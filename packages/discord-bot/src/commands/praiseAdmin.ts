@@ -4,8 +4,7 @@ import {
 } from '@discordjs/builders';
 
 import { logger } from '../utils/logger';
-
-// import { announcementHandler } from '../handlers/announce';
+import { announcementHandler } from '../handlers/announce';
 import { Command } from '../interfaces/Command';
 
 export const praiseAdmin: Command = {
@@ -36,10 +35,7 @@ export const praiseAdmin: Command = {
       await interaction.deferReply({ ephemeral: true });
       switch (subCommand) {
         case 'announce': {
-          // await announcementHandler(client, interaction);
-          await interaction.editReply(
-            'announcement command currently unavailable'
-          );
+          await announcementHandler(client, interaction);
           break;
         }
       }

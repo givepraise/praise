@@ -17,3 +17,11 @@ export type Setting = components['schemas']['Setting'];
 export type CommunityPaginatedResponseDto =
   components['schemas']['CommunityPaginatedResponseDto'];
 export type Community = components['schemas']['Community'];
+
+export type PeriodPaginatedResponseDto =
+  components['schemas']['PeriodPaginatedResponseDto'];
+
+export type Period = components['schemas']['Period'];
+export type PeriodDetailsDto = components['schemas']['PeriodDetailsDto'];
+export type PeriodDetailsQuantifierDto =
+  components['schemas']['PeriodDetailsQuantifierDto'];
