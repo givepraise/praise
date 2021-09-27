@@ -6,7 +6,7 @@ import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import React from "react";
 import { Link } from "react-router-dom";
-
+import Login from "./header/Login";
 export default function Header() {
   const {
     error: ethError,
@@ -52,6 +52,7 @@ export default function Header() {
             </div>
             <div className="hidden sm:block sm:ml-6 sm:w-full ">
               <div className="flex items-center justify-end h-full">
+                <Login />
                 <div>
                   {triedEager && (!connected || (connected && !!ethError)) && (
                     <button

@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 
-export const WelcomeToastShown = atom({
-  key: "WelcomeToastShown",
-  default: false,
+export const LoginNonceState = atom({
+  key: "LoginNonceState",
+  default: undefined,
 });

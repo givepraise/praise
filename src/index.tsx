@@ -5,7 +5,7 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import Header from "./components/Header";
-import LoginPage from "./pages/Login";
+import MainPage from "./pages/Main";
 import "./styles/globals.css";
 
 function getLibrary(provider: ExternalProvider) {
@@ -24,7 +24,7 @@ ReactDOM.render(
             <main>
               <Switch>
                 <Route exact path="/">
-                  <LoginPage />
+                  <MainPage />
                 </Route>
               </Switch>
             </main>
