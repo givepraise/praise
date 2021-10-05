@@ -1,14 +1,9 @@
-import { isConnected } from "@/eth/connectors";
-import { generateLoginMessage, loadSession, saveSession } from "@/spring/auth";
+import { generateLoginMessage, saveSession } from "@/spring/auth";
+import { NonceQuery } from "@/store/index";
 import { useWeb3React } from "@web3-react/core";
+import { useRecoilValue } from "recoil";
 export default function LoginButton() {
-  const {
-    error: ethError,
-    account: ethAccount,
-    connector: ethConnector,
-    library: ethLibrary,
-  } = useWeb3React();
-  const sessionId = loadSession(ethAccount!);
+  const { account: ethAccount, library: ethLibrary } = useWeb3React();
 
   const dummyFetchNonce = () => {
     return "NONCE123";
@@ -17,6 +12,8 @@ export default function LoginButton() {
   const dummyVerifySignature = (signature: string) => {
     return "JWT_SESSION_ID";
   };
+
+  const nonce = useRecoilValue(NonceQuery({ ethAccount }));
 
   const loginToPraise = async () => {
     // 1. Fetch current nonce from server
@@ -38,15 +35,11 @@ export default function LoginButton() {
   };
 
   return (
-    <>
-      {isConnected(ethConnector) && !ethError && !sessionId && (
-        <button
-          className="inline-block px-3 py-2 mr-4 text-base font-semibold text-white uppercase bg-green-700 rounded-lg"
-          onClick={loginToPraise}
-        >
-          Login to Praise
-        </button>
-      )}
-    </>
+    <button
+      className="inline-block px-3 py-2 mr-4 text-base font-semibold text-white uppercase bg-green-700 rounded-lg"
+      onClick={loginToPraise}
+    >
+      Login to Praise
+    </button>
   );
 }

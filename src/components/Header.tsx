@@ -1,6 +1,7 @@
 import EthAccount from "@/components/header/EthAccount";
-import { injected } from "@/eth/connectors";
+import { injected, isConnected } from "@/eth/connectors";
 import { useEagerConnect, useInactiveListener } from "@/eth/hooks";
+import { loadSession } from "@/spring/auth";
 import { ReactComponent as MetamaskIcon } from "@/svg/metamask.svg";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
@@ -11,8 +12,10 @@ export default function Header() {
   const {
     error: ethError,
     connector: ethConnector,
+    account: ethAccount,
     activate: ethActivate,
   } = useWeb3React();
+  const sessionId = loadSession(ethAccount!);
 
   // Attempt to activate pre-existing connection
   const triedEager = useEagerConnect();
@@ -52,7 +55,9 @@ export default function Header() {
             </div>
             <div className="hidden sm:block sm:ml-6 sm:w-full ">
               <div className="flex items-center justify-end h-full">
-                <Login />
+                {isConnected(ethConnector) && !ethError && !sessionId && (
+                  <Login />
+                )}
                 <div>
                   {triedEager && (!connected || (connected && !!ethError)) && (
                     <button
