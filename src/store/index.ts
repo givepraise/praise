@@ -1,13 +1,20 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import { atom, selectorFamily } from "recoil";
 
 const apiGet = async (endPoint: string) => {
   if (!process.env.REACT_APP_BACKEND_URL) {
     console.log("BACKEND URL NOT SET");
   }
-  return axios.get(endPoint, {
-    baseUrl: `${!process.env.REACT_APP_BACKEND_URL}`,
-  } as AxiosRequestConfig);
+
+  return axios.get(`${process.env.REACT_APP_BACKEND_URL}${endPoint}`);
+};
+
+const apiPost = async (endPoint: string, data: any) => {
+  if (!process.env.REACT_APP_BACKEND_URL) {
+    console.log("BACKEND URL NOT SET");
+  }
+
+  return axios.post(`${process.env.REACT_APP_BACKEND_URL}${endPoint}`, data);
 };
 
 export const LoginNonceState = atom({
@@ -20,11 +27,33 @@ export const NonceQuery = selectorFamily({
   get:
     (params: any) =>
     async ({ get }) => {
-      let response = await apiGet(
+      const response = (await apiGet(
         `/api/auth/nonce?publicKey=${params.ethAccount}`
-      );
-      console.log(JSON.stringify(response));
-      //return response!.nonce;
-      return "1234";
+      )) as any;
+
+      // ADD ERROR HANDLING
+      // ADD TYPE CHECKING
+      return response!.data!.nonce;
+    },
+});
+
+export const AuthQuery = selectorFamily({
+  key: "AuthQuery",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      if (!params.ethAccount || !params.message || !params.signature)
+        return undefined;
+
+      const data = {
+        publicKey: params.ethAccount,
+        message: params.message,
+        signature: params.signature,
+      };
+      const response = (await apiPost(`/api/auth`, data)) as any;
+
+      // ADD ERROR HANDLING
+      // ADD TYPE CHECKING
+      return response!.data!;
     },
 });
