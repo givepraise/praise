@@ -1,3 +1,4 @@
+import { loadSessionToken } from "@/spring/auth";
 import axios from "axios";
 import { atom, selectorFamily } from "recoil";
 
@@ -9,6 +10,25 @@ const apiGet = async (endPoint: string) => {
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_BACKEND_URL}${endPoint}`
+    );
+    return response;
+  } catch (err) {
+    return {};
+  }
+};
+
+const apiAuthGet = async (endPoint: string, ethAccount: string) => {
+  if (!process.env.REACT_APP_BACKEND_URL) {
+    console.log("BACKEND URL NOT SET");
+  }
+
+  try {
+    const token = loadSessionToken(ethAccount);
+    console.log("ethAccount: " + ethAccount);
+    console.log("token: " + token);
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}${endPoint}`,
+      { headers: { Authorization: `Bearer ${token}` } }
     );
     return response;
   } catch (err) {
@@ -32,9 +52,9 @@ const apiPost = async (endPoint: string, data: any) => {
   }
 };
 
-export const LoginNonceState = atom({
-  key: "LoginNonceState",
-  default: undefined,
+export const CurrentEthAddressState = atom({
+  key: "CurrentEthAddressState",
+  default: "",
 });
 
 export const NonceQuery = selectorFamily({
@@ -43,12 +63,12 @@ export const NonceQuery = selectorFamily({
     (params: any) =>
     async ({ get }) => {
       const response = (await apiGet(
-        `/api/auth/nonce?publicKey=${params.ethAccount}`
+        `/api/auth/nonce?ethereumAddress=${params.ethAccount}`
       )) as any;
 
       // ADD ERROR HANDLING
       // ADD TYPE CHECKING
-      return response!.data!.nonce;
+      return response?.data?.nonce;
     },
 });
 
@@ -61,7 +81,7 @@ export const AuthQuery = selectorFamily({
         return undefined;
 
       const data = {
-        publicKey: params.ethAccount,
+        ethereumAddress: params.ethAccount,
         message: params.message,
         signature: params.signature,
       };
@@ -69,7 +89,7 @@ export const AuthQuery = selectorFamily({
 
       // ADD ERROR HANDLING
       // ADD TYPE CHECKING
-      return response!.data!;
+      return response?.data;
     },
 });
 
@@ -78,11 +98,14 @@ export const AllUsersQuery = selectorFamily({
   get:
     (params: any) =>
     async ({ get }) => {
-      const response = (await apiGet(`/api/admin/users/all`)) as any;
+      const ethAccount = get(CurrentEthAddressState);
+      const response = (await apiAuthGet(
+        `/api/admin/users/all`,
+        ethAccount
+      )) as any;
 
-      if (!response) return undefined;
       // ADD ERROR HANDLING
       // ADD TYPE CHECKING
-      return response!.data!;
+      return response?.data;
     },
 });

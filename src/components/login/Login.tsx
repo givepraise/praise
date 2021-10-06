@@ -1,4 +1,4 @@
-import { generateLoginMessage, saveSession } from "@/spring/auth";
+import { generateLoginMessage, saveSessionToken } from "@/spring/auth";
 import { AuthQuery, NonceQuery } from "@/store/index";
 import { useWeb3React } from "@web3-react/core";
 import React from "react";
@@ -28,7 +28,7 @@ export default function LoginButton() {
     React.useEffect(() => {
       if (!ethAccount || !session) return;
       console.log(JSON.stringify(session));
-      saveSession(ethAccount, session);
+      saveSessionToken(ethAccount, JSON.stringify(session));
     }, [ethAccount, session]);
 
     const signLoginMessage = async () => {

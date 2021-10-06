@@ -9,10 +9,10 @@ export function generateLoginMessage(
   );
 }
 
-export function saveSession(account: string, sessionId: string) {
-  localStorage.setItem(`praise_key_${account}`, sessionId);
+export function saveSessionToken(account: string, sessionId: string) {
+  localStorage.setItem(`jwt_${account}`, sessionId);
 }
 
-export function loadSession(account: string): string | null {
-  return localStorage.getItem(`praise_key_${account}`);
+export function loadSessionToken(account: string): string | null {
+  return localStorage.getItem(`jwt_${account}`);
 }
