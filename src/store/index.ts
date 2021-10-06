@@ -6,7 +6,14 @@ const apiGet = async (endPoint: string) => {
     console.log("BACKEND URL NOT SET");
   }
 
-  return axios.get(`${process.env.REACT_APP_BACKEND_URL}${endPoint}`);
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}${endPoint}`
+    );
+    return response;
+  } catch (err) {
+    return {};
+  }
 };
 
 const apiPost = async (endPoint: string, data: any) => {
@@ -14,7 +21,15 @@ const apiPost = async (endPoint: string, data: any) => {
     console.log("BACKEND URL NOT SET");
   }
 
-  return axios.post(`${process.env.REACT_APP_BACKEND_URL}${endPoint}`, data);
+  try {
+    const response = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}${endPoint}`,
+      data
+    );
+    return response;
+  } catch (err) {
+    return {};
+  }
 };
 
 export const LoginNonceState = atom({
@@ -52,6 +67,20 @@ export const AuthQuery = selectorFamily({
       };
       const response = (await apiPost(`/api/auth`, data)) as any;
 
+      // ADD ERROR HANDLING
+      // ADD TYPE CHECKING
+      return response!.data!;
+    },
+});
+
+export const AllUsersQuery = selectorFamily({
+  key: "AllUsersQuery",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const response = (await apiGet(`/api/admin/users/all`)) as any;
+
+      if (!response) return undefined;
       // ADD ERROR HANDLING
       // ADD TYPE CHECKING
       return response!.data!;
