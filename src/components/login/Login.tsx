@@ -37,15 +37,24 @@ export default function LoginButton() {
       if (_signature) setSignature(_signature);
     };
 
-    if (!nonce) return null;
+    if (!nonce)
+      return (
+        <div>
+          <button className="inline-block px-3 py-2 text-base font-semibold text-gray-700 uppercase bg-gray-500 rounded-lg">
+            Sign login message
+          </button>
+        </div>
+      );
 
     return (
-      <button
-        className="inline-block px-3 py-2 mr-4 text-base font-semibold text-white uppercase bg-green-700 rounded-lg"
-        onClick={signLoginMessage}
-      >
-        Login to Praise
-      </button>
+      <div>
+        <button
+          className="inline-block px-3 py-2 text-base font-semibold text-white uppercase bg-green-700 rounded-lg"
+          onClick={signLoginMessage}
+        >
+          Sign login message
+        </button>
+      </div>
     );
   };
 

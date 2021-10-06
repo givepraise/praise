@@ -5,6 +5,7 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import Header from "./components/Header";
+import LoginPage from "./pages/Login";
 import MainPage from "./pages/Main";
 import "./styles/globals.css";
 
@@ -25,6 +26,9 @@ ReactDOM.render(
               <Switch>
                 <Route exact path="/">
                   <MainPage />
+                </Route>
+                <Route exact path="/login">
+                  <LoginPage />
                 </Route>
               </Switch>
             </main>
