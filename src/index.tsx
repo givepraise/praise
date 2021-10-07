@@ -1,12 +1,18 @@
 import { ExternalProvider, Web3Provider } from "@ethersproject/providers";
-import { Web3ReactProvider } from "@web3-react/core";
-import React from "react";
+import { useWeb3React, Web3ReactProvider } from "@web3-react/core";
+import React, { FC } from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import Header from "./components/Header";
 import LoginPage from "./pages/Login";
 import MainPage from "./pages/Main";
+import { loadSessionToken } from "./spring/auth";
 import "./styles/globals.css";
 
 function getLibrary(provider: ExternalProvider) {
@@ -14,6 +20,32 @@ function getLibrary(provider: ExternalProvider) {
   library.pollingInterval = 12000;
   return library;
 }
+
+interface PrivateRouteProps {
+  exact: boolean;
+  path: string;
+}
+const PrivateRoute: FC<PrivateRouteProps> = ({ children, ...rest }) => {
+  const { account: ethAccount } = useWeb3React();
+  const sessionId = loadSessionToken(ethAccount);
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        sessionId ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: { from: location },
+            }}
+          />
+        )
+      }
+    />
+  );
+};
 
 ReactDOM.render(
   <React.StrictMode>
@@ -24,9 +56,9 @@ ReactDOM.render(
             <Header />
             <main>
               <Switch>
-                <Route exact path="/">
+                <PrivateRoute exact path="/">
                   <MainPage />
-                </Route>
+                </PrivateRoute>
                 <Route exact path="/login">
                   <LoginPage />
                 </Route>

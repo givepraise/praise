@@ -11,19 +11,18 @@ const MainPage = () => {
     connector: ethConnector,
   } = useWeb3React();
 
-  const sessionId = loadSessionToken(ethAccount!);
+  const sessionId = loadSessionToken(ethAccount);
 
   return (
     <>
       <div className="max-w-lg overflow-auto text-white wall-container ">
         {isConnected(ethConnector) && !ethError && sessionId && (
-          <div>Your session id is: "{sessionId}"</div>
+          <div>You are connected.</div>
         )}
-
         {(!isConnected(ethConnector) || ethError || !sessionId) && (
           <div>
             You are not connected.{" "}
-            <Link to="/login" className="underline">
+            <Link to="/login?r=/" className="underline">
               Connect your wallet
             </Link>{" "}
             and login please.

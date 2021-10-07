@@ -1,14 +1,30 @@
-import { generateLoginMessage, saveSessionToken } from "@/spring/auth";
+import {
+  generateLoginMessage,
+  loadSessionToken,
+  saveSessionToken,
+} from "@/spring/auth";
 import { AuthQuery, NonceQuery } from "@/store/index";
 import { useWeb3React } from "@web3-react/core";
 import React from "react";
+import { useHistory, useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
+
+interface LocationState {
+  from: {
+    pathname: string;
+  };
+}
 
 export default function LoginButton() {
   const LoginButtonInner = () => {
     const { account: ethAccount, library: ethLibrary } = useWeb3React();
     const [message, setMessage] = React.useState<string | any>(undefined);
     const [signature, setSignature] = React.useState<string | any>(undefined);
+
+    const sessionId = loadSessionToken(ethAccount);
+
+    const history = useHistory();
+    const location = useLocation<LocationState>();
 
     // 1. Fetch nonce from server
     const nonce = useRecoilValue(NonceQuery({ ethAccount }));
@@ -27,9 +43,17 @@ export default function LoginButton() {
     // 5. Save session id for future api calls
     React.useEffect(() => {
       if (!ethAccount || !session) return;
-      console.log(JSON.stringify(session));
-      saveSessionToken(ethAccount, JSON.stringify(session));
+      saveSessionToken(ethAccount, session.accessToken);
     }, [ethAccount, session]);
+
+    // 6. Redirect after login
+    React.useEffect(() => {
+      if (!sessionId) return;
+      const { from } = location.state || { from: { pathname: "/" } };
+      setTimeout(() => {
+        history.replace(from);
+      }, 1000);
+    }, [sessionId, location, history]);
 
     const signLoginMessage = async () => {
       // 3. Sign the message using Metamask
@@ -42,6 +66,15 @@ export default function LoginButton() {
         <div>
           <button className="inline-block px-3 py-2 text-base font-semibold text-gray-700 uppercase bg-gray-500 rounded-lg">
             Sign login message
+          </button>
+        </div>
+      );
+
+    if (sessionId)
+      return (
+        <div>
+          <button className="inline-block px-3 py-2 text-base font-semibold text-gray-700 uppercase bg-gray-500 rounded-lg">
+            Logged in
           </button>
         </div>
       );

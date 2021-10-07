@@ -1,11 +1,12 @@
 import EthAccount from "@/components/login/EthAccount";
 import Login from "@/components/login/Login";
 import { injected } from "@/eth/connectors";
-import { useEagerConnect, useInactiveListener } from "@/eth/hooks";
+import { EthState } from "@/store/index";
 import { ReactComponent as MetamaskIcon } from "@/svg/metamask.svg";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import React from "react";
+import { useRecoilValue } from "recoil";
 
 export default function LoginPage() {
   const {
@@ -14,8 +15,7 @@ export default function LoginPage() {
     activate: ethActivate,
   } = useWeb3React();
 
-  // Attempt to activate pre-existing connection
-  const triedEager = useEagerConnect();
+  const ethState = useRecoilValue(EthState) as any;
 
   // Marks which ethConnector is being activated
   const [activatingConnector, setActivatingConnector] = React.useState<
@@ -23,11 +23,6 @@ export default function LoginPage() {
   >(undefined);
 
   const activating = injected === activatingConnector;
-  const connected = injected === ethConnector;
-  const connectDisabled = !triedEager || activating || connected || !!ethError;
-
-  // Listen to and react to network events
-  useInactiveListener(!triedEager || !!activatingConnector);
 
   // handle logic to recognize the ethConnector currently being activated
   React.useEffect(() => {
@@ -45,37 +40,38 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col items-center text-white wall-container mt-72">
       <EthAccount />
-      {triedEager && (!connected || (connected && !!ethError)) && (
-        <div className="mb-5">
-          <button
-            className={ethButtonClass}
-            disabled={connectDisabled || !!ethError || activating}
-            key={"Injected"}
-            onClick={() => {
-              setActivatingConnector(injected);
-              ethActivate(injected, (error) => {
-                if (error.name === "UnsupportedChainIdError")
-                  alert("Please connect to Ethereum mainnet");
-                setActivatingConnector(undefined);
-              });
-            }}
-          >
-            {!ethError && activating && <div>Initializing …</div>}
-            {!ethError && !activating && (
-              <div>
-                <MetamaskIcon className="inline-block w-4 h-4 pb-1 mr-2" />
-                Connect to a wallet
-              </div>
-            )}
-            {ethError && ethError.name === "UnsupportedChainIdError" && (
-              <div>Wrong network</div>
-            )}
-            {ethError && ethError.name !== "UnsupportedChainIdError" && (
-              <div>Unable to connect</div>
-            )}
-          </button>
-        </div>
-      )}
+      {ethState.triedEager &&
+        (!ethState.connected || (ethState.connected && !!ethError)) && (
+          <div className="mb-5">
+            <button
+              className={ethButtonClass}
+              disabled={ethState.connectDisabled || !!ethError || activating}
+              key={"Injected"}
+              onClick={() => {
+                setActivatingConnector(injected);
+                ethActivate(injected, (error) => {
+                  if (error.name === "UnsupportedChainIdError")
+                    alert("Please connect to Ethereum mainnet");
+                  setActivatingConnector(undefined);
+                });
+              }}
+            >
+              {!ethError && activating && <div>Initializing …</div>}
+              {!ethError && !activating && (
+                <div>
+                  <MetamaskIcon className="inline-block w-4 h-4 pb-1 mr-2" />
+                  Connect to a wallet
+                </div>
+              )}
+              {ethError && ethError.name === "UnsupportedChainIdError" && (
+                <div>Wrong network</div>
+              )}
+              {ethError && ethError.name !== "UnsupportedChainIdError" && (
+                <div>Unable to connect</div>
+              )}
+            </button>
+          </div>
+        )}
       <Login />
     </div>
   );

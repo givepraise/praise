@@ -24,8 +24,6 @@ const apiAuthGet = async (endPoint: string, ethAccount: string) => {
 
   try {
     const token = loadSessionToken(ethAccount);
-    console.log("ethAccount: " + ethAccount);
-    console.log("token: " + token);
     const response = await axios.get(
       `${process.env.REACT_APP_BACKEND_URL}${endPoint}`,
       { headers: { Authorization: `Bearer ${token}` } }
@@ -55,6 +53,11 @@ const apiPost = async (endPoint: string, data: any) => {
 export const CurrentEthAddressState = atom({
   key: "CurrentEthAddressState",
   default: "",
+});
+
+export const EthState = atom({
+  key: "EthState",
+  default: {},
 });
 
 export const NonceQuery = selectorFamily({
