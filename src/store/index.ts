@@ -50,14 +50,23 @@ const apiPost = async (endPoint: string, data: any) => {
   }
 };
 
-export const CurrentEthAddressState = atom({
-  key: "CurrentEthAddressState",
-  default: "",
-});
+interface EthStateInterface {
+  account: string | null | undefined;
+  triedEager: boolean;
+  activating: boolean;
+  connected: boolean;
+  connectDisabled: boolean;
+}
 
 export const EthState = atom({
   key: "EthState",
-  default: {},
+  default: {
+    account: undefined,
+    triedEager: false,
+    activating: false,
+    connected: false,
+    connectDisabled: false,
+  } as EthStateInterface,
 });
 
 export const NonceQuery = selectorFamily({
@@ -101,10 +110,12 @@ export const AllUsersQuery = selectorFamily({
   get:
     (params: any) =>
     async ({ get }) => {
-      const ethAccount = get(CurrentEthAddressState);
+      //const ethAccount = get(CurrentEthAddressState);
+      const ethState = get(EthState);
+      if (!ethState.account) return null;
       const response = (await apiAuthGet(
         `/api/admin/users/all`,
-        ethAccount
+        ethState.account
       )) as any;
 
       // ADD ERROR HANDLING

@@ -1,6 +1,6 @@
 import { injected } from "@/eth/connectors";
 import { useEagerConnect, useInactiveListener } from "@/eth/hooks";
-import { CurrentEthAddressState, EthState } from "@/store/index";
+import { EthState } from "@/store/index";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import React from "react";
@@ -29,9 +29,6 @@ export default function Header() {
   // Listen to and react to network events
   useInactiveListener(!triedEager || !!activatingConnector);
 
-  const setCurrentEthAddress = useSetRecoilState(CurrentEthAddressState);
-  const setEthState = useSetRecoilState(EthState);
-
   // Handle logic to recognize the ethConnector currently being activated
   React.useEffect(() => {
     if (activatingConnector && activatingConnector === ethConnector) {
@@ -39,18 +36,24 @@ export default function Header() {
     }
   }, [activatingConnector, ethConnector]);
 
-  // Store the currently connected eth address in state where Recoil can access it
+  // Store current eth address and connection state in global state
+  const setEthState = useSetRecoilState(EthState);
   React.useEffect(() => {
-    if (!ethAccount) return;
-    setCurrentEthAddress(ethAccount);
-  }, [ethAccount, setCurrentEthAddress]);
-
-  setEthState({
+    setEthState({
+      account: ethAccount,
+      triedEager,
+      activating,
+      connected,
+      connectDisabled,
+    });
+  }, [
+    setEthState,
+    ethAccount,
     triedEager,
     activating,
     connected,
     connectDisabled,
-  });
+  ]);
 
   return (
     <nav>
