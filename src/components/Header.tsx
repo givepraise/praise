@@ -1,17 +1,17 @@
-import EthAccount from "@/components/header/EthAccount";
 import { injected } from "@/eth/connectors";
 import { useEagerConnect, useInactiveListener } from "@/eth/hooks";
-import { ReactComponent as MetamaskIcon } from "@/svg/metamask.svg";
+import { CurrentEthAddressState, EthState } from "@/store/index";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import React from "react";
 import { Link } from "react-router-dom";
-import Login from "./header/Login";
+import { useSetRecoilState } from "recoil";
+
 export default function Header() {
   const {
     error: ethError,
     connector: ethConnector,
-    activate: ethActivate,
+    account: ethAccount,
   } = useWeb3React();
 
   // Attempt to activate pre-existing connection
@@ -29,66 +29,35 @@ export default function Header() {
   // Listen to and react to network events
   useInactiveListener(!triedEager || !!activatingConnector);
 
-  // handle logic to recognize the ethConnector currently being activated
+  const setCurrentEthAddress = useSetRecoilState(CurrentEthAddressState);
+  const setEthState = useSetRecoilState(EthState);
+
+  // Handle logic to recognize the ethConnector currently being activated
   React.useEffect(() => {
     if (activatingConnector && activatingConnector === ethConnector) {
       setActivatingConnector(undefined);
     }
   }, [activatingConnector, ethConnector]);
 
-  let ethButtonClass =
-    "inline-block px-3 py-2 text-base font-semibold uppercase rounded-lg focus:outline-none " +
-    (ethError
-      ? "bg-red-700 hover:bg-red-700 text-white"
-      : "bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-green-900");
+  // Store the currently connected eth address in state where Recoil can access it
+  React.useEffect(() => {
+    if (!ethAccount) return;
+    setCurrentEthAddress(ethAccount);
+  }, [ethAccount, setCurrentEthAddress]);
+
+  setEthState({
+    triedEager,
+    activating,
+    connected,
+    connectDisabled,
+  });
 
   return (
     <nav>
       <div className="px-2 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8 sm:py-6 lg:py-8">
-        <div className="relative flex items-center justify-between">
-          <div className="flex items-center justify-center flex-1 sm:items-stretch sm:justify-start">
-            <div className="flex items-center flex-shrink-0 text-3xl font-bold text-white">
-              <Link to="/">Praise 🙏</Link>
-            </div>
-            <div className="hidden sm:block sm:ml-6 sm:w-full ">
-              <div className="flex items-center justify-end h-full">
-                <Login />
-                <div>
-                  {triedEager && (!connected || (connected && !!ethError)) && (
-                    <button
-                      className={ethButtonClass}
-                      disabled={connectDisabled || !!ethError || activating}
-                      key={"Injected"}
-                      onClick={() => {
-                        setActivatingConnector(injected);
-                        ethActivate(injected, (error) => {
-                          if (error.name === "UnsupportedChainIdError")
-                            alert("Please connect to Ethereum mainnet");
-                          setActivatingConnector(undefined);
-                        });
-                      }}
-                    >
-                      {!ethError && activating && <div>Initializing …</div>}
-                      {!ethError && !activating && (
-                        <div>
-                          <MetamaskIcon className="inline-block w-4 h-4 pb-1 mr-2" />
-                          Connect to wallet
-                        </div>
-                      )}
-                      {ethError &&
-                        ethError.name === "UnsupportedChainIdError" && (
-                          <div>Wrong network</div>
-                        )}
-                      {ethError &&
-                        ethError.name !== "UnsupportedChainIdError" && (
-                          <div>Unable to connect</div>
-                        )}
-                    </button>
-                  )}
-                  <EthAccount />
-                </div>
-              </div>
-            </div>
+        <div className="flex flex-col items-center">
+          <div className="flex items-center flex-shrink-0 text-3xl font-bold text-white">
+            <Link to="/">Praise 🙏</Link>
           </div>
         </div>
       </div>
