@@ -1,9 +1,5 @@
-import {
-  generateLoginMessage,
-  loadSessionToken,
-  saveSessionToken,
-} from "@/spring/auth";
-import { AuthQuery, NonceQuery } from "@/store/index";
+import { AuthQuery, NonceQuery } from "@/store/auth";
+import { loadSessionToken, saveSessionToken } from "@/store/localStorage";
 import { useWeb3React } from "@web3-react/core";
 import React from "react";
 import { useHistory, useLocation } from "react-router-dom";
@@ -14,6 +10,16 @@ interface LocationState {
     pathname: string;
   };
 }
+const generateLoginMessage = (
+  account: string | undefined,
+  nonce: string
+): string => {
+  return (
+    "SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n" +
+    `ADDRESS:\n${account}\n\n` +
+    `NONCE:\n${nonce}`
+  );
+};
 
 export default function LoginButton() {
   const LoginButtonInner = () => {

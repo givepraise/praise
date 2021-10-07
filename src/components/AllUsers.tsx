@@ -1,4 +1,4 @@
-import { AllUsersQuery } from "@/store/index";
+import { AllUsersQuery } from "@/store/admin";
 import React from "react";
 import { useRecoilValue } from "recoil";
 

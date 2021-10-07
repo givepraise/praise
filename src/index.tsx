@@ -12,7 +12,7 @@ import { RecoilRoot } from "recoil";
 import Header from "./components/Header";
 import LoginPage from "./pages/Login";
 import MainPage from "./pages/Main";
-import { loadSessionToken } from "./spring/auth";
+import { loadSessionToken } from "./store/localStorage";
 import "./styles/globals.css";
 
 function getLibrary(provider: ExternalProvider) {

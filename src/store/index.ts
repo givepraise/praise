@@ -1,125 +1,79 @@
-import { loadSessionToken } from "@/spring/auth";
-import axios from "axios";
-import { atom, selectorFamily } from "recoil";
+import axios, { AxiosResponse } from "axios";
+import { selectorFamily } from "recoil";
+import { EthState, EthStateInterface } from "./eth";
+import { loadSessionToken } from "./localStorage";
 
-const apiGet = async (endPoint: string) => {
-  if (!process.env.REACT_APP_BACKEND_URL) {
-    console.log("BACKEND URL NOT SET");
+const hasAccount = (ethState: EthStateInterface) => {
+  if (!ethState.account) {
+    console.error("Ethereum wallet not connected.");
+    return false;
   }
-
-  try {
-    const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}${endPoint}`
-    );
-    return response;
-  } catch (err) {
-    return {};
-  }
+  return true;
 };
 
-const apiAuthGet = async (endPoint: string, ethAccount: string) => {
+const hasBackendUrl = () => {
   if (!process.env.REACT_APP_BACKEND_URL) {
-    console.log("BACKEND URL NOT SET");
+    console.log("Backend url not set.");
+    return false;
   }
-
-  try {
-    const token = loadSessionToken(ethAccount);
-    const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}${endPoint}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    return response;
-  } catch (err) {
-    return {};
-  }
+  return true;
 };
 
-const apiPost = async (endPoint: string, data: any) => {
-  if (!process.env.REACT_APP_BACKEND_URL) {
-    console.log("BACKEND URL NOT SET");
-  }
-
-  try {
-    const response = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}${endPoint}`,
-      data
-    );
-    return response;
-  } catch (err) {
-    return {};
-  }
-};
-
-interface EthStateInterface {
-  account: string | null | undefined;
-  triedEager: boolean;
-  activating: boolean;
-  connected: boolean;
-  connectDisabled: boolean;
-}
-
-export const EthState = atom({
-  key: "EthState",
-  default: {
-    account: undefined,
-    triedEager: false,
-    activating: false,
-    connected: false,
-    connectDisabled: false,
-  } as EthStateInterface,
-});
-
-export const NonceQuery = selectorFamily({
-  key: "NonceQuery",
+export const ApiGetQuery = selectorFamily({
+  key: "ApiGetQuery",
   get:
     (params: any) =>
     async ({ get }) => {
-      const response = (await apiGet(
-        `/api/auth/nonce?ethereumAddress=${params.ethAccount}`
-      )) as any;
+      if (!hasBackendUrl()) return null;
 
-      // ADD ERROR HANDLING
-      // ADD TYPE CHECKING
-      return response?.data?.nonce;
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`
+        );
+        return response;
+      } catch (err) {
+        return {} as AxiosResponse<never>;
+      }
     },
 });
 
-export const AuthQuery = selectorFamily({
-  key: "AuthQuery",
+export const ApiAuthGetQuery = selectorFamily({
+  key: "ApiAuthGetQuery",
   get:
     (params: any) =>
     async ({ get }) => {
-      if (!params.ethAccount || !params.message || !params.signature)
-        return undefined;
-
-      const data = {
-        ethereumAddress: params.ethAccount,
-        message: params.message,
-        signature: params.signature,
-      };
-      const response = (await apiPost(`/api/auth`, data)) as any;
-
-      // ADD ERROR HANDLING
-      // ADD TYPE CHECKING
-      return response?.data;
-    },
-});
-
-export const AllUsersQuery = selectorFamily({
-  key: "AllUsersQuery",
-  get:
-    (params: any) =>
-    async ({ get }) => {
-      //const ethAccount = get(CurrentEthAddressState);
       const ethState = get(EthState);
-      if (!ethState.account) return null;
-      const response = (await apiAuthGet(
-        `/api/admin/users/all`,
-        ethState.account
-      )) as any;
+      if (!hasAccount(ethState)) return null;
+      if (!hasBackendUrl()) return null;
 
-      // ADD ERROR HANDLING
-      // ADD TYPE CHECKING
-      return response?.data;
+      try {
+        const token = loadSessionToken(ethState.account);
+        const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        return response;
+      } catch (err) {
+        return {} as AxiosResponse<never>;
+      }
+    },
+});
+
+export const ApiPostQuery = selectorFamily({
+  key: "ApiPostQuery",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      if (!hasBackendUrl()) return null;
+
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
+          params.data
+        );
+        return response;
+      } catch (err) {
+        return {} as AxiosResponse<never>;
+      }
     },
 });

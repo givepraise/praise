@@ -1,6 +1,6 @@
 import AllUsers from "@/components/AllUsers";
 import { isConnected } from "@/eth/connectors";
-import { loadSessionToken } from "@/spring/auth";
+import { loadSessionToken } from "@/store/localStorage";
 import { useWeb3React } from "@web3-react/core";
 import { Link } from "react-router-dom";
 
