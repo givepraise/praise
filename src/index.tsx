@@ -15,6 +15,8 @@ import MainPage from "./pages/Main";
 import { loadSessionToken } from "./store/localStorage";
 import "./styles/globals.css";
 
+const LOAD_DELAY = 500;
+
 function getLibrary(provider: ExternalProvider) {
   const library = new Web3Provider(provider);
   library.pollingInterval = 12000;
@@ -27,6 +29,7 @@ interface PrivateRouteProps {
 }
 const PrivateRoute: FC<PrivateRouteProps> = ({ children, ...rest }) => {
   const { account: ethAccount } = useWeb3React();
+  console.log(ethAccount);
   const sessionId = loadSessionToken(ethAccount);
   return (
     <Route
@@ -47,6 +50,29 @@ const PrivateRoute: FC<PrivateRouteProps> = ({ children, ...rest }) => {
   );
 };
 
+const DelayedRoutes = () => {
+  const [delay, setDelay] = React.useState<boolean>(true);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setDelay(false);
+    }, LOAD_DELAY);
+  }, []);
+
+  if (delay) return null;
+
+  return (
+    <Switch>
+      <PrivateRoute exact path="/">
+        <MainPage />
+      </PrivateRoute>
+      <Route exact path="/login">
+        <LoginPage />
+      </Route>
+    </Switch>
+  );
+};
+
 ReactDOM.render(
   <React.StrictMode>
     <RecoilRoot>
@@ -55,14 +81,7 @@ ReactDOM.render(
           <div>
             <Header />
             <main>
-              <Switch>
-                <PrivateRoute exact path="/">
-                  <MainPage />
-                </PrivateRoute>
-                <Route exact path="/login">
-                  <LoginPage />
-                </Route>
-              </Switch>
+              <DelayedRoutes />
             </main>
           </div>
         </Router>
