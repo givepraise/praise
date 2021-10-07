@@ -52,7 +52,7 @@ ReactDOM.render(
     <RecoilRoot>
       <Web3ReactProvider getLibrary={getLibrary}>
         <Router>
-          <div className="bg-green-900">
+          <div>
             <Header />
             <main>
               <Switch>
