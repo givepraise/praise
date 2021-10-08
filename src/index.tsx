@@ -9,7 +9,8 @@ import {
   Switch,
 } from "react-router-dom";
 import { RecoilRoot } from "recoil";
-import Header from "./components/Header";
+import EthConnection from "./components/EthConnection";
+import Nav from "./components/Nav";
 import LoginPage from "./pages/Login";
 import MainPage from "./pages/Main";
 import { loadSessionToken } from "./store/localStorage";
@@ -24,12 +25,11 @@ function getLibrary(provider: ExternalProvider) {
 }
 
 interface PrivateRouteProps {
-  exact: boolean;
+  exact?: boolean;
   path: string;
 }
 const PrivateRoute: FC<PrivateRouteProps> = ({ children, ...rest }) => {
   const { account: ethAccount } = useWeb3React();
-  console.log(ethAccount);
   const sessionId = loadSessionToken(ethAccount);
   return (
     <Route
@@ -50,7 +50,7 @@ const PrivateRoute: FC<PrivateRouteProps> = ({ children, ...rest }) => {
   );
 };
 
-const DelayedRoutes = () => {
+const DelayedLoading: FC<any> = ({ children }) => {
   const [delay, setDelay] = React.useState<boolean>(true);
 
   React.useEffect(() => {
@@ -60,14 +60,17 @@ const DelayedRoutes = () => {
   }, []);
 
   if (delay) return null;
+  return children;
+};
 
+const SubPages = () => {
   return (
     <Switch>
-      <PrivateRoute exact path="/">
+      <Route path={`/two`}>
+        <div>Page 2</div>
+      </Route>
+      <Route exact path="/">
         <MainPage />
-      </PrivateRoute>
-      <Route exact path="/login">
-        <LoginPage />
       </Route>
     </Switch>
   );
@@ -79,9 +82,25 @@ ReactDOM.render(
       <Web3ReactProvider getLibrary={getLibrary}>
         <Router>
           <div>
-            <Header />
-            <main>
-              <DelayedRoutes />
+            <EthConnection />
+            <main className="font-sans">
+              <DelayedLoading>
+                <Switch>
+                  <Route exact path="/login">
+                    <LoginPage />
+                  </Route>
+                  <PrivateRoute path="/">
+                    <div className="flex min-h-screen">
+                      <Nav />
+                      <div className="flex w-full">
+                        <div className="max-w-4xl pt-5 mx-auto">
+                          <SubPages />
+                        </div>
+                      </div>
+                    </div>
+                  </PrivateRoute>
+                </Switch>
+              </DelayedLoading>
             </main>
           </div>
         </Router>

@@ -35,44 +35,58 @@ export default function LoginPage() {
     "inline-block px-3 py-2 text-base font-semibold uppercase rounded-lg focus:outline-none " +
     (ethError
       ? "bg-red-700 hover:bg-red-700 text-white"
-      : "bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-green-900");
+      : "bg-gray-400 text-white");
 
   return (
-    <div className="flex flex-col items-center text-white wall-container mt-72">
-      <EthAccount />
-      {ethState.triedEager &&
-        (!ethState.connected || (ethState.connected && !!ethError)) && (
-          <div className="mb-5">
-            <button
-              className={ethButtonClass}
-              disabled={ethState.connectDisabled || !!ethError || activating}
-              key={"Injected"}
-              onClick={() => {
-                setActivatingConnector(injected);
-                ethActivate(injected, (error) => {
-                  if (error.name === "UnsupportedChainIdError")
-                    alert("Please connect to Ethereum mainnet");
-                  setActivatingConnector(undefined);
-                });
-              }}
-            >
-              {!ethError && activating && <div>Initializing …</div>}
-              {!ethError && !activating && (
-                <div>
-                  <MetamaskIcon className="inline-block w-4 h-4 pb-1 mr-2" />
-                  Connect to a wallet
-                </div>
-              )}
-              {ethError && ethError.name === "UnsupportedChainIdError" && (
-                <div>Wrong network</div>
-              )}
-              {ethError && ethError.name !== "UnsupportedChainIdError" && (
-                <div>Unable to connect</div>
-              )}
-            </button>
+    <div className="w-full">
+      <div className="flex flex-col w-full h-screen">
+        <div className="w-full p-5 text-2xl font-bold">Praise 🙏</div>
+        <div className="flex flex-col items-center p-4 py-8 m-auto border border-solid rounded-lg shadow-sm bg-gray-50 w-96">
+          <div className="mb-3 text-xl font-semibold">Login</div>
+          <div className="mb-3 text-center">
+            To login to praise, first connect a wallet and then sign a
+            verification message.
           </div>
-        )}
-      <Login />
+          <div className="mb-3 text-lg font-semibold ">1. Connect</div>
+          <EthAccount />
+          {ethState.triedEager &&
+            (!ethState.connected || (ethState.connected && !!ethError)) && (
+              <div className="mb-5">
+                <button
+                  className={ethButtonClass}
+                  disabled={
+                    ethState.connectDisabled || !!ethError || activating
+                  }
+                  key={"Injected"}
+                  onClick={() => {
+                    setActivatingConnector(injected);
+                    ethActivate(injected, (error) => {
+                      if (error.name === "UnsupportedChainIdError")
+                        alert("Please connect to Ethereum mainnet");
+                      setActivatingConnector(undefined);
+                    });
+                  }}
+                >
+                  {!ethError && activating && <div>Initializing …</div>}
+                  {!ethError && !activating && (
+                    <div>
+                      <MetamaskIcon className="inline-block w-4 h-4 pb-1 mr-2" />
+                      Connect to a wallet
+                    </div>
+                  )}
+                  {ethError && ethError.name === "UnsupportedChainIdError" && (
+                    <div>Wrong network</div>
+                  )}
+                  {ethError && ethError.name !== "UnsupportedChainIdError" && (
+                    <div>Unable to connect</div>
+                  )}
+                </button>
+              </div>
+            )}
+          <div className="mb-3 text-lg font-semibold">2. Login</div>
+          <Login />
+        </div>
+      </div>
     </div>
   );
 }

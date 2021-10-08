@@ -70,7 +70,7 @@ export default function LoginButton() {
     if (!nonce)
       return (
         <div>
-          <button className="inline-block px-3 py-2 text-base font-semibold text-gray-700 uppercase bg-gray-500 rounded-lg">
+          <button className="inline-block px-3 py-2 text-base font-semibold text-gray-200 uppercase bg-gray-300 rounded-lg">
             Sign login message
           </button>
         </div>
@@ -79,7 +79,7 @@ export default function LoginButton() {
     if (sessionId)
       return (
         <div>
-          <button className="inline-block px-3 py-2 text-base font-semibold text-gray-700 uppercase bg-gray-500 rounded-lg">
+          <button className="inline-block px-3 py-2 text-base font-semibold text-gray-200 uppercase bg-gray-300 rounded-lg">
             Logged in
           </button>
         </div>
@@ -88,7 +88,7 @@ export default function LoginButton() {
     return (
       <div>
         <button
-          className="inline-block px-3 py-2 text-base font-semibold text-white uppercase bg-green-700 rounded-lg"
+          className="inline-block px-3 py-2 text-base font-semibold text-white uppercase bg-gray-400 rounded-lg"
           onClick={signLoginMessage}
         >
           Sign login message
