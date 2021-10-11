@@ -13,6 +13,8 @@ import EthConnection from "./components/EthConnection";
 import Nav from "./components/Nav";
 import LoginPage from "./pages/Login";
 import MainPage from "./pages/Main";
+import PeriodsCreateUpdatePage from "./pages/Periods/CreateUpdate";
+import Periods from "./pages/Periods/Periods";
 import { loadSessionToken } from "./store/localStorage";
 import "./styles/globals.css";
 
@@ -66,8 +68,11 @@ const DelayedLoading: FC<any> = ({ children }) => {
 const SubPages = () => {
   return (
     <Switch>
-      <Route path={`/two`}>
-        <div>Page 2</div>
+      <Route exact path={`/periods`}>
+        <Periods />
+      </Route>
+      <Route path={`/periods/createupdate`}>
+        <PeriodsCreateUpdatePage />
       </Route>
       <Route exact path="/">
         <MainPage />
@@ -93,7 +98,7 @@ ReactDOM.render(
                     <div className="flex min-h-screen">
                       <Nav />
                       <div className="flex w-full">
-                        <div className="max-w-4xl pt-5 mx-auto">
+                        <div className="w-[762px] pt-5 mx-auto">
                           <SubPages />
                         </div>
                       </div>

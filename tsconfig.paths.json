@@ -6,7 +6,8 @@
       "@/components/*": ["components/*"],
       "@/eth/*": ["eth/*"],
       "@/store/*": ["store/*"],
-      "@/svg/*": ["svg/*"]
+      "@/svg/*": ["svg/*"],
+      "@/utils/*": ["utils/*"]
     }
   }
 }
