@@ -5,6 +5,7 @@
       "@/*": ["/*"],
       "@/components/*": ["components/*"],
       "@/eth/*": ["eth/*"],
+      "@/pages/*": ["pages/*"],
       "@/store/*": ["store/*"],
       "@/svg/*": ["svg/*"],
       "@/utils/*": ["utils/*"]
