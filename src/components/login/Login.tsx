@@ -1,9 +1,9 @@
-import { AuthQuery, NonceQuery } from "@/store/auth";
-import { loadSessionToken, saveSessionToken } from "@/store/localStorage";
+import { AuthQuery, NonceQuery, SessionToken } from "@/store/auth";
+import * as localStorage from "@/store/localStorage";
 import { useWeb3React } from "@web3-react/core";
 import React from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 interface LocationState {
   from: {
@@ -26,9 +26,7 @@ export default function LoginButton() {
     const { account: ethAccount, library: ethLibrary } = useWeb3React();
     const [message, setMessage] = React.useState<string | any>(undefined);
     const [signature, setSignature] = React.useState<string | any>(undefined);
-
-    const sessionId = loadSessionToken(ethAccount);
-
+    const [sessionToken, setSessionToken] = useRecoilState(SessionToken);
     const history = useHistory();
     const location = useLocation<LocationState>();
 
@@ -46,20 +44,23 @@ export default function LoginButton() {
       setMessage(generateLoginMessage(ethAccount, nonce));
     }, [ethAccount, nonce]);
 
-    // 5. Save session id for future api calls
+    // 5. Authetication response
     React.useEffect(() => {
       if (!ethAccount || !session) return;
-      saveSessionToken(ethAccount, session.accessToken);
-    }, [ethAccount, session]);
+      // Save session id for future api calls
+      localStorage.setSessionToken(ethAccount, session.accessToken);
+      // Set session token in global state
+      setSessionToken(session.accessToken);
+    }, [ethAccount, session, setSessionToken]);
 
     // 6. Redirect after login
     React.useEffect(() => {
-      if (!sessionId) return;
+      if (!sessionToken) return;
       const { from } = location.state || { from: { pathname: "/" } };
       setTimeout(() => {
         history.replace(from);
       }, 1000);
-    }, [sessionId, location, history]);
+    }, [sessionToken, location, history]);
 
     const signLoginMessage = async () => {
       // 3. Sign the message using Metamask
@@ -76,7 +77,7 @@ export default function LoginButton() {
         </div>
       );
 
-    if (sessionId)
+    if (sessionToken)
       return (
         <div>
           <button className="inline-block px-3 py-2 text-base font-semibold text-gray-200 uppercase bg-gray-300 rounded-lg">

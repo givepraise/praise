@@ -1,5 +1,13 @@
-import { selectorFamily } from "recoil";
-import { ApiGetQuery, ApiPostQuery } from ".";
+import { atom, selectorFamily } from "recoil";
+import { ApiGetQuery, ApiPostQuery } from "./api";
+
+// SessionToken differentiates between null and undefined
+// undefined - Session token not loaded yet
+// null - No session token exists
+export const SessionToken = atom<string | null | undefined>({
+  key: "SessionToken",
+  default: undefined,
+});
 
 export const NonceQuery = selectorFamily({
   key: "NonceQuery",

@@ -1,13 +1,16 @@
 import { AllUsersQuery } from "@/store/admin";
+import { useAuthApiQuery } from "@/store/api";
 import React from "react";
-import { useRecoilValue } from "recoil";
 
 export default function AllUsers() {
   const AllUsersInner = () => {
-    const allUsers = useRecoilValue(AllUsersQuery({}));
+    // Always use `useAuthApiQuery` for queries instead of `useRecoilValue`
+    // to correctly handle expired JWT tokens and other error codes returned by
+    // the server
+    const allUsers = useAuthApiQuery(AllUsersQuery({}));
 
-    if (!allUsers) return <div>Unable to fetch user list.</div>;
-    return <div>{JSON.stringify(allUsers)}</div>;
+    if (!allUsers?.data) return <div>Unable to fetch user list.</div>;
+    return <div>{JSON.stringify(allUsers.data)}</div>;
   };
 
   return (

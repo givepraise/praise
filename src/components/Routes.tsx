@@ -1,10 +1,12 @@
 import Nav from "@/components/Nav";
 import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
-import { loadSessionToken } from "@/store/localStorage";
+import { SessionToken } from "@/store/auth";
+import * as localStorage from "@/store/localStorage";
 import { useWeb3React } from "@web3-react/core";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
+import { useRecoilState } from "recoil";
 
 const PeriodsCreateUpdatePage = React.lazy(
   () => import("@/pages/Periods/CreateUpdate")
@@ -17,14 +19,21 @@ interface PrivateRouteProps {
 }
 const PrivateRoute: FC<PrivateRouteProps> = ({ children, ...rest }) => {
   const { account: ethAccount } = useWeb3React();
-  const sessionId = loadSessionToken(ethAccount);
+  const [sessionToken, setSessionToken] = useRecoilState(SessionToken);
+  React.useEffect(() => {
+    setSessionToken(localStorage.getSessionToken(ethAccount));
+  }, [ethAccount, setSessionToken]);
+
+  // Token exists: Show content
+  // Token undefined: Unknown state => wait
+  // Token null: Token doesn't exist => login
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        sessionId ? (
+        sessionToken ? (
           children
-        ) : (
+        ) : sessionToken === undefined ? null : (
           <Redirect
             to={{
               pathname: "/login",

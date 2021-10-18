@@ -1,5 +1,5 @@
 import { selectorFamily } from "recoil";
-import { ApiAuthGetQuery } from ".";
+import { ApiAuthGetQuery } from "./api";
 
 export const AllUsersQuery = selectorFamily({
   key: "AllUsersQuery",
@@ -9,6 +9,6 @@ export const AllUsersQuery = selectorFamily({
       const response = get(
         ApiAuthGetQuery({ endPoint: "/api/admin/users/all" })
       );
-      return response?.data;
+      return response;
     },
 });
