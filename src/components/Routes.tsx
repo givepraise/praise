@@ -7,6 +7,7 @@ import { useWeb3React } from "@web3-react/core";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useRecoilState } from "recoil";
+import TopMenu from "./TopMenu";
 
 const PeriodsCreateUpdatePage = React.lazy(
   () => import("@/pages/Periods/CreateUpdate")
@@ -75,6 +76,7 @@ const Routes = () => {
           <Nav />
           <div className="flex w-full">
             <div className="w-[762px] pt-5 mx-auto">
+              <TopMenu />
               <SubPages />
             </div>
           </div>
