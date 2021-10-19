@@ -7,11 +7,11 @@ interface BreadCrumbProps {
 }
 const BreadCrumb = ({ name, icon }: BreadCrumbProps) => {
   return (
-    <div className="mb-16 text-sm">
+    <div className="mb-4 text-sm">
       <FontAwesomeIcon
         icon={icon}
-        size="2x"
-        className="inline-block mr-2 align-text-bottom"
+        size="1x"
+        className="inline-block mb-[2px] mr-2 align-text-bottom"
       />
       {name}
     </div>

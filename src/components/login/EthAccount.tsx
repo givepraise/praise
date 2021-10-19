@@ -7,7 +7,7 @@ export default function EthAccount() {
 
   if (isConnected(connector) && account)
     return (
-      <div className="inline-block px-3 py-2 mb-5 text-base font-semibold uppercase">
+      <div className="inline-block px-3 py-2 mb-5 text-base">
         <div
           style={{ width: "15px", height: "15px" }}
           className="inline-block mr-2"

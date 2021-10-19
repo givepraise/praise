@@ -32,10 +32,8 @@ export default function LoginPage() {
   }, [activatingConnector, ethConnector]);
 
   let ethButtonClass =
-    "inline-block px-3 py-2 text-base font-semibold uppercase rounded-lg focus:outline-none " +
-    (ethError
-      ? "bg-red-700 hover:bg-red-700 text-white"
-      : "bg-gray-400 text-white");
+    "px-4 py-2 font-bold text-white uppercase rounded " +
+    (ethError ? "bg-red-700 hover:bg-red-700" : "bg-black hover:bg-gray-700");
 
   return (
     <div className="w-full">
