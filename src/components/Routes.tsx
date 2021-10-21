@@ -1,23 +1,27 @@
 import Nav from "@/components/Nav";
 import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
-import { SessionToken } from "@/store/auth";
+import { ROLE_ADMIN, SessionToken, UserRoles } from "@/store/auth";
 import * as localStorage from "@/store/localStorage";
 import { useWeb3React } from "@web3-react/core";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 const PeriodsCreateUpdatePage = React.lazy(
   () => import("@/pages/Periods/CreateUpdate")
 );
-const Periods = React.lazy(() => import("@/pages/Periods/Periods"));
+const PeriodsPage = React.lazy(() => import("@/pages/Periods/Periods"));
 
-interface PrivateRouteProps {
+interface LoggedInOnlyRouteProps {
   exact?: boolean;
   path: string;
 }
-const PrivateRoute: FC<PrivateRouteProps> = ({ children, ...rest }) => {
+// A Route that requires user to be logged in
+const LoggedInOnlyRoute: FC<LoggedInOnlyRouteProps> = ({
+  children,
+  ...props
+}) => {
   const { account: ethAccount } = useWeb3React();
   const [sessionToken, setSessionToken] = useRecoilState(SessionToken);
   React.useEffect(() => {
@@ -29,7 +33,7 @@ const PrivateRoute: FC<PrivateRouteProps> = ({ children, ...rest }) => {
   // Token null: Token doesn't exist => login
   return (
     <Route
-      {...rest}
+      {...props}
       render={({ location }) =>
         sessionToken ? (
           children
@@ -46,16 +50,53 @@ const PrivateRoute: FC<PrivateRouteProps> = ({ children, ...rest }) => {
   );
 };
 
+interface AuthRouteProps {
+  exact?: boolean;
+  path: string;
+  roles: string[];
+}
+// A Route that takes an array of roles as argument and redirects
+// to frontpage if user do not belong to any of the given roles
+const AuthRoute: FC<AuthRouteProps> = ({ children, ...props }) => {
+  const userRoles = useRecoilValue(UserRoles);
+
+  let authenticated = false;
+  for (const role of props.roles) {
+    if (userRoles?.includes(role)) {
+      authenticated = true;
+      break;
+    }
+  }
+
+  return (
+    <Route
+      {...props}
+      render={({ location }) =>
+        authenticated ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/",
+              state: { from: location },
+            }}
+          />
+        )
+      }
+    />
+  );
+};
+
 const SubPages = () => {
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
       <Switch>
         <Route exact path={`/periods`}>
-          <Periods />
+          <PeriodsPage />
         </Route>
-        <Route path={`/periods/createupdate`}>
+        <AuthRoute roles={[ROLE_ADMIN]} path={`/periods/createupdate`}>
           <PeriodsCreateUpdatePage />
-        </Route>
+        </AuthRoute>
         <Route exact path="/">
           <MainPage />
         </Route>
@@ -70,7 +111,7 @@ const Routes = () => {
       <Route exact path="/login">
         <LoginPage />
       </Route>
-      <PrivateRoute path="/">
+      <LoggedInOnlyRoute path="/">
         <div className="flex min-h-screen">
           <Nav />
           <div className="flex w-full">
@@ -79,7 +120,7 @@ const Routes = () => {
             </div>
           </div>
         </div>
-      </PrivateRoute>
+      </LoggedInOnlyRoute>
     </Switch>
   );
 };
