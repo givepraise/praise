@@ -1,3 +1,4 @@
+import AdminOnly from "@/components/auth/AdminOnly";
 import BreadCrumb from "@/components/BreadCrumb";
 import PeriodsTable from "@/components/periods/Table";
 import { AllPeriodsQuery } from "@/store/periods";
@@ -33,11 +34,13 @@ const PeriodsPage = () => {
       </div>
 
       <div className="praise-box">
-        <div className="mb-2 text-right">
-          <Link to="/periods/createupdate">
-            <button className="praise-button">Create period</button>
-          </Link>
-        </div>
+        <AdminOnly>
+          <div className="mb-2 text-right">
+            <Link to="/periods/createupdate">
+              <button className="praise-button">Create period</button>
+            </Link>
+          </div>
+        </AdminOnly>
         <React.Suspense fallback="Loading…">
           <PeriodsTable />
         </React.Suspense>

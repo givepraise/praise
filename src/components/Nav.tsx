@@ -1,6 +1,7 @@
 import { SessionToken } from "@/store/auth";
 import { EthState } from "@/store/eth";
 import * as localStorage from "@/store/localStorage";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faAngleRight,
   faCalculator,
@@ -14,10 +15,31 @@ import { Jazzicon } from "@ukstv/jazzicon-react";
 import { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
+import AdminOnly from "./auth/AdminOnly";
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
 }
+
+interface NavProps {
+  icon: IconProp;
+  description: string;
+  to: string;
+}
+export const NavItem = ({ icon, description, to }: NavProps) => {
+  return (
+    <div className="relative flex px-4 py-1 cursor-pointer hover:bg-gray-300">
+      <div className="my-auto mr-4">
+        <FontAwesomeIcon icon={icon} size="1x" className="inline-block" />
+      </div>
+      <Link to={to}>
+        <div className="flex-auto my-1">
+          <span>{description}</span>
+        </div>
+      </Link>
+    </div>
+  );
+};
 
 export default function Nav() {
   const setSessionToken = useSetRecoilState(SessionToken);
@@ -37,64 +59,20 @@ export default function Nav() {
               <Link to="/">Praise 🙏</Link>
             </li>
 
-            <div className="relative flex px-4 py-1 cursor-pointer hover:bg-gray-300">
-              <div className="my-auto mr-4">
-                <FontAwesomeIcon
-                  icon={faUser}
-                  size="1x"
-                  className="inline-block"
-                />
-              </div>
-              <Link to="/praise">
-                <div className="flex-auto my-1">
-                  <span>My praise</span>
-                </div>
-              </Link>
-            </div>
-            <div className="relative flex px-4 py-1 cursor-pointer hover:bg-gray-300">
-              <div className="my-auto mr-4">
-                <FontAwesomeIcon
-                  icon={faUserFriends}
-                  size="1x"
-                  className="inline-block"
-                />
-              </div>
-              <Link to="/pool">
-                <div className="flex-auto my-1">
-                  <span>Quantifier pool</span>
-                </div>
-              </Link>
-            </div>
-
-            <div className="relative flex px-4 py-1 cursor-pointer hover:bg-gray-300">
-              <div className="my-auto mr-4">
-                <FontAwesomeIcon
-                  icon={faCalculator}
-                  size="1x"
-                  className="inline-block"
-                />
-              </div>
-              <Link to="/periods">
-                <div className="flex-auto my-1">
-                  <span>Quantifier periods</span>
-                </div>
-              </Link>
-            </div>
-
-            <div className="relative flex px-4 py-1 cursor-pointer hover:bg-gray-300">
-              <div className="my-auto mr-4">
-                <FontAwesomeIcon
-                  icon={faCog}
-                  size="1x"
-                  className="inline-block"
-                />
-              </div>
-              <Link to="/periods">
-                <div className="flex-auto my-1">
-                  <span>Settings</span>
-                </div>
-              </Link>
-            </div>
+            <NavItem icon={faUser} description="My praise" to="/praise" />
+            <NavItem
+              icon={faUserFriends}
+              description="Quantifier pool"
+              to="/pool"
+            />
+            <NavItem
+              icon={faCalculator}
+              description="Quantifier periods"
+              to="/periods"
+            />
+            <AdminOnly>
+              <NavItem icon={faCog} description="Settings" to="/settings" />
+            </AdminOnly>
           </ul>
         </div>
         <div className="px-4 py-3 border-t">
