@@ -1,3 +1,4 @@
+import { AxiosError, AxiosResponse } from "axios";
 import { atom, selectorFamily, useRecoilCallback } from "recoil";
 import {
   ApiAuthGetQuery,
@@ -59,6 +60,14 @@ export const AllPeriodsQuery: any = selectorFamily({
       set(AllPeriods, periods as Period[]);
       set(PeriodsRequestId, get(PeriodsRequestId) + 1);
     },
+});
+
+// Stores the api response from the latest call to /api/admin/periods/create
+export const CreatePeriodApiResponse = atom<
+  AxiosResponse<never> | AxiosError<never> | null
+>({
+  key: "PeriodsApiResponse",
+  default: null,
 });
 
 // Hook that returns a function to use for creating a new period

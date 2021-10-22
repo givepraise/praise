@@ -1,21 +1,24 @@
 import BackLink from "@/components/BackLink";
 import BreadCrumb from "@/components/BreadCrumb";
-import { PeriodDayPicker } from "@/components/periods/PeriodDayPicker";
-import { getApiError, getHttpError, isApiResponseOk } from "@/store/api";
-import { Period, useCreatePeriod } from "@/store/periods";
-import { DEFAULT_DATE_FORMAT } from "@/utils/date";
+import ApiErrorMessage from "@/components/periods/create/ApiErrorMessage";
+import FieldErrorMessage from "@/components/periods/create/FieldErrorMessage";
+import { PeriodDayPicker } from "@/components/periods/create/PeriodDayPicker";
+import SubmitButton from "@/components/periods/create/SubmitButton";
+import { isApiResponseOk } from "@/store/api";
 import {
-  faCalendarAlt,
-  faCheckCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AxiosError, AxiosResponse } from "axios";
+  CreatePeriodApiResponse,
+  Period,
+  useCreatePeriod,
+} from "@/store/periods";
+import { DEFAULT_DATE_FORMAT } from "@/utils/date";
+import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import { isMatch } from "date-fns";
 import { ValidationErrors } from "final-form";
 import React from "react";
 import "react-day-picker/lib/style.css";
-import { Field, Form, useField, useFormState } from "react-final-form";
+import { Field, Form } from "react-final-form";
 import { useHistory } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 
 const validate = (
   values: Record<string, any>
@@ -46,27 +49,14 @@ const validate = (
   return errors as ValidationErrors;
 };
 
-interface ErrorMessageProps {
-  name: string;
-}
-const ErrorMessage = ({ name }: ErrorMessageProps) => {
-  // Subscribe to error messsages concerning specified field
-  const {
-    meta: { active, touched, error },
-  } = useField(name, {
-    subscription: { touched: true, error: true, active: true },
-  });
-  return !active && touched && error ? (
-    <span className="text-red-500">{error}</span>
-  ) : null;
-};
-
 const PeriodsForm = () => {
   const { createPeriod } = useCreatePeriod();
-  const [apiResponse, setApiResponse] = React.useState<
-    AxiosResponse<never> | AxiosError<never> | null
-  >(null);
   const history = useHistory();
+  const setApiResponse = useSetRecoilState(CreatePeriodApiResponse);
+
+  React.useEffect(() => {
+    setApiResponse(null);
+  }, []);
 
   // Is only called if validate is successful
   const onSubmit = async (values: Record<string, any>) => {
@@ -91,73 +81,6 @@ const PeriodsForm = () => {
     setApiResponse(response);
   };
 
-  const SubmitButton = () => {
-    const { invalid, submitting, submitSucceeded, dirtySinceLastSubmit } =
-      useFormState();
-
-    const disabled =
-      invalid || submitting || (submitSucceeded && !dirtySinceLastSubmit);
-
-    const className = disabled ? "praise-button-disabled" : "praise-button";
-
-    return (
-      <button type="submit" className={className} disabled={disabled}>
-        {apiResponse && isApiResponseOk(apiResponse) ? (
-          <>
-            <FontAwesomeIcon
-              icon={faCheckCircle}
-              size="1x"
-              className="inline-block mr-2"
-            />
-            Period created
-          </>
-        ) : submitting ? (
-          "Creating…"
-        ) : (
-          "Create period"
-        )}
-      </button>
-    );
-  };
-
-  const ApiErrorMessage = () => {
-    const { dirtySinceLastSubmit } = useFormState();
-
-    // Clear api error when user edits form
-    React.useEffect(() => {
-      if (dirtySinceLastSubmit) setApiResponse(null);
-    }, [dirtySinceLastSubmit]);
-
-    // Form hasn't been submitted / no api response present
-    if (!apiResponse) return null;
-
-    // HTTP Error: 403, 500 ..
-    const httpError = getHttpError(apiResponse);
-    if (httpError) {
-      return <div className="text-red-500">{httpError.error}</div>;
-    }
-
-    // API Error: Validation rules, etc
-    const apiError = getApiError(apiResponse);
-    if (apiError) {
-      return (
-        <div className="text-red-500">
-          {apiError.message}
-          <ul>
-            {apiError.errors.map((error, index) => (
-              <li key={index} className="text-sm list-disc ml-7">
-                {error}
-              </li>
-            ))}
-          </ul>
-        </div>
-      );
-    }
-
-    // OK
-    return null;
-  };
-
   return (
     <Form
       onSubmit={onSubmit}
@@ -180,7 +103,7 @@ const PeriodsForm = () => {
                     placeholder="e.g. May-June"
                     className="block w-72"
                   />
-                  <ErrorMessage name="name" />
+                  <FieldErrorMessage name="name" />
                 </div>
               )}
             </Field>
@@ -195,7 +118,7 @@ const PeriodsForm = () => {
                     className="block w-72"
                   />
                   <PeriodDayPicker />
-                  <ErrorMessage name="endDate" />
+                  <FieldErrorMessage name="endDate" />
                 </div>
               )}
             </Field>
