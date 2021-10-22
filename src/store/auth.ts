@@ -13,6 +13,17 @@ export interface JWT {
   exp: number;
 }
 
+export interface Nonce {
+  ethereumAddress: string;
+  nonce: string;
+}
+
+export interface Auth {
+  ethereumAddress: string;
+  accessToken: string;
+  tokenType: string;
+}
+
 // SessionToken differentiates between null and undefined
 // undefined - Session token not loaded yet
 // null - No session token exists
@@ -55,13 +66,11 @@ export const NonceQuery = selectorFamily({
   get:
     (params: any) =>
     async ({ get }) => {
-      const response = get(
+      return get(
         ApiGetQuery({
           endPoint: `/api/auth/nonce?ethereumAddress=${params.ethAccount}`,
         })
       );
-      const data = response?.data as any;
-      return data?.nonce;
     },
 });
 
@@ -79,7 +88,6 @@ export const AuthQuery = selectorFamily({
         signature: params.signature,
       };
 
-      const response = get(ApiPostQuery({ endPoint: "/api/auth", data }));
-      return response?.data;
+      return get(ApiPostQuery({ endPoint: "/api/auth", data }));
     },
 });

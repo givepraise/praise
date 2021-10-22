@@ -1,11 +1,11 @@
+import { useAuthRecoilValue } from "@/store/api";
 import { AllPeriodsQuery } from "@/store/periods";
 import { formatDate } from "@/utils/date";
 import React from "react";
 import { TableOptions, useTable } from "react-table";
-import { useRecoilValue } from "recoil";
 
 const PeriodsTable = () => {
-  const allPeriods = useRecoilValue(AllPeriodsQuery({}));
+  const allPeriods = useAuthRecoilValue(AllPeriodsQuery({}));
 
   const columns = React.useMemo(
     () => [
@@ -24,13 +24,17 @@ const PeriodsTable = () => {
     []
   );
 
-  const options = { columns, data: allPeriods } as TableOptions<{}>;
+  const options = {
+    columns,
+    data: allPeriods ? allPeriods : [],
+  } as TableOptions<{}>;
   const tableInstance = useTable(options);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  if (!allPeriods) return <div>Unable to fetch user list.</div>;
+  if (!Array.isArray(allPeriods) || allPeriods.length === 0)
+    return <div>Create your first period to get started quantifying.</div>;
 
   return (
     <table className="w-full" {...getTableProps()}>

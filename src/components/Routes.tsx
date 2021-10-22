@@ -1,12 +1,13 @@
 import Nav from "@/components/Nav";
 import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
+import { useAuthRecoilValue } from "@/store/api";
 import { ROLE_ADMIN, SessionToken, UserRoles } from "@/store/auth";
 import * as localStorage from "@/store/localStorage";
 import { useWeb3React } from "@web3-react/core";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 
 const PeriodsCreateUpdatePage = React.lazy(
   () => import("@/pages/Periods/CreateUpdate")
@@ -58,7 +59,7 @@ interface AuthRouteProps {
 // A Route that takes an array of roles as argument and redirects
 // to frontpage if user do not belong to any of the given roles
 const AuthRoute: FC<AuthRouteProps> = ({ children, ...props }) => {
-  const userRoles = useRecoilValue(UserRoles);
+  const userRoles = useAuthRecoilValue(UserRoles);
 
   let authenticated = false;
   for (const role of props.roles) {

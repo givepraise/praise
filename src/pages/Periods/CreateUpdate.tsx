@@ -1,18 +1,21 @@
 import BackLink from "@/components/BackLink";
 import BreadCrumb from "@/components/BreadCrumb";
 import { PeriodDayPicker } from "@/components/periods/PeriodDayPicker";
+import { getApiError, getHttpError, isApiResponseOk } from "@/store/api";
+import { Period, useCreatePeriod } from "@/store/periods";
 import { DEFAULT_DATE_FORMAT } from "@/utils/date";
-import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCalendarAlt,
+  faCheckCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AxiosError, AxiosResponse } from "axios";
 import { isMatch } from "date-fns";
 import { ValidationErrors } from "final-form";
 import React from "react";
 import "react-day-picker/lib/style.css";
 import { Field, Form, useField, useFormState } from "react-final-form";
-
-// Is only called if validate is successful
-const onSubmit = async (values: Record<string, any>) => {
-  window.alert(JSON.stringify(values));
-};
+import { useHistory } from "react-router-dom";
 
 const validate = (
   values: Record<string, any>
@@ -58,17 +61,103 @@ const ErrorMessage = ({ name }: ErrorMessageProps) => {
   ) : null;
 };
 
-const SubmitButton = () => {
-  const { invalid } = useFormState();
-  const className = invalid ? "praise-button-disabled" : "praise-button";
-  return (
-    <button type="submit" className={className}>
-      Create period
-    </button>
-  );
-};
-
 const PeriodsForm = () => {
+  const { createPeriod } = useCreatePeriod();
+  const [apiResponse, setApiResponse] = React.useState<
+    AxiosResponse<never> | AxiosError<never> | null
+  >(null);
+  const history = useHistory();
+
+  // Is only called if validate is successful
+  const onSubmit = async (values: Record<string, any>) => {
+    // Selecting date from popup returns Array, setting manually
+    // returns string
+    const dateString =
+      Array.isArray(values.endDate) && values.endDate.length > 0
+        ? values.endDate[0]
+        : values.endDate;
+    const newPeriod: Period = {
+      name: values.name,
+      endDate: new Date(dateString).toISOString(),
+    };
+
+    const response = await createPeriod(newPeriod);
+    if (isApiResponseOk(response)) {
+      setTimeout(() => {
+        history.goBack();
+      }, 1000);
+    }
+
+    setApiResponse(response);
+  };
+
+  const SubmitButton = () => {
+    const { invalid, submitting, submitSucceeded, dirtySinceLastSubmit } =
+      useFormState();
+
+    const disabled =
+      invalid || submitting || (submitSucceeded && !dirtySinceLastSubmit);
+
+    const className = disabled ? "praise-button-disabled" : "praise-button";
+
+    return (
+      <button type="submit" className={className} disabled={disabled}>
+        {apiResponse && isApiResponseOk(apiResponse) ? (
+          <>
+            <FontAwesomeIcon
+              icon={faCheckCircle}
+              size="1x"
+              className="inline-block mr-2"
+            />
+            Period created
+          </>
+        ) : submitting ? (
+          "Creating…"
+        ) : (
+          "Create period"
+        )}
+      </button>
+    );
+  };
+
+  const ApiErrorMessage = () => {
+    const { dirtySinceLastSubmit } = useFormState();
+
+    // Clear api error when user edits form
+    React.useEffect(() => {
+      if (dirtySinceLastSubmit) setApiResponse(null);
+    }, [dirtySinceLastSubmit]);
+
+    // Form hasn't been submitted / no api response present
+    if (!apiResponse) return null;
+
+    // HTTP Error: 403, 500 ..
+    const httpError = getHttpError(apiResponse);
+    if (httpError) {
+      return <div className="text-red-500">{httpError.error}</div>;
+    }
+
+    // API Error: Validation rules, etc
+    const apiError = getApiError(apiResponse);
+    if (apiError) {
+      return (
+        <div className="text-red-500">
+          {apiError.message}
+          <ul>
+            {apiError.errors.map((error, index) => (
+              <li key={index} className="text-sm list-disc ml-7">
+                {error}
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    // OK
+    return null;
+  };
+
   return (
     <Form
       onSubmit={onSubmit}
@@ -78,7 +167,7 @@ const PeriodsForm = () => {
           utils.changeValue(state, "endDate", () => args);
         },
       }}
-      render={({ handleSubmit }) => (
+      render={({ handleSubmit, submitError }) => (
         <form onSubmit={handleSubmit} className="leading-loose">
           <div className="mb-3">
             <Field name="name">
@@ -111,6 +200,7 @@ const PeriodsForm = () => {
               )}
             </Field>
           </div>
+          <ApiErrorMessage />
 
           <div className="mt-2">
             <SubmitButton />

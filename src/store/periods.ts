@@ -1,40 +1,88 @@
-import { compareDesc } from "date-fns";
-import { selectorFamily } from "recoil";
+import { atom, selectorFamily, useRecoilCallback } from "recoil";
+import {
+  ApiAuthGetQuery,
+  ApiAuthPostQuery,
+  getApiResponseOkData,
+  useAuthRecoilValue,
+} from "./api";
 
-export const AllPeriodsQuery = selectorFamily({
+export interface Period {
+  id?: number;
+  name: string;
+  endDate: string;
+  totalPraises?: number;
+}
+
+// The request Id is used to force refresh of AllPeriodsQuery
+// AllPeriodsQuery subscribes to the value. Increase to trigger
+// refresh.
+const PeriodsRequestId = atom({
+  key: "PeriodsRequestId",
+  default: 0,
+});
+
+// A local only copy of all periods. Used to facilitate CRUD
+// without having to make full roundtrips to the server
+const AllPeriods = atom({
+  key: "AllPeriods",
+  default: [] as Period[],
+});
+
+// Fetches all periods from the server unless there is a local
+// working copy which is then returned instead
+export const AllPeriodsQuery: any = selectorFamily({
   key: "AllPeriodsQuery",
   get:
     (params: any) =>
     async ({ get }) => {
-      // const response = get(
-      //   ApiAuthGetQuery({ endPoint: "/api/admin/users/all" })
-      // );
-      // return response?.data;
+      // Subscribe to make request id part of the "call signature"
+      get(PeriodsRequestId);
 
-      let data = [
-        {
-          id: "1",
-          name: "Period 1",
-          endDate: "2011-10-05T14:48:00.000Z",
-          quantifiers: [],
-        },
-        {
-          id: "2",
-          name: "Period 2",
-          endDate: "2012-10-05T14:48:00.000Z",
-          quantifiers: [],
-        },
-        {
-          id: "3",
-          name: "Period 3",
-          endDate: "2023-10-05T14:48:00.000Z",
-          quantifiers: [],
-        },
-      ];
-      data.sort((a, b) => {
-        return compareDesc(new Date(a.endDate), new Date(b.endDate));
-      });
+      // If local working copy exists, return that
+      const allPeriods = get(AllPeriods);
+      if (allPeriods.length > 0) {
+        return allPeriods;
+      }
 
-      return data;
+      // Else, fetch from server
+      const response = get(
+        ApiAuthGetQuery({ endPoint: "/api/admin/periods/all" })
+      );
+
+      const periods = getApiResponseOkData(response) as Period[];
+      if (!periods) return [] as Period[];
+      return periods;
+    },
+  set:
+    (params: any) =>
+    ({ set, get }, periods) => {
+      set(AllPeriods, periods as Period[]);
+      set(PeriodsRequestId, get(PeriodsRequestId) + 1);
     },
 });
+
+// Hook that returns a function to use for creating a new period
+export const useCreatePeriod = () => {
+  const allPeriods: Period[] = useAuthRecoilValue(AllPeriodsQuery({}));
+
+  const createPeriod = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async (period: Period) => {
+        const response = await snapshot.getPromise(
+          ApiAuthPostQuery({
+            endPoint: "/api/admin/periods/create",
+            data: period,
+          })
+        );
+
+        // If OK response, add returned period object to local state
+        const periodData = getApiResponseOkData(response) as Period;
+        if (periodData) {
+          set(AllPeriodsQuery({}), [...allPeriods, periodData]);
+        }
+        return response;
+      }
+  );
+
+  return { createPeriod };
+};

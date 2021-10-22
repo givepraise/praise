@@ -1,9 +1,14 @@
-import { AuthQuery, NonceQuery, SessionToken } from "@/store/auth";
+import {
+  getApiResponseOkData,
+  isApiResponseOk,
+  useAuthRecoilValue,
+} from "@/store/api";
+import { Auth, AuthQuery, Nonce, NonceQuery, SessionToken } from "@/store/auth";
 import * as localStorage from "@/store/localStorage";
 import { useWeb3React } from "@web3-react/core";
 import React from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 
 interface LocationState {
   from: {
@@ -31,27 +36,33 @@ export default function LoginButton() {
     const location = useLocation<LocationState>();
 
     // 1. Fetch nonce from server
-    const nonce = useRecoilValue(NonceQuery({ ethAccount }));
+    const nonceResponse = useAuthRecoilValue(NonceQuery({ ethAccount }));
 
     // 4. Verify signature with server
-    const session = useRecoilValue(
+    const sessionResponse = useAuthRecoilValue(
       AuthQuery({ ethAccount, message, signature })
     );
 
     // 2. Generate login message to sign
     React.useEffect(() => {
-      if (!ethAccount || !nonce) return;
-      setMessage(generateLoginMessage(ethAccount, nonce));
-    }, [ethAccount, nonce]);
+      if (!ethAccount || !nonceResponse) return;
+      if (isApiResponseOk(nonceResponse)) {
+        const nonceData = getApiResponseOkData(nonceResponse) as Nonce;
+        setMessage(generateLoginMessage(ethAccount, nonceData.nonce));
+      }
+    }, [ethAccount, nonceResponse]);
 
     // 5. Authetication response
     React.useEffect(() => {
-      if (!ethAccount || !session) return;
-      // Save session id for future api calls
-      localStorage.setSessionToken(ethAccount, session.accessToken);
-      // Set session token in global state
-      setSessionToken(session.accessToken);
-    }, [ethAccount, session, setSessionToken]);
+      if (!ethAccount || !sessionResponse) return;
+      if (isApiResponseOk(sessionResponse)) {
+        const sessionData = getApiResponseOkData(sessionResponse) as Auth;
+        // Save session id for future api calls
+        localStorage.setSessionToken(ethAccount, sessionData.accessToken);
+        // Set session token in global state
+        setSessionToken(sessionData.accessToken);
+      }
+    }, [ethAccount, sessionResponse, setSessionToken]);
 
     // 6. Redirect after login
     React.useEffect(() => {
@@ -68,7 +79,7 @@ export default function LoginButton() {
       if (_signature) setSignature(_signature);
     };
 
-    if (!nonce)
+    if (!nonceResponse)
       return (
         <div>
           <button className="px-4 py-2 font-bold text-gray-500 uppercase bg-gray-700 rounded cursor-default">
