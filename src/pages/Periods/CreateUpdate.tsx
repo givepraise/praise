@@ -5,11 +5,7 @@ import FieldErrorMessage from "@/components/periods/create/FieldErrorMessage";
 import { PeriodDayPicker } from "@/components/periods/create/PeriodDayPicker";
 import SubmitButton from "@/components/periods/create/SubmitButton";
 import { isApiResponseOk } from "@/store/api";
-import {
-  CreatePeriodApiResponse,
-  Period,
-  useCreatePeriod,
-} from "@/store/periods";
+import { Period, useCreatePeriod } from "@/store/periods";
 import { DEFAULT_DATE_FORMAT } from "@/utils/date";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import { isMatch } from "date-fns";
@@ -18,7 +14,6 @@ import React from "react";
 import "react-day-picker/lib/style.css";
 import { Field, Form } from "react-final-form";
 import { useHistory } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
 
 const validate = (
   values: Record<string, any>
@@ -52,11 +47,6 @@ const validate = (
 const PeriodsForm = () => {
   const { createPeriod } = useCreatePeriod();
   const history = useHistory();
-  const setApiResponse = useSetRecoilState(CreatePeriodApiResponse);
-
-  React.useEffect(() => {
-    setApiResponse(null);
-  }, []);
 
   // Is only called if validate is successful
   const onSubmit = async (values: Record<string, any>) => {
@@ -77,8 +67,6 @@ const PeriodsForm = () => {
         history.goBack();
       }, 1000);
     }
-
-    setApiResponse(response);
   };
 
   return (

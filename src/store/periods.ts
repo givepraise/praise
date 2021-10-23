@@ -1,5 +1,11 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { atom, selectorFamily, useRecoilCallback } from "recoil";
+import React from "react";
+import {
+  atom,
+  selectorFamily,
+  useRecoilCallback,
+  useSetRecoilState,
+} from "recoil";
 import {
   ApiAuthGetQuery,
   ApiAuthPostQuery,
@@ -73,6 +79,12 @@ export const CreatePeriodApiResponse = atom<
 // Hook that returns a function to use for creating a new period
 export const useCreatePeriod = () => {
   const allPeriods: Period[] = useAuthRecoilValue(AllPeriodsQuery({}));
+  const setApiResponse = useSetRecoilState(CreatePeriodApiResponse);
+
+  // Clear api response from previous call
+  React.useEffect(() => {
+    setApiResponse(null);
+  });
 
   const createPeriod = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -89,6 +101,7 @@ export const useCreatePeriod = () => {
         if (periodData) {
           set(AllPeriodsQuery({}), [...allPeriods, periodData]);
         }
+        setApiResponse(response);
         return response;
       }
   );
