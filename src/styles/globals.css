@@ -14,4 +14,9 @@
   h2 {
     @apply text-xl font-semibold;
   }
+
+  td,
+  th {
+    @apply p-2;
+  }
 }

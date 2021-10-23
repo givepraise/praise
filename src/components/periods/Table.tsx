@@ -1,11 +1,15 @@
 import { useAuthRecoilValue } from "@/store/api";
-import { AllPeriodsQuery } from "@/store/periods";
+import { AllPeriodsQuery, Period } from "@/store/periods";
 import { formatDate } from "@/utils/date";
-import React from "react";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { SyntheticEvent } from "react";
+import { useHistory } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
 
 const PeriodsTable = () => {
   const allPeriods = useAuthRecoilValue(AllPeriodsQuery({}));
+  const history = useHistory();
 
   const columns = React.useMemo(
     () => [
@@ -36,8 +40,11 @@ const PeriodsTable = () => {
   if (!Array.isArray(allPeriods) || allPeriods.length === 0)
     return <div>Create your first period to get started quantifying.</div>;
 
+  const handleClick = (id: number) => (e: SyntheticEvent) => {
+    history.push(`/periods/${id}`);
+  };
   return (
-    <table className="w-full" {...getTableProps()}>
+    <table className="w-full table-auto" {...getTableProps()}>
       <thead>
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -53,12 +60,26 @@ const PeriodsTable = () => {
         {rows.map((row) => {
           prepareRow(row);
           return (
-            <tr {...row.getRowProps()}>
+            <tr
+              className="cursor-pointer hover:bg-gray-300"
+              {...row.getRowProps()}
+              onClick={handleClick((row.original as Period).id!)}
+            >
               {row.cells.map((cell) => {
                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
               })}
-              <td>open</td>
-              <td>&gt;</td>
+              <td>
+                <div className="inline-block px-2 py-1 text-xs text-white bg-green-500 rounded-full">
+                  open
+                </div>
+              </td>
+              <td>
+                <FontAwesomeIcon
+                  icon={faChevronRight}
+                  size="1x"
+                  className="inline-block"
+                />
+              </td>
             </tr>
           );
         })}
