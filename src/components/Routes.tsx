@@ -13,6 +13,7 @@ const PeriodsCreateUpdatePage = React.lazy(
   () => import("@/pages/Periods/CreateUpdate")
 );
 const PeriodsPage = React.lazy(() => import("@/pages/Periods/Periods"));
+const QuantifierPoolPage = React.lazy(() => import("@/pages/Pool"));
 
 interface LoggedInOnlyRouteProps {
   exact?: boolean;
@@ -97,6 +98,9 @@ const SubPages = () => {
         </Route>
         <AuthRoute roles={[ROLE_ADMIN]} path={`/periods/createupdate`}>
           <PeriodsCreateUpdatePage />
+        </AuthRoute>
+        <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
+          <QuantifierPoolPage />
         </AuthRoute>
         <Route exact path="/">
           <MainPage />
