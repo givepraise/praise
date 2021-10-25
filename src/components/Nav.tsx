@@ -58,11 +58,13 @@ export default function Nav() {
             </li>
 
             <NavItem icon={faUser} description="My praise" to="/praise" />
-            <NavItem
-              icon={faUserFriends}
-              description="Quantifier pool"
-              to="/pool"
-            />
+            <AdminOnly>
+              <NavItem
+                icon={faUserFriends}
+                description="Quantifier pool"
+                to="/pool"
+              />
+            </AdminOnly>
             <NavItem
               icon={faCalculator}
               description="Quantifier periods"
