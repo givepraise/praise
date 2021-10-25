@@ -2,6 +2,7 @@ import { useAuthRecoilValue } from "@/store/api";
 import { SessionToken } from "@/store/auth";
 import { EthState } from "@/store/eth";
 import * as localStorage from "@/store/localStorage";
+import { classNames } from "@/utils/index";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faAngleRight,
@@ -18,10 +19,6 @@ import { Link } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import AdminOnly from "./auth/AdminOnly";
 
-function classNames(...classes: any[]) {
-  return classes.filter(Boolean).join(" ");
-}
-
 interface NavProps {
   icon: IconProp;
   description: string;
@@ -29,7 +26,7 @@ interface NavProps {
 }
 export const NavItem = ({ icon, description, to }: NavProps) => {
   return (
-    <div className="relative flex px-4 py-1 cursor-pointer hover:bg-gray-300">
+    <div className="relative flex px-4 py-1 cursor-pointer hover:bg-gray-100 ">
       <div className="my-auto mr-4">
         <FontAwesomeIcon icon={icon} size="1x" className="inline-block" />
       </div>
@@ -111,9 +108,7 @@ export default function Nav() {
                     {({ active }) => (
                       <div
                         className={classNames(
-                          active
-                            ? "bg-gray-100 text-gray-900"
-                            : "text-gray-700",
+                          active ? "bg-gray-100" : "text-gray-700",
                           "block px-4 py-2 text-sm cursor-pointer"
                         )}
                         onClick={handleLogoutClick}

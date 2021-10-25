@@ -22,3 +22,7 @@ export const useOutsideAlerter = (ref: any) => {
 
   return { timestamp };
 };
+
+export const classNames = (...classes: any[]) => {
+  return classes.filter(Boolean).join(" ");
+};
