@@ -34,7 +34,7 @@ export const AllUsersQuery = selector({
   },
 });
 
-const AllUsers = atom({
+export const AllUsers = atom({
   key: "AllUsers",
   default: [] as User[],
 });

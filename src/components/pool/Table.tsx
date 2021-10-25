@@ -1,5 +1,6 @@
 import { isApiResponseOk } from "@/store/api";
 import { AllQuantifierUsers, useAllUsersQuery } from "@/store/users";
+import { shortenEthAddress } from "@/utils/index";
 import React from "react";
 import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
@@ -14,9 +15,7 @@ const PoolTable = () => {
         Header: "Eth address",
         accessor: "ethereumAddress",
         Cell: (data: any) => {
-          return `${data.value.substring(0, 6)}...${data.value.substring(
-            data.value.length - 4
-          )}`;
+          return shortenEthAddress(data.value);
         },
       },
     ],
@@ -53,7 +52,7 @@ const PoolTable = () => {
           prepareRow(row);
           return (
             <tr
-              className="cursor-pointer hover:bg-gray-300"
+              className="cursor-pointer hover:bg-gray-100"
               {...row.getRowProps()}
             >
               {row.cells.map((cell) => {

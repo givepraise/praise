@@ -26,3 +26,9 @@ export const useOutsideAlerter = (ref: any) => {
 export const classNames = (...classes: any[]) => {
   return classes.filter(Boolean).join(" ");
 };
+
+export const shortenEthAddress = (address: string) => {
+  return `${address.substring(0, 6)}...${address.substring(
+    address.length - 4
+  )}`;
+};
