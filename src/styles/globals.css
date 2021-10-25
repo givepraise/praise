@@ -9,6 +9,7 @@
 @layer base {
   html {
     background-color: #f3f4f6;
+    @apply text-gray-800;
   }
 
   h2 {

@@ -61,7 +61,7 @@ const PeriodsTable = () => {
           prepareRow(row);
           return (
             <tr
-              className="cursor-pointer hover:bg-gray-300"
+              className="cursor-pointer hover:bg-gray-100"
               {...row.getRowProps()}
               onClick={handleClick((row.original as Period).id!)}
             >
