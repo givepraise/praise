@@ -1,4 +1,3 @@
-import { useAuthRecoilValue } from "@/store/api";
 import { SessionToken } from "@/store/auth";
 import { EthState } from "@/store/eth";
 import * as localStorage from "@/store/localStorage";
@@ -16,7 +15,7 @@ import { Menu, Transition } from "@headlessui/react";
 import { Jazzicon } from "@ukstv/jazzicon-react";
 import { Fragment } from "react";
 import { Link } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import AdminOnly from "./auth/AdminOnly";
 
 interface NavProps {
@@ -41,7 +40,7 @@ export const NavItem = ({ icon, description, to }: NavProps) => {
 
 export default function Nav() {
   const setSessionToken = useSetRecoilState(SessionToken);
-  const ethState = useAuthRecoilValue(EthState);
+  const ethState = useRecoilValue(EthState);
 
   const handleLogoutClick = () => {
     localStorage.removeSessionToken(ethState.account);

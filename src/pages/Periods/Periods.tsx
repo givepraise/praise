@@ -1,16 +1,17 @@
 import AdminOnly from "@/components/auth/AdminOnly";
 import BreadCrumb from "@/components/BreadCrumb";
 import PeriodsTable from "@/components/periods/Table";
-import { useAuthRecoilValue } from "@/store/api";
-import { AllPeriodsQuery } from "@/store/periods";
+import { AllPeriods, useAllPeriodsQuery } from "@/store/periods";
 import { formatDate } from "@/utils/date";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import { compareDesc } from "date-fns";
 import React from "react";
 import { Link } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 
 const ActivePeriodMessage = () => {
-  const allPeriods = useAuthRecoilValue(AllPeriodsQuery({}));
+  useAllPeriodsQuery();
+  const allPeriods = useRecoilValue(AllPeriods);
 
   if (!Array.isArray(allPeriods) || allPeriods.length === 0)
     return <div>There is no active quantification period.</div>;

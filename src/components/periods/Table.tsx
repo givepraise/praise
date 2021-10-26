@@ -1,14 +1,15 @@
-import { useAuthRecoilValue } from "@/store/api";
-import { AllPeriodsQuery, Period } from "@/store/periods";
+import { AllPeriods, Period, useAllPeriodsQuery } from "@/store/periods";
 import { formatDate } from "@/utils/date";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { SyntheticEvent } from "react";
 import { useHistory } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
+import { useRecoilValue } from "recoil";
 
 const PeriodsTable = () => {
-  const allPeriods = useAuthRecoilValue(AllPeriodsQuery({}));
+  useAllPeriodsQuery();
+  const allPeriods = useRecoilValue(AllPeriods);
   const history = useHistory();
 
   const columns = React.useMemo(

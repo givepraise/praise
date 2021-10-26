@@ -2,15 +2,18 @@ import { AxiosError, AxiosResponse } from "axios";
 import React from "react";
 import {
   atom,
-  selectorFamily,
+  selector,
   useRecoilCallback,
+  useRecoilState,
+  useRecoilValue,
   useSetRecoilState,
 } from "recoil";
 import {
   ApiAuthGetQuery,
   ApiAuthPostQuery,
-  getApiResponseOkData,
-  useAuthRecoilValue,
+  isApiErrorData,
+  isApiResponseOk,
+  useAuthApiQuery,
 } from "./api";
 
 export interface Period {
@@ -30,42 +33,20 @@ const PeriodsRequestId = atom({
 
 // A local only copy of all periods. Used to facilitate CRUD
 // without having to make full roundtrips to the server
-const AllPeriods = atom({
+export const AllPeriods = atom<Period[] | undefined>({
   key: "AllPeriods",
-  default: [] as Period[],
+  default: undefined,
 });
 
-// Fetches all periods from the server unless there is a local
-// working copy which is then returned instead
-export const AllPeriodsQuery: any = selectorFamily({
+export const AllPeriodsQuery = selector({
   key: "AllPeriodsQuery",
-  get:
-    (params: any) =>
-    async ({ get }) => {
-      // Subscribe to make request id part of the "call signature"
-      get(PeriodsRequestId);
-
-      // If local working copy exists, return that
-      const allPeriods = get(AllPeriods);
-      if (allPeriods.length > 0) {
-        return allPeriods;
-      }
-
-      // Else, fetch from server
-      const response = get(
-        ApiAuthGetQuery({ endPoint: "/api/admin/periods/all" })
-      );
-
-      const periods = getApiResponseOkData(response) as Period[];
-      if (!periods) return [] as Period[];
-      return periods;
-    },
-  set:
-    (params: any) =>
-    ({ set, get }, periods) => {
-      set(AllPeriods, periods as Period[]);
-      set(PeriodsRequestId, get(PeriodsRequestId) + 1);
-    },
+  get: async ({ get }) => {
+    get(PeriodsRequestId);
+    const periods = get(
+      ApiAuthGetQuery({ endPoint: "/api/admin/periods/all" })
+    );
+    return periods;
+  },
 });
 
 // Stores the api response from the latest call to /api/admin/periods/create
@@ -76,15 +57,33 @@ export const CreatePeriodApiResponse = atom<
   default: null,
 });
 
+export const useAllPeriodsQuery = () => {
+  const allPeriodsQueryResponse = useAuthApiQuery(AllPeriodsQuery);
+  const [allPeriods, setAllPeriods] = useRecoilState(AllPeriods);
+
+  // Only set AllPeriods if not previously loaded
+  React.useEffect(() => {
+    if (
+      isApiResponseOk(allPeriodsQueryResponse) &&
+      typeof allPeriods === "undefined"
+    ) {
+      const periods = allPeriodsQueryResponse.data as Period[];
+      if (Array.isArray(periods) && periods.length > 0) setAllPeriods(periods);
+    }
+  }, [allPeriodsQueryResponse, setAllPeriods, allPeriods]);
+
+  return allPeriodsQueryResponse;
+};
+
 // Hook that returns a function to use for creating a new period
 export const useCreatePeriod = () => {
-  const allPeriods: Period[] = useAuthRecoilValue(AllPeriodsQuery({}));
+  const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
   const setApiResponse = useSetRecoilState(CreatePeriodApiResponse);
 
-  // Clear api response from previous call
+  //Clear api response from previous call
   React.useEffect(() => {
     setApiResponse(null);
-  });
+  }, [setApiResponse]);
 
   const createPeriod = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -95,13 +94,18 @@ export const useCreatePeriod = () => {
             data: period,
           })
         );
-
         // If OK response, add returned period object to local state
-        const periodData = getApiResponseOkData(response) as Period;
-        if (periodData) {
-          set(AllPeriodsQuery({}), [...allPeriods, periodData]);
+        if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
+          const period = response.data as Period;
+          if (period) {
+            if (typeof allPeriods !== "undefined") {
+              set(AllPeriods, [...allPeriods, period]);
+            } else {
+              set(AllPeriods, [period]);
+            }
+          }
         }
-        setApiResponse(response);
+        set(CreatePeriodApiResponse, response);
         return response;
       }
   );

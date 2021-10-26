@@ -1,10 +1,6 @@
 import React from "react";
-import { atom, selector, useSetRecoilState } from "recoil";
-import {
-  ApiAuthGetQuery,
-  getApiResponseOkData,
-  useAuthRecoilValue,
-} from "./api";
+import { atom, selector, useRecoilState } from "recoil";
+import { ApiAuthGetQuery, isApiResponseOk, useAuthApiQuery } from "./api";
 
 enum USER_ROLE {
   Admin = "ROLE_ADMIN",
@@ -34,27 +30,35 @@ export const AllUsersQuery = selector({
   },
 });
 
-export const AllUsers = atom({
+export const AllUsers = atom<User[] | undefined>({
   key: "AllUsers",
-  default: [] as User[],
+  default: undefined,
 });
 
 export const AllQuantifierUsers = selector({
   key: "AllQuantifierUsers",
   get: async ({ get }) => {
     const users = get(AllUsers);
-    return users.filter((user) => user.roles.includes(USER_ROLE.Quantifier));
+    if (users) {
+      return users.filter((user) => user.roles.includes(USER_ROLE.Quantifier));
+    }
+    return undefined;
   },
 });
 
 export const useAllUsersQuery = () => {
-  const allUsersQueryResponse = useAuthRecoilValue(AllUsersQuery);
-  const setAllUsers = useSetRecoilState(AllUsers);
+  const allUsersQueryResponse = useAuthApiQuery(AllUsersQuery);
+  const [allUsers, setAllUsers] = useRecoilState(AllUsers);
 
   React.useEffect(() => {
-    const users = getApiResponseOkData(allUsersQueryResponse) as User[];
-    if (Array.isArray(users) && users.length > 0) setAllUsers(users);
-  }, [allUsersQueryResponse, setAllUsers]);
+    if (
+      isApiResponseOk(allUsersQueryResponse) &&
+      typeof allUsers === "undefined"
+    ) {
+      const users = allUsersQueryResponse.data as User[];
+      if (Array.isArray(users) && users.length > 0) setAllUsers(users);
+    }
+  }, [allUsersQueryResponse, setAllUsers, allUsers]);
 
   return allUsersQueryResponse;
 };

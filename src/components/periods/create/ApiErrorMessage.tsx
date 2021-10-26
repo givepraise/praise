@@ -10,16 +10,16 @@ const ApiErrorMessage = () => {
   // Form hasn't been submitted / no api response present
   if (!apiResponse || dirtySinceLastSubmit) return null;
 
-  // HTTP Error: 403, 500 ..
-  const httpError = getHttpError(apiResponse);
-  if (httpError) {
-    return <div className="text-red-500">{httpError.error}</div>;
-  }
-
   // API Error: Validation rules, etc
   const apiError = getApiError(apiResponse);
   if (apiError && apiError.errors.length === 0) {
     return <div className="text-red-500">{apiError.message}</div>;
+  }
+
+  // HTTP Error: 403, 500 ..
+  const httpError = getHttpError(apiResponse);
+  if (httpError) {
+    return <div className="text-red-500">{httpError.error}</div>;
   }
 
   // OK

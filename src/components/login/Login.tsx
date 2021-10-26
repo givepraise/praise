@@ -1,8 +1,4 @@
-import {
-  getApiResponseOkData,
-  isApiResponseOk,
-  useAuthRecoilValue,
-} from "@/store/api";
+import { isApiResponseOk, useAuthApiQuery } from "@/store/api";
 import { Auth, AuthQuery, Nonce, NonceQuery, SessionToken } from "@/store/auth";
 import * as localStorage from "@/store/localStorage";
 import { useWeb3React } from "@web3-react/core";
@@ -36,10 +32,10 @@ export default function LoginButton() {
     const location = useLocation<LocationState>();
 
     // 1. Fetch nonce from server
-    const nonceResponse = useAuthRecoilValue(NonceQuery({ ethAccount }));
+    const nonceResponse = useAuthApiQuery(NonceQuery({ ethAccount }));
 
     // 4. Verify signature with server
-    const sessionResponse = useAuthRecoilValue(
+    const sessionResponse = useAuthApiQuery(
       AuthQuery({ ethAccount, message, signature })
     );
 
@@ -47,7 +43,7 @@ export default function LoginButton() {
     React.useEffect(() => {
       if (!ethAccount || !nonceResponse) return;
       if (isApiResponseOk(nonceResponse)) {
-        const nonceData = getApiResponseOkData(nonceResponse) as Nonce;
+        const nonceData = nonceResponse.data as Nonce;
         setMessage(generateLoginMessage(ethAccount, nonceData.nonce));
       }
     }, [ethAccount, nonceResponse]);
@@ -56,7 +52,7 @@ export default function LoginButton() {
     React.useEffect(() => {
       if (!ethAccount || !sessionResponse) return;
       if (isApiResponseOk(sessionResponse)) {
-        const sessionData = getApiResponseOkData(sessionResponse) as Auth;
+        const sessionData = sessionResponse.data as Auth;
         // Save session id for future api calls
         localStorage.setSessionToken(ethAccount, sessionData.accessToken);
         // Set session token in global state

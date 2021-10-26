@@ -1,4 +1,4 @@
-import { AllUsers } from "@/store/users";
+import { AllUsers, User } from "@/store/users";
 import { classNames, shortenEthAddress } from "@/utils/index";
 import {
   faTimes,
@@ -15,7 +15,9 @@ const UserAutosuggest = () => {
   const allUsers = useRecoilValue(AllUsers);
 
   const DropdownCombobox = () => {
-    const [inputItems, setInputItems] = React.useState(allUsers);
+    const [inputItems, setInputItems] = React.useState(
+      allUsers ? allUsers : ([] as User[])
+    );
     const {
       isOpen,
       getMenuProps,
@@ -26,13 +28,15 @@ const UserAutosuggest = () => {
     } = useCombobox({
       items: inputItems,
       onInputValueChange: ({ inputValue }) => {
-        setInputItems(
-          allUsers.filter((user) =>
-            user.ethereumAddress
-              .toLowerCase()
-              .includes(inputValue!.toLowerCase())
-          )
-        );
+        if (allUsers) {
+          setInputItems(
+            allUsers.filter((user) =>
+              user.ethereumAddress
+                .toLowerCase()
+                .includes(inputValue!.toLowerCase())
+            )
+          );
+        }
       },
       onSelectedItemChange: (selectedItem: any) => {
         alert(JSON.stringify(selectedItem));

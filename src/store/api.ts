@@ -1,6 +1,5 @@
-import * as localStorage from "@/store/localStorage";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { selectorFamily, useRecoilValue, useSetRecoilState } from "recoil";
+import { selectorFamily, useRecoilValue } from "recoil";
 import { SessionToken } from "./auth";
 import { EthState, EthStateInterface } from "./eth";
 
@@ -103,22 +102,40 @@ export const ApiAuthPostQuery = selectorFamily({
     },
 });
 
-// Always use `useAuthRecoilValue` for queries instead of `useRecoilValue`
+// Always use `useAuthApiQuery` for queries instead of `useRecoilValue`
 // to correctly handle expired JWT tokens and other error codes returned by
 // the server
-export const useAuthRecoilValue = (recoilValue: any) => {
-  const ethState = useRecoilValue(EthState);
+export const useAuthApiQuery = (recoilValue: any) => {
+  //const ethState = useRecoilValue(EthState);
   const response = useRecoilValue(recoilValue) as any;
-  const setSessionToken = useSetRecoilState(SessionToken);
+  //const setSessionToken = useSetRecoilState(SessionToken);
+
+  if (typeof response === "undefined" || response === null) return response;
+
+  if (isApiResponseError(response)) {
+    const err = response as AxiosError;
+    if (err.response) {
+      // client received an error response (5xx, 4xx)
+      return err;
+    } else if (err.request) {
+      // client never received a response, or request never left
+      // TODO Add handling of no response
+      return err;
+    } else {
+      // anything else
+      // TODO Add handling of other errors
+      return err;
+    }
+  }
 
   // DUMMY CHECK!
   // This should make a real check if session token has expired
-  if (response?.data?.status === 403) {
-    localStorage.removeSessionToken(ethState.account);
-    setSessionToken(null);
-  }
+  // if (response?.data?.status === 403) {
+  //   localStorage.removeSessionToken(ethState.account);
+  //   setSessionToken(null);
+  // }
 
-  return response;
+  return response as AxiosResponse;
 };
 
 export interface ApiError {
@@ -135,65 +152,58 @@ export interface HttpError {
   timestamp: string;
 }
 
-export const isHttpOk = (
-  response: AxiosResponse<never> | AxiosError<never> | null
-): response is AxiosResponse<never> => {
-  return (response as AxiosResponse<never>).status === 200;
-};
-
-export const isHttpError = (
-  response: AxiosResponse<never> | AxiosError<never> | null
-): response is AxiosError<never> => {
-  return (response as AxiosError<never>).isAxiosError !== undefined;
-};
-
-export const getHttpError = (
-  response: AxiosResponse<never> | AxiosError<never> | null
-) => {
-  if (!response) return null;
-  const axiosError = response as AxiosError<never>;
-  if (axiosError.isAxiosError && axiosError.response) {
-    return axiosError.response.data as HttpError;
-  }
-  return null;
-};
-
-export const isApiResponseDataError = (data: any): data is ApiError => {
+export const isApiErrorData = (data: any): data is ApiError => {
   if (!data) return false;
   return (data as ApiError).code !== undefined;
 };
 
-export const getApiError = (
-  response: AxiosResponse<never> | AxiosError<never> | null
-) => {
-  if (!response) return null;
-  const axiosResponse = response as AxiosResponse<never>;
-  if (isApiResponseDataError(axiosResponse.data)) {
-    return axiosResponse.data as ApiError;
+export const isHttpErrorData = (data: any): data is HttpError => {
+  if (!data) return false;
+  return (data as HttpError).error !== undefined;
+};
+
+export const isApiResponseOk = (
+  response: AxiosResponse | AxiosError | null
+): response is AxiosResponse => {
+  return (response as AxiosResponse).status === 200;
+};
+
+export const isApiResponseError = (
+  response: AxiosResponse | AxiosError | null
+): response is AxiosError => {
+  return (response as AxiosError).isAxiosError !== undefined;
+};
+
+export const getHttpError = (response: AxiosResponse | AxiosError | null) => {
+  if (!response || !isApiResponseError(response)) return null;
+  const axiosError = response as AxiosError;
+  if (axiosError.response && isHttpErrorData(axiosError.response.data)) {
+    return axiosError.response.data as HttpError;
+  }
+  if (axiosError.message) {
+    return {
+      error: axiosError.message,
+      path: axiosError.config.url,
+      status: 0,
+      timestamp: "",
+    } as HttpError;
   }
   return null;
 };
 
-// Checks response returned from API and returns ok if:
-// 1. There is a response
-// 2. The HTTP status code is 200
-// 3. The response data is not an error message
-export const isApiResponseOk = (
-  response: AxiosResponse<never> | AxiosError<never> | null
-) => {
-  if (
-    response &&
-    !isHttpError(response) &&
-    !isApiResponseDataError(response.data)
-  ) {
-    return true;
+export const getApiError = (response: AxiosResponse | AxiosError | null) => {
+  if (!response) return null;
+  if (isApiResponseOk(response)) {
+    const axiosResponse = response as AxiosResponse;
+    if (isApiErrorData(axiosResponse.data)) {
+      return axiosResponse.data as ApiError;
+    }
   }
-  return false;
-};
-
-export const getApiResponseOkData = (
-  response: AxiosResponse<never> | AxiosError<never> | null
-) => {
-  if (!isApiResponseOk(response)) return null;
-  return (response as AxiosResponse<never>).data as any;
+  if (isApiResponseError(response)) {
+    const axiosError = response as AxiosError;
+    if (axiosError.response && isApiErrorData(axiosError.response?.data)) {
+      return axiosError.response?.data as ApiError;
+    }
+  }
+  return null;
 };
