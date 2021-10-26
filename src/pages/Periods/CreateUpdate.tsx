@@ -4,7 +4,7 @@ import ApiErrorMessage from "@/components/periods/create/ApiErrorMessage";
 import FieldErrorMessage from "@/components/periods/create/FieldErrorMessage";
 import { PeriodDayPicker } from "@/components/periods/create/PeriodDayPicker";
 import SubmitButton from "@/components/periods/create/SubmitButton";
-import { isApiErrorData, isApiResponseOk } from "@/store/api";
+import { isApiResponseOk } from "@/store/api";
 import {
   CreatePeriodApiResponse,
   Period,
@@ -71,7 +71,7 @@ const PeriodsForm = () => {
     };
 
     const response = await createPeriod(newPeriod);
-    if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
+    if (isApiResponseOk(response)) {
       setTimeout(() => {
         history.goBack();
       }, 1000);
@@ -87,7 +87,7 @@ const PeriodsForm = () => {
           utils.changeValue(state, "endDate", () => args);
         },
       }}
-      render={({ handleSubmit, submitError }) => (
+      render={({ handleSubmit, submitSucceeded }) => (
         <form onSubmit={handleSubmit} className="leading-loose">
           <div className="mb-3">
             <Field name="name">
@@ -120,8 +120,7 @@ const PeriodsForm = () => {
               )}
             </Field>
           </div>
-          <ApiErrorMessage />
-
+          {submitSucceeded && <ApiErrorMessage />}
           <div className="mt-2">
             <SubmitButton />
           </div>

@@ -106,9 +106,7 @@ export const ApiAuthPostQuery = selectorFamily({
 // to correctly handle expired JWT tokens and other error codes returned by
 // the server
 export const useAuthApiQuery = (recoilValue: any) => {
-  //const ethState = useRecoilValue(EthState);
   const response = useRecoilValue(recoilValue) as any;
-  //const setSessionToken = useSetRecoilState(SessionToken);
 
   if (typeof response === "undefined" || response === null) return response;
 
@@ -116,6 +114,7 @@ export const useAuthApiQuery = (recoilValue: any) => {
     const err = response as AxiosError;
     if (err.response) {
       // client received an error response (5xx, 4xx)
+      // TODO Handle expired JWT token
       return err;
     } else if (err.request) {
       // client never received a response, or request never left
@@ -127,14 +126,6 @@ export const useAuthApiQuery = (recoilValue: any) => {
       return err;
     }
   }
-
-  // DUMMY CHECK!
-  // This should make a real check if session token has expired
-  // if (response?.data?.status === 403) {
-  //   localStorage.removeSessionToken(ethState.account);
-  //   setSessionToken(null);
-  // }
-
   return response as AxiosResponse;
 };
 
@@ -152,6 +143,11 @@ export interface HttpError {
   timestamp: string;
 }
 
+interface BackendErrors {
+  apiError: ApiError | null;
+  httpError: HttpError | null;
+}
+
 export const isApiErrorData = (data: any): data is ApiError => {
   if (!data) return false;
   return (data as ApiError).code !== undefined;
@@ -165,7 +161,8 @@ export const isHttpErrorData = (data: any): data is HttpError => {
 export const isApiResponseOk = (
   response: AxiosResponse | AxiosError | null
 ): response is AxiosResponse => {
-  return (response as AxiosResponse).status === 200;
+  const axiosResponse = response as AxiosResponse;
+  return axiosResponse.status === 200 && !isApiErrorData(axiosResponse.data);
 };
 
 export const isApiResponseError = (
@@ -193,8 +190,8 @@ export const getHttpError = (response: AxiosResponse | AxiosError | null) => {
 
 export const getApiError = (response: AxiosResponse | AxiosError | null) => {
   if (!response) return null;
-  if (isApiResponseOk(response)) {
-    const axiosResponse = response as AxiosResponse;
+  const axiosResponse = response as AxiosResponse;
+  if (axiosResponse.status === 200) {
     if (isApiErrorData(axiosResponse.data)) {
       return axiosResponse.data as ApiError;
     }
@@ -206,4 +203,14 @@ export const getApiError = (response: AxiosResponse | AxiosError | null) => {
     }
   }
   return null;
+};
+
+export const getBackendErrors = (
+  response: AxiosResponse | AxiosError | null
+) => {
+  if (!response) return null;
+  return {
+    apiError: getApiError(response),
+    httpError: getHttpError(response),
+  } as BackendErrors;
 };

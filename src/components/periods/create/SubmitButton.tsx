@@ -1,4 +1,4 @@
-import { isApiErrorData, isApiResponseOk } from "@/store/api";
+import { isApiResponseOk } from "@/store/api";
 import { CreatePeriodApiResponse } from "@/store/periods";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,9 +17,7 @@ const SubmitButton = () => {
 
   return (
     <button type="submit" className={className} disabled={disabled}>
-      {apiResponse &&
-      isApiResponseOk(apiResponse) &&
-      !isApiErrorData(apiResponse.data) ? (
+      {apiResponse && isApiResponseOk(apiResponse) ? (
         <>
           <FontAwesomeIcon
             icon={faCheckCircle}

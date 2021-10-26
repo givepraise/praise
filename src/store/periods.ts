@@ -6,7 +6,6 @@ import {
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
-  useSetRecoilState,
 } from "recoil";
 import {
   ApiAuthGetQuery,
@@ -78,12 +77,6 @@ export const useAllPeriodsQuery = () => {
 // Hook that returns a function to use for creating a new period
 export const useCreatePeriod = () => {
   const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
-  const setApiResponse = useSetRecoilState(CreatePeriodApiResponse);
-
-  //Clear api response from previous call
-  React.useEffect(() => {
-    setApiResponse(null);
-  }, [setApiResponse]);
 
   const createPeriod = useRecoilCallback(
     ({ snapshot, set }) =>
