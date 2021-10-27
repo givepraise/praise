@@ -1,19 +1,14 @@
 import { ExternalProvider, Web3Provider } from "@ethersproject/providers";
-import { useWeb3React, Web3ReactProvider } from "@web3-react/core";
+import { Web3ReactProvider } from "@web3-react/core";
 import React, { FC } from "react";
 import ReactDOM from "react-dom";
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  Switch,
-} from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import { RecoilRoot } from "recoil";
-import Header from "./components/Header";
-import LoginPage from "./pages/Login";
-import MainPage from "./pages/Main";
-import { loadSessionToken } from "./spring/auth";
+import EthConnection from "./components/EthConnection";
+import Routes from "./components/Routes";
 import "./styles/globals.css";
+
+const LOAD_DELAY = 500;
 
 function getLibrary(provider: ExternalProvider) {
   const library = new Web3Provider(provider);
@@ -21,30 +16,18 @@ function getLibrary(provider: ExternalProvider) {
   return library;
 }
 
-interface PrivateRouteProps {
-  exact: boolean;
-  path: string;
-}
-const PrivateRoute: FC<PrivateRouteProps> = ({ children, ...rest }) => {
-  const { account: ethAccount } = useWeb3React();
-  const sessionId = loadSessionToken(ethAccount);
-  return (
-    <Route
-      {...rest}
-      render={({ location }) =>
-        sessionId ? (
-          children
-        ) : (
-          <Redirect
-            to={{
-              pathname: "/login",
-              state: { from: location },
-            }}
-          />
-        )
-      }
-    />
-  );
+const DelayedLoading: FC<any> = ({ children }) => {
+  const [delay, setDelay] = React.useState<boolean>(true);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setDelay(false);
+    }, LOAD_DELAY);
+  }, []);
+
+  // Possibility to add loader here
+  if (delay) return null;
+  return children;
 };
 
 ReactDOM.render(
@@ -52,17 +35,12 @@ ReactDOM.render(
     <RecoilRoot>
       <Web3ReactProvider getLibrary={getLibrary}>
         <Router>
-          <div className="bg-green-900">
-            <Header />
-            <main>
-              <Switch>
-                <PrivateRoute exact path="/">
-                  <MainPage />
-                </PrivateRoute>
-                <Route exact path="/login">
-                  <LoginPage />
-                </Route>
-              </Switch>
+          <div>
+            <EthConnection />
+            <main className="font-sans">
+              <DelayedLoading>
+                <Routes />
+              </DelayedLoading>
             </main>
           </div>
         </Router>

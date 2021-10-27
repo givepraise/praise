@@ -1,0 +1,19 @@
+.praise-box {
+  @apply p-5 mb-5 break-words border rounded-lg shadow-sm bg-gray-50;
+}
+
+.praise-button {
+  @apply px-4 py-2 font-bold text-white bg-black rounded hover:bg-gray-700;
+}
+
+.praise-button-small {
+  @apply py-0 text-sm;
+}
+
+.praise-button-disabled {
+  @apply px-4 py-2 font-bold text-gray-500 bg-gray-700 rounded cursor-default;
+}
+
+.praise-button-round {
+  @apply flex items-center justify-center rounded-full hover:bg-gray-300 w-7 h-7;
+}

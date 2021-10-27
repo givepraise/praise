@@ -5,9 +5,10 @@
       "@/*": ["/*"],
       "@/components/*": ["components/*"],
       "@/eth/*": ["eth/*"],
+      "@/pages/*": ["pages/*"],
       "@/store/*": ["store/*"],
       "@/svg/*": ["svg/*"],
-      "@/spring/*": ["spring/*"]
+      "@/utils/*": ["utils/*"]
     }
   }
 }

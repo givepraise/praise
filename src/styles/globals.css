@@ -1,15 +1,23 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+
+@import "tailwindcss/components";
+@import "./custom-components.css";
+
+@import "tailwindcss/utilities";
+@import "./custom-utilities.css";
 
 @layer base {
   html {
-    background-color: rgb(6, 78, 59);
+    background-color: #f3f4f6;
+    @apply text-gray-800;
   }
-}
 
-@layer components {
-  .wall-container {
-    @apply w-full px-10 lg:px-0 lg:max-w-2xl lg:mx-auto;
+  h2 {
+    @apply text-xl font-semibold;
+  }
+
+  td,
+  th {
+    @apply p-2;
   }
 }
