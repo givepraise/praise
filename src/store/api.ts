@@ -214,3 +214,20 @@ export const getBackendErrors = (
     httpError: getHttpError(response),
   } as BackendErrors;
 };
+
+export const getBackendErrorMessage = (
+  response: AxiosResponse | AxiosError | null
+) => {
+  if (!response) return null;
+  const backendErrors = getBackendErrors(response);
+  let msg = null;
+  if (backendErrors?.apiError?.code) {
+    msg = backendErrors.apiError.message;
+  } else {
+    if (backendErrors?.httpError?.error) {
+      msg = backendErrors?.httpError?.error;
+    }
+  }
+  if (msg) console.error(backendErrors);
+  return msg;
+};

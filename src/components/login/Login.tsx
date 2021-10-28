@@ -1,4 +1,8 @@
-import { isApiResponseOk, useAuthApiQuery } from "@/store/api";
+import {
+  getBackendErrorMessage,
+  isApiResponseOk,
+  useAuthApiQuery,
+} from "@/store/api";
 import { Auth, AuthQuery, Nonce, NonceQuery, SessionToken } from "@/store/auth";
 import * as localStorage from "@/store/localStorage";
 import { useWeb3React } from "@web3-react/core";
@@ -75,14 +79,17 @@ export default function LoginButton() {
       if (_signature) setSignature(_signature);
     };
 
-    if (!nonceResponse)
+    if (!nonceResponse || !isApiResponseOk(nonceResponse)) {
+      const msg = getBackendErrorMessage(nonceResponse);
       return (
         <div>
           <button className="px-4 py-2 font-bold text-gray-500 uppercase bg-gray-700 rounded cursor-default">
             Sign login message
           </button>
+          {msg && <div className="mt-3 text-center text-red-500">{msg}</div>}
         </div>
       );
+    }
 
     if (sessionToken)
       return (
