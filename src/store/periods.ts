@@ -3,6 +3,7 @@ import React from "react";
 import {
   atom,
   selector,
+  selectorFamily,
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
@@ -46,6 +47,17 @@ export const AllPeriodsQuery = selector({
     );
     return periods;
   },
+});
+
+export const SinglePeriod = selectorFamily({
+  key: "SinglePeriod",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const allPeriods = get(AllPeriods);
+      if (!allPeriods) return null;
+      return allPeriods.filter((period) => period.id === parseInt(params.id));
+    },
 });
 
 // Stores the api response from the latest call to /api/admin/periods/create
