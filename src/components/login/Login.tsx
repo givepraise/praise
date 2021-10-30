@@ -80,13 +80,15 @@ export default function LoginButton() {
     };
 
     if (!nonceResponse || !isApiResponseOk(nonceResponse)) {
-      const msg = getBackendErrorMessage(nonceResponse);
+      const errorMsg = getBackendErrorMessage(nonceResponse);
       return (
         <div>
           <button className="px-4 py-2 font-bold text-gray-500 uppercase bg-gray-700 rounded cursor-default">
             Sign login message
           </button>
-          {msg && <div className="mt-3 text-center text-red-500">{msg}</div>}
+          {errorMsg && (
+            <div className="mt-3 text-center text-red-500">{errorMsg}</div>
+          )}
         </div>
       );
     }

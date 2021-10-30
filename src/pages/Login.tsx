@@ -8,6 +8,10 @@ import { InjectedConnector } from "@web3-react/injected-connector";
 import React from "react";
 import { useRecoilValue } from "recoil";
 
+const hasMetaMask = () => {
+  return typeof (window as any).ethereum !== "undefined";
+};
+
 export default function LoginPage() {
   const {
     error: ethError,
@@ -33,7 +37,11 @@ export default function LoginPage() {
 
   let ethButtonClass =
     "px-4 py-2 font-bold text-white uppercase rounded " +
-    (ethError ? "bg-red-700 hover:bg-red-700" : "bg-black hover:bg-gray-700");
+    (ethError
+      ? "bg-red-700 hover:bg-red-700"
+      : hasMetaMask()
+      ? "bg-black hover:bg-gray-700"
+      : "text-gray-500 bg-gray-700  cursor-default");
 
   return (
     <div className="w-full">
@@ -53,7 +61,10 @@ export default function LoginPage() {
                 <button
                   className={ethButtonClass}
                   disabled={
-                    ethState.connectDisabled || !!ethError || activating
+                    ethState.connectDisabled ||
+                    !!ethError ||
+                    activating ||
+                    !hasMetaMask()
                   }
                   key={"Injected"}
                   onClick={() => {
@@ -68,7 +79,9 @@ export default function LoginPage() {
                   {!ethError && activating && <div>Initializing …</div>}
                   {!ethError && !activating && (
                     <div>
-                      <MetamaskIcon className="inline-block w-4 h-4 pb-1 mr-2" />
+                      <MetamaskIcon
+                        className={"inline-block w-4 h-4 pb-1 mr-2"}
+                      />
                       Connect to a wallet
                     </div>
                   )}
@@ -79,6 +92,11 @@ export default function LoginPage() {
                     <div>Unable to connect</div>
                   )}
                 </button>
+                {!hasMetaMask() && (
+                  <div className="mt-3 text-center text-red-500">
+                    No MetaMask installed
+                  </div>
+                )}
               </div>
             )}
           <div className="mb-3 text-lg font-semibold">2. Login</div>
