@@ -16,3 +16,10 @@ Copy `.env.template` and rename `.env.development`. Set `REACT_APP_BACKEND_URL`,
 yarn
 yarn start
 ```
+
+### 4. Testing
+
+`yarn test` *or*
+`yarn test:watch`
+
+*TODO: setup ESLint*
