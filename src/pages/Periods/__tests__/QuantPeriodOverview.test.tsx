@@ -1,22 +1,26 @@
-import React from "react";
+import React, {
+  FC
+} from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
-import QuantPeriodOverview from "../QuantPeriodOverview";
+import QuantPeriodOverview, { QuantPeriodOverviewProps } from '../QuantPeriodOverview';
+
+function setup({periodName, periodStart, periodEnd}: QuantPeriodOverviewProps) {
+  return render(
+    <QuantPeriodOverview 
+      periodName={periodName}
+      periodStart={periodStart}
+      periodEnd={periodEnd}
+    />
+  );
+}
 
 describe("QuantPeriodOverview text input and rendering", () => {
-  beforeEach(() => {
-  });
-
   it('should render the name, start and end dates onto the screen', () => {
     const periodName = "never ending period";
     const periodStart = "1987-06-05";
     const periodEnd = "2345-06-07";
 
-    render(<QuantPeriodOverview 
-        periodName={periodName}
-        periodStart={periodStart}
-        periodEnd={periodEnd}
-      />
-    );
+    setup({periodName, periodStart, periodEnd});
 
     expect(screen.getByPlaceholderText(periodName)).toBeInTheDocument();
     expect(screen.getByText(/1987-06-05/)).toBeInTheDocument();
@@ -29,29 +33,17 @@ describe("QuantPeriodOverview text input and rendering", () => {
     const periodStart = "1987-06-05";
     const periodEnd = "2345-06-07";
 
-    render(<QuantPeriodOverview 
-        periodName={periodName}
-        periodStart={periodStart}
-        periodEnd={periodEnd}
-      />
-    );
+    setup({periodName, periodStart, periodEnd});
 
     expect(screen.getByText('Update')).toBeDisabled();
   });
-
-  // screen.debug();
 
   it('should enable the "Update" button when a valid input is entered', () => {
     const periodName = "never ending period";
     const periodStart = "1987-06-05";
     const periodEnd = "2345-06-07";
 
-    render(<QuantPeriodOverview 
-        periodName={periodName}
-        periodStart={periodStart}
-        periodEnd={periodEnd}
-      />
-    );
+    setup({periodName, periodStart, periodEnd});
 
     const input = screen.getByPlaceholderText(periodName);
     fireEvent.change(input, {target: {value: 'jelly'}});
@@ -64,12 +56,7 @@ describe("QuantPeriodOverview text input and rendering", () => {
     const periodStart = "1987-06-05";
     const periodEnd = "2345-06-07";
 
-    render(<QuantPeriodOverview 
-        periodName={periodName}
-        periodStart={periodStart}
-        periodEnd={periodEnd}
-      />
-    );
+    setup({periodName, periodStart, periodEnd});
 
     const input = screen.getByPlaceholderText(periodName);
     fireEvent.change(input, {target: {value: 'm'}});
@@ -82,12 +69,7 @@ describe("QuantPeriodOverview text input and rendering", () => {
     const periodStart = "1987-06-05";
     const periodEnd = "2345-06-07";
 
-    render(<QuantPeriodOverview 
-        periodName={periodName}
-        periodStart={periodStart}
-        periodEnd={periodEnd}
-      />
-    );
+    setup({periodName, periodStart, periodEnd});
 
     const input = screen.getByPlaceholderText(periodName);
     fireEvent.change(input, {target: {value: 'getting hotter'}});
@@ -124,11 +106,7 @@ it('should clear the input upon clicking the "Update" button', () => {
   const periodStart = "1987-06-05";
   const periodEnd = "2345-06-07";
 
-  render(<QuantPeriodOverview 
-      periodName={periodName}
-      periodStart={periodStart}
-      periodEnd={periodEnd} />
-    );
+  setup({periodName, periodStart, periodEnd});
 
   const input = screen.getByPlaceholderText(periodName) as HTMLInputElement;
   const addButton = screen.getByText('Update');
@@ -138,3 +116,5 @@ it('should clear the input upon clicking the "Update" button', () => {
 
   expect(input.value).toBe('');
 });
+
+  // screen.debug();

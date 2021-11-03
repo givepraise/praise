@@ -6,19 +6,20 @@ import React, {
    useState
 } from 'react';
 
-interface Props {
+export interface QuantPeriodOverviewProps {
     periodName: string;
     periodStart: string;
     periodEnd: string;
     onWordAdd?: (value: string | undefined) => void;
 }
 
+
 const QuantPeriodOverview = ({
     periodName,
     periodStart,
     periodEnd,
     onWordAdd,
-}: Props) => {
+}: QuantPeriodOverviewProps) => {
     const inputEl: RefObject<HTMLInputElement> | null = useRef(null);
     const [newWord, setNewWord] = useState('');
     const [disable, setDisable] = useState(true);
