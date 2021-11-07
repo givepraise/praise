@@ -2,6 +2,7 @@ import React, {
   FC
 } from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
+import userEvent from '@testing-library/user-event';
 import { RecoilRoot } from "recoil";
 import QuantPeriodOverview, { QuantPeriodOverviewProps } from '../QuantPeriodOverview';
 
@@ -27,24 +28,24 @@ describe("QuantPeriodOverview text input and rendering", () => {
 
     setup({periodId, periodName, periodStart, periodEnd});
 
-    expect(screen.getByPlaceholderText(periodName)).toBeInTheDocument();
+    expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByText(/1987-06-05/)).toBeInTheDocument();
     expect(screen.getByText(/2345-06-07/)).toBeInTheDocument();
   });
 });
 
-  it('should have the "Update" button disabled when initialized', () => {
+  it('should have an input field containing the default name when initialized', () => {
     const periodId = 1270;
     const periodName = "never ending period";
     const periodStart = "1987-06-05";
     const periodEnd = "2345-06-07";
 
     setup({periodId, periodName, periodStart, periodEnd});
-
-    expect(screen.getByText('Update')).toBeDisabled();
+    const input = screen.getByRole('textbox')
+    expect(input).toHaveValue("never ending period");
   });
 
-  it('should enable the "Update" button when a valid input is entered', () => {
+  it('should submit successfully when a valid input is entered', () => {
     const periodId = 1270;
     const periodName = "never ending period";
     const periodStart = "1987-06-05";
@@ -52,13 +53,16 @@ describe("QuantPeriodOverview text input and rendering", () => {
 
     setup({periodId, periodName, periodStart, periodEnd});
 
-    const input = screen.getByPlaceholderText(periodName);
-    fireEvent.change(input, {target: {value: 'jelly'}});
+    const input = screen.getByLabelText("Name") as HTMLInputElement;
+    fireEvent.change(input, {target: {value: ''}});
+      userEvent.type(input, 'jelly');
+      userEvent.type(input, '{enter}');
 
-    expect(screen.getByText('Update')).toBeEnabled();
+screen.debug();
+    expect(screen.findByRole('cell')).toHaveTextContent("jelly");
   });
 
-  it('should have the "Update" button disabled if the input is less than 2 chars', () => {
+  it('should raise an error if an input is submitted with less than 3 chars', () => {
     const periodId = 1270;
     const periodName = "never ending period";
     const periodStart = "1987-06-05";
@@ -66,13 +70,13 @@ describe("QuantPeriodOverview text input and rendering", () => {
 
     setup({periodId, periodName, periodStart, periodEnd});
 
-    const input = screen.getByPlaceholderText(periodName);
+    const input = screen.getByLabelText("Name") as HTMLInputElement;
     fireEvent.change(input, {target: {value: 'm'}});
 
-    expect(screen.getByText('Update')).toBeDisabled();
+    expect(screen.findByText("name requires more than 3 characters")).toBeInTheDocument();
   });
 
-  it('should have the "Update" button disabled if the input contains spaces', () => {
+  it('should submit successfully if the input contains spaces', () => {
     const periodId = 1270;
     const periodName = "never ending period";
     const periodStart = "1987-06-05";
@@ -80,42 +84,15 @@ describe("QuantPeriodOverview text input and rendering", () => {
 
     setup({periodId, periodName, periodStart, periodEnd});
 
-    const input = screen.getByPlaceholderText(periodName);
-    fireEvent.change(input, {target: {value: 'getting hotter'}});
+    const input = screen.getByLabelText("Name") as HTMLInputElement;
+      fireEvent.change(input, {target: {value: ''}});
+      userEvent.type(input, 'getting hotter');
+      userEvent.type(input, '{enter}');
 
-    expect(screen.getByText('Update')).toBeDisabled();
+    expect(screen.findByRole('cell')).toHaveTextContent("getting warmer");
   });
 
-  it('should call the onWordAdd handler (if exists) with the new word upon clicking the "Update" button', () => {
-    const onWordsAddSpy = jest.fn();
-    const inputValue = 'beulah';
-
-    const periodId = 1270;
-    const periodName = "never ending period";
-    const periodStart = "1987-06-05";
-    const periodEnd = "2345-06-07";
-
-    render(
-      <RecoilRoot>
-        <QuantPeriodOverview 
-          periodId={periodId}
-          periodName={periodName}        
-          periodStart={periodStart}
-          periodEnd={periodEnd}
-          onWordAdd={onWordsAddSpy} />
-      </RecoilRoot>
-      );
-
-    const input = screen.getByPlaceholderText(periodName);
-    const addButton = screen.getByText('Update');
-
-    fireEvent.change(input, {target: {value: inputValue}});
-    fireEvent.click(addButton);
-
-    expect(onWordsAddSpy).toHaveBeenCalledWith(inputValue);
-});
-
-it('should clear the input upon clicking the "Update" button', () => {
+it('should return to the original input upon pressing escape with a valid name', () => {
   const periodId = 1270;
   const periodName = "never ending period";
   const periodStart = "1987-06-05";
@@ -123,13 +100,12 @@ it('should clear the input upon clicking the "Update" button', () => {
 
   setup({periodId, periodName, periodStart, periodEnd});
 
-  const input = screen.getByPlaceholderText(periodName) as HTMLInputElement;
-  const addButton = screen.getByText('Update');
+  const input = screen.getByLabelText("Name") as HTMLInputElement;
 
-  fireEvent.change(input, {target: {value: "bingo!"}});
-  fireEvent.click(addButton);
+  userEvent.type(input, "bingo!");
+  userEvent.type(input, '{esc}');
 
-  expect(input.value).toBe('');
+  expect(input.value).toBe('never ending period');
 });
 
-  // screen.debug();
+// screen.debug();

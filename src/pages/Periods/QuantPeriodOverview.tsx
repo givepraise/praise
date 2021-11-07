@@ -1,5 +1,4 @@
 import React, {
-   MouseEvent,
    KeyboardEvent,
    ChangeEventHandler,
    RefObject, 
@@ -14,6 +13,7 @@ import {
   Period,
   useUpdatePeriod,
 } from "@/store/periods";
+import OutsideClickHandler from 'react-outside-click-handler';
 
 export interface QuantPeriodOverviewProps {
     periodId: number | undefined;
@@ -31,9 +31,9 @@ const QuantPeriodOverview = ({
     onWordAdd,
 }: QuantPeriodOverviewProps) => {
     const inputEl: RefObject<HTMLInputElement> | null = useRef(null);
-    const [newWord, setNewWord] = useState('');
+    const [newWord, setNewWord] = useState(`${periodName}`);
     const { updatePeriod } = useUpdatePeriod();
-    const [disable, setDisable] = useState(true);
+    const [valid, setValid] = useState(true);
     const setApiResponse = useSetRecoilState(UpdatePeriodApiResponse);
 
     const history = useHistory();
@@ -58,18 +58,13 @@ const QuantPeriodOverview = ({
         }
     };
 
-   const handleUpdatePeriodNameClick = (e: MouseEvent<HTMLButtonElement>) => {
-       onWordAdd?.(newWord);
-       setNewWord('');
-   };
-
    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.code === "Enter") {
-            onWordAdd?.(newWord);
-            UpdatePeriodName(newWord, periodId);
-            setNewWord('');
+            if (valid) {
+                UpdatePeriodName(newWord, periodId);
+            }
         } else if (e.code === "Escape") {
-            setNewWord('');
+            setNewWord(`${periodName}`);
         } else {
             return;
         }
@@ -78,33 +73,32 @@ const QuantPeriodOverview = ({
   const onChange: ChangeEventHandler<HTMLInputElement> = ({currentTarget: {value}}) => {
        setNewWord(value);
        // A word is valid if it has more than a single char and has no spaces
-       const isInvalidWord: boolean = value.length < 2 || /\s/.test(value);
-       setDisable(isInvalidWord);
+       const isInvalidWord: boolean = value.length < 3 || /\s/.test(value);
+       setValid(!isInvalidWord);
    };
+
+   const handleClickOutside = () => {
+        setNewWord(`${periodName}`);
+   }
 
    return (
        <div>
             <h2>Period Overview</h2>
             <br />
-            <label htmlFor="period-name-input">Name  </label>
-            <input
-               type="text"
-               name="period-name"
-               className="praise-text-input"
-               id="period-name-input"
-               required
-               ref={inputEl}
-               placeholder={periodName}
-               value={newWord}
-               onChange={onChange}
-               onKeyDown={handleKeyDown}
-            />
-            <button 
-                className="praise-button" 
-                onClick={handleUpdatePeriodNameClick}
-                disabled={disable}>
-                    Update
-            </button>
+                <label htmlFor="period-name-input">Name  </label>
+                <OutsideClickHandler onOutsideClick={handleClickOutside}>
+                    <input
+                       type="text"
+                       name="period-name"
+                       className="praise-text-input"
+                       id="period-name-input"
+                       required
+                       ref={inputEl}
+                       value={newWord}
+                       onChange={onChange}
+                       onKeyDown={handleKeyDown}
+                    />
+                </OutsideClickHandler>
             <br />
             <br />
             Period Start: {periodStart}
