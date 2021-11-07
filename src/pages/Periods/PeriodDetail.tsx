@@ -1,26 +1,24 @@
 import BackLink from "@/components/BackLink";
 import BreadCrumb from "@/components/BreadCrumb";
-import { SinglePeriod, useAllPeriodsQuery } from "@/store/periods";
+import { Period, SinglePeriod, useAllPeriodsQuery } from "@/store/periods";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import AddWord from "./AddWord";
 import QuantPeriodOverview from "./QuantPeriodOverview";
+import { formatDate } from "@/utils/date";
 
 
-const PeriodDetails = () => {
-  // Make sure that all periods are fetched
+const PeriodDetail = () => {
   useAllPeriodsQuery();
   let { id } = useParams() as any;
 
-  const period = useRecoilValue(SinglePeriod({ id: id }));
+  const this_period = useRecoilValue(SinglePeriod({ id: id }));
+  
+  const last_period = useRecoilValue(SinglePeriod({ id: id - 1 }));
 
-  return <div>{JSON.stringify(period)}</div>;
-};
-
-const PeriodDetailPage = () => {
-    return (
+  return (
     <>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
       <BackLink />
@@ -28,9 +26,10 @@ const PeriodDetailPage = () => {
       <div className="praise-box">
         <React.Suspense fallback="Loading…">
           <QuantPeriodOverview 
-            periodName = "never ending period"
-            periodStart = "1987-06-05"
-            periodEnd = "2345-06-07"
+            periodId = {this_period[0].id}
+            periodName = {this_period[0].name}
+            periodStart = {formatDate(last_period[0].endDate)}
+            periodEnd = {formatDate(this_period[0].endDate)}
           />
         </React.Suspense>
       </div>
@@ -40,11 +39,10 @@ const PeriodDetailPage = () => {
       </div>
       <div className="praise-box">
         <React.Suspense fallback="Loading…">
-          <PeriodDetails />
         </React.Suspense>
       </div>
     </>
   );
 };
 
-export default PeriodDetailPage;
+export default PeriodDetail;

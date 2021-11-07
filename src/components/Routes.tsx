@@ -1,7 +1,7 @@
 import Nav from "@/components/Nav";
 import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
-import PeriodDetailPage from "@/pages/Periods/DetailExample";
+import PeriodDetail from "@/pages/Periods/PeriodDetail";
 import { ROLE_ADMIN, SessionToken, UserRoles } from "@/store/auth";
 import * as localStorage from "@/store/localStorage";
 import { useWeb3React } from "@web3-react/core";
@@ -100,7 +100,7 @@ const SubPages = () => {
           <PeriodsCreateUpdatePage />
         </AuthRoute>
         <Route exact path={`/periods/:id`}>
-          <PeriodDetailPage />
+          <PeriodDetail />
         </Route>
         <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
           <QuantifierPoolPage />

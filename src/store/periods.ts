@@ -11,6 +11,7 @@ import {
 import {
   ApiAuthGetQuery,
   ApiAuthPostQuery,
+  ApiAuthPatchQuery,
   isApiErrorData,
   isApiResponseOk,
   useAuthApiQuery,
@@ -55,8 +56,17 @@ export const SinglePeriod = selectorFamily({
     (params: any) =>
     async ({ get }) => {
       const allPeriods = get(AllPeriods);
-      if (!allPeriods) return null;
-      return allPeriods.filter((period) => period.id === parseInt(params.id));
+      if (!allPeriods) return [];
+      if (params.id === 0) {
+        const nullPeriod: Period[] = [{
+          id: 0,
+          name: 'nullPeriod',
+          endDate: '-',
+        }];
+        return nullPeriod;
+      } else {
+        return allPeriods.filter((period) => period.id === parseInt(params.id));
+      }
     },
 });
 
@@ -64,7 +74,15 @@ export const SinglePeriod = selectorFamily({
 export const CreatePeriodApiResponse = atom<
   AxiosResponse<never> | AxiosError<never> | null
 >({
-  key: "PeriodsApiResponse",
+  key: "CreatePeriodApiResponse",
+  default: null,
+});
+
+// Stores the api response from the latest call to /api/admin/periods/create
+export const UpdatePeriodApiResponse = atom<
+  AxiosResponse<never> | AxiosError<never> | null
+>({
+  key: "UpdatePeriodApiResponse",
   default: null,
 });
 
@@ -116,4 +134,37 @@ export const useCreatePeriod = () => {
   );
 
   return { createPeriod };
+};
+
+
+// Hook that returns a function to use for updating a period
+export const useUpdatePeriod = () => {
+  const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
+  const updatePeriod = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async (period: Period) => {
+        const response = await snapshot.getPromise(
+          ApiAuthPatchQuery({
+            endPoint: `/api/admin/periods/${period.id}/rename?name=${period.name}`,
+            data: period,
+          })
+        );
+
+  //       // If OK response, add returned period object to local state
+        if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
+          const period = response.data as Period;
+          if (period) {
+            if (typeof allPeriods !== "undefined") {
+              set(AllPeriods, [...allPeriods, period]);
+            } else {
+              set(AllPeriods, [period]);
+            }
+          }
+        }
+        set(UpdatePeriodApiResponse, response);
+        return response;
+      }
+  );
+
+  return { updatePeriod };
 };
