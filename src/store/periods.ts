@@ -155,7 +155,12 @@ export const useUpdatePeriod = () => {
           const period = response.data as Period;
           if (period) {
             if (typeof allPeriods !== "undefined") {
-              set(AllPeriods, [...allPeriods, period]);
+              set(
+                AllPeriods, 
+                allPeriods.map((oldPeriod) =>
+                  oldPeriod.id === period.id ? period : oldPeriod, period
+                )
+              );
             } else {
               set(AllPeriods, [period]);
             }

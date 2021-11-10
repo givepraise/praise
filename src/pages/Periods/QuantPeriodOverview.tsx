@@ -12,6 +12,7 @@ import {
   UpdatePeriodApiResponse,
   Period,
   useUpdatePeriod,
+  useAllPeriodsQuery,
 } from "@/store/periods";
 import OutsideClickHandler from 'react-outside-click-handler';
 
@@ -39,7 +40,7 @@ const QuantPeriodOverview = ({
     const history = useHistory();
 
     // Is only called if validate is successful
-    const UpdatePeriodName = async (values: string, periodId: number | undefined) => {
+    const updatePeriodName = async (values: string, periodId: number | undefined) => {
         // Clear any old API error messages
         setApiResponse(null);
 
@@ -53,7 +54,7 @@ const QuantPeriodOverview = ({
         const response = await updatePeriod(updatedPeriod);
         if (isApiResponseOk(response)) {
           setTimeout(() => {
-            history.goBack();
+            history.replace("/periods/" + periodId);
           }, 1000);
         }
     };
@@ -61,7 +62,7 @@ const QuantPeriodOverview = ({
    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.code === "Enter") {
             if (valid) {
-                UpdatePeriodName(newWord, periodId);
+                updatePeriodName(newWord, periodId);
             }
         } else if (e.code === "Escape") {
             setNewWord(`${periodName}`);
@@ -90,7 +91,7 @@ const QuantPeriodOverview = ({
                     <input
                        type="text"
                        name="period-name"
-                       className="praise-text-input"
+                       className="pl-0 text-xl font-semibold bg-transparent border-0"
                        id="period-name-input"
                        required
                        ref={inputEl}

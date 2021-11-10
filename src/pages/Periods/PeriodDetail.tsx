@@ -5,7 +5,6 @@ import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import AddWord from "./AddWord";
 import QuantPeriodOverview from "./QuantPeriodOverview";
 import { formatDate } from "@/utils/date";
 
@@ -14,9 +13,9 @@ const PeriodDetail = () => {
   useAllPeriodsQuery();
   let { id } = useParams() as any;
 
-  const this_period = useRecoilValue(SinglePeriod({ id: id }));
+  const thisPeriod = useRecoilValue(SinglePeriod({ id: id }));
   
-  const last_period = useRecoilValue(SinglePeriod({ id: id - 1 }));
+  const lastPeriod = useRecoilValue(SinglePeriod({ id: id - 1 }));
 
   return (
     <>
@@ -26,10 +25,10 @@ const PeriodDetail = () => {
       <div className="praise-box">
         <React.Suspense fallback="Loading…">
           <QuantPeriodOverview 
-            periodId = {this_period[0].id}
-            periodName = {this_period[0].name}
-            periodStart = {formatDate(last_period[0].endDate)}
-            periodEnd = {formatDate(this_period[0].endDate)}
+            periodId = {thisPeriod[0].id}
+            periodName = {thisPeriod[0].name}
+            periodStart = {formatDate(lastPeriod[0].endDate)}
+            periodEnd = {formatDate(thisPeriod[0].endDate)}
           />
         </React.Suspense>
       </div>
