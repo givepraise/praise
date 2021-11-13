@@ -1,12 +1,12 @@
 import BackLink from "@/components/BackLink";
 import BreadCrumb from "@/components/BreadCrumb";
-import { Period, SinglePeriod, useAllPeriodsQuery } from "@/store/periods";
+import { SinglePeriod, useAllPeriodsQuery } from "@/store/periods";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import QuantPeriodOverview from "./QuantPeriodOverview";
-import { formatDate } from "@/utils/date";
+import { formatDate, isValidDate } from "@/utils/date";
 
 
 const PeriodDetail = () => {
@@ -27,8 +27,8 @@ const PeriodDetail = () => {
           <QuantPeriodOverview 
             periodId = {thisPeriod[0].id}
             periodName = {thisPeriod[0].name}
-            periodStart = {formatDate(lastPeriod[0].endDate)}
-            periodEnd = {formatDate(thisPeriod[0].endDate)}
+            periodStart = { isValidDate(lastPeriod[0].endDate) ? formatDate(lastPeriod[0].endDate) : "-" }
+            periodEnd = { formatDate(thisPeriod[0].endDate) }
           />
         </React.Suspense>
       </div>
