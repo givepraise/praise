@@ -12,7 +12,6 @@ import {
   UpdatePeriodApiResponse,
   Period,
   useUpdatePeriod,
-  useAllPeriodsQuery,
 } from "@/store/periods";
 import OutsideClickHandler from 'react-outside-click-handler';
 
@@ -60,7 +59,7 @@ const QuantPeriodOverview = ({
     };
 
    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.code === "Enter") {
+        if (e.code === "Enter" || e.code === "Tab") {
             if (valid) {
                 updatePeriodName(newWord, periodId);
             }
