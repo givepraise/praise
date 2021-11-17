@@ -55,18 +55,9 @@ export const SinglePeriod = selectorFamily({
   get:
     (params: any) =>
     async ({ get }) => {
-      const allPeriods = get(AllPeriods);
+      const allPeriods = get(AllPeriods)
       if (!allPeriods) return [];
-      if (params.id === 0) {
-        const nullPeriod: Period[] = [{
-          id: 0,
-          name: 'nullPeriod',
-          endDate: '-',
-        }];
-        return nullPeriod;
-      } else {
-        return allPeriods.filter((period) => period.id === parseInt(params.id));
-      }
+      return allPeriods.filter((period) => period.id === parseInt(params.id));
     },
 });
 
