@@ -36,6 +36,7 @@ const QuantPeriodOverview = ({
     const [valid, setValid] = useState(true);
     const setApiResponse = useSetRecoilState(UpdatePeriodApiResponse);
 
+    
     const history = useHistory();
 
     // Is only called if validate is successful
