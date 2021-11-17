@@ -25,7 +25,9 @@ interface NavProps {
 }
 export const NavItem = ({ icon, description, to }: NavProps) => {
   return (
-    <div className="relative flex px-4 py-1 cursor-pointer hover:bg-gray-100 ">
+    <div 
+      className="relative flex px-4 py-1 cursor-pointer hover:bg-gray-100"
+      id={to.substring(1) + "-nav-button"}>
       <div className="my-auto mr-4">
         <FontAwesomeIcon icon={icon} size="1x" className="inline-block" />
       </div>
