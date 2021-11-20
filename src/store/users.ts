@@ -26,7 +26,7 @@ export const AllUsersQuery = selector({
   key: "AllUsersQuery",
   get: async ({ get }) => {
     get(UsersRequestId);
-    return get(ApiAuthGetQuery({ endPoint: "/api/admin/users/all" }));
+    return get(ApiAuthGetQuery({ endPoint: "/api/admin/users/allByFilter" }));
   },
 });
 
@@ -55,7 +55,7 @@ export const useAllUsersQuery = () => {
       isApiResponseOk(allUsersQueryResponse) &&
       typeof allUsers === "undefined"
     ) {
-      const users = allUsersQueryResponse.data as User[];
+      const users = (allUsersQueryResponse.data as any).content as User[];
       if (Array.isArray(users) && users.length > 0) setAllUsers(users);
     }
   }, [allUsersQueryResponse, setAllUsers, allUsers]);

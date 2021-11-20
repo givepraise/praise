@@ -20,7 +20,10 @@ export const useOutsideAlerter = (ref: any) => {
     };
   }, [ref]);
 
-  return { timestamp };
+  const reset = () => {
+    setTimestamp(0);
+  };
+  return { timestamp, reset };
 };
 
 export const classNames = (...classes: any[]) => {

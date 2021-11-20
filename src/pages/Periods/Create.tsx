@@ -1,7 +1,7 @@
 import BackLink from "@/components/BackLink";
 import BreadCrumb from "@/components/BreadCrumb";
-import ApiErrorMessage from "@/components/periods/create/ApiErrorMessage";
-import FieldErrorMessage from "@/components/periods/create/FieldErrorMessage";
+import ApiErrorMessage from "@/components/form/ApiErrorMessage";
+import FieldErrorMessage from "@/components/form/FieldErrorMessage";
 import { PeriodDayPicker } from "@/components/periods/create/PeriodDayPicker";
 import SubmitButton from "@/components/periods/create/SubmitButton";
 import { isApiResponseOk } from "@/store/api";
@@ -18,7 +18,7 @@ import React from "react";
 import "react-day-picker/lib/style.css";
 import { Field, Form } from "react-final-form";
 import { useHistory } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 
 const validate = (
   values: Record<string, any>
@@ -51,14 +51,12 @@ const validate = (
 
 const PeriodsForm = () => {
   const { createPeriod } = useCreatePeriod();
-  const setApiResponse = useSetRecoilState(CreatePeriodApiResponse);
+  const [apiResponse, setApiResponse] = useRecoilState(CreatePeriodApiResponse);
 
   const history = useHistory();
 
   // Is only called if validate is successful
   const onSubmit = async (values: Record<string, any>) => {
-    // Clear any old API error messages
-    setApiResponse(null);
     // Selecting date from popup returns Array, setting manually
     // returns string
     const dateString =
@@ -74,6 +72,7 @@ const PeriodsForm = () => {
     if (isApiResponseOk(response)) {
       setTimeout(() => {
         history.goBack();
+        setApiResponse(null); // Clear API response when navigating away
       }, 1000);
     }
   };
@@ -97,10 +96,11 @@ const PeriodsForm = () => {
                   <input
                     type="text"
                     {...input}
+                    autoComplete="off"
                     placeholder="e.g. May-June"
                     className="block w-72"
                   />
-                  <FieldErrorMessage name="name" />
+                  <FieldErrorMessage name="name" apiResponse={apiResponse} />
                 </div>
               )}
             </Field>
@@ -111,16 +111,17 @@ const PeriodsForm = () => {
                   <input
                     type="text"
                     {...input}
+                    autoComplete="off"
                     placeholder="e.g. 2021-01-01"
                     className="block w-72"
                   />
                   <PeriodDayPicker />
-                  <FieldErrorMessage name="endDate" />
+                  <FieldErrorMessage name="endDate" apiResponse={apiResponse} />
                 </div>
               )}
             </Field>
           </div>
-          {submitSucceeded && <ApiErrorMessage />}
+          {submitSucceeded && <ApiErrorMessage apiResponse={apiResponse} />}
           <div className="mt-2">
             <SubmitButton />
           </div>
@@ -130,7 +131,7 @@ const PeriodsForm = () => {
   );
 };
 
-const PeriodsCreateUpdatePage = () => {
+const PeriodsCreatePage = () => {
   return (
     <>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
@@ -148,4 +149,4 @@ const PeriodsCreateUpdatePage = () => {
   );
 };
 
-export default PeriodsCreateUpdatePage;
+export default PeriodsCreatePage;

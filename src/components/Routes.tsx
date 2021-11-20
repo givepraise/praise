@@ -1,7 +1,7 @@
 import Nav from "@/components/Nav";
 import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
-import PeriodDetailPage from "@/pages/Periods/DetailExample";
+import PeriodDetailPage from "@/pages/Periods/Detail";
 import { ROLE_ADMIN, SessionToken, UserRoles } from "@/store/auth";
 import * as localStorage from "@/store/localStorage";
 import { useWeb3React } from "@web3-react/core";
@@ -10,7 +10,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 
 const PeriodsCreateUpdatePage = React.lazy(
-  () => import("@/pages/Periods/CreateUpdate")
+  () => import("@/pages/Periods/Create")
 );
 const PeriodsPage = React.lazy(() => import("@/pages/Periods/Periods"));
 const QuantifierPoolPage = React.lazy(() => import("@/pages/Pool"));
