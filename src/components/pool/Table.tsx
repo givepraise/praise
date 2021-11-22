@@ -1,5 +1,5 @@
-import { isApiResponseOk } from "@/store/api";
-import { AllQuantifierUsers, useAllUsersQuery } from "@/store/users";
+import { isApiResponseOk } from "@/model/api";
+import { AllQuantifierUsers, useAllUsersQuery } from "@/model/users";
 import { shortenEthAddress } from "@/utils/index";
 import React from "react";
 import { TableOptions, useTable } from "react-table";

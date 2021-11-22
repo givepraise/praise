@@ -1,4 +1,4 @@
-import { AllUsers, User } from "@/store/users";
+import { AllUsers, UserIdentity } from "@/model/users";
 import { classNames, shortenEthAddress } from "@/utils/index";
 import {
   faTimes,
@@ -16,7 +16,7 @@ const UserAutosuggest = () => {
 
   const DropdownCombobox = () => {
     const [inputItems, setInputItems] = React.useState(
-      allUsers ? allUsers : ([] as User[])
+      allUsers ? allUsers : ([] as UserIdentity[])
     );
     const {
       isOpen,

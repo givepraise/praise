@@ -1,15 +1,16 @@
 import Nav from "@/components/Nav";
+import { ROLE_ADMIN, SessionToken, UserRoles } from "@/model/auth";
+import * as localStorage from "@/model/localStorage";
 import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
-import { ROLE_ADMIN, SessionToken, UserRoles } from "@/store/auth";
-import * as localStorage from "@/store/localStorage";
+import PeriodDetailPage from "@/pages/Periods/Detail";
 import { useWeb3React } from "@web3-react/core";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 
 const PeriodsCreateUpdatePage = React.lazy(
-  () => import("@/pages/Periods/CreateUpdate")
+  () => import("@/pages/Periods/Create")
 );
 const PeriodsPage = React.lazy(() => import("@/pages/Periods/Periods"));
 const QuantifierPoolPage = React.lazy(() => import("@/pages/Pool"));
@@ -98,6 +99,9 @@ const SubPages = () => {
         <AuthRoute roles={[ROLE_ADMIN]} path={`/periods/createupdate`}>
           <PeriodsCreateUpdatePage />
         </AuthRoute>
+        <Route exact path={`/periods/:id`}>
+          <PeriodDetailPage />
+        </Route>
         <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
           <QuantifierPoolPage />
         </AuthRoute>

@@ -66,6 +66,7 @@ export const NonceQuery = selectorFamily({
   get:
     (params: any) =>
     async ({ get }) => {
+      if (!params.ethAccount) return null;
       return get(
         ApiGetQuery({
           endPoint: `/api/auth/nonce?ethereumAddress=${params.ethAccount}`,

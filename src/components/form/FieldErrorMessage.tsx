@@ -1,7 +1,6 @@
-import { ApiError, getApiError } from "@/store/api";
-import { CreatePeriodApiResponse } from "@/store/periods";
+import { ApiError, getApiError } from "@/model/api";
+import { AxiosError, AxiosResponse } from "axios";
 import { useField, useFormState } from "react-final-form";
-import { useRecoilValue } from "recoil";
 
 const getApiErrorMessage = (apiError: ApiError, name: string) => {
   for (const error of apiError.errors) {
@@ -13,9 +12,10 @@ const getApiErrorMessage = (apiError: ApiError, name: string) => {
 
 interface FieldErrorMessageProps {
   name: string;
+  apiResponse: AxiosResponse | AxiosError | null;
 }
-const FieldErrorMessage = ({ name }: FieldErrorMessageProps) => {
-  const apiResponse = useRecoilValue(CreatePeriodApiResponse);
+const FieldErrorMessage = ({ name, apiResponse }: FieldErrorMessageProps) => {
+  //const apiResponse = useRecoilValue(CreatePeriodApiResponse);
   const { dirtySinceLastSubmit } = useFormState();
 
   // Subscribe to error messsages concerning specified field

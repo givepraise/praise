@@ -6,6 +6,7 @@ export function useEagerConnect() {
   const { activate, active } = useWeb3React();
   const [tried, setTried] = useState(false);
 
+  /* eslint-disable */
   useEffect(() => {
     injected.isAuthorized().then((isAuthorized: boolean) => {
       if (isAuthorized) {
@@ -17,6 +18,7 @@ export function useEagerConnect() {
       }
     });
   }, []); // intentionally only running on mount (make sure it's only mounted once :))
+  /* eslint-enable */
 
   // if the connection worked, wait until we get confirmation of that to flip the flag
   useEffect(() => {
