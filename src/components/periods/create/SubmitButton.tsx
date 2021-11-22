@@ -1,5 +1,5 @@
-import { isApiResponseOk } from "@/store/api";
-import { CreatePeriodApiResponse } from "@/store/periods";
+import { isApiResponseOk } from "@/model/api";
+import { CreatePeriodApiResponse } from "@/model/periods";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useFormState } from "react-final-form";

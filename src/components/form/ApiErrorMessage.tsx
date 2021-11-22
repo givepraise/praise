@@ -1,4 +1,4 @@
-import { getBackendErrors } from "@/store/api";
+import { getBackendErrors } from "@/model/api";
 import { AxiosError, AxiosResponse } from "axios";
 import { useFormState } from "react-final-form";
 

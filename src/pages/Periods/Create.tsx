@@ -4,12 +4,12 @@ import ApiErrorMessage from "@/components/form/ApiErrorMessage";
 import FieldErrorMessage from "@/components/form/FieldErrorMessage";
 import { PeriodDayPicker } from "@/components/periods/create/PeriodDayPicker";
 import SubmitButton from "@/components/periods/create/SubmitButton";
-import { isApiResponseOk } from "@/store/api";
+import { isApiResponseOk } from "@/model/api";
 import {
   CreatePeriodApiResponse,
   Period,
   useCreatePeriod,
-} from "@/store/periods";
+} from "@/model/periods";
 import { DEFAULT_DATE_FORMAT } from "@/utils/date";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import { isMatch } from "date-fns";

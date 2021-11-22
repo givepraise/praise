@@ -1,7 +1,7 @@
 import AdminOnly from "@/components/auth/AdminOnly";
 import BreadCrumb from "@/components/BreadCrumb";
 import PeriodsTable from "@/components/periods/Table";
-import { AllPeriods, useAllPeriodsQuery } from "@/store/periods";
+import { AllPeriods, useAllPeriodsQuery } from "@/model/periods";
 import { formatDate } from "@/utils/date";
 import { getActivePeriod } from "@/utils/periods";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";

@@ -1,4 +1,4 @@
-import { AllUsers, UserIdentity } from "@/store/users";
+import { AllUsers, UserIdentity } from "@/model/users";
 import { classNames, shortenEthAddress } from "@/utils/index";
 import {
   faTimes,

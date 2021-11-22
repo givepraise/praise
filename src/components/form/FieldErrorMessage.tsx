@@ -1,4 +1,4 @@
-import { ApiError, getApiError } from "@/store/api";
+import { ApiError, getApiError } from "@/model/api";
 import { AxiosError, AxiosResponse } from "axios";
 import { useField, useFormState } from "react-final-form";
 

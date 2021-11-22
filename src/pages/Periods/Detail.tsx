@@ -9,7 +9,7 @@ import {
   UpdatePeriodApiResponse,
   useAllPeriodsQuery,
   useUpdatePeriod,
-} from "@/store/periods";
+} from "@/model/periods";
 import { formatDate } from "@/utils/date";
 import { getPreviousPeriod } from "@/utils/periods";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";

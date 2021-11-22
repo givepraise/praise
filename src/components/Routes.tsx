@@ -1,9 +1,9 @@
 import Nav from "@/components/Nav";
+import { ROLE_ADMIN, SessionToken, UserRoles } from "@/model/auth";
+import * as localStorage from "@/model/localStorage";
 import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
 import PeriodDetailPage from "@/pages/Periods/Detail";
-import { ROLE_ADMIN, SessionToken, UserRoles } from "@/store/auth";
-import * as localStorage from "@/store/localStorage";
 import { useWeb3React } from "@web3-react/core";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";

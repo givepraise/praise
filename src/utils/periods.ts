@@ -1,4 +1,4 @@
-import { Period } from "@/store/periods";
+import { Period } from "@/model/periods";
 import { compareDesc } from "date-fns";
 
 export const getActivePeriod = (allPeriods: Period[]) => {

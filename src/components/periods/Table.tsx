@@ -1,4 +1,4 @@
-import { AllPeriods, Period, useAllPeriodsQuery } from "@/store/periods";
+import { AllPeriods, Period, useAllPeriodsQuery } from "@/model/periods";
 import { formatDate } from "@/utils/date";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

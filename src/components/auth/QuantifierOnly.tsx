@@ -1,4 +1,4 @@
-import { HasRole, ROLE_QUANTIFIER } from "@/store/auth";
+import { HasRole, ROLE_QUANTIFIER } from "@/model/auth";
 import { useRecoilValue } from "recoil";
 
 const QuantifierOnly: React.FC<any> = ({ children }) => {
