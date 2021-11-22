@@ -72,11 +72,13 @@
   },
   "devDependencies": {
     "@types/jest": "^27.0.2",
+    "cypress": "^9.0.0",
     "i": "^0.3.7",
     "jest": "^27.3.1",
     "jest-transform-stub": "^2.0.0",
     "npm": "^8.1.2",
     "ts-jest": "^27.0.7",
-    "ts-node": "^10.4.0"
+    "ts-node": "^10.4.0",
+    "web3": "^1.6.1"
   }
 }

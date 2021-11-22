@@ -1,21 +1,20 @@
-import { isConnected } from "@/eth/connectors";
 import { Jazzicon } from "@ukstv/jazzicon-react";
-import { useWeb3React } from "@web3-react/core";
+import { EthState } from "@/store/eth";
+import { useRecoilValue } from "recoil";
 
 export default function EthAccount() {
-  const { connector, account } = useWeb3React();
-
-  if (isConnected(connector) && account)
+  const ethState = useRecoilValue(EthState);
+  if (ethState.connected && ethState.account)
     return (
       <div className="inline-block px-3 py-2 mb-5 text-base">
         <div
           style={{ width: "15px", height: "15px" }}
           className="inline-block mr-2"
         >
-          <Jazzicon address={account} />
+          <Jazzicon address={ethState.account} />
         </div>
-        {account.substring(0, 6)}...
-        {account.substring(account.length - 4)} {" "}
+        {ethState.account.substring(0, 6)}...
+        {ethState.account.substring(ethState.account.length - 4)} {" "}
       </div>
     );
 

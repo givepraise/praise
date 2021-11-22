@@ -3,8 +3,8 @@ import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
 import PeriodDetail from "@/pages/Periods/PeriodDetail";
 import { ROLE_ADMIN, SessionToken, UserRoles } from "@/store/auth";
+import { EthState } from "@/store/eth";
 import * as localStorage from "@/store/localStorage";
-import { useWeb3React } from "@web3-react/core";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -24,12 +24,11 @@ const LoggedInOnlyRoute: FC<LoggedInOnlyRouteProps> = ({
   children,
   ...props
 }) => {
-  const { account: ethAccount } = useWeb3React();
+  const ethState = useRecoilValue(EthState);
   const [sessionToken, setSessionToken] = useRecoilState(SessionToken);
   React.useEffect(() => {
-    setSessionToken(localStorage.getSessionToken(ethAccount));
-  }, [ethAccount, setSessionToken]);
-
+    setSessionToken(localStorage.getSessionToken(ethState.account));
+  }, [ethState.account, setSessionToken]);
   // Token exists: Show content
   // Token undefined: Unknown state => wait
   // Token null: Token doesn't exist => login
