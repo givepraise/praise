@@ -31,6 +31,7 @@ export const classNames = (...classes: any[]) => {
 };
 
 export const shortenEthAddress = (address: string) => {
+  if (!address || !address.length) return null;
   return `${address.substring(0, 6)}...${address.substring(
     address.length - 4
   )}`;
