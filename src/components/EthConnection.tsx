@@ -37,15 +37,15 @@ export default function EthConnection() {
 
   // This allows us to stub out the Metamask extension in a test environment
   // Waiting on Cypress for feedback on a better solution on stubbing out the connector
-  var connectedStatus: boolean;
-  var usedAccount: string | null | undefined;
+  var envDependentConnectionStatus: boolean;
+  var envDependentAccount: string | null | undefined;
 
   if (process.env.NODE_ENV === 'test') {
-    usedAccount = process.env.REACT_APP_ETH_ADDRESS;
-    connectedStatus = true;
+    envDependentAccount = process.env.REACT_APP_ETH_ADDRESS;
+    envDependentConnectionStatus = true;
   } else {
-    usedAccount = ethAccount;
-    connectedStatus = connected;
+    envDependentAccount = ethAccount;
+    envDependentConnectionStatus = connected;
   }
   // End of testing conditional
 
@@ -55,10 +55,11 @@ export default function EthConnection() {
   React.useEffect(() => {
     setEthState({
       // account: ethAccount, //Switch back to ethAccount after conditional stub above has been removed
-      account: usedAccount,
+      account: envDependentAccount,
       triedEager,
       activating,
-      connected,
+      // connected,  //Switch back to connected after conditional stub above has been removed
+      connected: envDependentConnectionStatus,
       connectDisabled,
     });
   }, [
