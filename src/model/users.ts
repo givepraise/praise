@@ -13,7 +13,8 @@ export interface UserIdentity {
   createdAt: string;
   updatedAt: string;
   ethereumAddress: string;
-  roles: string[];
+  roles: USER_INDENTITY_ROLE[];
+  accounts?: UserAccount[];
 }
 
 export enum USER_ACCOUNT_PLATFORM {
