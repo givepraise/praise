@@ -1,5 +1,5 @@
 import { AllUsers, UserIdentity } from "@/model/users";
-import { classNames, shortenEthAddress } from "@/utils/index";
+import { classNames } from "@/utils/index";
 import {
   faTimes,
   faUser,
@@ -30,11 +30,19 @@ const UserAutosuggest = () => {
       onInputValueChange: ({ inputValue }) => {
         if (allUsers) {
           setInputItems(
-            allUsers.filter((user) =>
-              user.ethereumAddress
-                .toLowerCase()
-                .includes(inputValue!.toLowerCase())
-            )
+            allUsers.filter((user) => {
+              if (user.id.toString().includes(inputValue!.toLowerCase()))
+                return true;
+              if (
+                user.ethereumAddress &&
+                user.ethereumAddress.length > 0 &&
+                user.ethereumAddress
+                  .toLowerCase()
+                  .includes(inputValue!.toLowerCase())
+              )
+                return true;
+              return false;
+            })
           );
         }
       },
@@ -76,7 +84,7 @@ const UserAutosuggest = () => {
                 key={`${item}${index}`}
                 {...getItemProps({ item, index })}
               >
-                {shortenEthAddress(item.ethereumAddress)}
+                {item.id}
               </li>
             ))}
         </ul>

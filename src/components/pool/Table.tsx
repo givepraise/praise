@@ -1,6 +1,5 @@
 import { isApiResponseOk } from "@/model/api";
 import { AllQuantifierUsers, useAllUsersQuery } from "@/model/users";
-import { shortenEthAddress } from "@/utils/index";
 import React from "react";
 import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
@@ -12,10 +11,11 @@ const PoolTable = () => {
   const columns = React.useMemo(
     () => [
       {
-        Header: "Eth address",
-        accessor: "ethereumAddress",
+        Header: "User id",
+        accessor: "id",
         Cell: (data: any) => {
-          return shortenEthAddress(data.value);
+          //return shortenEthAddress(data.value);
+          return data.value;
         },
       },
     ],
