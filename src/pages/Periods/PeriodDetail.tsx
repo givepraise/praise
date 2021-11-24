@@ -1,6 +1,6 @@
 import BackLink from "@/components/BackLink";
 import BreadCrumb from "@/components/BreadCrumb";
-import { Period, useAllPeriodsQuery } from "@/store/periods";
+import { Period, useAllPeriodsQuery } from "@/model/periods";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useParams } from "react-router-dom";

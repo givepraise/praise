@@ -101,28 +101,6 @@ export const ApiAuthPostQuery = selectorFamily({
       }
     },
 });
-export const ApiAuthPatchQuery = selectorFamily({
-  key: "ApiAuthPatchQuery",
-  get:
-    (params: any) =>
-    async ({ get }) => {
-      const ethState = get(EthState);
-      const sessionToken = get(SessionToken);
-      if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
-        return null;
-
-      try {
-        const response = await axios.patch(
-          `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-          params.data,
-          { headers: { Authorization: `Bearer ${sessionToken}` } }
-        );
-        return response as AxiosResponse;
-      } catch (err) {
-        return err as AxiosError;
-      }
-    },
-});
 
 export const ApiAuthPatchQuery = selectorFamily({
   key: "ApiAuthPatchQuery",
@@ -146,6 +124,7 @@ export const ApiAuthPatchQuery = selectorFamily({
       }
     },
 });
+
 
 // Always use `useAuthApiQuery` for queries instead of `useRecoilValue`
 // to correctly handle expired JWT tokens and other error codes returned by

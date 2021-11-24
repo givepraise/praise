@@ -1,12 +1,10 @@
 import Nav from "@/components/Nav";
-import { ROLE_ADMIN, SessionToken, UserRoles } from "@/model/auth";
-import * as localStorage from "@/model/localStorage";
 import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
 import PeriodDetail from "@/pages/Periods/PeriodDetail";
-import { ROLE_ADMIN, SessionToken, UserRoles } from "@/store/auth";
-import { EthState } from "@/store/eth";
-import * as localStorage from "@/store/localStorage";
+import { ROLE_ADMIN, SessionToken, UserRoles } from "@/model/auth";
+import { EthState } from "@/model/eth";
+import * as localStorage from "@/model/localStorage";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";

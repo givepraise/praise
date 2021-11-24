@@ -6,13 +6,13 @@ import React, {
 } from 'react';
 import { useHistory } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
-import { isApiResponseOk } from "@/store/api";
+import { isApiResponseOk } from "@/model/api";
 import {
   UpdatePeriodApiResponse,
   Period,
   useUpdatePeriod,
-} from "@/store/periods";
-import ApiErrorMessage from "@/components/periods/create/ApiErrorMessage";
+} from "@/model/periods";
+import ApiErrorMessage from "@/components/form/ApiErrorMessage";
 import OutsideClickHandler from 'react-outside-click-handler';
 
 export interface QuantPeriodOverviewProps {

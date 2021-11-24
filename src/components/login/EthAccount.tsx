@@ -1,5 +1,5 @@
 import { Jazzicon } from "@ukstv/jazzicon-react";
-import { EthState } from "@/store/eth";
+import { EthState } from "@/model/eth";
 import { useRecoilValue } from "recoil";
 
 export default function EthAccount() {
