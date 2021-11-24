@@ -1,11 +1,13 @@
-import { getBackendErrors } from "@/store/api";
-import { CreatePeriodApiResponse } from "@/store/periods";
+import { getBackendErrors } from "@/model/api";
+import { AxiosError, AxiosResponse } from "axios";
 import { useFormState } from "react-final-form";
-import { useRecoilValue } from "recoil";
 
-const ApiErrorMessage = () => {
+interface ApiErrorMessageProps {
+  apiResponse: AxiosResponse | AxiosError | null;
+}
+
+const ApiErrorMessage = ({ apiResponse }: ApiErrorMessageProps) => {
   const { dirtySinceLastSubmit } = useFormState();
-  const apiResponse = useRecoilValue(CreatePeriodApiResponse);
 
   // Form hasn't been submitted / no api response present
   if (!apiResponse || dirtySinceLastSubmit) return null;

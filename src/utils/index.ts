@@ -20,7 +20,10 @@ export const useOutsideAlerter = (ref: any) => {
     };
   }, [ref]);
 
-  return { timestamp };
+  const reset = () => {
+    setTimestamp(0);
+  };
+  return { timestamp, reset };
 };
 
 export const classNames = (...classes: any[]) => {
@@ -28,6 +31,7 @@ export const classNames = (...classes: any[]) => {
 };
 
 export const shortenEthAddress = (address: string) => {
+  if (!address || !address.length) return null;
   return `${address.substring(0, 6)}...${address.substring(
     address.length - 4
   )}`;

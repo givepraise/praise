@@ -2,9 +2,9 @@ import {
   getBackendErrorMessage,
   isApiResponseOk,
   useAuthApiQuery,
-} from "@/store/api";
-import { Auth, AuthQuery, Nonce, NonceQuery, SessionToken } from "@/store/auth";
-import * as localStorage from "@/store/localStorage";
+} from "@/model/api";
+import { Auth, AuthQuery, Nonce, NonceQuery, SessionToken } from "@/model/auth";
+import * as localStorage from "@/model/localStorage";
 import { useWeb3React } from "@web3-react/core";
 import React from "react";
 import { useHistory, useLocation } from "react-router-dom";

@@ -1,6 +1,6 @@
-import { SessionToken } from "@/store/auth";
-import { EthState } from "@/store/eth";
-import * as localStorage from "@/store/localStorage";
+import { SessionToken } from "@/model/auth";
+import { EthState } from "@/model/eth";
+import * as localStorage from "@/model/localStorage";
 import { classNames } from "@/utils/index";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -32,7 +32,8 @@ export const NavItem = ({ icon, description, to }: NavProps) => {
         <FontAwesomeIcon icon={icon} size="1x" className="inline-block" />
       </div>
       <Link to={to}>
-        <div className="flex-auto my-1">
+        <FontAwesomeIcon icon={icon} size="1x" className="inline-block mr-4" />
+        <div className="flex-auto inline-block my-1">
           <span>{description}</span>
         </div>
       </Link>

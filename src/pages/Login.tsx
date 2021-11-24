@@ -1,7 +1,7 @@
 import EthAccount from "@/components/login/EthAccount";
 import Login from "@/components/login/Login";
 import { injected } from "@/eth/connectors";
-import { EthState } from "@/store/eth";
+import { EthState } from "@/model/eth";
 import { ReactComponent as MetamaskIcon } from "@/svg/metamask.svg";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";

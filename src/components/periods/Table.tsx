@@ -1,4 +1,4 @@
-import { AllPeriods, Period, useAllPeriodsQuery } from "@/store/periods";
+import { AllPeriods, Period, useAllPeriodsQuery } from "@/model/periods";
 import { formatDate } from "@/utils/date";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -70,7 +70,7 @@ const PeriodsTable = () => {
                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
               })}
               <td>
-                <div className="inline-block px-2 py-1 text-xs text-white bg-green-500 rounded-full">
+                <div className="inline-block px-2 py-1 text-xs text-white bg-black rounded-full">
                   open
                 </div>
               </td>

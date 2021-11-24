@@ -1,4 +1,6 @@
 import Nav from "@/components/Nav";
+import { ROLE_ADMIN, SessionToken, UserRoles } from "@/model/auth";
+import * as localStorage from "@/model/localStorage";
 import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
 import PeriodDetail from "@/pages/Periods/PeriodDetail";
@@ -10,7 +12,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 
 const PeriodsCreateUpdatePage = React.lazy(
-  () => import("@/pages/Periods/CreateUpdate")
+  () => import("@/pages/Periods/Create")
 );
 const PeriodsPage = React.lazy(() => import("@/pages/Periods/Periods"));
 const QuantifierPoolPage = React.lazy(() => import("@/pages/Pool"));
