@@ -1,7 +1,6 @@
 import React, {
   KeyboardEvent,
   ChangeEventHandler,
-  RefObject, 
   useState
 } from 'react';
 import { useHistory } from "react-router-dom";

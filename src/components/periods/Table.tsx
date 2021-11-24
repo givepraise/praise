@@ -45,7 +45,9 @@ const PeriodsTable = () => {
     history.push(`/periods/${id}`);
   };
   return (
-    <table className="w-full table-auto" {...getTableProps()}>
+    <table 
+      id="periods-table"
+      className="w-full table-auto" {...getTableProps()}>
       <thead>
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -63,6 +65,7 @@ const PeriodsTable = () => {
           return (
             <tr
               className="cursor-pointer hover:bg-gray-100"
+              id={"period-" + row.values.name}
               {...row.getRowProps()}
               onClick={handleClick((row.original as Period).id!)}
             >

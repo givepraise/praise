@@ -1,18 +1,20 @@
 import BackLink from "@/components/BackLink";
 import BreadCrumb from "@/components/BreadCrumb";
-import { Period, useAllPeriodsQuery } from "@/model/periods";
+import { Period,   SinglePeriod, useAllPeriodsQuery } from "@/model/periods";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useParams } from "react-router-dom";
 import QuantPeriodOverview from "./QuantPeriodOverview";
 import { formatDate } from "@/utils/date";
+import { useRecoilValue } from "recoil";
 
 
 const PeriodDetailPage = () => {
-  const { data } = useAllPeriodsQuery();
-
   let { id } = useParams() as { id: string };
   var intId: number = parseInt(id);
+
+  const { data } = useAllPeriodsQuery();
+  const period = useRecoilValue(SinglePeriod({ id: id }));
 
   const thisPeriod = data.filter((period: Period) => period.id === intId);
   const lastPeriod = data.filter((period: Period) => period.id === intId - 1);

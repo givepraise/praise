@@ -42,7 +42,11 @@ const PeriodsPage = () => {
         <AdminOnly>
           <div className="mb-2 text-right">
             <Link to="/periods/createupdate">
-              <button className="praise-button">Create period</button>
+              <button
+                className="praise-button"
+                id="create-period-button">
+                 Create period
+              </button>
             </Link>
           </div>
         </AdminOnly>
