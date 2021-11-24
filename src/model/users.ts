@@ -9,7 +9,7 @@ import {
 } from "recoil";
 import { ApiAuthGetQuery, isApiResponseOk, useAuthApiQuery } from "./api";
 
-enum USER_INDENTITY_ROLE {
+export enum USER_INDENTITY_ROLE {
   Admin = "ROLE_ADMIN",
   Quantifier = "ROLE_QUANTIFIER",
   User = "ROLE_USER",
@@ -102,9 +102,10 @@ export const AddUserRoleApiResponse = atom<
 // Hook that returns functions for administering users
 export const useAdminUsers = () => {
   const allUsers: UserIdentity[] | undefined = useRecoilValue(AllUsers);
+
   const addRole = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (user: UserIdentity, role: USER_INDENTITY_ROLE) => {
+      async (userId: number, role: USER_INDENTITY_ROLE) => {
         // const response = await snapshot.getPromise(
         //   ApiAuthPatchQuery({
         //     endPoint: `/api/admin/users/${user.id}/addRole...`,
@@ -112,7 +113,7 @@ export const useAdminUsers = () => {
         //   })
         // );
 
-        // mock adding of role, rtemove when endpoint is finished
+        // mock adding of role, remove when endpoint is finished
         if (user.roles?.indexOf(role) === -1) {
           user.roles.push(role);
         }
@@ -140,10 +141,10 @@ export const useAdminUsers = () => {
 
   const removeRole = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (user: UserIdentity, role: USER_INDENTITY_ROLE) => {
+      async (userId: number, role: USER_INDENTITY_ROLE) => {
         // const response = await snapshot.getPromise(
         //   ApiAuthPatchQuery({
-        //     endPoint: `/api/admin/users/${user.id}/addRole...`,
+        //     endPoint: `/api/admin/users/${user.id}/removeRole...`,
         //     data: ... ,
         //   })
         // );

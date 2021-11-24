@@ -1,19 +1,27 @@
+import PoolDeleteDialog from "@/components/pool/DeleteDialog";
 import { isApiResponseOk } from "@/model/api";
-import { AllQuantifierUsers, useAllUsersQuery, UserIdentity } from "@/model/users";
+import {
+  AllQuantifierUsers,
+  useAdminUsers,
+  useAllUsersQuery,
+  UserIdentity,
+  USER_INDENTITY_ROLE,
+} from "@/model/users";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Dialog } from "@headlessui/react";
 import React from "react";
 import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Dialog } from "@headlessui/react";
-import PoolDeleteDialog from "@/components/pool/DeleteDialog";
 
 const PoolTable = () => {
   const allUsersQueryResponse = useAllUsersQuery();
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
+  const { removeRole } = useAdminUsers();
 
   let [isOpen, setIsOpen] = React.useState(false);
-  let [selectedQuantifier, setSelectedQuantifier] = React.useState<UserIdentity>();
+  let [selectedQuantifier, setSelectedQuantifier] =
+    React.useState<UserIdentity>();
 
   const columns = React.useMemo(
     () => [
@@ -36,19 +44,20 @@ const PoolTable = () => {
   const tableInstance = useTable(options);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    tableInstance;  
+    tableInstance;
 
   if (!isApiResponseOk(allUsersQueryResponse))
     return <div>Unable to fetch user list.</div>;
-  
-  const handleDeleteQuantifierClick = (quantifier: UserIdentity) => {    
+
+  const handleDeleteQuantifierClick = (quantifier: UserIdentity) => {
     setSelectedQuantifier(quantifier);
     setIsOpen(true);
-  }
+  };
 
   const removeQuantifier = (id: number) => {
-    /** TODO: remove quantifier from list of all quantifiers */    
-  }
+    /** TODO: remove quantifier from list of all quantifiers */
+    removeRole(id, USER_INDENTITY_ROLE.Quantifier);
+  };
 
   return (
     <table className="w-full table-auto" {...getTableProps()}>
@@ -72,19 +81,22 @@ const PoolTable = () => {
               {...row.getRowProps()}
             >
               {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>                                                      
+                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
               })}
               <td>
-                <button onClick={() => handleDeleteQuantifierClick(row.original as UserIdentity)}>
+                <button
+                  onClick={() =>
+                    handleDeleteQuantifierClick(row.original as UserIdentity)
+                  }
+                >
                   <FontAwesomeIcon
                     icon={faTrash}
                     size="1x"
                     className="inline-block"
                   />
                 </button>
-                
               </td>
-            </tr>            
+            </tr>
           );
         })}
 
@@ -93,11 +105,14 @@ const PoolTable = () => {
             open={isOpen && !!selectedQuantifier}
             onClose={() => setIsOpen(false)}
             className="fixed inset-0 z-10 overflow-y-auto"
-          >            
-            <PoolDeleteDialog onClose={() => setIsOpen(false)} onQuantifierRemoved={(id: number) => removeQuantifier(id)} quantifier={selectedQuantifier} />            
-          </Dialog>          
+          >
+            <PoolDeleteDialog
+              onClose={() => setIsOpen(false)}
+              onQuantifierRemoved={(id: number) => removeQuantifier(id)}
+              quantifier={selectedQuantifier}
+            />
+          </Dialog>
         </React.Suspense>
-
       </tbody>
     </table>
   );
