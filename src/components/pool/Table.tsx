@@ -37,7 +37,7 @@ const PoolTable = () => {
     []
   );
 
-  let options = {
+  const options = {
     columns,
     data: allQuantifierUsers ? allQuantifierUsers : [],
   } as TableOptions<{}>;
@@ -54,8 +54,7 @@ const PoolTable = () => {
     setIsOpen(true);
   };
 
-  const removeQuantifier = (id: number) => {
-    /** TODO: remove quantifier from list of all quantifiers */
+  const removeQuantifier = (id: number) => {    
     removeRole(id, USER_INDENTITY_ROLE.Quantifier);
   };
 
