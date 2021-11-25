@@ -95,6 +95,7 @@ const PeriodsForm = () => {
                   <label className="block">Period name</label>
                   <input
                     type="text"
+                    id="input-period-name"
                     {...input}
                     autoComplete="off"
                     placeholder="e.g. May-June"
@@ -110,6 +111,7 @@ const PeriodsForm = () => {
                   <label className="block">End date</label>
                   <input
                     type="text"
+                    id="input-period-date"
                     {...input}
                     autoComplete="off"
                     placeholder="e.g. 2021-01-01"

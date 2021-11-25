@@ -1,10 +1,10 @@
 import Nav from "@/components/Nav";
 import { ROLE_ADMIN, SessionToken, UserRoles } from "@/model/auth";
+import { EthState } from "@/model/eth";
 import * as localStorage from "@/model/localStorage";
 import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
-import PeriodDetailPage from "@/pages/Periods/Detail";
-import { useWeb3React } from "@web3-react/core";
+import PeriodDetail from "@/pages/Periods/Detail";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -24,12 +24,11 @@ const LoggedInOnlyRoute: FC<LoggedInOnlyRouteProps> = ({
   children,
   ...props
 }) => {
-  const { account: ethAccount } = useWeb3React();
+  const ethState = useRecoilValue(EthState);
   const [sessionToken, setSessionToken] = useRecoilState(SessionToken);
   React.useEffect(() => {
-    setSessionToken(localStorage.getSessionToken(ethAccount));
-  }, [ethAccount, setSessionToken]);
-
+    setSessionToken(localStorage.getSessionToken(ethState.account));
+  }, [ethState.account, setSessionToken]);
   // Token exists: Show content
   // Token undefined: Unknown state => wait
   // Token null: Token doesn't exist => login
@@ -100,7 +99,7 @@ const SubPages = () => {
           <PeriodsCreateUpdatePage />
         </AuthRoute>
         <Route exact path={`/periods/:id`}>
-          <PeriodDetailPage />
+          <PeriodDetail />
         </Route>
         <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
           <QuantifierPoolPage />

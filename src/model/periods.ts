@@ -68,11 +68,11 @@ export const SinglePeriod = selectorFamily({
 export const CreatePeriodApiResponse = atom<
   AxiosResponse<never> | AxiosError<never> | null
 >({
-  key: "PeriodsApiResponse",
+  key: "CreatePeriodApiResponse",
   default: null,
 });
 
-// Stores the api response from the latest call to /api/admin/periods/create
+// Stores the api response from the latest call to /api/admin/periods/update
 export const UpdatePeriodApiResponse = atom<
   AxiosResponse<never> | AxiosError<never> | null
 >({

@@ -125,6 +125,7 @@ export const ApiAuthPatchQuery = selectorFamily({
     },
 });
 
+
 // Always use `useAuthApiQuery` for queries instead of `useRecoilValue`
 // to correctly handle expired JWT tokens and other error codes returned by
 // the server
