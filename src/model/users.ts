@@ -1,8 +1,15 @@
+import { AxiosError, AxiosResponse } from "axios";
 import React from "react";
-import { atom, selector, useRecoilState } from "recoil";
+import {
+  atom,
+  selector,
+  useRecoilCallback,
+  useRecoilState,
+  useRecoilValue,
+} from "recoil";
 import { ApiAuthGetQuery, isApiResponseOk, useAuthApiQuery } from "./api";
 
-enum USER_INDENTITY_ROLE {
+export enum USER_INDENTITY_ROLE {
   Admin = "ROLE_ADMIN",
   Quantifier = "ROLE_QUANTIFIER",
   User = "ROLE_USER",
@@ -83,4 +90,109 @@ export const useAllUsersQuery = () => {
   }, [allUsersQueryResponse, setAllUsers, allUsers]);
 
   return allUsersQueryResponse;
+};
+
+export const AddUserRoleApiResponse = atom<
+  AxiosResponse<never> | AxiosError<never> | null
+>({
+  key: "AddUserRoleApiResponse",
+  default: null,
+});
+
+// Hook that returns functions for administering users
+export const useAdminUsers = () => {
+  const allUsers: UserIdentity[] | undefined = useRecoilValue(AllUsers);
+
+  const addRole = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async (userId: number, role: USER_INDENTITY_ROLE) => {
+        // const response = await snapshot.getPromise(
+        //   ApiAuthPatchQuery({
+        //     endPoint: `/api/admin/users/${user.id}/addRole...`,
+        //     data: ... ,
+        //   })
+        // );
+
+        const user = allUsers?.find(({ id }) => id === userId);                      
+
+        // If OK response, add returned user object to local state
+        //if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
+        //const user = response.data as UserIdentity;
+        if (user) {
+          // mock adding of role, remove when endpoint is finished
+          if (user.roles?.indexOf(role) === -1) {
+            user.roles.push(role);
+          }
+
+          if (typeof allUsers !== "undefined") {
+            set(
+              AllUsers,
+              allUsers.map((oldUser) =>
+                oldUser.id === user.id ? user : oldUser
+              )
+            );
+          } else {
+            set(AllUsers, [user]);
+          }
+        }
+        // }
+        // set(AddUserRoleApiResponse, response);
+        // return response;
+      }
+  );
+
+  const removeRole = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async (userId: number, role: USER_INDENTITY_ROLE) => {
+        // const response = await snapshot.getPromise(
+        //   ApiAuthPatchQuery({
+        //     endPoint: `/api/admin/users/${user.id}/removeRole...`,
+        //     data: ... ,
+        //   })
+        // );
+
+        const user = allUsers?.find(({ id }) => id === userId);              
+        
+        // If OK response, add returned user object to local state
+        //if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
+        //const user = response.data as UserIdentity;
+        if (user) {
+          // mock removing of role, remove when endpoint is finished
+          const index = user.roles?.indexOf(role);          
+
+          if (index > -1) {
+            // I did this because of this error, probably it won't be neccessary on the real data:
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Read-only
+            let roles:any = [...user.roles];
+            roles.splice(index, 1);
+            const userCopy = {
+              id: user.id,
+              accounts: user.accounts,
+              roles: roles,
+              ethereumAddress: user.ethereumAddress,
+              createdAt: user.createdAt,
+              updatedAt: user.updatedAt
+            } as UserIdentity;
+
+            if (typeof allUsers !== "undefined") {
+              set(
+                AllUsers,
+                allUsers.map((oldUser) =>
+                  oldUser.id === userCopy.id ? userCopy : oldUser
+                )
+              );
+            } else {
+              set(AllUsers, [user]);
+            }
+            
+          }
+          
+        }
+        // }
+        // set(AddUserRoleApiResponse, response);
+        // return response;
+      }
+  );
+
+  return { addRole, removeRole };
 };
