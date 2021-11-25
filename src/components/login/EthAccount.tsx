@@ -1,5 +1,6 @@
-import { Jazzicon } from "@ukstv/jazzicon-react";
 import { EthState } from "@/model/eth";
+import { shortenEthAddress } from "@/utils/index";
+import { Jazzicon } from "@ukstv/jazzicon-react";
 import { useRecoilValue } from "recoil";
 
 export default function EthAccount() {
@@ -13,8 +14,7 @@ export default function EthAccount() {
         >
           <Jazzicon address={ethState.account} />
         </div>
-        {ethState.account.substring(0, 6)}...
-        {ethState.account.substring(ethState.account.length - 4)} {" "}
+        {shortenEthAddress(ethState.account)}
       </div>
     );
 

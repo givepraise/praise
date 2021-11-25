@@ -40,7 +40,7 @@ export default function EthConnection() {
   var envDependentConnectionStatus: boolean;
   var envDependentAccount: string | null | undefined;
 
-  if (process.env.NODE_ENV === 'test') {
+  if (process.env.NODE_ENV === "test") {
     envDependentAccount = process.env.REACT_APP_ETH_ADDRESS;
     envDependentConnectionStatus = true;
   } else {
@@ -48,7 +48,6 @@ export default function EthConnection() {
     envDependentConnectionStatus = connected;
   }
   // End of testing conditional
-
 
   // Store current eth address and connection state in global state
   const setEthState = useSetRecoilState(EthState);
@@ -69,6 +68,8 @@ export default function EthConnection() {
     activating,
     connected,
     connectDisabled,
+    envDependentAccount,
+    envDependentConnectionStatus,
   ]);
 
   return null;

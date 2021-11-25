@@ -11,8 +11,8 @@ import {
 } from "recoil";
 import {
   ApiAuthGetQuery,
-  ApiAuthPostQuery,
   ApiAuthPatchQuery,
+  ApiAuthPostQuery,
   isApiErrorData,
   isApiResponseOk,
   useAuthApiQuery,
@@ -72,7 +72,7 @@ export const CreatePeriodApiResponse = atom<
   default: null,
 });
 
-// Stores the api response from the latest call to /api/admin/periods/create
+// Stores the api response from the latest call to /api/admin/periods/update
 export const UpdatePeriodApiResponse = atom<
   AxiosResponse<never> | AxiosError<never> | null
 >({

@@ -20,20 +20,4 @@
   th {
     @apply p-2;
   }
-
-  input[type=text] {
-    border: 1px solid;
-    border-color:  grey;
-    border-radius: 10px;
-  }
-
-  input[type=text]:active{
-    border: 3px solid;
-    border-colour: blue;
-  }
-  
-  input[type=text]:hover {
-    border: 3px solid;
-    border-color:  grey;
-  }
 }
