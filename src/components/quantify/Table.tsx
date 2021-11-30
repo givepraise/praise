@@ -4,6 +4,8 @@ import { getPraiseMarks } from "@/utils/index";
 import { Dialog } from "@headlessui/react";
 import DismissDialog from "@/components/quantify/DismissDialog";
 import DuplicateDialog from "@/components/quantify/DuplicateDialog";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimesCircle, faCopy } from "@fortawesome/free-solid-svg-icons";
 
 const praises = [
   {
@@ -56,20 +58,20 @@ const QuantifyTable = () => {
                 <div className="flex space-x-1">
                   {
                     !!praise.dismissed ?
-                      <div className="bg-black text-white text-sm">Dismissed</div>
+                      <div className="text-xs bg-black text-white mt-0.2 h-5 pr-1 pl-1 pt-0.5">Dismissed</div>
                     : <div></div>
                   }
                   <div className={(!!praise.dismissed ? 'line-through' : '')}>{praise.praise}</div>
                 </div>
               </td>
               <td>
-                <div className="flex space-x-4">
+                <div className="flex space-x-1">
                   <RangeSlider marks={getPraiseMarks()} defaultValue={praise.quantify_value} onValueChanged={(value: number) => handleChange(value)}></RangeSlider>
-                  <button className="praise-button text-xs px-2 py-2" onClick={() => setIsDuplicateDialogOpen(true)}>
-                    Duplicate
+                  <button onClick={() => setIsDuplicateDialogOpen(true)}>
+                    <FontAwesomeIcon icon={faCopy} size="1x" />
                   </button>
-                  <button className="praise-button text-xs px-2 py-2" onClick={() => setIsDismissDialogOpen(true)}>
-                    Dismiss
+                  <button onClick={() => setIsDismissDialogOpen(true)}>
+                    <FontAwesomeIcon icon={faTimesCircle} size="1x" />
                   </button>
                 </div>
               </td>              

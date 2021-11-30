@@ -126,7 +126,7 @@ const Routes = () => {
         <div className="flex min-h-screen">
           <Nav />
           <div className="flex w-full">
-            <div className="w-[1100px] pt-4 mx-auto">
+            <div className="w-[900px] pt-4 mx-auto">
               <SubPages />
             </div>
           </div>

@@ -13,7 +13,7 @@ interface DismissDialogProps {
   praise: Praise | undefined
 }
 const PoolDismissDialog = ({ onClose, onDismiss, praise }: DismissDialogProps) => {
-  if (praise) {
+  if (praise) {    
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
@@ -28,7 +28,7 @@ const PoolDismissDialog = ({ onClose, onDismiss, praise }: DismissDialogProps) =
               <FontAwesomeIcon icon={faCalculator} size="2x" />
             </div>
             <Dialog.Title className="text-center mb-7">
-              Dismiss              
+              Dismiss praise {praise.id}            
             </Dialog.Title>
             <Dialog.Description className="text-center mb-7">
               Dismiss a praise when it contains no praise information or is out of scope for the praise system.
