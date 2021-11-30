@@ -1,5 +1,10 @@
 import Nav from "@/components/Nav";
-import { ROLE_ADMIN, ROLE_QUANTIFIER, SessionToken, UserRoles } from "@/model/auth";
+import {
+  ROLE_ADMIN,
+  ROLE_QUANTIFIER,
+  SessionToken,
+  UserRoles,
+} from "@/model/auth";
 import { EthState } from "@/model/eth";
 import * as localStorage from "@/model/localStorage";
 import LoginPage from "@/pages/Login";
@@ -90,29 +95,29 @@ const AuthRoute: FC<AuthRouteProps> = ({ children, ...props }) => {
 };
 
 const SubPages = () => {
-  return (    
-      <React.Suspense fallback={<div>Loading...</div>}>      
-          <Switch>
-            <Route exact path={`/periods`}>
-              <PeriodsPage />
-            </Route>
-            <AuthRoute roles={[ROLE_ADMIN]} path={`/periods/createupdate`}>
-              <PeriodsCreateUpdatePage />
-            </AuthRoute>
-            <Route exact path={`/periods/:id`}>
-              <PeriodDetail />
-            </Route>
-            <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
-              <QuantifierPoolPage />
-            </AuthRoute>
-            <AuthRoute roles={[ROLE_QUANTIFIER]} path={`/quantify`}>              
-              <QuantifyPage />              
-            </AuthRoute>
-            <Route exact path="/">
-              <MainPage />
-            </Route>
-          </Switch>      
-      </React.Suspense>    
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <Switch>
+        <Route exact path={`/periods`}>
+          <PeriodsPage />
+        </Route>
+        <AuthRoute roles={[ROLE_ADMIN]} path={`/periods/createupdate`}>
+          <PeriodsCreateUpdatePage />
+        </AuthRoute>
+        <Route exact path={`/periods/:id`}>
+          <PeriodDetail />
+        </Route>
+        <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
+          <QuantifierPoolPage />
+        </AuthRoute>
+        <AuthRoute roles={[ROLE_QUANTIFIER]} path={`/quantify`}>
+          <QuantifyPage />
+        </AuthRoute>
+        <Route exact path="/">
+          <MainPage />
+        </Route>
+      </Switch>
+    </React.Suspense>
   );
 };
 
@@ -126,8 +131,10 @@ const Routes = () => {
         <div className="flex min-h-screen">
           <Nav />
           <div className="flex w-full">
-            <div className="w-[900px] pt-4 mx-auto">
-              <SubPages />
+            <div className="w-[920px] pt-4 mx-auto px-5">
+              <div>
+                <SubPages />
+              </div>
             </div>
           </div>
         </div>

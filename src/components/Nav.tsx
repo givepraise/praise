@@ -49,7 +49,7 @@ export default function Nav() {
   };
 
   return (
-    <nav className="flex-shrink-0 w-64 mr-5 border-r shadow-sm">
+    <nav className="flex-shrink-0 w-64 border-r shadow-sm">
       <div className="flex flex-col flex-auto h-full bg-gray-50">
         <div className="flex flex-col flex-grow">
           <ul className="relative h-full p-0 m-0 list-none">
