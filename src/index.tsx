@@ -37,7 +37,7 @@ ReactDOM.render(
         <Router>
           <div>
             <EthConnection />
-            <main className="font-sans">
+            <main className="font-sans text-sm">
               <DelayedLoading>
                 <Routes />
               </DelayedLoading>

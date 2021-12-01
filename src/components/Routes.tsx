@@ -1,5 +1,10 @@
 import Nav from "@/components/Nav";
-import { ROLE_ADMIN, SessionToken, UserRoles } from "@/model/auth";
+import {
+  ROLE_ADMIN,
+  ROLE_QUANTIFIER,
+  SessionToken,
+  UserRoles,
+} from "@/model/auth";
 import { EthState } from "@/model/eth";
 import * as localStorage from "@/model/localStorage";
 import LoginPage from "@/pages/Login";
@@ -14,6 +19,7 @@ const PeriodsCreateUpdatePage = React.lazy(
 );
 const PeriodsPage = React.lazy(() => import("@/pages/Periods/Periods"));
 const QuantifierPoolPage = React.lazy(() => import("@/pages/Pool"));
+const QuantifyPage = React.lazy(() => import("@/pages/Quantify"));
 
 interface LoggedInOnlyRouteProps {
   exact?: boolean;
@@ -104,6 +110,9 @@ const SubPages = () => {
         <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
           <QuantifierPoolPage />
         </AuthRoute>
+        <AuthRoute roles={[ROLE_QUANTIFIER]} path={`/quantify`}>
+          <QuantifyPage />
+        </AuthRoute>
         <Route exact path="/">
           <MainPage />
         </Route>
@@ -122,8 +131,10 @@ const Routes = () => {
         <div className="flex min-h-screen">
           <Nav />
           <div className="flex w-full">
-            <div className="w-[762px] pt-5 mx-auto">
-              <SubPages />
+            <div className="w-[920px] pt-4 mx-auto px-5">
+              <div>
+                <SubPages />
+              </div>
             </div>
           </div>
         </div>

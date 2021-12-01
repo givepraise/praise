@@ -36,3 +36,19 @@ export const shortenEthAddress = (address: string) => {
     address.length - 4
   )}`;
 };
+
+export const getPraiseMarks = () => {
+  return {
+    0: 0,
+    14: 1,
+    29: 3,
+    43: 5,
+    58: 8,
+    72: 13,
+    86: 21,
+    101: 34,
+    115: 55,
+    130: 89,
+    144: 144,
+  };
+};
