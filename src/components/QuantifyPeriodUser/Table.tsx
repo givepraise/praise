@@ -1,5 +1,5 @@
-import DismissDialog from "@/components/quantify/DismissDialog";
-import DuplicateDialog from "@/components/quantify/DuplicateDialog";
+import DismissDialog from "@/components/QuantifyPeriodUser/DismissDialog";
+import DuplicateDialog from "@/components/QuantifyPeriodUser/DuplicateDialog";
 import { getPraiseMarks } from "@/utils/index";
 import {
   faCopy,
@@ -124,7 +124,9 @@ const QuantifyTable = () => {
                     marks={getPraiseMarks()}
                     defaultValue={praise.quantify_value}
                     onValueChanged={(value: number) => handleChange(value)}
-                    disabled={ praise.dismissed || praise.duplicate_of ? true : false }
+                    disabled={
+                      praise.dismissed || praise.duplicate_of ? true : false
+                    }
                   ></RangeSlider>
                   <button onClick={() => setIsDuplicateDialogOpen(true)}>
                     <FontAwesomeIcon icon={faCopy} size="1x" />

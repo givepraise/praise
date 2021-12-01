@@ -1,28 +1,28 @@
-import {
-  faTimes,      
-  faCalculator
-} from "@fortawesome/free-solid-svg-icons";
+import PraiseAutosuggest from "@/components/QuantifyPeriodUser/PraiseAutosuggest";
+import { Praise } from "@/model/praise";
+import { faCalculator, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
-import PraiseAutosuggest from "@/components/quantify/PraiseAutosuggest";
-import { Praise } from "@/model/praise";
 
 interface PoolDeleteDialogProps {
   onClose(): any;
-  onDuplicate(id: number, fid: number): void
-  praise: Praise | undefined
+  onDuplicate(id: number, fid: number): void;
+  praise: Praise | undefined;
 }
-const PoolDismissDialog = ({ onDuplicate, onClose, praise }: PoolDeleteDialogProps) => {
-
+const PoolDismissDialog = ({
+  onDuplicate,
+  onClose,
+  praise,
+}: PoolDeleteDialogProps) => {
   const handleSetAsDuplicate = (fid: number) => {
     if (praise) {
       onDuplicate(praise.id, fid);
       onClose();
-    }    
-  }
+    }
+  };
 
   if (praise) {
-    return (    
+    return (
       <div className="flex items-center justify-center min-h-screen">
         <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
         <div className="relative max-w-xl pb-16 mx-auto bg-white rounded">
@@ -38,7 +38,7 @@ const PoolDismissDialog = ({ onDuplicate, onClose, praise }: PoolDeleteDialogPro
             <Dialog.Title className="text-center mb-7">
               Mark praise {praise.id} as duplicate
             </Dialog.Title>
-              
+
             <div className="flex justify-center">
               <PraiseAutosuggest onSelect={() => handleSetAsDuplicate} />
             </div>
@@ -48,7 +48,7 @@ const PoolDismissDialog = ({ onDuplicate, onClose, praise }: PoolDeleteDialogPro
     );
   } else {
     return null;
-  }  
+  }
 };
 
 export default PoolDismissDialog;
