@@ -32,13 +32,13 @@ const PeriodsPage = () => {
   return (
     <>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
-      <div className="praise-box">
+      <div className="praise-box w-2/3">
         <React.Suspense fallback="Loading…">
           <ActivePeriodMessage />
         </React.Suspense>
       </div>
 
-      <div className="praise-box">
+      <div className="praise-box w-2/3">
         <AdminOnly>
           <div className="mb-2 text-right">
             <Link to="/periods/createupdate">
