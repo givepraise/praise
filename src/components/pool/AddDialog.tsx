@@ -11,7 +11,12 @@ import { useCombobox } from "downshift";
 import React from "react";
 import { useRecoilValue } from "recoil";
 
-const UserAutosuggest = () => {
+interface UserAutosuggestProps {
+  onClose(): any
+  onQuantifierAdded(id: number): void
+}
+
+const UserAutosuggest = ({ onQuantifierAdded, onClose }: UserAutosuggestProps) => {
   const allUsers = useRecoilValue(AllUsers);
 
   const DropdownCombobox = () => {
@@ -46,8 +51,10 @@ const UserAutosuggest = () => {
           );
         }
       },
-      onSelectedItemChange: (selectedItem: any) => {
-        alert(JSON.stringify(selectedItem));
+      onSelectedItemChange: (data: any) => {
+        const selectedItem = data.selectedItem as UserIdentity;
+        onQuantifierAdded(selectedItem.id);
+        onClose();
       },
     });
     return (
@@ -96,8 +103,9 @@ const UserAutosuggest = () => {
 
 interface PoolAddDialogProps {
   onClose(): any;
+  onQuantifierAdded(id: number): void
 }
-const PoolAddDialog = ({ onClose }: PoolAddDialogProps) => {
+const PoolAddDialog = ({ onClose, onQuantifierAdded }: PoolAddDialogProps) => {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
@@ -115,7 +123,7 @@ const PoolAddDialog = ({ onClose }: PoolAddDialogProps) => {
             Add a member to the Quantifier Pool
           </Dialog.Title>
           <div className="flex justify-center">
-            <UserAutosuggest />
+            <UserAutosuggest onQuantifierAdded={onQuantifierAdded} onClose={onClose} />
           </div>
         </div>
       </div>
