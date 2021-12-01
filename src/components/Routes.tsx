@@ -10,6 +10,7 @@ import * as localStorage from "@/model/localStorage";
 import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
 import PeriodDetail from "@/pages/Periods/Detail";
+import QuantifyPeriodPage from "@/pages/Quantify/Period";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -19,7 +20,7 @@ const PeriodsCreateUpdatePage = React.lazy(
 );
 const PeriodsPage = React.lazy(() => import("@/pages/Periods/Periods"));
 const QuantifierPoolPage = React.lazy(() => import("@/pages/Pool"));
-const QuantifyPage = React.lazy(() => import("@/pages/Quantify"));
+const QuantifyPage = React.lazy(() => import("@/pages/Quantify/PeriodUser"));
 
 interface LoggedInOnlyRouteProps {
   exact?: boolean;
@@ -110,8 +111,17 @@ const SubPages = () => {
         <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
           <QuantifierPoolPage />
         </AuthRoute>
-        <AuthRoute roles={[ROLE_QUANTIFIER]} path={`/quantify`}>
+        <AuthRoute
+          roles={[ROLE_QUANTIFIER]}
+          path={`/quantify/period/:periodId/user/:userId`}
+        >
           <QuantifyPage />
+        </AuthRoute>
+        <AuthRoute
+          roles={[ROLE_QUANTIFIER]}
+          path={`/quantify/period/:periodId`}
+        >
+          <QuantifyPeriodPage />
         </AuthRoute>
         <Route exact path="/">
           <MainPage />

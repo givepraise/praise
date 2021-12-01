@@ -67,7 +67,7 @@ export default function Nav() {
             </AdminOnly>
             <NavItem
               icon={faCalculator}
-              description="Quantifier periods"
+              description="Quantification periods"
               to="/periods"
             />
             <AdminOnly>
