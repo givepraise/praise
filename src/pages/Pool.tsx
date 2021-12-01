@@ -26,7 +26,7 @@ const PoolPage = () => {
     <>
       <BreadCrumb name="Quantifier pool" icon={faUserFriends} />
 
-      <div className="praise-box">
+      <div className="praise-box w-2/3">
         <div className="mb-2 text-right">
           <button className="praise-button" onClick={handleAddQuantifierClick}>
             Add quantifier

@@ -7,7 +7,7 @@ import {
   UserIdentity,
   USER_INDENTITY_ROLE,
 } from "@/model/users";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
 import React from "react";
@@ -26,10 +26,28 @@ const PoolTable = () => {
   const columns = React.useMemo(
     () => [
       {
-        Header: "User id",
+        Header: "Id",
         accessor: "id",
+        Cell: (data: any) => {          
+          return (
+            <div className="flex items-center w-full">
+              <div className="flex items-center">
+                <FontAwesomeIcon icon={faUserCircle} size="2x" />
+              </div>
+              <div className="flex-grow p-3 whitespace-nowrap">
+                #{data.row.original.id}
+                <br />
+                John Doe
+              </div>
+            </div>
+          );
+        },
+      },
+      {
+        Header: "Ethereum Address",
+        accessor: "ethereumAddress",
         Cell: (data: any) => {
-          //return shortenEthAddress(data.value);
+          // return shortenEthAddress(data.value);
           return data.value;
         },
       },
@@ -43,7 +61,7 @@ const PoolTable = () => {
   } as TableOptions<{}>;
   const tableInstance = useTable(options);
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+  const { getTableProps, getTableBodyProps, rows, prepareRow } =
     tableInstance;
 
   if (!isApiResponseOk(allUsersQueryResponse))
@@ -60,19 +78,9 @@ const PoolTable = () => {
 
   return (
     <table className="w-full table-auto" {...getTableProps()}>
-      <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th className="text-left" {...column.getHeaderProps()}>
-                {column.render("Header")}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
       <tbody {...getTableBodyProps()}>
-        {rows.map((row) => {
+        {rows.map((row) => {          
+          
           prepareRow(row);
           return (
             <tr

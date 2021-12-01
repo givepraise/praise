@@ -139,7 +139,7 @@ const PeriodsCreatePage = () => {
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
 
       <BackLink />
-      <div className="praise-box">
+      <div className="praise-box w-2/3">
         <h2 className="mb-2">Create period</h2>
         <div className="mb-2">
           A new period begins where the last one ended and ends at{" "}

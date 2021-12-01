@@ -65,7 +65,7 @@ export const AllQuantifierUsers = selector({
   key: "AllQuantifierUsers",
   get: async ({ get }) => {
     const users = get(AllUsers);
-    if (users) {
+    if (users) {      
       return users.filter((user) =>
         user.roles.includes(USER_INDENTITY_ROLE.Quantifier)
       );
