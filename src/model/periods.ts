@@ -46,9 +46,7 @@ export const AllPeriodsQuery = selector({
     get(PeriodsRequestId);
     const periods = get(
       ApiAuthGetQuery({ endPoint: "/api/admin/periods/all" })
-    );
-
-    console.log('PERIODS:', periods);
+    );    
     return periods;
   },
 });
