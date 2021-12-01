@@ -124,6 +124,7 @@ const QuantifyTable = () => {
                     marks={getPraiseMarks()}
                     defaultValue={praise.quantify_value}
                     onValueChanged={(value: number) => handleChange(value)}
+                    disabled={ praise.dismissed || praise.duplicate_of ? true : false }
                   ></RangeSlider>
                   <button onClick={() => setIsDuplicateDialogOpen(true)}>
                     <FontAwesomeIcon icon={faCopy} size="1x" />

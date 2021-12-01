@@ -40,15 +40,15 @@ export const shortenEthAddress = (address: string) => {
 export const getPraiseMarks = () => {
   return {
     0: 0,
-    1: 1,
-    3: 3,
-    5: 5,
-    8: 8,
-    13: 13,
-    21: 21,
-    34: 34,
-    55: 55,
-    89: 89,
+    14: 1,
+    29: 3,
+    43: 5,
+    58: 8,
+    72: 13,
+    86: 21,
+    101: 34,
+    115: 55,
+    130: 89,
     144: 144,
   };
 };
