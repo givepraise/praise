@@ -3,6 +3,7 @@ import DuplicateDialog from "@/components/QuantifyPeriodUser/DuplicateDialog";
 import { getPraiseMarks } from "@/utils/index";
 import {
   faCopy,
+  faTimes,
   faTimesCircle,
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
@@ -55,11 +56,13 @@ const praises = [
 
 interface InlineLabelProps {
   text: string;
+  button: any;
 }
-const InlineLabel = ({ text }: InlineLabelProps) => {
+const InlineLabel = ({ text, button }: InlineLabelProps) => {
   return (
-    <span className="text-xs no-underline bg-black text-white mt-0.2 h-5 pr-1 pl-1 pt-0.5 mr-1 rounded">
+    <span className="h-6 pl-1 pr-1 mr-1 text-xs text-white no-underline bg-black py-[1px] rounded">
       {text}
+      {button}
     </span>
   );
 };
@@ -79,6 +82,26 @@ const QuantifyTable = () => {
 
   const handleDuplicate = (id: number, fid: number) => {
     /** TODO: mark as duplicate */
+  };
+
+  const handleRemoveDismiss = (id: number) => {
+    /** TODO: handle remove dismiss */
+  };
+
+  const handleRemoveDuplicate = (id: number) => {
+    /** TODO: handle remove duplicate */
+  };
+
+  const getRemoveButton = (action: any) => {
+    return (
+      <button onClick={action} className="ml-2">
+        <FontAwesomeIcon
+          className="text-gray-400 hover:text-white"
+          icon={faTimes}
+          size="1x"
+        />
+      </button>
+    );
   };
 
   return (
@@ -103,13 +126,17 @@ const QuantifyTable = () => {
                 <div className="flex space-x-1">
                   {praise.dismissed ? (
                     <span>
-                      <InlineLabel text="Dismissed" />
+                      <InlineLabel
+                        text="Dismissed"
+                        button={getRemoveButton(handleRemoveDismiss)}
+                      />
                       <span className="line-through">{praise.praise}</span>
                     </span>
                   ) : praise.duplicate_of != null ? (
                     <span>
                       <InlineLabel
                         text={`Duplicate of: #${praise.duplicate_of}`}
+                        button={getRemoveButton(handleRemoveDuplicate)}
                       />
                       <span className="line-through">{praise.praise}</span>
                     </span>
