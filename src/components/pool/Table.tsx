@@ -67,7 +67,7 @@ const PoolTable = () => {
   if (!isApiResponseOk(allUsersQueryResponse))
     return <div>Unable to fetch user list.</div>;
 
-  const handleDeleteQuantifierClick = (quantifier: UserIdentity) => {
+  const handleDeleteQuantifierClick = (quantifier: UserIdentity) => {    
     setSelectedQuantifier(quantifier);
     setIsOpen(true);
   };
@@ -95,6 +95,7 @@ const PoolTable = () => {
                   onClick={() =>
                     handleDeleteQuantifierClick(row.original as UserIdentity)
                   }
+                  className="hover:text-gray-400"
                 >
                   <FontAwesomeIcon
                     icon={faTrash}
