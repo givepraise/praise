@@ -68,8 +68,8 @@ export const AllPraisesCurrentPageNumber = atom<number>({
   key: "AllPraisesCurrentPageNumber",
   default: 0,
 });
-export const AllPraisesLastPageNumber = atom<number>({
-  key: "AllPraisesLastPageNumber",
+export const AllPraisesLatestPageNumber = atom<number>({
+  key: "AllPraisesLatestPageNumber",
   default: 0,
 });
 export const AllPraisesTotalPages = atom<number>({
@@ -80,8 +80,8 @@ export const AllPraisesTotalPages = atom<number>({
 export const useAllPraisesQuery = (queryParams: AllPraisesQueryParameters) => {
   const allPraisesQueryResponse = useAuthApiQuery(AllPraisesQuery(queryParams));
   const [allPraises, setAllPraises] = useRecoilState(AllPraises);
-  const [lastPageNumber, setLastPageNumber] = useRecoilState(
-    AllPraisesLastPageNumber
+  const [latestPageNumber, setLatestPageNumber] = useRecoilState(
+    AllPraisesLatestPageNumber
   );
   const setTotalPages = useSetRecoilState(AllPraisesTotalPages);
 
@@ -89,7 +89,7 @@ export const useAllPraisesQuery = (queryParams: AllPraisesQueryParameters) => {
     const data = allPraisesQueryResponse.data as any;
     if (
       (typeof allPraises === "undefined" ||
-        data.pageable?.pageNumber > lastPageNumber) &&
+        data.pageable?.pageNumber > latestPageNumber) &&
       isApiResponseOk(allPraisesQueryResponse)
     ) {
       if (
@@ -97,7 +97,7 @@ export const useAllPraisesQuery = (queryParams: AllPraisesQueryParameters) => {
         Array.isArray(data.content) &&
         data.content.length > 0
       ) {
-        setLastPageNumber(data.pageable?.pageNumber);
+        setLatestPageNumber(data.pageable?.pageNumber);
         setTotalPages(data.totalPages);
         setAllPraises(
           allPraises ? allPraises.concat(data.content) : data.content
@@ -107,8 +107,8 @@ export const useAllPraisesQuery = (queryParams: AllPraisesQueryParameters) => {
   }, [
     allPraisesQueryResponse,
     allPraises,
-    lastPageNumber,
-    setLastPageNumber,
+    latestPageNumber,
+    setLatestPageNumber,
     setTotalPages,
     setAllPraises,
   ]);
