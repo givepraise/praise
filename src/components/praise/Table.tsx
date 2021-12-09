@@ -1,7 +1,6 @@
 import {
   AllPraises,
-  AllPraisesCurrentPageNumber,
-  AllPraisesTotalPages,
+  AllPraisesQueryPagination,
   useAllPraisesQuery,
 } from "@/model/praise";
 import React from "react";
@@ -9,17 +8,22 @@ import { TableOptions, useTable } from "react-table";
 import { useRecoilState, useRecoilValue } from "recoil";
 
 const LoadMoreButton = () => {
-  const [currentPageNumber, setPageNumber] = useRecoilState(
-    AllPraisesCurrentPageNumber
+  const [praisePagination, setPraisePagination] = useRecoilState(
+    AllPraisesQueryPagination
   );
-  const totalPages = useRecoilValue(AllPraisesTotalPages);
 
-  if (currentPageNumber >= totalPages - 1) return null;
+  if (praisePagination.currentPageNumber >= praisePagination.totalPages - 1)
+    return null;
   return (
     <div className="mt-2 text-center">
       <button
         className="praise-button"
-        onClick={() => setPageNumber(currentPageNumber + 1)}
+        onClick={() =>
+          setPraisePagination({
+            ...praisePagination,
+            currentPageNumber: praisePagination.currentPageNumber + 1,
+          })
+        }
       >
         Load more…
       </button>
@@ -29,9 +33,9 @@ const LoadMoreButton = () => {
 
 const PraisesTable = () => {
   const allPraises = useRecoilValue(AllPraises);
-  const currentPageNumber = useRecoilValue(AllPraisesCurrentPageNumber);
+  const praisePagination = useRecoilValue(AllPraisesQueryPagination);
 
-  useAllPraisesQuery({ page: currentPageNumber, size: 1 });
+  useAllPraisesQuery({ page: praisePagination.currentPageNumber, size: 1 });
 
   const columns = React.useMemo(
     () => [

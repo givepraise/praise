@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  atom,
-  selectorFamily,
-  useRecoilState,
-  useSetRecoilState,
-} from "recoil";
+import { atom, selectorFamily, useRecoilState } from "recoil";
 import { ApiAuthGetQuery, isApiResponseOk, useAuthApiQuery } from "./api";
 import { Source } from "./source";
 import { UserAccount } from "./users";
@@ -64,32 +59,33 @@ export const AllPraisesQuery = selectorFamily({
     },
 });
 
-export const AllPraisesCurrentPageNumber = atom<number>({
-  key: "AllPraisesCurrentPageNumber",
-  default: 0,
-});
-export const AllPraisesLatestPageNumber = atom<number>({
-  key: "AllPraisesLatestPageNumber",
-  default: 0,
-});
-export const AllPraisesTotalPages = atom<number>({
-  key: "AllPraisesTotalPages",
-  default: 0,
-});
+export interface AllPraisesQueryPaginationInterface {
+  latestFetchPageNumber: number;
+  currentPageNumber: number;
+  totalPages: number;
+}
+export const AllPraisesQueryPagination =
+  atom<AllPraisesQueryPaginationInterface>({
+    key: "AllPraisesQueryPagination",
+    default: {
+      latestFetchPageNumber: 0,
+      currentPageNumber: 0,
+      totalPages: 0,
+    },
+  });
 
 export const useAllPraisesQuery = (queryParams: AllPraisesQueryParameters) => {
   const allPraisesQueryResponse = useAuthApiQuery(AllPraisesQuery(queryParams));
   const [allPraises, setAllPraises] = useRecoilState(AllPraises);
-  const [latestPageNumber, setLatestPageNumber] = useRecoilState(
-    AllPraisesLatestPageNumber
+  const [praisePagination, setPraisePagination] = useRecoilState(
+    AllPraisesQueryPagination
   );
-  const setTotalPages = useSetRecoilState(AllPraisesTotalPages);
 
   React.useEffect(() => {
     const data = allPraisesQueryResponse.data as any;
     if (
       (typeof allPraises === "undefined" ||
-        data.pageable?.pageNumber > latestPageNumber) &&
+        data.pageable?.pageNumber > praisePagination.latestFetchPageNumber) &&
       isApiResponseOk(allPraisesQueryResponse)
     ) {
       if (
@@ -97,8 +93,11 @@ export const useAllPraisesQuery = (queryParams: AllPraisesQueryParameters) => {
         Array.isArray(data.content) &&
         data.content.length > 0
       ) {
-        setLatestPageNumber(data.pageable?.pageNumber);
-        setTotalPages(data.totalPages);
+        setPraisePagination({
+          ...praisePagination,
+          latestFetchPageNumber: data.pageable?.pageNumber,
+          totalPages: data.totalPages,
+        });
         setAllPraises(
           allPraises ? allPraises.concat(data.content) : data.content
         );
@@ -107,9 +106,8 @@ export const useAllPraisesQuery = (queryParams: AllPraisesQueryParameters) => {
   }, [
     allPraisesQueryResponse,
     allPraises,
-    latestPageNumber,
-    setLatestPageNumber,
-    setTotalPages,
+    praisePagination,
+    setPraisePagination,
     setAllPraises,
   ]);
 
