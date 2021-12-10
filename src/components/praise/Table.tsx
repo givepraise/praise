@@ -6,12 +6,13 @@ import {
 import React from "react";
 import { TableOptions, useTable } from "react-table";
 import { useRecoilState, useRecoilValue } from "recoil";
+import PraisePageLoader from "./PraisePageLoader";
 
 const LoadMoreButton = () => {
   const [praisePagination, setPraisePagination] = useRecoilState(
     AllPraisesQueryPagination
   );
-  useAllPraisesQuery({ page: praisePagination.currentPageNumber, size: 1 });
+  useAllPraisesQuery({ page: praisePagination.currentPageNumber, size: 10 });
 
   if (praisePagination.currentPageNumber >= praisePagination.totalPages - 1)
     return null;
@@ -119,9 +120,12 @@ const PraisesTable = () => {
           </tbody>
         </table>
       </React.Suspense>
-      <React.Suspense fallback="">
+      {/* <React.Suspense fallback="">
         <LoadMoreButton />
-      </React.Suspense>
+      </React.Suspense> */}
+      <React.Suspense fallback="Loading…">
+        <PraisePageLoader />
+      </React.Suspense>      
     </>
   );
 };
