@@ -11,6 +11,7 @@ const LoadMoreButton = () => {
   const [praisePagination, setPraisePagination] = useRecoilState(
     AllPraisesQueryPagination
   );
+  useAllPraisesQuery({ page: praisePagination.currentPageNumber, size: 1 });
 
   if (praisePagination.currentPageNumber >= praisePagination.totalPages - 1)
     return null;
@@ -33,9 +34,6 @@ const LoadMoreButton = () => {
 
 const PraisesTable = () => {
   const allPraises = useRecoilValue(AllPraises);
-  const praisePagination = useRecoilValue(AllPraisesQueryPagination);
-
-  useAllPraisesQuery({ page: praisePagination.currentPageNumber, size: 1 });
 
   const columns = React.useMemo(
     () => [
@@ -82,47 +80,48 @@ const PraisesTable = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  if (!Array.isArray(allPraises) || allPraises.length === 0)
-    return <div>No praises.</div>;
-
   return (
     <>
-      <table
-        id="praises-table"
-        className="w-full table-auto"
-        {...getTableProps()}
-      >
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th className="text-left" {...column.getHeaderProps()}>
-                  {column.render("Header")}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr
-                className="cursor-pointer hover:bg-gray-100"
-                id={"praise-" + row.values.id}
-                {...row.getRowProps()}
-              >
-                {row.cells.map((cell) => {
-                  return (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                  );
-                })}
+      <React.Suspense fallback="Loading…">
+        <table
+          id="praises-table"
+          className="w-full table-auto"
+          {...getTableProps()}
+        >
+          <thead>
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <th className="text-left" {...column.getHeaderProps()}>
+                    {column.render("Header")}
+                  </th>
+                ))}
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      <LoadMoreButton />
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row);
+              return (
+                <tr
+                  className="cursor-pointer hover:bg-gray-100"
+                  id={"praise-" + row.values.id}
+                  {...row.getRowProps()}
+                >
+                  {row.cells.map((cell) => {
+                    return (
+                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </React.Suspense>
+      <React.Suspense fallback="">
+        <LoadMoreButton />
+      </React.Suspense>
     </>
   );
 };
