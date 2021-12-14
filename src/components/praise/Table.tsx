@@ -97,7 +97,7 @@ const PraisesTable = () => {
                 >
                   {row.cells.map((cell) => {
                     return (
-                      <td {...cell.getCellProps()} className="pb-60">
+                      <td {...cell.getCellProps()}>
                         {cell.render("Cell")}
                       </td>
                     );

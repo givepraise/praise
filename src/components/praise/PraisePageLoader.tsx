@@ -13,18 +13,14 @@ const PraisePageLoader = () => {
   });
   const [loading, setLoading] = React.useState(false);
 
-  React.useEffect(() => {
-    console.log("New response = loading finished");
+  React.useEffect(() => {    
     setLoading(false);
   }, [queryRepsponse]);
 
   const handleContainerOnBottom = useCallback(() => {
     setLoading(true);
     if (praisePagination.currentPageNumber >= praisePagination.totalPages - 1)
-      return;
-
-    console.log("currentPageNumber " + praisePagination.currentPageNumber);
-    console.log("totalPages " + praisePagination.totalPages);
+      return;    
 
     setPraisePagination({
       ...praisePagination,
