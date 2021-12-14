@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import PeriodAssignDialog from "../AssignDialog";
 import PeriodCloseDialog from "../CloseDialog";
+import PeriodDateForm from "./PeriodDateForm";
 
 const PeriodDetails = () => {
     let [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
@@ -42,7 +43,11 @@ const PeriodDetails = () => {
     return (
       <div>
         <div>Period start: {periodStart}</div>
-        <div>Period end: {formatDate(period.endDate)}</div>
+        {/* <div>Period end: {formatDate(period.endDate)}</div> */}
+        <div className="flex mt-4">
+          <div className="inline">Period end:</div>
+          <div className="inline ml-3 mt-[-9px]"><PeriodDateForm></PeriodDateForm></div>
+        </div>
 
         <div className="mt-5">
           <button className="praise-button text-xs" onClick={() => setIsAssignDialogOpen(true)}>

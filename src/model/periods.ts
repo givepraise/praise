@@ -135,7 +135,45 @@ export const useCreatePeriod = () => {
   return { createPeriod };
 };
 
-// Hook that returns a function to use for updating a period
+// Hook that returns a function to use for renaming a period
+export const useRenamePeriod = () => {
+  const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
+  const renamePeriod = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async (period: Period) => {
+        const response = await snapshot.getPromise(
+          ApiAuthPatchQuery({
+            endPoint: `/api/admin/periods/${period.id}/rename?name=${period.name}`,
+            data: period,
+          })
+        );
+
+        // If OK response, add returned period object to local state
+        if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
+          const period = response.data as Period;
+          if (period) {
+            if (typeof allPeriods !== "undefined") {
+              set(
+                AllPeriods,
+                allPeriods.map(
+                  (oldPeriod) =>
+                    oldPeriod.id === period.id ? period : oldPeriod,
+                  period
+                )
+              );
+            } else {
+              set(AllPeriods, [period]);
+            }
+          }
+        }
+        set(UpdatePeriodApiResponse, response);
+        return response;
+      }
+  );
+  return { renamePeriod };
+};
+
+/** TODO: modify function to update period endDate */
 export const useUpdatePeriod = () => {
   const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
   const updatePeriod = useRecoilCallback(
