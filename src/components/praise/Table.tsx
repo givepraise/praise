@@ -1,34 +1,20 @@
-import {
-  AllPraises,
-  AllPraisesQueryPagination,
-  useAllPraisesQuery,
-} from "@/model/praise";
+import { AllPraises } from "@/model/praise";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { TableOptions, useTable } from "react-table";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import PraisePageLoader from "./PraisePageLoader";
 
-const LoadMoreButton = () => {
-  const [praisePagination, setPraisePagination] = useRecoilState(
-    AllPraisesQueryPagination
-  );
-  useAllPraisesQuery({ page: praisePagination.currentPageNumber, size: 10 });
-
-  if (praisePagination.currentPageNumber >= praisePagination.totalPages - 1)
-    return null;
+const PraisePageLoaderSpinner = () => {
   return (
-    <div className="mt-2 text-center">
-      <button
-        className="praise-button"
-        onClick={() =>
-          setPraisePagination({
-            ...praisePagination,
-            currentPageNumber: praisePagination.currentPageNumber + 1,
-          })
-        }
-      >
-        Load more…
-      </button>
+    <div className="w-full mt-2 text-center">
+      <FontAwesomeIcon
+        icon={faSpinner}
+        size="1x"
+        spin
+        className="inline-block mr-4"
+      />
     </div>
   );
 };
@@ -111,7 +97,9 @@ const PraisesTable = () => {
                 >
                   {row.cells.map((cell) => {
                     return (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      <td {...cell.getCellProps()} className="pb-60">
+                        {cell.render("Cell")}
+                      </td>
                     );
                   })}
                 </tr>
@@ -120,12 +108,9 @@ const PraisesTable = () => {
           </tbody>
         </table>
       </React.Suspense>
-      {/* <React.Suspense fallback="">
-        <LoadMoreButton />
-      </React.Suspense> */}
-      <React.Suspense fallback="Loading…">
+      <React.Suspense fallback={<PraisePageLoaderSpinner />}>
         <PraisePageLoader />
-      </React.Suspense>      
+      </React.Suspense>
     </>
   );
 };
