@@ -155,10 +155,10 @@ const QuantifyTable = () => {
                       praise.dismissed || praise.duplicate_of ? true : false
                     }
                   ></RangeSlider>
-                  <button disabled={!!praise.duplicate_of} onClick={() => setIsDuplicateDialogOpen(true)}>
+                  <button className="hover:text-gray-400" disabled={!!praise.duplicate_of} onClick={() => setIsDuplicateDialogOpen(true)}>
                     <FontAwesomeIcon icon={faCopy} size="1x" className={!!praise.duplicate_of ? "text-gray-400" : ""} />
                   </button>
-                  <button disabled={praise.dismissed} onClick={() => setIsDismissDialogOpen(true)}>
+                  <button className="hover:text-gray-400" disabled={praise.dismissed} onClick={() => setIsDismissDialogOpen(true)}>
                     <FontAwesomeIcon icon={faTimesCircle} size="1x" className={!!praise.dismissed ? "text-gray-400" : ""} />
                   </button>
                 </div>
