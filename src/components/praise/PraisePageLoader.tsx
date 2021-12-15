@@ -14,7 +14,6 @@ const PraisePageLoader = () => {
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    console.log("New response = loading finished");
     setLoading(false);
   }, [queryRepsponse]);
 
@@ -22,10 +21,6 @@ const PraisePageLoader = () => {
     setLoading(true);
     if (praisePagination.currentPageNumber >= praisePagination.totalPages - 1)
       return;
-
-    console.log("currentPageNumber " + praisePagination.currentPageNumber);
-    console.log("totalPages " + praisePagination.totalPages);
-
     setPraisePagination({
       ...praisePagination,
       currentPageNumber: praisePagination.currentPageNumber + 1,
