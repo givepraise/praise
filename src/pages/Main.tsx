@@ -1,11 +1,9 @@
 import PraisesTable from "@/components/praise/Table";
 import React from "react";
 import { Link } from "react-router-dom";
-;
-
 const MainPage = () => {
   return (
-    <>      
+    <>
       <div className="w-2/3 praise-box">
         <div className="mt-2">
           You can perform quantifications for the following periods:
@@ -20,9 +18,7 @@ const MainPage = () => {
       </div>
 
       <div className="praise-box">
-        <React.Suspense fallback="Loading…">
-          <PraisesTable />
-        </React.Suspense>
+        <PraisesTable />
       </div>
     </>
   );
