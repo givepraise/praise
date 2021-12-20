@@ -1,25 +1,29 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export interface UserInput {
-  email: string;  
+  email: string;
   password: string;
 }
 
 export interface UserDocument extends UserInput, mongoose.Document {
   createdAt: Date;
-  updatedAt: Date;  
+  updatedAt: Date;
 }
 
 const userSchema = new mongoose.Schema(
   {
-    email: { type: String, required: true, unique: true },    
-    password: { type: String, required: true },
+    ethereumAddress: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    nonce: { type: String, select: false },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-const UserModel = mongoose.model<UserDocument>("User", userSchema);
+const UserModel = mongoose.model<UserDocument>('User', userSchema);
 
 export default UserModel;
