@@ -1,26 +1,24 @@
 import mongoose from 'mongoose';
 
 export interface UserAccountInterface {
-  id: number;
   createdAt: string;
   username: string;
   profileImageUrl: string;
   platform: string; // DISCORD | TELEGRAM
 }
 
-export interface UserInputInterface {
+export interface UserInterface {
   ethereumAddress: string;
   accounts: Array<UserAccountInterface>;
   roles: Array<string>;
 }
 
-export interface UserDocument extends UserInputInterface, mongoose.Document {
+export interface UserDocument extends UserInterface, mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
 }
 
 export const AccountSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true },
   createdAt: { type: String, required: true },
   username: { type: String, required: true, unique: true },
   profileImageUrl: { type: String },
@@ -35,7 +33,6 @@ export const AccountSchema = new mongoose.Schema({
 
 const userSchema = new mongoose.Schema(
   {
-    id: { type: String, required: true, unique: true },
     ethereumAddress: { type: String, required: true, unique: true },
     accounts: [AccountSchema],
     roles: {

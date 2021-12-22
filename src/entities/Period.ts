@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 
-export interface PeriodInput {
+export interface PeriodInterface {
   name: string;
   status: string; // OPEN, QUANTIFY, CLOSED
   endDate: Date;
   quantifiers: [string];
 }
 
-export interface PeriodDocument extends PeriodInput, mongoose.Document {
+export interface PeriodDocument extends PeriodInterface, mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
 }
