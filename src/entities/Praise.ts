@@ -30,10 +30,10 @@ export interface PraiseDocument
 const QuantificationSchema = new mongoose.Schema(
   {
     id: { type: String, required: true, unique: true },
-    quantifierId: { type: String, required: true },
-    score: { type: Number, required: true },
+    quantifierId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    score: { type: Number },
     dismissed: { type: Boolean, required: true, default: false },
-    duplicatePraiseId: { type: String },
+    duplicatePraiseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Praise' },
   },
   {
     timestamps: true,
@@ -43,17 +43,17 @@ const QuantificationSchema = new mongoose.Schema(
 const praiseSchema = new mongoose.Schema(
   {
     id: { type: String, required: true, unique: true },
-    periodId: { type: String, required: true },
+    periodId: { type: mongoose.Schema.Types.ObjectId, ref: 'Period' },
     reason: { type: String, required: true },
     quantifications: [QuantificationSchema],
-    giver: AccountSchema,
-    receiver: AccountSchema,
+    giver: { type: AccountSchema, required: true },
+    receiver: { type: AccountSchema, required: true },
   },
   {
     timestamps: true,
   }
 );
 
-const PraiseModel = mongoose.model<PraiseDocument>('User', praiseSchema);
+const PraiseModel = mongoose.model<PraiseDocument>('Praise', praiseSchema);
 
 export default PraiseModel;

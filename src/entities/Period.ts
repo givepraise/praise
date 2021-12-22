@@ -14,7 +14,6 @@ export interface PeriodDocument extends PeriodInput, mongoose.Document {
 
 const periodSchema = new mongoose.Schema(
   {
-    id: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     status: {
       type: {
