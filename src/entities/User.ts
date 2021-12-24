@@ -22,11 +22,9 @@ export const accountSchema = new mongoose.Schema(
     username: { type: String, required: true },
     profileImageUrl: { type: String },
     platform: {
-      type: {
-        type: String,
-        enum: ['DISCORD', 'TELEGRAM'],
-      },
-      default: ['DISCORD'],
+      type: String,
+      enum: ['DISCORD', 'TELEGRAM'],
+      default: 'DISCORD',
     },
   },
   {
@@ -53,6 +51,6 @@ export const userSchema = new mongoose.Schema(
   }
 );
 
-const UserModel = mongoose.model<UserDocument>('User', userSchema);
+const UserModel = mongoose.model<UserInterface>('User', userSchema);
 
 export default UserModel;

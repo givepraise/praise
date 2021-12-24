@@ -1,26 +1,25 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 
-export interface PeriodInterface {
+export interface PeriodInterface extends Document, mongoose.Document {
   name: string;
-  status: string; // OPEN, QUANTIFY, CLOSED
+  status: 'OPEN' | 'QUANTIFY' | 'CLOSED';
   endDate: Date;
   quantifiers: [string];
 }
 
-export interface PeriodDocument extends PeriodInterface, mongoose.Document {
+export interface PeriodDocument extends PeriodInterface {
   createdAt: Date;
   updatedAt: Date;
 }
 
-const periodSchema = new mongoose.Schema(
+const periodSchema = new mongoose.Schema<PeriodInterface>(
   {
     name: { type: String, required: true },
     status: {
-      type: {
-        type: String,
-        enum: ['OPEN', 'QUANTIFY', 'CLOSED'],
-      },
-      default: ['OPEN'],
+      type: String,
+      enum: ['OPEN', 'QUANTIFY', 'CLOSED'],
+      default: 'OPEN',
     },
     endDate: { type: Date, required: true },
     quantifiers: { type: [String] },
@@ -30,6 +29,11 @@ const periodSchema = new mongoose.Schema(
   }
 );
 
-const PeriodModel = mongoose.model<PeriodDocument>('Period', periodSchema);
+periodSchema.plugin(mongoosePagination);
+
+const PeriodModel = mongoose.model<
+  PeriodInterface,
+  Pagination<PeriodInterface>
+>('Period', periodSchema);
 
 export default PeriodModel;
