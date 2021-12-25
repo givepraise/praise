@@ -75,9 +75,12 @@
       "@shared/*": [
         "src/shared/*"
       ],
+      "@services/*": [
+        "src/services/*"
+      ],
       "@server": [
         "src/Server"
-      ]
+      ],      
     },
   },
   "include": [

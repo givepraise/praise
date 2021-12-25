@@ -51,6 +51,6 @@ const praiseSchema = new mongoose.Schema(
   }
 );
 
-const PraiseModel = mongoose.model<PraiseDocument>('Praise', praiseSchema);
+const PraiseModel = mongoose.model<PraiseInterface>('Praise', praiseSchema);
 
 export default PraiseModel;
