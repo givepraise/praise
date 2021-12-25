@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 import { PeriodInterface } from './Period';
-import { AccountSchema, UserAccountInterface } from './User';
+import { userSchema, UserInterface } from './User';
 
 export interface QuantificationInterface {
   createdAt: string;
   updatedAt: string;
-  quantifier: UserAccountInterface;
+  quantifier: UserInterface;
   score: number;
   dismissed: boolean;
   duplicatePraise: PraiseInterface;
@@ -17,8 +17,8 @@ export interface PraiseInterface {
   sourceId: string;
   sourceName: string;
   quantifications: Array<QuantificationInterface>;
-  giver: UserAccountInterface;
-  receiver: UserAccountInterface;
+  giver: UserInterface;
+  receiver: UserInterface;
 }
 
 export interface PraiseDocument extends PraiseInterface, mongoose.Document {
@@ -43,14 +43,14 @@ const praiseSchema = new mongoose.Schema(
     period: { type: mongoose.Schema.Types.ObjectId, ref: 'Period' },
     reason: { type: String, required: true },
     quantifications: [QuantificationSchema],
-    giver: { type: AccountSchema, required: true },
-    receiver: { type: AccountSchema, required: true },
+    giver: { type: userSchema, required: true },
+    receiver: { type: userSchema, required: true },
   },
   {
     timestamps: true,
   }
 );
 
-const PraiseModel = mongoose.model<PraiseDocument>('Praise', praiseSchema);
+const PraiseModel = mongoose.model<PraiseInterface>('Praise', praiseSchema);
 
 export default PraiseModel;

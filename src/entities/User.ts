@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 export interface UserAccountInterface {
-  createdAt: string;
   username: string;
   profileImageUrl: string;
   platform: string; // DISCORD | TELEGRAM
@@ -18,24 +17,25 @@ export interface UserDocument extends UserInterface, mongoose.Document {
   updatedAt: Date;
 }
 
-export const AccountSchema = new mongoose.Schema({
-  createdAt: { type: String, required: true },
-  username: { type: String, required: true, unique: true },
-  profileImageUrl: { type: String },
-  platform: {
-    type: {
+export const accountSchema = new mongoose.Schema(
+  {
+    username: { type: String, required: true },
+    profileImageUrl: { type: String },
+    platform: {
       type: String,
       enum: ['DISCORD', 'TELEGRAM'],
+      default: 'DISCORD',
     },
-    default: ['DISCORD'],
   },
-});
-
-const userSchema = new mongoose.Schema(
   {
-    ethereumAddress: { type: String, required: true, unique: true },
-    nonce: { type: String, select: false },
-    accounts: [AccountSchema],
+    timestamps: true,
+  }
+);
+
+export const userSchema = new mongoose.Schema(
+  {
+    ethereumAddress: { type: String, required: true },
+    accounts: [accountSchema],
     roles: {
       type: [
         {
@@ -51,6 +51,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-const UserModel = mongoose.model<UserDocument>('User', userSchema);
+const UserModel = mongoose.model<UserInterface>('User', userSchema);
 
 export default UserModel;
