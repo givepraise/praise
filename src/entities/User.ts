@@ -32,6 +32,12 @@ export const accountSchema = new mongoose.Schema(
   }
 );
 
+export enum UserRole {
+  admin = 'ADMIN',
+  user = 'USER',
+  quantifier = 'QUANTIFIER',
+}
+
 export const userSchema = new mongoose.Schema(
   {
     ethereumAddress: { type: String, required: true },
@@ -40,11 +46,13 @@ export const userSchema = new mongoose.Schema(
       type: [
         {
           type: String,
-          enum: ['ADMIN', 'USER', 'QUANTIFIER'],
+          enum: [UserRole],
         },
       ],
       default: ['USER'],
     },
+    nonce: { type: String, select: false },
+    accessToken: { type: String, select: false },
   },
   {
     timestamps: true,
