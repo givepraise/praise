@@ -1,10 +1,9 @@
 import { UserRole } from '@entities/User';
+import { FORBIDDEN, UNAUTHORIZED } from '@shared/constants';
 import { JwtService } from '@shared/JwtService';
 import { NextFunction, Request, Response } from 'express';
-import StatusCodes from 'http-status-codes';
 
 const jwtService = new JwtService();
-const { UNAUTHORIZED, FORBIDDEN } = StatusCodes;
 
 // Middleware to verify if user is an admin
 export const authMiddleware = (role: UserRole) => {
@@ -13,7 +12,7 @@ export const authMiddleware = (role: UserRole) => {
     const AuthHeader = req.headers['authorization'];
     if (typeof AuthHeader === 'undefined')
       return res.status(UNAUTHORIZED).json({
-        error: 'JWT not present in header.',
+        error: 'JWT not present in headeraaaa.',
       });
 
     // Check authorization header format

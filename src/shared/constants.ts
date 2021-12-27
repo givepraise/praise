@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes';
+
 // Strings
 export const paramMissingError =
   'One or more of the required parameters was missing.';
@@ -19,3 +21,10 @@ export const cookieProps = Object.freeze({
     secure: process.env.SECURE_COOKIE === 'true',
   },
 });
+
+export enum RouteType {
+  admin = 'ADMIN',
+  user = 'USER',
+}
+
+export const { UNAUTHORIZED, FORBIDDEN, NOT_FOUND } = StatusCodes;

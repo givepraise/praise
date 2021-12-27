@@ -8,12 +8,9 @@ export interface UserAccountInterface {
 }
 
 export interface UserInterface extends mongoose.Document {
-  ethereumAddress: string;
+  ethereumAddress?: string | undefined;
   accounts: Array<UserAccountInterface>;
   roles: Array<string>;
-}
-
-export interface UserDocument extends UserInterface, mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
 }
