@@ -1,15 +1,14 @@
+import { cookieProps } from '@shared/constants';
+import logger from '@shared/Logger';
 import cookieParser from 'cookie-parser';
-import morgan from 'morgan';
+import cors from 'cors';
+import express, { NextFunction, Request, Response } from 'express';
+import 'express-async-errors';
 import helmet from 'helmet';
 import StatusCodes from 'http-status-codes';
-import express, { NextFunction, Request, Response } from 'express';
 import mongoose, { ConnectOptions } from 'mongoose';
-
-import 'express-async-errors';
-
+import morgan from 'morgan';
 import BaseRouter from './routes';
-import logger from '@shared/Logger';
-import { cookieProps } from '@shared/constants';
 import seedData from './seed';
 
 /************************************************************************************
@@ -25,6 +24,11 @@ mongoose
   .then(() => {
     const { BAD_REQUEST } = StatusCodes;
 
+    app.use(
+      cors({
+        origin: '*',
+      })
+    );
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(cookieParser(cookieProps.secret));

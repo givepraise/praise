@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { PeriodInterface } from './Period';
-import { userSchema, UserInterface } from './User';
+import { UserInterface, userSchema } from './User';
 
 export interface QuantificationInterface {
   createdAt: string;
