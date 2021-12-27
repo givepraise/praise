@@ -8,17 +8,17 @@ const dummyData = [
   {
     receiver: "Happy Salamander",
     number_of_praise: "17",
-    total_praise_score: "111"
+    total_praise_score: "111",
   },
   {
     receiver: "Santas Helper",
     number_of_praise: "17",
-    total_praise_score: "111"
+    total_praise_score: "111",
   },
   {
     receiver: "Daft Punk",
     number_of_praise: "17",
-    total_praise_score: "111"
+    total_praise_score: "111",
   },
 ];
 
@@ -54,7 +54,7 @@ const PeriodSummary = () => {
     /** TODO: go to period summary */
   };
   return (
-    <div className="praise-box w-2/3">
+    <div className="w-2/3 praise-box">
       <table
         id="periods-table"
         className="w-full table-auto"
@@ -79,10 +79,12 @@ const PeriodSummary = () => {
                 className="cursor-pointer hover:bg-gray-100"
                 id={"period-" + row.values.name}
                 {...row.getRowProps()}
-                onClick={handleClick((row.original as Period).id!)}
+                onClick={handleClick((row.original as Period)._id!)}
               >
                 {row.cells.map((cell) => {
-                  return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                  return (
+                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                  );
                 })}
 
                 <td>

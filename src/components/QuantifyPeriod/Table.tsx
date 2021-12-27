@@ -74,7 +74,7 @@ const QuantifyOverviewTable = () => {
               className="cursor-pointer hover:bg-gray-100"
               id={"period-" + row.values.name}
               {...row.getRowProps()}
-              onClick={handleClick((row.original as Period).id!)}
+              onClick={handleClick((row.original as Period)._id!)}
             >
               {row.cells.map((cell) => {
                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;

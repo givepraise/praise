@@ -1,7 +1,5 @@
 import { AllPeriods, Period, useAllPeriodsQuery } from "@/model/periods";
 import { formatDate } from "@/utils/date";
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { SyntheticEvent } from "react";
 import { useHistory } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
@@ -25,6 +23,17 @@ const PeriodsTable = () => {
           return formatDate(data.value);
         },
       },
+      {
+        Header: "",
+        accessor: "status",
+        Cell: (data: any) => {
+          return (
+            <div className="inline-block px-2 py-1 text-xs text-white bg-black rounded-full">
+              {data.value}
+            </div>
+          );
+        },
+      },
     ],
     []
   );
@@ -45,9 +54,11 @@ const PeriodsTable = () => {
     history.push(`/periods/${id}`);
   };
   return (
-    <table 
+    <table
       id="periods-table"
-      className="w-full table-auto" {...getTableProps()}>
+      className="w-full table-auto"
+      {...getTableProps()}
+    >
       <thead>
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -67,23 +78,11 @@ const PeriodsTable = () => {
               className="cursor-pointer hover:bg-gray-100"
               id={"period-" + row.values.name}
               {...row.getRowProps()}
-              onClick={handleClick((row.original as Period).id!)}
+              onClick={handleClick((row.original as Period)._id!)}
             >
               {row.cells.map((cell) => {
                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
               })}
-              <td>
-                <div className="inline-block px-2 py-1 text-xs text-white bg-black rounded-full">
-                  open
-                </div>
-              </td>
-              <td>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  size="1x"
-                  className="inline-block"
-                />
-              </td>
             </tr>
           );
         })}

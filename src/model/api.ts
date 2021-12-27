@@ -125,7 +125,6 @@ export const ApiAuthPatchQuery = selectorFamily({
     },
 });
 
-
 // Always use `useAuthApiQuery` for queries instead of `useRecoilValue`
 // to correctly handle expired JWT tokens and other error codes returned by
 // the server
@@ -255,3 +254,17 @@ export const getBackendErrorMessage = (
   if (msg) console.error(backendErrors);
   return msg;
 };
+
+export interface PaginatedResponseData {
+  docs: any[];
+  hasMore?: boolean;
+  hasNextPage?: boolean;
+  hasPrevPage?: boolean;
+  prevPage?: number;
+  nextPage?: number;
+  limit?: number;
+  totalDocs?: number;
+  totalPages?: number;
+  page?: number;
+  pagingCounter?: number;
+}
