@@ -152,7 +152,7 @@ export const useRenamePeriod = () => {
       async (period: Period) => {
         const response = await snapshot.getPromise(
           ApiAuthPatchQuery({
-            endPoint: `/api/admin/periods/${period.id}/rename?name=${period.name}`,
+            endPoint: `/api/admin/periods/${period._id}/rename?name=${period.name}`,
             data: period,
           })
         );
@@ -166,7 +166,7 @@ export const useRenamePeriod = () => {
                 AllPeriods,
                 allPeriods.map(
                   (oldPeriod) =>
-                    oldPeriod.id === period.id ? period : oldPeriod,
+                    oldPeriod._id === period._id ? period : oldPeriod,
                   period
                 )
               );
@@ -191,7 +191,7 @@ export const useUpdatePeriod = () => {
         const response = await snapshot.getPromise(
           //TODO Dont forget to add auth befor production!
           ApiAuthPatchQuery({
-            endPoint: `/api/periods/${period._id}/update?name=${period.name}`,
+            endPoint: `/api/periods/${period._id}/update?name=${period.name}&endDate=${period.endDate}`,
           })
         );
 
