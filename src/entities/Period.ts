@@ -1,7 +1,7 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 
-export interface PeriodInterface extends Document, mongoose.Document {
+export interface PeriodInterface extends mongoose.Document {
   name: string;
   status: 'OPEN' | 'QUANTIFY' | 'CLOSED';
   endDate: Date;
