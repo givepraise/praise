@@ -5,7 +5,7 @@ import { authMiddleware } from '@middleware/auth';
 
 // User-routes
 const userRouter = Router();
-userRouter.get('/', authMiddleware(UserRole.user), controller.getUsers);
-userRouter.get('/:id', controller.getUser);
+userRouter.get('/', authMiddleware(UserRole.user), controller.all);
+userRouter.get('/:id', controller.single);
 
 export = userRouter;

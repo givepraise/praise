@@ -7,7 +7,7 @@ const userData = (req: Request, user: UserInterface) => {
   return {
     _id: user._id,
     ethereumAddress:
-      req.body.routeType !== RouteType.admin ? user.ethereumAddress : undefined,
+      req.body.routeType !== RouteType.user ? user.ethereumAddress : undefined,
     accounts: user.accounts,
     roles: user.roles,
     createdAt: user.createdAt,

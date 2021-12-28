@@ -9,13 +9,32 @@ import { authMiddleware } from '@middleware/auth';
 const userRouter = Router();
 userRouter.get(
   '/',
-  [authMiddleware(UserRole.user), routeTypeMiddleware(RouteType.admin)],
-  controller.getUsers
+  [authMiddleware(UserRole.admin), routeTypeMiddleware(RouteType.admin)],
+  controller.all
 );
+
+userRouter.get(
+  '/search',
+  [authMiddleware(UserRole.admin), routeTypeMiddleware(RouteType.admin)],
+  controller.search
+);
+
 userRouter.get(
   '/:id',
+  [authMiddleware(UserRole.admin), routeTypeMiddleware(RouteType.admin)],
+  controller.single
+);
+
+userRouter.post(
+  '/:id/addRole',
   [authMiddleware(UserRole.user), routeTypeMiddleware(RouteType.admin)],
-  controller.getUser
+  controller.addRole
+);
+
+userRouter.post(
+  '/:id/removeRole',
+  [authMiddleware(UserRole.admin), routeTypeMiddleware(RouteType.admin)],
+  controller.removeRole
 );
 
 export = userRouter;

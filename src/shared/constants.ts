@@ -27,4 +27,4 @@ export enum RouteType {
   user = 'USER',
 }
 
-export const { UNAUTHORIZED, FORBIDDEN, NOT_FOUND } = StatusCodes;
+export const { UNAUTHORIZED, FORBIDDEN, NOT_FOUND, BAD_REQUEST } = StatusCodes;
