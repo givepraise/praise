@@ -12,7 +12,7 @@ export const authMiddleware = (role: UserRole) => {
     const AuthHeader = req.headers['authorization'];
     if (typeof AuthHeader === 'undefined')
       return res.status(UNAUTHORIZED).json({
-        error: 'JWT not present in headeraaaa.',
+        error: 'JWT not present in header.',
       });
 
     // Check authorization header format
