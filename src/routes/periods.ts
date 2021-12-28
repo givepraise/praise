@@ -1,8 +1,10 @@
+import * as periodController from '@controllers/periods';
 import { Router } from 'express';
-import controller from '../controllers/periods';
 
 // Period-routes
 const periodRouter = Router();
-periodRouter.get('/', controller.getPeriods);
-
+periodRouter.get('/all', periodController.all);
+periodRouter.get('/:periodId', periodController.single);
+periodRouter.patch('/:periodId/update', periodController.update);
+periodRouter.patch('/:periodId/close', periodController.close);
 export = periodRouter;
