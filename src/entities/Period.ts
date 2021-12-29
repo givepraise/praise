@@ -15,7 +15,7 @@ export interface PeriodDocument extends PeriodInterface {
 
 const periodSchema = new mongoose.Schema<PeriodInterface>(
   {
-    name: { type: String, required: true },
+    name: { type: String, required: true, minlength: 3, maxlength: 64 },
     status: {
       type: String,
       enum: ['OPEN', 'QUANTIFY', 'CLOSED'],

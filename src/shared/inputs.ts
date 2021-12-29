@@ -6,3 +6,8 @@ export interface QueryInput extends Query {
   limit?: string;
   page?: string;
 }
+
+export interface PeriodCreateParams {
+  name: string;
+  endDate: string;
+}
