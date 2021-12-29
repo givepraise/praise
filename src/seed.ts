@@ -1,6 +1,7 @@
 import PeriodModel from '@entities/Period';
 import PraiseModel from '@entities/Praise';
 import UserModel from '@entities/User';
+import UserAccountModel from '@entities/UserAccount';
 import faker from 'faker';
 
 const periodStatuses = ['OPEN', 'QUANTIFY', 'CLOSED'];
@@ -33,6 +34,7 @@ const seedData = async () => {
               ethereumAddress: faker.datatype.uuid(),
               accounts: [
                 {
+                  id: faker.datatype.uuid(),
                   username: faker.internet.userName(),
                   profileImageUrl: faker.image.imageUrl(),
                   platform: 'DISCORD',
@@ -41,28 +43,18 @@ const seedData = async () => {
               roles: ['QUANTIFIER'],
             });
 
-            const giver = await UserModel.create({
-              ethereumAddress: faker.datatype.uuid(),
-              accounts: [
-                {
-                  username: faker.internet.userName(),
-                  profileImageUrl: faker.image.imageUrl(),
-                  platform: 'DISCORD',
-                },
-              ],
-              roles: ['USER'],
+            const giver = await UserAccountModel.create({
+              id: faker.datatype.uuid(),
+              username: faker.internet.userName(),
+              profileImageUrl: faker.image.imageUrl(),
+              platform: 'DISCORD',
             });
 
-            const receiver = await UserModel.create({
-              ethereumAddress: faker.datatype.uuid(),
-              accounts: [
-                {
-                  username: faker.internet.userName(),
-                  profileImageUrl: faker.image.imageUrl(),
-                  platform: 'DISCORD',
-                },
-              ],
-              roles: ['USER'],
+            const receiver = await UserAccountModel.create({
+              id: faker.datatype.uuid(),
+              username: faker.internet.userName(),
+              profileImageUrl: faker.image.imageUrl(),
+              platform: 'DISCORD',
             });
 
             for (let i = 0; i < 30; i++) {

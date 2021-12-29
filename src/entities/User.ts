@@ -1,11 +1,6 @@
 import mongoose from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-
-export interface UserAccountInterface {
-  username: string;
-  profileImageUrl: string;
-  platform: string; // DISCORD | TELEGRAM
-}
+import { userAccountSchema, UserAccountInterface } from './UserAccount';
 
 export interface UserInterface extends mongoose.Document {
   ethereumAddress: string;
@@ -14,21 +9,6 @@ export interface UserInterface extends mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export const accountSchema = new mongoose.Schema(
-  {
-    username: { type: String, required: true },
-    profileImageUrl: { type: String },
-    platform: {
-      type: String,
-      enum: ['DISCORD', 'TELEGRAM'],
-      default: 'DISCORD',
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
 
 export enum UserRole {
   admin = 'ADMIN',
@@ -39,7 +19,7 @@ export enum UserRole {
 export const userSchema = new mongoose.Schema(
   {
     ethereumAddress: { type: String, required: true },
-    accounts: [accountSchema],
+    accounts: [userAccountSchema],
     roles: {
       type: [
         {

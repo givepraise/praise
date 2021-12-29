@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import { PeriodInterface } from './Period';
-import { UserInterface, userSchema } from './User';
+import { UserInterface } from './User';
+import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
+import { userAccountSchema, UserAccountInterface } from './UserAccount';
 
 export interface QuantificationInterface {
   createdAt: string;
@@ -11,17 +13,14 @@ export interface QuantificationInterface {
   duplicatePraise: PraiseInterface;
 }
 
-export interface PraiseInterface {
+export interface PraiseInterface extends mongoose.Document {
   period: PeriodInterface;
   reason: string;
   sourceId: string;
   sourceName: string;
   quantifications: Array<QuantificationInterface>;
-  giver: UserInterface;
-  receiver: UserInterface;
-}
-
-export interface PraiseDocument extends PraiseInterface, mongoose.Document {
+  giver: UserAccountInterface;
+  receiver: UserAccountInterface;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,14 +42,19 @@ const praiseSchema = new mongoose.Schema(
     period: { type: mongoose.Schema.Types.ObjectId, ref: 'Period' },
     reason: { type: String, required: true },
     quantifications: [QuantificationSchema],
-    giver: { type: userSchema, required: true },
-    receiver: { type: userSchema, required: true },
+    giver: { type: userAccountSchema, required: true },
+    receiver: { type: userAccountSchema, required: true },
   },
   {
     timestamps: true,
   }
 );
 
-const PraiseModel = mongoose.model<PraiseInterface>('Praise', praiseSchema);
+praiseSchema.plugin(mongoosePagination);
+
+const PraiseModel = mongoose.model<
+  PraiseInterface,
+  Pagination<PraiseInterface>
+>('Praise', praiseSchema);
 
 export default PraiseModel;
