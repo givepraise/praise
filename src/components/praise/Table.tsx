@@ -1,4 +1,5 @@
 import { AllPraises } from "@/model/praise";
+import { formatDate } from "@/utils/date";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
@@ -21,33 +22,34 @@ const PraisePageLoaderSpinner = () => {
 
 const PraisesTable = () => {
   const allPraises = useRecoilValue(AllPraises);
-
   const columns = React.useMemo(
     () => [
       {
         Header: "Id",
-        accessor: "id",
+        accessor: "_id",
+        Cell: (data: any) => {
+          return data.value.substr(0, 4);
+        },
       },
       {
         Header: "Date",
         accessor: "createdAt",
         Cell: (data: any) => {
-          // return formatDate(data.value);
-          return "2021-09-15";
+          return formatDate(data.value);
         },
       },
       {
         Header: "From",
         accessor: "giver",
         Cell: (data: any) => {
-          return `${data.value.username}#${data.value.id}`;
+          return `${data.value.username}`;
         },
       },
       {
         Header: "To",
-        accessor: "recipient",
+        accessor: "receiver",
         Cell: (data: any) => {
-          return `${data.value.username}#${data.value.id}`;
+          return `${data.value.username}`;
         },
       },
       {
@@ -97,9 +99,7 @@ const PraisesTable = () => {
                 >
                   {row.cells.map((cell) => {
                     return (
-                      <td {...cell.getCellProps()}>
-                        {cell.render("Cell")}
-                      </td>
+                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                     );
                   })}
                 </tr>
