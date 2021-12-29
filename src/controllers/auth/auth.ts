@@ -56,7 +56,11 @@ async function auth(req: AuthRequest, res: Response): Promise<any> {
   });
 
   // Save access token
-  UserModel.findOneAndUpdate({ ethereumAddress }, { accessToken });
+  await UserModel.findOneAndUpdate(
+    { ethereumAddress },
+    { accessToken },
+    { new: true }
+  );
 
   return res.status(200).json({
     accessToken,
