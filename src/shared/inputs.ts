@@ -1,3 +1,4 @@
+import { UserRole } from '@entities/User';
 import { Query } from './types';
 
 export interface QueryInput extends Query {
@@ -10,4 +11,16 @@ export interface QueryInput extends Query {
 export interface PeriodCreateParams {
   name: string;
   endDate: string;
+}
+
+export interface SearchQueryInput extends QueryInput {
+  search: string;
+}
+
+export interface AddRoleInput {
+  role: UserRole;
+}
+
+export interface RemoveRoleInput {
+  role: UserRole;
 }
