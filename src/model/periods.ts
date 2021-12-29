@@ -46,7 +46,11 @@ export const AllPeriodsQuery = selector({
   key: "AllPeriodsQuery",
   get: async ({ get }) => {
     get(PeriodsRequestId);
-    const periods = get(ApiAuthGetQuery({ endPoint: "/api/periods/all" }));
+    const periods = get(
+      ApiAuthGetQuery({
+        endPoint: "/api/periods/all?sortColumn=endDate&sortType=desc",
+      })
+    );
     return periods;
   },
 });
@@ -90,7 +94,6 @@ export const useAllPeriodsQuery = () => {
   const allPeriodsQueryResponse = useAuthApiQuery(AllPeriodsQuery);
   const [allPeriods, setAllPeriods] = useRecoilState(AllPeriods);
 
-  console.log(allPeriodsQueryResponse);
   // Only set AllPeriods if not previously loaded
   React.useEffect(() => {
     if (
@@ -101,10 +104,6 @@ export const useAllPeriodsQuery = () => {
         allPeriodsQueryResponse.data as PaginatedResponseData;
       const periods = paginatedResponse.docs as Period[];
       if (Array.isArray(periods) && periods.length > 0) {
-        // TODO API should return periods sorted by endDate
-        // const sortedPeriods = [...periods].sort((a, b) =>
-        //   compareAsc(new Date(a.endDate), new Date(b.endDate))
-        // );
         setAllPeriods(periods);
       }
     }
@@ -122,7 +121,7 @@ export const useCreatePeriod = () => {
       async (period: Period) => {
         const response = await snapshot.getPromise(
           ApiAuthPostQuery({
-            endPoint: "/api/admin/periods/create",
+            endPoint: "/api/periods/create",
             data: period,
           })
         );
@@ -144,44 +143,6 @@ export const useCreatePeriod = () => {
   return { createPeriod };
 };
 
-// Hook that returns a function to use for renaming a period
-export const useRenamePeriod = () => {
-  const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
-  const renamePeriod = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async (period: Period) => {
-        const response = await snapshot.getPromise(
-          ApiAuthPatchQuery({
-            endPoint: `/api/admin/periods/${period._id}/rename?name=${period.name}`,
-            data: period,
-          })
-        );
-
-        // If OK response, add returned period object to local state
-        if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
-          const period = response.data as Period;
-          if (period) {
-            if (typeof allPeriods !== "undefined") {
-              set(
-                AllPeriods,
-                allPeriods.map(
-                  (oldPeriod) =>
-                    oldPeriod._id === period._id ? period : oldPeriod,
-                  period
-                )
-              );
-            } else {
-              set(AllPeriods, [period]);
-            }
-          }
-        }
-        set(UpdatePeriodApiResponse, response);
-        return response;
-      }
-  );
-  return { renamePeriod };
-};
-
 /** TODO: modify function to update period endDate */
 export const useUpdatePeriod = () => {
   const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
@@ -191,7 +152,8 @@ export const useUpdatePeriod = () => {
         const response = await snapshot.getPromise(
           //TODO Dont forget to add auth befor production!
           ApiAuthPatchQuery({
-            endPoint: `/api/periods/${period._id}/update?name=${period.name}&endDate=${period.endDate}`,
+            endPoint: `/api/periods/${period._id}/update`,
+            data: period,
           })
         );
 
