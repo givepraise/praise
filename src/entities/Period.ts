@@ -25,7 +25,7 @@ async function validateEndDate(this: any, endDate: string) {
   );
 
   // No period exists = this is the first period = allow any date
-  if (!twoLastPeriods) return true;
+  if (!twoLastPeriods || twoLastPeriods.length === 0) return true;
 
   let d1;
   let d2 = new Date(endDate);
