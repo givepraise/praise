@@ -64,3 +64,14 @@ export const close = async (req: Request, res: Response): Promise<Response> => {
 
   return res.status(StatusCodes.OK).json(period);
 };
+
+export const verifyQuantifierPoolSize = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  // WORK IN PROGRESS!
+  let period = await PeriodModel.findById(req.params.periodId);
+  if (!period) return res.status(StatusCodes.NOT_FOUND);
+
+  return res.status(StatusCodes.OK).json(period);
+};
