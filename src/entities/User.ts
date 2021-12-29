@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 
 export interface UserAccountInterface {
   username: string;
@@ -6,13 +7,10 @@ export interface UserAccountInterface {
   platform: string; // DISCORD | TELEGRAM
 }
 
-export interface UserInterface {
+export interface UserInterface extends mongoose.Document {
   ethereumAddress: string;
   accounts: Array<UserAccountInterface>;
   roles: Array<string>;
-}
-
-export interface UserDocument extends UserInterface, mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
 }
@@ -59,6 +57,11 @@ export const userSchema = new mongoose.Schema(
   }
 );
 
-const UserModel = mongoose.model<UserInterface>('User', userSchema);
+userSchema.plugin(mongoosePagination);
+
+const UserModel = mongoose.model<UserInterface, Pagination<UserInterface>>(
+  'User',
+  userSchema
+);
 
 export default UserModel;
