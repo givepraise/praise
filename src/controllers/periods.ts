@@ -50,7 +50,7 @@ export const update = async (
     period.endDate = d;
   }
 
-  period.save();
+  await period.save();
 
   return res.status(StatusCodes.OK).json(period);
 };
