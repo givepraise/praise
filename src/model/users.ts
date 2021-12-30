@@ -7,26 +7,33 @@ import {
   useRecoilState,
   useRecoilValue,
 } from "recoil";
-import { ApiAuthGetQuery, isApiResponseOk, useAuthApiQuery, ApiAuthPatchQuery, isApiErrorData } from "./api";
+import {
+  ApiAuthGetQuery,
+  ApiAuthPatchQuery,
+  isApiErrorData,
+  isApiResponseOk,
+  PaginatedResponseData,
+  useAuthApiQuery,
+} from "./api";
 
-export enum USER_INDENTITY_ROLE {
-  Admin = "ROLE_ADMIN",
-  Quantifier = "ROLE_QUANTIFIER",
-  User = "ROLE_USER",
+export enum UserRole {
+  ADMIN = "ADMIN",
+  QUANTIFIER = "QUANTIFIER",
+  USER = "USER",
 }
 
 export interface UserIdentity {
-  id: number;
+  _id: string;
   createdAt: string;
   updatedAt: string;
   ethereumAddress: string;
-  roles: USER_INDENTITY_ROLE[];
   accounts?: UserAccount[];
+  roles: UserRole[];
 }
 
-export enum USER_ACCOUNT_PLATFORM {
-  Discord = "DISCORD",
-  Telegram = "TELEGRAM",
+export enum UserAccountPlatform {
+  DISCORD = "DISCORD",
+  TELEGRAM = "TELEGRAM",
 }
 
 export interface UserAccount {
@@ -35,9 +42,9 @@ export interface UserAccount {
   updatedAt: string;
   userId?: UserIdentity;
   accountId: string;
-  userName: string;
+  username: string;
   profileImageUrl: string;
-  platform: USER_ACCOUNT_PLATFORM;
+  platform: UserAccountPlatform;
 }
 
 // The request Id is used to force refresh of AllUsersQuery.
@@ -52,7 +59,12 @@ export const AllUsersQuery = selector({
   key: "AllUsersQuery",
   get: async ({ get }) => {
     get(UsersRequestId);
-    return get(ApiAuthGetQuery({ endPoint: "/api/admin/users/allByFilter" }));
+    return get(
+      ApiAuthGetQuery({
+        endPoint:
+          "/api/admin/users/all?sortColumn=ethereumAddress&sortType=desc",
+      })
+    );
   },
 });
 
@@ -65,10 +77,8 @@ export const AllQuantifierUsers = selector({
   key: "AllQuantifierUsers",
   get: async ({ get }) => {
     const users = get(AllUsers);
-    if (users) {      
-      return users.filter((user) =>
-        user.roles.includes(USER_INDENTITY_ROLE.Quantifier)
-      );
+    if (users) {
+      return users.filter((user) => user.roles.includes(UserRole.QUANTIFIER));
     }
     return undefined;
   },
@@ -83,8 +93,9 @@ export const useAllUsersQuery = () => {
       isApiResponseOk(allUsersQueryResponse) &&
       typeof allUsers === "undefined"
     ) {
-      const users = (allUsersQueryResponse.data as any)
-        .content as UserIdentity[];
+      const paginatedResponse =
+        allUsersQueryResponse.data as PaginatedResponseData;
+      const users = paginatedResponse.docs as UserIdentity[];
       if (Array.isArray(users) && users.length > 0) setAllUsers(users);
     }
   }, [allUsersQueryResponse, setAllUsers, allUsers]);
@@ -105,11 +116,11 @@ export const useAdminUsers = () => {
 
   const addRole = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (userId: number, role: USER_INDENTITY_ROLE) => {        
-
+      async (userId: string, role: UserRole) => {
         const response = await snapshot.getPromise(
           ApiAuthPatchQuery({
-            endPoint: `/api/admin/users/${userId}/addRole?code=${role}`,            
+            endPoint: `/api/admin/users/${userId}/addRole`,
+            data: { role },
           })
         );
 
@@ -117,16 +128,11 @@ export const useAdminUsers = () => {
         if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
           const user = response.data as UserIdentity;
           if (user) {
-            // mock adding of role, remove when endpoint is finished
-            if (user.roles?.indexOf(role) === -1) {
-              user.roles.push(role);
-            }
-
             if (typeof allUsers !== "undefined") {
               set(
                 AllUsers,
                 allUsers.map((oldUser) =>
-                  oldUser.id === user.id ? user : oldUser
+                  oldUser._id === user._id ? user : oldUser
                 )
               );
             } else {
@@ -141,27 +147,28 @@ export const useAdminUsers = () => {
 
   const removeRole = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (userId: number, role: USER_INDENTITY_ROLE) => {
+      async (userId: string, role: UserRole) => {
         const response = await snapshot.getPromise(
           ApiAuthPatchQuery({
-            endPoint: `/api/admin/users/${userId}/removeRole?code=${role}`,            
+            endPoint: `/api/admin/users/${userId}/removeRole`,
+            data: { role },
           })
         );
-                
+
         // If OK response, add returned user object to local state
         if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
           const user = response.data as UserIdentity;
-          if (user) {            
-              if (typeof allUsers !== "undefined") {
-                set(
-                  AllUsers,
-                  allUsers.map((oldUser) =>
-                    oldUser.id === user.id ? user : oldUser
-                  )
-                );
-              } else {
-                set(AllUsers, [user]);
-              }                                      
+          if (user) {
+            if (typeof allUsers !== "undefined") {
+              set(
+                AllUsers,
+                allUsers.map((oldUser) =>
+                  oldUser._id === user._id ? user : oldUser
+                )
+              );
+            } else {
+              set(AllUsers, [user]);
+            }
           }
         }
         set(AddUserRoleApiResponse, response);

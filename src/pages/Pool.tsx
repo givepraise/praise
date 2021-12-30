@@ -1,14 +1,10 @@
 import BreadCrumb from "@/components/BreadCrumb";
 import PoolAddDialog from "@/components/pool/AddDialog";
 import PoolTable from "@/components/pool/Table";
+import { useAdminUsers, UserRole } from "@/model/users";
 import { faUserFriends } from "@fortawesome/free-solid-svg-icons";
 import { Dialog } from "@headlessui/react";
 import React from "react";
-
-import {  
-  useAdminUsers,  
-  USER_INDENTITY_ROLE,
-} from "@/model/users";
 
 const PoolPage = () => {
   let [isOpen, setIsOpen] = React.useState(false);
@@ -18,15 +14,15 @@ const PoolPage = () => {
     setIsOpen(true);
   };
 
-  const handleQuantifierAdded = (id: number) => {
-    addRole(id, USER_INDENTITY_ROLE.Quantifier);
-  }
+  const handleQuantifierAdded = (id: string) => {
+    addRole(id, UserRole.QUANTIFIER);
+  };
 
   return (
     <>
       <BreadCrumb name="Quantifier pool" icon={faUserFriends} />
 
-      <div className="praise-box w-2/3">
+      <div className="w-2/3 praise-box">
         <div className="mb-2 text-right">
           <button className="praise-button" onClick={handleAddQuantifierClick}>
             Add quantifier
@@ -38,7 +34,10 @@ const PoolPage = () => {
             onClose={() => setIsOpen(false)}
             className="fixed inset-0 z-10 overflow-y-auto"
           >
-            <PoolAddDialog onClose={() => setIsOpen(false)} onQuantifierAdded={handleQuantifierAdded} />
+            <PoolAddDialog
+              onClose={() => setIsOpen(false)}
+              onQuantifierAdded={handleQuantifierAdded}
+            />
           </Dialog>
           <PoolTable />
         </React.Suspense>

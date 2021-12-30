@@ -1,5 +1,6 @@
-import { AllUsers, UserIdentity } from "@/model/users";
+import { AllUsers, UserIdentity, UserRole } from "@/model/users";
 import { classNames } from "@/utils/index";
+import { getUsername } from "@/utils/users";
 import {
   faTimes,
   faUser,
@@ -12,11 +13,14 @@ import React from "react";
 import { useRecoilValue } from "recoil";
 
 interface UserAutosuggestProps {
-  onClose(): any
-  onQuantifierAdded(id: number): void
+  onClose(): any;
+  onQuantifierAdded(id: string): void;
 }
 
-const UserAutosuggest = ({ onQuantifierAdded, onClose }: UserAutosuggestProps) => {
+const UserAutosuggest = ({
+  onQuantifierAdded,
+  onClose,
+}: UserAutosuggestProps) => {
   const allUsers = useRecoilValue(AllUsers);
 
   const DropdownCombobox = () => {
@@ -36,7 +40,8 @@ const UserAutosuggest = ({ onQuantifierAdded, onClose }: UserAutosuggestProps) =
         if (allUsers) {
           setInputItems(
             allUsers.filter((user) => {
-              if (user.id.toString().includes(inputValue!.toLowerCase()))
+              if (user.roles.includes(UserRole.QUANTIFIER)) return false;
+              if (user._id.toString().includes(inputValue!.toLowerCase()))
                 return true;
               if (
                 user.ethereumAddress &&
@@ -46,6 +51,16 @@ const UserAutosuggest = ({ onQuantifierAdded, onClose }: UserAutosuggestProps) =
                   .includes(inputValue!.toLowerCase())
               )
                 return true;
+              if (
+                user.accounts?.find((account) =>
+                  account.username
+                    .toLowerCase()
+                    .includes(inputValue!.toLowerCase())
+                    ? true
+                    : false
+                )
+              )
+                return true;
               return false;
             })
           );
@@ -53,7 +68,7 @@ const UserAutosuggest = ({ onQuantifierAdded, onClose }: UserAutosuggestProps) =
       },
       onSelectedItemChange: (data: any) => {
         const selectedItem = data.selectedItem as UserIdentity;
-        onQuantifierAdded(selectedItem.id);
+        onQuantifierAdded(selectedItem._id);
         onClose();
       },
     });
@@ -91,7 +106,7 @@ const UserAutosuggest = ({ onQuantifierAdded, onClose }: UserAutosuggestProps) =
                 key={`${item}${index}`}
                 {...getItemProps({ item, index })}
               >
-                {item.id}
+                {getUsername(item)}
               </li>
             ))}
         </ul>
@@ -103,7 +118,7 @@ const UserAutosuggest = ({ onQuantifierAdded, onClose }: UserAutosuggestProps) =
 
 interface PoolAddDialogProps {
   onClose(): any;
-  onQuantifierAdded(id: number): void
+  onQuantifierAdded(id: string): void;
 }
 const PoolAddDialog = ({ onClose, onQuantifierAdded }: PoolAddDialogProps) => {
   return (
@@ -123,7 +138,10 @@ const PoolAddDialog = ({ onClose, onQuantifierAdded }: PoolAddDialogProps) => {
             Add a member to the Quantifier Pool
           </Dialog.Title>
           <div className="flex justify-center">
-            <UserAutosuggest onQuantifierAdded={onQuantifierAdded} onClose={onClose} />
+            <UserAutosuggest
+              onQuantifierAdded={onQuantifierAdded}
+              onClose={onClose}
+            />
           </div>
         </div>
       </div>
