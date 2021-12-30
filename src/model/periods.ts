@@ -121,7 +121,7 @@ export const useCreatePeriod = () => {
       async (period: Period) => {
         const response = await snapshot.getPromise(
           ApiAuthPostQuery({
-            endPoint: "/api/periods/create",
+            endPoint: "/api/admin/periods/create",
             data: period,
           })
         );
@@ -152,7 +152,7 @@ export const useUpdatePeriod = () => {
         const response = await snapshot.getPromise(
           //TODO Dont forget to add auth befor production!
           ApiAuthPatchQuery({
-            endPoint: `/api/periods/${period._id}/update`,
+            endPoint: `/api/admin/periods/${period._id}/update`,
             data: period,
           })
         );
@@ -191,7 +191,7 @@ export const useClosePeriod = () => {
         const response = await snapshot.getPromise(
           //TODO Dont forget to add auth befor production!
           ApiAuthPatchQuery({
-            endPoint: `/api/periods/${period._id}/close`,
+            endPoint: `/api/admin/periods/${period._id}/close`,
           })
         );
 
