@@ -1,6 +1,11 @@
 import React from "react";
 import { atom, selectorFamily, useRecoilState } from "recoil";
-import { ApiAuthGetQuery, isApiResponseOk, useAuthApiQuery } from "./api";
+import {
+  ApiAuthGetQuery,
+  isApiResponseOk,
+  PaginatedResponseData,
+  useAuthApiQuery,
+} from "./api";
 import { Source } from "./source";
 import { UserAccount } from "./users";
 
@@ -88,19 +93,20 @@ export const useAllPraisesQuery = (queryParams: AllPraisesQueryParameters) => {
         data.pageable?.pageNumber > praisePagination.latestFetchPageNumber) &&
       isApiResponseOk(allPraisesQueryResponse)
     ) {
-      if (
-        data.content &&
-        Array.isArray(data.content) &&
-        data.content.length > 0
-      ) {
-        setPraisePagination({
-          ...praisePagination,
-          latestFetchPageNumber: data.pageable?.pageNumber,
-          totalPages: data.totalPages,
-        });
-        setAllPraises(
-          allPraises ? allPraises.concat(data.content) : data.content
-        );
+      const paginatedResponse =
+        allPraisesQueryResponse.data as PaginatedResponseData;
+      const praises = paginatedResponse.docs as Praise[];
+
+      if (Array.isArray(praises) && praises.length > 0) {
+        setAllPraises(praises);
+        // setPraisePagination({
+        //   ...praisePagination,
+        //   latestFetchPageNumber: data.pageable?.pageNumber,
+        //   totalPages: data.totalPages,
+        // });
+        // setAllPraises(
+        //   allPraises ? allPraises.concat(data.content) : data.content
+        // );
       }
     }
   }, [

@@ -2,9 +2,9 @@ import jwtDecode from "jwt-decode";
 import { atom, selector, selectorFamily } from "recoil";
 import { ApiGetQuery, ApiPostQuery } from "./api";
 
-export const ROLE_USER = "ROLE_USER";
-export const ROLE_ADMIN = "ROLE_ADMIN";
-export const ROLE_QUANTIFIER = "ROLE_QUANTIFIER";
+export const ROLE_USER = "USER";
+export const ROLE_ADMIN = "ADMIN";
+export const ROLE_QUANTIFIER = "QUANTIFIER";
 
 export interface JWT {
   sub: string;
