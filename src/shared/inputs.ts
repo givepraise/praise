@@ -8,6 +8,11 @@ export interface QueryInput extends Query {
   page?: string;
 }
 
+export interface PeriodCreateParams {
+  name: string;
+  endDate: string;
+}
+
 export interface SearchQueryInput extends QueryInput {
   search: string;
 }

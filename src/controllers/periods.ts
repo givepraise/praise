@@ -1,6 +1,6 @@
-import PeriodModel from '@entities/Period';
+import PeriodModel, { PeriodInterface } from '@entities/Period';
 import { getQuerySort } from '@shared/functions';
-import { QueryInput } from '@shared/inputs';
+import { PeriodCreateParams, QueryInput } from '@shared/inputs';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
@@ -16,48 +16,62 @@ export const all = async (
 };
 
 export const single = async (
-  req: Request<any, QueryInput, any>,
+  req: Request,
   res: Response
 ): Promise<Response> => {
-  let period = await PeriodModel.findById(req.params.periodId);
-  if (!period) return res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+  const period = await PeriodModel.findById(req.params.periodId);
+  if (!period) return res.status(StatusCodes.NOT_FOUND);
+  return res.status(StatusCodes.OK).json(period);
+};
+
+export const create = async (
+  req: Request<any, PeriodCreateParams, any>,
+  res: Response
+): Promise<Response> => {
+  const { name, endDate } = req.body;
+  const period = await PeriodModel.create({ name, endDate });
   return res.status(StatusCodes.OK).json(period);
 };
 
 export const update = async (
-  req: Request<any, QueryInput, any>,
+  req: Request<any, PeriodInterface, any>,
   res: Response
 ): Promise<Response> => {
-  const name = req.query.name as string;
-  const endDate = req.query.endDate as string;
-
-  if (!name && !endDate) return res.status(StatusCodes.BAD_REQUEST);
-
   let period = await PeriodModel.findById(req.params.periodId);
-  if (!period) return res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+  if (!period) return res.status(StatusCodes.NOT_FOUND);
 
-  if (name) period.name = name;
-  if (endDate) {
-    const d = new Date(endDate);
+  if (req.body.name !== period.name) {
+    period.name = req.body.name;
+  }
+  if (req.body.endDate !== period.endDate) {
+    const d = new Date(req.body.endDate);
     if (d.toString() === 'Invalid Date')
       return res.status(StatusCodes.BAD_REQUEST).send('Invalid date format.');
     period.endDate = d;
   }
 
+  await period.save();
+
+  return res.status(StatusCodes.OK).json(period);
+};
+
+export const close = async (req: Request, res: Response): Promise<Response> => {
+  let period = await PeriodModel.findById(req.params.periodId);
+  if (!period) return res.status(StatusCodes.NOT_FOUND);
+
+  period.status = 'CLOSED';
   period.save();
 
   return res.status(StatusCodes.OK).json(period);
 };
 
-export const close = async (
-  req: Request<any, QueryInput, any>,
+export const verifyQuantifierPoolSize = async (
+  req: Request,
   res: Response
 ): Promise<Response> => {
+  // WORK IN PROGRESS!
   let period = await PeriodModel.findById(req.params.periodId);
-  if (!period) return res.status(StatusCodes.INTERNAL_SERVER_ERROR);
-
-  period.status = 'CLOSED';
-  period.save();
+  if (!period) return res.status(StatusCodes.NOT_FOUND);
 
   return res.status(StatusCodes.OK).json(period);
 };
