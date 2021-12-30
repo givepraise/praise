@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-import { UserAccountInterface, userAccountSchema } from './UserAccount';
+import { UserAccountInterface } from './UserAccount';
 
 export interface UserInterface extends mongoose.Document {
   ethereumAddress: string;
@@ -19,7 +19,7 @@ export enum UserRole {
 export const userSchema = new mongoose.Schema(
   {
     ethereumAddress: { type: String, required: true },
-    accounts: [userAccountSchema],
+    accounts: [{ type: Schema.Types.ObjectId, ref: 'Account' }],
     roles: {
       type: [
         {
