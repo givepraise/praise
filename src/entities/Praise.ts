@@ -39,8 +39,8 @@ const praiseSchema = new mongoose.Schema(
   {
     reason: { type: String, required: true },
     quantifications: [QuantificationSchema],
-    giver: { type: Schema.Types.ObjectId, ref: 'Giver' },
-    receiver: { type: Schema.Types.ObjectId, ref: 'Receiver' },
+    giver: { type: Schema.Types.ObjectId, ref: 'UserAccount' },
+    receiver: { type: Schema.Types.ObjectId, ref: 'UserAccount' },
   },
   {
     timestamps: true,

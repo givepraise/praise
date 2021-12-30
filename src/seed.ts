@@ -12,9 +12,72 @@ const PERIOD_NUMBER = 10;
 const PERIOD_LENGTH = 10;
 const PRAISE_NUMBER = 100;
 
+const USERS = [
+  {
+    ethereumAddress: '0xa32aECda752cF4EF89956e83d60C04835d4FA867',
+    roles: ['ADMIN', 'USER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER', 'QUANTIFIER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER', 'QUANTIFIER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER', 'QUANTIFIER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER', 'QUANTIFIER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER'],
+  },
+  {
+    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    roles: ['USER'],
+  },
+];
+
 const twoRandomAccountIndexes = () => {
-  const n1 = Math.floor(Math.random() * (USER_NUMBER - 1));
-  const n2 = n1 === USER_NUMBER - 1 ? USER_NUMBER - 2 : n1 + 1;
+  const n1 = Math.floor(Math.random() * (USERS.length - 1));
+  const n2 = n1 === USERS.length - 1 ? USERS.length - 2 : n1 + 1;
   return [n1, n2];
 };
 
@@ -37,8 +100,8 @@ const seedData = async () => {
     }
   }
 
-  if (userCount < USER_NUMBER) {
-    for (let i = 0; i < USER_NUMBER; i++) {
+  if (userCount < USERS.length) {
+    for (let i = 0; i < USERS.length; i++) {
       try {
         const account = await UserAccountModel.create({
           id: faker.datatype.uuid(),
@@ -48,19 +111,14 @@ const seedData = async () => {
         });
 
         await UserModel.create({
-          ethereumAddress: faker.datatype.uuid(),
+          ethereumAddress: USERS[i].ethereumAddress,
           accounts: [account._id],
-          roles: ['QUANTIFIER'],
+          roles: USERS[i].roles,
         });
       } catch (e) {
         console.log('ERROR:', e);
       }
     }
-
-    await UserModel.create({
-      ethereumAddress: '0xa32aECda752cF4EF89956e83d60C04835d4FA867',
-      roles: ['ADMIN', 'USER'],
-    });
   }
 
   if (praisesCount < PRAISE_NUMBER) {

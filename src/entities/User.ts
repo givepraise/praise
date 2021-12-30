@@ -19,7 +19,7 @@ export enum UserRole {
 export const userSchema = new mongoose.Schema(
   {
     ethereumAddress: { type: String, required: true },
-    accounts: [{ type: Schema.Types.ObjectId, ref: 'Account' }],
+    accounts: [{ type: Schema.Types.ObjectId, ref: 'UserAccount' }],
     roles: {
       type: [
         {

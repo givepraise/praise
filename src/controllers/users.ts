@@ -20,6 +20,7 @@ const all = async (
   const users = await UserModel.paginate({
     ...req.query,
     sort: getQuerySort(req.query),
+    populate: 'accounts',
   });
 
   return res.status(200).json(userListTransformer(req, users));
@@ -57,7 +58,7 @@ const addRole = async (
   req: Request<any, AddRoleInput, any>,
   res: Response
 ): Promise<Response> => {
-  const user = await UserModel.findById(req.params.id);
+  const user = await UserModel.findById(req.params.id).populate('accounts');
   if (!user)
     return res.status(NOT_FOUND).json({
       error: 'User not found.',
@@ -81,7 +82,7 @@ const removeRole = async (
   req: Request<any, RemoveRoleInput, any>,
   res: Response
 ): Promise<Response> => {
-  const user = await UserModel.findById(req.params.id);
+  const user = await UserModel.findById(req.params.id).populate('accounts');
   if (!user)
     return res.status(NOT_FOUND).json({
       error: 'User not found.',
