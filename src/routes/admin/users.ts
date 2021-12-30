@@ -15,13 +15,13 @@ userRouter.get(
 
 userRouter.get('/:id', routeTypeMiddleware(RouteType.admin), controller.single);
 
-userRouter.post(
+userRouter.patch(
   '/:id/addRole',
   routeTypeMiddleware(RouteType.admin),
   controller.addRole
 );
 
-userRouter.post(
+userRouter.patch(
   '/:id/removeRole',
   routeTypeMiddleware(RouteType.admin),
   controller.removeRole

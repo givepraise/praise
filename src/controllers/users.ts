@@ -1,20 +1,20 @@
-import { Request, Response } from 'express';
 import UserModel from '@entities/User';
+import { BAD_REQUEST, NOT_FOUND } from '@shared/constants';
+import { getQuerySort } from '@shared/functions';
 import {
   AddRoleInput,
   QueryInput,
   RemoveRoleInput,
   SearchQueryInput,
 } from '@shared/inputs';
-import { getQuerySort } from '@shared/functions';
+import { Request, Response } from 'express';
 import {
   userListTransformer,
   userSingleTransformer,
 } from 'src/transformers/userTransformer';
-import { NOT_FOUND, BAD_REQUEST } from '@shared/constants';
 
 const all = async (
-  req: Request<any, QueryInput, any>,
+  req: Request<any, any, QueryInput>,
   res: Response
 ): Promise<Response> => {
   const users = await UserModel.paginate({
@@ -54,16 +54,17 @@ const search = async (
 };
 
 const addRole = async (
-  req: Request<any, any, AddRoleInput>,
+  req: Request<any, AddRoleInput, any>,
   res: Response
 ): Promise<Response> => {
   const user = await UserModel.findById(req.params.id);
-  const { role } = req.body;
-
   if (!user)
     return res.status(NOT_FOUND).json({
       error: 'User not found.',
     });
+
+  const { role } = req.body;
+  if (!role) return res.status(BAD_REQUEST);
 
   try {
     if (!user.roles.includes(role)) {
@@ -77,16 +78,17 @@ const addRole = async (
 };
 
 const removeRole = async (
-  req: Request<any, any, RemoveRoleInput>,
+  req: Request<any, RemoveRoleInput, any>,
   res: Response
 ): Promise<Response> => {
   const user = await UserModel.findById(req.params.id);
-  const { role } = req.body;
-
   if (!user)
     return res.status(NOT_FOUND).json({
       error: 'User not found.',
     });
+
+  const { role } = req.body;
+  if (!role) return res.status(BAD_REQUEST);
 
   try {
     var roleIndex = user.roles.indexOf(role);
