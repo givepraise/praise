@@ -1,6 +1,6 @@
-import PeriodModel, { PeriodInterface } from '@entities/Period';
+import PeriodModel from '@entities/Period';
 import { getQuerySort } from '@shared/functions';
-import { PeriodCreateParams, QueryInput } from '@shared/inputs';
+import { PeriodCreateUpdateInput, QueryInput } from '@shared/inputs';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
@@ -25,7 +25,7 @@ export const single = async (
 };
 
 export const create = async (
-  req: Request<any, PeriodCreateParams, any>,
+  req: Request<any, PeriodCreateUpdateInput, any>,
   res: Response
 ): Promise<Response> => {
   const { name, endDate } = req.body;
@@ -34,7 +34,7 @@ export const create = async (
 };
 
 export const update = async (
-  req: Request<any, PeriodInterface, any>,
+  req: Request<any, PeriodCreateUpdateInput, any>,
   res: Response
 ): Promise<Response> => {
   let period = await PeriodModel.findById(req.params.periodId);
