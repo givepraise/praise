@@ -32,13 +32,15 @@ const PoolDeleteDialog = ({
             <div className="flex justify-center mb-7">
               <FontAwesomeIcon icon={faUserFriends} size="2x" />
             </div>
-            <Dialog.Title className="text-center mb-7">
+            <Dialog.Title className="mb-5 text-center">
               Removing 1 member from Quantifier Pool
             </Dialog.Title>
-            <div className="flex justify-center">{getUsername(quantifier)}</div>
+            <div className="flex justify-center mb-5">
+              {getUsername(quantifier)}
+            </div>
             <div className="flex justify-center">
               <button
-                className="mt-4 praise-button"
+                className="praise-button"
                 onClick={() => {
                   onQuantifierRemoved(quantifier._id);
                   onClose();

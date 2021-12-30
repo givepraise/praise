@@ -7,6 +7,7 @@ import {
   UserIdentity,
   UserRole,
 } from "@/model/users";
+import { shortenEthAddress } from "@/utils/index";
 import { getUsername } from "@/utils/users";
 import { faTrash, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -37,17 +38,11 @@ const PoolTable = () => {
               </div>
               <div className="flex-grow p-3 whitespace-nowrap">
                 {getUsername(data.row.original)}
+                <br />
+                {shortenEthAddress(data.row.original.ethereumAddress)}
               </div>
             </div>
           );
-        },
-      },
-      {
-        Header: "Ethereum Address",
-        accessor: "ethereumAddress",
-        Cell: (data: any) => {
-          // return shortenEthAddress(data.value);
-          return data.value;
         },
       },
     ],
