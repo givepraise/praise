@@ -1,14 +1,14 @@
-import { Router } from 'express';
 import controller from '@controllers/users';
-import { RouteType } from '@shared/constants';
-import { routeTypeMiddleware } from '@middleware/routeType';
 import { UserRole } from '@entities/User';
 import { authMiddleware } from '@middleware/auth';
+import { routeTypeMiddleware } from '@middleware/routeType';
+import { RouteType } from '@shared/constants';
+import { Router } from 'express';
 
 // User-routes
 const userRouter = Router();
 userRouter.get(
-  '/',
+  '/all',
   [authMiddleware(UserRole.admin), routeTypeMiddleware(RouteType.admin)],
   controller.all
 );
