@@ -65,15 +65,11 @@ const addRole = async (
       error: 'User not found.',
     });
 
-  try {
-    if (!user.roles.includes(role)) {
-      user.roles.push(role);
-    }
-    await user.save();
-    return res.status(200).json(userSingleTransformer(req, user));
-  } catch (e: any) {
-    return res.status(BAD_REQUEST).json({ errors: e.errors });
+  if (!user.roles.includes(role)) {
+    user.roles.push(role);
   }
+  await user.save();
+  return res.status(200).json(userSingleTransformer(req, user));
 };
 
 const removeRole = async (
@@ -88,15 +84,11 @@ const removeRole = async (
       error: 'User not found.',
     });
 
-  try {
-    var roleIndex = user.roles.indexOf(role);
-    user.roles.splice(roleIndex, 1);
+  var roleIndex = user.roles.indexOf(role);
+  user.roles.splice(roleIndex, 1);
 
-    await user.save();
-    return res.status(200).json(userSingleTransformer(req, user));
-  } catch (e: any) {
-    return res.status(BAD_REQUEST).json({ errors: e.errors });
-  }
+  await user.save();
+  return res.status(200).json(userSingleTransformer(req, user));
 };
 
 export default { all, single, search, addRole, removeRole };

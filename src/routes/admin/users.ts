@@ -9,7 +9,7 @@ import { authMiddleware } from '@middleware/auth';
 const userRouter = Router();
 userRouter.get(
   '/',
-  [authMiddleware(UserRole.admin), routeTypeMiddleware(RouteType.admin)],
+  [authMiddleware(UserRole.user), routeTypeMiddleware(RouteType.admin)],
   controller.all
 );
 
