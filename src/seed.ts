@@ -8,9 +8,9 @@ const periodStatuses = ['OPEN', 'QUANTIFY', 'CLOSED'];
 const roles = ['ADMIN', 'USER', 'QUANTIFIER'];
 
 const USER_NUMBER = 15;
-const PERIOD_NUMBER = 10;
+const PERIOD_NUMBER = 3;
 const PERIOD_LENGTH = 10;
-const PRAISE_NUMBER = 100;
+const PRAISE_NUMBER = 300;
 
 const USERS = [
   {

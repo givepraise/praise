@@ -4,12 +4,12 @@ import { UserInterface } from './User';
 import { UserAccountInterface } from './UserAccount';
 
 export interface QuantificationInterface {
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   quantifier: UserInterface;
-  score: number;
-  dismissed: boolean;
-  duplicatePraise: PraiseInterface;
+  score?: number;
+  dismissed?: boolean;
+  duplicatePraise?: PraiseInterface;
 }
 
 export interface PraiseInterface extends mongoose.Document {
