@@ -1,4 +1,4 @@
-import PeriodModel from '@entities/Period';
+import PeriodModel, { PeriodInterface } from '@entities/Period';
 import PraiseModel from '@entities/Praise';
 import UserModel, { UserRole } from '@entities/User';
 import { getQuerySort } from '@shared/functions';
@@ -72,232 +72,35 @@ export const close = async (req: Request, res: Response): Promise<Response> => {
   return res.status(StatusCodes.OK).json(period);
 };
 
-const _verifyQuantifierPoolSize = async (periodId: string) => {
+// Returns previous period end date or 1970-01-01 if no previous period
+const getPreviousPeriodEndDate = async (period: PeriodInterface) => {
+  const previousPeriod = await PeriodModel.findOne({
+    endDate: { $lt: period.endDate },
+  }).sort({ endDate: -1 });
+  const previousEndDate = previousPeriod
+    ? previousPeriod.endDate
+    : new Date(+0);
+  return previousEndDate;
+};
+
+interface Receiver {
+  _id: string;
+  praiseCount: number;
+  praiseIds: string[];
+}
+
+// Returns an array of an
+const getQuantifierReceivers = async (periodId: string) => {
   const period = await PeriodModel.findById(periodId);
   if (!period) throw new Error('Period not found.');
 
-  // Group all praise receivers for period and count number of received praise
-  const pool = await UserModel.find({ roles: UserRole.QUANTIFIER });
+  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
-  // Previous period end date or 1970-01-01 if no previous period
-  const previousPeriod = await PeriodModel.findOne({
-    endDate: { $lt: period.endDate },
-  }).sort({ endDate: -1 });
-  const previousEndDate = previousPeriod
-    ? previousPeriod.endDate
-    : new Date(+0);
-
-  // Group all praise receivers for period and count number of received praise
+  // Aggregate all period praise receivers and count number of received praise
   const receivers = await PraiseModel.aggregate([
     {
       $match: {
-        createdAt: { $gt: previousEndDate, $lt: period.endDate },
-      },
-    },
-    { $group: { _id: '$receiver', praiseCount: { $count: {} } } },
-  ] as any);
-
-  // Init counter to keep track of how many quantifiers are assigned to each receiver
-  for (let receiver of receivers) {
-    receiver.assignedQuantifiers = 0;
-  }
-
-  let quantifiers = [0];
-  let qi = 0;
-  let riStart = 0;
-
-  // let qstats = [];
-  // qstats[qi] = new Array();
-
-  let assignsLeft = receivers.length;
-
-  while (assignsLeft > 0) {
-    // Move start index each loop to avoid same combinations of receivers being
-    // assigned to quantifiers.
-    riStart = riStart < receivers.length - 1 ? riStart + 1 : 0;
-    for (let ri = riStart; ri < receivers.length; ri++) {
-      if (receivers[ri].assignedQuantifiers < QUANTIFIERS_PER_PRAISE_RECEIVER) {
-        if (
-          quantifiers[qi] + receivers[ri].praiseCount >
-          PRAISE_PER_QUANTIFIER
-        ) {
-          qi++;
-          quantifiers[qi] = 0;
-          //qstats[qi] = new Array();
-        }
-
-        if (
-          receivers[ri].praiseCount > MAX_PRAISE_PER_QUANTIFIER &&
-          quantifiers[qi] === 0
-        ) {
-          quantifiers[qi] = receivers[ri].praiseCount;
-          //qstats[qi].push(receivers[ri].praiseCount);
-          receivers[ri].assignedQuantifiers += 1;
-        }
-
-        if (
-          quantifiers[qi] + receivers[ri].praiseCount <=
-          PRAISE_PER_QUANTIFIER
-        ) {
-          quantifiers[qi] += receivers[ri].praiseCount;
-          //qstats[qi].push(receivers[ri].praiseCount);
-          receivers[ri].assignedQuantifiers += 1;
-        }
-
-        if (
-          receivers[ri].assignedQuantifiers === QUANTIFIERS_PER_PRAISE_RECEIVER
-        ) {
-          assignsLeft--;
-        }
-      }
-    }
-    // console.log(receivers);
-    // console.log(qstats);
-  }
-
-  const response = {
-    quantifierPoolSize: pool.length,
-    requiredPoolSize: quantifiers.length,
-  };
-
-  // console.log(response);
-  return response;
-};
-
-// const _verifyQuantifierPoolSize = async (periodId: string) => {
-//   const period = await PeriodModel.findById(periodId);
-//   if (!period) throw new Error('Period not found.');
-
-//   // Group all praise receivers for period and count number of received praise
-//   const pool = await UserModel.find({ roles: UserRole.QUANTIFIER });
-
-//   // Previous period end date or 1970-01-01 if no previous period
-//   const previousPeriod = await PeriodModel.findOne({
-//     endDate: { $lt: period.endDate },
-//   }).sort({ endDate: -1 });
-//   const previousEndDate = previousPeriod
-//     ? previousPeriod.endDate
-//     : new Date(+0);
-
-//   // Group all praise receivers for period and count number of received praise
-//   const receivers = await PraiseModel.aggregate([
-//     {
-//       $match: {
-//         createdAt: { $gt: previousEndDate, $lt: period.endDate },
-//       },
-//     },
-//     { $group: { _id: '$receiver', praiseCount: { $count: {} } } },
-//   ] as any);
-
-//   // Init counter to keep track of how many quantifiers are assigned to each receiver
-//   for (let receiver of receivers) {
-//     receiver.assignedQuantifiers = 0;
-//   }
-
-//   let quantifiers = [0];
-//   let qi = 0;
-//   let riStart = 0;
-
-//   // let qstats = [];
-//   // qstats[qi] = new Array();
-
-//   let assignsLeft = receivers.length;
-
-//   while (assignsLeft > 0) {
-//     // Move start index each loop to avoid same combinations of receivers being
-//     // assigned to quantifiers.
-//     riStart = riStart < receivers.length - 1 ? riStart + 1 : 0;
-//     for (let ri = riStart; ri < receivers.length; ri++) {
-//       if (receivers[ri].assignedQuantifiers < QUANTIFIERS_PER_PRAISE_RECEIVER) {
-//         if (
-//           quantifiers[qi] + receivers[ri].praiseCount >
-//           PRAISE_PER_QUANTIFIER
-//         ) {
-//           qi++;
-//           quantifiers[qi] = 0;
-//           //qstats[qi] = new Array();
-//         }
-
-//         if (
-//           receivers[ri].praiseCount > MAX_PRAISE_PER_QUANTIFIER &&
-//           quantifiers[qi] === 0
-//         ) {
-//           quantifiers[qi] = receivers[ri].praiseCount;
-//           //qstats[qi].push(receivers[ri].praiseCount);
-//           receivers[ri].assignedQuantifiers += 1;
-//         }
-
-//         if (
-//           quantifiers[qi] + receivers[ri].praiseCount <=
-//           PRAISE_PER_QUANTIFIER
-//         ) {
-//           quantifiers[qi] += receivers[ri].praiseCount;
-//           //qstats[qi].push(receivers[ri].praiseCount);
-//           receivers[ri].assignedQuantifiers += 1;
-//         }
-
-//         if (
-//           receivers[ri].assignedQuantifiers === QUANTIFIERS_PER_PRAISE_RECEIVER
-//         ) {
-//           assignsLeft--;
-//         }
-//       }
-//     }
-//     // console.log(receivers);
-//     // console.log(qstats);
-//   }
-
-//   const response = {
-//     quantifierPoolSize: pool.length,
-//     requiredPoolSize: quantifiers.length,
-//   };
-
-//   // console.log(response);
-//   return response;
-// };
-
-export const verifyQuantifierPoolSize = async (
-  req: Request,
-  res: Response
-): Promise<Response> => {
-  const response = await _verifyQuantifierPoolSize(req.params.periodId);
-  return res.status(StatusCodes.OK).json(response);
-};
-
-export const assignQuantifiers = async (
-  req: Request,
-  res: Response
-): Promise<Response> => {
-  const poolSize = await _verifyQuantifierPoolSize(req.params.periodId);
-
-  if (poolSize.requiredPoolSize > poolSize.quantifierPoolSize)
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ error: 'Quantifier pool size too small.' });
-
-  let period = await PeriodModel.findById(req.params.periodId);
-  if (!period) throw new Error('Period not found.');
-
-  // Group all praise receivers for period and count number of received praise
-  const quantifierPool = await UserModel.find({ roles: UserRole.QUANTIFIER });
-
-  let selectedQuantifiers = quantifierPool
-    .sort(() => 0.5 - Math.random())
-    .slice(0, poolSize.requiredPoolSize);
-
-  // Previous period end date or 1970-01-01 if no previous period
-  const previousPeriod = await PeriodModel.findOne({
-    endDate: { $lt: period.endDate },
-  }).sort({ endDate: -1 });
-  const previousEndDate = previousPeriod
-    ? previousPeriod.endDate
-    : new Date(+0);
-
-  // Group all praise receivers for period and count number of received praise
-  const receivers = await PraiseModel.aggregate([
-    {
-      $match: {
-        createdAt: { $gt: previousEndDate, $lt: period.endDate },
+        createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
       },
     },
     {
@@ -311,83 +114,140 @@ export const assignQuantifiers = async (
     },
   ] as any);
 
-  // Init counter to keep track of how many quantifiers are assigned to each receiver
-  for (let receiver of receivers) {
-    receiver.assignedQuantifiers = 0;
-  }
-
-  let quantifiers = [0];
   let qi = 0;
+  let quantifierReceivers = [];
+  quantifierReceivers[qi] = new Array();
   let riStart = 0;
 
-  // let qstats = [];
-  // qstats[qi] = new Array();
+  const assignedPraiseCount = (quantifier: Receiver[]) => {
+    return quantifier.reduce(function (sum, receiver) {
+      return sum + receiver.praiseCount;
+    }, 0);
+  };
 
   let assignsLeft = receivers.length;
-
   while (assignsLeft > 0) {
     // Move start index each loop to avoid same combinations of receivers being
     // assigned to quantifiers.
     riStart = riStart < receivers.length - 1 ? riStart + 1 : 0;
     for (let ri = riStart; ri < receivers.length; ri++) {
+      receivers[ri].assignedQuantifiers = receivers[ri].assignedQuantifiers
+        ? receivers[ri].assignedQuantifiers
+        : 0;
+
       if (receivers[ri].assignedQuantifiers < QUANTIFIERS_PER_PRAISE_RECEIVER) {
         if (
-          quantifiers[qi] + receivers[ri].praiseCount >
-          PRAISE_PER_QUANTIFIER
+          assignedPraiseCount(quantifierReceivers[qi]) +
+            receivers[ri].praiseCount >
+            MAX_PRAISE_PER_QUANTIFIER &&
+          assignedPraiseCount(quantifierReceivers[qi]) > 0
         ) {
-          qi++;
-          quantifiers[qi] = 0;
-          //qstats[qi] = new Array();
+          quantifierReceivers[++qi] = new Array(); // Initialise new quantifier
+          continue;
         }
 
-        if (
-          receivers[ri].praiseCount > MAX_PRAISE_PER_QUANTIFIER &&
-          quantifiers[qi] === 0
-        ) {
-          quantifiers[qi] = receivers[ri].praiseCount;
-          //qstats[qi].push(receivers[ri].praiseCount);
-          receivers[ri].assignedQuantifiers += 1;
-          for (let praiseId of receivers[ri].praiseIds) {
-            const praise = await PraiseModel.findById(praiseId);
-            if (praise) {
-              praise.quantifications.push({
-                quantifier: selectedQuantifiers[qi]._id,
-              });
-              praise.save();
-            }
-          }
-        }
+        quantifierReceivers[qi].push(receivers[ri]);
 
-        if (
-          quantifiers[qi] + receivers[ri].praiseCount <=
-          PRAISE_PER_QUANTIFIER
-        ) {
-          quantifiers[qi] += receivers[ri].praiseCount;
-          //qstats[qi].push(receivers[ri].praiseCount);
-          receivers[ri].assignedQuantifiers += 1;
-          for (let praiseId of receivers[ri].praiseIds) {
-            const praise = await PraiseModel.findById(praiseId);
-            if (praise) {
-              praise.quantifications.push({
-                quantifier: selectedQuantifiers[qi]._id,
-              });
-              praise.save();
-            }
-          }
-        }
+        receivers[ri].assignedQuantifiers = receivers[ri].assignedQuantifiers
+          ? receivers[ri].assignedQuantifiers + 1
+          : 1;
 
-        if (
+        assignsLeft =
           receivers[ri].assignedQuantifiers === QUANTIFIERS_PER_PRAISE_RECEIVER
-        ) {
-          assignsLeft--;
+            ? assignsLeft - 1
+            : assignsLeft;
+      }
+    }
+  }
+
+  return quantifierReceivers as Array<Array<Receiver>>;
+};
+
+export const verifyQuantifierPoolSize = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const quantifierReceivers = await getQuantifierReceivers(req.params.periodId);
+
+  const quantifierPool = await UserModel.find({ roles: UserRole.QUANTIFIER });
+
+  const response = {
+    quantifierPoolSize: quantifierPool.length,
+    requiredPoolSize: quantifierReceivers.length,
+  };
+
+  return res.status(StatusCodes.OK).json(response);
+};
+
+export const assignQuantifiers = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const period = await PeriodModel.findById(req.params.periodId);
+  if (!period) throw new Error('Period not found.');
+  if (period.status !== 'OPEN')
+    throw new Error('Quantifiers can only be assigned on OPEN periods.');
+
+  const quantifierReceivers = await getQuantifierReceivers(req.params.periodId);
+  const quantifierPool = await UserModel.find({ roles: UserRole.QUANTIFIER });
+
+  const requiredPoolSize = quantifierReceivers.length;
+
+  if (requiredPoolSize > quantifierPool.length)
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: 'Quantifier pool size too small.' });
+
+  let selectedQuantifiers = quantifierPool
+    .sort(() => 0.5 - Math.random())
+    .slice(0, requiredPoolSize);
+
+  const getQuantifier = (receiver: Receiver, qi: number) => {
+    // Quantifying your own praise is not allowed
+    if (receiver._id === quantifierPool[qi]._id) {
+      return qi === quantifierPool.length
+        ? quantifierPool[qi - 1]._id
+        : quantifierPool[qi + 1]._id;
+    }
+    return quantifierPool[qi];
+  };
+
+  // Quantifiers
+  for (let qi = 0; qi < requiredPoolSize; qi++) {
+    // Receivers
+    for (let receiver of quantifierReceivers[qi]) {
+      const quantifier = getQuantifier(receiver, qi);
+      // Praise
+      for (let praiseId of receiver.praiseIds) {
+        const praise = await PraiseModel.findById(praiseId);
+        if (praise) {
+          praise.quantifications.push({
+            quantifier: selectedQuantifiers[qi]._id,
+          });
+          praise.save();
         }
       }
     }
-    // console.log(receivers);
-    // console.log(qstats);
   }
 
-  // console.log(response);
+  period.status = 'QUANTIFY';
+  period.save();
 
   return res.status(StatusCodes.OK);
+};
+
+export const praise = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const period = await PeriodModel.findById(req.params.periodId);
+  if (!period) throw new Error('Period not found.');
+
+  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+
+  const praise = await PraiseModel.find().where({
+    createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
+  });
+
+  return res.status(StatusCodes.OK).json(praise);
 };

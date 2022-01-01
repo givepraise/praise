@@ -91,8 +91,9 @@ const seedData = async () => {
     for (let i = 0; i < PERIOD_NUMBER; i++) {
       await PeriodModel.create({
         name: faker.lorem.words(),
-        status:
-          periodStatuses[Math.floor(Math.random() * periodStatuses.length)],
+        status: 'OPEN',
+        // status:
+        //   periodStatuses[Math.floor(Math.random() * periodStatuses.length)],
         endDate: d,
         quantifiers: [],
       });

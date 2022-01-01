@@ -5,9 +5,13 @@ import { Router } from 'express';
 const periodRouter = Router();
 periodRouter.post('/create', periodController.create);
 periodRouter.patch('/:periodId/update', periodController.update);
-periodRouter.patch('/:periodId/close', periodController.assignQuantifiers);
+periodRouter.patch('/:periodId/close', periodController.close);
 periodRouter.patch(
   '/:periodId/verifyQuantifierPoolSize',
   periodController.verifyQuantifierPoolSize
+);
+periodRouter.patch(
+  '/:periodId/assignQuantifiers',
+  periodController.assignQuantifiers
 );
 export = periodRouter;
