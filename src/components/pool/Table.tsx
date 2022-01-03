@@ -4,9 +4,11 @@ import {
   AllQuantifierUsers,
   useAdminUsers,
   useAllUsersQuery,
-  UserIdentity,
-  USER_INDENTITY_ROLE,
+  User,
+  UserRole,
 } from "@/model/users";
+import { shortenEthAddress } from "@/utils/index";
+import { getUsername } from "@/utils/users";
 import { faTrash, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
@@ -20,35 +22,26 @@ const PoolTable = () => {
   const { removeRole } = useAdminUsers();
 
   let [isOpen, setIsOpen] = React.useState(false);
-  let [selectedQuantifier, setSelectedQuantifier] =
-    React.useState<UserIdentity>();
+  let [selectedQuantifier, setSelectedQuantifier] = React.useState<User>();
 
   const columns = React.useMemo(
     () => [
       {
         Header: "Id",
-        accessor: "id",
-        Cell: (data: any) => {          
+        accessor: "_id",
+        Cell: (data: any) => {
           return (
             <div className="flex items-center w-full">
               <div className="flex items-center">
                 <FontAwesomeIcon icon={faUserCircle} size="2x" />
               </div>
               <div className="flex-grow p-3 whitespace-nowrap">
-                #{data.row.original.id}
+                {getUsername(data.row.original)}
                 <br />
-                John Doe
+                {shortenEthAddress(data.row.original.ethereumAddress)}
               </div>
             </div>
           );
-        },
-      },
-      {
-        Header: "Ethereum Address",
-        accessor: "ethereumAddress",
-        Cell: (data: any) => {
-          // return shortenEthAddress(data.value);
-          return data.value;
         },
       },
     ],
@@ -61,26 +54,24 @@ const PoolTable = () => {
   } as TableOptions<{}>;
   const tableInstance = useTable(options);
 
-  const { getTableProps, getTableBodyProps, rows, prepareRow } =
-    tableInstance;
+  const { getTableProps, getTableBodyProps, rows, prepareRow } = tableInstance;
 
   if (!isApiResponseOk(allUsersQueryResponse))
     return <div>Unable to fetch user list.</div>;
 
-  const handleDeleteQuantifierClick = (quantifier: UserIdentity) => {    
+  const handleDeleteQuantifierClick = (quantifier: User) => {
     setSelectedQuantifier(quantifier);
     setIsOpen(true);
   };
 
-  const removeQuantifier = (id: number) => {    
-    removeRole(id, USER_INDENTITY_ROLE.Quantifier);
+  const removeQuantifier = (id: string) => {
+    removeRole(id, UserRole.QUANTIFIER);
   };
 
   return (
     <table className="w-full table-auto" {...getTableProps()}>
       <tbody {...getTableBodyProps()}>
-        {rows.map((row) => {          
-          
+        {rows.map((row) => {
           prepareRow(row);
           return (
             <tr
@@ -93,7 +84,7 @@ const PoolTable = () => {
               <td>
                 <button
                   onClick={() =>
-                    handleDeleteQuantifierClick(row.original as UserIdentity)
+                    handleDeleteQuantifierClick(row.original as User)
                   }
                   className="hover:text-gray-400"
                 >
@@ -116,7 +107,7 @@ const PoolTable = () => {
           >
             <PoolDeleteDialog
               onClose={() => setIsOpen(false)}
-              onQuantifierRemoved={(id: number) => removeQuantifier(id)}
+              onQuantifierRemoved={(id: string) => removeQuantifier(id)}
               quantifier={selectedQuantifier}
             />
           </Dialog>

@@ -11,7 +11,7 @@ const PeriodBreadCrumb = () => {
   let { periodId } = useParams() as any;
 
   useAllPeriodsQuery(); // Make sure that all periods are fetched
-  const period = useRecoilValue(SinglePeriod({ id: periodId }));
+  const period = useRecoilValue(SinglePeriod({ periodId }));
 
   if (!period) return null;
   return <BreadCrumb name={`Quantify / ${period.name}`} icon={faCalendarAlt} />;

@@ -1,18 +1,23 @@
-import { UserIdentity } from "@/model/users";
+import { User } from "@/model/users";
+import { getUsername } from "@/utils/users";
 import {
-  faTimes,  
+  faMinusCircle,
+  faTimes,
   faUserFriends,
-  faMinusCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
 
 interface PoolDeleteDialogProps {
   onClose(): any;
-  onQuantifierRemoved(id: number): void
-  quantifier: UserIdentity | undefined
+  onQuantifierRemoved(id: string): void;
+  quantifier: User | undefined;
 }
-const PoolDeleteDialog = ({ onClose, onQuantifierRemoved, quantifier }: PoolDeleteDialogProps) => {  
+const PoolDeleteDialog = ({
+  onClose,
+  onQuantifierRemoved,
+  quantifier,
+}: PoolDeleteDialogProps) => {
   if (quantifier) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -27,15 +32,25 @@ const PoolDeleteDialog = ({ onClose, onQuantifierRemoved, quantifier }: PoolDele
             <div className="flex justify-center mb-7">
               <FontAwesomeIcon icon={faUserFriends} size="2x" />
             </div>
-            <Dialog.Title className="text-center mb-7">
+            <Dialog.Title className="mb-5 text-center">
               Removing 1 member from Quantifier Pool
             </Dialog.Title>
-            <div className="flex justify-center">
-              { quantifier.id }
+            <div className="flex justify-center mb-5">
+              {getUsername(quantifier)}
             </div>
             <div className="flex justify-center">
-              <button className="praise-button mt-4" onClick={() => {onQuantifierRemoved(quantifier.id); onClose();}}>
-                <FontAwesomeIcon className="mr-2" icon={faMinusCircle} size="1x" />
+              <button
+                className="praise-button"
+                onClick={() => {
+                  onQuantifierRemoved(quantifier._id);
+                  onClose();
+                }}
+              >
+                <FontAwesomeIcon
+                  className="mr-2"
+                  icon={faMinusCircle}
+                  size="1x"
+                />
                 Remove member
               </button>
             </div>
@@ -45,7 +60,7 @@ const PoolDeleteDialog = ({ onClose, onQuantifierRemoved, quantifier }: PoolDele
     );
   } else {
     return null;
-  }  
+  }
 };
 
 export default PoolDeleteDialog;

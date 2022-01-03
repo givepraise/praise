@@ -11,7 +11,7 @@ const PeriodMessage = () => {
   let { periodId } = useParams() as any;
 
   useAllPeriodsQuery(); // Make sure that all periods are fetched
-  const period = useRecoilValue(SinglePeriod({ id: periodId }));
+  const period = useRecoilValue(SinglePeriod({ periodId }));
 
   return (
     <>

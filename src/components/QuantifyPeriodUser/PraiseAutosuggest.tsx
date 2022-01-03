@@ -1,15 +1,13 @@
-import { AllUsers, UserIdentity } from "@/model/users";
+import { AllUsers, User } from "@/model/users";
 import { classNames } from "@/utils/index";
-import {  
-  faUser,  
-} from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCombobox } from "downshift";
 import React from "react";
 import { useRecoilValue } from "recoil";
 
 interface PraiseAutosuggestProps {
-  onSelect(): any;  
+  onSelect(): any;
 }
 
 const PraiseAutosuggest = ({ onSelect }: PraiseAutosuggestProps) => {
@@ -17,7 +15,7 @@ const PraiseAutosuggest = ({ onSelect }: PraiseAutosuggestProps) => {
 
   const DropdownCombobox = () => {
     const [inputItems, setInputItems] = React.useState(
-      allUsers ? allUsers : ([] as UserIdentity[])
+      allUsers ? allUsers : ([] as User[])
     );
     const {
       isOpen,
@@ -32,7 +30,7 @@ const PraiseAutosuggest = ({ onSelect }: PraiseAutosuggestProps) => {
         if (allUsers) {
           setInputItems(
             allUsers.filter((user) => {
-              if (user.id.toString().includes(inputValue!.toLowerCase()))
+              if (user._id.toString().includes(inputValue!.toLowerCase()))
                 return true;
               if (
                 user.ethereumAddress &&
@@ -85,7 +83,7 @@ const PraiseAutosuggest = ({ onSelect }: PraiseAutosuggestProps) => {
                 key={`${item}${index}`}
                 {...getItemProps({ item, index })}
               >
-                {item.id}
+                {item._id}
               </li>
             ))}
         </ul>

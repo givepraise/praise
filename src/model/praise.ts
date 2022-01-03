@@ -9,8 +9,13 @@ import {
 import { Source } from "./source";
 import { UserAccount } from "./users";
 
-export interface QuantifiedPraise {
-  id: number;
+export interface Quantification {
+  createdAt?: string;
+  updatedAt?: string;
+  quantifier: string;
+  score?: number;
+  dismissed?: boolean;
+  duplicatePraise?: string;
 }
 
 export interface Praise {
@@ -19,9 +24,9 @@ export interface Praise {
   updatedAt: string;
   periodId?: number;
   reason: string;
-  quantifiedPraises?: QuantifiedPraise[];
+  quantifications?: Quantification[];
   giver: UserAccount;
-  recipient: UserAccount;
+  receiver: UserAccount;
   source: Source;
 }
 
