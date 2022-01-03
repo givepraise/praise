@@ -137,7 +137,9 @@ const seedData = async () => {
           reason: faker.lorem.sentences(),
           giver: giver!._id,
           receiver: receiver!._id,
-          createdAt: new Date(Date.now() + randomDays * 86400000),
+          createdAt: new Date(
+            Date.now() + (randomDays - PERIOD_LENGTH) * 86400000
+          ),
         });
       } catch (e) {
         console.log('ERROR:', e);
