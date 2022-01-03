@@ -64,6 +64,9 @@ const addRole = async (
       error: 'User not found.',
     });
 
+  const { role } = req.body;
+  if (!role) return res.status(BAD_REQUEST);
+
   if (!user.roles.includes(role)) {
     user.roles.push(role);
   }
@@ -80,6 +83,9 @@ const removeRole = async (
     return res.status(NOT_FOUND).json({
       error: 'User not found.',
     });
+
+  const { role } = req.body;
+  if (!role) return res.status(BAD_REQUEST);
 
   var roleIndex = user.roles.indexOf(role);
   user.roles.splice(roleIndex, 1);
