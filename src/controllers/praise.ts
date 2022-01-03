@@ -11,6 +11,7 @@ export const all = async (
   const praises = await PraiseModel.paginate({
     ...req.query,
     sort: getQuerySort(req.query),
+    populate: 'giver receiver',
   });
 
   return res.status(200).json(praises);
