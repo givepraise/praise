@@ -245,9 +245,11 @@ export const praise = async (
 
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
-  const praise = await PraiseModel.find().where({
-    createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
-  });
+  const praise = await PraiseModel.find()
+    .where({
+      createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
+    })
+    .populate('receiver');
 
   return res.status(StatusCodes.OK).json(praise);
 };
