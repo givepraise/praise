@@ -11,7 +11,7 @@ import { getPreviousPeriod } from "@/utils/periods";
 import { Dialog } from "@headlessui/react";
 import React from "react";
 import "react-day-picker/lib/style.css";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import PeriodAssignDialog from "../AssignDialog";
 import PeriodCloseDialog from "../CloseDialog";
@@ -26,7 +26,8 @@ const PeriodDetails = () => {
   const allPeriods = useRecoilValue(AllPeriods);
   let { id } = useParams() as any;
   const period = useRecoilValue(SinglePeriod({ periodId: id }));
-  const poolRequirements = useVerifyQuantifierPoolSize(id);
+  const { location } = useHistory();
+  const poolRequirements = useVerifyQuantifierPoolSize(id, location.key);
 
   const assignDialogRef = React.useRef(null);
   const closeDialogRef = React.useRef(null);
@@ -59,7 +60,9 @@ const PeriodDetails = () => {
           {period.status === "OPEN" ? (
             <button
               className="praise-button"
-              onClick={() => setIsAssignDialogOpen(true)}
+              onClick={() => {
+                setIsAssignDialogOpen(true);
+              }}
             >
               Assign quantifiers
             </button>

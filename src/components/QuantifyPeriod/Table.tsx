@@ -46,7 +46,7 @@ const QuantifyOverviewTable = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const handleClick = (id: number) => (e: SyntheticEvent) => {
+  const handleClick = (perioId: string) => (e: SyntheticEvent) => {
     history.push(`/quantify/period/1/user/2`);
   };
   return (

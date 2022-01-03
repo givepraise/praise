@@ -3,6 +3,7 @@ import React from "react";
 import {
   atom,
   selector,
+  selectorFamily,
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
@@ -98,6 +99,18 @@ export const useAllUsersQuery = () => {
 
   return allUsersQueryResponse;
 };
+
+export const SingleUser = selectorFamily({
+  key: "SingleUser",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const { userId } = params;
+      const allUsers = get(AllUsers);
+      if (!allUsers) return null;
+      return allUsers.filter((user) => user._id === userId)[0];
+    },
+});
 
 export const AddUserRoleApiResponse = atom<
   AxiosResponse<never> | AxiosError<never> | null

@@ -3,6 +3,7 @@ import {
   faCalculator,
   faCheckSquare,
   faTimes,
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
@@ -18,6 +19,10 @@ const PeriodAssignDialog = ({
   onAssign,
   poolRequirements,
 }: PeriodAssignDialogProps) => {
+  const quantPoolBigEnough = poolRequirements
+    ? poolRequirements.quantifierPoolSize >= poolRequirements.requiredPoolSize
+    : false;
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
@@ -40,25 +45,51 @@ const PeriodAssignDialog = ({
               {poolRequirements ? poolRequirements.quantifierPoolSize : "#"}{" "}
               members.
             </div>
-            <div>
+            <div className="mb-3">
               Members needed for quantification:{" "}
               {poolRequirements ? poolRequirements.requiredPoolSize : "#"}
             </div>
             <div>
-              <FontAwesomeIcon className="text-green" icon={faCheckSquare} />{" "}
-              Quantifier pool requirements are met.
+              {quantPoolBigEnough ? (
+                <>
+                  <FontAwesomeIcon
+                    className="text-green"
+                    icon={faCheckSquare}
+                  />{" "}
+                  Quantifier pool requirements are met.
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon
+                    className="text-green"
+                    icon={faTimesCircle}
+                  />{" "}
+                  Quantifier pool requirements are not met.
+                </>
+              )}
             </div>
           </div>
           <div className="flex justify-center">
-            <button
-              className="mt-4 praise-button"
-              onClick={() => {
-                onAssign();
-                onClose();
-              }}
-            >
-              Assign
-            </button>
+            {quantPoolBigEnough ? (
+              <button
+                className="mt-4 praise-button"
+                onClick={() => {
+                  onAssign();
+                  onClose();
+                }}
+              >
+                Assign
+              </button>
+            ) : (
+              <button
+                className="mt-4 praise-button"
+                onClick={() => {
+                  onClose();
+                }}
+              >
+                Close
+              </button>
+            )}
           </div>
         </div>
       </div>

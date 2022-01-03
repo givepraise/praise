@@ -50,8 +50,8 @@ const PeriodsTable = () => {
   if (!Array.isArray(allPeriods) || allPeriods.length === 0)
     return <div>Create your first period to get started quantifying.</div>;
 
-  const handleClick = (id: number) => (e: SyntheticEvent) => {
-    history.push(`/periods/${id}`);
+  const handleClick = (periodId: string) => (e: SyntheticEvent) => {
+    history.push(`/periods/${periodId}`);
   };
   return (
     <table

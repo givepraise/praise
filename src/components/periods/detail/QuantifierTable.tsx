@@ -1,32 +1,48 @@
 import {
   Period,
-  PeriodReceivers,
+  PeriodQuantifiers,
   usePeriodPraisesQuery,
 } from "@/model/periods";
+import { SingleUser, useAllUsersQuery } from "@/model/users";
+import { getUsername } from "@/utils/users";
 import React, { SyntheticEvent } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
 
-const PeriodSummary = () => {
+interface UserCellProps {
+  userId: string;
+}
+
+const UserCell = ({ userId }: UserCellProps) => {
+  const user = useRecoilValue(SingleUser({ userId }));
+  if (user) return <div>{getUsername(user)}</div>;
+  return <div>{userId}</div>;
+};
+
+const QuantifierTable = () => {
   const history = useHistory();
   let { id } = useParams() as any;
   usePeriodPraisesQuery(id);
-  const periodReceivers = useRecoilValue(PeriodReceivers({ periodId: id }));
+  useAllUsersQuery();
+
+  const periodQuantifiers = useRecoilValue(PeriodQuantifiers({ periodId: id }));
 
   const columns = React.useMemo(
     () => [
       {
-        Header: "Receiver",
-        accessor: "username",
+        Header: "Quantifier",
+        accessor: "quantifier",
+        Cell: (data: any) => <UserCell userId={data.value} />,
       },
       {
-        Header: "Number of praise",
-        accessor: "praiseCount",
-      },
-      {
-        Header: "Total praise score",
-        accessor: "praiseScore",
+        Header: "Finished items",
+        accessor: "",
+        Cell: (data: any) => {
+          return data.row.original
+            ? `${data.row.original.done} / ${data.row.original.count}`
+            : null;
+        },
       },
     ],
     []
@@ -34,16 +50,16 @@ const PeriodSummary = () => {
 
   const options = {
     columns,
-    data: periodReceivers ? periodReceivers : [],
+    data: periodQuantifiers ? periodQuantifiers : [],
   } as TableOptions<{}>;
   const tableInstance = useTable(options);
-
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const handleClick = (id: number) => (e: SyntheticEvent) => {
+  const handleClick = (periodId: string) => (e: SyntheticEvent) => {
     history.push(`/quantify/period/1/user/2`);
   };
+
   return (
     <table
       id="periods-table"
@@ -82,4 +98,4 @@ const PeriodSummary = () => {
   );
 };
 
-export default PeriodSummary;
+export default QuantifierTable;

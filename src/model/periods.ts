@@ -21,7 +21,7 @@ import {
 import { Praise } from "./praise";
 
 export interface Period {
-  _id?: number;
+  _id?: string;
   createdAt?: string;
   updatedAt?: string;
   name: string;
@@ -191,13 +191,11 @@ export const useClosePeriod = () => {
     ({ snapshot, set }) =>
       async (periodId: string) => {
         const response = await snapshot.getPromise(
-          //TODO Dont forget to add auth befor production!
           ApiAuthPatchQuery({
             endPoint: `/api/admin/periods/${periodId}/close`,
           })
         );
 
-        // If OK response, add returned period object to local state
         if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
           const period = response.data as Period;
           if (period) {
@@ -227,9 +225,11 @@ export const VerifyQuantifierPoolSizeQuery = selectorFamily({
   get:
     (params: any) =>
     async ({ get }) => {
+      const { periodId, refreshKey } = params;
       const response = get(
         ApiAuthPatchQuery({
-          endPoint: `/api/admin/periods/${params.periodId}/verifyQuantifierPoolSize`,
+          endPoint: `/api/admin/periods/${periodId}/verifyQuantifierPoolSize`,
+          refreshKey,
         })
       );
       return response;
@@ -242,21 +242,28 @@ export interface PoolRequirements {
 }
 
 export const useVerifyQuantifierPoolSize = (
-  periodId: number
+  periodId: number,
+  refreshKey: string | undefined
 ): PoolRequirements | undefined => {
-  const response = useAuthApiQuery(VerifyQuantifierPoolSizeQuery({ periodId }));
+  const response = useAuthApiQuery(
+    VerifyQuantifierPoolSizeQuery({ periodId, refreshKey })
+  );
   const [poolRequirements, setPoolRequirements] = React.useState<
     PoolRequirements | undefined
   >(undefined);
 
   React.useEffect(() => {
-    if (isApiResponseOk(response)) setPoolRequirements(response.data);
+    if (isApiResponseOk(response)) {
+      setPoolRequirements(response.data);
+    }
   }, [response]);
 
   return poolRequirements;
 };
 
 export const useAssignQuantifiers = () => {
+  const allPeriods = useRecoilValue(AllPeriods);
+
   const assignQuantifiers = useRecoilCallback(
     ({ snapshot, set }) =>
       async (periodId: string) => {
@@ -265,7 +272,27 @@ export const useAssignQuantifiers = () => {
             endPoint: `/api/admin/periods/${periodId}/assignQuantifiers`,
           })
         );
-        set(PeriodPraiseRequestId, new Date().getMilliseconds());
+        if (isApiResponseOk(response)) {
+          const praise = response.data as Praise[];
+          if (Array.isArray(praise) && praise.length > 0) {
+            set(PeriodPraise(periodId), praise);
+          }
+          if (allPeriods) {
+            set(
+              AllPeriods,
+              allPeriods.map((period) => {
+                if (period._id === periodId) {
+                  const newPeriod = {
+                    ...period,
+                    status: "QUANTIFY",
+                  };
+                  return newPeriod;
+                }
+                return period;
+              })
+            );
+          }
+        }
         return response;
       }
   );

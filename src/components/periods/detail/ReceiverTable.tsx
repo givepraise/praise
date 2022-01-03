@@ -1,6 +1,6 @@
 import {
   Period,
-  PeriodQuantifiers,
+  PeriodReceivers,
   usePeriodPraisesQuery,
 } from "@/model/periods";
 import React, { SyntheticEvent } from "react";
@@ -8,26 +8,25 @@ import { useHistory, useParams } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
 
-const Quantifiers = () => {
+const ReceiverTable = () => {
   const history = useHistory();
   let { id } = useParams() as any;
   usePeriodPraisesQuery(id);
-  const periodQuantifiers = useRecoilValue(PeriodQuantifiers({ periodId: id }));
+  const periodReceivers = useRecoilValue(PeriodReceivers({ periodId: id }));
 
   const columns = React.useMemo(
     () => [
       {
-        Header: "Quantifier",
-        accessor: "quantifier",
+        Header: "Receiver",
+        accessor: "username",
       },
       {
-        Header: "Finished items",
-        accessor: "",
-        Cell: (data: any) => {
-          return data.row.original
-            ? `${data.row.original.done} / ${data.row.original.count}`
-            : null;
-        },
+        Header: "Number of praise",
+        accessor: "praiseCount",
+      },
+      {
+        Header: "Total praise score",
+        accessor: "praiseScore",
       },
     ],
     []
@@ -35,16 +34,16 @@ const Quantifiers = () => {
 
   const options = {
     columns,
-    data: periodQuantifiers ? periodQuantifiers : [],
+    data: periodReceivers ? periodReceivers : [],
   } as TableOptions<{}>;
   const tableInstance = useTable(options);
+
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const handleClick = (id: number) => (e: SyntheticEvent) => {
+  const handleClick = (periodId: string) => (e: SyntheticEvent) => {
     history.push(`/quantify/period/1/user/2`);
   };
-
   return (
     <table
       id="periods-table"
@@ -83,4 +82,4 @@ const Quantifiers = () => {
   );
 };
 
-export default Quantifiers;
+export default ReceiverTable;

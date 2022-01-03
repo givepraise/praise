@@ -10,6 +10,8 @@ const PoolPage = () => {
   let [isOpen, setIsOpen] = React.useState(false);
   const { addRole } = useAdminUsers();
 
+  const addDialogRef = React.useRef(null);
+
   const handleAddQuantifierClick = () => {
     setIsOpen(true);
   };
@@ -28,19 +30,22 @@ const PoolPage = () => {
             Add quantifier
           </button>
         </div>
-        <React.Suspense fallback={null}>
+        {isOpen ? (
           <Dialog
             open={isOpen}
             onClose={() => setIsOpen(false)}
             className="fixed inset-0 z-10 overflow-y-auto"
+            initialFocus={addDialogRef}
           >
-            <PoolAddDialog
-              onClose={() => setIsOpen(false)}
-              onQuantifierAdded={handleQuantifierAdded}
-            />
+            <div ref={addDialogRef}>
+              <PoolAddDialog
+                onClose={() => setIsOpen(false)}
+                onQuantifierAdded={handleQuantifierAdded}
+              />
+            </div>
           </Dialog>
-          <PoolTable />
-        </React.Suspense>
+        ) : null}
+        <PoolTable />
       </div>
     </>
   );
