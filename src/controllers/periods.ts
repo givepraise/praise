@@ -233,7 +233,7 @@ export const assignQuantifiers = async (
   period.status = 'QUANTIFY';
   period.save();
 
-  return res.status(StatusCodes.OK);
+  return praise(req, res);
 };
 
 export const praise = async (
