@@ -1,4 +1,4 @@
-import { UserIdentity } from "@/model/users";
+import { User } from "@/model/users";
 import { getUsername } from "@/utils/users";
 import {
   faMinusCircle,
@@ -11,7 +11,7 @@ import { Dialog } from "@headlessui/react";
 interface PoolDeleteDialogProps {
   onClose(): any;
   onQuantifierRemoved(id: string): void;
-  quantifier: UserIdentity | undefined;
+  quantifier: User | undefined;
 }
 const PoolDeleteDialog = ({
   onClose,

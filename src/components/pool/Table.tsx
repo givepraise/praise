@@ -4,7 +4,7 @@ import {
   AllQuantifierUsers,
   useAdminUsers,
   useAllUsersQuery,
-  UserIdentity,
+  User,
   UserRole,
 } from "@/model/users";
 import { shortenEthAddress } from "@/utils/index";
@@ -22,8 +22,7 @@ const PoolTable = () => {
   const { removeRole } = useAdminUsers();
 
   let [isOpen, setIsOpen] = React.useState(false);
-  let [selectedQuantifier, setSelectedQuantifier] =
-    React.useState<UserIdentity>();
+  let [selectedQuantifier, setSelectedQuantifier] = React.useState<User>();
 
   const columns = React.useMemo(
     () => [
@@ -60,7 +59,7 @@ const PoolTable = () => {
   if (!isApiResponseOk(allUsersQueryResponse))
     return <div>Unable to fetch user list.</div>;
 
-  const handleDeleteQuantifierClick = (quantifier: UserIdentity) => {
+  const handleDeleteQuantifierClick = (quantifier: User) => {
     setSelectedQuantifier(quantifier);
     setIsOpen(true);
   };
@@ -85,7 +84,7 @@ const PoolTable = () => {
               <td>
                 <button
                   onClick={() =>
-                    handleDeleteQuantifierClick(row.original as UserIdentity)
+                    handleDeleteQuantifierClick(row.original as User)
                   }
                   className="hover:text-gray-400"
                 >

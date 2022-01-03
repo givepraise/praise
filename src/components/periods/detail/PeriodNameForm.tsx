@@ -38,7 +38,7 @@ const PeriodNameForm = () => {
   let { id } = useParams() as any;
 
   useAllPeriodsQuery(); // Make sure that all periods are fetched
-  const period = useRecoilValue(SinglePeriod({ id: id }));
+  const period = useRecoilValue(SinglePeriod({ periodId: id }));
   const [apiResponse, setApiResponse] = useRecoilState(UpdatePeriodApiResponse);
   const { updatePeriod } = useUpdatePeriod();
 

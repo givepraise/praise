@@ -1,4 +1,4 @@
-import { AllUsers, UserIdentity, UserRole } from "@/model/users";
+import { AllUsers, User, UserRole } from "@/model/users";
 import { classNames } from "@/utils/index";
 import { getUsername } from "@/utils/users";
 import {
@@ -25,7 +25,7 @@ const UserAutosuggest = ({
 
   const DropdownCombobox = () => {
     const [inputItems, setInputItems] = React.useState(
-      allUsers ? allUsers : ([] as UserIdentity[])
+      allUsers ? allUsers : ([] as User[])
     );
     const {
       isOpen,
@@ -67,7 +67,7 @@ const UserAutosuggest = ({
         }
       },
       onSelectedItemChange: (data: any) => {
-        const selectedItem = data.selectedItem as UserIdentity;
+        const selectedItem = data.selectedItem as User;
         onQuantifierAdded(selectedItem._id);
         onClose();
       },

@@ -2,6 +2,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import React from "react";
 import {
   atom,
+  atomFamily,
   selector,
   selectorFamily,
   useRecoilCallback,
@@ -17,6 +18,7 @@ import {
   PaginatedResponseData,
   useAuthApiQuery,
 } from "./api";
+import { Praise } from "./praise";
 
 export interface Period {
   _id?: number;
@@ -62,32 +64,8 @@ export const SinglePeriod = selectorFamily({
     async ({ get }) => {
       const allPeriods = get(AllPeriods);
       if (!allPeriods) return null;
-      return allPeriods.filter((period) => period._id === params.id)[0];
+      return allPeriods.filter((period) => period._id === params.periodId)[0];
     },
-});
-
-// Stores the api response from the latest call to /api/admin/periods/create
-export const CreatePeriodApiResponse = atom<
-  AxiosResponse<never> | AxiosError<never> | null
->({
-  key: "CreatePeriodApiResponse",
-  default: null,
-});
-
-// Stores the api response from the latest call to /api/admin/periods/update
-export const UpdatePeriodApiResponse = atom<
-  AxiosResponse<never> | AxiosError<never> | null
->({
-  key: "UpdatePeriodApiResponse",
-  default: null,
-});
-
-// Stores the api response from the latest call to /api/admin/periods/close
-export const ClosePeriodApiResponse = atom<
-  AxiosResponse<never> | AxiosError<never> | null
->({
-  key: "ClosePeriodApiResponse",
-  default: null,
 });
 
 export const useAllPeriodsQuery = () => {
@@ -111,6 +89,14 @@ export const useAllPeriodsQuery = () => {
 
   return allPeriodsQueryResponse;
 };
+
+// Stores the api response from the latest call to /api/admin/periods/create
+export const CreatePeriodApiResponse = atom<
+  AxiosResponse<never> | AxiosError<never> | null
+>({
+  key: "CreatePeriodApiResponse",
+  default: null,
+});
 
 // Hook that returns a function to use for creating a new period
 export const useCreatePeriod = () => {
@@ -142,6 +128,14 @@ export const useCreatePeriod = () => {
   );
   return { createPeriod };
 };
+
+// Stores the api response from the latest call to /api/admin/periods/update
+export const UpdatePeriodApiResponse = atom<
+  AxiosResponse<never> | AxiosError<never> | null
+>({
+  key: "UpdatePeriodApiResponse",
+  default: null,
+});
 
 /** TODO: modify function to update period endDate */
 export const useUpdatePeriod = () => {
@@ -182,16 +176,24 @@ export const useUpdatePeriod = () => {
   return { updatePeriod };
 };
 
+// Stores the api response from the latest call to /api/admin/periods/close
+export const ClosePeriodApiResponse = atom<
+  AxiosResponse<never> | AxiosError<never> | null
+>({
+  key: "ClosePeriodApiResponse",
+  default: null,
+});
+
 // Hook that returns a function to use for closing a period
 export const useClosePeriod = () => {
   const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
   const closePeriod = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (period: Period) => {
+      async (periodId: string) => {
         const response = await snapshot.getPromise(
           //TODO Dont forget to add auth befor production!
           ApiAuthPatchQuery({
-            endPoint: `/api/admin/periods/${period._id}/close`,
+            endPoint: `/api/admin/periods/${periodId}/close`,
           })
         );
 
@@ -219,3 +221,201 @@ export const useClosePeriod = () => {
   );
   return { closePeriod };
 };
+
+export const VerifyQuantifierPoolSizeQuery = selectorFamily({
+  key: "VerifyQuantifierPoolSizeQuery",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const response = get(
+        ApiAuthPatchQuery({
+          endPoint: `/api/admin/periods/${params.periodId}/verifyQuantifierPoolSize`,
+        })
+      );
+      return response;
+    },
+});
+
+export interface PoolRequirements {
+  quantifierPoolSize: number;
+  requiredPoolSize: number;
+}
+
+export const useVerifyQuantifierPoolSize = (
+  periodId: number
+): PoolRequirements | undefined => {
+  const response = useAuthApiQuery(VerifyQuantifierPoolSizeQuery({ periodId }));
+  const [poolRequirements, setPoolRequirements] = React.useState<
+    PoolRequirements | undefined
+  >(undefined);
+
+  React.useEffect(() => {
+    if (isApiResponseOk(response)) setPoolRequirements(response.data);
+  }, [response]);
+
+  return poolRequirements;
+};
+
+export const useAssignQuantifiers = () => {
+  const assignQuantifiers = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async (periodId: string) => {
+        const response = await snapshot.getPromise(
+          ApiAuthPatchQuery({
+            endPoint: `/api/admin/periods/${periodId}/assignQuantifiers`,
+          })
+        );
+        set(PeriodPraiseRequestId, new Date().getMilliseconds());
+        return response;
+      }
+  );
+  return { assignQuantifiers };
+};
+
+// The request Id is used to force refresh of PeriodPraiseQuery
+// PeriodPraiseQuery subscribes to the value. Increase to trigger
+// refresh.
+const PeriodPraiseRequestId = atom({
+  key: "PeriodPraiseRequestId",
+  default: 0,
+});
+
+export const PeriodPraise = atomFamily<Praise[] | undefined, string>({
+  key: "PeriodPraise",
+  default: undefined,
+});
+
+export const PeriodPraiseQuery = selectorFamily({
+  key: "PeriodPraiseQuery",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      get(PeriodPraiseRequestId);
+      const praise = get(
+        ApiAuthGetQuery({ endPoint: `/api/periods/${params.periodId}/praise` })
+      );
+      return praise;
+    },
+});
+
+export const usePeriodPraisesQuery = (periodId: string) => {
+  const periodPraiseQueryResponse = useAuthApiQuery(
+    PeriodPraiseQuery({ periodId })
+  );
+  const [periodPraise, setPeriodPraise] = useRecoilState(
+    PeriodPraise(periodId)
+  );
+
+  React.useEffect(() => {
+    if (
+      typeof periodPraise === "undefined" &&
+      isApiResponseOk(periodPraiseQueryResponse)
+    ) {
+      const praise = periodPraiseQueryResponse.data as Praise[];
+      if (Array.isArray(praise) && praise.length > 0) {
+        setPeriodPraise(praise);
+      }
+    }
+  }, [periodPraiseQueryResponse, periodPraise, setPeriodPraise]);
+
+  return periodPraiseQueryResponse;
+};
+
+interface QuantifierData {
+  quantifier: string;
+  count: number;
+  done: number;
+}
+
+export const PeriodQuantifiers = selectorFamily({
+  key: "PeriodQuantifiers",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const praise = get(PeriodPraise(params.periodId));
+      if (praise) {
+        let q: QuantifierData[] = [];
+
+        for (let praiseItem of praise) {
+          if (!praiseItem.quantifications) continue;
+
+          for (let quantification of praiseItem.quantifications) {
+            const qi = q.findIndex(
+              (item) => item.quantifier === quantification.quantifier
+            );
+
+            const done = quantification.score ? 1 : 0;
+
+            const qd: QuantifierData = {
+              quantifier: quantification.quantifier,
+              count: qi > -1 ? q[qi].count + 1 : 1,
+              done: qi > -1 ? q[qi].done + done : done,
+            };
+
+            if (qi > -1) {
+              q[qi] = qd;
+            } else {
+              q.push(qd);
+            }
+          }
+        }
+        return q;
+      }
+
+      return undefined;
+    },
+});
+
+interface ReceiverData {
+  username: string;
+  praiseCount: number;
+  praiseScore: number;
+}
+
+const avgPraiseScore = (scoreData: number[]) => {
+  return scoreData.reduce((a, b) => a + b, 0);
+};
+
+export const PeriodReceivers = selectorFamily({
+  key: "PeriodReceivers",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const praise = get(PeriodPraise(params.periodId));
+      if (praise) {
+        let r: ReceiverData[] = [];
+
+        for (let praiseItem of praise) {
+          const scoreData: number[] = [];
+
+          if (praiseItem.quantifications) {
+            for (let quantification of praiseItem.quantifications) {
+              if (quantification.score) scoreData.push(quantification.score);
+            }
+          }
+
+          const ri = r.findIndex(
+            (item) => item.username === praiseItem.receiver.username
+          );
+
+          const rd: ReceiverData = {
+            username: praiseItem.receiver.username,
+            praiseCount: ri > -1 ? r[ri].praiseCount + 1 : 1,
+            praiseScore:
+              ri > -1
+                ? r[ri].praiseScore + avgPraiseScore(scoreData)
+                : avgPraiseScore(scoreData),
+          };
+
+          if (ri > -1) {
+            r[ri] = rd;
+          } else {
+            r.push(rd);
+          }
+        }
+        return r;
+      }
+
+      return undefined;
+    },
+});

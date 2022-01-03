@@ -22,7 +22,7 @@ export enum UserRole {
   USER = "USER",
 }
 
-export interface UserIdentity {
+export interface User {
   _id: string;
   createdAt: string;
   updatedAt: string;
@@ -37,14 +37,10 @@ export enum UserAccountPlatform {
 }
 
 export interface UserAccount {
-  id: number;
-  createdAt: string;
-  updatedAt: string;
-  userId?: UserIdentity;
-  accountId: string;
+  id: string;
   username: string;
   profileImageUrl: string;
-  platform: UserAccountPlatform;
+  platform: string; // DISCORD | TELEGRAM
 }
 
 // The request Id is used to force refresh of AllUsersQuery.
@@ -68,7 +64,7 @@ export const AllUsersQuery = selector({
   },
 });
 
-export const AllUsers = atom<UserIdentity[] | undefined>({
+export const AllUsers = atom<User[] | undefined>({
   key: "AllUsers",
   default: undefined,
 });
@@ -95,7 +91,7 @@ export const useAllUsersQuery = () => {
     ) {
       const paginatedResponse =
         allUsersQueryResponse.data as PaginatedResponseData;
-      const users = paginatedResponse.docs as UserIdentity[];
+      const users = paginatedResponse.docs as User[];
       if (Array.isArray(users) && users.length > 0) setAllUsers(users);
     }
   }, [allUsersQueryResponse, setAllUsers, allUsers]);
@@ -112,7 +108,7 @@ export const AddUserRoleApiResponse = atom<
 
 // Hook that returns functions for administering users
 export const useAdminUsers = () => {
-  const allUsers: UserIdentity[] | undefined = useRecoilValue(AllUsers);
+  const allUsers: User[] | undefined = useRecoilValue(AllUsers);
 
   const addRole = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -126,7 +122,7 @@ export const useAdminUsers = () => {
 
         // If OK response, add returned user object to local state
         if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
-          const user = response.data as UserIdentity;
+          const user = response.data as User;
           if (user) {
             if (typeof allUsers !== "undefined") {
               set(
@@ -157,7 +153,7 @@ export const useAdminUsers = () => {
 
         // If OK response, add returned user object to local state
         if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
-          const user = response.data as UserIdentity;
+          const user = response.data as User;
           if (user) {
             if (typeof allUsers !== "undefined") {
               set(

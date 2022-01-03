@@ -1,6 +1,6 @@
-import { UserAccountPlatform, UserIdentity } from "@/model/users";
+import { User, UserAccountPlatform } from "@/model/users";
 
-export const getUsername = (user: UserIdentity): string | undefined => {
+export const getUsername = (user: User): string | undefined => {
   if (!user || !Array.isArray(user.accounts) || user.accounts.length === 0)
     return undefined;
 

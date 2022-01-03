@@ -2,7 +2,9 @@ import {
   AllPeriods,
   SinglePeriod,
   useAllPeriodsQuery,
+  useAssignQuantifiers,
   useClosePeriod,
+  useVerifyQuantifierPoolSize,
 } from "@/model/periods";
 import { formatDate } from "@/utils/date";
 import { getPreviousPeriod } from "@/utils/periods";
@@ -23,9 +25,15 @@ const PeriodDetails = () => {
   useAllPeriodsQuery();
   const allPeriods = useRecoilValue(AllPeriods);
   let { id } = useParams() as any;
-  const period = useRecoilValue(SinglePeriod({ id: id }));
+  const period = useRecoilValue(SinglePeriod({ periodId: id }));
+  const poolRequirements = useVerifyQuantifierPoolSize(id);
+
+  const assignDialogRef = React.useRef(null);
+  const closeDialogRef = React.useRef(null);
 
   const { closePeriod } = useClosePeriod();
+  const { assignQuantifiers } = useAssignQuantifiers();
+
   if (!period || !allPeriods) return null;
 
   const periodStartDate = getPreviousPeriod(allPeriods, period);
@@ -34,49 +42,52 @@ const PeriodDetails = () => {
     : "Dawn of time";
 
   const handleClosePeriod = () => {
-    closePeriod(period);
+    closePeriod(id);
   };
 
   const handleAssign = () => {
-    console.log("Assign!");
+    assignQuantifiers(id);
   };
 
   return (
     <div>
       <div>Period start: {periodStart}</div>
-      <div className="flex mt-4">
-        <div className="inline">Period end:</div>
-        <div className="inline ml-3 mt-[-9px]">
-          <PeriodDateForm></PeriodDateForm>
-        </div>
-      </div>
-      <div>Status: {period.status}</div>
+      <PeriodDateForm />
 
-      <div className="mt-5">
-        <button
-          className="text-xs praise-button"
-          onClick={() => setIsAssignDialogOpen(true)}
-        >
-          Assign quantifiers
-        </button>
-        <button
-          className="ml-5 text-xs praise-button"
-          onClick={() => setIsCloseDialogOpen(true)}
-        >
-          Close period
-        </button>
-      </div>
+      {period.status !== "CLOSED" ? (
+        <div className="mt-5">
+          {period.status === "OPEN" ? (
+            <button
+              className="praise-button"
+              onClick={() => setIsAssignDialogOpen(true)}
+            >
+              Assign quantifiers
+            </button>
+          ) : null}
+          {period.status === "QUANTIFY" ? (
+            <button
+              className="praise-button"
+              onClick={() => setIsCloseDialogOpen(true)}
+            >
+              Close period
+            </button>
+          ) : null}
+        </div>
+      ) : null}
 
       <React.Suspense fallback={null}>
         <Dialog
           open={isCloseDialogOpen}
           onClose={() => setIsCloseDialogOpen(false)}
           className="fixed inset-0 z-10 overflow-y-auto"
+          initialFocus={closeDialogRef}
         >
-          <PeriodCloseDialog
-            onClose={() => setIsCloseDialogOpen(false)}
-            onRemove={() => handleClosePeriod()}
-          />
+          <div ref={closeDialogRef}>
+            <PeriodCloseDialog
+              onClose={() => setIsCloseDialogOpen(false)}
+              onRemove={() => handleClosePeriod()}
+            />
+          </div>
         </Dialog>
       </React.Suspense>
 
@@ -85,11 +96,15 @@ const PeriodDetails = () => {
           open={isAssignDialogOpen}
           onClose={() => setIsAssignDialogOpen(false)}
           className="fixed inset-0 z-10 overflow-y-auto"
+          initialFocus={assignDialogRef}
         >
-          <PeriodAssignDialog
-            onClose={() => setIsAssignDialogOpen(false)}
-            onAssign={() => handleAssign()}
-          />
+          <div ref={assignDialogRef}>
+            <PeriodAssignDialog
+              onClose={() => setIsAssignDialogOpen(false)}
+              onAssign={() => handleAssign()}
+              poolRequirements={poolRequirements}
+            />
+          </div>
         </Dialog>
       </React.Suspense>
     </div>
