@@ -10,6 +10,7 @@ import mongoose, { ConnectOptions } from 'mongoose';
 import morgan from 'morgan';
 import BaseRouter from './routes';
 import seedData from './seed';
+import ErrorHandler from '@shared/ErrorHandler';
 
 /************************************************************************************
  *                              Set basic express settings
@@ -45,17 +46,9 @@ mongoose
 
     // Add APIs
     app.use('/api', BaseRouter);
+    app.use(ErrorHandler);
 
     seedData();
-
-    // Print API errors
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-      logger.err(err, true);
-      return res.status(BAD_REQUEST).json({
-        error: err.message,
-      });
-    });
 
     app.listen(5000, () => {
       console.log('Server has started!');
