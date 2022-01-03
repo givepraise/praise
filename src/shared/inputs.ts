@@ -8,7 +8,7 @@ export interface QueryInput extends Query {
   page?: string;
 }
 
-export interface PeriodCreateParams {
+export interface PeriodCreateUpdateInput {
   name: string;
   endDate: string;
 }

@@ -1,20 +1,18 @@
-import mongoose from 'mongoose';
-import { PeriodInterface } from './Period';
-import { UserInterface } from './User';
+import mongoose, { Schema } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-import { userAccountSchema, UserAccountInterface } from './UserAccount';
+import { UserInterface } from './User';
+import { UserAccountInterface } from './UserAccount';
 
 export interface QuantificationInterface {
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   quantifier: UserInterface;
-  score: number;
-  dismissed: boolean;
-  duplicatePraise: PraiseInterface;
+  score?: number;
+  dismissed?: boolean;
+  duplicatePraise?: PraiseInterface;
 }
 
 export interface PraiseInterface extends mongoose.Document {
-  period: PeriodInterface;
   reason: string;
   sourceId: string;
   sourceName: string;
@@ -39,11 +37,10 @@ const QuantificationSchema = new mongoose.Schema(
 
 const praiseSchema = new mongoose.Schema(
   {
-    period: { type: mongoose.Schema.Types.ObjectId, ref: 'Period' },
     reason: { type: String, required: true },
     quantifications: [QuantificationSchema],
-    giver: { type: userAccountSchema, required: true },
-    receiver: { type: userAccountSchema, required: true },
+    giver: { type: Schema.Types.ObjectId, ref: 'UserAccount' },
+    receiver: { type: Schema.Types.ObjectId, ref: 'UserAccount' },
   },
   {
     timestamps: true,
