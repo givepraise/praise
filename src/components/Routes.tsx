@@ -97,37 +97,32 @@ const AuthRoute: FC<AuthRouteProps> = ({ children, ...props }) => {
 
 const SubPages = () => {
   return (
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <Switch>
-        <Route exact path={`/periods`}>
-          <PeriodsPage />
-        </Route>
-        <AuthRoute roles={[ROLE_ADMIN]} path={`/periods/createupdate`}>
-          <PeriodsCreateUpdatePage />
-        </AuthRoute>
-        <Route exact path={`/periods/:id`}>
-          <PeriodDetail />
-        </Route>
-        <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
-          <QuantifierPoolPage />
-        </AuthRoute>
-        <AuthRoute
-          roles={[ROLE_QUANTIFIER]}
-          path={`/quantify/period/:periodId/user/:userId`}
-        >
-          <QuantifyPage />
-        </AuthRoute>
-        <AuthRoute
-          roles={[ROLE_QUANTIFIER]}
-          path={`/quantify/period/:periodId`}
-        >
-          <QuantifyPeriodPage />
-        </AuthRoute>
-        <Route exact path="/">
-          <MainPage />
-        </Route>
-      </Switch>
-    </React.Suspense>
+    <Switch>
+      <Route exact path={`/periods`}>
+        <PeriodsPage />
+      </Route>
+      <AuthRoute roles={[ROLE_ADMIN]} path={`/periods/createupdate`}>
+        <PeriodsCreateUpdatePage />
+      </AuthRoute>
+      <Route exact path={`/periods/:id`}>
+        <PeriodDetail />
+      </Route>
+      <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
+        <QuantifierPoolPage />
+      </AuthRoute>
+      <AuthRoute
+        roles={[ROLE_QUANTIFIER]}
+        path={`/quantify/period/:periodId/user/:userId`}
+      >
+        <QuantifyPage />
+      </AuthRoute>
+      <AuthRoute roles={[ROLE_QUANTIFIER]} path={`/quantify/period/:periodId`}>
+        <QuantifyPeriodPage />
+      </AuthRoute>
+      <Route exact path="/">
+        <MainPage />
+      </Route>
+    </Switch>
   );
 };
 
