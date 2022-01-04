@@ -249,7 +249,7 @@ export const praise = async (
     .where({
       createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
     })
-    .populate('receiver');
+    .populate('receiver giver');
 
   return res.status(StatusCodes.OK).json(praise);
 };
