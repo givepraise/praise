@@ -5,6 +5,7 @@ import jsonwebtoken, { VerifyErrors } from 'jsonwebtoken';
 import randomString from 'randomstring';
 
 export interface ClientData {
+  userId: string;
   ethereumAddress: string;
   roles: string[];
 }

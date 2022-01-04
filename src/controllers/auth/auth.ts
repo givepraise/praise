@@ -51,6 +51,7 @@ async function auth(req: AuthRequest, res: Response): Promise<any> {
   if (!user) throw new Error('User not found.');
 
   const accessToken = await jwtService.getJwt({
+    userId: user._id,
     ethereumAddress,
     roles: user.roles,
   });
