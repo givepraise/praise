@@ -28,6 +28,7 @@ export interface Praise {
   giver: UserAccount;
   receiver: UserAccount;
   source: Source;
+  avgScore?: number;
 }
 
 // The request Id is used to force refresh of AllPraisesQuery

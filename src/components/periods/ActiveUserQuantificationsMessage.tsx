@@ -1,5 +1,5 @@
 import {
-  ActiveUserQuantifications,
+  AllActiveQuantifierQuantifications,
   QuantifierData,
   SinglePeriod,
 } from "@/model/periods";
@@ -28,7 +28,9 @@ const QuantifierPeriodMessage = ({
 };
 
 export const ActiveUserQuantificationsMessage = () => {
-  const activeUserQuantifications = useRecoilValue(ActiveUserQuantifications);
+  const activeUserQuantifications = useRecoilValue(
+    AllActiveQuantifierQuantifications
+  );
   if (
     !activeUserQuantifications ||
     !Array.isArray(activeUserQuantifications) ||

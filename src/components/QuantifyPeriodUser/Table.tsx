@@ -1,7 +1,7 @@
 import DismissDialog from "@/components/QuantifyPeriodUser/DismissDialog";
 import DuplicateDialog from "@/components/QuantifyPeriodUser/DuplicateDialog";
 import { ActiveUserId } from "@/model/auth";
-import { PeriodPraise } from "@/model/periods";
+import { AllPeriodPraise } from "@/model/periods";
 import { Praise } from "@/model/praise";
 import { formatDate } from "@/utils/date";
 import { getPraiseMarks } from "@/utils/index";
@@ -39,7 +39,7 @@ const QuantifyTable = () => {
   let [isDuplicateDialogOpen, setIsDuplicateDialogOpen] = React.useState(false);
   let [selectedPraise, setSelectedPraise] = React.useState<any>();
 
-  const data = useRecoilValue(PeriodPraise(periodId));
+  const data = useRecoilValue(AllPeriodPraise(periodId));
 
   const handleChange = (value: number) => {
     /** TODO: update praise by Id (saved in selectedPraise) */

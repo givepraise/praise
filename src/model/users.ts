@@ -113,6 +113,21 @@ export const SingleUser = selectorFamily({
     },
 });
 
+export const SingleUserByReceiverId = selectorFamily({
+  key: "SingleUserByReceiverId",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const { receiverId } = params;
+      const allUsers = get(AllUsers);
+      if (!allUsers) return null;
+      return allUsers.find((user) => {
+        if (!user.accounts) return false;
+        return user.accounts.find((account) => account._id === receiverId);
+      });
+    },
+});
+
 export const AddUserRoleApiResponse = atom<
   AxiosResponse<never> | AxiosError<never> | null
 >({

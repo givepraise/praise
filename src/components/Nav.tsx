@@ -1,13 +1,14 @@
 import { SessionToken } from "@/model/auth";
 import { EthState } from "@/model/eth";
 import * as localStorage from "@/model/localStorage";
+import { ReactComponent as TECLogo } from "@/svg/tec-logo.svg";
 import { classNames } from "@/utils/index";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faAngleRight,
   faCalculator,
   faCog,
-  faUser,
+  faPrayingHands,
   faUserFriends,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -30,7 +31,11 @@ export const NavItem = ({ icon, description, to }: NavProps) => {
       id={to.substring(1) + "-nav-button"}
     >
       <Link to={to}>
-        <FontAwesomeIcon icon={icon} size="1x" className="inline-block mr-4" />
+        <FontAwesomeIcon
+          icon={icon}
+          size="1x"
+          className="inline-block ml-2 mr-3"
+        />
         <div className="flex-auto inline-block my-1">
           <span>{description}</span>
         </div>
@@ -53,11 +58,17 @@ export default function Nav() {
       <div className="flex flex-col flex-auto h-full bg-gray-50">
         <div className="flex flex-col flex-grow">
           <ul className="relative h-full p-0 m-0 list-none">
-            <li className="relative flex justify-start w-full p-4 mb-3 text-2xl font-bold border-b shadow-sm">
-              <Link to="/">Praise 🙏</Link>
+            <li className="relative flex justify-start w-full p-4 text-2xl font-bold">
+              <Link to="/">
+                <TECLogo className={"inline-block w-52"} />
+              </Link>
             </li>
 
-            <NavItem icon={faUser} description="My praise" to="/mypraise" />
+            <NavItem
+              icon={faPrayingHands}
+              description="My praise"
+              to="/mypraise"
+            />
             <AdminOnly>
               <NavItem
                 icon={faUserFriends}

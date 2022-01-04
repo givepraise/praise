@@ -2,7 +2,7 @@ import BackLink from "@/components/BackLink";
 import BreadCrumb from "@/components/BreadCrumb";
 import QuantifyOverviewTable from "@/components/QuantifyPeriod/Table";
 import {
-  ActiveUserQuantificationPeriod,
+  PeriodActiveQuantifierQuantifications,
   SinglePeriod,
   useAllPeriodsQuery,
 } from "@/model/periods";
@@ -17,7 +17,7 @@ const PeriodMessage = () => {
   useAllPeriodsQuery(); // Make sure that all periods are fetched
   const period = useRecoilValue(SinglePeriod({ periodId }));
   const quantificationData = useRecoilValue(
-    ActiveUserQuantificationPeriod({ periodId })
+    PeriodActiveQuantifierQuantifications({ periodId })
   );
 
   return (

@@ -13,37 +13,37 @@ import { useRecoilValue } from "recoil";
 
 const PeriodDetailPage = () => {
   useAllPeriodsQuery();
-  let { id } = useParams() as any;
-  const period = useRecoilValue(SinglePeriod({ periodId: id }));
+  let { periodId } = useParams() as any;
+  const period = useRecoilValue(SinglePeriod({ periodId }));
 
   return (
     <>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
       <BackLink />
 
-      <React.Suspense fallback="Loading…">
-        <div className="w-2/3 praise-box ">
+      <div className="w-2/3 praise-box ">
+        <React.Suspense fallback="Loading…">
           <div className="float-right px-2 py-1 text-xs text-white bg-black rounded-full">
             {period ? period.status : null}
           </div>
           <PeriodNameForm />
           <PeriodDetails />
-        </div>
-      </React.Suspense>
-      <React.Suspense fallback="Loading…">
-        <div className="w-2/3 praise-box">
+        </React.Suspense>
+      </div>
+      <div className="w-2/3 praise-box">
+        <React.Suspense fallback="Loading…">
           {period?.status === "QUANTIFY" || period?.status === "CLOSED" ? (
             <QuantifierTable />
           ) : (
             "No quantifiers have yet been assigned to this period."
           )}
-        </div>
-      </React.Suspense>
-      <React.Suspense fallback="Loading…">
-        <div className="w-2/3 praise-box">
+        </React.Suspense>
+      </div>
+      <div className="w-2/3 praise-box">
+        <React.Suspense fallback="Loading…">
           <ReceiverTable />
-        </div>
-      </React.Suspense>
+        </React.Suspense>
+      </div>
     </>
   );
 };

@@ -5,7 +5,7 @@ import {
   usePeriodPraisesQuery,
 } from "@/model/periods";
 import { useAllUsersQuery } from "@/model/users";
-import { faCalculator } from "@fortawesome/free-solid-svg-icons";
+import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useRecoilValue } from "recoil";
@@ -47,10 +47,10 @@ export const LoadScreen = () => {
   return (
     <div className="fixed top-0 left-0 z-50 block w-full h-full bg-white opacity-75">
       <span
-        className="relative block w-0 h-0 mx-auto my-0 text-green-500 opacity-75 top-1/2"
+        className="relative block w-0 h-0 mx-auto my-0 top-1/2"
         style={{ top: "50%" }}
       >
-        <FontAwesomeIcon icon={faCalculator} size="3x" spin />
+        <FontAwesomeIcon icon={faPrayingHands} size="5x" spin />
       </span>
     </div>
   );

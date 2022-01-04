@@ -35,10 +35,10 @@ const validate = (
 };
 
 const PeriodNameForm = () => {
-  let { id } = useParams() as any;
+  let { periodId } = useParams() as any;
 
   useAllPeriodsQuery(); // Make sure that all periods are fetched
-  const period = useRecoilValue(SinglePeriod({ periodId: id }));
+  const period = useRecoilValue(SinglePeriod({ periodId }));
   const [apiResponse, setApiResponse] = useRecoilState(UpdatePeriodApiResponse);
   const { updatePeriod } = useUpdatePeriod();
 

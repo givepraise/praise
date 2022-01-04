@@ -12,6 +12,7 @@ import MainPage from "@/pages/Main";
 import MyPraise from "@/pages/MyPraise";
 import PeriodDetail from "@/pages/Periods/Detail";
 import QuantifyPeriodPage from "@/pages/Quantify/Period";
+import QuantSummaryPeriodReceiverPage from "@/pages/QuantSummary/PeriodReceiver";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -105,7 +106,7 @@ const SubPages = () => {
       <AuthRoute roles={[ROLE_ADMIN]} path={`/periods/createupdate`}>
         <PeriodsCreateUpdatePage />
       </AuthRoute>
-      <Route exact path={`/periods/:id`}>
+      <Route exact path={`/periods/:periodId`}>
         <PeriodDetail />
       </Route>
       <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
@@ -120,6 +121,10 @@ const SubPages = () => {
       <AuthRoute roles={[ROLE_QUANTIFIER]} path={`/quantify/period/:periodId`}>
         <QuantifyPeriodPage />
       </AuthRoute>
+      <Route exact path="/quantsummary/period/:periodId/receiver/:receiverId">
+        <QuantSummaryPeriodReceiverPage />
+      </Route>
+
       <Route exact path="/mypraise">
         <MyPraise />
       </Route>
@@ -140,7 +145,7 @@ const Routes = () => {
         <div className="flex min-h-screen">
           <Nav />
           <div className="flex w-full">
-            <div className="w-[920px] pt-4 mx-auto px-5">
+            <div className="w-[920px] pt-4 px-5">
               <div>
                 <SubPages />
               </div>

@@ -1,9 +1,7 @@
 import PoolDeleteDialog from "@/components/pool/DeleteDialog";
-import { isApiResponseOk } from "@/model/api";
 import {
   AllQuantifierUsers,
   useAdminUsers,
-  useAllUsersQuery,
   User,
   UserRole,
 } from "@/model/users";
@@ -17,7 +15,6 @@ import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
 
 const PoolTable = () => {
-  const allUsersQueryResponse = useAllUsersQuery();
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
   const { removeRole } = useAdminUsers();
 
@@ -58,8 +55,8 @@ const PoolTable = () => {
 
   const { getTableProps, getTableBodyProps, rows, prepareRow } = tableInstance;
 
-  if (!isApiResponseOk(allUsersQueryResponse))
-    return <div>Unable to fetch user list.</div>;
+  if (!allQuantifierUsers)
+    return <div>There are no users in the Quantifier pool.</div>;
 
   const handleDeleteQuantifierClick = (quantifier: User) => {
     setSelectedQuantifier(quantifier);

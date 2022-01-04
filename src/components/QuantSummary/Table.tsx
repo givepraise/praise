@@ -1,32 +1,50 @@
 import {
-  AllPeriodReceivers,
-  ReceiverData,
-  usePeriodPraisesQuery,
+  AllPeriodReceiverPraise,
+  QuantifierReceiverData,
 } from "@/model/periods";
+import { formatDate } from "@/utils/date";
+import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { SyntheticEvent } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
 
-const ReceiverTable = () => {
+const PeriodReceiverTable = () => {
   const history = useHistory();
-  let { periodId } = useParams() as any;
-  usePeriodPraisesQuery(periodId);
-  const periodReceivers = useRecoilValue(AllPeriodReceivers({ periodId }));
+  let { periodId, receiverId } = useParams() as any;
+
+  const data = useRecoilValue(
+    AllPeriodReceiverPraise({ periodId, receiverId })
+  );
 
   const columns = React.useMemo(
     () => [
       {
-        Header: "Receiver",
-        accessor: "username",
+        Header: "From",
+        accessor: "createdAt",
+        Cell: (data: any) => {
+          return (
+            <div className="flex items-center w-full">
+              <div className="flex items-center">
+                <FontAwesomeIcon icon={faUserCircle} size="2x" />
+              </div>
+              <div className="flex-grow p-3 whitespace-nowrap">
+                {formatDate(data.row.original.createdAt)}
+                <br />
+                {data.row.original.giver.username}
+              </div>
+            </div>
+          );
+        },
       },
       {
-        Header: "Number of praise",
-        accessor: "praiseCount",
+        Header: "Reason",
+        accessor: "reason",
       },
       {
-        Header: "Total praise score",
-        accessor: "praiseScore",
+        Header: "Avg.score",
+        accessor: "avgScore",
       },
     ],
     []
@@ -34,16 +52,16 @@ const ReceiverTable = () => {
 
   const options = {
     columns,
-    data: periodReceivers ? periodReceivers : [],
+    data: data ? data : [],
   } as TableOptions<{}>;
   const tableInstance = useTable(options);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const handleClick = (data: ReceiverData) => (e: SyntheticEvent) => {
+  const handleClick = (data: QuantifierReceiverData) => (e: SyntheticEvent) => {
     history.push(
-      `/quantsummary/period/${periodId}/receiver/${data.receiverId}`
+      `/quantify/period/${data.periodId}/receiver/${data.receiverId}`
     );
   };
   return (
@@ -71,7 +89,7 @@ const ReceiverTable = () => {
               className="cursor-pointer hover:bg-gray-100"
               id={"period-" + row.values.name}
               {...row.getRowProps()}
-              onClick={handleClick(row.original as ReceiverData)}
+              onClick={handleClick(row.original as QuantifierReceiverData)}
             >
               {row.cells.map((cell) => {
                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
@@ -84,4 +102,4 @@ const ReceiverTable = () => {
   );
 };
 
-export default ReceiverTable;
+export default PeriodReceiverTable;
