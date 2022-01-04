@@ -17,7 +17,7 @@ docker pull mongo
 Run mongo:
 
 ```
-yarn mongo:start
+yarn mongodb:start
 ```
 
 ## 2. Start API backend
