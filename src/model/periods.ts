@@ -18,6 +18,7 @@ import {
   PaginatedResponseData,
   useAuthApiQuery,
 } from "./api";
+import { UserId } from "./auth";
 import { Praise } from "./praise";
 
 export interface Period {
@@ -348,8 +349,9 @@ export const usePeriodPraisesQuery = (periodId: string) => {
   return periodPraiseQueryResponse;
 };
 
-interface QuantifierData {
-  quantifier: string;
+export interface QuantifierData {
+  periodId: string;
+  userId: string;
   count: number;
   done: number;
 }
@@ -368,13 +370,14 @@ export const PeriodQuantifiers = selectorFamily({
 
           for (let quantification of praiseItem.quantifications) {
             const qi = q.findIndex(
-              (item) => item.quantifier === quantification.quantifier
+              (item) => item.userId === quantification.quantifier
             );
 
             const done = quantification.score ? 1 : 0;
 
             const qd: QuantifierData = {
-              quantifier: quantification.quantifier,
+              periodId: params.periodId,
+              userId: quantification.quantifier,
               count: qi > -1 ? q[qi].count + 1 : 1,
               done: qi > -1 ? q[qi].done + done : done,
             };
@@ -445,4 +448,26 @@ export const PeriodReceivers = selectorFamily({
 
       return undefined;
     },
+});
+
+export const ActiveUserQuantifications = selector({
+  key: "ActiveUserQuantifications",
+  get: async ({ get }) => {
+    const periods = get(AllPeriods);
+    const userId = get(UserId);
+    const response: QuantifierData[] = [];
+    if (!periods) return undefined;
+    for (const period of periods) {
+      if (period.status === "QUANTIFY") {
+        let periodQuantifiers = get(
+          PeriodQuantifiers({ periodId: period._id })
+        );
+        if (!periodQuantifiers) continue;
+        for (const qd of periodQuantifiers) {
+          if (qd.userId === userId) response.push(qd);
+        }
+      }
+    }
+    return response;
+  },
 });
