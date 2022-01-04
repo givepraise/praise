@@ -32,7 +32,7 @@ const QuantifierTable = () => {
     () => [
       {
         Header: "Quantifier",
-        accessor: "quantifier",
+        accessor: "userId",
         Cell: (data: any) => <UserCell userId={data.value} />,
       },
       {
