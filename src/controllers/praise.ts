@@ -1,5 +1,6 @@
 import PraiseModel from '@entities/Praise';
 import { NOT_FOUND } from '@shared/constants';
+import { NotFoundError } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
 import { QueryInput } from '@shared/inputs';
 import { Request, Response } from 'express';
@@ -20,10 +21,7 @@ export const all = async (
 const single = async (req: Request, res: Response): Promise<Response> => {
   const praise = await PraiseModel.findById(req.params.id);
 
-  if (!praise)
-    return res.status(NOT_FOUND).json({
-      error: 'Praise not found.',
-    });
+  if (!praise) throw new NotFoundError('Praise');
 
   return res.status(200).json(praise);
 };

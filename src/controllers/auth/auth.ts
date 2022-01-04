@@ -1,4 +1,5 @@
 import UserModel from '@entities/User';
+import { NotFoundError, UnauthorizedError } from '@shared/errors';
 import { JwtService } from '@shared/JwtService';
 import { ethers } from 'ethers';
 import { Request, Response } from 'express';
@@ -37,18 +38,18 @@ async function auth(req: AuthRequest, res: Response): Promise<any> {
   const queryResult = (await UserModel.findOne({ ethereumAddress })
     .select('nonce')
     .exec()) as any;
-  if (!queryResult) throw new Error('User not found.');
+  if (!queryResult) throw new NotFoundError('User');
 
   // Generate expected message, nonce included.
   // Recover signer from generated message + signature
   const generatedMsg = generateLoginMessage(ethereumAddress, queryResult.nonce);
   const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
   if (signerAddress !== ethereumAddress)
-    throw new Error('Verification failed.');
+    throw new UnauthorizedError('Verification failed.');
 
   // Generate access token
   const user = await UserModel.findOne({ ethereumAddress });
-  if (!user) throw new Error('User not found.');
+  if (!user) throw new NotFoundError('User');
 
   const accessToken = await jwtService.getJwt({
     ethereumAddress,

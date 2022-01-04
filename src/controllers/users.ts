@@ -1,5 +1,5 @@
 import UserModel from '@entities/User';
-import { BAD_REQUEST, NOT_FOUND } from '@shared/constants';
+import { NOT_FOUND } from '@shared/constants';
 import { getQuerySort } from '@shared/functions';
 import {
   AddRoleInput,
@@ -12,6 +12,7 @@ import {
   userListTransformer,
   userSingleTransformer,
 } from 'src/transformers/userTransformer';
+import { NotFoundError } from '@shared/errors';
 
 const all = async (
   req: Request<any, any, QueryInput>,
@@ -29,10 +30,7 @@ const all = async (
 const single = async (req: Request, res: Response): Promise<Response> => {
   const user = await UserModel.findById(req.params.id);
 
-  if (!user)
-    return res.status(NOT_FOUND).json({
-      error: 'User not found.',
-    });
+  if (!user) throw new NotFoundError('User');
 
   return res.status(200).json(userSingleTransformer(req, user));
 };
@@ -59,10 +57,9 @@ const addRole = async (
   res: Response
 ): Promise<Response> => {
   const user = await UserModel.findById(req.params.id).populate('accounts');
-  if (!user)
-    return res.status(NOT_FOUND).json({
-      error: 'User not found.',
-    });
+  const { role } = req.body;
+
+  if (!user) throw new NotFoundError('User');
 
   if (!user.roles.includes(role)) {
     user.roles.push(role);
@@ -76,10 +73,9 @@ const removeRole = async (
   res: Response
 ): Promise<Response> => {
   const user = await UserModel.findById(req.params.id).populate('accounts');
-  if (!user)
-    return res.status(NOT_FOUND).json({
-      error: 'User not found.',
-    });
+  const { role } = req.body;
+
+  if (!user) throw new NotFoundError('User');
 
   var roleIndex = user.roles.indexOf(role);
   user.roles.splice(roleIndex, 1);

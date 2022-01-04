@@ -1,6 +1,7 @@
 import PeriodModel, { PeriodInterface } from '@entities/Period';
 import PraiseModel from '@entities/Praise';
 import UserModel, { UserRole } from '@entities/User';
+import { BadRequestError, NotFoundError } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
 import { PeriodCreateUpdateInput, QueryInput } from '@shared/inputs';
 import { Request, Response } from 'express';
@@ -92,7 +93,7 @@ interface Receiver {
 // Returns an array of an
 const getQuantifierReceivers = async (periodId: string) => {
   const period = await PeriodModel.findById(periodId);
-  if (!period) throw new Error('Period not found.');
+  if (!period) throw new NotFoundError('Period');
 
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
@@ -184,9 +185,11 @@ export const assignQuantifiers = async (
   res: Response
 ): Promise<Response> => {
   const period = await PeriodModel.findById(req.params.periodId);
-  if (!period) throw new Error('Period not found.');
+  if (!period) throw new NotFoundError('Period');
   if (period.status !== 'OPEN')
-    throw new Error('Quantifiers can only be assigned on OPEN periods.');
+    throw new BadRequestError(
+      'Quantifiers can only be assigned on OPEN periods.'
+    );
 
   const quantifierReceivers = await getQuantifierReceivers(req.params.periodId);
   const quantifierPool = await UserModel.find({ roles: UserRole.QUANTIFIER });
@@ -241,7 +244,7 @@ export const praise = async (
   res: Response
 ): Promise<Response> => {
   const period = await PeriodModel.findById(req.params.periodId);
-  if (!period) throw new Error('Period not found.');
+  if (!period) throw new NotFoundError('Period');
 
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
