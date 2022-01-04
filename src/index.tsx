@@ -6,6 +6,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import EthConnection from "./components/EthConnection";
 import Routes from "./components/Routes";
+import { LoadScreen, StartupLoader } from "./startupLoader";
 import "./styles/globals.css";
 
 const LOAD_DELAY = 500;
@@ -39,7 +40,10 @@ ReactDOM.render(
             <EthConnection />
             <main className="font-sans text-sm">
               <DelayedLoading>
-                <Routes />
+                <React.Suspense fallback={<LoadScreen />}>
+                  <StartupLoader />
+                  <Routes />
+                </React.Suspense>
               </DelayedLoading>
             </main>
           </div>
