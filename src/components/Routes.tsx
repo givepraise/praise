@@ -9,6 +9,7 @@ import { EthState } from "@/model/eth";
 import * as localStorage from "@/model/localStorage";
 import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
+import MyPraise from "@/pages/MyPraise";
 import PeriodDetail from "@/pages/Periods/Detail";
 import QuantifyPeriodPage from "@/pages/Quantify/Period";
 import React, { FC } from "react";
@@ -119,6 +120,9 @@ const SubPages = () => {
       <AuthRoute roles={[ROLE_QUANTIFIER]} path={`/quantify/period/:periodId`}>
         <QuantifyPeriodPage />
       </AuthRoute>
+      <Route exact path="/mypraise">
+        <MyPraise />
+      </Route>
       <Route exact path="/">
         <MainPage />
       </Route>

@@ -57,7 +57,7 @@ export default function Nav() {
               <Link to="/">Praise 🙏</Link>
             </li>
 
-            <NavItem icon={faUser} description="My praise" to="/praise" />
+            <NavItem icon={faUser} description="My praise" to="/mypraise" />
             <AdminOnly>
               <NavItem
                 icon={faUserFriends}
