@@ -33,7 +33,7 @@ export interface Praise {
 // The request Id is used to force refresh of AllPraisesQuery
 // AllPraisesQuery subscribes to the value. Increase to trigger
 // refresh.
-const PraisesRequestId = atom({
+export const PraisesRequestId = atom({
   key: "PraisesRequestId",
   default: 0,
 });

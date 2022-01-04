@@ -21,6 +21,8 @@ const PoolTable = () => {
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
   const { removeRole } = useAdminUsers();
 
+  const deleteDialogRef = React.useRef(null);
+
   let [isOpen, setIsOpen] = React.useState(false);
   let [selectedQuantifier, setSelectedQuantifier] = React.useState<User>();
 
@@ -99,19 +101,22 @@ const PoolTable = () => {
           );
         })}
 
-        <React.Suspense fallback={null}>
+        {isOpen ? (
           <Dialog
             open={isOpen && !!selectedQuantifier}
             onClose={() => setIsOpen(false)}
             className="fixed inset-0 z-10 overflow-y-auto"
+            initialFocus={deleteDialogRef}
           >
-            <PoolDeleteDialog
-              onClose={() => setIsOpen(false)}
-              onQuantifierRemoved={(id: string) => removeQuantifier(id)}
-              quantifier={selectedQuantifier}
-            />
+            <div ref={deleteDialogRef}>
+              <PoolDeleteDialog
+                onClose={() => setIsOpen(false)}
+                onQuantifierRemoved={(id: string) => removeQuantifier(id)}
+                quantifier={selectedQuantifier}
+              />
+            </div>
           </Dialog>
-        </React.Suspense>
+        ) : null}
       </tbody>
     </table>
   );

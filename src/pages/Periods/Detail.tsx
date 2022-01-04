@@ -2,8 +2,8 @@ import BackLink from "@/components/BackLink";
 import BreadCrumb from "@/components/BreadCrumb";
 import PeriodDetails from "@/components/periods/detail/Details";
 import PeriodNameForm from "@/components/periods/detail/PeriodNameForm";
-import PeriodSummary from "@/components/periods/detail/PeriodSummary";
-import Quantifiers from "@/components/periods/detail/Quantifiers";
+import QuantifierTable from "@/components/periods/detail/QuantifierTable";
+import ReceiverTable from "@/components/periods/detail/ReceiverTable";
 import { SinglePeriod, useAllPeriodsQuery } from "@/model/periods";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import { default as React } from "react";
@@ -33,7 +33,7 @@ const PeriodDetailPage = () => {
       <React.Suspense fallback="Loading…">
         <div className="w-2/3 praise-box">
           {period?.status === "QUANTIFY" || period?.status === "CLOSED" ? (
-            <Quantifiers />
+            <QuantifierTable />
           ) : (
             "No quantifiers have yet been assigned to this period."
           )}
@@ -41,7 +41,7 @@ const PeriodDetailPage = () => {
       </React.Suspense>
       <React.Suspense fallback="Loading…">
         <div className="w-2/3 praise-box">
-          <PeriodSummary />
+          <ReceiverTable />
         </div>
       </React.Suspense>
     </>
