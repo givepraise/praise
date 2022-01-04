@@ -1,7 +1,11 @@
 import BackLink from "@/components/BackLink";
 import BreadCrumb from "@/components/BreadCrumb";
 import QuantifyTable from "@/components/QuantifyPeriodUser/Table";
-import { SinglePeriod, useAllPeriodsQuery } from "@/model/periods";
+import {
+  PeriodActiveQuantifierReceiver,
+  SinglePeriod,
+  useAllPeriodsQuery,
+} from "@/model/periods";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useParams } from "react-router-dom";
@@ -18,11 +22,18 @@ const PeriodBreadCrumb = () => {
 };
 
 const PeriodMessage = () => {
+  let { periodId, receiverId } = useParams() as any;
+
+  const data = useRecoilValue(
+    PeriodActiveQuantifierReceiver({ periodId, receiverId })
+  );
+
+  if (!data) return null;
   return (
     <>
-      <h2>Receiver: Happy Salamander</h2>
-      <p>Number of praise items: 17</p>
-      <p>Items left to quantify: 17</p>
+      <h2>Receiver: {data.receiverName}</h2>
+      <p>Number of praise items: {data.count}</p>
+      <p>Items left to quantify: {data.count - data.done}</p>
     </>
   );
 };

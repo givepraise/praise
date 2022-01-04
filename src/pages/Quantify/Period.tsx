@@ -1,7 +1,11 @@
 import BackLink from "@/components/BackLink";
 import BreadCrumb from "@/components/BreadCrumb";
 import QuantifyOverviewTable from "@/components/QuantifyPeriod/Table";
-import { SinglePeriod, useAllPeriodsQuery } from "@/model/periods";
+import {
+  ActiveUserQuantificationPeriod,
+  SinglePeriod,
+  useAllPeriodsQuery,
+} from "@/model/periods";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useParams } from "react-router-dom";
@@ -12,14 +16,20 @@ const PeriodMessage = () => {
 
   useAllPeriodsQuery(); // Make sure that all periods are fetched
   const period = useRecoilValue(SinglePeriod({ periodId }));
+  const quantificationData = useRecoilValue(
+    ActiveUserQuantificationPeriod({ periodId })
+  );
 
   return (
     <>
       <h2>{period?.name}</h2>
-      <div>
-        Assigned number of praise items: 27 <br />
-        Items left to quantify this period: 17
-      </div>
+      {quantificationData ? (
+        <div>
+          Assigned number of praise items: {quantificationData.count} <br />
+          Items left to quantify this period:{" "}
+          {quantificationData.count - quantificationData.done}
+        </div>
+      ) : null}
     </>
   );
 };

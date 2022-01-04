@@ -1,9 +1,9 @@
 import Nav from "@/components/Nav";
 import {
+  ActiveUserRoles,
   ROLE_ADMIN,
   ROLE_QUANTIFIER,
   SessionToken,
-  UserRoles,
 } from "@/model/auth";
 import { EthState } from "@/model/eth";
 import * as localStorage from "@/model/localStorage";
@@ -67,7 +67,7 @@ interface AuthRouteProps {
 // A Route that takes an array of roles as argument and redirects
 // to frontpage if user do not belong to any of the given roles
 const AuthRoute: FC<AuthRouteProps> = ({ children, ...props }) => {
-  const userRoles = useRecoilValue(UserRoles);
+  const userRoles = useRecoilValue(ActiveUserRoles);
 
   let authenticated = false;
   for (const role of props.roles) {
@@ -113,7 +113,7 @@ const SubPages = () => {
       </AuthRoute>
       <AuthRoute
         roles={[ROLE_QUANTIFIER]}
-        path={`/quantify/period/:periodId/user/:userId`}
+        path={`/quantify/period/:periodId/receiver/:receiverId`}
       >
         <QuantifyPage />
       </AuthRoute>

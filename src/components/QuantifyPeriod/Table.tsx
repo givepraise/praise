@@ -1,37 +1,34 @@
-import { Period } from "@/model/periods";
+import {
+  PeriodActiveQuantifierReceivers,
+  QuantifierReceiverData,
+} from "@/model/periods";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { SyntheticEvent } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
-
-const dummyData = [
-  {
-    receiver: "Happy Salamander",
-    finishedItems: "17/17",
-  },
-  {
-    receiver: "Santas Helper",
-    finishedItems: "2/34",
-  },
-  {
-    receiver: "Daft Punk",
-    finishedItems: "12/22",
-  },
-];
+import { useRecoilValue } from "recoil";
 
 const QuantifyOverviewTable = () => {
   const history = useHistory();
+  let { periodId } = useParams() as any;
+
+  const data = useRecoilValue(PeriodActiveQuantifierReceivers({ periodId }));
 
   const columns = React.useMemo(
     () => [
       {
         Header: "Receiver",
-        accessor: "receiver",
+        accessor: "receiverName",
       },
       {
         Header: "Finished items",
         accessor: "finishedItems",
+        Cell: (data: any) => {
+          return data.row.original
+            ? `${data.row.original.done} / ${data.row.original.count}`
+            : null;
+        },
       },
     ],
     []
@@ -39,15 +36,17 @@ const QuantifyOverviewTable = () => {
 
   const options = {
     columns,
-    data: dummyData,
+    data: data ? data : [],
   } as TableOptions<{}>;
   const tableInstance = useTable(options);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const handleClick = (perioId: string) => (e: SyntheticEvent) => {
-    history.push(`/quantify/period/1/user/2`);
+  const handleClick = (data: QuantifierReceiverData) => (e: SyntheticEvent) => {
+    history.push(
+      `/quantify/period/${data.periodId}/receiver/${data.receiverId}`
+    );
   };
   return (
     <table
@@ -74,7 +73,7 @@ const QuantifyOverviewTable = () => {
               className="cursor-pointer hover:bg-gray-100"
               id={"period-" + row.values.name}
               {...row.getRowProps()}
-              onClick={handleClick((row.original as Period)._id!)}
+              onClick={handleClick(row.original as QuantifierReceiverData)}
             >
               {row.cells.map((cell) => {
                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;

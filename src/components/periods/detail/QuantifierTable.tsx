@@ -1,24 +1,14 @@
+import { UserCell } from "@/components/table/UserCell";
 import {
   Period,
   PeriodQuantifiers,
   usePeriodPraisesQuery,
 } from "@/model/periods";
-import { SingleUser, useAllUsersQuery } from "@/model/users";
-import { getUsername } from "@/utils/users";
+import { useAllUsersQuery } from "@/model/users";
 import React, { SyntheticEvent } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
-
-interface UserCellProps {
-  userId: string;
-}
-
-const UserCell = ({ userId }: UserCellProps) => {
-  const user = useRecoilValue(SingleUser({ userId }));
-  if (user) return <div>{getUsername(user)}</div>;
-  return <div>{userId}</div>;
-};
 
 const QuantifierTable = () => {
   const history = useHistory();

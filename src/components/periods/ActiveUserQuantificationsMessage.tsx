@@ -20,7 +20,7 @@ const QuantifierPeriodMessage = ({
   if (!period) return null;
   return (
     <li key={period._id}>
-      <Link to="/">{period.name}</Link> (
+      <Link to={`/quantify/period/${period._id}`}>{period.name}</Link> (
       {quantifierData.count - quantifierData.done}/{quantifierData.count}{" "}
       unfinished items)
     </li>

@@ -38,6 +38,7 @@ export enum UserAccountPlatform {
 }
 
 export interface UserAccount {
+  _id?: string;
   id: string;
   username: string;
   profileImageUrl: string;

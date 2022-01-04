@@ -18,7 +18,7 @@ import {
   PaginatedResponseData,
   useAuthApiQuery,
 } from "./api";
-import { UserId } from "./auth";
+import { ActiveUserId } from "./auth";
 import { Praise } from "./praise";
 
 export interface Period {
@@ -454,7 +454,7 @@ export const ActiveUserQuantifications = selector({
   key: "ActiveUserQuantifications",
   get: async ({ get }) => {
     const periods = get(AllPeriods);
-    const userId = get(UserId);
+    const userId = get(ActiveUserId);
     const response: QuantifierData[] = [];
     if (!periods) return undefined;
     for (const period of periods) {
@@ -470,4 +470,88 @@ export const ActiveUserQuantifications = selector({
     }
     return response;
   },
+});
+
+export const ActiveUserQuantificationPeriod = selectorFamily({
+  key: "ActiveUserQuantificationPeriod",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const period = get(SinglePeriod({ periodId: params.periodId }));
+      const userId = get(ActiveUserId);
+      if (!period) return undefined;
+      if (period.status === "QUANTIFY") {
+        let periodQuantifiers = get(
+          PeriodQuantifiers({ periodId: period._id })
+        );
+        if (!periodQuantifiers) return undefined;
+        for (const qd of periodQuantifiers) {
+          if (qd.userId === userId) return qd;
+        }
+      }
+      return undefined;
+    },
+});
+
+export interface QuantifierReceiverData {
+  periodId: string;
+  receiverId: string;
+  receiverName: string;
+  count: number;
+  done: number;
+}
+
+export const PeriodActiveQuantifierReceivers = selectorFamily({
+  key: "PeriodActiveQuantifierReceivers",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const praise = get(PeriodPraise(params.periodId));
+      const userId = get(ActiveUserId);
+      if (praise) {
+        let q: QuantifierReceiverData[] = [];
+
+        for (let praiseItem of praise) {
+          if (!praiseItem.quantifications || !praiseItem.receiver._id) continue;
+          for (let quantification of praiseItem.quantifications) {
+            if (quantification.quantifier !== userId) continue;
+
+            const qi = q.findIndex(
+              (item) => item.receiverId === praiseItem.receiver._id
+            );
+
+            const done = quantification.score ? 1 : 0;
+
+            const qd: QuantifierReceiverData = {
+              periodId: params.periodId,
+              receiverId: praiseItem.receiver._id,
+              receiverName: praiseItem.receiver.username,
+              count: qi > -1 ? q[qi].count + 1 : 1,
+              done: qi > -1 ? q[qi].done + done : done,
+            };
+
+            if (qi > -1) {
+              q[qi] = qd;
+            } else {
+              q.push(qd);
+            }
+          }
+        }
+        return q;
+      }
+
+      return undefined;
+    },
+});
+
+export const PeriodActiveQuantifierReceiver = selectorFamily({
+  key: "PeriodActiveQuantifierReceiver",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const { periodId, receiverId } = params;
+      const qrd = get(PeriodActiveQuantifierReceivers({ periodId }));
+      if (!qrd) return undefined;
+      return qrd.find((item) => item.receiverId === receiverId);
+    },
 });

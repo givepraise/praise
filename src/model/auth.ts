@@ -43,8 +43,8 @@ export const DecodedSessionToken = selector({
   },
 });
 
-export const UserId = selector({
-  key: "UserId",
+export const ActiveUserId = selector({
+  key: "ActiveUserId",
   get: ({ get }) => {
     const decodedToken = get(DecodedSessionToken);
     if (!decodedToken) return null;
@@ -52,8 +52,8 @@ export const UserId = selector({
   },
 });
 
-export const UserRoles = selector({
-  key: "UserRoles",
+export const ActiveUserRoles = selector({
+  key: "ActiveUserRoles",
   get: ({ get }) => {
     const decodedToken = get(DecodedSessionToken);
     if (!decodedToken) return null;
@@ -66,7 +66,7 @@ export const HasRole = selectorFamily({
   get:
     (role: string) =>
     ({ get }) => {
-      const userRoles = get(UserRoles);
+      const userRoles = get(ActiveUserRoles);
       if (!userRoles) return null;
       return userRoles.includes(role);
     },
