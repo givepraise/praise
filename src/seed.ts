@@ -77,7 +77,8 @@ const USERS = [
 
 const twoRandomAccountIndexes = () => {
   const n1 = Math.floor(Math.random() * (USERS.length - 1));
-  const n2 = n1 === USERS.length - 1 ? USERS.length - 2 : n1 + 1;
+  let n2 = Math.floor(Math.random() * (USERS.length - 1));
+  n2 = n2 === n1 ? (n1 === USERS.length - 1 ? USERS.length - 2 : n1 + 1) : n2;
   return [n1, n2];
 };
 
@@ -90,7 +91,7 @@ const seedData = async () => {
     let d = new Date();
     for (let i = 0; i < PERIOD_NUMBER; i++) {
       await PeriodModel.create({
-        name: faker.lorem.words(),
+        name: `Period ${i + 1}`,
         status: 'OPEN',
         // status:
         //   periodStatuses[Math.floor(Math.random() * periodStatuses.length)],
