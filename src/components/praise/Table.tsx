@@ -25,18 +25,11 @@ const PraisesTable = () => {
   const columns = React.useMemo(
     () => [
       {
-        Header: "Id",
-        accessor: "_id",
-        Cell: (data: any) => {
-          return data.value.substr(0, 4);
-        },
-      },
-      {
         Header: "Date",
         accessor: "createdAt",
-        Cell: (data: any) => {
-          return formatDate(data.value);
-        },
+        Cell: (data: any) => (
+          <div className="whitespace-nowrap">{formatDate(data.value)}</div>
+        ),
       },
       {
         Header: "From",
