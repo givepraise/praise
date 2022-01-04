@@ -25,6 +25,7 @@ export const authMiddleware = (role: UserRole) => {
     // Decode JWT and check permissions
     const accessToken = bearer[1];
     const clientData = await jwtService.decodeJwt(accessToken);
+
     if (!clientData.roles.includes(role))
       return res.status(FORBIDDEN).json({
         error: 'User is not authorized to access resource.',

@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
+import { errorNames, errorCodes, INTERNAL_SERVER_ERROR } from './constants';
+import { ErrorInterface } from './types';
 
 const ErrorHandler = (
   err: any,
@@ -11,6 +13,15 @@ const ErrorHandler = (
       return (err = handleValidationError(err, res));
     if (err.code && err.code == 11000)
       return (err = handleDuplicateKeyError(err, res));
+    if (
+      err.name === errorNames.INTERNAL_SERVER_ERROR ||
+      err.name === errorNames.NOT_FOUND ||
+      err.name === errorNames.BAD_REQUEST ||
+      err.name === errorNames.UNAUTHORIZED ||
+      err.name === errorNames.FORBIDDEN
+    ) {
+      return (err = handleAppError(err, res));
+    }
   } catch (err) {
     res.status(500).send('An unknown error occurred.');
   }
@@ -35,6 +46,18 @@ const handleValidationError = (err: any, res: Response) => {
 
   let code = 400;
   res.status(code).send(errors);
+};
+
+const handleAppError = (err: ErrorInterface, res: Response) => {
+  const name = err.name;
+  const code = errorCodes[name];
+
+  const error = {
+    message: err.message,
+    name,
+    code,
+  };
+  res.status(code).send(error);
 };
 
 export default ErrorHandler;
