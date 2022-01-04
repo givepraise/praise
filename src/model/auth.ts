@@ -8,6 +8,8 @@ export const ROLE_QUANTIFIER = "QUANTIFIER";
 
 export interface JWT {
   sub: string;
+  userId: string;
+  ethereumAddress: string;
   roles: string[];
   iat: number;
   exp: number;
@@ -38,6 +40,15 @@ export const DecodedSessionToken = selector({
     const token = get(SessionToken);
     if (!token) return null;
     return jwtDecode(token) as JWT;
+  },
+});
+
+export const UserId = selector({
+  key: "UserId",
+  get: ({ get }) => {
+    const decodedToken = get(DecodedSessionToken);
+    if (!decodedToken) return null;
+    return decodedToken.userId;
   },
 });
 
