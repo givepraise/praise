@@ -6,11 +6,11 @@ import { faUserFriends } from "@fortawesome/free-solid-svg-icons";
 import { Dialog } from "@headlessui/react";
 import React from "react";
 
-const PoolPage = () => {
+const AddRoleButton = () => {
   let [isOpen, setIsOpen] = React.useState(false);
   const { addRole } = useAdminUsers();
 
-  const addDialogRef = React.useRef(null);
+  //const addDialogRef = React.useRef(null);
 
   const handleAddQuantifierClick = () => {
     setIsOpen(true);
@@ -22,22 +22,15 @@ const PoolPage = () => {
 
   return (
     <>
-      <BreadCrumb name="Quantifier pool" icon={faUserFriends} />
-
-      <div className="w-2/3 praise-box">
-        <div className="mb-2 text-right">
-          <button className="praise-button" onClick={handleAddQuantifierClick}>
-            Add quantifier
-          </button>
-        </div>
+      <button className="praise-button" onClick={handleAddQuantifierClick}>
+        Add quantifier
         {isOpen ? (
           <Dialog
             open={isOpen}
             onClose={() => setIsOpen(false)}
             className="fixed inset-0 z-10 overflow-y-auto"
-            initialFocus={addDialogRef}
           >
-            <div ref={addDialogRef}>
+            <div>
               <PoolAddDialog
                 onClose={() => setIsOpen(false)}
                 onQuantifierAdded={handleQuantifierAdded}
@@ -45,6 +38,22 @@ const PoolPage = () => {
             </div>
           </Dialog>
         ) : null}
+      </button>
+    </>
+  );
+};
+
+const PoolPage = () => {
+  return (
+    <>
+      <BreadCrumb name="Quantifier pool" icon={faUserFriends} />
+
+      <div className="w-2/3 praise-box">
+        <div className="mb-2 text-right">
+          <React.Suspense fallback="Loading…">
+            <AddRoleButton />
+          </React.Suspense>
+        </div>
         <PoolTable />
       </div>
     </>
