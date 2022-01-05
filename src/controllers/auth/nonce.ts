@@ -20,7 +20,7 @@ async function nonce(req: NonceRequest, res: Response): Promise<any> {
   const nonce = randomstring.generate();
 
   // Update existing user or create new
-  let user = await UserModel.findOneAndUpdate(
+  const user = await UserModel.findOneAndUpdate(
     { ethereumAddress },
     { nonce },
     { upsert: true, new: true }

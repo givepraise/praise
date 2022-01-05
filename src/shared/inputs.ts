@@ -13,6 +13,12 @@ export interface PeriodCreateUpdateInput {
   endDate: string;
 }
 
+export interface QuantificationCreateUpdateInput {
+  score: number;
+  dismissed: boolean;
+  duplicatePraiseId: string;
+}
+
 export interface SearchQueryInput extends QueryInput {
   search: string;
 }

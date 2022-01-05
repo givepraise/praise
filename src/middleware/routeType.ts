@@ -1,4 +1,3 @@
-import { UserRole } from '@entities/User';
 import { RouteType } from '@shared/constants';
 import { NextFunction, Request, Response } from 'express';
 

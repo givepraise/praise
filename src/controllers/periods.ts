@@ -45,7 +45,7 @@ export const update = async (
   req: Request<any, PeriodCreateUpdateInput, any>,
   res: Response
 ): Promise<Response> => {
-  let period = await PeriodModel.findById(req.params.periodId);
+  const period = await PeriodModel.findById(req.params.periodId);
   if (!period) return res.status(StatusCodes.NOT_FOUND);
 
   if (req.body.name !== period.name) {
@@ -64,7 +64,7 @@ export const update = async (
 };
 
 export const close = async (req: Request, res: Response): Promise<Response> => {
-  let period = await PeriodModel.findById(req.params.periodId);
+  const period = await PeriodModel.findById(req.params.periodId);
   if (!period) return res.status(StatusCodes.NOT_FOUND);
 
   period.status = 'CLOSED';
@@ -115,9 +115,9 @@ const getQuantifierReceivers = async (periodId: string) => {
     },
   ] as any);
 
-  let qi = 0;
-  let quantifierReceivers = [];
-  quantifierReceivers[qi] = new Array();
+  let qi = 0 as number;
+  const quantifierReceivers: any[] = [];
+  quantifierReceivers[qi] = [];
   let riStart = 0;
 
   const assignedPraiseCount = (quantifier: Receiver[]) => {
@@ -143,7 +143,7 @@ const getQuantifierReceivers = async (periodId: string) => {
             MAX_PRAISE_PER_QUANTIFIER &&
           assignedPraiseCount(quantifierReceivers[qi]) > 0
         ) {
-          quantifierReceivers[++qi] = new Array(); // Initialise new quantifier
+          quantifierReceivers[++qi] = []; // Initialise new quantifier
           continue;
         }
 
@@ -201,7 +201,7 @@ export const assignQuantifiers = async (
       .status(StatusCodes.BAD_REQUEST)
       .json({ error: 'Quantifier pool size too small.' });
 
-  let selectedQuantifiers = quantifierPool
+  const selectedQuantifiers = quantifierPool
     .sort(() => 0.5 - Math.random())
     .slice(0, requiredPoolSize);
 
@@ -218,10 +218,10 @@ export const assignQuantifiers = async (
   // Quantifiers
   for (let qi = 0; qi < requiredPoolSize; qi++) {
     // Receivers
-    for (let receiver of quantifierReceivers[qi]) {
+    for (const receiver of quantifierReceivers[qi]) {
       const quantifier = getQuantifier(receiver, qi);
       // Praise
-      for (let praiseId of receiver.praiseIds) {
+      for (const praiseId of receiver.praiseIds) {
         const praise = await PraiseModel.findById(praiseId);
         if (praise) {
           praise.quantifications.push({
