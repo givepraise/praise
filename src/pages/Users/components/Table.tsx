@@ -73,10 +73,7 @@ const PoolTable = () => {
         {rows.map((row) => {
           prepareRow(row);
           return (
-            <tr
-              className="cursor-pointer hover:bg-gray-100"
-              {...row.getRowProps()}
-            >
+            <tr {...row.getRowProps()}>
               {row.cells.map((cell) => {
                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
               })}

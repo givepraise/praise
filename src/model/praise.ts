@@ -136,10 +136,12 @@ export const useAllPraisesQuery = (queryParams: AllPraisesQueryParameters) => {
 
 export const avgPraiseScore = (quantifications: any[] | undefined) => {
   if (!quantifications) return 0;
-  return quantifications.reduce((score1, score2) => {
-    if (!score1 || !score2) return 0;
-    return score1 + score2;
-  }, 0);
+  let score = 0;
+  let i = 0;
+  for (i; i < quantifications.length; i++) {
+    score += quantifications[i].score;
+  }
+  return Math.round(score / (i + 1));
 };
 
 export const SinglePraisesRequestId = atom({

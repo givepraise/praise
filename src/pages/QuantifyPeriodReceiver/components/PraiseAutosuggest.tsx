@@ -1,22 +1,36 @@
-import { AllUsers, User } from "@/model/users";
+import { ActiveUserId } from "@/model/auth";
+import { AllPeriodPraise } from "@/model/periods";
+import { Praise } from "@/model/praise";
 import { classNames } from "@/utils/index";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCombobox } from "downshift";
 import React from "react";
+import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 
 interface PraiseAutosuggestProps {
-  onSelect(): any;
+  onClose(): any;
+  onSelect(id: string): void;
 }
 
-const PraiseAutosuggest = ({ onSelect }: PraiseAutosuggestProps) => {
-  const allUsers = useRecoilValue(AllUsers);
+const PraiseAutosuggest = ({ onSelect, onClose }: PraiseAutosuggestProps) => {
+  const { periodId, receiverId } = useParams() as any;
+  const userId = useRecoilValue(ActiveUserId);
+
+  const data = useRecoilValue(AllPeriodPraise(periodId));
+
+  if (!data) return null;
+
+  const filteredData = data.filter(
+    (praise) =>
+      praise.quantifications!.findIndex(
+        (quant) => quant.quantifier === userId
+      ) >= 0 && praise.receiver._id! === receiverId
+  );
 
   const DropdownCombobox = () => {
-    const [inputItems, setInputItems] = React.useState(
-      allUsers ? allUsers : ([] as User[])
-    );
+    const [inputItems, setInputItems] = React.useState(filteredData);
     const {
       isOpen,
       getMenuProps,
@@ -27,26 +41,20 @@ const PraiseAutosuggest = ({ onSelect }: PraiseAutosuggestProps) => {
     } = useCombobox({
       items: inputItems,
       onInputValueChange: ({ inputValue }) => {
-        if (allUsers) {
+        if (filteredData) {
           setInputItems(
-            allUsers.filter((user) => {
-              if (user._id.toString().includes(inputValue!.toLowerCase()))
-                return true;
-              if (
-                user.ethereumAddress &&
-                user.ethereumAddress.length > 0 &&
-                user.ethereumAddress
-                  .toLowerCase()
-                  .includes(inputValue!.toLowerCase())
-              )
+            filteredData.filter((praise) => {
+              if (praise._id.slice(-4).includes(inputValue!.toLowerCase()))
                 return true;
               return false;
             })
           );
         }
       },
-      onSelectedItemChange: (selectedItem: any) => {
-        alert(JSON.stringify(selectedItem));
+      onSelectedItemChange: (data: any) => {
+        const selectedItem = data.selectedItem as Praise;
+        onSelect(selectedItem._id);
+        onClose();
       },
     });
     return (
@@ -83,7 +91,7 @@ const PraiseAutosuggest = ({ onSelect }: PraiseAutosuggestProps) => {
                 key={`${item}${index}`}
                 {...getItemProps({ item, index })}
               >
-                {item._id}
+                #{item._id.slice(-4)} - {item.giver.username}
               </li>
             ))}
         </ul>

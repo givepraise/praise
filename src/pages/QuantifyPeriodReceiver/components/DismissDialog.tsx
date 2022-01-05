@@ -9,7 +9,7 @@ import { Dialog } from "@headlessui/react";
 
 interface DismissDialogProps {
   onClose(): any;
-  onDismiss(id: string): void;
+  onDismiss(): any;
   praise: Praise | undefined;
 }
 const PoolDismissDialog = ({
@@ -32,7 +32,7 @@ const PoolDismissDialog = ({
               <FontAwesomeIcon icon={faCalculator} size="2x" />
             </div>
             <Dialog.Title className="text-center mb-7">
-              Dismiss praise {praise._id}
+              Dismiss praise #{praise._id.slice(-5)}
             </Dialog.Title>
             <Dialog.Description className="text-center mb-7">
               Dismiss a praise when it contains no praise information or is out
@@ -42,7 +42,7 @@ const PoolDismissDialog = ({
               <button
                 className="mt-4 praise-button"
                 onClick={() => {
-                  onDismiss(praise._id);
+                  onDismiss();
                   onClose();
                 }}
               >

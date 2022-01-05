@@ -6,21 +6,14 @@ import PraiseAutosuggest from "./PraiseAutosuggest";
 
 interface PoolDeleteDialogProps {
   onClose(): any;
-  onDuplicate(id: string, fid: number): void;
+  onSelect(praiseId: string): void;
   praise: Praise | undefined;
 }
 const PoolDismissDialog = ({
-  onDuplicate,
+  onSelect,
   onClose,
   praise,
 }: PoolDeleteDialogProps) => {
-  const handleSetAsDuplicate = (fid: number) => {
-    if (praise) {
-      onDuplicate(praise._id, fid);
-      onClose();
-    }
-  };
-
   if (praise) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -36,11 +29,11 @@ const PoolDismissDialog = ({
               <FontAwesomeIcon icon={faCalculator} size="2x" />
             </div>
             <Dialog.Title className="text-center mb-7">
-              Mark praise {praise._id} as duplicate
+              Mark praise #{praise._id.slice(-4)} as duplicate
             </Dialog.Title>
 
             <div className="flex justify-center">
-              <PraiseAutosuggest onSelect={() => handleSetAsDuplicate} />
+              <PraiseAutosuggest onSelect={onSelect} onClose={onClose} />
             </div>
           </div>
         </div>

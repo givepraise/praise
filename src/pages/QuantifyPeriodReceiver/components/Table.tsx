@@ -48,7 +48,6 @@ const QuantifyTable = () => {
   const data = useRecoilValue(AllPeriodPraise(periodId));
 
   const handleChange = (value: number) => {
-    //TODO this is not beautiful
     const quantification = getQuantification(selectedPraise!, userId!);
     quantify(
       selectedPraise!._id,
@@ -59,16 +58,16 @@ const QuantifyTable = () => {
     /** TODO: update praise by Id (saved in selectedPraise) */
   };
 
-  const handleDismiss = (id: string) => {
-    /** TODO: dismiss praise */
+  const handleDismiss = () => {
+    quantify(selectedPraise!._id, 0, true, null);
   };
 
-  const handleDuplicate = (id: string, fid: number) => {
-    /** TODO: mark as duplicate */
+  const handleDuplicate = (duplicatePraiseId: string) => {
+    quantify(selectedPraise!._id, 0, false, duplicatePraiseId);
   };
 
   const handleRemoveDismiss = (id: string) => {
-    /** TODO: handle remove dismiss */
+    quantify(selectedPraise!._id, 0, false, null);
   };
 
   const handleRemoveDuplicate = (id: string) => {
@@ -130,6 +129,7 @@ const QuantifyTable = () => {
                     {formatDate(praise.createdAt)}
                     <br />
                     {praise.giver.username}
+                    <br />#{praise._id.slice(-4)}
                   </div>
                 </div>
               </td>
@@ -203,7 +203,7 @@ const QuantifyTable = () => {
             <DismissDialog
               praise={selectedPraise}
               onClose={() => setIsDismissDialogOpen(false)}
-              onDismiss={(id: string) => handleDismiss(id)}
+              onDismiss={() => handleDismiss()}
             />
           </Dialog>
         </React.Suspense>
@@ -217,9 +217,7 @@ const QuantifyTable = () => {
             <DuplicateDialog
               praise={selectedPraise}
               onClose={() => setIsDuplicateDialogOpen(false)}
-              onDuplicate={(id: string, fid: number) =>
-                handleDuplicate(id, fid)
-              }
+              onSelect={handleDuplicate}
             />
           </Dialog>
         </React.Suspense>
