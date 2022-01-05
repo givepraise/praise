@@ -1,51 +1,49 @@
 import BackLink from "@/components/BackLink";
 import BreadCrumb from "@/components/BreadCrumb";
-import PeriodReceiverTable from "@/components/QuantSummary/Table";
-import { PeriodReceiver, SinglePeriod } from "@/model/periods";
-import { SingleUserByReceiverId } from "@/model/users";
-import { getUsername } from "@/utils/users";
+import PraiseDetailTable from "@/components/QuantSummary/PraiseDetailTable";
+import { SinglePeriod } from "@/model/periods";
+import { SinglePraise } from "@/model/praise";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 
 const PeriodReceiverBreadCrumb = () => {
-  let { periodId, receiverId } = useParams() as any;
+  let { periodId, praiseId } = useParams() as any;
   const period = useRecoilValue(SinglePeriod({ periodId }));
-  const user = useRecoilValue(SingleUserByReceiverId({ receiverId }));
+  const praise = useRecoilValue(SinglePraise({ praiseId }));
 
-  if (!user || !period) return null;
+  if (!praise || !period) return null;
   return (
     <BreadCrumb
-      name={`Quantification Period Summary / ${period?.name} / ${getUsername(
-        user
-      )}`}
+      name={`Quantification Praise Details / ${praise._id}`}
       icon={faCalendarAlt}
     />
   );
 };
 
 const PeriodReceiverMessage = () => {
-  let { periodId, receiverId } = useParams() as any;
+  let { periodId, praiseId } = useParams() as any;
   const period = useRecoilValue(SinglePeriod({ periodId }));
-  const user = useRecoilValue(SingleUserByReceiverId({ receiverId }));
-  const receiverData = useRecoilValue(PeriodReceiver({ periodId, receiverId }));
-  if (!user || !period || !receiverData) return null;
+  const praise = useRecoilValue(SinglePraise({ praiseId }));
+
+  if (!period || !praise) return null;
   return (
     <>
-      <h2>Quantification Period Summary</h2>
+      <h2>Quantification Praise Details</h2>
       <div className="mt-5">
-        Receiver: {getUsername(user)}
+        Giver: {praise.giver.username}
         <br />
-        Period: {period.name}
+        Receiver: {praise.receiver.username}
         <br />
-        Total praise score: {receiverData.praiseScore}
+        Average praise score: {praise.avgScore}
       </div>
+      <div className="mt-2">Reason: {praise.reason}</div>
     </>
   );
 };
 
-const QuantSummaryPeriodReceiverPage = () => {
+const QuantSummaryPraisePage = () => {
   return (
     <>
       <React.Suspense fallback="Loading…">
@@ -62,11 +60,11 @@ const QuantSummaryPeriodReceiverPage = () => {
 
       <div className="praise-box">
         <React.Suspense fallback="Loading…">
-          <PeriodReceiverTable />
+          <PraiseDetailTable />
         </React.Suspense>
       </div>
     </>
   );
 };
 
-export default QuantSummaryPeriodReceiverPage;
+export default QuantSummaryPraisePage;

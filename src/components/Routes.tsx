@@ -13,6 +13,7 @@ import MyPraise from "@/pages/MyPraise";
 import PeriodDetail from "@/pages/Periods/Detail";
 import QuantifyPeriodPage from "@/pages/Quantify/Period";
 import QuantSummaryPeriodReceiverPage from "@/pages/QuantSummary/PeriodReceiver";
+import QuantSummaryPraisePage from "@/pages/QuantSummary/Praise";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -123,6 +124,9 @@ const SubPages = () => {
       </AuthRoute>
       <Route exact path="/quantsummary/period/:periodId/receiver/:receiverId">
         <QuantSummaryPeriodReceiverPage />
+      </Route>
+      <Route exact path="/quantsummary/period/:periodId/praise/:praiseId">
+        <QuantSummaryPraisePage />
       </Route>
 
       <Route exact path="/mypraise">

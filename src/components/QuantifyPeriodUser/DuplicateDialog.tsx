@@ -16,7 +16,7 @@ const PoolDismissDialog = ({
 }: PoolDeleteDialogProps) => {
   const handleSetAsDuplicate = (fid: number) => {
     if (praise) {
-      onDuplicate(praise.id, fid);
+      onDuplicate(praise._id, fid);
       onClose();
     }
   };
@@ -36,7 +36,7 @@ const PoolDismissDialog = ({
               <FontAwesomeIcon icon={faCalculator} size="2x" />
             </div>
             <Dialog.Title className="text-center mb-7">
-              Mark praise {praise.id} as duplicate
+              Mark praise {praise._id} as duplicate
             </Dialog.Title>
 
             <div className="flex justify-center">

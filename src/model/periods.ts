@@ -19,7 +19,7 @@ import {
   useAuthApiQuery,
 } from "./api";
 import { ActiveUserId } from "./auth";
-import { Praise } from "./praise";
+import { avgPraiseScore, Praise } from "./praise";
 
 export interface Period {
   _id?: string;
@@ -313,6 +313,18 @@ export const AllPeriodPraise = atomFamily<Praise[] | undefined, string>({
   default: undefined,
 });
 
+export const SinglePeriodPraise = selectorFamily({
+  key: "SinglePeriodPraise",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const { periodId, praiseId } = params;
+      const allPeriodPraise = get(AllPeriodPraise(periodId));
+      if (!allPeriodPraise) return null;
+      return allPeriodPraise.find((praise) => praise._id === praiseId);
+    },
+});
+
 export const PeriodPraiseQuery = selectorFamily({
   key: "PeriodPraiseQuery",
   get:
@@ -345,7 +357,7 @@ export const usePeriodPraisesQuery = (periodId: string) => {
         for (let item of praise) {
           praiseWithAvgScore.push({
             ...item,
-            avgScore: avgPraiseScore2(item.quantifications),
+            avgScore: avgPraiseScore(item.quantifications),
           });
         }
         setPeriodPraise(praiseWithAvgScore);
@@ -422,18 +434,6 @@ export interface ReceiverData {
   praiseScore: number;
 }
 
-const avgPraiseScore = (scoreData: number[]) => {
-  return scoreData.reduce((a, b) => a + b, 0);
-};
-
-const avgPraiseScore2 = (quantifications: any[] | undefined) => {
-  if (!quantifications) return 0;
-  return quantifications.reduce((score1, score2) => {
-    if (!score1 || !score2) return 0;
-    return score1 + score2;
-  }, 0);
-};
-
 export const AllPeriodReceivers = selectorFamily({
   key: "AllPeriodReceivers",
   get:
@@ -445,14 +445,6 @@ export const AllPeriodReceivers = selectorFamily({
         let r: ReceiverData[] = [];
 
         for (let praiseItem of praise) {
-          const scoreData: number[] = [];
-
-          if (praiseItem.quantifications) {
-            for (let quantification of praiseItem.quantifications) {
-              if (quantification.score) scoreData.push(quantification.score);
-            }
-          }
-
           const ri = r.findIndex(
             (item) => item.username === praiseItem.receiver.username
           );
@@ -463,8 +455,8 @@ export const AllPeriodReceivers = selectorFamily({
             praiseCount: ri > -1 ? r[ri].praiseCount + 1 : 1,
             praiseScore:
               ri > -1
-                ? r[ri].praiseScore + avgPraiseScore(scoreData)
-                : avgPraiseScore(scoreData),
+                ? r[ri].praiseScore + avgPraiseScore(praiseItem.quantifications)
+                : avgPraiseScore(praiseItem.quantifications),
           };
 
           if (ri > -1) {

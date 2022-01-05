@@ -1,7 +1,5 @@
-import {
-  AllPeriodReceiverPraise,
-  QuantifierReceiverData,
-} from "@/model/periods";
+import { AllPeriodReceiverPraise } from "@/model/periods";
+import { Praise } from "@/model/praise";
 import { formatDate } from "@/utils/date";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -59,10 +57,8 @@ const PeriodReceiverTable = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const handleClick = (data: QuantifierReceiverData) => (e: SyntheticEvent) => {
-    history.push(
-      `/quantify/period/${data.periodId}/receiver/${data.receiverId}`
-    );
+  const handleClick = (praise: Praise) => (e: SyntheticEvent) => {
+    history.push(`/quantsummary/period/${periodId}/praise/${praise._id}`);
   };
   return (
     <table
@@ -89,7 +85,7 @@ const PeriodReceiverTable = () => {
               className="cursor-pointer hover:bg-gray-100"
               id={"period-" + row.values.name}
               {...row.getRowProps()}
-              onClick={handleClick(row.original as QuantifierReceiverData)}
+              onClick={handleClick(row.original as Praise)}
             >
               {row.cells.map((cell) => {
                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;

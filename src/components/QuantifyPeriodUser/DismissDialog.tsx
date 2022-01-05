@@ -1,19 +1,23 @@
 import { Praise } from "@/model/praise";
 import {
-  faTimes,    
+  faCalculator,
   faMinusCircle,
-  faCalculator
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
 
 interface DismissDialogProps {
   onClose(): any;
-  onDismiss(id: number): void
-  praise: Praise | undefined
+  onDismiss(id: number): void;
+  praise: Praise | undefined;
 }
-const PoolDismissDialog = ({ onClose, onDismiss, praise }: DismissDialogProps) => {
-  if (praise) {    
+const PoolDismissDialog = ({
+  onClose,
+  onDismiss,
+  praise,
+}: DismissDialogProps) => {
+  if (praise) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
@@ -28,14 +32,25 @@ const PoolDismissDialog = ({ onClose, onDismiss, praise }: DismissDialogProps) =
               <FontAwesomeIcon icon={faCalculator} size="2x" />
             </div>
             <Dialog.Title className="text-center mb-7">
-              Dismiss praise {praise.id}            
+              Dismiss praise {praise._id}
             </Dialog.Title>
             <Dialog.Description className="text-center mb-7">
-              Dismiss a praise when it contains no praise information or is out of scope for the praise system.
+              Dismiss a praise when it contains no praise information or is out
+              of scope for the praise system.
             </Dialog.Description>
             <div className="flex justify-center">
-              <button className="praise-button mt-4" onClick={() => {onDismiss(praise.id); onClose();}}>
-                <FontAwesomeIcon className="mr-2" icon={faMinusCircle} size="1x" />
+              <button
+                className="mt-4 praise-button"
+                onClick={() => {
+                  onDismiss(praise._id);
+                  onClose();
+                }}
+              >
+                <FontAwesomeIcon
+                  className="mr-2"
+                  icon={faMinusCircle}
+                  size="1x"
+                />
                 Dismiss
               </button>
             </div>
@@ -45,7 +60,7 @@ const PoolDismissDialog = ({ onClose, onDismiss, praise }: DismissDialogProps) =
     );
   } else {
     return null;
-  }  
+  }
 };
 
 export default PoolDismissDialog;
