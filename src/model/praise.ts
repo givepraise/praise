@@ -2,6 +2,7 @@ import React from "react";
 import { atom, selectorFamily, useRecoilState } from "recoil";
 import {
   ApiAuthGetQuery,
+  isApiResponseError,
   isApiResponseOk,
   PaginatedResponseData,
   useAuthApiQuery,
@@ -19,7 +20,7 @@ export interface Quantification {
 }
 
 export interface Praise {
-  id: number;
+  _id: number;
   createdAt: string;
   updatedAt: string;
   periodId?: number;
@@ -125,3 +126,36 @@ export const useAllPraisesQuery = (queryParams: AllPraisesQueryParameters) => {
 
   return allPraisesQueryResponse;
 };
+
+export const avgPraiseScore = (quantifications: any[] | undefined) => {
+  if (!quantifications) return 0;
+  return quantifications.reduce((score1, score2) => {
+    if (!score1 || !score2) return 0;
+    return score1 + score2;
+  }, 0);
+};
+
+export const SinglePraisesRequestId = atom({
+  key: "SinglePraisesRequestId",
+  default: 0,
+});
+
+export const SinglePraise = selectorFamily({
+  key: "SinglePraise",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const { praiseId } = params;
+      get(SinglePraisesRequestId);
+      const response = get(
+        ApiAuthGetQuery({ endPoint: `/api/praise/${praiseId}` })
+      );
+      if (!response || isApiResponseError(response)) return undefined;
+      const praise: Praise = response.data;
+      const extPraise: Praise = {
+        ...praise,
+        avgScore: avgPraiseScore(praise.quantifications),
+      };
+      return extPraise as Praise;
+    },
+});
