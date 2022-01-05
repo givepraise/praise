@@ -87,7 +87,7 @@ const seedData = async () => {
   const userCount = await UserModel.count();
 
   if (periodsCount < PERIOD_NUMBER) {
-    let d = new Date();
+    const d = new Date();
     for (let i = 0; i < PERIOD_NUMBER; i++) {
       await PeriodModel.create({
         name: faker.lorem.words(),
@@ -130,12 +130,14 @@ const seedData = async () => {
       const receiver = await UserAccountModel.findOne().skip(accounts[1]);
 
       try {
-        let randomDays = Math.floor(
+        const randomDays = Math.floor(
           Math.random() * PERIOD_NUMBER * PERIOD_LENGTH
         );
         PraiseModel.create({
           reason: faker.lorem.sentences(),
           giver: giver!._id,
+          sourceId: faker.datatype.uuid(),
+          sourceName: faker.lorem.word(),
           receiver: receiver!._id,
           createdAt: new Date(
             Date.now() + (randomDays - PERIOD_LENGTH) * 86400000

@@ -23,7 +23,6 @@
     "exec": "./node_modules/.bin/ts-node --files -r tsconfig-paths/register ./src"
   },
   "_moduleAliases": {
-    "@daos": "dist/daos",
     "@entities": "dist/entities",
     "@shared": "dist/shared",
     "@server": "dist/Server"
@@ -105,7 +104,7 @@
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
-    "eslint": "^6.5.1",
+    "eslint": "^8.0.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
     "find": "^0.3.0",

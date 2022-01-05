@@ -22,7 +22,6 @@
   "parserOptions": {
     "ecmaVersion": 2018
   },
-  "rules": {
-    "prettier/prettier": "error"
+  "rules": {    
   }
 }

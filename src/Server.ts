@@ -1,11 +1,9 @@
 import { cookieProps } from '@shared/constants';
-import logger from '@shared/Logger';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import 'express-async-errors';
 import helmet from 'helmet';
-import StatusCodes from 'http-status-codes';
 import mongoose, { ConnectOptions } from 'mongoose';
 import morgan from 'morgan';
 import BaseRouter from './routes';
@@ -19,12 +17,13 @@ import ErrorHandler from '@shared/ErrorHandler';
 const app = express();
 
 mongoose
-  .connect('mongodb://localhost:27017/praise_db', {
-    useNewUrlParser: true,
-  } as ConnectOptions)
+  .connect(
+    process.env.MONGO_DB as string,
+    {
+      useNewUrlParser: true,
+    } as ConnectOptions
+  )
   .then(() => {
-    const { BAD_REQUEST } = StatusCodes;
-
     app.use(
       cors({
         origin: '*',
