@@ -24,10 +24,10 @@ const PeriodDetails = () => {
   // Make sure that all periods are fetched
   useAllPeriodsQuery();
   const allPeriods = useRecoilValue(AllPeriods);
-  let { id } = useParams() as any;
-  const period = useRecoilValue(SinglePeriod({ periodId: id }));
+  let { periodId } = useParams() as any;
+  const period = useRecoilValue(SinglePeriod({ periodId }));
   const { location } = useHistory();
-  const poolRequirements = useVerifyQuantifierPoolSize(id, location.key);
+  const poolRequirements = useVerifyQuantifierPoolSize(periodId, location.key);
 
   const assignDialogRef = React.useRef(null);
   const closeDialogRef = React.useRef(null);
@@ -43,11 +43,11 @@ const PeriodDetails = () => {
     : "Dawn of time";
 
   const handleClosePeriod = () => {
-    closePeriod(id);
+    closePeriod(periodId);
   };
 
   const handleAssign = () => {
-    assignQuantifiers(id);
+    assignQuantifiers(periodId);
   };
 
   return (

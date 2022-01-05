@@ -18,6 +18,7 @@ import {
   PaginatedResponseData,
   useAuthApiQuery,
 } from "./api";
+import { ActiveUserId } from "./auth";
 import { Praise } from "./praise";
 
 export interface Period {
@@ -275,7 +276,7 @@ export const useAssignQuantifiers = () => {
         if (isApiResponseOk(response)) {
           const praise = response.data as Praise[];
           if (Array.isArray(praise) && praise.length > 0) {
-            set(PeriodPraise(periodId), praise);
+            set(AllPeriodPraise(periodId), praise);
           }
           if (allPeriods) {
             set(
@@ -307,8 +308,8 @@ const PeriodPraiseRequestId = atom({
   default: 0,
 });
 
-export const PeriodPraise = atomFamily<Praise[] | undefined, string>({
-  key: "PeriodPraise",
+export const AllPeriodPraise = atomFamily<Praise[] | undefined, string>({
+  key: "AllPeriodPraise",
   default: undefined,
 });
 
@@ -330,7 +331,7 @@ export const usePeriodPraisesQuery = (periodId: string) => {
     PeriodPraiseQuery({ periodId })
   );
   const [periodPraise, setPeriodPraise] = useRecoilState(
-    PeriodPraise(periodId)
+    AllPeriodPraise(periodId)
   );
 
   React.useEffect(() => {
@@ -339,8 +340,15 @@ export const usePeriodPraisesQuery = (periodId: string) => {
       isApiResponseOk(periodPraiseQueryResponse)
     ) {
       const praise = periodPraiseQueryResponse.data as Praise[];
+      const praiseWithAvgScore: Praise[] = [];
       if (Array.isArray(praise) && praise.length > 0) {
-        setPeriodPraise(praise);
+        for (let item of praise) {
+          praiseWithAvgScore.push({
+            ...item,
+            avgScore: avgPraiseScore2(item.quantifications),
+          });
+        }
+        setPeriodPraise(praiseWithAvgScore);
       }
     }
   }, [periodPraiseQueryResponse, periodPraise, setPeriodPraise]);
@@ -348,8 +356,21 @@ export const usePeriodPraisesQuery = (periodId: string) => {
   return periodPraiseQueryResponse;
 };
 
-interface QuantifierData {
-  quantifier: string;
+export const AllPeriodReceiverPraise = selectorFamily({
+  key: "AllPeriodReceiverPraise",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const { periodId, receiverId } = params;
+      const praise = get(AllPeriodPraise(periodId));
+      if (!praise) return undefined;
+      return praise.filter((item) => item.receiver._id === receiverId);
+    },
+});
+
+export interface QuantifierData {
+  periodId: string;
+  userId: string;
   count: number;
   done: number;
 }
@@ -359,7 +380,7 @@ export const PeriodQuantifiers = selectorFamily({
   get:
     (params: any) =>
     async ({ get }) => {
-      const praise = get(PeriodPraise(params.periodId));
+      const praise = get(AllPeriodPraise(params.periodId));
       if (praise) {
         let q: QuantifierData[] = [];
 
@@ -368,13 +389,14 @@ export const PeriodQuantifiers = selectorFamily({
 
           for (let quantification of praiseItem.quantifications) {
             const qi = q.findIndex(
-              (item) => item.quantifier === quantification.quantifier
+              (item) => item.userId === quantification.quantifier
             );
 
             const done = quantification.score ? 1 : 0;
 
             const qd: QuantifierData = {
-              quantifier: quantification.quantifier,
+              periodId: params.periodId,
+              userId: quantification.quantifier,
               count: qi > -1 ? q[qi].count + 1 : 1,
               done: qi > -1 ? q[qi].done + done : done,
             };
@@ -393,7 +415,8 @@ export const PeriodQuantifiers = selectorFamily({
     },
 });
 
-interface ReceiverData {
+export interface ReceiverData {
+  receiverId: string;
   username: string;
   praiseCount: number;
   praiseScore: number;
@@ -403,12 +426,21 @@ const avgPraiseScore = (scoreData: number[]) => {
   return scoreData.reduce((a, b) => a + b, 0);
 };
 
-export const PeriodReceivers = selectorFamily({
-  key: "PeriodReceivers",
+const avgPraiseScore2 = (quantifications: any[] | undefined) => {
+  if (!quantifications) return 0;
+  return quantifications.reduce((score1, score2) => {
+    if (!score1 || !score2) return 0;
+    return score1 + score2;
+  }, 0);
+};
+
+export const AllPeriodReceivers = selectorFamily({
+  key: "AllPeriodReceivers",
   get:
     (params: any) =>
     async ({ get }) => {
-      const praise = get(PeriodPraise(params.periodId));
+      const { periodId } = params;
+      const praise = get(AllPeriodPraise(periodId));
       if (praise) {
         let r: ReceiverData[] = [];
 
@@ -426,6 +458,7 @@ export const PeriodReceivers = selectorFamily({
           );
 
           const rd: ReceiverData = {
+            receiverId: praiseItem.receiver._id!,
             username: praiseItem.receiver.username,
             praiseCount: ri > -1 ? r[ri].praiseCount + 1 : 1,
             praiseScore:
@@ -444,5 +477,126 @@ export const PeriodReceivers = selectorFamily({
       }
 
       return undefined;
+    },
+});
+
+export const PeriodReceiver = selectorFamily({
+  key: "PeriodReceiver",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const { receiverId, periodId } = params;
+      const allPeriodReceivers = get(AllPeriodReceivers({ periodId }));
+
+      if (!allPeriodReceivers) return undefined;
+
+      return allPeriodReceivers.find((rd) => rd.receiverId === receiverId);
+    },
+});
+
+export const AllActiveQuantifierQuantifications = selector({
+  key: "AllActiveQuantifierQuantifications",
+  get: async ({ get }) => {
+    const periods = get(AllPeriods);
+    const userId = get(ActiveUserId);
+    const response: QuantifierData[] = [];
+    if (!periods) return undefined;
+    for (const period of periods) {
+      if (period.status === "QUANTIFY") {
+        let periodQuantifiers = get(
+          PeriodQuantifiers({ periodId: period._id })
+        );
+        if (!periodQuantifiers) continue;
+        for (const qd of periodQuantifiers) {
+          if (qd.userId === userId) response.push(qd);
+        }
+      }
+    }
+    return response;
+  },
+});
+
+export const PeriodActiveQuantifierQuantifications = selectorFamily({
+  key: "PeriodActiveQuantifierQuantifications",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const { periodId } = params;
+      const period = get(SinglePeriod({ periodId }));
+      const userId = get(ActiveUserId);
+      if (!period) return undefined;
+      if (period.status === "QUANTIFY") {
+        let periodQuantifiers = get(
+          PeriodQuantifiers({ periodId: period._id })
+        );
+        if (!periodQuantifiers) return undefined;
+        for (const qd of periodQuantifiers) {
+          if (qd.userId === userId) return qd;
+        }
+      }
+      return undefined;
+    },
+});
+
+export interface QuantifierReceiverData {
+  periodId: string;
+  receiverId: string;
+  receiverName: string;
+  count: number;
+  done: number;
+}
+
+export const PeriodActiveQuantifierReceivers = selectorFamily({
+  key: "PeriodActiveQuantifierReceivers",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const praise = get(AllPeriodPraise(params.periodId));
+      const userId = get(ActiveUserId);
+      if (praise) {
+        let q: QuantifierReceiverData[] = [];
+
+        for (let praiseItem of praise) {
+          if (!praiseItem.quantifications || !praiseItem.receiver._id) continue;
+          for (let quantification of praiseItem.quantifications) {
+            if (quantification.quantifier !== userId) continue;
+
+            const qi = q.findIndex(
+              (item) => item.receiverId === praiseItem.receiver._id
+            );
+
+            const done = quantification.score ? 1 : 0;
+
+            const qd: QuantifierReceiverData = {
+              periodId: params.periodId,
+              receiverId: praiseItem.receiver._id,
+              receiverName: praiseItem.receiver.username,
+              count: qi > -1 ? q[qi].count + 1 : 1,
+              done: qi > -1 ? q[qi].done + done : done,
+            };
+
+            if (qi > -1) {
+              q[qi] = qd;
+            } else {
+              q.push(qd);
+            }
+          }
+        }
+        return q;
+      }
+
+      return undefined;
+    },
+});
+
+export const PeriodActiveQuantifierReceiver = selectorFamily({
+  key: "PeriodActiveQuantifierReceiver",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const { periodId, receiverId } = params;
+      const qrd = get(PeriodActiveQuantifierReceivers({ periodId }));
+      if (!qrd) return undefined;
+      return qrd.find((item) => item.receiverId === receiverId);
     },
 });

@@ -5,10 +5,10 @@ import PraisesTable from "@/components/praise/Table";
 import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 
-const MainPage = () => {
+const MyPraise = () => {
   return (
     <>
-      <BreadCrumb name="Praise" icon={faPrayingHands} />
+      <BreadCrumb name="My praise" icon={faPrayingHands} />
 
       <div className="w-2/3 praise-box">
         <React.Suspense fallback="Loading…">
@@ -24,4 +24,4 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default MyPraise;

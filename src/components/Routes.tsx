@@ -1,16 +1,18 @@
 import Nav from "@/components/Nav";
 import {
+  ActiveUserRoles,
   ROLE_ADMIN,
   ROLE_QUANTIFIER,
   SessionToken,
-  UserRoles,
 } from "@/model/auth";
 import { EthState } from "@/model/eth";
 import * as localStorage from "@/model/localStorage";
 import LoginPage from "@/pages/Login";
 import MainPage from "@/pages/Main";
+import MyPraise from "@/pages/MyPraise";
 import PeriodDetail from "@/pages/Periods/Detail";
 import QuantifyPeriodPage from "@/pages/Quantify/Period";
+import QuantSummaryPeriodReceiverPage from "@/pages/QuantSummary/PeriodReceiver";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -66,7 +68,7 @@ interface AuthRouteProps {
 // A Route that takes an array of roles as argument and redirects
 // to frontpage if user do not belong to any of the given roles
 const AuthRoute: FC<AuthRouteProps> = ({ children, ...props }) => {
-  const userRoles = useRecoilValue(UserRoles);
+  const userRoles = useRecoilValue(ActiveUserRoles);
 
   let authenticated = false;
   for (const role of props.roles) {
@@ -97,37 +99,39 @@ const AuthRoute: FC<AuthRouteProps> = ({ children, ...props }) => {
 
 const SubPages = () => {
   return (
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <Switch>
-        <Route exact path={`/periods`}>
-          <PeriodsPage />
-        </Route>
-        <AuthRoute roles={[ROLE_ADMIN]} path={`/periods/createupdate`}>
-          <PeriodsCreateUpdatePage />
-        </AuthRoute>
-        <Route exact path={`/periods/:id`}>
-          <PeriodDetail />
-        </Route>
-        <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
-          <QuantifierPoolPage />
-        </AuthRoute>
-        <AuthRoute
-          roles={[ROLE_QUANTIFIER]}
-          path={`/quantify/period/:periodId/user/:userId`}
-        >
-          <QuantifyPage />
-        </AuthRoute>
-        <AuthRoute
-          roles={[ROLE_QUANTIFIER]}
-          path={`/quantify/period/:periodId`}
-        >
-          <QuantifyPeriodPage />
-        </AuthRoute>
-        <Route exact path="/">
-          <MainPage />
-        </Route>
-      </Switch>
-    </React.Suspense>
+    <Switch>
+      <Route exact path={`/periods`}>
+        <PeriodsPage />
+      </Route>
+      <AuthRoute roles={[ROLE_ADMIN]} path={`/periods/createupdate`}>
+        <PeriodsCreateUpdatePage />
+      </AuthRoute>
+      <Route exact path={`/periods/:periodId`}>
+        <PeriodDetail />
+      </Route>
+      <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
+        <QuantifierPoolPage />
+      </AuthRoute>
+      <AuthRoute
+        roles={[ROLE_QUANTIFIER]}
+        path={`/quantify/period/:periodId/receiver/:receiverId`}
+      >
+        <QuantifyPage />
+      </AuthRoute>
+      <AuthRoute roles={[ROLE_QUANTIFIER]} path={`/quantify/period/:periodId`}>
+        <QuantifyPeriodPage />
+      </AuthRoute>
+      <Route exact path="/quantsummary/period/:periodId/receiver/:receiverId">
+        <QuantSummaryPeriodReceiverPage />
+      </Route>
+
+      <Route exact path="/mypraise">
+        <MyPraise />
+      </Route>
+      <Route exact path="/">
+        <MainPage />
+      </Route>
+    </Switch>
   );
 };
 
@@ -141,7 +145,7 @@ const Routes = () => {
         <div className="flex min-h-screen">
           <Nav />
           <div className="flex w-full">
-            <div className="w-[920px] pt-4 mx-auto px-5">
+            <div className="w-[920px] pt-4 px-5">
               <div>
                 <SubPages />
               </div>

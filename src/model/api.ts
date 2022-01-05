@@ -185,6 +185,7 @@ export const isApiResponseOk = (
   response: AxiosResponse | AxiosError | null
 ): response is AxiosResponse => {
   const axiosResponse = response as AxiosResponse;
+  if (!axiosResponse) return false;
   return axiosResponse.status === 200 && !isApiErrorData(axiosResponse.data);
 };
 

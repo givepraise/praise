@@ -1,34 +1,50 @@
 import {
-  PeriodActiveQuantifierReceivers,
+  AllPeriodReceiverPraise,
   QuantifierReceiverData,
 } from "@/model/periods";
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { formatDate } from "@/utils/date";
+import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { SyntheticEvent } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
 
-const QuantifyOverviewTable = () => {
+const PeriodReceiverTable = () => {
   const history = useHistory();
-  let { periodId } = useParams() as any;
+  let { periodId, receiverId } = useParams() as any;
 
-  const data = useRecoilValue(PeriodActiveQuantifierReceivers({ periodId }));
+  const data = useRecoilValue(
+    AllPeriodReceiverPraise({ periodId, receiverId })
+  );
 
   const columns = React.useMemo(
     () => [
       {
-        Header: "Receiver",
-        accessor: "receiverName",
+        Header: "From",
+        accessor: "createdAt",
+        Cell: (data: any) => {
+          return (
+            <div className="flex items-center w-full">
+              <div className="flex items-center">
+                <FontAwesomeIcon icon={faUserCircle} size="2x" />
+              </div>
+              <div className="flex-grow p-3 whitespace-nowrap">
+                {formatDate(data.row.original.createdAt)}
+                <br />
+                {data.row.original.giver.username}
+              </div>
+            </div>
+          );
+        },
       },
       {
-        Header: "Finished items",
-        accessor: "finishedItems",
-        Cell: (data: any) => {
-          return data.row.original
-            ? `${data.row.original.done} / ${data.row.original.count}`
-            : null;
-        },
+        Header: "Reason",
+        accessor: "reason",
+      },
+      {
+        Header: "Avg.score",
+        accessor: "avgScore",
       },
     ],
     []
@@ -78,14 +94,6 @@ const QuantifyOverviewTable = () => {
               {row.cells.map((cell) => {
                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
               })}
-
-              <td>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  size="1x"
-                  className="inline-block"
-                />
-              </td>
             </tr>
           );
         })}
@@ -94,4 +102,4 @@ const QuantifyOverviewTable = () => {
   );
 };
 
-export default QuantifyOverviewTable;
+export default PeriodReceiverTable;

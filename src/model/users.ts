@@ -38,6 +38,7 @@ export enum UserAccountPlatform {
 }
 
 export interface UserAccount {
+  _id?: string;
   id: string;
   username: string;
   profileImageUrl: string;
@@ -109,6 +110,21 @@ export const SingleUser = selectorFamily({
       const allUsers = get(AllUsers);
       if (!allUsers) return null;
       return allUsers.filter((user) => user._id === userId)[0];
+    },
+});
+
+export const SingleUserByReceiverId = selectorFamily({
+  key: "SingleUserByReceiverId",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const { receiverId } = params;
+      const allUsers = get(AllUsers);
+      if (!allUsers) return null;
+      return allUsers.find((user) => {
+        if (!user.accounts) return false;
+        return user.accounts.find((account) => account._id === receiverId);
+      });
     },
 });
 

@@ -1,6 +1,6 @@
 import {
-  Period,
-  PeriodReceivers,
+  AllPeriodReceivers,
+  ReceiverData,
   usePeriodPraisesQuery,
 } from "@/model/periods";
 import React, { SyntheticEvent } from "react";
@@ -10,9 +10,9 @@ import { useRecoilValue } from "recoil";
 
 const ReceiverTable = () => {
   const history = useHistory();
-  let { id } = useParams() as any;
-  usePeriodPraisesQuery(id);
-  const periodReceivers = useRecoilValue(PeriodReceivers({ periodId: id }));
+  let { periodId } = useParams() as any;
+  usePeriodPraisesQuery(periodId);
+  const periodReceivers = useRecoilValue(AllPeriodReceivers({ periodId }));
 
   const columns = React.useMemo(
     () => [
@@ -41,8 +41,10 @@ const ReceiverTable = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const handleClick = (periodId: string) => (e: SyntheticEvent) => {
-    history.push(`/quantify/period/1/user/2`);
+  const handleClick = (data: ReceiverData) => (e: SyntheticEvent) => {
+    history.push(
+      `/quantsummary/period/${periodId}/receiver/${data.receiverId}`
+    );
   };
   return (
     <table
@@ -69,7 +71,7 @@ const ReceiverTable = () => {
               className="cursor-pointer hover:bg-gray-100"
               id={"period-" + row.values.name}
               {...row.getRowProps()}
-              onClick={handleClick((row.original as Period)._id!)}
+              onClick={handleClick(row.original as ReceiverData)}
             >
               {row.cells.map((cell) => {
                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
