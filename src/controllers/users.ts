@@ -1,5 +1,5 @@
 import UserModel from '@entities/User';
-import { NOT_FOUND } from '@shared/constants';
+import { BadRequestError, NotFoundError } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
 import {
   AddRoleInput,
@@ -12,7 +12,6 @@ import {
   userListTransformer,
   userSingleTransformer,
 } from 'src/transformers/userTransformer';
-import { BadRequestError, NotFoundError } from '@shared/errors';
 
 const all = async (
   req: Request<any, any, QueryInput>,
