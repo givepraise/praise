@@ -1,6 +1,5 @@
 import PraiseModel from '@entities/Praise';
-import QuantificationModel from '@entities/Quantification';
-import { NotFoundError } from '@shared/errors';
+import { BadRequestError, NotFoundError } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
 import { QuantificationCreateUpdateInput, QueryInput } from '@shared/inputs';
 import { Request, Response } from 'express';
@@ -37,18 +36,17 @@ const quantify = async (
   const { score, dismissed, duplicatePraiseId } = req.body;
   const duplicatePraise = duplicatePraiseId ? duplicatePraiseId : null;
 
-  const quantification = await QuantificationModel.findOneAndUpdate(
-    { quantifier: req.body.currentUser },
-    {
-      score,
-      quantifier: req.body.currentUser,
-      dismissed,
-      duplicatePraise,
-    },
-    { upsert: true, new: true }
+  const quantification = praise.quantifications.find((q) =>
+    q.quantifier.equals(req.body.currentUser._id)
   );
 
-  praise.quantifications.push(quantification);
+  if (!quantification)
+    throw new BadRequestError('User not assigned as quantifier for praise.');
+
+  quantification.score = score;
+  quantification.dismissed = dismissed;
+  quantification.duplicatePraise = duplicatePraise;
+
   praise.save();
 
   return res.status(200).json(praise);
