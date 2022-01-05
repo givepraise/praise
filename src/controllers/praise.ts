@@ -19,7 +19,9 @@ export const all = async (
 };
 
 const single = async (req: Request, res: Response): Promise<Response> => {
-  const praise = await PraiseModel.findById(req.params.id);
+  const praise = await PraiseModel.findById(req.params.id).populate(
+    'giver receiver'
+  );
   if (!praise) throw new NotFoundError('Praise');
 
   return res.status(200).json(praise);
