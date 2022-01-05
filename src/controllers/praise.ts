@@ -1,5 +1,4 @@
 import PraiseModel from '@entities/Praise';
-import { NOT_FOUND } from '@shared/constants';
 import { NotFoundError } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
 import { QueryInput } from '@shared/inputs';
@@ -19,7 +18,9 @@ export const all = async (
 };
 
 const single = async (req: Request, res: Response): Promise<Response> => {
-  const praise = await PraiseModel.findById(req.params.id);
+  const praise = await PraiseModel.findById(req.params.id).populate(
+    'giver receiver'
+  );
 
   if (!praise) throw new NotFoundError('Praise');
 
