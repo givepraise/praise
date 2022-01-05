@@ -1,5 +1,5 @@
 import UserModel from '@entities/User';
-import { NOT_FOUND } from '@shared/constants';
+import { BadRequestError, NotFoundError } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
 import {
   AddRoleInput,
@@ -12,7 +12,6 @@ import {
   userListTransformer,
   userSingleTransformer,
 } from 'src/transformers/userTransformer';
-import { NotFoundError } from '@shared/errors';
 
 const all = async (
   req: Request<any, any, QueryInput>,
@@ -57,12 +56,10 @@ const addRole = async (
   res: Response
 ): Promise<Response> => {
   const user = await UserModel.findById(req.params.id).populate('accounts');
-  const { role } = req.body;
-
   if (!user) throw new NotFoundError('User');
 
   const { role } = req.body;
-  if (!role) return res.status(BAD_REQUEST);
+  if (!role) throw new BadRequestError('No role specified.');
 
   if (!user.roles.includes(role)) {
     user.roles.push(role);
@@ -76,12 +73,11 @@ const removeRole = async (
   res: Response
 ): Promise<Response> => {
   const user = await UserModel.findById(req.params.id).populate('accounts');
-  const { role } = req.body;
 
   if (!user) throw new NotFoundError('User');
 
   const { role } = req.body;
-  if (!role) return res.status(BAD_REQUEST);
+  if (!role) throw new BadRequestError('No role specified.');
 
   var roleIndex = user.roles.indexOf(role);
   user.roles.splice(roleIndex, 1);
