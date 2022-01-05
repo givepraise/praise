@@ -1,7 +1,14 @@
 import React from "react";
-import { atom, selectorFamily, useRecoilState } from "recoil";
+import {
+  atom,
+  selectorFamily,
+  useRecoilCallback,
+  useRecoilState,
+  useRecoilValue,
+} from "recoil";
 import {
   ApiAuthGetQuery,
+  ApiAuthPatchQuery,
   isApiResponseError,
   isApiResponseOk,
   PaginatedResponseData,
@@ -20,7 +27,7 @@ export interface Quantification {
 }
 
 export interface Praise {
-  _id: number;
+  _id: string;
   createdAt: string;
   updatedAt: string;
   periodId?: number;
@@ -159,3 +166,55 @@ export const SinglePraise = selectorFamily({
       return extPraise as Praise;
     },
 });
+
+export const QuantifyPraise = selectorFamily({
+  key: "QuantifyPraise",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const { praiseId, score, dismissed, duplicatePraise } = params;
+      const response = get(
+        ApiAuthPatchQuery({
+          endPoint: `/api/praise/${praiseId}/quantify`,
+          data: {
+            score,
+            dismissed,
+            duplicatePraise,
+          },
+        })
+      );
+      return response;
+    },
+});
+
+// Hook that returns a function to use for closing a period
+export const useQuantifyPraise = () => {
+  const singlePraisesRequestId = useRecoilValue(SinglePraisesRequestId);
+
+  const quantify = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async (
+        praiseId: string,
+        score: number,
+        dismissed: boolean,
+        duplicatePraise: string | null
+      ) => {
+        const response = await snapshot.getPromise(
+          ApiAuthPatchQuery({
+            endPoint: `/api/praise/${praiseId}/quantify`,
+            data: {
+              score,
+              dismissed,
+              duplicatePraise,
+            },
+          })
+        );
+
+        if (isApiResponseOk(response)) {
+          set(SinglePraisesRequestId, singlePraisesRequestId + 1);
+          return response.data as Praise;
+        }
+      }
+  );
+  return { quantify };
+};

@@ -1,21 +1,19 @@
 // sourced from:
 // https://www.pluralsight.com/guides/how-to-test-react-components-in-typescript
 
+import StartPage from "@/pages/Start/StartPage";
+import { render, screen } from "@testing-library/react";
 import React from "react";
-import { act, screen, render, fireEvent } from "@testing-library/react";
 import { RecoilRoot } from "recoil";
-import MainPage from "@/pages/Main";
 
-
-describe("<MainPage />", () => 
+describe("<MainPage />", () =>
   test("should call useEagerConnect", async () => {
     render(
       <RecoilRoot>
-        <MainPage />
+        <StartPage />
       </RecoilRoot>
-    )
+    );
 
-    screen.getByText('Praise main page')
-  })
-);
+    screen.getByText("Praise main page");
+  }));
 // screen.debug()

@@ -5,7 +5,7 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import EthConnection from "./components/EthConnection";
-import Routes from "./components/Routes";
+import Routes from "./navigation/Routes";
 import { LoadScreen, StartupLoader } from "./startupLoader";
 import "./styles/globals.css";
 
