@@ -1,5 +1,4 @@
 import UserModel from '@entities/User';
-import { NOT_FOUND } from '@shared/constants';
 import { getQuerySort } from '@shared/functions';
 import {
   AddRoleInput,
@@ -80,7 +79,7 @@ const removeRole = async (
   const { role } = req.body;
   if (!role) throw new BadRequestError('Role is required');
 
-  var roleIndex = user.roles.indexOf(role);
+  const roleIndex = user.roles.indexOf(role);
   user.roles.splice(roleIndex, 1);
 
   await user.save();

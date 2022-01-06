@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import controller from '@controllers/users';
+import controller from '@controllers/useraccounts';
 
 // User-routes
 const userRouter = Router();
