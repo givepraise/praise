@@ -3,6 +3,7 @@ import { authMiddleware } from '@middleware/auth';
 import { Router } from 'express';
 import adminPeriodRouter from './admin/periods';
 import adminUserRouter from './admin/users';
+import adminPraiseRouter from './admin/praise';
 import authRouter from './auth';
 import periodRouter from './periods';
 import praiseRouter from './praise';
@@ -29,6 +30,11 @@ baseRouter.use(
   '/admin/periods',
   authMiddleware(UserRole.ADMIN),
   adminPeriodRouter
+);
+baseRouter.use(
+  '/admin/praise',
+  authMiddleware(UserRole.ADMIN),
+  adminPraiseRouter
 );
 
 baseRouter.all('*', (req, res, next) => {

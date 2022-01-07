@@ -3,6 +3,7 @@
 import { cookieProps } from '@shared/constants';
 import jsonwebtoken, { VerifyErrors } from 'jsonwebtoken';
 import randomString from 'randomstring';
+import { UnauthorizedError } from './errors';
 
 export interface ClientData {
   userId: string;
@@ -32,7 +33,8 @@ export class JwtService {
   public getJwt(data: ClientData): Promise<string> {
     return new Promise((resolve, reject) => {
       jsonwebtoken.sign(data, this.secret, this.options, (err, token) => {
-        err ? reject(err) : resolve(token || '');
+        if (err) throw new UnauthorizedError(err);
+        return resolve(token || '');
       });
     });
   }
@@ -43,12 +45,13 @@ export class JwtService {
    * @param jwt
    */
   public decodeJwt(jwt: string): Promise<ClientData> {
-    return new Promise((res, rej) => {
+    return new Promise((res) => {
       jsonwebtoken.verify(
         jwt,
         this.secret,
         (err: VerifyErrors | null, decoded?: object) => {
-          return err ? rej(this.VALIDATION_ERROR) : res(decoded as ClientData);
+          if (err) throw new UnauthorizedError(this.VALIDATION_ERROR);
+          return res(decoded as ClientData);
         }
       );
     });
