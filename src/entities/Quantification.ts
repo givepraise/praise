@@ -8,7 +8,7 @@ export interface QuantificationInterface {
   quantifier: UserInterface;
   score?: number;
   dismissed?: boolean;
-  duplicatePraise?: PraiseInterface;
+  duplicatePraise?: PraiseInterface | null;
 }
 
 export const quantificationSchema = new mongoose.Schema(
@@ -16,7 +16,11 @@ export const quantificationSchema = new mongoose.Schema(
     quantifier: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     score: { type: Number, default: 0 },
     dismissed: { type: Boolean, required: true, default: false },
-    duplicatePraise: { type: mongoose.Schema.Types.ObjectId, ref: 'Praise' },
+    duplicatePraise: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Praise',
+      default: null,
+    },
   },
   {
     timestamps: true,

@@ -30,11 +30,12 @@ const quantify = async (
   req: Request<any, QuantificationCreateUpdateInput, any>,
   res: Response
 ): Promise<Response> => {
-  const praise = await PraiseModel.findById(req.params.id);
+  const praise = await PraiseModel.findById(req.params.id).populate(
+    'giver receiver'
+  );
   if (!praise) throw new NotFoundError('Praise');
 
-  const { score, dismissed, duplicatePraiseId } = req.body;
-  const duplicatePraise = duplicatePraiseId ? duplicatePraiseId : null;
+  const { score, dismissed, duplicatePraise } = req.body;
 
   const quantification = praise.quantifications.find((q) =>
     q.quantifier.equals(req.body.currentUser._id)
@@ -45,7 +46,14 @@ const quantify = async (
 
   quantification.score = score;
   quantification.dismissed = dismissed;
-  quantification.duplicatePraise = duplicatePraise;
+  if (duplicatePraise) {
+    const dp = await PraiseModel.findById(duplicatePraise);
+    if (dp) {
+      quantification.duplicatePraise = dp._id;
+    }
+  } else {
+    quantification.duplicatePraise = null;
+  }
 
   praise.save();
 
