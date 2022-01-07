@@ -1,6 +1,5 @@
 import PraiseModel from '@entities/Praise';
-import QuantificationModel from '@entities/Quantification';
-import { NotFoundError } from '@shared/errors';
+import { BadRequestError, NotFoundError } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
 import { QuantificationCreateUpdateInput, QueryInput } from '@shared/inputs';
 import { Request, Response } from 'express';
@@ -19,7 +18,9 @@ export const all = async (
 };
 
 const single = async (req: Request, res: Response): Promise<Response> => {
-  const praise = await PraiseModel.findById(req.params.id);
+  const praise = await PraiseModel.findById(req.params.id).populate(
+    'giver receiver'
+  );
   if (!praise) throw new NotFoundError('Praise');
 
   return res.status(200).json(praise);
@@ -29,24 +30,31 @@ const quantify = async (
   req: Request<any, QuantificationCreateUpdateInput, any>,
   res: Response
 ): Promise<Response> => {
-  const praise = await PraiseModel.findById(req.params.id);
+  const praise = await PraiseModel.findById(req.params.id).populate(
+    'giver receiver'
+  );
   if (!praise) throw new NotFoundError('Praise');
 
-  const { score, dismissed, duplicatePraiseId } = req.body;
-  const duplicatePraise = duplicatePraiseId ? duplicatePraiseId : null;
+  const { score, dismissed, duplicatePraise } = req.body;
 
-  const quantification = await QuantificationModel.findOneAndUpdate(
-    { quantifier: req.body.currentUser },
-    {
-      score,
-      quantifier: req.body.currentUser,
-      dismissed,
-      duplicatePraise,
-    },
-    { upsert: true, new: true }
+  const quantification = praise.quantifications.find((q) =>
+    q.quantifier.equals(req.body.currentUser._id)
   );
 
-  praise.quantifications.push(quantification);
+  if (!quantification)
+    throw new BadRequestError('User not assigned as quantifier for praise.');
+
+  quantification.score = score;
+  quantification.dismissed = dismissed;
+  if (duplicatePraise) {
+    const dp = await PraiseModel.findById(duplicatePraise);
+    if (dp) {
+      quantification.duplicatePraise = dp._id;
+    }
+  } else {
+    quantification.duplicatePraise = null;
+  }
+
   praise.save();
 
   return res.status(200).json(praise);
