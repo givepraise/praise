@@ -79,7 +79,7 @@ const removeRole = async (
   const { role } = req.body;
   if (!role) throw new BadRequestError('Role is required');
 
-  var roleIndex = user.roles.indexOf(role);
+  const roleIndex = user.roles.indexOf(role);
   user.roles.splice(roleIndex, 1);
 
   await user.save();
