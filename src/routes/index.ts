@@ -7,6 +7,7 @@ import authRouter from './auth';
 import periodRouter from './periods';
 import praiseRouter from './praise';
 import userRouter from './users';
+import userAccountRouter from './useraccounts';
 import { NOT_FOUND } from '@shared/constants';
 
 // Export the base-router
@@ -17,6 +18,11 @@ baseRouter.use('/auth', authRouter);
 baseRouter.use('/users', authMiddleware(UserRole.USER), userRouter);
 baseRouter.use('/periods', authMiddleware(UserRole.USER), periodRouter);
 baseRouter.use('/praise', authMiddleware(UserRole.USER), praiseRouter);
+baseRouter.use(
+  '/useraccount',
+  authMiddleware(UserRole.USER),
+  userAccountRouter
+);
 
 baseRouter.use('/admin/users', authMiddleware(UserRole.ADMIN), adminUserRouter);
 baseRouter.use(
