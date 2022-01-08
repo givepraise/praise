@@ -88,17 +88,28 @@ interface Receiver {
   _id: string;
   praiseCount: number;
   praiseIds: string[];
+  assignedQuantifiers?: number;
 }
 
-// Returns an array of an
-const getQuantifierReceivers = async (periodId: string) => {
+interface Quantifier {
+  _id?: string;
+  receivers: Receiver[];
+}
+
+const assignedPraiseCount = (quantifier: Quantifier) => {
+  return quantifier.receivers.reduce(function (sum, receiver) {
+    return sum + receiver.praiseCount;
+  }, 0);
+};
+
+const assignQuantifiersDryRun = async (periodId: string) => {
   const period = await PeriodModel.findById(periodId);
   if (!period) throw new NotFoundError('Period');
 
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
   // Aggregate all period praise receivers and count number of received praise
-  const receivers = await PraiseModel.aggregate([
+  let receivers: Receiver[] = await PraiseModel.aggregate([
     {
       $match: {
         createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
@@ -115,66 +126,91 @@ const getQuantifierReceivers = async (periodId: string) => {
     },
   ] as any);
 
-  let qi = 0 as number;
-  const quantifierReceivers: any[] = [];
-  quantifierReceivers[qi] = [];
-  let riStart = 0;
+  const quantifierPool = await UserModel.find({ roles: UserRole.QUANTIFIER });
+  const poolIds: Quantifier[] = quantifierPool.map(
+    (user) => ({ _id: user._id, receivers: [] } as Quantifier)
+  );
+  // Scramble the quant pool to randomize who gets assigned
+  const pool = poolIds.sort(() => 0.5 - Math.random()).slice(0, poolIds.length);
 
-  const assignedPraiseCount = (quantifier: Receiver[]) => {
-    return quantifier.reduce(function (sum, receiver) {
-      return sum + receiver.praiseCount;
-    }, 0);
-  };
+  for (let qi = 0; qi < pool.length; qi++) {
+    const q = pool[qi];
 
-  let assignsLeft = receivers.length;
-  while (assignsLeft > 0) {
-    // Move start index each loop to avoid same combinations of receivers being
+    // Scramble receivers array to avoid same combinations of receivers being
     // assigned to quantifiers.
-    riStart = riStart < receivers.length - 1 ? riStart + 1 : 0;
-    for (let ri = riStart; ri < receivers.length; ri++) {
-      receivers[ri].assignedQuantifiers = receivers[ri].assignedQuantifiers
-        ? receivers[ri].assignedQuantifiers
-        : 0;
+    receivers = receivers
+      .sort(() => 0.5 - Math.random())
+      .slice(0, receivers.length);
 
-      if (receivers[ri].assignedQuantifiers < QUANTIFIERS_PER_PRAISE_RECEIVER) {
-        if (
-          assignedPraiseCount(quantifierReceivers[qi]) +
-            receivers[ri].praiseCount >
-            MAX_PRAISE_PER_QUANTIFIER &&
-          assignedPraiseCount(quantifierReceivers[qi]) > 0
-        ) {
-          quantifierReceivers[++qi] = []; // Initialise new quantifier
-          continue;
-        }
+    for (let ri = 0; ri < receivers.length; ri++) {
+      const r = receivers[ri];
 
-        quantifierReceivers[qi].push(receivers[ri]);
+      // Quantify your own received praise not allowed
+      if (r._id === q._id) continue;
 
-        receivers[ri].assignedQuantifiers = receivers[ri].assignedQuantifiers
-          ? receivers[ri].assignedQuantifiers + 1
-          : 1;
+      // Receiver already assigned to quantifier
+      if (q.receivers.findIndex((receiver) => receiver._id === r._id) > -1)
+        continue;
 
-        assignsLeft =
-          receivers[ri].assignedQuantifiers === QUANTIFIERS_PER_PRAISE_RECEIVER
-            ? assignsLeft - 1
-            : assignsLeft;
+      // Receiver already assigned to enough quantifiers
+      if (r.assignedQuantifiers === QUANTIFIERS_PER_PRAISE_RECEIVER) {
+        continue;
       }
+
+      // Assign praise that meet criteria
+      if (
+        (q.receivers.length === 0 &&
+          r.praiseCount > MAX_PRAISE_PER_QUANTIFIER) ||
+        assignedPraiseCount(q) + r.praiseCount < MAX_PRAISE_PER_QUANTIFIER
+      ) {
+        q.receivers.push(r);
+        r.assignedQuantifiers = r.assignedQuantifiers
+          ? r.assignedQuantifiers + 1
+          : 1;
+        continue;
+      }
+    }
+
+    const assignsRemaining = () => {
+      for (let r of receivers) {
+        if (
+          !r.assignedQuantifiers ||
+          r.assignedQuantifiers < QUANTIFIERS_PER_PRAISE_RECEIVER
+        )
+          return true;
+      }
+      return false;
+    };
+
+    // Extend the pool with dummy quantifiers if assigns remain to be done
+    // when reaching the end of the pool
+    if (qi === pool.length - 1 && assignsRemaining()) {
+      pool.push({
+        receivers: [],
+      });
     }
   }
 
-  return quantifierReceivers as Array<Array<Receiver>>;
+  // Trim any unassigned quantifiers from the returned pool
+  while (pool[pool.length - 1].receivers.length === 0) {
+    pool.pop();
+  }
+
+  return pool;
 };
 
 export const verifyQuantifierPoolSize = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const quantifierReceivers = await getQuantifierReceivers(req.params.periodId);
-
   const quantifierPool = await UserModel.find({ roles: UserRole.QUANTIFIER });
+  const assignedQuantifiers = await assignQuantifiersDryRun(
+    req.params.periodId
+  );
 
   const response = {
     quantifierPoolSize: quantifierPool.length,
-    requiredPoolSize: quantifierReceivers.length,
+    requiredPoolSize: assignedQuantifiers.length,
   };
 
   return res.status(StatusCodes.OK).json(response);
@@ -191,41 +227,26 @@ export const assignQuantifiers = async (
       'Quantifiers can only be assigned on OPEN periods.'
     );
 
-  const quantifierReceivers = await getQuantifierReceivers(req.params.periodId);
-  const quantifierPool = await UserModel.find({ roles: UserRole.QUANTIFIER });
+  const assignedQuantifiers = await assignQuantifiersDryRun(
+    req.params.periodId
+  );
 
-  const requiredPoolSize = quantifierReceivers.length;
-
-  if (requiredPoolSize > quantifierPool.length)
+  if (assignedQuantifiers.find((q) => typeof q._id === 'undefined'))
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ error: 'Quantifier pool size too small.' });
 
-  const selectedQuantifiers = quantifierPool
-    .sort(() => 0.5 - Math.random())
-    .slice(0, requiredPoolSize);
-
-  const getQuantifier = (receiver: Receiver, qi: number) => {
-    // Quantifying your own praise is not allowed
-    if (receiver._id === quantifierPool[qi]._id) {
-      return qi === quantifierPool.length
-        ? quantifierPool[qi - 1]._id
-        : quantifierPool[qi + 1]._id;
-    }
-    return quantifierPool[qi];
-  };
-
   // Quantifiers
-  for (let qi = 0; qi < requiredPoolSize; qi++) {
+  for (let q of assignedQuantifiers) {
+    const quantifier = await UserModel.findById(q._id);
     // Receivers
-    for (const receiver of quantifierReceivers[qi]) {
-      const quantifier = getQuantifier(receiver, qi);
+    for (const receiver of q.receivers) {
       // Praise
       for (const praiseId of receiver.praiseIds) {
         const praise = await PraiseModel.findById(praiseId);
-        if (praise) {
+        if (quantifier && praise) {
           praise.quantifications.push({
-            quantifier: selectedQuantifiers[qi]._id,
+            quantifier: quantifier._id,
           });
           praise.save();
         }
