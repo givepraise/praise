@@ -21,20 +21,18 @@ const PeriodReceiverTable = () => {
       {
         Header: "From",
         accessor: "createdAt",
-        Cell: (data: any) => {
-          return (
-            <div className="flex items-center w-full">
-              <div className="flex items-center">
-                <FontAwesomeIcon icon={faUserCircle} size="2x" />
-              </div>
-              <div className="flex-grow p-3 whitespace-nowrap">
-                {formatDate(data.row.original.createdAt)}
-                <br />
-                {data.row.original.giver.username}
-              </div>
+        Cell: (data: any) => (
+          <div className="flex items-center w-full">
+            <div className="flex items-center">
+              <FontAwesomeIcon icon={faUserCircle} size="2x" />
             </div>
-          );
-        },
+            <div className="flex-grow p-3 whitespace-nowrap">
+              {formatDate(data.row.original.createdAt)}
+              <br />
+              {data.row.original.giver.username}
+            </div>
+          </div>
+        ),
       },
       {
         Header: "Reason",
