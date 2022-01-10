@@ -1,6 +1,8 @@
 import LoaderSpinner from "@/components/LoaderSpinner";
 import { AllPraiseList, Praise } from "@/model/praise";
 import { formatDate } from "@/utils/date";
+import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { SyntheticEvent } from "react";
 import { useHistory } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
@@ -13,28 +15,23 @@ const MyPraiseTable = () => {
   const columns = React.useMemo(
     () => [
       {
-        Header: "Date",
         accessor: "createdAt",
         Cell: (data: any) => (
-          <div className="whitespace-nowrap">{formatDate(data.value)}</div>
+          <div className="flex items-center w-full">
+            <div className="flex items-center">
+              <FontAwesomeIcon icon={faUserCircle} size="2x" />
+            </div>
+            <div className="flex-grow p-3 whitespace-nowrap">
+              {formatDate(data.row.original.createdAt)}
+              <br />
+              Giver: {data.row.original.giver.username}
+              <br />
+              Receiver: {data.row.original.receiver.username}
+            </div>
+          </div>
         ),
       },
       {
-        Header: "From",
-        accessor: "giver",
-        Cell: (data: any) => {
-          return `${data.value.username}`;
-        },
-      },
-      {
-        Header: "To",
-        accessor: "receiver",
-        Cell: (data: any) => {
-          return `${data.value.username}`;
-        },
-      },
-      {
-        Header: "Praise",
         accessor: "reason",
       },
     ],
