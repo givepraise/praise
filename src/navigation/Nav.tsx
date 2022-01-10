@@ -27,7 +27,7 @@ interface NavProps {
 export const NavItem = ({ icon, description, to }: NavProps) => {
   return (
     <div
-      className="relative flex px-4 py-1 cursor-pointer hover:bg-gray-100"
+      className="relative flex px-4 py-1 cursor-pointer hover:bg-gray-100 mr-[1px]"
       id={to.substring(1) + "-nav-button"}
     >
       <Link to={to}>
@@ -55,8 +55,8 @@ export default function Nav() {
 
   return (
     <nav className="flex-shrink-0 w-64 border-r shadow-sm">
-      <div className="flex flex-col flex-auto h-full bg-gray-50">
-        <div className="flex flex-col flex-grow">
+      <div className="h-full bg-gray-50">
+        <div className="fixed top-0 left-0 w-64">
           <ul className="relative h-full p-0 m-0 list-none">
             <li className="relative flex justify-start w-full p-4 text-2xl font-bold">
               <Link to="/">
@@ -86,10 +86,10 @@ export default function Nav() {
             </AdminOnly>
           </ul>
         </div>
-        <div className="px-4 py-3 border-t">
+        <div className="fixed bottom-0 left-0 w-64 px-4 py-3 border-t">
           <Menu as="div" className="relative inline-block mr-2">
             <div>
-              <Menu.Button className=" hover:text-gray-700 focus:outline-none">
+              <Menu.Button className=" hover:text-gray-500 focus:outline-none">
                 <div
                   style={{ width: "15px", height: "15px" }}
                   className="inline-block mr-2"
