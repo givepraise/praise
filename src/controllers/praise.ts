@@ -8,7 +8,20 @@ export const all = async (
   req: Request<any, QueryInput, any>,
   res: Response
 ): Promise<Response> => {
+  const query: any = {};
+  if (req.query.receiver) {
+    query.receiver = req.query.receiver;
+  }
+
+  if (req.query.periodStart && req.query.periodEnd) {
+    query.createdAt = {
+      $gte: req.query.periodStart,
+      $lte: req.query.periodEnd,
+    };
+  }
+
   const praises = await PraiseModel.paginate({
+    query,
     ...req.query,
     sort: getQuerySort(req.query),
     populate: 'giver receiver',
