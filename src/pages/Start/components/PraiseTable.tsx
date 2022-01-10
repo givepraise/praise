@@ -9,9 +9,11 @@ import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
 import PraisePageLoader from "./PraisePageLoader";
 
+export const ALL_PRAISE_LIST_KEY = "ALL_PRAISE";
+
 const PraiseTable = () => {
   const history = useHistory();
-  const allPraise = useRecoilValue(AllPraiseList);
+  const allPraise = useRecoilValue(AllPraiseList(ALL_PRAISE_LIST_KEY));
   const columns = React.useMemo(
     () => [
       {

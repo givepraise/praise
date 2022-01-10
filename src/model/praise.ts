@@ -2,7 +2,6 @@ import React from "react";
 import {
   atom,
   atomFamily,
-  selector,
   selectorFamily,
   useRecoilCallback,
   useRecoilState,
@@ -41,7 +40,7 @@ export interface Praise {
 
 // A local only copy of all praises. Used to facilitate CRUD
 // without having to make full roundtrips to the server
-export const AllPraiseIdList = atom<string[] | undefined>({
+export const AllPraiseIdList = atomFamily<string[] | undefined, string>({
   key: "AllPraiseIdList",
   default: undefined,
 });
@@ -77,18 +76,20 @@ export const SinglePraiseExt = selectorFamily({
     },
 });
 
-export const AllPraiseList = selector({
+export const AllPraiseList = selectorFamily({
   key: "AllPraiseList",
-  get: async ({ get }) => {
-    const praiseIdList = get(AllPraiseIdList);
-    const allPraiseList: Praise[] = [];
-    if (!praiseIdList) return undefined;
-    for (const praiseId of praiseIdList) {
-      const praise = get(SinglePraise(praiseId));
-      if (praise) allPraiseList.push(praise);
-    }
-    return allPraiseList;
-  },
+  get:
+    (listKey: string) =>
+    async ({ get }) => {
+      const praiseIdList = get(AllPraiseIdList(listKey));
+      const allPraiseList: Praise[] = [];
+      if (!praiseIdList) return undefined;
+      for (const praiseId of praiseIdList) {
+        const praise = get(SinglePraise(praiseId));
+        if (praise) allPraiseList.push(praise);
+      }
+      return allPraiseList;
+    },
 });
 
 // The request Id is used to force refresh of AllPraiseQuery
@@ -121,22 +122,24 @@ export interface AllPraiseQueryPaginationInterface {
   totalPages: number;
 }
 
-export const AllPraiseQueryPagination = atom<AllPraiseQueryPaginationInterface>(
-  {
-    key: "AllPraiseQueryPagination",
-    default: {
-      latestFetchPage: 1,
-      currentPage: 1,
-      totalPages: 0,
-    },
-  }
-);
+export const AllPraiseQueryPagination = atomFamily<
+  AllPraiseQueryPaginationInterface,
+  string
+>({
+  key: "AllPraiseQueryPagination",
+  default: {
+    latestFetchPage: 1,
+    currentPage: 1,
+    totalPages: 0,
+  },
+});
 
 export interface AllPraiseQueryParameters {
   sortColumn?: string;
   sortType?: string;
   limit?: number;
   page?: number;
+  receiver?: string | null;
 }
 
 export const SinglePraiseQuery = selectorFamily({
@@ -178,23 +181,28 @@ export const useSinglePraiseQuery = (praiseId: string) => {
   return praise;
 };
 
-export const useAllPraiseQuery = (queryParams: AllPraiseQueryParameters) => {
+export const useAllPraiseQuery = (
+  queryParams: AllPraiseQueryParameters,
+  listKey: string
+) => {
   const allPraiseQueryResponse = useAuthApiQuery(AllPraiseQuery(queryParams));
   const [praisePagination, setPraisePagination] = useRecoilState(
-    AllPraiseQueryPagination
+    AllPraiseQueryPagination(listKey)
   );
-  const allPraiseIdList = useRecoilValue(AllPraiseIdList);
+  const allPraiseIdList = useRecoilValue(AllPraiseIdList(listKey));
 
   const saveAllPraiseIdList = useRecoilCallback(
     ({ snapshot, set }) =>
       async (praiseList: Praise[]) => {
-        const allPraiseIdList = await snapshot.getPromise(AllPraiseIdList);
+        const allPraiseIdList = await snapshot.getPromise(
+          AllPraiseIdList(listKey)
+        );
         const praiseIdList: string[] = [];
         for (const praise of praiseList) {
           praiseIdList.push(praise._id);
         }
         set(
-          AllPraiseIdList,
+          AllPraiseIdList(listKey),
           allPraiseIdList ? allPraiseIdList.concat(praiseIdList) : praiseIdList
         );
       }

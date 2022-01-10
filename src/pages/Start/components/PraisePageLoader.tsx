@@ -3,17 +3,21 @@ import { AllPraiseQueryPagination, useAllPraiseQuery } from "@/model/praise";
 import React, { useCallback } from "react";
 import { BottomScrollListener } from "react-bottom-scroll-listener";
 import { useRecoilState } from "recoil";
+import { ALL_PRAISE_LIST_KEY } from "./PraiseTable";
 
 const PraisePageLoader = () => {
   const [praisePagination, setPraisePagination] = useRecoilState(
-    AllPraiseQueryPagination
+    AllPraiseQueryPagination(ALL_PRAISE_LIST_KEY)
   );
-  const queryRepsponse = useAllPraiseQuery({
-    page: praisePagination.currentPage,
-    limit: 5,
-    sortColumn: "createdAt",
-    sortType: "desc",
-  });
+  const queryRepsponse = useAllPraiseQuery(
+    {
+      page: praisePagination.currentPage,
+      limit: 5,
+      sortColumn: "createdAt",
+      sortType: "desc",
+    },
+    ALL_PRAISE_LIST_KEY
+  );
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
