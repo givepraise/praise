@@ -273,6 +273,7 @@ export const praise = async (
     .where({
       createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
     })
+    .sort({ createdAt: -1 })
     .populate('receiver giver');
 
   return res.status(StatusCodes.OK).json(praise);
