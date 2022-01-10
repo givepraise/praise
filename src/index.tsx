@@ -6,8 +6,9 @@ import { Toaster } from "react-hot-toast";
 import { BrowserRouter as Router } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import EthConnection from "./components/EthConnection";
+import { handleErrors, isApiResponseError } from "./model/api";
 import Routes from "./navigation/Routes";
-import { LoadScreen, StartupLoader } from "./startupLoader";
+import { LoadScreen } from "./startupLoader";
 import "./styles/globals.css";
 
 const LOAD_DELAY = 500;
@@ -32,6 +33,22 @@ const DelayedLoading: FC<any> = ({ children }) => {
   return children;
 };
 
+class ErrorBoundary extends React.Component {
+  constructor(props: any) {
+    super(props);
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    if (isApiResponseError(error)) {
+      handleErrors(error);
+    }
+  }
+
+  render() {
+    return this.props.children;
+  }
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <RecoilRoot>
@@ -39,19 +56,20 @@ ReactDOM.render(
         <Router>
           <div>
             <EthConnection />
-            <main className="font-mono text-sm">
-              <DelayedLoading>
-                <React.Suspense fallback={<LoadScreen />}>
-                  <StartupLoader />
-                  <Routes />
-                  <Toaster
-                    position="bottom-right"
-                    reverseOrder={false}
-                    toastOptions={{ duration: 3000 }}
-                  />
-                </React.Suspense>
-              </DelayedLoading>
-            </main>
+            <ErrorBoundary>
+              <main className="font-mono text-sm">
+                <DelayedLoading>
+                  <React.Suspense fallback={<LoadScreen />}>
+                    <Routes />
+                    <Toaster
+                      position="bottom-right"
+                      reverseOrder={false}
+                      toastOptions={{ duration: 3000 }}
+                    />
+                  </React.Suspense>
+                </DelayedLoading>
+              </main>
+            </ErrorBoundary>
           </div>
         </Router>
       </Web3ReactProvider>

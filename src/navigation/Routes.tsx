@@ -6,11 +6,13 @@ import {
 } from "@/model/auth";
 import { EthState } from "@/model/eth";
 import * as localStorage from "@/model/localStorage";
+import NotFound from "@/pages/404";
 import LoginPage from "@/pages/Login/LoginPage";
 import StartPage from "@/pages/Start/StartPage";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { StartupLoader } from "../startupLoader";
 import Nav from "./Nav";
 
 const MyPraisePage = React.lazy(() => import("@/pages/MyPraise/MyPraisePage"));
@@ -164,7 +166,11 @@ const Routes = () => {
       <Route exact path="/login">
         <LoginPage />
       </Route>
+      <Route exact path="/404">
+        <NotFound />
+      </Route>
       <LoggedInOnlyRoute path="/">
+        <StartupLoader />
         <div className="flex min-h-screen">
           <Nav />
           <div className="flex w-full">
