@@ -34,10 +34,6 @@ const DelayedLoading: FC<any> = ({ children }) => {
 };
 
 class ErrorBoundary extends React.Component {
-  constructor(props: any) {
-    super(props);
-  }
-
   componentDidCatch(error: any, errorInfo: any) {
     if (isApiResponseError(error)) {
       handleErrors(error);

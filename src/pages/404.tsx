@@ -2,10 +2,6 @@ import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 
-interface QuantifyPeriodLoaderProps {
-  periodId: string;
-}
-
 const NotFound = () => {
   const logout = () => {
     localStorage.clear();
