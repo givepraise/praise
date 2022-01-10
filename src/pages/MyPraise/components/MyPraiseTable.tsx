@@ -44,8 +44,7 @@ const MyPraiseTable = () => {
   } as TableOptions<{}>;
   const tableInstance = useTable(options);
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    tableInstance;
+  const { getTableProps, getTableBodyProps, rows, prepareRow } = tableInstance;
 
   const handleClick = (data: Praise) => (e: SyntheticEvent) => {
     history.push(`/praise/${data._id}`);
@@ -58,17 +57,6 @@ const MyPraiseTable = () => {
         className="w-full table-auto"
         {...getTableProps()}
       >
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th className="text-left" {...column.getHeaderProps()}>
-                  {column.render("Header")}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
         <tbody {...getTableBodyProps()}>
           {rows.map((row) => {
             prepareRow(row);
