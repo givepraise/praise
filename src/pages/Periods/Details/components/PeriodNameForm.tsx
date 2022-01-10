@@ -1,17 +1,15 @@
-import ApiErrorMessage from "@/components/form/ApiErrorMessage";
 import FieldErrorMessage from "@/components/form/FieldErrorMessage";
 import OutsideClickHandler from "@/components/OutsideClickHandler";
-import {
-  SinglePeriod,
-  UpdatePeriodApiResponse,
-  useUpdatePeriod,
-} from "@/model/periods";
+import { isApiResponseOk } from "@/model/api";
+import { SinglePeriod, useUpdatePeriod } from "@/model/periods";
+import { AxiosResponse } from "axios";
 import { ValidationErrors } from "final-form";
 import { default as React } from "react";
 import "react-day-picker/lib/style.css";
 import { Field, Form } from "react-final-form";
+import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 
 const validate = (
   values: Record<string, any>
@@ -37,7 +35,9 @@ const PeriodNameForm = () => {
   let { periodId } = useParams() as any;
 
   const period = useRecoilValue(SinglePeriod({ periodId }));
-  const [apiResponse, setApiResponse] = useRecoilState(UpdatePeriodApiResponse);
+  const [apiResponse, setApiResponse] = React.useState<AxiosResponse | null>(
+    null
+  );
   const { updatePeriod } = useUpdatePeriod();
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
@@ -48,7 +48,9 @@ const PeriodNameForm = () => {
     setApiResponse(null); // Clear any old API error messages
     const newPeriod = { ...period };
     newPeriod.name = values.name;
-    updatePeriod(newPeriod);
+    const response = await updatePeriod(newPeriod);
+    if (isApiResponseOk(response)) toast.success("Period name saved");
+    setApiResponse(response);
   };
 
   if (!period) return null;
@@ -97,7 +99,6 @@ const PeriodNameForm = () => {
               )}
             </Field>
           </div>
-          {submitSucceeded && <ApiErrorMessage apiResponse={apiResponse} />}
         </form>
       )}
     />

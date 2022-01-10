@@ -2,6 +2,7 @@ import { ExternalProvider, Web3Provider } from "@ethersproject/providers";
 import { Web3ReactProvider } from "@web3-react/core";
 import React, { FC } from "react";
 import ReactDOM from "react-dom";
+import { Toaster } from "react-hot-toast";
 import { BrowserRouter as Router } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import EthConnection from "./components/EthConnection";
@@ -43,6 +44,11 @@ ReactDOM.render(
                 <React.Suspense fallback={<LoadScreen />}>
                   <StartupLoader />
                   <Routes />
+                  <Toaster
+                    position="bottom-right"
+                    reverseOrder={false}
+                    toastOptions={{ duration: 3000 }}
+                  />
                 </React.Suspense>
               </DelayedLoading>
             </main>

@@ -1,4 +1,5 @@
 import BreadCrumb from "@/components/BreadCrumb";
+import { HasRole, ROLE_ADMIN } from "@/model/auth";
 import { SinglePeriod } from "@/model/periods";
 import BackLink from "@/navigation/BackLink";
 import PeriodDetails from "@/pages/Periods/Details/components/Details";
@@ -14,6 +15,7 @@ import ReceiverTable from "./components/ReceiverTable";
 const PeriodDetailHead = () => {
   let { periodId } = useParams() as any;
   const period = useRecoilValue(SinglePeriod({ periodId }));
+  const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
 
   return (
     <>
@@ -21,7 +23,7 @@ const PeriodDetailHead = () => {
       <div className="float-right px-2 py-1 text-xs text-white bg-black rounded-full">
         {period ? period.status : null}
       </div>
-      <PeriodNameForm />
+      {isAdmin ? <PeriodNameForm /> : <h2>{period?.name}</h2>}
       <PeriodDetails />
     </>
   );

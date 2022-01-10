@@ -1,5 +1,4 @@
 import BreadCrumb from "@/components/BreadCrumb";
-import ApiErrorMessage from "@/components/form/ApiErrorMessage";
 import FieldErrorMessage from "@/components/form/FieldErrorMessage";
 import { PeriodDayPicker } from "@/components/periods/PeriodDayPicker";
 import { isApiResponseOk } from "@/model/api";
@@ -123,7 +122,6 @@ const PeriodsForm = () => {
               )}
             </Field>
           </div>
-          {submitSucceeded && <ApiErrorMessage apiResponse={apiResponse} />}
           <div className="mt-2">
             <SubmitButton />
           </div>

@@ -11,11 +11,11 @@ import {
 import {
   ApiAuthGetQuery,
   ApiAuthPatchQuery,
+  ApiQuery,
   isApiResponseOk,
   PaginatedResponseData,
   useAuthApiQuery,
 } from "./api";
-import { Source } from "./source";
 import { UserAccount } from "./users";
 
 export interface Quantification {
@@ -36,7 +36,7 @@ export interface Praise {
   quantifications?: Quantification[];
   giver: UserAccount;
   receiver: UserAccount;
-  source: Source;
+  source: string;
 }
 
 // A local only copy of all praises. Used to facilitate CRUD
@@ -147,7 +147,9 @@ export const useSinglePraiseQuery = (praiseId: string) => {
   const fetchSinglePraise = useRecoilCallback(
     ({ snapshot, set }) =>
       async () => {
-        const response = await snapshot.getPromise(SinglePraiseQuery(praiseId));
+        const response = await ApiQuery(
+          snapshot.getPromise(SinglePraiseQuery(praiseId))
+        );
         if (isApiResponseOk(response)) {
           set(SinglePraise(praiseId), response.data);
         } else {
@@ -269,15 +271,17 @@ export const useQuantifyPraise = () => {
         dismissed: boolean,
         duplicatePraise: string | null
       ) => {
-        const response = await snapshot.getPromise(
-          ApiAuthPatchQuery({
-            endPoint: `/api/praise/${praiseId}/quantify`,
-            data: {
-              score,
-              dismissed,
-              duplicatePraise,
-            },
-          })
+        const response = await ApiQuery(
+          snapshot.getPromise(
+            ApiAuthPatchQuery({
+              endPoint: `/api/praise/${praiseId}/quantify`,
+              data: {
+                score,
+                dismissed,
+                duplicatePraise,
+              },
+            })
+          )
         );
 
         if (isApiResponseOk(response)) {

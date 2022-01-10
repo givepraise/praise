@@ -13,7 +13,7 @@ import {
   ApiAuthGetQuery,
   ApiAuthPatchQuery,
   ApiAuthPostQuery,
-  isApiErrorData,
+  ApiQuery,
   isApiResponseOk,
   PaginatedResponseData,
   useAuthApiQuery,
@@ -125,14 +125,16 @@ export const useCreatePeriod = () => {
   const createPeriod = useRecoilCallback(
     ({ snapshot, set }) =>
       async (period: Period) => {
-        const response = await snapshot.getPromise(
-          ApiAuthPostQuery({
-            endPoint: "/api/admin/periods/create",
-            data: period,
-          })
+        const response = await ApiQuery(
+          snapshot.getPromise(
+            ApiAuthPostQuery({
+              endPoint: "/api/admin/periods/create",
+              data: period,
+            })
+          )
         );
-        // If OK response, add returned period object to local state
-        if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
+        //If OK response, add returned period object to local state
+        if (isApiResponseOk(response)) {
           const period = response.data as Period;
           if (period) {
             if (typeof allPeriods !== "undefined") {
@@ -157,22 +159,22 @@ export const UpdatePeriodApiResponse = atom<
   default: null,
 });
 
-/** TODO: modify function to update period endDate */
 export const useUpdatePeriod = () => {
   const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
   const updatePeriod = useRecoilCallback(
     ({ snapshot, set }) =>
       async (period: Period) => {
-        const response = await snapshot.getPromise(
-          //TODO Dont forget to add auth befor production!
-          ApiAuthPatchQuery({
-            endPoint: `/api/admin/periods/${period._id}/update`,
-            data: period,
-          })
+        const response = await ApiQuery(
+          snapshot.getPromise(
+            ApiAuthPatchQuery({
+              endPoint: `/api/admin/periods/${period._id}/update`,
+              data: period,
+            })
+          )
         );
 
         // If OK response, add returned period object to local state
-        if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
+        if (isApiResponseOk(response)) {
           const period = response.data as Period;
           if (period) {
             if (typeof allPeriods !== "undefined") {
@@ -210,13 +212,15 @@ export const useClosePeriod = () => {
   const closePeriod = useRecoilCallback(
     ({ snapshot, set }) =>
       async (periodId: string) => {
-        const response = await snapshot.getPromise(
-          ApiAuthPatchQuery({
-            endPoint: `/api/admin/periods/${periodId}/close`,
-          })
+        const response = await ApiQuery(
+          snapshot.getPromise(
+            ApiAuthPatchQuery({
+              endPoint: `/api/admin/periods/${periodId}/close`,
+            })
+          )
         );
 
-        if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
+        if (isApiResponseOk(response)) {
           const period = response.data as Period;
           if (period) {
             if (typeof allPeriods !== "undefined") {
@@ -296,10 +300,12 @@ export const useAssignQuantifiers = () => {
   const assignQuantifiers = useRecoilCallback(
     ({ snapshot, set }) =>
       async (periodId: string) => {
-        const response = await snapshot.getPromise(
-          ApiAuthPatchQuery({
-            endPoint: `/api/admin/periods/${periodId}/assignQuantifiers`,
-          })
+        const response = await ApiQuery(
+          snapshot.getPromise(
+            ApiAuthPatchQuery({
+              endPoint: `/api/admin/periods/${periodId}/assignQuantifiers`,
+            })
+          )
         );
         if (isApiResponseOk(response)) {
           const praiseList = response.data as Praise[];

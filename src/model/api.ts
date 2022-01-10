@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
+import toast from "react-hot-toast";
 import { selectorFamily, useRecoilValue } from "recoil";
 import { SessionToken } from "./auth";
 import { EthState, EthStateInterface } from "./eth";
@@ -26,15 +27,10 @@ export const ApiGetQuery = selectorFamily({
     async ({ get }) => {
       if (!hasBackendUrl()) return null;
 
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-          params.headers
-        );
-        return response as AxiosResponse;
-      } catch (err) {
-        return err as AxiosError;
-      }
+      return await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
+        params.headers
+      );
     },
 });
 
@@ -48,15 +44,10 @@ export const ApiAuthGetQuery = selectorFamily({
       if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
         return null;
 
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-          { headers: { Authorization: `Bearer ${sessionToken}` } }
-        );
-        return response as AxiosResponse;
-      } catch (err) {
-        return err as AxiosError;
-      }
+      return await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
+        { headers: { Authorization: `Bearer ${sessionToken}` } }
+      );
     },
 });
 
@@ -67,15 +58,10 @@ export const ApiPostQuery = selectorFamily({
     async ({ get }) => {
       if (!hasBackendUrl()) return null;
 
-      try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-          params.data
-        );
-        return response as AxiosResponse;
-      } catch (err) {
-        return err as AxiosError;
-      }
+      return await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
+        params.data
+      );
     },
 });
 
@@ -89,16 +75,11 @@ export const ApiAuthPostQuery = selectorFamily({
       if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
         return null;
 
-      try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-          params.data,
-          { headers: { Authorization: `Bearer ${sessionToken}` } }
-        );
-        return response as AxiosResponse;
-      } catch (err) {
-        return err as AxiosError;
-      }
+      return await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
+        params.data,
+        { headers: { Authorization: `Bearer ${sessionToken}` } }
+      );
     },
 });
 
@@ -112,18 +93,39 @@ export const ApiAuthPatchQuery = selectorFamily({
       if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
         return null;
 
-      try {
-        const response = await axios.patch(
-          `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-          params.data,
-          { headers: { Authorization: `Bearer ${sessionToken}` } }
-        );
-        return response as AxiosResponse;
-      } catch (err) {
-        return err as AxiosError;
-      }
+      return await axios.patch(
+        `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
+        params.data,
+        { headers: { Authorization: `Bearer ${sessionToken}` } }
+      );
     },
 });
+
+const handleErrors = (err: AxiosError) => {
+  if (err.response) {
+    // client received an error response (5xx, 4xx)
+    // TODO Handle expired JWT token
+  } else if (err.request) {
+    // client never received a response, or request never left
+    if (err.message) {
+      toast.error(err.message);
+    } else {
+      toast.error("Unknown error.");
+    }
+  } else {
+    // anything else
+    // TODO Add handling of other errors
+  }
+};
+
+export const ApiQuery = async (query: any) => {
+  try {
+    return await query;
+  } catch (err) {
+    if (isApiResponseError(err)) handleErrors(err);
+    return err;
+  }
+};
 
 // Always use `useAuthApiQuery` for queries instead of `useRecoilValue`
 // to correctly handle expired JWT tokens and other error codes returned by
@@ -134,126 +136,24 @@ export const useAuthApiQuery = (recoilValue: any) => {
   if (typeof response === "undefined" || response === null) return response;
 
   if (isApiResponseError(response)) {
-    const err = response as AxiosError;
-    if (err.response) {
-      // client received an error response (5xx, 4xx)
-      // TODO Handle expired JWT token
-      return err;
-    } else if (err.request) {
-      // client never received a response, or request never left
-      // TODO Add handling of no response
-      return err;
-    } else {
-      // anything else
-      // TODO Add handling of other errors
-      return err;
-    }
+    handleErrors(response);
+    return response as AxiosError;
   }
   return response as AxiosResponse;
 };
 
-export interface ApiError {
-  code: number;
-  uri: string;
-  message: string;
-  errors: string[];
-}
-
-export interface HttpError {
-  error: string;
-  path: string;
-  status: number;
-  timestamp: string;
-}
-
-interface BackendErrors {
-  apiError: ApiError | null;
-  httpError: HttpError | null;
-}
-
-export const isApiErrorData = (data: any): data is ApiError => {
-  if (!data) return false;
-  return (data as ApiError).code !== undefined;
-};
-
-export const isHttpErrorData = (data: any): data is HttpError => {
-  if (!data) return false;
-  return (data as HttpError).error !== undefined;
-};
-
 export const isApiResponseOk = (
-  response: AxiosResponse | AxiosError | null
+  response: AxiosResponse | AxiosError | null | unknown
 ): response is AxiosResponse => {
   const axiosResponse = response as AxiosResponse;
   if (!axiosResponse) return false;
-  return axiosResponse.status === 200 && !isApiErrorData(axiosResponse.data);
+  return axiosResponse.status === 200;
 };
 
 export const isApiResponseError = (
-  response: AxiosResponse | AxiosError | null
+  response: AxiosResponse | AxiosError | null | unknown
 ): response is AxiosError => {
   return (response as AxiosError).isAxiosError !== undefined;
-};
-
-export const getHttpError = (response: AxiosResponse | AxiosError | null) => {
-  if (!response || !isApiResponseError(response)) return null;
-  const axiosError = response as AxiosError;
-  if (axiosError.response && isHttpErrorData(axiosError.response.data)) {
-    return axiosError.response.data as HttpError;
-  }
-  if (axiosError.message) {
-    return {
-      error: axiosError.message,
-      path: axiosError.config.url,
-      status: 0,
-      timestamp: "",
-    } as HttpError;
-  }
-  return null;
-};
-
-export const getApiError = (response: AxiosResponse | AxiosError | null) => {
-  if (!response) return null;
-  const axiosResponse = response as AxiosResponse;
-  if (axiosResponse.status === 200) {
-    if (isApiErrorData(axiosResponse.data)) {
-      return axiosResponse.data as ApiError;
-    }
-  }
-  if (isApiResponseError(response)) {
-    const axiosError = response as AxiosError;
-    if (axiosError.response && isApiErrorData(axiosError.response?.data)) {
-      return axiosError.response?.data as ApiError;
-    }
-  }
-  return null;
-};
-
-export const getBackendErrors = (
-  response: AxiosResponse | AxiosError | null
-) => {
-  if (!response) return null;
-  return {
-    apiError: getApiError(response),
-    httpError: getHttpError(response),
-  } as BackendErrors;
-};
-
-export const getBackendErrorMessage = (
-  response: AxiosResponse | AxiosError | null
-) => {
-  if (!response) return null;
-  const backendErrors = getBackendErrors(response);
-  let msg = null;
-  if (backendErrors?.apiError?.code) {
-    msg = backendErrors.apiError.message;
-  } else {
-    if (backendErrors?.httpError?.error) {
-      msg = backendErrors?.httpError?.error;
-    }
-  }
-  if (msg) console.error(backendErrors);
-  return msg;
 };
 
 export interface PaginatedResponseData {

@@ -11,7 +11,7 @@ import {
 import {
   ApiAuthGetQuery,
   ApiAuthPatchQuery,
-  isApiErrorData,
+  ApiQuery,
   isApiResponseOk,
   PaginatedResponseData,
   useAuthApiQuery,
@@ -141,15 +141,17 @@ export const useAdminUsers = () => {
   const addRole = useRecoilCallback(
     ({ snapshot, set }) =>
       async (userId: string, role: UserRole) => {
-        const response = await snapshot.getPromise(
-          ApiAuthPatchQuery({
-            endPoint: `/api/admin/users/${userId}/addRole`,
-            data: { role },
-          })
+        const response = await ApiQuery(
+          snapshot.getPromise(
+            ApiAuthPatchQuery({
+              endPoint: `/api/admin/users/${userId}/addRole`,
+              data: { role },
+            })
+          )
         );
 
         // If OK response, add returned user object to local state
-        if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
+        if (isApiResponseOk(response)) {
           const user = response.data as User;
           if (user) {
             if (typeof allUsers !== "undefined") {
@@ -172,15 +174,17 @@ export const useAdminUsers = () => {
   const removeRole = useRecoilCallback(
     ({ snapshot, set }) =>
       async (userId: string, role: UserRole) => {
-        const response = await snapshot.getPromise(
-          ApiAuthPatchQuery({
-            endPoint: `/api/admin/users/${userId}/removeRole`,
-            data: { role },
-          })
+        const response = await ApiQuery(
+          snapshot.getPromise(
+            ApiAuthPatchQuery({
+              endPoint: `/api/admin/users/${userId}/removeRole`,
+              data: { role },
+            })
+          )
         );
 
         // If OK response, add returned user object to local state
-        if (isApiResponseOk(response) && !isApiErrorData(response.data)) {
+        if (isApiResponseOk(response)) {
           const user = response.data as User;
           if (user) {
             if (typeof allUsers !== "undefined") {

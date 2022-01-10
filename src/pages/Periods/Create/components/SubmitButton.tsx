@@ -16,11 +16,12 @@ const SubmitButton = () => {
   const className = disabled ? "praise-button-disabled" : "praise-button";
 
   return (
-    <button 
-      type="submit" 
+    <button
+      type="submit"
       id="submit-button"
-      className={className} 
-      disabled={disabled}>
+      className={className}
+      disabled={disabled}
+    >
       {apiResponse && isApiResponseOk(apiResponse) ? (
         <>
           <FontAwesomeIcon

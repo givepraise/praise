@@ -10,6 +10,7 @@ import { getPreviousPeriod } from "@/utils/periods";
 import { Dialog } from "@headlessui/react";
 import React from "react";
 import "react-day-picker/lib/style.css";
+import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import PeriodAssignDialog from "./AssignDialog";
@@ -43,7 +44,12 @@ const PeriodDetails = () => {
   };
 
   const handleAssign = () => {
-    assignQuantifiers(periodId);
+    const promise = assignQuantifiers(periodId);
+    toast.promise(promise, {
+      loading: "Assigning quantifiers …",
+      success: "Quantifiers assigned",
+      error: "Assign failed",
+    });
   };
 
   if (!period) return <div>Period not found.</div>;
@@ -51,9 +57,13 @@ const PeriodDetails = () => {
   return (
     <div>
       <div>Period start: {periodStart}</div>
-      <PeriodDateForm />
+      {isAdmin ? (
+        <PeriodDateForm />
+      ) : (
+        <div>Period end: {formatDate(period.endDate)}</div>
+      )}
 
-      {period.status !== "CLOSED" ? (
+      {isAdmin && period.status !== "CLOSED" ? (
         <div className="mt-5">
           {period.status === "OPEN" ? (
             <button

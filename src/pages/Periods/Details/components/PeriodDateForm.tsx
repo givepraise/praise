@@ -1,20 +1,18 @@
-import ApiErrorMessage from "@/components/form/ApiErrorMessage";
 import FieldErrorMessage from "@/components/form/FieldErrorMessage";
 import OutsideClickHandler from "@/components/OutsideClickHandler";
 import { PeriodDayPicker } from "@/components/periods/PeriodDayPicker";
-import {
-  SinglePeriod,
-  UpdatePeriodApiResponse,
-  useUpdatePeriod,
-} from "@/model/periods";
+import { isApiResponseOk } from "@/model/api";
+import { SinglePeriod, useUpdatePeriod } from "@/model/periods";
 import { DATE_FORMAT, formatDate } from "@/utils/date";
-import { isMatch } from "date-fns";
+import { AxiosResponse } from "axios";
+import { isMatch, isSameDay } from "date-fns";
 import { ValidationErrors } from "final-form";
 import { default as React } from "react";
 import "react-day-picker/lib/style.css";
 import { Field, Form } from "react-final-form";
+import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 
 const validate = (
   values: Record<string, any>
@@ -37,18 +35,25 @@ const PeriodDateForm = () => {
   let { periodId } = useParams() as any;
 
   const period = useRecoilValue(SinglePeriod({ periodId }));
-  const [apiResponse, setApiResponse] = useRecoilState(UpdatePeriodApiResponse);
+  const [apiResponse, setApiResponse] = React.useState<AxiosResponse | null>(
+    null
+  );
   const { updatePeriod } = useUpdatePeriod();
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   // Is only called if validate is successful
   const onSubmit = async (values: Record<string, any>) => {
-    if (!period || period === values.endDate) return; // Only save if endDate has changed
-    setApiResponse(null); // Clear any old API error messages
+    if (
+      !period ||
+      isSameDay(new Date(period.endDate), new Date(values.endDate))
+    )
+      return; // Only save if endDate has changed
     const newPeriod = { ...period };
     newPeriod.endDate = values.endDate;
-    updatePeriod(newPeriod);
+    const response = await updatePeriod(newPeriod);
+    if (isApiResponseOk(response)) toast.success("Period date saved");
+    setApiResponse(response);
   };
 
   if (!period) return null;
@@ -83,7 +88,7 @@ const PeriodDateForm = () => {
                         ref={inputRef}
                         autoComplete="off"
                         placeholder="e.g. 2021-01-01"
-                        className="relative left-[-5px] py-0 pl-1 my-0 text-sm font-semibold bg-transparent border border-transparent hover:border-gray-300 w-28"
+                        className="relative left-[-5px] py-0 pl-1 my-0 text-sm bg-transparent border border-transparent hover:border-gray-300 w-28"
                       />
                       <PeriodDayPicker />
                     </OutsideClickHandler>
@@ -98,7 +103,6 @@ const PeriodDateForm = () => {
               )}
             </Field>
           </div>
-          {submitSucceeded && <ApiErrorMessage apiResponse={apiResponse} />}
         </form>
       )}
     />
