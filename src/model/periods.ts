@@ -523,8 +523,8 @@ export const AllPeriodReceivers = selectorFamily({
             praiseCount: ri > -1 ? r[ri].praiseCount + 1 : 1,
             praiseScore:
               ri > -1
-                ? r[ri].praiseScore + avgPraiseScore(praiseItem.quantifications)
-                : avgPraiseScore(praiseItem.quantifications),
+                ? r[ri].praiseScore + avgPraiseScore(praiseItem)
+                : avgPraiseScore(praiseItem),
           };
 
           if (ri > -1) {

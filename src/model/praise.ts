@@ -51,6 +51,17 @@ export const SinglePraise = atomFamily<Praise | undefined, string>({
   default: undefined,
 });
 
+export const avgPraiseScore = (praise: Praise | undefined) => {
+  if (!praise || !praise.quantifications || praise.quantifications.length === 0)
+    return 0;
+  let score = 0;
+  let i = 0;
+  for (i; i < praise.quantifications.length; i++) {
+    score += praise.quantifications[i].score!;
+  }
+  return Math.round(score / i);
+};
+
 export const SinglePraiseExt = selectorFamily({
   key: "SinglePraiseExt",
   get:
@@ -60,7 +71,7 @@ export const SinglePraiseExt = selectorFamily({
       if (!praise) return undefined;
       const praiseExt = {
         ...praise,
-        avgScore: avgPraiseScore(praise?.quantifications),
+        avgScore: avgPraiseScore(praise),
       };
       return praiseExt;
     },
@@ -229,16 +240,6 @@ export const useAllPraiseQuery = (queryParams: AllPraiseQueryParameters) => {
   ]);
 
   return allPraiseQueryResponse;
-};
-
-export const avgPraiseScore = (quantifications: any[] | undefined) => {
-  if (!quantifications) return 0;
-  let score = 0;
-  let i = 0;
-  for (i; i < quantifications.length; i++) {
-    score += quantifications[i].score;
-  }
-  return Math.round(score / i);
 };
 
 export const QuantifyPraise = selectorFamily({
