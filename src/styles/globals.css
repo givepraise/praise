@@ -13,11 +13,15 @@
   }
 
   h2 {
-    @apply text-xl font-semibold;
+    @apply text-xl font-semibold mb-1.5;
   }
 
   td,
   th {
     @apply p-2;
+  }
+
+  a {
+    @apply underline;
   }
 }

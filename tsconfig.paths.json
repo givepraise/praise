@@ -7,6 +7,7 @@
       "@/eth/*": ["eth/*"],
       "@/pages/*": ["pages/*"],
       "@/model/*": ["model/*"],
+      "@/navigation/*": ["navigation/*"],
       "@/svg/*": ["svg/*"],
       "@/utils/*": ["utils/*"]
     }

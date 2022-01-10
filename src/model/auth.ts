@@ -2,12 +2,14 @@ import jwtDecode from "jwt-decode";
 import { atom, selector, selectorFamily } from "recoil";
 import { ApiGetQuery, ApiPostQuery } from "./api";
 
-export const ROLE_USER = "ROLE_USER";
-export const ROLE_ADMIN = "ROLE_ADMIN";
-export const ROLE_QUANTIFIER = "ROLE_QUANTIFIER";
+export const ROLE_USER = "USER";
+export const ROLE_ADMIN = "ADMIN";
+export const ROLE_QUANTIFIER = "QUANTIFIER";
 
 export interface JWT {
   sub: string;
+  userId: string;
+  ethereumAddress: string;
   roles: string[];
   iat: number;
   exp: number;
@@ -41,8 +43,17 @@ export const DecodedSessionToken = selector({
   },
 });
 
-export const UserRoles = selector({
-  key: "UserRoles",
+export const ActiveUserId = selector({
+  key: "ActiveUserId",
+  get: ({ get }) => {
+    const decodedToken = get(DecodedSessionToken);
+    if (!decodedToken) return null;
+    return decodedToken.userId;
+  },
+});
+
+export const ActiveUserRoles = selector({
+  key: "ActiveUserRoles",
   get: ({ get }) => {
     const decodedToken = get(DecodedSessionToken);
     if (!decodedToken) return null;
@@ -55,7 +66,7 @@ export const HasRole = selectorFamily({
   get:
     (role: string) =>
     ({ get }) => {
-      const userRoles = get(UserRoles);
+      const userRoles = get(ActiveUserRoles);
       if (!userRoles) return null;
       return userRoles.includes(role);
     },

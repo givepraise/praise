@@ -1,7 +1,16 @@
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 
-export const DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+export const DATE_FORMAT = "yyyy-MM-dd";
+export const DATE_FORMAT_LONG = "yyyy-MM-dd HH:mm";
 
 export const formatDate = (isoDate: string) => {
-  return format(new Date(isoDate), DEFAULT_DATE_FORMAT);
+  return format(new Date(isoDate), DATE_FORMAT);
+};
+
+export const formatDateLong = (isoDate: string) => {
+  return format(new Date(isoDate), DATE_FORMAT_LONG);
+};
+
+export const isValidDate = (inputString: string): boolean => {
+  return isValid(new Date(inputString));
 };
