@@ -9,7 +9,7 @@ import {
   useCreatePeriod,
 } from "@/model/periods";
 import BackLink from "@/navigation/BackLink";
-import { DEFAULT_DATE_FORMAT } from "@/utils/date";
+import { DATE_FORMAT } from "@/utils/date";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import { isMatch } from "date-fns";
 import { ValidationErrors } from "final-form";
@@ -39,7 +39,7 @@ const validate = (
 
   // End date validation
   if (values.endDate) {
-    if (!isMatch(values.endDate, DEFAULT_DATE_FORMAT)) {
+    if (!isMatch(values.endDate, DATE_FORMAT)) {
       errors.endDate = "Invalid date format";
     }
   } else {
@@ -137,15 +137,17 @@ const PeriodsCreatePage = () => {
   return (
     <>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
-
       <BackLink />
+
       <div className="w-2/3 praise-box">
         <h2 className="mb-2">Create period</h2>
         <div className="mb-2">
           A new period begins where the last one ended and ends at{" "}
           <i>end date</i>.
         </div>
-        <PeriodsForm />
+        <React.Suspense fallback="Loading…">
+          <PeriodsForm />
+        </React.Suspense>
       </div>
     </>
   );

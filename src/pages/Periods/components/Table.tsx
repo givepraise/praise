@@ -1,4 +1,4 @@
-import { AllPeriods, Period, useAllPeriodsQuery } from "@/model/periods";
+import { AllPeriods, Period } from "@/model/periods";
 import { formatDate } from "@/utils/date";
 import React, { SyntheticEvent } from "react";
 import { useHistory } from "react-router-dom";
@@ -6,7 +6,6 @@ import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
 
 const PeriodsTable = () => {
-  useAllPeriodsQuery();
   const allPeriods = useRecoilValue(AllPeriods);
   const history = useHistory();
 
@@ -51,7 +50,7 @@ const PeriodsTable = () => {
     return <div>Create your first period to get started quantifying.</div>;
 
   const handleClick = (periodId: string) => (e: SyntheticEvent) => {
-    history.push(`/periods/${periodId}`);
+    history.push(`/period/${periodId}`);
   };
   return (
     <table

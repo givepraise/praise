@@ -1,17 +1,21 @@
+import { HasRole, ROLE_ADMIN } from "@/model/auth";
 import {
   AllPeriodReceivers,
   ReceiverData,
-  usePeriodPraisesQuery,
+  SinglePeriod,
+  usePeriodPraiseQuery,
 } from "@/model/periods";
 import React, { SyntheticEvent } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { TableOptions, useTable } from "react-table";
+import { TableOptions, useSortBy, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
 
 const ReceiverTable = () => {
   const history = useHistory();
   let { periodId } = useParams() as any;
-  usePeriodPraisesQuery(periodId);
+  const period = useRecoilValue(SinglePeriod({ periodId }));
+  const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
+  usePeriodPraiseQuery(periodId);
   const periodReceivers = useRecoilValue(AllPeriodReceivers({ periodId }));
 
   const columns = React.useMemo(
@@ -27,6 +31,7 @@ const ReceiverTable = () => {
       {
         Header: "Total praise score",
         accessor: "praiseScore",
+        sortType: "basic",
       },
     ],
     []
@@ -35,17 +40,29 @@ const ReceiverTable = () => {
   const options = {
     columns,
     data: periodReceivers ? periodReceivers : [],
+    initialState: {
+      sortBy: [
+        {
+          id: "praiseScore",
+          desc: true,
+        },
+      ],
+    },
   } as TableOptions<{}>;
-  const tableInstance = useTable(options);
+  const tableInstance = useTable(options, useSortBy);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
   const handleClick = (data: ReceiverData) => (e: SyntheticEvent) => {
-    history.push(
-      `/quantsummary/period/${periodId}/receiver/${data.receiverId}`
-    );
+    history.push(`/period/${periodId}/receiver/${data.receiverId}`);
   };
+
+  if (!period) return <div>Period not found.</div>;
+
+  if (period.status === "QUANTIFY" && !isAdmin)
+    return <div>Praise scores are not visible during quantification.</div>;
+
   return (
     <table
       id="periods-table"

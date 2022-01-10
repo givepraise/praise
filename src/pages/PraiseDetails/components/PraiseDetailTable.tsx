@@ -1,6 +1,10 @@
 import { UserCell } from "@/components/table/UserCell";
+import { HasRole, ROLE_ADMIN } from "@/model/auth";
+import { SinglePeriodByDate } from "@/model/periods";
 import { SinglePraise } from "@/model/praise";
 import { formatDate } from "@/utils/date";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
@@ -9,7 +13,9 @@ import { useRecoilValue } from "recoil";
 const PraiseDetailTable = () => {
   let { praiseId } = useParams() as any;
 
-  const data = useRecoilValue(SinglePraise({ praiseId }));
+  const praise = useRecoilValue(SinglePraise(praiseId));
+  const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
+  const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
 
   const columns = React.useMemo(
     () => [
@@ -30,10 +36,17 @@ const PraiseDetailTable = () => {
       {
         Header: "Dismissed",
         accessor: "dismissed",
+        Cell: (data: any) =>
+          data.value === true ? (
+            <FontAwesomeIcon icon={faCheckCircle} size="1x" />
+          ) : (
+            ""
+          ),
       },
       {
         Header: "Duplicate",
-        accessor: "duplicate",
+        accessor: "duplicatePraise",
+        Cell: (data: any) => (data.value ? `#${data.value.slice(-4)}` : ""),
       },
     ],
     []
@@ -41,12 +54,20 @@ const PraiseDetailTable = () => {
 
   const options = {
     columns,
-    data: data ? data.quantifications : [],
+    data: praise ? praise.quantifications : [],
   } as TableOptions<{}>;
   const tableInstance = useTable(options);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
+
+  if (!period) return <div>Could not load praise details.</div>;
+
+  if (period.status === "QUANTIFY" && !isAdmin)
+    return <div>Praise scores are not visible during quantification.</div>;
+
+  if (period.status === "OPEN")
+    return <div>This praise has not been quantified yet.</div>;
 
   return (
     <table

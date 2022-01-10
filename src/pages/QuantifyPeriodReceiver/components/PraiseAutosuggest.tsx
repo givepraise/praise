@@ -1,8 +1,8 @@
 import { ActiveUserId } from "@/model/auth";
-import { AllPeriodPraise } from "@/model/periods";
+import { AllPeriodPraiseList } from "@/model/periods";
 import { Praise } from "@/model/praise";
 import { classNames } from "@/utils/index";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCombobox } from "downshift";
 import React from "react";
@@ -18,7 +18,7 @@ const PraiseAutosuggest = ({ onSelect, onClose }: PraiseAutosuggestProps) => {
   const { periodId, receiverId } = useParams() as any;
   const userId = useRecoilValue(ActiveUserId);
 
-  const data = useRecoilValue(AllPeriodPraise(periodId));
+  const data = useRecoilValue(AllPeriodPraiseList({ periodId }));
 
   if (!data) return null;
 
@@ -52,6 +52,7 @@ const PraiseAutosuggest = ({ onSelect, onClose }: PraiseAutosuggestProps) => {
         }
       },
       onSelectedItemChange: (data: any) => {
+        if (!data) return;
         const selectedItem = data.selectedItem as Praise;
         onSelect(selectedItem._id);
         onClose();
@@ -63,13 +64,13 @@ const PraiseAutosuggest = ({ onSelect, onClose }: PraiseAutosuggestProps) => {
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <span className="text-gray-500 sm:text-sm">
-                <FontAwesomeIcon icon={faUser} />
+                <FontAwesomeIcon icon={faPrayingHands} />
               </span>
             </div>
             <input
               className="pl-8 text-sm w-80"
               type="text"
-              placeholder="Search by Discord or Telegram Handle"
+              placeholder="Search by praise id"
               {...getInputProps()}
             />
           </div>

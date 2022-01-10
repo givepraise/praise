@@ -11,6 +11,7 @@ const PeriodsPage = () => {
   return (
     <>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
+
       <div className="w-2/3 praise-box">
         <React.Suspense fallback="Loading…">
           <ActivePeriodMessage />

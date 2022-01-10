@@ -1,5 +1,5 @@
 import BreadCrumb from "@/components/BreadCrumb";
-import { SinglePeriod, useAllPeriodsQuery } from "@/model/periods";
+import { SinglePeriod } from "@/model/periods";
 import BackLink from "@/navigation/BackLink";
 import PeriodDetails from "@/pages/Periods/Details/components/Details";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
@@ -11,11 +11,23 @@ import PeriodNameForm from "./components/PeriodNameForm";
 import QuantifierTable from "./components/QuantifierTable";
 import ReceiverTable from "./components/ReceiverTable";
 
-const PeriodDetailPage = () => {
-  useAllPeriodsQuery();
+const PeriodDetailHead = () => {
   let { periodId } = useParams() as any;
   const period = useRecoilValue(SinglePeriod({ periodId }));
 
+  return (
+    <>
+      {" "}
+      <div className="float-right px-2 py-1 text-xs text-white bg-black rounded-full">
+        {period ? period.status : null}
+      </div>
+      <PeriodNameForm />
+      <PeriodDetails />
+    </>
+  );
+};
+
+const PeriodDetailPage = () => {
   return (
     <>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
@@ -23,20 +35,12 @@ const PeriodDetailPage = () => {
 
       <div className="w-2/3 praise-box ">
         <React.Suspense fallback="Loading…">
-          <div className="float-right px-2 py-1 text-xs text-white bg-black rounded-full">
-            {period ? period.status : null}
-          </div>
-          <PeriodNameForm />
-          <PeriodDetails />
+          <PeriodDetailHead />
         </React.Suspense>
       </div>
       <div className="w-2/3 praise-box">
         <React.Suspense fallback="Loading…">
-          {period?.status === "QUANTIFY" || period?.status === "CLOSED" ? (
-            <QuantifierTable />
-          ) : (
-            "No quantifiers have yet been assigned to this period."
-          )}
+          <QuantifierTable />
         </React.Suspense>
       </div>
       <div className="w-2/3 praise-box">

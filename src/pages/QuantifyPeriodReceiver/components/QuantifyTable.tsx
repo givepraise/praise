@@ -1,9 +1,12 @@
 import { ActiveUserId } from "@/model/auth";
-import { AllPeriodPraise } from "@/model/periods";
+import {
+  PeriodActiveQuantifierReceiverPraise,
+  usePeriodPraiseQuery,
+} from "@/model/periods";
 import { Praise, useQuantifyPraise } from "@/model/praise";
 import DismissDialog from "@/pages/QuantifyPeriodReceiver/components/DismissDialog";
 import { formatDate } from "@/utils/date";
-import { getPraiseMarks } from "@/utils/index";
+import { getPraiseMark, getPraiseMarks } from "@/utils/index";
 import {
   faCopy,
   faTimes,
@@ -37,15 +40,19 @@ const getQuantification = (praise: Praise, quantifierId: string) => {
 
 const QuantifyTable = () => {
   const { periodId, receiverId } = useParams() as any;
+  usePeriodPraiseQuery(periodId);
   const userId = useRecoilValue(ActiveUserId);
+  const data = useRecoilValue(
+    PeriodActiveQuantifierReceiverPraise({ periodId, receiverId })
+  );
+
   const { quantify } = useQuantifyPraise();
+
   let [isDismissDialogOpen, setIsDismissDialogOpen] = React.useState(false);
   let [isDuplicateDialogOpen, setIsDuplicateDialogOpen] = React.useState(false);
   let [selectedPraise, setSelectedPraise] = React.useState<Praise | undefined>(
     undefined
   );
-
-  const data = useRecoilValue(AllPeriodPraise(periodId));
 
   const handleChange = (value: number) => {
     const quantification = getQuantification(selectedPraise!, userId!);
@@ -55,7 +62,6 @@ const QuantifyTable = () => {
       quantification!.dismissed ? quantification!.dismissed : false,
       quantification!.duplicatePraise ? quantification!.duplicatePraise : null
     );
-    /** TODO: update praise by Id (saved in selectedPraise) */
   };
 
   const handleDismiss = () => {
@@ -71,7 +77,7 @@ const QuantifyTable = () => {
   };
 
   const handleRemoveDuplicate = (id: string) => {
-    /** TODO: handle remove duplicate */
+    quantify(selectedPraise!._id, 0, false, null);
   };
 
   const getRemoveButton = (action: any) => {
@@ -87,13 +93,6 @@ const QuantifyTable = () => {
   };
 
   if (!data) return null;
-
-  const filteredData = data.filter(
-    (praise) =>
-      praise.quantifications!.findIndex(
-        (quant) => quant.quantifier === userId
-      ) >= 0 && praise.receiver._id! === receiverId
-  );
 
   const quantification = (praise: Praise) => {
     return praise.quantifications!.find((q) => q.quantifier === userId);
@@ -111,13 +110,13 @@ const QuantifyTable = () => {
 
   const score = (praise: Praise) => {
     const q = quantification(praise);
-    return q ? (q.score ? q.score : 0) : 0;
+    return q && q.score ? getPraiseMark(q.score) : 0;
   };
 
   return (
     <table className="w-full table-auto">
       <tbody>
-        {filteredData.map((praise, index) => {
+        {data.map((praise, index) => {
           return (
             <tr key={index} onMouseDown={() => setSelectedPraise(praise)}>
               <td>
@@ -146,9 +145,9 @@ const QuantifyTable = () => {
                   ) : duplicate(praise) ? (
                     <span>
                       <InlineLabel
-                        text={`Duplicate of: #${
-                          quantification(praise)!.duplicatePraise
-                        }`}
+                        text={`Duplicate of: #${quantification(
+                          praise
+                        )!.duplicatePraise?.slice(-4)}`}
                         button={getRemoveButton(handleRemoveDuplicate)}
                       />
                       <span className="line-through">{praise.reason}</span>

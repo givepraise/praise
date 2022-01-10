@@ -38,7 +38,7 @@ ReactDOM.render(
         <Router>
           <div>
             <EthConnection />
-            <main className="font-sans text-sm">
+            <main className="font-mono text-sm">
               <DelayedLoading>
                 <React.Suspense fallback={<LoadScreen />}>
                   <StartupLoader />

@@ -1,4 +1,4 @@
-import { PoolRequirements } from "@/model/periods";
+import { useVerifyQuantifierPoolSize } from "@/model/periods";
 import {
   faCalculator,
   faCheckSquare,
@@ -8,17 +8,17 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
 import React from "react";
+import { useHistory, useParams } from "react-router-dom";
 
 interface PeriodAssignDialogProps {
   onClose(): any;
   onAssign(): any;
-  poolRequirements: PoolRequirements | undefined;
 }
-const PeriodAssignDialog = ({
-  onClose,
-  onAssign,
-  poolRequirements,
-}: PeriodAssignDialogProps) => {
+const PeriodAssignDialog = ({ onClose, onAssign }: PeriodAssignDialogProps) => {
+  let { periodId } = useParams() as any;
+  const { location } = useHistory();
+  const poolRequirements = useVerifyQuantifierPoolSize(periodId, location.key);
+
   const quantPoolBigEnough = poolRequirements
     ? poolRequirements.quantifierPoolSize >= poolRequirements.requiredPoolSize
     : false;

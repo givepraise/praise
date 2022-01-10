@@ -4,7 +4,6 @@ import OutsideClickHandler from "@/components/OutsideClickHandler";
 import {
   SinglePeriod,
   UpdatePeriodApiResponse,
-  useAllPeriodsQuery,
   useUpdatePeriod,
 } from "@/model/periods";
 import { ValidationErrors } from "final-form";
@@ -37,7 +36,6 @@ const validate = (
 const PeriodNameForm = () => {
   let { periodId } = useParams() as any;
 
-  useAllPeriodsQuery(); // Make sure that all periods are fetched
   const period = useRecoilValue(SinglePeriod({ periodId }));
   const [apiResponse, setApiResponse] = useRecoilState(UpdatePeriodApiResponse);
   const { updatePeriod } = useUpdatePeriod();

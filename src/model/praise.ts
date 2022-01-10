@@ -1,6 +1,8 @@
 import React from "react";
 import {
   atom,
+  atomFamily,
+  selector,
   selectorFamily,
   useRecoilCallback,
   useRecoilState,
@@ -9,7 +11,6 @@ import {
 import {
   ApiAuthGetQuery,
   ApiAuthPatchQuery,
-  isApiResponseError,
   isApiResponseOk,
   PaginatedResponseData,
   useAuthApiQuery,
@@ -36,102 +37,196 @@ export interface Praise {
   giver: UserAccount;
   receiver: UserAccount;
   source: Source;
-  avgScore?: number;
 }
-
-// The request Id is used to force refresh of AllPraisesQuery
-// AllPraisesQuery subscribes to the value. Increase to trigger
-// refresh.
-export const PraisesRequestId = atom({
-  key: "PraisesRequestId",
-  default: 0,
-});
 
 // A local only copy of all praises. Used to facilitate CRUD
 // without having to make full roundtrips to the server
-export const AllPraises = atom<Praise[] | undefined>({
-  key: "AllPraises",
+export const AllPraiseIdList = atom<string[] | undefined>({
+  key: "AllPraiseIdList",
   default: undefined,
 });
 
-interface AllPraisesQueryParameters {
-  praiseId?: number;
-  periodId?: number;
-  page?: number;
-  size?: number;
-  sort?: string[];
-}
+export const SinglePraise = atomFamily<Praise | undefined, string>({
+  key: "SinglePraise",
+  default: undefined,
+});
 
-export const AllPraisesQuery = selectorFamily({
-  key: "AllPraisesQuery",
+export const SinglePraiseExt = selectorFamily({
+  key: "SinglePraiseExt",
+  get:
+    (praiseId: string) =>
+    async ({ get }) => {
+      const praise = get(SinglePraise(praiseId));
+      if (!praise) return undefined;
+      const praiseExt = {
+        ...praise,
+        avgScore: avgPraiseScore(praise?.quantifications),
+      };
+      return praiseExt;
+    },
+});
+
+export const AllPraiseList = selector({
+  key: "AllPraiseList",
+  get: async ({ get }) => {
+    const praiseIdList = get(AllPraiseIdList);
+    const allPraiseList: Praise[] = [];
+    if (!praiseIdList) return undefined;
+    for (const praiseId of praiseIdList) {
+      const praise = get(SinglePraise(praiseId));
+      if (praise) allPraiseList.push(praise);
+    }
+    return allPraiseList;
+  },
+});
+
+// The request Id is used to force refresh of AllPraiseQuery
+// AllPraiseQuery subscribes to the value. Increase to trigger
+// refresh.
+export const PraiseRequestId = atom({
+  key: "PraiseRequestId",
+  default: 0,
+});
+
+export const AllPraiseQuery = selectorFamily({
+  key: "AllPraiseQuery",
   get:
     (params: any) =>
     async ({ get }) => {
-      get(PraisesRequestId);
+      get(PraiseRequestId);
       let qs = Object.keys(params)
         .map((key) => `${key}=${params[key]}`)
         .join("&");
       const praises = get(
-        ApiAuthGetQuery({ endPoint: `/api/praise/all${qs ? `?${qs}` : null}` })
+        ApiAuthGetQuery({ endPoint: `/api/praise/all${qs ? `?${qs}` : ""}` })
       );
       return praises;
     },
 });
 
-export interface AllPraisesQueryPaginationInterface {
-  latestFetchPageNumber: number;
-  currentPageNumber: number;
+export interface AllPraiseQueryPaginationInterface {
+  latestFetchPage: number;
+  currentPage: number;
   totalPages: number;
 }
-export const AllPraisesQueryPagination =
-  atom<AllPraisesQueryPaginationInterface>({
-    key: "AllPraisesQueryPagination",
+
+export const AllPraiseQueryPagination = atom<AllPraiseQueryPaginationInterface>(
+  {
+    key: "AllPraiseQueryPagination",
     default: {
-      latestFetchPageNumber: 0,
-      currentPageNumber: 0,
+      latestFetchPage: 1,
+      currentPage: 1,
       totalPages: 0,
     },
-  });
+  }
+);
 
-export const useAllPraisesQuery = (queryParams: AllPraisesQueryParameters) => {
-  const allPraisesQueryResponse = useAuthApiQuery(AllPraisesQuery(queryParams));
-  const [allPraises, setAllPraises] = useRecoilState(AllPraises);
-  const [praisePagination, setPraisePagination] = useRecoilState(
-    AllPraisesQueryPagination
+export interface AllPraiseQueryParameters {
+  sortColumn?: string;
+  sortType?: string;
+  limit?: number;
+  page?: number;
+}
+
+export const SinglePraiseQuery = selectorFamily({
+  key: "SinglePraiseQuery",
+  get:
+    (praiseId: string) =>
+    async ({ get }) => {
+      get(PraiseRequestId);
+      const praise = get(
+        ApiAuthGetQuery({ endPoint: `/api/praise/${praiseId}` })
+      );
+      return praise;
+    },
+});
+
+export const useSinglePraiseQuery = (praiseId: string) => {
+  const praise = useRecoilValue(SinglePraise(praiseId));
+
+  const fetchSinglePraise = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async () => {
+        const response = await snapshot.getPromise(SinglePraiseQuery(praiseId));
+        if (isApiResponseOk(response)) {
+          set(SinglePraise(praiseId), response.data);
+        } else {
+          //TODO handle error
+        }
+      }
   );
 
   React.useEffect(() => {
-    const data = allPraisesQueryResponse.data as any;
+    if (praiseId && !praise) {
+      fetchSinglePraise();
+    }
+  }, [praiseId, praise, fetchSinglePraise]);
+
+  return praise;
+};
+
+export const useAllPraiseQuery = (queryParams: AllPraiseQueryParameters) => {
+  const allPraiseQueryResponse = useAuthApiQuery(AllPraiseQuery(queryParams));
+  const [praisePagination, setPraisePagination] = useRecoilState(
+    AllPraiseQueryPagination
+  );
+  const allPraiseIdList = useRecoilValue(AllPraiseIdList);
+
+  const saveAllPraiseIdList = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async (praiseList: Praise[]) => {
+        const allPraiseIdList = await snapshot.getPromise(AllPraiseIdList);
+        const praiseIdList: string[] = [];
+        for (const praise of praiseList) {
+          praiseIdList.push(praise._id);
+        }
+        set(
+          AllPraiseIdList,
+          allPraiseIdList ? allPraiseIdList.concat(praiseIdList) : praiseIdList
+        );
+      }
+  );
+
+  const saveIndividualPraise = useRecoilCallback(
+    ({ set }) =>
+      async (praiseList: Praise[]) => {
+        for (const praise of praiseList) {
+          set(SinglePraise(praise._id), praise);
+        }
+      }
+  );
+
+  React.useEffect(() => {
+    const data = allPraiseQueryResponse.data as any;
     if (
-      (typeof allPraises === "undefined" ||
-        data.pageable?.pageNumber > praisePagination.latestFetchPageNumber) &&
-      isApiResponseOk(allPraisesQueryResponse)
+      typeof allPraiseIdList === "undefined" ||
+      (data.page > praisePagination.latestFetchPage &&
+        isApiResponseOk(allPraiseQueryResponse))
     ) {
       const paginatedResponse =
-        allPraisesQueryResponse.data as PaginatedResponseData;
-      const praises = paginatedResponse.docs as Praise[];
+        allPraiseQueryResponse.data as PaginatedResponseData;
+      const praiseList = paginatedResponse.docs as Praise[];
 
-      if (Array.isArray(praises) && praises.length > 0) {
-        setAllPraises(praises);
-        // setPraisePagination({
-        //   ...praisePagination,
-        //   latestFetchPageNumber: data.pageable?.pageNumber,
-        //   totalPages: data.totalPages,
-        // });
-        // setAllPraises(
-        //   allPraises ? allPraises.concat(data.content) : data.content
-        // );
+      if (Array.isArray(praiseList) && praiseList.length > 0) {
+        saveAllPraiseIdList(praiseList);
+        saveIndividualPraise(praiseList);
+        setPraisePagination({
+          ...praisePagination,
+          latestFetchPage: data.page,
+          totalPages: data.totalPages,
+        });
       }
     }
   }, [
-    allPraisesQueryResponse,
-    allPraises,
+    allPraiseQueryResponse,
     praisePagination,
+    allPraiseIdList,
+    saveIndividualPraise,
+    saveAllPraiseIdList,
     setPraisePagination,
-    setAllPraises,
   ]);
 
-  return allPraisesQueryResponse;
+  return allPraiseQueryResponse;
 };
 
 export const avgPraiseScore = (quantifications: any[] | undefined) => {
@@ -141,33 +236,8 @@ export const avgPraiseScore = (quantifications: any[] | undefined) => {
   for (i; i < quantifications.length; i++) {
     score += quantifications[i].score;
   }
-  return Math.round(score / (i + 1));
+  return Math.round(score / i);
 };
-
-export const SinglePraisesRequestId = atom({
-  key: "SinglePraisesRequestId",
-  default: 0,
-});
-
-export const SinglePraise = selectorFamily({
-  key: "SinglePraise",
-  get:
-    (params: any) =>
-    async ({ get }) => {
-      const { praiseId } = params;
-      get(SinglePraisesRequestId);
-      const response = get(
-        ApiAuthGetQuery({ endPoint: `/api/praise/${praiseId}` })
-      );
-      if (!response || isApiResponseError(response)) return undefined;
-      const praise: Praise = response.data;
-      const extPraise: Praise = {
-        ...praise,
-        avgScore: avgPraiseScore(praise.quantifications),
-      };
-      return extPraise as Praise;
-    },
-});
 
 export const QuantifyPraise = selectorFamily({
   key: "QuantifyPraise",
@@ -191,8 +261,6 @@ export const QuantifyPraise = selectorFamily({
 
 // Hook that returns a function to use for closing a period
 export const useQuantifyPraise = () => {
-  const singlePraisesRequestId = useRecoilValue(SinglePraisesRequestId);
-
   const quantify = useRecoilCallback(
     ({ snapshot, set }) =>
       async (
@@ -213,7 +281,8 @@ export const useQuantifyPraise = () => {
         );
 
         if (isApiResponseOk(response)) {
-          set(SinglePraisesRequestId, singlePraisesRequestId + 1);
+          const praise = response.data as Praise;
+          set(SinglePraise(praise._id), praise);
           return response.data as Praise;
         }
       }

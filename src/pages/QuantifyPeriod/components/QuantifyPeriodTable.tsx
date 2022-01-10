@@ -9,7 +9,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
 
-const QuantifyOverviewTable = () => {
+const QuantifyPeriodTable = () => {
   const history = useHistory();
   let { periodId } = useParams() as any;
 
@@ -94,4 +94,4 @@ const QuantifyOverviewTable = () => {
   );
 };
 
-export default QuantifyOverviewTable;
+export default QuantifyPeriodTable;

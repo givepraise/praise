@@ -5,10 +5,9 @@ import { PeriodDayPicker } from "@/components/periods/PeriodDayPicker";
 import {
   SinglePeriod,
   UpdatePeriodApiResponse,
-  useAllPeriodsQuery,
   useUpdatePeriod,
 } from "@/model/periods";
-import { DEFAULT_DATE_FORMAT, formatDate } from "@/utils/date";
+import { DATE_FORMAT, formatDate } from "@/utils/date";
 import { isMatch } from "date-fns";
 import { ValidationErrors } from "final-form";
 import { default as React } from "react";
@@ -24,7 +23,7 @@ const validate = (
 
   // End date validation
   if (values.endDate) {
-    if (!isMatch(values.endDate, DEFAULT_DATE_FORMAT)) {
+    if (!isMatch(values.endDate, DATE_FORMAT)) {
       errors.endDate = "Invalid date format";
     }
   } else {
@@ -37,7 +36,6 @@ const validate = (
 const PeriodDateForm = () => {
   let { periodId } = useParams() as any;
 
-  useAllPeriodsQuery(); // Make sure that all periods are fetched
   const period = useRecoilValue(SinglePeriod({ periodId }));
   const [apiResponse, setApiResponse] = useRecoilState(UpdatePeriodApiResponse);
   const { updatePeriod } = useUpdatePeriod();

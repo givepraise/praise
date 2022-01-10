@@ -3,7 +3,7 @@ import { ActivePeriodMessage } from "@/components/periods/ActivePeriodMessage";
 import { ActiveUserQuantificationsMessage } from "@/components/periods/ActiveUserQuantificationsMessage";
 import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
-import PraisesTable from "./components/Table";
+import PraiseTable from "./components/MyPraiseTable";
 
 const MyPraise = () => {
   return (
@@ -18,7 +18,9 @@ const MyPraise = () => {
       </div>
 
       <div className="praise-box">
-        <PraisesTable />
+        <React.Suspense fallback="Loading…">
+          <PraiseTable />
+        </React.Suspense>
       </div>
     </>
   );

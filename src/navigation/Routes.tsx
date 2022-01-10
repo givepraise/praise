@@ -7,22 +7,33 @@ import {
 import { EthState } from "@/model/eth";
 import * as localStorage from "@/model/localStorage";
 import LoginPage from "@/pages/Login/LoginPage";
-import MyPraise from "@/pages/MyPraise/MyPraisePage";
-import PeriodDetail from "@/pages/Periods/Details/PeriodDetailsPage";
-import QuantSummaryPeriodReceiverPage from "@/pages/QuantificationPeriodSummary/QuantificationPeriodSummaryPage";
-import QuantSummaryPraisePage from "@/pages/QuantificationPraiseSummary/QuantificationPraiseSummaryPage";
-import QuantifyPeriodPage from "@/pages/QuantifyPeriod/QuantifyPeriodPage";
 import StartPage from "@/pages/Start/StartPage";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import Nav from "./Nav";
 
+const MyPraisePage = React.lazy(() => import("@/pages/MyPraise/MyPraisePage"));
+const UsersPage = React.lazy(() => import("@/pages/Users/UsersPage"));
+
+const PeriodsPage = React.lazy(() => import("@/pages/Periods/PeriodsPage"));
 const PeriodsCreateUpdatePage = React.lazy(
   () => import("@/pages/Periods/Create/PeriodCreatePage")
 );
-const PeriodsPage = React.lazy(() => import("@/pages/Periods/PeriodsPage"));
-const QuantifierPoolPage = React.lazy(() => import("@/pages/Users/UsersPage"));
+const PeriodDetailPage = React.lazy(
+  () => import("@/pages/Periods/Details/PeriodDetailsPage")
+);
+const PeriodReceiverSummaryPage = React.lazy(
+  () => import("@/pages/Periods/ReceiverSummary/ReceiverSummaryPage")
+);
+
+const PraiseDetailsPage = React.lazy(
+  () => import("@/pages/PraiseDetails/PraiseDetailsPage")
+);
+
+const QuantifyPeriodPage = React.lazy(
+  () => import("@/pages/QuantifyPeriod/QuantifyPeriodPage")
+);
 const QuantifyPage = React.lazy(
   () => import("@/pages/QuantifyPeriodReceiver/QuantifyPeriodReceiverPage")
 );
@@ -103,18 +114,33 @@ const AuthRoute: FC<AuthRouteProps> = ({ children, ...props }) => {
 const SubPages = () => {
   return (
     <Switch>
+      <Route exact path="/mypraise">
+        <MyPraisePage />
+      </Route>
+
+      <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
+        <UsersPage />
+      </AuthRoute>
+
       <Route exact path={`/periods`}>
         <PeriodsPage />
       </Route>
+
       <AuthRoute roles={[ROLE_ADMIN]} path={`/periods/createupdate`}>
         <PeriodsCreateUpdatePage />
       </AuthRoute>
-      <Route exact path={`/periods/:periodId`}>
-        <PeriodDetail />
+
+      <Route exact path="/period/:periodId/receiver/:receiverId">
+        <PeriodReceiverSummaryPage />
       </Route>
-      <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
-        <QuantifierPoolPage />
-      </AuthRoute>
+      <Route exact path={`/period/:periodId`}>
+        <PeriodDetailPage />
+      </Route>
+
+      <Route exact path="/praise/:praiseId">
+        <PraiseDetailsPage />
+      </Route>
+
       <AuthRoute
         roles={[ROLE_QUANTIFIER]}
         path={`/quantify/period/:periodId/receiver/:receiverId`}
@@ -124,16 +150,7 @@ const SubPages = () => {
       <AuthRoute roles={[ROLE_QUANTIFIER]} path={`/quantify/period/:periodId`}>
         <QuantifyPeriodPage />
       </AuthRoute>
-      <Route exact path="/quantsummary/period/:periodId/receiver/:receiverId">
-        <QuantSummaryPeriodReceiverPage />
-      </Route>
-      <Route exact path="/quantsummary/period/:periodId/praise/:praiseId">
-        <QuantSummaryPraisePage />
-      </Route>
 
-      <Route exact path="/mypraise">
-        <MyPraise />
-      </Route>
       <Route exact path="/">
         <StartPage />
       </Route>

@@ -2,28 +2,25 @@ import BreadCrumb from "@/components/BreadCrumb";
 import {
   PeriodActiveQuantifierReceiver,
   SinglePeriod,
-  useAllPeriodsQuery,
+  usePeriodPraiseQuery,
 } from "@/model/periods";
 import BackLink from "@/navigation/BackLink";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import QuantifyTable from "./components/Table";
+import QuantifyTable from "./components/QuantifyTable";
 
 const PeriodBreadCrumb = () => {
   let { periodId } = useParams() as any;
-
-  useAllPeriodsQuery(); // Make sure that all periods are fetched
   const period = useRecoilValue(SinglePeriod({ periodId }));
-
   if (!period) return null;
   return <BreadCrumb name={`Quantify / ${period.name}`} icon={faCalendarAlt} />;
 };
 
 const PeriodMessage = () => {
   let { periodId, receiverId } = useParams() as any;
-
+  usePeriodPraiseQuery(periodId);
   const data = useRecoilValue(
     PeriodActiveQuantifierReceiver({ periodId, receiverId })
   );

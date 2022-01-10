@@ -1,31 +1,30 @@
-import { HasRole } from "@/model/auth";
 import {
   AllPeriods,
   useAllPeriodsQuery,
-  usePeriodPraisesQuery,
+  usePeriodPraiseQuery,
 } from "@/model/periods";
 import { useAllUsersQuery } from "@/model/users";
 import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useRecoilValue } from "recoil";
+import { HasRole } from "./model/auth";
 
 interface QuantifyPeriodLoaderProps {
   periodId: string;
 }
 
 const QuantifyPeriodLoader = ({ periodId }: QuantifyPeriodLoaderProps) => {
-  usePeriodPraisesQuery(periodId);
+  usePeriodPraiseQuery(periodId);
   return null;
 };
 
 export const StartupLoader = () => {
   useAllPeriodsQuery();
   useAllUsersQuery();
+
   const periods = useRecoilValue(AllPeriods);
-
   const isQuantifier = useRecoilValue(HasRole("QUANTIFIER"));
-
   if (!periods) return null;
 
   if (isQuantifier) {

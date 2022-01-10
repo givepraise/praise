@@ -1,6 +1,9 @@
 import { UserCell } from "@/components/table/UserCell";
-import { PeriodQuantifiers, usePeriodPraisesQuery } from "@/model/periods";
-import { useAllUsersQuery } from "@/model/users";
+import {
+  PeriodQuantifiers,
+  SinglePeriod,
+  usePeriodPraiseQuery,
+} from "@/model/periods";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
@@ -8,8 +11,8 @@ import { useRecoilValue } from "recoil";
 
 const QuantifierTable = () => {
   let { periodId } = useParams() as any;
-  usePeriodPraisesQuery(periodId);
-  useAllUsersQuery();
+  const period = useRecoilValue(SinglePeriod({ periodId }));
+  usePeriodPraiseQuery(periodId);
 
   const periodQuantifiers = useRecoilValue(PeriodQuantifiers({ periodId }));
 
@@ -40,6 +43,11 @@ const QuantifierTable = () => {
   const tableInstance = useTable(options);
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
+
+  if (!period) return <div>Period not found.</div>;
+
+  if (period.status === "OPEN")
+    return <div>No quantifiers have yet been assigned to this period.</div>;
 
   return (
     <table

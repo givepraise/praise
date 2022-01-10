@@ -37,18 +37,21 @@ export const shortenEthAddress = (address: string) => {
   )}`;
 };
 
+const praiseScore = [0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144];
+
 export const getPraiseMarks = () => {
-  return {
-    0: 0,
-    14: 1,
-    29: 3,
-    43: 5,
-    58: 8,
-    72: 13,
-    86: 21,
-    101: 34,
-    115: 55,
-    130: 89,
-    144: 144,
-  };
+  let marks = {};
+  let topScore = praiseScore[praiseScore.length - 1];
+  const markStep = Math.round(topScore / (praiseScore.length - 1));
+  for (let i = 0; i < praiseScore.length; i++) {
+    (marks as any)[i * markStep] = praiseScore[i];
+  }
+  return marks;
+};
+
+export const getPraiseMark = (score: number) => {
+  let topScore = praiseScore[praiseScore.length - 1];
+  const markStep = Math.round(topScore / (praiseScore.length - 1));
+  const i = praiseScore.findIndex((s) => s === score);
+  return markStep * i;
 };

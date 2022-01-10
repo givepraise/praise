@@ -1,17 +1,16 @@
+import { HasRole, ROLE_ADMIN } from "@/model/auth";
 import {
   AllPeriods,
   SinglePeriod,
-  useAllPeriodsQuery,
   useAssignQuantifiers,
   useClosePeriod,
-  useVerifyQuantifierPoolSize,
 } from "@/model/periods";
 import { formatDate } from "@/utils/date";
 import { getPreviousPeriod } from "@/utils/periods";
 import { Dialog } from "@headlessui/react";
 import React from "react";
 import "react-day-picker/lib/style.css";
-import { useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import PeriodAssignDialog from "./AssignDialog";
 import PeriodCloseDialog from "./CloseDialog";
@@ -21,13 +20,10 @@ const PeriodDetails = () => {
   let [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
   let [isAssignDialogOpen, setIsAssignDialogOpen] = React.useState(false);
 
-  // Make sure that all periods are fetched
-  useAllPeriodsQuery();
   const allPeriods = useRecoilValue(AllPeriods);
   let { periodId } = useParams() as any;
   const period = useRecoilValue(SinglePeriod({ periodId }));
-  const { location } = useHistory();
-  const poolRequirements = useVerifyQuantifierPoolSize(periodId, location.key);
+  const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
 
   const assignDialogRef = React.useRef(null);
   const closeDialogRef = React.useRef(null);
@@ -49,6 +45,8 @@ const PeriodDetails = () => {
   const handleAssign = () => {
     assignQuantifiers(periodId);
   };
+
+  if (!period) return <div>Period not found.</div>;
 
   return (
     <div>
@@ -78,23 +76,21 @@ const PeriodDetails = () => {
         </div>
       ) : null}
 
-      <React.Suspense fallback={null}>
-        <Dialog
-          open={isCloseDialogOpen}
-          onClose={() => setIsCloseDialogOpen(false)}
-          className="fixed inset-0 z-10 overflow-y-auto"
-          initialFocus={closeDialogRef}
-        >
-          <div ref={closeDialogRef}>
-            <PeriodCloseDialog
-              onClose={() => setIsCloseDialogOpen(false)}
-              onRemove={() => handleClosePeriod()}
-            />
-          </div>
-        </Dialog>
-      </React.Suspense>
+      <Dialog
+        open={isCloseDialogOpen}
+        onClose={() => setIsCloseDialogOpen(false)}
+        className="fixed inset-0 z-10 overflow-y-auto"
+        initialFocus={closeDialogRef}
+      >
+        <div ref={closeDialogRef}>
+          <PeriodCloseDialog
+            onClose={() => setIsCloseDialogOpen(false)}
+            onRemove={() => handleClosePeriod()}
+          />
+        </div>
+      </Dialog>
 
-      <React.Suspense fallback={null}>
+      {period.status === "OPEN" && isAdmin ? (
         <Dialog
           open={isAssignDialogOpen}
           onClose={() => setIsAssignDialogOpen(false)}
@@ -105,11 +101,10 @@ const PeriodDetails = () => {
             <PeriodAssignDialog
               onClose={() => setIsAssignDialogOpen(false)}
               onAssign={() => handleAssign()}
-              poolRequirements={poolRequirements}
             />
           </div>
         </Dialog>
-      </React.Suspense>
+      ) : null}
     </div>
   );
 };

@@ -1,9 +1,9 @@
 import BreadCrumb from "@/components/BreadCrumb";
 import { ActivePeriodMessage } from "@/components/periods/ActivePeriodMessage";
 import { ActiveUserQuantificationsMessage } from "@/components/periods/ActiveUserQuantificationsMessage";
-import PraisesTable from "@/pages/Start/components/Table";
 import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
+import PraiseTable from "./components/PraiseTable";
 
 const StartPage = () => {
   return (
@@ -18,7 +18,9 @@ const StartPage = () => {
       </div>
 
       <div className="praise-box">
-        <PraisesTable />
+        <React.Suspense fallback="Loading…">
+          <PraiseTable />
+        </React.Suspense>
       </div>
     </>
   );

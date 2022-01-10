@@ -59,8 +59,7 @@ export const AllUsersQuery = selector({
     get(UsersRequestId);
     return get(
       ApiAuthGetQuery({
-        endPoint:
-          "/api/admin/users/all?sortColumn=ethereumAddress&sortType=desc",
+        endPoint: "/api/users/all?sortColumn=ethereumAddress&sortType=desc",
       })
     );
   },

@@ -4,7 +4,7 @@ import React, { useCallback } from "react";
 import { BottomScrollListener } from "react-bottom-scroll-listener";
 import { useRecoilState } from "recoil";
 
-const PraisePageLoader = () => {
+const MyPraisePageLoader = () => {
   const [praisePagination, setPraisePagination] = useRecoilState(
     AllPraiseQueryPagination
   );
@@ -47,4 +47,4 @@ const PraisePageLoader = () => {
   );
 };
 
-export default PraisePageLoader;
+export default MyPraisePageLoader;

@@ -58,7 +58,7 @@ const PeriodReceiverTable = () => {
     tableInstance;
 
   const handleClick = (praise: Praise) => (e: SyntheticEvent) => {
-    history.push(`/quantsummary/period/${periodId}/praise/${praise._id}`);
+    history.push(`/praise/${praise._id}`);
   };
   return (
     <table
