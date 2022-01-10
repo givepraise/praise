@@ -18,12 +18,12 @@ const USERS = [
     roles: ['ADMIN', 'USER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    ethereumAddress: '0xa2608614d3038A334AC0d0f341441C978862018b',
     roles: ['USER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
-    roles: ['USER'],
+    ethereumAddress: '0xfb346bB121F9D955EdEe371ddD0060303E8496A9',
+    roles: ['USER', 'QUANTIFIER'],
   },
   {
     ethereumAddress: '0xa123400000000000000000000000000000006789',
