@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { errorNames, errorCodes, INTERNAL_SERVER_ERROR } from './constants';
+import { errorNames, errorCodes } from './constants';
 import { ErrorInterface } from './types';
 
 const ErrorHandler = (
@@ -8,6 +8,8 @@ const ErrorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  console.log('wololo');
+
   try {
     if (err.name === 'ValidationError')
       return (err = handleValidationError(err, res));
@@ -35,7 +37,7 @@ const handleDuplicateKeyError = (err: any, res: Response) => {
 };
 
 const handleValidationError = (err: any, res: Response) => {
-  let errors = {};
+  const errors = {};
 
   Object.keys(err.errors).forEach((key) => {
     const obj = err.errors[key];
@@ -44,7 +46,7 @@ const handleValidationError = (err: any, res: Response) => {
     Object.assign(errors, error);
   });
 
-  let code = 400;
+  const code = 400;
   res.status(code).send(errors);
 };
 
