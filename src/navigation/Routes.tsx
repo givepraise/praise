@@ -8,6 +8,7 @@ import { EthState } from "@/model/eth";
 import * as localStorage from "@/model/localStorage";
 import ErrorPage from "@/pages/ErrorPage";
 import LoginPage from "@/pages/Login/LoginPage";
+import NotFoundPage from "@/pages/NotFoundPage";
 import StartPage from "@/pages/Start/StartPage";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
@@ -155,6 +156,10 @@ const SubPages = () => {
 
       <Route exact path="/">
         <StartPage />
+      </Route>
+
+      <Route path="/*">
+        <NotFoundPage />
       </Route>
     </Switch>
   );
