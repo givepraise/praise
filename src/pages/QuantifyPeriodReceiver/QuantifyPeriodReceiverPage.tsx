@@ -5,7 +5,11 @@ import {
   usePeriodPraiseQuery,
 } from "@/model/periods";
 import BackLink from "@/navigation/BackLink";
-import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCalendarAlt,
+  faCheckCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
@@ -16,6 +20,15 @@ const PeriodBreadCrumb = () => {
   const period = useRecoilValue(SinglePeriod({ periodId }));
   if (!period) return null;
   return <BreadCrumb name={`Quantify / ${period.name}`} icon={faCalendarAlt} />;
+};
+
+const DoneLabel = () => {
+  return (
+    <div className="pl-1 pr-1 ml-2 text-xs text-white no-underline bg-green-400 py-[3px] rounded inline-block relative top-[-1px]">
+      <FontAwesomeIcon icon={faCheckCircle} size="1x" className="mr-2" />
+      Done
+    </div>
+  );
 };
 
 const PeriodMessage = () => {
@@ -30,7 +43,16 @@ const PeriodMessage = () => {
     <>
       <h2>Receiver: {data.receiverName}</h2>
       <p>Number of praise items: {data.count}</p>
-      <p>Items left to quantify: {data.count - data.done}</p>
+      <p>
+        Items left to quantify:{" "}
+        {data.count - data.done === 0 ? (
+          <>
+            0<DoneLabel />
+          </>
+        ) : (
+          data.count - data.done
+        )}
+      </p>
     </>
   );
 };

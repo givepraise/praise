@@ -28,17 +28,19 @@ const PeriodsTable = () => {
         accessor: "status",
         Cell: (data: any) => {
           return (
-            <div
-              className={classNames(
-                data.value === "OPEN"
-                  ? "bg-green-400"
-                  : data.value === "QUANTIFY"
-                  ? "bg-pink-400"
-                  : "bg-gray-300",
-                "inline-block px-2 py-1 text-xs text-white bg-black rounded-full"
-              )}
-            >
-              {data.value}
+            <div className="w-full text-right">
+              <div
+                className={classNames(
+                  data.value === "OPEN"
+                    ? "bg-green-300"
+                    : data.value === "QUANTIFY"
+                    ? "bg-pink-300"
+                    : "bg-gray-300",
+                  "inline-block px-2 py-1 text-xs text-white bg-black rounded-full"
+                )}
+              >
+                {data.value === "QUANTIFY" ? "QUANTIFYING" : data.value}
+              </div>
             </div>
           );
         },

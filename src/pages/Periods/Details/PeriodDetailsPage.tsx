@@ -24,14 +24,18 @@ const PeriodDetailHead = () => {
       <div
         className={classNames(
           period?.status === "OPEN"
-            ? "bg-green-400"
+            ? "bg-green-300"
             : period?.status === "QUANTIFY"
-            ? "bg-pink-400"
+            ? "bg-pink-300"
             : "bg-gray-300",
           "float-right px-2 py-1 text-xs text-white rounded-full"
         )}
       >
-        {period ? period.status : null}
+        {period
+          ? period.status === "QUANTIFY"
+            ? "QUANTIFYING"
+            : period.status
+          : null}
       </div>
       {isAdmin ? <PeriodNameForm /> : <h2>{period?.name}</h2>}
       <PeriodDetails />
