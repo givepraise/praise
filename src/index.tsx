@@ -5,9 +5,10 @@ import ReactDOM from "react-dom";
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter as Router } from "react-router-dom";
 import { RecoilRoot } from "recoil";
+import useErrorBoundary from "use-error-boundary";
 import EthConnection from "./components/EthConnection";
-import { handleErrors, isApiResponseError } from "./model/api";
 import Routes from "./navigation/Routes";
+import ErrorPage from "./pages/ErrorPage";
 import { LoadScreen } from "./startupLoader";
 import "./styles/globals.css";
 
@@ -33,17 +34,16 @@ const DelayedLoading: FC<any> = ({ children }) => {
   return children;
 };
 
-class ErrorBoundary extends React.Component {
-  componentDidCatch(error: any, errorInfo: any) {
-    if (isApiResponseError(error)) {
-      handleErrors(error);
-    }
-  }
+const ErrorBoundary: FC<any> = ({ children }) => {
+  const { ErrorBoundary } = useErrorBoundary();
 
-  render() {
-    return this.props.children;
-  }
-}
+  return (
+    <ErrorBoundary
+      render={() => children}
+      renderError={({ error }) => <ErrorPage error={error} />}
+    />
+  );
+};
 
 ReactDOM.render(
   <React.StrictMode>
@@ -52,20 +52,20 @@ ReactDOM.render(
         <Router>
           <div>
             <EthConnection />
-            <ErrorBoundary>
-              <main>
-                <DelayedLoading>
-                  <React.Suspense fallback={<LoadScreen />}>
+            <main>
+              <DelayedLoading>
+                <React.Suspense fallback={<LoadScreen />}>
+                  <ErrorBoundary>
                     <Routes />
-                    <Toaster
-                      position="bottom-right"
-                      reverseOrder={false}
-                      toastOptions={{ duration: 3000 }}
-                    />
-                  </React.Suspense>
-                </DelayedLoading>
-              </main>
-            </ErrorBoundary>
+                  </ErrorBoundary>
+                </React.Suspense>
+              </DelayedLoading>
+              <Toaster
+                position="bottom-right"
+                reverseOrder={false}
+                toastOptions={{ duration: 3000 }}
+              />
+            </main>
           </div>
         </Router>
       </Web3ReactProvider>

@@ -6,7 +6,7 @@ import {
 } from "@/model/auth";
 import { EthState } from "@/model/eth";
 import * as localStorage from "@/model/localStorage";
-import NotFound from "@/pages/404";
+import ErrorPage from "@/pages/ErrorPage";
 import LoginPage from "@/pages/Login/LoginPage";
 import StartPage from "@/pages/Start/StartPage";
 import React, { FC } from "react";
@@ -167,7 +167,7 @@ const Routes = () => {
         <LoginPage />
       </Route>
       <Route exact path="/404">
-        <NotFound />
+        <ErrorPage error={{ message: "Not found" }} />
       </Route>
       <LoggedInOnlyRoute path="/">
         <StartupLoader />

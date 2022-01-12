@@ -2,7 +2,11 @@ import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 
-const NotFound = () => {
+interface NotFoundProps {
+  error: any;
+}
+
+const ErrorPage = ({ error }: NotFoundProps) => {
   const logout = () => {
     localStorage.clear();
     window.location.href = "/";
@@ -13,7 +17,7 @@ const NotFound = () => {
       <div className="m-auto text-center">
         <FontAwesomeIcon icon={faPrayingHands} size="2x" />
         <br />
-        <h2 className="mt-3">Not found</h2>
+        <h2 className="mt-3">{error.message}</h2>
         <button className="mt-5 praise-button" onClick={logout}>
           Login
         </button>
@@ -22,4 +26,4 @@ const NotFound = () => {
   );
 };
 
-export default NotFound;
+export default ErrorPage;
