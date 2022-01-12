@@ -31,7 +31,7 @@ const PeriodCloseDialog = ({ onClose, onRemove }: PeriodCloseDialogProps) => {
           </Dialog.Description>
           <div className="flex justify-center">
             <button
-              className="mt-4 praise-button"
+              className="mt-4 bg-red-600 praise-button"
               onClick={() => {
                 onRemove();
                 onClose();

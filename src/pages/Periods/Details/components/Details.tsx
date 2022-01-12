@@ -7,6 +7,8 @@ import {
 } from "@/model/periods";
 import { formatDate } from "@/utils/date";
 import { getPreviousPeriod } from "@/utils/periods";
+import { faDownload, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
 import React from "react";
 import "react-day-picker/lib/style.css";
@@ -63,28 +65,43 @@ const PeriodDetails = () => {
         <div>Period end: {formatDate(period.endDate)}</div>
       )}
 
-      {isAdmin && period.status !== "CLOSED" ? (
-        <div className="mt-5">
-          {period.status === "OPEN" ? (
-            <button
-              className="praise-button"
-              onClick={() => {
-                setIsAssignDialogOpen(true);
-              }}
-            >
-              Assign quantifiers
+      <div className="mt-5">
+        {period.status === "OPEN" ? (
+          <button
+            className="praise-button"
+            onClick={() => {
+              setIsAssignDialogOpen(true);
+            }}
+          >
+            Assign quantifiers
+          </button>
+        ) : null}
+        {period.status === "QUANTIFY" ? (
+          <div className="flex justify-between">
+            <button className="praise-button" onClick={() => {}}>
+              <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
+              Export
             </button>
-          ) : null}
-          {period.status === "QUANTIFY" ? (
             <button
-              className="praise-button"
+              className="bg-red-600 praise-button"
               onClick={() => setIsCloseDialogOpen(true)}
             >
+              <FontAwesomeIcon
+                icon={faTimesCircle}
+                size="1x"
+                className="mr-2"
+              />
               Close period
             </button>
-          ) : null}
-        </div>
-      ) : null}
+          </div>
+        ) : null}
+        {period.status === "CLOSED" ? (
+          <button className="praise-button" onClick={() => {}}>
+            <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
+            Export
+          </button>
+        ) : null}
+      </div>
 
       <Dialog
         open={isCloseDialogOpen}
