@@ -3,6 +3,7 @@ import { HasRole, ROLE_ADMIN } from "@/model/auth";
 import { SinglePeriod } from "@/model/periods";
 import BackLink from "@/navigation/BackLink";
 import PeriodDetails from "@/pages/Periods/Details/components/Details";
+import { classNames } from "@/utils/index";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import { default as React } from "react";
 import "react-day-picker/lib/style.css";
@@ -20,7 +21,16 @@ const PeriodDetailHead = () => {
   return (
     <>
       {" "}
-      <div className="float-right px-2 py-1 text-xs text-white bg-black rounded-full">
+      <div
+        className={classNames(
+          period?.status === "OPEN"
+            ? "bg-green-400"
+            : period?.status === "QUANTIFY"
+            ? "bg-pink-400"
+            : "bg-gray-300",
+          "float-right px-2 py-1 text-xs text-white rounded-full"
+        )}
+      >
         {period ? period.status : null}
       </div>
       {isAdmin ? <PeriodNameForm /> : <h2>{period?.name}</h2>}

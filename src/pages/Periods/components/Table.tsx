@@ -1,5 +1,6 @@
 import { AllPeriods, Period } from "@/model/periods";
 import { formatDate } from "@/utils/date";
+import { classNames } from "@/utils/index";
 import React, { SyntheticEvent } from "react";
 import { useHistory } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
@@ -27,7 +28,16 @@ const PeriodsTable = () => {
         accessor: "status",
         Cell: (data: any) => {
           return (
-            <div className="inline-block px-2 py-1 text-xs text-white bg-black rounded-full">
+            <div
+              className={classNames(
+                data.value === "OPEN"
+                  ? "bg-green-400"
+                  : data.value === "QUANTIFY"
+                  ? "bg-pink-400"
+                  : "bg-gray-300",
+                "inline-block px-2 py-1 text-xs text-white bg-black rounded-full"
+              )}
+            >
               {data.value}
             </div>
           );
@@ -74,7 +84,10 @@ const PeriodsTable = () => {
           prepareRow(row);
           return (
             <tr
-              className="cursor-pointer hover:bg-gray-100"
+              className={classNames(
+                row.values.status === "CLOSED" ? "text-gray-400" : "",
+                "cursor-pointer hover:bg-gray-100"
+              )}
               id={"period-" + row.values.name}
               {...row.getRowProps()}
               onClick={handleClick((row.original as Period)._id!)}

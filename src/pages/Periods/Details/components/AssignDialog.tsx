@@ -1,9 +1,9 @@
 import { useVerifyQuantifierPoolSize } from "@/model/periods";
 import {
-  faCalculator,
   faCheckSquare,
   faTimes,
   faTimesCircle,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
@@ -34,7 +34,7 @@ const PeriodAssignDialog = ({ onClose, onAssign }: PeriodAssignDialogProps) => {
         </div>
         <div className="px-20">
           <div className="flex justify-center mb-7">
-            <FontAwesomeIcon icon={faCalculator} size="2x" />
+            <FontAwesomeIcon icon={faUsers} size="2x" />
           </div>
           <Dialog.Title className="text-center mb-7">
             Assign quantifiers

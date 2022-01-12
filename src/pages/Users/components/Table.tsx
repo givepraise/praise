@@ -6,7 +6,7 @@ import {
 } from "@/model/users";
 import { shortenEthAddress } from "@/utils/index";
 import { getUsername } from "@/utils/users";
-import { faTrash, faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { faTimesCircle, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
 import React from "react";
@@ -77,15 +77,15 @@ const PoolTable = () => {
               {row.cells.map((cell) => {
                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
               })}
-              <td>
+              <td className="w-8">
                 <button
                   onClick={() =>
                     handleDeleteQuantifierClick(row.original as User)
                   }
-                  className="hover:text-gray-400"
+                  className="hover:text-red-600"
                 >
                   <FontAwesomeIcon
-                    icon={faTrash}
+                    icon={faTimesCircle}
                     size="1x"
                     className="inline-block"
                   />

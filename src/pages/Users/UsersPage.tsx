@@ -1,7 +1,8 @@
 import BreadCrumb from "@/components/BreadCrumb";
 import { useAdminUsers, UserRole } from "@/model/users";
 import PoolAddDialog from "@/pages/Users/components/AddDialog";
-import { faUserFriends } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faUserFriends } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
 import React from "react";
 import PoolTable from "./components/Table";
@@ -23,6 +24,7 @@ const AddRoleButton = () => {
   return (
     <>
       <button className="praise-button" onClick={handleAddQuantifierClick}>
+        <FontAwesomeIcon icon={faPlus} size="1x" className="mr-2" />
         Add quantifier
         {isOpen ? (
           <Dialog

@@ -1,11 +1,7 @@
 import { AllUsers, User, UserRole } from "@/model/users";
 import { classNames } from "@/utils/index";
 import { getUsername } from "@/utils/users";
-import {
-  faTimes,
-  faUser,
-  faUserFriends,
-} from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
 import { useCombobox } from "downshift";
@@ -132,7 +128,7 @@ const PoolAddDialog = ({ onClose, onQuantifierAdded }: PoolAddDialogProps) => {
         </div>
         <div className="px-20">
           <div className="flex justify-center mb-7">
-            <FontAwesomeIcon icon={faUserFriends} size="2x" />
+            <FontAwesomeIcon icon={faUser} size="2x" />
           </div>
           <Dialog.Title className="text-center mb-7">
             Add a member to the Quantifier Pool

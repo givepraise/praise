@@ -104,7 +104,7 @@ export const ApiAuthPatchQuery = selectorFamily({
 export const handleErrors = (err: AxiosError) => {
   // client received an error response (5xx, 4xx)
   if (err.response) {
-    if ((err.response.status = 404)) {
+    if (err.response.status === 404) {
       window.location.href = "/404";
     }
     // TODO Handle expired JWT token
