@@ -35,8 +35,11 @@ const PoolTable = () => {
                 <FontAwesomeIcon icon={faUserCircle} size="2x" />
               </div>
               <div className="flex-grow p-3 whitespace-nowrap">
-                {getUsername(data.row.original)}
-                <br />
+                {data.row.original.accounts?.length > 0 ? (
+                  <div>{getUsername(data.row.original)}</div>
+                ) : (
+                  ""
+                )}
                 {shortenEthAddress(data.row.original.ethereumAddress)}
               </div>
             </div>

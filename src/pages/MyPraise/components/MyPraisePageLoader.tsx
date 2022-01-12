@@ -10,7 +10,9 @@ import { MY_PRAISE_LIST_KEY } from "./MyPraiseTable";
 //TODO add support for more than one user account connected to one user
 const getReceiverId = (user: User | null) => {
   const accounts = user?.accounts;
-  return accounts ? accounts[0]._id : null;
+  return Array.isArray(accounts) && accounts.length > 0
+    ? accounts[0]._id
+    : null;
 };
 
 const MyPraisePageLoader = () => {
@@ -19,7 +21,7 @@ const MyPraisePageLoader = () => {
   );
   const userId = useRecoilValue(ActiveUserId);
   const user = useRecoilValue(SingleUser({ userId }));
-  const queryRepsponse = useAllPraiseQuery(
+  const queryResponse = useAllPraiseQuery(
     {
       page: praisePagination.currentPage,
       limit: 5,
@@ -33,7 +35,7 @@ const MyPraisePageLoader = () => {
 
   React.useEffect(() => {
     setLoading(false);
-  }, [queryRepsponse]);
+  }, [queryResponse]);
 
   const handleContainerOnBottom = useCallback(() => {
     if (

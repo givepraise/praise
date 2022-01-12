@@ -2,12 +2,21 @@ import {
   PeriodActiveQuantifierReceivers,
   QuantifierReceiverData,
 } from "@/model/periods";
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { SyntheticEvent } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
+
+const DoneLabel = () => {
+  return (
+    <div className="pl-1 pr-1 ml-2 text-xs text-white no-underline bg-green-400 py-[3px] rounded inline-block relative top-[-1px]">
+      <FontAwesomeIcon icon={faCheckCircle} size="1x" className="mr-2" />
+      Done
+    </div>
+  );
+};
 
 const QuantifyPeriodTable = () => {
   const history = useHistory();
@@ -22,12 +31,25 @@ const QuantifyPeriodTable = () => {
         accessor: "receiverName",
       },
       {
-        Header: "Finished items",
-        accessor: "finishedItems",
+        Header: "Remaining items",
+        accessor: "count",
         Cell: (data: any) => {
-          return data.row.original
-            ? `${data.row.original.done} / ${data.row.original.count}`
-            : null;
+          const item = data.row.original;
+          if (!item) return null;
+          return `${item.count - item.done} / ${item.count}`;
+        },
+      },
+      {
+        Header: "",
+        accessor: "done",
+        Cell: (data: any) => {
+          const item = data.row.original;
+          if (!item) return null;
+          return item.count - item.done === 0 ? (
+            <div className="w-full text-right">
+              <DoneLabel />
+            </div>
+          ) : null;
         },
       },
     ],
@@ -78,14 +100,6 @@ const QuantifyPeriodTable = () => {
               {row.cells.map((cell) => {
                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
               })}
-
-              <td>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  size="1x"
-                  className="inline-block"
-                />
-              </td>
             </tr>
           );
         })}

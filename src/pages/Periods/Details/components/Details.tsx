@@ -23,6 +23,7 @@ import { useRecoilValue } from "recoil";
 import PeriodAssignDialog from "./AssignDialog";
 import PeriodCloseDialog from "./CloseDialog";
 import PeriodDateForm from "./PeriodDateForm";
+import { QuantifierMessage } from "./QuantifierMessage";
 
 const PeriodDetails = () => {
   let [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
@@ -88,14 +89,6 @@ const PeriodDetails = () => {
             ) : null}
             {period.status === "QUANTIFY" ? (
               <div className="flex justify-between">
-                <button className="praise-button" onClick={() => {}}>
-                  <FontAwesomeIcon
-                    icon={faDownload}
-                    size="1x"
-                    className="mr-2"
-                  />
-                  Export
-                </button>
                 <button
                   className="hover:bg-red-600 praise-button"
                   onClick={() => setIsCloseDialogOpen(true)}
@@ -118,6 +111,8 @@ const PeriodDetails = () => {
           </div>
         </>
       )}
+
+      <QuantifierMessage />
 
       <Dialog
         open={isCloseDialogOpen}
