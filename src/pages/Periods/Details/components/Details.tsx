@@ -4,6 +4,7 @@ import {
   SinglePeriod,
   useAssignQuantifiers,
   useClosePeriod,
+  useExportPraise,
 } from "@/model/periods";
 import { formatDate } from "@/utils/date";
 import { getPreviousPeriod } from "@/utils/periods";
@@ -31,6 +32,7 @@ const PeriodDetails = () => {
   let { periodId } = useParams() as any;
   const period = useRecoilValue(SinglePeriod({ periodId }));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
+  const { exportPraise } = useExportPraise();
 
   const assignDialogRef = React.useRef(null);
   const closeDialogRef = React.useRef(null);
@@ -58,55 +60,64 @@ const PeriodDetails = () => {
     });
   };
 
+  const handleExport = () => {
+    exportPraise(period);
+  };
+
   if (!period) return <div>Period not found.</div>;
 
   return (
     <div>
       <div>Period start: {periodStart}</div>
-      {isAdmin ? (
-        <PeriodDateForm />
-      ) : (
+      {!isAdmin ? (
         <div>Period end: {formatDate(period.endDate)}</div>
-      )}
-
-      <div className="mt-5">
-        {period.status === "OPEN" ? (
-          <button
-            className="praise-button"
-            onClick={() => {
-              setIsAssignDialogOpen(true);
-            }}
-          >
-            <FontAwesomeIcon icon={faUsers} size="1x" className="mr-2" />
-            Assign quantifiers
-          </button>
-        ) : null}
-        {period.status === "QUANTIFY" ? (
-          <div className="flex justify-between">
-            <button className="praise-button" onClick={() => {}}>
-              <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
-              Export
-            </button>
-            <button
-              className="hover:bg-red-600 praise-button"
-              onClick={() => setIsCloseDialogOpen(true)}
-            >
-              <FontAwesomeIcon
-                icon={faTimesCircle}
-                size="1x"
-                className="mr-2"
-              />
-              Close period
-            </button>
+      ) : (
+        <>
+          <PeriodDateForm />
+          <div className="mt-5">
+            {period.status === "OPEN" ? (
+              <button
+                className="praise-button"
+                onClick={() => {
+                  setIsAssignDialogOpen(true);
+                }}
+              >
+                <FontAwesomeIcon icon={faUsers} size="1x" className="mr-2" />
+                Assign quantifiers
+              </button>
+            ) : null}
+            {period.status === "QUANTIFY" ? (
+              <div className="flex justify-between">
+                <button className="praise-button" onClick={() => {}}>
+                  <FontAwesomeIcon
+                    icon={faDownload}
+                    size="1x"
+                    className="mr-2"
+                  />
+                  Export
+                </button>
+                <button
+                  className="hover:bg-red-600 praise-button"
+                  onClick={() => setIsCloseDialogOpen(true)}
+                >
+                  <FontAwesomeIcon
+                    icon={faTimesCircle}
+                    size="1x"
+                    className="mr-2"
+                  />
+                  Close period
+                </button>
+              </div>
+            ) : null}
+            {period.status === "CLOSED" ? (
+              <button className="praise-button" onClick={handleExport}>
+                <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
+                Export
+              </button>
+            ) : null}
           </div>
-        ) : null}
-        {period.status === "CLOSED" ? (
-          <button className="praise-button" onClick={() => {}}>
-            <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
-            Export
-          </button>
-        ) : null}
-      </div>
+        </>
+      )}
 
       <Dialog
         open={isCloseDialogOpen}

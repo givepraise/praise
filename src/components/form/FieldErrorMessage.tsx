@@ -16,7 +16,6 @@ const FieldErrorMessage = ({ name, apiResponse }: FieldErrorMessageProps) => {
     subscription: { touched: true, error: true, active: true },
   });
 
-  console.log(apiResponse);
   // Display api error message for matching field if form has not
   // been edited since last submit
   if (apiResponse && isApiResponseError(apiResponse)) {
