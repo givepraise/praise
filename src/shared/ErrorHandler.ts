@@ -22,11 +22,9 @@ const ErrorHandler = (
     ) {
       return (err = handleAppError(err, res));
     } else {
-      console.log('ERROR:', err);
       res.status(500).send('An unknown error occurred.');
     }
   } catch (err) {
-    console.log('ERROR:', err);
     res.status(500).send('An unknown error occurred.');
   }
 };
