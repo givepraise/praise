@@ -1,3 +1,4 @@
+import { getPreviousPeriod } from "@/utils/periods";
 import { AxiosError, AxiosResponse } from "axios";
 import React from "react";
 import {
@@ -684,3 +685,32 @@ export const PeriodActiveQuantifierReceiverPraise = selectorFamily({
       );
     },
 });
+
+export const useExportPraise = () => {
+  const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
+
+  const exportPraise = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async (period: Period) => {
+        if (!period || !allPeriods) return null;
+        const periodStartDate = getPreviousPeriod(allPeriods, period);
+
+        const response = await ApiQuery(
+          snapshot.getPromise(
+            ApiAuthGetQuery({
+              endPoint: `/api/praise/export/?periodStart=${periodStartDate}&periodEnd=${period.endDate}`,
+              config: { responseType: "blob" },
+            })
+          )
+        );
+
+        // If OK response, add returned period object to local state
+        if (isApiResponseOk(response)) {
+          const href = window.URL.createObjectURL(response.data);
+          window.location.href = href;
+          return href;
+        }
+      }
+  );
+  return { exportPraise };
+};

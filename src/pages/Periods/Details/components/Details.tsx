@@ -4,6 +4,7 @@ import {
   SinglePeriod,
   useAssignQuantifiers,
   useClosePeriod,
+  useExportPraise,
 } from "@/model/periods";
 import { formatDate } from "@/utils/date";
 import { getPreviousPeriod } from "@/utils/periods";
@@ -31,6 +32,7 @@ const PeriodDetails = () => {
   let { periodId } = useParams() as any;
   const period = useRecoilValue(SinglePeriod({ periodId }));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
+  const { exportPraise } = useExportPraise();
 
   const assignDialogRef = React.useRef(null);
   const closeDialogRef = React.useRef(null);
@@ -56,6 +58,10 @@ const PeriodDetails = () => {
       success: "Quantifiers assigned",
       error: "Assign failed",
     });
+  };
+
+  const handleExport = () => {
+    exportPraise(period);
   };
 
   if (!period) return <div>Period not found.</div>;
@@ -104,7 +110,7 @@ const PeriodDetails = () => {
               </div>
             ) : null}
             {period.status === "CLOSED" ? (
-              <button className="praise-button" onClick={() => {}}>
+              <button className="praise-button" onClick={handleExport}>
                 <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
                 Export
               </button>

@@ -44,9 +44,13 @@ export const ApiAuthGetQuery = selectorFamily({
       if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
         return null;
 
+      const config = {
+        ...params.config,
+        headers: { Authorization: `Bearer ${sessionToken}` },
+      };
       return await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-        { headers: { Authorization: `Bearer ${sessionToken}` } }
+        config
       );
     },
 });
