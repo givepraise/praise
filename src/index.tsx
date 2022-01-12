@@ -53,7 +53,7 @@ ReactDOM.render(
           <div>
             <EthConnection />
             <ErrorBoundary>
-              <main className="font-mono text-sm">
+              <main>
                 <DelayedLoading>
                   <React.Suspense fallback={<LoadScreen />}>
                     <Routes />
