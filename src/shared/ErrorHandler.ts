@@ -8,8 +8,6 @@ const ErrorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log('wololo');
-
   try {
     if (err.name === 'ValidationError')
       return (err = handleValidationError(err, res));
@@ -23,6 +21,8 @@ const ErrorHandler = (
       err.name === errorNames.FORBIDDEN
     ) {
       return (err = handleAppError(err, res));
+    } else {
+      res.status(500).send('An unknown error occurred.');
     }
   } catch (err) {
     res.status(500).send('An unknown error occurred.');
