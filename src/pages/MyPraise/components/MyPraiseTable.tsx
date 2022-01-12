@@ -1,7 +1,7 @@
 import LoaderSpinner from "@/components/LoaderSpinner";
 import { AllPraiseList, Praise } from "@/model/praise";
 import { formatDate } from "@/utils/date";
-import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { faSadTear, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { SyntheticEvent } from "react";
 import { useHistory } from "react-router-dom";
@@ -52,6 +52,14 @@ const MyPraiseTable = () => {
     history.push(`/praise/${data._id}`);
   };
 
+  if (!allPraise)
+    return (
+      <div>
+        {" "}
+        <FontAwesomeIcon icon={faSadTear} size="2x" className="mr-2" />
+        <div className="mt-3">You have not yet received any praise.</div>
+      </div>
+    );
   return (
     <>
       <table
