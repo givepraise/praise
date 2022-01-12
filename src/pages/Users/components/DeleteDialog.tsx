@@ -1,9 +1,9 @@
 import { User } from "@/model/users";
 import { getUsername } from "@/utils/users";
 import {
-  faMinusCircle,
   faTimes,
-  faUserFriends,
+  faTimesCircle,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
@@ -30,7 +30,7 @@ const PoolDeleteDialog = ({
           </div>
           <div className="px-20">
             <div className="flex justify-center mb-7">
-              <FontAwesomeIcon icon={faUserFriends} size="2x" />
+              <FontAwesomeIcon icon={faUser} size="2x" />
             </div>
             <Dialog.Title className="mb-5 text-center">
               Removing 1 member from Quantifier Pool
@@ -40,7 +40,7 @@ const PoolDeleteDialog = ({
             </div>
             <div className="flex justify-center">
               <button
-                className="praise-button"
+                className="bg-red-600 praise-button"
                 onClick={() => {
                   onQuantifierRemoved(quantifier._id);
                   onClose();
@@ -48,7 +48,7 @@ const PoolDeleteDialog = ({
               >
                 <FontAwesomeIcon
                   className="mr-2"
-                  icon={faMinusCircle}
+                  icon={faTimesCircle}
                   size="1x"
                 />
                 Remove member

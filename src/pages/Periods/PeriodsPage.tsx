@@ -2,7 +2,8 @@ import AdminOnly from "@/components/auth/AdminOnly";
 import BreadCrumb from "@/components/BreadCrumb";
 import { ActivePeriodMessage } from "@/components/periods/ActivePeriodMessage";
 import { ActiveUserQuantificationsMessage } from "@/components/periods/ActiveUserQuantificationsMessage";
-import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarAlt, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Link } from "react-router-dom";
 import PeriodsTable from "./components/Table";
@@ -24,6 +25,7 @@ const PeriodsPage = () => {
           <div className="mb-2 text-right">
             <Link to="/periods/createupdate">
               <button className="praise-button" id="create-period-button">
+                <FontAwesomeIcon icon={faPlus} size="1x" className="mr-2" />
                 Create period
               </button>
             </Link>

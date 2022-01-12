@@ -7,7 +7,11 @@ import {
 } from "@/model/periods";
 import { formatDate } from "@/utils/date";
 import { getPreviousPeriod } from "@/utils/periods";
-import { faDownload, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faDownload,
+  faTimesCircle,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
 import React from "react";
@@ -73,6 +77,7 @@ const PeriodDetails = () => {
               setIsAssignDialogOpen(true);
             }}
           >
+            <FontAwesomeIcon icon={faUsers} size="1x" className="mr-2" />
             Assign quantifiers
           </button>
         ) : null}
@@ -83,7 +88,7 @@ const PeriodDetails = () => {
               Export
             </button>
             <button
-              className="bg-red-600 praise-button"
+              className="hover:bg-red-600 praise-button"
               onClick={() => setIsCloseDialogOpen(true)}
             >
               <FontAwesomeIcon

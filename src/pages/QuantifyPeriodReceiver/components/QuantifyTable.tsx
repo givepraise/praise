@@ -6,7 +6,7 @@ import {
 import { Praise, useQuantifyPraise } from "@/model/praise";
 import DismissDialog from "@/pages/QuantifyPeriodReceiver/components/DismissDialog";
 import { formatDate } from "@/utils/date";
-import { getPraiseMark, getPraiseMarks } from "@/utils/index";
+import { classNames, getPraiseMark, getPraiseMarks } from "@/utils/index";
 import {
   faCopy,
   faTimes,
@@ -24,10 +24,16 @@ import RangeSlider from "./RangeSlider";
 interface InlineLabelProps {
   text: string;
   button: any;
+  className?: string;
 }
-const InlineLabel = ({ text, button }: InlineLabelProps) => {
+const InlineLabel = ({ text, button, className }: InlineLabelProps) => {
   return (
-    <span className="h-6 pl-1 pr-1 mr-1 text-xs text-white no-underline bg-black py-[1px] rounded">
+    <span
+      className={classNames(
+        className,
+        "h-6 pl-1 pr-1 mr-1 text-xs text-white no-underline bg-black py-[1px] rounded"
+      )}
+    >
       {text}
       {button}
     </span>
@@ -84,7 +90,7 @@ const QuantifyTable = () => {
     return (
       <button onClick={action} className="ml-2">
         <FontAwesomeIcon
-          className="text-gray-400 hover:text-white"
+          className="text-white text-opacity-50 hover:text-opacity-100"
           icon={faTimes}
           size="1x"
         />
@@ -139,6 +145,7 @@ const QuantifyTable = () => {
                       <InlineLabel
                         text="Dismissed"
                         button={getRemoveButton(handleRemoveDismiss)}
+                        className="bg-red-600"
                       />
                       <span className="line-through">{praise.reason}</span>
                     </span>
