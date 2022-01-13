@@ -1,9 +1,6 @@
 import PraiseModel from '@entities/Praise';
-<<<<<<< HEAD
 import QuantificationModel from '@entities/Quantification';
 import UserAccountModel from '@entities/UserAccount';
-=======
->>>>>>> main
 import { BadRequestError, NotFoundError } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
 import {
@@ -60,20 +57,8 @@ const quantify = async (
 
   const { score, dismissed, duplicatePraise } = req.body;
 
-<<<<<<< HEAD
-  const quantification = await QuantificationModel.findOneAndUpdate(
-    { quantifier: res.locals.currentUser },
-    {
-      score,
-      quantifier: res.locals.currentUser,
-      dismissed,
-      duplicatePraise,
-    },
-    { upsert: true, new: true }
-=======
   const quantification = praise.quantifications.find((q) =>
     q.quantifier.equals(req.body.currentUser._id)
->>>>>>> main
   );
 
   if (!quantification)
