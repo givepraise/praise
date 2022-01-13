@@ -7,8 +7,9 @@ import helmet from 'helmet';
 import mongoose, { ConnectOptions } from 'mongoose';
 import morgan from 'morgan';
 import BaseRouter from './routes';
-import seedData from './seed';
+import seedData from './pre-start/seed';
 import ErrorHandler from '@shared/ErrorHandler';
+import seedSettings from './pre-start/settings';
 
 /************************************************************************************
  *                              Set basic express settings
@@ -43,11 +44,12 @@ mongoose
       app.use(helmet());
     }
 
+    seedSettings();
+    seedData();
+
     // Add APIs
     app.use('/api', BaseRouter);
     app.use(ErrorHandler);
-
-    seedData();
 
     app.listen(5000, () => {
       console.log('Server has started!');

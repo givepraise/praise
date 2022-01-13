@@ -94,9 +94,10 @@ const endDateValidators = [
     msg: 'Date change only allowed on open periods.',
   },
 ];
+
 const periodSchema = new mongoose.Schema<PeriodInterface>(
   {
-    name: { type: String, required: true, minlength: 5, maxlength: 64 },
+    name: { type: String, required: true, minlength: 3, maxlength: 64 },
     status: {
       type: String,
       enum: ['OPEN', 'QUANTIFY', 'CLOSED'],

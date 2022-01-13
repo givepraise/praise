@@ -46,3 +46,7 @@ export interface AddRoleInput {
 export interface RemoveRoleInput {
   role: UserRole;
 }
+
+export interface SettingsSetInput {
+  value: string;
+}

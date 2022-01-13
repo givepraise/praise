@@ -9,6 +9,7 @@ import periodRouter from './periods';
 import praiseRouter from './praise';
 import userRouter from './users';
 import userAccountRouter from './useraccounts';
+import settingsRouter from './admin/settings';
 import { NOT_FOUND } from '@shared/constants';
 
 // Export the base-router
@@ -35,6 +36,12 @@ baseRouter.use(
   '/admin/praise',
   authMiddleware(UserRole.ADMIN),
   adminPraiseRouter
+);
+
+baseRouter.use(
+  '/admin/settings',
+  authMiddleware(UserRole.USER),
+  settingsRouter
 );
 
 baseRouter.all('*', (req, res, next) => {
