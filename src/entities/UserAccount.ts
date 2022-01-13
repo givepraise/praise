@@ -18,6 +18,7 @@ export const userAccountSchema = new mongoose.Schema(
       enum: ['DISCORD', 'TELEGRAM'],
       default: 'DISCORD',
     },
+    activateToken: { type: String, select: false },
   },
   {
     collection: 'accounts',
