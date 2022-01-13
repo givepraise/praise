@@ -176,3 +176,23 @@ export interface PaginatedResponseData {
   page?: number;
   pagingCounter?: number;
 }
+
+export const ActivateQuery = selectorFamily({
+  key: "ActivateQuery",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const { ethereumAddress, accountName, message, signature } = params;
+      if (!ethereumAddress || !accountName || !message || !signature)
+        return undefined;
+
+      const data = {
+        ethereumAddress,
+        accountName,
+        message,
+        signature,
+      };
+
+      return get(ApiPostQuery({ endPoint: "/api/activate", data }));
+    },
+});

@@ -6,6 +6,7 @@ import {
 } from "@/model/auth";
 import { EthState } from "@/model/eth";
 import * as localStorage from "@/model/localStorage";
+import ActivatePage from "@/pages/Activate/ActivatePage";
 import ErrorPage from "@/pages/ErrorPage";
 import LoginPage from "@/pages/Login/LoginPage";
 import NotFoundPage from "@/pages/NotFoundPage";
@@ -168,6 +169,9 @@ const SubPages = () => {
 const Routes = () => {
   return (
     <Switch>
+      <Route exact path="/activate">
+        <ActivatePage />
+      </Route>
       <Route exact path="/login">
         <LoginPage />
       </Route>
