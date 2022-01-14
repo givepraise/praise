@@ -1,7 +1,7 @@
+import controller from '@controllers/praise';
 import { UserRole } from '@entities/User';
 import { authMiddleware } from '@middleware/auth';
 import { Router } from 'express';
-import controller from '@controllers/praise';
 
 // Praise-routes
 const praiseRouter = Router();
@@ -14,4 +14,4 @@ praiseRouter.patch(
   controller.quantify
 );
 
-export = praiseRouter;
+export default praiseRouter;

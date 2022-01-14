@@ -2,10 +2,10 @@
   "name": "praise_backend_js",
   "version": "0.0.0",
   "scripts": {
-    "build": "./node_modules/.bin/ts-node build.ts",
+    "build": "tsc",
     "lint": "eslint . --ext .ts",
-    "start": "node -r module-alias/register ./dist --env=production",
-    "start:dev": "PORT=8088 nodemon",
+    "start": "ts-node -r tsconfig-paths/register --transpile-only ./src",
+    "start:dev": "nodemon ./src",
     "test": "nodemon --config ./spec/nodemon.json",
     "test:no-reloading": "./node_modules/.bin/ts-node --files -r tsconfig-paths/register ./spec",
     "mongodb:start": "docker-compose up -d",
@@ -18,15 +18,7 @@
       "src"
     ],
     "ext": "ts, html",
-    "ignore": [
-      "src/public"
-    ],
     "exec": "./node_modules/.bin/ts-node --files -r tsconfig-paths/register ./src"
-  },
-  "_moduleAliases": {
-    "@entities": "dist/entities",
-    "@shared": "dist/shared",
-    "@server": "dist/Server"
   },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
@@ -58,10 +50,6 @@
       "@typescript-eslint/no-unsafe-assignment": 0
     }
   },
-  "eslintIgnore": [
-    "src/public/",
-    "build.ts"
-  ],
   "dependencies": {
     "@discordjs/builders": "^0.11.0",
     "@discordjs/rest": "^0.2.0-canary.0",

@@ -4,4 +4,4 @@ import { Router } from 'express';
 const activateRouter = Router();
 activateRouter.post('/', activate);
 
-export = activateRouter;
+export default activateRouter;
