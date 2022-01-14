@@ -18,6 +18,9 @@ const ErrorPage = ({ error }: NotFoundProps) => {
         <FontAwesomeIcon icon={faPrayingHands} size="2x" />
         <br />
         <h2 className="mt-3">{error.message}</h2>
+        {error.response?.data?.message ? (
+          <div className="mt-3">{error.response.data.message}</div>
+        ) : null}
         <button className="mt-5 praise-button" onClick={logout}>
           Login
         </button>

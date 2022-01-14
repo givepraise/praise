@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import toast from "react-hot-toast";
-import { selectorFamily, useRecoilValue } from "recoil";
+import { atom, selectorFamily, useRecoilValue } from "recoil";
 import { SessionToken } from "./auth";
 import { EthState, EthStateInterface } from "./eth";
 
@@ -176,3 +176,28 @@ export interface PaginatedResponseData {
   page?: number;
   pagingCounter?: number;
 }
+
+export const AccountActivated = atom<boolean>({
+  key: "AccountActivated",
+  default: false,
+});
+
+export const AccountActivateQuery = selectorFamily({
+  key: "AccountActivateQuery",
+  get:
+    (params: any) =>
+    async ({ get }) => {
+      const { ethereumAddress, accountName, message, signature } = params;
+      if (!ethereumAddress || !accountName || !message || !signature)
+        return undefined;
+
+      const data = {
+        ethereumAddress,
+        accountName,
+        message,
+        signature,
+      };
+
+      return get(ApiPostQuery({ endPoint: "/api/activate", data }));
+    },
+});

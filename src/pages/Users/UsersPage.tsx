@@ -5,7 +5,7 @@ import { faPlus, faUserFriends } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
 import React from "react";
-import PoolTable from "./components/Table";
+import UsersTable from "./components/UsersTable";
 
 const AddRoleButton = () => {
   let [isOpen, setIsOpen] = React.useState(false);
@@ -45,7 +45,7 @@ const AddRoleButton = () => {
   );
 };
 
-const PoolPage = () => {
+const UsersPage = () => {
   return (
     <>
       <BreadCrumb name="Quantifier pool" icon={faUserFriends} />
@@ -56,10 +56,10 @@ const PoolPage = () => {
             <AddRoleButton />
           </React.Suspense>
         </div>
-        <PoolTable />
+        <UsersTable />
       </div>
     </>
   );
 };
 
-export default PoolPage;
+export default UsersPage;
