@@ -5,7 +5,7 @@ import {
   UserRole,
 } from "@/model/users";
 import { shortenEthAddress } from "@/utils/index";
-import { getUsername } from "@/utils/users";
+import { getProfileImageUrl, getUsername } from "@/utils/users";
 import { faTimesCircle, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
@@ -14,7 +14,7 @@ import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
 import PoolDeleteDialog from "./DeleteDialog";
 
-const PoolTable = () => {
+const UsersTable = () => {
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
   const { removeRole } = useAdminUsers();
 
@@ -32,7 +32,15 @@ const PoolTable = () => {
           return (
             <div className="flex items-center w-full">
               <div className="flex items-center">
-                <FontAwesomeIcon icon={faUserCircle} size="2x" />
+                {data.row.original.accounts?.length > 0 ? (
+                  <img
+                    alt="avatar"
+                    className="w-8 rounded-full"
+                    src={getProfileImageUrl(data.row.original, 64)}
+                  />
+                ) : (
+                  <FontAwesomeIcon icon={faUserCircle} size="2x" />
+                )}
               </div>
               <div className="flex-grow p-3 whitespace-nowrap">
                 {data.row.original.accounts?.length > 0 ? (
@@ -119,4 +127,4 @@ const PoolTable = () => {
   );
 };
 
-export default PoolTable;
+export default UsersTable;
