@@ -2,6 +2,7 @@ import UserModel from '@entities/User';
 import UserAccountModel from '@entities/UserAccount';
 import {
   BadRequestError,
+  InternalServerError,
   NotFoundError,
   UnauthorizedError,
 } from '@shared/errors';
@@ -33,15 +34,22 @@ interface ActivateRequest extends Request {
 export async function activate(
   req: ActivateRequest,
   res: Response
-): Promise<any> {
+): Promise<Response> {
   const { ethereumAddress, signature, accountName } = req.body;
 
   // Find previously generated token
-  const userAccount = (await UserAccountModel.findOne({ username: accountName })
+  const userAccount = await UserAccountModel.findOne({ username: accountName })
     .select('activateToken')
-    .exec()) as any;
+    .exec();
 
   if (!userAccount) throw new NotFoundError('UserAccount');
+  if (!userAccount.activateToken)
+    throw new InternalServerError('Activation token not found.');
+
+  // You are only allowed to activate once
+  const alreadyActivated = await UserModel.findOne({ accounts: userAccount });
+  if (alreadyActivated)
+    throw new BadRequestError('User account already activated.');
 
   // Generate expected message, token included.
   const generatedMsg = generateLoginMessage(
@@ -63,12 +71,6 @@ export async function activate(
     { upsert: true, new: true }
   ).populate('accounts');
   if (!user) throw new NotFoundError('User');
-
-  // You are only allowed to activate once
-  for (let account of user.accounts) {
-    if (account.username === accountName)
-      throw new BadRequestError('User account already activated.');
-  }
 
   // Link user account with user
   user.accounts.push(userAccount);
