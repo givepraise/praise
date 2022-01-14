@@ -2,5 +2,6 @@ node_modules
 
 .DS_Store
 
-development.env
-production.env
+dist
+
+.env

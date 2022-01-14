@@ -13,4 +13,4 @@ settingsRouter.patch(
   settingsController.set
 );
 
-export = settingsRouter;
+export default settingsRouter;

@@ -5,4 +5,4 @@ const authRouter = Router();
 authRouter.get('/nonce', controller.nonce);
 authRouter.post('/', controller.auth);
 
-export = authRouter;
+export default authRouter;

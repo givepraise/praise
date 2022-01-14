@@ -1,6 +1,10 @@
-import { NOTFOUND } from 'dns';
+import * as dotenv from 'dotenv';
+import 'express-async-errors';
 import { StatusCodes } from 'http-status-codes';
+import path from 'path';
 import { ErrorCodesInterface } from './types';
+
+dotenv.config({ path: path.join(__dirname, '..', '..', '/.env') });
 
 // Strings
 export const paramMissingError =

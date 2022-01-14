@@ -1,15 +1,19 @@
 import { cookieProps } from '@shared/constants';
+import ErrorHandler from '@shared/ErrorHandler';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import * as dotenv from 'dotenv';
 import express from 'express';
 import 'express-async-errors';
 import helmet from 'helmet';
 import mongoose, { ConnectOptions } from 'mongoose';
 import morgan from 'morgan';
-import BaseRouter from './routes';
+import path from 'path';
 import seedData from './pre-start/seed';
-import ErrorHandler from '@shared/ErrorHandler';
 import seedSettings from './pre-start/settings';
+import BaseRouter from './routes';
+
+dotenv.config({ path: path.join(__dirname, '..', '/.env') });
 
 /************************************************************************************
  *                              Set basic express settings
@@ -50,10 +54,6 @@ mongoose
     // Add APIs
     app.use('/api', BaseRouter);
     app.use(ErrorHandler);
-
-    app.listen(5000, () => {
-      console.log('Server has started!');
-    });
   });
 
 /************************************************************************************
