@@ -1,4 +1,5 @@
 import { injected } from "@/eth/connectors";
+import { AccountActivated } from "@/model/api";
 import { EthState } from "@/model/eth";
 import { ReactComponent as MetamaskIcon } from "@/svg/metamask.svg";
 import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
@@ -16,7 +17,26 @@ const hasMetaMask = () => {
   return typeof (window as any).ethereum !== "undefined";
 };
 
-export default function ActivatePage() {
+const ActivateSuccessful = () => {
+  const { search } = useLocation();
+  const { platform } = queryString.parse(search);
+
+  return (
+    <div className="flex h-screen">
+      <div className="m-auto text-center">
+        <FontAwesomeIcon icon={faPrayingHands} size="2x" />
+        <br />
+        <h2 className="mt-3">
+          Your {platform === "DISCORD" ? "Discord" : "Telegram"} account has
+          been activated!
+        </h2>
+        <div className="mt-3">You can now close this window or tab.</div>
+      </div>
+    </div>
+  );
+};
+
+const ActivateDialog = () => {
   const { search } = useLocation();
   const { account: accountName, platform } = queryString.parse(search);
   const {
@@ -116,4 +136,10 @@ export default function ActivatePage() {
       </div>
     </div>
   );
+};
+
+export default function ActivatePage() {
+  const accountActivated = useRecoilValue(AccountActivated);
+
+  return accountActivated ? <ActivateSuccessful /> : <ActivateDialog />;
 }

@@ -1,8 +1,14 @@
-import { ActivateQuery, isApiResponseOk, useAuthApiQuery } from "@/model/api";
+import {
+  AccountActivated,
+  AccountActivateQuery,
+  isApiResponseOk,
+  useAuthApiQuery,
+} from "@/model/api";
 import { useWeb3React } from "@web3-react/core";
 import queryString from "query-string";
 import React from "react";
 import { useLocation } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 
 const generateLoginMessage = (
   accountName: string,
@@ -24,10 +30,11 @@ export default function ActivateButton() {
     const [signature, setSignature] = React.useState<string | any>(undefined);
     const { search } = useLocation();
     const { account: accountName, token } = queryString.parse(search);
+    const setAccountActivated = useSetRecoilState(AccountActivated);
 
     // 3. Verify signature with server
     const activateResponse = useAuthApiQuery(
-      ActivateQuery({ ethereumAddress, accountName, message, signature })
+      AccountActivateQuery({ ethereumAddress, accountName, message, signature })
     );
 
     // 1. Generate login message to sign
@@ -42,20 +49,16 @@ export default function ActivateButton() {
       );
     }, [ethereumAddress, accountName, token]);
 
+    // 4. Account activated
+    React.useEffect(() => {
+      if (isApiResponseOk(activateResponse)) setAccountActivated(true);
+    }, [activateResponse, setAccountActivated]);
+
     const signLoginMessage = async () => {
       // 2. Sign the message using Metamask
       const _signature: any = await ethLibrary.getSigner().signMessage(message);
       if (_signature) setSignature(_signature);
     };
-
-    if (isApiResponseOk(activateResponse))
-      return (
-        <div>
-          <button className="px-4 py-2 font-bold text-gray-500 uppercase bg-gray-700 rounded cursor-default">
-            Activated!!
-          </button>
-        </div>
-      );
 
     return (
       <div>

@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import toast from "react-hot-toast";
-import { selectorFamily, useRecoilValue } from "recoil";
+import { atom, selectorFamily, useRecoilValue } from "recoil";
 import { SessionToken } from "./auth";
 import { EthState, EthStateInterface } from "./eth";
 
@@ -177,8 +177,13 @@ export interface PaginatedResponseData {
   pagingCounter?: number;
 }
 
-export const ActivateQuery = selectorFamily({
-  key: "ActivateQuery",
+export const AccountActivated = atom<boolean>({
+  key: "AccountActivated",
+  default: false,
+});
+
+export const AccountActivateQuery = selectorFamily({
+  key: "AccountActivateQuery",
   get:
     (params: any) =>
     async ({ get }) => {
