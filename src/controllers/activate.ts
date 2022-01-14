@@ -56,10 +56,12 @@ export async function activate(
   if (signerAddress !== ethereumAddress)
     throw new UnauthorizedError('Verification failed.');
 
-  // Find user to link account to
-  const user = await UserModel.findOne({ ethereumAddress }).populate(
-    'accounts'
-  );
+  // Find existing user or create new
+  const user = await UserModel.findOneAndUpdate(
+    { ethereumAddress },
+    { ethereumAddress },
+    { upsert: true, new: true }
+  ).populate('accounts');
   if (!user) throw new NotFoundError('User');
 
   // You are only allowed to activate once
