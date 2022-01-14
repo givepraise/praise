@@ -31,7 +31,7 @@ module.exports = {
     }
 
     await interaction.reply(
-      `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${process.env.FRONTEND_URI}/activate?account=${user.username}%23${user.discriminator}&platform=DISCORD&token=${ua.activateToken})`
+      `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${process.env.FRONTEND_URL}/activate?account=${user.username}%23${user.discriminator}&platform=DISCORD&token=${ua.activateToken})`
     );
   },
 };
