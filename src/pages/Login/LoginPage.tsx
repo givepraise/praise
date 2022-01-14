@@ -1,6 +1,8 @@
 import { injected } from "@/eth/connectors";
 import { EthState } from "@/model/eth";
 import { ReactComponent as MetamaskIcon } from "@/svg/metamask.svg";
+import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import React from "react";
@@ -46,7 +48,9 @@ export default function LoginPage() {
   return (
     <div className="w-full">
       <div className="flex flex-col w-full h-screen">
-        <div className="w-full p-5 text-2xl font-bold">Praise 🙏</div>
+        <div className="w-full p-5 text-2xl font-bold">
+          <FontAwesomeIcon icon={faPrayingHands} size="1x" className="m-2" />
+        </div>
         <div className="flex flex-col items-center p-4 py-8 m-auto border border-solid rounded-lg shadow-sm bg-gray-50 w-96">
           <div className="mb-3 text-xl font-semibold">Login</div>
           <div className="mb-3 text-center">
