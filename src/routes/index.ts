@@ -1,20 +1,23 @@
 import { UserRole } from '@entities/User';
 import { authMiddleware } from '@middleware/auth';
+import { NOT_FOUND } from '@shared/constants';
 import { Router } from 'express';
+import activateRouter from './activate';
 import adminPeriodRouter from './admin/periods';
+import settingsRouter from './admin/settings';
 import adminUserRouter from './admin/users';
 import authRouter from './auth';
 import periodRouter from './periods';
 import praiseRouter from './praise';
-import userRouter from './users';
 import userAccountRouter from './useraccounts';
-import settingsRouter from './admin/settings';
-import { NOT_FOUND } from '@shared/constants';
+import userRouter from './users';
 
 // Export the base-router
 const baseRouter = Router();
 
 baseRouter.use('/auth', authRouter);
+
+baseRouter.use('/activate', activateRouter);
 
 baseRouter.use('/users', authMiddleware(UserRole.USER), userRouter);
 baseRouter.use('/periods', authMiddleware(UserRole.USER), periodRouter);

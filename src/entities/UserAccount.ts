@@ -6,6 +6,7 @@ export interface UserAccountInterface extends mongoose.Document {
   username: string;
   profileImageUrl: string;
   platform: string; // DISCORD | TELEGRAM
+  activateToken?: string;
 }
 
 export const userAccountSchema = new mongoose.Schema(
@@ -18,6 +19,7 @@ export const userAccountSchema = new mongoose.Schema(
       enum: ['DISCORD', 'TELEGRAM'],
       default: 'DISCORD',
     },
+    activateToken: { type: String, select: false },
   },
   {
     collection: 'accounts',
