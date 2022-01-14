@@ -6,6 +6,7 @@ export interface UserAccountInterface extends mongoose.Document {
   username: string;
   profileImageUrl: string;
   platform: string; // DISCORD | TELEGRAM
+  activateToken?: string;
 }
 
 export const userAccountSchema = new mongoose.Schema(
