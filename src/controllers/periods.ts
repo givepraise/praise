@@ -1,16 +1,16 @@
 import PeriodModel, { PeriodInterface } from '@entities/Period';
 import PraiseModel from '@entities/Praise';
 import UserModel, { UserRole } from '@entities/User';
-import { BadRequestError, NotFoundError } from '@shared/errors';
+import {
+  BadRequestError,
+  InternalServerError,
+  NotFoundError,
+} from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
 import { PeriodCreateUpdateInput, QueryInput } from '@shared/inputs';
+import { settingFloat, settingInt } from '@shared/settings';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-
-const QUANTIFIERS_PER_PRAISE_RECEIVER = 3;
-const PRAISE_PER_QUANTIFIER = 50;
-const TOLERANCE = 1.2;
-const MAX_PRAISE_PER_QUANTIFIER = PRAISE_PER_QUANTIFIER * TOLERANCE;
 
 export const all = async (
   req: Request<any, QueryInput, any>,
@@ -133,6 +133,19 @@ const assignQuantifiersDryRun = async (periodId: string) => {
   // Scramble the quant pool to randomize who gets assigned
   const pool = poolIds.sort(() => 0.5 - Math.random()).slice(0, poolIds.length);
 
+  const quantifiersPerPraiseReceiver = await settingInt(
+    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER'
+  );
+  const tolerance = await settingFloat(
+    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER_TOLERANCE'
+  );
+  const praisePerQuantifier = await settingInt('PRAISE_PER_QUANTIFIER');
+
+  if (!quantifiersPerPraiseReceiver || !tolerance || !praisePerQuantifier)
+    throw new InternalServerError('Configuration error');
+
+  const maxPraisePerQuantifier = praisePerQuantifier * tolerance;
+
   for (let qi = 0; qi < pool.length; qi++) {
     const q = pool[qi];
 
@@ -153,15 +166,15 @@ const assignQuantifiersDryRun = async (periodId: string) => {
         continue;
 
       // Receiver already assigned to enough quantifiers
-      if (r.assignedQuantifiers === QUANTIFIERS_PER_PRAISE_RECEIVER) {
+
+      if (r.assignedQuantifiers === quantifiersPerPraiseReceiver) {
         continue;
       }
 
       // Assign praise that meet criteria
       if (
-        (q.receivers.length === 0 &&
-          r.praiseCount > MAX_PRAISE_PER_QUANTIFIER) ||
-        assignedPraiseCount(q) + r.praiseCount < MAX_PRAISE_PER_QUANTIFIER
+        (q.receivers.length === 0 && r.praiseCount > maxPraisePerQuantifier) ||
+        assignedPraiseCount(q) + r.praiseCount < maxPraisePerQuantifier
       ) {
         q.receivers.push(r);
         r.assignedQuantifiers = r.assignedQuantifiers
@@ -172,10 +185,10 @@ const assignQuantifiersDryRun = async (periodId: string) => {
     }
 
     const assignsRemaining = () => {
-      for (let r of receivers) {
+      for (const r of receivers) {
         if (
           !r.assignedQuantifiers ||
-          r.assignedQuantifiers < QUANTIFIERS_PER_PRAISE_RECEIVER
+          r.assignedQuantifiers < quantifiersPerPraiseReceiver
         )
           return true;
       }
@@ -237,7 +250,7 @@ export const assignQuantifiers = async (
       .json({ error: 'Quantifier pool size too small.' });
 
   // Quantifiers
-  for (let q of assignedQuantifiers) {
+  for (const q of assignedQuantifiers) {
     const quantifier = await UserModel.findById(q._id);
     // Receivers
     for (const receiver of q.receivers) {
