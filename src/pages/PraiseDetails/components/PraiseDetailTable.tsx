@@ -1,7 +1,7 @@
 import { UserCell } from "@/components/table/UserCell";
 import { HasRole, ROLE_ADMIN } from "@/model/auth";
 import { SinglePeriodByDate } from "@/model/periods";
-import { SinglePraise } from "@/model/praise";
+import { SinglePraiseExt } from "@/model/praise";
 import { formatDate } from "@/utils/date";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,7 +13,7 @@ import { useRecoilValue } from "recoil";
 const PraiseDetailTable = () => {
   let { praiseId } = useParams() as any;
 
-  const praise = useRecoilValue(SinglePraise(praiseId));
+  const praise = useRecoilValue(SinglePraiseExt(praiseId));
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
 
@@ -32,6 +32,10 @@ const PraiseDetailTable = () => {
       {
         Header: "Score",
         accessor: "score",
+        Cell: (data: any) =>
+          data.row.original.duplicatePraise
+            ? data.row.original.duplicateScore
+            : data.row.original.score,
       },
       {
         Header: "Dismissed",

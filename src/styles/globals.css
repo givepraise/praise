@@ -24,4 +24,12 @@
   a {
     @apply underline;
   }
+
+  .praise-button {
+    @apply px-4 py-2 font-bold text-white bg-black rounded hover:bg-gray-700;
+  }
+
+  .praise-button-disabled {
+    @apply px-4 py-2 font-bold text-gray-500 bg-gray-700 rounded cursor-default;
+  }
 }
