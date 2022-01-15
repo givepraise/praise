@@ -2,6 +2,7 @@ import React from "react";
 import {
   atom,
   atomFamily,
+  GetRecoilValue,
   selectorFamily,
   useRecoilCallback,
   useRecoilState,
@@ -15,13 +16,15 @@ import {
   PaginatedResponseData,
   useAuthApiQuery,
 } from "./api";
+import { SingleFloatSetting } from "./settings";
 import { UserAccount } from "./users";
 
 export interface Quantification {
   createdAt?: string;
   updatedAt?: string;
   quantifier: string;
-  score?: number;
+  score: number;
+  duplicateScore?: number;
   dismissed?: boolean;
   duplicatePraise?: string;
 }
@@ -36,6 +39,7 @@ export interface Praise {
   giver: UserAccount;
   receiver: UserAccount;
   source: string;
+  avgScore?: number;
 }
 
 // A local only copy of all praises. Used to facilitate CRUD
@@ -50,15 +54,58 @@ export const SinglePraise = atomFamily<Praise | undefined, string>({
   default: undefined,
 });
 
-export const avgPraiseScore = (praise: Praise | undefined) => {
+export const avgPraiseScore = (
+  praise: Praise | undefined,
+  get: GetRecoilValue
+) => {
   if (!praise || !praise.quantifications || praise.quantifications.length === 0)
     return 0;
   let score = 0;
   let i = 0;
   for (i; i < praise.quantifications.length; i++) {
-    score += praise.quantifications[i].score!;
+    const quantification = praise.quantifications[i];
+    if (quantification.duplicatePraise && quantification.duplicateScore) {
+      score += quantification.duplicateScore;
+    }
+    score += quantification.score!;
   }
   return Math.round(score / i);
+};
+
+const quantWithDuplicateScore = (
+  quantification: Quantification,
+  get: GetRecoilValue
+): Quantification => {
+  let quantificationExt = {
+    ...quantification,
+    duplicateScore: 0,
+  };
+  if (quantification.duplicatePraise) {
+    const duplicatePraisePercentage = get(
+      SingleFloatSetting("PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE")
+    );
+    if (duplicatePraisePercentage) {
+      let duplicatePraise = get(SinglePraise(quantification.duplicatePraise));
+      if (!duplicatePraise) {
+        const duplicatePraiseResponse = get(
+          SinglePraiseQuery(quantification.duplicatePraise)
+        );
+        if (isApiResponseOk(duplicatePraiseResponse)) {
+          duplicatePraise = duplicatePraiseResponse.data;
+        }
+      }
+      if (duplicatePraise && duplicatePraise.quantifications) {
+        const duplicateQuantification = duplicatePraise.quantifications.find(
+          (q) => q.quantifier === quantification.quantifier
+        );
+        if (duplicateQuantification) {
+          quantificationExt.duplicateScore =
+            duplicateQuantification.score * duplicatePraisePercentage;
+        }
+      }
+    }
+  }
+  return quantificationExt;
 };
 
 export const SinglePraiseExt = selectorFamily({
@@ -68,10 +115,15 @@ export const SinglePraiseExt = selectorFamily({
     async ({ get }) => {
       const praise = get(SinglePraise(praiseId));
       if (!praise) return undefined;
-      const praiseExt = {
+      let praiseExt = {
         ...praise,
-        avgScore: avgPraiseScore(praise),
       };
+      if (praise.quantifications) {
+        praiseExt.quantifications = praise.quantifications.map((q) =>
+          quantWithDuplicateScore(q, get)
+        );
+      }
+      praiseExt.avgScore = avgPraiseScore(praiseExt, get);
       return praiseExt;
     },
 });

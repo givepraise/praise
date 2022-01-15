@@ -10,6 +10,7 @@ import ActivatePage from "@/pages/Activate/ActivatePage";
 import ErrorPage from "@/pages/ErrorPage";
 import LoginPage from "@/pages/Login/LoginPage";
 import NotFoundPage from "@/pages/NotFoundPage";
+import SettingsPage from "@/pages/Settings/SettingsPage";
 import StartPage from "@/pages/Start/StartPage";
 import React, { FC } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
@@ -153,6 +154,10 @@ const SubPages = () => {
       </AuthRoute>
       <AuthRoute roles={[ROLE_QUANTIFIER]} path={`/quantify/period/:periodId`}>
         <QuantifyPeriodPage />
+      </AuthRoute>
+
+      <AuthRoute roles={[ROLE_ADMIN]} path={`/settings`}>
+        <SettingsPage />
       </AuthRoute>
 
       <Route exact path="/">

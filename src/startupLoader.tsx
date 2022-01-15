@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useRecoilValue } from "recoil";
 import { HasRole } from "./model/auth";
+import { useAllSettingsQuery } from "./model/settings";
 
 interface QuantifyPeriodLoaderProps {
   periodId: string;
@@ -22,6 +23,7 @@ const QuantifyPeriodLoader = ({ periodId }: QuantifyPeriodLoaderProps) => {
 export const StartupLoader = () => {
   useAllPeriodsQuery();
   useAllUsersQuery();
+  useAllSettingsQuery();
 
   const periods = useRecoilValue(AllPeriods);
   const isQuantifier = useRecoilValue(HasRole("QUANTIFIER"));
