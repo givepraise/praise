@@ -13,30 +13,25 @@ export const single = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const settings = await SettingsModel.findOne({
-    key: req.params.key.toUpperCase(),
-  });
+  const setting = await SettingsModel.findById(req.params.key);
+  if (!setting) throw new NotFoundError('Settings');
 
-  if (!settings) throw new NotFoundError('Settings');
-
-  return res.status(200).json(settings);
+  return res.status(200).json(setting);
 };
 
 export const set = async (
   req: Request<any, SettingsSetInput, any>,
   res: Response
 ): Promise<Response> => {
-  const settings = await SettingsModel.findOne({
-    key: req.params.key.toUpperCase(),
-  });
+  const setting = await SettingsModel.findById(req.params.key);
+  if (!setting) throw new NotFoundError('Settings');
 
-  if (!settings) throw new NotFoundError('Settings');
   if (!req.body.value) throw new BadRequestError('Value is required field');
 
-  settings.value = req.body.value;
-  settings.save();
+  setting.value = req.body.value;
+  setting.save();
 
-  return res.status(200).json(settings);
+  return res.status(200).json(setting);
 };
 
 export default { all, single, set };
