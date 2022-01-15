@@ -1,6 +1,7 @@
 import logger from '@shared/Logger';
 import { Client, Collection, Intents } from 'discord.js';
-import fs from 'fs';
+
+import { registerCommands } from "./utils/registerCommands";
 
 declare module 'discord.js' {
   export interface Client {
@@ -8,19 +9,28 @@ declare module 'discord.js' {
   }
 }
 
+if (!process.env.PRAISE_GIVER_ROLE_ID) {
+  console.error('Praise Giver Role not set.');
+}
+
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
 // Set bot commands
-client.commands = new Collection();
-const commandFiles = fs
-  .readdirSync('./src/bots/discord/commands')
-  .filter((file) => file.endsWith('.ts'));
-for (const file of commandFiles) {
-  const command = require(`./commands/${file}`);
-  logger.info(`Setting command: ${command.data.name}`);
-  client.commands.set(command.data.name, command);
-}
+(async() => {
+  const registerSuccess = await registerCommands(
+    client,
+    process.env.DISCORD_CLIENT_ID || "",
+    process.env.DISCORD_GUILD_ID || "",
+  );
+
+  if (registerSuccess) {
+    logger.info("All bot commands registered in Guild.");
+  }
+  else {
+    logger.err("Failed to register bot commands");
+  }
+})();
 
 client.once('ready', () => {
   logger.info(`Discord client is ready!`);
