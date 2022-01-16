@@ -6,6 +6,7 @@ import activateRouter from './activate';
 import adminPeriodRouter from './admin/periods';
 import settingsRouter from './admin/settings';
 import adminUserRouter from './admin/users';
+import adminPraiseRouter from './admin/praise';
 import authRouter from './auth';
 import periodRouter from './periods';
 import praiseRouter from './praise';
@@ -33,6 +34,11 @@ baseRouter.use(
   '/admin/periods',
   authMiddleware(UserRole.ADMIN),
   adminPeriodRouter
+);
+baseRouter.use(
+  '/admin/praise',
+  authMiddleware(UserRole.ADMIN),
+  adminPraiseRouter
 );
 
 baseRouter.use(
