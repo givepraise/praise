@@ -27,4 +27,4 @@ userRouter.patch(
   controller.removeRole
 );
 
-export = userRouter;
+export default userRouter;

@@ -14,4 +14,4 @@ periodRouter.patch(
   '/:periodId/assignQuantifiers',
   periodController.assignQuantifiers
 );
-export = periodRouter;
+export default periodRouter;
