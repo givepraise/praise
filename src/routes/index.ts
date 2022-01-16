@@ -37,11 +37,11 @@ baseRouter.use(
 
 baseRouter.use(
   '/admin/settings',
-  authMiddleware(UserRole.USER),
+  authMiddleware(UserRole.ADMIN),
   settingsRouter
 );
 
-baseRouter.all('*', (req, res, next) => {
+baseRouter.all('*', (req, res) => {
   res.status(404).json({
     status: NOT_FOUND,
     message: `Can't find ${req.originalUrl} on this server!`,

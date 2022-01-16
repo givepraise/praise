@@ -6,7 +6,7 @@ const data = [
   { key: 'DESCRIPTION', value: process.env.DESCRIPTION },
   {
     key: 'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
-    value: process.env.PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER || 50,
+    value: process.env.PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER || 3,
   },
   {
     key: 'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER_TOLERANCE',
@@ -14,7 +14,7 @@ const data = [
   },
   {
     key: 'PRAISE_PER_QUANTIFIER',
-    value: process.env.PRAISE_PER_QUANTIFIER || 3,
+    value: process.env.PRAISE_PER_QUANTIFIER || 50,
   },
   {
     key: 'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS',
