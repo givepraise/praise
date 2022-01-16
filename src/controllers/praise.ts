@@ -1,13 +1,11 @@
 import PraiseModel from '@entities/Praise';
-import QuantificationModel from '@entities/Quantification';
-import UserAccountModel from '@entities/UserAccount';
-import { BadRequestError, NotFoundError } from '@shared/errors';
-import { getQuerySort } from '@shared/functions';
 import {
-  PraiseImportInput,
-  QuantificationCreateUpdateInput,
-  QueryInput,
-} from '@shared/inputs';
+  BadRequestError,
+  InternalServerError,
+  NotFoundError,
+} from '@shared/errors';
+import { getQuerySort } from '@shared/functions';
+import { QuantificationCreateUpdateInput, QueryInput } from '@shared/inputs';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 
@@ -81,40 +79,42 @@ const quantify = async (
 };
 
 const importData = async (req: Request, res: Response): Promise<Response> => {
-  try {
-    const reqData = JSON.parse(req.body.data);
-    const data = await Promise.all(
-      reqData.map(async (o: PraiseImportInput) => {
-        const giver = await UserAccountModel.create({
-          id: o.giver.id,
-          username: o.giver.username,
-          profileImageUrl: o.giver.profileImageUrl,
-          platform: o.giver.platform,
-        });
+  throw new InternalServerError('Not implemented');
 
-        const receiver = await UserAccountModel.create({
-          id: o.recipients[0].id,
-          username: o.recipients[0].username,
-          profileImageUrl: o.recipients[0].profileImageUrl,
-          platform: o.recipients[0].platform,
-        });
+  // try {
+  //   const reqData = JSON.parse(req.body.data);
+  //   const data = await Promise.all(
+  //     reqData.map(async (o: PraiseImportInput) => {
+  //       const giver = await UserAccountModel.create({
+  //         id: o.giver.id,
+  //         username: o.giver.username,
+  //         profileImageUrl: o.giver.profileImageUrl,
+  //         platform: o.giver.platform,
+  //       });
 
-        return {
-          reason: o.praiseReason,
-          sourceId: o.source.id,
-          sourceName: o.source.name,
-          giver,
-          receiver,
-        };
-      })
-    );
+  //       const receiver = await UserAccountModel.create({
+  //         id: o.recipients[0].id,
+  //         username: o.recipients[0].username,
+  //         profileImageUrl: o.recipients[0].profileImageUrl,
+  //         platform: o.recipients[0].platform,
+  //       });
 
-    PraiseModel.insertMany(data);
+  //       return {
+  //         reason: o.praiseReason,
+  //         sourceId: o.source.id,
+  //         sourceName: o.source.name,
+  //         giver,
+  //         receiver,
+  //       };
+  //     })
+  //   );
 
-    return res.status(200).json(data);
-  } catch (e) {
-    throw new BadRequestError(e);
-  }
+  //   PraiseModel.insertMany(data);
+
+  //   return res.status(200).json(data);
+  // } catch (e) {
+  //   throw new BadRequestError(e);
+  // }
 };
 
 export const exportPraise = async (

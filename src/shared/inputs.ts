@@ -20,19 +20,13 @@ export interface QuantificationCreateUpdateInput {
   duplicatePraiseId: string;
 }
 
-interface PraiseSourceInterface {
-  id: string;
-  name: string;
-  channelId: string;
-  channelName: string;
-  platform: string;
-}
-
 export interface PraiseImportInput {
+  createdAt: string;
   giver: UserAccountInterface;
-  recipients: Array<UserAccountInterface>;
-  praiseReason: string;
-  source: PraiseSourceInterface;
+  receiver: UserAccountInterface;
+  reason: string;
+  sourceId: string;
+  sourceName: string;
 }
 
 export interface SearchQueryInput extends QueryInput {
