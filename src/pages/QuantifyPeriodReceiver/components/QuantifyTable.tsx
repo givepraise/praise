@@ -123,6 +123,7 @@ const QuantifyTable = () => {
     <table className="w-full table-auto">
       <tbody>
         {data.map((praise, index) => {
+          if (!praise) return null;
           return (
             <tr key={index} onMouseDown={() => setSelectedPraise(praise)}>
               <td>

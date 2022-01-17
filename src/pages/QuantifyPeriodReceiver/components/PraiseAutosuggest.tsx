@@ -24,9 +24,11 @@ const PraiseAutosuggest = ({ onSelect, onClose }: PraiseAutosuggestProps) => {
 
   const filteredData = data.filter(
     (praise) =>
+      praise &&
       praise.quantifications!.findIndex(
         (quant) => quant.quantifier === userId
-      ) >= 0 && praise.receiver._id! === receiverId
+      ) >= 0 &&
+      praise.receiver._id! === receiverId
   );
 
   const DropdownCombobox = () => {
@@ -44,7 +46,10 @@ const PraiseAutosuggest = ({ onSelect, onClose }: PraiseAutosuggestProps) => {
         if (filteredData) {
           setInputItems(
             filteredData.filter((praise) => {
-              if (praise._id.slice(-4).includes(inputValue!.toLowerCase()))
+              if (
+                praise &&
+                praise._id.slice(-4).includes(inputValue!.toLowerCase())
+              )
                 return true;
               return false;
             })
@@ -92,7 +97,7 @@ const PraiseAutosuggest = ({ onSelect, onClose }: PraiseAutosuggestProps) => {
                 key={`${item}${index}`}
                 {...getItemProps({ item, index })}
               >
-                #{item._id.slice(-4)} - {item.giver.username}
+                #{item && item._id.slice(-4)} - {item && item.giver.username}
               </li>
             ))}
         </ul>

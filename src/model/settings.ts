@@ -29,7 +29,7 @@ const AllSettingsRequestId = atom({
 
 export const AllSettingsQuery = selector({
   key: "AllSettingsQuery",
-  get: async ({ get }) => {
+  get: ({ get }) => {
     get(AllSettingsRequestId);
     return get(
       ApiAuthGetQuery({
@@ -73,7 +73,7 @@ export const SingleSetting = selectorFamily({
   key: "SingleSetting",
   get:
     (key: string) =>
-    async ({ get }) => {
+    ({ get }) => {
       const allSettings = get(AllSettings);
       if (!allSettings) return null;
       return allSettings.find((setting) => setting.key === key);
@@ -84,7 +84,7 @@ export const SingleFloatSetting = selectorFamily({
   key: "SingleFloatSetting",
   get:
     (key: string) =>
-    async ({ get }) => {
+    ({ get }) => {
       const setting = get(SingleSetting(key));
       if (!setting) return null;
       if (setting && setting.value) {
@@ -99,7 +99,7 @@ export const SingleIntSetting = selectorFamily({
   key: "SingleIntSetting",
   get:
     (key: string) =>
-    async ({ get }) => {
+    ({ get }) => {
       const setting = get(SingleSetting(key));
       if (!setting) return null;
       if (setting && setting.value) {
@@ -119,7 +119,7 @@ export const useSetSetting = () => {
           snapshot.getPromise(
             ApiAuthPatchQuery({
               endPoint: `/api/admin/settings/${setting._id}/set`,
-              data: { value: setting.value },
+              data: JSON.stringify({ value: setting.value }),
             })
           )
         );

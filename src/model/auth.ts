@@ -76,7 +76,7 @@ export const NonceQuery = selectorFamily({
   key: "NonceQuery",
   get:
     (params: any) =>
-    async ({ get }) => {
+    ({ get }) => {
       if (!params.ethAccount) return null;
       return get(
         ApiGetQuery({
@@ -90,15 +90,15 @@ export const AuthQuery = selectorFamily({
   key: "AuthQuery",
   get:
     (params: any) =>
-    async ({ get }) => {
+    ({ get }) => {
       if (!params.ethAccount || !params.message || !params.signature)
         return undefined;
 
-      const data = {
+      const data = JSON.stringify({
         ethereumAddress: params.ethAccount,
         message: params.message,
         signature: params.signature,
-      };
+      });
 
       return get(ApiPostQuery({ endPoint: "/api/auth", data }));
     },

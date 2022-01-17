@@ -55,7 +55,7 @@ const UsersRequestId = atom({
 
 export const AllUsersQuery = selector({
   key: "AllUsersQuery",
-  get: async ({ get }) => {
+  get: ({ get }) => {
     get(UsersRequestId);
     return get(
       ApiAuthGetQuery({
@@ -72,7 +72,7 @@ export const AllUsers = atom<User[] | undefined>({
 
 export const AllQuantifierUsers = selector({
   key: "AllQuantifierUsers",
-  get: async ({ get }) => {
+  get: ({ get }) => {
     const users = get(AllUsers);
     if (users) {
       return users.filter((user) => user.roles.includes(UserRole.QUANTIFIER));
@@ -104,7 +104,7 @@ export const SingleUser = selectorFamily({
   key: "SingleUser",
   get:
     (params: any) =>
-    async ({ get }) => {
+    ({ get }) => {
       const { userId } = params;
       const allUsers = get(AllUsers);
       if (!allUsers) return null;
@@ -116,7 +116,7 @@ export const SingleUserByReceiverId = selectorFamily({
   key: "SingleUserByReceiverId",
   get:
     (params: any) =>
-    async ({ get }) => {
+    ({ get }) => {
       const { receiverId } = params;
       const allUsers = get(AllUsers);
       if (!allUsers) return null;
@@ -145,7 +145,7 @@ export const useAdminUsers = () => {
           snapshot.getPromise(
             ApiAuthPatchQuery({
               endPoint: `/api/admin/users/${userId}/addRole`,
-              data: { role },
+              data: JSON.stringify({ role }),
             })
           )
         );
@@ -178,7 +178,7 @@ export const useAdminUsers = () => {
           snapshot.getPromise(
             ApiAuthPatchQuery({
               endPoint: `/api/admin/users/${userId}/removeRole`,
-              data: { role },
+              data: JSON.stringify({ role }),
             })
           )
         );

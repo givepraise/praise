@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios";
 import React from "react";
 import {
   atom,
@@ -91,7 +92,7 @@ const quantWithDuplicateScore = (
           SinglePraiseQuery(quantification.duplicatePraise)
         );
         if (isApiResponseOk(duplicatePraiseResponse)) {
-          duplicatePraise = duplicatePraiseResponse.data;
+          duplicatePraise = (duplicatePraiseResponse as AxiosResponse).data;
         }
       }
       if (duplicatePraise && duplicatePraise.quantifications) {
@@ -112,7 +113,7 @@ export const SinglePraiseExt = selectorFamily({
   key: "SinglePraiseExt",
   get:
     (praiseId: string) =>
-    async ({ get }) => {
+    ({ get }) => {
       const praise = get(SinglePraise(praiseId));
       if (!praise) return undefined;
       let praiseExt = {
@@ -132,7 +133,7 @@ export const AllPraiseList = selectorFamily({
   key: "AllPraiseList",
   get:
     (listKey: string) =>
-    async ({ get }) => {
+    ({ get }) => {
       const praiseIdList = get(AllPraiseIdList(listKey));
       const allPraiseList: Praise[] = [];
       if (!praiseIdList) return undefined;
@@ -156,7 +157,7 @@ export const AllPraiseQuery = selectorFamily({
   key: "AllPraiseQuery",
   get:
     (params: any) =>
-    async ({ get }) => {
+    ({ get }) => {
       get(PraiseRequestId);
       let qs = Object.keys(params)
         .map((key) => `${key}=${params[key]}`)
@@ -198,12 +199,12 @@ export const SinglePraiseQuery = selectorFamily({
   key: "SinglePraiseQuery",
   get:
     (praiseId: string) =>
-    async ({ get }) => {
+    ({ get }) => {
       get(PraiseRequestId);
-      const praise = get(
+      const response = get(
         ApiAuthGetQuery({ endPoint: `/api/praise/${praiseId}` })
       );
-      return praise;
+      return response;
     },
 });
 
@@ -213,7 +214,7 @@ export const useSinglePraiseQuery = (praiseId: string) => {
   const fetchSinglePraise = useRecoilCallback(
     ({ snapshot, set }) =>
       async () => {
-        const response = await ApiQuery(
+        const response = ApiQuery(
           snapshot.getPromise(SinglePraiseQuery(praiseId))
         );
         if (isApiResponseOk(response)) {
@@ -262,7 +263,7 @@ export const useAllPraiseQuery = (
 
   const saveIndividualPraise = useRecoilCallback(
     ({ set }) =>
-      async (praiseList: Praise[]) => {
+      (praiseList: Praise[]) => {
         for (const praise of praiseList) {
           set(SinglePraise(praise._id), praise);
         }
@@ -306,16 +307,16 @@ export const QuantifyPraise = selectorFamily({
   key: "QuantifyPraise",
   get:
     (params: any) =>
-    async ({ get }) => {
+    ({ get }) => {
       const { praiseId, score, dismissed, duplicatePraise } = params;
       const response = get(
         ApiAuthPatchQuery({
           endPoint: `/api/praise/${praiseId}/quantify`,
-          data: {
+          data: JSON.stringify({
             score,
             dismissed,
             duplicatePraise,
-          },
+          }),
         })
       );
       return response;
@@ -332,15 +333,15 @@ export const useQuantifyPraise = () => {
         dismissed: boolean,
         duplicatePraise: string | null
       ) => {
-        const response = await ApiQuery(
+        const response = ApiQuery(
           snapshot.getPromise(
             ApiAuthPatchQuery({
               endPoint: `/api/praise/${praiseId}/quantify`,
-              data: {
+              data: JSON.stringify({
                 score,
                 dismissed,
                 duplicatePraise,
-              },
+              }),
             })
           )
         );
