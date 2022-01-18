@@ -18,21 +18,23 @@ export const QuantifierMessage = () => {
 
   if (!period) return null;
   return quantificationData ? (
-    <div className="mt-2">
+    <div className="w-2/3 praise-box">
       <div>
-        <strong>You are a quantifier for this period!</strong>
-        <br />
-        Assigned number of praise items: {quantificationData.count}
-        <br />
-        Items left to quantify:{" "}
-        {quantificationData.count - quantificationData.done}
-        <button
-          className="block mt-3 praise-button"
-          onClick={() => history.push(`/quantify/period/${period._id}`)}
-        >
-          <FontAwesomeIcon icon={faCalculator} size="1x" className="mr-2" />
-          Quantify
-        </button>
+        <div>
+          <strong>You are a quantifier for this period!</strong>
+          <br />
+          Assigned number of praise items: {quantificationData.count}
+          <br />
+          Items left to quantify:{" "}
+          {quantificationData.count - quantificationData.done}
+          <button
+            className="block mt-5 praise-button"
+            onClick={() => history.push(`/quantify/period/${period._id}`)}
+          >
+            <FontAwesomeIcon icon={faCalculator} size="1x" className="mr-2" />
+            Quantify
+          </button>
+        </div>
       </div>
     </div>
   ) : null;

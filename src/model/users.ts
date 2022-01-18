@@ -1,3 +1,4 @@
+import { pseudonymNouns, psudonymAdjectives } from "@/utils/users";
 import { AxiosError, AxiosResponse } from "axios";
 import React from "react";
 import {
@@ -16,6 +17,7 @@ import {
   PaginatedResponseData,
   useAuthApiQuery,
 } from "./api";
+import { AllPeriods } from "./periods";
 
 export enum UserRole {
   ADMIN = "ADMIN",
@@ -55,7 +57,7 @@ const UsersRequestId = atom({
 
 export const AllUsersQuery = selector({
   key: "AllUsersQuery",
-  get: async ({ get }) => {
+  get: ({ get }) => {
     get(UsersRequestId);
     return get(
       ApiAuthGetQuery({
@@ -72,7 +74,7 @@ export const AllUsers = atom<User[] | undefined>({
 
 export const AllQuantifierUsers = selector({
   key: "AllQuantifierUsers",
-  get: async ({ get }) => {
+  get: ({ get }) => {
     const users = get(AllUsers);
     if (users) {
       return users.filter((user) => user.roles.includes(UserRole.QUANTIFIER));
@@ -104,7 +106,7 @@ export const SingleUser = selectorFamily({
   key: "SingleUser",
   get:
     (params: any) =>
-    async ({ get }) => {
+    ({ get }) => {
       const { userId } = params;
       const allUsers = get(AllUsers);
       if (!allUsers) return null;
@@ -116,7 +118,7 @@ export const SingleUserByReceiverId = selectorFamily({
   key: "SingleUserByReceiverId",
   get:
     (params: any) =>
-    async ({ get }) => {
+    ({ get }) => {
       const { receiverId } = params;
       const allUsers = get(AllUsers);
       if (!allUsers) return null;
@@ -124,6 +126,36 @@ export const SingleUserByReceiverId = selectorFamily({
         if (!user.accounts) return false;
         return user.accounts.find((account) => account._id === receiverId);
       });
+    },
+});
+
+const stringToNumber = (s: string) => {
+  var value = 0;
+  for (var i = s.length - 1; i >= 0; i--) {
+    value = value * 256 + s.charCodeAt(i);
+  }
+  return value;
+};
+
+export const PseudonymForUser = selectorFamily({
+  key: "PseudonymForUser",
+  get:
+    (params: any) =>
+    ({ get }) => {
+      const { periodId, userId } = params;
+      const allPeriods = get(AllPeriods);
+      if (!allPeriods) return "Loading…";
+      const periodIndex = allPeriods.findIndex((p) => p._id === periodId);
+
+      if (userId && periodIndex > -1) {
+        const u = stringToNumber(userId);
+        const p = stringToNumber(periodId);
+        const n = pseudonymNouns[(u + p) % pseudonymNouns.length];
+        const a = psudonymAdjectives[(u + p) % psudonymAdjectives.length];
+        return `${a} ${n}`;
+      }
+
+      return "Unknown user";
     },
 });
 
@@ -145,7 +177,7 @@ export const useAdminUsers = () => {
           snapshot.getPromise(
             ApiAuthPatchQuery({
               endPoint: `/api/admin/users/${userId}/addRole`,
-              data: { role },
+              data: JSON.stringify({ role }),
             })
           )
         );
@@ -178,7 +210,7 @@ export const useAdminUsers = () => {
           snapshot.getPromise(
             ApiAuthPatchQuery({
               endPoint: `/api/admin/users/${userId}/removeRole`,
-              data: { role },
+              data: JSON.stringify({ role }),
             })
           )
         );

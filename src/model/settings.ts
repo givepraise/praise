@@ -1,5 +1,6 @@
 import { AxiosError, AxiosResponse } from "axios";
 import React from "react";
+import toast from "react-hot-toast";
 import {
   atom,
   selector,
@@ -29,7 +30,7 @@ const AllSettingsRequestId = atom({
 
 export const AllSettingsQuery = selector({
   key: "AllSettingsQuery",
-  get: async ({ get }) => {
+  get: ({ get }) => {
     get(AllSettingsRequestId);
     return get(
       ApiAuthGetQuery({
@@ -73,7 +74,7 @@ export const SingleSetting = selectorFamily({
   key: "SingleSetting",
   get:
     (key: string) =>
-    async ({ get }) => {
+    ({ get }) => {
       const allSettings = get(AllSettings);
       if (!allSettings) return null;
       return allSettings.find((setting) => setting.key === key);
@@ -84,7 +85,7 @@ export const SingleFloatSetting = selectorFamily({
   key: "SingleFloatSetting",
   get:
     (key: string) =>
-    async ({ get }) => {
+    ({ get }) => {
       const setting = get(SingleSetting(key));
       if (!setting) return null;
       if (setting && setting.value) {
@@ -95,11 +96,26 @@ export const SingleFloatSetting = selectorFamily({
     },
 });
 
+export const SingleBooleanSetting = selectorFamily({
+  key: "SingleBooleanSetting",
+  get:
+    (key: string) =>
+    ({ get }) => {
+      const setting = get(SingleSetting(key));
+      if (!setting) return null;
+      if (setting && setting.value) {
+        if (setting.value.toLowerCase() === "true") return true;
+        if (setting.value.toLowerCase() === "false") return false;
+      }
+      return null;
+    },
+});
+
 export const SingleIntSetting = selectorFamily({
   key: "SingleIntSetting",
   get:
     (key: string) =>
-    async ({ get }) => {
+    ({ get }) => {
       const setting = get(SingleSetting(key));
       if (!setting) return null;
       if (setting && setting.value) {
@@ -119,7 +135,7 @@ export const useSetSetting = () => {
           snapshot.getPromise(
             ApiAuthPatchQuery({
               endPoint: `/api/admin/settings/${setting._id}/set`,
-              data: { value: setting.value },
+              data: JSON.stringify({ value: setting.value }),
             })
           )
         );
@@ -127,6 +143,7 @@ export const useSetSetting = () => {
         // If OK response, add returned period object to local state
         if (isApiResponseOk(response)) {
           const setting = response.data as Setting;
+          toast.success(`Saved ${setting.key}`);
           if (setting) {
             if (typeof allSettings !== "undefined") {
               set(

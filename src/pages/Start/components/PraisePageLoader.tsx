@@ -12,7 +12,7 @@ const PraisePageLoader = () => {
   const queryRepsponse = useAllPraiseQuery(
     {
       page: praisePagination.currentPage,
-      limit: 5,
+      limit: 20,
       sortColumn: "createdAt",
       sortType: "desc",
     },

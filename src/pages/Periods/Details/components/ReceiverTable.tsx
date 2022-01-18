@@ -43,7 +43,7 @@ const ReceiverTable = () => {
     initialState: {
       sortBy: [
         {
-          id: "praiseScore",
+          id: period?.status === "OPEN" ? "praiseCount" : "praiseScore",
           desc: true,
         },
       ],

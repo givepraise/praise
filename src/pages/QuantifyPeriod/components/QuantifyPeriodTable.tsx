@@ -1,7 +1,9 @@
+import { UserPseudonym } from "@/components/user/UserPseudonym";
 import {
   PeriodActiveQuantifierReceivers,
   QuantifierReceiverData,
 } from "@/model/periods";
+import { SingleBooleanSetting } from "@/model/settings";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { SyntheticEvent } from "react";
@@ -23,12 +25,24 @@ const QuantifyPeriodTable = () => {
   let { periodId } = useParams() as any;
 
   const data = useRecoilValue(PeriodActiveQuantifierReceivers({ periodId }));
-
+  const usePseudonyms = useRecoilValue(
+    SingleBooleanSetting("PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS")
+  );
   const columns = React.useMemo(
     () => [
       {
         Header: "Receiver",
         accessor: "receiverName",
+        Cell: (data: any) => {
+          return usePseudonyms ? (
+            <UserPseudonym
+              userId={data.row.original.receiverId}
+              periodId={data.row.original.periodId}
+            />
+          ) : (
+            data.value
+          );
+        },
       },
       {
         Header: "Remaining items",
@@ -53,7 +67,7 @@ const QuantifyPeriodTable = () => {
         },
       },
     ],
-    []
+    [usePseudonyms]
   );
 
   const options = {

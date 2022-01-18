@@ -23,7 +23,6 @@ import { useRecoilValue } from "recoil";
 import PeriodAssignDialog from "./AssignDialog";
 import PeriodCloseDialog from "./CloseDialog";
 import PeriodDateForm from "./PeriodDateForm";
-import { QuantifierMessage } from "./QuantifierMessage";
 
 const PeriodDetails = () => {
   let [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
@@ -111,8 +110,6 @@ const PeriodDetails = () => {
           </div>
         </>
       )}
-
-      <QuantifierMessage />
 
       <Dialog
         open={isCloseDialogOpen}

@@ -5,7 +5,7 @@ import {
   UserRole,
 } from "@/model/users";
 import { shortenEthAddress } from "@/utils/index";
-import { getProfileImageUrl, getUsername } from "@/utils/users";
+import { getUsername } from "@/utils/users";
 import { faTimesCircle, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
@@ -32,15 +32,7 @@ const UsersTable = () => {
           return (
             <div className="flex items-center w-full">
               <div className="flex items-center">
-                {data.row.original.accounts?.length > 0 ? (
-                  <img
-                    alt="avatar"
-                    className="w-8 rounded-full"
-                    src={getProfileImageUrl(data.row.original, 64)}
-                  />
-                ) : (
-                  <FontAwesomeIcon icon={faUserCircle} size="2x" />
-                )}
+                <FontAwesomeIcon icon={faUserCircle} size="2x" />
               </div>
               <div className="flex-grow p-3 whitespace-nowrap">
                 {data.row.original.accounts?.length > 0 ? (

@@ -16,52 +16,60 @@ const getReceiverId = (user: User | null) => {
 };
 
 const MyPraisePageLoader = () => {
-  const [praisePagination, setPraisePagination] = useRecoilState(
-    AllPraiseQueryPagination(MY_PRAISE_LIST_KEY)
-  );
   const userId = useRecoilValue(ActiveUserId);
   const user = useRecoilValue(SingleUser({ userId }));
-  const queryResponse = useAllPraiseQuery(
-    {
-      page: praisePagination.currentPage,
-      limit: 5,
-      sortColumn: "createdAt",
-      sortType: "desc",
-      receiver: getReceiverId(user),
-    },
-    MY_PRAISE_LIST_KEY
-  );
-  const [loading, setLoading] = React.useState(false);
 
-  React.useEffect(() => {
-    setLoading(false);
-  }, [queryResponse]);
+  const receiverId = getReceiverId(user);
 
-  const handleContainerOnBottom = useCallback(() => {
-    if (
-      loading ||
-      praisePagination.currentPage >= praisePagination.totalPages - 1
-    )
-      return;
-    setLoading(true);
+  const MyPraisePageLoaderInner = () => {
+    const [praisePagination, setPraisePagination] = useRecoilState(
+      AllPraiseQueryPagination(MY_PRAISE_LIST_KEY)
+    );
+    const queryResponse = useAllPraiseQuery(
+      {
+        page: praisePagination.currentPage,
+        limit: 20,
+        sortColumn: "createdAt",
+        sortType: "desc",
+        receiver: receiverId,
+      },
+      MY_PRAISE_LIST_KEY
+    );
+    const [loading, setLoading] = React.useState(false);
 
-    setTimeout(() => {
-      setPraisePagination({
-        ...praisePagination,
-        currentPage: praisePagination.currentPage + 1,
-      });
-    }, 1000);
-  }, [praisePagination, loading, setPraisePagination]);
+    React.useEffect(() => {
+      setLoading(false);
+    }, [queryResponse]);
 
-  if (loading) return <LoaderSpinner />;
+    const handleContainerOnBottom = useCallback(() => {
+      if (
+        loading ||
+        praisePagination.currentPage >= praisePagination.totalPages
+      )
+        return;
+      setLoading(true);
 
-  /* This will trigger handleOnDocumentBottom when the body of the page hits the bottom */
-  return (
-    <BottomScrollListener
-      onBottom={handleContainerOnBottom}
-      triggerOnNoScroll
-    />
-  );
+      setTimeout(() => {
+        setPraisePagination({
+          ...praisePagination,
+          currentPage: praisePagination.currentPage + 1,
+        });
+      }, 1000);
+    }, [praisePagination, loading, setPraisePagination]);
+
+    if (loading) return <LoaderSpinner />;
+
+    /* This will trigger handleOnDocumentBottom when the body of the page hits the bottom */
+    return (
+      <BottomScrollListener
+        onBottom={handleContainerOnBottom}
+        triggerOnNoScroll
+      />
+    );
+  };
+
+  if (!receiverId) return null;
+  return <MyPraisePageLoaderInner />;
 };
 
 export default MyPraisePageLoader;

@@ -1,8 +1,27 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import toast from "react-hot-toast";
-import { atom, selectorFamily, useRecoilValue } from "recoil";
+import {
+  atom,
+  selectorFamily,
+  SerializableParam,
+  useRecoilValue,
+} from "recoil";
 import { SessionToken } from "./auth";
 import { EthState, EthStateInterface } from "./eth";
+
+type QueryParams = {
+  [key: string]: SerializableParam;
+  endPoint: string;
+  config?: any;
+  headers?: any;
+};
+
+type QueryDataParam = {
+  data: string;
+};
+
+type PatchQueryParams = QueryParams & QueryDataParam;
+type PostQueryParams = QueryParams & QueryDataParam;
 
 const hasAccount = (ethState: EthStateInterface) => {
   if (!ethState.account) {
@@ -20,24 +39,43 @@ const hasBackendUrl = () => {
   return true;
 };
 
-export const ApiGetQuery = selectorFamily({
-  key: "ApiGetQuery",
-  get:
-    (params: any) =>
-    async ({ get }) => {
-      if (!hasBackendUrl()) return null;
+const parseData = function (body: string): any {
+  try {
+    const parsedBody = JSON.parse(body);
+    return parsedBody;
+  } catch (err) {
+    throw new Error("Invalid request body format.");
+  }
+};
 
-      return await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-        params.headers
-      );
-    },
+export const ApiGetQuery = selectorFamily<AxiosResponse | null, QueryParams>({
+  key: "ApiGetQuery",
+  get: (params: QueryParams) => async () => {
+    if (!hasBackendUrl()) return null;
+
+    const config = {
+      config: {
+        ...params.config,
+      },
+      headers: {
+        ...params.headers,
+      },
+    };
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
+      config
+    );
+    return response;
+  },
 });
 
-export const ApiAuthGetQuery = selectorFamily({
+export const ApiAuthGetQuery = selectorFamily<
+  AxiosResponse | null,
+  QueryParams
+>({
   key: "ApiAuthGetQuery",
   get:
-    (params: any) =>
+    (params: QueryParams) =>
     async ({ get }) => {
       const ethState = get(EthState);
       const sessionToken = get(SessionToken);
@@ -45,63 +83,108 @@ export const ApiAuthGetQuery = selectorFamily({
         return null;
 
       const config = {
-        ...params.config,
-        headers: { Authorization: `Bearer ${sessionToken}` },
+        config: {
+          ...params.config,
+        },
+        headers: {
+          ...params.headers,
+          Authorization: `Bearer ${sessionToken}`,
+        },
       };
-      return await axios.get(
+
+      const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
         config
       );
+      return response;
     },
 });
 
-export const ApiPostQuery = selectorFamily({
+export const ApiPostQuery = selectorFamily<
+  AxiosResponse<any> | null,
+  PostQueryParams
+>({
   key: "ApiPostQuery",
-  get:
-    (params: any) =>
-    async ({ get }) => {
-      if (!hasBackendUrl()) return null;
-
-      return await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-        params.data
-      );
-    },
+  get: (params: PostQueryParams) => async () => {
+    if (!hasBackendUrl()) return null;
+    const config = {
+      config: {
+        ...params.config,
+      },
+      headers: {
+        ...params.headers,
+      },
+    };
+    const response = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
+      parseData(params.data),
+      config
+    );
+    return response;
+  },
 });
 
-export const ApiAuthPostQuery = selectorFamily({
+export const ApiAuthPostQuery = selectorFamily<
+  AxiosResponse<any> | null,
+  PostQueryParams
+>({
   key: "ApiAuthPostQuery",
   get:
-    (params: any) =>
+    (params: PostQueryParams) =>
     async ({ get }) => {
       const ethState = get(EthState);
       const sessionToken = get(SessionToken);
       if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
         return null;
 
-      return await axios.post(
+      const config = {
+        config: {
+          ...params.config,
+        },
+        headers: {
+          ...params.headers,
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      };
+
+      const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-        params.data,
-        { headers: { Authorization: `Bearer ${sessionToken}` } }
+        parseData(params.data),
+        config
       );
+      return response;
     },
 });
 
-export const ApiAuthPatchQuery = selectorFamily({
+export const ApiAuthPatchQuery = selectorFamily<
+  AxiosResponse<any> | null,
+  PatchQueryParams
+>({
   key: "ApiAuthPatchQuery",
   get:
-    (params: any) =>
+    (params: PatchQueryParams) =>
     async ({ get }) => {
       const ethState = get(EthState);
       const sessionToken = get(SessionToken);
       if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
         return null;
 
-      return await axios.patch(
+      const config = {
+        config: {
+          ...params.config,
+        },
+        headers: {
+          ...params.headers,
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      };
+
+      const response = await axios.patch(
         `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-        params.data,
-        { headers: { Authorization: `Bearer ${sessionToken}` } }
+        parseData(params.data),
+        config
       );
+      return response;
     },
 });
 
@@ -130,7 +213,13 @@ export const ApiQuery = async (query: any) => {
     return await query;
   } catch (err) {
     if (isApiResponseError(err)) handleErrors(err);
-    return err;
+    if (err instanceof Error) {
+      if (err.message) {
+        toast.error(err.message);
+      } else {
+        toast.error("Unknown error.");
+      }
+    }
   }
 };
 
@@ -191,12 +280,12 @@ export const AccountActivateQuery = selectorFamily({
       if (!ethereumAddress || !accountName || !message || !signature)
         return undefined;
 
-      const data = {
+      const data = JSON.stringify({
         ethereumAddress,
         accountName,
         message,
         signature,
-      };
+      });
 
       return get(ApiPostQuery({ endPoint: "/api/activate", data }));
     },
