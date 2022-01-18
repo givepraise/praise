@@ -1,5 +1,6 @@
 import { AxiosError, AxiosResponse } from "axios";
 import React from "react";
+import toast from "react-hot-toast";
 import {
   atom,
   selector,
@@ -127,6 +128,7 @@ export const useSetSetting = () => {
         // If OK response, add returned period object to local state
         if (isApiResponseOk(response)) {
           const setting = response.data as Setting;
+          toast.success(`Saved ${setting.key}`);
           if (setting) {
             if (typeof allSettings !== "undefined") {
               set(
