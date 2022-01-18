@@ -258,7 +258,7 @@ export const VerifyQuantifierPoolSizeQuery = selectorFamily({
     ({ get }) => {
       const { periodId, refreshKey } = params;
       const response = get(
-        ApiAuthPatchQuery({
+        ApiAuthGetQuery({
           endPoint: `/api/admin/periods/${periodId}/verifyQuantifierPoolSize`,
           refreshKey,
         })
