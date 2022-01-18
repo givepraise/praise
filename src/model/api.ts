@@ -12,10 +12,16 @@ import { EthState, EthStateInterface } from "./eth";
 type QueryParams = {
   [key: string]: SerializableParam;
   endPoint: string;
-  data?: string;
   config?: any;
   headers?: any;
 };
+
+type QueryDataParam = {
+  data: string;
+};
+
+type PatchQueryParams = QueryParams & QueryDataParam;
+type PostQueryParams = QueryParams & QueryDataParam;
 
 const hasAccount = (ethState: EthStateInterface) => {
   if (!ethState.account) {
@@ -46,9 +52,18 @@ export const ApiGetQuery = selectorFamily<AxiosResponse | null, QueryParams>({
   key: "ApiGetQuery",
   get: (params: QueryParams) => async () => {
     if (!hasBackendUrl()) return null;
+
+    const config = {
+      config: {
+        ...params.config,
+      },
+      headers: {
+        ...params.headers,
+      },
+    };
     const response = await axios.get(
       `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-      params.headers
+      config
     );
     return response;
   },
@@ -68,9 +83,15 @@ export const ApiAuthGetQuery = selectorFamily<
         return null;
 
       const config = {
-        ...params.config,
-        headers: { Authorization: `Bearer ${sessionToken}` },
+        config: {
+          ...params.config,
+        },
+        headers: {
+          ...params.headers,
+          Authorization: `Bearer ${sessionToken}`,
+        },
       };
+
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
         config
@@ -81,14 +102,23 @@ export const ApiAuthGetQuery = selectorFamily<
 
 export const ApiPostQuery = selectorFamily<
   AxiosResponse<any> | null,
-  QueryParams
+  PostQueryParams
 >({
   key: "ApiPostQuery",
-  get: (params: QueryParams) => async () => {
-    if (!hasBackendUrl() || !params.data) return null;
+  get: (params: PostQueryParams) => async () => {
+    if (!hasBackendUrl()) return null;
+    const config = {
+      config: {
+        ...params.config,
+      },
+      headers: {
+        ...params.headers,
+      },
+    };
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-      parseData(params.data)
+      parseData(params.data),
+      config
     );
     return response;
   },
@@ -96,26 +126,31 @@ export const ApiPostQuery = selectorFamily<
 
 export const ApiAuthPostQuery = selectorFamily<
   AxiosResponse<any> | null,
-  QueryParams
+  PostQueryParams
 >({
   key: "ApiAuthPostQuery",
   get:
-    (params: any) =>
+    (params: PostQueryParams) =>
     async ({ get }) => {
       const ethState = get(EthState);
       const sessionToken = get(SessionToken);
-      if (
-        !hasAccount(ethState) ||
-        !sessionToken ||
-        !hasBackendUrl() ||
-        !params.data
-      )
+      if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
         return null;
+
+      const config = {
+        config: {
+          ...params.config,
+        },
+        headers: {
+          ...params.headers,
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      };
 
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
         parseData(params.data),
-        { headers: { Authorization: `Bearer ${sessionToken}` } }
+        config
       );
       return response;
     },
@@ -123,26 +158,31 @@ export const ApiAuthPostQuery = selectorFamily<
 
 export const ApiAuthPatchQuery = selectorFamily<
   AxiosResponse<any> | null,
-  QueryParams
+  PatchQueryParams
 >({
   key: "ApiAuthPatchQuery",
   get:
-    (params: any) =>
+    (params: PatchQueryParams) =>
     async ({ get }) => {
       const ethState = get(EthState);
       const sessionToken = get(SessionToken);
-      if (
-        !hasAccount(ethState) ||
-        !sessionToken ||
-        !hasBackendUrl() ||
-        !params.data
-      )
+      if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
         return null;
+
+      const config = {
+        config: {
+          ...params.config,
+        },
+        headers: {
+          ...params.headers,
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      };
 
       const response = await axios.patch(
         `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
         parseData(params.data),
-        { headers: { Authorization: `Bearer ${sessionToken}` } }
+        config
       );
       return response;
     },

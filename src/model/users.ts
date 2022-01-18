@@ -1,3 +1,4 @@
+import { pseudonymNouns, psudonymAdjectives } from "@/utils/users";
 import { AxiosError, AxiosResponse } from "axios";
 import React from "react";
 import {
@@ -16,6 +17,7 @@ import {
   PaginatedResponseData,
   useAuthApiQuery,
 } from "./api";
+import { AllPeriods } from "./periods";
 
 export enum UserRole {
   ADMIN = "ADMIN",
@@ -124,6 +126,36 @@ export const SingleUserByReceiverId = selectorFamily({
         if (!user.accounts) return false;
         return user.accounts.find((account) => account._id === receiverId);
       });
+    },
+});
+
+const stringToNumber = (s: string) => {
+  var value = 0;
+  for (var i = s.length - 1; i >= 0; i--) {
+    value = value * 256 + s.charCodeAt(i);
+  }
+  return value;
+};
+
+export const PseudonymForUser = selectorFamily({
+  key: "PseudonymForUser",
+  get:
+    (params: any) =>
+    ({ get }) => {
+      const { periodId, userId } = params;
+      const allPeriods = get(AllPeriods);
+      if (!allPeriods) return "Loading…";
+      const periodIndex = allPeriods.findIndex((p) => p._id === periodId);
+
+      if (userId && periodIndex > -1) {
+        const u = stringToNumber(userId);
+        const p = stringToNumber(periodId);
+        const n = pseudonymNouns[(u + p) % pseudonymNouns.length];
+        const a = psudonymAdjectives[(u + p) % psudonymAdjectives.length];
+        return `${a} ${n}`;
+      }
+
+      return "Unknown user";
     },
 });
 

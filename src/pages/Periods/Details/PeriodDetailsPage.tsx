@@ -10,6 +10,7 @@ import "react-day-picker/lib/style.css";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import PeriodNameForm from "./components/PeriodNameForm";
+import { QuantifierMessage } from "./components/QuantifierMessage";
 import QuantifierTable from "./components/QuantifierTable";
 import ReceiverTable from "./components/ReceiverTable";
 
@@ -54,6 +55,11 @@ const PeriodDetailPage = () => {
           <PeriodDetailHead />
         </React.Suspense>
       </div>
+
+      <React.Suspense fallback="Loading…">
+        <QuantifierMessage />
+      </React.Suspense>
+
       <div className="w-2/3 praise-box">
         <React.Suspense fallback="Loading…">
           <QuantifierTable />

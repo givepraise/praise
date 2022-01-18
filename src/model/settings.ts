@@ -96,6 +96,21 @@ export const SingleFloatSetting = selectorFamily({
     },
 });
 
+export const SingleBooleanSetting = selectorFamily({
+  key: "SingleBooleanSetting",
+  get:
+    (key: string) =>
+    ({ get }) => {
+      const setting = get(SingleSetting(key));
+      if (!setting) return null;
+      if (setting && setting.value) {
+        if (setting.value.toLowerCase() === "true") return true;
+        if (setting.value.toLowerCase() === "false") return false;
+      }
+      return null;
+    },
+});
+
 export const SingleIntSetting = selectorFamily({
   key: "SingleIntSetting",
   get:

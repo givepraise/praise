@@ -333,7 +333,7 @@ export const useQuantifyPraise = () => {
         dismissed: boolean,
         duplicatePraise: string | null
       ) => {
-        const response = ApiQuery(
+        const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatchQuery({
               endPoint: `/api/praise/${praiseId}/quantify`,

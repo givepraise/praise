@@ -1,6 +1,8 @@
+import { UserPseudonym } from "@/components/user/UserPseudonym";
 import { ActiveUserId } from "@/model/auth";
 import { AllPeriodPraiseList } from "@/model/periods";
 import { Praise } from "@/model/praise";
+import { SingleBooleanSetting } from "@/model/settings";
 import { classNames } from "@/utils/index";
 import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,6 +21,9 @@ const PraiseAutosuggest = ({ onSelect, onClose }: PraiseAutosuggestProps) => {
   const userId = useRecoilValue(ActiveUserId);
 
   const data = useRecoilValue(AllPeriodPraiseList({ periodId }));
+  const usePseudonyms = useRecoilValue(
+    SingleBooleanSetting("PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS")
+  );
 
   if (!data) return null;
 
@@ -48,7 +53,7 @@ const PraiseAutosuggest = ({ onSelect, onClose }: PraiseAutosuggestProps) => {
             filteredData.filter((praise) => {
               if (
                 praise &&
-                praise._id.slice(-4).includes(inputValue!.toLowerCase())
+                `#${praise._id.slice(-4)}`.includes(inputValue!.toLowerCase())
               )
                 return true;
               return false;
@@ -73,7 +78,7 @@ const PraiseAutosuggest = ({ onSelect, onClose }: PraiseAutosuggestProps) => {
               </span>
             </div>
             <input
-              className="pl-8 text-sm w-80"
+              className="pl-10 text-sm w-80"
               type="text"
               placeholder="Search by praise id"
               {...getInputProps()}
@@ -97,7 +102,16 @@ const PraiseAutosuggest = ({ onSelect, onClose }: PraiseAutosuggestProps) => {
                 key={`${item}${index}`}
                 {...getItemProps({ item, index })}
               >
-                #{item && item._id.slice(-4)} - {item && item.giver.username}
+                #{item && item._id.slice(-4)} -{" "}
+                {item &&
+                  (usePseudonyms ? (
+                    <UserPseudonym
+                      userId={item.giver._id!}
+                      periodId={periodId}
+                    />
+                  ) : (
+                    item.giver.username
+                  ))}
               </li>
             ))}
         </ul>

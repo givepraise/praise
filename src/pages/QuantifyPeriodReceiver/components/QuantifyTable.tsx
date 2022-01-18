@@ -1,9 +1,11 @@
+import { UserPseudonym } from "@/components/user/UserPseudonym";
 import { ActiveUserId } from "@/model/auth";
 import {
   PeriodActiveQuantifierReceiverPraise,
   usePeriodPraiseQuery,
 } from "@/model/periods";
 import { Praise, useQuantifyPraise } from "@/model/praise";
+import { SingleBooleanSetting } from "@/model/settings";
 import DismissDialog from "@/pages/QuantifyPeriodReceiver/components/DismissDialog";
 import { formatDate } from "@/utils/date";
 import { classNames, getPraiseMark, getPraiseMarks } from "@/utils/index";
@@ -50,6 +52,9 @@ const QuantifyTable = () => {
   const userId = useRecoilValue(ActiveUserId);
   const data = useRecoilValue(
     PeriodActiveQuantifierReceiverPraise({ periodId, receiverId })
+  );
+  const usePseudonyms = useRecoilValue(
+    SingleBooleanSetting("PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS")
   );
 
   const { quantify } = useQuantifyPraise();
@@ -134,7 +139,14 @@ const QuantifyTable = () => {
                   <div className="flex-grow p-3 whitespace-nowrap">
                     {formatDate(praise.createdAt)}
                     <br />
-                    {praise.giver.username}
+                    {usePseudonyms ? (
+                      <UserPseudonym
+                        userId={praise.giver._id!}
+                        periodId={periodId}
+                      />
+                    ) : (
+                      praise.giver.username
+                    )}
                     <br />#{praise._id.slice(-4)}
                   </div>
                 </div>

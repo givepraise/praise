@@ -1,9 +1,11 @@
 import BreadCrumb from "@/components/BreadCrumb";
+import { UserPseudonym } from "@/components/user/UserPseudonym";
 import {
   PeriodActiveQuantifierReceiver,
   SinglePeriod,
   usePeriodPraiseQuery,
 } from "@/model/periods";
+import { SingleBooleanSetting } from "@/model/settings";
 import BackLink from "@/navigation/BackLink";
 import {
   faCalendarAlt,
@@ -37,11 +39,21 @@ const PeriodMessage = () => {
   const data = useRecoilValue(
     PeriodActiveQuantifierReceiver({ periodId, receiverId })
   );
+  const usePseudonyms = useRecoilValue(
+    SingleBooleanSetting("PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS")
+  );
 
   if (!data) return null;
   return (
     <>
-      <h2>Receiver: {data.receiverName}</h2>
+      <h2>
+        Receiver:{" "}
+        {usePseudonyms ? (
+          <UserPseudonym userId={receiverId} periodId={periodId} />
+        ) : (
+          data.receiverName
+        )}
+      </h2>
       <p>Number of praise items: {data.count}</p>
       <p>
         Items left to quantify:{" "}

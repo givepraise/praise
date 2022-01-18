@@ -223,6 +223,7 @@ export const useClosePeriod = () => {
           snapshot.getPromise(
             ApiAuthPatchQuery({
               endPoint: `/api/admin/periods/${periodId}/close`,
+              data: JSON.stringify({}),
             })
           )
         );
@@ -311,6 +312,7 @@ export const useAssignQuantifiers = () => {
           snapshot.getPromise(
             ApiAuthPatchQuery({
               endPoint: `/api/admin/periods/${periodId}/assignQuantifiers`,
+              data: JSON.stringify({}),
             })
           )
         );
