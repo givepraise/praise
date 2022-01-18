@@ -6,7 +6,7 @@ const periodRouter = Router();
 periodRouter.post('/create', periodController.create);
 periodRouter.patch('/:periodId/update', periodController.update);
 periodRouter.patch('/:periodId/close', periodController.close);
-periodRouter.patch(
+periodRouter.get(
   '/:periodId/verifyQuantifierPoolSize',
   periodController.verifyQuantifierPoolSize
 );

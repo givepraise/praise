@@ -159,21 +159,24 @@ const assignQuantifiersDryRun = async (periodId: string) => {
       const r = receivers[ri];
 
       // Quantify your own received praise not allowed
-      if (r._id === q._id) continue;
+      if (r._id.toString() === q._id?.toString()) {
+        continue;
+      }
 
       // Receiver already assigned to quantifier
-      if (q.receivers.findIndex((receiver) => receiver._id === r._id) > -1)
+      if (q.receivers.findIndex((receiver) => receiver._id === r._id) > -1) {
         continue;
+      }
 
       // Receiver already assigned to enough quantifiers
-
       if (r.assignedQuantifiers === quantifiersPerPraiseReceiver) {
+        receivers.splice(ri, 1);
         continue;
       }
 
       // Assign praise that meet criteria
       if (
-        (q.receivers.length === 0 && r.praiseCount > maxPraisePerQuantifier) ||
+        (q.receivers.length === 0 && r.praiseCount >= maxPraisePerQuantifier) ||
         assignedPraiseCount(q) + r.praiseCount < maxPraisePerQuantifier
       ) {
         q.receivers.push(r);
@@ -189,8 +192,9 @@ const assignQuantifiersDryRun = async (periodId: string) => {
         if (
           !r.assignedQuantifiers ||
           r.assignedQuantifiers < quantifiersPerPraiseReceiver
-        )
+        ) {
           return true;
+        }
       }
       return false;
     };
