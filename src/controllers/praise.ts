@@ -56,7 +56,7 @@ const quantify = async (
   const { score, dismissed, duplicatePraise } = req.body;
 
   const quantification = praise.quantifications.find((q) =>
-    q.quantifier.equals(req.body.currentUser._id)
+    q.quantifier.equals(res.locals.currentUser._id)
   );
 
   if (!quantification)
