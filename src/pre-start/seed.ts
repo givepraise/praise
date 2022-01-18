@@ -14,20 +14,12 @@ const PRAISE_NUMBER = 300;
 
 const USERS = [
   {
-    ethereumAddress: '0xa32aECda752cF4EF89956e83d60C04835d4FA867',
+    ethereumAddress: '0xa32aECda752cF4EF89956e83d60C04835d4FA867', // Kristofer
     roles: ['ADMIN', 'USER'],
   },
   {
-    ethereumAddress: '0xa2608614d3038A334AC0d0f341441C978862018b',
-    roles: ['USER'],
-  },
-  {
-    ethereumAddress: '0xfb346bB121F9D955EdEe371ddD0060303E8496A9',
-    roles: ['USER', 'QUANTIFIER'],
-  },
-  {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
-    roles: ['USER', 'QUANTIFIER'],
+    ethereumAddress: '0x826976d7C600d45FB8287CA1d7c76FC8eb732030', // Mitch
+    roles: ['ADMIN', 'USER'],
   },
   {
     ethereumAddress: '0xa123400000000000000000000000000000006789',
