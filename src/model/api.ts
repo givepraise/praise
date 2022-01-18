@@ -33,6 +33,15 @@ const hasBackendUrl = () => {
   return true;
 };
 
+const parseData = function (body: string): any {
+  try {
+    const parsedBody = JSON.parse(body);
+    return parsedBody;
+  } catch (err) {
+    throw new Error("Invalid request body format.");
+  }
+};
+
 export const ApiGetQuery = selectorFamily<AxiosResponse | null, QueryParams>({
   key: "ApiGetQuery",
   get: (params: QueryParams) => async () => {
@@ -76,10 +85,10 @@ export const ApiPostQuery = selectorFamily<
 >({
   key: "ApiPostQuery",
   get: (params: QueryParams) => async () => {
-    if (!hasBackendUrl()) return null;
+    if (!hasBackendUrl() || !params.data) return null;
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-      params.data
+      parseData(params.data)
     );
     return response;
   },
@@ -95,12 +104,17 @@ export const ApiAuthPostQuery = selectorFamily<
     async ({ get }) => {
       const ethState = get(EthState);
       const sessionToken = get(SessionToken);
-      if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
+      if (
+        !hasAccount(ethState) ||
+        !sessionToken ||
+        !hasBackendUrl() ||
+        !params.data
+      )
         return null;
 
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-        params.data,
+        parseData(params.data),
         { headers: { Authorization: `Bearer ${sessionToken}` } }
       );
       return response;
@@ -117,12 +131,17 @@ export const ApiAuthPatchQuery = selectorFamily<
     async ({ get }) => {
       const ethState = get(EthState);
       const sessionToken = get(SessionToken);
-      if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
+      if (
+        !hasAccount(ethState) ||
+        !sessionToken ||
+        !hasBackendUrl() ||
+        !params.data
+      )
         return null;
 
       const response = await axios.patch(
         `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-        params.data,
+        parseData(params.data),
         { headers: { Authorization: `Bearer ${sessionToken}` } }
       );
       return response;
@@ -154,7 +173,13 @@ export const ApiQuery = async (query: any) => {
     return await query;
   } catch (err) {
     if (isApiResponseError(err)) handleErrors(err);
-    return err;
+    if (err instanceof Error) {
+      if (err.message) {
+        toast.error(err.message);
+      } else {
+        toast.error("Unknown error.");
+      }
+    }
   }
 };
 
