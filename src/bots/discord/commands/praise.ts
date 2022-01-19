@@ -1,27 +1,13 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction, Interaction } from 'discord.js';
-import { MessageEmbed, GuildMember } from 'discord.js';
+import { MessageEmbed } from 'discord.js';
+import { praiseErrorEmbed, praiseSuccessEmbed } from '../utils/praiseEmbeds'
+
 import randomstring from 'randomstring';
 
 import UserAccountModel from '../../../entities/UserAccount';
 import UserModel from '../../../entities/User';
 import PraiseModel from '../../../entities/Praise';
-
-const praiseErrorEmbed = (title: string, description: string) => {
-  return new MessageEmbed()
-    .setColor('#ff0000')
-    .setTitle(`ERROR: ${title}`)
-    .setDescription(description)
-    .setFooter({ text: 'PRAISE DID NOT REGISTER' });
-};
-
-const praiseSuccessEmbed = (praised: string[]) => {
-  return new MessageEmbed()
-    .setColor('#00ff00')
-    .setTitle(`SUCCESSFULLY PRAISED!`)
-    .setDescription(`Praised ${praised.join(', ')}.`)
-    .setFooter({ text: 'PRAISE REGISTERED' });
-};
 
 const praise = async (interaction: CommandInteraction) => {
   const { guild, channel, member } = interaction;
