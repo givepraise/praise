@@ -20,6 +20,7 @@ import { Dialog } from "@headlessui/react";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
+import { QuantifyBackNextLink } from "./BackNextLink";
 import DuplicateDialog from "./DuplicateDialog";
 import RangeSlider from "./RangeSlider";
 
@@ -125,131 +126,134 @@ const QuantifyTable = () => {
   };
 
   return (
-    <table className="w-full table-auto">
-      <tbody>
-        {data.map((praise, index) => {
-          if (!praise) return null;
-          return (
-            <tr key={index} onMouseDown={() => setSelectedPraise(praise)}>
-              <td>
-                <div className="flex items-center w-full">
-                  <div className="flex items-center">
-                    <UserAvatar userAccount={praise.giver} />
+    <>
+      <table className="w-full table-auto">
+        <tbody>
+          {data.map((praise, index) => {
+            if (!praise) return null;
+            return (
+              <tr key={index} onMouseDown={() => setSelectedPraise(praise)}>
+                <td>
+                  <div className="flex items-center w-full">
+                    <div className="flex items-center">
+                      <UserAvatar userAccount={praise.giver} />
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td>
-                <div>
-                  <span className="font-bold">
-                    {usePseudonyms ? (
-                      <UserPseudonym
-                        userId={praise.giver._id!}
-                        periodId={periodId}
+                </td>
+                <td>
+                  <div>
+                    <span className="font-bold">
+                      {usePseudonyms ? (
+                        <UserPseudonym
+                          userId={praise.giver._id!}
+                          periodId={periodId}
+                        />
+                      ) : (
+                        praise.giver.username
+                      )}
+                    </span>
+                    <span className="ml-2 text-xs text-gray-500">
+                      {formatDate(praise.createdAt)}
+                    </span>
+                  </div>
+                  <div className="flex space-x-1">
+                    <span>
+                      <InlineLabel
+                        text={`#${praise._id.slice(-4)}`}
+                        className="bg-gray-400"
                       />
-                    ) : (
-                      praise.giver.username
-                    )}
-                  </span>
-                  <span className="ml-2 text-xs text-gray-500">
-                    {formatDate(praise.createdAt)}
-                  </span>
-                </div>
-                <div className="flex space-x-1">
-                  <span>
-                    <InlineLabel
-                      text={`#${praise._id.slice(-4)}`}
-                      className="bg-gray-400"
-                    />
-                    {dismissed(praise) ? (
-                      <>
-                        <InlineLabel
-                          text="Dismissed"
-                          button={getRemoveButton(handleRemoveDismiss)}
-                          className="bg-red-600"
-                        />
-                        <span className="line-through">{praise.reason}</span>
-                      </>
-                    ) : duplicate(praise) ? (
-                      <>
-                        <InlineLabel
-                          text={`Duplicate of: #${quantification(
-                            praise
-                          )!.duplicatePraise?.slice(-4)}`}
-                          button={getRemoveButton(handleRemoveDuplicate)}
-                        />
-                        <span className="text-gray-400">{praise.reason}</span>
-                      </>
-                    ) : (
-                      praise.reason
-                    )}
-                  </span>
-                </div>
-              </td>
-              <td>
-                <div className="flex space-x-3">
-                  <RangeSlider
-                    marks={getPraiseMarks()}
-                    defaultValue={score(praise)}
-                    onValueChanged={(value: number) => handleChange(value)}
-                    disabled={dismissed(praise) || duplicate(praise)}
-                  ></RangeSlider>
-                  <button
-                    className="hover:text-gray-400"
-                    disabled={duplicate(praise)}
-                    onClick={() => setIsDuplicateDialogOpen(true)}
-                  >
-                    <FontAwesomeIcon
-                      icon={faCopy}
-                      size="1x"
-                      className={duplicate(praise) ? "text-gray-400" : ""}
-                    />
-                  </button>
-                  <button
-                    className="hover:text-gray-400"
-                    disabled={dismissed(praise)}
-                    onClick={() => setIsDismissDialogOpen(true)}
-                  >
-                    <FontAwesomeIcon
-                      icon={faTimesCircle}
-                      size="1x"
-                      className={dismissed(praise) ? "text-gray-400" : ""}
-                    />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          );
-        })}
+                      {dismissed(praise) ? (
+                        <>
+                          <InlineLabel
+                            text="Dismissed"
+                            button={getRemoveButton(handleRemoveDismiss)}
+                            className="bg-red-600"
+                          />
+                          <span className="line-through">{praise.reason}</span>
+                        </>
+                      ) : duplicate(praise) ? (
+                        <>
+                          <InlineLabel
+                            text={`Duplicate of: #${quantification(
+                              praise
+                            )!.duplicatePraise?.slice(-4)}`}
+                            button={getRemoveButton(handleRemoveDuplicate)}
+                          />
+                          <span className="text-gray-400">{praise.reason}</span>
+                        </>
+                      ) : (
+                        praise.reason
+                      )}
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div className="flex space-x-3">
+                    <RangeSlider
+                      marks={getPraiseMarks()}
+                      defaultValue={score(praise)}
+                      onValueChanged={(value: number) => handleChange(value)}
+                      disabled={dismissed(praise) || duplicate(praise)}
+                    ></RangeSlider>
+                    <button
+                      className="hover:text-gray-400"
+                      disabled={duplicate(praise)}
+                      onClick={() => setIsDuplicateDialogOpen(true)}
+                    >
+                      <FontAwesomeIcon
+                        icon={faCopy}
+                        size="1x"
+                        className={duplicate(praise) ? "text-gray-400" : ""}
+                      />
+                    </button>
+                    <button
+                      className="hover:text-gray-400"
+                      disabled={dismissed(praise)}
+                      onClick={() => setIsDismissDialogOpen(true)}
+                    >
+                      <FontAwesomeIcon
+                        icon={faTimesCircle}
+                        size="1x"
+                        className={dismissed(praise) ? "text-gray-400" : ""}
+                      />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
 
-        <React.Suspense fallback={null}>
-          <Dialog
-            open={isDismissDialogOpen && !!selectedPraise}
-            onClose={() => setIsDismissDialogOpen(false)}
-            className="fixed inset-0 z-10 overflow-y-auto"
-          >
-            <DismissDialog
-              praise={selectedPraise}
+          <React.Suspense fallback={null}>
+            <Dialog
+              open={isDismissDialogOpen && !!selectedPraise}
               onClose={() => setIsDismissDialogOpen(false)}
-              onDismiss={() => handleDismiss()}
-            />
-          </Dialog>
-        </React.Suspense>
+              className="fixed inset-0 z-10 overflow-y-auto"
+            >
+              <DismissDialog
+                praise={selectedPraise}
+                onClose={() => setIsDismissDialogOpen(false)}
+                onDismiss={() => handleDismiss()}
+              />
+            </Dialog>
+          </React.Suspense>
 
-        <React.Suspense fallback={null}>
-          <Dialog
-            open={isDuplicateDialogOpen}
-            onClose={() => setIsDuplicateDialogOpen(false)}
-            className="fixed inset-0 z-10 overflow-y-auto"
-          >
-            <DuplicateDialog
-              praise={selectedPraise!}
+          <React.Suspense fallback={null}>
+            <Dialog
+              open={isDuplicateDialogOpen}
               onClose={() => setIsDuplicateDialogOpen(false)}
-              onSelect={handleDuplicate}
-            />
-          </Dialog>
-        </React.Suspense>
-      </tbody>
-    </table>
+              className="fixed inset-0 z-10 overflow-y-auto"
+            >
+              <DuplicateDialog
+                praise={selectedPraise!}
+                onClose={() => setIsDuplicateDialogOpen(false)}
+                onSelect={handleDuplicate}
+              />
+            </Dialog>
+          </React.Suspense>
+        </tbody>
+      </table>
+      <QuantifyBackNextLink />
+    </>
   );
 };
 
