@@ -54,8 +54,8 @@ const PeriodMessage = () => {
           data.receiverName
         )}
       </h2>
-      <p>Number of praise items: {data.count}</p>
-      <p>
+      <div>Number of praise items: {data.count}</div>
+      <div>
         Items left to quantify:{" "}
         {data.count - data.done === 0 ? (
           <>
@@ -64,7 +64,7 @@ const PeriodMessage = () => {
         ) : (
           data.count - data.done
         )}
-      </p>
+      </div>
     </>
   );
 };
