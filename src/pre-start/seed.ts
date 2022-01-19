@@ -100,7 +100,6 @@ const seedData = async () => {
         const account = await UserAccountModel.create({
           id: faker.datatype.uuid(),
           username: faker.internet.userName(),
-          profileImageUrl: faker.image.imageUrl(),
           platform: 'DISCORD',
         });
 
