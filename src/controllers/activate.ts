@@ -10,13 +10,13 @@ import { ethers } from 'ethers';
 import { Request, Response } from 'express';
 
 const generateLoginMessage = (
-  accountName: string,
+  accountId: string,
   ethereumAddress: string,
   token: string
 ): string => {
   return (
     'SIGN THIS MESSAGE TO ACTIVATE YOUR ACCOUNT.\n\n' +
-    `ACCOUNT NAME:\n${accountName}\n\n` +
+    `ACCOUNT ID:\n${accountId}\n\n` +
     `ADDRESS:\n${ethereumAddress}\n\n` +
     `TOKEN:\n${token}`
   );
@@ -25,7 +25,7 @@ const generateLoginMessage = (
 interface ActivateRequest extends Request {
   body: {
     ethereumAddress: string;
-    accountName: string;
+    accountId: string;
     message: string;
     signature: string;
   };
@@ -35,10 +35,10 @@ export async function activate(
   req: ActivateRequest,
   res: Response
 ): Promise<Response> {
-  const { ethereumAddress, signature, accountName } = req.body;
+  const { ethereumAddress, signature, accountId } = req.body;
 
   // Find previously generated token
-  const userAccount = await UserAccountModel.findOne({ username: accountName })
+  const userAccount = await UserAccountModel.findOne({ id: accountId })
     .select('activateToken')
     .exec();
 
@@ -53,7 +53,7 @@ export async function activate(
 
   // Generate expected message, token included.
   const generatedMsg = generateLoginMessage(
-    accountName,
+    accountId,
     ethereumAddress,
     userAccount.activateToken
   );
