@@ -15,7 +15,7 @@ export const quantificationSchema = new mongoose.Schema(
   {
     quantifier: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     score: { type: Number, default: 0 },
-    dismissed: { type: Boolean, required: true, default: false },
+    dismissed: { type: Boolean, default: false },
     duplicatePraise: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Praise',

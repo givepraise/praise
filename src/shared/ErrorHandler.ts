@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { errorNames, errorCodes } from './constants';
 import { ErrorInterface } from './types';
+import logger from '@shared/Logger';
 
 const ErrorHandler = (
   err: any,
@@ -8,6 +9,8 @@ const ErrorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  logger.err(err);
+
   try {
     if (err.name === 'ValidationError')
       return (err = handleValidationError(err, res));
