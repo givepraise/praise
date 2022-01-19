@@ -34,7 +34,7 @@ export const AllSettingsQuery = selector({
     get(AllSettingsRequestId);
     return get(
       ApiAuthGetQuery({
-        endPoint: "/api/admin/settings/all",
+        endPoint: "/api/settings/all",
       })
     );
   },
