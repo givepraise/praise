@@ -26,13 +26,13 @@ const importPraise = async (praiseData: PraiseImportInput[]) => {
     const data = await Promise.all(
       praiseData.map(async (praise: PraiseImportInput) => {
         const giver = await UserAccountModel.findOneAndUpdate(
-          { username: praise.giver.username },
+          { id: praise.giver.id },
           praise.giver,
           { upsert: true, new: true }
         );
 
         const receiver = await UserAccountModel.findOneAndUpdate(
-          { username: praise.receiver.username },
+          { id: praise.receiver.id },
           praise.receiver,
           { upsert: true, new: true }
         );

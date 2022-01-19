@@ -11,7 +11,7 @@ export interface UserAccountInterface extends mongoose.Document {
 
 export const userAccountSchema = new mongoose.Schema(
   {
-    id: { type: String, required: true },
+    id: { type: String, required: true, unique: true },
     username: { type: String, required: true },
     profileImageUrl: { type: String },
     platform: {
