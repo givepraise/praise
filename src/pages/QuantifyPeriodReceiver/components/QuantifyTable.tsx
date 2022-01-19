@@ -25,7 +25,7 @@ import RangeSlider from "./RangeSlider";
 
 interface InlineLabelProps {
   text: string;
-  button: any;
+  button?: any;
   className?: string;
 }
 const InlineLabel = ({ text, button, className }: InlineLabelProps) => {
@@ -37,7 +37,7 @@ const InlineLabel = ({ text, button, className }: InlineLabelProps) => {
       )}
     >
       {text}
-      {button}
+      {button && button}
     </span>
   );
 };
@@ -136,9 +136,11 @@ const QuantifyTable = () => {
                   <div className="flex items-center">
                     <FontAwesomeIcon icon={faUserCircle} size="2x" />
                   </div>
-                  <div className="flex-grow p-3 whitespace-nowrap">
-                    {formatDate(praise.createdAt)}
-                    <br />
+                </div>
+              </td>
+              <td>
+                <div>
+                  <span className="font-bold">
                     {usePseudonyms ? (
                       <UserPseudonym
                         userId={praise.giver._id!}
@@ -147,34 +149,40 @@ const QuantifyTable = () => {
                     ) : (
                       praise.giver.username
                     )}
-                    <br />#{praise._id.slice(-4)}
-                  </div>
+                  </span>
+                  <span className="ml-2 text-xs text-gray-500">
+                    {formatDate(praise.createdAt)}
+                  </span>
                 </div>
-              </td>
-              <td>
                 <div className="flex space-x-1">
-                  {dismissed(praise) ? (
-                    <span>
-                      <InlineLabel
-                        text="Dismissed"
-                        button={getRemoveButton(handleRemoveDismiss)}
-                        className="bg-red-600"
-                      />
-                      <span className="line-through">{praise.reason}</span>
-                    </span>
-                  ) : duplicate(praise) ? (
-                    <span>
-                      <InlineLabel
-                        text={`Duplicate of: #${quantification(
-                          praise
-                        )!.duplicatePraise?.slice(-4)}`}
-                        button={getRemoveButton(handleRemoveDuplicate)}
-                      />
-                      <span className="line-through">{praise.reason}</span>
-                    </span>
-                  ) : (
-                    praise.reason
-                  )}
+                  <span>
+                    <InlineLabel
+                      text={`#${praise._id.slice(-4)}`}
+                      className="bg-gray-400"
+                    />
+                    {dismissed(praise) ? (
+                      <>
+                        <InlineLabel
+                          text="Dismissed"
+                          button={getRemoveButton(handleRemoveDismiss)}
+                          className="bg-red-600"
+                        />
+                        <span className="line-through">{praise.reason}</span>
+                      </>
+                    ) : duplicate(praise) ? (
+                      <>
+                        <InlineLabel
+                          text={`Duplicate of: #${quantification(
+                            praise
+                          )!.duplicatePraise?.slice(-4)}`}
+                          button={getRemoveButton(handleRemoveDuplicate)}
+                        />
+                        <span className="text-gray-400">{praise.reason}</span>
+                      </>
+                    ) : (
+                      praise.reason
+                    )}
+                  </span>
                 </div>
               </td>
               <td>

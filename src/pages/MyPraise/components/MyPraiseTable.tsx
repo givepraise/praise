@@ -19,24 +19,27 @@ const MyPraiseTable = () => {
       {
         accessor: "createdAt",
         Cell: (data: any) => (
-          <div className="flex items-center w-full overflow-hidden">
+          <div className="flex items-center w-full">
             <div className="flex items-center">
               <FontAwesomeIcon icon={faUserCircle} size="2x" />
             </div>
-            <div className="flex-grow p-3 whitespace-nowrap">
-              {formatDate(data.row.original.createdAt)}
-              <br />
-              From: {data.row.original.giver.username}
-              <br />
-              To: {data.row.original.receiver.username}
+            <div className="flex-grow p-3">
+              <div>
+                <span className="font-bold">
+                  {data.row.original.giver.username}
+                </span>{" "}
+                to{" "}
+                <span className="font-bold">
+                  {data.row.original.receiver.username}
+                </span>
+                <span className="ml-2 text-xs text-gray-500">
+                  {formatDate(data.row.original.createdAt)}
+                </span>
+              </div>
+
+              <div className="w-full">{data.row.original.reason}</div>
             </div>
           </div>
-        ),
-      },
-      {
-        accessor: "reason",
-        Cell: (data: any) => (
-          <div className="w-full overflow-hidden">{data.value}</div>
         ),
       },
     ],
@@ -61,14 +64,10 @@ const MyPraiseTable = () => {
       {allPraise ? (
         <table
           id="praises-table"
-          className="w-full text-xs table-fixed"
+          className="w-full table-fixed"
           {...getTableProps()}
         >
           <tbody {...getTableBodyProps()}>
-            <tr>
-              <td className="w-72"></td>
-              <td></td>
-            </tr>
             {rows.map((row) => {
               prepareRow(row);
               return (
