@@ -24,9 +24,10 @@ const activate = async (interaction: CommandInteraction) => {
     return;
   }
 
-  await interaction.reply(
-    `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${process.env.FRONTEND_URL}/activate?accountId=${ua.id}&accountName=${user.username}%23${user.discriminator}&platform=DISCORD&token=${ua.activateToken})`
-  );
+  await interaction.reply({
+    content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${process.env.FRONTEND_URL}/activate?accountId=${ua.id}&accountName=${user.username}%23${user.discriminator}&platform=DISCORD&token=${ua.activateToken})`,
+    ephemeral: true,
+  });
 };
 
 module.exports = {
