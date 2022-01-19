@@ -17,7 +17,10 @@ const WrappedUserAvatar = ({ user, userAccount }: UserAvatarProps) => {
     if (Array.isArray(user.accounts) && user.accounts.length > 0) {
       for (const account of user.accounts) {
         // Prefer DISCORD over others
-        if (account.platform === UserAccountPlatform.DISCORD) {
+        if (
+          account.profileImageUrl &&
+          account.platform === UserAccountPlatform.DISCORD
+        ) {
           url = discordAvatarUrl(account);
           break;
         }
