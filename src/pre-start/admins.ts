@@ -17,10 +17,14 @@ const seedAdmins = () => {
         user.roles.push(UserRole.ADMIN);
         user.save();
       }
+      if (!user.roles.includes(UserRole.USER)) {
+        user.roles.push(UserRole.USER);
+        user.save();
+      }
     } else {
       await UserModel.create({
         ethereumAddress: e,
-        roles: [UserRole.ADMIN],
+        roles: [UserRole.ADMIN, UserRole.USER],
       });
     }
   });
