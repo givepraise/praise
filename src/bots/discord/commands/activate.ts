@@ -14,7 +14,7 @@ const activate = async (interaction: CommandInteraction) => {
   };
 
   const userAccount = await UserAccountModel.findOneAndUpdate(
-    { username: ua.username },
+    { id: user.id },
     ua,
     { upsert: true, new: true }
   );
@@ -25,7 +25,7 @@ const activate = async (interaction: CommandInteraction) => {
   }
 
   await interaction.reply(
-    `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${process.env.FRONTEND_URL}/activate?account=${user.username}%23${user.discriminator}&platform=DISCORD&token=${ua.activateToken})`
+    `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${process.env.FRONTEND_URL}/activate?accountId=${ua.id}&accountName=${user.username}%23${user.discriminator}&platform=DISCORD&token=${ua.activateToken})`
   );
 };
 
