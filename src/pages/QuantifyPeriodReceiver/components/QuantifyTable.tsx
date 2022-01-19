@@ -242,7 +242,7 @@ const QuantifyTable = () => {
             className="fixed inset-0 z-10 overflow-y-auto"
           >
             <DuplicateDialog
-              praise={selectedPraise}
+              praise={selectedPraise!}
               onClose={() => setIsDuplicateDialogOpen(false)}
               onSelect={handleDuplicate}
             />

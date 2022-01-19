@@ -14,9 +14,14 @@ import { useRecoilValue } from "recoil";
 interface PraiseAutosuggestProps {
   onClose(): any;
   onSelect(id: string): void;
+  praise: Praise;
 }
 
-const PraiseAutosuggest = ({ onSelect, onClose }: PraiseAutosuggestProps) => {
+const PraiseAutosuggest = ({
+  onSelect,
+  onClose,
+  praise,
+}: PraiseAutosuggestProps) => {
   const { periodId, receiverId } = useParams() as any;
   const userId = useRecoilValue(ActiveUserId);
 
@@ -28,12 +33,12 @@ const PraiseAutosuggest = ({ onSelect, onClose }: PraiseAutosuggestProps) => {
   if (!data) return null;
 
   const filteredData = data.filter(
-    (praise) =>
-      praise &&
-      praise.quantifications!.findIndex(
-        (quant) => quant.quantifier === userId
-      ) >= 0 &&
-      praise.receiver._id! === receiverId
+    (p) =>
+      p &&
+      p.quantifications!.findIndex((quant) => quant.quantifier === userId) >=
+        0 &&
+      p.receiver._id! === receiverId &&
+      p._id !== praise._id
   );
 
   const DropdownCombobox = () => {

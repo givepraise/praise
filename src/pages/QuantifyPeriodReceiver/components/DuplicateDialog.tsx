@@ -7,7 +7,7 @@ import PraiseAutosuggest from "./PraiseAutosuggest";
 interface PoolDeleteDialogProps {
   onClose(): any;
   onSelect(praiseId: string): void;
-  praise: Praise | undefined;
+  praise: Praise;
 }
 const PoolDismissDialog = ({
   onSelect,
@@ -33,7 +33,11 @@ const PoolDismissDialog = ({
             </Dialog.Title>
 
             <div className="flex justify-center">
-              <PraiseAutosuggest onSelect={onSelect} onClose={onClose} />
+              <PraiseAutosuggest
+                onSelect={onSelect}
+                onClose={onClose}
+                praise={praise}
+              />
             </div>
           </div>
         </div>
