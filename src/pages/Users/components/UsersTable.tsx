@@ -1,3 +1,4 @@
+import { UserAvatar } from "@/components/user/UserAvatar";
 import {
   AllQuantifierUsers,
   useAdminUsers,
@@ -6,7 +7,7 @@ import {
 } from "@/model/users";
 import { shortenEthAddress } from "@/utils/index";
 import { getUsername } from "@/utils/users";
-import { faTimesCircle, faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
 import React from "react";
@@ -32,7 +33,7 @@ const UsersTable = () => {
           return (
             <div className="flex items-center w-full">
               <div className="flex items-center">
-                <FontAwesomeIcon icon={faUserCircle} size="2x" />
+                <UserAvatar user={data.row.original} />
               </div>
               <div className="flex-grow p-3 whitespace-nowrap">
                 {data.row.original.accounts?.length > 0 ? (

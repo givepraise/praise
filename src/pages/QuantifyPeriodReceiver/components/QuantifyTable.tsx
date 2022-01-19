@@ -1,3 +1,4 @@
+import { UserAvatar } from "@/components/user/UserAvatar";
 import { UserPseudonym } from "@/components/user/UserPseudonym";
 import { ActiveUserId } from "@/model/auth";
 import {
@@ -13,7 +14,6 @@ import {
   faCopy,
   faTimes,
   faTimesCircle,
-  faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog } from "@headlessui/react";
@@ -134,7 +134,7 @@ const QuantifyTable = () => {
               <td>
                 <div className="flex items-center w-full">
                   <div className="flex items-center">
-                    <FontAwesomeIcon icon={faUserCircle} size="2x" />
+                    <UserAvatar userAccount={praise.giver} />
                   </div>
                 </div>
               </td>

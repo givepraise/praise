@@ -1,8 +1,7 @@
+import { UserAvatar } from "@/components/user/UserAvatar";
 import { AllPeriodReceiverPraise } from "@/model/periods";
 import { Praise } from "@/model/praise";
 import { formatDate } from "@/utils/date";
-import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { SyntheticEvent } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { TableOptions, useTable } from "react-table";
@@ -24,7 +23,7 @@ const PeriodReceiverTable = () => {
         Cell: (data: any) => (
           <div className="flex items-center w-full">
             <div className="flex items-center">
-              <FontAwesomeIcon icon={faUserCircle} size="2x" />
+              <UserAvatar user={data.row.original} />
             </div>
             <div className="flex-grow p-3">
               <div>

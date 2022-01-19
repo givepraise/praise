@@ -1,7 +1,8 @@
 import LoaderSpinner from "@/components/LoaderSpinner";
+import { UserAvatar } from "@/components/user/UserAvatar";
 import { AllPraiseList, Praise } from "@/model/praise";
 import { formatDate } from "@/utils/date";
-import { faSadTear, faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { faSadTear } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { SyntheticEvent } from "react";
 import { useHistory } from "react-router-dom";
@@ -21,9 +22,9 @@ const MyPraiseTable = () => {
         Cell: (data: any) => (
           <div className="flex items-center w-full">
             <div className="flex items-center">
-              <FontAwesomeIcon icon={faUserCircle} size="2x" />
+              <UserAvatar userAccount={data.row.original.giver} />
             </div>
-            <div className="flex-grow p-3">
+            <div className="flex-grow p-3 overflow-hidden">
               <div>
                 <span className="font-bold">
                   {data.row.original.giver.username}
@@ -73,7 +74,6 @@ const MyPraiseTable = () => {
               return (
                 <tr
                   className="cursor-pointer hover:bg-gray-100"
-                  id={"praise-" + row.values.id}
                   {...row.getRowProps()}
                   onClick={handleClick(row.original as Praise)}
                 >
