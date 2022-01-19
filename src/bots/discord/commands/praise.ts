@@ -124,6 +124,11 @@ const praise = async (interaction: CommandInteraction) => {
   const Receivers = (await guild.members.fetch({ user: receiverIds })).map(
     (u) => u
   );
+
+  const guildChannel = await guild.channels.fetch(
+    interaction?.channel?.id || ''
+  );
+
   for (const receiver of Receivers) {
     const ra = {
       id: receiver.user.id,
@@ -146,10 +151,6 @@ const praise = async (interaction: CommandInteraction) => {
         "You were just praised in the TEC! It looks like you haven't activated your account... To activate use the `/praise-activate` command in the server."
       );
     }
-
-    const guildChannel = await guild.channels.fetch(
-      interaction?.channel?.id || ''
-    );
 
     await PraiseModel.create({
       reason: reason,
