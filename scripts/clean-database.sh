@@ -1,6 +1,8 @@
 mongosh
 use praise_db;
-db.praises.drop();
-db.users.drop();
 db.accounts.drop();
 db.periods.drop();
+db.praises.drop();
+db.quantifications.drop();
+db.settings.drop();
+db.users.drop();

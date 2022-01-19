@@ -66,7 +66,19 @@ const quantify = async (
   quantification.dismissed = dismissed;
   if (duplicatePraise) {
     const dp = await PraiseModel.findById(duplicatePraise);
+
     if (dp) {
+      const circularDependency = dp.quantifications.find((q) => {
+        if (!q.duplicatePraise) return null;
+        return q.duplicatePraise.equals(praise._id);
+      });
+
+      if (duplicatePraise === praise.id || circularDependency) {
+        throw new BadRequestError(
+          'Selected praise cannot be set as duplicate.'
+        );
+      }
+
       quantification.duplicatePraise = dp._id;
     }
   } else {
