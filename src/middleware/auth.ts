@@ -34,10 +34,10 @@ export const authMiddleware = (role: UserRole) => {
     });
 
     if (!user) throw new NotFoundError('User');
-    req.body.currentUser = user;
 
     res.locals.roles = clientData.roles;
     res.locals.ethereumAddress = clientData.ethereumAddress;
+    res.locals.currentUser = user;
 
     next();
   };

@@ -4,11 +4,13 @@ import { NOT_FOUND } from '@shared/constants';
 import { Router } from 'express';
 import activateRouter from './activate';
 import adminPeriodRouter from './admin/periods';
-import settingsRouter from './admin/settings';
+import adminPraiseRouter from './admin/praise';
+import adminSettingsRouter from './admin/settings';
 import adminUserRouter from './admin/users';
 import authRouter from './auth';
 import periodRouter from './periods';
 import praiseRouter from './praise';
+import settingsRouter from './settings';
 import userAccountRouter from './useraccounts';
 import userRouter from './users';
 
@@ -19,6 +21,7 @@ baseRouter.use('/auth', authRouter);
 
 baseRouter.use('/activate', activateRouter);
 
+baseRouter.use('/settings', authMiddleware(UserRole.USER), settingsRouter);
 baseRouter.use('/users', authMiddleware(UserRole.USER), userRouter);
 baseRouter.use('/periods', authMiddleware(UserRole.USER), periodRouter);
 baseRouter.use('/praise', authMiddleware(UserRole.USER), praiseRouter);
@@ -34,11 +37,16 @@ baseRouter.use(
   authMiddleware(UserRole.ADMIN),
   adminPeriodRouter
 );
+baseRouter.use(
+  '/admin/praise',
+  authMiddleware(UserRole.ADMIN),
+  adminPraiseRouter
+);
 
 baseRouter.use(
   '/admin/settings',
   authMiddleware(UserRole.ADMIN),
-  settingsRouter
+  adminSettingsRouter
 );
 
 baseRouter.all('*', (req, res) => {

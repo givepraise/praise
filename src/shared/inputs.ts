@@ -1,4 +1,5 @@
 import { UserRole } from '@entities/User';
+import { UserAccountInterface } from '@entities/UserAccount';
 import { Query } from './types';
 
 export interface QueryInput extends Query {
@@ -17,6 +18,15 @@ export interface QuantificationCreateUpdateInput {
   score: number;
   dismissed: boolean;
   duplicatePraiseId: string;
+}
+
+export interface PraiseImportInput {
+  createdAt: string;
+  giver: UserAccountInterface;
+  receiver: UserAccountInterface;
+  reason: string;
+  sourceId: string;
+  sourceName: string;
 }
 
 export interface SearchQueryInput extends QueryInput {
