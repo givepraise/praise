@@ -22,7 +22,7 @@ const USERS = [
     roles: ['ADMIN', 'USER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    ethereumAddress: '0x2fA130927814B590623031e846f059df9554FdDe', // Vyvy-vi
     roles: ['USER', 'QUANTIFIER'],
   },
   {
