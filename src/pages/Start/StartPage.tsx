@@ -17,7 +17,7 @@ const StartPage = () => {
         </React.Suspense>
       </div>
 
-      <div className="praise-box">
+      <div className="w-2/3 praise-box">
         <React.Suspense fallback="Loading…">
           <PraiseTable />
         </React.Suspense>

@@ -21,20 +21,21 @@ const PeriodReceiverMessage = () => {
 
   return (
     <>
-      Praise Id: {praise._id}
-      <br />
-      Date: {formatDateLong(praise.createdAt)}
-      <br />
-      Giver: {praise.giver.username}
-      <br />
-      Receiver: {praise.receiver.username}
-      {period.status === "CLOSED" || isAdmin ? (
-        <>
-          <br />
-          Average praise score: {praise.avgScore}
-        </>
-      ) : null}
-      <div className="mt-2">Reason: {praise.reason}</div>
+      <div className="text-gray-500">{formatDateLong(praise.createdAt)}</div>
+      <h2>
+        {praise.giver.username} <span className="font-normal">to</span>{" "}
+        {praise.receiver.username}
+      </h2>
+      <div className="mt-2">{praise.reason}</div>
+      <div className="mt-2">
+        Id: {praise._id}
+        {period.status === "CLOSED" || isAdmin ? (
+          <>
+            <br />
+            Average praise score: {praise.avgScore}
+          </>
+        ) : null}
+      </div>
     </>
   );
 };

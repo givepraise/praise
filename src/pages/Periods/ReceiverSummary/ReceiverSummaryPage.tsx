@@ -14,10 +14,10 @@ const PeriodReceiverMessage = () => {
   const period = useRecoilValue(SinglePeriod({ periodId }));
   const user = useRecoilValue(SingleUserByReceiverId({ receiverId }));
   const receiverData = useRecoilValue(PeriodReceiver({ periodId, receiverId }));
-  if (!user || !period || !receiverData) return null;
+  if (!period || !receiverData) return null;
   return (
     <>
-      <h2>{getUsername(user)}</h2>
+      <h2>{user ? getUsername(user) : receiverData.username}</h2>
       <div className="mt-5">
         Period: {period.name}
         <br />

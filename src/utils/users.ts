@@ -14,23 +14,6 @@ export const getUsername = (user: User): string | undefined => {
   return username;
 };
 
-export const getProfileImageUrl = (
-  user: User,
-  size: number
-): string | undefined => {
-  let url;
-  if (Array.isArray(user.accounts) && user.accounts.length > 0) {
-    for (const account of user.accounts) {
-      // Prefer DISCORD over others
-      if (account.platform === UserAccountPlatform.DISCORD) {
-        url = `https://cdn.discordapp.com/avatars/${account.id}/${account.profileImageUrl}.webp?size=${size}`;
-        break;
-      }
-    }
-  }
-  return url;
-};
-
 export const psudonymAdjectives = [
   "Red",
   "Green",
