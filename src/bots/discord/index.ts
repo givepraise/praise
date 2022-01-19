@@ -14,7 +14,7 @@ if (!process.env.PRAISE_GIVER_ROLE_ID) {
 }
 
 // Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ intents: ["GUILDS", "GUILD_MEMBERS"] });
 
 // Set bot commands
 (async() => {

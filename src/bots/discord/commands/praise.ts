@@ -18,6 +18,17 @@ const praiseErrorEmbed = (
     .setFooter({ text: 'PRAISE DID NOT REGISTER' });
 }
 
+const praiseSuccessEmbed = (
+  praised: string[]
+) => {
+  return new MessageEmbed()
+    .setColor("#00ff00")
+    .setTitle(`SUCCESSFULLY PRAISED!`)
+    .setDescription("Praised" + praised.join(', '))
+    .setFooter({ text: 'PRAISE REGISTERED' });
+}
+
+
 const praise = async (interaction: CommandInteraction) => {
   const { guild, channel, member } = interaction;
   if (!guild || !member) {
@@ -108,7 +119,7 @@ const praise = async (interaction: CommandInteraction) => {
   });
 
   if (!User) {
- const notActivatedEmbed = praiseErrorEmbed(
+    const notActivatedEmbed = praiseErrorEmbed(
       "Account Not Activated",
       "Your Account is not activated in the praise system. Unactivated accounts can not praise users. Use the `/praise-activate` command to activate your praise account and to link your eth address." 
     );
@@ -116,14 +127,51 @@ const praise = async (interaction: CommandInteraction) => {
     return;
   }
 
-  PraiseModel.create({
-    reason: reason,
-    giver: ua.id,
-    sourceId: `DISCORD:${guild.id}:${}`,
-    sourceName: faker.lorem.word(),
-    receiver: receiver!._id,
-    createdAt: 
+  const praised: string[] = ["la"];
+  const receiverIds = receiverData.validReceiverIds.map((id) => id.substr(3, id.length - 4));
+  const Receivers = await guild.members.fetch({user: receiverIds});
+  console.log(Receivers);
+  Receivers.forEach(async (receiver) => {
+    const ra = {
+      id: receiver.user.id,
+      username: receiver.user.username + '#' + receiver.user.discriminator,
+      profileImageUrl: receiver.avatar,
+      platform: 'DISCORD',
+      activateToken: randomstring.generate(),
+    };
+    console.log(receiver);
+    const receiverAccount = await UserAccountModel.findOneAndUpdate(
+      { username: ra.username },
+      ra,
+      { upsert: true, new: true }
+    );
+    
+    const receiverUser = await UserModel.findOne({
+      accounts: receiverAccount
+    });
+    if (!receiverUser) {
+      await receiver.send('You were just praised in the TEC! It looks like you haven\'t activated your account... To activate use the `/praise-activate` command in the server.');
+    }
+
+    const guildChannel = await guild.channels.fetch(interaction?.channel?.id || "");
+
+    await PraiseModel.create({
+      reason: reason,
+      giver: userAccount!._id,
+      sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
+      sourceName: `DISCORD:${encodeURI(guild.name)}:${encodeURI(guildChannel?.name || "")}`,
+      receiver: receiverAccount!._id,
+      createdAt: interaction.createdAt,
+    });
+    console.log(praised);
+    praised.push(ra.id);
+    console.log(praised);
   });
+
+  console.log(praised)
+  await interaction.reply({embeds: [praiseSuccessEmbed(
+      praised.map((id) => `<@!${id}>`)
+  )]});
 }
 
 module.exports = {
