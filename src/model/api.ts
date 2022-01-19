@@ -276,13 +276,13 @@ export const AccountActivateQuery = selectorFamily({
   get:
     (params: any) =>
     async ({ get }) => {
-      const { ethereumAddress, accountName, message, signature } = params;
-      if (!ethereumAddress || !accountName || !message || !signature)
+      const { ethereumAddress, accountId, message, signature } = params;
+      if (!ethereumAddress || !accountId || !message || !signature)
         return undefined;
 
       const data = JSON.stringify({
         ethereumAddress,
-        accountName,
+        accountId,
         message,
         signature,
       });

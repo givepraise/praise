@@ -38,7 +38,7 @@ const ActivateSuccessful = () => {
 
 const ActivateDialog = () => {
   const { search } = useLocation();
-  const { account: accountName, platform } = queryString.parse(search);
+  const { accountName, platform } = queryString.parse(search);
   const {
     error: ethError,
     connector: ethConnector,
