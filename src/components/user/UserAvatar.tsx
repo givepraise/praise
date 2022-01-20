@@ -37,7 +37,7 @@ const WrappedUserAvatar = ({ user, userAccount }: UserAvatarProps) => {
   }
 
   return url ? (
-    <img src={url} alt="avatar" className="rounded-full w-[29px]" />
+    <img src={url} alt="avatar" className="rounded-full w-[29px] max-w-none" />
   ) : (
     <FontAwesomeIcon icon={faUserCircle} size="2x" />
   );
