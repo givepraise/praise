@@ -32,19 +32,12 @@ const activate = async (interaction: CommandInteraction) => {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('praise')
-    .setDescription('The Praise Bot!')
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName('activate')
-        .setDescription(
-          'Activates your praise account and links your eth address!'
-        )
-    ),
+    .setName('praise-activate')
+    .setDescription('Activates your praise account and links your eth address!'),
 
   async execute(interaction: Interaction) {
     if (interaction.isCommand()) {
-      if (interaction.options.getSubcommand() === 'activate') {
+      if (interaction.commandName === 'praise-activate') {
         await activate(interaction);
       }
     }
