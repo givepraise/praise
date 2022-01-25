@@ -126,9 +126,7 @@ export const SinglePraiseExt = selectorFamily({
       if (!praise) return undefined;
       let praiseExt = {
         ...praise,
-        reason:
-          praise.reason +
-          "https://www.google.com/search?q=fleur+de+lis&oq=fleur+de+lis&aqs=chrome..69i57j0i512l7j46i199i465i512j0i512.1385j0j7&sourceid=chrome&ie=UTF-8",
+        reason: praise.reason,
       };
       if (praise.quantifications) {
         praiseExt.quantifications = praise.quantifications.map((q) =>
