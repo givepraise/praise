@@ -190,22 +190,29 @@ export const ApiAuthPatchQuery = selectorFamily<
 
 export const handleErrors = (err: AxiosError) => {
   // client received an error response (5xx, 4xx)
-  if (err.response) {
-    if (err.response.status === 404) {
+  const { request, response } = err;
+  if (response) {
+    if (response.status === 404) {
       window.location.href = "/404";
     }
+
+    if ((response.data as any).error) {
+      toast.error((response.data as any).error);
+      return;
+    }
+
     // TODO Handle expired JWT token
-  } else if (err.request) {
+  }
+
+  if (request) {
     // client never received a response, or request never left
     if (err.message) {
       toast.error(err.message);
-    } else {
-      toast.error("Unknown error.");
+      return;
     }
-  } else {
-    // anything else
-    // TODO Add handling of other errors
   }
+
+  toast.error("Unknown error.");
 };
 
 export const ApiQuery = async (query: any) => {
