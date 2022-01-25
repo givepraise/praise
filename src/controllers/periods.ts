@@ -118,7 +118,7 @@ const assignQuantifiersDryRun = async (periodId: string) => {
     {
       $group: {
         _id: '$receiver',
-        praiseCount: { $count: {} },
+        praiseCount: { $sum: {} },
         praiseIds: {
           $push: '$_id',
         },

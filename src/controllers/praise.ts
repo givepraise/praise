@@ -8,6 +8,7 @@ import { getQuerySort } from '@shared/functions';
 import { QuantificationCreateUpdateInput, QueryInput } from '@shared/inputs';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
+import UserModel from '@entities/User';
 
 export const all = async (
   req: Request<any, QueryInput, any>,
@@ -134,6 +135,7 @@ export const exportPraise = async (
   res: Response
 ): Promise<any> => {
   const query: any = {};
+
   if (req.query.receiver) {
     query.receiver = req.query.receiver;
   }
@@ -206,7 +208,27 @@ export const exportPraise = async (
   const quantificationsColumnsCount =
     praiseQuantifications[0].quantificationsCount;
 
-  const docs = praises ? praises : [];
+  const docs = await Promise.all(
+    praises.map(async (p) => {
+      const receiver = await UserModel.findOne({
+        accounts: p.receiver._id,
+      });
+
+      const giver = await UserModel.findOne({
+        accounts: p.giver._id,
+      });
+
+      if (receiver) {
+        p.receiver.ethAddress = receiver.ethereumAddress;
+      }
+
+      if (giver) {
+        p.giver.ethAddress = giver.ethereumAddress;
+      }
+
+      return p;
+    })
+  );
 
   const fields = [
     {
@@ -219,7 +241,7 @@ export const exportPraise = async (
     },
     {
       label: 'TO ETH ADDRESS',
-      value: 'receiver.user.ethAddress',
+      value: 'receiver.ethAddress',
     },
     {
       label: 'FROM',
@@ -227,7 +249,7 @@ export const exportPraise = async (
     },
     {
       label: 'FROM ETH ADDRESS',
-      value: 'giver.user.ethAddress',
+      value: 'giver.ethAddress',
     },
     {
       label: 'REASON',
