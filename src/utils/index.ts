@@ -1,3 +1,4 @@
+import { Mark } from "@mui/material";
 import React from "react";
 
 export const useOutsideAlerter = (ref: any) => {
@@ -37,14 +38,15 @@ export const shortenEthAddress = (address: string) => {
   )}`;
 };
 
-const praiseScore = [0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144];
+export const praiseScore = [0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144];
 
 export const getPraiseMarks = () => {
-  let marks = {};
+  let marks: Mark[] = [];
   let topScore = praiseScore[praiseScore.length - 1];
-  const markStep = Math.round(topScore / (praiseScore.length - 1));
   for (let i = 0; i < praiseScore.length; i++) {
-    (marks as any)[i * markStep] = praiseScore[i];
+    marks.push({
+      value: Math.round((i * topScore) / (praiseScore.length - 1)),
+    });
   }
   return marks;
 };
