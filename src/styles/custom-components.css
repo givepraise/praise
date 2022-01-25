@@ -14,3 +14,12 @@
   @apply border border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent;
 }
 */
+
+/* MUI Slider styles */
+.local-MuiSlider-colorPrimary {
+  @apply !text-gray-800;
+}
+
+.local-MuiSlider-disabled {
+  @apply text-gray-400;
+}

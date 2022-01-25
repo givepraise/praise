@@ -115,7 +115,7 @@ export default function Nav() {
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
             >
-              <Menu.Items className="absolute w-56 -mt-12 bg-white rounded-md shadow-lg left-40 ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <Menu.Items className="absolute w-56 -mt-12 bg-white rounded-md shadow-lg left-40 ring-1 ring-gray-800 ring-opacity-5 focus:outline-none">
                 <div className="py-1">
                   <Menu.Item>
                     {({ active }) => (

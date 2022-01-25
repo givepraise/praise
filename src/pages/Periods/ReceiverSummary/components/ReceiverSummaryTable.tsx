@@ -1,101 +1,56 @@
 import { UserAvatar } from "@/components/user/UserAvatar";
 import { AllPeriodReceiverPraise } from "@/model/periods";
-import { Praise } from "@/model/praise";
 import { formatDate } from "@/utils/date";
-import React, { SyntheticEvent } from "react";
+import React from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { TableOptions, useTable } from "react-table";
 import { useRecoilValue } from "recoil";
 
-const PeriodReceiverTable = () => {
+interface PraiseRowProps {
+  praise: any;
+}
+const PraiseRow = ({ praise }: PraiseRowProps) => {
   const history = useHistory();
+
+  const handleClick = () => {
+    history.push(`/praise/${praise._id}`);
+  };
+
+  return (
+    <div
+      className="flex items-center p-5 cursor-pointer hover:bg-gray-100"
+      onClick={handleClick}
+    >
+      <div className="">
+        <UserAvatar userAccount={praise.giver} />
+      </div>
+      <div className="ml-5 overflow-hidden">
+        <div>
+          <span className="font-bold">{praise.giver.username}</span>
+          <span className="ml-3 text-xs text-gray-500">
+            {formatDate(praise.createdAt)}
+          </span>
+        </div>
+        <div>{praise.reason}</div>
+      </div>
+      <div className="text-center px-14">{praise.avgScore}</div>
+    </div>
+  );
+};
+
+const PeriodReceiverTable = () => {
   let { periodId, receiverId } = useParams() as any;
 
   const data = useRecoilValue(
     AllPeriodReceiverPraise({ periodId, receiverId })
   );
 
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: "",
-        accessor: "createdAt",
-        Cell: (data: any) => (
-          <div className="flex items-center w-full">
-            <div className="flex items-center">
-              <UserAvatar user={data.row.original} />
-            </div>
-            <div className="flex-grow p-3">
-              <div>
-                <span className="font-bold">
-                  {data.row.original.giver.username}
-                </span>
-                <span className="ml-2 text-xs text-gray-500">
-                  {formatDate(data.row.original.createdAt)}
-                </span>
-              </div>
-
-              <div className="w-full">{data.row.original.reason}</div>
-            </div>
-          </div>
-        ),
-      },
-      {
-        Header: "Avg.score",
-        accessor: "avgScore",
-        Cell: (data: any) => <div className="text-center">{data.value}</div>,
-      },
-    ],
-    []
-  );
-
-  const options = {
-    columns,
-    data: data ? data : [],
-  } as TableOptions<{}>;
-  const tableInstance = useTable(options);
-
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    tableInstance;
-
-  const handleClick = (praise: Praise) => (e: SyntheticEvent) => {
-    history.push(`/praise/${praise._id}`);
-  };
+  if (!data) return null;
   return (
-    <table
-      id="periods-table"
-      className="w-full table-auto"
-      {...getTableProps()}
-    >
-      <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th className="text-left" {...column.getHeaderProps()}>
-                {column.render("Header")}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row) => {
-          prepareRow(row);
-          return (
-            <tr
-              className="cursor-pointer hover:bg-gray-100"
-              id={"period-" + row.values.name}
-              {...row.getRowProps()}
-              onClick={handleClick(row.original as Praise)}
-            >
-              {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <div>
+      {data?.map((praise) => (
+        <PraiseRow praise={praise} />
+      ))}
+    </div>
   );
 };
 

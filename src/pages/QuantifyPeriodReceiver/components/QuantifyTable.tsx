@@ -9,7 +9,7 @@ import { Praise, useQuantifyPraise } from "@/model/praise";
 import { SingleBooleanSetting } from "@/model/settings";
 import DismissDialog from "@/pages/QuantifyPeriodReceiver/components/DismissDialog";
 import { formatDate } from "@/utils/date";
-import { classNames, getPraiseMark, getPraiseMarks } from "@/utils/index";
+import { classNames } from "@/utils/index";
 import {
   faCopy,
   faTimes,
@@ -22,7 +22,7 @@ import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { QuantifyBackNextLink } from "./BackNextLink";
 import DuplicateDialog from "./DuplicateDialog";
-import RangeSlider from "./RangeSlider";
+import QuantifySlider from "./QuantifySlider";
 
 interface InlineLabelProps {
   text: string;
@@ -34,7 +34,7 @@ const InlineLabel = ({ text, button, className }: InlineLabelProps) => {
     <span
       className={classNames(
         className,
-        "h-6 pl-1 pr-1 mr-1 text-xs text-white no-underline bg-black py-[1px] rounded"
+        "h-6 pl-1 pr-1 mr-1 text-xs text-white no-underline bg-gray-800 py-[1px] rounded"
       )}
     >
       {text}
@@ -43,8 +43,16 @@ const InlineLabel = ({ text, button, className }: InlineLabelProps) => {
   );
 };
 
-const getQuantification = (praise: Praise, quantifierId: string) => {
-  return praise!.quantifications!.find((q) => q.quantifier === quantifierId);
+const getRemoveButton = (action: any) => {
+  return (
+    <button onClick={action} className="ml-2">
+      <FontAwesomeIcon
+        className="text-white text-opacity-50 hover:text-opacity-100"
+        icon={faTimes}
+        size="1x"
+      />
+    </button>
+  );
 };
 
 const QuantifyTable = () => {
@@ -57,7 +65,6 @@ const QuantifyTable = () => {
   const usePseudonyms = useRecoilValue(
     SingleBooleanSetting("PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS")
   );
-
   const { quantify } = useQuantifyPraise();
 
   let [isDismissDialogOpen, setIsDismissDialogOpen] = React.useState(false);
@@ -66,14 +73,20 @@ const QuantifyTable = () => {
     undefined
   );
 
-  const handleChange = (value: number) => {
-    const quantification = getQuantification(selectedPraise!, userId!);
-    quantify(
-      selectedPraise!._id,
-      (getPraiseMarks() as any)[value.toString()],
-      quantification!.dismissed ? quantification!.dismissed : false,
-      quantification!.duplicatePraise ? quantification!.duplicatePraise : null
-    );
+  if (!data) return null;
+
+  const quantification = (praise: Praise) => {
+    return praise.quantifications!.find((q) => q.quantifier === userId);
+  };
+
+  const dismissed = (praise: Praise) => {
+    const q = quantification(praise);
+    return q ? !!q.dismissed : false;
+  };
+
+  const duplicate = (praise: Praise) => {
+    const q = quantification(praise);
+    return q ? (q.duplicatePraise ? true : false) : false;
   };
 
   const handleDismiss = () => {
@@ -92,39 +105,6 @@ const QuantifyTable = () => {
     quantify(selectedPraise!._id, 0, false, null);
   };
 
-  const getRemoveButton = (action: any) => {
-    return (
-      <button onClick={action} className="ml-2">
-        <FontAwesomeIcon
-          className="text-white text-opacity-50 hover:text-opacity-100"
-          icon={faTimes}
-          size="1x"
-        />
-      </button>
-    );
-  };
-
-  if (!data) return null;
-
-  const quantification = (praise: Praise) => {
-    return praise.quantifications!.find((q) => q.quantifier === userId);
-  };
-
-  const dismissed = (praise: Praise) => {
-    const q = quantification(praise);
-    return q ? !!q.dismissed : false;
-  };
-
-  const duplicate = (praise: Praise) => {
-    const q = quantification(praise);
-    return q ? (q.duplicatePraise ? true : false) : false;
-  };
-
-  const score = (praise: Praise) => {
-    const q = quantification(praise);
-    return q && q.score ? getPraiseMark(q.score) : 0;
-  };
-
   return (
     <>
       <table className="w-full table-auto">
@@ -134,7 +114,7 @@ const QuantifyTable = () => {
             return (
               <tr key={index} onMouseDown={() => setSelectedPraise(praise)}>
                 <td>
-                  <div className="flex items-center w-full">
+                  <div className="items-center w-full">
                     <div className="flex items-center">
                       <UserAvatar userAccount={praise.giver} />
                     </div>
@@ -156,7 +136,7 @@ const QuantifyTable = () => {
                       {formatDate(praise.createdAt)}
                     </span>
                   </div>
-                  <div className="flex space-x-1">
+                  <div className="w-[550px] overflow-hidden overflow-ellipsis">
                     <span>
                       <InlineLabel
                         text={`#${praise._id.slice(-4)}`}
@@ -188,15 +168,10 @@ const QuantifyTable = () => {
                   </div>
                 </td>
                 <td>
-                  <div className="flex space-x-3">
-                    <RangeSlider
-                      marks={getPraiseMarks()}
-                      defaultValue={score(praise)}
-                      onValueChanged={(value: number) => handleChange(value)}
-                      disabled={dismissed(praise) || duplicate(praise)}
-                    ></RangeSlider>
+                  <div className="flex">
+                    <QuantifySlider praise={praise} />
                     <button
-                      className="hover:text-gray-400"
+                      className="pb-1 ml-4 hover:text-gray-400"
                       disabled={duplicate(praise)}
                       onClick={() => setIsDuplicateDialogOpen(true)}
                     >
@@ -207,7 +182,7 @@ const QuantifyTable = () => {
                       />
                     </button>
                     <button
-                      className="hover:text-gray-400"
+                      className="pb-1 ml-1 hover:text-gray-400"
                       disabled={dismissed(praise)}
                       onClick={() => setIsDismissDialogOpen(true)}
                     >

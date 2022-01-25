@@ -36,7 +36,7 @@ const PeriodsTable = () => {
                     : data.value === "QUANTIFY"
                     ? "bg-pink-300"
                     : "bg-gray-300",
-                  "inline-block px-2 py-1 text-xs text-white bg-black rounded-full"
+                  "inline-block px-2 py-1 text-xs text-white bg-gray-800 rounded-full"
                 )}
               >
                 {data.value === "QUANTIFY" ? "QUANTIFYING" : data.value}

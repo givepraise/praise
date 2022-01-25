@@ -1,7 +1,9 @@
+import { SingleBooleanSetting } from "@/model/settings";
 import { User, UserAccount, UserAccountPlatform } from "@/model/users";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
+import { useRecoilValue } from "recoil";
 
 const discordAvatarUrl = (account: UserAccount) => {
   return `https://cdn.discordapp.com/avatars/${account.id}/${account.profileImageUrl}.webp?size=128`;
@@ -12,6 +14,10 @@ interface UserAvatarProps {
   userAccount?: UserAccount;
 }
 const WrappedUserAvatar = ({ user, userAccount }: UserAvatarProps) => {
+  const usePseudonyms = useRecoilValue(
+    SingleBooleanSetting("PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS")
+  );
+  if (usePseudonyms) return <FontAwesomeIcon icon={faUserCircle} size="2x" />;
   let url;
   if (user) {
     if (Array.isArray(user.accounts) && user.accounts.length > 0) {

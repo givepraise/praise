@@ -26,7 +26,7 @@
   }
 
   .praise-button {
-    @apply px-4 py-2 font-bold text-white bg-black rounded hover:bg-gray-700;
+    @apply px-4 py-2 font-bold text-white bg-gray-800 rounded hover:bg-gray-700;
   }
 
   .praise-button-disabled {

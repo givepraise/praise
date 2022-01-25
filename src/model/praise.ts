@@ -63,13 +63,21 @@ export const avgPraiseScore = (
     return 0;
   let score = 0;
   let i = 0;
-  for (i; i < praise.quantifications.length; i++) {
-    const quantification = praise.quantifications[i];
-    if (quantification.duplicatePraise && quantification.duplicateScore) {
+  praise.quantifications.forEach((quantification) => {
+    if (
+      quantification.duplicatePraise &&
+      quantification.duplicateScore &&
+      quantification.duplicateScore > 0
+    ) {
       score += quantification.duplicateScore;
+      i++;
     }
-    score += quantification.score!;
-  }
+    if (quantification.score > 0) {
+      score += quantification.score!;
+      i++;
+    }
+  });
+  if (score === 0) return 0;
   return Math.round(score / i);
 };
 
@@ -118,6 +126,9 @@ export const SinglePraiseExt = selectorFamily({
       if (!praise) return undefined;
       let praiseExt = {
         ...praise,
+        reason:
+          praise.reason +
+          "https://www.google.com/search?q=fleur+de+lis&oq=fleur+de+lis&aqs=chrome..69i57j0i512l7j46i199i465i512j0i512.1385j0j7&sourceid=chrome&ie=UTF-8",
       };
       if (praise.quantifications) {
         praiseExt.quantifications = praise.quantifications.map((q) =>

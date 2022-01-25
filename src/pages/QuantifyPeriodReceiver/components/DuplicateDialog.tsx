@@ -17,7 +17,7 @@ const PoolDismissDialog = ({
   if (praise) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
+        <Dialog.Overlay className="fixed inset-0 bg-gray-800 opacity-30" />
         <div className="relative max-w-xl pb-16 mx-auto bg-white rounded">
           <div className="flex justify-end p-6">
             <button className="praise-button-round" onClick={onClose}>

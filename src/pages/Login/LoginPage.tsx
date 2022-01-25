@@ -42,7 +42,7 @@ export default function LoginPage() {
     (ethError
       ? "bg-red-700 hover:bg-red-700"
       : hasMetaMask()
-      ? "bg-black hover:bg-gray-700"
+      ? "bg-gray-800 hover:bg-gray-700"
       : "text-gray-500 bg-gray-700  cursor-default");
 
   return (

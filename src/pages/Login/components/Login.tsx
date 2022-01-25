@@ -97,7 +97,7 @@ export default function LoginButton() {
     return (
       <div>
         <button
-          className="px-4 py-2 font-bold text-white uppercase bg-black rounded hover:bg-gray-700"
+          className="px-4 py-2 font-bold text-white uppercase bg-gray-800 rounded hover:bg-gray-700"
           onClick={signLoginMessage}
         >
           Sign login message
