@@ -39,11 +39,10 @@ const praise = async (interaction: CommandInteraction) => {
     username: member.user.username + '#' + member.user.discriminator,
     profileImageUrl: member.user.avatar,
     platform: 'DISCORD',
-    activateToken: randomstring.generate(),
   };
 
   const userAccount = await UserAccountModel.findOneAndUpdate(
-    { username: ua.username },
+    { id: ua.id },
     ua,
     { upsert: true, new: true }
   );
@@ -135,10 +134,9 @@ const praise = async (interaction: CommandInteraction) => {
       username: receiver.user.username + '#' + receiver.user.discriminator,
       profileImageUrl: receiver.avatar,
       platform: 'DISCORD',
-      activateToken: randomstring.generate(),
     };
     const receiverAccount = await UserAccountModel.findOneAndUpdate(
-      { username: ra.username },
+      { id: ra.id },
       ra,
       { upsert: true, new: true }
     );
@@ -166,7 +164,7 @@ const praise = async (interaction: CommandInteraction) => {
   }
 
   await interaction.reply({
-    embeds: [praiseSuccessEmbed(praised.map((id) => `<@!${id}>`))],
+    embeds: [praiseSuccessEmbed(praised.map((id) => `<@!${id}>`), reason)],
   });
 };
 
