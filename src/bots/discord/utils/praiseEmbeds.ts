@@ -8,11 +8,12 @@ export const praiseErrorEmbed = (title: string, description: string) => {
     .setFooter({ text: 'PRAISE DID NOT REGISTER' });
 };
 
-export const praiseSuccessEmbed = (praised: string[]) => {
+export const praiseSuccessEmbed = (praised: string[], reason: string) => {
   return new MessageEmbed()
     .setColor('#00ff00')
     .setTitle(`SUCCESSFULLY PRAISED!`)
-    .setDescription(`Praised ${praised.join(', ')}.`)
+    .setDescription(`Praised ${praised.join(', ')}`)
+    .addField("Reason", reason)
     .setFooter({ text: 'PRAISE REGISTERED' });
 };
 
