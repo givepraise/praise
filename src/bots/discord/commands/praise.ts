@@ -158,7 +158,6 @@ const praise = async (interaction: CommandInteraction) => {
         guildChannel?.name || ''
       )}`,
       receiver: receiverAccount!._id,
-      createdAt: interaction.createdAt,
     });
     praised.push(ra.id);
   }
