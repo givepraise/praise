@@ -3,7 +3,7 @@ import logger from '@shared/Logger';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction, Interaction } from 'discord.js';
 import { MessageEmbed } from 'discord.js';
-import { praiseErrorEmbed, praiseSuccessEmbed } from '../utils/praiseEmbeds'
+import { praiseErrorEmbed, praiseSuccessEmbed } from '../utils/praiseEmbeds';
 
 import UserAccountModel from '../../../entities/UserAccount';
 import UserModel from '../../../entities/User';
@@ -125,9 +125,7 @@ const praise = async (interaction: CommandInteraction) => {
     (u) => u
   );
 
-  const guildChannel = await guild.channels.fetch(
-    channel?.id || ''
-  );
+  const guildChannel = await guild.channels.fetch(channel?.id || '');
 
   for (const receiver of Receivers) {
     const ra = {
@@ -148,8 +146,8 @@ const praise = async (interaction: CommandInteraction) => {
     if (!receiverUser) {
       try {
         await receiver.send(
-            "You were just praised in the TEC! It looks like you haven't activated your account... To activate use the `/praise-activate` command in the server."
-      );
+          "You were just praised in the TEC! It looks like you haven't activated your account... To activate use the `/praise-activate` command in the server."
+        );
       } catch (err) {
         logger.warn(`Can't DM user - ${ra.username} [${ra.id}]`);
       }
@@ -164,16 +162,21 @@ const praise = async (interaction: CommandInteraction) => {
       receiver: receiverAccount!._id,
     });
     if (praiseObj) {
-        praised.push(ra.id);
+      praised.push(ra.id);
     } else {
-        logger.err(
-          `Praise not registered for [${ua.id}] -> [${ra.id}] for [${reason}]`
-        )
+      logger.err(
+        `Praise not registered for [${ua.id}] -> [${ra.id}] for [${reason}]`
+      );
     }
   }
 
   await interaction.editReply({
-    embeds: [praiseSuccessEmbed(praised.map((id) => `<@!${id}>`), reason)],
+    embeds: [
+      praiseSuccessEmbed(
+        praised.map((id) => `<@!${id}>`),
+        reason
+      ),
+    ],
   });
   return;
 };

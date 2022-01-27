@@ -5,7 +5,7 @@ export const praiseErrorEmbed = (title: string, description: string) => {
     .setColor('#ff0000')
     .setTitle(`ERROR: ${title}`)
     .setDescription(description)
-    .setFooter({ text: '❌ \ PRAISE NOT REGISTERED' });
+    .setFooter({ text: '❌  PRAISE NOT REGISTERED' });
 };
 
 export const praiseSuccessEmbed = (praised: string[], reason: string) => {
@@ -13,7 +13,6 @@ export const praiseSuccessEmbed = (praised: string[], reason: string) => {
     .setColor('#00ff00')
     .setTitle(`SUCCESSFULLY PRAISED!`)
     .setDescription(`Praised ${praised.join(', ')}`)
-    .addField("Reason", reason)
-    .setFooter({ text: '✅ \ PRAISE REGISTERED' });
+    .addField('Reason', reason)
+    .setFooter({ text: '✅  PRAISE REGISTERED' });
 };
-
