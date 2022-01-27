@@ -11,12 +11,13 @@ import PraiseModel from '../../../entities/Praise';
 
 const praise = async (interaction: CommandInteraction) => {
   const { guild, channel, member } = interaction;
+
   if (!guild || !member) {
     const dmErrorEmbed = praiseErrorEmbed(
       'Server not found',
       'This command can only be used in the discord server.'
     );
-    await interaction.reply({ embeds: [dmErrorEmbed] });
+    await interaction.editReply({ embeds: [dmErrorEmbed] });
     return;
   }
 
@@ -30,7 +31,7 @@ const praise = async (interaction: CommandInteraction) => {
       `User does not have \`${praiseGiverRole?.name}\` role`,
       `The praise command can only be used by members with the <@&${praiseGiverRole?.id}> role. Attend an onboarding-call, or ask a steward or guide for an Intro to Praise.`
     );
-    await interaction.reply({ embeds: [noGiverRoleEmbed] });
+    await interaction.editReply({ embeds: [noGiverRoleEmbed] });
     return;
   }
 
@@ -90,7 +91,7 @@ const praise = async (interaction: CommandInteraction) => {
       'This command requires atleast one valid receiver to be mentioned.'
     );
 
-    await interaction.reply({ embeds: [addInfoFields(noReceiverEmbed)] });
+    await interaction.editReply({ embeds: [addInfoFields(noReceiverEmbed)] });
     return;
   }
 
@@ -99,7 +100,7 @@ const praise = async (interaction: CommandInteraction) => {
       'Reason not provided',
       'Praise needs a `reason` in order to be dished.'
     );
-    await interaction.reply({ embeds: [addInfoFields(noReasonEmbed)] });
+    await interaction.editReply({ embeds: [addInfoFields(noReasonEmbed)] });
     return;
   }
 
@@ -112,7 +113,7 @@ const praise = async (interaction: CommandInteraction) => {
       'Account Not Activated',
       'Your Account is not activated in the praise system. Unactivated accounts can not praise users. Use the `/praise-activate` command to activate your praise account and to link your eth address.'
     );
-    await interaction.reply({ embeds: [addInfoFields(notActivatedEmbed)] });
+    await interaction.editReply({ embeds: [addInfoFields(notActivatedEmbed)] });
     return;
   }
 
@@ -145,11 +146,14 @@ const praise = async (interaction: CommandInteraction) => {
       accounts: receiverAccount,
     });
     if (!receiverUser) {
-      await receiver.send(
-        "You were just praised in the TEC! It looks like you haven't activated your account... To activate use the `/praise-activate` command in the server."
+      try {
+        await receiver.send(
+            "You were just praised in the TEC! It looks like you haven't activated your account... To activate use the `/praise-activate` command in the server."
       );
+      } catch (err) {
+        console.error(`Can't DM user - ${ra.username} [${ra.id}]`);
+      }
     }
-
     await PraiseModel.create({
       reason: reason,
       giver: userAccount!._id,
@@ -162,9 +166,10 @@ const praise = async (interaction: CommandInteraction) => {
     praised.push(ra.id);
   }
 
-  await interaction.reply({
+  await interaction.editReply({
     embeds: [praiseSuccessEmbed(praised.map((id) => `<@!${id}>`), reason)],
   });
+  return;
 };
 
 module.exports = {
@@ -189,6 +194,7 @@ module.exports = {
   async execute(interaction: Interaction) {
     if (interaction.isCommand()) {
       if (interaction.commandName === 'praise') {
+        await interaction.deferReply();
         await praise(interaction);
       }
     }
