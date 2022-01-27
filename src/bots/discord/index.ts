@@ -10,7 +10,7 @@ declare module 'discord.js' {
 }
 
 if (!process.env.PRAISE_GIVER_ROLE_ID) {
-  console.error('Praise Giver Role not set.');
+  logger.err('Praise Giver Role not set.');
 }
 
 // Create a new client instance
@@ -43,7 +43,7 @@ client.on('interactionCreate', async (interaction) => {
   try {
     await command.execute(interaction);
   } catch (error) {
-    console.error(error);
+    logger.err(error);
     return interaction.reply({
       content: 'There was an error while executing this command!',
       ephemeral: true,

@@ -1,3 +1,5 @@
+import logger from '@shared/Logger';
+
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 
@@ -12,14 +14,14 @@ export const registerCommands = async (
     guildId: string,
 ): Promise<boolean> => {
   if (!clientId) {
-    console.error('DISCORD_CLIENT_ID env variable not set.');
+    logger.err('DISCORD_CLIENT_ID env variable not set.');
   }
   if (!guildId) {
-    console.error('DISCORD_GUILD_ID env variable not set.');
+    logger.err('DISCORD_GUILD_ID env variable not set.');
   }
 
   try {
-    console.log('Started refreshing application (/) commands.');
+    logger.info('Started refreshing application (/) commands.');
     const rest = new REST({ version: '9' }).setToken(client.token || "");
 
     const commandData = [];
@@ -49,7 +51,7 @@ export const registerCommands = async (
 
     return true;
   } catch (error) {
-    console.error(error);
+    logger.err(error);
     return false;
   }
 }

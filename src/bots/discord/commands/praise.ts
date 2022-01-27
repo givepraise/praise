@@ -1,9 +1,9 @@
+import logger from '@shared/Logger';
+
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction, Interaction } from 'discord.js';
 import { MessageEmbed } from 'discord.js';
 import { praiseErrorEmbed, praiseSuccessEmbed } from '../utils/praiseEmbeds'
-
-import randomstring from 'randomstring';
 
 import UserAccountModel from '../../../entities/UserAccount';
 import UserModel from '../../../entities/User';
@@ -126,7 +126,7 @@ const praise = async (interaction: CommandInteraction) => {
   );
 
   const guildChannel = await guild.channels.fetch(
-    interaction?.channel?.id || ''
+    channel?.id || ''
   );
 
   for (const receiver of Receivers) {
@@ -151,10 +151,10 @@ const praise = async (interaction: CommandInteraction) => {
             "You were just praised in the TEC! It looks like you haven't activated your account... To activate use the `/praise-activate` command in the server."
       );
       } catch (err) {
-        console.error(`Can't DM user - ${ra.username} [${ra.id}]`);
+        logger.warn(`Can't DM user - ${ra.username} [${ra.id}]`);
       }
     }
-    await PraiseModel.create({
+    const praiseObj = await PraiseModel.create({
       reason: reason,
       giver: userAccount!._id,
       sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
@@ -163,7 +163,13 @@ const praise = async (interaction: CommandInteraction) => {
       )}`,
       receiver: receiverAccount!._id,
     });
-    praised.push(ra.id);
+    if (praiseObj) {
+        praised.push(ra.id);
+    } else {
+        logger.err(
+          `Praise not registered for [${ua.id}] -> [${ra.id}] for [${reason}]`
+        )
+    }
   }
 
   await interaction.editReply({
