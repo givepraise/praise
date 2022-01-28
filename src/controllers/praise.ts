@@ -134,17 +134,10 @@ export const exportPraise = async (
   req: Request<any, QueryInput, any>,
   res: Response
 ): Promise<any> => {
-  const query: any = {};
-
-  if (req.query.receiver) {
-    query.receiver = req.query.receiver;
-  }
-
-  if (req.query.periodStart && req.query.periodEnd) {
-    query.createdAt = {
-      $gte: req.query.periodStart,
-      $lte: req.query.periodEnd,
-    };
+  if (!req.query.periodStart || !req.query.periodEnd) {
+    throw new BadRequestError(
+      'You need to specify start and end date for period.'
+    );
   }
 
   const praises = await PraiseModel.aggregate([
@@ -163,6 +156,11 @@ export const exportPraise = async (
           },
         },
         averageScore: { $avg: '$quantifications.score' },
+      },
+    },
+    {
+      $match: {
+        createdAt: { $gte: req.query.periodStart, $lte: req.query.periodEnd },
       },
     },
     {
