@@ -1,11 +1,11 @@
-import PraiseModel from '@entities/Praise';
-import UserModel from '@entities/User';
 import { BadRequestError, NotFoundError } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
 import { QueryInput } from '@shared/inputs';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { QuantificationCreateUpdateInput } from '@praise/types';
+import { PraiseModel } from './entities';
+import { UserModel } from '@user/entities';
 
 export const all = async (
   req: Request<any, QueryInput, any>, //TODO find something better than any

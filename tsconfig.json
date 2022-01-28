@@ -7,7 +7,7 @@
     "baseUrl": "./",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,    
+    "forceConsistentCasingInFileNames": true,
     "paths": {
       "@entities/*": ["src/entities/*"],
       "@shared/*": ["src/shared/*"],

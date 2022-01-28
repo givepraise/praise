@@ -1,11 +1,11 @@
 import PraiseModel from '@entities/Praise';
-import UserAccountModel from '@entities/UserAccount';
 import { PraiseImportInput } from '@shared/inputs';
 import * as dotenv from 'dotenv';
 import 'express-async-errors';
 import fs from 'fs';
 import mongoose, { ConnectOptions } from 'mongoose';
 import path from 'path';
+import UserAccountModel from 'src/useraccount/entities';
 
 dotenv.config({ path: path.join(__dirname, '..', '..', '/.env') });
 
@@ -49,13 +49,13 @@ const importPraise = async (praiseData: PraiseImportInput[]) => {
     );
 
     console.log(`\nParsed ${praiseData.length} praise.`);
-    console.log(`Saving to database.`);
+    console.log('Saving to database.');
 
     await PraiseModel.insertMany(data);
 
-    console.log(`👍 SUCCESS!`);
+    console.log('👍 SUCCESS!');
   } catch (e: any) {
-    console.log(`\n\n🛑 ERRROR!\n`);
+    console.log('\n\n🛑 ERRROR!\n');
     console.error(e.name + ': ' + e.message);
   }
 

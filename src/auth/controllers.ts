@@ -1,10 +1,20 @@
-import UserModel, { UserInterface } from '@entities/User';
 import { NotFoundError, UnauthorizedError } from '@shared/errors';
+import {
+  TypedRequestBody,
+  TypedRequestQuery,
+  TypedResponse,
+} from '@shared/types';
+import { UserModel } from '@user/entities';
+import { UserDocument } from '@user/types';
 import { ethers } from 'ethers';
-import { Response } from 'express';
 import randomstring from 'randomstring';
 import { JwtService } from './JwtService';
-import { AuthRequest, NonceRequest, NonceResponse } from './types';
+import {
+  AuthRequestBody,
+  AuthResponse,
+  NonceQuery,
+  NonceResponse,
+} from './types';
 
 const jwtService = new JwtService();
 
@@ -19,13 +29,20 @@ const generateLoginMessage = (
   );
 };
 
-export async function auth(req: AuthRequest, res: Response): Promise<Response> {
+/**
+ * Description
+ * @param
+ */
+export const auth = async (
+  req: TypedRequestBody<AuthRequestBody>,
+  res: TypedResponse<AuthResponse>
+): Promise<TypedResponse<AuthResponse>> => {
   const { ethereumAddress, signature } = req.body;
 
   // Find previously generated nonce
   const queryResult = (await UserModel.findOne({ ethereumAddress })
     .select('nonce')
-    .exec()) as UserInterface;
+    .exec()) as UserDocument;
   if (!queryResult) throw new NotFoundError('User');
 
   // Generate expected message, nonce included.
@@ -52,17 +69,21 @@ export async function auth(req: AuthRequest, res: Response): Promise<Response> {
     { new: true }
   );
 
-  return res.status(200).send({
+  return res.status(200).json({
     accessToken,
     ethereumAddress,
     tokenType: 'Bearer',
   });
-}
+};
 
-export async function nonce(
-  req: NonceRequest,
-  res: Response
-): Promise<Response> {
+/**
+ * Description
+ * @param
+ */
+export const nonce = async (
+  req: TypedRequestQuery<NonceQuery>,
+  res: TypedResponse<NonceResponse>
+): Promise<TypedResponse<NonceResponse>> => {
   const { ethereumAddress } = req.query;
 
   // Generate random nonce used for auth request
@@ -78,5 +99,5 @@ export async function nonce(
   return res.status(200).json({
     ethereumAddress,
     nonce,
-  } as NonceResponse);
-}
+  });
+};

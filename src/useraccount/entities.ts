@@ -1,13 +1,6 @@
 import mongoose from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-
-export interface UserAccountInterface extends mongoose.Document {
-  id: string;
-  username: string;
-  profileImageUrl: string;
-  platform: string; // DISCORD | TELEGRAM
-  activateToken?: string;
-}
+import { UserAccountDocument } from './types';
 
 export const userAccountSchema = new mongoose.Schema(
   {
@@ -29,9 +22,7 @@ export const userAccountSchema = new mongoose.Schema(
 
 userAccountSchema.plugin(mongoosePagination);
 
-const UserAccountModel = mongoose.model<
-  UserAccountInterface,
-  Pagination<UserAccountInterface>
+export const UserAccountModel = mongoose.model<
+  UserAccountDocument,
+  Pagination<UserAccountDocument>
 >('UserAccount', userAccountSchema);
-
-export default UserAccountModel;

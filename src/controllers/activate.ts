@@ -1,5 +1,4 @@
 import UserModel from '@entities/User';
-import UserAccountModel from '@entities/UserAccount';
 import {
   BadRequestError,
   InternalServerError,
@@ -8,6 +7,7 @@ import {
 } from '@shared/errors';
 import { ethers } from 'ethers';
 import { Request, Response } from 'express';
+import UserAccountModel from 'src/useraccount/entities';
 
 const generateLoginMessage = (
   accountId: string,

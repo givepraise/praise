@@ -1,13 +1,10 @@
-import logger from '@shared/Logger';
-
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { CommandInteraction, Interaction } from 'discord.js';
-import { MessageEmbed } from 'discord.js';
-import { praiseErrorEmbed, praiseSuccessEmbed } from '../utils/praiseEmbeds';
-
-import UserAccountModel from '../../../entities/UserAccount';
-import UserModel from '../../../entities/User';
+import logger from '@shared/Logger';
+import { CommandInteraction, Interaction, MessageEmbed } from 'discord.js';
 import PraiseModel from '../../../entities/Praise';
+import UserModel from '../../../entities/User';
+import UserAccountModel from '../../../useraccount/entities';
+import { praiseErrorEmbed, praiseSuccessEmbed } from '../utils/praiseEmbeds';
 
 const praise = async (interaction: CommandInteraction) => {
   const { guild, channel, member } = interaction;
