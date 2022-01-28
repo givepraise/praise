@@ -1,11 +1,7 @@
-import { Request } from 'express';
-
-export interface AuthRequest extends Request {
-  body: {
-    ethereumAddress: string;
-    message: string;
-    signature: string;
-  };
+export interface AuthRequestBody {
+  ethereumAddress: string;
+  message: string;
+  signature: string;
 }
 
 export interface AuthResponse {
@@ -14,11 +10,9 @@ export interface AuthResponse {
   tokenType: string;
 }
 
-export interface NonceRequest extends Request {
-  query: {
-    ethereumAddress: string;
-  };
-}
+export type NonceQuery = {
+  ethereumAddress: string;
+};
 
 export interface NonceResponse {
   ethereumAddress: string;

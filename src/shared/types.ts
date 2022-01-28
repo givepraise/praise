@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import * as core from 'express-serve-static-core';
 import { Send } from 'express-serve-static-core';
 
@@ -27,6 +27,6 @@ export interface TypedRequestBody<T> extends Request {
   body: T;
 }
 
-export interface TypedResponse<ResBody> extends Express.Response {
+export interface TypedResponse<ResBody> extends Response {
   json: Send<ResBody, this>;
 }
