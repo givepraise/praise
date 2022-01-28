@@ -10,7 +10,7 @@ export interface PraiseInterface extends mongoose.Document {
   reason: string;
   sourceId: string;
   sourceName: string;
-  quantifications: Array<QuantificationInterface>;
+  quantifications: QuantificationInterface[];
   giver: UserAccountInterface;
   receiver: UserAccountInterface;
   createdAt: Date;

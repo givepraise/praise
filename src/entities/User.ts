@@ -4,8 +4,8 @@ import { UserAccountInterface } from './UserAccount';
 
 export interface UserInterface extends mongoose.Document {
   ethereumAddress: string;
-  accounts: Array<UserAccountInterface>;
-  roles: Array<string>;
+  accounts: UserAccountInterface[];
+  roles: string[];
   createdAt: Date;
   updatedAt: Date;
 }
