@@ -1,15 +1,14 @@
 import { UserRole } from '@entities/User';
+import { praiseAdminRouter, praiseRouter } from '@praise/routes';
 import { NOT_FOUND } from '@shared/constants';
 import { Router } from 'express';
 import { authMiddleware } from 'src/auth/middleware';
 import activateRouter from './activate';
 import adminPeriodRouter from './admin/periods';
-import adminPraiseRouter from './admin/praise';
 import adminSettingsRouter from './admin/settings';
 import adminUserRouter from './admin/users';
 import { authRouter } from './auth/routes';
 import periodRouter from './periods';
-import praiseRouter from './praise';
 import settingsRouter from './settings';
 import userAccountRouter from './useraccounts';
 import userRouter from './users';
@@ -40,7 +39,7 @@ baseRouter.use(
 baseRouter.use(
   '/admin/praise',
   authMiddleware(UserRole.ADMIN),
-  adminPraiseRouter
+  praiseAdminRouter
 );
 
 baseRouter.use(
