@@ -1,16 +1,12 @@
 import PraiseModel from '@entities/Praise';
-import {
-  BadRequestError,
-  InternalServerError,
-  NotFoundError,
-} from '@shared/errors';
+import { BadRequestError, NotFoundError } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
 import { QuantificationCreateUpdateInput, QueryInput } from '@shared/inputs';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 
 export const all = async (
-  req: Request<any, QueryInput, any>,
+  req: Request<any, QueryInput, any>, //TODO find something better than any
   res: Response
 ): Promise<Response> => {
   const query: any = {};
@@ -32,7 +28,7 @@ export const all = async (
     populate: 'giver receiver',
   });
 
-  return res.status(200).json(praises);
+  return res.status(200).json(praises); //TODO typed response
 };
 
 const single = async (req: Request, res: Response): Promise<Response> => {
@@ -90,50 +86,11 @@ const quantify = async (
   return res.status(200).json(praise);
 };
 
-const importData = async (req: Request, res: Response): Promise<Response> => {
-  throw new InternalServerError('Not implemented');
-
-  // try {
-  //   const reqData = JSON.parse(req.body.data);
-  //   const data = await Promise.all(
-  //     reqData.map(async (o: PraiseImportInput) => {
-  //       const giver = await UserAccountModel.create({
-  //         id: o.giver.id,
-  //         username: o.giver.username,
-  //         profileImageUrl: o.giver.profileImageUrl,
-  //         platform: o.giver.platform,
-  //       });
-
-  //       const receiver = await UserAccountModel.create({
-  //         id: o.recipients[0].id,
-  //         username: o.recipients[0].username,
-  //         profileImageUrl: o.recipients[0].profileImageUrl,
-  //         platform: o.recipients[0].platform,
-  //       });
-
-  //       return {
-  //         reason: o.praiseReason,
-  //         sourceId: o.source.id,
-  //         sourceName: o.source.name,
-  //         giver,
-  //         receiver,
-  //       };
-  //     })
-  //   );
-
-  //   PraiseModel.insertMany(data);
-
-  //   return res.status(200).json(data);
-  // } catch (e) {
-  //   throw new BadRequestError(e);
-  // }
-};
-
 export const exportPraise = async (
   req: Request<any, QueryInput, any>,
   res: Response
 ): Promise<any> => {
-  const query: any = {};
+  const query: any = {}; //TODO object not being used
   if (req.query.receiver) {
     query.receiver = req.query.receiver;
   }

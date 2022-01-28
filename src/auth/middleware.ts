@@ -4,8 +4,8 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '@shared/errors';
-import { JwtService } from '@shared/JwtService';
 import { NextFunction, Request, Response } from 'express';
+import { JwtService } from './JwtService';
 
 const jwtService = new JwtService();
 

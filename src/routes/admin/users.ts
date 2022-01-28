@@ -1,7 +1,7 @@
-import controller from '@controllers/users';
 import { routeTypeMiddleware } from '@middleware/routeType';
 import { RouteType } from '@shared/constants';
 import { Router } from 'express';
+import controller from 'src/user/controllers';
 
 // User-routes
 const userRouter = Router();

@@ -14,7 +14,11 @@
       "@services/*": ["src/services/*"],
       "@controllers/*": ["src/controllers/*"],
       "@middleware/*": ["src/middleware/*"],
-      "@server": ["src/Server"]
+      "@server": ["src/Server"],
+      "@auth": ["src/auth"],
+      "@user": ["src/user"],
+      "@period": ["src/period"],
+      "@praise": ["src/praise"]
     }
   },
   "include": ["src/**/*.ts"]

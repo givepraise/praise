@@ -3,7 +3,7 @@
 import { cookieProps } from '@shared/constants';
 import jsonwebtoken, { VerifyErrors } from 'jsonwebtoken';
 import randomString from 'randomstring';
-import { UnauthorizedError } from './errors';
+import { UnauthorizedError } from '../shared/errors';
 
 export interface ClientData {
   userId: string;

@@ -17,7 +17,7 @@ const userData = (req: Request, user: UserInterface) => {
 
 export const userListTransformer = (
   req: Request,
-  data: PaginationModel<UserInterface> | undefined
+  data: PaginationModel<UserInterface> | undefined //TODO remove undefined
 ) => {
   if (!data) return [];
 

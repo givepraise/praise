@@ -13,6 +13,10 @@ import {
   userSingleTransformer,
 } from 'src/transformers/userTransformer';
 
+/**
+ * Description
+ * @param
+ */
 const all = async (
   req: Request<any, any, QueryInput>,
   res: Response
@@ -26,6 +30,10 @@ const all = async (
   return res.status(200).json(userListTransformer(req, users));
 };
 
+/**
+ * Description
+ * @param
+ */
 const single = async (req: Request, res: Response): Promise<Response> => {
   const user = await UserModel.findById(req.params.id);
 
@@ -34,6 +42,10 @@ const single = async (req: Request, res: Response): Promise<Response> => {
   return res.status(200).json(userSingleTransformer(req, user));
 };
 
+/**
+ * Description
+ * @param
+ */
 const search = async (
   req: Request<any, SearchQueryInput, any>,
   res: Response
@@ -51,6 +63,10 @@ const search = async (
   return res.status(200).json(userListTransformer(req, users));
 };
 
+/**
+ * Description
+ * @param
+ */
 const addRole = async (
   req: Request<any, AddRoleInput, any>,
   res: Response
@@ -69,6 +85,10 @@ const addRole = async (
   return res.status(200).json(userSingleTransformer(req, user));
 };
 
+/**
+ * Description
+ * @param
+ */
 const removeRole = async (
   req: Request<any, RemoveRoleInput, any>,
   res: Response

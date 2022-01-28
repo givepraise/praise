@@ -1,8 +1,10 @@
-import UserModel from '@entities/User';
+import UserModel, { UserInterface } from '@entities/User';
 import { NotFoundError, UnauthorizedError } from '@shared/errors';
-import { JwtService } from '@shared/JwtService';
 import { ethers } from 'ethers';
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import randomstring from 'randomstring';
+import { JwtService } from './JwtService';
+import { AuthRequest, NonceRequest, NonceResponse } from './types';
 
 const jwtService = new JwtService();
 
@@ -17,27 +19,13 @@ const generateLoginMessage = (
   );
 };
 
-interface AuthRequest extends Request {
-  body: {
-    ethereumAddress: string;
-    message: string;
-    signature: string;
-  };
-}
-
-interface AuthResponse {
-  accessToken: string;
-  ethereumAddress: string;
-  tokenType: string;
-}
-
-async function auth(req: AuthRequest, res: Response): Promise<any> {
+export async function auth(req: AuthRequest, res: Response): Promise<Response> {
   const { ethereumAddress, signature } = req.body;
 
   // Find previously generated nonce
   const queryResult = (await UserModel.findOne({ ethereumAddress })
     .select('nonce')
-    .exec()) as any;
+    .exec()) as UserInterface;
   if (!queryResult) throw new NotFoundError('User');
 
   // Generate expected message, nonce included.
@@ -64,11 +52,31 @@ async function auth(req: AuthRequest, res: Response): Promise<any> {
     { new: true }
   );
 
-  return res.status(200).json({
+  return res.status(200).send({
     accessToken,
     ethereumAddress,
     tokenType: 'Bearer',
-  } as AuthResponse);
+  });
 }
 
-export default auth;
+export async function nonce(
+  req: NonceRequest,
+  res: Response
+): Promise<Response> {
+  const { ethereumAddress } = req.query;
+
+  // Generate random nonce used for auth request
+  const nonce = randomstring.generate();
+
+  // Update existing user or create new
+  await UserModel.findOneAndUpdate(
+    { ethereumAddress },
+    { nonce },
+    { upsert: true, new: true }
+  );
+
+  return res.status(200).json({
+    ethereumAddress,
+    nonce,
+  } as NonceResponse);
+}
