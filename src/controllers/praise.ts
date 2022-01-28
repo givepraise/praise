@@ -101,6 +101,7 @@ export const exportPraise = async (
       $gte: req.query.periodStart,
       $lte: req.query.periodEnd,
     };
+  }
   if (!req.query.periodStart || !req.query.periodEnd) {
     throw new BadRequestError(
       'You need to specify start and end date for period.'
