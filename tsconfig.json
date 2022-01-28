@@ -7,18 +7,19 @@
     "baseUrl": "./",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,    
+    "forceConsistentCasingInFileNames": true,
     "paths": {
       "@entities/*": ["src/entities/*"],
       "@shared/*": ["src/shared/*"],
       "@services/*": ["src/services/*"],
       "@controllers/*": ["src/controllers/*"],
       "@middleware/*": ["src/middleware/*"],
-      "@server": ["src/Server"],
-      "@auth": ["src/auth"],
-      "@user": ["src/user"],
-      "@period": ["src/period"],
-      "@praise": ["src/praise"]
+      "@server": ["src/Server/*"],
+      "@auth": ["src/auth/*"],
+      "@user": ["src/user/*"],
+      "@useraccount": ["src/useraccount/*"],
+      "@period": ["src/period/*"],
+      "@praise": ["src/praise/*"]
     }
   },
   "include": ["src/**/*.ts"]

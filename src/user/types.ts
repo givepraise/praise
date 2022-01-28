@@ -1,46 +1,20 @@
-import { UserRole } from '@entities/User';
-import { UserAccountInterface } from '@entities/UserAccount';
-export type Query = core.Query;
+import mongoose from 'mongoose';
+import { UserAccountDocument } from 'src/useraccount/types';
 
-export interface QueryInput extends core.Query {
-  sortColumn?: string;
-  sortType?: string;
-  limit?: string;
-  page?: string;
+export interface UserDocument extends mongoose.Document {
+  ethereumAddress: string;
+  accounts: UserAccountDocument[];
+  roles: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface PeriodCreateUpdateInput {
-  name: string;
-  endDate: string;
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  QUANTIFIER = 'QUANTIFIER',
 }
 
-export interface QuantificationCreateUpdateInput {
-  score: number;
-  dismissed: boolean;
-  duplicatePraiseId: string;
-}
-
-export interface PraiseImportInput {
-  createdAt: string;
-  giver: UserAccountInterface;
-  receiver: UserAccountInterface;
-  reason: string;
-  sourceId: string;
-  sourceName: string;
-}
-
-export interface SearchQueryInput extends QueryInput {
-  search: string;
-}
-
-export interface AddRoleInput {
+export interface RoleChangeRequest {
   role: UserRole;
-}
-
-export interface RemoveRoleInput {
-  role: UserRole;
-}
-
-export interface SettingsSetInput {
-  value: string;
 }

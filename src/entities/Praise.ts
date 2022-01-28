@@ -1,10 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
+import { UserAccountInterface } from '../useraccount/entities';
 import {
   QuantificationInterface,
   quantificationSchema,
 } from './Quantification';
-import { UserAccountInterface } from './UserAccount';
 
 export interface PraiseInterface extends mongoose.Document {
   reason: string;

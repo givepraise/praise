@@ -1,24 +1,21 @@
-import UserModel from '@entities/User';
 import { BadRequestError, NotFoundError } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
-import {
-  AddRoleInput,
-  QueryInput,
-  RemoveRoleInput,
-  SearchQueryInput,
-} from '@shared/inputs';
+import { QueryInput, SearchQueryInput } from '@shared/inputs';
+import { TypedRequestBody, TypedRequestQuery } from '@shared/types';
 import { Request, Response } from 'express';
 import {
   userListTransformer,
   userSingleTransformer,
-} from 'src/transformers/userTransformer';
+} from 'src/user/transformers';
+import { UserModel } from './entities';
+import { RoleChangeRequest } from './types';
 
 /**
  * Description
  * @param
  */
-const all = async (
-  req: Request<any, any, QueryInput>,
+export const all = async (
+  req: TypedRequestQuery<QueryInput>,
   res: Response
 ): Promise<Response> => {
   const users = await UserModel.paginate({
@@ -34,7 +31,10 @@ const all = async (
  * Description
  * @param
  */
-const single = async (req: Request, res: Response): Promise<Response> => {
+export const single = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   const user = await UserModel.findById(req.params.id);
 
   if (!user) throw new NotFoundError('User');
@@ -46,8 +46,8 @@ const single = async (req: Request, res: Response): Promise<Response> => {
  * Description
  * @param
  */
-const search = async (
-  req: Request<any, SearchQueryInput, any>,
+export const search = async (
+  req: TypedRequestQuery<SearchQueryInput>,
   res: Response
 ): Promise<Response> => {
   const searchQuery = {
@@ -67,8 +67,8 @@ const search = async (
  * Description
  * @param
  */
-const addRole = async (
-  req: Request<any, AddRoleInput, any>,
+export const addRole = async (
+  req: TypedRequestBody<RoleChangeRequest>,
   res: Response
 ): Promise<Response> => {
   const user = await UserModel.findById(req.params.id).populate('accounts');
@@ -89,8 +89,8 @@ const addRole = async (
  * Description
  * @param
  */
-const removeRole = async (
-  req: Request<any, RemoveRoleInput, any>,
+export const removeRole = async (
+  req: TypedRequestBody<RoleChangeRequest>,
   res: Response
 ): Promise<Response> => {
   const user = await UserModel.findById(req.params.id).populate('accounts');
@@ -105,5 +105,3 @@ const removeRole = async (
   await user.save();
   return res.status(200).json(userSingleTransformer(req, user));
 };
-
-export default { all, single, search, addRole, removeRole };

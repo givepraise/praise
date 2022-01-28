@@ -1,8 +1,8 @@
 import PeriodModel from '@entities/Period';
 import PraiseModel from '@entities/Praise';
 import UserModel from '@entities/User';
-import UserAccountModel from '@entities/UserAccount';
 import faker from 'faker';
+import UserAccountModel from 'src/useraccount/entities';
 
 const periodStatuses = ['OPEN', 'QUANTIFY', 'CLOSED'];
 const roles = ['ADMIN', 'USER', 'QUANTIFIER'];

@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction, Interaction } from 'discord.js';
 import randomstring from 'randomstring';
-import UserAccountModel from '../../../entities/UserAccount';
+import UserAccountModel from '../../../useraccount/entities';
 
 const activate = async (interaction: CommandInteraction) => {
   const { user } = interaction;

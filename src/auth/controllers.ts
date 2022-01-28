@@ -1,5 +1,6 @@
-import UserModel, { UserInterface } from '@entities/User';
 import { NotFoundError, UnauthorizedError } from '@shared/errors';
+import { UserModel } from '@user/entities';
+import { UserDocument } from '@user/types';
 import { ethers } from 'ethers';
 import { Response } from 'express';
 import randomstring from 'randomstring';
@@ -19,13 +20,17 @@ const generateLoginMessage = (
   );
 };
 
+/**
+ * Description
+ * @param
+ */
 export async function auth(req: AuthRequest, res: Response): Promise<Response> {
   const { ethereumAddress, signature } = req.body;
 
   // Find previously generated nonce
   const queryResult = (await UserModel.findOne({ ethereumAddress })
     .select('nonce')
-    .exec()) as UserInterface;
+    .exec()) as UserDocument;
   if (!queryResult) throw new NotFoundError('User');
 
   // Generate expected message, nonce included.
@@ -59,6 +64,10 @@ export async function auth(req: AuthRequest, res: Response): Promise<Response> {
   });
 }
 
+/**
+ * Description
+ * @param
+ */
 export async function nonce(
   req: NonceRequest,
   res: Response

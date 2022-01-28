@@ -1,5 +1,4 @@
-import { UserRole } from '@entities/User';
-import { UserAccountInterface } from '@entities/UserAccount';
+import { UserAccountInterface } from 'src/useraccount/entities';
 import { Query } from './types';
 
 export interface QueryInput extends Query {
@@ -31,14 +30,6 @@ export interface PraiseImportInput {
 
 export interface SearchQueryInput extends QueryInput {
   search: string;
-}
-
-export interface AddRoleInput {
-  role: UserRole;
-}
-
-export interface RemoveRoleInput {
-  role: UserRole;
 }
 
 export interface SettingsSetInput {

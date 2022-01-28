@@ -1,9 +1,12 @@
-import UserModel, { UserRole } from '@entities/User';
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import {
   ForbiddenError,
   NotFoundError,
   UnauthorizedError,
 } from '@shared/errors';
+import { UserModel } from '@user/entities';
+import { UserRole } from '@user/types';
 import { NextFunction, Request, Response } from 'express';
 import { JwtService } from './JwtService';
 
@@ -19,7 +22,7 @@ export const authMiddleware = (role: UserRole) => {
 
     // Check authorization header format
     const bearer = AuthHeader.split(' ');
-    if (!Array.isArray(bearer) || bearer.length != 2)
+    if (!Array.isArray(bearer) || bearer.length !== 2)
       throw new UnauthorizedError('Invalid authorization bearer format.');
 
     // Decode JWT and check permissions
