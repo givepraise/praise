@@ -1,3 +1,5 @@
+import { QueryInput } from '@shared/inputs';
+
 export interface AuthRequestBody {
   ethereumAddress: string;
   message: string;
@@ -10,9 +12,9 @@ export interface AuthResponse {
   tokenType: string;
 }
 
-export type NonceQuery = {
+export interface NonceQuery extends QueryInput {
   ethereumAddress: string;
-};
+}
 
 export interface NonceResponse {
   ethereumAddress: string;

@@ -1,4 +1,8 @@
-import { NotFoundError, UnauthorizedError } from '@shared/errors';
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from '@shared/errors';
 import {
   TypedRequestBody,
   TypedRequestQuery,
@@ -18,10 +22,7 @@ import {
 
 const jwtService = new JwtService();
 
-const generateLoginMessage = (
-  account: string | undefined,
-  nonce: string
-): string => {
+const generateLoginMessage = (account: string, nonce: string): string => {
   return (
     'SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n' +
     `ADDRESS:\n${account}\n\n` +
@@ -38,36 +39,31 @@ export const auth = async (
   res: TypedResponse<AuthResponse>
 ): Promise<TypedResponse<AuthResponse>> => {
   const { ethereumAddress, signature } = req.body;
+  if (!ethereumAddress) throw new NotFoundError('ethereumAddress');
+  if (!signature) throw new NotFoundError('signature');
 
   // Find previously generated nonce
-  const queryResult = (await UserModel.findOne({ ethereumAddress })
+  const user = (await UserModel.findOne({ ethereumAddress })
     .select('nonce')
     .exec()) as UserDocument;
-  if (!queryResult) throw new NotFoundError('User');
+  if (!user) throw new NotFoundError('User');
+  if (!user.nonce)
+    throw new BadRequestError('Noce not found. Call /api/nonce first.');
 
   // Generate expected message, nonce included.
   // Recover signer from generated message + signature
-  const generatedMsg = generateLoginMessage(ethereumAddress, queryResult.nonce);
+  const generatedMsg = generateLoginMessage(ethereumAddress, user.nonce);
   const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
   if (signerAddress !== ethereumAddress)
     throw new UnauthorizedError('Verification failed.');
-
-  // Generate access token
-  const user = await UserModel.findOne({ ethereumAddress });
-  if (!user) throw new NotFoundError('User');
 
   const accessToken = await jwtService.getJwt({
     userId: user._id,
     ethereumAddress,
     roles: user.roles,
   });
-
-  // Save access token
-  await UserModel.findOneAndUpdate(
-    { ethereumAddress },
-    { accessToken },
-    { new: true }
-  );
+  user.accessToken = accessToken;
+  user.save();
 
   return res.status(200).json({
     accessToken,
@@ -85,6 +81,7 @@ export const nonce = async (
   res: TypedResponse<NonceResponse>
 ): Promise<TypedResponse<NonceResponse>> => {
   const { ethereumAddress } = req.query;
+  if (!ethereumAddress) throw new NotFoundError('ethereumAddress');
 
   // Generate random nonce used for auth request
   const nonce = randomstring.generate();
