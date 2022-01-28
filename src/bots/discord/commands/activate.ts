@@ -33,7 +33,9 @@ const activate = async (interaction: CommandInteraction) => {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('praise-activate')
-    .setDescription('Activates your praise account and links your eth address!'),
+    .setDescription(
+      'Activates your praise account and links your eth address!'
+    ),
 
   async execute(interaction: Interaction) {
     if (interaction.isCommand()) {

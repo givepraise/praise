@@ -1,9 +1,9 @@
+import logger from '@shared/Logger';
+
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction, Interaction } from 'discord.js';
 import { MessageEmbed } from 'discord.js';
-import { praiseErrorEmbed, praiseSuccessEmbed } from '../utils/praiseEmbeds'
-
-import randomstring from 'randomstring';
+import { praiseErrorEmbed, praiseSuccessEmbed } from '../utils/praiseEmbeds';
 
 import UserAccountModel from '../../../entities/UserAccount';
 import UserModel from '../../../entities/User';
@@ -11,12 +11,13 @@ import PraiseModel from '../../../entities/Praise';
 
 const praise = async (interaction: CommandInteraction) => {
   const { guild, channel, member } = interaction;
+
   if (!guild || !member) {
     const dmErrorEmbed = praiseErrorEmbed(
       'Server not found',
       'This command can only be used in the discord server.'
     );
-    await interaction.reply({ embeds: [dmErrorEmbed] });
+    await interaction.editReply({ embeds: [dmErrorEmbed] });
     return;
   }
 
@@ -30,7 +31,7 @@ const praise = async (interaction: CommandInteraction) => {
       `User does not have \`${praiseGiverRole?.name}\` role`,
       `The praise command can only be used by members with the <@&${praiseGiverRole?.id}> role. Attend an onboarding-call, or ask a steward or guide for an Intro to Praise.`
     );
-    await interaction.reply({ embeds: [noGiverRoleEmbed] });
+    await interaction.editReply({ embeds: [noGiverRoleEmbed] });
     return;
   }
 
@@ -39,11 +40,10 @@ const praise = async (interaction: CommandInteraction) => {
     username: member.user.username + '#' + member.user.discriminator,
     profileImageUrl: member.user.avatar,
     platform: 'DISCORD',
-    activateToken: randomstring.generate(),
   };
 
   const userAccount = await UserAccountModel.findOneAndUpdate(
-    { username: ua.username },
+    { id: ua.id },
     ua,
     { upsert: true, new: true }
   );
@@ -91,7 +91,7 @@ const praise = async (interaction: CommandInteraction) => {
       'This command requires atleast one valid receiver to be mentioned.'
     );
 
-    await interaction.reply({ embeds: [addInfoFields(noReceiverEmbed)] });
+    await interaction.editReply({ embeds: [addInfoFields(noReceiverEmbed)] });
     return;
   }
 
@@ -100,7 +100,7 @@ const praise = async (interaction: CommandInteraction) => {
       'Reason not provided',
       'Praise needs a `reason` in order to be dished.'
     );
-    await interaction.reply({ embeds: [addInfoFields(noReasonEmbed)] });
+    await interaction.editReply({ embeds: [addInfoFields(noReasonEmbed)] });
     return;
   }
 
@@ -113,7 +113,7 @@ const praise = async (interaction: CommandInteraction) => {
       'Account Not Activated',
       'Your Account is not activated in the praise system. Unactivated accounts can not praise users. Use the `/praise-activate` command to activate your praise account and to link your eth address.'
     );
-    await interaction.reply({ embeds: [addInfoFields(notActivatedEmbed)] });
+    await interaction.editReply({ embeds: [addInfoFields(notActivatedEmbed)] });
     return;
   }
 
@@ -125,9 +125,7 @@ const praise = async (interaction: CommandInteraction) => {
     (u) => u
   );
 
-  const guildChannel = await guild.channels.fetch(
-    interaction?.channel?.id || ''
-  );
+  const guildChannel = await guild.channels.fetch(channel?.id || '');
 
   for (const receiver of Receivers) {
     const ra = {
@@ -135,10 +133,9 @@ const praise = async (interaction: CommandInteraction) => {
       username: receiver.user.username + '#' + receiver.user.discriminator,
       profileImageUrl: receiver.avatar,
       platform: 'DISCORD',
-      activateToken: randomstring.generate(),
     };
     const receiverAccount = await UserAccountModel.findOneAndUpdate(
-      { username: ra.username },
+      { id: ra.id },
       ra,
       { upsert: true, new: true }
     );
@@ -147,12 +144,15 @@ const praise = async (interaction: CommandInteraction) => {
       accounts: receiverAccount,
     });
     if (!receiverUser) {
-      await receiver.send(
-        "You were just praised in the TEC! It looks like you haven't activated your account... To activate use the `/praise-activate` command in the server."
-      );
+      try {
+        await receiver.send(
+          "You were just praised in the TEC! It looks like you haven't activated your account... To activate use the `/praise-activate` command in the server."
+        );
+      } catch (err) {
+        logger.warn(`Can't DM user - ${ra.username} [${ra.id}]`);
+      }
     }
-
-    await PraiseModel.create({
+    const praiseObj = await PraiseModel.create({
       reason: reason,
       giver: userAccount!._id,
       sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
@@ -160,14 +160,25 @@ const praise = async (interaction: CommandInteraction) => {
         guildChannel?.name || ''
       )}`,
       receiver: receiverAccount!._id,
-      createdAt: interaction.createdAt,
     });
-    praised.push(ra.id);
+    if (praiseObj) {
+      praised.push(ra.id);
+    } else {
+      logger.err(
+        `Praise not registered for [${ua.id}] -> [${ra.id}] for [${reason}]`
+      );
+    }
   }
 
-  await interaction.reply({
-    embeds: [praiseSuccessEmbed(praised.map((id) => `<@!${id}>`))],
+  await interaction.editReply({
+    embeds: [
+      praiseSuccessEmbed(
+        praised.map((id) => `<@!${id}>`),
+        reason
+      ),
+    ],
   });
+  return;
 };
 
 module.exports = {
@@ -192,6 +203,7 @@ module.exports = {
   async execute(interaction: Interaction) {
     if (interaction.isCommand()) {
       if (interaction.commandName === 'praise') {
+        await interaction.deferReply();
         await praise(interaction);
       }
     }

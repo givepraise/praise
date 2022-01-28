@@ -1,7 +1,7 @@
 import logger from '@shared/Logger';
 import { Client, Collection, Intents } from 'discord.js';
 
-import { registerCommands } from "./utils/registerCommands";
+import { registerCommands } from './utils/registerCommands';
 
 declare module 'discord.js' {
   export interface Client {
@@ -10,25 +10,24 @@ declare module 'discord.js' {
 }
 
 if (!process.env.PRAISE_GIVER_ROLE_ID) {
-  console.error('Praise Giver Role not set.');
+  logger.err('Praise Giver Role not set.');
 }
 
 // Create a new client instance
-const client = new Client({ intents: ["GUILDS", "GUILD_MEMBERS"] });
+const client = new Client({ intents: ['GUILDS', 'GUILD_MEMBERS'] });
 
 // Set bot commands
-(async() => {
+(async () => {
   const registerSuccess = await registerCommands(
     client,
-    process.env.DISCORD_CLIENT_ID || "",
-    process.env.DISCORD_GUILD_ID || "",
+    process.env.DISCORD_CLIENT_ID || '',
+    process.env.DISCORD_GUILD_ID || ''
   );
 
   if (registerSuccess) {
-    logger.info("All bot commands registered in Guild.");
-  }
-  else {
-    logger.err("Failed to register bot commands");
+    logger.info('All bot commands registered in Guild.');
+  } else {
+    logger.err('Failed to register bot commands');
   }
 })();
 
@@ -43,7 +42,7 @@ client.on('interactionCreate', async (interaction) => {
   try {
     await command.execute(interaction);
   } catch (error) {
-    console.error(error);
+    logger.err(error);
     return interaction.reply({
       content: 'There was an error while executing this command!',
       ephemeral: true,
