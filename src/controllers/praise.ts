@@ -1,4 +1,5 @@
 import PraiseModel from '@entities/Praise';
+import UserModel from '@entities/User';
 import { BadRequestError, NotFoundError } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
 import { QuantificationCreateUpdateInput, QueryInput } from '@shared/inputs';
@@ -100,6 +101,10 @@ export const exportPraise = async (
       $gte: req.query.periodStart,
       $lte: req.query.periodEnd,
     };
+  if (!req.query.periodStart || !req.query.periodEnd) {
+    throw new BadRequestError(
+      'You need to specify start and end date for period.'
+    );
   }
 
   const praises = await PraiseModel.aggregate([
@@ -118,6 +123,11 @@ export const exportPraise = async (
           },
         },
         averageScore: { $avg: '$quantifications.score' },
+      },
+    },
+    {
+      $match: {
+        createdAt: { $gte: req.query.periodStart, $lte: req.query.periodEnd },
       },
     },
     {
@@ -163,7 +173,27 @@ export const exportPraise = async (
   const quantificationsColumnsCount =
     praiseQuantifications[0].quantificationsCount;
 
-  const docs = praises ? praises : [];
+  const docs = await Promise.all(
+    praises.map(async (p) => {
+      const receiver = await UserModel.findOne({
+        accounts: p.receiver._id,
+      });
+
+      const giver = await UserModel.findOne({
+        accounts: p.giver._id,
+      });
+
+      if (receiver) {
+        p.receiver.ethAddress = receiver.ethereumAddress;
+      }
+
+      if (giver) {
+        p.giver.ethAddress = giver.ethereumAddress;
+      }
+
+      return p;
+    })
+  );
 
   const fields = [
     {
@@ -176,7 +206,7 @@ export const exportPraise = async (
     },
     {
       label: 'TO ETH ADDRESS',
-      value: 'receiver.user.ethAddress',
+      value: 'receiver.ethAddress',
     },
     {
       label: 'FROM',
@@ -184,7 +214,7 @@ export const exportPraise = async (
     },
     {
       label: 'FROM ETH ADDRESS',
-      value: 'giver.user.ethAddress',
+      value: 'giver.ethAddress',
     },
     {
       label: 'REASON',
