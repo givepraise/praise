@@ -1,10 +1,11 @@
-import PraiseModel from '@entities/Praise';
-import UserModel from '@entities/User';
 import { BadRequestError, NotFoundError } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
-import { QuantificationCreateUpdateInput, QueryInput } from '@shared/inputs';
+import { QueryInput } from '@shared/inputs';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
+import { QuantificationCreateUpdateInput } from '@praise/types';
+import { PraiseModel } from './entities';
+import { UserModel } from '@user/entities';
 
 export const all = async (
   req: Request<any, QueryInput, any>, //TODO find something better than any
@@ -270,4 +271,4 @@ export const exportPraise = async (
   res.status(200).send(csv);
 };
 
-export default { all, single, quantify, exportPraise, importData };
+export default { all, single, quantify, exportPraise };
