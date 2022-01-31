@@ -1,8 +1,8 @@
-import PeriodModel from '@entities/Period';
-import PraiseModel from '@entities/Praise';
-import UserModel from '@entities/User';
+import { PeriodModel } from '@period/entities';
+import { PraiseModel } from '@praise/entities';
+import { UserModel } from '@user/entities';
 import faker from 'faker';
-import UserAccountModel from 'src/useraccount/entities';
+import { UserAccountModel } from '@useraccount/entities';
 
 const periodStatuses = ['OPEN', 'QUANTIFY', 'CLOSED'];
 const roles = ['ADMIN', 'USER', 'QUANTIFIER'];
@@ -142,4 +142,4 @@ const seedData = async () => {
   }
 };
 
-export default seedData;
+export { seedData };

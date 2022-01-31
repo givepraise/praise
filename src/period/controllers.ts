@@ -7,7 +7,7 @@ import {
   NotFoundError,
 } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
-import { PeriodCreateUpdateInput, QueryInput } from '@shared/inputs';
+import { QueryInput } from '@shared/inputs';
 import { settingFloat, settingInt } from '@shared/settings';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
@@ -16,8 +16,8 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
-import { Period, Quantifier, Receiver } from './types';
-import PeriodModel from './entities';
+import { Period, PeriodCreateUpdateInput, Quantifier, Receiver } from './types';
+import { PeriodModel } from './entities';
 import { Praise } from '@praise/types';
 
 export const all = async (
@@ -96,7 +96,7 @@ const getPreviousPeriodEndDate = async (period: Period) => {
 };
 
 const assignedPraiseCount = (quantifier: Quantifier) => {
-  return quantifier.receivers.reduce(function (sum, receiver) {
+  return quantifier.receivers.reduce((sum, receiver) => {
     return sum + receiver.praiseCount;
   }, 0);
 };

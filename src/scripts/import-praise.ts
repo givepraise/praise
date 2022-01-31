@@ -1,11 +1,11 @@
-import PraiseModel from '@entities/Praise';
-import { PraiseImportInput } from '@shared/inputs';
+import { PraiseModel } from '@praise/entities';
 import * as dotenv from 'dotenv';
 import 'express-async-errors';
 import fs from 'fs';
 import mongoose, { ConnectOptions } from 'mongoose';
 import path from 'path';
-import UserAccountModel from 'src/useraccount/entities';
+import { UserAccountModel } from '@useraccount/entities';
+import { PraiseImportInput } from '@praise/types';
 
 dotenv.config({ path: path.join(__dirname, '..', '..', '/.env') });
 
@@ -71,7 +71,7 @@ mongoose
   )
   .then(() => {
     const args = process.argv.slice(2);
-    if (args.length != 1) {
+    if (args.length !== 1) {
       console.log(
         'Too many arguments! Script accepts one argument only - the filename containing the praise import data'
       );

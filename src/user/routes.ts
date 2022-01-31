@@ -9,19 +9,19 @@ userRouter.get('/all', all);
 userRouter.get('/:id', single);
 
 // User admin only routes
-const userAdminRouter = Router();
-userAdminRouter.get('/all', routeTypeMiddleware(RouteType.admin), all);
-userAdminRouter.get('/search', routeTypeMiddleware(RouteType.admin), search);
-userAdminRouter.get('/:id', routeTypeMiddleware(RouteType.admin), single);
-userAdminRouter.patch(
+const adminUserRouter = Router();
+adminUserRouter.get('/all', routeTypeMiddleware(RouteType.admin), all);
+adminUserRouter.get('/search', routeTypeMiddleware(RouteType.admin), search);
+adminUserRouter.get('/:id', routeTypeMiddleware(RouteType.admin), single);
+adminUserRouter.patch(
   '/:id/addRole',
   routeTypeMiddleware(RouteType.admin),
   addRole
 );
-userAdminRouter.patch(
+adminUserRouter.patch(
   '/:id/removeRole',
   routeTypeMiddleware(RouteType.admin),
   removeRole
 );
 
-export { userRouter, userAdminRouter };
+export { userRouter, adminUserRouter };

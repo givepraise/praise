@@ -1,6 +1,6 @@
 import { BadRequestError, NotFoundError } from '@shared/errors';
 import { TypedRequestBody, TypedResponse } from '@shared/types';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { SettingsModel } from './entities';
 import { Setting, SettingSetInput } from './types';
 
@@ -23,7 +23,7 @@ export const single = async (
 
 export const set = async (
   req: TypedRequestBody<SettingSetInput>,
-  res: Response
+  res: TypedResponse<Setting>
 ): Promise<TypedResponse<Setting>> => {
   if (!req.body.value) throw new BadRequestError('Value is required field');
   const setting = await SettingsModel.findById(req.params.key);

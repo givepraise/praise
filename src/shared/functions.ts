@@ -1,5 +1,5 @@
 import { QueryInput } from './inputs';
-import logger from './Logger';
+import { logger } from './Logger';
 
 export const pErr = (err: Error) => {
   if (err) {
@@ -12,7 +12,7 @@ export const getRandomInt = () => {
 };
 
 export const getQuerySort = (input: QueryInput) => {
-  let sort: any = {};
+  const sort: any = {};
 
   if (input.sortColumn) {
     const sortColumn: any = input.sortColumn;

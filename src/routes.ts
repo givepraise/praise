@@ -9,7 +9,6 @@ import { UserRole } from '@user/types';
 import { userAccountRouter } from '@useraccount/routes';
 import { Router } from 'express';
 import { authMiddleware } from 'src/auth/middleware';
-
 const baseRouter = Router();
 
 /* Open routes */

@@ -1,4 +1,4 @@
-import controller from '@praise/controllers';
+import * as controller from '@praise/controllers';
 import { UserRole } from '@user/types';
 import { authMiddleware } from '@auth/middleware';
 import { Router } from 'express';

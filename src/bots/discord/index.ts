@@ -1,4 +1,4 @@
-import logger from '@shared/Logger';
+import { logger } from '@shared/Logger';
 import { Client, Collection, Intents } from 'discord.js';
 
 import { registerCommands } from './utils/registerCommands';
@@ -32,7 +32,7 @@ const client = new Client({ intents: ['GUILDS', 'GUILD_MEMBERS'] });
 })();
 
 client.once('ready', () => {
-  logger.info(`Discord client is ready!`);
+  logger.info('Discord client is ready!');
 });
 
 client.on('interactionCreate', async (interaction) => {
@@ -50,4 +50,4 @@ client.on('interactionCreate', async (interaction) => {
   }
 });
 
-export default client;
+export { client };

@@ -9,7 +9,7 @@ export interface Period {
   updatedAt: Date;
 }
 
-export interface PraiseDocument extends Period, mongoose.Document {}
+export interface PeriodDocument extends Period, mongoose.Document {}
 
 export interface Receiver {
   _id: string;
@@ -21,4 +21,9 @@ export interface Receiver {
 export interface Quantifier {
   _id?: string;
   receivers: Receiver[];
+}
+
+export interface PeriodCreateUpdateInput {
+  name: string;
+  endDate: string;
 }

@@ -12,7 +12,7 @@ import {
   TypedResponse,
 } from '@shared/types';
 
-export const all = async (
+const all = async (
   req: TypedRequestQuery<QueryInput>,
   res: TypedResponse<PaginatedResponseBody<Praise>>
 ): Promise<TypedResponse<PaginatedResponseBody<Praise>>> => {
@@ -96,7 +96,7 @@ const quantify = async (
   return res.status(200).json(praise);
 };
 
-export const exportPraise = async (
+const exportPraise = async (
   req: Request<any, QueryInput, any>,
   res: Response
 ): Promise<any> => {
@@ -279,4 +279,4 @@ export const exportPraise = async (
   res.status(200).send(csv);
 };
 
-export default { all, single, quantify, exportPraise };
+export { all, single, quantify, exportPraise };
