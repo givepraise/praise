@@ -14,7 +14,7 @@ import {
 import { Request } from 'express';
 import { userListTransformer, userTransformer } from 'src/user/transformers';
 import { UserModel } from './entities';
-import { RoleChangeRequest, User, UserSearchQuery } from './types';
+import { RoleChangeRequest, User, UserRole, UserSearchQuery } from './types';
 
 /**
  * Description
@@ -82,6 +82,7 @@ export const addRole = async (
 
   const { role } = req.body;
   if (!role) throw new BadRequestError('Role is required');
+  if (!(role in UserRole)) throw new BadRequestError('Invalid role');
 
   if (!user.roles.includes(role)) {
     user.roles.push(role);
