@@ -12,7 +12,7 @@ import path from 'path';
 import seedAdmins from './pre-start/admins';
 import seedData from './pre-start/seed';
 import seedSettings from './pre-start/settings';
-import BaseRouter from './routes';
+import { baseRouter } from './routes';
 
 dotenv.config({ path: path.join(__dirname, '..', '/.env') });
 
@@ -54,7 +54,7 @@ mongoose
     seedAdmins();
 
     // Add APIs
-    app.use('/api', BaseRouter);
+    app.use('/api', baseRouter);
     app.use(ErrorHandler);
   });
 
@@ -62,4 +62,4 @@ mongoose
  *                              Export Server
  ***********************************************************************************/
 
-export default app;
+export { app };

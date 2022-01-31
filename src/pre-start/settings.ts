@@ -1,4 +1,4 @@
-import SettingsModel from '@entities/Settings';
+import SettingsModel from 'src/settings/entities';
 
 const data = [
   { key: 'NAME', value: process.env.NAME },

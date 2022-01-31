@@ -9,17 +9,15 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@entities/*": ["src/entities/*"],
-      "@shared/*": ["src/shared/*"],
-      "@services/*": ["src/services/*"],
-      "@controllers/*": ["src/controllers/*"],
-      "@middleware/*": ["src/middleware/*"],
-      "@server/*": ["src/Server/*"],
+      "@activate/*": ["src/activate/*"],
       "@auth/*": ["src/auth/*"],
-      "@user/*": ["src/user/*"],
-      "@useraccount/*": ["src/useraccount/*"],
+      "@middleware/*": ["src/middleware/*"],
       "@period/*": ["src/period/*"],
-      "@praise/*": ["src/praise/*"]
+      "@praise/*": ["src/praise/*"],
+      "@settings/*": ["src/settings/*"],
+      "@shared/*": ["src/shared/*"],
+      "@user/*": ["src/user/*"],
+      "@useraccount/*": ["src/useraccount/*"]
     }
   },
   "include": ["src/**/*.ts"]

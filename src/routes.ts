@@ -1,24 +1,23 @@
-import { UserRole } from '@entities/User';
+import { activateRouter } from '@activate/routes';
+import { authRouter } from '@auth/routes';
+import { periodRouter } from '@period/routes';
 import { praiseRouter } from '@praise/routes';
+import { settingsAdminRouter, settingsRouter } from '@settings/routes';
 import { NOT_FOUND } from '@shared/constants';
+import { userAdminRouter, userRouter } from '@user/routes';
+import { UserRole } from '@user/types';
+import { userAccountRouter } from '@useraccount/routes';
 import { Router } from 'express';
 import { authMiddleware } from 'src/auth/middleware';
-import activateRouter from './activate';
-import adminPeriodRouter from './admin/periods';
-import adminSettingsRouter from './admin/settings';
-import adminUserRouter from './admin/users';
-import { authRouter } from './auth/routes';
-import periodRouter from './periods';
-import settingsRouter from './settings';
-import userAccountRouter from './useraccounts';
-import userRouter from './users';
 
-// Export the base-router
 const baseRouter = Router();
 
-baseRouter.use('/auth', authRouter);
+/* Open routes */
 
+baseRouter.use('/auth', authRouter);
 baseRouter.use('/activate', activateRouter);
+
+/* USER authentication */
 
 baseRouter.use('/settings', authMiddleware(UserRole.USER), settingsRouter);
 baseRouter.use('/users', authMiddleware(UserRole.USER), userRouter);
@@ -30,17 +29,18 @@ baseRouter.use(
   userAccountRouter
 );
 
-baseRouter.use('/admin/users', authMiddleware(UserRole.ADMIN), adminUserRouter);
+/* ADMIN authentication */
+
+baseRouter.use('/admin/users', authMiddleware(UserRole.ADMIN), userAdminRouter);
 baseRouter.use(
   '/admin/periods',
   authMiddleware(UserRole.ADMIN),
-  adminPeriodRouter
+  periodAdminRouter
 );
-
 baseRouter.use(
   '/admin/settings',
   authMiddleware(UserRole.ADMIN),
-  adminSettingsRouter
+  settingsAdminRouter
 );
 
 baseRouter.all('*', (req, res) => {
@@ -50,4 +50,4 @@ baseRouter.all('*', (req, res) => {
   });
 });
 
-export default baseRouter;
+export { baseRouter };

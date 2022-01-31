@@ -15,7 +15,3 @@ export interface PeriodCreateUpdateInput {
 export interface SearchQueryInput extends QueryInput {
   search: string;
 }
-
-export interface SettingsSetInput {
-  value: string;
-}

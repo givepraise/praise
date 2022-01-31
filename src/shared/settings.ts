@@ -1,4 +1,4 @@
-import SettingsModel from '@entities/Settings';
+import SettingsModel from 'src/settings/entities';
 
 export const settingValue = async (key: string): Promise<string | null> => {
   const setting = await SettingsModel.findOne({ key });
