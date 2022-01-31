@@ -12,7 +12,6 @@ import { JwtService } from './JwtService';
 
 const jwtService = new JwtService();
 
-// Middleware to verify if user is an admin
 export const authMiddleware = (role: UserRole) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     // Get authorization header
@@ -35,11 +34,9 @@ export const authMiddleware = (role: UserRole) => {
     const user = await UserModel.findOne({
       ethereumAddress: clientData.ethereumAddress,
     });
-
     if (!user) throw new NotFoundError('User');
 
-    res.locals.roles = clientData.roles;
-    res.locals.ethereumAddress = clientData.ethereumAddress;
+    // Save current user for usage in endpoints
     res.locals.currentUser = user;
 
     next();
