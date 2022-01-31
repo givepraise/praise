@@ -1,5 +1,5 @@
 import { cookieProps } from '@shared/constants';
-import ErrorHandler from '@shared/ErrorHandler';
+import { ErrorHandler } from '@shared/ErrorHandler';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
@@ -9,9 +9,9 @@ import helmet from 'helmet';
 import mongoose, { ConnectOptions } from 'mongoose';
 import morgan from 'morgan';
 import path from 'path';
+import seedAdmins from './pre-start/admins';
 import seedData from './pre-start/seed';
 import seedSettings from './pre-start/settings';
-import seedAdmins from './pre-start/admins';
 import BaseRouter from './routes';
 
 dotenv.config({ path: path.join(__dirname, '..', '/.env') });
