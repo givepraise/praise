@@ -8,4 +8,4 @@ periodRouter.get('/all', periodController.all);
 periodRouter.get('/:periodId', periodController.single);
 periodRouter.get('/:periodId/praise', periodController.praise);
 
-export default periodRouter;
+export { periodRouter };

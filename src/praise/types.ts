@@ -17,7 +17,7 @@ export interface PraiseImportInput {
   sourceName: string;
 }
 
-export interface PraiseDocument extends mongoose.Document {
+export interface Praise {
   reason: string;
   sourceId: string;
   sourceName: string;
@@ -28,7 +28,9 @@ export interface PraiseDocument extends mongoose.Document {
   updatedAt: Date;
 }
 
-export interface QuantificationDocument {
+export interface PraiseDocument extends Praise, mongoose.Document {}
+
+export interface Quantification {
   createdAt?: string;
   updatedAt?: string;
   quantifier: UserDocument;
@@ -36,3 +38,7 @@ export interface QuantificationDocument {
   dismissed?: boolean;
   duplicatePraise?: PraiseDocument | null;
 }
+
+export interface QuantificationDocument
+  extends Quantification,
+    mongoose.Document {}

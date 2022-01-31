@@ -3,14 +3,19 @@ import { getQuerySort } from '@shared/functions';
 import { QueryInput } from '@shared/inputs';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
-import { QuantificationCreateUpdateInput } from '@praise/types';
+import { Praise, QuantificationCreateUpdateInput } from '@praise/types';
 import { PraiseModel } from './entities';
 import { UserModel } from '@user/entities';
+import {
+  PaginatedResponseBody,
+  TypedRequestQuery,
+  TypedResponse,
+} from '@shared/types';
 
 export const all = async (
-  req: Request<any, QueryInput, any>, //TODO find something better than any
-  res: Response
-): Promise<Response> => {
+  req: TypedRequestQuery<QueryInput>,
+  res: TypedResponse<PaginatedResponseBody<Praise>>
+): Promise<TypedResponse<PaginatedResponseBody<Praise>>> => {
   const query: any = {};
   if (req.query.receiver) {
     query.receiver = req.query.receiver;
@@ -30,10 +35,13 @@ export const all = async (
     populate: 'giver receiver',
   });
 
-  return res.status(200).json(praises); //TODO typed response
+  return res.status(200).json(praises);
 };
 
-const single = async (req: Request, res: Response): Promise<Response> => {
+const single = async (
+  req: Request,
+  res: TypedResponse<Praise>
+): Promise<TypedResponse<Praise>> => {
   const praise = await PraiseModel.findById(req.params.id).populate(
     'giver receiver'
   );
@@ -44,8 +52,8 @@ const single = async (req: Request, res: Response): Promise<Response> => {
 
 const quantify = async (
   req: Request<any, QuantificationCreateUpdateInput, any>,
-  res: Response
-): Promise<Response> => {
+  res: TypedResponse<Praise>
+): Promise<TypedResponse<Praise>> => {
   const praise = await PraiseModel.findById(req.params.id).populate(
     'giver receiver'
   );
