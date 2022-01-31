@@ -1,17 +1,7 @@
+import { PeriodDocument } from '@entities/Period';
 import mongoose from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-
-export interface PeriodInterface extends mongoose.Document {
-  name: string;
-  status: 'OPEN' | 'QUANTIFY' | 'CLOSED';
-  endDate: Date;
-  quantifiers: [string];
-}
-
-export interface PeriodDocument extends PeriodInterface {
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Period } from './types';
 
 async function validateEndDate(this: any, endDate: string) {
   // This rule don't apply when no change to endDate has been made
@@ -95,7 +85,7 @@ const endDateValidators = [
   },
 ];
 
-const periodSchema = new mongoose.Schema<PeriodInterface>(
+const periodSchema = new mongoose.Schema<PeriodDocument>(
   {
     name: { type: String, required: true, minlength: 3, maxlength: 64 },
     status: {
@@ -117,9 +107,9 @@ const periodSchema = new mongoose.Schema<PeriodInterface>(
 
 periodSchema.plugin(mongoosePagination);
 
-const PeriodModel = mongoose.model<
-  PeriodInterface,
-  Pagination<PeriodInterface>
->('Period', periodSchema);
+const PeriodModel = mongoose.model<PeriodDocument, Pagination<PeriodDocument>>(
+  'Period',
+  periodSchema
+);
 
 export default PeriodModel;

@@ -1,6 +1,6 @@
-import PeriodModel, { PeriodInterface } from '@entities/Period';
-import PraiseModel from '@entities/Praise';
-import UserModel, { UserRole } from '@entities/User';
+import { PraiseModel } from '@praise/entities';
+import { UserModel } from '@user/entities';
+import { UserRole } from '@user/types';
 import {
   BadRequestError,
   InternalServerError,
@@ -11,11 +11,19 @@ import { PeriodCreateUpdateInput, QueryInput } from '@shared/inputs';
 import { settingFloat, settingInt } from '@shared/settings';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import {
+  PaginatedResponseBody,
+  TypedRequestQuery,
+  TypedResponse,
+} from '@shared/types';
+import { Period, Quantifier, Receiver } from './types';
+import PeriodModel from './entities';
+import { Praise } from '@praise/types';
 
 export const all = async (
-  req: Request<any, QueryInput, any>,
-  res: Response
-): Promise<Response> => {
+  req: TypedRequestQuery<QueryInput>,
+  res: TypedResponse<PaginatedResponseBody<Period>>
+): Promise<TypedResponse<PaginatedResponseBody<Period>>> => {
   const response = await PeriodModel.paginate({
     ...req.query,
     sort: getQuerySort(req.query),
@@ -25,8 +33,8 @@ export const all = async (
 
 export const single = async (
   req: Request,
-  res: Response
-): Promise<Response> => {
+  res: TypedResponse<Period>
+): Promise<TypedResponse<Period>> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) return res.status(StatusCodes.NOT_FOUND);
   return res.status(StatusCodes.OK).json(period);
@@ -34,8 +42,8 @@ export const single = async (
 
 export const create = async (
   req: Request<any, PeriodCreateUpdateInput, any>,
-  res: Response
-): Promise<Response> => {
+  res: TypedResponse<Period>
+): Promise<TypedResponse<Period>> => {
   const { name, endDate } = req.body;
   const period = await PeriodModel.create({ name, endDate });
   return res.status(StatusCodes.OK).json(period);
@@ -43,8 +51,8 @@ export const create = async (
 
 export const update = async (
   req: Request<any, PeriodCreateUpdateInput, any>,
-  res: Response
-): Promise<Response> => {
+  res: TypedResponse<Period>
+): Promise<TypedResponse<Period>> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) return res.status(StatusCodes.NOT_FOUND);
 
@@ -63,7 +71,10 @@ export const update = async (
   return res.status(StatusCodes.OK).json(period);
 };
 
-export const close = async (req: Request, res: Response): Promise<Response> => {
+export const close = async (
+  req: Request,
+  res: TypedResponse<Period>
+): Promise<TypedResponse<Period>> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) return res.status(StatusCodes.NOT_FOUND);
 
@@ -74,7 +85,7 @@ export const close = async (req: Request, res: Response): Promise<Response> => {
 };
 
 // Returns previous period end date or 1970-01-01 if no previous period
-const getPreviousPeriodEndDate = async (period: PeriodInterface) => {
+const getPreviousPeriodEndDate = async (period: Period) => {
   const previousPeriod = await PeriodModel.findOne({
     endDate: { $lt: period.endDate },
   }).sort({ endDate: -1 });
@@ -83,18 +94,6 @@ const getPreviousPeriodEndDate = async (period: PeriodInterface) => {
     : new Date(+0);
   return previousEndDate;
 };
-
-interface Receiver {
-  _id: string;
-  praiseCount: number;
-  praiseIds: string[];
-  assignedQuantifiers?: number;
-}
-
-interface Quantifier {
-  _id?: string;
-  receivers: Receiver[];
-}
 
 const assignedPraiseCount = (quantifier: Quantifier) => {
   return quantifier.receivers.reduce(function (sum, receiver) {
@@ -279,8 +278,8 @@ export const assignQuantifiers = async (
 
 export const praise = async (
   req: Request,
-  res: Response
-): Promise<Response> => {
+  res: TypedResponse<Praise>
+): Promise<TypedResponse<Praise>> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
