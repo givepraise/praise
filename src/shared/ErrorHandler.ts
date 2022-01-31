@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { errorNames, errorCodes } from './constants';
 import { ErrorInterface } from './types';
-import logger from '@shared/Logger';
+import { logger } from '@shared/Logger';
 
 const ErrorHandler = (
   err: any,
@@ -14,7 +14,7 @@ const ErrorHandler = (
   try {
     if (err.name === 'ValidationError')
       return (err = handleValidationError(err, res));
-    if (err.code && err.code == 11000)
+    if (err.code && err.code === 11000)
       return (err = handleDuplicateKeyError(err, res));
     if (
       err.name === errorNames.INTERNAL_SERVER_ERROR ||
@@ -65,4 +65,4 @@ const handleAppError = (err: ErrorInterface, res: Response) => {
   res.status(code).send(error);
 };
 
-export default ErrorHandler;
+export { ErrorHandler };

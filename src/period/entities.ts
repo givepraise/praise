@@ -1,7 +1,6 @@
-import { PeriodDocument } from '@entities/Period';
+import { PeriodDocument } from '@period/types';
 import mongoose from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-import { Period } from './types';
 
 async function validateEndDate(this: any, endDate: string) {
   // This rule don't apply when no change to endDate has been made
@@ -18,7 +17,7 @@ async function validateEndDate(this: any, endDate: string) {
   if (!twoLastPeriods || twoLastPeriods.length === 0) return true;
 
   let d1;
-  let d2 = new Date(endDate);
+  const d2 = new Date(endDate);
 
   // Save new period = compare to last period
   // Update period = compare to 2nd last period
@@ -112,4 +111,4 @@ const PeriodModel = mongoose.model<PeriodDocument, Pagination<PeriodDocument>>(
   periodSchema
 );
 
-export default PeriodModel;
+export { PeriodModel };

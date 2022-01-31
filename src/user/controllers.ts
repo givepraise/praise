@@ -20,7 +20,7 @@ import { RoleChangeRequest, User, UserSearchQuery } from './types';
  * Description
  * @param
  */
-export const all = async (
+const all = async (
   req: TypedRequestQuery<QueryInput>,
   res: TypedResponse<PaginatedResponseBody<User>>
 ): Promise<TypedResponse<PaginatedResponseBody<User>>> => {
@@ -37,7 +37,7 @@ export const all = async (
  * Description
  * @param
  */
-export const single = async (
+const single = async (
   req: Request,
   res: TypedResponse<User>
 ): Promise<TypedResponse<User>> => {
@@ -50,7 +50,7 @@ export const single = async (
  * Description
  * @param
  */
-export const search = async (
+const search = async (
   req: TypedRequestQuery<UserSearchQuery>,
   res: TypedResponse<PaginatedResponseBody<User>>
 ): Promise<TypedResponse<PaginatedResponseBody<User>>> => {
@@ -73,7 +73,7 @@ export const search = async (
  * Description
  * @param
  */
-export const addRole = async (
+const addRole = async (
   req: TypedRequestBody<RoleChangeRequest>,
   res: TypedResponse<User>
 ): Promise<TypedResponse<User>> => {
@@ -94,7 +94,7 @@ export const addRole = async (
  * Description
  * @param
  */
-export const removeRole = async (
+const removeRole = async (
   req: TypedRequestBody<RoleChangeRequest>,
   res: TypedResponse<User>
 ): Promise<TypedResponse<User>> => {
@@ -112,3 +112,5 @@ export const removeRole = async (
   }
   return res.status(200).json(userTransformer(req, user));
 };
+
+export { all, single, search, addRole, removeRole };

@@ -11,7 +11,7 @@ export const praiseErrorEmbed = (title: string, description: string) => {
 export const praiseSuccessEmbed = (praised: string[], reason: string) => {
   return new MessageEmbed()
     .setColor('#00ff00')
-    .setTitle(`SUCCESSFULLY PRAISED!`)
+    .setTitle('SUCCESSFULLY PRAISED!')
     .setDescription(`Praised ${praised.join(', ')}`)
     .addField('Reason', reason)
     .setFooter({ text: '✅  PRAISE REGISTERED' });

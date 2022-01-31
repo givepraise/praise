@@ -1,9 +1,5 @@
 import mongoose from 'mongoose';
-
-export interface SettingsInterface extends mongoose.Document {
-  key: string;
-  value: string;
-}
+import { SettingsDocument } from './types';
 
 export const settingsSchema = new mongoose.Schema(
   {
@@ -15,9 +11,9 @@ export const settingsSchema = new mongoose.Schema(
   }
 );
 
-const SettingsModel = mongoose.model<SettingsInterface>(
+const SettingsModel = mongoose.model<SettingsDocument>(
   'Settings',
   settingsSchema
 );
 
-export default SettingsModel;
+export { SettingsModel };

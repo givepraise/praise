@@ -1,18 +1,18 @@
 import { cookieProps } from '@shared/constants';
-import ErrorHandler from '@shared/ErrorHandler';
+import { ErrorHandler } from '@shared/ErrorHandler';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
-import express from 'express';
+import express, { json, urlencoded } from 'express';
 import 'express-async-errors';
 import helmet from 'helmet';
 import mongoose, { ConnectOptions } from 'mongoose';
 import morgan from 'morgan';
 import path from 'path';
-import seedData from './pre-start/seed';
-import seedSettings from './pre-start/settings';
-import seedAdmins from './pre-start/admins';
-import BaseRouter from './routes';
+import { seedData } from './pre-start/seed';
+import { seedSettings } from './pre-start/settings';
+import { seedAdmins } from './pre-start/admins';
+import { baseRouter } from './routes';
 
 dotenv.config({ path: path.join(__dirname, '..', '/.env') });
 
@@ -35,8 +35,8 @@ mongoose
         origin: '*',
       })
     );
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
+    app.use(json());
+    app.use(urlencoded({ extended: true }));
     app.use(cookieParser(cookieProps.secret));
 
     // Show routes called in console during development
@@ -54,7 +54,7 @@ mongoose
     seedAdmins();
 
     // Add APIs
-    app.use('/api', BaseRouter);
+    app.use('/api', baseRouter);
     app.use(ErrorHandler);
   });
 
@@ -62,4 +62,4 @@ mongoose
  *                              Export Server
  ***********************************************************************************/
 
-export default app;
+export { app };

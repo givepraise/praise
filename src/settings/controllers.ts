@@ -1,28 +1,33 @@
-import SettingsModel from '@entities/Settings';
+import { SettingsModel } from '@settings/entities';
 import { BadRequestError, NotFoundError } from '@shared/errors';
-import { SettingsSetInput } from '@shared/inputs';
+import { QueryInput } from '@shared/inputs';
+import { TypedRequestQuery, TypedResponse } from '@shared/types';
 import { Request, Response } from 'express';
+import { Settings, SettingsSetInput } from './types';
 
-export const all = async (req: Request, res: Response): Promise<Response> => {
+const all = async (
+  req: TypedRequestQuery<QueryInput>,
+  res: Response
+): Promise<Response> => {
   const settings = await SettingsModel.find({});
 
   return res.status(200).json(settings);
 };
 
-export const single = async (
+const single = async (
   req: Request,
-  res: Response
-): Promise<Response> => {
+  res: TypedResponse<Settings>
+): Promise<TypedResponse<Settings>> => {
   const setting = await SettingsModel.findById(req.params.key);
   if (!setting) throw new NotFoundError('Settings');
 
   return res.status(200).json(setting);
 };
 
-export const set = async (
+const set = async (
   req: Request<any, SettingsSetInput, any>,
-  res: Response
-): Promise<Response> => {
+  res: TypedResponse<Settings>
+): Promise<TypedResponse<Settings>> => {
   const setting = await SettingsModel.findById(req.params.key);
   if (!setting) throw new NotFoundError('Settings');
 
@@ -34,4 +39,4 @@ export const set = async (
   return res.status(200).json(setting);
 };
 
-export default { all, single, set };
+export { all, single, set };

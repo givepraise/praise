@@ -1,4 +1,4 @@
-import UserModel from '@entities/User';
+import { UserModel } from '@user/entities';
 import {
   BadRequestError,
   InternalServerError,
@@ -6,8 +6,9 @@ import {
   UnauthorizedError,
 } from '@shared/errors';
 import { ethers } from 'ethers';
-import { Request, Response } from 'express';
-import UserAccountModel from 'src/useraccount/entities';
+import { Response } from 'express';
+import { UserAccountModel } from '@useraccount/entities';
+import { ActivateRequest } from './types';
 
 const generateLoginMessage = (
   accountId: string,
@@ -22,19 +23,10 @@ const generateLoginMessage = (
   );
 };
 
-interface ActivateRequest extends Request {
-  body: {
-    ethereumAddress: string;
-    accountId: string;
-    message: string;
-    signature: string;
-  };
-}
-
-export async function activate(
+const activate = async (
   req: ActivateRequest,
   res: Response
-): Promise<Response> {
+): Promise<Response> => {
   const { ethereumAddress, signature, accountId } = req.body;
 
   // Find previously generated token
@@ -77,4 +69,6 @@ export async function activate(
   user.save();
 
   return res.status(200).json(user);
-}
+};
+
+export { activate };

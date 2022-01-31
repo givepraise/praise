@@ -1,4 +1,4 @@
-import logger from '@shared/Logger';
+import { logger } from '@shared/Logger';
 
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';

@@ -14,12 +14,14 @@
       "@services/*": ["src/services/*"],
       "@controllers/*": ["src/controllers/*"],
       "@middleware/*": ["src/middleware/*"],
-      "@server/*": ["src/Server/*"],
+      "@server": ["src/Server"],
       "@auth/*": ["src/auth/*"],
       "@user/*": ["src/user/*"],
       "@useraccount/*": ["src/useraccount/*"],
       "@period/*": ["src/period/*"],
-      "@praise/*": ["src/praise/*"]
+      "@praise/*": ["src/praise/*"],
+      "@settings/*": ["src/settings/*"],
+      "@activate/*": ["src/activate/*"]
     }
   },
   "include": ["src/**/*.ts"]

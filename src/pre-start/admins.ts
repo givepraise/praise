@@ -1,4 +1,5 @@
-import UserModel, { UserRole } from '@entities/User';
+import { UserModel } from '@user/entities';
+import { UserRole } from '@user/types';
 
 const seedAdmins = () => {
   const admins = process.env.ADMINS as string;
@@ -30,4 +31,4 @@ const seedAdmins = () => {
   });
 };
 
-export default seedAdmins;
+export { seedAdmins };

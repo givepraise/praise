@@ -1,4 +1,4 @@
-import SettingsModel from '@entities/Settings';
+import { SettingsModel } from '@settings/entities';
 
 const data = [
   { key: 'NAME', value: process.env.NAME },
@@ -42,4 +42,4 @@ const seedSettings = () => {
   });
 };
 
-export default seedSettings;
+export { seedSettings };

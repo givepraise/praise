@@ -7,15 +7,6 @@ export interface QueryInput extends Query {
   page?: string;
 }
 
-export interface PeriodCreateUpdateInput {
-  name: string;
-  endDate: string;
-}
-
 export interface SearchQueryInput extends QueryInput {
   search: string;
-}
-
-export interface SettingsSetInput {
-  value: string;
 }

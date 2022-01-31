@@ -2,8 +2,8 @@ import { Router } from 'express';
 import { all, single } from './controllers';
 
 // User-routes
-const userRouter = Router();
-userRouter.get('/all', all);
-userRouter.get('/:id', single);
+const userAccountRouter = Router();
+userAccountRouter.get('/all', all);
+userAccountRouter.get('/:id', single);
 
-export { userRouter };
+export { userAccountRouter };

@@ -14,7 +14,7 @@ import { UserAccount } from './types';
  * Description
  * @param
  */
-export const all = async (
+const all = async (
   req: TypedRequestQuery<QueryInput>,
   res: TypedResponse<PaginatedResponseBody<UserAccount>>
 ): Promise<TypedResponse<PaginatedResponseBody<UserAccount>>> => {
@@ -29,7 +29,7 @@ export const all = async (
  * Description
  * @param
  */
-export const single = async (
+const single = async (
   req: Request,
   res: TypedResponse<UserAccount>
 ): Promise<TypedResponse<UserAccount>> => {
@@ -37,3 +37,5 @@ export const single = async (
   if (!account) throw new NotFoundError('UserAccount');
   return res.status(200).json(account);
 };
+
+export { all, single };
