@@ -21,7 +21,7 @@ export interface Praise {
   reason: string;
   sourceId: string;
   sourceName: string;
-  quantifications: QuantificationDocument[];
+  quantifications: Quantification[];
   giver: UserAccountDocument;
   receiver: UserAccountDocument;
   createdAt: Date;

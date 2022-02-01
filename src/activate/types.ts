@@ -1,5 +1,6 @@
 import { Request } from 'express';
 
+//TODO don't extend Request
 export interface ActivateRequest extends Request {
   body: {
     ethereumAddress: string;
