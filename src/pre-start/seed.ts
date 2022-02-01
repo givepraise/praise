@@ -4,10 +4,6 @@ import { UserModel } from '@user/entities';
 import faker from 'faker';
 import { UserAccountModel } from '@useraccount/entities';
 
-const periodStatuses = ['OPEN', 'QUANTIFY', 'CLOSED'];
-const roles = ['ADMIN', 'USER', 'QUANTIFIER'];
-
-const USER_NUMBER = 15;
 const PERIOD_NUMBER = 3;
 const PERIOD_LENGTH = 10;
 const PRAISE_NUMBER = 300;
@@ -67,14 +63,14 @@ const USERS = [
   },
 ];
 
-const twoRandomAccountIndexes = () => {
+const twoRandomAccountIndexes = (): Array<number> => {
   const n1 = Math.floor(Math.random() * (USERS.length - 1));
   let n2 = Math.floor(Math.random() * (USERS.length - 1));
   n2 = n2 === n1 ? (n1 === USERS.length - 1 ? USERS.length - 2 : n1 + 1) : n2;
   return [n1, n2];
 };
 
-const seedData = async () => {
+const seedData = async (): Promise<void> => {
   const periodsCount = await PeriodModel.count();
   const praisesCount = await PraiseModel.count();
   const userCount = await UserModel.count();

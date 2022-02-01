@@ -1,9 +1,11 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction, Interaction } from 'discord.js';
 import randomstring from 'randomstring';
-import UserAccountModel from '../../../useraccount/entities';
+import { UserAccountModel } from '@useraccount/entities';
 
-const activate = async (interaction: CommandInteraction) => {
+const activate = async (
+  interaction: CommandInteraction
+): Promise<CommandInteraction | undefined> => {
   const { user } = interaction;
   const ua = {
     id: user.id,

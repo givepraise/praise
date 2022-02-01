@@ -1,4 +1,4 @@
-import logger from '@shared/Logger';
+import { logger } from '@shared/Logger';
 import { Request, Response } from 'express';
 import { errorCodes, errorNames } from './constants';
 import { ErrorInterface } from './types';

@@ -1,6 +1,6 @@
-import logger from '@shared/Logger';
-import discordClient from 'src/bots/discord';
-import { app } from './server';
+import { logger } from '@shared/Logger';
+import { discordClient } from 'src/bots/discord';
+import { app } from '@server';
 
 // Start the server
 const port = Number(process.env.PORT || 3000);

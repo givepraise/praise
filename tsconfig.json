@@ -17,7 +17,8 @@
       "@settings/*": ["src/settings/*"],
       "@shared/*": ["src/shared/*"],
       "@user/*": ["src/user/*"],
-      "@useraccount/*": ["src/useraccount/*"]
+      "@useraccount/*": ["src/useraccount/*"],
+      "@server": ["src/Server"],
     }
   },
   "include": ["src/**/*.ts"]

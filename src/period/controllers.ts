@@ -85,23 +85,27 @@ export const close = async (
 };
 
 // Returns previous period end date or 1970-01-01 if no previous period
-const getPreviousPeriodEndDate = async (period: Period) => {
+const getPreviousPeriodEndDate = async (period: Period): Promise<Date> => {
   const previousPeriod = await PeriodModel.findOne({
     endDate: { $lt: period.endDate },
   }).sort({ endDate: -1 });
+
   const previousEndDate = previousPeriod
     ? previousPeriod.endDate
     : new Date(+0);
+
   return previousEndDate;
 };
 
-const assignedPraiseCount = (quantifier: Quantifier) => {
+const assignedPraiseCount = (quantifier: Quantifier): number => {
   return quantifier.receivers.reduce((sum, receiver) => {
     return sum + receiver.praiseCount;
   }, 0);
 };
 
-const assignQuantifiersDryRun = async (periodId: string) => {
+const assignQuantifiersDryRun = async (
+  periodId: string
+): Promise<Array<Quantifier>> => {
   const period = await PeriodModel.findById(periodId);
   if (!period) throw new NotFoundError('Period');
 
@@ -186,7 +190,7 @@ const assignQuantifiersDryRun = async (periodId: string) => {
       }
     }
 
-    const assignsRemaining = () => {
+    const assignsRemaining = (): boolean => {
       for (const r of receivers) {
         if (
           !r.assignedQuantifiers ||
@@ -213,6 +217,25 @@ const assignQuantifiersDryRun = async (periodId: string) => {
   }
 
   return pool;
+};
+
+export const praise = async (
+  req: Request,
+  res: TypedResponse<Praise[]>
+): Promise<TypedResponse<Praise[]>> => {
+  const period = await PeriodModel.findById(req.params.periodId);
+  if (!period) throw new NotFoundError('Period');
+
+  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+
+  const praise = await PraiseModel.find()
+    .where({
+      createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
+    })
+    .sort({ createdAt: -1 })
+    .populate('receiver giver');
+
+  return res.status(StatusCodes.OK).json(praise);
 };
 
 export const verifyQuantifierPoolSize = async (
@@ -274,23 +297,4 @@ export const assignQuantifiers = async (
   period.save();
 
   return praise(req, res);
-};
-
-export const praise = async (
-  req: Request,
-  res: TypedResponse<Praise>
-): Promise<TypedResponse<Praise>> => {
-  const period = await PeriodModel.findById(req.params.periodId);
-  if (!period) throw new NotFoundError('Period');
-
-  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
-
-  const praise = await PraiseModel.find()
-    .where({
-      createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
-    })
-    .sort({ createdAt: -1 })
-    .populate('receiver giver');
-
-  return res.status(StatusCodes.OK).json(praise);
 };
