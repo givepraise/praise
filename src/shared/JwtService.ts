@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { cookieProps } from '@shared/constants';
-import jsonwebtoken, { VerifyErrors } from 'jsonwebtoken';
+import jsonwebtoken from 'jsonwebtoken';
 import randomString from 'randomstring';
 import { UnauthorizedError } from './errors';
 
@@ -46,14 +46,10 @@ export class JwtService {
    */
   public decodeJwt(jwt: string): Promise<ClientData> {
     return new Promise((res) => {
-      jsonwebtoken.verify(
-        jwt,
-        this.secret,
-        (err: VerifyErrors | null, decoded?: object) => {
-          if (err) throw new UnauthorizedError(this.VALIDATION_ERROR);
-          return res(decoded as ClientData);
-        }
-      );
+      jsonwebtoken.verify(jwt, this.secret, (err, decoded) => {
+        if (err) throw new UnauthorizedError(this.VALIDATION_ERROR);
+        return res(decoded as ClientData);
+      });
     });
   }
 }
