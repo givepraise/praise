@@ -1,10 +1,10 @@
 import { activateRouter } from '@activate/routes';
 import { authRouter } from '@auth/routes';
-import { periodRouter } from '@period/routes';
+import { adminPeriodRouter, periodRouter } from '@period/routes';
 import { praiseRouter } from '@praise/routes';
 import { settingsAdminRouter, settingsRouter } from '@settings/routes';
 import { NOT_FOUND } from '@shared/constants';
-import { userAdminRouter, userRouter } from '@user/routes';
+import { adminUserRouter, userRouter } from '@user/routes';
 import { UserRole } from '@user/types';
 import { userAccountRouter } from '@useraccount/routes';
 import { Router } from 'express';
@@ -30,11 +30,11 @@ baseRouter.use(
 
 /* ADMIN authentication */
 
-baseRouter.use('/admin/users', authMiddleware(UserRole.ADMIN), userAdminRouter);
+baseRouter.use('/admin/users', authMiddleware(UserRole.ADMIN), adminUserRouter);
 baseRouter.use(
   '/admin/periods',
   authMiddleware(UserRole.ADMIN),
-  periodAdminRouter
+  adminPeriodRouter
 );
 baseRouter.use(
   '/admin/settings',

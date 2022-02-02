@@ -31,7 +31,7 @@ export class JwtService {
   public getJwt(data: ClientData): Promise<string> {
     return new Promise((resolve) => {
       sign(data, this.secret, this.options, (err, token) => {
-        if (err) throw new UnauthorizedError(err);
+        if (err) throw new UnauthorizedError(err.message);
         return resolve(token || '');
       });
     });
