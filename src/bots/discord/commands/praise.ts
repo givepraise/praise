@@ -1,13 +1,10 @@
-import logger from '@shared/Logger';
-
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { CommandInteraction, Interaction } from 'discord.js';
-import { MessageEmbed } from 'discord.js';
+import { logger } from '@shared/Logger';
+import { CommandInteraction, Interaction, MessageEmbed } from 'discord.js';
+import { PraiseModel } from '@praise/entities';
+import { UserModel } from '@user/entities';
+import { UserAccountModel } from '@useraccount/entities';
 import { praiseErrorEmbed, praiseSuccessEmbed } from '../utils/praiseEmbeds';
-
-import UserAccountModel from '../../../entities/UserAccount';
-import UserModel from '../../../entities/User';
-import PraiseModel from '../../../entities/Praise';
 
 const praise = async (interaction: CommandInteraction) => {
   const { guild, channel, member } = interaction;
@@ -82,9 +79,9 @@ const praise = async (interaction: CommandInteraction) => {
 
   if (
     !receivers ||
-    receivers.length == 0 ||
+    receivers.length === 0 ||
     !receiverData.validReceiverIds ||
-    receiverData.validReceiverIds?.length == 0
+    receiverData.validReceiverIds?.length === 0
   ) {
     const noReceiverEmbed = praiseErrorEmbed(
       'Receivers not mentiond',
@@ -95,7 +92,7 @@ const praise = async (interaction: CommandInteraction) => {
     return;
   }
 
-  if (!reason || reason.length == 0) {
+  if (!reason || reason.length === 0) {
     const noReasonEmbed = praiseErrorEmbed(
       'Reason not provided',
       'Praise needs a `reason` in order to be dished.'

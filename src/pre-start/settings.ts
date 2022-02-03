@@ -1,4 +1,4 @@
-import SettingsModel from '@entities/Settings';
+import { SettingsModel } from '@settings/entities';
 
 const data = [
   { key: 'NAME', value: process.env.NAME },
@@ -32,7 +32,7 @@ const data = [
   { key: 'TELEGRAM_LOGO', value: process.env.TELEGRAM_LOGO },
 ];
 
-const seedSettings = () => {
+const seedSettings = (): void => {
   data.forEach(async (obj) => {
     const document = await SettingsModel.findOne({ key: obj.key });
 
@@ -42,4 +42,4 @@ const seedSettings = () => {
   });
 };
 
-export default seedSettings;
+export { seedSettings };

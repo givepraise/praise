@@ -1,4 +1,4 @@
-import logger from '@shared/Logger';
+import { logger } from '@shared/Logger';
 import { Client, Collection, Intents } from 'discord.js';
 
 import { registerCommands } from './utils/registerCommands';
@@ -14,12 +14,12 @@ if (!process.env.PRAISE_GIVER_ROLE_ID) {
 }
 
 // Create a new client instance
-const client = new Client({ intents: ['GUILDS', 'GUILD_MEMBERS'] });
+const discordClient = new Client({ intents: ['GUILDS', 'GUILD_MEMBERS'] });
 
 // Set bot commands
 (async () => {
   const registerSuccess = await registerCommands(
-    client,
+    discordClient,
     process.env.DISCORD_CLIENT_ID || '',
     process.env.DISCORD_GUILD_ID || ''
   );
@@ -31,13 +31,13 @@ const client = new Client({ intents: ['GUILDS', 'GUILD_MEMBERS'] });
   }
 })();
 
-client.once('ready', () => {
-  logger.info(`Discord client is ready!`);
+discordClient.once('ready', () => {
+  logger.info('Discord client is ready!');
 });
 
-client.on('interactionCreate', async (interaction) => {
+discordClient.on('interactionCreate', async (interaction) => {
   if (!interaction.isCommand()) return;
-  const command = client.commands.get(interaction.commandName);
+  const command = discordClient.commands.get(interaction.commandName);
   if (!command) return;
   try {
     await command.execute(interaction);
@@ -50,4 +50,4 @@ client.on('interactionCreate', async (interaction) => {
   }
 });
 
-export default client;
+export { discordClient };

@@ -1,6 +1,7 @@
-import UserModel, { UserRole } from '@entities/User';
+import { UserModel } from '@user/entities';
+import { UserRole } from '@user/types';
 
-const seedAdmins = () => {
+const seedAdmins = (): void => {
   const admins = process.env.ADMINS as string;
   const ethAddresses = admins
     .split(',')
@@ -9,7 +10,7 @@ const seedAdmins = () => {
       return item.trim();
     });
 
-  ethAddresses.forEach(async (e) => {
+  ethAddresses.forEach(async (e): Promise<void> => {
     const user = await UserModel.findOne({ ethereumAddress: e });
 
     if (user) {
@@ -30,4 +31,4 @@ const seedAdmins = () => {
   });
 };
 
-export default seedAdmins;
+export { seedAdmins };

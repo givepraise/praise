@@ -10,35 +10,35 @@ class DomainError extends Error implements ErrorInterface {
 }
 
 class InternalServerError extends DomainError {
-  constructor(message: any) {
+  constructor(message: string) {
     super(message);
     this.name = errorNames.INTERNAL_SERVER_ERROR;
   }
 }
 
 class BadRequestError extends DomainError {
-  constructor(message: any) {
+  constructor(message: string) {
     super(message);
     this.name = errorNames.BAD_REQUEST;
   }
 }
 
 class UnauthorizedError extends DomainError {
-  constructor(message: any) {
+  constructor(message: string) {
     super(message);
     this.name = errorNames.UNAUTHORIZED;
   }
 }
 
 class ForbiddenError extends DomainError {
-  constructor(message: any) {
+  constructor(message: string) {
     super(message);
     this.name = errorNames.FORBIDDEN;
   }
 }
 
 class NotFoundError extends DomainError {
-  constructor(resource: any) {
+  constructor(resource: string) {
     super(`Resource ${resource} was not found.`);
     this.name = errorNames.NOT_FOUND;
   }
