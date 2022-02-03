@@ -7,7 +7,7 @@ import {
 } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
 import { QueryInput } from '@shared/inputs';
-import { settingFloat, settingInt } from '@shared/settings';
+import { settingInt } from '@shared/settings';
 import {
   PaginatedResponseBody,
   TypedRequestQuery,
@@ -139,9 +139,7 @@ const assignQuantifiersDryRun = async (
   const quantifiersPerPraiseReceiver = await settingInt(
     'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER'
   );
-  const tolerance = await settingFloat(
-    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER_TOLERANCE'
-  );
+  const tolerance = 1.05;
   const praisePerQuantifier = await settingInt('PRAISE_PER_QUANTIFIER');
 
   if (!quantifiersPerPraiseReceiver || !tolerance || !praisePerQuantifier)
@@ -166,27 +164,21 @@ const assignQuantifiersDryRun = async (
         continue;
       }
 
-      // Receiver already assigned to quantifier
-      if (q.receivers.findIndex((receiver) => receiver._id === r._id) > -1) {
-        continue;
-      }
-
-      // Receiver already assigned to enough quantifiers
-      if (r.assignedQuantifiers === quantifiersPerPraiseReceiver) {
-        receivers.splice(ri, 1);
-        continue;
-      }
-
       // Assign praise that meet criteria
       if (
-        (q.receivers.length === 0 && r.praiseCount >= maxPraisePerQuantifier) ||
+        (q.receivers.length === 0 && r.praiseCount >= praisePerQuantifier) ||
         assignedPraiseCount(q) + r.praiseCount < maxPraisePerQuantifier
       ) {
+        // Assign receiver to quantifier
         q.receivers.push(r);
         r.assignedQuantifiers = r.assignedQuantifiers
           ? r.assignedQuantifiers + 1
           : 1;
-        continue;
+        // No more assigns needed for this receiver, splice from receiver array
+        if (r.assignedQuantifiers === quantifiersPerPraiseReceiver) {
+          receivers.splice(ri, 1);
+          ri--;
+        }
       }
     }
 
@@ -270,6 +262,7 @@ export const assignQuantifiers = async (
     req.params.periodId
   );
 
+  // Undefined quantifers means pool size is too small
   if (assignedQuantifiers.find((q) => typeof q._id === 'undefined'))
     return res
       .status(StatusCodes.BAD_REQUEST)
