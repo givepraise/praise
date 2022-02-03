@@ -17,7 +17,7 @@ const PeriodReceiverMessage = () => {
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
 
-  if (!praise || !period) return null;
+  if (!praise) return null;
 
   return (
     <>
@@ -29,7 +29,7 @@ const PeriodReceiverMessage = () => {
       <div className="mt-2">{praise.reason}</div>
       <div className="mt-2">
         Id: {praise._id}
-        {period.status === "CLOSED" || isAdmin ? (
+        {period && (period.status === "CLOSED" || isAdmin) ? (
           <>
             <br />
             Average praise score: {praise.avgScore}
