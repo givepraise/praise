@@ -22,9 +22,11 @@ dotenv.config({ path: path.join(__dirname, '..', '/.env') });
 
 const app = express();
 
+//mongodb://admin:admin123@localhost:27017/praise_db
+const db = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}`;
 mongoose
   .connect(
-    process.env.MONGO_DB as string,
+    db as string,
     {
       useNewUrlParser: true,
     } as ConnectOptions
