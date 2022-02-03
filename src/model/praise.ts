@@ -223,7 +223,7 @@ export const useSinglePraiseQuery = (praiseId: string) => {
   const fetchSinglePraise = useRecoilCallback(
     ({ snapshot, set }) =>
       async () => {
-        const response = ApiQuery(
+        const response = await ApiQuery(
           snapshot.getPromise(SinglePraiseQuery(praiseId))
         );
         if (isApiResponseOk(response)) {
