@@ -1,28 +1,29 @@
-# Praise Backend
+# praise
 
-`👷‍♂️👷‍♂️ WIP 👷‍♀️👷‍♀️`
+## api
 
-## 1. Run MongoDB
-
-Prerequisites:
-
-- Docker installed
-
-Pull mongo image:
+Build:
 
 ```
-docker pull mongo
+yarn workspace api build
 ```
 
-Run mongo:
+Start:
 
 ```
-yarn mongodb:start
+yarn workspace api start
 ```
 
-## 2. Start API backend
+## Discord bot
+
+Build:
 
 ```
-yarn
-yarn start:dev
+yarn workspace bot_discord build
+```
+
+Start:
+
+```
+yarn workspace bot_discord start
 ```

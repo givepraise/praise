@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "moduleResolution": "node",
+    "rootDir": "src",
     "outDir": "dist",
-    "strict": true,
     "baseUrl": "./",
+    "target": "ES2015",
+    "module": "commonjs",
+    "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -18,8 +19,8 @@
       "@shared/*": ["src/shared/*"],
       "@user/*": ["src/user/*"],
       "@useraccount/*": ["src/useraccount/*"],
-      "@server": ["src/Server"],
+      "@server": ["src/server"]
     }
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "test/**/*.ts"]
 }
