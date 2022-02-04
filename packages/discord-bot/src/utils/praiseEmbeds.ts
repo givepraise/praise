@@ -8,11 +8,8 @@ export const praiseErrorEmbed = (title: string, description: string) => {
     .setFooter({ text: '❌  PRAISE NOT REGISTERED' });
 };
 
-export const praiseSuccessEmbed = (praised: string[], reason: string) => {
-  return new MessageEmbed()
-    .setColor('#00ff00')
-    .setTitle('SUCCESSFULLY PRAISED!')
-    .setDescription(`Praised ${praised.join(', ')}`)
-    .addField('Reason', reason)
-    .setFooter({ text: '✅  PRAISE REGISTERED' });
+export const praiseSuccess = (praised: string[], reason: string) => {
+  return `Succesfully praised ${praised.join(', ')} for reason - ${reason}`
 };
+
+export const notActivatedError = '**Account Not Activated**\nYour Account is not activated in the praise system. Unactivated accounts can not praise users. Use the `/praise-activate` command to activate your praise account and to link your eth address.';
