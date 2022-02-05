@@ -6,14 +6,10 @@
   "main": "dist/index",
   "scripts": {
     "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./dist",
-    "ts:defs": "tsc --declaration --outDir . --emitDeclarationOnly",
     "lint": "eslint . --ext .ts",
     "start": "ts-node -r tsconfig-paths/register --transpile-only ./src",
     "start:dev": "nodemon ./src",
     "test": "ts-mocha --paths -p tsconfig.json src/**/*.spec.ts",
-    "mongodb:start": "docker-compose up -d",
-    "mongodb:clean": "docker exec -i mongodb-praise bash < ./scripts/clean-database.sh",
-    "mongodb:stop": "docker-compose down",
     "import-praise": "ts-node -r tsconfig-paths/register src/scripts/import-praise.ts"
   },
   "nodemonConfig": {

@@ -1,6 +1,24 @@
 # praise
 
-## api
+## 1. Run MongoDB
+
+Prerequisites:
+
+- Docker installed
+
+Pull mongo image:
+
+```
+docker pull mongo
+```
+
+Run mongo:
+
+```
+yarn mongodb:start
+```
+
+## 2. Start api backend
 
 Build:
 
@@ -14,7 +32,7 @@ Start:
 yarn workspace api start
 ```
 
-## Discord bot
+## 3. Start Discord bot
 
 Build:
 

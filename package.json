@@ -5,6 +5,11 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "mongodb:start": "docker-compose up -d",
+    "mongodb:clean": "docker exec -i mongodb-praise bash < ./scripts/clean-database.sh",
+    "mongodb:stop": "docker-compose down"
+  },
   "dependencies": {
     "eslint": "^8.8.0",
     "prettier": "^2.5.1",
