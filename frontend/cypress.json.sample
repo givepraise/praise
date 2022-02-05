@@ -1,0 +1,7 @@
+{
+	"baseUrl": "http://localhost:8088",
+	"env": {
+		"ethAddress": "yourpubkeyhere",
+		"privateKey": "yourprivatekeyhere"
+	}
+}
