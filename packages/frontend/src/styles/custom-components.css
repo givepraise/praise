@@ -1,0 +1,25 @@
+.praise-box {
+  @apply p-5 mb-5 break-words border rounded-lg shadow-sm bg-gray-50;
+}
+
+.praise-button-small {
+  @apply py-0 text-sm;
+}
+
+.praise-button-round {
+  @apply flex items-center justify-center rounded-full hover:bg-gray-300 w-7 h-7;
+}
+/*
+.praise-text-input {
+  @apply border border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent;
+}
+*/
+
+/* MUI Slider styles */
+.local-MuiSlider-colorPrimary {
+  @apply !text-gray-800;
+}
+
+.local-MuiSlider-disabled {
+  @apply text-gray-400;
+}

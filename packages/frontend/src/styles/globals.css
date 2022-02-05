@@ -1,0 +1,35 @@
+@import "tailwindcss/base";
+
+@import "tailwindcss/components";
+@import "./custom-components.css";
+
+@import "tailwindcss/utilities";
+@import "./custom-utilities.css";
+
+@layer base {
+  html {
+    background-color: #f3f4f6;
+    @apply text-gray-800;
+  }
+
+  h2 {
+    @apply text-xl font-semibold mb-1.5;
+  }
+
+  td,
+  th {
+    @apply p-2;
+  }
+
+  a {
+    @apply underline;
+  }
+
+  .praise-button {
+    @apply px-4 py-2 font-bold text-white bg-gray-800 rounded hover:bg-gray-700;
+  }
+
+  .praise-button-disabled {
+    @apply px-4 py-2 font-bold text-gray-500 bg-gray-700 rounded cursor-default;
+  }
+}
