@@ -1,5 +1,5 @@
 {
-  "name": "bot_discord",
+  "name": "discord-bot",
   "version": "0.0.1",
   "dependencies": {
     "@discordjs/builders": "^0.12.0",
