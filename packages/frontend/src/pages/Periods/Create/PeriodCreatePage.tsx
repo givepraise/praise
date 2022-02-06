@@ -1,23 +1,23 @@
-import BreadCrumb from "@/components/BreadCrumb";
-import FieldErrorMessage from "@/components/form/FieldErrorMessage";
-import { PeriodDayPicker } from "@/components/periods/PeriodDayPicker";
-import { isApiResponseOk } from "@/model/api";
+import BreadCrumb from '@/components/BreadCrumb';
+import FieldErrorMessage from '@/components/form/FieldErrorMessage';
+import { PeriodDayPicker } from '@/components/periods/PeriodDayPicker';
+import { isApiResponseOk } from '@/model/api';
 import {
   CreatePeriodApiResponse,
   Period,
   useCreatePeriod,
-} from "@/model/periods";
-import BackLink from "@/navigation/BackLink";
-import { DATE_FORMAT } from "@/utils/date";
-import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
-import { isMatch } from "date-fns";
-import { ValidationErrors } from "final-form";
-import React from "react";
-import "react-day-picker/lib/style.css";
-import { Field, Form } from "react-final-form";
-import { useHistory } from "react-router-dom";
-import { useRecoilState } from "recoil";
-import SubmitButton from "./components/SubmitButton";
+} from '@/model/periods';
+import BackLink from '@/navigation/BackLink';
+import { DATE_FORMAT } from '@/utils/date';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { isMatch } from 'date-fns';
+import { ValidationErrors } from 'final-form';
+import React from 'react';
+import 'react-day-picker/lib/style.css';
+import { Field, Form } from 'react-final-form';
+import { useHistory } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import SubmitButton from './components/SubmitButton';
 
 const validate = (
   values: Record<string, any>
@@ -27,22 +27,22 @@ const validate = (
   // Name validation
   if (values.name) {
     if (values.name.length < 3) {
-      errors.name = "Min 3 characters";
+      errors.name = 'Min 3 characters';
     }
     if (values.name.length > 64) {
-      errors.name = "Max 64 characters";
+      errors.name = 'Max 64 characters';
     }
   } else {
-    errors.name = "Required";
+    errors.name = 'Required';
   }
 
   // End date validation
   if (values.endDate) {
     if (!isMatch(values.endDate, DATE_FORMAT)) {
-      errors.endDate = "Invalid date format";
+      errors.endDate = 'Invalid date format';
     }
   } else {
-    errors.endDate = "Required";
+    errors.endDate = 'Required';
   }
 
   return errors as ValidationErrors;
@@ -82,7 +82,7 @@ const PeriodsForm = () => {
       validate={validate}
       mutators={{
         setDate: (args, state, utils) => {
-          utils.changeValue(state, "endDate", () => args);
+          utils.changeValue(state, 'endDate', () => args);
         },
       }}
       render={({ handleSubmit, submitSucceeded }) => (
@@ -140,7 +140,7 @@ const PeriodsCreatePage = () => {
       <div className="w-2/3 praise-box">
         <h2 className="mb-2">Create period</h2>
         <div className="mb-2">
-          A new period begins where the last one ended and ends at{" "}
+          A new period begins where the last one ended and ends at{' '}
           <i>end date</i>.
         </div>
         <React.Suspense fallback="Loading…">

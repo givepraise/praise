@@ -3,44 +3,44 @@ import {
   ROLE_ADMIN,
   ROLE_QUANTIFIER,
   SessionToken,
-} from "@/model/auth";
-import { EthState } from "@/model/eth";
-import * as localStorage from "@/model/localStorage";
-import ActivatePage from "@/pages/Activate/ActivatePage";
-import ErrorPage from "@/pages/ErrorPage";
-import LoginPage from "@/pages/Login/LoginPage";
-import NotFoundPage from "@/pages/NotFoundPage";
-import SettingsPage from "@/pages/Settings/SettingsPage";
-import StartPage from "@/pages/Start/StartPage";
-import React, { FC } from "react";
-import { Redirect, Route, Switch } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { StartupLoader } from "../startupLoader";
-import Nav from "./Nav";
+} from '@/model/auth';
+import { EthState } from '@/model/eth';
+import * as localStorage from '@/model/localStorage';
+import ActivatePage from '@/pages/Activate/ActivatePage';
+import ErrorPage from '@/pages/ErrorPage';
+import LoginPage from '@/pages/Login/LoginPage';
+import NotFoundPage from '@/pages/NotFoundPage';
+import SettingsPage from '@/pages/Settings/SettingsPage';
+import StartPage from '@/pages/Start/StartPage';
+import React, { FC } from 'react';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { StartupLoader } from '../startupLoader';
+import Nav from './Nav';
 
-const MyPraisePage = React.lazy(() => import("@/pages/MyPraise/MyPraisePage"));
-const UsersPage = React.lazy(() => import("@/pages/Users/UsersPage"));
+const MyPraisePage = React.lazy(() => import('@/pages/MyPraise/MyPraisePage'));
+const UsersPage = React.lazy(() => import('@/pages/Users/UsersPage'));
 
-const PeriodsPage = React.lazy(() => import("@/pages/Periods/PeriodsPage"));
+const PeriodsPage = React.lazy(() => import('@/pages/Periods/PeriodsPage'));
 const PeriodsCreateUpdatePage = React.lazy(
-  () => import("@/pages/Periods/Create/PeriodCreatePage")
+  () => import('@/pages/Periods/Create/PeriodCreatePage')
 );
 const PeriodDetailPage = React.lazy(
-  () => import("@/pages/Periods/Details/PeriodDetailsPage")
+  () => import('@/pages/Periods/Details/PeriodDetailsPage')
 );
 const PeriodReceiverSummaryPage = React.lazy(
-  () => import("@/pages/Periods/ReceiverSummary/ReceiverSummaryPage")
+  () => import('@/pages/Periods/ReceiverSummary/ReceiverSummaryPage')
 );
 
 const PraiseDetailsPage = React.lazy(
-  () => import("@/pages/PraiseDetails/PraiseDetailsPage")
+  () => import('@/pages/PraiseDetails/PraiseDetailsPage')
 );
 
 const QuantifyPeriodPage = React.lazy(
-  () => import("@/pages/QuantifyPeriod/QuantifyPeriodPage")
+  () => import('@/pages/QuantifyPeriod/QuantifyPeriodPage')
 );
 const QuantifyPage = React.lazy(
-  () => import("@/pages/QuantifyPeriodReceiver/QuantifyPeriodReceiverPage")
+  () => import('@/pages/QuantifyPeriodReceiver/QuantifyPeriodReceiverPage')
 );
 
 interface LoggedInOnlyRouteProps {
@@ -69,7 +69,7 @@ const LoggedInOnlyRoute: FC<LoggedInOnlyRouteProps> = ({
         ) : sessionToken === undefined ? null : (
           <Redirect
             to={{
-              pathname: "/login",
+              pathname: '/login',
               state: { from: location },
             }}
           />
@@ -106,7 +106,7 @@ const AuthRoute: FC<AuthRouteProps> = ({ children, ...props }) => {
         ) : (
           <Redirect
             to={{
-              pathname: "/",
+              pathname: '/',
               state: { from: location },
             }}
           />
@@ -181,7 +181,7 @@ const Routes = () => {
         <LoginPage />
       </Route>
       <Route exact path="/404">
-        <ErrorPage error={{ message: "Not found" }} />
+        <ErrorPage error={{ message: 'Not found' }} />
       </Route>
       <LoggedInOnlyRoute path="/">
         <StartupLoader />

@@ -1,14 +1,14 @@
-import LoaderSpinner from "@/components/LoaderSpinner";
-import { UserAvatar } from "@/components/user/UserAvatar";
-import { AllPraiseList, Praise } from "@/model/praise";
-import { formatDate } from "@/utils/date";
-import React, { SyntheticEvent } from "react";
-import { useHistory } from "react-router-dom";
-import { TableOptions, useTable } from "react-table";
-import { useRecoilValue } from "recoil";
-import PraisePageLoader from "./PraisePageLoader";
+import LoaderSpinner from '@/components/LoaderSpinner';
+import { UserAvatar } from '@/components/user/UserAvatar';
+import { AllPraiseList, Praise } from '@/model/praise';
+import { formatDate } from '@/utils/date';
+import React, { SyntheticEvent } from 'react';
+import { useHistory } from 'react-router-dom';
+import { TableOptions, useTable } from 'react-table';
+import { useRecoilValue } from 'recoil';
+import PraisePageLoader from './PraisePageLoader';
 
-export const ALL_PRAISE_LIST_KEY = "ALL_PRAISE";
+export const ALL_PRAISE_LIST_KEY = 'ALL_PRAISE';
 
 const PraiseTable = () => {
   const history = useHistory();
@@ -16,7 +16,7 @@ const PraiseTable = () => {
   const columns = React.useMemo(
     () => [
       {
-        accessor: "createdAt",
+        accessor: 'createdAt',
         Cell: (data: any) => (
           <div className="flex items-center w-full">
             <div className="flex items-center">
@@ -26,8 +26,8 @@ const PraiseTable = () => {
               <div>
                 <span className="font-bold">
                   {data.row.original.giver.username}
-                </span>{" "}
-                to{" "}
+                </span>{' '}
+                to{' '}
                 <span className="font-bold">
                   {data.row.original.receiver.username}
                 </span>
@@ -75,7 +75,7 @@ const PraiseTable = () => {
               >
                 {row.cells.map((cell) => {
                   return (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                   );
                 })}
               </tr>

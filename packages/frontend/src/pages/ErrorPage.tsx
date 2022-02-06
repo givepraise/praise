@@ -1,6 +1,6 @@
-import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
 
 interface NotFoundProps {
   error: any;
@@ -9,7 +9,7 @@ interface NotFoundProps {
 const ErrorPage = ({ error }: NotFoundProps) => {
   const logout = () => {
     localStorage.clear();
-    window.location.href = "/";
+    window.location.href = '/';
   };
 
   return (

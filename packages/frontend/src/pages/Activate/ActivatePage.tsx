@@ -1,20 +1,20 @@
-import { injected } from "@/eth/connectors";
-import { AccountActivated } from "@/model/api";
-import { EthState } from "@/model/eth";
-import { ReactComponent as MetamaskIcon } from "@/svg/metamask.svg";
-import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useWeb3React } from "@web3-react/core";
-import { InjectedConnector } from "@web3-react/injected-connector";
-import queryString from "query-string";
-import React from "react";
-import { useLocation } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import ActivateButton from "./components/ActivateButton";
-import EthAccount from "./components/EthAccount";
+import { injected } from '@/eth/connectors';
+import { AccountActivated } from '@/model/api';
+import { EthState } from '@/model/eth';
+import { ReactComponent as MetamaskIcon } from '@/svg/metamask.svg';
+import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useWeb3React } from '@web3-react/core';
+import { InjectedConnector } from '@web3-react/injected-connector';
+import queryString from 'query-string';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import ActivateButton from './components/ActivateButton';
+import EthAccount from './components/EthAccount';
 
 const hasMetaMask = () => {
-  return typeof (window as any).ethereum !== "undefined";
+  return typeof (window as any).ethereum !== 'undefined';
 };
 
 const ActivateSuccessful = () => {
@@ -27,7 +27,7 @@ const ActivateSuccessful = () => {
         <FontAwesomeIcon icon={faPrayingHands} size="2x" />
         <br />
         <h2 className="mt-3">
-          Your {platform === "DISCORD" ? "Discord" : "Telegram"} account has
+          Your {platform === 'DISCORD' ? 'Discord' : 'Telegram'} account has
           been activated!
         </h2>
         <div className="mt-3">You can now close this window or tab.</div>
@@ -62,12 +62,12 @@ const ActivateDialog = () => {
   }, [activatingConnector, ethConnector]);
 
   let ethButtonClass =
-    "px-4 py-2 font-bold text-white uppercase rounded " +
+    'px-4 py-2 font-bold text-white uppercase rounded ' +
     (ethError
-      ? "bg-red-700 hover:bg-red-700"
+      ? 'bg-red-700 hover:bg-red-700'
       : hasMetaMask()
-      ? "bg-gray-800 hover:bg-gray-700"
-      : "text-gray-500 bg-gray-700  cursor-default");
+      ? 'bg-gray-800 hover:bg-gray-700'
+      : 'text-gray-500 bg-gray-700  cursor-default');
 
   return (
     <div className="w-full">
@@ -78,8 +78,8 @@ const ActivateDialog = () => {
         <div className="flex flex-col items-center p-4 py-8 m-auto border border-solid rounded-lg shadow-sm bg-gray-50 w-96">
           <div className="mb-3 text-xl font-semibold">Activate</div>
           <div className="mb-3 text-center">
-            Activate your {platform === "DISCORD" ? "Discord" : "Telegram"}{" "}
-            account and link with an Ethereum address.{" "}
+            Activate your {platform === 'DISCORD' ? 'Discord' : 'Telegram'}{' '}
+            account and link with an Ethereum address.{' '}
           </div>
           <div className="mb-3 text-center">Account: {accountName}</div>
           <div className="mb-3 text-lg font-semibold ">1. Connect</div>
@@ -95,12 +95,12 @@ const ActivateDialog = () => {
                     activating ||
                     !hasMetaMask()
                   }
-                  key={"Injected"}
+                  key={'Injected'}
                   onClick={() => {
                     setActivatingConnector(injected);
                     ethActivate(injected, (error) => {
-                      if (error.name === "UnsupportedChainIdError")
-                        alert("Please connect to Ethereum mainnet");
+                      if (error.name === 'UnsupportedChainIdError')
+                        alert('Please connect to Ethereum mainnet');
                       setActivatingConnector(undefined);
                     });
                   }}
@@ -109,15 +109,15 @@ const ActivateDialog = () => {
                   {!ethError && !activating && (
                     <div>
                       <MetamaskIcon
-                        className={"inline-block w-4 h-4 pb-1 mr-2"}
+                        className={'inline-block w-4 h-4 pb-1 mr-2'}
                       />
                       Connect to a wallet
                     </div>
                   )}
-                  {ethError && ethError.name === "UnsupportedChainIdError" && (
+                  {ethError && ethError.name === 'UnsupportedChainIdError' && (
                     <div>Wrong network</div>
                   )}
-                  {ethError && ethError.name !== "UnsupportedChainIdError" && (
+                  {ethError && ethError.name !== 'UnsupportedChainIdError' && (
                     <div>Unable to connect</div>
                   )}
                 </button>

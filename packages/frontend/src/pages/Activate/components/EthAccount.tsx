@@ -1,7 +1,7 @@
-import { EthState } from "@/model/eth";
-import { shortenEthAddress } from "@/utils/index";
-import { Jazzicon } from "@ukstv/jazzicon-react";
-import { useRecoilValue } from "recoil";
+import { EthState } from '@/model/eth';
+import { shortenEthAddress } from '@/utils/index';
+import { Jazzicon } from '@ukstv/jazzicon-react';
+import { useRecoilValue } from 'recoil';
 
 export default function EthAccount() {
   const ethState = useRecoilValue(EthState);
@@ -9,7 +9,7 @@ export default function EthAccount() {
     return (
       <div className="inline-block px-3 py-2 mb-5 text-base">
         <div
-          style={{ width: "15px", height: "15px" }}
+          style={{ width: '15px', height: '15px' }}
           className="inline-block mr-2"
         >
           <Jazzicon address={ethState.account} />

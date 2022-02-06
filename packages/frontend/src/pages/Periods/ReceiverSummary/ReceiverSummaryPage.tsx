@@ -1,13 +1,13 @@
-import BreadCrumb from "@/components/BreadCrumb";
-import { PeriodReceiver, SinglePeriod } from "@/model/periods";
-import { SingleUserByReceiverId } from "@/model/users";
-import BackLink from "@/navigation/BackLink";
-import { getUsername } from "@/utils/users";
-import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
-import { useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import PeriodReceiverTable from "./components/ReceiverSummaryTable";
+import BreadCrumb from '@/components/BreadCrumb';
+import { PeriodReceiver, SinglePeriod } from '@/model/periods';
+import { SingleUserByReceiverId } from '@/model/users';
+import BackLink from '@/navigation/BackLink';
+import { getUsername } from '@/utils/users';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import PeriodReceiverTable from './components/ReceiverSummaryTable';
 
 const PeriodReceiverMessage = () => {
   let { periodId, receiverId } = useParams() as any;
@@ -30,7 +30,7 @@ const PeriodReceiverMessage = () => {
 const QuantSummaryPeriodReceiverPage = () => {
   return (
     <>
-      <BreadCrumb name={"Receiver summary for period"} icon={faCalendarAlt} />
+      <BreadCrumb name={'Receiver summary for period'} icon={faCalendarAlt} />
       <BackLink />
 
       <div className="w-2/3 praise-box">

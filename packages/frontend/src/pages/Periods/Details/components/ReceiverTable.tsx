@@ -1,14 +1,14 @@
-import { HasRole, ROLE_ADMIN } from "@/model/auth";
+import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   AllPeriodReceivers,
   ReceiverData,
   SinglePeriod,
   usePeriodPraiseQuery,
-} from "@/model/periods";
-import React, { SyntheticEvent } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { TableOptions, useSortBy, useTable } from "react-table";
-import { useRecoilValue } from "recoil";
+} from '@/model/periods';
+import React, { SyntheticEvent } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { TableOptions, useSortBy, useTable } from 'react-table';
+import { useRecoilValue } from 'recoil';
 
 const ReceiverTable = () => {
   const history = useHistory();
@@ -21,17 +21,17 @@ const ReceiverTable = () => {
   const columns = React.useMemo(
     () => [
       {
-        Header: "Receiver",
-        accessor: "username",
+        Header: 'Receiver',
+        accessor: 'username',
       },
       {
-        Header: "Number of praise",
-        accessor: "praiseCount",
+        Header: 'Number of praise',
+        accessor: 'praiseCount',
       },
       {
-        Header: "Total praise score",
-        accessor: "praiseScore",
-        sortType: "basic",
+        Header: 'Total praise score',
+        accessor: 'praiseScore',
+        sortType: 'basic',
       },
     ],
     []
@@ -43,7 +43,7 @@ const ReceiverTable = () => {
     initialState: {
       sortBy: [
         {
-          id: period?.status === "OPEN" ? "praiseCount" : "praiseScore",
+          id: period?.status === 'OPEN' ? 'praiseCount' : 'praiseScore',
           desc: true,
         },
       ],
@@ -60,7 +60,7 @@ const ReceiverTable = () => {
 
   if (!period) return <div>Period not found.</div>;
 
-  if (period.status === "QUANTIFY" && !isAdmin)
+  if (period.status === 'QUANTIFY' && !isAdmin)
     return <div>Praise scores are not visible during quantification.</div>;
 
   return (
@@ -74,7 +74,7 @@ const ReceiverTable = () => {
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
               <th className="text-left" {...column.getHeaderProps()}>
-                {column.render("Header")}
+                {column.render('Header')}
               </th>
             ))}
           </tr>
@@ -86,12 +86,12 @@ const ReceiverTable = () => {
           return (
             <tr
               className="cursor-pointer hover:bg-gray-100"
-              id={"period-" + row.values.name}
+              id={'period-' + row.values.name}
               {...row.getRowProps()}
               onClick={handleClick(row.original as ReceiverData)}
             >
               {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}
             </tr>
           );

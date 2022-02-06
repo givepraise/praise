@@ -1,14 +1,14 @@
-import BreadCrumb from "@/components/BreadCrumb";
-import { HasRole, ROLE_ADMIN } from "@/model/auth";
-import { SinglePeriodByDate } from "@/model/periods";
-import { SinglePraiseExt, useSinglePraiseQuery } from "@/model/praise";
-import BackLink from "@/navigation/BackLink";
-import { formatDateLong } from "@/utils/date";
-import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
-import { useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import PraiseDetailTable from "./components/PraiseDetailTable";
+import BreadCrumb from '@/components/BreadCrumb';
+import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { SinglePeriodByDate } from '@/model/periods';
+import { SinglePraiseExt, useSinglePraiseQuery } from '@/model/praise';
+import BackLink from '@/navigation/BackLink';
+import { formatDateLong } from '@/utils/date';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import PraiseDetailTable from './components/PraiseDetailTable';
 
 const PeriodReceiverMessage = () => {
   let { praiseId } = useParams() as any;
@@ -23,13 +23,13 @@ const PeriodReceiverMessage = () => {
     <>
       <div className="text-gray-500">{formatDateLong(praise.createdAt)}</div>
       <h2>
-        {praise.giver.username} <span className="font-normal">to</span>{" "}
+        {praise.giver.username} <span className="font-normal">to</span>{' '}
         {praise.receiver.username}
       </h2>
       <div className="mt-2">{praise.reason}</div>
       <div className="mt-2">
         Id: {praise._id}
-        {period && (period.status === "CLOSED" || isAdmin) ? (
+        {period && (period.status === 'CLOSED' || isAdmin) ? (
           <>
             <br />
             Average praise score: {praise.avgScore}

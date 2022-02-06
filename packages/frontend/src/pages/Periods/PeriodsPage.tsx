@@ -1,12 +1,12 @@
-import AdminOnly from "@/components/auth/AdminOnly";
-import BreadCrumb from "@/components/BreadCrumb";
-import { ActivePeriodMessage } from "@/components/periods/ActivePeriodMessage";
-import { ActiveUserQuantificationsMessage } from "@/components/periods/ActiveUserQuantificationsMessage";
-import { faCalendarAlt, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import { Link } from "react-router-dom";
-import PeriodsTable from "./components/Table";
+import AdminOnly from '@/components/auth/AdminOnly';
+import BreadCrumb from '@/components/BreadCrumb';
+import { ActivePeriodMessage } from '@/components/periods/ActivePeriodMessage';
+import { ActiveUserQuantificationsMessage } from '@/components/periods/ActiveUserQuantificationsMessage';
+import { faCalendarAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import PeriodsTable from './components/Table';
 
 const PeriodsPage = () => {
   return (

@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
 export interface Props {
-  shouldRemember: boolean,
+  shouldRemember: boolean;
   onUsernameChange: (username: string) => void;
   onPasswordChange: (password: string) => void;
   onRememberChange: (remember: boolean) => void;
@@ -9,8 +9,8 @@ export interface Props {
 }
 
 function TestedLogin(props: Props) {
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [remember, setRemember] = React.useState(props.shouldRemember);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -64,13 +64,10 @@ function TestedLogin(props: Props) {
           checked={remember}
           onChange={handleRememberChange}
         />
-      Remember me?
+        Remember me?
       </label>
 
-      <button 
-        type="submit" 
-        data-testid="submit"
-        onClick={handleSubmit}>
+      <button type="submit" data-testid="submit" onClick={handleSubmit}>
         Sign in
       </button>
     </form>

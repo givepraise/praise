@@ -1,17 +1,17 @@
-import { injected } from "@/eth/connectors";
-import { EthState } from "@/model/eth";
-import { ReactComponent as MetamaskIcon } from "@/svg/metamask.svg";
-import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useWeb3React } from "@web3-react/core";
-import { InjectedConnector } from "@web3-react/injected-connector";
-import React from "react";
-import { useRecoilValue } from "recoil";
-import EthAccount from "./components/EthAccount";
-import Login from "./components/Login";
+import { injected } from '@/eth/connectors';
+import { EthState } from '@/model/eth';
+import { ReactComponent as MetamaskIcon } from '@/svg/metamask.svg';
+import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useWeb3React } from '@web3-react/core';
+import { InjectedConnector } from '@web3-react/injected-connector';
+import React from 'react';
+import { useRecoilValue } from 'recoil';
+import EthAccount from './components/EthAccount';
+import Login from './components/Login';
 
 const hasMetaMask = () => {
-  return typeof (window as any).ethereum !== "undefined";
+  return typeof (window as any).ethereum !== 'undefined';
 };
 
 export default function LoginPage() {
@@ -38,12 +38,12 @@ export default function LoginPage() {
   }, [activatingConnector, ethConnector]);
 
   let ethButtonClass =
-    "px-4 py-2 font-bold text-white uppercase rounded " +
+    'px-4 py-2 font-bold text-white uppercase rounded ' +
     (ethError
-      ? "bg-red-700 hover:bg-red-700"
+      ? 'bg-red-700 hover:bg-red-700'
       : hasMetaMask()
-      ? "bg-gray-800 hover:bg-gray-700"
-      : "text-gray-500 bg-gray-700  cursor-default");
+      ? 'bg-gray-800 hover:bg-gray-700'
+      : 'text-gray-500 bg-gray-700  cursor-default');
 
   return (
     <div className="w-full">
@@ -70,12 +70,12 @@ export default function LoginPage() {
                     activating ||
                     !hasMetaMask()
                   }
-                  key={"Injected"}
+                  key={'Injected'}
                   onClick={() => {
                     setActivatingConnector(injected);
                     ethActivate(injected, (error) => {
-                      if (error.name === "UnsupportedChainIdError")
-                        alert("Please connect to Ethereum mainnet");
+                      if (error.name === 'UnsupportedChainIdError')
+                        alert('Please connect to Ethereum mainnet');
                       setActivatingConnector(undefined);
                     });
                   }}
@@ -84,15 +84,15 @@ export default function LoginPage() {
                   {!ethError && !activating && (
                     <div>
                       <MetamaskIcon
-                        className={"inline-block w-4 h-4 pb-1 mr-2"}
+                        className={'inline-block w-4 h-4 pb-1 mr-2'}
                       />
                       Connect to a wallet
                     </div>
                   )}
-                  {ethError && ethError.name === "UnsupportedChainIdError" && (
+                  {ethError && ethError.name === 'UnsupportedChainIdError' && (
                     <div>Wrong network</div>
                   )}
-                  {ethError && ethError.name !== "UnsupportedChainIdError" && (
+                  {ethError && ethError.name !== 'UnsupportedChainIdError' && (
                     <div>Unable to connect</div>
                   )}
                 </button>

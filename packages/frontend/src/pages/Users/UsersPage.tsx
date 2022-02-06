@@ -1,11 +1,11 @@
-import BreadCrumb from "@/components/BreadCrumb";
-import { useAdminUsers, UserRole } from "@/model/users";
-import PoolAddDialog from "@/pages/Users/components/AddDialog";
-import { faPlus, faUserFriends } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dialog } from "@headlessui/react";
-import React from "react";
-import UsersTable from "./components/UsersTable";
+import BreadCrumb from '@/components/BreadCrumb';
+import { useAdminUsers, UserRole } from '@/model/users';
+import PoolAddDialog from '@/pages/Users/components/AddDialog';
+import { faPlus, faUserFriends } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dialog } from '@headlessui/react';
+import React from 'react';
+import UsersTable from './components/UsersTable';
 
 const AddRoleButton = () => {
   let [isOpen, setIsOpen] = React.useState(false);

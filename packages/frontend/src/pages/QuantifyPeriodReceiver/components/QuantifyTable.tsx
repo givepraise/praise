@@ -1,28 +1,28 @@
-import { UserAvatar } from "@/components/user/UserAvatar";
-import { UserPseudonym } from "@/components/user/UserPseudonym";
-import { ActiveUserId } from "@/model/auth";
+import { UserAvatar } from '@/components/user/UserAvatar';
+import { UserPseudonym } from '@/components/user/UserPseudonym';
+import { ActiveUserId } from '@/model/auth';
 import {
   PeriodActiveQuantifierReceiverPraise,
   usePeriodPraiseQuery,
-} from "@/model/periods";
-import { Praise, useQuantifyPraise } from "@/model/praise";
-import { SingleBooleanSetting } from "@/model/settings";
-import DismissDialog from "@/pages/QuantifyPeriodReceiver/components/DismissDialog";
-import { formatDate } from "@/utils/date";
-import { classNames } from "@/utils/index";
+} from '@/model/periods';
+import { Praise, useQuantifyPraise } from '@/model/praise';
+import { SingleBooleanSetting } from '@/model/settings';
+import DismissDialog from '@/pages/QuantifyPeriodReceiver/components/DismissDialog';
+import { formatDate } from '@/utils/date';
+import { classNames } from '@/utils/index';
 import {
   faCopy,
   faTimes,
   faTimesCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dialog } from "@headlessui/react";
-import React from "react";
-import { useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import { QuantifyBackNextLink } from "./BackNextLink";
-import DuplicateDialog from "./DuplicateDialog";
-import QuantifySlider from "./QuantifySlider";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dialog } from '@headlessui/react';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { QuantifyBackNextLink } from './BackNextLink';
+import DuplicateDialog from './DuplicateDialog';
+import QuantifySlider from './QuantifySlider';
 
 interface InlineLabelProps {
   text: string;
@@ -34,7 +34,7 @@ const InlineLabel = ({ text, button, className }: InlineLabelProps) => {
     <span
       className={classNames(
         className,
-        "h-6 pl-1 pr-1 mr-1 text-xs text-white no-underline bg-gray-800 py-[1px] rounded"
+        'h-6 pl-1 pr-1 mr-1 text-xs text-white no-underline bg-gray-800 py-[1px] rounded'
       )}
     >
       {text}
@@ -63,7 +63,7 @@ const QuantifyTable = () => {
     PeriodActiveQuantifierReceiverPraise({ periodId, receiverId })
   );
   const usePseudonyms = useRecoilValue(
-    SingleBooleanSetting("PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS")
+    SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );
   const { quantify } = useQuantifyPraise();
 
@@ -178,7 +178,7 @@ const QuantifyTable = () => {
                       <FontAwesomeIcon
                         icon={faCopy}
                         size="1x"
-                        className={duplicate(praise) ? "text-gray-400" : ""}
+                        className={duplicate(praise) ? 'text-gray-400' : ''}
                       />
                     </button>
                     <button
@@ -189,7 +189,7 @@ const QuantifyTable = () => {
                       <FontAwesomeIcon
                         icon={faTimesCircle}
                         size="1x"
-                        className={dismissed(praise) ? "text-gray-400" : ""}
+                        className={dismissed(praise) ? 'text-gray-400' : ''}
                       />
                     </button>
                   </div>

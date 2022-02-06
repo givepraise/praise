@@ -1,18 +1,18 @@
-import FieldErrorMessage from "@/components/form/FieldErrorMessage";
-import OutsideClickHandler from "@/components/OutsideClickHandler";
-import { PeriodDayPicker } from "@/components/periods/PeriodDayPicker";
-import { isApiResponseOk } from "@/model/api";
-import { SinglePeriod, useUpdatePeriod } from "@/model/periods";
-import { DATE_FORMAT, formatDate } from "@/utils/date";
-import { AxiosResponse } from "axios";
-import { isMatch, isSameDay } from "date-fns";
-import { ValidationErrors } from "final-form";
-import { default as React } from "react";
-import "react-day-picker/lib/style.css";
-import { Field, Form } from "react-final-form";
-import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import FieldErrorMessage from '@/components/form/FieldErrorMessage';
+import OutsideClickHandler from '@/components/OutsideClickHandler';
+import { PeriodDayPicker } from '@/components/periods/PeriodDayPicker';
+import { isApiResponseOk } from '@/model/api';
+import { SinglePeriod, useUpdatePeriod } from '@/model/periods';
+import { DATE_FORMAT, formatDate } from '@/utils/date';
+import { AxiosResponse } from 'axios';
+import { isMatch, isSameDay } from 'date-fns';
+import { ValidationErrors } from 'final-form';
+import { default as React } from 'react';
+import 'react-day-picker/lib/style.css';
+import { Field, Form } from 'react-final-form';
+import toast from 'react-hot-toast';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
 const validate = (
   values: Record<string, any>
@@ -22,10 +22,10 @@ const validate = (
   // End date validation
   if (values.endDate) {
     if (!isMatch(values.endDate, DATE_FORMAT)) {
-      errors.endDate = "Invalid date format";
+      errors.endDate = 'Invalid date format';
     }
   } else {
-    errors.endDate = "Required";
+    errors.endDate = 'Required';
   }
 
   return errors as ValidationErrors;
@@ -52,7 +52,7 @@ const PeriodDateForm = () => {
     const newPeriod = { ...period };
     newPeriod.endDate = values.endDate;
     const response = await updatePeriod(newPeriod);
-    if (isApiResponseOk(response)) toast.success("Period date saved");
+    if (isApiResponseOk(response)) toast.success('Period date saved');
     setApiResponse(response);
   };
 
@@ -64,7 +64,7 @@ const PeriodDateForm = () => {
       validate={validate}
       mutators={{
         setDate: (args, state, utils) => {
-          utils.changeValue(state, "endDate", () => args);
+          utils.changeValue(state, 'endDate', () => args);
           onSubmit(state.formState.values);
         },
       }}

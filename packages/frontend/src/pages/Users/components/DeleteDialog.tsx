@@ -1,12 +1,12 @@
-import { User } from "@/model/users";
-import { getUsername } from "@/utils/users";
+import { User } from '@/model/users';
+import { getUsername } from '@/utils/users';
 import {
   faTimes,
   faTimesCircle,
   faUser,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dialog } from "@headlessui/react";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dialog } from '@headlessui/react';
 
 interface PoolDeleteDialogProps {
   onClose(): any;

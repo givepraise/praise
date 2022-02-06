@@ -2,9 +2,10 @@ import {
   faCalendarAlt,
   faTimes,
   faTimesCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dialog } from "@headlessui/react";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dialog } from '@headlessui/react';
+import React from 'react';
 
 interface PeriodCloseDialogProps {
   onClose(): any;

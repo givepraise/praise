@@ -1,9 +1,9 @@
-import { isApiResponseOk } from "@/model/api";
-import { CreatePeriodApiResponse } from "@/model/periods";
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useFormState } from "react-final-form";
-import { useRecoilValue } from "recoil";
+import { isApiResponseOk } from '@/model/api';
+import { CreatePeriodApiResponse } from '@/model/periods';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useFormState } from 'react-final-form';
+import { useRecoilValue } from 'recoil';
 
 const SubmitButton = () => {
   const { invalid, submitting, submitSucceeded, dirtySinceLastSubmit } =
@@ -13,7 +13,7 @@ const SubmitButton = () => {
   const disabled =
     invalid || submitting || (submitSucceeded && !dirtySinceLastSubmit);
 
-  const className = disabled ? "praise-button-disabled" : "praise-button";
+  const className = disabled ? 'praise-button-disabled' : 'praise-button';
 
   return (
     <button
@@ -32,9 +32,9 @@ const SubmitButton = () => {
           Setting saved
         </>
       ) : submitting ? (
-        "Saving…"
+        'Saving…'
       ) : (
-        "Save settings"
+        'Save settings'
       )}
     </button>
   );

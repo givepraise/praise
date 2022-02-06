@@ -1,18 +1,18 @@
-import BreadCrumb from "@/components/BreadCrumb";
-import { HasRole, ROLE_ADMIN } from "@/model/auth";
-import { SinglePeriod } from "@/model/periods";
-import BackLink from "@/navigation/BackLink";
-import PeriodDetails from "@/pages/Periods/Details/components/Details";
-import { classNames } from "@/utils/index";
-import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
-import { default as React } from "react";
-import "react-day-picker/lib/style.css";
-import { useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import PeriodNameForm from "./components/PeriodNameForm";
-import { QuantifierMessage } from "./components/QuantifierMessage";
-import QuantifierTable from "./components/QuantifierTable";
-import ReceiverTable from "./components/ReceiverTable";
+import BreadCrumb from '@/components/BreadCrumb';
+import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { SinglePeriod } from '@/model/periods';
+import BackLink from '@/navigation/BackLink';
+import PeriodDetails from '@/pages/Periods/Details/components/Details';
+import { classNames } from '@/utils/index';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { default as React } from 'react';
+import 'react-day-picker/lib/style.css';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import PeriodNameForm from './components/PeriodNameForm';
+import { QuantifierMessage } from './components/QuantifierMessage';
+import QuantifierTable from './components/QuantifierTable';
+import ReceiverTable from './components/ReceiverTable';
 
 const PeriodDetailHead = () => {
   let { periodId } = useParams() as any;
@@ -21,20 +21,20 @@ const PeriodDetailHead = () => {
 
   return (
     <>
-      {" "}
+      {' '}
       <div
         className={classNames(
-          period?.status === "OPEN"
-            ? "bg-green-300"
-            : period?.status === "QUANTIFY"
-            ? "bg-pink-300"
-            : "bg-gray-300",
-          "float-right px-2 py-1 text-xs text-white rounded-full"
+          period?.status === 'OPEN'
+            ? 'bg-green-300'
+            : period?.status === 'QUANTIFY'
+            ? 'bg-pink-300'
+            : 'bg-gray-300',
+          'float-right px-2 py-1 text-xs text-white rounded-full'
         )}
       >
         {period
-          ? period.status === "QUANTIFY"
-            ? "QUANTIFYING"
+          ? period.status === 'QUANTIFY'
+            ? 'QUANTIFYING'
             : period.status
           : null}
       </div>

@@ -1,23 +1,23 @@
-import AdminOnly from "@/components/auth/AdminOnly";
-import { SessionToken } from "@/model/auth";
-import { EthState } from "@/model/eth";
-import * as localStorage from "@/model/localStorage";
-import { ReactComponent as TECLogo } from "@/svg/tec-logo.svg";
-import { classNames } from "@/utils/index";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import AdminOnly from '@/components/auth/AdminOnly';
+import { SessionToken } from '@/model/auth';
+import { EthState } from '@/model/eth';
+import * as localStorage from '@/model/localStorage';
+import { ReactComponent as TECLogo } from '@/svg/tec-logo.svg';
+import { classNames } from '@/utils/index';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import {
   faAngleRight,
   faCalculator,
   faCog,
   faPrayingHands,
   faUserFriends,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Menu, Transition } from "@headlessui/react";
-import { Jazzicon } from "@ukstv/jazzicon-react";
-import { Fragment } from "react";
-import { Link } from "react-router-dom";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Menu, Transition } from '@headlessui/react';
+import { Jazzicon } from '@ukstv/jazzicon-react';
+import { Fragment } from 'react';
+import { Link } from 'react-router-dom';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 interface NavProps {
   icon: IconProp;
@@ -28,7 +28,7 @@ export const NavItem = ({ icon, description, to }: NavProps) => {
   return (
     <div
       className="relative flex px-4 py-1 cursor-pointer hover:bg-gray-100 mr-[1px]"
-      id={to.substring(1) + "-nav-button"}
+      id={to.substring(1) + '-nav-button'}
     >
       <Link to={to}>
         <FontAwesomeIcon
@@ -60,7 +60,7 @@ export default function Nav() {
           <ul className="relative h-full p-0 m-0 list-none">
             <li className="relative flex justify-start w-full p-4 text-2xl font-bold">
               <Link to="/">
-                <TECLogo className={"inline-block w-52"} />
+                <TECLogo className={'inline-block w-52'} />
               </Link>
             </li>
 
@@ -91,7 +91,7 @@ export default function Nav() {
             <div>
               <Menu.Button className=" hover:text-gray-500 focus:outline-none">
                 <div
-                  style={{ width: "15px", height: "15px" }}
+                  style={{ width: '15px', height: '15px' }}
                   className="inline-block mr-2"
                 >
                   <Jazzicon address={ethState.account!} />
@@ -121,8 +121,8 @@ export default function Nav() {
                     {({ active }) => (
                       <div
                         className={classNames(
-                          active ? "bg-gray-100" : "text-gray-700",
-                          "block px-4 py-2 text-sm cursor-pointer"
+                          active ? 'bg-gray-100' : 'text-gray-700',
+                          'block px-4 py-2 text-sm cursor-pointer'
                         )}
                         onClick={handleLogoutClick}
                       >

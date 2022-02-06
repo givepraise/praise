@@ -3,12 +3,12 @@ import {
   AccountActivateQuery,
   isApiResponseOk,
   useAuthApiQuery,
-} from "@/model/api";
-import { useWeb3React } from "@web3-react/core";
-import queryString from "query-string";
-import React from "react";
-import { useLocation } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
+} from '@/model/api';
+import { useWeb3React } from '@web3-react/core';
+import queryString from 'query-string';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
 
 const generateLoginMessage = (
   accountId: string,
@@ -16,7 +16,7 @@ const generateLoginMessage = (
   token: string
 ): string => {
   return (
-    "SIGN THIS MESSAGE TO ACTIVATE YOUR ACCOUNT.\n\n" +
+    'SIGN THIS MESSAGE TO ACTIVATE YOUR ACCOUNT.\n\n' +
     `ACCOUNT ID:\n${accountId}\n\n` +
     `ADDRESS:\n${ethereumAddress}\n\n` +
     `TOKEN:\n${token}`

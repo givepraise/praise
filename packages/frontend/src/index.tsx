@@ -1,16 +1,16 @@
-import { ExternalProvider, Web3Provider } from "@ethersproject/providers";
-import { Web3ReactProvider } from "@web3-react/core";
-import React, { FC } from "react";
-import ReactDOM from "react-dom";
-import { Toaster } from "react-hot-toast";
-import { BrowserRouter as Router } from "react-router-dom";
-import { RecoilRoot } from "recoil";
-import useErrorBoundary from "use-error-boundary";
-import EthConnection from "./components/EthConnection";
-import Routes from "./navigation/Routes";
-import ErrorPage from "./pages/ErrorPage";
-import { LoadScreen } from "./startupLoader";
-import "./styles/globals.css";
+import { ExternalProvider, Web3Provider } from '@ethersproject/providers';
+import { Web3ReactProvider } from '@web3-react/core';
+import React, { FC } from 'react';
+import ReactDOM from 'react-dom';
+import { Toaster } from 'react-hot-toast';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { RecoilRoot } from 'recoil';
+import useErrorBoundary from 'use-error-boundary';
+import EthConnection from './components/EthConnection';
+import Routes from './navigation/Routes';
+import ErrorPage from './pages/ErrorPage';
+import { LoadScreen } from './startupLoader';
+import './styles/globals.css';
 
 const LOAD_DELAY = 500;
 
@@ -72,5 +72,5 @@ ReactDOM.render(
     </RecoilRoot>
   </React.StrictMode>,
 
-  document.getElementById("root")
+  document.getElementById('root')
 );

@@ -1,13 +1,13 @@
-import { UserCell } from "@/components/table/UserCell";
+import { UserCell } from '@/components/table/UserCell';
 import {
   PeriodQuantifiers,
   SinglePeriod,
   usePeriodPraiseQuery,
-} from "@/model/periods";
-import React from "react";
-import { useParams } from "react-router-dom";
-import { TableOptions, useTable } from "react-table";
-import { useRecoilValue } from "recoil";
+} from '@/model/periods';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { TableOptions, useTable } from 'react-table';
+import { useRecoilValue } from 'recoil';
 
 const QuantifierTable = () => {
   let { periodId } = useParams() as any;
@@ -19,13 +19,13 @@ const QuantifierTable = () => {
   const columns = React.useMemo(
     () => [
       {
-        Header: "Quantifier",
-        accessor: "userId",
+        Header: 'Quantifier',
+        accessor: 'userId',
         Cell: (data: any) => <UserCell userId={data.value} />,
       },
       {
-        Header: "Finished items",
-        accessor: "",
+        Header: 'Finished items',
+        accessor: '',
         Cell: (data: any) => {
           return data.row.original
             ? `${data.row.original.done} / ${data.row.original.count}`
@@ -46,7 +46,7 @@ const QuantifierTable = () => {
 
   if (!period) return <div>Period not found.</div>;
 
-  if (period.status === "OPEN")
+  if (period.status === 'OPEN')
     return <div>No quantifiers have yet been assigned to this period.</div>;
 
   return (
@@ -60,7 +60,7 @@ const QuantifierTable = () => {
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
               <th className="text-left" {...column.getHeaderProps()}>
-                {column.render("Header")}
+                {column.render('Header')}
               </th>
             ))}
           </tr>
@@ -70,9 +70,9 @@ const QuantifierTable = () => {
         {rows.map((row) => {
           prepareRow(row);
           return (
-            <tr id={"period-" + row.values.name} {...row.getRowProps()}>
+            <tr id={'period-' + row.values.name} {...row.getRowProps()}>
               {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}
             </tr>
           );

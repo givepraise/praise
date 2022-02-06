@@ -1,14 +1,14 @@
-import BreadCrumb from "@/components/BreadCrumb";
-import FieldErrorMessage from "@/components/form/FieldErrorMessage";
-import { CreatePeriodApiResponse } from "@/model/periods";
-import { AllSettings, Setting, useSetSetting } from "@/model/settings";
-import { faCogs } from "@fortawesome/free-solid-svg-icons";
-import { ValidationErrors } from "final-form";
-import React from "react";
-import "react-day-picker/lib/style.css";
-import { Field, Form } from "react-final-form";
-import { useRecoilState, useRecoilValue } from "recoil";
-import SubmitButton from "./components/SubmitButton";
+import BreadCrumb from '@/components/BreadCrumb';
+import FieldErrorMessage from '@/components/form/FieldErrorMessage';
+import { CreatePeriodApiResponse } from '@/model/periods';
+import { AllSettings, Setting, useSetSetting } from '@/model/settings';
+import { faCogs } from '@fortawesome/free-solid-svg-icons';
+import { ValidationErrors } from 'final-form';
+import React from 'react';
+import 'react-day-picker/lib/style.css';
+import { Field, Form } from 'react-final-form';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import SubmitButton from './components/SubmitButton';
 
 const validate = (
   values: Record<string, any>
@@ -59,7 +59,7 @@ const SettingsForm = () => {
       initialValues={initialValues}
       mutators={{
         setDate: (args, state, utils) => {
-          utils.changeValue(state, "endDate", () => args);
+          utils.changeValue(state, 'endDate', () => args);
         },
       }}
       render={({ handleSubmit, submitSucceeded }) => (

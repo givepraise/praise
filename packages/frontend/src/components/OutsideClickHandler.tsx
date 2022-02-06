@@ -1,5 +1,5 @@
-import { useOutsideAlerter } from "@/utils/index";
-import React from "react";
+import { useOutsideAlerter } from '@/utils/index';
+import React from 'react';
 
 interface OutsideClickHandlerProps {
   onOutsideClick(): any;

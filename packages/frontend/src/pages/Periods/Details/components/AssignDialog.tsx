@@ -1,14 +1,14 @@
-import { useVerifyQuantifierPoolSize } from "@/model/periods";
+import { useVerifyQuantifierPoolSize } from '@/model/periods';
 import {
   faCheckSquare,
   faTimes,
   faTimesCircle,
   faUsers,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dialog } from "@headlessui/react";
-import React from "react";
-import { useHistory, useParams } from "react-router-dom";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dialog } from '@headlessui/react';
+import React from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 
 interface PeriodAssignDialogProps {
   onClose(): any;
@@ -28,23 +28,23 @@ const DialogMessage = ({ onClose, onAssign }: PeriodAssignDialogProps) => {
     <>
       <div className="text-center mb-7">
         <div>
-          The quantifier pool has{" "}
-          {poolRequirements ? poolRequirements.quantifierPoolSize : "#"}{" "}
+          The quantifier pool has{' '}
+          {poolRequirements ? poolRequirements.quantifierPoolSize : '#'}{' '}
           members.
         </div>
         <div className="mb-3">
-          Members needed for quantification:{" "}
-          {poolRequirements ? poolRequirements.requiredPoolSize : "#"}
+          Members needed for quantification:{' '}
+          {poolRequirements ? poolRequirements.requiredPoolSize : '#'}
         </div>
         <div>
           {quantPoolBigEnough ? (
             <>
-              <FontAwesomeIcon className="text-green" icon={faCheckSquare} />{" "}
+              <FontAwesomeIcon className="text-green" icon={faCheckSquare} />{' '}
               Quantifier pool requirements are met.
             </>
           ) : (
             <>
-              <FontAwesomeIcon className="text-green" icon={faTimesCircle} />{" "}
+              <FontAwesomeIcon className="text-green" icon={faTimesCircle} />{' '}
               Quantifier pool requirements are not met.
             </>
           )}

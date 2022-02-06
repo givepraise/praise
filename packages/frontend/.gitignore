@@ -18,6 +18,7 @@ cypress.json
 
 # misc
 .DS_Store
+.env
 .env.local
 .env.test
 .env.development

@@ -1,12 +1,12 @@
-import { AllUsers, User, UserRole } from "@/model/users";
-import { classNames } from "@/utils/index";
-import { getUsername } from "@/utils/users";
-import { faTimes, faUser } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dialog } from "@headlessui/react";
-import { useCombobox } from "downshift";
-import React from "react";
-import { useRecoilValue } from "recoil";
+import { AllUsers, User, UserRole } from '@/model/users';
+import { classNames } from '@/utils/index';
+import { getUsername } from '@/utils/users';
+import { faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dialog } from '@headlessui/react';
+import { useCombobox } from 'downshift';
+import React from 'react';
+import { useRecoilValue } from 'recoil';
 
 interface UserAutosuggestProps {
   onClose(): any;
@@ -87,8 +87,8 @@ const UserAutosuggest = ({
         </div>
         <ul
           className={classNames(
-            isOpen && inputItems.length > 0 ? "" : "hidden",
-            "absolute bg-white border w-80 mt-[1px]"
+            isOpen && inputItems.length > 0 ? '' : 'hidden',
+            'absolute bg-white border w-80 mt-[1px]'
           )}
           {...getMenuProps()}
         >
@@ -96,8 +96,8 @@ const UserAutosuggest = ({
             inputItems.map((item, index) => (
               <li
                 className={classNames(
-                  highlightedIndex === index ? "bg-gray-100" : "",
-                  "py-2 pl-2"
+                  highlightedIndex === index ? 'bg-gray-100' : '',
+                  'py-2 pl-2'
                 )}
                 key={`${item}${index}`}
                 {...getItemProps({ item, index })}

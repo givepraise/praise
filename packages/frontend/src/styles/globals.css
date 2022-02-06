@@ -1,10 +1,10 @@
-@import "tailwindcss/base";
+@import 'tailwindcss/base';
 
-@import "tailwindcss/components";
-@import "./custom-components.css";
+@import 'tailwindcss/components';
+@import './custom-components.css';
 
-@import "tailwindcss/utilities";
-@import "./custom-utilities.css";
+@import 'tailwindcss/utilities';
+@import './custom-utilities.css';
 
 @layer base {
   html {

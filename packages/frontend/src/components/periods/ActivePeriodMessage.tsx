@@ -1,13 +1,13 @@
-import { AllPeriods } from "@/model/periods";
-import { formatDate } from "@/utils/date";
-import { getActivePeriod } from "@/utils/periods";
-import React from "react";
-import { useRecoilValue } from "recoil";
+import { AllPeriods } from '@/model/periods';
+import { formatDate } from '@/utils/date';
+import { getActivePeriod } from '@/utils/periods';
+import React from 'react';
+import { useRecoilValue } from 'recoil';
 
 export const ActivePeriodMessage = () => {
   const allPeriods = useRecoilValue(AllPeriods);
 
-  const noPeriodMessage = "There is no active quantification period.";
+  const noPeriodMessage = 'There is no active quantification period.';
 
   if (!Array.isArray(allPeriods) || allPeriods.length === 0)
     return <div>{noPeriodMessage}</div>;

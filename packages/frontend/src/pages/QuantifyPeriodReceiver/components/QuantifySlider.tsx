@@ -1,9 +1,9 @@
-import { ActiveUserId } from "@/model/auth";
-import { Praise, useQuantifyPraise } from "@/model/praise";
-import { getPraiseMarks, praiseScore } from "@/utils/index";
-import { Slider, Tooltip } from "@mui/material";
-import React, { FC } from "react";
-import { useRecoilValue } from "recoil";
+import { ActiveUserId } from '@/model/auth';
+import { Praise, useQuantifyPraise } from '@/model/praise';
+import { getPraiseMarks, praiseScore } from '@/utils/index';
+import { Slider, Tooltip } from '@mui/material';
+import React, { FC } from 'react';
+import { useRecoilValue } from 'recoil';
 
 const ValueLabelComponent: FC<any> = (props) => {
   const { children, value } = props;
@@ -106,8 +106,8 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
     <div className="inline-block w-40">
       <Slider
         classes={{
-          colorPrimary: "local-MuiSlider-colorPrimary",
-          disabled: "local-MuiSlider-disabled",
+          colorPrimary: 'local-MuiSlider-colorPrimary',
+          disabled: 'local-MuiSlider-disabled',
         }}
         key={praise._id}
         valueLabelDisplay="on"

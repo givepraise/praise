@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios';
 import React from 'react';
 import {
   atom,
@@ -13,6 +12,7 @@ import {
   ApiAuthGetQuery,
   ApiAuthPatchQuery,
   ApiQuery,
+  isApiResponseError,
   isApiResponseOk,
   PaginatedResponseData,
   useAuthApiQuery,
@@ -55,10 +55,45 @@ export const SinglePraise = atomFamily<Praise | undefined, string>({
   default: undefined,
 });
 
-export const avgPraiseScore = (
-  praise: Praise | undefined,
-  get: GetRecoilValue
-) => {
+export const SinglePraiseQuery = selectorFamily({
+  key: 'SinglePraiseQuery',
+  get:
+    (praiseId: string) =>
+    ({ get }) => {
+      get(PraiseRequestId);
+      const response = get(
+        ApiAuthGetQuery({ endPoint: `/api/praise/${praiseId}` })
+      );
+      return response;
+    },
+});
+
+export const useSinglePraiseQuery = (praiseId: string) => {
+  const praise = useRecoilValue(SinglePraise(praiseId));
+
+  const fetchSinglePraise = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async () => {
+        const response = await ApiQuery(
+          snapshot.getPromise(SinglePraiseQuery(praiseId))
+        );
+        if (isApiResponseOk(response)) {
+          set(SinglePraise(praiseId), response.data);
+        } else {
+          //TODO handle error
+        }
+      }
+  );
+
+  React.useEffect(() => {
+    if (praiseId && !praise) {
+      fetchSinglePraise();
+    }
+  }, [praiseId, praise, fetchSinglePraise]);
+
+  return praise;
+};
+export const avgPraiseScore = (praise: Praise | undefined): number => {
   if (!praise || !praise.quantifications || praise.quantifications.length === 0)
     return 0;
   let score = 0;
@@ -204,45 +239,6 @@ export interface AllPraiseQueryParameters {
   receiver?: string | null;
 }
 
-export const SinglePraiseQuery = selectorFamily({
-  key: 'SinglePraiseQuery',
-  get:
-    (praiseId: string) =>
-    ({ get }) => {
-      get(PraiseRequestId);
-      const response = get(
-        ApiAuthGetQuery({ endPoint: `/api/praise/${praiseId}` })
-      );
-      return response;
-    },
-});
-
-export const useSinglePraiseQuery = (praiseId: string) => {
-  const praise = useRecoilValue(SinglePraise(praiseId));
-
-  const fetchSinglePraise = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async () => {
-        const response = await ApiQuery(
-          snapshot.getPromise(SinglePraiseQuery(praiseId))
-        );
-        if (isApiResponseOk(response)) {
-          set(SinglePraise(praiseId), response.data);
-        } else {
-          //TODO handle error
-        }
-      }
-  );
-
-  React.useEffect(() => {
-    if (praiseId && !praise) {
-      fetchSinglePraise();
-    }
-  }, [praiseId, praise, fetchSinglePraise]);
-
-  return praise;
-};
-
 export const useAllPraiseQuery = (
   queryParams: AllPraiseQueryParameters,
   listKey: string
@@ -280,6 +276,7 @@ export const useAllPraiseQuery = (
   );
 
   React.useEffect(() => {
+    if (isApiResponseError(allPraiseQueryResponse)) return;
     const data = allPraiseQueryResponse.data as any;
     if (
       typeof allPraiseIdList === 'undefined' ||

@@ -1,9 +1,9 @@
-import { UserAvatar } from "@/components/user/UserAvatar";
-import { AllPeriodReceiverPraise } from "@/model/periods";
-import { formatDate } from "@/utils/date";
-import React from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { UserAvatar } from '@/components/user/UserAvatar';
+import { AllPeriodReceiverPraise } from '@/model/periods';
+import { formatDate } from '@/utils/date';
+import React from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
 interface PraiseRowProps {
   praise: any;

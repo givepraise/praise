@@ -1,6 +1,12 @@
 # praise
 
-## 1. Run MongoDB
+## 1. Install dependencies
+
+```
+yarn
+```
+
+## 2. Run MongoDB
 
 Prerequisites:
 
@@ -18,7 +24,7 @@ Run mongo:
 yarn mongodb:start
 ```
 
-## 2. Start api backend
+## 3. Start api backend
 
 Build:
 
@@ -32,7 +38,7 @@ Start:
 yarn workspace api start
 ```
 
-## 3. Start Discord bot
+## 4. Start Discord bot
 
 Build:
 
@@ -44,4 +50,18 @@ Start:
 
 ```
 yarn workspace bot_discord start
+```
+
+## 5. Start frontend
+
+Build:
+
+```
+yarn workspace frontend build
+```
+
+Start:
+
+```
+yarn workspace frontend start
 ```

@@ -1,10 +1,10 @@
-import { injected } from "@/eth/connectors";
-import { useEagerConnect, useInactiveListener } from "@/eth/hooks";
-import { EthState } from "@/model/eth";
-import { useWeb3React } from "@web3-react/core";
-import { InjectedConnector } from "@web3-react/injected-connector";
-import React from "react";
-import { useSetRecoilState } from "recoil";
+import { injected } from '@/eth/connectors';
+import { useEagerConnect, useInactiveListener } from '@/eth/hooks';
+import { EthState } from '@/model/eth';
+import { useWeb3React } from '@web3-react/core';
+import { InjectedConnector } from '@web3-react/injected-connector';
+import React from 'react';
+import { useSetRecoilState } from 'recoil';
 
 export default function EthConnection() {
   const {
@@ -40,7 +40,7 @@ export default function EthConnection() {
   var envDependentConnectionStatus: boolean;
   var envDependentAccount: string | null | undefined;
 
-  if (process.env.NODE_ENV === "test") {
+  if (process.env.NODE_ENV === 'test') {
     envDependentAccount = process.env.REACT_APP_ETH_ADDRESS;
     envDependentConnectionStatus = true;
   } else {

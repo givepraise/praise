@@ -1,9 +1,9 @@
-import LoaderSpinner from "@/components/LoaderSpinner";
-import { AllPraiseQueryPagination, useAllPraiseQuery } from "@/model/praise";
-import React, { useCallback } from "react";
-import { BottomScrollListener } from "react-bottom-scroll-listener";
-import { useRecoilState } from "recoil";
-import { ALL_PRAISE_LIST_KEY } from "./PraiseTable";
+import LoaderSpinner from '@/components/LoaderSpinner';
+import { AllPraiseQueryPagination, useAllPraiseQuery } from '@/model/praise';
+import React, { useCallback } from 'react';
+import { BottomScrollListener } from 'react-bottom-scroll-listener';
+import { useRecoilState } from 'recoil';
+import { ALL_PRAISE_LIST_KEY } from './PraiseTable';
 
 const PraisePageLoader = () => {
   const [praisePagination, setPraisePagination] = useRecoilState(
@@ -13,8 +13,8 @@ const PraisePageLoader = () => {
     {
       page: praisePagination.currentPage,
       limit: 20,
-      sortColumn: "createdAt",
-      sortType: "desc",
+      sortColumn: 'createdAt',
+      sortType: 'desc',
     },
     ALL_PRAISE_LIST_KEY
   );

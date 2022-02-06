@@ -48,10 +48,24 @@ const parseData = function (body: string): any {
   }
 };
 
+export const isApiResponseOk = (
+  response: AxiosResponse | AxiosError | null | unknown
+): response is AxiosResponse => {
+  const axiosResponse = response as AxiosResponse;
+  if (!axiosResponse) return false;
+  return axiosResponse.status === 200;
+};
+
+export const isApiResponseError = (
+  response: AxiosResponse | AxiosError | null | unknown
+): response is AxiosError => {
+  return (response as AxiosError).isAxiosError !== undefined;
+};
+
 export const ApiGetQuery = selectorFamily<AxiosResponse | null, QueryParams>({
   key: 'ApiGetQuery',
-  get: (params: QueryParams) => async () => {
-    if (!hasBackendUrl()) return null;
+  get: (params: QueryParams) => async (): Promise<AxiosResponse<never>> => {
+    if (!hasBackendUrl()) throw new Error('lkjlasdkj');
 
     const config = {
       config: {
@@ -62,6 +76,7 @@ export const ApiGetQuery = selectorFamily<AxiosResponse | null, QueryParams>({
       },
     };
     const response = await axios.get(
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
       config
     );
@@ -76,7 +91,7 @@ export const ApiAuthGetQuery = selectorFamily<
   key: 'ApiAuthGetQuery',
   get:
     (params: QueryParams) =>
-    async ({ get }) => {
+    async ({ get }): Promise<AxiosResponse<never>> => {
       const ethState = get(EthState);
       const sessionToken = get(SessionToken);
       if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
@@ -93,6 +108,7 @@ export const ApiAuthGetQuery = selectorFamily<
       };
 
       const response = await axios.get(
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
         config
       );
@@ -105,7 +121,7 @@ export const ApiPostQuery = selectorFamily<
   PostQueryParams
 >({
   key: 'ApiPostQuery',
-  get: (params: PostQueryParams) => async () => {
+  get: (params: PostQueryParams) => async (): Promise<AxiosResponse<any>> => {
     if (!hasBackendUrl()) return null;
     const config = {
       config: {
@@ -116,6 +132,7 @@ export const ApiPostQuery = selectorFamily<
       },
     };
     const response = await axios.post(
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
       parseData(params.data),
       config
@@ -131,7 +148,7 @@ export const ApiAuthPostQuery = selectorFamily<
   key: 'ApiAuthPostQuery',
   get:
     (params: PostQueryParams) =>
-    async ({ get }) => {
+    async ({ get }): Promise<AxiosResponse<any>> => {
       const ethState = get(EthState);
       const sessionToken = get(SessionToken);
       if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
@@ -148,6 +165,7 @@ export const ApiAuthPostQuery = selectorFamily<
       };
 
       const response = await axios.post(
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
         parseData(params.data),
         config
@@ -163,7 +181,7 @@ export const ApiAuthPatchQuery = selectorFamily<
   key: 'ApiAuthPatchQuery',
   get:
     (params: PatchQueryParams) =>
-    async ({ get }) => {
+    async ({ get }): Promise<AxiosResponse<any>> => {
       const ethState = get(EthState);
       const sessionToken = get(SessionToken);
       if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
@@ -180,6 +198,7 @@ export const ApiAuthPatchQuery = selectorFamily<
       };
 
       const response = await axios.patch(
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
         parseData(params.data),
         config
@@ -188,7 +207,7 @@ export const ApiAuthPatchQuery = selectorFamily<
     },
 });
 
-export const handleErrors = (err: AxiosError) => {
+export const handleErrors = (err: AxiosError): void => {
   // client received an error response (5xx, 4xx)
   const { request, response } = err;
   if (response) {
@@ -200,7 +219,6 @@ export const handleErrors = (err: AxiosError) => {
       toast.error((response.data as any).error);
       return;
     }
-
     // TODO Handle expired JWT token
   }
 
@@ -215,7 +233,9 @@ export const handleErrors = (err: AxiosError) => {
   toast.error('Unknown error.');
 };
 
-export const ApiQuery = async (query: any) => {
+export const ApiQuery = async (
+  query: Promise<AxiosResponse<any>>
+): Promise<AxiosResponse<any>> => {
   try {
     return await query;
   } catch (err) {
@@ -243,20 +263,6 @@ export const useAuthApiQuery = (recoilValue: any) => {
     return response;
   }
   return response as AxiosResponse;
-};
-
-export const isApiResponseOk = (
-  response: AxiosResponse | AxiosError | null | unknown
-): response is AxiosResponse => {
-  const axiosResponse = response as AxiosResponse;
-  if (!axiosResponse) return false;
-  return axiosResponse.status === 200;
-};
-
-export const isApiResponseError = (
-  response: AxiosResponse | AxiosError | null | unknown
-): response is AxiosError => {
-  return (response as AxiosError).isAxiosError !== undefined;
 };
 
 export interface PaginatedResponseData {

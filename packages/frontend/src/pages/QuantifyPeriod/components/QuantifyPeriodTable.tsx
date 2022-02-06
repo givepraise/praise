@@ -1,15 +1,15 @@
-import { UserPseudonym } from "@/components/user/UserPseudonym";
+import { UserPseudonym } from '@/components/user/UserPseudonym';
 import {
   PeriodActiveQuantifierReceivers,
   QuantifierReceiverData,
-} from "@/model/periods";
-import { SingleBooleanSetting } from "@/model/settings";
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { SyntheticEvent } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { TableOptions, useTable } from "react-table";
-import { useRecoilValue } from "recoil";
+} from '@/model/periods';
+import { SingleBooleanSetting } from '@/model/settings';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { SyntheticEvent } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { TableOptions, useTable } from 'react-table';
+import { useRecoilValue } from 'recoil';
 
 const DoneLabel = () => {
   return (
@@ -26,13 +26,13 @@ const QuantifyPeriodTable = () => {
 
   const data = useRecoilValue(PeriodActiveQuantifierReceivers({ periodId }));
   const usePseudonyms = useRecoilValue(
-    SingleBooleanSetting("PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS")
+    SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );
   const columns = React.useMemo(
     () => [
       {
-        Header: "Receiver",
-        accessor: "receiverName",
+        Header: 'Receiver',
+        accessor: 'receiverName',
         Cell: (data: any) => {
           return usePseudonyms ? (
             <UserPseudonym
@@ -45,8 +45,8 @@ const QuantifyPeriodTable = () => {
         },
       },
       {
-        Header: "Remaining items",
-        accessor: "count",
+        Header: 'Remaining items',
+        accessor: 'count',
         Cell: (data: any) => {
           const item = data.row.original;
           if (!item) return null;
@@ -54,8 +54,8 @@ const QuantifyPeriodTable = () => {
         },
       },
       {
-        Header: "",
-        accessor: "done",
+        Header: '',
+        accessor: 'done',
         Cell: (data: any) => {
           const item = data.row.original;
           if (!item) return null;
@@ -95,7 +95,7 @@ const QuantifyPeriodTable = () => {
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
               <th className="text-left" {...column.getHeaderProps()}>
-                {column.render("Header")}
+                {column.render('Header')}
               </th>
             ))}
           </tr>
@@ -107,12 +107,12 @@ const QuantifyPeriodTable = () => {
           return (
             <tr
               className="cursor-pointer hover:bg-gray-100"
-              id={"period-" + row.values.name}
+              id={'period-' + row.values.name}
               {...row.getRowProps()}
               onClick={handleClick(row.original as QuantifierReceiverData)}
             >
               {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}
             </tr>
           );

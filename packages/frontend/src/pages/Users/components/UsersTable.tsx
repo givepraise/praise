@@ -1,19 +1,19 @@
-import { UserAvatar } from "@/components/user/UserAvatar";
+import { UserAvatar } from '@/components/user/UserAvatar';
 import {
   AllQuantifierUsers,
   useAdminUsers,
   User,
   UserRole,
-} from "@/model/users";
-import { shortenEthAddress } from "@/utils/index";
-import { getUsername } from "@/utils/users";
-import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dialog } from "@headlessui/react";
-import React from "react";
-import { TableOptions, useTable } from "react-table";
-import { useRecoilValue } from "recoil";
-import PoolDeleteDialog from "./DeleteDialog";
+} from '@/model/users';
+import { shortenEthAddress } from '@/utils/index';
+import { getUsername } from '@/utils/users';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dialog } from '@headlessui/react';
+import React from 'react';
+import { TableOptions, useTable } from 'react-table';
+import { useRecoilValue } from 'recoil';
+import PoolDeleteDialog from './DeleteDialog';
 
 const UsersTable = () => {
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
@@ -27,8 +27,8 @@ const UsersTable = () => {
   const columns = React.useMemo(
     () => [
       {
-        Header: "Id",
-        accessor: "_id",
+        Header: 'Id',
+        accessor: '_id',
         Cell: (data: any) => {
           return (
             <div className="flex items-center w-full">
@@ -39,7 +39,7 @@ const UsersTable = () => {
                 {data.row.original.accounts?.length > 0 ? (
                   <div>{getUsername(data.row.original)}</div>
                 ) : (
-                  ""
+                  ''
                 )}
                 {shortenEthAddress(data.row.original.ethereumAddress)}
               </div>
@@ -79,7 +79,7 @@ const UsersTable = () => {
           return (
             <tr {...row.getRowProps()}>
               {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}
               <td className="w-8">
                 <button

@@ -1,15 +1,15 @@
-import FieldErrorMessage from "@/components/form/FieldErrorMessage";
-import OutsideClickHandler from "@/components/OutsideClickHandler";
-import { isApiResponseOk } from "@/model/api";
-import { SinglePeriod, useUpdatePeriod } from "@/model/periods";
-import { AxiosResponse } from "axios";
-import { ValidationErrors } from "final-form";
-import { default as React } from "react";
-import "react-day-picker/lib/style.css";
-import { Field, Form } from "react-final-form";
-import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import FieldErrorMessage from '@/components/form/FieldErrorMessage';
+import OutsideClickHandler from '@/components/OutsideClickHandler';
+import { isApiResponseOk } from '@/model/api';
+import { SinglePeriod, useUpdatePeriod } from '@/model/periods';
+import { AxiosResponse } from 'axios';
+import { ValidationErrors } from 'final-form';
+import { default as React } from 'react';
+import 'react-day-picker/lib/style.css';
+import { Field, Form } from 'react-final-form';
+import toast from 'react-hot-toast';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
 const validate = (
   values: Record<string, any>
@@ -19,13 +19,13 @@ const validate = (
   // Name validation
   if (values.name) {
     if (values.name.length < 3) {
-      errors.name = "Min 3 characters";
+      errors.name = 'Min 3 characters';
     }
     if (values.name.length > 64) {
-      errors.name = "Max 64 characters";
+      errors.name = 'Max 64 characters';
     }
   } else {
-    errors.name = "Required";
+    errors.name = 'Required';
   }
 
   return errors as ValidationErrors;
@@ -49,7 +49,7 @@ const PeriodNameForm = () => {
     const newPeriod = { ...period };
     newPeriod.name = values.name;
     const response = await updatePeriod(newPeriod);
-    if (isApiResponseOk(response)) toast.success("Period name saved");
+    if (isApiResponseOk(response)) toast.success('Period name saved');
     setApiResponse(response);
   };
 
@@ -79,14 +79,14 @@ const PeriodNameForm = () => {
                       className="relative left-[-5px] pl-1 text-xl font-semibold bg-transparent border border-transparent hover:border-gray-300"
                       onKeyDown={(e) => {
                         switch (e.key) {
-                          case "Tab":
+                          case 'Tab':
                             handleSubmit();
                             break;
-                          case "Enter":
+                          case 'Enter':
                             handleSubmit();
                             inputRef.current?.blur();
                             break;
-                          case "Escape":
+                          case 'Escape':
                             form.reset();
                             inputRef.current?.blur();
                             break;

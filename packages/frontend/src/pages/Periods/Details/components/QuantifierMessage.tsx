@@ -1,12 +1,12 @@
 import {
   PeriodActiveQuantifierQuantifications,
   SinglePeriod,
-} from "@/model/periods";
-import { faCalculator } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+} from '@/model/periods';
+import { faCalculator } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
 export const QuantifierMessage = () => {
   let { periodId } = useParams() as any;
@@ -25,7 +25,7 @@ export const QuantifierMessage = () => {
           <br />
           Assigned number of praise items: {quantificationData.count}
           <br />
-          Items left to quantify:{" "}
+          Items left to quantify:{' '}
           {quantificationData.count - quantificationData.done}
           <button
             className="block mt-5 praise-button"

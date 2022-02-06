@@ -1,6 +1,6 @@
-import { SingleUser } from "@/model/users";
-import { getUsername } from "@/utils/users";
-import { useRecoilValue } from "recoil";
+import { SingleUser } from '@/model/users';
+import { getUsername } from '@/utils/users';
+import { useRecoilValue } from 'recoil';
 
 interface UserCellProps {
   userId: string;

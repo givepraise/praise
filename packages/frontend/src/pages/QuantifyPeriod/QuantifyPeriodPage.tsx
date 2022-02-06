@@ -1,14 +1,14 @@
-import BreadCrumb from "@/components/BreadCrumb";
+import BreadCrumb from '@/components/BreadCrumb';
 import {
   PeriodActiveQuantifierQuantifications,
   SinglePeriod,
-} from "@/model/periods";
-import BackLink from "@/navigation/BackLink";
-import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
-import { useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import QuantifyPeriodTable from "./components/QuantifyPeriodTable";
+} from '@/model/periods';
+import BackLink from '@/navigation/BackLink';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import QuantifyPeriodTable from './components/QuantifyPeriodTable';
 
 const PeriodMessage = () => {
   let { periodId } = useParams() as any;
@@ -24,7 +24,7 @@ const PeriodMessage = () => {
       {quantificationData ? (
         <div>
           Assigned number of praise items: {quantificationData.count} <br />
-          Items left to quantify this period:{" "}
+          Items left to quantify this period:{' '}
           {quantificationData.count - quantificationData.done}
         </div>
       ) : null}

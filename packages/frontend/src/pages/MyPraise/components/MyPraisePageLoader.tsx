@@ -1,11 +1,11 @@
-import LoaderSpinner from "@/components/LoaderSpinner";
-import { ActiveUserId } from "@/model/auth";
-import { AllPraiseQueryPagination, useAllPraiseQuery } from "@/model/praise";
-import { SingleUser, User } from "@/model/users";
-import React, { useCallback } from "react";
-import { BottomScrollListener } from "react-bottom-scroll-listener";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { MY_PRAISE_LIST_KEY } from "./MyPraiseTable";
+import LoaderSpinner from '@/components/LoaderSpinner';
+import { ActiveUserId } from '@/model/auth';
+import { AllPraiseQueryPagination, useAllPraiseQuery } from '@/model/praise';
+import { SingleUser, User } from '@/model/users';
+import React, { useCallback } from 'react';
+import { BottomScrollListener } from 'react-bottom-scroll-listener';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { MY_PRAISE_LIST_KEY } from './MyPraiseTable';
 
 //TODO add support for more than one user account connected to one user
 const getReceiverId = (user: User | null) => {
@@ -29,8 +29,8 @@ const MyPraisePageLoader = () => {
       {
         page: praisePagination.currentPage,
         limit: 20,
-        sortColumn: "createdAt",
-        sortType: "desc",
+        sortColumn: 'createdAt',
+        sortType: 'desc',
         receiver: receiverId,
       },
       MY_PRAISE_LIST_KEY

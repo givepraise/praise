@@ -1,9 +1,9 @@
-import BreadCrumb from "@/components/BreadCrumb";
-import { ActivePeriodMessage } from "@/components/periods/ActivePeriodMessage";
-import { ActiveUserQuantificationsMessage } from "@/components/periods/ActiveUserQuantificationsMessage";
-import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
-import PraiseTable from "./components/PraiseTable";
+import BreadCrumb from '@/components/BreadCrumb';
+import { ActivePeriodMessage } from '@/components/periods/ActivePeriodMessage';
+import { ActiveUserQuantificationsMessage } from '@/components/periods/ActiveUserQuantificationsMessage';
+import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
+import PraiseTable from './components/PraiseTable';
 
 const StartPage = () => {
   return (

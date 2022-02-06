@@ -1,11 +1,11 @@
-import { Praise } from "@/model/praise";
+import { Praise } from '@/model/praise';
 import {
   faCalculator,
   faMinusCircle,
   faTimes,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dialog } from "@headlessui/react";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dialog } from '@headlessui/react';
 
 interface DismissDialogProps {
   onClose(): any;

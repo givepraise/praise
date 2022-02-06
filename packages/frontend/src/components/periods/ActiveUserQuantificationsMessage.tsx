@@ -2,10 +2,10 @@ import {
   AllActiveQuantifierQuantifications,
   QuantifierData,
   SinglePeriod,
-} from "@/model/periods";
-import React from "react";
-import { Link } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+} from '@/model/periods';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
 interface QuantifierPeriodMessageProps {
   quantifierData: QuantifierData;
@@ -21,7 +21,7 @@ const QuantifierPeriodMessage = ({
   return (
     <li key={period._id}>
       <Link to={`/quantify/period/${period._id}`}>{period.name}</Link> (
-      {quantifierData.count - quantifierData.done}/{quantifierData.count}{" "}
+      {quantifierData.count - quantifierData.done}/{quantifierData.count}{' '}
       unfinished items)
     </li>
   );

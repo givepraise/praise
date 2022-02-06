@@ -1,10 +1,10 @@
-import { isApiResponseOk, useAuthApiQuery } from "@/model/api";
-import { Auth, AuthQuery, Nonce, NonceQuery, SessionToken } from "@/model/auth";
-import * as localStorage from "@/model/localStorage";
-import { useWeb3React } from "@web3-react/core";
-import React from "react";
-import { useHistory, useLocation } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { isApiResponseOk, useAuthApiQuery } from '@/model/api';
+import { Auth, AuthQuery, Nonce, NonceQuery, SessionToken } from '@/model/auth';
+import * as localStorage from '@/model/localStorage';
+import { useWeb3React } from '@web3-react/core';
+import React from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 
 interface LocationState {
   from: {
@@ -16,7 +16,7 @@ const generateLoginMessage = (
   nonce: string
 ): string => {
   return (
-    "SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n" +
+    'SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n' +
     `ADDRESS:\n${account}\n\n` +
     `NONCE:\n${nonce}`
   );
@@ -63,7 +63,7 @@ export default function LoginButton() {
     // 6. Redirect after login
     React.useEffect(() => {
       if (!sessionToken) return;
-      const { from } = location.state || { from: { pathname: "/" } };
+      const { from } = location.state || { from: { pathname: '/' } };
       setTimeout(() => {
         history.replace(from);
       }, 1000);

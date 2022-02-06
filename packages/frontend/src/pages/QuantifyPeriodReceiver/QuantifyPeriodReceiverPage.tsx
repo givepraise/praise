@@ -1,21 +1,21 @@
-import BreadCrumb from "@/components/BreadCrumb";
-import { UserPseudonym } from "@/components/user/UserPseudonym";
+import BreadCrumb from '@/components/BreadCrumb';
+import { UserPseudonym } from '@/components/user/UserPseudonym';
 import {
   PeriodActiveQuantifierReceiver,
   SinglePeriod,
   usePeriodPraiseQuery,
-} from "@/model/periods";
-import { SingleBooleanSetting } from "@/model/settings";
-import BackLink from "@/navigation/BackLink";
+} from '@/model/periods';
+import { SingleBooleanSetting } from '@/model/settings';
+import BackLink from '@/navigation/BackLink';
 import {
   faCalendarAlt,
   faCheckCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import { useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import QuantifyTable from "./components/QuantifyTable";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import QuantifyTable from './components/QuantifyTable';
 
 const PeriodBreadCrumb = () => {
   let { periodId } = useParams() as any;
@@ -40,14 +40,14 @@ const PeriodMessage = () => {
     PeriodActiveQuantifierReceiver({ periodId, receiverId })
   );
   const usePseudonyms = useRecoilValue(
-    SingleBooleanSetting("PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS")
+    SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );
 
   if (!data) return null;
   return (
     <>
       <h2>
-        Receiver:{" "}
+        Receiver:{' '}
         {usePseudonyms ? (
           <UserPseudonym userId={receiverId} periodId={periodId} />
         ) : (
@@ -56,7 +56,7 @@ const PeriodMessage = () => {
       </h2>
       <div>Number of praise items: {data.count}</div>
       <div>
-        Items left to quantify:{" "}
+        Items left to quantify:{' '}
         {data.count - data.done === 0 ? (
           <>
             0<DoneLabel />

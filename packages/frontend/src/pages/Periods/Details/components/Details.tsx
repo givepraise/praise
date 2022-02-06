@@ -1,28 +1,28 @@
-import { HasRole, ROLE_ADMIN } from "@/model/auth";
+import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   AllPeriods,
   SinglePeriod,
   useAssignQuantifiers,
   useClosePeriod,
   useExportPraise,
-} from "@/model/periods";
-import { formatDate } from "@/utils/date";
-import { getPreviousPeriod } from "@/utils/periods";
+} from '@/model/periods';
+import { formatDate } from '@/utils/date';
+import { getPreviousPeriod } from '@/utils/periods';
 import {
   faDownload,
   faTimesCircle,
   faUsers,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dialog } from "@headlessui/react";
-import React from "react";
-import "react-day-picker/lib/style.css";
-import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import PeriodAssignDialog from "./AssignDialog";
-import PeriodCloseDialog from "./CloseDialog";
-import PeriodDateForm from "./PeriodDateForm";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dialog } from '@headlessui/react';
+import React from 'react';
+import 'react-day-picker/lib/style.css';
+import toast from 'react-hot-toast';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import PeriodAssignDialog from './AssignDialog';
+import PeriodCloseDialog from './CloseDialog';
+import PeriodDateForm from './PeriodDateForm';
 
 const PeriodDetails = () => {
   let [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
@@ -45,7 +45,7 @@ const PeriodDetails = () => {
   const periodStartDate = getPreviousPeriod(allPeriods, period);
   const periodStart = periodStartDate
     ? formatDate(periodStartDate.endDate)
-    : "Dawn of time";
+    : 'Dawn of time';
 
   const handleClosePeriod = () => {
     closePeriod(periodId);
@@ -54,9 +54,9 @@ const PeriodDetails = () => {
   const handleAssign = () => {
     const promise = assignQuantifiers(periodId);
     toast.promise(promise, {
-      loading: "Assigning quantifiers …",
-      success: "Quantifiers assigned",
-      error: "Assign failed",
+      loading: 'Assigning quantifiers …',
+      success: 'Quantifiers assigned',
+      error: 'Assign failed',
     });
   };
 
@@ -75,7 +75,7 @@ const PeriodDetails = () => {
         <>
           <PeriodDateForm />
           <div className="mt-5">
-            {period.status === "OPEN" ? (
+            {period.status === 'OPEN' ? (
               <button
                 className="praise-button"
                 onClick={() => {
@@ -86,7 +86,7 @@ const PeriodDetails = () => {
                 Assign quantifiers
               </button>
             ) : null}
-            {period.status === "QUANTIFY" ? (
+            {period.status === 'QUANTIFY' ? (
               <div className="flex justify-between">
                 <button
                   className="hover:bg-red-600 praise-button"
@@ -101,7 +101,7 @@ const PeriodDetails = () => {
                 </button>
               </div>
             ) : null}
-            {period.status === "CLOSED" ? (
+            {period.status === 'CLOSED' ? (
               <button className="praise-button" onClick={handleExport}>
                 <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
                 Export
@@ -125,7 +125,7 @@ const PeriodDetails = () => {
         </div>
       </Dialog>
 
-      {period.status === "OPEN" && isAdmin ? (
+      {period.status === 'OPEN' && isAdmin ? (
         <Dialog
           open={isAssignDialogOpen}
           onClose={() => setIsAssignDialogOpen(false)}

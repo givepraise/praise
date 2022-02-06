@@ -48,7 +48,7 @@ export const ActiveUserId = selector({
   get: ({ get }) => {
     const decodedToken = get(DecodedSessionToken);
     if (!decodedToken) return null;
-    return decodedToken.userId;
+    return (decodedToken as any).userId;
   },
 });
 
@@ -57,7 +57,7 @@ export const ActiveUserRoles = selector({
   get: ({ get }) => {
     const decodedToken = get(DecodedSessionToken);
     if (!decodedToken) return null;
-    return decodedToken.roles;
+    return (decodedToken as any).roles;
   },
 });
 

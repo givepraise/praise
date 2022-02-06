@@ -1,15 +1,15 @@
-import { UserPseudonym } from "@/components/user/UserPseudonym";
-import { ActiveUserId } from "@/model/auth";
-import { AllPeriodPraiseList } from "@/model/periods";
-import { Praise } from "@/model/praise";
-import { SingleBooleanSetting } from "@/model/settings";
-import { classNames } from "@/utils/index";
-import { faPrayingHands } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useCombobox } from "downshift";
-import React from "react";
-import { useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { UserPseudonym } from '@/components/user/UserPseudonym';
+import { ActiveUserId } from '@/model/auth';
+import { AllPeriodPraiseList } from '@/model/periods';
+import { Praise } from '@/model/praise';
+import { SingleBooleanSetting } from '@/model/settings';
+import { classNames } from '@/utils/index';
+import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useCombobox } from 'downshift';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
 interface PraiseAutosuggestProps {
   onClose(): any;
@@ -27,7 +27,7 @@ const PraiseAutosuggest = ({
 
   const data = useRecoilValue(AllPeriodPraiseList({ periodId }));
   const usePseudonyms = useRecoilValue(
-    SingleBooleanSetting("PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS")
+    SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );
 
   if (!data) return null;
@@ -92,8 +92,8 @@ const PraiseAutosuggest = ({
         </div>
         <ul
           className={classNames(
-            isOpen && inputItems.length > 0 ? "" : "hidden",
-            "absolute bg-white border w-80 mt-[1px]"
+            isOpen && inputItems.length > 0 ? '' : 'hidden',
+            'absolute bg-white border w-80 mt-[1px]'
           )}
           {...getMenuProps()}
         >
@@ -101,13 +101,13 @@ const PraiseAutosuggest = ({
             inputItems.map((item, index) => (
               <li
                 className={classNames(
-                  highlightedIndex === index ? "bg-gray-100" : "",
-                  "py-2 pl-2"
+                  highlightedIndex === index ? 'bg-gray-100' : '',
+                  'py-2 pl-2'
                 )}
                 key={`${item}${index}`}
                 {...getItemProps({ item, index })}
               >
-                #{item && item._id.slice(-4)} -{" "}
+                #{item && item._id.slice(-4)} -{' '}
                 {item &&
                   (usePseudonyms ? (
                     <UserPseudonym

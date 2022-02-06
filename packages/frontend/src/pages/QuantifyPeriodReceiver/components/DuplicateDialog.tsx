@@ -1,8 +1,8 @@
-import { Praise } from "@/model/praise";
-import { faCalculator, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dialog } from "@headlessui/react";
-import PraiseAutosuggest from "./PraiseAutosuggest";
+import { Praise } from '@/model/praise';
+import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dialog } from '@headlessui/react';
+import PraiseAutosuggest from './PraiseAutosuggest';
 
 interface PoolDeleteDialogProps {
   onClose(): any;

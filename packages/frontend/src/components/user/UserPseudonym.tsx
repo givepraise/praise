@@ -1,5 +1,5 @@
-import { PseudonymForUser } from "@/model/users";
-import { useRecoilValue } from "recoil";
+import { PseudonymForUser } from '@/model/users';
+import { useRecoilValue } from 'recoil';
 
 interface UserPseudonymParams {
   userId: string;

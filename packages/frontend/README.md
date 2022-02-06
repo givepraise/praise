@@ -19,7 +19,7 @@ yarn start
 
 ### 4. Testing
 
-`yarn test` *or*
+`yarn test` _or_
 `yarn test:watch`
 
-*TODO: setup ESLint*
+_TODO: setup ESLint_
