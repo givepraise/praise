@@ -1,10 +1,10 @@
-import jwtDecode from "jwt-decode";
-import { atom, selector, selectorFamily } from "recoil";
-import { ApiGetQuery, ApiPostQuery } from "./api";
+import jwtDecode from 'jwt-decode';
+import { atom, selector, selectorFamily } from 'recoil';
+import { ApiGetQuery, ApiPostQuery } from './api';
 
-export const ROLE_USER = "USER";
-export const ROLE_ADMIN = "ADMIN";
-export const ROLE_QUANTIFIER = "QUANTIFIER";
+export const ROLE_USER = 'USER';
+export const ROLE_ADMIN = 'ADMIN';
+export const ROLE_QUANTIFIER = 'QUANTIFIER';
 
 export interface JWT {
   sub: string;
@@ -30,21 +30,21 @@ export interface Auth {
 // undefined - Session token not loaded yet
 // null - No session token exists
 export const SessionToken = atom<string | null | undefined>({
-  key: "SessionToken",
+  key: 'SessionToken',
   default: undefined,
 });
 
 export const DecodedSessionToken = selector({
-  key: "DecodedSessionToken",
+  key: 'DecodedSessionToken',
   get: ({ get }) => {
     const token = get(SessionToken);
     if (!token) return null;
-    return jwtDecode(token) as JWT;
+    return jwtDecode(token);
   },
 });
 
 export const ActiveUserId = selector({
-  key: "ActiveUserId",
+  key: 'ActiveUserId',
   get: ({ get }) => {
     const decodedToken = get(DecodedSessionToken);
     if (!decodedToken) return null;
@@ -53,7 +53,7 @@ export const ActiveUserId = selector({
 });
 
 export const ActiveUserRoles = selector({
-  key: "ActiveUserRoles",
+  key: 'ActiveUserRoles',
   get: ({ get }) => {
     const decodedToken = get(DecodedSessionToken);
     if (!decodedToken) return null;
@@ -62,7 +62,7 @@ export const ActiveUserRoles = selector({
 });
 
 export const HasRole = selectorFamily({
-  key: "HasRole",
+  key: 'HasRole',
   get:
     (role: string) =>
     ({ get }) => {
@@ -73,7 +73,7 @@ export const HasRole = selectorFamily({
 });
 
 export const NonceQuery = selectorFamily({
-  key: "NonceQuery",
+  key: 'NonceQuery',
   get:
     (params: any) =>
     ({ get }) => {
@@ -87,7 +87,7 @@ export const NonceQuery = selectorFamily({
 });
 
 export const AuthQuery = selectorFamily({
-  key: "AuthQuery",
+  key: 'AuthQuery',
   get:
     (params: any) =>
     ({ get }) => {
@@ -100,6 +100,6 @@ export const AuthQuery = selectorFamily({
         signature: params.signature,
       });
 
-      return get(ApiPostQuery({ endPoint: "/api/auth", data }));
+      return get(ApiPostQuery({ endPoint: '/api/auth', data }));
     },
 });

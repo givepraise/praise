@@ -1,6 +1,6 @@
-import { AxiosError, AxiosResponse } from "axios";
-import React from "react";
-import toast from "react-hot-toast";
+import { AxiosError, AxiosResponse } from 'axios';
+import React from 'react';
+import toast from 'react-hot-toast';
 import {
   atom,
   selector,
@@ -8,14 +8,14 @@ import {
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
-} from "recoil";
+} from 'recoil';
 import {
   ApiAuthGetQuery,
   ApiAuthPatchQuery,
   ApiQuery,
   isApiResponseOk,
   useAuthApiQuery,
-} from "./api";
+} from './api';
 
 export interface Setting {
   _id: string;
@@ -24,24 +24,24 @@ export interface Setting {
 }
 
 const AllSettingsRequestId = atom({
-  key: "AllSettingsRequestId",
+  key: 'AllSettingsRequestId',
   default: 0,
 });
 
 export const AllSettingsQuery = selector({
-  key: "AllSettingsQuery",
+  key: 'AllSettingsQuery',
   get: ({ get }) => {
     get(AllSettingsRequestId);
     return get(
       ApiAuthGetQuery({
-        endPoint: "/api/settings/all",
+        endPoint: '/api/settings/all',
       })
     );
   },
 });
 
 export const AllSettings = atom<Setting[] | undefined>({
-  key: "AllSettings",
+  key: 'AllSettings',
   default: undefined,
 });
 
@@ -52,7 +52,7 @@ export const useAllSettingsQuery = () => {
   React.useEffect(() => {
     if (
       isApiResponseOk(allSettingsQueryResponse) &&
-      typeof allSettings === "undefined"
+      typeof allSettings === 'undefined'
     ) {
       const settings = allSettingsQueryResponse.data as Setting[];
       if (Array.isArray(settings) && settings.length > 0)
@@ -66,12 +66,12 @@ export const useAllSettingsQuery = () => {
 export const SetSettingApiResponse = atom<
   AxiosResponse<never> | AxiosError<never> | null
 >({
-  key: "SetSettingApiResponse",
+  key: 'SetSettingApiResponse',
   default: null,
 });
 
 export const SingleSetting = selectorFamily({
-  key: "SingleSetting",
+  key: 'SingleSetting',
   get:
     (key: string) =>
     ({ get }) => {
@@ -82,7 +82,7 @@ export const SingleSetting = selectorFamily({
 });
 
 export const SingleFloatSetting = selectorFamily({
-  key: "SingleFloatSetting",
+  key: 'SingleFloatSetting',
   get:
     (key: string) =>
     ({ get }) => {
@@ -97,22 +97,22 @@ export const SingleFloatSetting = selectorFamily({
 });
 
 export const SingleBooleanSetting = selectorFamily({
-  key: "SingleBooleanSetting",
+  key: 'SingleBooleanSetting',
   get:
     (key: string) =>
     ({ get }) => {
       const setting = get(SingleSetting(key));
       if (!setting) return null;
       if (setting && setting.value) {
-        if (setting.value.toLowerCase() === "true") return true;
-        if (setting.value.toLowerCase() === "false") return false;
+        if (setting.value.toLowerCase() === 'true') return true;
+        if (setting.value.toLowerCase() === 'false') return false;
       }
       return null;
     },
 });
 
 export const SingleIntSetting = selectorFamily({
-  key: "SingleIntSetting",
+  key: 'SingleIntSetting',
   get:
     (key: string) =>
     ({ get }) => {
@@ -145,7 +145,7 @@ export const useSetSetting = () => {
           const setting = response.data as Setting;
           toast.success(`Saved ${setting.key}`);
           if (setting) {
-            if (typeof allSettings !== "undefined") {
+            if (typeof allSettings !== 'undefined') {
               set(
                 AllSettings,
                 allSettings.map(

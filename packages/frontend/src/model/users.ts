@@ -1,6 +1,6 @@
-import { pseudonymNouns, psudonymAdjectives } from "@/utils/users";
-import { AxiosError, AxiosResponse } from "axios";
-import React from "react";
+import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
+import { AxiosError, AxiosResponse } from 'axios';
+import React from 'react';
 import {
   atom,
   selector,
@@ -8,7 +8,7 @@ import {
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
-} from "recoil";
+} from 'recoil';
 import {
   ApiAuthGetQuery,
   ApiAuthPatchQuery,
@@ -16,13 +16,13 @@ import {
   isApiResponseOk,
   PaginatedResponseData,
   useAuthApiQuery,
-} from "./api";
-import { AllPeriods } from "./periods";
+} from './api';
+import { AllPeriods } from './periods';
 
 export enum UserRole {
-  ADMIN = "ADMIN",
-  QUANTIFIER = "QUANTIFIER",
-  USER = "USER",
+  ADMIN = 'ADMIN',
+  QUANTIFIER = 'QUANTIFIER',
+  USER = 'USER',
 }
 
 export interface User {
@@ -35,8 +35,8 @@ export interface User {
 }
 
 export enum UserAccountPlatform {
-  DISCORD = "DISCORD",
-  TELEGRAM = "TELEGRAM",
+  DISCORD = 'DISCORD',
+  TELEGRAM = 'TELEGRAM',
 }
 
 export interface UserAccount {
@@ -51,29 +51,29 @@ export interface UserAccount {
 // AllUsersQuery subscribes to the value. Increase to trigger
 // refresh.
 const UsersRequestId = atom({
-  key: "UsersRequestId",
+  key: 'UsersRequestId',
   default: 0,
 });
 
 export const AllUsersQuery = selector({
-  key: "AllUsersQuery",
+  key: 'AllUsersQuery',
   get: ({ get }) => {
     get(UsersRequestId);
     return get(
       ApiAuthGetQuery({
-        endPoint: "/api/users/all?sortColumn=ethereumAddress&sortType=desc",
+        endPoint: '/api/users/all?sortColumn=ethereumAddress&sortType=desc',
       })
     );
   },
 });
 
 export const AllUsers = atom<User[] | undefined>({
-  key: "AllUsers",
+  key: 'AllUsers',
   default: undefined,
 });
 
 export const AllQuantifierUsers = selector({
-  key: "AllQuantifierUsers",
+  key: 'AllQuantifierUsers',
   get: ({ get }) => {
     const users = get(AllUsers);
     if (users) {
@@ -90,7 +90,7 @@ export const useAllUsersQuery = () => {
   React.useEffect(() => {
     if (
       isApiResponseOk(allUsersQueryResponse) &&
-      typeof allUsers === "undefined"
+      typeof allUsers === 'undefined'
     ) {
       const paginatedResponse =
         allUsersQueryResponse.data as PaginatedResponseData;
@@ -103,7 +103,7 @@ export const useAllUsersQuery = () => {
 };
 
 export const SingleUser = selectorFamily({
-  key: "SingleUser",
+  key: 'SingleUser',
   get:
     (params: any) =>
     ({ get }) => {
@@ -115,7 +115,7 @@ export const SingleUser = selectorFamily({
 });
 
 export const SingleUserByReceiverId = selectorFamily({
-  key: "SingleUserByReceiverId",
+  key: 'SingleUserByReceiverId',
   get:
     (params: any) =>
     ({ get }) => {
@@ -130,21 +130,21 @@ export const SingleUserByReceiverId = selectorFamily({
 });
 
 const stringToNumber = (s: string) => {
-  var value = 0;
-  for (var i = s.length - 1; i >= 0; i--) {
+  let value = 0;
+  for (let i = s.length - 1; i >= 0; i--) {
     value = value * 256 + s.charCodeAt(i);
   }
   return value;
 };
 
 export const PseudonymForUser = selectorFamily({
-  key: "PseudonymForUser",
+  key: 'PseudonymForUser',
   get:
     (params: any) =>
     ({ get }) => {
       const { periodId, userId } = params;
       const allPeriods = get(AllPeriods);
-      if (!allPeriods) return "Loading…";
+      if (!allPeriods) return 'Loading…';
       const periodIndex = allPeriods.findIndex((p) => p._id === periodId);
 
       if (userId && periodIndex > -1) {
@@ -155,14 +155,14 @@ export const PseudonymForUser = selectorFamily({
         return `${a} ${n}`;
       }
 
-      return "Unknown user";
+      return 'Unknown user';
     },
 });
 
 export const AddUserRoleApiResponse = atom<
   AxiosResponse<never> | AxiosError<never> | null
 >({
-  key: "AddUserRoleApiResponse",
+  key: 'AddUserRoleApiResponse',
   default: null,
 });
 
@@ -186,7 +186,7 @@ export const useAdminUsers = () => {
         if (isApiResponseOk(response)) {
           const user = response.data as User;
           if (user) {
-            if (typeof allUsers !== "undefined") {
+            if (typeof allUsers !== 'undefined') {
               set(
                 AllUsers,
                 allUsers.map((oldUser) =>
@@ -219,7 +219,7 @@ export const useAdminUsers = () => {
         if (isApiResponseOk(response)) {
           const user = response.data as User;
           if (user) {
-            if (typeof allUsers !== "undefined") {
+            if (typeof allUsers !== 'undefined') {
               set(
                 AllUsers,
                 allUsers.map((oldUser) =>

@@ -1,5 +1,5 @@
-import { AbstractConnector } from "@web3-react/abstract-connector/dist";
-import { InjectedConnector } from "@web3-react/injected-connector";
+import { AbstractConnector } from '@web3-react/abstract-connector/dist';
+import { InjectedConnector } from '@web3-react/injected-connector';
 
 export const injected = new InjectedConnector({
   // Eth mainnet, test nets and a few others xDai, Polygon, etc.

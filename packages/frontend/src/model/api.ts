@@ -1,13 +1,13 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
-import toast from "react-hot-toast";
+import axios, { AxiosError, AxiosResponse } from 'axios';
+import toast from 'react-hot-toast';
 import {
   atom,
   selectorFamily,
   SerializableParam,
   useRecoilValue,
-} from "recoil";
-import { SessionToken } from "./auth";
-import { EthState, EthStateInterface } from "./eth";
+} from 'recoil';
+import { SessionToken } from './auth';
+import { EthState, EthStateInterface } from './eth';
 
 type QueryParams = {
   [key: string]: SerializableParam;
@@ -25,7 +25,7 @@ type PostQueryParams = QueryParams & QueryDataParam;
 
 const hasAccount = (ethState: EthStateInterface) => {
   if (!ethState.account) {
-    console.error("Ethereum wallet not connected.");
+    console.error('Ethereum wallet not connected.');
     return false;
   }
   return true;
@@ -33,7 +33,7 @@ const hasAccount = (ethState: EthStateInterface) => {
 
 const hasBackendUrl = () => {
   if (!process.env.REACT_APP_BACKEND_URL) {
-    console.log("Backend url not set.");
+    console.log('Backend url not set.');
     return false;
   }
   return true;
@@ -44,12 +44,12 @@ const parseData = function (body: string): any {
     const parsedBody = JSON.parse(body);
     return parsedBody;
   } catch (err) {
-    throw new Error("Invalid request body format.");
+    throw new Error('Invalid request body format.');
   }
 };
 
 export const ApiGetQuery = selectorFamily<AxiosResponse | null, QueryParams>({
-  key: "ApiGetQuery",
+  key: 'ApiGetQuery',
   get: (params: QueryParams) => async () => {
     if (!hasBackendUrl()) return null;
 
@@ -73,7 +73,7 @@ export const ApiAuthGetQuery = selectorFamily<
   AxiosResponse | null,
   QueryParams
 >({
-  key: "ApiAuthGetQuery",
+  key: 'ApiAuthGetQuery',
   get:
     (params: QueryParams) =>
     async ({ get }) => {
@@ -104,7 +104,7 @@ export const ApiPostQuery = selectorFamily<
   AxiosResponse<any> | null,
   PostQueryParams
 >({
-  key: "ApiPostQuery",
+  key: 'ApiPostQuery',
   get: (params: PostQueryParams) => async () => {
     if (!hasBackendUrl()) return null;
     const config = {
@@ -128,7 +128,7 @@ export const ApiAuthPostQuery = selectorFamily<
   AxiosResponse<any> | null,
   PostQueryParams
 >({
-  key: "ApiAuthPostQuery",
+  key: 'ApiAuthPostQuery',
   get:
     (params: PostQueryParams) =>
     async ({ get }) => {
@@ -160,7 +160,7 @@ export const ApiAuthPatchQuery = selectorFamily<
   AxiosResponse<any> | null,
   PatchQueryParams
 >({
-  key: "ApiAuthPatchQuery",
+  key: 'ApiAuthPatchQuery',
   get:
     (params: PatchQueryParams) =>
     async ({ get }) => {
@@ -193,7 +193,7 @@ export const handleErrors = (err: AxiosError) => {
   const { request, response } = err;
   if (response) {
     if (response.status === 404) {
-      window.location.href = "/404";
+      window.location.href = '/404';
     }
 
     if ((response.data as any).error) {
@@ -212,7 +212,7 @@ export const handleErrors = (err: AxiosError) => {
     }
   }
 
-  toast.error("Unknown error.");
+  toast.error('Unknown error.');
 };
 
 export const ApiQuery = async (query: any) => {
@@ -224,7 +224,7 @@ export const ApiQuery = async (query: any) => {
       if (err.message) {
         toast.error(err.message);
       } else {
-        toast.error("Unknown error.");
+        toast.error('Unknown error.');
       }
     }
   }
@@ -234,13 +234,13 @@ export const ApiQuery = async (query: any) => {
 // to correctly handle expired JWT tokens and other error codes returned by
 // the server
 export const useAuthApiQuery = (recoilValue: any) => {
-  const response = useRecoilValue(recoilValue) as any;
+  const response = useRecoilValue(recoilValue);
 
-  if (typeof response === "undefined" || response === null) return response;
+  if (typeof response === 'undefined' || response === null) return response;
 
   if (isApiResponseError(response)) {
     handleErrors(response);
-    return response as AxiosError;
+    return response;
   }
   return response as AxiosResponse;
 };
@@ -274,12 +274,12 @@ export interface PaginatedResponseData {
 }
 
 export const AccountActivated = atom<boolean>({
-  key: "AccountActivated",
+  key: 'AccountActivated',
   default: false,
 });
 
 export const AccountActivateQuery = selectorFamily({
-  key: "AccountActivateQuery",
+  key: 'AccountActivateQuery',
   get:
     (params: any) =>
     async ({ get }) => {
@@ -294,6 +294,6 @@ export const AccountActivateQuery = selectorFamily({
         signature,
       });
 
-      return get(ApiPostQuery({ endPoint: "/api/activate", data }));
+      return get(ApiPostQuery({ endPoint: '/api/activate', data }));
     },
 });

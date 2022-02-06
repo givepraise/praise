@@ -1,4 +1,4 @@
-import { atom } from "recoil";
+import { atom } from 'recoil';
 
 export interface EthStateInterface {
   account: string | null | undefined;
@@ -9,7 +9,7 @@ export interface EthStateInterface {
 }
 
 export const EthState = atom({
-  key: "EthState",
+  key: 'EthState',
   default: {
     account: undefined,
     triedEager: false,

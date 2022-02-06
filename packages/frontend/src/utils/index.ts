@@ -1,5 +1,5 @@
-import { Mark } from "@mui/material";
-import React from "react";
+import { Mark } from '@mui/material';
+import React from 'react';
 
 export const useOutsideAlerter = (ref: any) => {
   const [timestamp, setTimestamp] = React.useState<number>(0);
@@ -14,10 +14,10 @@ export const useOutsideAlerter = (ref: any) => {
       }
     }
     // Bind the event listener
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
       // Unbind the event listener on clean up
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [ref]);
 
@@ -28,7 +28,7 @@ export const useOutsideAlerter = (ref: any) => {
 };
 
 export const classNames = (...classes: any[]) => {
-  return classes.filter(Boolean).join(" ");
+  return classes.filter(Boolean).join(' ');
 };
 
 export const shortenEthAddress = (address: string) => {
@@ -41,8 +41,8 @@ export const shortenEthAddress = (address: string) => {
 export const praiseScore = [0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144];
 
 export const getPraiseMarks = () => {
-  let marks: Mark[] = [];
-  let topScore = praiseScore[praiseScore.length - 1];
+  const marks: Mark[] = [];
+  const topScore = praiseScore[praiseScore.length - 1];
   for (let i = 0; i < praiseScore.length; i++) {
     marks.push({
       value: Math.round((i * topScore) / (praiseScore.length - 1)),
@@ -52,7 +52,7 @@ export const getPraiseMarks = () => {
 };
 
 export const getPraiseMark = (score: number) => {
-  let topScore = praiseScore[praiseScore.length - 1];
+  const topScore = praiseScore[praiseScore.length - 1];
   const markStep = Math.round(topScore / (praiseScore.length - 1));
   const i = praiseScore.findIndex((s) => s === score);
   return markStep * i;

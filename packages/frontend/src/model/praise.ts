@@ -1,5 +1,5 @@
-import { AxiosResponse } from "axios";
-import React from "react";
+import { AxiosResponse } from 'axios';
+import React from 'react';
 import {
   atom,
   atomFamily,
@@ -8,7 +8,7 @@ import {
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
-} from "recoil";
+} from 'recoil';
 import {
   ApiAuthGetQuery,
   ApiAuthPatchQuery,
@@ -16,9 +16,9 @@ import {
   isApiResponseOk,
   PaginatedResponseData,
   useAuthApiQuery,
-} from "./api";
-import { SingleFloatSetting } from "./settings";
-import { UserAccount } from "./users";
+} from './api';
+import { SingleFloatSetting } from './settings';
+import { UserAccount } from './users';
 
 export interface Quantification {
   createdAt?: string;
@@ -46,12 +46,12 @@ export interface Praise {
 // A local only copy of all praises. Used to facilitate CRUD
 // without having to make full roundtrips to the server
 export const AllPraiseIdList = atomFamily<string[] | undefined, string>({
-  key: "AllPraiseIdList",
+  key: 'AllPraiseIdList',
   default: undefined,
 });
 
 export const SinglePraise = atomFamily<Praise | undefined, string>({
-  key: "SinglePraise",
+  key: 'SinglePraise',
   default: undefined,
 });
 
@@ -73,7 +73,7 @@ export const avgPraiseScore = (
       i++;
     }
     if (quantification.score > 0) {
-      score += quantification.score!;
+      score += quantification.score;
       i++;
     }
   });
@@ -85,13 +85,13 @@ const quantWithDuplicateScore = (
   quantification: Quantification,
   get: GetRecoilValue
 ): Quantification => {
-  let quantificationExt = {
+  const quantificationExt = {
     ...quantification,
     duplicateScore: 0,
   };
   if (quantification.duplicatePraise) {
     const duplicatePraisePercentage = get(
-      SingleFloatSetting("PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE")
+      SingleFloatSetting('PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE')
     );
     if (duplicatePraisePercentage) {
       let duplicatePraise = get(SinglePraise(quantification.duplicatePraise));
@@ -100,7 +100,7 @@ const quantWithDuplicateScore = (
           SinglePraiseQuery(quantification.duplicatePraise)
         );
         if (isApiResponseOk(duplicatePraiseResponse)) {
-          duplicatePraise = (duplicatePraiseResponse as AxiosResponse).data;
+          duplicatePraise = duplicatePraiseResponse.data;
         }
       }
       if (duplicatePraise && duplicatePraise.quantifications) {
@@ -118,13 +118,13 @@ const quantWithDuplicateScore = (
 };
 
 export const SinglePraiseExt = selectorFamily({
-  key: "SinglePraiseExt",
+  key: 'SinglePraiseExt',
   get:
     (praiseId: string) =>
     ({ get }) => {
       const praise = get(SinglePraise(praiseId));
       if (!praise) return undefined;
-      let praiseExt = {
+      const praiseExt = {
         ...praise,
         reason: praise.reason,
       };
@@ -139,7 +139,7 @@ export const SinglePraiseExt = selectorFamily({
 });
 
 export const AllPraiseList = selectorFamily({
-  key: "AllPraiseList",
+  key: 'AllPraiseList',
   get:
     (listKey: string) =>
     ({ get }) => {
@@ -158,21 +158,21 @@ export const AllPraiseList = selectorFamily({
 // AllPraiseQuery subscribes to the value. Increase to trigger
 // refresh.
 export const PraiseRequestId = atom({
-  key: "PraiseRequestId",
+  key: 'PraiseRequestId',
   default: 0,
 });
 
 export const AllPraiseQuery = selectorFamily({
-  key: "AllPraiseQuery",
+  key: 'AllPraiseQuery',
   get:
     (params: any) =>
     ({ get }) => {
       get(PraiseRequestId);
-      let qs = Object.keys(params)
+      const qs = Object.keys(params)
         .map((key) => `${key}=${params[key]}`)
-        .join("&");
+        .join('&');
       const praises = get(
-        ApiAuthGetQuery({ endPoint: `/api/praise/all${qs ? `?${qs}` : ""}` })
+        ApiAuthGetQuery({ endPoint: `/api/praise/all${qs ? `?${qs}` : ''}` })
       );
       return praises;
     },
@@ -188,7 +188,7 @@ export const AllPraiseQueryPagination = atomFamily<
   AllPraiseQueryPaginationInterface,
   string
 >({
-  key: "AllPraiseQueryPagination",
+  key: 'AllPraiseQueryPagination',
   default: {
     latestFetchPage: 1,
     currentPage: 1,
@@ -205,7 +205,7 @@ export interface AllPraiseQueryParameters {
 }
 
 export const SinglePraiseQuery = selectorFamily({
-  key: "SinglePraiseQuery",
+  key: 'SinglePraiseQuery',
   get:
     (praiseId: string) =>
     ({ get }) => {
@@ -282,7 +282,7 @@ export const useAllPraiseQuery = (
   React.useEffect(() => {
     const data = allPraiseQueryResponse.data as any;
     if (
-      typeof allPraiseIdList === "undefined" ||
+      typeof allPraiseIdList === 'undefined' ||
       (data.page > praisePagination.latestFetchPage &&
         isApiResponseOk(allPraiseQueryResponse))
     ) {
@@ -313,7 +313,7 @@ export const useAllPraiseQuery = (
 };
 
 export const QuantifyPraise = selectorFamily({
-  key: "QuantifyPraise",
+  key: 'QuantifyPraise',
   get:
     (params: any) =>
     ({ get }) => {

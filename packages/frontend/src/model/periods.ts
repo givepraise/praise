@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
-import { getPreviousPeriod } from "@/utils/periods";
-import { AxiosError, AxiosResponse } from "axios";
-import React from "react";
+import { getPreviousPeriod } from '@/utils/periods';
+import { AxiosError, AxiosResponse } from 'axios';
+import React from 'react';
 import {
   atom,
   atomFamily,
@@ -13,7 +13,7 @@ import {
   useRecoilTransaction_UNSTABLE,
   useRecoilValue,
   waitForAll,
-} from "recoil";
+} from 'recoil';
 import {
   ApiAuthGetQuery,
   ApiAuthPatchQuery,
@@ -22,14 +22,14 @@ import {
   isApiResponseOk,
   PaginatedResponseData,
   useAuthApiQuery,
-} from "./api";
-import { ActiveUserId } from "./auth";
+} from './api';
+import { ActiveUserId } from './auth';
 import {
   avgPraiseScore,
   Praise,
   SinglePraise,
   SinglePraiseExt,
-} from "./praise";
+} from './praise';
 
 export interface Period {
   _id?: string;
@@ -44,24 +44,24 @@ export interface Period {
 // AllPeriodsQuery subscribes to the value. Increase to trigger
 // refresh.
 const PeriodsRequestId = atom({
-  key: "PeriodsRequestId",
+  key: 'PeriodsRequestId',
   default: 0,
 });
 
 // A local only copy of all periods. Used to facilitate CRUD
 // without having to make full roundtrips to the server
 export const AllPeriods = atom<Period[] | undefined>({
-  key: "AllPeriods",
+  key: 'AllPeriods',
   default: undefined,
 });
 
 export const AllPeriodsQuery = selector({
-  key: "AllPeriodsQuery",
+  key: 'AllPeriodsQuery',
   get: ({ get }) => {
     get(PeriodsRequestId);
     const periods = get(
       ApiAuthGetQuery({
-        endPoint: "/api/periods/all?sortColumn=endDate&sortType=desc",
+        endPoint: '/api/periods/all?sortColumn=endDate&sortType=desc',
       })
     );
     return periods;
@@ -69,7 +69,7 @@ export const AllPeriodsQuery = selector({
 });
 
 export const SinglePeriod = selectorFamily({
-  key: "SinglePeriod",
+  key: 'SinglePeriod',
   get:
     (params: any) =>
     ({ get }) => {
@@ -80,7 +80,7 @@ export const SinglePeriod = selectorFamily({
 });
 
 export const SinglePeriodByDate = selectorFamily({
-  key: "SinglePeriodByDate",
+  key: 'SinglePeriodByDate',
   get:
     (anyDate: string | undefined) =>
     ({ get }) => {
@@ -101,7 +101,7 @@ export const useAllPeriodsQuery = () => {
   React.useEffect(() => {
     if (
       isApiResponseOk(allPeriodsQueryResponse) &&
-      typeof allPeriods === "undefined"
+      typeof allPeriods === 'undefined'
     ) {
       const paginatedResponse =
         allPeriodsQueryResponse.data as PaginatedResponseData;
@@ -119,7 +119,7 @@ export const useAllPeriodsQuery = () => {
 export const CreatePeriodApiResponse = atom<
   AxiosResponse<never> | AxiosError<never> | null
 >({
-  key: "CreatePeriodApiResponse",
+  key: 'CreatePeriodApiResponse',
   default: null,
 });
 
@@ -133,7 +133,7 @@ export const useCreatePeriod = () => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPostQuery({
-              endPoint: "/api/admin/periods/create",
+              endPoint: '/api/admin/periods/create',
               data: JSON.stringify(period),
             })
           )
@@ -142,7 +142,7 @@ export const useCreatePeriod = () => {
         if (isApiResponseOk(response)) {
           const responsePeriod = response.data as Period;
           if (responsePeriod) {
-            if (typeof allPeriods !== "undefined") {
+            if (typeof allPeriods !== 'undefined') {
               set(AllPeriods, [...allPeriods, responsePeriod]);
             } else {
               set(AllPeriods, [responsePeriod]);
@@ -160,7 +160,7 @@ export const useCreatePeriod = () => {
 export const UpdatePeriodApiResponse = atom<
   AxiosResponse<never> | AxiosError<never> | null
 >({
-  key: "UpdatePeriodApiResponse",
+  key: 'UpdatePeriodApiResponse',
   default: null,
 });
 
@@ -182,7 +182,7 @@ export const useUpdatePeriod = () => {
         if (isApiResponseOk(response)) {
           const responsePeriod = response.data as Period;
           if (responsePeriod) {
-            if (typeof allPeriods !== "undefined") {
+            if (typeof allPeriods !== 'undefined') {
               set(
                 AllPeriods,
                 allPeriods.map(
@@ -209,7 +209,7 @@ export const useUpdatePeriod = () => {
 export const ClosePeriodApiResponse = atom<
   AxiosResponse<never> | AxiosError<never> | null
 >({
-  key: "ClosePeriodApiResponse",
+  key: 'ClosePeriodApiResponse',
   default: null,
 });
 
@@ -231,7 +231,7 @@ export const useClosePeriod = () => {
         if (isApiResponseOk(response)) {
           const period = response.data as Period;
           if (period) {
-            if (typeof allPeriods !== "undefined") {
+            if (typeof allPeriods !== 'undefined') {
               set(
                 AllPeriods,
                 allPeriods.map(
@@ -253,7 +253,7 @@ export const useClosePeriod = () => {
 };
 
 export const VerifyQuantifierPoolSizeQuery = selectorFamily({
-  key: "VerifyQuantifierPoolSizeQuery",
+  key: 'VerifyQuantifierPoolSizeQuery',
   get:
     (params: any) =>
     ({ get }) => {
@@ -328,7 +328,7 @@ export const useAssignQuantifiers = () => {
                 if (period._id === periodId) {
                   const newPeriod = {
                     ...period,
-                    status: "QUANTIFY",
+                    status: 'QUANTIFY',
                   };
                   return newPeriod;
                 }
@@ -347,17 +347,17 @@ export const useAssignQuantifiers = () => {
 // PeriodPraiseQuery subscribes to the value. Increase to trigger
 // refresh.
 const PeriodPraiseRequestId = atom({
-  key: "PeriodPraiseRequestId",
+  key: 'PeriodPraiseRequestId',
   default: 0,
 });
 
 export const AllPeriodPraiseIdList = atomFamily<string[] | undefined, string>({
-  key: "AllPeriodPraiseIdList",
+  key: 'AllPeriodPraiseIdList',
   default: undefined,
 });
 
 export const AllPeriodPraiseList = selectorFamily({
-  key: "AllPeriodPraiseList",
+  key: 'AllPeriodPraiseList',
   get:
     (params: any) =>
     ({ get }) => {
@@ -374,7 +374,7 @@ export const AllPeriodPraiseList = selectorFamily({
 });
 
 export const PeriodPraiseQuery = selectorFamily({
-  key: "PeriodPraiseQuery",
+  key: 'PeriodPraiseQuery',
   get:
     (params: any) =>
     ({ get }) => {
@@ -406,7 +406,7 @@ export const usePeriodPraiseQuery = (periodId: string) => {
 
   React.useEffect(() => {
     if (
-      typeof periodPraiseIdList === "undefined" &&
+      typeof periodPraiseIdList === 'undefined' &&
       isApiResponseOk(periodPraiseQueryResponse)
     ) {
       const praiseList = periodPraiseQueryResponse.data as Praise[];
@@ -420,7 +420,7 @@ export const usePeriodPraiseQuery = (periodId: string) => {
 };
 
 export const AllPeriodReceiverPraise = selectorFamily({
-  key: "AllPeriodReceiverPraise",
+  key: 'AllPeriodReceiverPraise',
   get:
     (params: any) =>
     ({ get }) => {
@@ -439,7 +439,7 @@ export interface QuantifierData {
 }
 
 export const PeriodQuantifiers = selectorFamily({
-  key: "PeriodQuantifiers",
+  key: 'PeriodQuantifiers',
   get:
     (params: any) =>
     ({ get }) => {
@@ -492,7 +492,7 @@ export interface ReceiverData {
 }
 
 export const AllPeriodReceivers = selectorFamily({
-  key: "AllPeriodReceivers",
+  key: 'AllPeriodReceivers',
   get:
     (params: any) =>
     ({ get }) => {
@@ -532,7 +532,7 @@ export const AllPeriodReceivers = selectorFamily({
 });
 
 export const PeriodReceiver = selectorFamily({
-  key: "PeriodReceiver",
+  key: 'PeriodReceiver',
   get:
     (params: any) =>
     ({ get }) => {
@@ -546,14 +546,14 @@ export const PeriodReceiver = selectorFamily({
 });
 
 export const AllActiveQuantifierQuantifications = selector({
-  key: "AllActiveQuantifierQuantifications",
+  key: 'AllActiveQuantifierQuantifications',
   get: ({ get }) => {
     const periods = get(AllPeriods);
     const userId = get(ActiveUserId);
     const response: QuantifierData[] = [];
     if (!periods) return undefined;
     periods.forEach((period) => {
-      if (period.status === "QUANTIFY") {
+      if (period.status === 'QUANTIFY') {
         const periodQuantifiers = get(
           PeriodQuantifiers({ periodId: period._id })
         );
@@ -569,7 +569,7 @@ export const AllActiveQuantifierQuantifications = selector({
 });
 
 export const PeriodActiveQuantifierQuantifications = selectorFamily({
-  key: "PeriodActiveQuantifierQuantifications",
+  key: 'PeriodActiveQuantifierQuantifications',
   get:
     (params: any) =>
     ({ get }) => {
@@ -577,7 +577,7 @@ export const PeriodActiveQuantifierQuantifications = selectorFamily({
       const period = get(SinglePeriod({ periodId }));
       const userId = get(ActiveUserId);
       if (!period) return undefined;
-      if (period.status === "QUANTIFY") {
+      if (period.status === 'QUANTIFY') {
         const periodQuantifiers = get(
           PeriodQuantifiers({ periodId: period._id })
         );
@@ -600,7 +600,7 @@ export interface QuantifierReceiverData {
 }
 
 export const PeriodActiveQuantifierReceivers = selectorFamily({
-  key: "PeriodActiveQuantifierReceivers",
+  key: 'PeriodActiveQuantifierReceivers',
   get:
     (params: any) =>
     ({ get }) => {
@@ -655,7 +655,7 @@ export const PeriodActiveQuantifierReceivers = selectorFamily({
 });
 
 export const PeriodActiveQuantifierReceiver = selectorFamily({
-  key: "PeriodActiveQuantifierReceiver",
+  key: 'PeriodActiveQuantifierReceiver',
   get:
     (params: any) =>
     ({ get }) => {
@@ -667,7 +667,7 @@ export const PeriodActiveQuantifierReceiver = selectorFamily({
 });
 
 export const PeriodActiveQuantifierReceiverPraise = selectorFamily({
-  key: "PeriodActiveQuantifierReceiverPraise",
+  key: 'PeriodActiveQuantifierReceiverPraise',
   get:
     (params: any) =>
     ({ get }) => {
@@ -699,7 +699,7 @@ export const useExportPraise = () => {
           snapshot.getPromise(
             ApiAuthGetQuery({
               endPoint: `/api/praise/export/?periodStart=${periodStartDate}&periodEnd=${period.endDate}`,
-              config: { responseType: "blob" },
+              config: { responseType: 'blob' },
             })
           )
         );

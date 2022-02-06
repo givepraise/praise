@@ -9905,6 +9905,7 @@ __metadata:
     cypress: ^9.0.0
     date-fns: ^2.25.0
     downshift: ^6.1.7
+    eslint: ^8.8.0
     ethers: ^5.5.1
     final-form: ^4.20.4
     i: ^0.3.7
@@ -9912,6 +9913,7 @@ __metadata:
     jwt-decode: ^3.1.2
     npm: ^8.1.2
     postcss: ^7.0.36
+    prettier: ^2.5.1
     query-string: ^7.1.0
     react: ^17.0.2
     react-bottom-scroll-listener: ^5.0.0
@@ -9925,7 +9927,7 @@ __metadata:
     recoil: ^0.4.1
     tailwindcss: "npm:@tailwindcss/postcss7-compat@^2.2.7"
     ts-jest: ^27.0.7
-    typescript: ^4.3.5
+    typescript: ^4.5.5
     use-error-boundary: ^2.0.6
     web-vitals: ^1.0.1
     web3: ^1.6.1
@@ -19640,7 +19642,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.2.3, typescript@npm:^4.3.5, typescript@npm:^4.5.4, typescript@npm:^4.5.5":
+"typescript@npm:^4.2.3, typescript@npm:^4.5.4, typescript@npm:^4.5.5":
   version: 4.5.5
   resolution: "typescript@npm:4.5.5"
   bin:
@@ -19650,7 +19652,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.2.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.3.5#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.5#~builtin<compat/typescript>":
+"typescript@patch:typescript@^4.2.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.5#~builtin<compat/typescript>":
   version: 4.5.5
   resolution: "typescript@patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=493e53"
   bin:
