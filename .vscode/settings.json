@@ -15,6 +15,10 @@
     {
       "directory": "./packages/bot_discourse",
       "changeProcessCWD": true
+    },
+    {
+      "directory": "./packages/frontend",
+      "changeProcessCWD": true
     }
   ]
 }

@@ -1,7 +1,8 @@
 {
-  "name": "praise-ui",
-  "version": "0.1.0",
+  "name": "frontend",
+  "version": "0.0.1",
   "private": true,
+  "packageManager": "yarn@3.1.1",
   "dependencies": {
     "@craco/craco": "^6.2.0",
     "@emotion/react": "^11.7.1",
@@ -33,7 +34,6 @@
     "jwt-decode": "^3.1.2",
     "postcss": "^7.0.36",
     "query-string": "^7.1.0",
-    "rc-slider": "^9.7.4",
     "react": "^17.0.2",
     "react-bottom-scroll-listener": "^5.0.0",
     "react-day-picker": "^7.4.10",
@@ -47,15 +47,14 @@
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.7",
     "typescript": "^4.3.5",
     "use-error-boundary": "^2.0.6",
-    "web-vitals": "^1.0.1",
-    "yarn": "^1.22.17"
+    "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "TAILWIND_MODE=watch craco start",
     "build": "craco build",
+    "start": "TAILWIND_MODE=watch craco start",
+    "lint": "eslint . --ext .ts",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "eject": "react-scripts eject"
+    "test:watch": "jest --watch"
   },
   "eslintConfig": {
     "extends": [
@@ -82,7 +81,6 @@
     "jest-transform-stub": "^2.0.0",
     "npm": "^8.1.2",
     "ts-jest": "^27.0.7",
-    "ts-node": "^10.4.0",
     "web3": "^1.6.1"
   }
 }
