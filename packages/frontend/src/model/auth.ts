@@ -1,3 +1,4 @@
+import EthAccount from '@/pages/Activate/components/EthAccount';
 import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
 import { ApiGetQuery, ApiPostQuery } from './api';
@@ -72,10 +73,14 @@ export const HasRole = selectorFamily({
     },
 });
 
+interface NonceParams {
+  ethAccount: string;
+}
+
 export const NonceQuery = selectorFamily({
   key: 'NonceQuery',
   get:
-    (params: any) =>
+    (params: NonceParams) =>
     ({ get }) => {
       if (!params.ethAccount) return null;
       return get(

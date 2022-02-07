@@ -252,10 +252,15 @@ export const useClosePeriod = () => {
   return { closePeriod };
 };
 
+interface VerifyQuantifierPoolSizeParams {
+  periodId: number;
+  refreshKey: string | undefined;
+}
+
 export const VerifyQuantifierPoolSizeQuery = selectorFamily({
   key: 'VerifyQuantifierPoolSizeQuery',
   get:
-    (params: any) =>
+    (params: VerifyQuantifierPoolSizeParams) =>
     ({ get }) => {
       const { periodId, refreshKey } = params;
       const response = get(
@@ -376,7 +381,7 @@ export const AllPeriodPraiseList = selectorFamily({
 export const PeriodPraiseQuery = selectorFamily({
   key: 'PeriodPraiseQuery',
   get:
-    (params: any) =>
+    (params: VerifyQuantifierPoolSizeParams) =>
     ({ get }) => {
       get(PeriodPraiseRequestId);
       const praise = get(

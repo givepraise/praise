@@ -309,10 +309,17 @@ export const useAllPraiseQuery = (
   return allPraiseQueryResponse;
 };
 
+interface QuantifyPraiseParams {
+  praiseId: string;
+  score: number;
+  dismissed: boolean;
+  duplicatePraise: string;
+}
+
 export const QuantifyPraise = selectorFamily({
   key: 'QuantifyPraise',
   get:
-    (params: any) =>
+    (params: QuantifyPraiseParams) =>
     ({ get }) => {
       const { praiseId, score, dismissed, duplicatePraise } = params;
       const response = get(

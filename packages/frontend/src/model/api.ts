@@ -235,7 +235,7 @@ export const handleErrors = (err: AxiosError): void => {
 
 export const ApiQuery = async (
   query: Promise<AxiosResponse<any>>
-): Promise<AxiosResponse<any>> => {
+): Promise<AxiosResponse<any> | void> => {
   try {
     return await query;
   } catch (err) {
@@ -288,7 +288,7 @@ export const AccountActivateQuery = selectorFamily({
   key: 'AccountActivateQuery',
   get:
     (params: any) =>
-    async ({ get }) => {
+    ({ get }) => {
       const { ethereumAddress, accountId, message, signature } = params;
       if (!ethereumAddress || !accountId || !message || !signature)
         return undefined;

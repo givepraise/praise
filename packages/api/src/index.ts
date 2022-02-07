@@ -1,4 +1,4 @@
-import { app } from '@server';
+import { app } from './Server';
 import * as dotenv from 'dotenv';
 import 'express-async-errors';
 import logger from 'jet-logger';
