@@ -36,23 +36,23 @@ export function useInactiveListener(suppress = false) {
   useEffect((): any => {
     const { ethereum } = window as any;
     if (ethereum && ethereum.on && !active && !error && !suppress) {
-      const handleConnect = () => {
+      const handleConnect = async () => {
         console.log("Handling 'connect' event");
-        activate(injected);
+        await activate(injected);
       };
-      const handleChainChanged = (chainId: string | number) => {
+      const handleChainChanged = async (chainId: string | number) => {
         console.log("Handling 'chainChanged' event with payload", chainId);
-        activate(injected);
+        await activate(injected);
       };
-      const handleAccountsChanged = (accounts: string[]) => {
+      const handleAccountsChanged = async (accounts: string[]) => {
         console.log("Handling 'accountsChanged' event with payload", accounts);
         if (accounts.length > 0) {
-          activate(injected);
+          await activate(injected);
         }
       };
-      const handleNetworkChanged = (networkId: string | number) => {
+      const handleNetworkChanged = async (networkId: string | number) => {
         console.log("Handling 'networkChanged' event with payload", networkId);
-        activate(injected);
+        await activate(injected);
       };
 
       ethereum.on('connect', handleConnect);
