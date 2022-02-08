@@ -115,7 +115,7 @@ export const useAllPeriodsQuery = () => {
 
 // Stores the api response from the latest call to /api/admin/periods/create
 export const CreatePeriodApiResponse = atom<
-  AxiosResponse<never> | AxiosError<never> | null
+  void | AxiosResponse<never | any> | AxiosError<never> | null
 >({
   key: 'CreatePeriodApiResponse',
   default: null,
