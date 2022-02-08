@@ -1,54 +1,41 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import toast from 'react-hot-toast';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { toast } from 'react-hot-toast';
 import {
-  atom,
+  GetRecoilValue,
+  RecoilValue,
   selectorFamily,
   SerializableParam,
   useRecoilValue,
 } from 'recoil';
 import { SessionToken } from './auth';
-import { EthState, EthStateInterface } from './eth';
+import { EthState } from './eth';
 
-type QueryParams = {
+type RequestParams = {
   [key: string]: SerializableParam;
-  endPoint: string;
+  url: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   config?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   headers?: any;
 };
 
-type QueryDataParam = {
+type RequestDataParam = {
   data: string;
 };
 
-type PatchQueryParams = QueryParams & QueryDataParam;
-type PostQueryParams = QueryParams & QueryDataParam;
+type PatchRequestParams = RequestParams & RequestDataParam;
+type PostRequestParams = RequestParams & RequestDataParam;
 
-const hasAccount = (ethState: EthStateInterface) => {
-  if (!ethState.account) {
-    console.error('Ethereum wallet not connected.');
-    return false;
-  }
-  return true;
-};
-
-const hasBackendUrl = () => {
-  if (!process.env.REACT_APP_BACKEND_URL) {
-    console.log('Backend url not set.');
-    return false;
-  }
-  return true;
-};
-
-const parseData = function (body: string): any {
+const parseData = function (data: string): unknown {
   try {
-    const parsedBody = JSON.parse(body);
-    return parsedBody;
+    const parsedData = JSON.parse(data);
+    return parsedData;
   } catch (err) {
-    throw new Error('Invalid request body format.');
+    throw new Error('Invalid request data format.');
   }
 };
 
-export const isApiResponseOk = (
+export const isResponseOk = (
   response: AxiosResponse | AxiosError | null | unknown
 ): response is AxiosResponse => {
   const axiosResponse = response as AxiosResponse;
@@ -56,152 +43,143 @@ export const isApiResponseOk = (
   return axiosResponse.status === 200;
 };
 
-export const isApiResponseError = (
+export const isApiResponseAxiosError = (
   response: AxiosResponse | AxiosError | null | unknown
 ): response is AxiosError => {
   return (response as AxiosError).isAxiosError !== undefined;
 };
 
-export const ApiGetQuery = selectorFamily<AxiosResponse | null, QueryParams>({
-  key: 'ApiGetQuery',
-  get: (params: QueryParams) => async (): Promise<AxiosResponse<never>> => {
-    if (!hasBackendUrl()) throw new Error('lkjlasdkj');
+const endpointUrl = (url: string): string => {
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+  if (!backendUrl) {
+    throw new Error('Backend URL not set.');
+  }
+  return `${backendUrl}${url}`;
+};
 
-    const config = {
-      config: {
-        ...params.config,
-      },
-      headers: {
-        ...params.headers,
-      },
-    };
+const requestConfig = (config: any, headers: any): AxiosRequestConfig => {
+  return {
+    ...config,
+    headers: {
+      ...headers,
+    },
+  };
+};
+
+const authRequestConfig = (
+  config: any,
+  headers: any,
+  get: GetRecoilValue
+): AxiosRequestConfig => {
+  const ethState = get(EthState);
+  const sessionToken = get(SessionToken);
+  if (!ethState.account) {
+    throw new Error('Eth account not connected.');
+  }
+  if (!(typeof sessionToken === 'string')) {
+    throw new Error('No session token found.');
+  }
+  return {
+    ...config,
+    headers: {
+      ...headers,
+      Authorization: `Bearer ${sessionToken}`,
+    },
+  };
+};
+
+/**
+ * GET request
+ */
+export const ApiGet = selectorFamily<AxiosResponse<unknown>, RequestParams>({
+  key: 'ApiGet',
+  get: (params: RequestParams) => async (): Promise<AxiosResponse<unknown>> => {
+    const { config, headers, url } = params;
     const response = await axios.get(
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-      config
+      endpointUrl(url),
+      requestConfig(config, headers)
     );
     return response;
   },
 });
 
-export const ApiAuthGetQuery = selectorFamily<
-  AxiosResponse | null,
-  QueryParams
->({
-  key: 'ApiAuthGetQuery',
-  get:
-    (params: QueryParams) =>
-    async ({ get }): Promise<AxiosResponse<never>> => {
-      const ethState = get(EthState);
-      const sessionToken = get(SessionToken);
-      if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
-        return null;
-
-      const config = {
-        config: {
-          ...params.config,
-        },
-        headers: {
-          ...params.headers,
-          Authorization: `Bearer ${sessionToken}`,
-        },
-      };
-
-      const response = await axios.get(
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-        config
-      );
-      return response;
-    },
-});
-
-export const ApiPostQuery = selectorFamily<
-  AxiosResponse<any> | null,
-  PostQueryParams
->({
-  key: 'ApiPostQuery',
-  get: (params: PostQueryParams) => async (): Promise<AxiosResponse<any>> => {
-    if (!hasBackendUrl()) return null;
-    const config = {
-      config: {
-        ...params.config,
+/**
+ * Authenticated GET request
+ */
+export const ApiAuthGet = selectorFamily<AxiosResponse<unknown>, RequestParams>(
+  {
+    key: 'ApiAuthGet',
+    get:
+      (params: RequestParams) =>
+      async ({ get }): Promise<AxiosResponse<unknown>> => {
+        const { config, headers, url } = params;
+        const response = await axios.get(
+          endpointUrl(url),
+          authRequestConfig(config, headers, get)
+        );
+        return response;
       },
-      headers: {
-        ...params.headers,
-      },
-    };
-    const response = await axios.post(
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-      parseData(params.data),
-      config
-    );
-    return response;
-  },
-});
+  }
+);
 
-export const ApiAuthPostQuery = selectorFamily<
-  AxiosResponse<any>,
-  PostQueryParams
+/**
+ * POST request
+ */
+export const ApiPost = selectorFamily<
+  AxiosResponse<unknown>,
+  PostRequestParams
 >({
-  key: 'ApiAuthPostQuery',
+  key: 'ApiPost',
   get:
-    (params: PostQueryParams) =>
-    async ({ get }): Promise<AxiosResponse<any>> => {
-      const ethState = get(EthState);
-      const sessionToken = get(SessionToken);
-      if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
-        return null;
-
-      const config = {
-        config: {
-          ...params.config,
-        },
-        headers: {
-          ...params.headers,
-          Authorization: `Bearer ${sessionToken}`,
-        },
-      };
-
+    (params: PostRequestParams) =>
+    async (): Promise<AxiosResponse<unknown>> => {
+      const { config, headers, url, data } = params;
       const response = await axios.post(
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-        parseData(params.data),
-        config
+        endpointUrl(url),
+        parseData(data),
+        requestConfig(config, headers)
       );
       return response;
     },
 });
 
-export const ApiAuthPatchQuery = selectorFamily<
-  AxiosResponse<any>,
-  PatchQueryParams
+/**
+ * Authenticated POST request
+ */
+export const ApiAuthPost = selectorFamily<
+  AxiosResponse<unknown>,
+  PostRequestParams
 >({
-  key: 'ApiAuthPatchQuery',
+  key: 'ApiAuthPost',
   get:
-    (params: PatchQueryParams) =>
-    async ({ get }): Promise<AxiosResponse<any>> => {
-      const ethState = get(EthState);
-      const sessionToken = get(SessionToken);
-      if (!hasAccount(ethState) || !sessionToken || !hasBackendUrl())
-        return null;
+    (params: PostRequestParams) =>
+    async ({ get }): Promise<AxiosResponse<unknown>> => {
+      const { config, headers, url, data } = params;
+      const response = await axios.post(
+        endpointUrl(url),
+        parseData(data),
+        authRequestConfig(config, headers, get)
+      );
+      return response;
+    },
+});
 
-      const config = {
-        config: {
-          ...params.config,
-        },
-        headers: {
-          ...params.headers,
-          Authorization: `Bearer ${sessionToken}`,
-        },
-      };
-
+/**
+ * An authenticated PATCH request
+ */
+export const ApiAuthPatch = selectorFamily<
+  AxiosResponse<unknown>,
+  PatchRequestParams
+>({
+  key: 'ApiAuthPatch',
+  get:
+    (params: PatchRequestParams) =>
+    async ({ get }): Promise<AxiosResponse<unknown>> => {
+      const { config, headers, url, data } = params;
       const response = await axios.patch(
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        `${process.env.REACT_APP_BACKEND_URL}${params.endPoint}`,
-        parseData(params.data),
-        config
+        endpointUrl(url),
+        parseData(data),
+        authRequestConfig(config, headers, get)
       );
       return response;
     },
@@ -233,13 +211,16 @@ export const handleErrors = (err: AxiosError): void => {
   toast.error('Unknown error.');
 };
 
+/**
+ * Wrap an api request to automate error handling. Shows toast error message on error.
+ */
 export const ApiQuery = async (
-  query: Promise<AxiosResponse<any>>
-): Promise<AxiosResponse<any> | void> => {
+  query: Promise<AxiosResponse<unknown>>
+): Promise<AxiosResponse<unknown> | void> => {
   try {
     return await query;
   } catch (err) {
-    if (isApiResponseError(err)) handleErrors(err);
+    if (isApiResponseAxiosError(err)) handleErrors(err);
     if (err instanceof Error) {
       if (err.message) {
         toast.error(err.message);
@@ -250,56 +231,16 @@ export const ApiQuery = async (
   }
 };
 
-// Always use `useAuthApiQuery` for queries instead of `useRecoilValue`
-// to correctly handle expired JWT tokens and other error codes returned by
-// the server
-export const useAuthApiQuery = (recoilValue: any) => {
+/**
+ * Always use `useAuthApiQuery` for queries instead of `useRecoilValue`
+ * to correctly handle expired JWT tokens and other error codes returned by
+ * the server
+ */
+export function useAuthApiQuery<T>(recoilValue: RecoilValue<T>): T {
   const response = useRecoilValue(recoilValue);
 
-  if (typeof response === 'undefined' || response === null) return response;
-
-  if (isApiResponseError(response)) {
+  if (isApiResponseAxiosError(response)) {
     handleErrors(response);
-    return response;
   }
-  return response as AxiosResponse;
-};
-
-export interface PaginatedResponseData {
-  docs: any[];
-  hasMore?: boolean;
-  hasNextPage?: boolean;
-  hasPrevPage?: boolean;
-  prevPage?: number;
-  nextPage?: number;
-  limit?: number;
-  totalDocs?: number;
-  totalPages?: number;
-  page?: number;
-  pagingCounter?: number;
+  return response;
 }
-
-export const AccountActivated = atom<boolean>({
-  key: 'AccountActivated',
-  default: false,
-});
-
-export const AccountActivateQuery = selectorFamily({
-  key: 'AccountActivateQuery',
-  get:
-    (params: any) =>
-    ({ get }) => {
-      const { ethereumAddress, accountId, message, signature } = params;
-      if (!ethereumAddress || !accountId || !message || !signature)
-        return undefined;
-
-      const data = JSON.stringify({
-        ethereumAddress,
-        accountId,
-        message,
-        signature,
-      });
-
-      return get(ApiPostQuery({ endPoint: '/api/activate', data }));
-    },
-});

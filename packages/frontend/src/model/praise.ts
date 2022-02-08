@@ -1,3 +1,8 @@
+import {
+  PaginatedResponseBody,
+  QueryInputParsedQs,
+} from 'api/dist/shared/types';
+import { AxiosResponse } from 'axios';
 import React from 'react';
 import {
   atom,
@@ -9,12 +14,11 @@ import {
   useRecoilValue,
 } from 'recoil';
 import {
-  ApiAuthGetQuery,
-  ApiAuthPatchQuery,
+  ApiAuthGet,
+  ApiAuthPatch,
   ApiQuery,
-  isApiResponseError,
-  isApiResponseOk,
-  PaginatedResponseData,
+  isApiResponseAxiosError,
+  isResponseOk,
   useAuthApiQuery,
 } from './api';
 import { SingleFloatSetting } from './settings';
@@ -61,9 +65,7 @@ export const SinglePraiseQuery = selectorFamily({
     (praiseId: string) =>
     ({ get }) => {
       get(PraiseRequestId);
-      const response = get(
-        ApiAuthGetQuery({ endPoint: `/api/praise/${praiseId}` })
-      );
+      const response = get(ApiAuthGet({ url: `/api/praise/${praiseId}` }));
       return response;
     },
 });
@@ -77,7 +79,7 @@ export const useSinglePraiseQuery = (praiseId: string) => {
         const response = await ApiQuery(
           snapshot.getPromise(SinglePraiseQuery(praiseId))
         );
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           set(SinglePraise(praiseId), response.data);
         } else {
           //TODO handle error
@@ -87,7 +89,7 @@ export const useSinglePraiseQuery = (praiseId: string) => {
 
   React.useEffect(() => {
     if (praiseId && !praise) {
-      fetchSinglePraise();
+      void fetchSinglePraise();
     }
   }, [praiseId, praise, fetchSinglePraise]);
 
@@ -134,7 +136,7 @@ const quantWithDuplicateScore = (
         const duplicatePraiseResponse = get(
           SinglePraiseQuery(quantification.duplicatePraise)
         );
-        if (isApiResponseOk(duplicatePraiseResponse)) {
+        if (isResponseOk(duplicatePraiseResponse)) {
           duplicatePraise = duplicatePraiseResponse.data;
         }
       }
@@ -168,7 +170,7 @@ export const SinglePraiseExt = selectorFamily({
           quantWithDuplicateScore(q, get)
         );
       }
-      praiseExt.avgScore = avgPraiseScore(praiseExt, get);
+      praiseExt.avgScore = avgPraiseScore(praiseExt);
       return praiseExt;
     },
 });
@@ -197,19 +199,26 @@ export const PraiseRequestId = atom({
   default: 0,
 });
 
-export const AllPraiseQuery = selectorFamily({
+export const AllPraiseQuery = selectorFamily<
+  AxiosResponse<PaginatedResponseBody<Praise>> | undefined,
+  QueryInputParsedQs
+>({
   key: 'AllPraiseQuery',
   get:
-    (params: any) =>
-    ({ get }) => {
+    (query: QueryInputParsedQs) =>
+    ({ get }): AxiosResponse<PaginatedResponseBody<Praise>> | undefined => {
+      if (!query) throw new Error('Invalid query');
       get(PraiseRequestId);
-      const qs = Object.keys(params)
-        .map((key) => `${key}=${params[key]}`)
+      const qs = Object.keys(query)
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        .map((key) => `${key}=${query[key]}`) //TODO Remove comment and fix!
         .join('&');
-      const praises = get(
-        ApiAuthGetQuery({ endPoint: `/api/praise/all${qs ? `?${qs}` : ''}` })
+      const response = get(
+        ApiAuthGet({ url: `/api/praise/all${qs ? `?${qs}` : ''}` })
       );
-      return praises;
+      if (isResponseOk(response)) {
+        return response;
+      }
     },
 });
 
@@ -240,7 +249,7 @@ export interface AllPraiseQueryParameters {
 }
 
 export const useAllPraiseQuery = (
-  queryParams: AllPraiseQueryParameters,
+  queryParams: QueryInputParsedQs,
   listKey: string
 ) => {
   const allPraiseQueryResponse = useAuthApiQuery(AllPraiseQuery(queryParams));
@@ -276,19 +285,22 @@ export const useAllPraiseQuery = (
   );
 
   React.useEffect(() => {
-    if (isApiResponseError(allPraiseQueryResponse)) return;
+    if (
+      !allPraiseQueryResponse ||
+      isApiResponseAxiosError(allPraiseQueryResponse)
+    )
+      return;
     const data = allPraiseQueryResponse.data as any;
     if (
       typeof allPraiseIdList === 'undefined' ||
       (data.page > praisePagination.latestFetchPage &&
-        isApiResponseOk(allPraiseQueryResponse))
+        isResponseOk(allPraiseQueryResponse))
     ) {
-      const paginatedResponse =
-        allPraiseQueryResponse.data as PaginatedResponseData;
-      const praiseList = paginatedResponse.docs as Praise[];
+      const paginatedResponse = allPraiseQueryResponse.data;
+      const praiseList = paginatedResponse.docs;
 
       if (Array.isArray(praiseList) && praiseList.length > 0) {
-        saveAllPraiseIdList(praiseList);
+        void saveAllPraiseIdList(praiseList);
         saveIndividualPraise(praiseList);
         setPraisePagination({
           ...praisePagination,
@@ -309,12 +321,12 @@ export const useAllPraiseQuery = (
   return allPraiseQueryResponse;
 };
 
-interface QuantifyPraiseParams {
+type QuantifyPraiseParams = {
   praiseId: string;
   score: number;
   dismissed: boolean;
   duplicatePraise: string;
-}
+};
 
 export const QuantifyPraise = selectorFamily({
   key: 'QuantifyPraise',
@@ -323,8 +335,8 @@ export const QuantifyPraise = selectorFamily({
     ({ get }) => {
       const { praiseId, score, dismissed, duplicatePraise } = params;
       const response = get(
-        ApiAuthPatchQuery({
-          endPoint: `/api/praise/${praiseId}/quantify`,
+        ApiAuthPatch({
+          url: `/api/praise/${praiseId}/quantify`,
           data: JSON.stringify({
             score,
             dismissed,
@@ -348,8 +360,8 @@ export const useQuantifyPraise = () => {
       ) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/praise/${praiseId}/quantify`,
+            ApiAuthPatch({
+              url: `/api/praise/${praiseId}/quantify`,
               data: JSON.stringify({
                 score,
                 dismissed,
@@ -359,7 +371,7 @@ export const useQuantifyPraise = () => {
           )
         );
 
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const praise = response.data as Praise;
           set(SinglePraise(praise._id), praise);
           return response.data as Praise;

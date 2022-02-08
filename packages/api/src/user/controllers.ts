@@ -4,9 +4,10 @@ import {
   NotFoundError,
 } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
-import { QueryInput } from '@shared/inputs';
 import {
   PaginatedResponseBody,
+  QueryInputParsedQs,
+  SearchQueryInputParsedQs,
   TypedRequestBody,
   TypedRequestQuery,
   TypedResponse,
@@ -14,19 +15,14 @@ import {
 import { Request } from 'express';
 import { UserModel } from './entities';
 import { userListTransformer, userTransformer } from './transformers';
-import {
-  RoleChangeRequestBody,
-  User,
-  UserRole,
-  UserSearchQuery,
-} from './types';
+import { RoleChangeRequestInput, User, UserRole } from './types';
 
 /**
  * Description
  * @param
  */
 const all = async (
-  req: TypedRequestQuery<QueryInput>,
+  req: TypedRequestQuery<QueryInputParsedQs>,
   res: TypedResponse<PaginatedResponseBody<User>>
 ): Promise<void> => {
   const users = await UserModel.paginate({
@@ -56,7 +52,7 @@ const single = async (
  * @param
  */
 const search = async (
-  req: TypedRequestQuery<UserSearchQuery>,
+  req: TypedRequestQuery<SearchQueryInputParsedQs>,
   res: TypedResponse<PaginatedResponseBody<User>>
 ): Promise<void> => {
   //TODO Support searching more than eth address
@@ -79,7 +75,7 @@ const search = async (
  * @param
  */
 const addRole = async (
-  req: TypedRequestBody<RoleChangeRequestBody>,
+  req: TypedRequestBody<RoleChangeRequestInput>,
   res: TypedResponse<User>
 ): Promise<void> => {
   const user = await UserModel.findById(req.params.id).populate('accounts');
@@ -101,7 +97,7 @@ const addRole = async (
  * @param
  */
 const removeRole = async (
-  req: TypedRequestBody<RoleChangeRequestBody>,
+  req: TypedRequestBody<RoleChangeRequestInput>,
   res: TypedResponse<User>
 ): Promise<void> => {
   const user = await UserModel.findById(req.params.id).populate('accounts');

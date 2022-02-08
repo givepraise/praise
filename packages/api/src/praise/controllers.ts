@@ -1,13 +1,18 @@
-import { Praise, QuantificationCreateUpdateInput } from '@praise/types';
+import {
+  Praise,
+  PraiseAllInput,
+  QuantificationCreateUpdateInput,
+} from '@praise/types';
 import {
   BadRequestError,
   InternalServerError,
   NotFoundError,
 } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
-import { QueryInput } from '@shared/inputs';
 import {
   PaginatedResponseBody,
+  Query,
+  QueryInput,
   TypedRequestBody,
   TypedRequestQuery,
   TypedResponse,
@@ -17,19 +22,22 @@ import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { PraiseModel } from './entities';
 
+interface PraiseAllInputParsedQs extends Query, PraiseAllInput {}
+
 const all = async (
-  req: TypedRequestQuery<QueryInput>,
+  req: TypedRequestQuery<PraiseAllInputParsedQs>,
   res: TypedResponse<PaginatedResponseBody<Praise>>
 ): Promise<void> => {
+  const { receiver, periodStart, periodEnd } = req.query;
   const query: any = {};
-  if (req.query.receiver) {
-    query.receiver = req.query.receiver;
+  if (receiver) {
+    query.receiver = receiver;
   }
 
-  if (req.query.periodStart && req.query.periodEnd) {
+  if (periodStart && periodEnd) {
     query.createdAt = {
-      $gte: req.query.periodStart,
-      $lte: req.query.periodEnd,
+      $gte: periodStart,
+      $lte: periodEnd,
     };
   }
 
@@ -106,10 +114,10 @@ const quantify = async (
 };
 
 const exportPraise = async (
-  req: Request<any, QueryInput, any>,
+  req: Request<any, QueryInput, any>, //TODO typed request
   res: Response
 ): Promise<void> => {
-  const query: any = {}; //TODO object not being used
+  const query: any = {};
   if (req.query.receiver) {
     query.receiver = req.query.receiver;
   }

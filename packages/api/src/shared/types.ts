@@ -14,6 +14,21 @@ export interface ErrorInterface {
 export type Query = core.Query;
 export type Params = core.ParamsDictionary;
 
+export interface QueryInput {
+  sortColumn?: string;
+  sortType?: string;
+  limit?: string;
+  page?: string;
+}
+
+export interface QueryInputParsedQs extends QueryInput, Query {}
+
+export interface SearchQueryInput extends QueryInput {
+  search?: string;
+}
+
+export interface SearchQueryInputParsedQs extends SearchQueryInput, Query {}
+
 export interface TypedRequest<T extends Query, U> extends Request {
   body: U;
   query: T;

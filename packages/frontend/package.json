@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "api": "*",
     "@craco/craco": "^6.2.0",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
@@ -49,7 +50,7 @@
     "react-router-dom": "^5.2.1",
     "react-scripts": "5.0.0",
     "react-table": "^7.7.0",
-    "recoil": "^0.4.1",
+    "recoil": "^0.6.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.7",
     "use-error-boundary": "^2.0.6",
     "web-vitals": "^1.0.1"

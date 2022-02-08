@@ -1,4 +1,4 @@
-import { isApiResponseOk } from '@/model/api';
+import { isResponseOk } from '@/model/api';
 import { CreatePeriodApiResponse } from '@/model/periods';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,7 +22,7 @@ const SubmitButton = () => {
       className={className}
       disabled={disabled}
     >
-      {apiResponse && isApiResponseOk(apiResponse) ? (
+      {apiResponse && isResponseOk(apiResponse) ? (
         <>
           <FontAwesomeIcon
             icon={faCheckCircle}

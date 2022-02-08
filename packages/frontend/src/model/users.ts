@@ -1,4 +1,5 @@
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
+import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
@@ -10,11 +11,10 @@ import {
   useRecoilValue,
 } from 'recoil';
 import {
-  ApiAuthGetQuery,
-  ApiAuthPatchQuery,
+  ApiAuthGet,
+  ApiAuthPatch,
   ApiQuery,
-  isApiResponseOk,
-  PaginatedResponseData,
+  isResponseOk,
   useAuthApiQuery,
 } from './api';
 import { AllPeriods } from './periods';
@@ -60,8 +60,8 @@ export const AllUsersQuery = selector({
   get: ({ get }) => {
     get(UsersRequestId);
     return get(
-      ApiAuthGetQuery({
-        endPoint: '/api/users/all?sortColumn=ethereumAddress&sortType=desc',
+      ApiAuthGet({
+        url: '/api/users/all?sortColumn=ethereumAddress&sortType=desc',
       })
     );
   },
@@ -89,12 +89,12 @@ export const useAllUsersQuery = () => {
 
   React.useEffect(() => {
     if (
-      isApiResponseOk(allUsersQueryResponse) &&
+      isResponseOk(allUsersQueryResponse) &&
       typeof allUsers === 'undefined'
     ) {
       const paginatedResponse =
-        allUsersQueryResponse.data as PaginatedResponseData;
-      const users = paginatedResponse.docs as User[];
+        allUsersQueryResponse.data as PaginatedResponseBody<User>;
+      const users = paginatedResponse.docs;
       if (Array.isArray(users) && users.length > 0) setAllUsers(users);
     }
   }, [allUsersQueryResponse, setAllUsers, allUsers]);
@@ -160,7 +160,7 @@ export const PseudonymForUser = selectorFamily({
 });
 
 export const AddUserRoleApiResponse = atom<
-  AxiosResponse<never> | AxiosError<never> | null
+  AxiosResponse<unknown> | AxiosError<unknown> | null
 >({
   key: 'AddUserRoleApiResponse',
   default: null,
@@ -175,15 +175,15 @@ export const useAdminUsers = () => {
       async (userId: string, role: UserRole) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/admin/users/${userId}/addRole`,
+            ApiAuthPatch({
+              url: `/api/admin/users/${userId}/addRole`,
               data: JSON.stringify({ role }),
             })
           )
         );
 
         // If OK response, add returned user object to local state
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const user = response.data as User;
           if (user) {
             if (typeof allUsers !== 'undefined') {
@@ -197,8 +197,8 @@ export const useAdminUsers = () => {
               set(AllUsers, [user]);
             }
           }
+          set(AddUserRoleApiResponse, response);
         }
-        set(AddUserRoleApiResponse, response);
         return response;
       }
   );
@@ -208,15 +208,15 @@ export const useAdminUsers = () => {
       async (userId: string, role: UserRole) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/admin/users/${userId}/removeRole`,
+            ApiAuthPatch({
+              url: `/api/admin/users/${userId}/removeRole`,
               data: JSON.stringify({ role }),
             })
           )
         );
 
         // If OK response, add returned user object to local state
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const user = response.data as User;
           if (user) {
             if (typeof allUsers !== 'undefined') {
@@ -230,8 +230,8 @@ export const useAdminUsers = () => {
               set(AllUsers, [user]);
             }
           }
+          set(AddUserRoleApiResponse, response);
         }
-        set(AddUserRoleApiResponse, response);
         return response;
       }
   );

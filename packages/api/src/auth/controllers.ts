@@ -4,6 +4,7 @@ import {
   UnauthorizedError,
 } from '@shared/errors';
 import {
+  Query,
   TypedRequestBody,
   TypedRequestQuery,
   TypedResponse,
@@ -14,9 +15,9 @@ import { ethers } from 'ethers';
 import randomstring from 'randomstring';
 import { JwtService } from './JwtService';
 import {
-  AuthRequestBody,
+  AuthRequestInput,
   AuthResponse,
-  NonceRequestQuery,
+  NonceRequestInput,
   NonceResponse,
 } from './types';
 
@@ -35,7 +36,7 @@ const generateLoginMessage = (account: string, nonce: string): string => {
  * @param
  */
 export const auth = async (
-  req: TypedRequestBody<AuthRequestBody>,
+  req: TypedRequestBody<AuthRequestInput>,
   res: TypedResponse<AuthResponse>
 ): Promise<void> => {
   const { ethereumAddress, signature } = req.body;
@@ -72,12 +73,14 @@ export const auth = async (
   });
 };
 
+interface NonceRequestInputParsedQs extends Query, NonceRequestInput {}
+
 /**
  * Description
  * @param
  */
 export const nonce = async (
-  req: TypedRequestQuery<NonceRequestQuery>,
+  req: TypedRequestQuery<NonceRequestInputParsedQs>,
   res: TypedResponse<NonceResponse>
 ): Promise<void> => {
   const { ethereumAddress } = req.query;

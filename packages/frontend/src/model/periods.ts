@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
 import { getPreviousPeriod } from '@/utils/periods';
+import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
@@ -15,12 +16,11 @@ import {
   waitForAll,
 } from 'recoil';
 import {
-  ApiAuthGetQuery,
-  ApiAuthPatchQuery,
-  ApiAuthPostQuery,
+  ApiAuthGet,
+  ApiAuthPatch,
+  ApiAuthPost,
   ApiQuery,
-  isApiResponseOk,
-  PaginatedResponseData,
+  isResponseOk,
   useAuthApiQuery,
 } from './api';
 import { ActiveUserId } from './auth';
@@ -60,8 +60,8 @@ export const AllPeriodsQuery = selector({
   get: ({ get }) => {
     get(PeriodsRequestId);
     const periods = get(
-      ApiAuthGetQuery({
-        endPoint: '/api/periods/all?sortColumn=endDate&sortType=desc',
+      ApiAuthGet({
+        url: '/api/periods/all?sortColumn=endDate&sortType=desc',
       })
     );
     return periods;
@@ -100,12 +100,12 @@ export const useAllPeriodsQuery = () => {
   // Only set AllPeriods if not previously loaded
   React.useEffect(() => {
     if (
-      isApiResponseOk(allPeriodsQueryResponse) &&
+      isResponseOk(allPeriodsQueryResponse) &&
       typeof allPeriods === 'undefined'
     ) {
       const paginatedResponse =
-        allPeriodsQueryResponse.data as PaginatedResponseData;
-      const periods = paginatedResponse.docs as Period[];
+        allPeriodsQueryResponse.data as PaginatedResponseBody<Period>;
+      const periods = paginatedResponse.docs;
       if (Array.isArray(periods) && periods.length > 0) {
         setAllPeriods(periods);
       }
@@ -132,14 +132,14 @@ export const useCreatePeriod = () => {
       async (period: Period) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPostQuery({
-              endPoint: '/api/admin/periods/create',
+            ApiAuthPost({
+              url: '/api/admin/periods/create',
               data: JSON.stringify(period),
             })
           )
         );
         // If OK response, add returned period object to local state
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const responsePeriod = response.data as Period;
           if (responsePeriod) {
             if (typeof allPeriods !== 'undefined') {
@@ -158,7 +158,7 @@ export const useCreatePeriod = () => {
 
 // Stores the api response from the latest call to /api/admin/periods/update
 export const UpdatePeriodApiResponse = atom<
-  AxiosResponse<never> | AxiosError<never> | null
+  AxiosResponse<unknown> | AxiosError<unknown> | null
 >({
   key: 'UpdatePeriodApiResponse',
   default: null,
@@ -169,17 +169,18 @@ export const useUpdatePeriod = () => {
   const updatePeriod = useRecoilCallback(
     ({ snapshot, set }) =>
       async (period: Period) => {
+        if (!period._id) throw new Error('No _id on Period');
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/admin/periods/${period._id}/update`,
+            ApiAuthPatch({
+              url: `/api/admin/periods/${period._id}/update`,
               data: JSON.stringify(period),
             })
           )
         );
 
         // If OK response, add returned period object to local state
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const responsePeriod = response.data as Period;
           if (responsePeriod) {
             if (typeof allPeriods !== 'undefined') {
@@ -197,8 +198,8 @@ export const useUpdatePeriod = () => {
               set(AllPeriods, [responsePeriod]);
             }
           }
+          set(UpdatePeriodApiResponse, response);
         }
-        set(UpdatePeriodApiResponse, response);
         return response;
       }
   );
@@ -221,14 +222,14 @@ export const useClosePeriod = () => {
       async (periodId: string) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/admin/periods/${periodId}/close`,
+            ApiAuthPatch({
+              url: `/api/admin/periods/${periodId}/close`,
               data: JSON.stringify({}),
             })
           )
         );
 
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const period = response.data as Period;
           if (period) {
             if (typeof allPeriods !== 'undefined') {
@@ -244,18 +245,18 @@ export const useClosePeriod = () => {
               set(AllPeriods, [period]);
             }
           }
+          set(UpdatePeriodApiResponse, response);
         }
-        set(UpdatePeriodApiResponse, response);
         return response;
       }
   );
   return { closePeriod };
 };
 
-interface VerifyQuantifierPoolSizeParams {
-  periodId: number;
+type VerifyQuantifierPoolSizeParams = {
+  periodId: string;
   refreshKey: string | undefined;
-}
+};
 
 export const VerifyQuantifierPoolSizeQuery = selectorFamily({
   key: 'VerifyQuantifierPoolSizeQuery',
@@ -264,8 +265,8 @@ export const VerifyQuantifierPoolSizeQuery = selectorFamily({
     ({ get }) => {
       const { periodId, refreshKey } = params;
       const response = get(
-        ApiAuthGetQuery({
-          endPoint: `/api/admin/periods/${periodId}/verifyQuantifierPoolSize`,
+        ApiAuthGet({
+          url: `/api/admin/periods/${periodId}/verifyQuantifierPoolSize`,
           refreshKey,
         })
       );
@@ -279,7 +280,7 @@ export interface PoolRequirements {
 }
 
 export const useVerifyQuantifierPoolSize = (
-  periodId: number,
+  periodId: string,
   refreshKey: string | undefined
 ): PoolRequirements | undefined => {
   const response = useAuthApiQuery(
@@ -290,7 +291,7 @@ export const useVerifyQuantifierPoolSize = (
   >(undefined);
 
   React.useEffect(() => {
-    if (isApiResponseOk(response)) {
+    if (isResponseOk(response)) {
       setPoolRequirements(response.data);
     }
   }, [response]);
@@ -315,13 +316,13 @@ export const useAssignQuantifiers = () => {
       async (periodId: string) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/admin/periods/${periodId}/assignQuantifiers`,
+            ApiAuthPatch({
+              url: `/api/admin/periods/${periodId}/assignQuantifiers`,
               data: JSON.stringify({}),
             })
           )
         );
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const praiseList = response.data as Praise[];
           if (Array.isArray(praiseList) && praiseList.length > 0) {
             saveIndividualPraise(praiseList);
@@ -381,11 +382,11 @@ export const AllPeriodPraiseList = selectorFamily({
 export const PeriodPraiseQuery = selectorFamily({
   key: 'PeriodPraiseQuery',
   get:
-    (params: VerifyQuantifierPoolSizeParams) =>
+    (periodId: string) =>
     ({ get }) => {
       get(PeriodPraiseRequestId);
       const praise = get(
-        ApiAuthGetQuery({ endPoint: `/api/periods/${params.periodId}/praise` })
+        ApiAuthGet({ url: `/api/periods/${periodId}/praise` })
       );
       return praise;
     },
@@ -393,7 +394,7 @@ export const PeriodPraiseQuery = selectorFamily({
 
 export const usePeriodPraiseQuery = (periodId: string) => {
   const periodPraiseQueryResponse = useAuthApiQuery(
-    PeriodPraiseQuery({ periodId })
+    PeriodPraiseQuery(periodId)
   );
   const periodPraiseIdList = useRecoilValue(AllPeriodPraiseIdList(periodId));
 
@@ -412,7 +413,7 @@ export const usePeriodPraiseQuery = (periodId: string) => {
   React.useEffect(() => {
     if (
       typeof periodPraiseIdList === 'undefined' &&
-      isApiResponseOk(periodPraiseQueryResponse)
+      isResponseOk(periodPraiseQueryResponse)
     ) {
       const praiseList = periodPraiseQueryResponse.data as Praise[];
       if (Array.isArray(praiseList) && praiseList.length > 0) {
@@ -518,8 +519,8 @@ export const AllPeriodReceivers = selectorFamily({
             praiseCount: ri > -1 ? r[ri].praiseCount + 1 : 1,
             praiseScore:
               ri > -1
-                ? r[ri].praiseScore + avgPraiseScore(praiseItem, get)
-                : avgPraiseScore(praiseItem, get),
+                ? r[ri].praiseScore + avgPraiseScore(praiseItem)
+                : avgPraiseScore(praiseItem),
           };
 
           if (ri > -1) {
@@ -698,19 +699,19 @@ export const useExportPraise = () => {
     ({ snapshot, set }) =>
       async (period: Period) => {
         if (!period || !allPeriods) return null;
-        const periodStartDate = getPreviousPeriod(allPeriods, period);
-
+        const previousPeriod = getPreviousPeriod(allPeriods, period);
+        if (!previousPeriod) throw new Error('Invalid previous start date');
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthGetQuery({
-              endPoint: `/api/praise/export/?periodStart=${periodStartDate}&periodEnd=${period.endDate}`,
+            ApiAuthGet({
+              url: `/api/praise/export/?periodStart=${previousPeriod.endDate}&periodEnd=${period.endDate}`,
               config: { responseType: 'blob' },
             })
           )
         );
 
         // If OK response, add returned period object to local state
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const href = window.URL.createObjectURL(response.data);
           window.location.href = href;
           return href;

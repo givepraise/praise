@@ -1,6 +1,6 @@
-import { QueryInput } from '@shared/inputs';
+import { QueryInput } from '@shared/types';
 
-export interface AuthRequestBody {
+export interface AuthRequestInput {
   ethereumAddress: string;
   message: string;
   signature: string;
@@ -12,7 +12,7 @@ export interface AuthResponse {
   tokenType: string;
 }
 
-export interface NonceRequestQuery extends QueryInput {
+export interface NonceRequestInput extends QueryInput {
   ethereumAddress?: string;
 }
 

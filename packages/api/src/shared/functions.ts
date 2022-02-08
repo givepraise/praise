@@ -1,5 +1,5 @@
 import logger from 'jet-logger';
-import { QueryInput } from './inputs';
+import { QueryInput } from './types';
 
 export const pErr = (err: Error): void => {
   if (err) {

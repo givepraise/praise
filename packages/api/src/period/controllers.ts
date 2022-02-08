@@ -6,10 +6,10 @@ import {
   NotFoundError,
 } from '@shared/errors';
 import { getQuerySort } from '@shared/functions';
-import { QueryInput } from '@shared/inputs';
 import { settingInt } from '@shared/settings';
 import {
   PaginatedResponseBody,
+  QueryInputParsedQs,
   TypedRequestBody,
   TypedRequestQuery,
   TypedResponse,
@@ -22,7 +22,7 @@ import { PeriodModel } from './entities';
 import { Period, PeriodCreateUpdateInput, Quantifier, Receiver } from './types';
 
 export const all = async (
-  req: TypedRequestQuery<QueryInput>,
+  req: TypedRequestQuery<QueryInputParsedQs>,
   res: TypedResponse<PaginatedResponseBody<Period>>
 ): Promise<void> => {
   const response = await PeriodModel.paginate({

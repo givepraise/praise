@@ -1,5 +1,5 @@
 import { injected } from '@/eth/connectors';
-import { AccountActivated } from '@/model/api';
+import { AccountActivated } from '@/model/activate';
 import { EthState } from '@/model/eth';
 import { ReactComponent as MetamaskIcon } from '@/svg/metamask.svg';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
@@ -61,7 +61,7 @@ const ActivateDialog = () => {
     }
   }, [activatingConnector, ethConnector]);
 
-  let ethButtonClass =
+  const ethButtonClass =
     'px-4 py-2 font-bold text-white uppercase rounded ' +
     (ethError
       ? 'bg-red-700 hover:bg-red-700'
@@ -96,9 +96,9 @@ const ActivateDialog = () => {
                     !hasMetaMask()
                   }
                   key={'Injected'}
-                  onClick={() => {
+                  onClick={(): void => {
                     setActivatingConnector(injected);
-                    ethActivate(injected, (error) => {
+                    void ethActivate(injected, (error) => {
                       if (error.name === 'UnsupportedChainIdError')
                         alert('Please connect to Ethereum mainnet');
                       setActivatingConnector(undefined);

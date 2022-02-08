@@ -4,6 +4,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '@shared/errors';
+import { TypedRequestBody } from '@shared/types';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { ethers } from 'ethers';
@@ -24,7 +25,7 @@ const generateLoginMessage = (
 };
 
 const activate = async (
-  req: ActivateRequestBody,
+  req: TypedRequestBody<ActivateRequestBody>,
   res: Response
 ): Promise<void> => {
   const { ethereumAddress, signature, accountId } = req.body;

@@ -10,10 +10,10 @@ import {
   useRecoilValue,
 } from 'recoil';
 import {
-  ApiAuthGetQuery,
-  ApiAuthPatchQuery,
+  ApiAuthGet,
+  ApiAuthPatch,
   ApiQuery,
-  isApiResponseOk,
+  isResponseOk,
   useAuthApiQuery,
 } from './api';
 
@@ -33,8 +33,8 @@ export const AllSettingsQuery = selector({
   get: ({ get }) => {
     get(AllSettingsRequestId);
     return get(
-      ApiAuthGetQuery({
-        endPoint: '/api/settings/all',
+      ApiAuthGet({
+        url: '/api/settings/all',
       })
     );
   },
@@ -51,7 +51,7 @@ export const useAllSettingsQuery = () => {
 
   React.useEffect(() => {
     if (
-      isApiResponseOk(allSettingsQueryResponse) &&
+      isResponseOk(allSettingsQueryResponse) &&
       typeof allSettings === 'undefined'
     ) {
       const settings = allSettingsQueryResponse.data as Setting[];
@@ -64,7 +64,7 @@ export const useAllSettingsQuery = () => {
 };
 
 export const SetSettingApiResponse = atom<
-  AxiosResponse<never> | AxiosError<never> | null
+  AxiosResponse<unknown> | AxiosError<unknown> | null
 >({
   key: 'SetSettingApiResponse',
   default: null,
@@ -133,15 +133,15 @@ export const useSetSetting = () => {
       async (setting: Setting) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/admin/settings/${setting._id}/set`,
+            ApiAuthPatch({
+              url: `/api/admin/settings/${setting._id}/set`,
               data: JSON.stringify({ value: setting.value }),
             })
           )
         );
 
         // If OK response, add returned period object to local state
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const setting = response.data as Setting;
           toast.success(`Saved ${setting.key}`);
           if (setting) {
@@ -158,8 +158,8 @@ export const useSetSetting = () => {
               set(AllSettings, [setting]);
             }
           }
+          set(SetSettingApiResponse, response);
         }
-        set(SetSettingApiResponse, response);
         return response;
       }
   );
