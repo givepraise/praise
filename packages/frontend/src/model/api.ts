@@ -142,7 +142,7 @@ export const ApiPostQuery = selectorFamily<
 });
 
 export const ApiAuthPostQuery = selectorFamily<
-  AxiosResponse<any> | null,
+  AxiosResponse<any>,
   PostQueryParams
 >({
   key: 'ApiAuthPostQuery',
@@ -175,7 +175,7 @@ export const ApiAuthPostQuery = selectorFamily<
 });
 
 export const ApiAuthPatchQuery = selectorFamily<
-  AxiosResponse<any> | null,
+  AxiosResponse<any>,
   PatchQueryParams
 >({
   key: 'ApiAuthPatchQuery',

@@ -1,4 +1,3 @@
-import EthAccount from '@/pages/Activate/components/EthAccount';
 import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
 import { ApiGetQuery, ApiPostQuery } from './api';
