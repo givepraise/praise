@@ -16,9 +16,11 @@ export interface JWT {
   exp: number;
 }
 
-// SessionToken differentiates between null and undefined
-// undefined - Session token not loaded yet
-// null - No session token exists
+/**
+ * SessionToken differentiates between null and undefined
+ * `undefined` - Session token not loaded yet
+ * `null` - No session token exists
+ */
 export const SessionToken = atom<string | null | undefined>({
   key: 'SessionToken',
   default: undefined,
