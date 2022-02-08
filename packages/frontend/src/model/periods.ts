@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
 import { getPreviousPeriod } from '@/utils/periods';
+import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
@@ -102,8 +103,9 @@ export const useAllPeriodsQuery = () => {
       isResponseOk(allPeriodsQueryResponse) &&
       typeof allPeriods === 'undefined'
     ) {
-      const paginatedResponse = allPeriodsQueryResponse.data;
-      const periods = paginatedResponse.docs as Period[];
+      const paginatedResponse =
+        allPeriodsQueryResponse.data as PaginatedResponseBody<Period>;
+      const periods = paginatedResponse.docs;
       if (Array.isArray(periods) && periods.length > 0) {
         setAllPeriods(periods);
       }
@@ -156,7 +158,7 @@ export const useCreatePeriod = () => {
 
 // Stores the api response from the latest call to /api/admin/periods/update
 export const UpdatePeriodApiResponse = atom<
-  AxiosResponse<never> | AxiosError<never> | null
+  AxiosResponse<unknown> | AxiosError<unknown> | null
 >({
   key: 'UpdatePeriodApiResponse',
   default: null,
@@ -167,6 +169,7 @@ export const useUpdatePeriod = () => {
   const updatePeriod = useRecoilCallback(
     ({ snapshot, set }) =>
       async (period: Period) => {
+        if (!period._id) throw new Error('No _id on Period');
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
@@ -195,8 +198,8 @@ export const useUpdatePeriod = () => {
               set(AllPeriods, [responsePeriod]);
             }
           }
+          set(UpdatePeriodApiResponse, response);
         }
-        set(UpdatePeriodApiResponse, response);
         return response;
       }
   );
@@ -242,18 +245,18 @@ export const useClosePeriod = () => {
               set(AllPeriods, [period]);
             }
           }
+          set(UpdatePeriodApiResponse, response);
         }
-        set(UpdatePeriodApiResponse, response);
         return response;
       }
   );
   return { closePeriod };
 };
 
-interface VerifyQuantifierPoolSizeParams {
-  periodId: number;
+type VerifyQuantifierPoolSizeParams = {
+  periodId: string;
   refreshKey: string | undefined;
-}
+};
 
 export const VerifyQuantifierPoolSizeQuery = selectorFamily({
   key: 'VerifyQuantifierPoolSizeQuery',
@@ -277,7 +280,7 @@ export interface PoolRequirements {
 }
 
 export const useVerifyQuantifierPoolSize = (
-  periodId: number,
+  periodId: string,
   refreshKey: string | undefined
 ): PoolRequirements | undefined => {
   const response = useAuthApiQuery(
@@ -379,11 +382,11 @@ export const AllPeriodPraiseList = selectorFamily({
 export const PeriodPraiseQuery = selectorFamily({
   key: 'PeriodPraiseQuery',
   get:
-    (params: VerifyQuantifierPoolSizeParams) =>
+    (periodId: string) =>
     ({ get }) => {
       get(PeriodPraiseRequestId);
       const praise = get(
-        ApiAuthGet({ url: `/api/periods/${params.periodId}/praise` })
+        ApiAuthGet({ url: `/api/periods/${periodId}/praise` })
       );
       return praise;
     },
@@ -391,7 +394,7 @@ export const PeriodPraiseQuery = selectorFamily({
 
 export const usePeriodPraiseQuery = (periodId: string) => {
   const periodPraiseQueryResponse = useAuthApiQuery(
-    PeriodPraiseQuery({ periodId })
+    PeriodPraiseQuery(periodId)
   );
   const periodPraiseIdList = useRecoilValue(AllPeriodPraiseIdList(periodId));
 
@@ -516,8 +519,8 @@ export const AllPeriodReceivers = selectorFamily({
             praiseCount: ri > -1 ? r[ri].praiseCount + 1 : 1,
             praiseScore:
               ri > -1
-                ? r[ri].praiseScore + avgPraiseScore(praiseItem, get)
-                : avgPraiseScore(praiseItem, get),
+                ? r[ri].praiseScore + avgPraiseScore(praiseItem)
+                : avgPraiseScore(praiseItem),
           };
 
           if (ri > -1) {
@@ -696,12 +699,12 @@ export const useExportPraise = () => {
     ({ snapshot, set }) =>
       async (period: Period) => {
         if (!period || !allPeriods) return null;
-        const periodStartDate = getPreviousPeriod(allPeriods, period);
-
+        const previousPeriod = getPreviousPeriod(allPeriods, period);
+        if (!previousPeriod) throw new Error('Invalid previous start date');
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthGet({
-              url: `/api/praise/export/?periodStart=${periodStartDate}&periodEnd=${period.endDate}`,
+              url: `/api/praise/export/?periodStart=${previousPeriod.endDate}&periodEnd=${period.endDate}`,
               config: { responseType: 'blob' },
             })
           )

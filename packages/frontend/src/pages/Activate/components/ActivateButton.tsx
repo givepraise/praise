@@ -1,14 +1,15 @@
 import {
   AccountActivated,
   AccountActivateQuery,
-  isResponseOk,
-  useAuthApiQuery,
-} from '@/model/api';
+  ActivateRequestBodySerializable,
+} from '@/model/activate';
+import { isResponseOk } from '@/model/api';
 import { useWeb3React } from '@web3-react/core';
+import { AxiosResponse } from 'axios';
 import queryString from 'query-string';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilCallback, useSetRecoilState } from 'recoil';
 
 const generateLoginMessage = (
   accountId: string,
@@ -26,16 +27,58 @@ const generateLoginMessage = (
 export default function ActivateButton() {
   const ActivateButtonInner = () => {
     const { account: ethereumAddress, library: ethLibrary } = useWeb3React();
-    const [message, setMessage] = React.useState<string | any>(undefined);
-    const [signature, setSignature] = React.useState<string | any>(undefined);
+    const [message, setMessage] = React.useState<string | undefined>(undefined);
+    const [signature, setSignature] = React.useState<string | undefined>(
+      undefined
+    );
+    const [activateResponse, setActivateResponse] = React.useState<
+      AxiosResponse<unknown> | undefined
+    >(undefined);
     const { search } = useLocation();
     const { accountId, token } = queryString.parse(search);
     const setAccountActivated = useSetRecoilState(AccountActivated);
 
     // 3. Verify signature with server
-    const activateResponse = useAuthApiQuery(
-      AccountActivateQuery({ ethereumAddress, accountId, message, signature })
+    const activateAccount = useRecoilCallback(
+      ({ snapshot }) =>
+        async (
+          params: ActivateRequestBodySerializable
+        ): Promise<AxiosResponse<unknown>> => {
+          const { ethereumAddress, accountId, message, signature } = params;
+          const response = await snapshot.getPromise(
+            AccountActivateQuery({
+              ethereumAddress,
+              accountId,
+              message,
+              signature,
+            })
+          );
+          return response;
+        },
+      [ethereumAddress, accountId, message, signature]
     );
+    React.useEffect(() => {
+      if (
+        !ethereumAddress ||
+        !accountId ||
+        Array.isArray(accountId) ||
+        !message ||
+        !signature
+      )
+        return;
+
+      void (async (): Promise<void> => {
+        const response = await activateAccount({
+          ethereumAddress,
+          accountId,
+          message,
+          signature,
+        });
+        if (isResponseOk(response)) {
+          setActivateResponse(response);
+        }
+      })();
+    }, [ethereumAddress, accountId, message, signature]);
 
     // 1. Generate login message to sign
     React.useEffect(() => {

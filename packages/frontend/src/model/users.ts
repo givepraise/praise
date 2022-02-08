@@ -1,4 +1,5 @@
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
+import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
@@ -14,7 +15,6 @@ import {
   ApiAuthPatch,
   ApiQuery,
   isResponseOk,
-  PaginatedResponseData,
   useAuthApiQuery,
 } from './api';
 import { AllPeriods } from './periods';
@@ -93,8 +93,8 @@ export const useAllUsersQuery = () => {
       typeof allUsers === 'undefined'
     ) {
       const paginatedResponse =
-        allUsersQueryResponse.data as PaginatedResponseData;
-      const users = paginatedResponse.docs as User[];
+        allUsersQueryResponse.data as PaginatedResponseBody<User>;
+      const users = paginatedResponse.docs;
       if (Array.isArray(users) && users.length > 0) setAllUsers(users);
     }
   }, [allUsersQueryResponse, setAllUsers, allUsers]);
@@ -160,7 +160,7 @@ export const PseudonymForUser = selectorFamily({
 });
 
 export const AddUserRoleApiResponse = atom<
-  AxiosResponse<never> | AxiosError<never> | null
+  AxiosResponse<unknown> | AxiosError<unknown> | null
 >({
   key: 'AddUserRoleApiResponse',
   default: null,
@@ -197,8 +197,8 @@ export const useAdminUsers = () => {
               set(AllUsers, [user]);
             }
           }
+          set(AddUserRoleApiResponse, response);
         }
-        set(AddUserRoleApiResponse, response);
         return response;
       }
   );
@@ -230,8 +230,8 @@ export const useAdminUsers = () => {
               set(AllUsers, [user]);
             }
           }
+          set(AddUserRoleApiResponse, response);
         }
-        set(AddUserRoleApiResponse, response);
         return response;
       }
   );

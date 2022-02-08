@@ -236,11 +236,11 @@ export const ApiQuery = async (
  * to correctly handle expired JWT tokens and other error codes returned by
  * the server
  */
-export const useAuthApiQuery = (recoilValue: RecoilValue<unknown>): unknown => {
+export function useAuthApiQuery<T>(recoilValue: RecoilValue<T>): T {
   const response = useRecoilValue(recoilValue);
 
   if (isApiResponseAxiosError(response)) {
     handleErrors(response);
   }
   return response;
-};
+}

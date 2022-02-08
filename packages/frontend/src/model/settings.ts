@@ -64,7 +64,7 @@ export const useAllSettingsQuery = () => {
 };
 
 export const SetSettingApiResponse = atom<
-  AxiosResponse<never> | AxiosError<never> | null
+  AxiosResponse<unknown> | AxiosError<unknown> | null
 >({
   key: 'SetSettingApiResponse',
   default: null,
@@ -158,8 +158,8 @@ export const useSetSetting = () => {
               set(AllSettings, [setting]);
             }
           }
+          set(SetSettingApiResponse, response);
         }
-        set(SetSettingApiResponse, response);
         return response;
       }
   );

@@ -1,24 +1,24 @@
 import { ActivateRequestBody } from 'api/dist/activate/types';
+import { AxiosResponse } from 'axios';
 import { atom, selectorFamily, SerializableParam } from 'recoil';
-import { ApiPost, isResponseOk } from './api';
-import { User } from './users';
+import { ApiPost } from './api';
 
 export const AccountActivated = atom<boolean>({
   key: 'AccountActivated',
   default: false,
 });
 
-interface ActivateRequestBodySerializable extends ActivateRequestBody {
+export interface ActivateRequestBodySerializable extends ActivateRequestBody {
   [key: string]: SerializableParam;
 }
 export const AccountActivateQuery = selectorFamily<
-  User | undefined,
+  AxiosResponse<unknown>,
   ActivateRequestBodySerializable
 >({
   key: 'AccountActivateQuery',
   get:
     (params: ActivateRequestBody) =>
-    ({ get }): User | undefined => {
+    ({ get }): AxiosResponse<unknown> => {
       const { ethereumAddress, accountId, message, signature } = params;
       if (!ethereumAddress || !accountId || !message || !signature)
         throw new Error('Invalid activation request.');
@@ -31,8 +31,6 @@ export const AccountActivateQuery = selectorFamily<
       });
 
       const response = get(ApiPost({ url: '/api/activate', data }));
-      if (isResponseOk(response)) {
-        return response.data as User;
-      }
+      return response;
     },
 });

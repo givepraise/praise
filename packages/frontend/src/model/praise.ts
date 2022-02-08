@@ -1,3 +1,8 @@
+import {
+  PaginatedResponseBody,
+  QueryInputParsedQs,
+} from 'api/dist/shared/types';
+import { AxiosResponse } from 'axios';
 import React from 'react';
 import {
   atom,
@@ -14,7 +19,6 @@ import {
   ApiQuery,
   isApiResponseAxiosError,
   isResponseOk,
-  PaginatedResponseData,
   useAuthApiQuery,
 } from './api';
 import { SingleFloatSetting } from './settings';
@@ -85,7 +89,7 @@ export const useSinglePraiseQuery = (praiseId: string) => {
 
   React.useEffect(() => {
     if (praiseId && !praise) {
-      fetchSinglePraise();
+      void fetchSinglePraise();
     }
   }, [praiseId, praise, fetchSinglePraise]);
 
@@ -166,7 +170,7 @@ export const SinglePraiseExt = selectorFamily({
           quantWithDuplicateScore(q, get)
         );
       }
-      praiseExt.avgScore = avgPraiseScore(praiseExt, get);
+      praiseExt.avgScore = avgPraiseScore(praiseExt);
       return praiseExt;
     },
 });
@@ -195,19 +199,26 @@ export const PraiseRequestId = atom({
   default: 0,
 });
 
-export const AllPraiseQuery = selectorFamily({
+export const AllPraiseQuery = selectorFamily<
+  AxiosResponse<PaginatedResponseBody<Praise>> | undefined,
+  QueryInputParsedQs
+>({
   key: 'AllPraiseQuery',
   get:
-    (params: any) =>
-    ({ get }) => {
+    (query: QueryInputParsedQs) =>
+    ({ get }): AxiosResponse<PaginatedResponseBody<Praise>> | undefined => {
+      if (!query) throw new Error('Invalid query');
       get(PraiseRequestId);
-      const qs = Object.keys(params)
-        .map((key) => `${key}=${params[key]}`)
+      const qs = Object.keys(query)
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        .map((key) => `${key}=${query[key]}`) //TODO Remove comment and fix!
         .join('&');
-      const praises = get(
+      const response = get(
         ApiAuthGet({ url: `/api/praise/all${qs ? `?${qs}` : ''}` })
       );
-      return praises;
+      if (isResponseOk(response)) {
+        return response;
+      }
     },
 });
 
@@ -238,7 +249,7 @@ export interface AllPraiseQueryParameters {
 }
 
 export const useAllPraiseQuery = (
-  queryParams: AllPraiseQueryParameters,
+  queryParams: QueryInputParsedQs,
   listKey: string
 ) => {
   const allPraiseQueryResponse = useAuthApiQuery(AllPraiseQuery(queryParams));
@@ -274,19 +285,22 @@ export const useAllPraiseQuery = (
   );
 
   React.useEffect(() => {
-    if (isApiResponseAxiosError(allPraiseQueryResponse)) return;
+    if (
+      !allPraiseQueryResponse ||
+      isApiResponseAxiosError(allPraiseQueryResponse)
+    )
+      return;
     const data = allPraiseQueryResponse.data as any;
     if (
       typeof allPraiseIdList === 'undefined' ||
       (data.page > praisePagination.latestFetchPage &&
         isResponseOk(allPraiseQueryResponse))
     ) {
-      const paginatedResponse =
-        allPraiseQueryResponse.data as PaginatedResponseData;
-      const praiseList = paginatedResponse.docs as Praise[];
+      const paginatedResponse = allPraiseQueryResponse.data;
+      const praiseList = paginatedResponse.docs;
 
       if (Array.isArray(praiseList) && praiseList.length > 0) {
-        saveAllPraiseIdList(praiseList);
+        void saveAllPraiseIdList(praiseList);
         saveIndividualPraise(praiseList);
         setPraisePagination({
           ...praisePagination,
@@ -307,12 +321,12 @@ export const useAllPraiseQuery = (
   return allPraiseQueryResponse;
 };
 
-interface QuantifyPraiseParams {
+type QuantifyPraiseParams = {
   praiseId: string;
   score: number;
   dismissed: boolean;
   duplicatePraise: string;
-}
+};
 
 export const QuantifyPraise = selectorFamily({
   key: 'QuantifyPraise',
