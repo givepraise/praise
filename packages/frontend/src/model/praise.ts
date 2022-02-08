@@ -12,8 +12,8 @@ import {
   ApiAuthGetQuery,
   ApiAuthPatchQuery,
   ApiQuery,
-  isApiResponseError,
-  isApiResponseOk,
+  isApiResponseAxiosError,
+  isResponseOk,
   PaginatedResponseData,
   useAuthApiQuery,
 } from './api';
@@ -77,7 +77,7 @@ export const useSinglePraiseQuery = (praiseId: string) => {
         const response = await ApiQuery(
           snapshot.getPromise(SinglePraiseQuery(praiseId))
         );
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           set(SinglePraise(praiseId), response.data);
         } else {
           //TODO handle error
@@ -134,7 +134,7 @@ const quantWithDuplicateScore = (
         const duplicatePraiseResponse = get(
           SinglePraiseQuery(quantification.duplicatePraise)
         );
-        if (isApiResponseOk(duplicatePraiseResponse)) {
+        if (isResponseOk(duplicatePraiseResponse)) {
           duplicatePraise = duplicatePraiseResponse.data;
         }
       }
@@ -276,12 +276,12 @@ export const useAllPraiseQuery = (
   );
 
   React.useEffect(() => {
-    if (isApiResponseError(allPraiseQueryResponse)) return;
+    if (isApiResponseAxiosError(allPraiseQueryResponse)) return;
     const data = allPraiseQueryResponse.data as any;
     if (
       typeof allPraiseIdList === 'undefined' ||
       (data.page > praisePagination.latestFetchPage &&
-        isApiResponseOk(allPraiseQueryResponse))
+        isResponseOk(allPraiseQueryResponse))
     ) {
       const paginatedResponse =
         allPraiseQueryResponse.data as PaginatedResponseData;
@@ -359,7 +359,7 @@ export const useQuantifyPraise = () => {
           )
         );
 
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const praise = response.data as Praise;
           set(SinglePraise(praise._id), praise);
           return response.data as Praise;

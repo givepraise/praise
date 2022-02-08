@@ -1,4 +1,4 @@
-import { isApiResponseOk, useAuthApiQuery } from '@/model/api';
+import { isResponseOk, useAuthApiQuery } from '@/model/api';
 import { Auth, AuthQuery, Nonce, NonceQuery, SessionToken } from '@/model/auth';
 import * as localStorage from '@/model/localStorage';
 import { useWeb3React } from '@web3-react/core';
@@ -42,7 +42,7 @@ export default function LoginButton() {
     // 2. Generate login message to sign
     React.useEffect(() => {
       if (!ethAccount || !nonceResponse) return;
-      if (isApiResponseOk(nonceResponse)) {
+      if (isResponseOk(nonceResponse)) {
         const nonceData = nonceResponse.data as Nonce;
         setMessage(generateLoginMessage(ethAccount, nonceData.nonce));
       }
@@ -51,7 +51,7 @@ export default function LoginButton() {
     // 5. Authetication response
     React.useEffect(() => {
       if (!ethAccount || !sessionResponse) return;
-      if (isApiResponseOk(sessionResponse)) {
+      if (isResponseOk(sessionResponse)) {
         const sessionData = sessionResponse.data as Auth;
         // Save session id for future api calls
         localStorage.setSessionToken(ethAccount, sessionData.accessToken);
@@ -75,7 +75,7 @@ export default function LoginButton() {
       if (_signature) setSignature(_signature);
     };
 
-    if (!nonceResponse || !isApiResponseOk(nonceResponse)) {
+    if (!nonceResponse || !isResponseOk(nonceResponse)) {
       return (
         <div>
           <button className="px-4 py-2 font-bold text-gray-500 uppercase bg-gray-700 rounded cursor-default">

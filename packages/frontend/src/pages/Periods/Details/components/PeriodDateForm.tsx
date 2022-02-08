@@ -1,7 +1,7 @@
 import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import OutsideClickHandler from '@/components/OutsideClickHandler';
 import { PeriodDayPicker } from '@/components/periods/PeriodDayPicker';
-import { isApiResponseOk } from '@/model/api';
+import { isResponseOk } from '@/model/api';
 import { SinglePeriod, useUpdatePeriod } from '@/model/periods';
 import { DATE_FORMAT, formatDate } from '@/utils/date';
 import { AxiosResponse } from 'axios';
@@ -32,7 +32,7 @@ const validate = (
 };
 
 const PeriodDateForm = () => {
-  let { periodId } = useParams() as any;
+  const { periodId } = useParams();
 
   const period = useRecoilValue(SinglePeriod({ periodId }));
   const [apiResponse, setApiResponse] = React.useState<AxiosResponse | null>(
@@ -52,7 +52,7 @@ const PeriodDateForm = () => {
     const newPeriod = { ...period };
     newPeriod.endDate = values.endDate;
     const response = await updatePeriod(newPeriod);
-    if (isApiResponseOk(response)) toast.success('Period date saved');
+    if (isResponseOk(response)) toast.success('Period date saved');
     setApiResponse(response);
   };
 

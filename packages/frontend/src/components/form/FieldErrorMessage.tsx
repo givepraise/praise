@@ -1,4 +1,4 @@
-import { isApiResponseError } from '@/model/api';
+import { isApiResponseAxiosError } from '@/model/api';
 import { AxiosError, AxiosResponse } from 'axios';
 import { useField, useFormState } from 'react-final-form';
 
@@ -18,7 +18,7 @@ const FieldErrorMessage = ({ name, apiResponse }: FieldErrorMessageProps) => {
 
   // Display api error message for matching field if form has not
   // been edited since last submit
-  if (apiResponse && isApiResponseError(apiResponse)) {
+  if (apiResponse && isApiResponseAxiosError(apiResponse)) {
     if (!dirtySinceLastSubmit && apiResponse.response) {
       if (apiResponse.response.status === 400) {
         if (apiResponse.response.data[name])

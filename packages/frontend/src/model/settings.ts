@@ -13,7 +13,7 @@ import {
   ApiAuthGetQuery,
   ApiAuthPatchQuery,
   ApiQuery,
-  isApiResponseOk,
+  isResponseOk,
   useAuthApiQuery,
 } from './api';
 
@@ -51,7 +51,7 @@ export const useAllSettingsQuery = () => {
 
   React.useEffect(() => {
     if (
-      isApiResponseOk(allSettingsQueryResponse) &&
+      isResponseOk(allSettingsQueryResponse) &&
       typeof allSettings === 'undefined'
     ) {
       const settings = allSettingsQueryResponse.data as Setting[];
@@ -141,7 +141,7 @@ export const useSetSetting = () => {
         );
 
         // If OK response, add returned period object to local state
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const setting = response.data as Setting;
           toast.success(`Saved ${setting.key}`);
           if (setting) {

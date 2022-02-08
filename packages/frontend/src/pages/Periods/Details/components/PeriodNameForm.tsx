@@ -1,6 +1,6 @@
 import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import OutsideClickHandler from '@/components/OutsideClickHandler';
-import { isApiResponseOk } from '@/model/api';
+import { isResponseOk } from '@/model/api';
 import { SinglePeriod, useUpdatePeriod } from '@/model/periods';
 import { AxiosResponse } from 'axios';
 import { ValidationErrors } from 'final-form';
@@ -32,7 +32,7 @@ const validate = (
 };
 
 const PeriodNameForm = () => {
-  let { periodId } = useParams() as any;
+  const { periodId } = useParams();
 
   const period = useRecoilValue(SinglePeriod({ periodId }));
   const [apiResponse, setApiResponse] = React.useState<AxiosResponse | null>(
@@ -49,7 +49,7 @@ const PeriodNameForm = () => {
     const newPeriod = { ...period };
     newPeriod.name = values.name;
     const response = await updatePeriod(newPeriod);
-    if (isApiResponseOk(response)) toast.success('Period name saved');
+    if (isResponseOk(response)) toast.success('Period name saved');
     setApiResponse(response);
   };
 

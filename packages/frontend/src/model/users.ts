@@ -13,7 +13,7 @@ import {
   ApiAuthGetQuery,
   ApiAuthPatchQuery,
   ApiQuery,
-  isApiResponseOk,
+  isResponseOk,
   PaginatedResponseData,
   useAuthApiQuery,
 } from './api';
@@ -89,7 +89,7 @@ export const useAllUsersQuery = () => {
 
   React.useEffect(() => {
     if (
-      isApiResponseOk(allUsersQueryResponse) &&
+      isResponseOk(allUsersQueryResponse) &&
       typeof allUsers === 'undefined'
     ) {
       const paginatedResponse =
@@ -183,7 +183,7 @@ export const useAdminUsers = () => {
         );
 
         // If OK response, add returned user object to local state
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const user = response.data as User;
           if (user) {
             if (typeof allUsers !== 'undefined') {
@@ -216,7 +216,7 @@ export const useAdminUsers = () => {
         );
 
         // If OK response, add returned user object to local state
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const user = response.data as User;
           if (user) {
             if (typeof allUsers !== 'undefined') {

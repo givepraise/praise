@@ -1,7 +1,7 @@
 import BreadCrumb from '@/components/BreadCrumb';
 import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import { PeriodDayPicker } from '@/components/periods/PeriodDayPicker';
-import { isApiResponseOk } from '@/model/api';
+import { isResponseOk } from '@/model/api';
 import {
   CreatePeriodApiResponse,
   Period,
@@ -68,7 +68,7 @@ const PeriodsForm = () => {
     };
 
     const response = await createPeriod(newPeriod);
-    if (isApiResponseOk(response)) {
+    if (isResponseOk(response)) {
       setTimeout(() => {
         history.goBack();
         setApiResponse(null); // Clear API response when navigating away

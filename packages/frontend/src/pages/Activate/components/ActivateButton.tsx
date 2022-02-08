@@ -1,7 +1,7 @@
 import {
   AccountActivated,
   AccountActivateQuery,
-  isApiResponseOk,
+  isResponseOk,
   useAuthApiQuery,
 } from '@/model/api';
 import { useWeb3React } from '@web3-react/core';
@@ -51,7 +51,7 @@ export default function ActivateButton() {
 
     // 4. Account activated
     React.useEffect(() => {
-      if (isApiResponseOk(activateResponse)) setAccountActivated(true);
+      if (isResponseOk(activateResponse)) setAccountActivated(true);
     }, [activateResponse, setAccountActivated]);
 
     const signLoginMessage = async () => {

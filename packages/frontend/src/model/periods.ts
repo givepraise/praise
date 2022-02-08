@@ -19,8 +19,7 @@ import {
   ApiAuthPatchQuery,
   ApiAuthPostQuery,
   ApiQuery,
-  isApiResponseOk,
-  PaginatedResponseData,
+  isResponseOk,
   useAuthApiQuery,
 } from './api';
 import { ActiveUserId } from './auth';
@@ -100,11 +99,10 @@ export const useAllPeriodsQuery = () => {
   // Only set AllPeriods if not previously loaded
   React.useEffect(() => {
     if (
-      isApiResponseOk(allPeriodsQueryResponse) &&
+      isResponseOk(allPeriodsQueryResponse) &&
       typeof allPeriods === 'undefined'
     ) {
-      const paginatedResponse =
-        allPeriodsQueryResponse.data as PaginatedResponseData;
+      const paginatedResponse = allPeriodsQueryResponse.data;
       const periods = paginatedResponse.docs as Period[];
       if (Array.isArray(periods) && periods.length > 0) {
         setAllPeriods(periods);
@@ -139,7 +137,7 @@ export const useCreatePeriod = () => {
           )
         );
         // If OK response, add returned period object to local state
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const responsePeriod = response.data as Period;
           if (responsePeriod) {
             if (typeof allPeriods !== 'undefined') {
@@ -179,7 +177,7 @@ export const useUpdatePeriod = () => {
         );
 
         // If OK response, add returned period object to local state
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const responsePeriod = response.data as Period;
           if (responsePeriod) {
             if (typeof allPeriods !== 'undefined') {
@@ -228,7 +226,7 @@ export const useClosePeriod = () => {
           )
         );
 
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const period = response.data as Period;
           if (period) {
             if (typeof allPeriods !== 'undefined') {
@@ -290,7 +288,7 @@ export const useVerifyQuantifierPoolSize = (
   >(undefined);
 
   React.useEffect(() => {
-    if (isApiResponseOk(response)) {
+    if (isResponseOk(response)) {
       setPoolRequirements(response.data);
     }
   }, [response]);
@@ -321,7 +319,7 @@ export const useAssignQuantifiers = () => {
             })
           )
         );
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const praiseList = response.data as Praise[];
           if (Array.isArray(praiseList) && praiseList.length > 0) {
             saveIndividualPraise(praiseList);
@@ -412,7 +410,7 @@ export const usePeriodPraiseQuery = (periodId: string) => {
   React.useEffect(() => {
     if (
       typeof periodPraiseIdList === 'undefined' &&
-      isApiResponseOk(periodPraiseQueryResponse)
+      isResponseOk(periodPraiseQueryResponse)
     ) {
       const praiseList = periodPraiseQueryResponse.data as Praise[];
       if (Array.isArray(praiseList) && praiseList.length > 0) {
@@ -710,7 +708,7 @@ export const useExportPraise = () => {
         );
 
         // If OK response, add returned period object to local state
-        if (isApiResponseOk(response)) {
+        if (isResponseOk(response)) {
           const href = window.URL.createObjectURL(response.data);
           window.location.href = href;
           return href;
