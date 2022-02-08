@@ -1,7 +1,8 @@
 import { isResponseOk, useAuthApiQuery } from '@/model/api';
-import { Auth, AuthQuery, Nonce, NonceQuery, SessionToken } from '@/model/auth';
+import { AuthQuery, NonceQuery } from '@/model/auth';
 import * as localStorage from '@/model/localStorage';
 import { useWeb3React } from '@web3-react/core';
+import { AuthResponse, NonceResponse } from 'api/dist/auth/types';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
@@ -11,10 +12,7 @@ interface LocationState {
     pathname: string;
   };
 }
-const generateLoginMessage = (
-  account: string | undefined,
-  nonce: string
-): string => {
+const generateLoginMessage = (account: string, nonce: string): string => {
   return (
     'SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n' +
     `ADDRESS:\n${account}\n\n` +
@@ -24,7 +22,7 @@ const generateLoginMessage = (
 
 export default function LoginButton() {
   const LoginButtonInner = () => {
-    const { account: ethAccount, library: ethLibrary } = useWeb3React();
+    const { account: ethereumAccount, library: ethLibrary } = useWeb3React();
     const [message, setMessage] = React.useState<string | any>(undefined);
     const [signature, setSignature] = React.useState<string | any>(undefined);
     const [sessionToken, setSessionToken] = useRecoilState(SessionToken);
@@ -32,33 +30,33 @@ export default function LoginButton() {
     const location = useLocation<LocationState>();
 
     // 1. Fetch nonce from server
-    const nonceResponse = useAuthApiQuery(NonceQuery({ ethAccount }));
+    const nonceResponse = useAuthApiQuery(NonceQuery({ ethereumAccount })); //TODO Not done! See ActivateButton.tsx for inspiration.
 
     // 4. Verify signature with server
     const sessionResponse = useAuthApiQuery(
-      AuthQuery({ ethAccount, message, signature })
+      AuthQuery({ ethereumAccount, message, signature })
     );
 
     // 2. Generate login message to sign
     React.useEffect(() => {
-      if (!ethAccount || !nonceResponse) return;
+      if (!ethereumAccount || !nonceResponse) return;
       if (isResponseOk(nonceResponse)) {
-        const nonceData = nonceResponse.data as Nonce;
-        setMessage(generateLoginMessage(ethAccount, nonceData.nonce));
+        const nonceData = nonceResponse.data as NonceResponse;
+        setMessage(generateLoginMessage(ethereumAccount, nonceData.nonce));
       }
-    }, [ethAccount, nonceResponse]);
+    }, [ethereumAccount, nonceResponse]);
 
     // 5. Authetication response
     React.useEffect(() => {
-      if (!ethAccount || !sessionResponse) return;
+      if (!ethereumAccount || !sessionResponse) return;
       if (isResponseOk(sessionResponse)) {
-        const sessionData = sessionResponse.data as Auth;
+        const sessionData = sessionResponse.data as AuthResponse;
         // Save session id for future api calls
-        localStorage.setSessionToken(ethAccount, sessionData.accessToken);
+        localStorage.setSessionToken(ethereumAccount, sessionData.accessToken);
         // Set session token in global state
         setSessionToken(sessionData.accessToken);
       }
-    }, [ethAccount, sessionResponse, setSessionToken]);
+    }, [ethereumAccount, sessionResponse, setSessionToken]);
 
     // 6. Redirect after login
     React.useEffect(() => {
