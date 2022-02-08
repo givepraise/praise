@@ -10,8 +10,8 @@ import {
   useRecoilValue,
 } from 'recoil';
 import {
-  ApiAuthGetQuery,
-  ApiAuthPatchQuery,
+  ApiAuthGet,
+  ApiAuthPatch,
   ApiQuery,
   isResponseOk,
   useAuthApiQuery,
@@ -33,8 +33,8 @@ export const AllSettingsQuery = selector({
   get: ({ get }) => {
     get(AllSettingsRequestId);
     return get(
-      ApiAuthGetQuery({
-        endPoint: '/api/settings/all',
+      ApiAuthGet({
+        url: '/api/settings/all',
       })
     );
   },
@@ -133,8 +133,8 @@ export const useSetSetting = () => {
       async (setting: Setting) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/admin/settings/${setting._id}/set`,
+            ApiAuthPatch({
+              url: `/api/admin/settings/${setting._id}/set`,
               data: JSON.stringify({ value: setting.value }),
             })
           )

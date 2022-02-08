@@ -1,6 +1,6 @@
 import { ActivateRequestBody } from 'api/dist/activate/types';
 import { atom, selectorFamily, SerializableParam } from 'recoil';
-import { ApiPostQuery, isResponseOk } from './api';
+import { ApiPost, isResponseOk } from './api';
 import { User } from './users';
 
 export const AccountActivated = atom<boolean>({
@@ -30,7 +30,7 @@ export const AccountActivateQuery = selectorFamily<
         signature,
       });
 
-      const response = get(ApiPostQuery({ endPoint: '/api/activate', data }));
+      const response = get(ApiPost({ url: '/api/activate', data }));
       if (isResponseOk(response)) {
         return response.data as User;
       }

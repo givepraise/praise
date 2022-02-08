@@ -10,8 +10,8 @@ import {
   useRecoilValue,
 } from 'recoil';
 import {
-  ApiAuthGetQuery,
-  ApiAuthPatchQuery,
+  ApiAuthGet,
+  ApiAuthPatch,
   ApiQuery,
   isResponseOk,
   PaginatedResponseData,
@@ -60,8 +60,8 @@ export const AllUsersQuery = selector({
   get: ({ get }) => {
     get(UsersRequestId);
     return get(
-      ApiAuthGetQuery({
-        endPoint: '/api/users/all?sortColumn=ethereumAddress&sortType=desc',
+      ApiAuthGet({
+        url: '/api/users/all?sortColumn=ethereumAddress&sortType=desc',
       })
     );
   },
@@ -175,8 +175,8 @@ export const useAdminUsers = () => {
       async (userId: string, role: UserRole) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/admin/users/${userId}/addRole`,
+            ApiAuthPatch({
+              url: `/api/admin/users/${userId}/addRole`,
               data: JSON.stringify({ role }),
             })
           )
@@ -208,8 +208,8 @@ export const useAdminUsers = () => {
       async (userId: string, role: UserRole) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/admin/users/${userId}/removeRole`,
+            ApiAuthPatch({
+              url: `/api/admin/users/${userId}/removeRole`,
               data: JSON.stringify({ role }),
             })
           )

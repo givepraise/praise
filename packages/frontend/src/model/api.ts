@@ -1,6 +1,7 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { toast } from 'react-hot-toast';
 import {
+  GetRecoilValue,
   RecoilValue,
   selectorFamily,
   SerializableParam,
@@ -9,28 +10,28 @@ import {
 import { SessionToken } from './auth';
 import { EthState } from './eth';
 
-type QueryParams = {
+type RequestParams = {
   [key: string]: SerializableParam;
-  endPoint: string;
+  url: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   config?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   headers?: any;
 };
 
-type QueryDataParam = {
+type RequestDataParam = {
   data: string;
 };
 
-type PatchQueryParams = QueryParams & QueryDataParam;
-type PostQueryParams = QueryParams & QueryDataParam;
+type PatchRequestParams = RequestParams & RequestDataParam;
+type PostRequestParams = RequestParams & RequestDataParam;
 
-const parseData = function (body: string): unknown {
+const parseData = function (data: string): unknown {
   try {
-    const parsedBody = JSON.parse(body);
-    return parsedBody;
+    const parsedData = JSON.parse(data);
+    return parsedData;
   } catch (err) {
-    throw new Error('Invalid request body format.');
+    throw new Error('Invalid request data format.');
   }
 };
 
@@ -48,137 +49,116 @@ export const isApiResponseAxiosError = (
   return (response as AxiosError).isAxiosError !== undefined;
 };
 
+const endpointUrl = (url: string): string => {
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+  if (!backendUrl) {
+    throw new Error('Backend URL not set.');
+  }
+  return `${backendUrl}${url}`;
+};
+
+const requestConfig = (config: any, headers: any): AxiosRequestConfig => {
+  return {
+    ...config,
+    headers: {
+      ...headers,
+    },
+  };
+};
+
+const authRequestConfig = (
+  config: any,
+  headers: any,
+  get: GetRecoilValue
+): AxiosRequestConfig => {
+  const ethState = get(EthState);
+  const sessionToken = get(SessionToken);
+  if (!ethState.account) {
+    throw new Error('Eth account not connected.');
+  }
+  if (!(typeof sessionToken === 'string')) {
+    throw new Error('No session token found.');
+  }
+  return {
+    ...config,
+    headers: {
+      ...headers,
+      Authorization: `Bearer ${sessionToken}`,
+    },
+  };
+};
+
 /**
- * A GET request
+ * GET request
  */
-export const ApiGetQuery = selectorFamily<AxiosResponse, QueryParams>({
-  key: 'ApiGetQuery',
-  get: (params: QueryParams) => async (): Promise<AxiosResponse<never>> => {
-    const backendUrl = process.env.REACT_APP_BACKEND_URL;
-    if (!backendUrl) {
-      throw new Error('Backend URL not set.');
-    }
-    const config = {
-      config: {
-        ...params.config,
-      },
-      headers: {
-        ...params.headers,
-      },
-    };
-    const response = await axios.get(`${backendUrl}${params.endPoint}`, config);
+export const ApiGet = selectorFamily<AxiosResponse<unknown>, RequestParams>({
+  key: 'ApiGet',
+  get: (params: RequestParams) => async (): Promise<AxiosResponse<unknown>> => {
+    const { config, headers, url } = params;
+    const response = await axios.get(
+      endpointUrl(url),
+      requestConfig(config, headers)
+    );
     return response;
   },
 });
 
 /**
- * An authenticated GET request
+ * Authenticated GET request
  */
-export const ApiAuthGetQuery = selectorFamily<AxiosResponse, QueryParams>({
-  key: 'ApiAuthGetQuery',
-  get:
-    (params: QueryParams) =>
-    async ({ get }): Promise<AxiosResponse<never>> => {
-      const ethState = get(EthState);
-      const sessionToken = get(SessionToken);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
-      if (!ethState.account) {
-        throw new Error('Eth account not connected.');
-      }
-      if (!(typeof sessionToken === 'string')) {
-        throw new Error('No session token found.');
-      }
-      if (!backendUrl) {
-        throw new Error('Backend URL not set.');
-      }
-
-      const config = {
-        config: {
-          ...params.config,
-        },
-        headers: {
-          ...params.headers,
-          Authorization: `Bearer ${sessionToken}`,
-        },
-      };
-
-      const response = await axios.get(
-        `${backendUrl}${params.endPoint}`,
-        config
-      );
-      return response;
-    },
-});
+export const ApiAuthGet = selectorFamily<AxiosResponse<unknown>, RequestParams>(
+  {
+    key: 'ApiAuthGet',
+    get:
+      (params: RequestParams) =>
+      async ({ get }): Promise<AxiosResponse<unknown>> => {
+        const { config, headers, url } = params;
+        const response = await axios.get(
+          endpointUrl(url),
+          authRequestConfig(config, headers, get)
+        );
+        return response;
+      },
+  }
+);
 
 /**
- * A POST request
+ * POST request
  */
-export const ApiPostQuery = selectorFamily<
+export const ApiPost = selectorFamily<
   AxiosResponse<unknown>,
-  PostQueryParams
+  PostRequestParams
 >({
-  key: 'ApiPostQuery',
+  key: 'ApiPost',
   get:
-    (params: PostQueryParams) => async (): Promise<AxiosResponse<unknown>> => {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
-      if (!backendUrl) {
-        throw new Error('Backend URL not set.');
-      }
-      const config = {
-        config: {
-          ...params.config,
-        },
-        headers: {
-          ...params.headers,
-        },
-      };
+    (params: PostRequestParams) =>
+    async (): Promise<AxiosResponse<unknown>> => {
+      const { config, headers, url, data } = params;
       const response = await axios.post(
-        `${backendUrl}${params.endPoint}`,
-        parseData(params.data),
-        config
+        endpointUrl(url),
+        parseData(data),
+        requestConfig(config, headers)
       );
       return response;
     },
 });
 
 /**
- * An authenticated POST request
+ * Authenticated POST request
  */
-export const ApiAuthPostQuery = selectorFamily<
+export const ApiAuthPost = selectorFamily<
   AxiosResponse<unknown>,
-  PostQueryParams
+  PostRequestParams
 >({
-  key: 'ApiAuthPostQuery',
+  key: 'ApiAuthPost',
   get:
-    (params: PostQueryParams) =>
+    (params: PostRequestParams) =>
     async ({ get }): Promise<AxiosResponse<unknown>> => {
-      const ethState = get(EthState);
-      const sessionToken = get(SessionToken);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
-      if (!ethState.account) {
-        throw new Error('Eth account not connected.');
-      }
-      if (!(typeof sessionToken === 'string')) {
-        throw new Error('No session token found.');
-      }
-      if (!backendUrl) {
-        throw new Error('Backend URL not set.');
-      }
-
-      const config = {
-        config: {
-          ...params.config,
-        },
-        headers: {
-          ...params.headers,
-          Authorization: `Bearer ${sessionToken}`,
-        },
-      };
-
+      const { config, headers, url, data } = params;
       const response = await axios.post(
-        `${backendUrl}${params.endPoint}`,
-        parseData(params.data),
-        config
+        endpointUrl(url),
+        parseData(data),
+        authRequestConfig(config, headers, get)
       );
       return response;
     },
@@ -187,41 +167,19 @@ export const ApiAuthPostQuery = selectorFamily<
 /**
  * An authenticated PATCH request
  */
-export const ApiAuthPatchQuery = selectorFamily<
+export const ApiAuthPatch = selectorFamily<
   AxiosResponse<unknown>,
-  PatchQueryParams
+  PatchRequestParams
 >({
-  key: 'ApiAuthPatchQuery',
+  key: 'ApiAuthPatch',
   get:
-    (params: PatchQueryParams) =>
+    (params: PatchRequestParams) =>
     async ({ get }): Promise<AxiosResponse<unknown>> => {
-      const ethState = get(EthState);
-      const sessionToken = get(SessionToken);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
-      if (!ethState.account) {
-        throw new Error('Eth account not connected.');
-      }
-      if (!(typeof sessionToken === 'string')) {
-        throw new Error('No session token found.');
-      }
-      if (!backendUrl) {
-        throw new Error('Backend URL not set.');
-      }
-
-      const config = {
-        config: {
-          ...params.config,
-        },
-        headers: {
-          ...params.headers,
-          Authorization: `Bearer ${sessionToken}`,
-        },
-      };
-
+      const { config, headers, url, data } = params;
       const response = await axios.patch(
-        `${backendUrl}${params.endPoint}`,
-        parseData(params.data),
-        config
+        endpointUrl(url),
+        parseData(data),
+        authRequestConfig(config, headers, get)
       );
       return response;
     },
@@ -253,6 +211,9 @@ export const handleErrors = (err: AxiosError): void => {
   toast.error('Unknown error.');
 };
 
+/**
+ * Wrap an api request to automate error handling. Shows toast error message on error.
+ */
 export const ApiQuery = async (
   query: Promise<AxiosResponse<unknown>>
 ): Promise<AxiosResponse<unknown> | void> => {
@@ -283,17 +244,3 @@ export const useAuthApiQuery = (recoilValue: RecoilValue<unknown>): unknown => {
   }
   return response;
 };
-
-// export interface PaginatedResponseData {
-//   docs: any[];
-//   hasMore?: boolean;
-//   hasNextPage?: boolean;
-//   hasPrevPage?: boolean;
-//   prevPage?: number;
-//   nextPage?: number;
-//   limit?: number;
-//   totalDocs?: number;
-//   totalPages?: number;
-//   page?: number;
-//   pagingCounter?: number;
-// }

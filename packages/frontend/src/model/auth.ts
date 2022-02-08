@@ -1,7 +1,7 @@
-import EthAccount from '@/pages/Activate/components/EthAccount';
+import { AuthResponse, NonceResponse } from 'api/dist/auth/types';
 import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
-import { ApiGetQuery, ApiPostQuery } from './api';
+import { ApiGet, ApiPost, isResponseOk } from './api';
 
 export const ROLE_USER = 'USER';
 export const ROLE_ADMIN = 'ADMIN';
@@ -14,17 +14,6 @@ export interface JWT {
   roles: string[];
   iat: number;
   exp: number;
-}
-
-export interface Nonce {
-  ethereumAddress: string;
-  nonce: string;
-}
-
-export interface Auth {
-  ethereumAddress: string;
-  accessToken: string;
-  tokenType: string;
 }
 
 // SessionToken differentiates between null and undefined
@@ -49,7 +38,7 @@ export const ActiveUserId = selector({
   get: ({ get }) => {
     const decodedToken = get(DecodedSessionToken);
     if (!decodedToken) return null;
-    return (decodedToken as any).userId;
+    return (decodedToken as JWT).userId;
   },
 });
 
@@ -58,7 +47,7 @@ export const ActiveUserRoles = selector({
   get: ({ get }) => {
     const decodedToken = get(DecodedSessionToken);
     if (!decodedToken) return null;
-    return (decodedToken as any).roles;
+    return (decodedToken as JWT).roles;
   },
 });
 
@@ -66,45 +55,61 @@ export const HasRole = selectorFamily({
   key: 'HasRole',
   get:
     (role: string) =>
-    ({ get }) => {
+    ({ get }): boolean => {
       const userRoles = get(ActiveUserRoles);
-      if (!userRoles) return null;
+      if (!userRoles) throw new Error('No user roles available');
       return userRoles.includes(role);
     },
 });
 
-interface NonceParams {
-  ethAccount: string;
-}
+type NonceRequestQuery = {
+  ethereumAddress: string;
+};
 
-export const NonceQuery = selectorFamily({
+export const NonceQuery = selectorFamily<
+  NonceResponse | undefined,
+  NonceRequestQuery
+>({
   key: 'NonceQuery',
   get:
-    (params: NonceParams) =>
-    ({ get }) => {
-      if (!params.ethAccount) return null;
-      return get(
-        ApiGetQuery({
-          endPoint: `/api/auth/nonce?ethereumAddress=${params.ethAccount}`,
+    (params: NonceRequestQuery) =>
+    ({ get }): NonceResponse | undefined => {
+      if (!params.ethereumAddress) throw new Error('No ETH Account specified.');
+      const response = get(
+        ApiGet({
+          url: `/api/auth/nonce?ethereumAddress=${params.ethereumAddress}`,
         })
       );
+      if (isResponseOk(response)) {
+        return response.data as NonceResponse;
+      }
     },
 });
 
-export const AuthQuery = selectorFamily({
+type AuthRequestBody = {
+  ethereumAddress: string;
+  message: string;
+  signature: string;
+};
+
+export const AuthQuery = selectorFamily<
+  AuthResponse | undefined,
+  AuthRequestBody
+>({
   key: 'AuthQuery',
   get:
-    (params: any) =>
-    ({ get }) => {
-      if (!params.ethAccount || !params.message || !params.signature)
-        return undefined;
-
+    (params: AuthRequestBody) =>
+    ({ get }): AuthResponse | undefined => {
+      if (!params.ethereumAddress || !params.message || !params.signature)
+        throw new Error('invalid auth params.');
       const data = JSON.stringify({
-        ethereumAddress: params.ethAccount,
+        ethereumAddress: params.ethereumAddress,
         message: params.message,
         signature: params.signature,
       });
-
-      return get(ApiPostQuery({ endPoint: '/api/auth', data }));
+      const response = get(ApiPost({ url: '/api/auth', data }));
+      if (isResponseOk(response)) {
+        return response.data as AuthResponse;
+      }
     },
 });

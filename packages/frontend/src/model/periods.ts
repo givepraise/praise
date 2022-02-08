@@ -15,9 +15,9 @@ import {
   waitForAll,
 } from 'recoil';
 import {
-  ApiAuthGetQuery,
-  ApiAuthPatchQuery,
-  ApiAuthPostQuery,
+  ApiAuthGet,
+  ApiAuthPatch,
+  ApiAuthPost,
   ApiQuery,
   isResponseOk,
   useAuthApiQuery,
@@ -59,8 +59,8 @@ export const AllPeriodsQuery = selector({
   get: ({ get }) => {
     get(PeriodsRequestId);
     const periods = get(
-      ApiAuthGetQuery({
-        endPoint: '/api/periods/all?sortColumn=endDate&sortType=desc',
+      ApiAuthGet({
+        url: '/api/periods/all?sortColumn=endDate&sortType=desc',
       })
     );
     return periods;
@@ -130,8 +130,8 @@ export const useCreatePeriod = () => {
       async (period: Period) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPostQuery({
-              endPoint: '/api/admin/periods/create',
+            ApiAuthPost({
+              url: '/api/admin/periods/create',
               data: JSON.stringify(period),
             })
           )
@@ -169,8 +169,8 @@ export const useUpdatePeriod = () => {
       async (period: Period) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/admin/periods/${period._id}/update`,
+            ApiAuthPatch({
+              url: `/api/admin/periods/${period._id}/update`,
               data: JSON.stringify(period),
             })
           )
@@ -219,8 +219,8 @@ export const useClosePeriod = () => {
       async (periodId: string) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/admin/periods/${periodId}/close`,
+            ApiAuthPatch({
+              url: `/api/admin/periods/${periodId}/close`,
               data: JSON.stringify({}),
             })
           )
@@ -262,8 +262,8 @@ export const VerifyQuantifierPoolSizeQuery = selectorFamily({
     ({ get }) => {
       const { periodId, refreshKey } = params;
       const response = get(
-        ApiAuthGetQuery({
-          endPoint: `/api/admin/periods/${periodId}/verifyQuantifierPoolSize`,
+        ApiAuthGet({
+          url: `/api/admin/periods/${periodId}/verifyQuantifierPoolSize`,
           refreshKey,
         })
       );
@@ -313,8 +313,8 @@ export const useAssignQuantifiers = () => {
       async (periodId: string) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/admin/periods/${periodId}/assignQuantifiers`,
+            ApiAuthPatch({
+              url: `/api/admin/periods/${periodId}/assignQuantifiers`,
               data: JSON.stringify({}),
             })
           )
@@ -383,7 +383,7 @@ export const PeriodPraiseQuery = selectorFamily({
     ({ get }) => {
       get(PeriodPraiseRequestId);
       const praise = get(
-        ApiAuthGetQuery({ endPoint: `/api/periods/${params.periodId}/praise` })
+        ApiAuthGet({ url: `/api/periods/${params.periodId}/praise` })
       );
       return praise;
     },
@@ -700,8 +700,8 @@ export const useExportPraise = () => {
 
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthGetQuery({
-              endPoint: `/api/praise/export/?periodStart=${periodStartDate}&periodEnd=${period.endDate}`,
+            ApiAuthGet({
+              url: `/api/praise/export/?periodStart=${periodStartDate}&periodEnd=${period.endDate}`,
               config: { responseType: 'blob' },
             })
           )

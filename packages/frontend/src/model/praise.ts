@@ -9,8 +9,8 @@ import {
   useRecoilValue,
 } from 'recoil';
 import {
-  ApiAuthGetQuery,
-  ApiAuthPatchQuery,
+  ApiAuthGet,
+  ApiAuthPatch,
   ApiQuery,
   isApiResponseAxiosError,
   isResponseOk,
@@ -61,9 +61,7 @@ export const SinglePraiseQuery = selectorFamily({
     (praiseId: string) =>
     ({ get }) => {
       get(PraiseRequestId);
-      const response = get(
-        ApiAuthGetQuery({ endPoint: `/api/praise/${praiseId}` })
-      );
+      const response = get(ApiAuthGet({ url: `/api/praise/${praiseId}` }));
       return response;
     },
 });
@@ -207,7 +205,7 @@ export const AllPraiseQuery = selectorFamily({
         .map((key) => `${key}=${params[key]}`)
         .join('&');
       const praises = get(
-        ApiAuthGetQuery({ endPoint: `/api/praise/all${qs ? `?${qs}` : ''}` })
+        ApiAuthGet({ url: `/api/praise/all${qs ? `?${qs}` : ''}` })
       );
       return praises;
     },
@@ -323,8 +321,8 @@ export const QuantifyPraise = selectorFamily({
     ({ get }) => {
       const { praiseId, score, dismissed, duplicatePraise } = params;
       const response = get(
-        ApiAuthPatchQuery({
-          endPoint: `/api/praise/${praiseId}/quantify`,
+        ApiAuthPatch({
+          url: `/api/praise/${praiseId}/quantify`,
           data: JSON.stringify({
             score,
             dismissed,
@@ -348,8 +346,8 @@ export const useQuantifyPraise = () => {
       ) => {
         const response = await ApiQuery(
           snapshot.getPromise(
-            ApiAuthPatchQuery({
-              endPoint: `/api/praise/${praiseId}/quantify`,
+            ApiAuthPatch({
+              url: `/api/praise/${praiseId}/quantify`,
               data: JSON.stringify({
                 score,
                 dismissed,
