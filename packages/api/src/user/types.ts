@@ -1,4 +1,3 @@
-import { QueryInput } from '@shared/inputs';
 import { UserAccountDocument } from '@useraccount/types';
 import mongoose from 'mongoose';
 
@@ -22,10 +21,6 @@ export enum UserRole {
   QUANTIFIER = 'QUANTIFIER',
 }
 
-export interface RoleChangeRequestBody {
+export interface RoleChangeRequestInput {
   role: UserRole;
-}
-
-export interface UserSearchQuery extends QueryInput {
-  search?: string;
 }
