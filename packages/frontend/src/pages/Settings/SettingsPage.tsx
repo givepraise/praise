@@ -27,7 +27,7 @@ const SettingsForm = () => {
 
   // Is only called if validate is successful
   const onSubmit = async (values: Record<string, any>) => {
-    for (let prop in values) {
+    for (const prop in values) {
       if (Object.prototype.hasOwnProperty.call(values, prop)) {
         const setting = settings?.find((s) => s.key === prop);
         if (setting && values[prop] !== setting.value) {
@@ -35,7 +35,7 @@ const SettingsForm = () => {
             ...setting,
             value: values[prop],
           } as Setting;
-          setSetting(updatedSetting);
+          await setSetting(updatedSetting);
         }
       }
     }
@@ -47,8 +47,8 @@ const SettingsForm = () => {
   //   setting.value;
   // });
 
-  let initialValues = {} as any;
-  for (let setting of settings) {
+  const initialValues = {} as any;
+  for (const setting of settings) {
     initialValues[setting.key] = setting.value;
   }
 
@@ -77,7 +77,12 @@ const SettingsForm = () => {
                       autoComplete="off"
                       className="block w-full"
                     />
-                    <FieldErrorMessage name="name" apiResponse={apiResponse} />
+                    {apiResponse && (
+                      <FieldErrorMessage
+                        name="name"
+                        apiResponse={apiResponse}
+                      />
+                    )}
                   </div>
                 )}
               </Field>

@@ -25,6 +25,7 @@ const MyPraisePageLoader = () => {
     const [praisePagination, setPraisePagination] = useRecoilState(
       AllPraiseQueryPagination(MY_PRAISE_LIST_KEY)
     );
+
     const queryResponse = useAllPraiseQuery(
       {
         page: praisePagination.currentPage,

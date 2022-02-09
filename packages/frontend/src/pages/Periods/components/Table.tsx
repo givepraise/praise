@@ -72,32 +72,36 @@ const PeriodsTable = () => {
     >
       <thead>
         {headerGroups.map((headerGroup) => (
+          // eslint-disable-next-line react/jsx-key
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
+              // eslint-disable-next-line react/jsx-key
               <th className="text-left" {...column.getHeaderProps()}>
                 {column.render('Header')}
               </th>
             ))}
-          </tr>
+          </tr> //TODO add key
         ))}
       </thead>
       <tbody {...getTableBodyProps()}>
         {rows.map((row) => {
           prepareRow(row);
           return (
+            // eslint-disable-next-line react/jsx-key
             <tr
               className={classNames(
                 row.values.status === 'CLOSED' ? 'text-gray-400' : '',
                 'cursor-pointer hover:bg-gray-100'
               )}
-              id={'period-' + row.values.name}
+              id="" //TODO set id
               {...row.getRowProps()}
               onClick={handleClick((row.original as Period)._id!)}
             >
               {row.cells.map((cell) => {
+                // eslint-disable-next-line react/jsx-key
                 return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}
-            </tr>
+            </tr> //TODO add key
           );
         })}
       </tbody>

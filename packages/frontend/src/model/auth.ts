@@ -1,7 +1,7 @@
-import { AuthResponse, NonceResponse } from 'api/dist/auth/types';
+import { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
-import { ApiGet, ApiPost, isResponseOk } from './api';
+import { ApiGet, ApiPost } from './api';
 
 export const ROLE_USER = 'USER';
 export const ROLE_ADMIN = 'ADMIN';
@@ -64,44 +64,42 @@ export const HasRole = selectorFamily({
     },
 });
 
-type NonceRequestQuery = {
+export type NonceRequestQuery = {
   ethereumAddress: string;
 };
 
 export const NonceQuery = selectorFamily<
-  NonceResponse | undefined,
+  AxiosResponse<unknown>,
   NonceRequestQuery
 >({
   key: 'NonceQuery',
   get:
     (params: NonceRequestQuery) =>
-    ({ get }): NonceResponse | undefined => {
+    ({ get }): AxiosResponse<unknown> => {
       if (!params.ethereumAddress) throw new Error('No ETH Account specified.');
       const response = get(
         ApiGet({
           url: `/api/auth/nonce?ethereumAddress=${params.ethereumAddress}`,
         })
       );
-      if (isResponseOk(response)) {
-        return response.data as NonceResponse;
-      }
+      return response;
     },
 });
 
-type AuthRequestBody = {
+export type AuthRequestBody = {
   ethereumAddress: string;
   message: string;
   signature: string;
 };
 
 export const AuthQuery = selectorFamily<
-  AuthResponse | undefined,
+  AxiosResponse<unknown>,
   AuthRequestBody
 >({
   key: 'AuthQuery',
   get:
     (params: AuthRequestBody) =>
-    ({ get }): AuthResponse | undefined => {
+    ({ get }): AxiosResponse<unknown> => {
       if (!params.ethereumAddress || !params.message || !params.signature)
         throw new Error('invalid auth params.');
       const data = JSON.stringify({
@@ -110,8 +108,6 @@ export const AuthQuery = selectorFamily<
         signature: params.signature,
       });
       const response = get(ApiPost({ url: '/api/auth', data }));
-      if (isResponseOk(response)) {
-        return response.data as AuthResponse;
-      }
+      return response;
     },
 });

@@ -16,7 +16,8 @@ interface PeriodAssignDialogProps {
 }
 
 const DialogMessage = ({ onClose, onAssign }: PeriodAssignDialogProps) => {
-  let { periodId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId } = useParams() as any;
   const { location } = useHistory();
   const poolRequirements = useVerifyQuantifierPoolSize(periodId, location.key);
 

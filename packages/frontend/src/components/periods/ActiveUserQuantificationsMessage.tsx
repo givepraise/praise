@@ -17,7 +17,7 @@ const QuantifierPeriodMessage = ({
     SinglePeriod({ periodId: quantifierData.periodId })
   );
 
-  if (!period) return null;
+  if (!period?._id) return null;
   return (
     <li key={period._id}>
       <Link to={`/quantify/period/${period._id}`}>{period.name}</Link> (

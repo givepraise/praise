@@ -32,12 +32,12 @@ const validate = (
 };
 
 const PeriodNameForm = () => {
-  const { periodId } = useParams();
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId } = useParams() as any;
 
   const period = useRecoilValue(SinglePeriod({ periodId }));
-  const [apiResponse, setApiResponse] = React.useState<AxiosResponse | null>(
-    null
-  );
+  const [apiResponse, setApiResponse] =
+    React.useState<AxiosResponse<unknown> | null>(null);
   const { updatePeriod } = useUpdatePeriod();
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
@@ -49,8 +49,10 @@ const PeriodNameForm = () => {
     const newPeriod = { ...period };
     newPeriod.name = values.name;
     const response = await updatePeriod(newPeriod);
-    if (isResponseOk(response)) toast.success('Period name saved');
-    setApiResponse(response);
+    if (response) {
+      if (isResponseOk(response)) toast.success('Period name saved');
+      setApiResponse(response);
+    }
   };
 
   if (!period) return null;
@@ -80,10 +82,10 @@ const PeriodNameForm = () => {
                       onKeyDown={(e) => {
                         switch (e.key) {
                           case 'Tab':
-                            handleSubmit();
+                            void handleSubmit();
                             break;
                           case 'Enter':
-                            handleSubmit();
+                            void handleSubmit();
                             inputRef.current?.blur();
                             break;
                           case 'Escape':

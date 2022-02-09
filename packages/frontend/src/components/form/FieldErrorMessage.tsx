@@ -4,7 +4,7 @@ import { useField, useFormState } from 'react-final-form';
 
 interface FieldErrorMessageProps {
   name: string;
-  apiResponse: AxiosResponse | AxiosError | null;
+  apiResponse: AxiosResponse<unknown> | AxiosError<unknown> | null;
 }
 const FieldErrorMessage = ({ name, apiResponse }: FieldErrorMessageProps) => {
   const { dirtySinceLastSubmit } = useFormState();

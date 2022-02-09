@@ -37,7 +37,7 @@ export default function LoginPage() {
     }
   }, [activatingConnector, ethConnector]);
 
-  let ethButtonClass =
+  const ethButtonClass =
     'px-4 py-2 font-bold text-white uppercase rounded ' +
     (ethError
       ? 'bg-red-700 hover:bg-red-700'
@@ -73,7 +73,7 @@ export default function LoginPage() {
                   key={'Injected'}
                   onClick={() => {
                     setActivatingConnector(injected);
-                    ethActivate(injected, (error) => {
+                    void ethActivate(injected, (error) => {
                       if (error.name === 'UnsupportedChainIdError')
                         alert('Please connect to Ethereum mainnet');
                       setActivatingConnector(undefined);

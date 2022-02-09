@@ -78,7 +78,7 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
   ) => {
     if (!Array.isArray(value)) {
       console.log(value);
-      setSliderValue(value as number);
+      setSliderValue(value);
     }
   };
 
@@ -89,8 +89,8 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
     const q = quantification(praise);
     const score = valueToScore(value);
 
-    quantify(
-      praise!._id,
+    void quantify(
+      praise._id,
       score,
       q!.dismissed ? q!.dismissed : false,
       q!.duplicatePraise ? q!.duplicatePraise : null

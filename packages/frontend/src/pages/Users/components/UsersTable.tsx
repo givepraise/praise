@@ -21,8 +21,8 @@ const UsersTable = () => {
 
   const deleteDialogRef = React.useRef(null);
 
-  let [isOpen, setIsOpen] = React.useState(false);
-  let [selectedQuantifier, setSelectedQuantifier] = React.useState<User>();
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [selectedQuantifier, setSelectedQuantifier] = React.useState<User>();
 
   const columns = React.useMemo(
     () => [
@@ -68,7 +68,7 @@ const UsersTable = () => {
   };
 
   const removeQuantifier = (id: string) => {
-    removeRole(id, UserRole.QUANTIFIER);
+    void removeRole(id, UserRole.QUANTIFIER);
   };
 
   return (
@@ -77,9 +77,11 @@ const UsersTable = () => {
         {rows.map((row) => {
           prepareRow(row);
           return (
+            // eslint-disable-next-line react/jsx-key
             <tr {...row.getRowProps()}>
               {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                // eslint-disable-next-line react/jsx-key
+                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>; //TODO fix
               })}
               <td className="w-8">
                 <button
@@ -95,7 +97,7 @@ const UsersTable = () => {
                   />
                 </button>
               </td>
-            </tr>
+            </tr> //TODO fix
           );
         })}
 

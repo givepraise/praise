@@ -12,6 +12,7 @@ const PraiseRow = ({ praise }: PraiseRowProps) => {
   const history = useHistory();
 
   const handleClick = () => {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     history.push(`/praise/${praise._id}`);
   };
 
@@ -38,7 +39,8 @@ const PraiseRow = ({ praise }: PraiseRowProps) => {
 };
 
 const PeriodReceiverTable = () => {
-  let { periodId, receiverId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId, receiverId } = useParams() as any;
 
   const data = useRecoilValue(
     AllPeriodReceiverPraise({ periodId, receiverId })
@@ -48,7 +50,7 @@ const PeriodReceiverTable = () => {
   return (
     <div>
       {data?.map((praise) => (
-        <PraiseRow praise={praise} />
+        <PraiseRow praise={praise} key={praise?._id} />
       ))}
     </div>
   );

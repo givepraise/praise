@@ -1,11 +1,18 @@
-import { isResponseOk, useAuthApiQuery } from '@/model/api';
-import { AuthQuery, NonceQuery } from '@/model/auth';
+import { isResponseOk } from '@/model/api';
+import {
+  AuthQuery,
+  AuthRequestBody,
+  NonceQuery,
+  NonceRequestQuery,
+  SessionToken,
+} from '@/model/auth';
 import * as localStorage from '@/model/localStorage';
 import { useWeb3React } from '@web3-react/core';
 import { AuthResponse, NonceResponse } from 'api/dist/auth/types';
+import { AxiosResponse } from 'axios';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useRecoilCallback, useRecoilState } from 'recoil';
 
 interface LocationState {
   from: {
@@ -22,41 +29,82 @@ const generateLoginMessage = (account: string, nonce: string): string => {
 
 export default function LoginButton() {
   const LoginButtonInner = () => {
-    const { account: ethereumAccount, library: ethLibrary } = useWeb3React();
+    const { account: ethereumAddress, library: ethLibrary } = useWeb3React();
     const [message, setMessage] = React.useState<string | any>(undefined);
     const [signature, setSignature] = React.useState<string | any>(undefined);
     const [sessionToken, setSessionToken] = useRecoilState(SessionToken);
+    const [nonceResponse, setNonceResponse] = React.useState<
+      AxiosResponse<unknown> | undefined
+    >(undefined);
+    const [authResponse, setAuthResponse] = React.useState<
+      AxiosResponse<unknown> | undefined
+    >(undefined);
     const history = useHistory();
     const location = useLocation<LocationState>();
 
     // 1. Fetch nonce from server
-    const nonceResponse = useAuthApiQuery(NonceQuery({ ethereumAccount })); //TODO Not done! See ActivateButton.tsx for inspiration.
+    const fetchNonce = useRecoilCallback(
+      ({ snapshot }) =>
+        async (params: NonceRequestQuery): Promise<AxiosResponse<unknown>> => {
+          const response = await snapshot.getPromise(NonceQuery(params));
+          return response;
+        },
+      [ethereumAddress]
+    );
+    React.useEffect(() => {
+      if (!ethereumAddress) return;
+
+      void (async (): Promise<void> => {
+        const response = await fetchNonce({
+          ethereumAddress,
+        });
+        setNonceResponse(response);
+      })();
+    }, [ethereumAddress]);
 
     // 4. Verify signature with server
-    const sessionResponse = useAuthApiQuery(
-      AuthQuery({ ethereumAccount, message, signature })
+    const fetchSession = useRecoilCallback(
+      ({ snapshot }) =>
+        async (params: AuthRequestBody): Promise<AxiosResponse<unknown>> => {
+          const response = await snapshot.getPromise(AuthQuery(params));
+          return response;
+        },
+      [ethereumAddress]
     );
+    React.useEffect(() => {
+      if (!ethereumAddress || !message || !signature) return;
+
+      void (async (): Promise<void> => {
+        const response = await fetchSession({
+          ethereumAddress,
+          message,
+          signature,
+        });
+        setAuthResponse(response);
+      })();
+    }, [ethereumAddress, message, signature]);
 
     // 2. Generate login message to sign
     React.useEffect(() => {
-      if (!ethereumAccount || !nonceResponse) return;
+      console.log(nonceResponse);
+      if (!ethereumAddress || !nonceResponse) return;
       if (isResponseOk(nonceResponse)) {
         const nonceData = nonceResponse.data as NonceResponse;
-        setMessage(generateLoginMessage(ethereumAccount, nonceData.nonce));
+        setMessage(generateLoginMessage(ethereumAddress, nonceData.nonce));
       }
-    }, [ethereumAccount, nonceResponse]);
+    }, [ethereumAddress, nonceResponse]);
 
     // 5. Authetication response
     React.useEffect(() => {
-      if (!ethereumAccount || !sessionResponse) return;
-      if (isResponseOk(sessionResponse)) {
-        const sessionData = sessionResponse.data as AuthResponse;
+      if (!ethereumAddress || !authResponse) return;
+      if (isResponseOk(authResponse)) {
+        const sessionData = authResponse.data as AuthResponse;
         // Save session id for future api calls
-        localStorage.setSessionToken(ethereumAccount, sessionData.accessToken);
+        localStorage.setSessionToken(ethereumAddress, sessionData.accessToken);
         // Set session token in global state
         setSessionToken(sessionData.accessToken);
       }
-    }, [ethereumAccount, sessionResponse, setSessionToken]);
+    }, [ethereumAddress, authResponse, setSessionToken]);
 
     // 6. Redirect after login
     React.useEffect(() => {
