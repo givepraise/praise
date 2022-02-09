@@ -207,7 +207,8 @@ export const AllPraiseQuery = selectorFamily<
       if (!query) throw new Error('Invalid query');
       get(PraiseRequestId);
       const qs = Object.keys(query)
-        .map((key) => `${key}=${query[key]}`)
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        .map((key) => `${key}=${query[key]}`) //TODO fix
         .join('&');
       const response = get(
         ApiAuthGet({ url: `/api/praise/all${qs ? `?${qs}` : ''}` })
