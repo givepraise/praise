@@ -77,7 +77,6 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
     value: number | number[]
   ) => {
     if (!Array.isArray(value)) {
-      console.log(value);
       setSliderValue(value);
     }
   };

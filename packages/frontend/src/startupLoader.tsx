@@ -6,7 +6,7 @@ import {
 import { useAllUsersQuery } from '@/model/users';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { useRecoilValue } from 'recoil';
 import { HasRole } from './model/auth';
 import { useAllSettingsQuery } from './model/settings';
@@ -20,7 +20,7 @@ const QuantifyPeriodLoader = ({ periodId }: QuantifyPeriodLoaderProps) => {
   return null;
 };
 
-export const StartupLoader = () => {
+export const StartupLoader: React.FC = (): ReactElement | null => {
   useAllPeriodsQuery();
   useAllUsersQuery();
   useAllSettingsQuery();
@@ -44,7 +44,7 @@ export const StartupLoader = () => {
   return null;
 };
 
-export const LoadScreen = () => {
+export const LoadScreen: React.FC = (): ReactElement | null => {
   return (
     <div className="fixed top-0 left-0 z-50 block w-full h-full bg-white opacity-75">
       <span

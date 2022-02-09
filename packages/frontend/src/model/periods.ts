@@ -59,12 +59,11 @@ export const AllPeriodsQuery = selector({
   key: 'AllPeriodsQuery',
   get: ({ get }) => {
     get(PeriodsRequestId);
-    const periods = get(
+    return get(
       ApiAuthGet({
         url: '/api/periods/all?sortColumn=endDate&sortType=desc',
       })
     );
-    return periods;
   },
 });
 
@@ -93,7 +92,7 @@ export const SinglePeriodByDate = selectorFamily({
     },
 });
 
-export const useAllPeriodsQuery = () => {
+export const useAllPeriodsQuery = (): AxiosResponse<unknown> => {
   const allPeriodsQueryResponse = useAuthApiQuery(AllPeriodsQuery);
   const [allPeriods, setAllPeriods] = useRecoilState(AllPeriods);
 
