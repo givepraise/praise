@@ -8,7 +8,7 @@ import { InjectedConnector } from '@web3-react/injected-connector';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import EthAccount from './components/EthAccount';
-import Login from './components/Login';
+import { LoginButton } from './components/Login';
 
 const hasMetaMask = () => {
   return typeof (window as any).ethereum !== 'undefined';
@@ -104,7 +104,7 @@ export default function LoginPage() {
               </div>
             )}
           <div className="mb-3 text-lg font-semibold">2. Login</div>
-          <Login />
+          <LoginButton />
         </div>
       </div>
     </div>

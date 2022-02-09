@@ -19,5 +19,5 @@
     "noImplicitAny": false
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }

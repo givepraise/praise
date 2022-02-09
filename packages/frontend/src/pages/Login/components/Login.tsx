@@ -114,4 +114,4 @@ const LoginButton: React.FC = (): ReactElement => {
   );
 };
 
-export default LoginButton;
+export { LoginButton };

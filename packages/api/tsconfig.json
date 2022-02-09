@@ -13,6 +13,7 @@
     "paths": {
       "@activate/*": ["src/activate/*"],
       "@auth/*": ["src/auth/*"],
+      "@middleware/*": ["src/middleware/*"],
       "@period/*": ["src/period/*"],
       "@praise/*": ["src/praise/*"],
       "@settings/*": ["src/settings/*"],
