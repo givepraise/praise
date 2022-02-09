@@ -55,42 +55,11 @@ void (async (): Promise<void> => {
   }
   await seedSettings();
   await seedAdmins();
-  // Add APIs
+  // API routes
   app.use('/api', baseRouter);
+
+  // Error handling
   app.use(ErrorHandler);
 })();
-
-// (async (): Promise<void> => {
-//   try {
-//     await mongoose.connect(
-//       process.env.MONGO_DB as string,
-//       {
-//         useNewUrlParser: true,
-//       } as ConnectOptions
-//     );
-//     // app.use(
-//     //   cors({
-//     //     origin: '*',
-//     //   })
-//     // );
-//     // app.use(json());
-//     // app.use(urlencoded({ extended: true }));
-//     // app.use(cookieParser(cookieProps.secret));
-//     // // Show routes called in console during development
-//     // if (process.env.NODE_ENV === 'development') {
-//     //   app.use(morgan('dev'));
-//     //   seedData();
-//     // }
-//     // // Security
-//     // if (process.env.NODE_ENV === 'production') {
-//     //   app.use(helmet());
-//     // }
-//     // seedSettings();
-//     // seedAdmins();
-//     // // Add APIs
-//     // app.use('/api', baseRouter);
-//     // app.use(ErrorHandler);
-//   } catch (error) {}
-// })();
 
 export { app };
