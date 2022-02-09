@@ -11,7 +11,8 @@ import { useRecoilValue } from 'recoil';
 import PraiseDetailTable from './components/PraiseDetailTable';
 
 const PeriodReceiverMessage = () => {
-  let { praiseId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { praiseId } = useParams() as any;
   useSinglePraiseQuery(praiseId);
   const praise = useRecoilValue(SinglePraiseExt(praiseId));
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
@@ -43,7 +44,7 @@ const PeriodReceiverMessage = () => {
 const QuantSummaryPraisePage = () => {
   return (
     <>
-      <BreadCrumb name={`Praise details`} icon={faCalendarAlt} />
+      <BreadCrumb name={'Praise details'} icon={faCalendarAlt} />
       <BackLink />
 
       <div className="w-2/3 praise-box">

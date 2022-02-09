@@ -1,4 +1,3 @@
-import { Mark } from '@mui/material';
 import React from 'react';
 
 export const useOutsideAlerter = (ref: any) => {
@@ -39,6 +38,11 @@ export const shortenEthAddress = (address: string) => {
 };
 
 export const praiseScore = [0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144];
+
+interface Mark {
+  value: number;
+  label?: string;
+}
 
 export const getPraiseMarks = () => {
   const marks: Mark[] = [];

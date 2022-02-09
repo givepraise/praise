@@ -8,7 +8,8 @@ import { Link, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 export const QuantifyBackNextLink = () => {
-  let { periodId, receiverId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId, receiverId } = useParams() as any;
 
   const receivers = useRecoilValue(
     PeriodActiveQuantifierReceivers({ periodId })
@@ -36,6 +37,7 @@ export const QuantifyBackNextLink = () => {
         {backReceiver && (
           <Link
             replace
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             to={`/quantify/period/${periodId}/receiver/${backReceiver.receiverId}`}
           >
             <FontAwesomeIcon icon={faArrowLeft} size="1x" className="mr-2" />
@@ -54,6 +56,7 @@ export const QuantifyBackNextLink = () => {
         {forwardReceiver && (
           <Link
             replace
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             to={`/quantify/period/${periodId}/receiver/${forwardReceiver.receiverId}`}
           >
             {usePseudonyms ? (

@@ -15,7 +15,8 @@ import QuantifierTable from './components/QuantifierTable';
 import ReceiverTable from './components/ReceiverTable';
 
 const PeriodDetailHead = () => {
-  let { periodId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId } = useParams() as any;
   const period = useRecoilValue(SinglePeriod({ periodId }));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
 

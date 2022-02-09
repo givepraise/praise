@@ -1,10 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import {
-  ForbiddenError,
-  NotFoundError,
-  UnauthorizedError,
-} from '@shared/errors';
+import { ForbiddenError, UnauthorizedError } from '@shared/errors';
 import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
 import { NextFunction, Request, Response } from 'express';
@@ -24,17 +20,17 @@ export const authMiddleware = (role: UserRole) => {
     if (!Array.isArray(bearer) || bearer.length !== 2)
       throw new UnauthorizedError('Invalid authorization bearer format.');
 
-    // Decode JWT and check permissions
+    // Separate the accessToken
     const accessToken = bearer[1];
-    const clientData = await jwtService.decodeJwt(accessToken);
 
-    if (!clientData.roles.includes(role))
-      throw new ForbiddenError('User is not authorized to access resource.');
-
+    // Find User with matching token
     const user = await UserModel.findOne({
-      ethereumAddress: clientData.ethereumAddress,
+      accessToken,
     });
-    if (!user) throw new NotFoundError('User');
+
+    // No user or wrong permissions = Forbidden
+    if (!user || !user.roles.includes(role))
+      throw new ForbiddenError('User is not authorized to access resource.');
 
     // Save auth role and current user for usage in controllers
     res.locals.authRole = role;

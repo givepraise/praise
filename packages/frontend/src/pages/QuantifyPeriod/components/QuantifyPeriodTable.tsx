@@ -22,7 +22,8 @@ const DoneLabel = () => {
 
 const QuantifyPeriodTable = () => {
   const history = useHistory();
-  let { periodId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId } = useParams() as any;
 
   const data = useRecoilValue(PeriodActiveQuantifierReceivers({ periodId }));
   const usePseudonyms = useRecoilValue(
@@ -50,6 +51,7 @@ const QuantifyPeriodTable = () => {
         Cell: (data: any) => {
           const item = data.row.original;
           if (!item) return null;
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           return `${item.count - item.done} / ${item.count}`;
         },
       },
@@ -92,8 +94,10 @@ const QuantifyPeriodTable = () => {
     >
       <thead>
         {headerGroups.map((headerGroup) => (
+          // eslint-disable-next-line react/jsx-key
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
+              // eslint-disable-next-line react/jsx-key
               <th className="text-left" {...column.getHeaderProps()}>
                 {column.render('Header')}
               </th>
@@ -105,13 +109,15 @@ const QuantifyPeriodTable = () => {
         {rows.map((row) => {
           prepareRow(row);
           return (
+            // eslint-disable-next-line react/jsx-key
             <tr
               className="cursor-pointer hover:bg-gray-100"
-              id={'period-' + row.values.name}
+              id=""
               {...row.getRowProps()}
               onClick={handleClick(row.original as QuantifierReceiverData)}
             >
               {row.cells.map((cell) => {
+                // eslint-disable-next-line react/jsx-key
                 return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}
             </tr>

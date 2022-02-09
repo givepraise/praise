@@ -1,7 +1,4 @@
-import {
-  PaginatedResponseBody,
-  QueryInputParsedQs,
-} from 'api/dist/shared/types';
+import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosResponse } from 'axios';
 import React from 'react';
 import {
@@ -201,17 +198,17 @@ export const PraiseRequestId = atom({
 
 export const AllPraiseQuery = selectorFamily<
   AxiosResponse<PaginatedResponseBody<Praise>> | undefined,
-  QueryInputParsedQs
+  AllPraiseQueryParameters
 >({
   key: 'AllPraiseQuery',
   get:
-    (query: QueryInputParsedQs) =>
+    (query: AllPraiseQueryParameters) =>
     ({ get }): AxiosResponse<PaginatedResponseBody<Praise>> | undefined => {
       if (!query) throw new Error('Invalid query');
       get(PraiseRequestId);
       const qs = Object.keys(query)
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        .map((key) => `${key}=${query[key]}`) //TODO Remove comment and fix!
+        .map((key) => `${key}=${query[key]}`) //TODO fix
         .join('&');
       const response = get(
         ApiAuthGet({ url: `/api/praise/all${qs ? `?${qs}` : ''}` })
@@ -240,16 +237,16 @@ export const AllPraiseQueryPagination = atomFamily<
   },
 });
 
-export interface AllPraiseQueryParameters {
+export type AllPraiseQueryParameters = {
   sortColumn?: string;
   sortType?: string;
   limit?: number;
   page?: number;
   receiver?: string | null;
-}
+};
 
 export const useAllPraiseQuery = (
-  queryParams: QueryInputParsedQs,
+  queryParams: AllPraiseQueryParameters,
   listKey: string
 ) => {
   const allPraiseQueryResponse = useAuthApiQuery(AllPraiseQuery(queryParams));

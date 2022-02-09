@@ -11,7 +11,8 @@ import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 
 const PraiseDetailTable = () => {
-  let { praiseId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { praiseId } = useParams() as any;
 
   const praise = useRecoilValue(SinglePraiseExt(praiseId));
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
@@ -50,6 +51,7 @@ const PraiseDetailTable = () => {
       {
         Header: 'Duplicate',
         accessor: 'duplicatePraise',
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         Cell: (data: any) => (data.value ? `#${data.value.slice(-4)}` : ''),
       },
     ],
@@ -81,24 +83,28 @@ const PraiseDetailTable = () => {
     >
       <thead>
         {headerGroups.map((headerGroup) => (
+          // eslint-disable-next-line react/jsx-key
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
+              // eslint-disable-next-line react/jsx-key
               <th className="text-left" {...column.getHeaderProps()}>
                 {column.render('Header')}
               </th>
             ))}
-          </tr>
+          </tr> //TODO fix
         ))}
       </thead>
       <tbody {...getTableBodyProps()}>
         {rows.map((row) => {
           prepareRow(row);
           return (
-            <tr id={'period-' + row.values.name} {...row.getRowProps()}>
+            // eslint-disable-next-line react/jsx-key
+            <tr id="" {...row.getRowProps()}>
               {row.cells.map((cell) => {
+                // eslint-disable-next-line react/jsx-key
                 return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}
-            </tr>
+            </tr> //TODO fix key and id
           );
         })}
       </tbody>

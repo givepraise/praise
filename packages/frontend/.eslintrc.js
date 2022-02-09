@@ -1,27 +1,22 @@
 module.exports = {
+  plugins: ['react', 'react-hooks'],
   extends: [
     '../../.eslintrc.js',
-    'plugin:jsx-a11y/recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
   ],
-  plugins: ['jsx-a11y', 'react', 'react-hooks'],
   overrides: [
     {
-      files: [
-        './src/pages/*.tsx',
-        './src/components/**/*.tsx',
-        './src/components/hooks/*.ts',
-      ],
+      files: ['src/**/*.ts', 'src/**/*.tsx'],
       rules: {
         'import/no-default-export': 'off',
+        '@typescript-eslint/internal/prefer-ast-types-enum': 'off',
       },
     },
   ],
   rules: {
     'react/jsx-no-target-blank': 'off',
     'react/no-unescaped-entities': 'off',
-    '@typescript-eslint/internal/prefer-ast-types-enum': 'off',
     'react-hooks/exhaustive-deps': 'off', // TODO: enable it later
     'react/react-in-jsx-scope': 'off',
   },

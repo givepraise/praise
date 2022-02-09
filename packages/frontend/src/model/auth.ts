@@ -1,7 +1,7 @@
-import { AuthResponse, NonceResponse } from 'api/dist/auth/types';
+import { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
-import { ApiGet, ApiPost, isResponseOk } from './api';
+import { ApiGet, ApiPost } from './api';
 
 export const ROLE_USER = 'USER';
 export const ROLE_ADMIN = 'ADMIN';
@@ -57,61 +57,47 @@ export const HasRole = selectorFamily({
   key: 'HasRole',
   get:
     (role: string) =>
-    ({ get }): boolean => {
+    ({ get }): boolean | undefined => {
       const userRoles = get(ActiveUserRoles);
-      if (!userRoles) throw new Error('No user roles available');
+      if (!userRoles) return undefined;
       return userRoles.includes(role);
     },
 });
 
-type NonceRequestQuery = {
-  ethereumAddress: string | null | undefined;
-};
-
 export const NonceQuery = selectorFamily<
-  NonceResponse | undefined,
-  NonceRequestQuery
+  AxiosResponse<unknown> | undefined,
+  string | null | undefined
 >({
   key: 'NonceQuery',
   get:
-    (params: NonceRequestQuery) =>
-    ({ get }): NonceResponse | undefined => {
-      if (!params.ethereumAddress) throw new Error('No ETH Account specified.');
-      const response = get(
+    (ethereumAddress: string | null | undefined) =>
+    ({ get }): AxiosResponse<unknown> | undefined => {
+      if (!ethereumAddress) return undefined;
+      return get(
         ApiGet({
-          url: `/api/auth/nonce?ethereumAddress=${params.ethereumAddress}`,
+          url: `/api/auth/nonce?ethereumAddress=${ethereumAddress}`,
         })
       );
-      if (isResponseOk(response)) {
-        return response.data as NonceResponse;
-      }
     },
 });
 
-type AuthRequestBody = {
+export type AuthQueryParams = {
   ethereumAddress: string | null | undefined;
-  message: string;
-  signature: string;
+  message: string | undefined;
+  signature: string | undefined;
 };
 
 export const AuthQuery = selectorFamily<
-  AuthResponse | undefined,
-  AuthRequestBody
+  AxiosResponse<unknown> | undefined,
+  AuthQueryParams
 >({
   key: 'AuthQuery',
   get:
-    (params: AuthRequestBody) =>
-    ({ get }): AuthResponse | undefined => {
-      if (!params.ethereumAddress || !params.message || !params.signature)
-        throw new Error('invalid auth params.');
-      const data = JSON.stringify({
-        ethereumAddress: params.ethereumAddress,
-        message: params.message,
-        signature: params.signature,
-      });
-      const response = get(ApiPost({ url: '/api/auth', data }));
-      if (isResponseOk(response)) {
-        return response.data as AuthResponse;
-      }
+    (params: AuthQueryParams) =>
+    ({ get }): AxiosResponse<unknown> | undefined => {
+      const { ethereumAddress, message, signature } = params;
+      if (!ethereumAddress || !message || !signature) return undefined;
+      const data = JSON.stringify(params);
+      return get(ApiPost({ url: '/api/auth', data }));
     },
 });

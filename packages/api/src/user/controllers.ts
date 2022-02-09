@@ -87,6 +87,8 @@ const addRole = async (
 
   if (!user.roles.includes(role)) {
     user.roles.push(role);
+    user.accessToken = undefined;
+    user.nonce = undefined;
     await user.save();
   }
   res.status(200).json(userTransformer(res, user));
@@ -110,6 +112,8 @@ const removeRole = async (
 
   if (roleIndex > -1) {
     user.roles.splice(roleIndex, 1);
+    user.accessToken = undefined;
+    user.nonce = undefined;
     await user.save();
   }
   res.status(200).json(userTransformer(res, user));

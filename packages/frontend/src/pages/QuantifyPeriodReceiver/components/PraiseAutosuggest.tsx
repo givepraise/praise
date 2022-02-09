@@ -22,6 +22,7 @@ const PraiseAutosuggest = ({
   onClose,
   praise,
 }: PraiseAutosuggestProps) => {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId, receiverId } = useParams() as any;
   const userId = useRecoilValue(ActiveUserId);
 
@@ -104,7 +105,7 @@ const PraiseAutosuggest = ({
                   highlightedIndex === index ? 'bg-gray-100' : '',
                   'py-2 pl-2'
                 )}
-                key={`${item}${index}`}
+                key="" //TODO fix key
                 {...getItemProps({ item, index })}
               >
                 #{item && item._id.slice(-4)} -{' '}

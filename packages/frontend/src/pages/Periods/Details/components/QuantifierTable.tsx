@@ -10,7 +10,8 @@ import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 
 const QuantifierTable = () => {
-  let { periodId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId } = useParams() as any;
   const period = useRecoilValue(SinglePeriod({ periodId }));
   usePeriodPraiseQuery(periodId);
 
@@ -28,7 +29,8 @@ const QuantifierTable = () => {
         accessor: '',
         Cell: (data: any) => {
           return data.row.original
-            ? `${data.row.original.done} / ${data.row.original.count}`
+            ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+              `${data.row.original.done} / ${data.row.original.count}` //TODO FIX
             : null;
         },
       },
@@ -57,24 +59,28 @@ const QuantifierTable = () => {
     >
       <thead>
         {headerGroups.map((headerGroup) => (
+          // eslint-disable-next-line react/jsx-key
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
+              // eslint-disable-next-line react/jsx-key
               <th className="text-left" {...column.getHeaderProps()}>
                 {column.render('Header')}
               </th>
             ))}
-          </tr>
+          </tr> //TODO FIX
         ))}
       </thead>
       <tbody {...getTableBodyProps()}>
         {rows.map((row) => {
           prepareRow(row);
           return (
-            <tr id={'period-' + row.values.name} {...row.getRowProps()}>
+            // eslint-disable-next-line react/jsx-key
+            <tr id="" {...row.getRowProps()}>
               {row.cells.map((cell) => {
+                // eslint-disable-next-line react/jsx-key
                 return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}
-            </tr>
+            </tr> //TODO FIX ID and KEY
           );
         })}
       </tbody>

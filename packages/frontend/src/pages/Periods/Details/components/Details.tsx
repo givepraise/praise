@@ -25,11 +25,12 @@ import PeriodCloseDialog from './CloseDialog';
 import PeriodDateForm from './PeriodDateForm';
 
 const PeriodDetails = () => {
-  let [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
-  let [isAssignDialogOpen, setIsAssignDialogOpen] = React.useState(false);
+  const [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
+  const [isAssignDialogOpen, setIsAssignDialogOpen] = React.useState(false);
 
   const allPeriods = useRecoilValue(AllPeriods);
-  let { periodId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId } = useParams() as any;
   const period = useRecoilValue(SinglePeriod({ periodId }));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
@@ -48,12 +49,12 @@ const PeriodDetails = () => {
     : 'Dawn of time';
 
   const handleClosePeriod = () => {
-    closePeriod(periodId);
+    void closePeriod(periodId);
   };
 
   const handleAssign = () => {
     const promise = assignQuantifiers(periodId);
-    toast.promise(promise, {
+    void toast.promise(promise, {
       loading: 'Assigning quantifiers …',
       success: 'Quantifiers assigned',
       error: 'Assign failed',
@@ -61,7 +62,7 @@ const PeriodDetails = () => {
   };
 
   const handleExport = () => {
-    exportPraise(period);
+    void exportPraise(period);
   };
 
   if (!period) return <div>Period not found.</div>;

@@ -56,6 +56,7 @@ const getRemoveButton = (action: any) => {
 };
 
 const QuantifyTable = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId, receiverId } = useParams() as any;
   usePeriodPraiseQuery(periodId);
   const userId = useRecoilValue(ActiveUserId);
@@ -67,11 +68,12 @@ const QuantifyTable = () => {
   );
   const { quantify } = useQuantifyPraise();
 
-  let [isDismissDialogOpen, setIsDismissDialogOpen] = React.useState(false);
-  let [isDuplicateDialogOpen, setIsDuplicateDialogOpen] = React.useState(false);
-  let [selectedPraise, setSelectedPraise] = React.useState<Praise | undefined>(
-    undefined
-  );
+  const [isDismissDialogOpen, setIsDismissDialogOpen] = React.useState(false);
+  const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] =
+    React.useState(false);
+  const [selectedPraise, setSelectedPraise] = React.useState<
+    Praise | undefined
+  >(undefined);
 
   if (!data) return null;
 
@@ -90,19 +92,19 @@ const QuantifyTable = () => {
   };
 
   const handleDismiss = () => {
-    quantify(selectedPraise!._id, 0, true, null);
+    void quantify(selectedPraise!._id, 0, true, null);
   };
 
   const handleDuplicate = (duplicatePraiseId: string) => {
-    quantify(selectedPraise!._id, 0, false, duplicatePraiseId);
+    void quantify(selectedPraise!._id, 0, false, duplicatePraiseId);
   };
 
   const handleRemoveDismiss = (id: string) => {
-    quantify(selectedPraise!._id, 0, false, null);
+    void quantify(selectedPraise!._id, 0, false, null);
   };
 
   const handleRemoveDuplicate = (id: string) => {
-    quantify(selectedPraise!._id, 0, false, null);
+    void quantify(selectedPraise!._id, 0, false, null);
   };
 
   return (
@@ -154,6 +156,7 @@ const QuantifyTable = () => {
                       ) : duplicate(praise) ? (
                         <>
                           <InlineLabel
+                            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                             text={`Duplicate of: #${quantification(
                               praise
                             )!.duplicatePraise?.slice(-4)}`}
