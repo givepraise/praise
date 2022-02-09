@@ -65,7 +65,7 @@ export const HasRole = selectorFamily({
 });
 
 type NonceRequestQuery = {
-  ethereumAddress: string;
+  ethereumAddress: string | null | undefined;
 };
 
 export const NonceQuery = selectorFamily<
@@ -89,7 +89,7 @@ export const NonceQuery = selectorFamily<
 });
 
 type AuthRequestBody = {
-  ethereumAddress: string;
+  ethereumAddress: string | null | undefined;
   message: string;
   signature: string;
 };

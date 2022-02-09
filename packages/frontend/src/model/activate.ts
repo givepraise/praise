@@ -1,4 +1,4 @@
-import { ActivateRequestBody } from 'api/dist/activate/types';
+import { ActivateRequestBody } from 'api/src/activate/types';
 import { AxiosResponse } from 'axios';
 import { atom, selectorFamily, SerializableParam } from 'recoil';
 import { ApiPost } from './api';

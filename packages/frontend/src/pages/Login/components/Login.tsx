@@ -1,8 +1,8 @@
 import { isResponseOk, useAuthApiQuery } from '@/model/api';
-import { AuthQuery, NonceQuery } from '@/model/auth';
+import { AuthQuery, NonceQuery, SessionToken } from '@/model/auth';
 import * as localStorage from '@/model/localStorage';
 import { useWeb3React } from '@web3-react/core';
-import { AuthResponse, NonceResponse } from 'api/dist/auth/types';
+import { AuthResponse, NonceResponse } from 'api/src/auth/types';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
@@ -20,7 +20,7 @@ const generateLoginMessage = (account: string, nonce: string): string => {
   );
 };
 
-export default function LoginButton() {
+function LoginButton() {
   const LoginButtonInner = () => {
     const { account: ethereumAccount, library: ethLibrary } = useWeb3React();
     const [message, setMessage] = React.useState<string | any>(undefined);
@@ -30,11 +30,13 @@ export default function LoginButton() {
     const location = useLocation<LocationState>();
 
     // 1. Fetch nonce from server
-    const nonceResponse = useAuthApiQuery(NonceQuery({ ethereumAccount })); //TODO Not done! See ActivateButton.tsx for inspiration.
+    const nonceResponse = useAuthApiQuery(
+      NonceQuery({ ethereumAddress: ethereumAccount })
+    ); //TODO Not done! See ActivateButton.tsx for inspiration.
 
     // 4. Verify signature with server
     const sessionResponse = useAuthApiQuery(
-      AuthQuery({ ethereumAccount, message, signature })
+      AuthQuery({ ethereumAddress: ethereumAccount, message, signature })
     );
 
     // 2. Generate login message to sign
@@ -110,3 +112,5 @@ export default function LoginButton() {
     </React.Suspense>
   );
 }
+
+export { LoginButton };
