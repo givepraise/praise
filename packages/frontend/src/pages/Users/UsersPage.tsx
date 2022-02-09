@@ -8,7 +8,7 @@ import React from 'react';
 import UsersTable from './components/UsersTable';
 
 const AddRoleButton = () => {
-  let [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
   const { addRole } = useAdminUsers();
 
   //const addDialogRef = React.useRef(null);
@@ -18,7 +18,7 @@ const AddRoleButton = () => {
   };
 
   const handleQuantifierAdded = (id: string) => {
-    addRole(id, UserRole.QUANTIFIER);
+    void addRole(id, UserRole.QUANTIFIER);
   };
 
   return (

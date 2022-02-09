@@ -45,7 +45,7 @@ export const auth = async (
 
   // Find previously generated nonce
   const user = (await UserModel.findOne({ ethereumAddress })
-    .select('nonce')
+    .select('nonce roles')
     .exec()) as UserDocument;
   if (!user) throw new NotFoundError('User');
   if (!user.nonce)

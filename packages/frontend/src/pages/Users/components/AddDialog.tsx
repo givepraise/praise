@@ -99,7 +99,8 @@ const UserAutosuggest = ({
                   highlightedIndex === index ? 'bg-gray-100' : '',
                   'py-2 pl-2'
                 )}
-                key={`${item}${index}`}
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                key={`${item}${index}`} //TODO fix
                 {...getItemProps({ item, index })}
               >
                 {getUsername(item)}

@@ -11,7 +11,8 @@ import { useRecoilValue } from 'recoil';
 import QuantifyPeriodTable from './components/QuantifyPeriodTable';
 
 const PeriodMessage = () => {
-  let { periodId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId } = useParams() as any;
 
   const period = useRecoilValue(SinglePeriod({ periodId }));
   const quantificationData = useRecoilValue(

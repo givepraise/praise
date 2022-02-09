@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import logger from 'jet-logger';
 import { errorCodes, errorNames } from './constants';
 import { ErrorInterface } from './types';
@@ -43,7 +43,12 @@ const handleAppError = (err: ErrorInterface, res: Response): void => {
   res.status(code).send(error);
 };
 
-export const ErrorHandler = (err: any, req: Request, res: Response): void => {
+export const ErrorHandler = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   logger.err(err);
 
   try {

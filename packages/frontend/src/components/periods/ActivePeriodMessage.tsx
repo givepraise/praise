@@ -1,10 +1,10 @@
 import { AllPeriods } from '@/model/periods';
 import { formatDate } from '@/utils/date';
 import { getActivePeriod } from '@/utils/periods';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { useRecoilValue } from 'recoil';
 
-export const ActivePeriodMessage = () => {
+export const ActivePeriodMessage: React.FC = (): ReactElement => {
   const allPeriods = useRecoilValue(AllPeriods);
 
   const noPeriodMessage = 'There is no active quantification period.';

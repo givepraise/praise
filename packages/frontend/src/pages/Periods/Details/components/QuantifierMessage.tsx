@@ -9,7 +9,8 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 export const QuantifierMessage = () => {
-  let { periodId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId } = useParams() as any;
   const history = useHistory();
   const period = useRecoilValue(SinglePeriod({ periodId }));
   const quantificationData = useRecoilValue(
@@ -17,6 +18,7 @@ export const QuantifierMessage = () => {
   );
 
   if (!period) return null;
+
   return quantificationData ? (
     <div className="w-2/3 praise-box">
       <div>
@@ -29,7 +31,11 @@ export const QuantifierMessage = () => {
           {quantificationData.count - quantificationData.done}
           <button
             className="block mt-5 praise-button"
-            onClick={() => history.push(`/quantify/period/${period._id}`)}
+            onClick={() => {
+              if (period?._id) {
+                history.push(`/quantify/period/${period._id}`);
+              }
+            }}
           >
             <FontAwesomeIcon icon={faCalculator} size="1x" className="mr-2" />
             Quantify

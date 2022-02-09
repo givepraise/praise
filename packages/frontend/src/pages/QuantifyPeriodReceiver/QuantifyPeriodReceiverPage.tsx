@@ -18,7 +18,8 @@ import { useRecoilValue } from 'recoil';
 import QuantifyTable from './components/QuantifyTable';
 
 const PeriodBreadCrumb = () => {
-  let { periodId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId } = useParams() as any;
   const period = useRecoilValue(SinglePeriod({ periodId }));
   if (!period) return null;
   return <BreadCrumb name={`Quantify / ${period.name}`} icon={faCalendarAlt} />;
@@ -34,7 +35,8 @@ const DoneLabel = () => {
 };
 
 const PeriodMessage = () => {
-  let { periodId, receiverId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId, receiverId } = useParams() as any;
   usePeriodPraiseQuery(periodId);
   const data = useRecoilValue(
     PeriodActiveQuantifierReceiver({ periodId, receiverId })

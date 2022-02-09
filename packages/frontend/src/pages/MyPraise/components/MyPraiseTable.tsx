@@ -72,6 +72,7 @@ const MyPraiseTable = () => {
             {rows.map((row) => {
               prepareRow(row);
               return (
+                // eslint-disable-next-line react/jsx-key
                 <tr
                   className="cursor-pointer hover:bg-gray-100"
                   {...row.getRowProps()}
@@ -79,10 +80,11 @@ const MyPraiseTable = () => {
                 >
                   {row.cells.map((cell) => {
                     return (
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                      // eslint-disable-next-line react/jsx-key
+                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td> //TODO add key
                     );
                   })}
-                </tr>
+                </tr> //TODO Add key
               );
             })}
           </tbody>

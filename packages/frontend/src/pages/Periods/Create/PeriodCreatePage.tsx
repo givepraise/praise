@@ -100,7 +100,9 @@ const PeriodsForm = () => {
                     placeholder="e.g. May-June"
                     className="block w-72"
                   />
-                  <FieldErrorMessage name="name" apiResponse={apiResponse} />
+                  {apiResponse && (
+                    <FieldErrorMessage name="name" apiResponse={apiResponse} />
+                  )}
                 </div>
               )}
             </Field>
@@ -117,7 +119,12 @@ const PeriodsForm = () => {
                     className="block w-72"
                   />
                   <PeriodDayPicker />
-                  <FieldErrorMessage name="endDate" apiResponse={apiResponse} />
+                  {apiResponse && (
+                    <FieldErrorMessage
+                      name="endDate"
+                      apiResponse={apiResponse}
+                    />
+                  )}
                 </div>
               )}
             </Field>

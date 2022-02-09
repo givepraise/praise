@@ -37,8 +37,8 @@ export default function EthConnection() {
 
   // This allows us to stub out the Metamask extension in a test environment
   // Waiting on Cypress for feedback on a better solution on stubbing out the connector
-  var envDependentConnectionStatus: boolean;
-  var envDependentAccount: string | null | undefined;
+  let envDependentConnectionStatus: boolean;
+  let envDependentAccount: string | null | undefined;
 
   if (process.env.NODE_ENV === 'test') {
     envDependentAccount = process.env.REACT_APP_ETH_ADDRESS;

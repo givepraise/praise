@@ -12,7 +12,8 @@ import { useRecoilValue } from 'recoil';
 
 const ReceiverTable = () => {
   const history = useHistory();
-  let { periodId } = useParams() as any;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId } = useParams() as any;
   const period = useRecoilValue(SinglePeriod({ periodId }));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   usePeriodPraiseQuery(periodId);
@@ -55,6 +56,7 @@ const ReceiverTable = () => {
     tableInstance;
 
   const handleClick = (data: ReceiverData) => (e: SyntheticEvent) => {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     history.push(`/period/${periodId}/receiver/${data.receiverId}`);
   };
 
@@ -71,29 +73,33 @@ const ReceiverTable = () => {
     >
       <thead>
         {headerGroups.map((headerGroup) => (
+          // eslint-disable-next-line react/jsx-key
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
+              // eslint-disable-next-line react/jsx-key
               <th className="text-left" {...column.getHeaderProps()}>
                 {column.render('Header')}
               </th>
             ))}
-          </tr>
+          </tr> // TODO FIX
         ))}
       </thead>
       <tbody {...getTableBodyProps()}>
         {rows.map((row) => {
           prepareRow(row);
           return (
+            // eslint-disable-next-line react/jsx-key
             <tr
               className="cursor-pointer hover:bg-gray-100"
-              id={'period-' + row.values.name}
+              id=""
               {...row.getRowProps()}
               onClick={handleClick(row.original as ReceiverData)}
             >
               {row.cells.map((cell) => {
+                // eslint-disable-next-line react/jsx-key
                 return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}
-            </tr>
+            </tr> // TODO fix id and key
           );
         })}
       </tbody>

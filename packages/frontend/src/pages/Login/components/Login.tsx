@@ -1,11 +1,11 @@
-import { isResponseOk, useAuthApiQuery } from '@/model/api';
-import { AuthQuery, NonceQuery } from '@/model/auth';
+import { isResponseOk } from '@/model/api';
+import { AuthQuery, NonceQuery, SessionToken } from '@/model/auth';
 import * as localStorage from '@/model/localStorage';
 import { useWeb3React } from '@web3-react/core';
 import { AuthResponse, NonceResponse } from 'api/dist/auth/types';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 interface LocationState {
   from: {
@@ -20,43 +20,45 @@ const generateLoginMessage = (account: string, nonce: string): string => {
   );
 };
 
-export default function LoginButton() {
-  const LoginButtonInner = () => {
-    const { account: ethereumAccount, library: ethLibrary } = useWeb3React();
-    const [message, setMessage] = React.useState<string | any>(undefined);
-    const [signature, setSignature] = React.useState<string | any>(undefined);
+const LoginButton: React.FC = (): ReactElement => {
+  const LoginButtonInner: React.FC = (): ReactElement => {
+    const { account: ethereumAddress, library: ethLibrary } = useWeb3React();
+    const [message, setMessage] = React.useState<string | undefined>(undefined);
+    const [signature, setSignature] = React.useState<string | undefined>(
+      undefined
+    );
     const [sessionToken, setSessionToken] = useRecoilState(SessionToken);
     const history = useHistory();
     const location = useLocation<LocationState>();
 
     // 1. Fetch nonce from server
-    const nonceResponse = useAuthApiQuery(NonceQuery({ ethereumAccount })); //TODO Not done! See ActivateButton.tsx for inspiration.
+    const nonceResponse = useRecoilValue(NonceQuery(ethereumAddress));
 
     // 4. Verify signature with server
-    const sessionResponse = useAuthApiQuery(
-      AuthQuery({ ethereumAccount, message, signature })
+    const authResponse = useRecoilValue(
+      AuthQuery({ ethereumAddress, message, signature })
     );
 
     // 2. Generate login message to sign
     React.useEffect(() => {
-      if (!ethereumAccount || !nonceResponse) return;
+      if (!ethereumAddress || !nonceResponse) return;
       if (isResponseOk(nonceResponse)) {
         const nonceData = nonceResponse.data as NonceResponse;
-        setMessage(generateLoginMessage(ethereumAccount, nonceData.nonce));
+        setMessage(generateLoginMessage(ethereumAddress, nonceData.nonce));
       }
-    }, [ethereumAccount, nonceResponse]);
+    }, [ethereumAddress, nonceResponse]);
 
     // 5. Authetication response
     React.useEffect(() => {
-      if (!ethereumAccount || !sessionResponse) return;
-      if (isResponseOk(sessionResponse)) {
-        const sessionData = sessionResponse.data as AuthResponse;
+      if (!ethereumAddress || !authResponse) return;
+      if (isResponseOk(authResponse)) {
+        const sessionData = authResponse.data as AuthResponse;
         // Save session id for future api calls
-        localStorage.setSessionToken(ethereumAccount, sessionData.accessToken);
+        localStorage.setSessionToken(ethereumAddress, sessionData.accessToken);
         // Set session token in global state
         setSessionToken(sessionData.accessToken);
       }
-    }, [ethereumAccount, sessionResponse, setSessionToken]);
+    }, [ethereumAddress, authResponse, setSessionToken]);
 
     // 6. Redirect after login
     React.useEffect(() => {
@@ -67,8 +69,9 @@ export default function LoginButton() {
       }, 1000);
     }, [sessionToken, location, history]);
 
-    const signLoginMessage = async () => {
+    const signLoginMessage = async (): Promise<void> => {
       // 3. Sign the message using Metamask
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const _signature: any = await ethLibrary.getSigner().signMessage(message);
       if (_signature) setSignature(_signature);
     };
@@ -109,4 +112,6 @@ export default function LoginButton() {
       <LoginButtonInner />
     </React.Suspense>
   );
-}
+};
+
+export default LoginButton;
