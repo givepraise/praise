@@ -2,6 +2,7 @@ import { PeriodModel } from '@period/entities';
 import { PraiseModel } from '@praise/entities';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
+import { use } from 'chai';
 import faker from 'faker';
 
 const PERIOD_NUMBER = 3;
@@ -15,6 +16,10 @@ const USERS = [
   },
   {
     ethereumAddress: '0x826976d7C600d45FB8287CA1d7c76FC8eb732030', // Mitch
+    roles: ['ADMIN', 'USER'],
+  },
+  {
+    ethereumAddress: '0xc617C1B5c78E76aaA33e6d1964b24A4f923077f7', // Nebs
     roles: ['ADMIN', 'USER'],
   },
   {

@@ -18,10 +18,10 @@ const PraiseRow = ({ praise }: PraiseRowProps) => {
 
   return (
     <div
-      className="flex items-center p-5 cursor-pointer hover:bg-gray-100"
+      className="items-center p-5 cursor-pointer hover:bg-gray-100 flex items-center w-full"
       onClick={handleClick}
     >
-      <div className="">
+      <div className="flex items-center">
         <UserAvatar userAccount={praise.giver} />
       </div>
       <div className="ml-5 overflow-hidden">
@@ -33,7 +33,9 @@ const PraiseRow = ({ praise }: PraiseRowProps) => {
         </div>
         <div>{praise.reason}</div>
       </div>
-      <div className="text-center px-14">{praise.avgScore}</div>
+      <div className="text-right px-14 flex-grow whitespace-nowrap">
+        {praise.avgScore}
+      </div>
     </div>
   );
 };
