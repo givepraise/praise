@@ -1,4 +1,6 @@
+import { SingleStringSetting } from '@/model/settings';
 import React from 'react';
+import { useRecoilValue } from 'recoil';
 
 export const useOutsideAlerter = (ref: any) => {
   const [timestamp, setTimestamp] = React.useState<number>(0);
