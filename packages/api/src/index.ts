@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import 'express-async-errors';
 import logger from 'jet-logger';
 import path from 'path';
-import { app } from './server';
+import { app } from './Server';
 
 const load = dotenv.config({ path: path.join(__dirname, '..', '/.env') });
 if (load.error) {

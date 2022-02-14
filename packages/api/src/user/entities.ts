@@ -4,7 +4,7 @@ import { UserDocument, UserRole } from './types';
 
 export const userSchema = new mongoose.Schema(
   {
-    ethereumAddress: { type: String, required: true },
+    ethereumAddress: { type: String, required: true, unique: true },
     accounts: [{ type: Schema.Types.ObjectId, ref: 'UserAccount' }],
     roles: {
       type: [
