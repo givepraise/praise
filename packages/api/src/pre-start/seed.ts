@@ -23,6 +23,10 @@ const USERS = [
     roles: ['ADMIN', 'USER'],
   },
   {
+    ethereumAddress: '0x44FEa69505B8B3dA031Cf0cc2420f6114ED78E4f',
+    roles: ['USER', 'QUANTIFIER'],
+  },
+  {
     ethereumAddress: '0xa123400000000000000000000000000000006789',
     roles: ['USER', 'QUANTIFIER'],
   },

@@ -126,6 +126,21 @@ export const SingleIntSetting = selectorFamily({
     },
 });
 
+export const SingleStringSetting = selectorFamily({
+  key: 'SingleStringSetting',
+  get:
+    (key: string) =>
+    ({ get }) => {
+      const setting = get(SingleSetting(key));
+      if (!setting) return null;
+      if (setting && setting.value) {
+        const string = setting.value.toString();
+        if (string && string !== '') return string;
+      }
+      return null;
+    },
+});
+
 export const useSetSetting = () => {
   const allSettings: Setting[] | undefined = useRecoilValue(AllSettings);
   const setSetting = useRecoilCallback(

@@ -51,7 +51,7 @@
     "react-router-dom": "^5.2.1",
     "react-scripts": "5.0.0",
     "react-table": "^7.7.0",
-    "recoil": "^0.6.1",
+    "recoil": "^0.5.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.7",
     "use-error-boundary": "^2.0.6",
     "web-vitals": "^1.0.1"
