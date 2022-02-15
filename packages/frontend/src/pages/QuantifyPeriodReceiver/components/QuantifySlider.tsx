@@ -1,7 +1,6 @@
 import { ActiveUserId } from '@/model/auth';
 import { Praise, useQuantifyPraise } from '@/model/praise';
 import { SingleStringSetting } from '@/model/settings';
-import { getPraiseMarks, praiseScore } from '@/utils/index';
 import { Slider, Tooltip } from '@mui/material';
 import React, { FC } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -15,35 +14,37 @@ const ValueLabelComponent: FC<any> = (props) => {
   );
 };
 
-interface QuantifySliderProps {
-  praise: Praise;
-}
-
 interface Mark {
   value: number;
   label?: string;
 }
 
+interface QuantifySliderProps {
+  praise: Praise;
+}
+
 const QuantifySlider = ({ praise }: QuantifySliderProps) => {
-  const [sliderValue, setSliderValue] = React.useState<number>(0);
-  const [marks, setPraiseMarks] = React.useState<Mark[]>([]);
+  const [selectedSliderMark, setSelectedSliderMark] = React.useState<number>(0);
+  const [sliderMarks, setSliderMarks] = React.useState<Mark[]>([]);
+  const [scores, setScores] = React.useState<number[]>([]);
   const activeUserId = useRecoilValue(ActiveUserId);
   const { quantify } = useQuantifyPraise();
 
-  const values = useRecoilValue(
+  const allowedValues = useRecoilValue(
     SingleStringSetting('PRAISE_QUANTIFY_ALLOWED_VALUES')
   );
 
-  const praiseScore = values
-    ? values.split(', ').map(Number)
-    : '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144'.split(', ').map(Number);
+  React.useEffect(() => {
+    if (!allowedValues) return;
+    setScores(allowedValues.split(',').map((v) => Number.parseInt(v.trim())));
+  }, [allowedValues]);
 
-  const getPraiseMarks = () => {
+  const allowedSliderValuesToMarks = (): Mark[] => {
     const marks: Mark[] = [];
-    const topScore = praiseScore[praiseScore.length - 1];
-    for (let i = 0; i < praiseScore.length; i++) {
+    const topScore = scores[scores.length - 1];
+    for (let i = 0; i < scores.length; i++) {
       marks.push({
-        value: Math.round((i * topScore) / (praiseScore.length - 1)),
+        value: Math.round((i * topScore) / (scores.length - 1)),
       });
     }
     return marks;
@@ -53,7 +54,7 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
     (praise: Praise) => {
       return praise.quantifications!.find((q) => q.quantifier === activeUserId);
     },
-    [activeUserId]
+    [activeUserId, praise]
   );
 
   const dismissed = React.useCallback(
@@ -61,7 +62,7 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
       const q = quantification(praise);
       return q ? !!q.dismissed : false;
     },
-    [quantification]
+    [quantification, praise]
   );
 
   const duplicate = React.useCallback(
@@ -69,7 +70,7 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
       const q = quantification(praise);
       return q ? (q.duplicatePraise ? true : false) : false;
     },
-    [quantification]
+    [quantification, praise]
   );
 
   const score = React.useCallback(
@@ -77,45 +78,43 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
       const q = quantification(praise);
       return q && q.score ? q.score : 0;
     },
-    [quantification]
+    [quantification, praise]
   );
 
-  const scoreToValue = React.useCallback(
+  const scoreToMark = React.useCallback(
     (praise: Praise) => {
-      // const marks = getPraiseMarks();
-      return marks[praiseScore.indexOf(score(praise))]
-        ? marks[praiseScore.indexOf(score(praise))].value
+      return sliderMarks[scores.indexOf(score(praise))]
+        ? sliderMarks[scores.indexOf(score(praise))].value
         : 0;
     },
-    [score]
+    [score, praise, sliderMarks]
   );
 
-  const valueToScore = React.useCallback((value: number | number[]) => {
-    // const marks = getPraiseMarks();
-    return praiseScore[marks.findIndex((mark) => mark.value === value)];
-  }, []);
+  React.useEffect(() => {
+    if (scores.length === 0 || sliderMarks.length > 0) return;
+    setSliderMarks(allowedSliderValuesToMarks());
+  }, [scores, sliderMarks, setSliderMarks, allowedSliderValuesToMarks]);
 
   React.useEffect(() => {
     if (!praise) return;
-    setSliderValue(scoreToValue(praise));
-    setPraiseMarks(getPraiseMarks());
-  }, [praise, setSliderValue, scoreToValue, setPraiseMarks, getPraiseMarks]);
+    setSelectedSliderMark(scoreToMark(praise));
+  }, [praise, setSelectedSliderMark, scoreToMark]);
 
   const handleOnChange = (
     event: React.SyntheticEvent | Event,
     value: number | number[]
-  ) => {
+  ): void => {
     if (!Array.isArray(value)) {
-      setSliderValue(value);
+      setSelectedSliderMark(value);
     }
   };
 
   const handleOnChangeCommitted = (
     event: React.SyntheticEvent | Event,
     value: number | number[]
-  ) => {
+  ): void => {
     const q = quantification(praise);
-    const score = valueToScore(value);
+    const score = scores[sliderMarks.findIndex((mark) => mark.value === value)];
 
     void quantify(
       praise._id,
@@ -125,10 +124,15 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
     );
   };
 
-  function valueLabelFormat(value: any) {
-    // const marks = getPraiseMarks();
-    return praiseScore[marks.findIndex((mark) => mark.value === value)];
+  function valueLabelFormat(value: number): number {
+    return scores[sliderMarks.findIndex((mark) => mark.value === value)];
   }
+
+  const sliderMax = (): number => {
+    return sliderMarks.length > 0
+      ? sliderMarks[sliderMarks.length - 1].value
+      : 0;
+  };
 
   return (
     <div className="inline-block w-40">
@@ -141,14 +145,14 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
         valueLabelDisplay="on"
         step={null}
         components={{ ValueLabel: ValueLabelComponent }}
-        marks={marks}
+        marks={sliderMarks}
         valueLabelFormat={valueLabelFormat}
-        value={sliderValue}
+        value={selectedSliderMark}
         disabled={dismissed(praise) || duplicate(praise)}
         onChange={handleOnChange}
         onChangeCommitted={handleOnChangeCommitted}
         min={0}
-        max={144}
+        max={sliderMax()}
       />
     </div>
   );
