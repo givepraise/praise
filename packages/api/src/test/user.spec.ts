@@ -1,7 +1,7 @@
-import { app } from '../Server';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import 'mocha';
+import { app } from '../server';
 
 chai.use(chaiHttp);
 

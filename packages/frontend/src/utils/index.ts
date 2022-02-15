@@ -36,28 +36,3 @@ export const shortenEthAddress = (address: string) => {
     address.length - 4
   )}`;
 };
-
-export const praiseScore = [0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144];
-
-interface Mark {
-  value: number;
-  label?: string;
-}
-
-export const getPraiseMarks = () => {
-  const marks: Mark[] = [];
-  const topScore = praiseScore[praiseScore.length - 1];
-  for (let i = 0; i < praiseScore.length; i++) {
-    marks.push({
-      value: Math.round((i * topScore) / (praiseScore.length - 1)),
-    });
-  }
-  return marks;
-};
-
-export const getPraiseMark = (score: number) => {
-  const topScore = praiseScore[praiseScore.length - 1];
-  const markStep = Math.round(topScore / (praiseScore.length - 1));
-  const i = praiseScore.findIndex((s) => s === score);
-  return markStep * i;
-};
