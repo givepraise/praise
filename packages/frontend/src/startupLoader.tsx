@@ -1,24 +1,19 @@
-import {
-  AllPeriods,
-  useAllPeriodsQuery,
-  usePeriodPraiseQuery,
-} from '@/model/periods';
+import { AllPeriods, useAllPeriodsQuery } from '@/model/periods';
 import { useAllUsersQuery } from '@/model/users';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { ReactElement } from 'react';
 import { useRecoilValue } from 'recoil';
-import { HasRole } from './model/auth';
 import { useAllSettingsQuery } from './model/settings';
 
-interface QuantifyPeriodLoaderProps {
-  periodId: string;
-}
+// interface QuantifyPeriodLoaderProps {
+//   periodId: string;
+// }
 
-const QuantifyPeriodLoader = ({ periodId }: QuantifyPeriodLoaderProps) => {
-  usePeriodPraiseQuery(periodId);
-  return null;
-};
+// const QuantifyPeriodLoader = ({ periodId }: QuantifyPeriodLoaderProps) => {
+//   usePeriodPraiseQuery(periodId);
+//   return null;
+// };
 
 export const StartupLoader: React.FC = (): ReactElement | null => {
   useAllPeriodsQuery();
@@ -26,20 +21,21 @@ export const StartupLoader: React.FC = (): ReactElement | null => {
   useAllSettingsQuery();
 
   const periods = useRecoilValue(AllPeriods);
-  const isQuantifier = useRecoilValue(HasRole('QUANTIFIER'));
-  if (!periods) return null;
+  console.log(periods);
+  // const isQuantifier = useRecoilValue(HasRole('QUANTIFIER'));
+  // if (!periods) return null;
 
-  if (isQuantifier) {
-    return (
-      <>
-        {periods.map((period) =>
-          period._id && period.status === 'QUANTIFY' ? (
-            <QuantifyPeriodLoader periodId={period._id} key={period._id} />
-          ) : null
-        )}
-      </>
-    );
-  }
+  // if (isQuantifier) {
+  //   return (
+  //     <>
+  //       {periods.map((period) =>
+  //         period._id && period.status === 'QUANTIFY' ? (
+  //           <QuantifyPeriodLoader periodId={period._id} key={period._id} />
+  //         ) : null
+  //       )}
+  //     </>
+  //   );
+  // }
 
   return null;
 };

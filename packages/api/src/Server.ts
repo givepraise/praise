@@ -9,7 +9,6 @@ import logger from 'jet-logger';
 import mongoose, { ConnectOptions } from 'mongoose';
 import morgan from 'morgan';
 import { seedAdmins } from './pre-start/admins';
-import { seedData } from './pre-start/seed';
 import { seedSettings } from './pre-start/settings';
 import { baseRouter } from './routes';
 
@@ -42,7 +41,7 @@ void (async (): Promise<void> => {
   if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
     try {
-      await seedData();
+      //await seedData();
 
       logger.info('Seeded database with test data.');
     } catch (error) {

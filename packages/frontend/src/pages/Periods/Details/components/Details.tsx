@@ -43,9 +43,9 @@ const PeriodDetails = () => {
 
   if (!period || !allPeriods) return null;
 
-  const periodStartDate = getPreviousPeriod(allPeriods, period);
-  const periodStart = periodStartDate
-    ? formatDate(periodStartDate.endDate)
+  const previousPeriod = getPreviousPeriod(allPeriods, period);
+  const periodStart = previousPeriod
+    ? formatDate(previousPeriod.endDate)
     : 'Dawn of time';
 
   const handleClosePeriod = () => {

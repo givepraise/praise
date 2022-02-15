@@ -1,10 +1,8 @@
+import { UserCell } from '@/components/table/UserCell';
+import { isResponseOk } from '@/model/api';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import {
-  AllPeriodReceivers,
-  ReceiverData,
-  SinglePeriod,
-  usePeriodPraiseQuery,
-} from '@/model/periods';
+import { ReceiverData, SinglePeriodDetailsQuery } from '@/model/periods';
+import { PeriodDetails, PeriodDetailsReceiver } from 'api/dist/period/types';
 import React, { SyntheticEvent } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useSortBy, useTable } from 'react-table';
@@ -14,24 +12,34 @@ const ReceiverTable = () => {
   const history = useHistory();
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
-  const period = useRecoilValue(SinglePeriod({ periodId }));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  usePeriodPraiseQuery(periodId);
-  const periodReceivers = useRecoilValue(AllPeriodReceivers({ periodId }));
+  const { location } = useHistory();
+  const periodDetailsReponse = useRecoilValue(
+    SinglePeriodDetailsQuery({ periodId, refreshKey: location.key })
+  );
+
+  const periodDetails: PeriodDetails | null = isResponseOk(periodDetailsReponse)
+    ? (periodDetailsReponse.data as PeriodDetails)
+    : null;
 
   const columns = React.useMemo(
     () => [
       {
         Header: 'Receiver',
-        accessor: 'username',
+        accessor: '_id',
+        Cell: (data: any): JSX.Element => (
+          <UserCell userId={data.row.original._id} />
+        ),
       },
       {
         Header: 'Number of praise',
+        className: 'text-center',
         accessor: 'praiseCount',
       },
       {
         Header: 'Total praise score',
-        accessor: 'praiseScore',
+        className: 'text-center',
+        accessor: 'score',
         sortType: 'basic',
       },
     ],
@@ -40,11 +48,11 @@ const ReceiverTable = () => {
 
   const options = {
     columns,
-    data: periodReceivers ? periodReceivers : [],
+    data: periodDetails ? periodDetails.receivers : [],
     initialState: {
       sortBy: [
         {
-          id: period?.status === 'OPEN' ? 'praiseCount' : 'praiseScore',
+          id: periodDetails?.status === 'OPEN' ? 'praiseCount' : 'praiseScore',
           desc: true,
         },
       ],
@@ -55,14 +63,13 @@ const ReceiverTable = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const handleClick = (data: ReceiverData) => (e: SyntheticEvent) => {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    history.push(`/period/${periodId}/receiver/${data.receiverId}`);
+  const handleClick = (data: PeriodDetailsReceiver) => (e: SyntheticEvent) => {
+    history.push(`/period/${periodId}/receiver/${data._id}`);
   };
 
-  if (!period) return <div>Period not found.</div>;
+  if (!periodDetails) return <div>Period not found.</div>;
 
-  if (period.status === 'QUANTIFY' && !isAdmin)
+  if (periodDetails.status === 'QUANTIFY' && !isAdmin)
     return <div>Praise scores are not visible during quantification.</div>;
 
   return (
@@ -81,7 +88,7 @@ const ReceiverTable = () => {
                 {column.render('Header')}
               </th>
             ))}
-          </tr> // TODO FIX
+          </tr>
         ))}
       </thead>
       <tbody {...getTableBodyProps()}>
@@ -91,15 +98,21 @@ const ReceiverTable = () => {
             // eslint-disable-next-line react/jsx-key
             <tr
               className="cursor-pointer hover:bg-gray-100"
-              id=""
               {...row.getRowProps()}
               onClick={handleClick(row.original as ReceiverData)}
             >
               {row.cells.map((cell) => {
-                // eslint-disable-next-line react/jsx-key
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                return (
+                  // eslint-disable-next-line react/jsx-key
+                  <td
+                    {...cell.getCellProps()}
+                    className={(cell.column as any).className}
+                  >
+                    {cell.render('Cell')}
+                  </td>
+                );
               })}
-            </tr> // TODO fix id and key
+            </tr>
           );
         })}
       </tbody>

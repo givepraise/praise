@@ -243,6 +243,8 @@ export type AllPraiseQueryParameters = {
   limit?: number;
   page?: number;
   receiver?: string | null;
+  perdiodStart?: string;
+  periodEnd?: string;
 };
 
 export const useAllPraiseQuery = (

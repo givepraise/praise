@@ -50,8 +50,8 @@ async function validateOnlyUpdateLastPeriod(this: any): Promise<boolean> {
   if (!twoLastPeriods || twoLastPeriods.length === 1) return true;
 
   // Date change only allowed on last period
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  if (!twoLastPeriods[0]._id.equals(this._id)) return false;
+  if (!twoLastPeriods[0]._id || !twoLastPeriods[0]._id.equals(this._id))
+    return false;
 
   return true;
 }

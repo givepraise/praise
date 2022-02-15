@@ -67,6 +67,26 @@ export const AllPeriodsQuery = selector({
   },
 });
 
+type SinglePeriodDetailsParams = {
+  periodId: string;
+  refreshKey: string | undefined;
+};
+
+export const SinglePeriodDetailsQuery = selectorFamily({
+  key: 'SinglePeriodDetailsQuery',
+  get:
+    (params: SinglePeriodDetailsParams) =>
+    ({ get }): AxiosResponse<unknown> => {
+      const { periodId, refreshKey } = params;
+      return get(
+        ApiAuthGet({
+          url: `/api/periods/${periodId}`,
+          refreshKey,
+        })
+      );
+    },
+});
+
 export const SinglePeriod = selectorFamily({
   key: 'SinglePeriod',
   get:

@@ -11,6 +11,7 @@ module.exports = {
       rules: {
         'import/no-default-export': 'off',
         '@typescript-eslint/internal/prefer-ast-types-enum': 'off',
+        '@typescript-eslint/restrict-template-expressions': 'off',
       },
     },
   ],

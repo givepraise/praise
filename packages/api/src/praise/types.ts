@@ -18,9 +18,9 @@ export interface Quantification {
   createdAt?: string;
   updatedAt?: string;
   quantifier: UserDocument;
-  score?: number;
-  dismissed?: boolean;
-  duplicatePraise?: PraiseDocument | null;
+  score: number;
+  dismissed: boolean;
+  duplicatePraise: PraiseDocument | null;
 }
 
 export interface QuantificationDocument

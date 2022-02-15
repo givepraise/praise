@@ -1,38 +1,43 @@
 import { UserCell } from '@/components/table/UserCell';
-import {
-  PeriodQuantifiers,
-  SinglePeriod,
-  usePeriodPraiseQuery,
-} from '@/model/periods';
+import { isResponseOk } from '@/model/api';
+import { SinglePeriodDetailsQuery } from '@/model/periods';
+import { PeriodDetails } from 'api/dist/period/types';
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 
 const QuantifierTable = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
-  const period = useRecoilValue(SinglePeriod({ periodId }));
-  usePeriodPraiseQuery(periodId);
+  const { location } = useHistory();
+  const periodDetailsReponse = useRecoilValue(
+    SinglePeriodDetailsQuery({ periodId, refreshKey: location.key })
+  );
 
-  const periodQuantifiers = useRecoilValue(PeriodQuantifiers({ periodId }));
+  const period: PeriodDetails | null = isResponseOk(periodDetailsReponse)
+    ? (periodDetailsReponse.data as PeriodDetails)
+    : null;
 
   const columns = React.useMemo(
     () => [
       {
         Header: 'Quantifier',
-        accessor: 'userId',
-        Cell: (data: any) => <UserCell userId={data.value} />,
+        accessor: '_id',
+        className: 'text-left',
+        Cell: (data: any): JSX.Element => (
+          <UserCell userId={data.row.original._id} />
+        ),
       },
       {
         Header: 'Finished items',
         accessor: '',
-        Cell: (data: any) => {
-          return data.row.original
-            ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-              `${data.row.original.done} / ${data.row.original.count}` //TODO FIX
-            : null;
-        },
+        className: 'text-center',
+        Cell: (data: any): JSX.Element => (
+          <div>
+            {`${data.row.original.finishedCount} / ${data.row.original.praiseCount}`}
+          </div>
+        ),
       },
     ],
     []
@@ -40,7 +45,7 @@ const QuantifierTable = () => {
 
   const options = {
     columns,
-    data: periodQuantifiers ? periodQuantifiers : [],
+    data: period ? period.quantifiers : [],
   } as TableOptions<{}>;
   const tableInstance = useTable(options);
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
@@ -63,7 +68,10 @@ const QuantifierTable = () => {
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
               // eslint-disable-next-line react/jsx-key
-              <th className="text-left" {...column.getHeaderProps()}>
+              <th
+                {...column.getHeaderProps()}
+                className={(column as any).className}
+              >
                 {column.render('Header')}
               </th>
             ))}
@@ -77,8 +85,15 @@ const QuantifierTable = () => {
             // eslint-disable-next-line react/jsx-key
             <tr id="" {...row.getRowProps()}>
               {row.cells.map((cell) => {
-                // eslint-disable-next-line react/jsx-key
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                return (
+                  // eslint-disable-next-line react/jsx-key
+                  <td
+                    {...cell.getCellProps()}
+                    className={(cell.column as any).className}
+                  >
+                    {cell.render('Cell')}
+                  </td>
+                );
               })}
             </tr> //TODO FIX ID and KEY
           );

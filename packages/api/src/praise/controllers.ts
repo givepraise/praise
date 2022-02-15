@@ -22,7 +22,7 @@ import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { PraiseModel } from './entities';
 
-interface PraiseAllInputParsedQs extends Query, PraiseAllInput {}
+interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
 const all = async (
   req: TypedRequestQuery<PraiseAllInputParsedQs>,
@@ -36,7 +36,7 @@ const all = async (
 
   if (periodStart && periodEnd) {
     query.createdAt = {
-      $gte: periodStart,
+      $gt: periodStart,
       $lte: periodEnd,
     };
   }
@@ -124,7 +124,7 @@ const exportPraise = async (
 
   if (req.query.periodStart && req.query.periodEnd) {
     query.createdAt = {
-      $gte: req.query.periodStart,
+      $gt: req.query.periodStart,
       $lte: req.query.periodEnd,
     };
   }

@@ -1,4 +1,4 @@
-import { Period } from '@/model/periods';
+import { Period } from 'api/dist/period/types';
 import { compareDesc } from 'date-fns';
 
 export const getActivePeriod = (allPeriods: Period[]) => {

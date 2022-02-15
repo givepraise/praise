@@ -18,7 +18,7 @@ const PraiseRow = ({ praise }: PraiseRowProps) => {
 
   return (
     <div
-      className="items-center p-5 cursor-pointer hover:bg-gray-100 flex items-center w-full"
+      className="flex items-center w-full p-5 cursor-pointer hover:bg-gray-100"
       onClick={handleClick}
     >
       <div className="flex items-center">
@@ -33,7 +33,7 @@ const PraiseRow = ({ praise }: PraiseRowProps) => {
         </div>
         <div>{praise.reason}</div>
       </div>
-      <div className="text-right px-14 flex-grow whitespace-nowrap">
+      <div className="flex-grow text-right px-14 whitespace-nowrap">
         {praise.avgScore}
       </div>
     </div>
