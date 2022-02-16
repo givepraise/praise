@@ -1,7 +1,7 @@
 import { UserCell } from '@/components/table/UserCell';
 import { isResponseOk } from '@/model/api';
 import { SinglePeriodDetailsQuery } from '@/model/periods';
-import { PeriodDetails } from 'api/dist/period/types';
+import { PeriodDetailsDto } from 'api/dist/period/types';
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
@@ -15,8 +15,8 @@ const QuantifierTable = () => {
     SinglePeriodDetailsQuery({ periodId, refreshKey: location.key })
   );
 
-  const period: PeriodDetails | null = isResponseOk(periodDetailsReponse)
-    ? (periodDetailsReponse.data as PeriodDetails)
+  const period: PeriodDetailsDto | null = isResponseOk(periodDetailsReponse)
+    ? (periodDetailsReponse.data as PeriodDetailsDto)
     : null;
 
   const columns = React.useMemo(

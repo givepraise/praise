@@ -2,14 +2,11 @@ import BreadCrumb from '@/components/BreadCrumb';
 import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import { PeriodDayPicker } from '@/components/periods/PeriodDayPicker';
 import { isResponseOk } from '@/model/api';
-import {
-  CreatePeriodApiResponse,
-  Period,
-  useCreatePeriod,
-} from '@/model/periods';
+import { CreatePeriodApiResponse, useCreatePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
 import { DATE_FORMAT } from '@/utils/date';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { PeriodCreateUpdateInput } from 'api/dist/period/types';
 import { isMatch } from 'date-fns';
 import { ValidationErrors } from 'final-form';
 import React from 'react';
@@ -62,7 +59,7 @@ const PeriodsForm = () => {
       Array.isArray(values.endDate) && values.endDate.length > 0
         ? values.endDate[0]
         : values.endDate;
-    const newPeriod: Period = {
+    const newPeriod: PeriodCreateUpdateInput = {
       name: values.name,
       endDate: new Date(dateString).toISOString(),
     };
@@ -91,7 +88,7 @@ const PeriodsForm = () => {
             <Field name="name">
               {({ input, meta }) => (
                 <div className="mb-2">
-                  <label className="block">Period name</label>
+                  <label className="block">PeriodDto name</label>
                   <input
                     type="text"
                     id="input-period-name"

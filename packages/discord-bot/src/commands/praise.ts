@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { PraiseModel } from 'api/dist/praise/entities';
-import { UserModel } from 'api/dist/user/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { CommandInteraction, Interaction, MessageEmbed } from 'discord.js';
 import logger from 'jet-logger';
@@ -101,11 +100,7 @@ const praise = async (interaction: CommandInteraction) => {
     return;
   }
 
-  const User = await UserModel.findOne({
-    accounts: userAccount,
-  });
-
-  if (!User) {
+  if (!userAccount.user) {
     const notActivatedEmbed = praiseErrorEmbed(
       'Account Not Activated',
       'Your Account is not activated in the praise system. Unactivated accounts can not praise users. Use the `/praise-activate` command to activate your praise account and to link your eth address.'
@@ -137,10 +132,7 @@ const praise = async (interaction: CommandInteraction) => {
       { upsert: true, new: true }
     );
 
-    const receiverUser = await UserModel.findOne({
-      accounts: receiverAccount,
-    });
-    if (!receiverUser) {
+    if (!receiverAccount.user) {
       try {
         await receiver.send(
           "You were just praised in the TEC! It looks like you haven't activated your account... To activate use the `/praise-activate` command in the server."
@@ -151,12 +143,12 @@ const praise = async (interaction: CommandInteraction) => {
     }
     const praiseObj = await PraiseModel.create({
       reason: reason,
-      giver: userAccount!._id,
+      giver: userAccount._id,
       sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
       sourceName: `DISCORD:${encodeURI(guild.name)}:${encodeURI(
         guildChannel?.name || ''
       )}`,
-      receiver: receiverAccount!._id,
+      receiver: receiverAccount._id,
     });
     if (praiseObj) {
       praised.push(ra.id);

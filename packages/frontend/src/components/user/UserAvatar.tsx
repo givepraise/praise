@@ -1,17 +1,21 @@
 import { SingleBooleanSetting } from '@/model/settings';
-import { User, UserAccount, UserAccountPlatform } from '@/model/users';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { UserDto } from 'api/dist/user/types';
+import {
+  UserAccountDto,
+  UserAccountPlatform,
+} from 'api/dist/useraccount/types';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 
-const discordAvatarUrl = (account: UserAccount) => {
-  return `https://cdn.discordapp.com/avatars/${account.id}/${account.profileImageUrl}.webp?size=128`;
+const discordAvatarUrl = (account: UserAccountDto) => {
+  return `https://cdn.discordapp.com/avatars/${account.accountId}/${account.avatarId}.webp?size=128`;
 };
 
 interface UserAvatarProps {
-  user?: User;
-  userAccount?: UserAccount;
+  user?: UserDto;
+  userAccount?: UserAccountDto;
 }
 const WrappedUserAvatar = ({ user, userAccount }: UserAvatarProps) => {
   const usePseudonyms = useRecoilValue(
@@ -24,7 +28,7 @@ const WrappedUserAvatar = ({ user, userAccount }: UserAvatarProps) => {
       for (const account of user.accounts) {
         // Prefer DISCORD over others
         if (
-          account.profileImageUrl &&
+          account.avatarId &&
           account.platform === UserAccountPlatform.DISCORD
         ) {
           url = discordAvatarUrl(account);
@@ -35,7 +39,7 @@ const WrappedUserAvatar = ({ user, userAccount }: UserAvatarProps) => {
   }
   if (userAccount) {
     if (
-      userAccount.profileImageUrl &&
+      userAccount.avatarId &&
       userAccount.platform === UserAccountPlatform.DISCORD
     ) {
       url = discordAvatarUrl(userAccount);

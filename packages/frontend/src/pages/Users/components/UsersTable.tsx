@@ -1,15 +1,11 @@
 import { UserAvatar } from '@/components/user/UserAvatar';
-import {
-  AllQuantifierUsers,
-  useAdminUsers,
-  User,
-  UserRole,
-} from '@/model/users';
+import { AllQuantifierUsers, useAdminUsers } from '@/model/users';
 import { shortenEthAddress } from '@/utils/index';
 import { getUsername } from '@/utils/users';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
+import { UserDto, UserRole } from 'api/dist/user/types';
 import React from 'react';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
@@ -22,7 +18,7 @@ const UsersTable = () => {
   const deleteDialogRef = React.useRef(null);
 
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selectedQuantifier, setSelectedQuantifier] = React.useState<User>();
+  const [selectedQuantifier, setSelectedQuantifier] = React.useState<UserDto>();
 
   const columns = React.useMemo(
     () => [
@@ -62,7 +58,7 @@ const UsersTable = () => {
   if (!allQuantifierUsers)
     return <div>There are no users in the Quantifier pool.</div>;
 
-  const handleDeleteQuantifierClick = (quantifier: User) => {
+  const handleDeleteQuantifierClick = (quantifier: UserDto) => {
     setSelectedQuantifier(quantifier);
     setIsOpen(true);
   };
@@ -86,7 +82,7 @@ const UsersTable = () => {
               <td className="w-8">
                 <button
                   onClick={() =>
-                    handleDeleteQuantifierClick(row.original as User)
+                    handleDeleteQuantifierClick(row.original as UserDto)
                   }
                   className="hover:text-red-600"
                 >

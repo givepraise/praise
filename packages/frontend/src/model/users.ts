@@ -1,5 +1,6 @@
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
+import { UserDto, UserRole } from 'api/dist/user/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
@@ -18,34 +19,6 @@ import {
   useAuthApiQuery,
 } from './api';
 import { AllPeriods } from './periods';
-
-export enum UserRole {
-  ADMIN = 'ADMIN',
-  QUANTIFIER = 'QUANTIFIER',
-  USER = 'USER',
-}
-
-export interface User {
-  _id: string;
-  createdAt: string;
-  updatedAt: string;
-  ethereumAddress: string;
-  accounts?: UserAccount[];
-  roles: UserRole[];
-}
-
-export enum UserAccountPlatform {
-  DISCORD = 'DISCORD',
-  TELEGRAM = 'TELEGRAM',
-}
-
-export interface UserAccount {
-  _id?: string;
-  id: string;
-  username: string;
-  profileImageUrl: string;
-  platform: string; // DISCORD | TELEGRAM
-}
 
 // The request Id is used to force refresh of AllUsersQuery.
 // AllUsersQuery subscribes to the value. Increase to trigger
@@ -67,7 +40,7 @@ export const AllUsersQuery = selector({
   },
 });
 
-export const AllUsers = atom<User[] | undefined>({
+export const AllUsers = atom<UserDto[] | undefined>({
   key: 'AllUsers',
   default: undefined,
 });
@@ -93,7 +66,7 @@ export const useAllUsersQuery = () => {
       typeof allUsers === 'undefined'
     ) {
       const paginatedResponse =
-        allUsersQueryResponse.data as PaginatedResponseBody<User>;
+        allUsersQueryResponse.data as PaginatedResponseBody<UserDto>;
       const users = paginatedResponse.docs;
       if (Array.isArray(users) && users.length > 0) setAllUsers(users);
     }
@@ -168,7 +141,7 @@ export const AddUserRoleApiResponse = atom<
 
 // Hook that returns functions for administering users
 export const useAdminUsers = () => {
-  const allUsers: User[] | undefined = useRecoilValue(AllUsers);
+  const allUsers: UserDto[] | undefined = useRecoilValue(AllUsers);
 
   const addRole = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -184,7 +157,7 @@ export const useAdminUsers = () => {
 
         // If OK response, add returned user object to local state
         if (isResponseOk(response)) {
-          const user = response.data as User;
+          const user = response.data as UserDto;
           if (user) {
             if (typeof allUsers !== 'undefined') {
               set(
@@ -217,7 +190,7 @@ export const useAdminUsers = () => {
 
         // If OK response, add returned user object to local state
         if (isResponseOk(response)) {
-          const user = response.data as User;
+          const user = response.data as UserDto;
           if (user) {
             if (typeof allUsers !== 'undefined') {
               set(

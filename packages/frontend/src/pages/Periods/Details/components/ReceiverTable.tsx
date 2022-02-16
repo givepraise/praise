@@ -1,8 +1,8 @@
 import { UserCell } from '@/components/table/UserCell';
 import { isResponseOk } from '@/model/api';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import { ReceiverData, SinglePeriodDetailsQuery } from '@/model/periods';
-import { PeriodDetails, PeriodDetailsReceiver } from 'api/dist/period/types';
+import { SinglePeriodDetailsQuery } from '@/model/periods';
+import { PeriodDetailsDto } from 'api/dist/period/types';
 import React, { SyntheticEvent } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useSortBy, useTable } from 'react-table';
@@ -18,8 +18,10 @@ const ReceiverTable = () => {
     SinglePeriodDetailsQuery({ periodId, refreshKey: location.key })
   );
 
-  const periodDetails: PeriodDetails | null = isResponseOk(periodDetailsReponse)
-    ? (periodDetailsReponse.data as PeriodDetails)
+  const periodDetails: PeriodDetailsDto | null = isResponseOk(
+    periodDetailsReponse
+  )
+    ? (periodDetailsReponse.data as PeriodDetailsDto)
     : null;
 
   const columns = React.useMemo(
@@ -63,7 +65,7 @@ const ReceiverTable = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const handleClick = (data: PeriodDetailsReceiver) => (e: SyntheticEvent) => {
+  const handleClick = (data: any) => (e: SyntheticEvent) => {
     history.push(`/period/${periodId}/receiver/${data._id}`);
   };
 
@@ -99,7 +101,7 @@ const ReceiverTable = () => {
             <tr
               className="cursor-pointer hover:bg-gray-100"
               {...row.getRowProps()}
-              onClick={handleClick(row.original as ReceiverData)}
+              onClick={handleClick(row.original)}
             >
               {row.cells.map((cell) => {
                 return (

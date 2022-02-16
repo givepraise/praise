@@ -1,18 +1,17 @@
-import { PaginatedResponseBody } from '@shared/types';
 import { Response } from 'express';
-import { PaginationModel } from 'mongoose-paginate-ts';
-import { User, UserDocument, UserRole } from './types';
+import { UserDocument, UserDto, UserRole } from './types';
 
-const userDocToUser = (res: Response, userDoc: UserDocument): User => {
-  const { _id, accounts, roles, createdAt, updatedAt, ethereumAddress } =
-    userDoc;
+const userDocumentToUserDto = (
+  res: Response,
+  userDocument: UserDocument
+): UserDto => {
+  const { _id, roles, createdAt, updatedAt, ethereumAddress } = userDocument;
 
-  const user: User = {
+  const user: UserDto = {
     _id,
-    accounts,
     roles,
-    createdAt,
-    updatedAt,
+    createdAt: createdAt.toISOString(),
+    updatedAt: updatedAt.toISOString(),
   };
 
   /* Only return eth address to admin or quantifier */
@@ -28,17 +27,17 @@ const userDocToUser = (res: Response, userDoc: UserDocument): User => {
 
 export const userListTransformer = (
   res: Response,
-  userDocs: PaginationModel<UserDocument>
-): PaginatedResponseBody<User> => {
-  const response = {
-    ...userDocs,
-    docs: userDocs.docs.map((d) => {
-      return userDocToUser(res, d);
-    }),
-  };
-  return response;
+  userDocuments: UserDocument[]
+): UserDto[] => {
+  if (userDocuments && Array.isArray(userDocuments)) {
+    return userDocuments.map((d) => userDocumentToUserDto(res, d));
+  }
+  return [];
 };
 
-export const userTransformer = (res: Response, data: UserDocument): User => {
-  return userDocToUser(res, data);
+export const userTransformer = (
+  res: Response,
+  userDocument: UserDocument
+): UserDto => {
+  return userDocumentToUserDto(res, userDocument);
 };

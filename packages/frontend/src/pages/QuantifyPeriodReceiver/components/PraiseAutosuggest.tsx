@@ -1,7 +1,7 @@
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { ActiveUserId } from '@/model/auth';
 import { AllPeriodPraiseList } from '@/model/periods';
-import { Praise } from '@/model/praise';
+import { PraiseDto } from '@/model/praise';
 import { SingleBooleanSetting } from '@/model/settings';
 import { classNames } from '@/utils/index';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
@@ -14,7 +14,7 @@ import { useRecoilValue } from 'recoil';
 interface PraiseAutosuggestProps {
   onClose(): any;
   onSelect(id: string): void;
-  praise: Praise;
+  praise: PraiseDto;
 }
 
 const PraiseAutosuggest = ({
@@ -69,7 +69,7 @@ const PraiseAutosuggest = ({
       },
       onSelectedItemChange: (data: any) => {
         if (!data) return;
-        const selectedItem = data.selectedItem as Praise;
+        const selectedItem = data.selectedItem as PraiseDto;
         onSelect(selectedItem._id);
         onClose();
       },

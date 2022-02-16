@@ -2,7 +2,6 @@ import { PeriodModel } from '@period/entities';
 import { PraiseModel } from '@praise/entities';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
-import { use } from 'chai';
 import faker from 'faker';
 
 const PERIOD_NUMBER = 3;
@@ -27,47 +26,47 @@ const USERS = [
     roles: ['USER', 'QUANTIFIER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    ethereumAddress: '0xa1234000000000000000000000001000000006789',
     roles: ['USER', 'QUANTIFIER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    ethereumAddress: '0xa1234000000000000000000000000000020006789',
     roles: ['USER', 'QUANTIFIER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    ethereumAddress: '0xa1234000000000000000000000000003000006789',
     roles: ['USER', 'QUANTIFIER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    ethereumAddress: '0xa12340000001000000000000000000040000006789',
     roles: ['USER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    ethereumAddress: '0xa1234000000002000000000000000000000006789',
     roles: ['USER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    ethereumAddress: '0xa1234000000003000000000000000000000006789',
     roles: ['USER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    ethereumAddress: '0xa1234000000000400000000000000000000006789',
     roles: ['USER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    ethereumAddress: '0xa1234000000000050000000000000000000006789',
     roles: ['USER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    ethereumAddress: '0xa1234000000000060000000000000000000006789',
     roles: ['USER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    ethereumAddress: '0xa1234000000000000007000000000000000006789',
     roles: ['USER'],
   },
   {
-    ethereumAddress: '0xa123400000000000000000000000000000006789',
+    ethereumAddress: '0xa1234000000000000008000000000000000006789',
     roles: ['USER'],
   },
 ];
@@ -102,16 +101,16 @@ const seedData = async (): Promise<void> => {
   if (userCount < USERS.length) {
     for (let i = 0; i < USERS.length; i++) {
       try {
-        const account = await UserAccountModel.create({
-          id: faker.datatype.uuid(),
-          username: faker.internet.userName(),
-          platform: 'DISCORD',
+        const user = await UserModel.create({
+          ethereumAddress: USERS[i].ethereumAddress,
+          roles: USERS[i].roles,
         });
 
-        await UserModel.create({
-          ethereumAddress: USERS[i].ethereumAddress,
-          accounts: [account._id],
-          roles: USERS[i].roles,
+        await UserAccountModel.create({
+          user: user._id,
+          accountId: faker.datatype.uuid(),
+          name: faker.internet.userName(),
+          platform: 'DISCORD',
         });
       } catch (e) {
         console.log('ERROR:', e);

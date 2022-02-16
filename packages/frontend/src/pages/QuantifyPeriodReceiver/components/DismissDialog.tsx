@@ -1,4 +1,4 @@
-import { Praise } from '@/model/praise';
+import { PraiseDto } from '@/model/praise';
 import {
   faCalculator,
   faMinusCircle,
@@ -10,7 +10,7 @@ import { Dialog } from '@headlessui/react';
 interface DismissDialogProps {
   onClose(): any;
   onDismiss(): any;
-  praise: Praise | undefined;
+  praise: PraiseDto | undefined;
 }
 const PoolDismissDialog = ({
   onClose,

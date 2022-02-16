@@ -19,13 +19,18 @@ import { Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { PeriodModel } from './entities';
 import {
+  periodDetailsReceiverListTransformer,
+  periodDocumentListTransformer,
+  periodDocumentTransformer,
+} from './transformers';
+import {
   Period,
   PeriodCreateUpdateInput,
   PeriodDetailsDto,
-  PeriodDetailsQuantifier,
+  PeriodDetailsQuantifierDto,
   PeriodDetailsReceiver,
-  PeriodDocument,
   PeriodDto,
+  PeriodStatusType,
   VerifyQuantifierPoolSizeResponse,
 } from './types';
 
@@ -42,18 +47,6 @@ const getPreviousPeriodEndDate = async (period: Period): Promise<Date> => {
   return previousEndDate;
 };
 
-const getPeriodDto = (period: PeriodDocument): PeriodDto => {
-  const { _id, name, status, endDate, createdAt, updatedAt } = period;
-  return {
-    _id,
-    name,
-    status,
-    endDate: endDate.toISOString(),
-    createdAt: createdAt.toISOString(),
-    updatedAt: updatedAt.toISOString(),
-  };
-};
-
 /**
  * Description
  * @param
@@ -67,16 +60,9 @@ export const all = async (
     sort: getQuerySort(req.query),
   });
 
-  const getDocs = (docs: PeriodDocument[] | undefined): PeriodDto[] => {
-    if (docs && Array.isArray(docs) && docs.length > 0) {
-      return docs.map((period) => getPeriodDto(period));
-    }
-    return [];
-  };
-
   res.status(StatusCodes.OK).json({
     ...response,
-    docs: getDocs(response?.docs),
+    docs: periodDocumentListTransformer(response?.docs),
   });
 };
 
@@ -106,7 +92,12 @@ const calculateReceiverScores = async (
           const p = await PraiseModel.findById(qi.duplicatePraise);
           if (p) {
             for (const pq of p.quantifications) {
-              if (pq && pq.quantifier.equals(qi.quantifier) && pq.score > 0) {
+              if (
+                pq?.quantifier &&
+                qi.quantifier &&
+                pq.quantifier.equals(qi.quantifier) &&
+                pq.score > 0
+              ) {
                 s += pq.score * duplicatePraisePercentage;
                 si++;
               }
@@ -138,7 +129,7 @@ export const single = async (
 
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
-  const quantifier: PeriodDetailsQuantifier[] = await PraiseModel.aggregate([
+  const quantifier: PeriodDetailsQuantifierDto[] = await PraiseModel.aggregate([
     {
       $match: {
         createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
@@ -173,7 +164,7 @@ export const single = async (
     },
     {
       $group: {
-        _id: '$receiver',
+        _id: '$user',
         praiseCount: { $count: {} },
         quantifications: {
           $push: '$quantifications',
@@ -185,8 +176,8 @@ export const single = async (
   await calculateReceiverScores(receivers);
 
   res.status(StatusCodes.OK).json({
-    ...getPeriodDto(period),
-    receivers: [...receivers],
+    ...periodDocumentTransformer(period),
+    receivers: periodDetailsReceiverListTransformer(receivers),
     quantifiers: [...quantifier],
   });
 };
@@ -201,7 +192,7 @@ export const create = async (
 ): Promise<void> => {
   const { name, endDate } = req.body;
   const period = await PeriodModel.create({ name, endDate });
-  res.status(StatusCodes.OK).json(getPeriodDto(period));
+  res.status(StatusCodes.OK).json(periodDocumentTransformer(period));
 };
 
 /**
@@ -230,7 +221,7 @@ export const update = async (
 
   await period.save();
 
-  res.status(StatusCodes.OK).json(getPeriodDto(period));
+  res.status(StatusCodes.OK).json(periodDocumentTransformer(period));
 };
 
 /**
@@ -244,10 +235,10 @@ export const close = async (
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
-  period.status = 'CLOSED';
+  period.status = PeriodStatusType.CLOSED;
   await period.save();
 
-  res.status(StatusCodes.OK).json(getPeriodDto(period));
+  res.status(StatusCodes.OK).json(periodDocumentTransformer(period));
 };
 
 const assignedPraiseCount = (quantifier: Quantifier): number => {
@@ -429,10 +420,9 @@ export const assignQuantifiers = async (
         const praise = await PraiseModel.findById(praiseId);
         if (quantifier && praise) {
           praise.quantifications.push({
-            quantifier: quantifier._id,
+            quantifier,
             score: 0,
             dismissed: false,
-            duplicatePraise: null,
           });
           await praise.save();
         }
@@ -440,7 +430,7 @@ export const assignQuantifiers = async (
     }
   }
 
-  period.status = 'QUANTIFY';
+  period.status = PeriodStatusType.QUANTIFY;
   await period.save();
 
   void single(req, res);

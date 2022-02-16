@@ -1,9 +1,4 @@
 import {
-  Praise,
-  PraiseAllInput,
-  QuantificationCreateUpdateInput,
-} from '@praise/types';
-import {
   BadRequestError,
   InternalServerError,
   NotFoundError,
@@ -21,12 +16,21 @@ import { UserModel } from '@user/entities';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { PraiseModel } from './entities';
+import {
+  praiseDocumentListTransformer,
+  praiseDocumentTransformer,
+} from './transformers';
+import {
+  PraiseAllInput,
+  PraiseDto,
+  QuantificationCreateUpdateInput,
+} from './types';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
 const all = async (
   req: TypedRequestQuery<PraiseAllInputParsedQs>,
-  res: TypedResponse<PaginatedResponseBody<Praise>>
+  res: TypedResponse<PaginatedResponseBody<PraiseDto>>
 ): Promise<void> => {
   const { receiver, periodStart, periodEnd } = req.query;
   const query: any = {};
@@ -48,24 +52,29 @@ const all = async (
     populate: 'giver receiver',
   });
 
-  res.status(200).json(praises);
+  const response = {
+    ...praises,
+    docs: praiseDocumentListTransformer(praises?.docs),
+  };
+
+  res.status(200).json(response);
 };
 
 const single = async (
   req: Request,
-  res: TypedResponse<Praise>
+  res: TypedResponse<PraiseDto>
 ): Promise<void> => {
   const praise = await PraiseModel.findById(req.params.id).populate(
     'giver receiver'
   );
   if (!praise) throw new NotFoundError('Praise');
 
-  res.status(200).json(praise);
+  res.status(200).json(praiseDocumentTransformer(praise));
 };
 
 const quantify = async (
   req: TypedRequestBody<QuantificationCreateUpdateInput>,
-  res: TypedResponse<Praise>
+  res: TypedResponse<PraiseDto>
 ): Promise<void> => {
   const praise = await PraiseModel.findById(req.params.id).populate(
     'giver receiver'
@@ -105,12 +114,12 @@ const quantify = async (
       quantification.duplicatePraise = dp._id;
     }
   } else {
-    quantification.duplicatePraise = null;
+    quantification.duplicatePraise = undefined;
   }
 
   await praise.save();
 
-  res.status(200).json(praise);
+  res.status(200).json(praiseDocumentTransformer(praise));
 };
 
 const exportPraise = async (

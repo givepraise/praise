@@ -1,10 +1,10 @@
+import { PraiseDto } from 'api/dist/praise/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosResponse } from 'axios';
 import React from 'react';
 import {
   atom,
   atomFamily,
-  GetRecoilValue,
   selectorFamily,
   useRecoilCallback,
   useRecoilState,
@@ -18,31 +18,10 @@ import {
   isResponseOk,
   useAuthApiQuery,
 } from './api';
-import { SingleFloatSetting } from './settings';
-import { UserAccount } from './users';
 
-export interface Quantification {
-  createdAt?: string;
-  updatedAt?: string;
-  quantifier: string;
-  score: number;
-  duplicateScore?: number;
-  dismissed?: boolean;
-  duplicatePraise?: string;
-}
-
-export interface Praise {
-  _id: string;
-  createdAt: string;
-  updatedAt: string;
-  periodId?: number;
-  reason: string;
-  quantifications?: Quantification[];
-  giver: UserAccount;
-  receiver: UserAccount;
-  source: string;
-  avgScore?: number;
-}
+// interface PraiseExt extends PraiseDto {
+//   avgScore?: number;
+// }
 
 // A local only copy of all praises. Used to facilitate CRUD
 // without having to make full roundtrips to the server
@@ -51,7 +30,7 @@ export const AllPraiseIdList = atomFamily<string[] | undefined, string>({
   default: undefined,
 });
 
-export const SinglePraise = atomFamily<Praise | undefined, string>({
+export const SinglePraise = atomFamily<PraiseDto | undefined, string>({
   key: 'SinglePraise',
   default: undefined,
 });
@@ -92,85 +71,84 @@ export const useSinglePraiseQuery = (praiseId: string) => {
 
   return praise;
 };
-export const avgPraiseScore = (praise: Praise | undefined): number => {
-  if (!praise || !praise.quantifications || praise.quantifications.length === 0)
-    return 0;
-  let score = 0;
-  let i = 0;
-  praise.quantifications.forEach((quantification) => {
-    if (
-      quantification.duplicatePraise &&
-      quantification.duplicateScore &&
-      quantification.duplicateScore > 0
-    ) {
-      score += quantification.duplicateScore;
-      i++;
-    }
-    if (quantification.score > 0) {
-      score += quantification.score;
-      i++;
-    }
-  });
-  if (score === 0) return 0;
-  return Math.round(score / i);
-};
+// export const avgPraiseScore = (praise: PraiseExt | undefined): number => {
+//   if (!praise || !praise.quantifications || praise.quantifications.length === 0)
+//     return 0;
+//   let score = 0;
+//   let i = 0;
+//   praise.quantifications.forEach((quantification) => {
+//     if (
+//       quantification.duplicatePraise &&
+//       quantification.duplicateScore &&
+//       quantification.duplicateScore > 0
+//     ) {
+//       score += quantification.duplicateScore;
+//       i++;
+//     }
+//     if (quantification.score > 0) {
+//       score += quantification.score;
+//       i++;
+//     }
+//   });
+//   if (score === 0) return 0;
+//   return Math.round(score / i);
+// };
 
-const quantWithDuplicateScore = (
-  quantification: Quantification,
-  get: GetRecoilValue
-): Quantification => {
-  const quantificationExt = {
-    ...quantification,
-    duplicateScore: 0,
-  };
-  if (quantification.duplicatePraise) {
-    const duplicatePraisePercentage = get(
-      SingleFloatSetting('PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE')
-    );
-    if (duplicatePraisePercentage) {
-      let duplicatePraise = get(SinglePraise(quantification.duplicatePraise));
-      if (!duplicatePraise) {
-        const duplicatePraiseResponse = get(
-          SinglePraiseQuery(quantification.duplicatePraise)
-        );
-        if (isResponseOk(duplicatePraiseResponse)) {
-          duplicatePraise = duplicatePraiseResponse.data;
-        }
-      }
-      if (duplicatePraise && duplicatePraise.quantifications) {
-        const duplicateQuantification = duplicatePraise.quantifications.find(
-          (q) => q.quantifier === quantification.quantifier
-        );
-        if (duplicateQuantification) {
-          quantificationExt.duplicateScore =
-            duplicateQuantification.score * duplicatePraisePercentage;
-        }
-      }
-    }
-  }
-  return quantificationExt;
-};
+// const quantWithDuplicateScore = (
+//   quantification: QuantificationDto,
+//   get: GetRecoilValue
+// ): QuantificationDto => {
+//   const quantificationExt = {
+//     ...quantification,
+//     duplicateScore: 0,
+//   };
+//   if (quantification.duplicatePraise) {
+//     const duplicatePraisePercentage = get(
+//       SingleFloatSetting('PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE')
+//     );
+//     if (duplicatePraisePercentage) {
+//       let duplicatePraise = get(SinglePraise(quantification.duplicatePraise));
+//       if (!duplicatePraise) {
+//         const duplicatePraiseResponse = get(
+//           SinglePraiseQuery(quantification.duplicatePraise)
+//         );
+//         if (isResponseOk(duplicatePraiseResponse)) {
+//           duplicatePraise = duplicatePraiseResponse.data;
+//         }
+//       }
+//       if (duplicatePraise && duplicatePraise.quantifications) {
+//         const duplicateQuantification = duplicatePraise.quantifications.find(
+//           (q) => q.quantifier === quantification.quantifier
+//         );
+//         if (duplicateQuantification) {
+//           quantificationExt.duplicateScore =
+//             duplicateQuantification.score * duplicatePraisePercentage;
+//         }
+//       }
+//     }
+//   }
+//   return quantificationExt;
+// };
 
-export const SinglePraiseExt = selectorFamily({
-  key: 'SinglePraiseExt',
-  get:
-    (praiseId: string) =>
-    ({ get }) => {
-      const praise = get(SinglePraise(praiseId));
-      if (!praise) return undefined;
-      const praiseExt = {
-        ...praise,
-        reason: praise.reason,
-      };
-      if (praise.quantifications) {
-        praiseExt.quantifications = praise.quantifications.map((q) =>
-          quantWithDuplicateScore(q, get)
-        );
-      }
-      praiseExt.avgScore = avgPraiseScore(praiseExt);
-      return praiseExt;
-    },
-});
+// export const SinglePraiseExt = selectorFamily({
+//   key: 'SinglePraiseExt',
+//   get:
+//     (praiseId: string) =>
+//     ({ get }) => {
+//       const praise = get(SinglePraise(praiseId));
+//       if (!praise) return undefined;
+//       const praiseExt: PraiseExt = {
+//         ...praise,
+//       };
+//       if (praise.quantifications) {
+//         praiseExt.quantifications = praise.quantifications.map((q) =>
+//           quantWithDuplicateScore(q, get)
+//         );
+//       }
+//       praiseExt.avgScore = avgPraiseScore(praiseExt);
+//       return praiseExt;
+//     },
+// });
 
 export const AllPraiseList = selectorFamily({
   key: 'AllPraiseList',
@@ -178,7 +156,7 @@ export const AllPraiseList = selectorFamily({
     (listKey: string) =>
     ({ get }) => {
       const praiseIdList = get(AllPraiseIdList(listKey));
-      const allPraiseList: Praise[] = [];
+      const allPraiseList: PraiseDto[] = [];
       if (!praiseIdList) return undefined;
       for (const praiseId of praiseIdList) {
         const praise = get(SinglePraise(praiseId));
@@ -197,13 +175,13 @@ export const PraiseRequestId = atom({
 });
 
 export const AllPraiseQuery = selectorFamily<
-  AxiosResponse<PaginatedResponseBody<Praise>> | undefined,
+  AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined,
   AllPraiseQueryParameters
 >({
   key: 'AllPraiseQuery',
   get:
     (query: AllPraiseQueryParameters) =>
-    ({ get }): AxiosResponse<PaginatedResponseBody<Praise>> | undefined => {
+    ({ get }): AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined => {
       if (!query) throw new Error('Invalid query');
       get(PraiseRequestId);
       const qs = Object.keys(query)
@@ -259,7 +237,7 @@ export const useAllPraiseQuery = (
 
   const saveAllPraiseIdList = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (praiseList: Praise[]) => {
+      async (praiseList: PraiseDto[]) => {
         const allPraiseIdList = await snapshot.getPromise(
           AllPraiseIdList(listKey)
         );
@@ -276,7 +254,7 @@ export const useAllPraiseQuery = (
 
   const saveIndividualPraise = useRecoilCallback(
     ({ set }) =>
-      (praiseList: Praise[]) => {
+      (praiseList: PraiseDto[]) => {
         for (const praise of praiseList) {
           set(SinglePraise(praise._id), praise);
         }
@@ -371,9 +349,9 @@ export const useQuantifyPraise = () => {
         );
 
         if (isResponseOk(response)) {
-          const praise = response.data as Praise;
+          const praise = response.data as PraiseDto;
           set(SinglePraise(praise._id), praise);
-          return response.data as Praise;
+          return response.data as PraiseDto;
         }
       }
   );

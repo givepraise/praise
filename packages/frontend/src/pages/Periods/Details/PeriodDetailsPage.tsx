@@ -6,7 +6,7 @@ import BackLink from '@/navigation/BackLink';
 import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
 import { classNames } from '@/utils/index';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
-import { PeriodDetails } from 'api/dist/period/types';
+import { PeriodDetailsDto } from 'api/dist/period/types';
 import React from 'react';
 import 'react-day-picker/lib/style.css';
 import { useHistory, useParams } from 'react-router-dom';
@@ -25,8 +25,10 @@ const PeriodDetailHead = () => {
     SinglePeriodDetailsQuery({ periodId, refreshKey: location.key })
   );
 
-  const periodDetails: PeriodDetails | null = isResponseOk(periodDetailsReponse)
-    ? (periodDetailsReponse.data as PeriodDetails)
+  const periodDetails: PeriodDetailsDto | null = isResponseOk(
+    periodDetailsReponse
+  )
+    ? (periodDetailsReponse.data as PeriodDetailsDto)
     : null;
 
   return (

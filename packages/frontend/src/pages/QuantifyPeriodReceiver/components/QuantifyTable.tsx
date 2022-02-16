@@ -5,7 +5,7 @@ import {
   PeriodActiveQuantifierReceiverPraise,
   usePeriodPraiseQuery,
 } from '@/model/periods';
-import { Praise, useQuantifyPraise } from '@/model/praise';
+import { PraiseDto, useQuantifyPraise } from '@/model/praise';
 import { SingleBooleanSetting } from '@/model/settings';
 import DismissDialog from '@/pages/QuantifyPeriodReceiver/components/DismissDialog';
 import { formatDate } from '@/utils/date';
@@ -72,39 +72,39 @@ const QuantifyTable = () => {
   const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] =
     React.useState(false);
   const [selectedPraise, setSelectedPraise] = React.useState<
-    Praise | undefined
+    PraiseDto | undefined
   >(undefined);
 
   if (!data) return null;
 
-  const quantification = (praise: Praise) => {
+  const quantification = (praise: PraiseDto) => {
     return praise.quantifications!.find((q) => q.quantifier === userId);
   };
 
-  const dismissed = (praise: Praise) => {
+  const dismissed = (praise: PraiseDto) => {
     const q = quantification(praise);
     return q ? !!q.dismissed : false;
   };
 
-  const duplicate = (praise: Praise) => {
+  const duplicate = (praise: PraiseDto) => {
     const q = quantification(praise);
     return q ? (q.duplicatePraise ? true : false) : false;
   };
 
   const handleDismiss = () => {
-    void quantify(selectedPraise!._id, 0, true, null);
+    void quantify(selectedPraise._id, 0, true, null);
   };
 
   const handleDuplicate = (duplicatePraiseId: string) => {
-    void quantify(selectedPraise!._id, 0, false, duplicatePraiseId);
+    void quantify(selectedPraise._id, 0, false, duplicatePraiseId);
   };
 
   const handleRemoveDismiss = (id: string) => {
-    void quantify(selectedPraise!._id, 0, false, null);
+    void quantify(selectedPraise._id, 0, false, null);
   };
 
   const handleRemoveDuplicate = (id: string) => {
-    void quantify(selectedPraise!._id, 0, false, null);
+    void quantify(selectedPraise._id, 0, false, null);
   };
 
   return (
@@ -222,7 +222,7 @@ const QuantifyTable = () => {
               className="fixed inset-0 z-10 overflow-y-auto"
             >
               <DuplicateDialog
-                praise={selectedPraise!}
+                praise={selectedPraise}
                 onClose={() => setIsDuplicateDialogOpen(false)}
                 onSelect={handleDuplicate}
               />

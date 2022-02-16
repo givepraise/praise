@@ -3,9 +3,7 @@ import {
   InternalServerError,
   NotFoundError,
 } from '@shared/errors';
-import { getQuerySort } from '@shared/functions';
 import {
-  PaginatedResponseBody,
   QueryInputParsedQs,
   SearchQueryInputParsedQs,
   TypedRequestBody,
@@ -13,9 +11,10 @@ import {
   TypedResponse,
 } from '@shared/types';
 import { Request } from 'express';
+import mongoose from 'mongoose';
 import { UserModel } from './entities';
 import { userListTransformer, userTransformer } from './transformers';
-import { RoleChangeRequestInput, User, UserRole } from './types';
+import { UserDocument, UserDto, UserRole, UserRoleChangeInput } from './types';
 
 /**
  * Description
@@ -23,13 +22,18 @@ import { RoleChangeRequestInput, User, UserRole } from './types';
  */
 const all = async (
   req: TypedRequestQuery<QueryInputParsedQs>,
-  res: TypedResponse<PaginatedResponseBody<User>>
+  res: TypedResponse<UserDto[]>
 ): Promise<void> => {
-  const users = await UserModel.paginate({
-    ...req.query, //TODO Unchecked input
-    sort: getQuerySort(req.query),
-    populate: 'accounts',
-  });
+  const users: UserDocument[] = await UserModel.aggregate([
+    {
+      $lookup: {
+        from: 'UserAccount',
+        localField: '_id',
+        foreignField: 'user',
+        as: 'accounts',
+      },
+    },
+  ]);
   if (!users) throw new InternalServerError('No users found');
   res.status(200).json(userListTransformer(res, users));
 };
@@ -40,11 +44,23 @@ const all = async (
  */
 const single = async (
   req: Request,
-  res: TypedResponse<User>
+  res: TypedResponse<UserDto>
 ): Promise<void> => {
-  const user = await UserModel.findById(req.params.id);
-  if (!user) throw new NotFoundError('User');
-  res.status(200).json(userTransformer(res, user));
+  const { id } = req.params;
+  const users: UserDocument[] = await UserModel.aggregate([
+    { $match: { _id: new mongoose.Types.ObjectId(id) } },
+    {
+      $lookup: {
+        from: 'UserAccount',
+        localField: '_id',
+        foreignField: 'user',
+        as: 'accounts',
+      },
+    },
+  ]);
+  if (!Array.isArray(users) || users.length === 0)
+    throw new NotFoundError('User');
+  res.status(200).json(userTransformer(res, users[0]));
 };
 
 /**
@@ -53,20 +69,22 @@ const single = async (
  */
 const search = async (
   req: TypedRequestQuery<SearchQueryInputParsedQs>,
-  res: TypedResponse<PaginatedResponseBody<User>>
+  res: TypedResponse<UserDto[]>
 ): Promise<void> => {
   //TODO Support searching more than eth address
-  const searchQuery = {
-    ethereumAddress: { $regex: req.query.search },
-  };
-
-  const users = await UserModel.paginate({
-    query: searchQuery,
-    ...req.query, //TODO Unchecked input
-    sort: getQuerySort(req.query),
-  });
-  if (!users) throw new NotFoundError('User');
-
+  const users: UserDocument[] = await UserModel.aggregate([
+    { $match: { ethereumAddress: { $regex: req.query.search } } },
+    {
+      $lookup: {
+        from: 'UserAccount',
+        localField: '_id',
+        foreignField: 'user',
+        as: 'accounts',
+      },
+    },
+  ]);
+  if (!Array.isArray(users) || users.length === 0)
+    throw new NotFoundError('User');
   res.status(200).json(userListTransformer(res, users));
 };
 
@@ -75,10 +93,11 @@ const search = async (
  * @param
  */
 const addRole = async (
-  req: TypedRequestBody<RoleChangeRequestInput>,
-  res: TypedResponse<User>
+  req: TypedRequestBody<UserRoleChangeInput>,
+  res: TypedResponse<UserDto>
 ): Promise<void> => {
-  const user = await UserModel.findById(req.params.id).populate('accounts');
+  const { id } = req.params;
+  const user = await UserModel.findById(id);
   if (!user) throw new NotFoundError('User');
 
   const { role } = req.body;
@@ -99,10 +118,11 @@ const addRole = async (
  * @param
  */
 const removeRole = async (
-  req: TypedRequestBody<RoleChangeRequestInput>,
-  res: TypedResponse<User>
+  req: TypedRequestBody<UserRoleChangeInput>,
+  res: TypedResponse<UserDto>
 ): Promise<void> => {
-  const user = await UserModel.findById(req.params.id).populate('accounts');
+  const { id } = req.params;
+  const user = await UserModel.findById(id);
   if (!user) throw new NotFoundError('User');
 
   const { role } = req.body;

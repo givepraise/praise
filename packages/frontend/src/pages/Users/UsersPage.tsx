@@ -1,9 +1,10 @@
 import BreadCrumb from '@/components/BreadCrumb';
-import { useAdminUsers, UserRole } from '@/model/users';
+import { useAdminUsers } from '@/model/users';
 import PoolAddDialog from '@/pages/Users/components/AddDialog';
 import { faPlus, faUserFriends } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
+import { UserRole } from 'api/dist/user/types';
 import React from 'react';
 import UsersTable from './components/UsersTable';
 

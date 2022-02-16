@@ -8,6 +8,6 @@ settingsRouter.getAsync('/:key', single);
 
 // User admin only routes
 const settingsAdminRouter = Router();
-settingsAdminRouter.patchAsync('/:key/set', set);
+settingsAdminRouter.patchAsync('/:id/set', set);
 
 export { settingsRouter, settingsAdminRouter };

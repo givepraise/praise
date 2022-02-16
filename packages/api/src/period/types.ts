@@ -1,43 +1,63 @@
-import { Quantification } from '@praise/types';
-import mongoose from 'mongoose';
+import { Quantification, QuantificationDto } from '@praise/types';
+import { User } from '@user/types';
+import mongoose, { Types } from 'mongoose';
 
-type periodStatusType = 'OPEN' | 'QUANTIFY' | 'CLOSED';
+// export type PeriodStatusType = 'OPEN' | 'QUANTIFY' | 'CLOSED';
+
+export enum PeriodStatusType {
+  OPEN = 'OPEN',
+  QUANTIFY = 'QUANTIFY',
+  CLOSED = 'CLOSED',
+}
 
 export interface Period {
-  _id?: string;
   name: string;
-  status: periodStatusType;
+  status: PeriodStatusType;
   endDate: Date;
-  quantifiers: [string];
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface PeriodDocument extends Period, mongoose.Document<string> {}
+export interface PeriodDocument extends Period, mongoose.Document {}
 
 export interface PeriodDto {
-  _id?: string;
+  _id: string;
   name: string;
-  status: periodStatusType;
+  status: PeriodStatusType;
   endDate: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface PeriodDetailsReceiver {
-  _id?: string;
+  _id: Types.ObjectId;
   praiseCount: number;
-  quantifications?: [Quantification[]];
+  quantifications?: Array<Array<Quantification>>;
   score?: number;
 }
+
+export interface PeriodDetailsReceiverDto {
+  _id: string;
+  praiseCount: number;
+  quantifications?: Array<Array<QuantificationDto>>;
+  score?: number;
+}
+
 export interface PeriodDetailsQuantifier {
-  _id?: string;
+  user: User;
   finishedCount: number;
   praiseCount: number;
 }
+
+export interface PeriodDetailsQuantifierDto {
+  userId: string;
+  finishedCount: number;
+  praiseCount: number;
+}
+
 export interface PeriodDetailsDto extends PeriodDto {
-  quantifiers: PeriodDetailsQuantifier[];
-  receivers: PeriodDetailsReceiver[];
+  quantifiers: PeriodDetailsQuantifierDto[];
+  receivers: PeriodDetailsReceiverDto[];
 }
 
 export interface VerifyQuantifierPoolSizeResponse {
@@ -46,6 +66,7 @@ export interface VerifyQuantifierPoolSizeResponse {
 }
 
 export interface PeriodCreateUpdateInput {
+  _id?: string;
   name: string;
   endDate: string;
 }

@@ -1,5 +1,5 @@
 import { ActiveUserId } from '@/model/auth';
-import { Praise, useQuantifyPraise } from '@/model/praise';
+import { PraiseDto, useQuantifyPraise } from '@/model/praise';
 import { SingleStringSetting } from '@/model/settings';
 import { Slider, Tooltip } from '@mui/material';
 import React, { FC } from 'react';
@@ -20,7 +20,7 @@ interface Mark {
 }
 
 interface QuantifySliderProps {
-  praise: Praise;
+  praise: PraiseDto;
 }
 
 const QuantifySlider = ({ praise }: QuantifySliderProps) => {
@@ -51,14 +51,14 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
   };
 
   const quantification = React.useCallback(
-    (praise: Praise) => {
+    (praise: PraiseDto) => {
       return praise.quantifications!.find((q) => q.quantifier === activeUserId);
     },
     [activeUserId, praise]
   );
 
   const dismissed = React.useCallback(
-    (praise: Praise) => {
+    (praise: PraiseDto) => {
       const q = quantification(praise);
       return q ? !!q.dismissed : false;
     },
@@ -66,7 +66,7 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
   );
 
   const duplicate = React.useCallback(
-    (praise: Praise) => {
+    (praise: PraiseDto) => {
       const q = quantification(praise);
       return q ? (q.duplicatePraise ? true : false) : false;
     },
@@ -74,7 +74,7 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
   );
 
   const score = React.useCallback(
-    (praise: Praise) => {
+    (praise: PraiseDto) => {
       const q = quantification(praise);
       return q && q.score ? q.score : 0;
     },
@@ -82,7 +82,7 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
   );
 
   const scoreToMark = React.useCallback(
-    (praise: Praise) => {
+    (praise: PraiseDto) => {
       return sliderMarks[scores.indexOf(score(praise))]
         ? sliderMarks[scores.indexOf(score(praise))].value
         : 0;
@@ -119,8 +119,8 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
     void quantify(
       praise._id,
       score,
-      q!.dismissed ? q!.dismissed : false,
-      q!.duplicatePraise ? q!.duplicatePraise : null
+      q.dismissed ? q.dismissed : false,
+      q.duplicatePraise ? q.duplicatePraise : null
     );
   };
 

@@ -1,21 +1,25 @@
 import mongoose from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-import { UserAccountDocument } from './types';
+import { UserAccountDocument, UserAccountPlatform } from './types';
 
 export const userAccountSchema = new mongoose.Schema(
   {
-    id: { type: String, required: true, unique: true },
-    username: { type: String, required: true },
-    profileImageUrl: { type: String },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+    accountId: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    avatarId: { type: String },
     platform: {
       type: String,
-      enum: ['DISCORD', 'TELEGRAM'],
-      default: 'DISCORD',
+      enum: UserAccountPlatform,
+      required: true,
     },
     activateToken: { type: String, select: false },
   },
   {
-    collection: 'accounts',
     timestamps: true,
   }
 );

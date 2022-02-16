@@ -1,6 +1,6 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { AllPraiseList, Praise } from '@/model/praise';
+import { AllPraiseList, PraiseDto } from '@/model/praise';
 import { formatDate } from '@/utils/date';
 import React, { SyntheticEvent } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -53,7 +53,7 @@ const PraiseTable = () => {
 
   const { getTableProps, getTableBodyProps, rows, prepareRow } = tableInstance;
 
-  const handleClick = (data: Praise) => (e: SyntheticEvent) => {
+  const handleClick = (data: PraiseDto) => (e: SyntheticEvent) => {
     history.push(`/praise/${data._id}`);
   };
 
@@ -72,7 +72,7 @@ const PraiseTable = () => {
               <tr
                 className="cursor-pointer hover:bg-gray-100"
                 {...row.getRowProps()}
-                onClick={handleClick(row.original as Praise)}
+                onClick={handleClick(row.original as PraiseDto)}
               >
                 {row.cells.map((cell) => {
                   return (
