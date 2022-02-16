@@ -1,11 +1,5 @@
 import BreadCrumb from '@/components/BreadCrumb';
-import { UserPseudonym } from '@/components/user/UserPseudonym';
-import {
-  PeriodActiveQuantifierReceiver,
-  SinglePeriod,
-  usePeriodPraiseQuery,
-} from '@/model/periods';
-import { SingleBooleanSetting } from '@/model/settings';
+import { SinglePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
 import {
   faCalendarAlt,
@@ -35,40 +29,41 @@ const DoneLabel = () => {
 };
 
 const PeriodMessage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId, receiverId } = useParams() as any;
-  usePeriodPraiseQuery(periodId);
-  const data = useRecoilValue(
-    PeriodActiveQuantifierReceiver({ periodId, receiverId })
-  );
-  const usePseudonyms = useRecoilValue(
-    SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
-  );
+  return null;
+  // // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  // const { periodId, receiverId } = useParams() as any;
+  // usePeriodPraiseQuery(periodId);
+  // const data = useRecoilValue(
+  //   PeriodActiveQuantifierReceiver({ periodId, receiverId })
+  // );
+  // const usePseudonyms = useRecoilValue(
+  //   SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
+  // );
 
-  if (!data) return null;
-  return (
-    <>
-      <h2>
-        Receiver:{' '}
-        {usePseudonyms ? (
-          <UserPseudonym userId={receiverId} periodId={periodId} />
-        ) : (
-          data.receiverName
-        )}
-      </h2>
-      <div>Number of praise items: {data.count}</div>
-      <div>
-        Items left to quantify:{' '}
-        {data.count - data.done === 0 ? (
-          <>
-            0<DoneLabel />
-          </>
-        ) : (
-          data.count - data.done
-        )}
-      </div>
-    </>
-  );
+  // if (!data) return null;
+  // return (
+  //   <>
+  //     <h2>
+  //       Receiver:{' '}
+  //       {usePseudonyms ? (
+  //         <UserPseudonym userId={receiverId} periodId={periodId} />
+  //       ) : (
+  //         data.receiverName
+  //       )}
+  //     </h2>
+  //     <div>Number of praise items: {data.count}</div>
+  //     <div>
+  //       Items left to quantify:{' '}
+  //       {data.count - data.done === 0 ? (
+  //         <>
+  //           0<DoneLabel />
+  //         </>
+  //       ) : (
+  //         data.count - data.done
+  //       )}
+  //     </div>
+  //   </>
+  // );
 };
 
 const QuantifyPeriodUserPage = () => {

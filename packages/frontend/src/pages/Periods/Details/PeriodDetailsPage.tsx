@@ -1,15 +1,13 @@
 import BreadCrumb from '@/components/BreadCrumb';
-import { isResponseOk } from '@/model/api';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import { SinglePeriodDetailsQuery } from '@/model/periods';
+import { useSinglePeriodQuery } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
 import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
 import { classNames } from '@/utils/index';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
-import { PeriodDetailsDto } from 'api/dist/period/types';
 import React from 'react';
 import 'react-day-picker/lib/style.css';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import PeriodNameForm from './components/PeriodNameForm';
 import { QuantifierMessage } from './components/QuantifierMessage';
@@ -20,16 +18,7 @@ const PeriodDetailHead = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const { location } = useHistory();
-  const periodDetailsReponse = useRecoilValue(
-    SinglePeriodDetailsQuery({ periodId, refreshKey: location.key })
-  );
-
-  const periodDetails: PeriodDetailsDto | null = isResponseOk(
-    periodDetailsReponse
-  )
-    ? (periodDetailsReponse.data as PeriodDetailsDto)
-    : null;
+  const periodDetails = useSinglePeriodQuery(periodId);
 
   return (
     <>

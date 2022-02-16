@@ -1,5 +1,6 @@
-import { Quantification, QuantificationDto } from '@praise/types';
+import { QuantificationDocument, QuantificationDto } from '@praise/types';
 import { User } from '@user/types';
+import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
 import mongoose, { Types } from 'mongoose';
 
 // export type PeriodStatusType = 'OPEN' | 'QUANTIFY' | 'CLOSED';
@@ -32,8 +33,9 @@ export interface PeriodDto {
 export interface PeriodDetailsReceiver {
   _id: Types.ObjectId;
   praiseCount: number;
-  quantifications?: Array<Array<Quantification>>;
+  quantifications?: Array<Array<QuantificationDocument>>;
   score?: number;
+  userAccounts: UserAccountDocument[];
 }
 
 export interface PeriodDetailsReceiverDto {
@@ -41,6 +43,7 @@ export interface PeriodDetailsReceiverDto {
   praiseCount: number;
   quantifications?: Array<Array<QuantificationDto>>;
   score?: number;
+  userAccount?: UserAccountDto;
 }
 
 export interface PeriodDetailsQuantifier {

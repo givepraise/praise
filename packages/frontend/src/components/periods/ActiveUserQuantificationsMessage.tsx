@@ -1,8 +1,4 @@
-import {
-  AllActiveQuantifierQuantifications,
-  QuantifierData,
-  SinglePeriod,
-} from '@/model/periods';
+import { QuantifierData, SinglePeriod } from '@/model/periods';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
@@ -28,24 +24,25 @@ const QuantifierPeriodMessage = ({
 };
 
 export const ActiveUserQuantificationsMessage = () => {
-  const activeUserQuantifications = useRecoilValue(
-    AllActiveQuantifierQuantifications
-  );
-  if (
-    !activeUserQuantifications ||
-    !Array.isArray(activeUserQuantifications) ||
-    activeUserQuantifications.length === 0
-  )
-    return null;
+  return null;
+  // const activeUserQuantifications = useRecoilValue(
+  //   AllActiveQuantifierQuantifications
+  // );
+  // if (
+  //   !activeUserQuantifications ||
+  //   !Array.isArray(activeUserQuantifications) ||
+  //   activeUserQuantifications.length === 0
+  // )
+  //   return null;
 
-  return (
-    <div className="mt-2">
-      You can perform quantifications for the following periods:
-      <ul className="list-disc list-inside">
-        {activeUserQuantifications.map((qp) => (
-          <QuantifierPeriodMessage quantifierData={qp} key={qp.periodId} />
-        ))}
-      </ul>
-    </div>
-  );
+  // return (
+  //   <div className="mt-2">
+  //     You can perform quantifications for the following periods:
+  //     <ul className="list-disc list-inside">
+  //       {activeUserQuantifications.map((qp) => (
+  //         <QuantifierPeriodMessage quantifierData={qp} key={qp.periodId} />
+  //       ))}
+  //     </ul>
+  //   </div>
+  // );
 };

@@ -1,3 +1,4 @@
+import { userAccountTransformer } from '@useraccount/transformers';
 import {
   PraiseDocument,
   PraiseDto,
@@ -55,8 +56,8 @@ const praiseDocumentToDto = (praiseDocument: PraiseDocument): PraiseDto => {
     sourceId,
     sourceName,
     quantifications: quantificationListTransformer(quantifications),
-    giver: giver._id,
-    receiver: receiver._id,
+    giver: userAccountTransformer(giver),
+    receiver: userAccountTransformer(receiver),
     createdAt: createdAt.toISOString(),
     updatedAt: updatedAt.toISOString(),
   };

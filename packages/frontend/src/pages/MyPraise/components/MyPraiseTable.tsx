@@ -1,9 +1,10 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { AllPraiseList, PraiseDto } from '@/model/praise';
+import { AllPraiseList } from '@/model/praise';
 import { formatDate } from '@/utils/date';
 import { faSadTear } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { PraiseDto } from 'api/dist/praise/types';
 import React, { SyntheticEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';

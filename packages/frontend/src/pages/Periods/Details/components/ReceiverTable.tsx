@@ -1,8 +1,6 @@
 import { UserCell } from '@/components/table/UserCell';
-import { isResponseOk } from '@/model/api';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import { SinglePeriodDetailsQuery } from '@/model/periods';
-import { PeriodDetailsDto } from 'api/dist/period/types';
+import { useSinglePeriodQuery } from '@/model/periods';
 import React, { SyntheticEvent } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useSortBy, useTable } from 'react-table';
@@ -13,16 +11,7 @@ const ReceiverTable = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const { location } = useHistory();
-  const periodDetailsReponse = useRecoilValue(
-    SinglePeriodDetailsQuery({ periodId, refreshKey: location.key })
-  );
-
-  const periodDetails: PeriodDetailsDto | null = isResponseOk(
-    periodDetailsReponse
-  )
-    ? (periodDetailsReponse.data as PeriodDetailsDto)
-    : null;
+  const periodDetails = useSinglePeriodQuery(periodId);
 
   const columns = React.useMemo(
     () => [
@@ -30,7 +19,7 @@ const ReceiverTable = () => {
         Header: 'Receiver',
         accessor: '_id',
         Cell: (data: any): JSX.Element => (
-          <UserCell userId={data.row.original._id} />
+          <UserCell userId={data.row.original.userAccount.name} />
         ),
       },
       {

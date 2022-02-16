@@ -1,9 +1,7 @@
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { AllPeriodReceiverPraise } from '@/model/periods';
 import { formatDate } from '@/utils/date';
 import React from 'react';
-import { useHistory, useParams } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useHistory } from 'react-router-dom';
 
 interface PraiseRowProps {
   praise: any;
@@ -41,21 +39,22 @@ const PraiseRow = ({ praise }: PraiseRowProps) => {
 };
 
 const PeriodReceiverTable = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId, receiverId } = useParams() as any;
+  return null;
+  // // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  // const { periodId, receiverId } = useParams() as any;
 
-  const data = useRecoilValue(
-    AllPeriodReceiverPraise({ periodId, receiverId })
-  );
+  // const data = useRecoilValue(
+  //   AllPeriodReceiverPraise({ periodId, receiverId })
+  // );
 
-  if (!data) return null;
-  return (
-    <div>
-      {data?.map((praise) => (
-        <PraiseRow praise={praise} key={praise?._id} />
-      ))}
-    </div>
-  );
+  // if (!data) return null;
+  // return (
+  //   <div>
+  //     {data?.map((praise) => (
+  //       <PraiseRow praise={praise} key={praise?._id} />
+  //     ))}
+  //   </div>
+  // );
 };
 
 export default PeriodReceiverTable;

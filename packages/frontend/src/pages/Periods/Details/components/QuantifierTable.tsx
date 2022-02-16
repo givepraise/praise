@@ -1,6 +1,6 @@
 import { UserCell } from '@/components/table/UserCell';
 import { isResponseOk } from '@/model/api';
-import { SinglePeriodDetailsQuery } from '@/model/periods';
+import { SinglePeriodQuery } from '@/model/periods';
 import { PeriodDetailsDto } from 'api/dist/period/types';
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
@@ -12,7 +12,7 @@ const QuantifierTable = () => {
   const { periodId } = useParams() as any;
   const { location } = useHistory();
   const periodDetailsReponse = useRecoilValue(
-    SinglePeriodDetailsQuery({ periodId, refreshKey: location.key })
+    SinglePeriodQuery({ periodId, refreshKey: location.key })
   );
 
   const period: PeriodDetailsDto | null = isResponseOk(periodDetailsReponse)

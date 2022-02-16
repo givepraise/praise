@@ -1,7 +1,7 @@
 import BreadCrumb from '@/components/BreadCrumb';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
-import { SinglePraiseExt, useSinglePraiseQuery } from '@/model/praise';
+import { useSinglePraiseQuery } from '@/model/praise';
 import BackLink from '@/navigation/BackLink';
 import { formatDateLong } from '@/utils/date';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
@@ -13,8 +13,7 @@ import PraiseDetailTable from './components/PraiseDetailTable';
 const PeriodReceiverMessage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { praiseId } = useParams() as any;
-  useSinglePraiseQuery(praiseId);
-  const praise = useRecoilValue(SinglePraiseExt(praiseId));
+  const praise = useSinglePraiseQuery(praiseId);
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
 
@@ -24,8 +23,8 @@ const PeriodReceiverMessage = () => {
     <>
       <div className="text-gray-500">{formatDateLong(praise.createdAt)}</div>
       <h2>
-        {praise.giver.username} <span className="font-normal">to</span>{' '}
-        {praise.receiver.username}
+        {praise.giver.name} <span className="font-normal">to</span>{' '}
+        {praise.receiver.name}
       </h2>
       <div className="mt-2">{praise.reason}</div>
       <div className="mt-2">
@@ -33,7 +32,7 @@ const PeriodReceiverMessage = () => {
         {period && (period.status === 'CLOSED' || isAdmin) ? (
           <>
             <br />
-            Average praise score: {praise.avgScore}
+            Average praise score: {praise.score}
           </>
         ) : null}
       </div>

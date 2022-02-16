@@ -3,12 +3,15 @@
 import { getPreviousPeriod } from '@/utils/periods';
 import {
   PeriodCreateUpdateInput,
+  PeriodDetailsDto,
   PeriodDto,
   PeriodStatusType,
 } from 'api/dist/period/types';
+import { PraiseDto } from 'api/dist/praise/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   atom,
   selector,
@@ -25,7 +28,7 @@ import {
   isResponseOk,
   useAuthApiQuery,
 } from './api';
-import { PraiseDto, SinglePraise } from './praise';
+import { SinglePraise } from './praise';
 
 // The request Id is used to force refresh of AllPeriodsQuery
 // AllPeriodsQuery subscribes to the value. Increase to trigger
@@ -59,8 +62,8 @@ type SinglePeriodDetailsParams = {
   refreshKey: string | undefined;
 };
 
-export const SinglePeriodDetailsQuery = selectorFamily({
-  key: 'SinglePeriodDetailsQuery',
+export const SinglePeriodQuery = selectorFamily({
+  key: 'SinglePeriodQuery',
   get:
     (params: SinglePeriodDetailsParams) =>
     ({ get }): AxiosResponse<unknown> => {
@@ -73,6 +76,24 @@ export const SinglePeriodDetailsQuery = selectorFamily({
       );
     },
 });
+
+export const useSinglePeriodQuery = (
+  periodId: string
+): PeriodDetailsDto | undefined => {
+  const { location } = useHistory();
+  const periodResponse = useRecoilValue(
+    SinglePeriodQuery({ periodId, refreshKey: location.key })
+  );
+  const [period, setPeriod] = React.useState<PeriodDetailsDto | undefined>(
+    undefined
+  );
+  React.useEffect(() => {
+    if (!period && isResponseOk(periodResponse)) {
+      setPeriod(periodResponse.data);
+    }
+  }, [periodResponse]);
+  return period;
+};
 
 export const SinglePeriod = selectorFamily({
   key: 'SinglePeriod',
@@ -443,12 +464,12 @@ export const useAssignQuantifiers = () => {
 //     },
 // });
 
-// export interface QuantifierData {
-//   periodId: string;
-//   userId: string;
-//   count: number;
-//   done: number;
-// }
+export interface QuantifierData {
+  periodId: string;
+  userId: string;
+  count: number;
+  done: number;
+}
 
 // export const PeriodQuantifiers = selectorFamily({
 //   key: 'PeriodQuantifiers',

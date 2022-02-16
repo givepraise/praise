@@ -22,9 +22,11 @@ import {
 } from './transformers';
 import {
   PraiseAllInput,
+  PraiseDetailsDto,
   PraiseDto,
   QuantificationCreateUpdateInput,
 } from './types';
+import { calculatePraiseScore } from './utils';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
@@ -62,14 +64,15 @@ const all = async (
 
 const single = async (
   req: Request,
-  res: TypedResponse<PraiseDto>
+  res: TypedResponse<PraiseDetailsDto>
 ): Promise<void> => {
   const praise = await PraiseModel.findById(req.params.id).populate(
     'giver receiver'
   );
   if (!praise) throw new NotFoundError('Praise');
-
-  res.status(200).json(praiseDocumentTransformer(praise));
+  const praiseDetailsDto: PraiseDetailsDto = praiseDocumentTransformer(praise);
+  praiseDetailsDto.score = await calculatePraiseScore(praise);
+  res.status(200).json(praiseDetailsDto);
 };
 
 const quantify = async (

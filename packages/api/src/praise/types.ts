@@ -54,6 +54,13 @@ export interface QuantificationDto {
   updatedAt?: string;
 }
 
+export type QuantificationDetailsDto = QuantificationDto;
+
+export interface PraiseDetailsDto extends PraiseDto {
+  score?: number;
+  quantifications: QuantificationDetailsDto[];
+}
+
 export interface QuantificationCreateUpdateInput {
   score: number;
   dismissed: boolean;

@@ -1,7 +1,8 @@
 import { ActiveUserId } from '@/model/auth';
-import { PraiseDto, useQuantifyPraise } from '@/model/praise';
+import { useQuantifyPraise } from '@/model/praise';
 import { SingleStringSetting } from '@/model/settings';
 import { Slider, Tooltip } from '@mui/material';
+import { PraiseDto } from 'api/dist/praise/types';
 import React, { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -116,12 +117,12 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
     const q = quantification(praise);
     const score = scores[sliderMarks.findIndex((mark) => mark.value === value)];
 
-    void quantify(
-      praise._id,
-      score,
-      q.dismissed ? q.dismissed : false,
-      q.duplicatePraise ? q.duplicatePraise : null
-    );
+    // void quantify(
+    //   praise._id,
+    //   score,
+    //   q.dismissed ? q.dismissed : false,
+    //   q.duplicatePraise ? q.duplicatePraise : null
+    // );
   };
 
   function valueLabelFormat(value: number): number {

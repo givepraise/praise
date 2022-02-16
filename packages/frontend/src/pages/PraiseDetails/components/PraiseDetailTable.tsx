@@ -1,7 +1,7 @@
 import { UserCell } from '@/components/table/UserCell';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
-import { SinglePraiseExt } from '@/model/praise';
+import { useSinglePraiseQuery } from '@/model/praise';
 import { formatDate } from '@/utils/date';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,10 +13,9 @@ import { useRecoilValue } from 'recoil';
 const PraiseDetailTable = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { praiseId } = useParams() as any;
-
-  const praise = useRecoilValue(SinglePraiseExt(praiseId));
-  const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
+  const praise = useSinglePraiseQuery(praiseId);
+  const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
 
   const columns = React.useMemo(
     () => [

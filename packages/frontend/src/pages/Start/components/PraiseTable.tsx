@@ -1,7 +1,8 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { AllPraiseList, PraiseDto } from '@/model/praise';
+import { AllPraiseList } from '@/model/praise';
 import { formatDate } from '@/utils/date';
+import { PraiseDto } from 'api/dist/praise/types';
 import React, { SyntheticEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
@@ -25,11 +26,11 @@ const PraiseTable = () => {
             <div className="flex-grow p-3 overflow-hidden">
               <div>
                 <span className="font-bold">
-                  {data.row.original.giver.username}
+                  {data.row.original.giver.name}
                 </span>{' '}
                 to{' '}
                 <span className="font-bold">
-                  {data.row.original.receiver.username}
+                  {data.row.original.receiver.name}
                 </span>
                 <span className="ml-2 text-xs text-gray-500">
                   {formatDate(data.row.original.createdAt)}

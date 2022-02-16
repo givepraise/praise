@@ -1,5 +1,6 @@
 import { quantificationListTransformer } from '@praise/transformers';
 import { Quantification, QuantificationDto } from '@praise/types';
+import { userAccountTransformer } from '@useraccount/transformers';
 import {
   PeriodDetailsReceiver,
   PeriodDetailsReceiverDto,
@@ -50,12 +51,17 @@ export const listOfQuantificationListsTransformer = (
 const periodDetailsReceiverToDto = (
   periodDetailsReceiver: PeriodDetailsReceiver
 ): PeriodDetailsReceiverDto => {
-  const { _id, praiseCount, quantifications, score } = periodDetailsReceiver;
+  const { _id, praiseCount, quantifications, score, userAccounts } =
+    periodDetailsReceiver;
   return {
     _id: _id.toString(),
     praiseCount,
     quantifications: listOfQuantificationListsTransformer(quantifications),
     score,
+    userAccount:
+      Array.isArray(userAccounts) && userAccounts.length > 0
+        ? userAccountTransformer(userAccounts[0])
+        : undefined,
   };
 };
 

@@ -163,23 +163,33 @@ export const single = async (
       },
     },
     {
+      $lookup: {
+        from: 'useraccounts',
+        localField: 'receiver',
+        foreignField: '_id',
+        as: 'userAccounts',
+      },
+    },
+    {
       $group: {
-        _id: '$user',
+        _id: '$receiver',
         praiseCount: { $count: {} },
         quantifications: {
           $push: '$quantifications',
         },
+        userAccounts: { $first: '$userAccounts' },
       },
     },
   ]);
 
   await calculateReceiverScores(receivers);
 
-  res.status(StatusCodes.OK).json({
+  const response = {
     ...periodDocumentTransformer(period),
     receivers: periodDetailsReceiverListTransformer(receivers),
     quantifiers: [...quantifier],
-  });
+  };
+  res.status(StatusCodes.OK).json(response);
 };
 
 /**

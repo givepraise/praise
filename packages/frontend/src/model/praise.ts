@@ -1,7 +1,8 @@
-import { PraiseDto } from 'api/dist/praise/types';
+import { PraiseDetailsDto, PraiseDto } from 'api/dist/praise/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosResponse } from 'axios';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   atom,
   atomFamily,
@@ -35,42 +36,39 @@ export const SinglePraise = atomFamily<PraiseDto | undefined, string>({
   default: undefined,
 });
 
+type SinglePraiseDetailsParams = {
+  praiseId: string;
+  refreshKey: string | undefined;
+};
+
 export const SinglePraiseQuery = selectorFamily({
   key: 'SinglePraiseQuery',
   get:
-    (praiseId: string) =>
-    ({ get }) => {
-      get(PraiseRequestId);
-      const response = get(ApiAuthGet({ url: `/api/praise/${praiseId}` }));
-      return response;
+    (params: SinglePraiseDetailsParams) =>
+    ({ get }): AxiosResponse<unknown> => {
+      const { praiseId, refreshKey } = params;
+      return get(ApiAuthGet({ url: `/api/praise/${praiseId}`, refreshKey }));
     },
 });
 
-export const useSinglePraiseQuery = (praiseId: string) => {
-  const praise = useRecoilValue(SinglePraise(praiseId));
-
-  const fetchSinglePraise = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async () => {
-        const response = await ApiQuery(
-          snapshot.getPromise(SinglePraiseQuery(praiseId))
-        );
-        if (isResponseOk(response)) {
-          set(SinglePraise(praiseId), response.data);
-        } else {
-          //TODO handle error
-        }
-      }
+export const useSinglePraiseQuery = (
+  praiseId: string
+): PraiseDetailsDto | undefined => {
+  const { location } = useHistory();
+  const praiseResponse = useRecoilValue(
+    SinglePraiseQuery({ praiseId, refreshKey: location.key })
   );
-
+  const [praise, setPraise] = React.useState<PraiseDetailsDto | undefined>(
+    undefined
+  );
   React.useEffect(() => {
-    if (praiseId && !praise) {
-      void fetchSinglePraise();
+    if (!praise && isResponseOk(praiseResponse)) {
+      setPraise(praiseResponse.data);
     }
-  }, [praiseId, praise, fetchSinglePraise]);
-
+  }, [praiseResponse]);
   return praise;
 };
+
 // export const avgPraiseScore = (praise: PraiseExt | undefined): number => {
 //   if (!praise || !praise.quantifications || praise.quantifications.length === 0)
 //     return 0;
