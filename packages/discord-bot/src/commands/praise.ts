@@ -2,9 +2,9 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { PraiseModel } from 'api/dist/praise/entities';
 import { UserModel } from 'api/dist/user/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { CommandInteraction, Interaction, MessageEmbed } from 'discord.js';
+import { CommandInteraction, Interaction, Message, MessageEmbed } from 'discord.js';
 import logger from 'jet-logger';
-import { praiseErrorEmbed, praiseSuccessEmbed } from '../utils/praiseEmbeds';
+import { notActivatedError, praiseSuccess, praiseErrorEmbed } from '../utils/praiseEmbeds';
 
 const praise = async (interaction: CommandInteraction) => {
   const { guild, channel, member } = interaction;
@@ -24,11 +24,10 @@ const praise = async (interaction: CommandInteraction) => {
   const praiseGiver = await guild.members.fetch(member.user.id);
 
   if (!praiseGiver.roles.cache.find((r) => r.id === praiseGiverRole?.id)) {
-    const noGiverRoleEmbed = praiseErrorEmbed(
-      `User does not have \`${praiseGiverRole?.name}\` role`,
-      `The praise command can only be used by members with the <@&${praiseGiverRole?.id}> role. Attend an onboarding-call, or ask a steward or guide for an Intro to Praise.`
-    );
-    await interaction.editReply({ embeds: [noGiverRoleEmbed] });
+    const msg = await interaction.editReply(
+      `**User does not have \`${praiseGiverRole?.name}\` role**\nThe praise command can only be used by members with the <@&${praiseGiverRole?.id}> role. Attend an onboarding-call, or ask a steward or guide for an Intro to Praise.`
+    ) as Message;
+    await msg.react('❌');
     return;
   }
 
@@ -106,11 +105,8 @@ const praise = async (interaction: CommandInteraction) => {
   });
 
   if (!User) {
-    const notActivatedEmbed = praiseErrorEmbed(
-      'Account Not Activated',
-      'Your Account is not activated in the praise system. Unactivated accounts can not praise users. Use the `/praise-activate` command to activate your praise account and to link your eth address.'
-    );
-    await interaction.editReply({ embeds: [addInfoFields(notActivatedEmbed)] });
+    const msg = await interaction.editReply(notActivatedError) as Message;
+    await msg.react('❌');
     return;
   }
 
@@ -142,9 +138,10 @@ const praise = async (interaction: CommandInteraction) => {
     });
     if (!receiverUser) {
       try {
-        await receiver.send(
+        const msg = await receiver.send(
           "You were just praised in the TEC! It looks like you haven't activated your account... To activate use the `/praise-activate` command in the server."
         );
+        await msg.react('⚠️');
       } catch (err) {
         logger.warn(`Can't DM user - ${ra.username} [${ra.id}]`);
       }
@@ -167,14 +164,23 @@ const praise = async (interaction: CommandInteraction) => {
     }
   }
 
-  await interaction.editReply({
-    embeds: [
-      praiseSuccessEmbed(
+  let msg = await interaction.editReply(
+      praiseSuccess(
         praised.map((id) => `<@!${id}>`),
         reason
-      ),
-    ],
-  });
+      )
+  ) as Message;
+  await msg.react('✅');
+
+  if (receiverData.undefinedReceivers) {
+    msg = await msg.reply(`**Undefined Receivers**\nCould not praise ${receiverData.undefinedReceivers.join(', ')}.\n<@!${ua.id}>, this warning could have been caused when a user isn't mentioned properly in the praise receivers field OR when a user isn't found in the discord server.`);
+    await msg.react('⚠️');
+  }
+  if (receiverData.roleMentions) {
+    msg = await msg.reply(`**Roles as Praise receivers**\nCouldn't praise roles - ${receiverData.roleMentions.join(', ')}.\n<@!${ua.id}>, use the \`/group-praise\` for distribution of praise to all the members that have certain discord roles.`);
+    await msg.react('⚠️');
+  }
+
   return;
 };
 
