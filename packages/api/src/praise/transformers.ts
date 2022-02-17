@@ -28,12 +28,16 @@ const quantificationToDto = (
 };
 
 export const quantificationListTransformer = (
-  quantifications: Quantification[] | undefined
+  quantifications: Quantification[] | Quantification | undefined
 ): QuantificationDto[] => {
-  if (quantifications && Array.isArray(quantifications)) {
-    return quantifications.map((quantification) =>
-      quantificationToDto(quantification)
-    );
+  if (quantifications) {
+    if (Array.isArray(quantifications)) {
+      return quantifications.map((quantification) =>
+        quantificationToDto(quantification)
+      );
+    } else {
+      return [quantificationToDto(quantifications)];
+    }
   }
   return [];
 };

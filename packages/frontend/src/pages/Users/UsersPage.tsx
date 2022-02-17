@@ -12,8 +12,6 @@ const AddRoleButton = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const { addRole } = useAdminUsers();
 
-  //const addDialogRef = React.useRef(null);
-
   const handleAddQuantifierClick = () => {
     setIsOpen(true);
   };

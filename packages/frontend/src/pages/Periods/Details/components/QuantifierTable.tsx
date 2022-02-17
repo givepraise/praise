@@ -1,23 +1,22 @@
 import { UserCell } from '@/components/table/UserCell';
-import { isResponseOk } from '@/model/api';
-import { SinglePeriodQuery } from '@/model/periods';
-import { PeriodDetailsDto } from 'api/dist/period/types';
+import { SinglePeriod } from '@/model/periods';
 import React from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 
 const QuantifierTable = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
-  const { location } = useHistory();
-  const periodDetailsReponse = useRecoilValue(
-    SinglePeriodQuery({ periodId, refreshKey: location.key })
-  );
+  // const { location } = useHistory();
+  const period = useRecoilValue(SinglePeriod(periodId));
+  // const periodDetailsReponse = useRecoilValue(
+  //   SinglePeriodQuery({ periodId, refreshKey: location.key })
+  // );
 
-  const period: PeriodDetailsDto | null = isResponseOk(periodDetailsReponse)
-    ? (periodDetailsReponse.data as PeriodDetailsDto)
-    : null;
+  // const period: PeriodDetailsDto | null = isResponseOk(periodDetailsReponse)
+  //   ? (periodDetailsReponse.data as PeriodDetailsDto)
+  //   : null;
 
   const columns = React.useMemo(
     () => [

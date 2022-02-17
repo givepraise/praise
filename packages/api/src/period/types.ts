@@ -1,5 +1,5 @@
 import { QuantificationDocument, QuantificationDto } from '@praise/types';
-import { User } from '@user/types';
+import { Query } from '@shared/types';
 import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
 import mongoose, { Types } from 'mongoose';
 
@@ -46,21 +46,21 @@ export interface PeriodDetailsReceiverDto {
   userAccount?: UserAccountDto;
 }
 
-export interface PeriodDetailsQuantifier {
-  user: User;
-  finishedCount: number;
-  praiseCount: number;
-}
+// export interface PeriodDetailsQuantifier {
+//   user: User;
+//   finishedCount: number;
+//   praiseCount: number;
+// }
 
 export interface PeriodDetailsQuantifierDto {
-  userId: string;
+  _id: string;
   finishedCount: number;
   praiseCount: number;
 }
 
 export interface PeriodDetailsDto extends PeriodDto {
-  quantifiers: PeriodDetailsQuantifierDto[];
-  receivers: PeriodDetailsReceiverDto[];
+  quantifiers?: PeriodDetailsQuantifierDto[];
+  receivers?: PeriodDetailsReceiverDto[];
 }
 
 export interface VerifyQuantifierPoolSizeResponse {
@@ -72,4 +72,12 @@ export interface PeriodCreateUpdateInput {
   _id?: string;
   name: string;
   endDate: string;
+}
+
+export interface PeriodReceiverPraiseInput extends Query {
+  receiverId?: string;
+}
+
+export interface PeriodQuantifierPraiseInput extends Query {
+  quantifierId?: string;
 }

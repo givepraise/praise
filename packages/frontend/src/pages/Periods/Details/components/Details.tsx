@@ -17,8 +17,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
 import 'react-day-picker/lib/style.css';
-import toast from 'react-hot-toast';
-import { useParams } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import PeriodAssignDialog from './AssignDialog';
 import PeriodCloseDialog from './CloseDialog';
@@ -31,9 +31,10 @@ const PeriodDetails = () => {
   const allPeriods = useRecoilValue(AllPeriods);
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
-  const period = useRecoilValue(SinglePeriod({ periodId }));
+  const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
+  const history = useHistory();
 
   const assignDialogRef = React.useRef(null);
   const closeDialogRef = React.useRef(null);
@@ -54,11 +55,18 @@ const PeriodDetails = () => {
 
   const handleAssign = () => {
     const promise = assignQuantifiers(periodId);
-    void toast.promise(promise, {
-      loading: 'Assigning quantifiers …',
-      success: 'Quantifiers assigned',
-      error: 'Assign failed',
-    });
+    void toast.promise(
+      promise,
+      {
+        loading: 'Assigning quantifiers …',
+        success: 'Quantifiers assigned',
+        error: 'Assign failed',
+      },
+      {
+        position: 'top-center',
+      }
+    );
+    promise.finally(() => setTimeout(() => history.go(0), 1000));
   };
 
   const handleExport = () => {

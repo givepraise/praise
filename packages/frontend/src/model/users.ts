@@ -1,5 +1,4 @@
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
-import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { UserDto, UserRole } from 'api/dist/user/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
@@ -18,23 +17,20 @@ import {
   isResponseOk,
   useAuthApiQuery,
 } from './api';
+import { HasRole } from './auth';
 import { AllPeriods } from './periods';
-
-// The request Id is used to force refresh of AllUsersQuery.
-// AllUsersQuery subscribes to the value. Increase to trigger
-// refresh.
-const UsersRequestId = atom({
-  key: 'UsersRequestId',
-  default: 0,
-});
 
 export const AllUsersQuery = selector({
   key: 'AllUsersQuery',
   get: ({ get }) => {
-    get(UsersRequestId);
+    const isAdmin = get(HasRole('ADMIN'));
+    let endpoint = '/users';
+    if (isAdmin) {
+      endpoint = '/admin/users';
+    }
     return get(
       ApiAuthGet({
-        url: '/api/users/all?sortColumn=ethereumAddress&sortType=desc',
+        url: `/api${endpoint}/all?sortColumn=ethereumAddress&sortType=desc`,
       })
     );
   },
@@ -65,9 +61,7 @@ export const useAllUsersQuery = () => {
       isResponseOk(allUsersQueryResponse) &&
       typeof allUsers === 'undefined'
     ) {
-      const paginatedResponse =
-        allUsersQueryResponse.data as PaginatedResponseBody<UserDto>;
-      const users = paginatedResponse.docs;
+      const users = allUsersQueryResponse.data as UserDto[];
       if (Array.isArray(users) && users.length > 0) setAllUsers(users);
     }
   }, [allUsersQueryResponse, setAllUsers, allUsers]);

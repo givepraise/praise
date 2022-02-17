@@ -14,7 +14,7 @@ import QuantifyTable from './components/QuantifyTable';
 const PeriodBreadCrumb = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
-  const period = useRecoilValue(SinglePeriod({ periodId }));
+  const period = useRecoilValue(SinglePeriod(periodId));
   if (!period) return null;
   return <BreadCrumb name={`Quantify / ${period.name}`} icon={faCalendarAlt} />;
 };

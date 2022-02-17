@@ -1,6 +1,10 @@
+import { ActiveUserId } from '@/model/auth';
+import { usePeriodQuantifierPraiseQuery } from '@/model/periods';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
 const DoneLabel = () => {
   return (
@@ -12,10 +16,23 @@ const DoneLabel = () => {
 };
 
 const QuantifyPeriodTable = () => {
-  return null;
-  // const history = useHistory();
-  // // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  // const { periodId } = useParams() as any;
+  const history = useHistory();
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { periodId } = useParams() as any;
+  const userId = useRecoilValue(ActiveUserId);
+
+  interface QuantifyPeriodTableInnerParams {
+    quantifierId: string;
+  }
+  const QuantifyPeriodTableInner = ({
+    quantifierId,
+  }: QuantifyPeriodTableInnerParams) => {
+    const praiseList = usePeriodQuantifierPraiseQuery(periodId, quantifierId);
+    return null;
+  };
+
+  if (!userId) return null;
+  return <QuantifyPeriodTableInner quantifierId={userId} />;
 
   // const data = useRecoilValue(PeriodActiveQuantifierReceivers({ periodId }));
   // const usePseudonyms = useRecoilValue(

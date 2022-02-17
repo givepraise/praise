@@ -1,3 +1,4 @@
+import { userAccountListTransformer } from '@useraccount/transformers';
 import { Response } from 'express';
 import { UserDocument, UserDto, UserRole } from './types';
 
@@ -5,7 +6,8 @@ const userDocumentToUserDto = (
   res: Response,
   userDocument: UserDocument
 ): UserDto => {
-  const { _id, roles, createdAt, updatedAt, ethereumAddress } = userDocument;
+  const { _id, roles, createdAt, updatedAt, ethereumAddress, accounts } =
+    userDocument;
 
   const user: UserDto = {
     _id,
@@ -22,6 +24,9 @@ const userDocumentToUserDto = (
     user.ethereumAddress = ethereumAddress;
   }
 
+  if (accounts) {
+    user.accounts = userAccountListTransformer(accounts);
+  }
   return user;
 };
 

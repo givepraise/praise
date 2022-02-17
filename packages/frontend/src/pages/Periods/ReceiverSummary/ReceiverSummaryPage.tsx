@@ -1,5 +1,5 @@
 import BreadCrumb from '@/components/BreadCrumb';
-import { useSinglePeriodQuery } from '@/model/periods';
+import { SinglePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -8,19 +8,21 @@ import {
 } from 'api/dist/period/types';
 import React from 'react';
 import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 import PeriodReceiverTable from './components/ReceiverSummaryTable';
 
 const getReceiver = (
   periodDetails: PeriodDetailsDto,
   receiverId: string
 ): PeriodDetailsReceiverDto | undefined => {
-  return periodDetails.receivers.find((r) => r._id === receiverId);
+  return periodDetails.receivers?.find((r) => r._id === receiverId);
 };
 
 const PeriodReceiverMessage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId, receiverId } = useParams() as any;
-  const periodDetails = useSinglePeriodQuery(periodId);
+  // const periodDetails = useSinglePeriodQuery(periodId);
+  const periodDetails = useRecoilValue(SinglePeriod(periodId));
 
   if (!periodDetails) return null;
   const receiver = getReceiver(periodDetails, receiverId);

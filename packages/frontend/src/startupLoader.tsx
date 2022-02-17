@@ -1,9 +1,8 @@
-import { AllPeriods, useAllPeriodsQuery } from '@/model/periods';
+import { useAllPeriodsQuery } from '@/model/periods';
 import { useAllUsersQuery } from '@/model/users';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { ReactElement } from 'react';
-import { useRecoilValue } from 'recoil';
 import { useAllSettingsQuery } from './model/settings';
 
 // interface QuantifyPeriodLoaderProps {
@@ -15,13 +14,25 @@ import { useAllSettingsQuery } from './model/settings';
 //   return null;
 // };
 
+// const UserLoader = () => {
+//   useAllUsersQuery();
+//   return null;
+// }
+
+// const AdminLoader = () => {
+//   useAllUsersQuery();
+//   return null;
+// }
+
 export const StartupLoader: React.FC = (): ReactElement | null => {
   useAllPeriodsQuery();
-  useAllUsersQuery();
   useAllSettingsQuery();
+  useAllUsersQuery();
 
-  const periods = useRecoilValue(AllPeriods);
-  console.log(periods);
+  // const isAdmin = useRecoilValue(HasRole('ADMIN'));
+  // if (typeof isAdmin === "undefined") return null;
+  // if (isAdmin) return
+
   // const isQuantifier = useRecoilValue(HasRole('QUANTIFIER'));
   // if (!periods) return null;
 

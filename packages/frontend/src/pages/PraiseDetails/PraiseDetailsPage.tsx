@@ -32,7 +32,7 @@ const PeriodReceiverMessage = () => {
         {period && (period.status === 'CLOSED' || isAdmin) ? (
           <>
             <br />
-            Average praise score: {praise.score}
+            Score: {praise.score}
           </>
         ) : null}
       </div>

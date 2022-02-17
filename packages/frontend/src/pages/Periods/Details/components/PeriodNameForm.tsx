@@ -35,7 +35,7 @@ const PeriodNameForm = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
 
-  const period = useRecoilValue(SinglePeriod({ periodId }));
+  const period = useRecoilValue(SinglePeriod(periodId));
   const [apiResponse, setApiResponse] =
     React.useState<AxiosResponse<unknown> | null>(null);
   const { updatePeriod } = useUpdatePeriod();

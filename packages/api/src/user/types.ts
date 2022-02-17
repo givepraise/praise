@@ -1,4 +1,4 @@
-import { UserAccountDto } from '@useraccount/types';
+import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
 import mongoose from 'mongoose';
 
 export enum UserRole {
@@ -10,6 +10,7 @@ export enum UserRole {
 export interface User {
   ethereumAddress?: string;
   roles: UserRole[];
+  accounts?: UserAccountDocument[];
   nonce?: string;
   accessToken?: string;
   createdAt: Date;

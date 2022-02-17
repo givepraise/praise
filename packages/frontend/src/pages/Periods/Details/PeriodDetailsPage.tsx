@@ -1,6 +1,6 @@
 import BreadCrumb from '@/components/BreadCrumb';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import { useSinglePeriodQuery } from '@/model/periods';
+import { SinglePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
 import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
 import { classNames } from '@/utils/index';
@@ -18,8 +18,8 @@ const PeriodDetailHead = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const periodDetails = useSinglePeriodQuery(periodId);
-
+  // const periodDetails = useSinglePeriodQuery(periodId);
+  const periodDetails = useRecoilValue(SinglePeriod(periodId));
   return (
     <>
       {' '}

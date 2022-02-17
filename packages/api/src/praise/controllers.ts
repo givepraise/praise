@@ -16,23 +16,20 @@ import { UserModel } from '@user/entities';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { PraiseModel } from './entities';
-import {
-  praiseDocumentListTransformer,
-  praiseDocumentTransformer,
-} from './transformers';
+import { praiseDocumentTransformer } from './transformers';
 import {
   PraiseAllInput,
   PraiseDetailsDto,
   PraiseDto,
   QuantificationCreateUpdateInput,
 } from './types';
-import { calculatePraiseScore } from './utils';
+import { calculatePraiseScore, praiseWithScore } from './utils';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
-const all = async (
+export const all = async (
   req: TypedRequestQuery<PraiseAllInputParsedQs>,
-  res: TypedResponse<PaginatedResponseBody<PraiseDto>>
+  res: TypedResponse<PaginatedResponseBody<PraiseDetailsDto>>
 ): Promise<void> => {
   const { receiver, periodStart, periodEnd } = req.query;
   const query: any = {};
@@ -47,22 +44,29 @@ const all = async (
     };
   }
 
-  const praises = await PraiseModel.paginate({
+  const praisePagination = await PraiseModel.paginate({
     query,
     ...req.query,
     sort: getQuerySort(req.query),
     populate: 'giver receiver',
   });
 
+  const praiseDetailsDtoList: PraiseDetailsDto[] = [];
+  if (praisePagination?.docs) {
+    for (const praise of praisePagination.docs) {
+      praiseDetailsDtoList.push(await praiseWithScore(praise));
+    }
+  }
+
   const response = {
-    ...praises,
-    docs: praiseDocumentListTransformer(praises?.docs),
+    ...praisePagination,
+    docs: praiseDetailsDtoList,
   };
 
   res.status(200).json(response);
 };
 
-const single = async (
+export const single = async (
   req: Request,
   res: TypedResponse<PraiseDetailsDto>
 ): Promise<void> => {
@@ -75,7 +79,7 @@ const single = async (
   res.status(200).json(praiseDetailsDto);
 };
 
-const quantify = async (
+export const quantify = async (
   req: TypedRequestBody<QuantificationCreateUpdateInput>,
   res: TypedResponse<PraiseDto>
 ): Promise<void> => {
@@ -125,7 +129,7 @@ const quantify = async (
   res.status(200).json(praiseDocumentTransformer(praise));
 };
 
-const exportPraise = async (
+export const exportPraise = async (
   req: Request<any, QueryInput, any>, //TODO typed request
   res: Response
 ): Promise<void> => {
@@ -307,5 +311,3 @@ const exportPraise = async (
   res.attachment('data.csv');
   res.status(200).send(csv);
 };
-
-export { all, single, quantify, exportPraise };

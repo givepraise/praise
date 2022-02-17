@@ -27,7 +27,7 @@ const all = async (
   const users: UserDocument[] = await UserModel.aggregate([
     {
       $lookup: {
-        from: 'UserAccount',
+        from: 'useraccounts',
         localField: '_id',
         foreignField: 'user',
         as: 'accounts',
@@ -36,6 +36,23 @@ const all = async (
   ]);
   if (!users) throw new InternalServerError('No users found');
   res.status(200).json(userListTransformer(res, users));
+};
+
+const findUser = async (id: string): Promise<UserDocument> => {
+  const users: UserDocument[] = await UserModel.aggregate([
+    { $match: { _id: new mongoose.Types.ObjectId(id) } },
+    {
+      $lookup: {
+        from: 'useraccounts',
+        localField: '_id',
+        foreignField: 'user',
+        as: 'accounts',
+      },
+    },
+  ]);
+  if (!Array.isArray(users) || users.length === 0)
+    throw new NotFoundError('User');
+  return users[0];
 };
 
 /**
@@ -47,20 +64,8 @@ const single = async (
   res: TypedResponse<UserDto>
 ): Promise<void> => {
   const { id } = req.params;
-  const users: UserDocument[] = await UserModel.aggregate([
-    { $match: { _id: new mongoose.Types.ObjectId(id) } },
-    {
-      $lookup: {
-        from: 'UserAccount',
-        localField: '_id',
-        foreignField: 'user',
-        as: 'accounts',
-      },
-    },
-  ]);
-  if (!Array.isArray(users) || users.length === 0)
-    throw new NotFoundError('User');
-  res.status(200).json(userTransformer(res, users[0]));
+  const user = await findUser(id);
+  res.status(200).json(userTransformer(res, user));
 };
 
 /**
@@ -110,7 +115,9 @@ const addRole = async (
     user.nonce = undefined;
     await user.save();
   }
-  res.status(200).json(userTransformer(res, user));
+
+  const userWithDetails = await findUser(id);
+  res.status(200).json(userTransformer(res, userWithDetails));
 };
 
 /**
@@ -136,7 +143,9 @@ const removeRole = async (
     user.nonce = undefined;
     await user.save();
   }
-  res.status(200).json(userTransformer(res, user));
+
+  const userWithDetails = await findUser(id);
+  res.status(200).json(userTransformer(res, userWithDetails));
 };
 
 export { all, single, search, addRole, removeRole };

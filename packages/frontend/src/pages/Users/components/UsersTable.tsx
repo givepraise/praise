@@ -77,7 +77,7 @@ const UsersTable = () => {
             <tr {...row.getRowProps()}>
               {row.cells.map((cell) => {
                 // eslint-disable-next-line react/jsx-key
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>; //TODO fix
+                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}
               <td className="w-8">
                 <button
@@ -93,7 +93,7 @@ const UsersTable = () => {
                   />
                 </button>
               </td>
-            </tr> //TODO fix
+            </tr>
           );
         })}
 

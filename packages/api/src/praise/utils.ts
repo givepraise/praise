@@ -1,9 +1,12 @@
 import { BadRequestError } from '@shared/errors';
 import { settingFloat } from '@shared/settings';
 import { PraiseModel } from './entities';
-import { Praise } from './types';
+import { praiseDocumentTransformer } from './transformers';
+import { PraiseDetailsDto, PraiseDocument, PraiseDto } from './types';
 
-export const calculatePraiseScore = async (praise: Praise): Promise<number> => {
+export const calculatePraiseScore = async (
+  praise: PraiseDocument
+): Promise<number> => {
   const duplicatePraisePercentage = await settingFloat(
     'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
   );
@@ -42,4 +45,12 @@ export const calculatePraiseScore = async (praise: Praise): Promise<number> => {
     return Math.floor(s / si);
   }
   return 0;
+};
+
+export const praiseWithScore = async (
+  praise: PraiseDocument
+): Promise<PraiseDto> => {
+  const praiseDetailsDto: PraiseDetailsDto = praiseDocumentTransformer(praise);
+  praiseDetailsDto.score = await calculatePraiseScore(praise);
+  return praiseDetailsDto;
 };

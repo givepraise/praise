@@ -1,6 +1,6 @@
 import { UserCell } from '@/components/table/UserCell';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import { useSinglePeriodQuery } from '@/model/periods';
+import { SinglePeriod } from '@/model/periods';
 import React, { SyntheticEvent } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useSortBy, useTable } from 'react-table';
@@ -11,7 +11,8 @@ const ReceiverTable = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const periodDetails = useSinglePeriodQuery(periodId);
+  // const periodDetails = useSinglePeriodQuery(periodId);
+  const periodDetails = useRecoilValue(SinglePeriod(periodId));
 
   const columns = React.useMemo(
     () => [
