@@ -21,6 +21,7 @@ export interface Setting {
   _id: string;
   key: string;
   value: string;
+  type: string;
 }
 
 const AllSettingsRequestId = atom({

@@ -41,6 +41,126 @@ const SettingsForm = () => {
     }
   };
 
+  const getStringInput = (setting: Setting) => {
+    return (
+      <Field name={setting.key} key={setting.key}>
+        {({ input, meta }) => {
+          return (
+            <div className="mb-2">
+              <label className="block">{setting.key}</label>
+              <input
+                type="text"
+                id={setting.key}
+                {...input}
+                autoComplete="off"
+                className="block w-full"
+              />
+              {apiResponse && (
+                <FieldErrorMessage name="name" apiResponse={apiResponse} />
+              )}
+            </div>
+          );
+        }}
+      </Field>
+    );
+  };
+
+  const getNumberInput = (setting: Setting) => {
+    return (
+      <Field name={setting.key} key={setting.key}>
+        {({ input, meta }) => (
+          <div className="mb-2">
+            <label className="block">{setting.key}</label>
+            <input
+              type="number"
+              id={setting.key}
+              {...input}
+              autoComplete="off"
+              className="block w-full"
+            />
+            {apiResponse && (
+              <FieldErrorMessage name="name" apiResponse={apiResponse} />
+            )}
+          </div>
+        )}
+      </Field>
+    );
+  };
+
+  const getTextareaInput = (setting: Setting) => {
+    return (
+      <Field name={setting.key} key={setting.key}>
+        {({ input, meta }) => (
+          <div className="mb-2">
+            <label className="block">{setting.key}</label>
+            <textarea
+              type="text"
+              id={setting.key}
+              {...input}
+              autoComplete="off"
+              className="resize-none rounded-md block w-full  "
+            />
+            {apiResponse && (
+              <FieldErrorMessage name="name" apiResponse={apiResponse} />
+            )}
+          </div>
+        )}
+      </Field>
+    );
+  };
+
+  const getFileInput = (setting: Setting) => {
+    return (
+      <Field name={setting.key} key={setting.key}>
+        {({ input, meta }) => (
+          <div className="mb-2">
+            <label className="block">{setting.key}</label>
+            <input
+              type="text"
+              id={setting.key}
+              {...input}
+              autoComplete="off"
+              className="block w-full"
+            />
+            {apiResponse && (
+              <FieldErrorMessage name="name" apiResponse={apiResponse} />
+            )}
+          </div>
+        )}
+      </Field>
+    );
+  };
+
+  const getBooleanInput = (setting: Setting) => {
+    return (
+      <Field name={setting.key} key={setting.key} type="checkbox">
+        {({ input, meta }) => {
+          return (
+            <div className="mb-2">
+              <label className="block">{setting.key}</label>
+              <input
+                id={setting.key}
+                {...input}
+                className="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+              />
+              {apiResponse && (
+                <FieldErrorMessage name="name" apiResponse={apiResponse} />
+              )}
+            </div>
+          );
+        }}
+      </Field>
+    );
+  };
+
+  const getField = (setting: Setting) => {
+    if (setting.type === 'String') return getStringInput(setting);
+    if (setting.type === 'Number') return getNumberInput(setting);
+    if (setting.type === 'Textarea') return getTextareaInput(setting);
+    if (setting.type === 'Boolean') return getBooleanInput(setting);
+    if (setting.type === 'File') return getFileInput(setting);
+  };
+
   if (!Array.isArray(settings) || settings.length === 0) return null;
 
   // const initialValues = settings.map((setting: Setting) => {
@@ -65,28 +185,7 @@ const SettingsForm = () => {
       render={({ handleSubmit, submitSucceeded }) => (
         <form onSubmit={handleSubmit} className="leading-loose">
           <div className="mb-3">
-            {settings.map((setting: Setting) => (
-              <Field name={setting.key} key={setting.key}>
-                {({ input, meta }) => (
-                  <div className="mb-2">
-                    <label className="block">{setting.key}</label>
-                    <input
-                      type="text"
-                      id="input-period-name"
-                      {...input}
-                      autoComplete="off"
-                      className="block w-full"
-                    />
-                    {apiResponse && (
-                      <FieldErrorMessage
-                        name="name"
-                        apiResponse={apiResponse}
-                      />
-                    )}
-                  </div>
-                )}
-              </Field>
-            ))}
+            {settings.map((setting: Setting) => getField(setting))}
           </div>
           <div className="mt-2">
             <SubmitButton />
