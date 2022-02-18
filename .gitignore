@@ -1,3 +1,4 @@
+.env
 .vscode/*
 .DS_Store
 node_modules
@@ -8,3 +9,6 @@ node_modules
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+.env
+yarn-error.log
