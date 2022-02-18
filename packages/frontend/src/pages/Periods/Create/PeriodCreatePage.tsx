@@ -88,7 +88,7 @@ const PeriodsForm = () => {
             <Field name="name">
               {({ input, meta }) => (
                 <div className="mb-2">
-                  <label className="block">PeriodDto name</label>
+                  <label className="block">Period name</label>
                   <input
                     type="text"
                     id="input-period-name"

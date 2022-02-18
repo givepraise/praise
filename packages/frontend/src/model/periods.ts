@@ -140,7 +140,7 @@ export const SinglePeriod = selectorFamily({
   key: 'SinglePeriod',
   get:
     (periodId: string) =>
-    ({ get }) => {
+    ({ get }): PeriodDetailsDto | undefined => {
       const allPeriods = get(AllPeriods);
       if (!allPeriods) return undefined;
       return allPeriods.find((period) => period._id === periodId);
@@ -154,9 +154,9 @@ export const SinglePeriodByDate = selectorFamily({
   key: 'SinglePeriodByDate',
   get:
     (anyDate: string | undefined) =>
-    ({ get }) => {
+    ({ get }): PeriodDetailsDto | undefined => {
       const allPeriods = get(AllPeriods);
-      if (!allPeriods || !anyDate) return null;
+      if (!allPeriods || !anyDate) return undefined;
       return allPeriods
         .slice()
         .reverse()
@@ -182,7 +182,9 @@ export const useCreatePeriod = () => {
 
   const createPeriod = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (period: PeriodCreateUpdateInput) => {
+      async (
+        period: PeriodCreateUpdateInput
+      ): Promise<AxiosResponse<unknown> | AxiosError> => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPost({
@@ -226,7 +228,9 @@ export const useUpdatePeriod = () => {
   const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
   const updatePeriod = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (period: PeriodCreateUpdateInput) => {
+      async (
+        period: PeriodCreateUpdateInput
+      ): Promise<AxiosResponse<unknown> | AxiosError> => {
         if (!period._id) throw new Error('No _id on PeriodDto');
         const response = await ApiQuery(
           snapshot.getPromise(
@@ -281,7 +285,9 @@ export const useClosePeriod = () => {
   const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
   const closePeriod = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (periodId: string) => {
+      async (
+        periodId: string
+      ): Promise<AxiosResponse<unknown> | AxiosError> => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
@@ -381,7 +387,7 @@ export const useAssignQuantifiers = () => {
 
   const saveIndividualPraise = useRecoilCallback(
     ({ set }) =>
-      (praiseList: PraiseDto[]) => {
+      (praiseList: PraiseDto[]): void => {
         praiseList.forEach((praise) => {
           set(SinglePraise(praise._id), praise);
         });
@@ -390,7 +396,9 @@ export const useAssignQuantifiers = () => {
 
   const assignQuantifiers = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (periodId: string) => {
+      async (
+        periodId: string
+      ): Promise<AxiosResponse<unknown> | AxiosError> => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
@@ -510,9 +518,9 @@ export const useExportPraise = () => {
   const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
 
   const exportPraise = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async (period: PeriodDto) => {
-        if (!period || !allPeriods) return null;
+    ({ snapshot }) =>
+      async (period: PeriodDto): Promise<string | undefined> => {
+        if (!period || !allPeriods) return undefined;
         const previousPeriod = getPreviousPeriod(allPeriods, period);
         if (!previousPeriod) throw new Error('Invalid previous start date');
         const response = await ApiQuery(
@@ -550,7 +558,7 @@ export const PeriodQuantifierPraiseQuery = selectorFamily({
   key: 'PeriodQuantifierPraiseQuery',
   get:
     (params: PeriodQuantifierPraiseQueryParams) =>
-    ({ get }): AxiosResponse<unknown> | undefined => {
+    ({ get }): AxiosResponse<unknown> | AxiosError | undefined => {
       const { periodId, refreshKey } = params;
       const quantifierId = get(ActiveUserId);
       if (!periodId || !quantifierId) return undefined;
@@ -569,7 +577,7 @@ export const PeriodQuantifierPraiseQuery = selectorFamily({
 export const usePeriodQuantifierPraiseQuery = (
   periodId: string,
   refreshKey: string | undefined
-): AxiosResponse<unknown> | undefined => {
+): AxiosResponse<unknown> | AxiosError | undefined => {
   const response = useAuthApiQuery(
     PeriodQuantifierPraiseQuery({
       periodId,
@@ -601,7 +609,7 @@ export const usePeriodQuantifierPraiseQuery = (
 
   React.useEffect(() => {
     if (typeof allPraiseIdList === 'undefined' && isResponseOk(response)) {
-      const praiseList: PraiseDto[] = (response as any).data;
+      const praiseList: PraiseDto[] = response.data;
 
       if (Array.isArray(praiseList) && praiseList.length > 0) {
         saveAllPraiseIdList(praiseList);

@@ -21,17 +21,6 @@ import {
 } from './api';
 
 /**
- * Stores lists of Praise Ids. The following lists exists:
- * - All praise / start page
- * - My praise
- * - Period Praise for a receiver assigned to a quantifier
- */
-export const PraiseIdList = atomFamily<string[] | undefined, string>({
-  key: 'PraiseIdList',
-  default: undefined,
-});
-
-/**
  * Stores individual Praise items linked to one or more @PraiseIdList
  */
 export const SinglePraise = atomFamily<PraiseDto | undefined, string>({
@@ -48,7 +37,7 @@ type SinglePraiseQueryParams = {
 };
 
 /**
- *
+ * Selector query to fetch a single praise from the api.
  */
 export const SinglePraiseQuery = selectorFamily({
   key: 'SinglePraiseQuery',
@@ -61,7 +50,7 @@ export const SinglePraiseQuery = selectorFamily({
 });
 
 /**
- *
+ * Hook that fetches a single praise from the api
  */
 export const useSinglePraiseQuery = (
   praiseId: string
@@ -77,9 +66,20 @@ export const useSinglePraiseQuery = (
     if (!praise && isResponseOk(praiseResponse)) {
       setPraise(praiseResponse.data);
     }
-  }, [praiseResponse]);
+  }, [praise, praiseResponse]);
   return praise;
 };
+
+/**
+ * Stores lists of Praise Ids. The following lists exists:
+ * - All praise / start page
+ * - My praise
+ * - Period Praise for a receiver assigned to a quantifier
+ */
+export const PraiseIdList = atomFamily<string[] | undefined, string>({
+  key: 'PraiseIdList',
+  default: undefined,
+});
 
 /**
  * Selector to get all praise from a list of praise ids.
@@ -112,7 +112,20 @@ export const PraiseRequestId = atom({
 });
 
 /**
- *
+ * Parameters for @AllPraiseQuery
+ */
+export type AllPraiseQueryParameters = {
+  sortColumn?: string;
+  sortType?: string;
+  limit?: number;
+  page?: number;
+  receiver?: string | null;
+  perdiodStart?: string;
+  periodEnd?: string;
+};
+
+/**
+ * Query selector to fetch a list of praise from the api.
  */
 export const AllPraiseQuery = selectorFamily<
   AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined,
@@ -125,8 +138,7 @@ export const AllPraiseQuery = selectorFamily<
       if (!query) throw new Error('Invalid query');
       get(PraiseRequestId);
       const qs = Object.keys(query)
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        .map((key) => `${key}=${query[key]}`) //TODO fix
+        .map((key) => `${key}=${query[key]}`)
         .join('&');
       const response = get(
         ApiAuthGet({ url: `/api/praise/all${qs ? `?${qs}` : ''}` })
@@ -147,7 +159,7 @@ export interface AllPraiseQueryPaginationInterface {
 }
 
 /**
- *
+ * Atom to keep track of praise paginations.
  */
 export const AllPraiseQueryPagination = atomFamily<
   AllPraiseQueryPaginationInterface,
@@ -162,25 +174,12 @@ export const AllPraiseQueryPagination = atomFamily<
 });
 
 /**
- *
- */
-export type AllPraiseQueryParameters = {
-  sortColumn?: string;
-  sortType?: string;
-  limit?: number;
-  page?: number;
-  receiver?: string | null;
-  perdiodStart?: string;
-  periodEnd?: string;
-};
-
-/**
- *
+ * Hook to fetch praise from the api and save
  */
 export const useAllPraiseQuery = (
   queryParams: AllPraiseQueryParameters,
   listKey: string
-) => {
+): AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined => {
   const allPraiseQueryResponse = useAuthApiQuery(AllPraiseQuery(queryParams));
   const [praisePagination, setPraisePagination] = useRecoilState(
     AllPraiseQueryPagination(listKey)
@@ -219,10 +218,11 @@ export const useAllPraiseQuery = (
       isApiResponseAxiosError(allPraiseQueryResponse)
     )
       return;
-    const data = allPraiseQueryResponse.data as any;
+    const { page, totalPages } = allPraiseQueryResponse.data;
+    if (!page || !totalPages) return;
     if (
       typeof allPraiseIdList === 'undefined' ||
-      (data.page > praisePagination.latestFetchPage &&
+      (page > praisePagination.latestFetchPage &&
         isResponseOk(allPraiseQueryResponse))
     ) {
       const paginatedResponse = allPraiseQueryResponse.data;
@@ -233,8 +233,8 @@ export const useAllPraiseQuery = (
         saveIndividualPraise(praiseList);
         setPraisePagination({
           ...praisePagination,
-          latestFetchPage: data.page,
-          totalPages: data.totalPages,
+          latestFetchPage: page,
+          totalPages: totalPages,
         });
       }
     }

@@ -27,6 +27,9 @@ import { calculatePraiseScore, praiseWithScore } from './utils';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
+/**
+ * //TODO add descriptiom
+ */
 export const all = async (
   req: TypedRequestQuery<PraiseAllInputParsedQs>,
   res: TypedResponse<PaginatedResponseBody<PraiseDetailsDto>>
@@ -66,6 +69,9 @@ export const all = async (
   res.status(200).json(response);
 };
 
+/**
+ * //TODO add descriptiom
+ */
 export const single = async (
   req: Request,
   res: TypedResponse<PraiseDetailsDto>
@@ -81,6 +87,9 @@ export const single = async (
   res.status(200).json(praiseDetailsDto);
 };
 
+/**
+ * //TODO add descriptiom
+ */
 export const quantify = async (
   req: TypedRequestBody<QuantificationCreateUpdateInput>,
   res: TypedResponse<PraiseDto>
@@ -131,6 +140,9 @@ export const quantify = async (
   res.status(200).json(response);
 };
 
+/**
+ * //TODO add descriptiom
+ */
 export const exportPraise = async (
   req: Request<any, QueryInput, any>, //TODO typed request
   res: Response
