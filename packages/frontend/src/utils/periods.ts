@@ -1,3 +1,4 @@
+import { QuantifierReceiverData } from '@/model/periods';
 import {
   PeriodDetailsDto,
   PeriodDetailsQuantifierDto,
@@ -36,4 +37,39 @@ export const getQuantifierData = (
     return period.quantifiers?.find((q) => q._id === userId);
   }
   return undefined;
+};
+
+export const periodQuantifierPraiseListKey = (periodId: string): string =>
+  `PERIOD_QUANTIFIER_PRAISE_${periodId}`;
+
+interface QuantificationStats {
+  done: number;
+  count: number;
+}
+
+export const getQuantificationStats = (
+  data: QuantifierReceiverData[] | undefined
+): QuantificationStats | undefined => {
+  const stats: QuantificationStats = {
+    done: 0,
+    count: 0,
+  };
+
+  if (!data || !Array.isArray(data)) return undefined;
+
+  data.forEach((qrd) => {
+    stats.done += qrd.done;
+    stats.count += qrd.count;
+  });
+
+  return stats;
+};
+
+export const getQuantificationReceiverStats = (
+  data: QuantifierReceiverData[] | undefined,
+  receiverId: string | undefined
+): QuantifierReceiverData | undefined => {
+  if (!receiverId || !data || !Array.isArray(data)) return undefined;
+
+  return data.find((qrd) => qrd.receiverId === receiverId);
 };

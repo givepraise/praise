@@ -2,7 +2,6 @@ import { UserAvatar } from '@/components/user/UserAvatar';
 import { usePeriodReceiverPraiseQuery } from '@/model/periods';
 import { formatDate } from '@/utils/date';
 import { PraiseDetailsDto } from 'api/dist/praise/types';
-import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
 interface PraiseRowProps {
@@ -43,7 +42,12 @@ const PraiseRow = ({ praise }: PraiseRowProps) => {
 const PeriodReceiverTable = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId, receiverId } = useParams() as any;
-  const praiseList = usePeriodReceiverPraiseQuery(periodId, receiverId);
+  const { location } = useHistory();
+  const praiseList = usePeriodReceiverPraiseQuery(
+    periodId,
+    receiverId,
+    location?.key
+  );
 
   if (!praiseList) return null;
   return (

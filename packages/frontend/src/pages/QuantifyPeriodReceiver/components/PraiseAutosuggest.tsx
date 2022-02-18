@@ -1,6 +1,6 @@
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { ActiveUserId } from '@/model/auth';
-import { PeriodActiveQuantifierReceiverPraise } from '@/model/periods';
+import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { SingleBooleanSetting } from '@/model/settings';
 import { classNames } from '@/utils/index';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
@@ -25,10 +25,8 @@ const PraiseAutosuggest = ({
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId, receiverId } = useParams() as any;
   const userId = useRecoilValue(ActiveUserId);
-
-  // const data = useRecoilValue(AllPeriodPraiseList({ periodId }));
   const data = useRecoilValue(
-    PeriodActiveQuantifierReceiverPraise({ periodId, receiverId })
+    PeriodQuantifierReceiverPraise({ periodId, receiverId })
   );
 
   const usePseudonyms = useRecoilValue(

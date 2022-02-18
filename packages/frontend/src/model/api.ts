@@ -221,13 +221,6 @@ export const ApiQuery = async (
     return await query;
   } catch (err) {
     if (isApiResponseAxiosError(err)) handleErrors(err);
-    if (err instanceof Error) {
-      if (err.message) {
-        toast.error(err.message);
-      } else {
-        toast.error('Unknown error.');
-      }
-    }
   }
 };
 

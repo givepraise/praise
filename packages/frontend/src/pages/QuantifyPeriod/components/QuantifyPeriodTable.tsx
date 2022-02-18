@@ -1,6 +1,6 @@
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import {
-  PeriodActiveQuantifierReceivers,
+  PeriodQuantifierReceivers,
   QuantifierReceiverData,
   usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
@@ -27,7 +27,7 @@ const QuantifyPeriodTable = () => {
   const { periodId } = useParams() as any;
   const { location } = useHistory();
   usePeriodQuantifierPraiseQuery(periodId, location.key);
-  const data = useRecoilValue(PeriodActiveQuantifierReceivers(periodId));
+  const data = useRecoilValue(PeriodQuantifierReceivers(periodId));
   const usePseudonyms = useRecoilValue(
     SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );

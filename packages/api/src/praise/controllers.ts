@@ -74,8 +74,10 @@ export const single = async (
     'giver receiver'
   );
   if (!praise) throw new NotFoundError('Praise');
-  const praiseDetailsDto: PraiseDetailsDto = praiseDocumentTransformer(praise);
-  praiseDetailsDto.score = await calculatePraiseScore(praise);
+  const praiseDetailsDto: PraiseDetailsDto = await praiseDocumentTransformer(
+    praise
+  );
+  praiseDetailsDto.score = await calculatePraiseScore(praise.quantifications);
   res.status(200).json(praiseDetailsDto);
 };
 
@@ -125,8 +127,8 @@ export const quantify = async (
   }
 
   await praise.save();
-
-  res.status(200).json(praiseDocumentTransformer(praise));
+  const response = await praiseDocumentTransformer(praise);
+  res.status(200).json(response);
 };
 
 export const exportPraise = async (

@@ -2,10 +2,15 @@ import { BadRequestError } from '@shared/errors';
 import { settingFloat } from '@shared/settings';
 import { PraiseModel } from './entities';
 import { praiseDocumentTransformer } from './transformers';
-import { PraiseDetailsDto, PraiseDocument, PraiseDto } from './types';
+import {
+  PraiseDetailsDto,
+  PraiseDocument,
+  PraiseDto,
+  Quantification,
+} from './types';
 
 export const calculatePraiseScore = async (
-  praise: PraiseDocument
+  quantifications: Quantification[]
 ): Promise<number> => {
   const duplicatePraisePercentage = await settingFloat(
     'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
@@ -15,11 +20,11 @@ export const calculatePraiseScore = async (
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
     );
 
-  if (!praise.quantifications) return 0;
+  if (!quantifications) return 0;
 
   let si = 0;
   let s = 0;
-  for (const quantification of praise.quantifications) {
+  for (const quantification of quantifications) {
     if (quantification.score > 0) {
       s += quantification.score;
       si++;
@@ -34,7 +39,7 @@ export const calculatePraiseScore = async (
             pq.quantifier.equals(quantification.quantifier) &&
             pq.score > 0
           ) {
-            s += pq.score * duplicatePraisePercentage;
+            s += Math.floor(pq.score * duplicatePraisePercentage);
             si++;
           }
         }
@@ -50,7 +55,9 @@ export const calculatePraiseScore = async (
 export const praiseWithScore = async (
   praise: PraiseDocument
 ): Promise<PraiseDto> => {
-  const praiseDetailsDto: PraiseDetailsDto = praiseDocumentTransformer(praise);
-  praiseDetailsDto.score = await calculatePraiseScore(praise);
+  const praiseDetailsDto: PraiseDetailsDto = await praiseDocumentTransformer(
+    praise
+  );
+  praiseDetailsDto.score = await calculatePraiseScore(praise.quantifications);
   return praiseDetailsDto;
 };

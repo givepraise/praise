@@ -18,7 +18,8 @@ module.exports = {
   rules: {
     'react/jsx-no-target-blank': 'off',
     'react/no-unescaped-entities': 'off',
-    'react-hooks/exhaustive-deps': 'off', // TODO: enable it later
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
     'react/react-in-jsx-scope': 'off',
   },
   settings: {

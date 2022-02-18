@@ -18,7 +18,6 @@ const PeriodDetailHead = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  // const periodDetails = useSinglePeriodQuery(periodId);
   const periodDetails = useRecoilValue(SinglePeriod(periodId));
   return (
     <>

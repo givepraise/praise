@@ -3,51 +3,14 @@ import { useAllUsersQuery } from '@/model/users';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { ReactElement } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useAllSettingsQuery } from './model/settings';
 
-// interface QuantifyPeriodLoaderProps {
-//   periodId: string;
-// }
-
-// const QuantifyPeriodLoader = ({ periodId }: QuantifyPeriodLoaderProps) => {
-//   usePeriodPraiseQuery(periodId);
-//   return null;
-// };
-
-// const UserLoader = () => {
-//   useAllUsersQuery();
-//   return null;
-// }
-
-// const AdminLoader = () => {
-//   useAllUsersQuery();
-//   return null;
-// }
-
 export const StartupLoader: React.FC = (): ReactElement | null => {
-  useAllPeriodsQuery();
+  const { location } = useHistory();
+  useAllPeriodsQuery(location.key);
   useAllSettingsQuery();
   useAllUsersQuery();
-
-  // const isAdmin = useRecoilValue(HasRole('ADMIN'));
-  // if (typeof isAdmin === "undefined") return null;
-  // if (isAdmin) return
-
-  // const isQuantifier = useRecoilValue(HasRole('QUANTIFIER'));
-  // if (!periods) return null;
-
-  // if (isQuantifier) {
-  //   return (
-  //     <>
-  //       {periods.map((period) =>
-  //         period._id && period.status === 'QUANTIFY' ? (
-  //           <QuantifyPeriodLoader periodId={period._id} key={period._id} />
-  //         ) : null
-  //       )}
-  //     </>
-  //   );
-  // }
-
   return null;
 };
 

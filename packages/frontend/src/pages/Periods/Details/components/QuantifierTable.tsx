@@ -8,15 +8,7 @@ import { useRecoilValue } from 'recoil';
 const QuantifierTable = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
-  // const { location } = useHistory();
   const period = useRecoilValue(SinglePeriod(periodId));
-  // const periodDetailsReponse = useRecoilValue(
-  //   SinglePeriodQuery({ periodId, refreshKey: location.key })
-  // );
-
-  // const period: PeriodDetailsDto | null = isResponseOk(periodDetailsReponse)
-  //   ? (periodDetailsReponse.data as PeriodDetailsDto)
-  //   : null;
 
   const columns = React.useMemo(
     () => [
@@ -44,7 +36,7 @@ const QuantifierTable = () => {
 
   const options = {
     columns,
-    data: period ? period.quantifiers : [],
+    data: period?.quantifiers ? period.quantifiers : [],
   } as TableOptions<{}>;
   const tableInstance = useTable(options);
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
@@ -74,7 +66,7 @@ const QuantifierTable = () => {
                 {column.render('Header')}
               </th>
             ))}
-          </tr> //TODO FIX
+          </tr>
         ))}
       </thead>
       <tbody {...getTableBodyProps()}>
@@ -94,7 +86,7 @@ const QuantifierTable = () => {
                   </td>
                 );
               })}
-            </tr> //TODO FIX ID and KEY
+            </tr>
           );
         })}
       </tbody>

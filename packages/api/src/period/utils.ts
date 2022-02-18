@@ -1,4 +1,5 @@
 import { PraiseModel } from '@praise/entities';
+import { calculatePraiseScore } from '@praise/utils';
 import { BadRequestError, NotFoundError } from '@shared/errors';
 import { settingFloat } from '@shared/settings';
 import { PeriodModel } from './entities';
@@ -43,33 +44,7 @@ const calculateReceiverScores = async (
     let score = 0;
     if (!r.quantifications) continue;
     for (const quantification of r.quantifications) {
-      let si = 0;
-      let s = 0;
-      for (const qi of quantification) {
-        if (qi.score > 0) {
-          s += qi.score;
-          si++;
-        }
-        if (qi.duplicatePraise) {
-          const p = await PraiseModel.findById(qi.duplicatePraise);
-          if (p) {
-            for (const pq of p.quantifications) {
-              if (
-                pq?.quantifier &&
-                qi.quantifier &&
-                pq.quantifier.equals(qi.quantifier) &&
-                pq.score > 0
-              ) {
-                s += pq.score * duplicatePraisePercentage;
-                si++;
-              }
-            }
-          }
-        }
-      }
-      if (s > 0) {
-        score += Math.floor(s / si);
-      }
+      score += await calculatePraiseScore(quantification);
     }
     r.score = score;
     delete r.quantifications;
@@ -142,7 +117,7 @@ export const findPeriodDetailsDto = async (
 
   const response = {
     ...periodDocumentTransformer(period),
-    receivers: periodDetailsReceiverListTransformer(receivers),
+    receivers: await periodDetailsReceiverListTransformer(receivers),
     quantifiers: [...quantifier],
   };
   return response;

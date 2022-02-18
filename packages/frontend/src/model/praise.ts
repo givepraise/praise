@@ -20,37 +20,49 @@ import {
   useAuthApiQuery,
 } from './api';
 
-// interface PraiseExt extends PraiseDto {
-//   avgScore?: number;
-// }
-
-// A local only copy of all praises. Used to facilitate CRUD
-// without having to make full roundtrips to the server
-export const AllPraiseIdList = atomFamily<string[] | undefined, string>({
-  key: 'AllPraiseIdList',
+/**
+ * Stores lists of Praise Ids. The following lists exists:
+ * - All praise / start page
+ * - My praise
+ * - Period Praise for a receiver assigned to a quantifier
+ */
+export const PraiseIdList = atomFamily<string[] | undefined, string>({
+  key: 'PraiseIdList',
   default: undefined,
 });
 
+/**
+ * Stores individual Praise items linked to one or more @PraiseIdList
+ */
 export const SinglePraise = atomFamily<PraiseDto | undefined, string>({
   key: 'SinglePraise',
   default: undefined,
 });
 
-type SinglePraiseDetailsParams = {
+/**
+ * Params for @SinglePraiseQuery
+ */
+type SinglePraiseQueryParams = {
   praiseId: string;
   refreshKey: string | undefined;
 };
 
+/**
+ *
+ */
 export const SinglePraiseQuery = selectorFamily({
   key: 'SinglePraiseQuery',
   get:
-    (params: SinglePraiseDetailsParams) =>
+    (params: SinglePraiseQueryParams) =>
     ({ get }): AxiosResponse<unknown> => {
       const { praiseId, refreshKey } = params;
       return get(ApiAuthGet({ url: `/api/praise/${praiseId}`, refreshKey }));
     },
 });
 
+/**
+ *
+ */
 export const useSinglePraiseQuery = (
   praiseId: string
 ): PraiseDetailsDto | undefined => {
@@ -69,91 +81,16 @@ export const useSinglePraiseQuery = (
   return praise;
 };
 
-// export const avgPraiseScore = (praise: PraiseExt | undefined): number => {
-//   if (!praise || !praise.quantifications || praise.quantifications.length === 0)
-//     return 0;
-//   let score = 0;
-//   let i = 0;
-//   praise.quantifications.forEach((quantification) => {
-//     if (
-//       quantification.duplicatePraise &&
-//       quantification.duplicateScore &&
-//       quantification.duplicateScore > 0
-//     ) {
-//       score += quantification.duplicateScore;
-//       i++;
-//     }
-//     if (quantification.score > 0) {
-//       score += quantification.score;
-//       i++;
-//     }
-//   });
-//   if (score === 0) return 0;
-//   return Math.round(score / i);
-// };
-
-// const quantWithDuplicateScore = (
-//   quantification: QuantificationDto,
-//   get: GetRecoilValue
-// ): QuantificationDto => {
-//   const quantificationExt = {
-//     ...quantification,
-//     duplicateScore: 0,
-//   };
-//   if (quantification.duplicatePraise) {
-//     const duplicatePraisePercentage = get(
-//       SingleFloatSetting('PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE')
-//     );
-//     if (duplicatePraisePercentage) {
-//       let duplicatePraise = get(SinglePraise(quantification.duplicatePraise));
-//       if (!duplicatePraise) {
-//         const duplicatePraiseResponse = get(
-//           SinglePraiseQuery(quantification.duplicatePraise)
-//         );
-//         if (isResponseOk(duplicatePraiseResponse)) {
-//           duplicatePraise = duplicatePraiseResponse.data;
-//         }
-//       }
-//       if (duplicatePraise && duplicatePraise.quantifications) {
-//         const duplicateQuantification = duplicatePraise.quantifications.find(
-//           (q) => q.quantifier === quantification.quantifier
-//         );
-//         if (duplicateQuantification) {
-//           quantificationExt.duplicateScore =
-//             duplicateQuantification.score * duplicatePraisePercentage;
-//         }
-//       }
-//     }
-//   }
-//   return quantificationExt;
-// };
-
-// export const SinglePraiseExt = selectorFamily({
-//   key: 'SinglePraiseExt',
-//   get:
-//     (praiseId: string) =>
-//     ({ get }) => {
-//       const praise = get(SinglePraise(praiseId));
-//       if (!praise) return undefined;
-//       const praiseExt: PraiseExt = {
-//         ...praise,
-//       };
-//       if (praise.quantifications) {
-//         praiseExt.quantifications = praise.quantifications.map((q) =>
-//           quantWithDuplicateScore(q, get)
-//         );
-//       }
-//       praiseExt.avgScore = avgPraiseScore(praiseExt);
-//       return praiseExt;
-//     },
-// });
-
+/**
+ * Selector to get all praise from a list of praise ids.
+ * @param listKey The key the praise id list is stored under.
+ */
 export const AllPraiseList = selectorFamily({
   key: 'AllPraiseList',
   get:
     (listKey: string) =>
-    ({ get }) => {
-      const praiseIdList = get(AllPraiseIdList(listKey));
+    ({ get }): PraiseDto[] | undefined => {
+      const praiseIdList = get(PraiseIdList(listKey));
       const allPraiseList: PraiseDto[] = [];
       if (!praiseIdList) return undefined;
       for (const praiseId of praiseIdList) {
@@ -164,14 +101,19 @@ export const AllPraiseList = selectorFamily({
     },
 });
 
-// The request Id is used to force refresh of AllPraiseQuery
-// AllPraiseQuery subscribes to the value. Increase to trigger
-// refresh.
+/**
+ * The request Id is used to force refresh of AllPraiseQuery
+ * AllPraiseQuery subscribes to the value. Increase to trigger
+ * refresh.
+ */
 export const PraiseRequestId = atom({
   key: 'PraiseRequestId',
   default: 0,
 });
 
+/**
+ *
+ */
 export const AllPraiseQuery = selectorFamily<
   AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined,
   AllPraiseQueryParameters
@@ -195,12 +137,18 @@ export const AllPraiseQuery = selectorFamily<
     },
 });
 
+/**
+ *
+ */
 export interface AllPraiseQueryPaginationInterface {
   latestFetchPage: number;
   currentPage: number;
   totalPages: number;
 }
 
+/**
+ *
+ */
 export const AllPraiseQueryPagination = atomFamily<
   AllPraiseQueryPaginationInterface,
   string
@@ -213,6 +161,9 @@ export const AllPraiseQueryPagination = atomFamily<
   },
 });
 
+/**
+ *
+ */
 export type AllPraiseQueryParameters = {
   sortColumn?: string;
   sortType?: string;
@@ -223,6 +174,9 @@ export type AllPraiseQueryParameters = {
   periodEnd?: string;
 };
 
+/**
+ *
+ */
 export const useAllPraiseQuery = (
   queryParams: AllPraiseQueryParameters,
   listKey: string
@@ -231,20 +185,20 @@ export const useAllPraiseQuery = (
   const [praisePagination, setPraisePagination] = useRecoilState(
     AllPraiseQueryPagination(listKey)
   );
-  const allPraiseIdList = useRecoilValue(AllPraiseIdList(listKey));
+  const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
 
   const saveAllPraiseIdList = useRecoilCallback(
     ({ snapshot, set }) =>
       async (praiseList: PraiseDto[]) => {
         const allPraiseIdList = await snapshot.getPromise(
-          AllPraiseIdList(listKey)
+          PraiseIdList(listKey)
         );
         const praiseIdList: string[] = [];
         for (const praise of praiseList) {
           praiseIdList.push(praise._id);
         }
         set(
-          AllPraiseIdList(listKey),
+          PraiseIdList(listKey),
           allPraiseIdList ? allPraiseIdList.concat(praiseIdList) : praiseIdList
         );
       }
@@ -296,34 +250,9 @@ export const useAllPraiseQuery = (
   return allPraiseQueryResponse;
 };
 
-type QuantifyPraiseParams = {
-  praiseId: string;
-  score: number;
-  dismissed: boolean;
-  duplicatePraise: string;
-};
-
-// export const QuantifyPraise = selectorFamily({
-//   key: 'QuantifyPraise',
-//   get:
-//     (params: QuantifyPraiseParams) =>
-//     ({ get }) => {
-//       const { praiseId, score, dismissed, duplicatePraise } = params;
-//       const response = get(
-//         ApiAuthPatch({
-//           url: `/api/praise/${praiseId}/quantify`,
-//           data: JSON.stringify({
-//             score,
-//             dismissed,
-//             duplicatePraise,
-//           }),
-//         })
-//       );
-//       return response;
-//     },
-// });
-
-// Hook that returns a function to use for closing a period
+/**
+ * Hook that returns a function to use for closing a period
+ */
 export const useQuantifyPraise = () => {
   const quantify = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -332,7 +261,7 @@ export const useQuantifyPraise = () => {
         score: number,
         dismissed: boolean,
         duplicatePraise: string | null
-      ) => {
+      ): Promise<PraiseDto | undefined> => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({

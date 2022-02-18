@@ -412,5 +412,6 @@ export const quantifierPraise = async (
 
   await PraiseModel.populate(praiseList, { path: 'receiver giver' });
 
-  res.status(StatusCodes.OK).json(praiseDocumentListTransformer(praiseList));
+  const response = await praiseDocumentListTransformer(praiseList);
+  res.status(StatusCodes.OK).json(response);
 };

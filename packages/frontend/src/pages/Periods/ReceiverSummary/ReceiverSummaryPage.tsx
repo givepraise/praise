@@ -21,7 +21,6 @@ const getReceiver = (
 const PeriodReceiverMessage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId, receiverId } = useParams() as any;
-  // const periodDetails = useSinglePeriodQuery(periodId);
   const periodDetails = useRecoilValue(SinglePeriod(periodId));
 
   if (!periodDetails) return null;

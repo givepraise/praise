@@ -1,12 +1,13 @@
 import BreadCrumb from '@/components/BreadCrumb';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import {
-  PeriodActiveQuantifierReceiver,
+  PeriodQuantifierReceivers,
   SinglePeriod,
   usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
 import { SingleBooleanSetting } from '@/model/settings';
 import BackLink from '@/navigation/BackLink';
+import { getQuantificationReceiverStats } from '@/utils/periods';
 import {
   faCalendarAlt,
   faCheckCircle,
@@ -39,14 +40,15 @@ const PeriodMessage = () => {
   const { periodId, receiverId } = useParams() as any;
   const { location } = useHistory();
   usePeriodQuantifierPraiseQuery(periodId, location.key);
-  const data = useRecoilValue(
-    PeriodActiveQuantifierReceiver({ periodId, receiverId })
-  );
   const usePseudonyms = useRecoilValue(
     SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );
+  const quantifierReceiverData = getQuantificationReceiverStats(
+    useRecoilValue(PeriodQuantifierReceivers(periodId)),
+    receiverId
+  );
 
-  if (!data) return null;
+  if (!quantifierReceiverData) return null;
   return (
     <>
       <h2>
@@ -54,18 +56,18 @@ const PeriodMessage = () => {
         {usePseudonyms ? (
           <UserPseudonym userId={receiverId} periodId={periodId} />
         ) : (
-          data.receiverName
+          quantifierReceiverData.receiverName
         )}
       </h2>
-      <div>Number of praise items: {data.count}</div>
+      <div>Number of praise items: {quantifierReceiverData.count}</div>
       <div>
         Items left to quantify:{' '}
-        {data.count - data.done === 0 ? (
+        {quantifierReceiverData.count - quantifierReceiverData.done === 0 ? (
           <>
             0<DoneLabel />
           </>
         ) : (
-          data.count - data.done
+          quantifierReceiverData.count - quantifierReceiverData.done
         )}
       </div>
     </>

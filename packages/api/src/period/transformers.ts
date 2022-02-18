@@ -37,26 +37,30 @@ export const periodDocumentTransformer = (
   return periodDocumentToDto(periodDocument);
 };
 
-export const listOfQuantificationListsTransformer = (
+export const listOfQuantificationListsTransformer = async (
   listOfQuantificationLists: Quantification[][] | undefined
-): Array<Array<QuantificationDto>> => {
+): Promise<Array<Array<QuantificationDto>>> => {
   if (listOfQuantificationLists && Array.isArray(listOfQuantificationLists)) {
-    return listOfQuantificationLists.map((quantificationList) =>
-      quantificationListTransformer(quantificationList)
-    );
+    const quantifications: QuantificationDto[][] = [];
+    for (const q of listOfQuantificationLists) {
+      quantifications.push(await quantificationListTransformer(q));
+    }
+    return quantifications;
   }
   return [];
 };
 
-const periodDetailsReceiverToDto = (
+const periodDetailsReceiverToDto = async (
   periodDetailsReceiver: PeriodDetailsReceiver
-): PeriodDetailsReceiverDto => {
+): Promise<PeriodDetailsReceiverDto> => {
   const { _id, praiseCount, quantifications, score, userAccounts } =
     periodDetailsReceiver;
   return {
     _id: _id.toString(),
     praiseCount,
-    quantifications: listOfQuantificationListsTransformer(quantifications),
+    quantifications: await listOfQuantificationListsTransformer(
+      quantifications
+    ),
     score,
     userAccount:
       Array.isArray(userAccounts) && userAccounts.length > 0
@@ -65,19 +69,22 @@ const periodDetailsReceiverToDto = (
   };
 };
 
-export const periodDetailsReceiverListTransformer = (
+export const periodDetailsReceiverListTransformer = async (
   periodDetailsReceiverList: PeriodDetailsReceiver[] | undefined
-): PeriodDetailsReceiverDto[] => {
+): Promise<PeriodDetailsReceiverDto[]> => {
   if (periodDetailsReceiverList && Array.isArray(periodDetailsReceiverList)) {
-    return periodDetailsReceiverList.map((periodDetailsReceiver) =>
-      periodDetailsReceiverToDto(periodDetailsReceiver)
-    );
+    const periodDetailsReceiverDto: PeriodDetailsReceiverDto[] = [];
+    for (const pdr of periodDetailsReceiverList) {
+      periodDetailsReceiverDto.push(await periodDetailsReceiverToDto(pdr));
+    }
+    return periodDetailsReceiverDto;
   }
   return [];
 };
 
-export const periodDetailsReceiverTransformer = (
+export const periodDetailsReceiverTransformer = async (
   periodDetailsReceiver: PeriodDetailsReceiver
-): PeriodDetailsReceiverDto => {
-  return periodDetailsReceiverToDto(periodDetailsReceiver);
+): Promise<PeriodDetailsReceiverDto> => {
+  const response = await periodDetailsReceiverToDto(periodDetailsReceiver);
+  return response;
 };

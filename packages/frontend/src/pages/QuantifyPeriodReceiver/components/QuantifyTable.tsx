@@ -1,11 +1,11 @@
+import { InlineLabel } from '@/components/InlineLabel';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { ActiveUserId } from '@/model/auth';
-import { PeriodActiveQuantifierReceiverPraise } from '@/model/periods';
+import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
 import { SingleBooleanSetting } from '@/model/settings';
 import { formatDate } from '@/utils/date';
-import { classNames } from '@/utils/index';
 import {
   faCopy,
   faTimes,
@@ -13,7 +13,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
-import { PraiseDto } from 'api/dist/praise/types';
+import { PraiseDto, QuantificationDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
@@ -21,25 +21,6 @@ import { QuantifyBackNextLink } from './BackNextLink';
 import DismissDialog from './DismissDialog';
 import DuplicateDialog from './DuplicateDialog';
 import QuantifySlider from './QuantifySlider';
-
-interface InlineLabelProps {
-  text: string;
-  button?: any;
-  className?: string;
-}
-const InlineLabel = ({ text, button, className }: InlineLabelProps) => {
-  return (
-    <span
-      className={classNames(
-        className,
-        'h-6 pl-1 pr-1 mr-1 text-xs text-white no-underline bg-gray-800 py-[1px] rounded'
-      )}
-    >
-      {text}
-      {button && button}
-    </span>
-  );
-};
 
 const getRemoveButton = (action: any) => {
   return (
@@ -58,7 +39,7 @@ const QuantifyTable = () => {
   const { periodId, receiverId } = useParams() as any;
   const userId = useRecoilValue(ActiveUserId);
   const data = useRecoilValue(
-    PeriodActiveQuantifierReceiverPraise({ periodId, receiverId })
+    PeriodQuantifierReceiverPraise({ periodId, receiverId })
   );
   const usePseudonyms = useRecoilValue(
     SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
@@ -74,34 +55,34 @@ const QuantifyTable = () => {
 
   if (!data) return null;
 
-  const quantification = (praise: PraiseDto) => {
+  const quantification = (praise: PraiseDto): QuantificationDto | undefined => {
     return praise.quantifications.find((q) => q.quantifier === userId);
   };
 
-  const dismissed = (praise: PraiseDto) => {
+  const dismissed = (praise: PraiseDto): boolean => {
     const q = quantification(praise);
     return q ? !!q.dismissed : false;
   };
 
-  const duplicate = (praise: PraiseDto) => {
+  const duplicate = (praise: PraiseDto): boolean => {
     const q = quantification(praise);
     return q ? (q.duplicatePraise ? true : false) : false;
   };
 
-  const handleDismiss = () => {
+  const handleDismiss = (): void => {
     if (selectedPraise) void quantify(selectedPraise._id, 0, true, null);
   };
 
-  const handleDuplicate = (duplicatePraiseId: string) => {
+  const handleDuplicate = (duplicatePraiseId: string): void => {
     if (selectedPraise)
       void quantify(selectedPraise._id, 0, false, duplicatePraiseId);
   };
 
-  const handleRemoveDismiss = (id: string) => {
+  const handleRemoveDismiss = (): void => {
     if (selectedPraise) void quantify(selectedPraise._id, 0, false, null);
   };
 
-  const handleRemoveDuplicate = (id: string) => {
+  const handleRemoveDuplicate = (): void => {
     if (selectedPraise) void quantify(selectedPraise._id, 0, false, null);
   };
 

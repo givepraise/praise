@@ -1,8 +1,7 @@
 import BreadCrumb from '@/components/BreadCrumb';
-import { ActiveUserId } from '@/model/auth';
-import { SinglePeriod } from '@/model/periods';
+import { PeriodQuantifierReceivers, SinglePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
-import { getQuantifierData } from '@/utils/periods';
+import { getQuantificationStats } from '@/utils/periods';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useParams } from 'react-router-dom';
@@ -12,20 +11,21 @@ import QuantifyPeriodTable from './components/QuantifyPeriodTable';
 const PeriodMessage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
-  // const period = useSinglePeriodQuery(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
-  const userId = useRecoilValue(ActiveUserId);
-  const quantifierData = getQuantifierData(period, userId);
+
+  const quantificationStats = getQuantificationStats(
+    useRecoilValue(PeriodQuantifierReceivers(periodId))
+  );
 
   return (
     <>
       <h2>{period?.name}</h2>
-      {quantifierData ? (
+      {quantificationStats ? (
         <div>
-          Assigned number of praise items: {quantifierData.praiseCount}
+          Assigned number of praise items: {quantificationStats.count}
           <br />
           Items left to quantify:{' '}
-          {quantifierData.praiseCount - quantifierData.finishedCount}
+          {quantificationStats.count - quantificationStats.done}
         </div>
       ) : null}
     </>

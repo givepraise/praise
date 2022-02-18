@@ -89,8 +89,6 @@ const seedData = async (): Promise<void> => {
       await PeriodModel.create({
         name: `Period ${i + 1}`,
         status: 'OPEN',
-        // status:
-        //   periodStatuses[Math.floor(Math.random() * periodStatuses.length)],
         endDate: d,
         quantifiers: [],
       });

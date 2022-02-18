@@ -10,7 +10,6 @@ export const QuantifierMessage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
   const history = useHistory();
-  // const period = useSinglePeriodQuery(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
   const userId = useRecoilValue(ActiveUserId);
   const quantifierData = getQuantifierData(period, userId);

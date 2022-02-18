@@ -28,11 +28,11 @@ const MyPraiseTable = () => {
             <div className="flex-grow p-3 overflow-hidden">
               <div>
                 <span className="font-bold">
-                  {data.row.original.giver.username}
+                  {data.row.original.giver.name}
                 </span>{' '}
                 to{' '}
                 <span className="font-bold">
-                  {data.row.original.receiver.username}
+                  {data.row.original.receiver.name}
                 </span>
                 <span className="ml-2 text-xs text-gray-500">
                   {formatDate(data.row.original.createdAt)}
