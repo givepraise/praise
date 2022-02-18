@@ -47,8 +47,6 @@ void (async (): Promise<void> => {
     app.use(morgan('dev'));
     try {
       await seedData();
-
-      logger.info('Seeded database with test data.');
     } catch (error) {
       logger.err('Could not connect to database.');
     }

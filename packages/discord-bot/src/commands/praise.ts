@@ -1,10 +1,18 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { PraiseModel } from 'api/dist/praise/entities';
-import { UserModel } from 'api/dist/user/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { CommandInteraction, Interaction, Message, MessageEmbed } from 'discord.js';
+import {
+  CommandInteraction,
+  Interaction,
+  Message,
+  MessageEmbed,
+} from 'discord.js';
 import logger from 'jet-logger';
-import { notActivatedError, praiseSuccess, praiseErrorEmbed } from '../utils/praiseEmbeds';
+import {
+  notActivatedError,
+  praiseErrorEmbed,
+  praiseSuccess,
+} from '../utils/praiseEmbeds';
 
 const praise = async (interaction: CommandInteraction) => {
   const { guild, channel, member } = interaction;
@@ -24,9 +32,9 @@ const praise = async (interaction: CommandInteraction) => {
   const praiseGiver = await guild.members.fetch(member.user.id);
 
   if (!praiseGiver.roles.cache.find((r) => r.id === praiseGiverRole?.id)) {
-    const msg = await interaction.editReply(
+    const msg = (await interaction.editReply(
       `**User does not have \`${praiseGiverRole?.name}\` role**\nThe praise command can only be used by members with the <@&${praiseGiverRole?.id}> role. Attend an onboarding-call, or ask a steward or guide for an Intro to Praise.`
-    ) as Message;
+    )) as Message;
     await msg.react('❌');
     return;
   }
@@ -105,7 +113,7 @@ const praise = async (interaction: CommandInteraction) => {
   });
 
   if (!User) {
-    const msg = await interaction.editReply(notActivatedError) as Message;
+    const msg = (await interaction.editReply(notActivatedError)) as Message;
     await msg.react('❌');
     return;
   }
@@ -133,10 +141,7 @@ const praise = async (interaction: CommandInteraction) => {
       { upsert: true, new: true }
     );
 
-    const receiverUser = await UserModel.findOne({
-      accounts: receiverAccount,
-    });
-    if (!receiverUser) {
+    if (!receiverAccount.user) {
       try {
         const msg = await receiver.send(
           "You were just praised in the TEC! It looks like you haven't activated your account... To activate use the `/praise-activate` command in the server."
@@ -148,12 +153,12 @@ const praise = async (interaction: CommandInteraction) => {
     }
     const praiseObj = await PraiseModel.create({
       reason: reason,
-      giver: userAccount!._id,
+      giver: userAccount._id,
       sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
       sourceName: `DISCORD:${encodeURI(guild.name)}:${encodeURI(
         guildChannel?.name || ''
       )}`,
-      receiver: receiverAccount!._id,
+      receiver: receiverAccount._id,
     });
     if (praiseObj) {
       praised.push(ra.id);
@@ -164,20 +169,32 @@ const praise = async (interaction: CommandInteraction) => {
     }
   }
 
-  let msg = await interaction.editReply(
-      praiseSuccess(
-        praised.map((id) => `<@!${id}>`),
-        reason
-      )
-  ) as Message;
+  let msg = (await interaction.editReply(
+    praiseSuccess(
+      praised.map((id) => `<@!${id}>`),
+      reason
+    )
+  )) as Message;
   await msg.react('✅');
 
   if (receiverData.undefinedReceivers) {
-    msg = await msg.reply(`**Undefined Receivers**\nCould not praise ${receiverData.undefinedReceivers.join(', ')}.\n<@!${ua.id}>, this warning could have been caused when a user isn't mentioned properly in the praise receivers field OR when a user isn't found in the discord server.`);
+    msg = await msg.reply(
+      `**Undefined Receivers**\nCould not praise ${receiverData.undefinedReceivers.join(
+        ', '
+      )}.\n<@!${
+        ua.id
+      }>, this warning could have been caused when a user isn't mentioned properly in the praise receivers field OR when a user isn't found in the discord server.`
+    );
     await msg.react('⚠️');
   }
   if (receiverData.roleMentions) {
-    msg = await msg.reply(`**Roles as Praise receivers**\nCouldn't praise roles - ${receiverData.roleMentions.join(', ')}.\n<@!${ua.id}>, use the \`/group-praise\` for distribution of praise to all the members that have certain discord roles.`);
+    msg = await msg.reply(
+      `**Roles as Praise receivers**\nCouldn't praise roles - ${receiverData.roleMentions.join(
+        ', '
+      )}.\n<@!${
+        ua.id
+      }>, use the \`/group-praise\` for distribution of praise to all the members that have certain discord roles.`
+    );
     await msg.react('⚠️');
   }
 

@@ -1,26 +1,27 @@
 import BreadCrumb from '@/components/BreadCrumb';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import {
-  PeriodActiveQuantifierReceiver,
+  PeriodQuantifierReceivers,
   SinglePeriod,
-  usePeriodPraiseQuery,
+  usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
 import { SingleBooleanSetting } from '@/model/settings';
 import BackLink from '@/navigation/BackLink';
+import { getQuantificationReceiverStats } from '@/utils/periods';
 import {
   faCalendarAlt,
   faCheckCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import QuantifyTable from './components/QuantifyTable';
 
 const PeriodBreadCrumb = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
-  const period = useRecoilValue(SinglePeriod({ periodId }));
+  const period = useRecoilValue(SinglePeriod(periodId));
   if (!period) return null;
   return <BreadCrumb name={`Quantify / ${period.name}`} icon={faCalendarAlt} />;
 };
@@ -37,15 +38,17 @@ const DoneLabel = () => {
 const PeriodMessage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId, receiverId } = useParams() as any;
-  usePeriodPraiseQuery(periodId);
-  const data = useRecoilValue(
-    PeriodActiveQuantifierReceiver({ periodId, receiverId })
-  );
+  const { location } = useHistory();
+  usePeriodQuantifierPraiseQuery(periodId, location.key);
   const usePseudonyms = useRecoilValue(
     SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );
+  const quantifierReceiverData = getQuantificationReceiverStats(
+    useRecoilValue(PeriodQuantifierReceivers(periodId)),
+    receiverId
+  );
 
-  if (!data) return null;
+  if (!quantifierReceiverData) return null;
   return (
     <>
       <h2>
@@ -53,18 +56,18 @@ const PeriodMessage = () => {
         {usePseudonyms ? (
           <UserPseudonym userId={receiverId} periodId={periodId} />
         ) : (
-          data.receiverName
+          quantifierReceiverData.receiverName
         )}
       </h2>
-      <div>Number of praise items: {data.count}</div>
+      <div>Number of praise items: {quantifierReceiverData.count}</div>
       <div>
         Items left to quantify:{' '}
-        {data.count - data.done === 0 ? (
+        {quantifierReceiverData.count - quantifierReceiverData.done === 0 ? (
           <>
             0<DoneLabel />
           </>
         ) : (
-          data.count - data.done
+          quantifierReceiverData.count - quantifierReceiverData.done
         )}
       </div>
     </>

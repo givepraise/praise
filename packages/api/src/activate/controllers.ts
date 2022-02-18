@@ -40,8 +40,7 @@ const activate = async (
     throw new InternalServerError('Activation token not found.');
 
   // You are only allowed to activate once
-  const alreadyActivated = await UserModel.findOne({ accounts: userAccount });
-  if (alreadyActivated)
+  if (userAccount.user)
     throw new BadRequestError('User account already activated.');
 
   // Generate expected message, token included.
@@ -62,12 +61,12 @@ const activate = async (
     { ethereumAddress },
     { ethereumAddress },
     { upsert: true, new: true }
-  ).populate('accounts');
+  );
   if (!user) throw new NotFoundError('User');
 
   // Link user account with user
-  user.accounts.push(userAccount);
-  await user.save();
+  userAccount.user = user;
+  await userAccount.save();
 
   res.status(200).json(user);
 };

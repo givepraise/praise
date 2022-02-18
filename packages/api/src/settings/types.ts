@@ -7,6 +7,12 @@ export interface Setting {
 
 export interface SettingDocument extends Setting, mongoose.Document {}
 
-export interface SettingSetRequestBody {
+export interface SettingDto {
+  _id: string;
+  key: string;
+  value: string;
+}
+
+export interface SettingSetInput {
   value: string;
 }

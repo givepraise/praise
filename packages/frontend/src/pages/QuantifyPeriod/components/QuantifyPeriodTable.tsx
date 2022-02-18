@@ -1,12 +1,13 @@
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import {
-  PeriodActiveQuantifierReceivers,
+  PeriodQuantifierReceivers,
   QuantifierReceiverData,
+  usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
 import { SingleBooleanSetting } from '@/model/settings';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { SyntheticEvent } from 'react';
+import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
@@ -24,8 +25,9 @@ const QuantifyPeriodTable = () => {
   const history = useHistory();
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
-
-  const data = useRecoilValue(PeriodActiveQuantifierReceivers({ periodId }));
+  const { location } = useHistory();
+  usePeriodQuantifierPraiseQuery(periodId, location.key);
+  const data = useRecoilValue(PeriodQuantifierReceivers(periodId));
   const usePseudonyms = useRecoilValue(
     SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );
@@ -81,7 +83,7 @@ const QuantifyPeriodTable = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const handleClick = (data: QuantifierReceiverData) => (e: SyntheticEvent) => {
+  const handleClick = (data: QuantifierReceiverData) => () => {
     history.push(
       `/quantify/period/${data.periodId}/receiver/${data.receiverId}`
     );

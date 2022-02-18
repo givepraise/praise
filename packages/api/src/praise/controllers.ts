@@ -1,9 +1,4 @@
 import {
-  Praise,
-  PraiseAllInput,
-  QuantificationCreateUpdateInput,
-} from '@praise/types';
-import {
   BadRequestError,
   InternalServerError,
   NotFoundError,
@@ -21,12 +16,23 @@ import { UserModel } from '@user/entities';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { PraiseModel } from './entities';
+import { praiseDocumentTransformer } from './transformers';
+import {
+  PraiseAllInput,
+  PraiseDetailsDto,
+  PraiseDto,
+  QuantificationCreateUpdateInput,
+} from './types';
+import { calculatePraiseScore, praiseWithScore } from './utils';
 
-interface PraiseAllInputParsedQs extends Query, PraiseAllInput {}
+interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
-const all = async (
+/**
+ * //TODO add descriptiom
+ */
+export const all = async (
   req: TypedRequestQuery<PraiseAllInputParsedQs>,
-  res: TypedResponse<PaginatedResponseBody<Praise>>
+  res: TypedResponse<PaginatedResponseBody<PraiseDetailsDto>>
 ): Promise<void> => {
   const { receiver, periodStart, periodEnd } = req.query;
   const query: any = {};
@@ -36,36 +42,57 @@ const all = async (
 
   if (periodStart && periodEnd) {
     query.createdAt = {
-      $gte: periodStart,
+      $gt: periodStart,
       $lte: periodEnd,
     };
   }
 
-  const praises = await PraiseModel.paginate({
+  const praisePagination = await PraiseModel.paginate({
     query,
     ...req.query,
     sort: getQuerySort(req.query),
     populate: 'giver receiver',
   });
 
-  res.status(200).json(praises);
+  const praiseDetailsDtoList: PraiseDetailsDto[] = [];
+  if (praisePagination?.docs) {
+    for (const praise of praisePagination.docs) {
+      praiseDetailsDtoList.push(await praiseWithScore(praise));
+    }
+  }
+
+  const response = {
+    ...praisePagination,
+    docs: praiseDetailsDtoList,
+  };
+
+  res.status(200).json(response);
 };
 
-const single = async (
+/**
+ * //TODO add descriptiom
+ */
+export const single = async (
   req: Request,
-  res: TypedResponse<Praise>
+  res: TypedResponse<PraiseDetailsDto>
 ): Promise<void> => {
   const praise = await PraiseModel.findById(req.params.id).populate(
     'giver receiver'
   );
   if (!praise) throw new NotFoundError('Praise');
-
-  res.status(200).json(praise);
+  const praiseDetailsDto: PraiseDetailsDto = await praiseDocumentTransformer(
+    praise
+  );
+  praiseDetailsDto.score = await calculatePraiseScore(praise.quantifications);
+  res.status(200).json(praiseDetailsDto);
 };
 
-const quantify = async (
+/**
+ * //TODO add descriptiom
+ */
+export const quantify = async (
   req: TypedRequestBody<QuantificationCreateUpdateInput>,
-  res: TypedResponse<Praise>
+  res: TypedResponse<PraiseDto>
 ): Promise<void> => {
   const praise = await PraiseModel.findById(req.params.id).populate(
     'giver receiver'
@@ -105,15 +132,18 @@ const quantify = async (
       quantification.duplicatePraise = dp._id;
     }
   } else {
-    quantification.duplicatePraise = null;
+    quantification.duplicatePraise = undefined;
   }
 
   await praise.save();
-
-  res.status(200).json(praise);
+  const response = await praiseDocumentTransformer(praise);
+  res.status(200).json(response);
 };
 
-const exportPraise = async (
+/**
+ * //TODO add descriptiom
+ */
+export const exportPraise = async (
   req: Request<any, QueryInput, any>, //TODO typed request
   res: Response
 ): Promise<void> => {
@@ -124,7 +154,7 @@ const exportPraise = async (
 
   if (req.query.periodStart && req.query.periodEnd) {
     query.createdAt = {
-      $gte: req.query.periodStart,
+      $gt: req.query.periodStart,
       $lte: req.query.periodEnd,
     };
   }
@@ -295,5 +325,3 @@ const exportPraise = async (
   res.attachment('data.csv');
   res.status(200).send(csv);
 };
-
-export { all, single, quantify, exportPraise };

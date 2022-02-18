@@ -1,13 +1,13 @@
-import { Praise } from '@/model/praise';
 import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
+import { PraiseDto } from 'api/dist/praise/types';
 import PraiseAutosuggest from './PraiseAutosuggest';
 
 interface PoolDeleteDialogProps {
   onClose(): any;
   onSelect(praiseId: string): void;
-  praise: Praise;
+  praise: PraiseDto | undefined;
 }
 const PoolDismissDialog = ({
   onSelect,

@@ -1,19 +1,26 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
-import { getPreviousPeriod } from '@/utils/periods';
+import {
+  getPreviousPeriod,
+  periodQuantifierPraiseListKey,
+} from '@/utils/periods';
+import {
+  PeriodCreateUpdateInput,
+  PeriodDetailsDto,
+  PeriodDto,
+  PeriodStatusType,
+} from 'api/dist/period/types';
+import { PraiseDto } from 'api/dist/praise/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
   atom,
-  atomFamily,
   selector,
   selectorFamily,
   useRecoilCallback,
   useRecoilState,
-  useRecoilTransaction_UNSTABLE,
   useRecoilValue,
-  waitForAll,
 } from 'recoil';
 import {
   ApiAuthGet,
@@ -24,86 +31,51 @@ import {
   useAuthApiQuery,
 } from './api';
 import { ActiveUserId } from './auth';
-import {
-  avgPraiseScore,
-  Praise,
-  SinglePraise,
-  SinglePraiseExt,
-} from './praise';
+import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
 
-export interface Period {
-  _id?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  name: string;
-  status?: string;
-  endDate: string;
-}
-
-// The request Id is used to force refresh of AllPeriodsQuery
-// AllPeriodsQuery subscribes to the value. Increase to trigger
-// refresh.
-const PeriodsRequestId = atom({
-  key: 'PeriodsRequestId',
-  default: 0,
-});
-
-// A local only copy of all periods. Used to facilitate CRUD
-// without having to make full roundtrips to the server
-export const AllPeriods = atom<Period[] | undefined>({
+/**
+ * The full list of praise periods is being fetched on first pageload.
+ */
+export const AllPeriods = atom<PeriodDetailsDto[] | undefined>({
   key: 'AllPeriods',
   default: undefined,
 });
 
-export const AllPeriodsQuery = selector({
+/**
+ * Query selector that fetches all praise periods.
+ */
+export const AllPeriodsQuery = selectorFamily({
   key: 'AllPeriodsQuery',
-  get: ({ get }) => {
-    get(PeriodsRequestId);
-    return get(
-      ApiAuthGet({
-        url: '/api/periods/all?sortColumn=endDate&sortType=desc',
-      })
-    );
-  },
-});
-
-export const SinglePeriod = selectorFamily({
-  key: 'SinglePeriod',
   get:
-    (params: any) =>
+    (refreshKey: string | undefined) =>
     ({ get }) => {
-      const allPeriods = get(AllPeriods);
-      if (!allPeriods) return null;
-      return allPeriods.find((period) => period._id === params.periodId);
+      const response = get(
+        ApiAuthGet({
+          url: '/api/periods/all?sortColumn=endDate&sortType=desc',
+          refreshKey,
+        })
+      );
+      return response;
     },
 });
 
-export const SinglePeriodByDate = selectorFamily({
-  key: 'SinglePeriodByDate',
-  get:
-    (anyDate: string | undefined) =>
-    ({ get }) => {
-      const allPeriods = get(AllPeriods);
-      if (!allPeriods || !anyDate) return null;
-      return allPeriods
-        .slice()
-        .reverse()
-        .find((period) => new Date(period.endDate) > new Date(anyDate));
-    },
-});
-
-export const useAllPeriodsQuery = (): AxiosResponse<unknown> => {
-  const allPeriodsQueryResponse = useAuthApiQuery(AllPeriodsQuery);
+/**
+ * Hook that fetches all periods and store them to AllPeriods.
+ */
+export const useAllPeriodsQuery = (
+  refreshKey: string | undefined
+): AxiosResponse<unknown> => {
+  const allPeriodsQueryResponse = useAuthApiQuery(AllPeriodsQuery(refreshKey));
   const [allPeriods, setAllPeriods] = useRecoilState(AllPeriods);
 
-  // Only set AllPeriods if not previously loaded
+  // Only set AllPeriods if not previously loadedx
   React.useEffect(() => {
     if (
       isResponseOk(allPeriodsQueryResponse) &&
       typeof allPeriods === 'undefined'
     ) {
       const paginatedResponse =
-        allPeriodsQueryResponse.data as PaginatedResponseBody<Period>;
+        allPeriodsQueryResponse.data as PaginatedResponseBody<PeriodDetailsDto>;
       const periods = paginatedResponse.docs;
       if (Array.isArray(periods) && periods.length > 0) {
         setAllPeriods(periods);
@@ -114,7 +86,87 @@ export const useAllPeriodsQuery = (): AxiosResponse<unknown> => {
   return allPeriodsQueryResponse;
 };
 
-// Stores the api response from the latest call to /api/admin/periods/create
+/**
+ * Paramas for SinglePeriodQuery
+ */
+type SinglePeriodQueryParams = {
+  periodId: string;
+  refreshKey: string | undefined;
+};
+
+/**
+ * Query selector that fetches details for a single period.
+ */
+export const SinglePeriodQuery = selectorFamily({
+  key: 'SinglePeriodQuery',
+  get:
+    (params: SinglePeriodQueryParams) =>
+    ({ get }): AxiosResponse<unknown> => {
+      const { periodId, refreshKey } = params;
+      return get(
+        ApiAuthGet({
+          url: `/api/periods/${periodId}`,
+          refreshKey,
+        })
+      );
+    },
+});
+
+/**
+ * Hook that fetches details for a single period from the API.
+ */
+export const useSinglePeriodQuery = (
+  periodId: string,
+  refreshKey: string | undefined
+): PeriodDetailsDto | undefined => {
+  const periodResponse = useRecoilValue(
+    SinglePeriodQuery({ periodId, refreshKey })
+  );
+  const [period, setPeriod] = React.useState<PeriodDetailsDto | undefined>(
+    undefined
+  );
+  React.useEffect(() => {
+    if (!period && isResponseOk(periodResponse)) {
+      setPeriod(periodResponse.data);
+    }
+  }, [period, periodResponse]);
+  return period;
+};
+
+/**
+ * Selector to get details for a single period from local state (AllPeriods).
+ */
+export const SinglePeriod = selectorFamily({
+  key: 'SinglePeriod',
+  get:
+    (periodId: string) =>
+    ({ get }): PeriodDetailsDto | undefined => {
+      const allPeriods = get(AllPeriods);
+      if (!allPeriods) return undefined;
+      return allPeriods.find((period) => period._id === periodId);
+    },
+});
+
+/**
+ * Selector to get details for a single period from local state (AllPeriods).
+ */
+export const SinglePeriodByDate = selectorFamily({
+  key: 'SinglePeriodByDate',
+  get:
+    (anyDate: string | undefined) =>
+    ({ get }): PeriodDetailsDto | undefined => {
+      const allPeriods = get(AllPeriods);
+      if (!allPeriods || !anyDate) return undefined;
+      return allPeriods
+        .slice()
+        .reverse()
+        .find((period) => new Date(period.endDate) > new Date(anyDate));
+    },
+});
+
+/**
+ * Stores the api response from the latest call to /api/admin/periods/create.
+ */
 export const CreatePeriodApiResponse = atom<
   void | AxiosResponse<never | any> | AxiosError<never> | null
 >({
@@ -122,13 +174,17 @@ export const CreatePeriodApiResponse = atom<
   default: null,
 });
 
-// Hook that returns a function to use for creating a new period
+/**
+ * Hook that returns a function to use for creating a new period.
+ */
 export const useCreatePeriod = () => {
-  const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
+  const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
 
   const createPeriod = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (period: Period) => {
+      async (
+        period: PeriodCreateUpdateInput
+      ): Promise<AxiosResponse<unknown> | AxiosError> => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPost({
@@ -139,7 +195,7 @@ export const useCreatePeriod = () => {
         );
         // If OK response, add returned period object to local state
         if (isResponseOk(response)) {
-          const responsePeriod = response.data as Period;
+          const responsePeriod = response.data as PeriodDto;
           if (responsePeriod) {
             if (typeof allPeriods !== 'undefined') {
               set(AllPeriods, [...allPeriods, responsePeriod]);
@@ -155,7 +211,9 @@ export const useCreatePeriod = () => {
   return { createPeriod };
 };
 
-// Stores the api response from the latest call to /api/admin/periods/update
+/**
+ * Stores the api response from the latest call to /api/admin/periods/update.
+ */
 export const UpdatePeriodApiResponse = atom<
   AxiosResponse<unknown> | AxiosError<unknown> | null
 >({
@@ -163,12 +221,17 @@ export const UpdatePeriodApiResponse = atom<
   default: null,
 });
 
+/**
+ * Hook that returns a function to use for updating a period.
+ */
 export const useUpdatePeriod = () => {
-  const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
+  const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
   const updatePeriod = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (period: Period) => {
-        if (!period._id) throw new Error('No _id on Period');
+      async (
+        period: PeriodCreateUpdateInput
+      ): Promise<AxiosResponse<unknown> | AxiosError> => {
+        if (!period._id) throw new Error('No _id on PeriodDto');
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
@@ -180,7 +243,7 @@ export const useUpdatePeriod = () => {
 
         // If OK response, add returned period object to local state
         if (isResponseOk(response)) {
-          const responsePeriod = response.data as Period;
+          const responsePeriod = response.data as PeriodDto;
           if (responsePeriod) {
             if (typeof allPeriods !== 'undefined') {
               set(
@@ -205,7 +268,9 @@ export const useUpdatePeriod = () => {
   return { updatePeriod };
 };
 
-// Stores the api response from the latest call to /api/admin/periods/close
+/**
+ * Stores the api response from the latest call to /api/admin/periods/close.
+ */
 export const ClosePeriodApiResponse = atom<
   AxiosResponse<never> | AxiosError<never> | null
 >({
@@ -213,12 +278,16 @@ export const ClosePeriodApiResponse = atom<
   default: null,
 });
 
-// Hook that returns a function to use for closing a period
+/**
+ * Hook that returns a function to use for closing a period.
+ */
 export const useClosePeriod = () => {
-  const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
+  const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
   const closePeriod = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (periodId: string) => {
+      async (
+        periodId: string
+      ): Promise<AxiosResponse<unknown> | AxiosError> => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
@@ -229,7 +298,7 @@ export const useClosePeriod = () => {
         );
 
         if (isResponseOk(response)) {
-          const period = response.data as Period;
+          const period = response.data as PeriodDto;
           if (period) {
             if (typeof allPeriods !== 'undefined') {
               set(
@@ -252,15 +321,21 @@ export const useClosePeriod = () => {
   return { closePeriod };
 };
 
-type VerifyQuantifierPoolSizeParams = {
+/**
+ * Params for VerifyQuantifierPoolSizeQuery
+ */
+type VerifyQuantifierPoolSizeQueryParams = {
   periodId: string;
   refreshKey: string | undefined;
 };
 
+/**
+ * Selector query that fetches quantifier pool size requirements.
+ */
 export const VerifyQuantifierPoolSizeQuery = selectorFamily({
   key: 'VerifyQuantifierPoolSizeQuery',
   get:
-    (params: VerifyQuantifierPoolSizeParams) =>
+    (params: VerifyQuantifierPoolSizeQueryParams) =>
     ({ get }) => {
       const { periodId, refreshKey } = params;
       const response = get(
@@ -273,11 +348,17 @@ export const VerifyQuantifierPoolSizeQuery = selectorFamily({
     },
 });
 
+/**
+ * Quantifier pool size requirements returned by @useVerifyQuantifierPoolSize
+ */
 export interface PoolRequirements {
   quantifierPoolSize: number;
   requiredPoolSize: number;
 }
 
+/**
+ * Hook that fetches quantifier pool requirements.
+ */
 export const useVerifyQuantifierPoolSize = (
   periodId: string,
   refreshKey: string | undefined
@@ -298,12 +379,15 @@ export const useVerifyQuantifierPoolSize = (
   return poolRequirements;
 };
 
+/**
+ * Hook that returns function used to assign quantifiers
+ */
 export const useAssignQuantifiers = () => {
   const allPeriods = useRecoilValue(AllPeriods);
 
   const saveIndividualPraise = useRecoilCallback(
     ({ set }) =>
-      (praiseList: Praise[]) => {
+      (praiseList: PraiseDto[]): void => {
         praiseList.forEach((praise) => {
           set(SinglePraise(praise._id), praise);
         });
@@ -312,7 +396,9 @@ export const useAssignQuantifiers = () => {
 
   const assignQuantifiers = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (periodId: string) => {
+      async (
+        periodId: string
+      ): Promise<AxiosResponse<unknown> | AxiosError> => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
@@ -322,7 +408,7 @@ export const useAssignQuantifiers = () => {
           )
         );
         if (isResponseOk(response)) {
-          const praiseList = response.data as Praise[];
+          const praiseList = response.data as PraiseDto[];
           if (Array.isArray(praiseList) && praiseList.length > 0) {
             saveIndividualPraise(praiseList);
           }
@@ -333,7 +419,7 @@ export const useAssignQuantifiers = () => {
                 if (period._id === periodId) {
                   const newPeriod = {
                     ...period,
-                    status: 'QUANTIFY',
+                    status: 'QUANTIFY' as PeriodStatusType,
                   };
                   return newPeriod;
                 }
@@ -348,254 +434,195 @@ export const useAssignQuantifiers = () => {
   return { assignQuantifiers };
 };
 
-// The request Id is used to force refresh of PeriodPraiseQuery
-// PeriodPraiseQuery subscribes to the value. Increase to trigger
-// refresh.
-const PeriodPraiseRequestId = atom({
-  key: 'PeriodPraiseRequestId',
-  default: 0,
+/**
+ * Selector that returns all periods where the currently active user is
+ * assigned as quantifier,
+ */
+export const AllActiveUserQuantificationPeriods = selector({
+  key: 'AllActiveUserQuantificationPeriods',
+  get: ({ get }) => {
+    const periods = get(AllPeriods);
+    const userId = get(ActiveUserId);
+    if (!periods) return undefined;
+    const quantificationPeriods: PeriodDetailsDto[] = [];
+    periods.forEach((period) => {
+      if (period.status === 'QUANTIFY') {
+        if (period.quantifiers) {
+          period.quantifiers.forEach((quantifier) => {
+            if (quantifier._id === userId) quantificationPeriods.push(period);
+          });
+        }
+      }
+    });
+    return quantificationPeriods;
+  },
 });
 
-export const AllPeriodPraiseIdList = atomFamily<string[] | undefined, string>({
-  key: 'AllPeriodPraiseIdList',
-  default: undefined,
-});
+/**
+ * Params for @PeriodReceiverPraiseQuery
+ */
+type PeriodReceiverPraiseQueryParams = {
+  periodId: string;
+  receiverId: string;
+  refreshKey: string | undefined;
+};
 
-export const AllPeriodPraiseList = selectorFamily({
-  key: 'AllPeriodPraiseList',
+/**
+ * Selector query that fetches all praise received by a user for a period.
+ */
+export const PeriodReceiverPraiseQuery = selectorFamily({
+  key: 'PeriodReceiverPraiseQuery',
   get:
-    (params: any) =>
-    ({ get }) => {
-      const { periodId } = params;
-      const praiseIdList = get(AllPeriodPraiseIdList(periodId));
-      if (!praiseIdList) return undefined;
-      let allPraiseList = get(
-        waitForAll(praiseIdList.map((praiseId) => SinglePraiseExt(praiseId)))
+    (params: PeriodReceiverPraiseQueryParams) =>
+    ({ get }): AxiosResponse<unknown> => {
+      const { periodId, receiverId, refreshKey } = params;
+      return get(
+        ApiAuthGet({
+          url: `/api/periods/${periodId}/receiverPraise?receiverId=${receiverId}`,
+          refreshKey,
+        })
       );
-      allPraiseList = allPraiseList.filter((praise) => praise);
-
-      return allPraiseList;
     },
 });
 
-export const PeriodPraiseQuery = selectorFamily({
-  key: 'PeriodPraiseQuery',
-  get:
-    (periodId: string) =>
-    ({ get }) => {
-      get(PeriodPraiseRequestId);
-      const praise = get(
-        ApiAuthGet({ url: `/api/periods/${periodId}/praise` })
-      );
-      return praise;
-    },
-});
-
-export const usePeriodPraiseQuery = (periodId: string) => {
-  const periodPraiseQueryResponse = useAuthApiQuery(
-    PeriodPraiseQuery(periodId)
+/**
+ * Hook that fetches all praise received by a user for a period.
+ */
+export const usePeriodReceiverPraiseQuery = (
+  periodId: string,
+  receiverId: string,
+  refreshKey: string | undefined
+): PraiseDto[] | undefined => {
+  const praiseResponse = useAuthApiQuery(
+    PeriodReceiverPraiseQuery({
+      periodId,
+      receiverId,
+      refreshKey,
+    })
   );
-  const periodPraiseIdList = useRecoilValue(AllPeriodPraiseIdList(periodId));
+  const [praiseList, setPraiseList] = React.useState<PraiseDto[] | undefined>(
+    undefined
+  );
+  React.useEffect(() => {
+    if (!praiseList && isResponseOk(praiseResponse)) {
+      setPraiseList(praiseResponse.data);
+    }
+  }, [praiseList, praiseResponse]);
+  return praiseList;
+};
 
-  const savePraise = useRecoilTransaction_UNSTABLE(
-    ({ get, set }) =>
-      (praiseList: Praise[]) => {
+/**
+ * Hook that exports all praise in a period as csv data.
+ */
+export const useExportPraise = () => {
+  const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
+
+  const exportPraise = useRecoilCallback(
+    ({ snapshot }) =>
+      async (period: PeriodDto): Promise<string | undefined> => {
+        if (!period || !allPeriods) return undefined;
+        const previousPeriod = getPreviousPeriod(allPeriods, period);
+        if (!previousPeriod) throw new Error('Invalid previous start date');
+        const response = await ApiQuery(
+          snapshot.getPromise(
+            ApiAuthGet({
+              url: `/api/praise/export/?periodStart=${previousPeriod.endDate}&periodEnd=${period.endDate}`,
+              config: { responseType: 'blob' },
+            })
+          )
+        );
+
+        // If OK response, add returned period object to local state
+        if (isResponseOk(response)) {
+          const href = window.URL.createObjectURL(response.data);
+          window.location.href = href;
+          return href;
+        }
+      }
+  );
+  return { exportPraise };
+};
+
+/**
+ * Params for PeriodQuantifierPraiseQuery
+ */
+type PeriodQuantifierPraiseQueryParams = {
+  periodId: string;
+  refreshKey: string | undefined;
+};
+
+/**
+ * Query that fetches all praise assigned to the currently active quantifier for a period
+ */
+export const PeriodQuantifierPraiseQuery = selectorFamily({
+  key: 'PeriodQuantifierPraiseQuery',
+  get:
+    (params: PeriodQuantifierPraiseQueryParams) =>
+    ({ get }): AxiosResponse<unknown> | AxiosError | undefined => {
+      const { periodId, refreshKey } = params;
+      const quantifierId = get(ActiveUserId);
+      if (!periodId || !quantifierId) return undefined;
+      return get(
+        ApiAuthGet({
+          url: `/api/periods/${periodId}/quantifierPraise?quantifierId=${quantifierId}`,
+          refreshKey,
+        })
+      );
+    },
+});
+
+/**
+ * Hook to fetch and store all praise assigned to the currently active quantifier for a period
+ */
+export const usePeriodQuantifierPraiseQuery = (
+  periodId: string,
+  refreshKey: string | undefined
+): AxiosResponse<unknown> | AxiosError | undefined => {
+  const response = useAuthApiQuery(
+    PeriodQuantifierPraiseQuery({
+      periodId,
+      refreshKey,
+    })
+  );
+  const listKey = periodQuantifierPraiseListKey(periodId);
+  const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
+
+  const saveAllPraiseIdList = useRecoilCallback(
+    ({ set }) =>
+      (praiseList: PraiseDto[]) => {
         const praiseIdList: string[] = [];
-        praiseList.forEach((praise) => {
+        for (const praise of praiseList) {
           praiseIdList.push(praise._id);
+        }
+        set(PraiseIdList(listKey), praiseIdList);
+      }
+  );
+
+  const saveIndividualPraise = useRecoilCallback(
+    ({ set }) =>
+      (praiseList: PraiseDto[]) => {
+        for (const praise of praiseList) {
           set(SinglePraise(praise._id), praise);
-        });
-        set(AllPeriodPraiseIdList(periodId), praiseIdList);
+        }
       }
   );
 
   React.useEffect(() => {
-    if (
-      typeof periodPraiseIdList === 'undefined' &&
-      isResponseOk(periodPraiseQueryResponse)
-    ) {
-      const praiseList = periodPraiseQueryResponse.data as Praise[];
+    if (typeof allPraiseIdList === 'undefined' && isResponseOk(response)) {
+      const praiseList: PraiseDto[] = response.data;
+
       if (Array.isArray(praiseList) && praiseList.length > 0) {
-        savePraise(praiseList);
+        saveAllPraiseIdList(praiseList);
+        saveIndividualPraise(praiseList);
       }
     }
-  }, [periodPraiseIdList, periodPraiseQueryResponse, savePraise]);
-
-  return periodPraiseQueryResponse;
+  }, [allPraiseIdList, response, saveAllPraiseIdList, saveIndividualPraise]);
+  return response;
 };
 
-export const AllPeriodReceiverPraise = selectorFamily({
-  key: 'AllPeriodReceiverPraise',
-  get:
-    (params: any) =>
-    ({ get }) => {
-      const { periodId, receiverId } = params;
-      const praise = get(AllPeriodPraiseList({ periodId }));
-      if (!praise) return undefined;
-      return praise.filter((item) => item && item.receiver._id === receiverId);
-    },
-});
-
-export interface QuantifierData {
-  periodId: string;
-  userId: string;
-  count: number;
-  done: number;
-}
-
-export const PeriodQuantifiers = selectorFamily({
-  key: 'PeriodQuantifiers',
-  get:
-    (params: any) =>
-    ({ get }) => {
-      const { periodId } = params;
-      const praise = get(AllPeriodPraiseList({ periodId }));
-      if (praise) {
-        const q: QuantifierData[] = [];
-
-        praise.forEach((praiseItem) => {
-          if (!praiseItem || !praiseItem.quantifications) return;
-
-          praiseItem.quantifications?.forEach((quantification) => {
-            const qi = q.findIndex(
-              (item) => item.userId === quantification.quantifier
-            );
-
-            const done =
-              quantification.score ||
-              quantification.dismissed === true ||
-              quantification.duplicatePraise
-                ? 1
-                : 0;
-
-            const qd: QuantifierData = {
-              periodId,
-              userId: quantification.quantifier,
-              count: qi > -1 ? q[qi].count + 1 : 1,
-              done: qi > -1 ? q[qi].done + done : done,
-            };
-
-            if (qi > -1) {
-              q[qi] = qd;
-            } else {
-              q.push(qd);
-            }
-          });
-        });
-        return q;
-      }
-
-      return undefined;
-    },
-});
-
-export interface ReceiverData {
-  receiverId: string;
-  username: string;
-  praiseCount: number;
-  praiseScore: number;
-}
-
-export const AllPeriodReceivers = selectorFamily({
-  key: 'AllPeriodReceivers',
-  get:
-    (params: any) =>
-    ({ get }) => {
-      const { periodId } = params;
-      const praise = get(AllPeriodPraiseList({ periodId }));
-      if (praise) {
-        const r: ReceiverData[] = [];
-        praise.forEach((praiseItem) => {
-          if (!praiseItem) return;
-
-          const ri = r.findIndex(
-            (item) => item.username === praiseItem.receiver.username
-          );
-
-          const rd: ReceiverData = {
-            receiverId: praiseItem.receiver._id!,
-            username: praiseItem.receiver.username,
-            praiseCount: ri > -1 ? r[ri].praiseCount + 1 : 1,
-            praiseScore:
-              ri > -1
-                ? r[ri].praiseScore + avgPraiseScore(praiseItem)
-                : avgPraiseScore(praiseItem),
-          };
-
-          if (ri > -1) {
-            r[ri] = rd;
-          } else {
-            r.push(rd);
-          }
-        });
-
-        return r;
-      }
-
-      return undefined;
-    },
-});
-
-export const PeriodReceiver = selectorFamily({
-  key: 'PeriodReceiver',
-  get:
-    (params: any) =>
-    ({ get }) => {
-      const { receiverId, periodId } = params;
-      const allPeriodReceivers = get(AllPeriodReceivers({ periodId }));
-
-      if (!allPeriodReceivers) return undefined;
-
-      return allPeriodReceivers.find((rd) => rd.receiverId === receiverId);
-    },
-});
-
-export const AllActiveQuantifierQuantifications = selector({
-  key: 'AllActiveQuantifierQuantifications',
-  get: ({ get }) => {
-    const periods = get(AllPeriods);
-    const userId = get(ActiveUserId);
-    const response: QuantifierData[] = [];
-    if (!periods) return undefined;
-    periods.forEach((period) => {
-      if (period.status === 'QUANTIFY') {
-        const periodQuantifiers = get(
-          PeriodQuantifiers({ periodId: period._id })
-        );
-        if (!periodQuantifiers) return;
-        const quantifierData = periodQuantifiers.find(
-          (qd) => qd.userId === userId
-        );
-        if (quantifierData) response.push(quantifierData);
-      }
-    });
-    return response;
-  },
-});
-
-export const PeriodActiveQuantifierQuantifications = selectorFamily({
-  key: 'PeriodActiveQuantifierQuantifications',
-  get:
-    (params: any) =>
-    ({ get }) => {
-      const { periodId } = params;
-      const period = get(SinglePeriod({ periodId }));
-      const userId = get(ActiveUserId);
-      if (!period) return undefined;
-      if (period.status === 'QUANTIFY') {
-        const periodQuantifiers = get(
-          PeriodQuantifiers({ periodId: period._id })
-        );
-        if (!periodQuantifiers) return undefined;
-        const matchingQuantifierData = periodQuantifiers.find(
-          (qd) => qd.userId === userId
-        );
-        if (matchingQuantifierData) return matchingQuantifierData;
-      }
-      return undefined;
-    },
-});
-
+/**
+ * Return format for @PeriodQuantifierReceivers
+ */
 export interface QuantifierReceiverData {
   periodId: string;
   receiverId: string;
@@ -604,13 +631,17 @@ export interface QuantifierReceiverData {
   done: number;
 }
 
-export const PeriodActiveQuantifierReceivers = selectorFamily({
-  key: 'PeriodActiveQuantifierReceivers',
+/**
+ * Period selector that returns @QuantifierReceiverData for all receivers the currently active
+ * quantifer have been assigned to.
+ */
+export const PeriodQuantifierReceivers = selectorFamily({
+  key: 'PeriodQuantifierReceivers',
   get:
-    (params: any) =>
+    (periodId: string) =>
     ({ get }) => {
-      const { periodId } = params;
-      const praiseList = get(AllPeriodPraiseList({ periodId }));
+      const listKey = periodQuantifierPraiseListKey(periodId);
+      const praiseList = get(AllPraiseList(listKey));
       const userId = get(ActiveUserId);
       if (praiseList) {
         const q: QuantifierReceiverData[] = [];
@@ -638,8 +669,8 @@ export const PeriodActiveQuantifierReceivers = selectorFamily({
 
             const qd: QuantifierReceiverData = {
               periodId,
-              receiverId: praiseItem.receiver._id!,
-              receiverName: praiseItem.receiver.username,
+              receiverId: praiseItem.receiver._id,
+              receiverName: praiseItem.receiver.name,
               count: qi > -1 ? q[qi].count + 1 : 1,
               done: qi > -1 ? q[qi].done + done : done,
             };
@@ -659,63 +690,51 @@ export const PeriodActiveQuantifierReceivers = selectorFamily({
     },
 });
 
-export const PeriodActiveQuantifierReceiver = selectorFamily({
-  key: 'PeriodActiveQuantifierReceiver',
+/**
+ * Params for @PeriodQuantifierReceiver
+ */
+type PeriodQuantifierReceiverParams = {
+  periodId: string;
+  receiverId: string;
+};
+
+/**
+ * Period selector that returns @QuantifierReceiverData for a  receiver
+ * assigned to the currently active quantifier.
+ */
+export const PeriodQuantifierReceiver = selectorFamily({
+  key: 'PeriodQuantifierReceiver',
   get:
-    (params: any) =>
+    (params: PeriodQuantifierReceiverParams) =>
     ({ get }) => {
       const { periodId, receiverId } = params;
-      const qrd = get(PeriodActiveQuantifierReceivers({ periodId }));
+      const qrd = get(PeriodQuantifierReceivers(periodId));
       if (!qrd) return undefined;
       return qrd.find((item) => item.receiverId === receiverId);
     },
 });
 
-export const PeriodActiveQuantifierReceiverPraise = selectorFamily({
-  key: 'PeriodActiveQuantifierReceiverPraise',
+/**
+ * Period selector that returns all Praise for a receiver assigned to the
+ * currently active quantifier.
+ */
+export const PeriodQuantifierReceiverPraise = selectorFamily({
+  key: 'PeriodQuantifierReceiverPraise',
   get:
-    (params: any) =>
+    (params: PeriodQuantifierReceiverParams) =>
     ({ get }) => {
       const { periodId, receiverId } = params;
       const userId = get(ActiveUserId);
-      const praiseList = get(AllPeriodPraiseList({ periodId }));
+      const listKey = periodQuantifierPraiseListKey(periodId);
+      const praiseList = get(AllPraiseList(listKey));
       if (!praiseList) return undefined;
       return praiseList.filter(
         (praise) =>
           praise &&
-          praise.quantifications!.findIndex(
+          praise.quantifications.findIndex(
             (quant) => quant.quantifier === userId
           ) >= 0 &&
-          praise.receiver._id! === receiverId
+          praise.receiver._id === receiverId
       );
     },
 });
-
-export const useExportPraise = () => {
-  const allPeriods: Period[] | undefined = useRecoilValue(AllPeriods);
-
-  const exportPraise = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async (period: Period) => {
-        if (!period || !allPeriods) return null;
-        const previousPeriod = getPreviousPeriod(allPeriods, period);
-        if (!previousPeriod) throw new Error('Invalid previous start date');
-        const response = await ApiQuery(
-          snapshot.getPromise(
-            ApiAuthGet({
-              url: `/api/praise/export/?periodStart=${previousPeriod.endDate}&periodEnd=${period.endDate}`,
-              config: { responseType: 'blob' },
-            })
-          )
-        );
-
-        // If OK response, add returned period object to local state
-        if (isResponseOk(response)) {
-          const href = window.URL.createObjectURL(response.data);
-          window.location.href = href;
-          return href;
-        }
-      }
-  );
-  return { exportPraise };
-};
