@@ -303,25 +303,25 @@ type QuantifyPraiseParams = {
   duplicatePraise: string;
 };
 
-export const QuantifyPraise = selectorFamily({
-  key: 'QuantifyPraise',
-  get:
-    (params: QuantifyPraiseParams) =>
-    ({ get }) => {
-      const { praiseId, score, dismissed, duplicatePraise } = params;
-      const response = get(
-        ApiAuthPatch({
-          url: `/api/praise/${praiseId}/quantify`,
-          data: JSON.stringify({
-            score,
-            dismissed,
-            duplicatePraise,
-          }),
-        })
-      );
-      return response;
-    },
-});
+// export const QuantifyPraise = selectorFamily({
+//   key: 'QuantifyPraise',
+//   get:
+//     (params: QuantifyPraiseParams) =>
+//     ({ get }) => {
+//       const { praiseId, score, dismissed, duplicatePraise } = params;
+//       const response = get(
+//         ApiAuthPatch({
+//           url: `/api/praise/${praiseId}/quantify`,
+//           data: JSON.stringify({
+//             score,
+//             dismissed,
+//             duplicatePraise,
+//           }),
+//         })
+//       );
+//       return response;
+//     },
+// });
 
 // Hook that returns a function to use for closing a period
 export const useQuantifyPraise = () => {

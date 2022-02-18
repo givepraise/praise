@@ -7,7 +7,7 @@ import PraiseAutosuggest from './PraiseAutosuggest';
 interface PoolDeleteDialogProps {
   onClose(): any;
   onSelect(praiseId: string): void;
-  praise: PraiseDto;
+  praise: PraiseDto | undefined;
 }
 const PoolDismissDialog = ({
   onSelect,

@@ -53,7 +53,7 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
 
   const quantification = React.useCallback(
     (praise: PraiseDto) => {
-      return praise.quantifications!.find((q) => q.quantifier === activeUserId);
+      return praise.quantifications.find((q) => q.quantifier === activeUserId);
     },
     [activeUserId, praise]
   );
@@ -116,13 +116,13 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
   ): void => {
     const q = quantification(praise);
     const score = scores[sliderMarks.findIndex((mark) => mark.value === value)];
-
-    // void quantify(
-    //   praise._id,
-    //   score,
-    //   q.dismissed ? q.dismissed : false,
-    //   q.duplicatePraise ? q.duplicatePraise : null
-    // );
+    if (!q) return;
+    void quantify(
+      praise._id,
+      score,
+      q.dismissed ? q.dismissed : false,
+      q.duplicatePraise ? q.duplicatePraise : null
+    );
   };
 
   function valueLabelFormat(value: number): number {
