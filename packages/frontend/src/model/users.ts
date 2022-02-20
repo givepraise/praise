@@ -1,5 +1,5 @@
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
-import { PaginatedResponseBody } from 'api/dist/shared/types';
+import { UserDto, UserRole } from 'api/dist/user/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
@@ -17,57 +17,26 @@ import {
   isResponseOk,
   useAuthApiQuery,
 } from './api';
+import { HasRole } from './auth';
 import { AllPeriods } from './periods';
-
-export enum UserRole {
-  ADMIN = 'ADMIN',
-  QUANTIFIER = 'QUANTIFIER',
-  USER = 'USER',
-}
-
-export interface User {
-  _id: string;
-  createdAt: string;
-  updatedAt: string;
-  ethereumAddress: string;
-  accounts?: UserAccount[];
-  roles: UserRole[];
-}
-
-export enum UserAccountPlatform {
-  DISCORD = 'DISCORD',
-  TELEGRAM = 'TELEGRAM',
-}
-
-export interface UserAccount {
-  _id?: string;
-  id: string;
-  username: string;
-  profileImageUrl: string;
-  platform: string; // DISCORD | TELEGRAM
-}
-
-// The request Id is used to force refresh of AllUsersQuery.
-// AllUsersQuery subscribes to the value. Increase to trigger
-// refresh.
-const UsersRequestId = atom({
-  key: 'UsersRequestId',
-  default: 0,
-});
 
 export const AllUsersQuery = selector({
   key: 'AllUsersQuery',
   get: ({ get }) => {
-    get(UsersRequestId);
+    const isAdmin = get(HasRole('ADMIN'));
+    let endpoint = '/users';
+    if (isAdmin) {
+      endpoint = '/admin/users';
+    }
     return get(
       ApiAuthGet({
-        url: '/api/users/all?sortColumn=ethereumAddress&sortType=desc',
+        url: `/api${endpoint}/all?sortColumn=ethereumAddress&sortType=desc`,
       })
     );
   },
 });
 
-export const AllUsers = atom<User[] | undefined>({
+export const AllUsers = atom<UserDto[] | undefined>({
   key: 'AllUsers',
   default: undefined,
 });
@@ -92,9 +61,7 @@ export const useAllUsersQuery = () => {
       isResponseOk(allUsersQueryResponse) &&
       typeof allUsers === 'undefined'
     ) {
-      const paginatedResponse =
-        allUsersQueryResponse.data as PaginatedResponseBody<User>;
-      const users = paginatedResponse.docs;
+      const users = allUsersQueryResponse.data as UserDto[];
       if (Array.isArray(users) && users.length > 0) setAllUsers(users);
     }
   }, [allUsersQueryResponse, setAllUsers, allUsers]);
@@ -168,7 +135,7 @@ export const AddUserRoleApiResponse = atom<
 
 // Hook that returns functions for administering users
 export const useAdminUsers = () => {
-  const allUsers: User[] | undefined = useRecoilValue(AllUsers);
+  const allUsers: UserDto[] | undefined = useRecoilValue(AllUsers);
 
   const addRole = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -184,7 +151,7 @@ export const useAdminUsers = () => {
 
         // If OK response, add returned user object to local state
         if (isResponseOk(response)) {
-          const user = response.data as User;
+          const user = response.data as UserDto;
           if (user) {
             if (typeof allUsers !== 'undefined') {
               set(
@@ -217,7 +184,7 @@ export const useAdminUsers = () => {
 
         // If OK response, add returned user object to local state
         if (isResponseOk(response)) {
-          const user = response.data as User;
+          const user = response.data as UserDto;
           if (user) {
             if (typeof allUsers !== 'undefined') {
               set(

@@ -1,6 +1,6 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import {
   atom,
   selector,

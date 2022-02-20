@@ -2,10 +2,10 @@ import BreadCrumb from '@/components/BreadCrumb';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
-import PeriodDetails from '@/pages/Periods/Details/components/Details';
+import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
 import { classNames } from '@/utils/index';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
-import { default as React } from 'react';
+import React from 'react';
 import 'react-day-picker/lib/style.css';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
@@ -17,30 +17,29 @@ import ReceiverTable from './components/ReceiverTable';
 const PeriodDetailHead = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
-  const period = useRecoilValue(SinglePeriod({ periodId }));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-
+  const periodDetails = useRecoilValue(SinglePeriod(periodId));
   return (
     <>
       {' '}
       <div
         className={classNames(
-          period?.status === 'OPEN'
+          periodDetails?.status === 'OPEN'
             ? 'bg-green-300'
-            : period?.status === 'QUANTIFY'
+            : periodDetails?.status === 'QUANTIFY'
             ? 'bg-pink-300'
             : 'bg-gray-300',
           'float-right px-2 py-1 text-xs text-white rounded-full'
         )}
       >
-        {period
-          ? period.status === 'QUANTIFY'
+        {periodDetails
+          ? periodDetails.status === 'QUANTIFY'
             ? 'QUANTIFYING'
-            : period.status
+            : periodDetails.status
           : null}
       </div>
-      {isAdmin ? <PeriodNameForm /> : <h2>{period?.name}</h2>}
-      <PeriodDetails />
+      {isAdmin ? <PeriodNameForm /> : <h2>{periodDetails?.name}</h2>}
+      <PeriodDetailsComponent />
     </>
   );
 };

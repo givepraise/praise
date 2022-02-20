@@ -4,13 +4,13 @@ import { PeriodDayPicker } from '@/components/periods/PeriodDayPicker';
 import { isResponseOk } from '@/model/api';
 import { SinglePeriod, useUpdatePeriod } from '@/model/periods';
 import { DATE_FORMAT, formatDate } from '@/utils/date';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { isMatch, isSameDay } from 'date-fns';
 import { ValidationErrors } from 'final-form';
 import { default as React } from 'react';
 import 'react-day-picker/lib/style.css';
 import { Field, Form } from 'react-final-form';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
@@ -35,9 +35,10 @@ const PeriodDateForm = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
 
-  const period = useRecoilValue(SinglePeriod({ periodId }));
-  const [apiResponse, setApiResponse] =
-    React.useState<AxiosResponse<unknown> | null>(null);
+  const period = useRecoilValue(SinglePeriod(periodId));
+  const [apiResponse, setApiResponse] = React.useState<
+    AxiosResponse<unknown> | AxiosError | null
+  >(null);
   const { updatePeriod } = useUpdatePeriod();
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
@@ -53,7 +54,9 @@ const PeriodDateForm = () => {
     newPeriod.endDate = values.endDate;
     const response = await updatePeriod(newPeriod);
     if (response) {
-      if (isResponseOk(response)) toast.success('Period date saved');
+      if (isResponseOk(response)) {
+        toast.success('Period date saved');
+      }
       setApiResponse(response);
     }
   };

@@ -6,7 +6,14 @@ const periodRouter = Router();
 
 periodRouter.getAsync('/all', periodController.all);
 periodRouter.getAsync('/:periodId', periodController.single);
-periodRouter.getAsync('/:periodId/praise', periodController.praise);
+periodRouter.getAsync(
+  '/:periodId/receiverPraise',
+  periodController.receiverPraise
+);
+periodRouter.getAsync(
+  '/:periodId/quantifierPraise',
+  periodController.quantifierPraise
+);
 
 // ADMIN Period-routes
 const adminPeriodRouter = Router();

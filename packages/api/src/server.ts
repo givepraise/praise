@@ -16,15 +16,19 @@ import { baseRouter } from './routes';
 //const app = addAsync(express());
 const app = express();
 
+const username = process.env.MONGO_USERNAME || '';
+const password = process.env.MONGO_PASSWORD || '';
+const host = process.env.MONGO_HOST || '';
+const port = process.env.MONGO_PORT || '';
+const dbName = process.env.MONGO_DB || '';
+
+const db = `mongodb://${username}:${password}@${host}:${port}/${dbName}`;
 void (async (): Promise<void> => {
   logger.info('Connecting to database…');
   try {
-    await mongoose.connect(
-      process.env.MONGO_DB as string,
-      {
-        useNewUrlParser: true,
-      } as ConnectOptions
-    );
+    await mongoose.connect(db, {
+      useNewUrlParser: true,
+    } as ConnectOptions);
     logger.info('Connected to database.');
   } catch (error) {
     logger.err('Could not connect to database.');
@@ -43,8 +47,6 @@ void (async (): Promise<void> => {
     app.use(morgan('dev'));
     try {
       await seedData();
-
-      logger.info('Seeded database with test data.');
     } catch (error) {
       logger.err('Could not connect to database.');
     }

@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { PraiseModel } from 'api/dist/praise/entities';
-import { UserModel } from 'api/dist/user/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
+
 import { CommandInteraction, Interaction, Message } from 'discord.js';
 import logger from 'jet-logger';
 import {
@@ -21,6 +21,7 @@ const praise = async (
   interaction: CommandInteraction,
   interactionMsg: Message
 ): Promise<void> => {
+
   const { guild, channel, member } = interaction;
 
   if (!guild || !member) {
@@ -33,6 +34,7 @@ const praise = async (
   );
   const praiseGiver = await guild.members.fetch(member.user.id);
 
+
   if (
     praiseGiverRole &&
     !praiseGiver.roles.cache.find((r) => r.id === praiseGiverRole?.id)
@@ -40,6 +42,7 @@ const praise = async (
     await interaction.editReply({
       embeds: [roleError(praiseGiverRole, praiseGiver)],
     });
+
     return;
   }
 
@@ -113,10 +116,7 @@ const praise = async (
       { upsert: true, new: true }
     );
 
-    const receiverUser = await UserModel.findOne({
-      accounts: receiverAccount,
-    });
-    if (!receiverUser) {
+    if (!receiverAccount.user) {
       try {
         await receiver.send({ embeds: [notActivatedDM(interactionMsg.url)] });
       } catch (err) {
@@ -125,12 +125,12 @@ const praise = async (
     }
     const praiseObj = await PraiseModel.create({
       reason: reason,
-      giver: userAccount!._id,
+      giver: userAccount._id,
       sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
       sourceName: `DISCORD:${encodeURI(guild.name)}:${encodeURI(
         guildChannel?.name || ''
       )}`,
-      receiver: receiverAccount!._id,
+      receiver: receiverAccount._id,
     });
     if (praiseObj) {
       await receiver.send({ embeds: [praiseSuccessDM(interactionMsg.url)] });
@@ -141,6 +141,7 @@ const praise = async (
       );
     }
   }
+
 
   const msg = (await interaction.editReply(
     praiseSuccess(

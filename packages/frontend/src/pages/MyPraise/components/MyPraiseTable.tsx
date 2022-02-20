@@ -1,9 +1,10 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { AllPraiseList, Praise } from '@/model/praise';
+import { AllPraiseList } from '@/model/praise';
 import { formatDate } from '@/utils/date';
 import { faSadTear } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { PraiseDto } from 'api/dist/praise/types';
 import React, { SyntheticEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
@@ -27,11 +28,11 @@ const MyPraiseTable = () => {
             <div className="flex-grow p-3 overflow-hidden">
               <div>
                 <span className="font-bold">
-                  {data.row.original.giver.username}
+                  {data.row.original.giver.name}
                 </span>{' '}
                 to{' '}
                 <span className="font-bold">
-                  {data.row.original.receiver.username}
+                  {data.row.original.receiver.name}
                 </span>
                 <span className="ml-2 text-xs text-gray-500">
                   {formatDate(data.row.original.createdAt)}
@@ -55,7 +56,7 @@ const MyPraiseTable = () => {
 
   const { getTableProps, getTableBodyProps, rows, prepareRow } = tableInstance;
 
-  const handleClick = (data: Praise) => (e: SyntheticEvent) => {
+  const handleClick = (data: PraiseDto) => (e: SyntheticEvent) => {
     history.push(`/praise/${data._id}`);
   };
 
@@ -76,7 +77,7 @@ const MyPraiseTable = () => {
                 <tr
                   className="cursor-pointer hover:bg-gray-100"
                   {...row.getRowProps()}
-                  onClick={handleClick(row.original as Praise)}
+                  onClick={handleClick(row.original as PraiseDto)}
                 >
                   {row.cells.map((cell) => {
                     return (

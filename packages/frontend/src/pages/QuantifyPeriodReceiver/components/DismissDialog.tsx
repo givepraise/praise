@@ -1,4 +1,3 @@
-import { Praise } from '@/model/praise';
 import {
   faCalculator,
   faMinusCircle,
@@ -6,11 +5,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
+import { PraiseDto } from 'api/dist/praise/types';
 
 interface DismissDialogProps {
   onClose(): any;
   onDismiss(): any;
-  praise: Praise | undefined;
+  praise: PraiseDto | undefined;
 }
 const PoolDismissDialog = ({
   onClose,

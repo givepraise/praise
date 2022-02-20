@@ -1,46 +1,16 @@
-import {
-  AllPeriods,
-  useAllPeriodsQuery,
-  usePeriodPraiseQuery,
-} from '@/model/periods';
+import { useAllPeriodsQuery } from '@/model/periods';
 import { useAllUsersQuery } from '@/model/users';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { ReactElement } from 'react';
-import { useRecoilValue } from 'recoil';
-import { HasRole } from './model/auth';
+import { useHistory } from 'react-router-dom';
 import { useAllSettingsQuery } from './model/settings';
 
-interface QuantifyPeriodLoaderProps {
-  periodId: string;
-}
-
-const QuantifyPeriodLoader = ({ periodId }: QuantifyPeriodLoaderProps) => {
-  usePeriodPraiseQuery(periodId);
-  return null;
-};
-
 export const StartupLoader: React.FC = (): ReactElement | null => {
-  useAllPeriodsQuery();
-  useAllUsersQuery();
+  const { location } = useHistory();
+  useAllPeriodsQuery(location.key);
   useAllSettingsQuery();
-
-  const periods = useRecoilValue(AllPeriods);
-  const isQuantifier = useRecoilValue(HasRole('QUANTIFIER'));
-  if (!periods) return null;
-
-  if (isQuantifier) {
-    return (
-      <>
-        {periods.map((period) =>
-          period._id && period.status === 'QUANTIFY' ? (
-            <QuantifyPeriodLoader periodId={period._id} key={period._id} />
-          ) : null
-        )}
-      </>
-    );
-  }
-
+  useAllUsersQuery();
   return null;
 };
 

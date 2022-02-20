@@ -1,11 +1,11 @@
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { ActiveUserId } from '@/model/auth';
-import { AllPeriodPraiseList } from '@/model/periods';
-import { Praise } from '@/model/praise';
+import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { SingleBooleanSetting } from '@/model/settings';
 import { classNames } from '@/utils/index';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { PraiseDto } from 'api/dist/praise/types';
 import { useCombobox } from 'downshift';
 import React from 'react';
 import { useParams } from 'react-router-dom';
@@ -14,7 +14,7 @@ import { useRecoilValue } from 'recoil';
 interface PraiseAutosuggestProps {
   onClose(): any;
   onSelect(id: string): void;
-  praise: Praise;
+  praise: PraiseDto;
 }
 
 const PraiseAutosuggest = ({
@@ -25,8 +25,10 @@ const PraiseAutosuggest = ({
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId, receiverId } = useParams() as any;
   const userId = useRecoilValue(ActiveUserId);
+  const data = useRecoilValue(
+    PeriodQuantifierReceiverPraise({ periodId, receiverId })
+  );
 
-  const data = useRecoilValue(AllPeriodPraiseList({ periodId }));
   const usePseudonyms = useRecoilValue(
     SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );
@@ -36,9 +38,9 @@ const PraiseAutosuggest = ({
   const filteredData = data.filter(
     (p) =>
       p &&
-      p.quantifications!.findIndex((quant) => quant.quantifier === userId) >=
+      p.quantifications.findIndex((quant) => quant.quantifier === userId) >=
         0 &&
-      p.receiver._id! === receiverId &&
+      p.receiver._id === receiverId &&
       p._id !== praise._id
   );
 
@@ -69,7 +71,7 @@ const PraiseAutosuggest = ({
       },
       onSelectedItemChange: (data: any) => {
         if (!data) return;
-        const selectedItem = data.selectedItem as Praise;
+        const selectedItem = data.selectedItem as PraiseDto;
         onSelect(selectedItem._id);
         onClose();
       },
@@ -112,11 +114,11 @@ const PraiseAutosuggest = ({
                 {item &&
                   (usePseudonyms ? (
                     <UserPseudonym
-                      userId={item.giver._id!}
+                      userId={item.giver._id}
                       periodId={periodId}
                     />
                   ) : (
-                    item.giver.username
+                    item.giver.name
                   ))}
               </li>
             ))}

@@ -216,18 +216,14 @@ export const handleErrors = (err: AxiosError): void => {
  */
 export const ApiQuery = async (
   query: Promise<AxiosResponse<unknown>>
-): Promise<AxiosResponse<unknown> | void> => {
+): Promise<AxiosResponse<unknown> | AxiosError> => {
   try {
     return await query;
   } catch (err) {
-    if (isApiResponseAxiosError(err)) handleErrors(err);
-    if (err instanceof Error) {
-      if (err.message) {
-        toast.error(err.message);
-      } else {
-        toast.error('Unknown error.');
-      }
+    if (isApiResponseAxiosError(err)) {
+      handleErrors(err);
     }
+    return err as AxiosError;
   }
 };
 
@@ -238,7 +234,6 @@ export const ApiQuery = async (
  */
 export function useAuthApiQuery<T>(recoilValue: RecoilValue<T>): T {
   const response = useRecoilValue(recoilValue);
-
   if (isApiResponseAxiosError(response)) {
     handleErrors(response);
   }

@@ -2,12 +2,12 @@ import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import OutsideClickHandler from '@/components/OutsideClickHandler';
 import { isResponseOk } from '@/model/api';
 import { SinglePeriod, useUpdatePeriod } from '@/model/periods';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { ValidationErrors } from 'final-form';
 import { default as React } from 'react';
 import 'react-day-picker/lib/style.css';
 import { Field, Form } from 'react-final-form';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
@@ -18,7 +18,7 @@ const validate = (
 
   // Name validation
   if (values.name) {
-    if (values.name.length < 3) {
+    if (values.name.length < 1) {
       errors.name = 'Min 3 characters';
     }
     if (values.name.length > 64) {
@@ -35,9 +35,10 @@ const PeriodNameForm = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId } = useParams() as any;
 
-  const period = useRecoilValue(SinglePeriod({ periodId }));
-  const [apiResponse, setApiResponse] =
-    React.useState<AxiosResponse<unknown> | null>(null);
+  const period = useRecoilValue(SinglePeriod(periodId));
+  const [apiResponse, setApiResponse] = React.useState<
+    AxiosResponse<unknown> | AxiosError | null
+  >(null);
   const { updatePeriod } = useUpdatePeriod();
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
@@ -50,7 +51,9 @@ const PeriodNameForm = () => {
     newPeriod.name = values.name;
     const response = await updatePeriod(newPeriod);
     if (response) {
-      if (isResponseOk(response)) toast.success('Period name saved');
+      if (isResponseOk(response)) {
+        toast.success('Period name saved');
+      }
       setApiResponse(response);
     }
   };
