@@ -35,9 +35,8 @@ export const registerCommands = async (
 
     for (const file of commandFiles) {
       const command = await import(`../commands/${file}`);
-      const data = command.data.toJSON();
-      commandData.push(data);
-      client.commands.set(command.data.name, command);
+      commandData.push(command.data);
+      client.commands.set(file.split('.')[0], command);
     }
 
     await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
