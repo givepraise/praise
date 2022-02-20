@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { PraiseModel } from 'api/dist/praise/entities';
-import { UserModel } from 'api/dist/user/entities';
+//import { UserModel } from 'api/dist/user/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { CommandInteraction, Interaction, Message } from 'discord.js';
 import logger from 'jet-logger';
@@ -81,11 +81,7 @@ const praise = async (
     return;
   }
 
-  const User = await UserModel.findOne({
-    accounts: userAccount,
-  });
-
-  if (!User) {
+  if (!userAccount.user) {
     await interaction.editReply(notActivatedError);
     return;
   }
@@ -113,10 +109,7 @@ const praise = async (
       { upsert: true, new: true }
     );
 
-    const receiverUser = await UserModel.findOne({
-      accounts: receiverAccount,
-    });
-    if (!receiverUser) {
+    if (!receiverAccount.user) {
       try {
         await receiver.send({ embeds: [notActivatedDM(interactionMsg.url)] });
       } catch (err) {
