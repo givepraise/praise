@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { PraiseModel } from 'api/dist/praise/entities';
+import { UserModel } from 'api/dist/user/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-
 import { CommandInteraction, Interaction, Message } from 'discord.js';
 import logger from 'jet-logger';
 import {
@@ -21,7 +21,6 @@ const praise = async (
   interaction: CommandInteraction,
   interactionMsg: Message
 ): Promise<void> => {
-
   const { guild, channel, member } = interaction;
 
   if (!guild || !member) {
@@ -33,7 +32,6 @@ const praise = async (
     (r) => r.id === process.env.PRAISE_GIVER_ROLE_ID
   );
   const praiseGiver = await guild.members.fetch(member.user.id);
-
 
   if (
     praiseGiverRole &&
@@ -88,8 +86,7 @@ const praise = async (
   });
 
   if (!User) {
-    const msg = (await interaction.editReply(notActivatedError)) as Message;
-    await msg.react('❌');
+    await interaction.editReply(notActivatedError);
     return;
   }
 
@@ -116,7 +113,10 @@ const praise = async (
       { upsert: true, new: true }
     );
 
-    if (!receiverAccount.user) {
+    const receiverUser = await UserModel.findOne({
+      accounts: receiverAccount,
+    });
+    if (!receiverUser) {
       try {
         await receiver.send({ embeds: [notActivatedDM(interactionMsg.url)] });
       } catch (err) {
@@ -141,7 +141,6 @@ const praise = async (
       );
     }
   }
-
 
   const msg = (await interaction.editReply(
     praiseSuccess(
