@@ -34,7 +34,9 @@ export const registerCommands = async (
     client.commands = new Collection();
 
     for (const file of commandFiles) {
-      const command = await import(join(process.cwd(), 'src', 'commands', file));
+      const command = await import(
+        join(process.cwd(), 'src', 'commands', file)
+      );
       commandData.push(command.data);
       client.commands.set(file.split('.')[0], command);
     }
