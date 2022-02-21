@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-import { UserAccountDocument, UserAccountPlatform } from './types';
+import { UserAccountDocument } from './types';
 
 export const userAccountSchema = new mongoose.Schema(
   {
@@ -14,7 +14,7 @@ export const userAccountSchema = new mongoose.Schema(
     avatarId: { type: String },
     platform: {
       type: String,
-      enum: UserAccountPlatform,
+      enum: ['DISCORD', 'TELEGRAM'],
       required: true,
     },
     activateToken: { type: String, select: false },
