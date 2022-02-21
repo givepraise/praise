@@ -1,15 +1,16 @@
-import { User, UserAccountPlatform } from '@/model/users';
+import { UserDto } from 'api/dist/user/types';
+import { UserAccountPlatform } from 'api/dist/useraccount/types';
 import { shortenEthAddress } from '.';
 
-export const getUsername = (user: User): string | undefined => {
+export const getUsername = (user: UserDto): string | undefined => {
   let username = '';
   if (Array.isArray(user.accounts) && user.accounts.length > 0) {
     for (const account of user.accounts) {
-      username = account.username;
+      username = account.name;
       // Prefer DISCORD over others
       if (account.platform === UserAccountPlatform.DISCORD) break;
     }
-  } else if (username === '')
+  } else if (username === '' && user.ethereumAddress)
     return shortenEthAddress(user.ethereumAddress)?.toString();
   return username;
 };

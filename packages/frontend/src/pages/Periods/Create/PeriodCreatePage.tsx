@@ -2,14 +2,11 @@ import BreadCrumb from '@/components/BreadCrumb';
 import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import { PeriodDayPicker } from '@/components/periods/PeriodDayPicker';
 import { isResponseOk } from '@/model/api';
-import {
-  CreatePeriodApiResponse,
-  Period,
-  useCreatePeriod,
-} from '@/model/periods';
+import { CreatePeriodApiResponse, useCreatePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
 import { DATE_FORMAT } from '@/utils/date';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { PeriodCreateInput } from 'api/dist/period/types';
 import { isMatch } from 'date-fns';
 import { ValidationErrors } from 'final-form';
 import React from 'react';
@@ -20,9 +17,9 @@ import { useRecoilState } from 'recoil';
 import SubmitButton from './components/SubmitButton';
 
 const validate = (
-  values: Record<string, any>
+  values: Record<string, string>
 ): ValidationErrors | Promise<ValidationErrors> => {
-  const errors = {} as any;
+  const errors: ValidationErrors = {};
 
   // Name validation
   if (values.name) {
@@ -48,21 +45,21 @@ const validate = (
   return errors as ValidationErrors;
 };
 
-const PeriodsForm = () => {
+const PeriodsForm = (): JSX.Element => {
   const { createPeriod } = useCreatePeriod();
   const [apiResponse, setApiResponse] = useRecoilState(CreatePeriodApiResponse);
 
   const history = useHistory();
 
   // Is only called if validate is successful
-  const onSubmit = async (values: Record<string, any>) => {
+  const onSubmit = async (values: Record<string, string>): Promise<void> => {
     // Selecting date from popup returns Array, setting manually
     // returns string
     const dateString =
       Array.isArray(values.endDate) && values.endDate.length > 0
         ? values.endDate[0]
         : values.endDate;
-    const newPeriod: Period = {
+    const newPeriod: PeriodCreateInput = {
       name: values.name,
       endDate: new Date(dateString).toISOString(),
     };
@@ -81,15 +78,15 @@ const PeriodsForm = () => {
       onSubmit={onSubmit}
       validate={validate}
       mutators={{
-        setDate: (args, state, utils) => {
+        setDate: (args, state, utils): void => {
           utils.changeValue(state, 'endDate', () => args);
         },
       }}
-      render={({ handleSubmit, submitSucceeded }) => (
+      render={({ handleSubmit }): JSX.Element => (
         <form onSubmit={handleSubmit} className="leading-loose">
           <div className="mb-3">
             <Field name="name">
-              {({ input, meta }) => (
+              {({ input }): JSX.Element => (
                 <div className="mb-2">
                   <label className="block">Period name</label>
                   <input
@@ -107,7 +104,7 @@ const PeriodsForm = () => {
               )}
             </Field>
             <Field name="endDate">
-              {({ input, meta }) => (
+              {({ input }): JSX.Element => (
                 <div className="mb-5">
                   <label className="block">End date</label>
                   <input
@@ -138,7 +135,7 @@ const PeriodsForm = () => {
   );
 };
 
-const PeriodsCreatePage = () => {
+const PeriodsCreatePage = (): JSX.Element => {
   return (
     <>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />

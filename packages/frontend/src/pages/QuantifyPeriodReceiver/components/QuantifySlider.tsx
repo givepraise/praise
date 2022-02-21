@@ -1,7 +1,8 @@
 import { ActiveUserId } from '@/model/auth';
-import { Praise, useQuantifyPraise } from '@/model/praise';
+import { useQuantifyPraise } from '@/model/praise';
 import { SingleStringSetting } from '@/model/settings';
 import { Slider, Tooltip } from '@mui/material';
+import { PraiseDto } from 'api/dist/praise/types';
 import React, { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -20,7 +21,7 @@ interface Mark {
 }
 
 interface QuantifySliderProps {
-  praise: Praise;
+  praise: PraiseDto;
 }
 
 const QuantifySlider = ({ praise }: QuantifySliderProps) => {
@@ -39,55 +40,55 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
     setScores(allowedValues.split(',').map((v) => Number.parseInt(v.trim())));
   }, [allowedValues]);
 
-  const allowedSliderValuesToMarks = (): Mark[] => {
+  const allowedSliderValuesToMarks = React.useCallback((): Mark[] => {
     const marks: Mark[] = [];
     const topScore = scores[scores.length - 1];
     for (let i = 0; i < scores.length; i++) {
       marks.push({
-        value: Math.round((i * topScore) / (scores.length - 1)),
+        value: Math.floor((i * topScore) / (scores.length - 1)),
       });
     }
     return marks;
-  };
+  }, [scores]);
 
   const quantification = React.useCallback(
-    (praise: Praise) => {
-      return praise.quantifications!.find((q) => q.quantifier === activeUserId);
+    (praise: PraiseDto) => {
+      return praise.quantifications.find((q) => q.quantifier === activeUserId);
     },
-    [activeUserId, praise]
+    [activeUserId]
   );
 
   const dismissed = React.useCallback(
-    (praise: Praise) => {
+    (praise: PraiseDto) => {
       const q = quantification(praise);
       return q ? !!q.dismissed : false;
     },
-    [quantification, praise]
+    [quantification]
   );
 
   const duplicate = React.useCallback(
-    (praise: Praise) => {
+    (praise: PraiseDto) => {
       const q = quantification(praise);
       return q ? (q.duplicatePraise ? true : false) : false;
     },
-    [quantification, praise]
+    [quantification]
   );
 
   const score = React.useCallback(
-    (praise: Praise) => {
+    (praise: PraiseDto) => {
       const q = quantification(praise);
       return q && q.score ? q.score : 0;
     },
-    [quantification, praise]
+    [quantification]
   );
 
   const scoreToMark = React.useCallback(
-    (praise: Praise) => {
+    (praise: PraiseDto) => {
       return sliderMarks[scores.indexOf(score(praise))]
         ? sliderMarks[scores.indexOf(score(praise))].value
         : 0;
     },
-    [score, praise, sliderMarks]
+    [sliderMarks, scores, score]
   );
 
   React.useEffect(() => {
@@ -115,12 +116,12 @@ const QuantifySlider = ({ praise }: QuantifySliderProps) => {
   ): void => {
     const q = quantification(praise);
     const score = scores[sliderMarks.findIndex((mark) => mark.value === value)];
-
+    if (!q) return;
     void quantify(
       praise._id,
       score,
-      q!.dismissed ? q!.dismissed : false,
-      q!.duplicatePraise ? q!.duplicatePraise : null
+      q.dismissed ? q.dismissed : false,
+      q.duplicatePraise ? q.duplicatePraise : null
     );
   };
 

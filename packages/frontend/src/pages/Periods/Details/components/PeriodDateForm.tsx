@@ -2,22 +2,26 @@ import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import OutsideClickHandler from '@/components/OutsideClickHandler';
 import { PeriodDayPicker } from '@/components/periods/PeriodDayPicker';
 import { isResponseOk } from '@/model/api';
-import { SinglePeriod, useUpdatePeriod } from '@/model/periods';
+import {
+  PeriodPageParams,
+  SinglePeriod,
+  useUpdatePeriod,
+} from '@/model/periods';
 import { DATE_FORMAT, formatDate } from '@/utils/date';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { isMatch, isSameDay } from 'date-fns';
 import { ValidationErrors } from 'final-form';
 import { default as React } from 'react';
 import 'react-day-picker/lib/style.css';
 import { Field, Form } from 'react-final-form';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 const validate = (
-  values: Record<string, any>
+  values: Record<string, string>
 ): ValidationErrors | Promise<ValidationErrors> => {
-  const errors = {} as any;
+  const errors: ValidationErrors = {};
 
   // End date validation
   if (values.endDate) {
@@ -31,19 +35,17 @@ const validate = (
   return errors as ValidationErrors;
 };
 
-const PeriodDateForm = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId } = useParams() as any;
-
-  const period = useRecoilValue(SinglePeriod({ periodId }));
-  const [apiResponse, setApiResponse] =
-    React.useState<AxiosResponse<unknown> | null>(null);
+const PeriodDateForm = (): JSX.Element | null => {
+  const { periodId } = useParams<PeriodPageParams>();
+  const period = useRecoilValue(SinglePeriod(periodId));
+  const [apiResponse, setApiResponse] = React.useState<
+    AxiosResponse<unknown> | AxiosError<unknown> | null
+  >(null);
   const { updatePeriod } = useUpdatePeriod();
-
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   // Is only called if validate is successful
-  const onSubmit = async (values: Record<string, any>) => {
+  const onSubmit = async (values: Record<string, string>): Promise<void> => {
     if (
       !period ||
       isSameDay(new Date(period.endDate), new Date(values.endDate))
@@ -53,7 +55,9 @@ const PeriodDateForm = () => {
     newPeriod.endDate = values.endDate;
     const response = await updatePeriod(newPeriod);
     if (response) {
-      if (isResponseOk(response)) toast.success('Period date saved');
+      if (isResponseOk(response)) {
+        toast.success('Period date saved');
+      }
       setApiResponse(response);
     }
   };
@@ -65,23 +69,23 @@ const PeriodDateForm = () => {
       onSubmit={onSubmit}
       validate={validate}
       mutators={{
-        setDate: (args, state, utils) => {
+        setDate: (args, state, utils): void => {
           utils.changeValue(state, 'endDate', () => args);
-          void onSubmit(state.formState.values);
+          void onSubmit(state.formState.values as Record<string, string>);
         },
       }}
       initialValues={{ endDate: formatDate(period.endDate) }}
-      render={({ handleSubmit, submitSucceeded, form }) => (
+      render={({ handleSubmit }): JSX.Element => (
         <form onSubmit={handleSubmit} className="leading-loose">
           <div>
             Period end:
             <Field name="endDate">
-              {({ input, meta }) => (
+              {({ input, meta }): JSX.Element => (
                 <>
                   <div className="inline-block ml-1">
                     <OutsideClickHandler
                       onOutsideClick={handleSubmit}
-                      active={meta.active!}
+                      active={meta.active ? true : false}
                     >
                       <input
                         type="text"

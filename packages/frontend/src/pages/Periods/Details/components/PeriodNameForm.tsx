@@ -1,20 +1,24 @@
 import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import OutsideClickHandler from '@/components/OutsideClickHandler';
 import { isResponseOk } from '@/model/api';
-import { SinglePeriod, useUpdatePeriod } from '@/model/periods';
-import { AxiosResponse } from 'axios';
+import {
+  PeriodPageParams,
+  SinglePeriod,
+  useUpdatePeriod,
+} from '@/model/periods';
+import { AxiosError, AxiosResponse } from 'axios';
 import { ValidationErrors } from 'final-form';
 import { default as React } from 'react';
 import 'react-day-picker/lib/style.css';
 import { Field, Form } from 'react-final-form';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 const validate = (
-  values: Record<string, any>
+  values: Record<string, string>
 ): ValidationErrors | Promise<ValidationErrors> => {
-  const errors = {} as any;
+  const errors: ValidationErrors = {};
 
   // Name validation
   if (values.name) {
@@ -31,26 +35,25 @@ const validate = (
   return errors as ValidationErrors;
 };
 
-const PeriodNameForm = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId } = useParams() as any;
-
-  const period = useRecoilValue(SinglePeriod({ periodId }));
-  const [apiResponse, setApiResponse] =
-    React.useState<AxiosResponse<unknown> | null>(null);
+const PeriodNameForm = (): JSX.Element | null => {
+  const { periodId } = useParams<PeriodPageParams>();
+  const period = useRecoilValue(SinglePeriod(periodId));
+  const [apiResponse, setApiResponse] = React.useState<
+    AxiosResponse<unknown> | AxiosError<unknown> | null
+  >(null);
   const { updatePeriod } = useUpdatePeriod();
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   // Is only called if validate is successful
-  const onSubmit = async (values: Record<string, any>) => {
-    if (!period || period === values.name) return; // Only save if name has changed
-    setApiResponse(null); // Clear any old API error messages
-    const newPeriod = { ...period };
-    newPeriod.name = values.name;
-    const response = await updatePeriod(newPeriod);
+  const onSubmit = async (values: Record<string, string>): Promise<void> => {
+    if (!period || period.name === values.name) return; // Only save if name has changed
+    const periodUpdates = { _id: period._id, name: values.name };
+    const response = await updatePeriod(periodUpdates);
     if (response) {
-      if (isResponseOk(response)) toast.success('Period name saved');
+      if (isResponseOk(response)) {
+        toast.success('Period name saved');
+      }
       setApiResponse(response);
     }
   };
@@ -62,15 +65,15 @@ const PeriodNameForm = () => {
       onSubmit={onSubmit}
       validate={validate}
       initialValues={{ name: period.name }}
-      render={({ handleSubmit, submitSucceeded, form }) => (
+      render={({ handleSubmit, form }): JSX.Element => (
         <form onSubmit={handleSubmit} className="leading-loose">
           <div className="mb-3">
             <Field name="name">
-              {({ input, meta }) => (
+              {({ input, meta }): JSX.Element => (
                 <div className="mb-2">
                   <OutsideClickHandler
                     onOutsideClick={handleSubmit}
-                    active={meta.active!}
+                    active={meta.active ? true : false}
                   >
                     <input
                       type="text"
@@ -79,7 +82,7 @@ const PeriodNameForm = () => {
                       ref={inputRef}
                       placeholder="e.g. May-June"
                       className="relative left-[-5px] pl-1 text-xl font-semibold bg-transparent border border-transparent hover:border-gray-300"
-                      onKeyDown={(e) => {
+                      onKeyDown={(e): void => {
                         switch (e.key) {
                           case 'Tab':
                             void handleSubmit();

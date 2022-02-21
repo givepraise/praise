@@ -1,6 +1,7 @@
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   AllPeriods,
+  PeriodPageParams,
   SinglePeriod,
   useAssignQuantifiers,
   useClosePeriod,
@@ -17,51 +18,58 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
 import 'react-day-picker/lib/style.css';
-import toast from 'react-hot-toast';
-import { useParams } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import PeriodAssignDialog from './AssignDialog';
 import PeriodCloseDialog from './CloseDialog';
 import PeriodDateForm from './PeriodDateForm';
 
-const PeriodDetails = () => {
+const PeriodDetails = (): JSX.Element | null => {
   const [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = React.useState(false);
 
   const allPeriods = useRecoilValue(AllPeriods);
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId } = useParams() as any;
-  const period = useRecoilValue(SinglePeriod({ periodId }));
+  const { periodId } = useParams<PeriodPageParams>();
+  const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
+  const history = useHistory();
 
   const assignDialogRef = React.useRef(null);
   const closeDialogRef = React.useRef(null);
 
   const { closePeriod } = useClosePeriod();
-  const { assignQuantifiers } = useAssignQuantifiers();
+  const { assignQuantifiers } = useAssignQuantifiers(periodId);
 
   if (!period || !allPeriods) return null;
 
-  const periodStartDate = getPreviousPeriod(allPeriods, period);
-  const periodStart = periodStartDate
-    ? formatDate(periodStartDate.endDate)
+  const previousPeriod = getPreviousPeriod(allPeriods, period);
+  const periodStart = previousPeriod
+    ? formatDate(previousPeriod.endDate)
     : 'Dawn of time';
 
-  const handleClosePeriod = () => {
+  const handleClosePeriod = (): void => {
     void closePeriod(periodId);
   };
 
-  const handleAssign = () => {
-    const promise = assignQuantifiers(periodId);
-    void toast.promise(promise, {
-      loading: 'Assigning quantifiers …',
-      success: 'Quantifiers assigned',
-      error: 'Assign failed',
-    });
+  const handleAssign = (): void => {
+    const promise = assignQuantifiers();
+    void toast.promise(
+      promise,
+      {
+        loading: 'Assigning quantifiers …',
+        success: 'Quantifiers assigned',
+        error: 'Assign failed',
+      },
+      {
+        position: 'top-center',
+      }
+    );
+    promise.finally(() => setTimeout(() => history.go(0), 1000));
   };
 
-  const handleExport = () => {
+  const handleExport = (): void => {
     void exportPraise(period);
   };
 
@@ -79,7 +87,7 @@ const PeriodDetails = () => {
             {period.status === 'OPEN' ? (
               <button
                 className="praise-button"
-                onClick={() => {
+                onClick={(): void => {
                   setIsAssignDialogOpen(true);
                 }}
               >
@@ -91,7 +99,7 @@ const PeriodDetails = () => {
               <div className="flex justify-between">
                 <button
                   className="hover:bg-red-600 praise-button"
-                  onClick={() => setIsCloseDialogOpen(true)}
+                  onClick={(): void => setIsCloseDialogOpen(true)}
                 >
                   <FontAwesomeIcon
                     icon={faTimesCircle}
@@ -114,14 +122,14 @@ const PeriodDetails = () => {
 
       <Dialog
         open={isCloseDialogOpen}
-        onClose={() => setIsCloseDialogOpen(false)}
+        onClose={(): void => setIsCloseDialogOpen(false)}
         className="fixed inset-0 z-10 overflow-y-auto"
         initialFocus={closeDialogRef}
       >
         <div ref={closeDialogRef}>
           <PeriodCloseDialog
-            onClose={() => setIsCloseDialogOpen(false)}
-            onRemove={() => handleClosePeriod()}
+            onClose={(): void => setIsCloseDialogOpen(false)}
+            onRemove={(): void => handleClosePeriod()}
           />
         </div>
       </Dialog>
@@ -129,14 +137,14 @@ const PeriodDetails = () => {
       {period.status === 'OPEN' && isAdmin ? (
         <Dialog
           open={isAssignDialogOpen}
-          onClose={() => setIsAssignDialogOpen(false)}
+          onClose={(): void => setIsAssignDialogOpen(false)}
           className="fixed inset-0 z-10 overflow-y-auto"
           initialFocus={assignDialogRef}
         >
           <div ref={assignDialogRef}>
             <PeriodAssignDialog
-              onClose={() => setIsAssignDialogOpen(false)}
-              onAssign={() => handleAssign()}
+              onClose={(): void => setIsAssignDialogOpen(false)}
+              onAssign={(): void => handleAssign()}
             />
           </div>
         </Dialog>

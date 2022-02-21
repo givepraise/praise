@@ -1,4 +1,3 @@
-import { User } from '@/model/users';
 import { getUsername } from '@/utils/users';
 import {
   faTimes,
@@ -7,11 +6,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
+import { UserDto } from 'api/dist/user/types';
 
 interface PoolDeleteDialogProps {
   onClose(): any;
   onQuantifierRemoved(id: string): void;
-  quantifier: User | undefined;
+  quantifier: UserDto | undefined;
 }
 const PoolDeleteDialog = ({
   onClose,
@@ -42,7 +42,9 @@ const PoolDeleteDialog = ({
               <button
                 className="bg-red-600 praise-button"
                 onClick={() => {
-                  onQuantifierRemoved(quantifier._id);
+                  if (quantifier._id) {
+                    onQuantifierRemoved(quantifier._id);
+                  }
                   onClose();
                 }}
               >

@@ -1,9 +1,10 @@
-import { AllUsers, User, UserRole } from '@/model/users';
+import { AllUsers } from '@/model/users';
 import { classNames } from '@/utils/index';
 import { getUsername } from '@/utils/users';
 import { faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
+import { UserDto, UserRole } from 'api/dist/user/types';
 import { useCombobox } from 'downshift';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
@@ -21,7 +22,7 @@ const UserAutosuggest = ({
 
   const DropdownCombobox = () => {
     const [inputItems, setInputItems] = React.useState(
-      allUsers ? allUsers : ([] as User[])
+      allUsers ? allUsers : ([] as UserDto[])
     );
     const {
       isOpen,
@@ -37,8 +38,7 @@ const UserAutosuggest = ({
           setInputItems(
             allUsers.filter((user) => {
               if (user.roles.includes(UserRole.QUANTIFIER)) return false;
-              if (user._id.toString().includes(inputValue!.toLowerCase()))
-                return true;
+              if (user._id?.includes(inputValue!.toLowerCase())) return true;
               if (
                 user.ethereumAddress &&
                 user.ethereumAddress.length > 0 &&
@@ -49,9 +49,7 @@ const UserAutosuggest = ({
                 return true;
               if (
                 user.accounts?.find((account) =>
-                  account.username
-                    .toLowerCase()
-                    .includes(inputValue!.toLowerCase())
+                  account.name.toLowerCase().includes(inputValue!.toLowerCase())
                     ? true
                     : false
                 )
@@ -63,8 +61,10 @@ const UserAutosuggest = ({
         }
       },
       onSelectedItemChange: (data: any) => {
-        const selectedItem = data.selectedItem as User;
-        onQuantifierAdded(selectedItem._id);
+        const selectedItem = data.selectedItem as UserDto;
+        if (selectedItem._id) {
+          onQuantifierAdded(selectedItem._id);
+        }
         onClose();
       },
     });

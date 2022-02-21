@@ -1,7 +1,11 @@
 import BreadCrumb from '@/components/BreadCrumb';
 import FieldErrorMessage from '@/components/form/FieldErrorMessage';
-import { CreatePeriodApiResponse } from '@/model/periods';
-import { AllSettings, Setting, useSetSetting } from '@/model/settings';
+import {
+  AllSettings,
+  SetSettingApiResponse,
+  Setting,
+  useSetSetting,
+} from '@/model/settings';
 import { faCogs } from '@fortawesome/free-solid-svg-icons';
 import { ValidationErrors } from 'final-form';
 import React from 'react';
@@ -21,7 +25,7 @@ const validate = (
 };
 
 const SettingsForm = () => {
-  const [apiResponse] = useRecoilState(CreatePeriodApiResponse);
+  const [apiResponse] = useRecoilState(SetSettingApiResponse);
   const settings = useRecoilValue(AllSettings);
   const { setSetting } = useSetSetting();
 
@@ -162,10 +166,6 @@ const SettingsForm = () => {
   };
 
   if (!Array.isArray(settings) || settings.length === 0) return null;
-
-  // const initialValues = settings.map((setting: Setting) => {
-  //   setting.value;
-  // });
 
   const initialValues = {} as any;
   for (const setting of settings) {

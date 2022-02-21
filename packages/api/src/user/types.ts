@@ -1,19 +1,5 @@
-import { UserAccountDocument } from '@useraccount/types';
+import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
 import mongoose from 'mongoose';
-
-export interface User {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _id?: any;
-  ethereumAddress?: string;
-  accounts: UserAccountDocument[];
-  roles: string[];
-  createdAt: Date;
-  updatedAt: Date;
-  nonce?: string;
-  accessToken?: string;
-}
-
-export interface UserDocument extends User, mongoose.Document {}
 
 export enum UserRole {
   ADMIN = 'ADMIN',
@@ -21,6 +7,29 @@ export enum UserRole {
   QUANTIFIER = 'QUANTIFIER',
 }
 
-export interface RoleChangeRequestInput {
+export interface User {
+  ethereumAddress?: string;
+  roles: UserRole[];
+  accounts?: UserAccountDocument[];
+  nonce?: string;
+  accessToken?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserDocument extends User, mongoose.Document {}
+
+export interface UserDto {
+  _id: string;
+  ethereumAddress?: string;
+  roles: string[];
+  accounts?: UserAccountDto[];
+  nonce?: string;
+  accessToken?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserRoleChangeInput {
   role: UserRole;
 }

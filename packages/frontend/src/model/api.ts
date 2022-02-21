@@ -1,3 +1,4 @@
+import { ApiErrorResponseData } from 'api/dist/error/types';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { toast } from 'react-hot-toast';
 import {
@@ -9,7 +10,6 @@ import {
 } from 'recoil';
 import { SessionToken } from './auth';
 import { EthState } from './eth';
-
 type RequestParams = {
   [key: string]: SerializableParam;
   url: string;
@@ -44,9 +44,22 @@ export const isResponseOk = (
 };
 
 export const isApiResponseAxiosError = (
-  response: AxiosResponse | AxiosError | null | unknown
-): response is AxiosError => {
-  return (response as AxiosError).isAxiosError !== undefined;
+  axiosResponse: AxiosResponse | AxiosError | null | unknown
+): axiosResponse is AxiosError<ApiErrorResponseData> => {
+  return (
+    axiosResponse !== null &&
+    (axiosResponse as AxiosError).isAxiosError !== undefined
+  );
+};
+
+export const isApiResponseValidationError = (
+  axiosResponse: AxiosResponse | AxiosError | null | unknown
+): axiosResponse is AxiosError<ApiErrorResponseData> => {
+  return (
+    isApiResponseAxiosError(axiosResponse) &&
+    axiosResponse.response?.status === 400 &&
+    axiosResponse.response.data.errors
+  );
 };
 
 const endpointUrl = (url: string): string => {
@@ -57,7 +70,10 @@ const endpointUrl = (url: string): string => {
   return `${backendUrl}${url}`;
 };
 
-const requestConfig = (config: any, headers: any): AxiosRequestConfig => {
+const requestConfig = (
+  config: AxiosRequestConfig,
+  headers: Record<string, string>
+): AxiosRequestConfig => {
   return {
     ...config,
     headers: {
@@ -67,8 +83,8 @@ const requestConfig = (config: any, headers: any): AxiosRequestConfig => {
 };
 
 const authRequestConfig = (
-  config: any,
-  headers: any,
+  config: AxiosRequestConfig,
+  headers: Record<string, string>,
   get: GetRecoilValue
 ): AxiosRequestConfig => {
   const ethState = get(EthState);
@@ -185,7 +201,14 @@ export const ApiAuthPatch = selectorFamily<
     },
 });
 
-export const handleErrors = (err: AxiosError): void => {
+interface HandleErrorsOptions {
+  errorToast?: boolean;
+}
+
+export const handleErrors = (
+  err: AxiosError<ApiErrorResponseData>,
+  options?: HandleErrorsOptions
+): void => {
   // client received an error response (5xx, 4xx)
   const { request, response } = err;
   if (response) {
@@ -193,8 +216,10 @@ export const handleErrors = (err: AxiosError): void => {
       window.location.href = '/404';
     }
 
-    if ((response.data as any).error) {
-      toast.error((response.data as any).error);
+    if (response.data.message) {
+      if (!options?.errorToast === false) {
+        toast.error(response.data.message);
+      }
       return;
     }
     // TODO Handle expired JWT token
@@ -211,23 +236,24 @@ export const handleErrors = (err: AxiosError): void => {
   toast.error('Unknown error.');
 };
 
+interface ApiQueryOptions {
+  errorToast?: boolean;
+}
+
 /**
  * Wrap an api request to automate error handling. Shows toast error message on error.
  */
 export const ApiQuery = async (
-  query: Promise<AxiosResponse<unknown>>
-): Promise<AxiosResponse<unknown> | void> => {
+  query: Promise<AxiosResponse<unknown>>,
+  options?: ApiQueryOptions
+): Promise<AxiosResponse<unknown> | AxiosError<unknown>> => {
   try {
     return await query;
   } catch (err) {
-    if (isApiResponseAxiosError(err)) handleErrors(err);
-    if (err instanceof Error) {
-      if (err.message) {
-        toast.error(err.message);
-      } else {
-        toast.error('Unknown error.');
-      }
+    if (isApiResponseAxiosError(err)) {
+      handleErrors(err, options);
     }
+    return err as AxiosError;
   }
 };
 
@@ -238,7 +264,6 @@ export const ApiQuery = async (
  */
 export function useAuthApiQuery<T>(recoilValue: RecoilValue<T>): T {
   const response = useRecoilValue(recoilValue);
-
   if (isApiResponseAxiosError(response)) {
     handleErrors(response);
   }

@@ -1,24 +1,25 @@
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { AllPeriodReceiverPraise } from '@/model/periods';
+import {
+  PeriodAndReceiverPageParams,
+  usePeriodReceiverPraiseQuery,
+} from '@/model/periods';
 import { formatDate } from '@/utils/date';
-import React from 'react';
+import { PraiseDetailsDto } from 'api/dist/praise/types';
 import { useHistory, useParams } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
 
 interface PraiseRowProps {
-  praise: any;
+  praise: PraiseDetailsDto;
 }
-const PraiseRow = ({ praise }: PraiseRowProps) => {
+const PraiseRow = ({ praise }: PraiseRowProps): JSX.Element => {
   const history = useHistory();
 
-  const handleClick = () => {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  const handleClick = (): void => {
     history.push(`/praise/${praise._id}`);
   };
 
   return (
     <div
-      className="items-center p-5 cursor-pointer hover:bg-gray-100 flex items-center w-full"
+      className="flex items-center w-full p-5 cursor-pointer hover:bg-gray-100"
       onClick={handleClick}
     >
       <div className="flex items-center">
@@ -26,32 +27,33 @@ const PraiseRow = ({ praise }: PraiseRowProps) => {
       </div>
       <div className="ml-5 overflow-hidden">
         <div>
-          <span className="font-bold">{praise.giver.username}</span>
+          <span className="font-bold">{praise.giver.name}</span>
           <span className="ml-3 text-xs text-gray-500">
             {formatDate(praise.createdAt)}
           </span>
         </div>
         <div>{praise.reason}</div>
       </div>
-      <div className="text-right px-14 flex-grow whitespace-nowrap">
-        {praise.avgScore}
+      <div className="flex-grow text-right px-14 whitespace-nowrap">
+        {praise.score}
       </div>
     </div>
   );
 };
 
-const PeriodReceiverTable = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId, receiverId } = useParams() as any;
-
-  const data = useRecoilValue(
-    AllPeriodReceiverPraise({ periodId, receiverId })
+const PeriodReceiverTable = (): JSX.Element | null => {
+  const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
+  const { location } = useHistory();
+  const praiseList = usePeriodReceiverPraiseQuery(
+    periodId,
+    receiverId,
+    location?.key
   );
 
-  if (!data) return null;
+  if (!praiseList) return null;
   return (
     <div>
-      {data?.map((praise) => (
+      {praiseList?.map((praise) => (
         <PraiseRow praise={praise} key={praise?._id} />
       ))}
     </div>

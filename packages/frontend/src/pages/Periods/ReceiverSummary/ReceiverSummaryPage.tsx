@@ -1,34 +1,42 @@
 import BreadCrumb from '@/components/BreadCrumb';
-import { PeriodReceiver, SinglePeriod } from '@/model/periods';
-import { SingleUserByReceiverId } from '@/model/users';
+import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
-import { getUsername } from '@/utils/users';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+  PeriodDetailsDto,
+  PeriodDetailsReceiverDto,
+} from 'api/dist/period/types';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import PeriodReceiverTable from './components/ReceiverSummaryTable';
 
-const PeriodReceiverMessage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId, receiverId } = useParams() as any;
-  const period = useRecoilValue(SinglePeriod({ periodId }));
-  const user = useRecoilValue(SingleUserByReceiverId({ receiverId }));
-  const receiverData = useRecoilValue(PeriodReceiver({ periodId, receiverId }));
-  if (!period || !receiverData) return null;
+const getReceiver = (
+  periodDetails: PeriodDetailsDto,
+  receiverId: string
+): PeriodDetailsReceiverDto | undefined => {
+  return periodDetails.receivers?.find((r) => r._id === receiverId);
+};
+
+const PeriodReceiverMessage = (): JSX.Element | null => {
+  const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
+  const periodDetails = useRecoilValue(SinglePeriod(periodId));
+
+  if (!periodDetails) return null;
+  const receiver = getReceiver(periodDetails, receiverId);
   return (
     <>
-      <h2>{user ? getUsername(user) : receiverData.username}</h2>
+      <h2>{receiver?.userAccount?.name}</h2>
       <div className="mt-5">
-        Period: {period.name}
+        Period: {periodDetails.name}
         <br />
-        Total praise score: {receiverData.praiseScore}
+        Total praise score: {receiver?.score}
       </div>
     </>
   );
 };
 
-const QuantSummaryPeriodReceiverPage = () => {
+const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
   return (
     <>
       <BreadCrumb name={'Receiver summary for period'} icon={faCalendarAlt} />

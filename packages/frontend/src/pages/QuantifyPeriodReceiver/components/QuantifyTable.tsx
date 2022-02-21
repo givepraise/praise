@@ -1,15 +1,11 @@
+import { InlineLabel } from '@/components/InlineLabel';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { ActiveUserId } from '@/model/auth';
-import {
-  PeriodActiveQuantifierReceiverPraise,
-  usePeriodPraiseQuery,
-} from '@/model/periods';
-import { Praise, useQuantifyPraise } from '@/model/praise';
+import { PeriodQuantifierReceiverPraise } from '@/model/periods';
+import { useQuantifyPraise } from '@/model/praise';
 import { SingleBooleanSetting } from '@/model/settings';
-import DismissDialog from '@/pages/QuantifyPeriodReceiver/components/DismissDialog';
 import { formatDate } from '@/utils/date';
-import { classNames } from '@/utils/index';
 import {
   faCopy,
   faTimes,
@@ -17,31 +13,14 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
+import { PraiseDto, QuantificationDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { QuantifyBackNextLink } from './BackNextLink';
+import DismissDialog from './DismissDialog';
 import DuplicateDialog from './DuplicateDialog';
 import QuantifySlider from './QuantifySlider';
-
-interface InlineLabelProps {
-  text: string;
-  button?: any;
-  className?: string;
-}
-const InlineLabel = ({ text, button, className }: InlineLabelProps) => {
-  return (
-    <span
-      className={classNames(
-        className,
-        'h-6 pl-1 pr-1 mr-1 text-xs text-white no-underline bg-gray-800 py-[1px] rounded'
-      )}
-    >
-      {text}
-      {button && button}
-    </span>
-  );
-};
 
 const getRemoveButton = (action: any) => {
   return (
@@ -58,10 +37,9 @@ const getRemoveButton = (action: any) => {
 const QuantifyTable = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId, receiverId } = useParams() as any;
-  usePeriodPraiseQuery(periodId);
   const userId = useRecoilValue(ActiveUserId);
   const data = useRecoilValue(
-    PeriodActiveQuantifierReceiverPraise({ periodId, receiverId })
+    PeriodQuantifierReceiverPraise({ periodId, receiverId })
   );
   const usePseudonyms = useRecoilValue(
     SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
@@ -72,39 +50,40 @@ const QuantifyTable = () => {
   const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] =
     React.useState(false);
   const [selectedPraise, setSelectedPraise] = React.useState<
-    Praise | undefined
+    PraiseDto | undefined
   >(undefined);
 
   if (!data) return null;
 
-  const quantification = (praise: Praise) => {
-    return praise.quantifications!.find((q) => q.quantifier === userId);
+  const quantification = (praise: PraiseDto): QuantificationDto | undefined => {
+    return praise.quantifications.find((q) => q.quantifier === userId);
   };
 
-  const dismissed = (praise: Praise) => {
+  const dismissed = (praise: PraiseDto): boolean => {
     const q = quantification(praise);
     return q ? !!q.dismissed : false;
   };
 
-  const duplicate = (praise: Praise) => {
+  const duplicate = (praise: PraiseDto): boolean => {
     const q = quantification(praise);
     return q ? (q.duplicatePraise ? true : false) : false;
   };
 
-  const handleDismiss = () => {
-    void quantify(selectedPraise!._id, 0, true, null);
+  const handleDismiss = (): void => {
+    if (selectedPraise) void quantify(selectedPraise._id, 0, true, null);
   };
 
-  const handleDuplicate = (duplicatePraiseId: string) => {
-    void quantify(selectedPraise!._id, 0, false, duplicatePraiseId);
+  const handleDuplicate = (duplicatePraiseId: string): void => {
+    if (selectedPraise)
+      void quantify(selectedPraise._id, 0, false, duplicatePraiseId);
   };
 
-  const handleRemoveDismiss = (id: string) => {
-    void quantify(selectedPraise!._id, 0, false, null);
+  const handleRemoveDismiss = (): void => {
+    if (selectedPraise) void quantify(selectedPraise._id, 0, false, null);
   };
 
-  const handleRemoveDuplicate = (id: string) => {
-    void quantify(selectedPraise!._id, 0, false, null);
+  const handleRemoveDuplicate = (): void => {
+    if (selectedPraise) void quantify(selectedPraise._id, 0, false, null);
   };
 
   return (
@@ -127,11 +106,11 @@ const QuantifyTable = () => {
                     <span className="font-bold">
                       {usePseudonyms ? (
                         <UserPseudonym
-                          userId={praise.giver._id!}
+                          userId={praise.giver._id}
                           periodId={periodId}
                         />
                       ) : (
-                        praise.giver.username
+                        praise.giver.name
                       )}
                     </span>
                     <span className="ml-2 text-xs text-gray-500">
@@ -222,7 +201,7 @@ const QuantifyTable = () => {
               className="fixed inset-0 z-10 overflow-y-auto"
             >
               <DuplicateDialog
-                praise={selectedPraise!}
+                praise={selectedPraise}
                 onClose={() => setIsDuplicateDialogOpen(false)}
                 onSelect={handleDuplicate}
               />

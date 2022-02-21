@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useFormState } from 'react-final-form';
 import { useRecoilValue } from 'recoil';
 
-const SubmitButton = () => {
+const SubmitButton = (): JSX.Element => {
   const { invalid, submitting, submitSucceeded, dirtySinceLastSubmit } =
     useFormState();
   const apiResponse = useRecoilValue(CreatePeriodApiResponse);

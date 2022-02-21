@@ -1,4 +1,4 @@
-import { NotFoundError } from '@shared/errors';
+import { NotFoundError } from '@error/errors';
 import { getQuerySort } from '@shared/functions';
 import {
   PaginatedResponseBody,
@@ -8,7 +8,11 @@ import {
 } from '@shared/types';
 import { Request } from 'express';
 import { UserAccountModel } from './entities';
-import { UserAccount } from './types';
+import {
+  userAccountListTransformer,
+  userAccountTransformer,
+} from './transformers';
+import { UserAccountDto } from './types';
 
 /**
  * Description
@@ -16,13 +20,17 @@ import { UserAccount } from './types';
  */
 const all = async (
   req: TypedRequestQuery<QueryInputParsedQs>,
-  res: TypedResponse<PaginatedResponseBody<UserAccount>>
+  res: TypedResponse<PaginatedResponseBody<UserAccountDto>>
 ): Promise<void> => {
   const accounts = await UserAccountModel.paginate({
     ...req.query, //TODO the object is passed unchecked to mongoose. Security risk?
     sort: getQuerySort(req.query),
   });
-  res.status(200).json(accounts);
+  const response = {
+    ...accounts,
+    docs: userAccountListTransformer(accounts?.docs),
+  };
+  res.status(200).json(response);
 };
 
 /**
@@ -31,11 +39,11 @@ const all = async (
  */
 const single = async (
   req: Request,
-  res: TypedResponse<UserAccount>
+  res: TypedResponse<UserAccountDto>
 ): Promise<void> => {
   const account = await UserAccountModel.findById(req.params.id);
   if (!account) throw new NotFoundError('UserAccount');
-  res.status(200).json(account);
+  res.status(200).json(userAccountTransformer(account));
 };
 
 export { all, single };
