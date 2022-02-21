@@ -22,7 +22,7 @@ export const getPreviousPeriod = (
   period: PeriodDto
 ): PeriodDto | undefined => {
   const endDate = new Date(period.endDate);
-  for (let i = allPeriods.length - 1; i >= 0; i--) {
+  for (let i = 0; i < allPeriods.length; i++) {
     if (compareDesc(endDate, new Date(allPeriods[i].endDate)) < 0)
       return allPeriods[i];
   }

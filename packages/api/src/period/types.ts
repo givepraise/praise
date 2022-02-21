@@ -3,8 +3,6 @@ import { Query } from '@shared/types';
 import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
 import mongoose, { Types } from 'mongoose';
 
-// export type PeriodStatusType = 'OPEN' | 'QUANTIFY' | 'CLOSED';
-
 export enum PeriodStatusType {
   OPEN = 'OPEN',
   QUANTIFY = 'QUANTIFY',
@@ -46,12 +44,6 @@ export interface PeriodDetailsReceiverDto {
   userAccount?: UserAccountDto;
 }
 
-// export interface PeriodDetailsQuantifier {
-//   user: User;
-//   finishedCount: number;
-//   praiseCount: number;
-// }
-
 export interface PeriodDetailsQuantifierDto {
   _id: string;
   finishedCount: number;
@@ -68,10 +60,15 @@ export interface VerifyQuantifierPoolSizeResponse {
   requiredPoolSize: number;
 }
 
-export interface PeriodCreateUpdateInput {
-  _id?: string;
+export interface PeriodCreateInput {
   name: string;
   endDate: string;
+}
+
+export interface PeriodUpdateInput {
+  _id: string;
+  name?: string;
+  endDate?: string;
 }
 
 export interface PeriodReceiverPraiseInput extends Query {

@@ -1,13 +1,12 @@
 import { UserCell } from '@/components/table/UserCell';
-import { SinglePeriod } from '@/model/periods';
+import { PeriodPageParams, SinglePeriod } from '@/model/periods';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 
-const QuantifierTable = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId } = useParams() as any;
+const QuantifierTable = (): JSX.Element => {
+  const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
 
   const columns = React.useMemo(

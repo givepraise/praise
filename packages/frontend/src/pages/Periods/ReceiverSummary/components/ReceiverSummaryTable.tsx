@@ -1,5 +1,8 @@
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { usePeriodReceiverPraiseQuery } from '@/model/periods';
+import {
+  PeriodAndReceiverPageParams,
+  usePeriodReceiverPraiseQuery,
+} from '@/model/periods';
 import { formatDate } from '@/utils/date';
 import { PraiseDetailsDto } from 'api/dist/praise/types';
 import { useHistory, useParams } from 'react-router-dom';
@@ -7,11 +10,10 @@ import { useHistory, useParams } from 'react-router-dom';
 interface PraiseRowProps {
   praise: PraiseDetailsDto;
 }
-const PraiseRow = ({ praise }: PraiseRowProps) => {
+const PraiseRow = ({ praise }: PraiseRowProps): JSX.Element => {
   const history = useHistory();
 
-  const handleClick = () => {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  const handleClick = (): void => {
     history.push(`/praise/${praise._id}`);
   };
 
@@ -39,9 +41,8 @@ const PraiseRow = ({ praise }: PraiseRowProps) => {
   );
 };
 
-const PeriodReceiverTable = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId, receiverId } = useParams() as any;
+const PeriodReceiverTable = (): JSX.Element | null => {
+  const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
   const { location } = useHistory();
   const praiseList = usePeriodReceiverPraiseQuery(
     periodId,

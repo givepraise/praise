@@ -1,19 +1,16 @@
 import { UserCell } from '@/components/table/UserCell';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import { useSinglePeriodQuery } from '@/model/periods';
-import React, { SyntheticEvent } from 'react';
+import { PeriodPageParams, SinglePeriod } from '@/model/periods';
+import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useSortBy, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 
-const ReceiverTable = () => {
+const ReceiverTable = (): JSX.Element => {
   const history = useHistory();
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId } = useParams() as any;
+  const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const { location } = useHistory();
-  const periodDetails = useSinglePeriodQuery(periodId, location.key);
-
+  const period = useRecoilValue(SinglePeriod(periodId));
   const columns = React.useMemo(
     () => [
       {
@@ -40,11 +37,11 @@ const ReceiverTable = () => {
 
   const options = {
     columns,
-    data: periodDetails?.receivers ? periodDetails.receivers : [],
+    data: period?.receivers ? period.receivers : [],
     initialState: {
       sortBy: [
         {
-          id: periodDetails?.status === 'OPEN' ? 'praiseCount' : 'praiseScore',
+          id: period?.status === 'OPEN' ? 'praiseCount' : 'praiseScore',
           desc: true,
         },
       ],
@@ -55,13 +52,13 @@ const ReceiverTable = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const handleClick = (data: any) => (e: SyntheticEvent) => {
+  const handleClick = (data: any) => (): void => {
     history.push(`/period/${periodId}/receiver/${data._id}`);
   };
 
-  if (!periodDetails) return <div>Period not found.</div>;
+  if (!period) return <div>Period not found.</div>;
 
-  if (periodDetails.status === 'QUANTIFY' && !isAdmin)
+  if (period.status === 'QUANTIFY' && !isAdmin)
     return <div>Praise scores are not visible during quantification.</div>;
 
   return (

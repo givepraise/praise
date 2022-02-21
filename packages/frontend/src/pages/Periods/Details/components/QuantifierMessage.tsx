@@ -1,14 +1,13 @@
 import { ActiveUserId } from '@/model/auth';
-import { SinglePeriod } from '@/model/periods';
+import { PeriodPageParams, SinglePeriod } from '@/model/periods';
 import { getQuantifierData } from '@/utils/periods';
 import { faCalculator } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
-export const QuantifierMessage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId } = useParams() as any;
+export const QuantifierMessage = (): JSX.Element | null => {
+  const { periodId } = useParams<PeriodPageParams>();
   const history = useHistory();
   const period = useRecoilValue(SinglePeriod(periodId));
   const userId = useRecoilValue(ActiveUserId);
@@ -28,7 +27,7 @@ export const QuantifierMessage = () => {
           {quantifierData.praiseCount - quantifierData.finishedCount}
           <button
             className="block mt-5 praise-button"
-            onClick={() => {
+            onClick={(): void => {
               history.push(`/quantify/period/${periodId}`);
             }}
           >

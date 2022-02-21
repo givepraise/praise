@@ -1,14 +1,14 @@
 import { isResponseOk } from '@/model/api';
-import { CreatePeriodApiResponse } from '@/model/periods';
+import { SetSettingApiResponse } from '@/model/settings';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useFormState } from 'react-final-form';
 import { useRecoilValue } from 'recoil';
 
-const SubmitButton = () => {
+const SubmitButton = (): JSX.Element => {
   const { invalid, submitting, submitSucceeded, dirtySinceLastSubmit } =
     useFormState();
-  const apiResponse = useRecoilValue(CreatePeriodApiResponse);
+  const apiResponse = useRecoilValue(SetSettingApiResponse);
 
   const disabled =
     invalid || submitting || (submitSucceeded && !dirtySinceLastSubmit);

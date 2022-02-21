@@ -1,5 +1,5 @@
+import { UnauthorizedError } from '@error/errors';
 import { cookieProps } from '@shared/constants';
-import { UnauthorizedError } from '@shared/errors';
 import { sign, verify } from 'jsonwebtoken';
 import randomString from 'randomstring';
 
