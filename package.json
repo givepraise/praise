@@ -9,11 +9,9 @@
   "scripts": {
     "mongodb:start": "docker-compose up -d",
     "mongodb:clean": "docker exec -i mongodb-praise bash < ./packages/api/scripts/clean-database.sh",
-    "mongodb:stop": "docker-compose down",
-    "fix-typescript-references": "utils-typescript-references"
+    "mongodb:stop": "docker-compose down"
   },
   "devDependencies": {
-    "@goldstack/utils-typescript-references": "^0.1.5",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.10.2",
     "eslint": "^8.8.0",
