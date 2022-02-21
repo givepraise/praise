@@ -1,6 +1,10 @@
 import { QueryInput } from '@shared/types';
 import { UserDocument } from '@user/types';
-import { UserAccountDocument } from '@useraccount/types';
+import {
+  PraiseImportUserAccountInput,
+  UserAccountDocument,
+  UserAccountDto,
+} from '@useraccount/types';
 import mongoose from 'mongoose';
 
 export interface Praise {
@@ -15,19 +19,48 @@ export interface Praise {
 }
 
 export interface Quantification {
-  createdAt?: string;
-  updatedAt?: string;
   quantifier: UserDocument;
-  score?: number;
-  dismissed?: boolean;
-  duplicatePraise?: PraiseDocument | null;
+  score: number;
+  dismissed: boolean;
+  duplicatePraise?: PraiseDocument;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
+
+export interface PraiseDocument extends Praise, mongoose.Document {}
 
 export interface QuantificationDocument
   extends Quantification,
     mongoose.Document {}
 
-export interface PraiseDocument extends Praise, mongoose.Document {}
+export interface PraiseDto {
+  _id: string;
+  reason: string;
+  sourceId: string;
+  sourceName: string;
+  quantifications: QuantificationDto[];
+  giver: UserAccountDto;
+  receiver: UserAccountDto;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface QuantificationDto {
+  quantifier: string;
+  score: number;
+  dismissed: boolean;
+  duplicatePraise?: string;
+  duplicateScore?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type QuantificationDetailsDto = QuantificationDto;
+
+export interface PraiseDetailsDto extends PraiseDto {
+  score?: number;
+  quantifications: QuantificationDetailsDto[];
+}
 
 export interface QuantificationCreateUpdateInput {
   score: number;
@@ -43,8 +76,8 @@ export interface PraiseAllInput extends QueryInput {
 
 export interface PraiseImportInput {
   createdAt: string;
-  giver: UserAccountDocument;
-  receiver: UserAccountDocument;
+  giver: PraiseImportUserAccountInput;
+  receiver: PraiseImportUserAccountInput;
   reason: string;
   sourceId: string;
   sourceName: string;

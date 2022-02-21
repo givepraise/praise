@@ -1,37 +1,34 @@
+import { UserCell } from '@/components/table/UserCell';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import {
-  AllPeriodReceivers,
-  ReceiverData,
-  SinglePeriod,
-  usePeriodPraiseQuery,
-} from '@/model/periods';
-import React, { SyntheticEvent } from 'react';
+import { PeriodPageParams, SinglePeriod } from '@/model/periods';
+import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useSortBy, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 
-const ReceiverTable = () => {
+const ReceiverTable = (): JSX.Element => {
   const history = useHistory();
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId } = useParams() as any;
-  const period = useRecoilValue(SinglePeriod({ periodId }));
+  const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  usePeriodPraiseQuery(periodId);
-  const periodReceivers = useRecoilValue(AllPeriodReceivers({ periodId }));
-
+  const period = useRecoilValue(SinglePeriod(periodId));
   const columns = React.useMemo(
     () => [
       {
         Header: 'Receiver',
-        accessor: 'username',
+        accessor: '_id',
+        Cell: (data: any): JSX.Element => (
+          <UserCell userId={data.row.original.userAccount.name} />
+        ),
       },
       {
         Header: 'Number of praise',
+        className: 'text-center',
         accessor: 'praiseCount',
       },
       {
         Header: 'Total praise score',
-        accessor: 'praiseScore',
+        className: 'text-center',
+        accessor: 'score',
         sortType: 'basic',
       },
     ],
@@ -40,7 +37,7 @@ const ReceiverTable = () => {
 
   const options = {
     columns,
-    data: periodReceivers ? periodReceivers : [],
+    data: period?.receivers ? period.receivers : [],
     initialState: {
       sortBy: [
         {
@@ -55,9 +52,8 @@ const ReceiverTable = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  const handleClick = (data: ReceiverData) => (e: SyntheticEvent) => {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    history.push(`/period/${periodId}/receiver/${data.receiverId}`);
+  const handleClick = (data: any) => (): void => {
+    history.push(`/period/${periodId}/receiver/${data._id}`);
   };
 
   if (!period) return <div>Period not found.</div>;
@@ -81,7 +77,7 @@ const ReceiverTable = () => {
                 {column.render('Header')}
               </th>
             ))}
-          </tr> // TODO FIX
+          </tr>
         ))}
       </thead>
       <tbody {...getTableBodyProps()}>
@@ -91,15 +87,21 @@ const ReceiverTable = () => {
             // eslint-disable-next-line react/jsx-key
             <tr
               className="cursor-pointer hover:bg-gray-100"
-              id=""
               {...row.getRowProps()}
-              onClick={handleClick(row.original as ReceiverData)}
+              onClick={handleClick(row.original)}
             >
               {row.cells.map((cell) => {
-                // eslint-disable-next-line react/jsx-key
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                return (
+                  // eslint-disable-next-line react/jsx-key
+                  <td
+                    {...cell.getCellProps()}
+                    className={(cell.column as any).className}
+                  >
+                    {cell.render('Cell')}
+                  </td>
+                );
               })}
-            </tr> // TODO fix id and key
+            </tr>
           );
         })}
       </tbody>

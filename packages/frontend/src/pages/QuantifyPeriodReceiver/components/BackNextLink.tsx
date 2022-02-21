@@ -1,19 +1,15 @@
 import { UserPseudonym } from '@/components/user/UserPseudonym';
-import { PeriodActiveQuantifierReceivers } from '@/model/periods';
+import { PeriodQuantifierReceivers } from '@/model/periods';
 import { SingleBooleanSetting } from '@/model/settings';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 export const QuantifyBackNextLink = () => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const { periodId, receiverId } = useParams() as any;
-
-  const receivers = useRecoilValue(
-    PeriodActiveQuantifierReceivers({ periodId })
-  );
+  const receivers = useRecoilValue(PeriodQuantifierReceivers(periodId));
   const usePseudonyms = useRecoilValue(
     SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );

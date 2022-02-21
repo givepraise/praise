@@ -1,12 +1,13 @@
-import { AllPeriods, Period } from '@/model/periods';
+import { AllPeriods } from '@/model/periods';
 import { formatDate } from '@/utils/date';
 import { classNames } from '@/utils/index';
-import React, { SyntheticEvent } from 'react';
+import { PeriodDto } from 'api/dist/period/types';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 
-const PeriodsTable = () => {
+const PeriodsTable = (): JSX.Element => {
   const allPeriods = useRecoilValue(AllPeriods);
   const history = useHistory();
 
@@ -19,14 +20,14 @@ const PeriodsTable = () => {
       {
         Header: 'End date',
         accessor: 'endDate',
-        Cell: (data: any) => {
+        Cell: (data: any): string => {
           return formatDate(data.value);
         },
       },
       {
         Header: '',
         accessor: 'status',
-        Cell: (data: any) => {
+        Cell: (data: any): JSX.Element => {
           return (
             <div className="w-full text-right">
               <div
@@ -61,7 +62,7 @@ const PeriodsTable = () => {
   if (!Array.isArray(allPeriods) || allPeriods.length === 0)
     return <div>Create your first period to get started quantifying.</div>;
 
-  const handleClick = (periodId: string) => (e: SyntheticEvent) => {
+  const handleClick = (periodId: string) => (): void => {
     history.push(`/period/${periodId}`);
   };
   return (
@@ -95,7 +96,7 @@ const PeriodsTable = () => {
               )}
               id="" //TODO set id
               {...row.getRowProps()}
-              onClick={handleClick((row.original as Period)._id!)}
+              onClick={handleClick((row.original as PeriodDto)._id)}
             >
               {row.cells.map((cell) => {
                 // eslint-disable-next-line react/jsx-key

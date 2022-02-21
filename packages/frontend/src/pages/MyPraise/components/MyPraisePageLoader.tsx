@@ -1,14 +1,15 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
 import { ActiveUserId } from '@/model/auth';
 import { AllPraiseQueryPagination, useAllPraiseQuery } from '@/model/praise';
-import { SingleUser, User } from '@/model/users';
+import { SingleUser } from '@/model/users';
+import { UserDto } from 'api/dist/user/types';
 import React, { useCallback } from 'react';
 import { BottomScrollListener } from 'react-bottom-scroll-listener';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { MY_PRAISE_LIST_KEY } from './MyPraiseTable';
 
 //TODO add support for more than one user account connected to one user
-const getReceiverId = (user: User | null) => {
+const getReceiverId = (user: UserDto | null) => {
   const accounts = user?.accounts;
   return Array.isArray(accounts) && accounts.length > 0
     ? accounts[0]._id

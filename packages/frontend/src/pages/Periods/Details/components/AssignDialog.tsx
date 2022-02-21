@@ -1,4 +1,4 @@
-import { useVerifyQuantifierPoolSize } from '@/model/periods';
+import { PeriodPageParams, useVerifyQuantifierPoolSize } from '@/model/periods';
 import {
   faCheckSquare,
   faTimes,
@@ -11,13 +11,15 @@ import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
 interface PeriodAssignDialogProps {
-  onClose(): any;
-  onAssign(): any;
+  onClose(): void;
+  onAssign(): void;
 }
 
-const DialogMessage = ({ onClose, onAssign }: PeriodAssignDialogProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId } = useParams() as any;
+const DialogMessage = ({
+  onClose,
+  onAssign,
+}: PeriodAssignDialogProps): JSX.Element => {
+  const { periodId } = useParams<PeriodPageParams>();
   const { location } = useHistory();
   const poolRequirements = useVerifyQuantifierPoolSize(periodId, location.key);
 
@@ -55,7 +57,7 @@ const DialogMessage = ({ onClose, onAssign }: PeriodAssignDialogProps) => {
         {quantPoolBigEnough ? (
           <button
             className="mt-4 praise-button"
-            onClick={() => {
+            onClick={(): void => {
               onAssign();
               onClose();
             }}
@@ -65,7 +67,7 @@ const DialogMessage = ({ onClose, onAssign }: PeriodAssignDialogProps) => {
         ) : (
           <button
             className="mt-4 praise-button"
-            onClick={() => {
+            onClick={(): void => {
               onClose();
             }}
           >
@@ -77,7 +79,10 @@ const DialogMessage = ({ onClose, onAssign }: PeriodAssignDialogProps) => {
   );
 };
 
-const PeriodAssignDialog = ({ onClose, onAssign }: PeriodAssignDialogProps) => {
+const PeriodAssignDialog = ({
+  onClose,
+  onAssign,
+}: PeriodAssignDialogProps): JSX.Element => {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Dialog.Overlay className="fixed inset-0 bg-gray-800 opacity-30" />

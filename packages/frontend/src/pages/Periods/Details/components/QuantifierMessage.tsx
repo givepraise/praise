@@ -1,40 +1,34 @@
-import {
-  PeriodActiveQuantifierQuantifications,
-  SinglePeriod,
-} from '@/model/periods';
+import { ActiveUserId } from '@/model/auth';
+import { PeriodPageParams, SinglePeriod } from '@/model/periods';
+import { getQuantifierData } from '@/utils/periods';
 import { faCalculator } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
-export const QuantifierMessage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId } = useParams() as any;
+export const QuantifierMessage = (): JSX.Element | null => {
+  const { periodId } = useParams<PeriodPageParams>();
   const history = useHistory();
-  const period = useRecoilValue(SinglePeriod({ periodId }));
-  const quantificationData = useRecoilValue(
-    PeriodActiveQuantifierQuantifications({ periodId })
-  );
+  const period = useRecoilValue(SinglePeriod(periodId));
+  const userId = useRecoilValue(ActiveUserId);
+  const quantifierData = getQuantifierData(period, userId);
 
-  if (!period) return null;
+  if (!quantifierData) return null;
 
-  return quantificationData ? (
+  return (
     <div className="w-2/3 praise-box">
       <div>
         <div>
           <strong>You are a quantifier for this period!</strong>
           <br />
-          Assigned number of praise items: {quantificationData.count}
+          Assigned number of praise items: {quantifierData.praiseCount}
           <br />
           Items left to quantify:{' '}
-          {quantificationData.count - quantificationData.done}
+          {quantifierData.praiseCount - quantifierData.finishedCount}
           <button
             className="block mt-5 praise-button"
-            onClick={() => {
-              if (period?._id) {
-                history.push(`/quantify/period/${period._id}`);
-              }
+            onClick={(): void => {
+              history.push(`/quantify/period/${periodId}`);
             }}
           >
             <FontAwesomeIcon icon={faCalculator} size="1x" className="mr-2" />
@@ -43,5 +37,5 @@ export const QuantifierMessage = () => {
         </div>
       </div>
     </div>
-  ) : null;
+  );
 };

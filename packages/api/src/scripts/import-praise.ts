@@ -1,11 +1,11 @@
 import { PraiseModel } from '@praise/entities';
+import { PraiseImportInput } from '@praise/types';
+import { UserAccountModel } from '@useraccount/entities';
 import * as dotenv from 'dotenv';
 import 'express-async-errors';
 import fs from 'fs';
 import mongoose, { ConnectOptions } from 'mongoose';
 import path from 'path';
-import { UserAccountModel } from '@useraccount/entities';
-import { PraiseImportInput } from '@praise/types';
 
 dotenv.config({ path: path.join(__dirname, '..', '..', '/.env') });
 
@@ -26,13 +26,13 @@ const importPraise = async (praiseData: PraiseImportInput[]) => {
     const data = await Promise.all(
       praiseData.map(async (praise: PraiseImportInput) => {
         const giver = await UserAccountModel.findOneAndUpdate(
-          { id: praise.giver.id },
+          { id: praise.giver.accountId },
           praise.giver,
           { upsert: true, new: true }
         );
 
         const receiver = await UserAccountModel.findOneAndUpdate(
-          { id: praise.receiver.id },
+          { id: praise.receiver.accountId },
           praise.receiver,
           { upsert: true, new: true }
         );

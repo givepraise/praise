@@ -1,19 +1,75 @@
-import { Period } from '@/model/periods';
+import { QuantifierReceiverData } from '@/model/periods';
+import {
+  PeriodDetailsDto,
+  PeriodDetailsQuantifierDto,
+  PeriodDto,
+  PeriodStatusType,
+} from 'api/dist/period/types';
 import { compareDesc } from 'date-fns';
 
-export const getActivePeriod = (allPeriods: Period[]) => {
+export const getActivePeriod = (
+  allPeriods: PeriodDto[]
+): PeriodDto | undefined => {
   const today = new Date();
   for (const period of allPeriods) {
     if (compareDesc(today, new Date(period.endDate)) >= 0) return period;
   }
-  return null;
+  return undefined;
 };
 
-export const getPreviousPeriod = (allPeriods: Period[], period: Period) => {
+export const getPreviousPeriod = (
+  allPeriods: PeriodDto[],
+  period: PeriodDto
+): PeriodDto | undefined => {
   const endDate = new Date(period.endDate);
-  for (let i = allPeriods.length - 1; i >= 0; i--) {
+  for (let i = 0; i < allPeriods.length; i++) {
     if (compareDesc(endDate, new Date(allPeriods[i].endDate)) < 0)
       return allPeriods[i];
   }
-  return null;
+  return undefined;
+};
+
+export const getQuantifierData = (
+  period: PeriodDetailsDto | undefined,
+  userId: string | null
+): PeriodDetailsQuantifierDto | undefined => {
+  if (period && period.status === PeriodStatusType.QUANTIFY) {
+    return period.quantifiers?.find((q) => q._id === userId);
+  }
+  return undefined;
+};
+
+export const periodQuantifierPraiseListKey = (periodId: string): string =>
+  `PERIOD_QUANTIFIER_PRAISE_${periodId}`;
+
+interface QuantificationStats {
+  done: number;
+  count: number;
+}
+
+export const getQuantificationStats = (
+  data: QuantifierReceiverData[] | undefined
+): QuantificationStats | undefined => {
+  const stats: QuantificationStats = {
+    done: 0,
+    count: 0,
+  };
+
+  if (!data || !Array.isArray(data)) return undefined;
+
+  data.forEach((qrd) => {
+    stats.done += qrd.done;
+    stats.count += qrd.count;
+  });
+
+  return stats;
+};
+
+export const getQuantificationReceiverStats = (
+  data: QuantifierReceiverData[] | undefined,
+  receiverId: string | undefined
+): QuantifierReceiverData | undefined => {
+  if (!receiverId || !data || !Array.isArray(data)) return undefined;
+
+  return data.find((qrd) => qrd.receiverId === receiverId);
 };

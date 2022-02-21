@@ -1,5 +1,5 @@
+import { ErrorHandler } from '@error/ErrorHandler';
 import { cookieProps } from '@shared/constants';
-import { ErrorHandler } from '@shared/ErrorHandler';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { json, urlencoded } from 'express';
@@ -13,7 +13,6 @@ import { seedData } from './pre-start/seed';
 import { seedSettings } from './pre-start/settings';
 import { baseRouter } from './routes';
 
-//const app = addAsync(express());
 const app = express();
 
 const username = process.env.MONGO_USERNAME || '';
@@ -47,8 +46,6 @@ void (async (): Promise<void> => {
     app.use(morgan('dev'));
     try {
       await seedData();
-
-      logger.info('Seeded database with test data.');
     } catch (error) {
       logger.err('Could not connect to database.');
     }

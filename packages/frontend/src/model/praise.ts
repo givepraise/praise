@@ -1,10 +1,11 @@
+import { PraiseDetailsDto, PraiseDto } from 'api/dist/praise/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosResponse } from 'axios';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   atom,
   atomFamily,
-  GetRecoilValue,
   selectorFamily,
   useRecoilCallback,
   useRecoilState,
@@ -18,167 +19,79 @@ import {
   isResponseOk,
   useAuthApiQuery,
 } from './api';
-import { SingleFloatSetting } from './settings';
-import { UserAccount } from './users';
 
-export interface Quantification {
-  createdAt?: string;
-  updatedAt?: string;
-  quantifier: string;
-  score: number;
-  duplicateScore?: number;
-  dismissed?: boolean;
-  duplicatePraise?: string;
-}
-
-export interface Praise {
-  _id: string;
-  createdAt: string;
-  updatedAt: string;
-  periodId?: number;
-  reason: string;
-  quantifications?: Quantification[];
-  giver: UserAccount;
-  receiver: UserAccount;
-  source: string;
-  avgScore?: number;
-}
-
-// A local only copy of all praises. Used to facilitate CRUD
-// without having to make full roundtrips to the server
-export const AllPraiseIdList = atomFamily<string[] | undefined, string>({
-  key: 'AllPraiseIdList',
-  default: undefined,
-});
-
-export const SinglePraise = atomFamily<Praise | undefined, string>({
+/**
+ * Stores individual Praise items linked to one or more @PraiseIdList
+ */
+export const SinglePraise = atomFamily<PraiseDto | undefined, string>({
   key: 'SinglePraise',
   default: undefined,
 });
 
+/**
+ * Params for @SinglePraiseQuery
+ */
+type SinglePraiseQueryParams = {
+  praiseId: string;
+  refreshKey: string | undefined;
+};
+
+/**
+ * Selector query to fetch a single praise from the api.
+ */
 export const SinglePraiseQuery = selectorFamily({
   key: 'SinglePraiseQuery',
   get:
-    (praiseId: string) =>
-    ({ get }) => {
-      get(PraiseRequestId);
-      const response = get(ApiAuthGet({ url: `/api/praise/${praiseId}` }));
-      return response;
+    (params: SinglePraiseQueryParams) =>
+    ({ get }): AxiosResponse<unknown> => {
+      const { praiseId, refreshKey } = params;
+      return get(ApiAuthGet({ url: `/api/praise/${praiseId}`, refreshKey }));
     },
 });
 
-export const useSinglePraiseQuery = (praiseId: string) => {
-  const praise = useRecoilValue(SinglePraise(praiseId));
-
-  const fetchSinglePraise = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async () => {
-        const response = await ApiQuery(
-          snapshot.getPromise(SinglePraiseQuery(praiseId))
-        );
-        if (isResponseOk(response)) {
-          set(SinglePraise(praiseId), response.data);
-        } else {
-          //TODO handle error
-        }
-      }
+/**
+ * Hook that fetches a single praise from the api
+ */
+export const useSinglePraiseQuery = (
+  praiseId: string
+): PraiseDetailsDto | undefined => {
+  const { location } = useHistory();
+  const praiseResponse = useRecoilValue(
+    SinglePraiseQuery({ praiseId, refreshKey: location.key })
   );
-
+  const [praise, setPraise] = React.useState<PraiseDetailsDto | undefined>(
+    undefined
+  );
   React.useEffect(() => {
-    if (praiseId && !praise) {
-      void fetchSinglePraise();
+    if (!praise && isResponseOk(praiseResponse)) {
+      setPraise(praiseResponse.data);
     }
-  }, [praiseId, praise, fetchSinglePraise]);
-
+  }, [praise, praiseResponse]);
   return praise;
 };
-export const avgPraiseScore = (praise: Praise | undefined): number => {
-  if (!praise || !praise.quantifications || praise.quantifications.length === 0)
-    return 0;
-  let score = 0;
-  let i = 0;
-  praise.quantifications.forEach((quantification) => {
-    if (
-      quantification.duplicatePraise &&
-      quantification.duplicateScore &&
-      quantification.duplicateScore > 0
-    ) {
-      score += quantification.duplicateScore;
-      i++;
-    }
-    if (quantification.score > 0) {
-      score += quantification.score;
-      i++;
-    }
-  });
-  if (score === 0) return 0;
-  return Math.round(score / i);
-};
 
-const quantWithDuplicateScore = (
-  quantification: Quantification,
-  get: GetRecoilValue
-): Quantification => {
-  const quantificationExt = {
-    ...quantification,
-    duplicateScore: 0,
-  };
-  if (quantification.duplicatePraise) {
-    const duplicatePraisePercentage = get(
-      SingleFloatSetting('PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE')
-    );
-    if (duplicatePraisePercentage) {
-      let duplicatePraise = get(SinglePraise(quantification.duplicatePraise));
-      if (!duplicatePraise) {
-        const duplicatePraiseResponse = get(
-          SinglePraiseQuery(quantification.duplicatePraise)
-        );
-        if (isResponseOk(duplicatePraiseResponse)) {
-          duplicatePraise = duplicatePraiseResponse.data;
-        }
-      }
-      if (duplicatePraise && duplicatePraise.quantifications) {
-        const duplicateQuantification = duplicatePraise.quantifications.find(
-          (q) => q.quantifier === quantification.quantifier
-        );
-        if (duplicateQuantification) {
-          quantificationExt.duplicateScore =
-            duplicateQuantification.score * duplicatePraisePercentage;
-        }
-      }
-    }
-  }
-  return quantificationExt;
-};
-
-export const SinglePraiseExt = selectorFamily({
-  key: 'SinglePraiseExt',
-  get:
-    (praiseId: string) =>
-    ({ get }) => {
-      const praise = get(SinglePraise(praiseId));
-      if (!praise) return undefined;
-      const praiseExt = {
-        ...praise,
-        reason: praise.reason,
-      };
-      if (praise.quantifications) {
-        praiseExt.quantifications = praise.quantifications.map((q) =>
-          quantWithDuplicateScore(q, get)
-        );
-      }
-      praiseExt.avgScore = avgPraiseScore(praiseExt);
-      return praiseExt;
-    },
+/**
+ * Stores lists of Praise Ids. The following lists exists:
+ * - All praise / start page
+ * - My praise
+ * - Period Praise for a receiver assigned to a quantifier
+ */
+export const PraiseIdList = atomFamily<string[] | undefined, string>({
+  key: 'PraiseIdList',
+  default: undefined,
 });
 
+/**
+ * Selector to get all praise from a list of praise ids.
+ * @param listKey The key the praise id list is stored under.
+ */
 export const AllPraiseList = selectorFamily({
   key: 'AllPraiseList',
   get:
     (listKey: string) =>
-    ({ get }) => {
-      const praiseIdList = get(AllPraiseIdList(listKey));
-      const allPraiseList: Praise[] = [];
+    ({ get }): PraiseDto[] | undefined => {
+      const praiseIdList = get(PraiseIdList(listKey));
+      const allPraiseList: PraiseDto[] = [];
       if (!praiseIdList) return undefined;
       for (const praiseId of praiseIdList) {
         const praise = get(SinglePraise(praiseId));
@@ -188,27 +101,44 @@ export const AllPraiseList = selectorFamily({
     },
 });
 
-// The request Id is used to force refresh of AllPraiseQuery
-// AllPraiseQuery subscribes to the value. Increase to trigger
-// refresh.
+/**
+ * The request Id is used to force refresh of AllPraiseQuery
+ * AllPraiseQuery subscribes to the value. Increase to trigger
+ * refresh.
+ */
 export const PraiseRequestId = atom({
   key: 'PraiseRequestId',
   default: 0,
 });
 
+/**
+ * Parameters for @AllPraiseQuery
+ */
+export type AllPraiseQueryParameters = {
+  sortColumn?: string;
+  sortType?: string;
+  limit?: number;
+  page?: number;
+  receiver?: string | null;
+  perdiodStart?: string;
+  periodEnd?: string;
+};
+
+/**
+ * Query selector to fetch a list of praise from the api.
+ */
 export const AllPraiseQuery = selectorFamily<
-  AxiosResponse<PaginatedResponseBody<Praise>> | undefined,
+  AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined,
   AllPraiseQueryParameters
 >({
   key: 'AllPraiseQuery',
   get:
     (query: AllPraiseQueryParameters) =>
-    ({ get }): AxiosResponse<PaginatedResponseBody<Praise>> | undefined => {
+    ({ get }): AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined => {
       if (!query) throw new Error('Invalid query');
       get(PraiseRequestId);
       const qs = Object.keys(query)
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        .map((key) => `${key}=${query[key]}`) //TODO fix
+        .map((key) => `${key}=${query[key]}`)
         .join('&');
       const response = get(
         ApiAuthGet({ url: `/api/praise/all${qs ? `?${qs}` : ''}` })
@@ -219,12 +149,18 @@ export const AllPraiseQuery = selectorFamily<
     },
 });
 
+/**
+ *
+ */
 export interface AllPraiseQueryPaginationInterface {
   latestFetchPage: number;
   currentPage: number;
   totalPages: number;
 }
 
+/**
+ * Atom to keep track of praise paginations.
+ */
 export const AllPraiseQueryPagination = atomFamily<
   AllPraiseQueryPaginationInterface,
   string
@@ -237,36 +173,31 @@ export const AllPraiseQueryPagination = atomFamily<
   },
 });
 
-export type AllPraiseQueryParameters = {
-  sortColumn?: string;
-  sortType?: string;
-  limit?: number;
-  page?: number;
-  receiver?: string | null;
-};
-
+/**
+ * Hook to fetch praise from the api and save
+ */
 export const useAllPraiseQuery = (
   queryParams: AllPraiseQueryParameters,
   listKey: string
-) => {
+): AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined => {
   const allPraiseQueryResponse = useAuthApiQuery(AllPraiseQuery(queryParams));
   const [praisePagination, setPraisePagination] = useRecoilState(
     AllPraiseQueryPagination(listKey)
   );
-  const allPraiseIdList = useRecoilValue(AllPraiseIdList(listKey));
+  const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
 
   const saveAllPraiseIdList = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (praiseList: Praise[]) => {
+      async (praiseList: PraiseDto[]) => {
         const allPraiseIdList = await snapshot.getPromise(
-          AllPraiseIdList(listKey)
+          PraiseIdList(listKey)
         );
         const praiseIdList: string[] = [];
         for (const praise of praiseList) {
           praiseIdList.push(praise._id);
         }
         set(
-          AllPraiseIdList(listKey),
+          PraiseIdList(listKey),
           allPraiseIdList ? allPraiseIdList.concat(praiseIdList) : praiseIdList
         );
       }
@@ -274,7 +205,7 @@ export const useAllPraiseQuery = (
 
   const saveIndividualPraise = useRecoilCallback(
     ({ set }) =>
-      (praiseList: Praise[]) => {
+      (praiseList: PraiseDto[]) => {
         for (const praise of praiseList) {
           set(SinglePraise(praise._id), praise);
         }
@@ -287,10 +218,11 @@ export const useAllPraiseQuery = (
       isApiResponseAxiosError(allPraiseQueryResponse)
     )
       return;
-    const data = allPraiseQueryResponse.data as any;
+    const { page, totalPages } = allPraiseQueryResponse.data;
+    if (!page || !totalPages) return;
     if (
       typeof allPraiseIdList === 'undefined' ||
-      (data.page > praisePagination.latestFetchPage &&
+      (page > praisePagination.latestFetchPage &&
         isResponseOk(allPraiseQueryResponse))
     ) {
       const paginatedResponse = allPraiseQueryResponse.data;
@@ -301,8 +233,8 @@ export const useAllPraiseQuery = (
         saveIndividualPraise(praiseList);
         setPraisePagination({
           ...praisePagination,
-          latestFetchPage: data.page,
-          totalPages: data.totalPages,
+          latestFetchPage: page,
+          totalPages: totalPages,
         });
       }
     }
@@ -318,34 +250,9 @@ export const useAllPraiseQuery = (
   return allPraiseQueryResponse;
 };
 
-type QuantifyPraiseParams = {
-  praiseId: string;
-  score: number;
-  dismissed: boolean;
-  duplicatePraise: string;
-};
-
-export const QuantifyPraise = selectorFamily({
-  key: 'QuantifyPraise',
-  get:
-    (params: QuantifyPraiseParams) =>
-    ({ get }) => {
-      const { praiseId, score, dismissed, duplicatePraise } = params;
-      const response = get(
-        ApiAuthPatch({
-          url: `/api/praise/${praiseId}/quantify`,
-          data: JSON.stringify({
-            score,
-            dismissed,
-            duplicatePraise,
-          }),
-        })
-      );
-      return response;
-    },
-});
-
-// Hook that returns a function to use for closing a period
+/**
+ * Hook that returns a function to use for closing a period
+ */
 export const useQuantifyPraise = () => {
   const quantify = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -354,7 +261,7 @@ export const useQuantifyPraise = () => {
         score: number,
         dismissed: boolean,
         duplicatePraise: string | null
-      ) => {
+      ): Promise<PraiseDto | undefined> => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
@@ -369,9 +276,9 @@ export const useQuantifyPraise = () => {
         );
 
         if (isResponseOk(response)) {
-          const praise = response.data as Praise;
+          const praise = response.data as PraiseDto;
           set(SinglePraise(praise._id), praise);
-          return response.data as Praise;
+          return response.data as PraiseDto;
         }
       }
   );
