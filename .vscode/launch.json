@@ -1,0 +1,17 @@
+{
+    "configurations": [
+    {
+      "name": "Launch API",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn workspace api start:dev",
+      "smartStep": false
+    },
+    {
+      "name": "Launch FRONTEND",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn workspace frontend start",
+    }
+  ]
+}
