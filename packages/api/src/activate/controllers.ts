@@ -3,7 +3,7 @@ import {
   InternalServerError,
   NotFoundError,
   UnauthorizedError,
-} from '@shared/errors';
+} from '@error/errors';
 import { TypedRequestBody } from '@shared/types';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';

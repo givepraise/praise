@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { ForbiddenError, UnauthorizedError } from '@shared/errors';
+import { ForbiddenError, UnauthorizedError } from '@error/errors';
 import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
 import { NextFunction, Request, Response } from 'express';
-import { JwtService } from './JwtService';
-
-const jwtService = new JwtService();
 
 export const authMiddleware = (role: UserRole) => {
   return async (req: Request, res: Response, next: NextFunction) => {

@@ -5,13 +5,15 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
-import React from 'react';
 
 interface PeriodCloseDialogProps {
-  onClose(): any;
-  onRemove(): any;
+  onClose(): void;
+  onRemove(): void;
 }
-const PeriodCloseDialog = ({ onClose, onRemove }: PeriodCloseDialogProps) => {
+const PeriodCloseDialog = ({
+  onClose,
+  onRemove,
+}: PeriodCloseDialogProps): JSX.Element => {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Dialog.Overlay className="fixed inset-0 bg-gray-800 opacity-30" />
@@ -33,7 +35,7 @@ const PeriodCloseDialog = ({ onClose, onRemove }: PeriodCloseDialogProps) => {
           <div className="flex justify-center">
             <button
               className="mt-4 bg-red-600 praise-button"
-              onClick={() => {
+              onClick={(): void => {
                 onRemove();
                 onClose();
               }}

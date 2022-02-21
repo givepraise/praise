@@ -1,6 +1,5 @@
 import { AllActiveUserQuantificationPeriods } from '@/model/periods';
 import { PeriodDetailsDto } from 'api/dist/period/types';
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
@@ -20,8 +19,6 @@ export const ActiveUserQuantificationsMessage = () => {
   const activeUserQuantificationPeriods = useRecoilValue(
     AllActiveUserQuantificationPeriods
   );
-
-  console.log(activeUserQuantificationPeriods);
   if (
     !activeUserQuantificationPeriods ||
     !Array.isArray(activeUserQuantificationPeriods) ||

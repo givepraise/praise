@@ -1,4 +1,4 @@
-import { BadRequestError } from '@shared/errors';
+import { BadRequestError } from '@error/errors';
 import { settingFloat } from '@shared/settings';
 import { PraiseModel } from './entities';
 import { praiseDocumentTransformer } from './transformers';

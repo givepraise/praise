@@ -4,13 +4,17 @@ import { PraiseDocument, QuantificationDocument } from './types';
 
 export const quantificationSchema = new mongoose.Schema(
   {
-    quantifier: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    score: { type: Number, default: 0 },
-    dismissed: { type: Boolean, default: false },
+    quantifier: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    score: { type: Number, default: 0, required: true },
+    dismissed: { type: Boolean, default: false, required: true },
     duplicatePraise: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Praise',
-      default: null,
+      default: undefined,
     },
   },
   {
@@ -29,8 +33,12 @@ const praiseSchema = new mongoose.Schema(
     sourceId: { type: String, required: true },
     sourceName: { type: String, required: true },
     quantifications: [quantificationSchema],
-    giver: { type: Schema.Types.ObjectId, ref: 'UserAccount' },
-    receiver: { type: Schema.Types.ObjectId, ref: 'UserAccount' },
+    giver: { type: Schema.Types.ObjectId, ref: 'UserAccount', required: true },
+    receiver: {
+      type: Schema.Types.ObjectId,
+      ref: 'UserAccount',
+      required: true,
+    },
   },
   {
     timestamps: true,
