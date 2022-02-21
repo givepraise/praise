@@ -1,6 +1,7 @@
 import { PraiseModel } from '@praise/entities';
 import { PraiseImportInput } from '@praise/types';
 import { UserAccountModel } from '@useraccount/entities';
+import { UserAccountDocument } from '@useraccount/types';
 import * as dotenv from 'dotenv';
 import 'express-async-errors';
 import fs from 'fs';
@@ -35,13 +36,13 @@ const importPraise = async (praiseData: PraiseImportInput[]) => {
       praiseData.map(async (praise: PraiseImportInput) => {
         const giver = await UserAccountModel.findOneAndUpdate(
           { accountId: praise.giver.accountId },
-          praise.giver,
+          (praise.giver as UserAccountDocument),
           { upsert: true, new: true }
         );
 
         const receiver = await UserAccountModel.findOneAndUpdate(
           { accountId: praise.receiver.accountId },
-          praise.receiver,
+          (praise.receiver as UserAccountDocument),
           { upsert: true, new: true }
         );
 
