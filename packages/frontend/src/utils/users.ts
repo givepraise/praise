@@ -1,5 +1,4 @@
 import { UserDto } from 'api/dist/user/types';
-import { UserAccountPlatform } from 'api/dist/useraccount/types';
 import { shortenEthAddress } from '.';
 
 export const getUsername = (user: UserDto): string | undefined => {
@@ -8,7 +7,7 @@ export const getUsername = (user: UserDto): string | undefined => {
     for (const account of user.accounts) {
       username = account.name;
       // Prefer DISCORD over others
-      if (account.platform === UserAccountPlatform.DISCORD) break;
+      if (account.platform === 'DISCORD') break;
     }
   } else if (username === '' && user.ethereumAddress)
     return shortenEthAddress(user.ethereumAddress)?.toString();
