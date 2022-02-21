@@ -5,10 +5,11 @@ import {
   periodQuantifierPraiseListKey,
 } from '@/utils/periods';
 import {
-  PeriodCreateUpdateInput,
+  PeriodCreateInput,
   PeriodDetailsDto,
   PeriodDto,
   PeriodStatusType,
+  PeriodUpdateInput,
 } from 'api/dist/period/types';
 import { PraiseDto } from 'api/dist/praise/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
@@ -16,6 +17,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
   atom,
+  atomFamily,
   selector,
   selectorFamily,
   useRecoilCallback,
@@ -34,57 +36,54 @@ import { ActiveUserId } from './auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
 
 /**
- * The full list of praise periods is being fetched on first pageload.
+ * Types for `useParams()`
  */
-export const AllPeriods = atom<PeriodDetailsDto[] | undefined>({
-  key: 'AllPeriods',
+export type PeriodPageParams = {
+  periodId: string;
+};
+
+/**
+ * Types for `useParams()`
+ */
+export type PeriodAndReceiverPageParams = {
+  periodId: string;
+  receiverId: string;
+};
+
+/**
+ * One individual Period
+ */
+export const SinglePeriod = atomFamily<PeriodDetailsDto | undefined, string>({
+  key: 'SinglePeriod',
   default: undefined,
 });
 
 /**
- * Query selector that fetches all praise periods.
+ * The full list of period Ids
  */
-export const AllPeriodsQuery = selectorFamily({
-  key: 'AllPeriodsQuery',
-  get:
-    (refreshKey: string | undefined) =>
-    ({ get }) => {
-      const response = get(
-        ApiAuthGet({
-          url: '/api/periods/all?sortColumn=endDate&sortType=desc',
-          refreshKey,
-        })
-      );
-      return response;
-    },
+export const AllPeriodIds = atom<string[] | undefined>({
+  key: 'PeriodIdList',
+  default: undefined,
 });
 
 /**
- * Hook that fetches all periods and store them to AllPeriods.
+ * Return a list of Period objects based on the ids in @AllPeriodIds
  */
-export const useAllPeriodsQuery = (
-  refreshKey: string | undefined
-): AxiosResponse<unknown> => {
-  const allPeriodsQueryResponse = useAuthApiQuery(AllPeriodsQuery(refreshKey));
-  const [allPeriods, setAllPeriods] = useRecoilState(AllPeriods);
-
-  // Only set AllPeriods if not previously loadedx
-  React.useEffect(() => {
-    if (
-      isResponseOk(allPeriodsQueryResponse) &&
-      typeof allPeriods === 'undefined'
-    ) {
-      const paginatedResponse =
-        allPeriodsQueryResponse.data as PaginatedResponseBody<PeriodDetailsDto>;
-      const periods = paginatedResponse.docs;
-      if (Array.isArray(periods) && periods.length > 0) {
-        setAllPeriods(periods);
+export const AllPeriods = selector({
+  key: 'AllPeriods',
+  get: ({ get }): PeriodDetailsDto[] | undefined => {
+    const allPeriodIds = get(AllPeriodIds);
+    if (!allPeriodIds) return undefined;
+    const allPeriods: PeriodDetailsDto[] = [];
+    for (const periodId of allPeriodIds) {
+      const period = get(SinglePeriod(periodId));
+      if (period) {
+        allPeriods.push(period);
       }
     }
-  }, [allPeriodsQueryResponse, setAllPeriods, allPeriods]);
-
-  return allPeriodsQueryResponse;
-};
+    return allPeriods;
+  },
+});
 
 /**
  * Paramas for SinglePeriodQuery
@@ -119,33 +118,18 @@ export const useSinglePeriodQuery = (
   periodId: string,
   refreshKey: string | undefined
 ): PeriodDetailsDto | undefined => {
+  const [period, setPeriod] = useRecoilState(SinglePeriod(periodId));
   const periodResponse = useRecoilValue(
     SinglePeriodQuery({ periodId, refreshKey })
   );
-  const [period, setPeriod] = React.useState<PeriodDetailsDto | undefined>(
-    undefined
-  );
+
   React.useEffect(() => {
-    if (!period && isResponseOk(periodResponse)) {
+    if (periodResponse.data !== period && isResponseOk(periodResponse)) {
       setPeriod(periodResponse.data);
     }
-  }, [period, periodResponse]);
+  }, [period, periodResponse, setPeriod]);
   return period;
 };
-
-/**
- * Selector to get details for a single period from local state (AllPeriods).
- */
-export const SinglePeriod = selectorFamily({
-  key: 'SinglePeriod',
-  get:
-    (periodId: string) =>
-    ({ get }): PeriodDetailsDto | undefined => {
-      const allPeriods = get(AllPeriods);
-      if (!allPeriods) return undefined;
-      return allPeriods.find((period) => period._id === periodId);
-    },
-});
 
 /**
  * Selector to get details for a single period from local state (AllPeriods).
@@ -165,10 +149,68 @@ export const SinglePeriodByDate = selectorFamily({
 });
 
 /**
+ * Query selector that fetches all praise periods from the API.
+ */
+export const AllPeriodsQuery = selectorFamily({
+  key: 'AllPeriodsQuery',
+  get:
+    (refreshKey: string | undefined) =>
+    ({ get }): AxiosResponse<unknown> => {
+      const response = get(
+        ApiAuthGet({
+          url: '/api/periods/all?sortColumn=endDate&sortType=desc',
+          refreshKey,
+        })
+      );
+      return response;
+    },
+});
+
+/**
+ * Hook that fetches all periods. Period Ids are stored in @AllPeriods , each Period object is
+ * stored individually in @SinglePeriod .
+ */
+export const useAllPeriodsQuery = (
+  refreshKey: string | undefined
+): AxiosResponse<unknown> => {
+  const allPeriodsQueryResponse = useAuthApiQuery(AllPeriodsQuery(refreshKey));
+  const allPeriodsIds = useRecoilValue(AllPeriodIds);
+
+  const saveAllPeriods = useRecoilCallback(
+    ({ set }) =>
+      (periods: PeriodDetailsDto[]) => {
+        const periodIds: string[] = [];
+        for (const period of periods) {
+          periodIds.push(period._id);
+          set(SinglePeriod(period._id), period);
+        }
+        set(AllPeriodIds, periodIds);
+      }
+  );
+
+  // Only set AllPeriods if not previously loaded
+  React.useEffect(() => {
+    if (
+      isResponseOk(allPeriodsQueryResponse) &&
+      typeof allPeriodsIds === 'undefined'
+    ) {
+      const paginatedResponse =
+        allPeriodsQueryResponse.data as PaginatedResponseBody<PeriodDetailsDto>;
+      const periods = paginatedResponse.docs;
+      if (Array.isArray(periods) && periods.length > 0) {
+        void saveAllPeriods(periods);
+      }
+    }
+  }, [allPeriodsQueryResponse, allPeriodsIds, saveAllPeriods]);
+
+  return allPeriodsQueryResponse;
+};
+
+/**
  * Stores the api response from the latest call to /api/admin/periods/create.
  */
 export const CreatePeriodApiResponse = atom<
-  void | AxiosResponse<never | any> | AxiosError<never> | null
+  AxiosResponse<unknown> | AxiosError<unknown> | null
 >({
   key: 'CreatePeriodApiResponse',
   default: null,
@@ -178,13 +220,13 @@ export const CreatePeriodApiResponse = atom<
  * Hook that returns a function to use for creating a new period.
  */
 export const useCreatePeriod = () => {
-  const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
+  const [allPeriodIds, setAllPeriodIds] = useRecoilState(AllPeriodIds);
 
   const createPeriod = useRecoilCallback(
     ({ snapshot, set }) =>
       async (
-        period: PeriodCreateUpdateInput
-      ): Promise<AxiosResponse<unknown> | AxiosError> => {
+        period: PeriodCreateInput
+      ): Promise<AxiosResponse<unknown> | AxiosError<unknown>> => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPost({
@@ -193,14 +235,16 @@ export const useCreatePeriod = () => {
             })
           )
         );
-        // If OK response, add returned period object to local state
+        // If OK response, save returned period object to local state
         if (isResponseOk(response)) {
-          const responsePeriod = response.data as PeriodDto;
-          if (responsePeriod) {
-            if (typeof allPeriods !== 'undefined') {
-              set(AllPeriods, [...allPeriods, responsePeriod]);
+          const period = response.data as PeriodDetailsDto;
+          if (period) {
+            set(SinglePeriod(period._id), period);
+            if (allPeriodIds) {
+              const newAllPeriodIds: string[] = [period._id, ...allPeriodIds];
+              setAllPeriodIds(newAllPeriodIds);
             } else {
-              set(AllPeriods, [responsePeriod]);
+              setAllPeriodIds([period._id]);
             }
           }
         }
@@ -212,55 +256,30 @@ export const useCreatePeriod = () => {
 };
 
 /**
- * Stores the api response from the latest call to /api/admin/periods/update.
- */
-export const UpdatePeriodApiResponse = atom<
-  AxiosResponse<unknown> | AxiosError<unknown> | null
->({
-  key: 'UpdatePeriodApiResponse',
-  default: null,
-});
-
-/**
  * Hook that returns a function to use for updating a period.
  */
 export const useUpdatePeriod = () => {
-  const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
   const updatePeriod = useRecoilCallback(
     ({ snapshot, set }) =>
       async (
-        period: PeriodCreateUpdateInput
-      ): Promise<AxiosResponse<unknown> | AxiosError> => {
-        if (!period._id) throw new Error('No _id on PeriodDto');
+        period: PeriodUpdateInput
+      ): Promise<AxiosResponse<unknown> | AxiosError<unknown>> => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
               url: `/api/admin/periods/${period._id}/update`,
               data: JSON.stringify(period),
             })
-          )
+          ),
+          { errorToast: false }
         );
 
         // If OK response, add returned period object to local state
         if (isResponseOk(response)) {
-          const responsePeriod = response.data as PeriodDto;
-          if (responsePeriod) {
-            if (typeof allPeriods !== 'undefined') {
-              set(
-                AllPeriods,
-                allPeriods.map(
-                  (oldPeriod) =>
-                    oldPeriod._id === responsePeriod._id
-                      ? responsePeriod
-                      : oldPeriod,
-                  responsePeriod
-                )
-              );
-            } else {
-              set(AllPeriods, [responsePeriod]);
-            }
+          const period = response.data as PeriodDetailsDto;
+          if (period) {
+            set(SinglePeriod(period._id), period);
           }
-          set(UpdatePeriodApiResponse, response);
         }
         return response;
       }
@@ -269,25 +288,14 @@ export const useUpdatePeriod = () => {
 };
 
 /**
- * Stores the api response from the latest call to /api/admin/periods/close.
- */
-export const ClosePeriodApiResponse = atom<
-  AxiosResponse<never> | AxiosError<never> | null
->({
-  key: 'ClosePeriodApiResponse',
-  default: null,
-});
-
-/**
  * Hook that returns a function to use for closing a period.
  */
 export const useClosePeriod = () => {
-  const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
   const closePeriod = useRecoilCallback(
     ({ snapshot, set }) =>
       async (
         periodId: string
-      ): Promise<AxiosResponse<unknown> | AxiosError> => {
+      ): Promise<AxiosResponse<unknown> | AxiosError<unknown>> => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
@@ -300,20 +308,8 @@ export const useClosePeriod = () => {
         if (isResponseOk(response)) {
           const period = response.data as PeriodDto;
           if (period) {
-            if (typeof allPeriods !== 'undefined') {
-              set(
-                AllPeriods,
-                allPeriods.map(
-                  (oldPeriod) =>
-                    oldPeriod._id === period._id ? period : oldPeriod,
-                  period
-                )
-              );
-            } else {
-              set(AllPeriods, [period]);
-            }
+            set(SinglePeriod(period._id), period);
           }
-          set(UpdatePeriodApiResponse, response);
         }
         return response;
       }
@@ -336,7 +332,7 @@ export const VerifyQuantifierPoolSizeQuery = selectorFamily({
   key: 'VerifyQuantifierPoolSizeQuery',
   get:
     (params: VerifyQuantifierPoolSizeQueryParams) =>
-    ({ get }) => {
+    ({ get }): AxiosResponse<unknown> => {
       const { periodId, refreshKey } = params;
       const response = get(
         ApiAuthGet({
@@ -382,8 +378,8 @@ export const useVerifyQuantifierPoolSize = (
 /**
  * Hook that returns function used to assign quantifiers
  */
-export const useAssignQuantifiers = () => {
-  const allPeriods = useRecoilValue(AllPeriods);
+export const useAssignQuantifiers = (periodId: string) => {
+  const [period, setPeriod] = useRecoilState(SinglePeriod(periodId));
 
   const saveIndividualPraise = useRecoilCallback(
     ({ set }) =>
@@ -396,9 +392,10 @@ export const useAssignQuantifiers = () => {
 
   const assignQuantifiers = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (
-        periodId: string
-      ): Promise<AxiosResponse<unknown> | AxiosError> => {
+      async (): Promise<
+        AxiosResponse<unknown> | AxiosError<unknown> | undefined
+      > => {
+        if (!period) return undefined;
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
@@ -412,21 +409,11 @@ export const useAssignQuantifiers = () => {
           if (Array.isArray(praiseList) && praiseList.length > 0) {
             saveIndividualPraise(praiseList);
           }
-          if (allPeriods) {
-            set(
-              AllPeriods,
-              allPeriods.map((period) => {
-                if (period._id === periodId) {
-                  const newPeriod = {
-                    ...period,
-                    status: 'QUANTIFY' as PeriodStatusType,
-                  };
-                  return newPeriod;
-                }
-                return period;
-              })
-            );
-          }
+          const updatedPeriod: PeriodDetailsDto = {
+            ...period,
+            status: 'QUANTIFY' as PeriodStatusType,
+          };
+          setPeriod(updatedPeriod);
         }
         return response;
       }
@@ -558,7 +545,7 @@ export const PeriodQuantifierPraiseQuery = selectorFamily({
   key: 'PeriodQuantifierPraiseQuery',
   get:
     (params: PeriodQuantifierPraiseQueryParams) =>
-    ({ get }): AxiosResponse<unknown> | AxiosError | undefined => {
+    ({ get }): AxiosResponse<unknown> | AxiosError<unknown> | undefined => {
       const { periodId, refreshKey } = params;
       const quantifierId = get(ActiveUserId);
       if (!periodId || !quantifierId) return undefined;
@@ -577,7 +564,7 @@ export const PeriodQuantifierPraiseQuery = selectorFamily({
 export const usePeriodQuantifierPraiseQuery = (
   periodId: string,
   refreshKey: string | undefined
-): AxiosResponse<unknown> | AxiosError | undefined => {
+): AxiosResponse<unknown> | AxiosError<unknown> | undefined => {
   const response = useAuthApiQuery(
     PeriodQuantifierPraiseQuery({
       periodId,
@@ -639,7 +626,7 @@ export const PeriodQuantifierReceivers = selectorFamily({
   key: 'PeriodQuantifierReceivers',
   get:
     (periodId: string) =>
-    ({ get }) => {
+    ({ get }): QuantifierReceiverData[] | undefined => {
       const listKey = periodQuantifierPraiseListKey(periodId);
       const praiseList = get(AllPraiseList(listKey));
       const userId = get(ActiveUserId);
@@ -706,7 +693,7 @@ export const PeriodQuantifierReceiver = selectorFamily({
   key: 'PeriodQuantifierReceiver',
   get:
     (params: PeriodQuantifierReceiverParams) =>
-    ({ get }) => {
+    ({ get }): QuantifierReceiverData | undefined => {
       const { periodId, receiverId } = params;
       const qrd = get(PeriodQuantifierReceivers(periodId));
       if (!qrd) return undefined;
@@ -722,7 +709,7 @@ export const PeriodQuantifierReceiverPraise = selectorFamily({
   key: 'PeriodQuantifierReceiverPraise',
   get:
     (params: PeriodQuantifierReceiverParams) =>
-    ({ get }) => {
+    ({ get }): PraiseDto[] | undefined => {
       const { periodId, receiverId } = params;
       const userId = get(ActiveUserId);
       const listKey = periodQuantifierPraiseListKey(periodId);

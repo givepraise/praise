@@ -1,4 +1,4 @@
-import { NotFoundError } from '@shared/errors';
+import { NotFoundError } from '@error/errors';
 import { getQuerySort } from '@shared/functions';
 import {
   PaginatedResponseBody,

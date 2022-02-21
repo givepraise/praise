@@ -1,12 +1,12 @@
-import { PraiseModel } from '@praise/entities';
-import { praiseDocumentListTransformer } from '@praise/transformers';
-import { PraiseDetailsDto, PraiseDto } from '@praise/types';
-import { praiseWithScore } from '@praise/utils';
 import {
   BadRequestError,
   InternalServerError,
   NotFoundError,
-} from '@shared/errors';
+} from '@error/errors';
+import { PraiseModel } from '@praise/entities';
+import { praiseDocumentListTransformer } from '@praise/transformers';
+import { PraiseDetailsDto, PraiseDto } from '@praise/types';
+import { praiseWithScore } from '@praise/utils';
 import { getQuerySort } from '@shared/functions';
 import { settingInt } from '@shared/settings';
 import {
@@ -24,12 +24,12 @@ import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import { periodDocumentTransformer } from './transformers';
 import {
-  PeriodCreateUpdateInput,
   PeriodDetailsDto,
   PeriodDto,
   PeriodQuantifierPraiseInput,
   PeriodReceiverPraiseInput,
   PeriodStatusType,
+  PeriodUpdateInput,
   VerifyQuantifierPoolSizeResponse,
 } from './types';
 import { findPeriodDetailsDto, getPreviousPeriodEndDate } from './utils';
@@ -88,7 +88,7 @@ export const single = async (
  * @param
  */
 export const create = async (
-  req: TypedRequestBody<PeriodCreateUpdateInput>,
+  req: TypedRequestBody<PeriodUpdateInput>,
   res: TypedResponse<PeriodDto>
 ): Promise<void> => {
   const { name, endDate } = req.body;
@@ -101,20 +101,19 @@ export const create = async (
  * @param
  */
 export const update = async (
-  req: TypedRequestBody<PeriodCreateUpdateInput>,
+  req: TypedRequestBody<PeriodUpdateInput>,
   res: TypedResponse<PeriodDto>
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
-
   const { name, endDate } = req.body;
 
   if (name) {
-    period.name = req.body.name;
+    period.name = name;
   }
 
   if (endDate) {
-    const d = new Date(req.body.endDate);
+    const d = new Date(endDate);
     if (d.toString() === 'Invalid Date')
       throw new BadRequestError('Invalid date format.');
     period.endDate = d;
@@ -122,7 +121,8 @@ export const update = async (
 
   await period.save();
 
-  res.status(StatusCodes.OK).json(periodDocumentTransformer(period));
+  const periodDetailsDto = await findPeriodDetailsDto(period._id);
+  res.status(StatusCodes.OK).json(periodDetailsDto);
 };
 
 /**
