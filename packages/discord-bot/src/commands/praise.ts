@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { PraiseModel } from 'api/dist/praise/entities';
-//import { UserModel } from 'api/dist/user/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { CommandInteraction, Interaction, Message } from 'discord.js';
 import logger from 'jet-logger';
@@ -45,14 +44,14 @@ const praise = async (
   }
 
   const ua = {
-    id: member.user.id,
-    username: member.user.username + '#' + member.user.discriminator,
-    profileImageUrl: member.user.avatar,
+    accountId: member.user.id,
+    name: member.user.username + '#' + member.user.discriminator,
+    avatarId: member.user.avatar,
     platform: 'DISCORD',
   };
 
   const userAccount = await UserAccountModel.findOneAndUpdate(
-    { id: ua.id },
+    { id: ua.accountId },
     ua,
     { upsert: true, new: true }
   );
@@ -98,13 +97,13 @@ const praise = async (
 
   for (const receiver of Receivers) {
     const ra = {
-      id: receiver.user.id,
-      username: receiver.user.username + '#' + receiver.user.discriminator,
-      profileImageUrl: receiver.avatar,
+      accountId: receiver.user.id,
+      name: receiver.user.username + '#' + receiver.user.discriminator,
+      avatarId: receiver.avatar,
       platform: 'DISCORD',
     };
     const receiverAccount = await UserAccountModel.findOneAndUpdate(
-      { id: ra.id },
+      { id: ra.accountId },
       ra,
       { upsert: true, new: true }
     );
@@ -113,7 +112,7 @@ const praise = async (
       try {
         await receiver.send({ embeds: [notActivatedDM(interactionMsg.url)] });
       } catch (err) {
-        logger.warn(`Can't DM user - ${ra.username} [${ra.id}]`);
+        logger.warn(`Can't DM user - ${ra.name} [${ra.accountId}]`);
       }
     }
     const praiseObj = await PraiseModel.create({
@@ -127,10 +126,10 @@ const praise = async (
     });
     if (praiseObj) {
       await receiver.send({ embeds: [praiseSuccessDM(interactionMsg.url)] });
-      praised.push(ra.id);
+      praised.push(ra.accountId);
     } else {
       logger.err(
-        `Praise not registered for [${ua.id}] -> [${ra.id}] for [${reason}]`
+        `Praise not registered for [${ua.accountId}] -> [${ra.accountId}] for [${reason}]`
       );
     }
   }
@@ -146,13 +145,13 @@ const praise = async (
     await msg.reply(
       undefinedReceiverWarning(
         receiverData.undefinedReceivers.join(', '),
-        ua.id
+        ua.accountId
       )
     );
   }
   if (receiverData.roleMentions) {
     await msg.reply(
-      roleMentionWarning(receiverData.roleMentions.join(', '), ua.id)
+      roleMentionWarning(receiverData.roleMentions.join(', '), ua.accountId)
     );
   }
 
