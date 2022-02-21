@@ -84,7 +84,9 @@ const PeriodDetails = (): JSX.Element | null => {
         <>
           <PeriodDateForm />
           <div className="mt-5">
-            {period.status === 'OPEN' ? (
+            {period.status === 'OPEN' &&
+            period.receivers &&
+            period?.receivers.length > 0 ? (
               <button
                 className="praise-button"
                 onClick={(): void => {
