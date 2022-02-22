@@ -7,6 +7,7 @@ import {
   useClosePeriod,
   useExportPraise,
 } from '@/model/periods';
+import { AllQuantifierUsers } from '@/model/users';
 import { formatDate } from '@/utils/date';
 import { getPreviousPeriod } from '@/utils/periods';
 import {
@@ -30,6 +31,7 @@ const PeriodDetails = (): JSX.Element | null => {
   const [isAssignDialogOpen, setIsAssignDialogOpen] = React.useState(false);
 
   const allPeriods = useRecoilValue(AllPeriods);
+  const allQuantifiers = useRecoilValue(AllQuantifierUsers);
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
@@ -87,7 +89,11 @@ const PeriodDetails = (): JSX.Element | null => {
         <>
           <PeriodDateForm />
           <div className="mt-5">
-            {period.status === 'OPEN' ? (
+            {period.status === 'OPEN' &&
+            period.receivers &&
+            period?.receivers.length > 0 &&
+            allQuantifiers &&
+            allQuantifiers.length > 0 ? (
               <button
                 className="praise-button"
                 onClick={(): void => {
