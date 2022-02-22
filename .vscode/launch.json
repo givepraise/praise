@@ -1,5 +1,12 @@
 {
-    "configurations": [
+  "configurations": [
+    {
+      "name": "Launch Chrome, attach",
+      "port": 9222,
+      "request": "launch",
+      "type": "pwa-chrome",
+      "webRoot": "${workspaceFolder}"
+    },
     {
       "name": "Launch API",
       "type": "node-terminal",
@@ -11,7 +18,7 @@
       "name": "Launch FRONTEND",
       "type": "node-terminal",
       "request": "launch",
-      "command": "yarn workspace frontend start",
+      "command": "yarn workspace frontend start"
     }
   ]
 }
