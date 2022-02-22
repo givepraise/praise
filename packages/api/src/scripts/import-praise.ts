@@ -1,6 +1,7 @@
 import { PraiseModel } from '@praise/entities';
 import { PraiseImportInput } from '@praise/types';
 import { UserAccountModel } from '@useraccount/entities';
+import { UserAccountDocument } from '@useraccount/types';
 import * as dotenv from 'dotenv';
 import 'express-async-errors';
 import fs from 'fs';
@@ -8,6 +9,14 @@ import mongoose, { ConnectOptions } from 'mongoose';
 import path from 'path';
 
 dotenv.config({ path: path.join(__dirname, '..', '..', '/.env') });
+
+const username = process.env.MONGO_USERNAME || '';
+const password = process.env.MONGO_PASSWORD || '';
+const host = process.env.MONGO_HOST || '';
+const port = process.env.MONGO_PORT || '';
+const dbName = process.env.MONGO_DB || '';
+
+const db = `mongodb://${username}:${password}@${host}:${port}/${dbName}`;
 
 const importPraise = async (praiseData: PraiseImportInput[]) => {
   try {
@@ -26,14 +35,14 @@ const importPraise = async (praiseData: PraiseImportInput[]) => {
     const data = await Promise.all(
       praiseData.map(async (praise: PraiseImportInput) => {
         const giver = await UserAccountModel.findOneAndUpdate(
-          { id: praise.giver.accountId },
-          praise.giver,
+          { accountId: praise.giver.accountId },
+          (praise.giver as UserAccountDocument),
           { upsert: true, new: true }
         );
 
         const receiver = await UserAccountModel.findOneAndUpdate(
-          { id: praise.receiver.accountId },
-          praise.receiver,
+          { accountId: praise.receiver.accountId },
+          (praise.receiver as UserAccountDocument),
           { upsert: true, new: true }
         );
 
@@ -63,12 +72,9 @@ const importPraise = async (praiseData: PraiseImportInput[]) => {
 };
 
 mongoose
-  .connect(
-    process.env.MONGO_DB as string,
-    {
-      useNewUrlParser: true,
-    } as ConnectOptions
-  )
+  .connect(db, {
+    useNewUrlParser: true,
+  } as ConnectOptions)
   .then(() => {
     const args = process.argv.slice(2);
     if (args.length !== 1) {
@@ -80,7 +86,9 @@ mongoose
     const praiseDataFile = args[0];
 
     const praiseData = JSON.parse(
-      fs.readFileSync(praiseDataFile, { encoding: 'utf-8' })
+      fs.readFileSync(path.resolve(__dirname, praiseDataFile), {
+        encoding: 'utf-8',
+      })
     );
 
     console.log('Parsing praise …');

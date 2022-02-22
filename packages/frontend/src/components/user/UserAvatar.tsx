@@ -2,10 +2,7 @@ import { SingleBooleanSetting } from '@/model/settings';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { UserDto } from 'api/dist/user/types';
-import {
-  UserAccountDto,
-  UserAccountPlatform,
-} from 'api/dist/useraccount/types';
+import { UserAccountDto } from 'api/dist/useraccount/types';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -27,10 +24,7 @@ const WrappedUserAvatar = ({ user, userAccount }: UserAvatarProps) => {
     if (Array.isArray(user.accounts) && user.accounts.length > 0) {
       for (const account of user.accounts) {
         // Prefer DISCORD over others
-        if (
-          account.avatarId &&
-          account.platform === UserAccountPlatform.DISCORD
-        ) {
+        if (account.avatarId && account.platform === 'DISCORD') {
           url = discordAvatarUrl(account);
           break;
         }
@@ -38,10 +32,7 @@ const WrappedUserAvatar = ({ user, userAccount }: UserAvatarProps) => {
     }
   }
   if (userAccount) {
-    if (
-      userAccount.avatarId &&
-      userAccount.platform === UserAccountPlatform.DISCORD
-    ) {
+    if (userAccount.avatarId && userAccount.platform === 'DISCORD') {
       url = discordAvatarUrl(userAccount);
     }
   }
