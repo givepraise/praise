@@ -15,6 +15,13 @@
       "smartStep": false
     },
     {
+      "name": "Launch DISCORD BOT",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn workspace discord-bot start:dev",
+      "smartStep": false
+    },
+    {
       "name": "Launch FRONTEND",
       "type": "node-terminal",
       "request": "launch",
