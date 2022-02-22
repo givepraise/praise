@@ -124,3 +124,9 @@ Add to `.vscode/launch.json`:
     }
   ]
 ```
+
+To open docs, run-
+```
+yarn docs
+```
+Docs would be hosted at http://localhost:3000
