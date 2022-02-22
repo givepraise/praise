@@ -8,15 +8,15 @@ const activate = async (
 ): Promise<CommandInteraction | undefined> => {
   const { user } = interaction;
   const ua = {
-    id: user.id,
-    username: user.username + '#' + user.discriminator,
-    profileImageUrl: user.avatar,
+    accountId: user.id,
+    name: user.username + '#' + user.discriminator,
+    avatarId: user.avatar,
     platform: 'DISCORD',
     activateToken: randomstring.generate(),
   };
 
   const userAccount = await UserAccountModel.findOneAndUpdate(
-    { id: user.id },
+    { accountId: user.id },
     ua,
     { upsert: true, new: true }
   );
@@ -27,7 +27,7 @@ const activate = async (
   }
 
   await interaction.reply({
-    content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${process.env.FRONTEND_URL}/activate?accountId=${ua.id}&accountName=${user.username}%23${user.discriminator}&platform=DISCORD&token=${ua.activateToken})`,
+    content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${process.env.FRONTEND_URL}/activate?accountId=${ua.accountId}&accountName=${user.username}%23${user.discriminator}&platform=DISCORD&token=${ua.activateToken})`,
     ephemeral: true,
   });
 };

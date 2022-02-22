@@ -2,10 +2,7 @@
 import { UserDocument } from '@user/types';
 import mongoose from 'mongoose';
 
-export enum UserAccountPlatform {
-  DISCORD = 'DISCORD',
-  TELEGRAM = 'TELGRAM',
-}
+export type UserAccountPlatform = 'DISCORD' | 'TELGRAM';
 
 export interface UserAccount {
   user?: UserDocument;
@@ -26,7 +23,7 @@ export interface UserAccountDto {
   accountId: string;
   name: string;
   avatarId?: string;
-  platform: string;
+  platform: UserAccountPlatform;
   activateToken?: string;
   createdAt: string;
   updatedAt: string;
@@ -36,5 +33,5 @@ export interface PraiseImportUserAccountInput {
   accountId: string;
   name: string;
   avatarId?: string;
-  platform: string;
+  platform: UserAccountPlatform;
 }
