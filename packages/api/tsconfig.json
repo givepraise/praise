@@ -10,6 +10,7 @@
     "declaration": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "composite": true,
     "paths": {
       "@activate/*": ["src/activate/*"],
       "@auth/*": ["src/auth/*"],
@@ -24,5 +25,6 @@
       "@server": ["src/server"]
     }
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  "include": ["src/**/*.ts", "test/**/*.ts"],
+  "references": []
 }
