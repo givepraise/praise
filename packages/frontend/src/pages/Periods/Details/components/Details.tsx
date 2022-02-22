@@ -64,6 +64,9 @@ const PeriodDetails = (): JSX.Element | null => {
       },
       {
         position: 'top-center',
+        loading: {
+          duration: Infinity,
+        },
       }
     );
     promise.finally(() => setTimeout(() => history.go(0), 1000));
