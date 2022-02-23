@@ -33,6 +33,7 @@ import {
   VerifyQuantifierPoolSizeResponse,
 } from './types';
 import { findPeriodDetailsDto, getPreviousPeriodEndDate } from './utils';
+import { body, validationResult } from 'express-validator';
 
 /**
  * Description
@@ -91,6 +92,14 @@ export const create = async (
   req: TypedRequestBody<PeriodUpdateInput>,
   res: TypedResponse<PeriodDto>
 ): Promise<void> => {
+  body('name').not().isEmpty().isString().trim().escape();
+  body('endDate').not().isEmpty().isString().trim().escape();
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new BadRequestError('Invalid request input format.');
+  }
+
   const { name, endDate } = req.body;
   const period = await PeriodModel.create({ name, endDate });
   res.status(StatusCodes.OK).json(periodDocumentTransformer(period));
@@ -106,6 +115,15 @@ export const update = async (
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
+
+  body('name').not().isEmpty().isString().trim().escape();
+  body('endDate').not().isEmpty().isString().trim().escape();
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new BadRequestError('Invalid request input format.');
+  }
+
   const { name, endDate } = req.body;
 
   if (name) {

@@ -24,6 +24,7 @@ import {
   QuantificationCreateUpdateInput,
 } from './types';
 import { calculatePraiseScore, praiseWithScore } from './utils';
+import { body, validationResult } from 'express-validator';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
@@ -98,6 +99,16 @@ export const quantify = async (
     'giver receiver'
   );
   if (!praise) throw new NotFoundError('Praise');
+
+  body('score').isNumeric().escape();
+  body('dismissed').isBoolean();
+  body('duplicatePraise').isString().trim().escape();
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new BadRequestError('Invalid request input format.');
+  }
+
   const { score, dismissed, duplicatePraise } = req.body;
 
   if (!res.locals.currentUser?._id) {
