@@ -1,19 +1,20 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { PraiseModel } from 'api/dist/praise/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
+import { UserAccount } from 'api/src/useraccount/types';
 import { CommandInteraction, Interaction, Message } from 'discord.js';
 import logger from 'jet-logger';
 import {
-  notActivatedError,
   dmError,
-  roleError,
   invalidReceiverError,
   missingReasonError,
-  undefinedReceiverWarning,
-  roleMentionWarning,
-  praiseSuccessDM,
   notActivatedDM,
+  notActivatedError,
   praiseSuccess,
+  praiseSuccessDM,
+  roleError,
+  roleMentionWarning,
+  undefinedReceiverWarning,
 } from '../utils/praiseEmbeds';
 
 const praise = async (
@@ -48,7 +49,7 @@ const praise = async (
     name: member.user.username + '#' + member.user.discriminator,
     avatarId: member.user.avatar,
     platform: 'DISCORD',
-  };
+  } as UserAccount;
 
   const userAccount = await UserAccountModel.findOneAndUpdate(
     { id: ua.accountId },
@@ -101,7 +102,7 @@ const praise = async (
       name: receiver.user.username + '#' + receiver.user.discriminator,
       avatarId: receiver.avatar,
       platform: 'DISCORD',
-    };
+    } as UserAccount;
     const receiverAccount = await UserAccountModel.findOneAndUpdate(
       { id: ra.accountId },
       ra,

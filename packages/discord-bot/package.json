@@ -11,7 +11,8 @@
     "dotenv": "^16.0.0",
     "jet-logger": "^1.1.5",
     "mongoose": "^6.2.0",
-    "randomstring": "^1.2.2"
+    "randomstring": "^1.2.2",
+    "ts-node": "^10.5.0"
   },
   "devDependencies": {
     "@types/randomstring": "^1.1.8",

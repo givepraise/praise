@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
+import { UserAccount } from 'api/src/useraccount/types';
 import { CommandInteraction, Interaction } from 'discord.js';
 import randomstring from 'randomstring';
 
@@ -13,8 +14,7 @@ const activate = async (
     avatarId: user.avatar,
     platform: 'DISCORD',
     activateToken: randomstring.generate(),
-  };
-
+  } as UserAccount;
   const userAccount = await UserAccountModel.findOneAndUpdate(
     { accountId: user.id },
     ua,
