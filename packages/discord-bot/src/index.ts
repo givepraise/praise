@@ -70,16 +70,11 @@ discordClient.on('interactionCreate', async (interaction) => {
   const host = process.env.MONGO_HOST || '';
   const port = process.env.MONGO_PORT || '';
   const dbName = process.env.MONGO_DB || '';
+  const username = process.env.MONGO_USERNAME || '';
+  const password = process.env.MONGO_PASSWORD || '';
 
   try {
-    let db: string;
-    if (process.env.NODE_ENV !== 'development') {
-      const username = process.env.MONGO_USERNAME || '';
-      const password = process.env.MONGO_PASSWORD || '';
-      db = `mongodb://${username}:${password}@${host}:${port}/${dbName}`;
-    } else {
-      db = `mongodb://${host}:${port}/${dbName}`;
-    }
+    const db = `mongodb://${username}:${password}@${host}:${port}/${dbName}`;
     await mongoose.connect(db, {
       useNewUrlParser: true,
     } as ConnectOptions);
