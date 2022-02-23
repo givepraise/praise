@@ -1,0 +1,31 @@
+{
+  "configurations": [
+    {
+      "name": "Launch Chrome, attach",
+      "port": 9222,
+      "request": "launch",
+      "type": "pwa-chrome",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Launch API",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn workspace api start:dev",
+      "smartStep": false
+    },
+    {
+      "name": "Launch DISCORD BOT",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn workspace discord-bot start:dev",
+      "smartStep": false
+    },
+    {
+      "name": "Launch FRONTEND",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn workspace frontend start"
+    }
+  ]
+}

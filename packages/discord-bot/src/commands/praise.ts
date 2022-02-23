@@ -1,28 +1,30 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { PraiseModel } from 'api/dist/praise/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import {
-  CommandInteraction,
-  Interaction,
-  Message,
-  MessageEmbed,
-} from 'discord.js';
+import { UserAccount } from 'api/src/useraccount/types';
+import { CommandInteraction, Interaction, Message } from 'discord.js';
 import logger from 'jet-logger';
 import {
+  dmError,
+  invalidReceiverError,
+  missingReasonError,
+  notActivatedDM,
   notActivatedError,
-  praiseErrorEmbed,
   praiseSuccess,
+  praiseSuccessDM,
+  roleError,
+  roleMentionWarning,
+  undefinedReceiverWarning,
 } from '../utils/praiseEmbeds';
 
-const praise = async (interaction: CommandInteraction) => {
+const praise = async (
+  interaction: CommandInteraction,
+  interactionMsg: Message
+): Promise<void> => {
   const { guild, channel, member } = interaction;
 
   if (!guild || !member) {
-    const dmErrorEmbed = praiseErrorEmbed(
-      'Server not found',
-      'This command can only be used in the discord server.'
-    );
-    await interaction.editReply({ embeds: [dmErrorEmbed] });
+    await interaction.editReply(dmError);
     return;
   }
 
@@ -31,23 +33,26 @@ const praise = async (interaction: CommandInteraction) => {
   );
   const praiseGiver = await guild.members.fetch(member.user.id);
 
-  if (!praiseGiver.roles.cache.find((r) => r.id === praiseGiverRole?.id)) {
-    const msg = (await interaction.editReply(
-      `**User does not have \`${praiseGiverRole?.name}\` role**\nThe praise command can only be used by members with the <@&${praiseGiverRole?.id}> role. Attend an onboarding-call, or ask a steward or guide for an Intro to Praise.`
-    )) as Message;
-    await msg.react('❌');
+  if (
+    praiseGiverRole &&
+    !praiseGiver.roles.cache.find((r) => r.id === praiseGiverRole?.id)
+  ) {
+    await interaction.editReply({
+      embeds: [roleError(praiseGiverRole, praiseGiver)],
+    });
+
     return;
   }
 
   const ua = {
-    id: member.user.id,
-    username: member.user.username + '#' + member.user.discriminator,
-    profileImageUrl: member.user.avatar,
+    accountId: member.user.id,
+    name: member.user.username + '#' + member.user.discriminator,
+    avatarId: member.user.avatar,
     platform: 'DISCORD',
-  };
+  } as UserAccount;
 
   const userAccount = await UserAccountModel.findOneAndUpdate(
-    { id: ua.id },
+    { id: ua.accountId },
     ua,
     { upsert: true, new: true }
   );
@@ -61,60 +66,23 @@ const praise = async (interaction: CommandInteraction) => {
     roleMentions: receivers?.match(/<@&([0-9]+)>/g),
   };
 
-  const addInfoFields = (embed: MessageEmbed) => {
-    embed.addField(
-      'Valid Receivers',
-      receiverData.validReceiverIds?.join(', ') || 'No Receivers Mentioned.'
-    );
-    if (receiverData.undefinedReceivers) {
-      embed.addField(
-        'Undefined Receivers',
-        (receiverData.undefinedReceivers?.join(', ') || '') +
-          "\nThese users don't exist in the system, and hence can't be praised."
-      );
-    }
-    if (receiverData.roleMentions) {
-      embed.addField(
-        'Roles Mentioned',
-        (receiverData.roleMentions?.join(', ') || '') +
-          "\nYou can't dish praise to entire roles."
-      );
-    }
-    embed.addField('Reason', reason || 'No reason entered.');
-    return embed;
-  };
-
   if (
     !receivers ||
     receivers.length === 0 ||
     !receiverData.validReceiverIds ||
     receiverData.validReceiverIds?.length === 0
   ) {
-    const noReceiverEmbed = praiseErrorEmbed(
-      'Receivers not mentiond',
-      'This command requires atleast one valid receiver to be mentioned.'
-    );
-
-    await interaction.editReply({ embeds: [addInfoFields(noReceiverEmbed)] });
+    await interaction.editReply(invalidReceiverError);
     return;
   }
 
   if (!reason || reason.length === 0) {
-    const noReasonEmbed = praiseErrorEmbed(
-      'Reason not provided',
-      'Praise needs a `reason` in order to be dished.'
-    );
-    await interaction.editReply({ embeds: [addInfoFields(noReasonEmbed)] });
+    await interaction.editReply(missingReasonError);
     return;
   }
 
-  const User = await UserModel.findOne({
-    accounts: userAccount,
-  });
-
-  if (!User) {
-    const msg = (await interaction.editReply(notActivatedError)) as Message;
-    await msg.react('❌');
+  if (!userAccount.user) {
+    await interaction.editReply(notActivatedError);
     return;
   }
 
@@ -130,25 +98,22 @@ const praise = async (interaction: CommandInteraction) => {
 
   for (const receiver of Receivers) {
     const ra = {
-      id: receiver.user.id,
-      username: receiver.user.username + '#' + receiver.user.discriminator,
-      profileImageUrl: receiver.avatar,
+      accountId: receiver.user.id,
+      name: receiver.user.username + '#' + receiver.user.discriminator,
+      avatarId: receiver.avatar,
       platform: 'DISCORD',
-    };
+    } as UserAccount;
     const receiverAccount = await UserAccountModel.findOneAndUpdate(
-      { id: ra.id },
+      { id: ra.accountId },
       ra,
       { upsert: true, new: true }
     );
 
     if (!receiverAccount.user) {
       try {
-        const msg = await receiver.send(
-          "You were just praised in the TEC! It looks like you haven't activated your account... To activate use the `/praise-activate` command in the server."
-        );
-        await msg.react('⚠️');
+        await receiver.send({ embeds: [notActivatedDM(interactionMsg.url)] });
       } catch (err) {
-        logger.warn(`Can't DM user - ${ra.username} [${ra.id}]`);
+        logger.warn(`Can't DM user - ${ra.name} [${ra.accountId}]`);
       }
     }
     const praiseObj = await PraiseModel.create({
@@ -161,41 +126,34 @@ const praise = async (interaction: CommandInteraction) => {
       receiver: receiverAccount._id,
     });
     if (praiseObj) {
-      praised.push(ra.id);
+      await receiver.send({ embeds: [praiseSuccessDM(interactionMsg.url)] });
+      praised.push(ra.accountId);
     } else {
       logger.err(
-        `Praise not registered for [${ua.id}] -> [${ra.id}] for [${reason}]`
+        `Praise not registered for [${ua.accountId}] -> [${ra.accountId}] for [${reason}]`
       );
     }
   }
 
-  let msg = (await interaction.editReply(
+  const msg = (await interaction.editReply(
     praiseSuccess(
       praised.map((id) => `<@!${id}>`),
       reason
     )
   )) as Message;
-  await msg.react('✅');
 
   if (receiverData.undefinedReceivers) {
-    msg = await msg.reply(
-      `**Undefined Receivers**\nCould not praise ${receiverData.undefinedReceivers.join(
-        ', '
-      )}.\n<@!${
-        ua.id
-      }>, this warning could have been caused when a user isn't mentioned properly in the praise receivers field OR when a user isn't found in the discord server.`
+    await msg.reply(
+      undefinedReceiverWarning(
+        receiverData.undefinedReceivers.join(', '),
+        ua.accountId
+      )
     );
-    await msg.react('⚠️');
   }
   if (receiverData.roleMentions) {
-    msg = await msg.reply(
-      `**Roles as Praise receivers**\nCouldn't praise roles - ${receiverData.roleMentions.join(
-        ', '
-      )}.\n<@!${
-        ua.id
-      }>, use the \`/group-praise\` for distribution of praise to all the members that have certain discord roles.`
+    await msg.reply(
+      roleMentionWarning(receiverData.roleMentions.join(', '), ua.accountId)
     );
-    await msg.react('⚠️');
   }
 
   return;
@@ -220,11 +178,13 @@ module.exports = {
         .setRequired(true)
     ),
 
-  async execute(interaction: Interaction) {
+  async execute(interaction: Interaction): Promise<void> {
     if (interaction.isCommand()) {
       if (interaction.commandName === 'praise') {
-        await interaction.deferReply();
-        await praise(interaction);
+        const msg = await interaction.deferReply();
+        if (msg !== undefined) {
+          await praise(interaction, msg);
+        }
       }
     }
   },

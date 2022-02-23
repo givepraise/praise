@@ -1,14 +1,15 @@
-import { isApiResponseAxiosError } from '@/model/api';
+import { isApiResponseValidationError } from '@/model/api';
 import { AxiosError, AxiosResponse } from 'axios';
-import { useField, useFormState } from 'react-final-form';
+import { useField } from 'react-final-form';
 
 interface FieldErrorMessageProps {
   name: string;
   apiResponse: AxiosResponse<unknown> | AxiosError<unknown> | null;
 }
-const FieldErrorMessage = ({ name, apiResponse }: FieldErrorMessageProps) => {
-  const { dirtySinceLastSubmit } = useFormState();
-
+const FieldErrorMessage = ({
+  name,
+  apiResponse,
+}: FieldErrorMessageProps): JSX.Element | null => {
   // Subscribe to error messsages concerning specified field
   const {
     meta: { active, touched, error },
@@ -18,17 +19,13 @@ const FieldErrorMessage = ({ name, apiResponse }: FieldErrorMessageProps) => {
 
   // Display api error message for matching field if form has not
   // been edited since last submit
-  if (apiResponse && isApiResponseAxiosError(apiResponse)) {
-    if (!dirtySinceLastSubmit && apiResponse.response) {
-      if (apiResponse.response.status === 400) {
-        if (apiResponse.response.data[name])
-          return (
-            <span className="text-red-500">
-              {apiResponse.response.data[name]}
-            </span>
-          );
-      }
-    }
+  if (touched && isApiResponseValidationError(apiResponse)) {
+    if (apiResponse.response?.data?.errors[name])
+      return (
+        <span className="text-red-500">
+          {apiResponse.response.data.errors[name].message}
+        </span>
+      );
   }
 
   // Display client validation error

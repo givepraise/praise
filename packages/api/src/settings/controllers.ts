@@ -1,4 +1,4 @@
-import { BadRequestError, NotFoundError } from '@shared/errors';
+import { BadRequestError, NotFoundError } from '@error/errors';
 import { TypedRequestBody, TypedResponse } from '@shared/types';
 import { Request } from 'express';
 import { SettingsModel } from './entities';

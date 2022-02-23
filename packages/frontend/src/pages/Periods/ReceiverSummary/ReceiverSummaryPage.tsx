@@ -1,5 +1,5 @@
 import BreadCrumb from '@/components/BreadCrumb';
-import { SinglePeriod } from '@/model/periods';
+import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -18,9 +18,8 @@ const getReceiver = (
   return periodDetails.receivers?.find((r) => r._id === receiverId);
 };
 
-const PeriodReceiverMessage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId, receiverId } = useParams() as any;
+const PeriodReceiverMessage = (): JSX.Element | null => {
+  const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
   const periodDetails = useRecoilValue(SinglePeriod(periodId));
 
   if (!periodDetails) return null;
@@ -37,7 +36,7 @@ const PeriodReceiverMessage = () => {
   );
 };
 
-const QuantSummaryPeriodReceiverPage = () => {
+const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
   return (
     <>
       <BreadCrumb name={'Receiver summary for period'} icon={faCalendarAlt} />

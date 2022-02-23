@@ -1,10 +1,10 @@
 import { useAllPeriodsQuery } from '@/model/periods';
+import { useAllSettingsQuery } from '@/model/settings';
 import { useAllUsersQuery } from '@/model/users';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { ReactElement } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useAllSettingsQuery } from './model/settings';
 
 export const StartupLoader: React.FC = (): ReactElement | null => {
   const { location } = useHistory();

@@ -2,7 +2,7 @@ import {
   BadRequestError,
   InternalServerError,
   NotFoundError,
-} from '@shared/errors';
+} from '@error/errors';
 import {
   QueryInputParsedQs,
   SearchQueryInputParsedQs,

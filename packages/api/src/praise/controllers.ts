@@ -2,7 +2,7 @@ import {
   BadRequestError,
   InternalServerError,
   NotFoundError,
-} from '@shared/errors';
+} from '@error/errors';
 import { getQuerySort } from '@shared/functions';
 import {
   PaginatedResponseBody,
@@ -98,7 +98,6 @@ export const quantify = async (
     'giver receiver'
   );
   if (!praise) throw new NotFoundError('Praise');
-
   const { score, dismissed, duplicatePraise } = req.body;
 
   if (!res.locals.currentUser?._id) {

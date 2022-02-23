@@ -1,6 +1,6 @@
+import { BadRequestError, NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
 import { calculatePraiseScore } from '@praise/utils';
-import { BadRequestError, NotFoundError } from '@shared/errors';
 import { settingFloat } from '@shared/settings';
 import { PeriodModel } from './entities';
 import {
@@ -60,32 +60,34 @@ export const findPeriodDetailsDto = async (
 
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
-  const quantifier: PeriodDetailsQuantifierDto[] = await PraiseModel.aggregate([
-    {
-      $match: {
-        createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
-      },
-    },
-    { $unwind: '$quantifications' },
-    {
-      $addFields: {
-        finished: {
-          $or: [
-            { $ne: ['$quantifications.dismissed', false] },
-            { $gt: ['$quantifications.score', 0] },
-            { $ne: ['$quantifications.duplicatePraise', null] },
-          ],
+  const quantifiers: PeriodDetailsQuantifierDto[] = await PraiseModel.aggregate(
+    [
+      {
+        $match: {
+          createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
         },
       },
-    },
-    {
-      $group: {
-        _id: '$quantifications.quantifier',
-        praiseCount: { $count: {} },
-        finishedCount: { $sum: { $toInt: '$finished' } },
+      { $unwind: '$quantifications' },
+      {
+        $addFields: {
+          finished: {
+            $or: [
+              { $ne: ['$quantifications.dismissed', false] },
+              { $gt: ['$quantifications.score', 0] },
+              { $gt: ['$quantifications.duplicatePraise', null] },
+            ],
+          },
+        },
       },
-    },
-  ]);
+      {
+        $group: {
+          _id: '$quantifications.quantifier',
+          praiseCount: { $count: {} },
+          finishedCount: { $sum: { $toInt: '$finished' } },
+        },
+      },
+    ]
+  );
 
   const receivers: PeriodDetailsReceiver[] = await PraiseModel.aggregate([
     {
@@ -118,7 +120,7 @@ export const findPeriodDetailsDto = async (
   const response = {
     ...periodDocumentTransformer(period),
     receivers: await periodDetailsReceiverListTransformer(receivers),
-    quantifiers: [...quantifier],
+    quantifiers: [...quantifiers],
   };
   return response;
 };

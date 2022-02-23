@@ -2,7 +2,7 @@ import {
   BadRequestError,
   NotFoundError,
   UnauthorizedError,
-} from '@shared/errors';
+} from '@error/errors';
 import {
   Query,
   TypedRequestBody,

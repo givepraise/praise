@@ -66,14 +66,18 @@ discordClient.on('interactionCreate', async (interaction) => {
 
 // Connect to database
 (async () => {
-  logger.info('Connecting to datase…');
+  logger.info('Connecting to database…');
+  const host = process.env.MONGO_HOST || '';
+  const port = process.env.MONGO_PORT || '';
+  const dbName = process.env.MONGO_DB || '';
+  const username = process.env.MONGO_USERNAME || '';
+  const password = process.env.MONGO_PASSWORD || '';
+
   try {
-    await mongoose.connect(
-      process.env.MONGO_DB as string,
-      {
-        useNewUrlParser: true,
-      } as ConnectOptions
-    );
+    const db = `mongodb://${username}:${password}@${host}:${port}/${dbName}`;
+    await mongoose.connect(db, {
+      useNewUrlParser: true,
+    } as ConnectOptions);
     logger.info('Connected to database.');
   } catch (error) {
     logger.err('Could not connect to database.');
