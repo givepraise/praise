@@ -31,7 +31,7 @@ const activate = async (
   const { ethereumAddress, signature, accountId } = req.body;
 
   // Find previously generated token
-  const userAccount = await UserAccountModel.findOne({ id: accountId })
+  const userAccount = await UserAccountModel.findOne({ accountId })
     .select('activateToken')
     .exec();
 
