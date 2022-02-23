@@ -20,10 +20,11 @@ const WrappedUserAvatar = ({
   userAccount,
   enablePseudomyms,
 }: UserAvatarProps): JSX.Element => {
+  const [imageLoadError, setImageLoadError] = React.useState<boolean>(false);
   const pseudonymSetting = useRecoilValue(
     SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );
-  if (enablePseudomyms && pseudonymSetting)
+  if (imageLoadError || (enablePseudomyms && pseudonymSetting))
     return <FontAwesomeIcon icon={faUserCircle} size="2x" />;
   let url;
   if (user) {
@@ -44,7 +45,12 @@ const WrappedUserAvatar = ({
   }
 
   return url ? (
-    <img src={url} alt="avatar" className="rounded-full w-[29px] max-w-none" />
+    <img
+      src={url}
+      onError={(): void => setImageLoadError(true)}
+      alt="avatar"
+      className="rounded-full w-[29px] max-w-none"
+    />
   ) : (
     <FontAwesomeIcon icon={faUserCircle} size="2x" />
   );
