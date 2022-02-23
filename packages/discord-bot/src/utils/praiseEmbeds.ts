@@ -1,7 +1,7 @@
-import { MessageEmbed, Role, GuildMember } from 'discord.js';
+import { GuildMember, MessageEmbed, Role } from 'discord.js';
 
 export const praiseSuccess = (praised: string[], reason: string): string => {
-  return `✅ Succesfully praised ${praised.join(', ')} for reason - ${reason}`;
+  return `✅ Praise ${praised.join(', ')} ${reason}`;
 };
 
 export const praiseError = (title: string, description: string): string => {
