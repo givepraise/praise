@@ -5,7 +5,7 @@ export const praiseSuccess = (praised: string[], reason: string): string => {
 };
 
 export const praiseError = (title: string, description: string): string => {
-  return `**❌ ${title}\n${description}`;
+  return `**❌ ${title}**\n${description}`;
 };
 
 export const notActivatedError = praiseError(
