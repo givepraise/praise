@@ -13,12 +13,18 @@ const discordAvatarUrl = (account: UserAccountDto) => {
 interface UserAvatarProps {
   user?: UserDto;
   userAccount?: UserAccountDto;
+  enablePseudomyms?: boolean;
 }
-const WrappedUserAvatar = ({ user, userAccount }: UserAvatarProps) => {
-  const usePseudonyms = useRecoilValue(
+const WrappedUserAvatar = ({
+  user,
+  userAccount,
+  enablePseudomyms,
+}: UserAvatarProps): JSX.Element => {
+  const pseudonymSetting = useRecoilValue(
     SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );
-  if (usePseudonyms) return <FontAwesomeIcon icon={faUserCircle} size="2x" />;
+  if (enablePseudomyms && pseudonymSetting)
+    return <FontAwesomeIcon icon={faUserCircle} size="2x" />;
   let url;
   if (user) {
     if (Array.isArray(user.accounts) && user.accounts.length > 0) {

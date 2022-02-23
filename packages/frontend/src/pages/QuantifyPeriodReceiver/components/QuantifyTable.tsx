@@ -2,7 +2,10 @@ import { InlineLabel } from '@/components/InlineLabel';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { ActiveUserId } from '@/model/auth';
-import { PeriodQuantifierReceiverPraise } from '@/model/periods';
+import {
+  PeriodAndReceiverPageParams,
+  PeriodQuantifierReceiverPraise,
+} from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
 import { SingleBooleanSetting } from '@/model/settings';
 import { formatDate } from '@/utils/date';
@@ -22,7 +25,7 @@ import DismissDialog from './DismissDialog';
 import DuplicateDialog from './DuplicateDialog';
 import QuantifySlider from './QuantifySlider';
 
-const getRemoveButton = (action: any) => {
+const getRemoveButton = (action: any): JSX.Element => {
   return (
     <button onClick={action} className="ml-2">
       <FontAwesomeIcon
@@ -34,9 +37,8 @@ const getRemoveButton = (action: any) => {
   );
 };
 
-const QuantifyTable = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId, receiverId } = useParams() as any;
+const QuantifyTable = (): JSX.Element | null => {
+  const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
   const userId = useRecoilValue(ActiveUserId);
   const data = useRecoilValue(
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
@@ -93,11 +95,14 @@ const QuantifyTable = () => {
           {data.map((praise, index) => {
             if (!praise) return null;
             return (
-              <tr key={index} onMouseDown={() => setSelectedPraise(praise)}>
+              <tr
+                key={index}
+                onMouseDown={(): void => setSelectedPraise(praise)}
+              >
                 <td>
                   <div className="items-center w-full">
                     <div className="flex items-center">
-                      <UserAvatar userAccount={praise.giver} />
+                      <UserAvatar userAccount={praise.giver} enablePseudomyms />
                     </div>
                   </div>
                 </td>
@@ -155,7 +160,7 @@ const QuantifyTable = () => {
                     <button
                       className="pb-1 ml-4 hover:text-gray-400"
                       disabled={duplicate(praise)}
-                      onClick={() => setIsDuplicateDialogOpen(true)}
+                      onClick={(): void => setIsDuplicateDialogOpen(true)}
                     >
                       <FontAwesomeIcon
                         icon={faCopy}
@@ -166,7 +171,7 @@ const QuantifyTable = () => {
                     <button
                       className="pb-1 ml-1 hover:text-gray-400"
                       disabled={dismissed(praise)}
-                      onClick={() => setIsDismissDialogOpen(true)}
+                      onClick={(): void => setIsDismissDialogOpen(true)}
                     >
                       <FontAwesomeIcon
                         icon={faTimesCircle}
@@ -183,13 +188,13 @@ const QuantifyTable = () => {
           <React.Suspense fallback={null}>
             <Dialog
               open={isDismissDialogOpen && !!selectedPraise}
-              onClose={() => setIsDismissDialogOpen(false)}
+              onClose={(): void => setIsDismissDialogOpen(false)}
               className="fixed inset-0 z-10 overflow-y-auto"
             >
               <DismissDialog
                 praise={selectedPraise}
-                onClose={() => setIsDismissDialogOpen(false)}
-                onDismiss={() => handleDismiss()}
+                onClose={(): void => setIsDismissDialogOpen(false)}
+                onDismiss={(): void => handleDismiss()}
               />
             </Dialog>
           </React.Suspense>
@@ -197,12 +202,12 @@ const QuantifyTable = () => {
           <React.Suspense fallback={null}>
             <Dialog
               open={isDuplicateDialogOpen}
-              onClose={() => setIsDuplicateDialogOpen(false)}
+              onClose={(): void => setIsDuplicateDialogOpen(false)}
               className="fixed inset-0 z-10 overflow-y-auto"
             >
               <DuplicateDialog
                 praise={selectedPraise}
-                onClose={() => setIsDuplicateDialogOpen(false)}
+                onClose={(): void => setIsDuplicateDialogOpen(false)}
                 onSelect={handleDuplicate}
               />
             </Dialog>
