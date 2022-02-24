@@ -102,4 +102,4 @@ To open docs, run-
 ```
 yarn docs
 ```
-Docs would be hosted at http://localhost:3000
+Docs would be hosted at http://localhost:45231
