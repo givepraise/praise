@@ -3,6 +3,7 @@ import { PraiseModel } from 'api/dist/praise/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
 import { CommandInteraction, Interaction, Message } from 'discord.js';
+import { APIMessage } from 'discord-api-types/v9';
 import logger from 'jet-logger';
 import {
   dmError,
@@ -19,8 +20,8 @@ import {
 
 const praise = async (
   interaction: CommandInteraction,
-  interactionMsg: Message
-): Promise<void> => {
+  responseUrl: string
+) => {
   const { guild, channel, member } = interaction;
 
   if (!guild || !member) {
@@ -52,7 +53,7 @@ const praise = async (
   } as UserAccount;
 
   const userAccount = await UserAccountModel.findOneAndUpdate(
-    { id: ua.accountId },
+    { accountId: ua.accountId },
     ua,
     { upsert: true, new: true }
   );
@@ -104,14 +105,14 @@ const praise = async (
       platform: 'DISCORD',
     } as UserAccount;
     const receiverAccount = await UserAccountModel.findOneAndUpdate(
-      { id: ra.accountId },
+      { accountId: ra.accountId },
       ra,
       { upsert: true, new: true }
     );
 
     if (!receiverAccount.user) {
       try {
-        await receiver.send({ embeds: [notActivatedDM(interactionMsg.url)] });
+        await receiver.send({ embeds: [notActivatedDM(responseUrl)] });
       } catch (err) {
         logger.warn(`Can't DM user - ${ra.name} [${ra.accountId}]`);
       }
@@ -126,7 +127,7 @@ const praise = async (
       receiver: receiverAccount._id,
     });
     if (praiseObj) {
-      await receiver.send({ embeds: [praiseSuccessDM(interactionMsg.url)] });
+      await receiver.send({ embeds: [praiseSuccessDM(responseUrl)] });
       praised.push(ra.accountId);
     } else {
       logger.err(
@@ -178,12 +179,16 @@ module.exports = {
         .setRequired(true)
     ),
 
-  async execute(interaction: Interaction): Promise<void> {
+  async execute(interaction: Interaction) {
     if (interaction.isCommand()) {
       if (interaction.commandName === 'praise') {
-        const msg = await interaction.deferReply();
+        const msg = await interaction.deferReply({fetchReply: true}) as APIMessage | void;
         if (msg !== undefined) {
-          await praise(interaction, msg);
+          msg as APIMessage;
+          await praise(
+            interaction,
+            `https://discord.com/channels/${msg?.guild_id}/${msg?.channel_id}/${msg?.id}`
+          );
         }
       }
     }

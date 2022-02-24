@@ -414,8 +414,9 @@ export const useAssignQuantifiers = (periodId: string) => {
             status: 'QUANTIFY' as PeriodStatusType,
           };
           setPeriod(updatedPeriod);
+          return response;
         }
-        return response;
+        throw new Error();
       }
   );
   return { assignQuantifiers };
