@@ -102,7 +102,7 @@ const SettingsForm = () => {
               id={setting.key}
               {...input}
               autoComplete="off"
-              className="resize-none rounded-md block w-full  "
+              className="block w-full resize-y "
             />
             {apiResponse && (
               <FieldErrorMessage name="name" apiResponse={apiResponse} />
@@ -142,11 +142,7 @@ const SettingsForm = () => {
           return (
             <div className="mb-2">
               <label className="block">{setting.key}</label>
-              <input
-                id={setting.key}
-                {...input}
-                className="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain mr-2 cursor-pointer"
-              />
+              <input id={setting.key} {...input} />
               {apiResponse && (
                 <FieldErrorMessage name="name" apiResponse={apiResponse} />
               )}
@@ -169,7 +165,8 @@ const SettingsForm = () => {
 
   const initialValues = {} as any;
   for (const setting of settings) {
-    initialValues[setting.key] = setting.value;
+    initialValues[setting.key] =
+      setting.type === 'Boolean' ? setting.value === 'true' : setting.value;
   }
 
   return (
