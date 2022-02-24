@@ -22,6 +22,7 @@ import {
 } from '@shared/types';
 import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
+import { UserAccountDocument } from '@useraccount/types';
 import { Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
@@ -164,6 +165,7 @@ interface Receiver {
 
 interface Quantifier {
   _id?: string;
+  accounts: UserAccountDocument[];
   receivers: Receiver[];
 }
 
@@ -193,9 +195,20 @@ const assignQuantifiersDryRun = async (
     },
   ]);
 
-  const quantifierPool = await UserModel.find({ roles: UserRole.QUANTIFIER });
+  const quantifierPool = await UserModel.aggregate([
+    { $match: { roles: UserRole.QUANTIFIER } },
+    {
+      $lookup: {
+        from: 'useraccounts',
+        localField: '_id',
+        foreignField: 'user',
+        as: 'accounts',
+      },
+    },
+  ]);
+
   const poolIds: Quantifier[] = quantifierPool.map(
-    (user) => ({ _id: user._id, receivers: [] } as Quantifier)
+    (user) => ({ ...user, receivers: [] } as Quantifier)
   );
   // Scramble the quant pool to randomize who gets assigned
   const pool = poolIds.sort(() => 0.5 - Math.random()).slice(0, poolIds.length);
@@ -223,15 +236,15 @@ const assignQuantifiersDryRun = async (
     for (let ri = 0; ri < receivers.length; ri++) {
       const r = receivers[ri];
 
-      // Quantify your own received praise not allowed
-      if (r._id.toString() === q._id?.toString()) {
-        continue;
-      }
+      const quantifierAccountIds: string[] = q.accounts.map((account) =>
+        account._id.toString()
+      );
 
       // Assign praise that meet criteria
       if (
-        (q.receivers.length === 0 && r.praiseCount >= praisePerQuantifier) ||
-        assignedPraiseCount(q) + r.praiseCount < maxPraisePerQuantifier
+        !quantifierAccountIds.includes(r._id.toString()) &&
+        ((q.receivers.length === 0 && r.praiseCount >= praisePerQuantifier) ||
+        assignedPraiseCount(q) + r.praiseCount < maxPraisePerQuantifier)
       ) {
         // Assign receiver to quantifier
         q.receivers.push(r);
@@ -262,6 +275,8 @@ const assignQuantifiersDryRun = async (
     // when reaching the end of the pool
     if (qi === pool.length - 1 && assignsRemaining()) {
       pool.push({
+        _id: undefined,
+        accounts: [],
         receivers: [],
       });
     }
