@@ -120,7 +120,7 @@ export type AllPraiseQueryParameters = {
   limit?: number;
   page?: number;
   receiver?: string | null;
-  perdiodStart?: string;
+  periodStart?: string;
   periodEnd?: string;
 };
 

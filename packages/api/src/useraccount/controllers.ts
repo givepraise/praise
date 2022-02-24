@@ -1,5 +1,5 @@
 import { NotFoundError } from '@error/errors';
-import { getQuerySort } from '@shared/functions';
+import { getQueryInput, getQuerySort } from '@shared/functions';
 import {
   PaginatedResponseBody,
   QueryInputParsedQs,
@@ -22,8 +22,10 @@ const all = async (
   req: TypedRequestQuery<QueryInputParsedQs>,
   res: TypedResponse<PaginatedResponseBody<UserAccountDto>>
 ): Promise<void> => {
+  const query = getQueryInput(req.query);
+
   const accounts = await UserAccountModel.paginate({
-    ...req.query, //TODO the object is passed unchecked to mongoose. Security risk?
+    ...query, //TODO the object is passed unchecked to mongoose. Security risk?
     sort: getQuerySort(req.query),
   });
   const response = {

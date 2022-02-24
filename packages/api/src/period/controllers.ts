@@ -7,7 +7,11 @@ import { PraiseModel } from '@praise/entities';
 import { praiseDocumentListTransformer } from '@praise/transformers';
 import { PraiseDetailsDto, PraiseDto } from '@praise/types';
 import { praiseWithScore } from '@praise/utils';
-import { getQuerySort } from '@shared/functions';
+import {
+  getPraiseAllInput,
+  getQueryInput,
+  getQuerySort,
+} from '@shared/functions';
 import { settingInt } from '@shared/settings';
 import {
   PaginatedResponseBody,
@@ -42,8 +46,10 @@ export const all = async (
   req: TypedRequestQuery<QueryInputParsedQs>,
   res: TypedResponse<PaginatedResponseBody<PeriodDetailsDto | undefined>>
 ): Promise<void> => {
+  const query = getQueryInput(req.query);
+
   const response = await PeriodModel.paginate({
-    ...req.query,
+    ...query,
     sort: getQuerySort(req.query),
   });
 
@@ -106,6 +112,7 @@ export const update = async (
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
+
   const { name, endDate } = req.body;
 
   if (name) {
