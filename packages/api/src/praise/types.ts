@@ -70,7 +70,7 @@ export interface QuantificationCreateUpdateInput {
 
 export interface PraiseAllInput extends QueryInput {
   receiver?: string;
-  perdiodStart?: string;
+  periodStart?: string;
   periodEnd?: string;
 }
 

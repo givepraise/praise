@@ -18,31 +18,71 @@ const dbName = process.env.MONGO_DB || '';
 
 const db = `mongodb://${username}:${password}@${host}:${port}/${dbName}`;
 
-const importPraise = async (praiseData: PraiseImportInput[]) => {
+const importPraise = async (
+  praiseData: PraiseImportInput[],
+  sloppyImport: boolean
+) => {
   try {
-    // Filter out invalid praise items
+    let isValid = true;
+    let missingNames: string[] = [];
+    // Check import file validity, correct what can be corrected
     praiseData = praiseData.filter((praise, index) => {
       process.stdout.write(`Parsing praise ${index}/${praiseData.length}\r`);
+
+      // Empty reason gets default text.
       if (!praise.reason || praise.reason === '') {
-        console.log(
-          `Skipping ${index}: Praise reason "${praise.reason}" is not valid.`
-        );
-        return false;
+        praise.reason = 'No reason given.';
       }
+
+      if (!praise.giver.accountId) {
+        console.log(
+          `${index}: Giver accountId for ${praise.giver.name} is missing.`
+        );
+        missingNames.push(praise.giver.name);
+        if (sloppyImport) {
+          return false;
+        }
+        isValid = false;
+      }
+
+      if (!praise.receiver.accountId) {
+        console.log(
+          `${index}: Receiver accountId for ${praise.receiver.name} is missing.`
+        );
+        missingNames.push(praise.receiver.name);
+        if (sloppyImport) {
+          return false;
+        }
+        isValid = false;
+      }
+
       return true;
     });
+
+    if (missingNames.length > 0) {
+      const distinctNames = [...new Set(missingNames)];
+      console.log('\nDistinct missing usernames:\n');
+      for (let name of distinctNames) {
+        let n = name.split('#');
+        console.log(`${n[0]},${n[1]}`);
+      }
+    }
+
+    if (!isValid) {
+      throw new Error('Invalid import format.');
+    }
 
     const data = await Promise.all(
       praiseData.map(async (praise: PraiseImportInput) => {
         const giver = await UserAccountModel.findOneAndUpdate(
           { accountId: praise.giver.accountId },
-          (praise.giver as UserAccountDocument),
+          praise.giver as UserAccountDocument,
           { upsert: true, new: true }
         );
 
         const receiver = await UserAccountModel.findOneAndUpdate(
           { accountId: praise.receiver.accountId },
-          (praise.receiver as UserAccountDocument),
+          praise.receiver as UserAccountDocument,
           { upsert: true, new: true }
         );
 
@@ -64,7 +104,7 @@ const importPraise = async (praiseData: PraiseImportInput[]) => {
 
     console.log('👍 SUCCESS!');
   } catch (e: any) {
-    console.log('\n\n🛑 ERRROR!\n');
+    console.log('\n🛑 ERRROR!\n');
     console.error(e.name + ': ' + e.message);
   }
 
@@ -77,20 +117,29 @@ mongoose
   } as ConnectOptions)
   .then(() => {
     const args = process.argv.slice(2);
-    if (args.length !== 1) {
+    if (args.length == 0) {
+      console.log('Usage: yarn workspace api import-praise [FILE] [OPTIONS]');
       console.log(
-        'Too many arguments! Script accepts one argument only - the filename containing the praise import data'
+        'Options: \n--sloppy - Skip null account ids instead of terminating import'
+      );
+    }
+    if (args.length > 2) {
+      console.log(
+        'Too many arguments! Script accepts two arguments only - the filename containing the praise import data and option "--sloppy".'
       );
       process.exit();
     }
     const praiseDataFile = args[0];
-
     const praiseData = JSON.parse(
       fs.readFileSync(path.resolve(__dirname, praiseDataFile), {
         encoding: 'utf-8',
       })
     );
 
+    let sloppyImport = false;
+    if (args[1] === '--sloppy') {
+      sloppyImport = true;
+    }
     console.log('Parsing praise …');
-    importPraise(praiseData);
+    importPraise(praiseData, sloppyImport);
   });
