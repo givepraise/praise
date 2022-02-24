@@ -169,12 +169,37 @@ interface Quantifier {
   receivers: Receiver[];
 }
 
+const assignsRemaining = (
+  receivers: Receiver[],
+  quantifiersPerPraiseReceiver: number
+): boolean => {
+  for (const r of receivers) {
+    if (
+      !r.assignedQuantifiers ||
+      r.assignedQuantifiers < quantifiersPerPraiseReceiver
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
+
 const assignQuantifiersDryRun = async (
   periodId: string
 ): Promise<Array<Quantifier>> => {
   const period = await PeriodModel.findById(periodId);
   if (!period) throw new NotFoundError('Period');
 
+  const quantifiersPerPraiseReceiver = await settingInt(
+    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER'
+  );
+  const tolerance = 1.05;
+  const praisePerQuantifier = await settingInt('PRAISE_PER_QUANTIFIER');
+
+  if (!quantifiersPerPraiseReceiver || !tolerance || !praisePerQuantifier)
+    throw new InternalServerError('Configuration error');
+
+  const maxPraisePerQuantifier = praisePerQuantifier * tolerance;
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
   // Aggregate all period praise receivers and count number of received praise
@@ -213,17 +238,6 @@ const assignQuantifiersDryRun = async (
   // Scramble the quant pool to randomize who gets assigned
   const pool = poolIds.sort(() => 0.5 - Math.random()).slice(0, poolIds.length);
 
-  const quantifiersPerPraiseReceiver = await settingInt(
-    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER'
-  );
-  const tolerance = 1.05;
-  const praisePerQuantifier = await settingInt('PRAISE_PER_QUANTIFIER');
-
-  if (!quantifiersPerPraiseReceiver || !tolerance || !praisePerQuantifier)
-    throw new InternalServerError('Configuration error');
-
-  const maxPraisePerQuantifier = praisePerQuantifier * tolerance;
-
   for (let qi = 0; qi < pool.length; qi++) {
     const q = pool[qi];
 
@@ -259,21 +273,12 @@ const assignQuantifiersDryRun = async (
       }
     }
 
-    const assignsRemaining = (): boolean => {
-      for (const r of receivers) {
-        if (
-          !r.assignedQuantifiers ||
-          r.assignedQuantifiers < quantifiersPerPraiseReceiver
-        ) {
-          return true;
-        }
-      }
-      return false;
-    };
-
     // Extend the pool with dummy quantifiers if assigns remain to be done
     // when reaching the end of the pool
-    if (qi === pool.length - 1 && assignsRemaining()) {
+    if (
+      qi === pool.length - 1 &&
+      assignsRemaining(receivers, quantifiersPerPraiseReceiver)
+    ) {
       pool.push({
         _id: undefined,
         accounts: [],
