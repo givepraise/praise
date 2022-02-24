@@ -5012,7 +5012,6 @@ __metadata:
     ethers: ^5.5.2
     express: ^4.17.1
     express-async-errors: ^3.1.1
-    express-validator: ^6.14.0
     faker: ^5.5.3
     find: ^0.3.0
     fs-extra: ^10.0.0
@@ -9373,16 +9372,6 @@ __metadata:
   peerDependencies:
     express: ^4.16.2
   checksum: 3a2a6df8ea957185df401a239189d617715c38fba13fac8ced7750b25fa95b0ae656e5d1385d12d0e4dcd7997e90d070b218e86abcf8e68bb6048830b53ba668
-  languageName: node
-  linkType: hard
-
-"express-validator@npm:^6.14.0":
-  version: 6.14.0
-  resolution: "express-validator@npm:6.14.0"
-  dependencies:
-    lodash: ^4.17.21
-    validator: ^13.7.0
-  checksum: e43ba1f18a4f02d784e44e13b1b43269a61f9d9283f31e51c230ff6d31591b3d67ad89e444a0941c0688bfd220049087e606bb61569c0eb8df2f118b866cfb43
   languageName: node
   linkType: hard
 
@@ -20263,13 +20252,6 @@ __metadata:
   dependencies:
     builtins: ^1.0.3
   checksum: ce4c68207abfb22c05eedb09ff97adbcedc80304a235a0844f5344f1fd5086aa80e4dbec5684d6094e26e35065277b765c1caef68bcea66b9056761eddb22967
-  languageName: node
-  linkType: hard
-
-"validator@npm:^13.7.0":
-  version: 13.7.0
-  resolution: "validator@npm:13.7.0"
-  checksum: 2b83283de1222ca549a7ef57f46e8d49c6669213348db78b7045bce36a3b5843ff1e9f709ebf74574e06223461ee1f264f8cc9a26a0060a79a27de079d8286ef
   languageName: node
   linkType: hard
 

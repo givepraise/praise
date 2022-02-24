@@ -20,7 +20,6 @@ import {
   NonceRequestInput,
   NonceResponse,
 } from './types';
-import { body, validationResult } from 'express-validator';
 
 const jwtService = new JwtService();
 
@@ -40,14 +39,6 @@ export const auth = async (
   req: TypedRequestBody<AuthRequestInput>,
   res: TypedResponse<AuthResponse>
 ): Promise<void> => {
-  body('ethereumAddress').not().isEmpty().trim().escape();
-  body('signature').not().isEmpty().trim().escape();
-
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    throw new BadRequestError('Invalid request input format.');
-  }
-
   const { ethereumAddress, signature } = req.body;
   if (!ethereumAddress) throw new NotFoundError('ethereumAddress');
   if (!signature) throw new NotFoundError('signature');
@@ -92,13 +83,6 @@ export const nonce = async (
   req: TypedRequestQuery<NonceRequestInputParsedQs>,
   res: TypedResponse<NonceResponse>
 ): Promise<void> => {
-  body('ethereumAddress').not().isEmpty().trim().escape();
-
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    throw new BadRequestError('Invalid request input format.');
-  }
-
   const { ethereumAddress } = req.query;
   if (!ethereumAddress) throw new NotFoundError('ethereumAddress');
 
