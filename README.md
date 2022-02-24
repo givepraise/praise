@@ -97,52 +97,7 @@ Start:
 yarn workspace frontend start
 ```
 
-# VSCode
-
-If you use VSCode, you might want to add the following to `.vscode/settings.json`:
-
-```
-{
-  "eslint.workingDirectories": [
-    {
-      "directory": "./packages/api",
-      "changeProcessCWD": true
-    },
-    {
-      "directory": "./packages/discord-bot",
-      "changeProcessCWD": true
-    },
-    {
-      "directory": "./packages/frontend",
-      "changeProcessCWD": true
-    }
-  ]
-}
-```
-
-You might also want to add launch configurations to be able to debug frontend and api from within VSCode.
-
-Add to `.vscode/launch.json`:
-
-```
-  "configurations": [
-    {
-      "name": "Launch API",
-      "type": "node-terminal",
-      "request": "launch",
-      "command": "yarn workspace api start:dev",
-      "smartStep": false
-    },
-    {
-      "name": "Launch FRONTEND",
-      "type": "pwa-chrome",
-      "request": "launch",
-      "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}"
-    }
-  ]
-```
-
+## Documentation
 To open docs, run-
 ```
 yarn docs
