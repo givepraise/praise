@@ -45,7 +45,13 @@ void (async (): Promise<void> => {
   if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
     try {
-      await seedData();
+      const collections = await mongoose.connection.db
+        .listCollections()
+        .toArray();
+      if (collections.length === 0) {
+        // Only seed database if it is empty
+        await seedData();
+      }
     } catch (error) {
       logger.err('Could not connect to database.');
     }

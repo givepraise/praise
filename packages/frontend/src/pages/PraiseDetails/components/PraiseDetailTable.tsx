@@ -92,13 +92,11 @@ const PraiseDetailTable = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  if (!period) return <div>Could not load praise details.</div>;
+  if (!period || period.status === 'OPEN')
+    return <div>This praise has not been quantified yet.</div>;
 
   if (period.status === 'QUANTIFY' && !isAdmin)
     return <div>Praise scores are not visible during quantification.</div>;
-
-  if (period.status === 'OPEN')
-    return <div>This praise has not been quantified yet.</div>;
 
   return (
     <table

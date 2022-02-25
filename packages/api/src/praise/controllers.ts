@@ -3,7 +3,11 @@ import {
   InternalServerError,
   NotFoundError,
 } from '@error/errors';
-import { getQuerySort } from '@shared/functions';
+import {
+  getPraiseAllInput,
+  getQueryInput,
+  getQuerySort,
+} from '@shared/functions';
 import {
   PaginatedResponseBody,
   Query,
@@ -34,22 +38,12 @@ export const all = async (
   req: TypedRequestQuery<PraiseAllInputParsedQs>,
   res: TypedResponse<PaginatedResponseBody<PraiseDetailsDto>>
 ): Promise<void> => {
-  const { receiver, periodStart, periodEnd } = req.query;
-  const query: any = {};
-  if (receiver) {
-    query.receiver = receiver;
-  }
-
-  if (periodStart && periodEnd) {
-    query.createdAt = {
-      $gt: periodStart,
-      $lte: periodEnd,
-    };
-  }
+  const query = getPraiseAllInput(req.query);
+  const queryInput = getQueryInput(req.query);
 
   const praisePagination = await PraiseModel.paginate({
     query,
-    ...req.query,
+    ...queryInput,
     sort: getQuerySort(req.query),
     populate: 'giver receiver',
   });
@@ -98,6 +92,7 @@ export const quantify = async (
     'giver receiver'
   );
   if (!praise) throw new NotFoundError('Praise');
+
   const { score, dismissed, duplicatePraise } = req.body;
 
   if (!res.locals.currentUser?._id) {

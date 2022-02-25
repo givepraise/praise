@@ -217,7 +217,7 @@ export const handleErrors = (
     }
 
     if (response.data.message) {
-      if (!options?.errorToast === false) {
+      if (!options || options.errorToast === false) {
         toast.error(response.data.message);
       }
       return;
