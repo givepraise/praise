@@ -14,9 +14,25 @@ export function fieldTypeValidator(this: SettingDocument): Boolean {
   }
 
   if (this.type === 'Boolean') {
-    console.log('here');
-    console.log('VALUE:', this.value);
-    return typeof this.value === 'boolean';
+    return this.value === 'true' || this.value === 'false';
+  }
+
+  if (this.type === 'List') {
+    let valid = true;
+    let previous = 0;
+    const valueArray = this.value.split(',').map((item) => item.trim());
+
+    valueArray.forEach((element) => {
+      console.log(previous, parseInt(element));
+
+      if (!isNumeric(element) || parseInt(element) < previous) {
+        valid = false;
+      }
+
+      previous = parseInt(element);
+    });
+
+    return valid;
   }
 
   return typeof this.value === this.type;

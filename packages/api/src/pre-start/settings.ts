@@ -34,7 +34,7 @@ const settings = [
     value:
       process.env.PRAISE_QUANTIFY_ALLOWED_VALUES ||
       '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
-    type: 'String',
+    type: 'List',
   },
   {
     key: 'DISCORD_ACTIVATION',
