@@ -8324,7 +8324,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"docsify@npm:^4.12.1":
+"docsify@npm:^4.12.1, docsify@npm:^4.12.2":
   version: 4.12.2
   resolution: "docsify@npm:4.12.2"
   dependencies:
@@ -16894,6 +16894,7 @@ __metadata:
   dependencies:
     "@typescript-eslint/eslint-plugin": ^5.7.0
     "@typescript-eslint/parser": ^5.10.2
+    docsify: ^4.12.2
     eslint: ^8.8.0
     eslint-config-prettier: ^8.3.0
     eslint-import-resolver-node: ^0.3.6
