@@ -41,18 +41,24 @@ const calculateReceiverScores = async (
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
     );
 
-  const receiversWithQuantifications = receivers.filter((r) => r.quantifications);
+  const receiversWithQuantificationScores = await Promise.all(
+    receivers.map(async (r) => {
+      if (!r.quantifications) return r;
 
-  for (const r of receiversWithQuantifications) {
-    const quantifierScores = await Promise.all(
-      //@ts-ignore
-      r.quantifications.map((q) => calculatePraiseScore(q))
-    );
+      const quantifierScores = await Promise.all(
+        //@ts-ignore
+        r.quantifications.map((q) => calculatePraiseScore(q))
+      );
 
-    r.score = sum(quantifierScores);
-    delete r.quantifications;
-  }
-  return receivers;
+      return {
+        ...r,
+        score: sum(quantifierScores),
+        quantifications: undefined
+      };
+    })
+  );
+
+  return receiversWithQuantificationScores;
 };
 
 export const findPeriodDetailsDto = async (
@@ -117,11 +123,11 @@ export const findPeriodDetailsDto = async (
     ]),
   ]);
 
-  await calculateReceiverScores(receivers);
+  const receiversWithScores = await calculateReceiverScores(receivers);
 
   const response = {
     ...periodDocumentTransformer(period),
-    receivers: await periodDetailsReceiverListTransformer(receivers),
+    receivers: await periodDetailsReceiverListTransformer(receiversWithScores),
     quantifiers: [...quantifiers],
   };
   return response;
