@@ -60,8 +60,8 @@ export const findPeriodDetailsDto = async (
 
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
-  const quantifiers: PeriodDetailsQuantifierDto[] = await PraiseModel.aggregate(
-    [
+  const [quantifiers, receivers]: [PeriodDetailsQuantifierDto[], PeriodDetailsReceiver[]] = await Promise.all([
+    PraiseModel.aggregate([
       {
         $match: {
           createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
@@ -86,33 +86,32 @@ export const findPeriodDetailsDto = async (
           finishedCount: { $sum: { $toInt: '$finished' } },
         },
       },
-    ]
-  );
-
-  const receivers: PeriodDetailsReceiver[] = await PraiseModel.aggregate([
-    {
-      $match: {
-        createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
-      },
-    },
-    {
-      $lookup: {
-        from: 'useraccounts',
-        localField: 'receiver',
-        foreignField: '_id',
-        as: 'userAccounts',
-      },
-    },
-    {
-      $group: {
-        _id: '$receiver',
-        praiseCount: { $count: {} },
-        quantifications: {
-          $push: '$quantifications',
+    ]),
+    PraiseModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
         },
-        userAccounts: { $first: '$userAccounts' },
       },
-    },
+      {
+        $lookup: {
+          from: 'useraccounts',
+          localField: 'receiver',
+          foreignField: '_id',
+          as: 'userAccounts',
+        },
+      },
+      {
+        $group: {
+          _id: '$receiver',
+          praiseCount: { $count: {} },
+          quantifications: {
+            $push: '$quantifications',
+          },
+          userAccounts: { $first: '$userAccounts' },
+        },
+      },
+    ]),
   ]);
 
   await calculateReceiverScores(receivers);
