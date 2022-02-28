@@ -1,6 +1,6 @@
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
-import { calculatePraiseScore } from '@praise/utils';
+import { calculateQuantificationsCompositeScore } from '@praise/utils';
 import { settingFloat } from '@shared/settings';
 import { PeriodModel } from './entities';
 import {
@@ -47,7 +47,7 @@ const calculateReceiverScores = async (
 
       const quantifierScores = await Promise.all(
         //@ts-ignore
-        r.quantifications.map((q) => calculatePraiseScore(q))
+        r.quantifications.map((q) => calculateQuantificationsCompositeScore(q, duplicatePraisePercentage))
       );
 
       return {
