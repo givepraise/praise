@@ -5,7 +5,7 @@ import {
 } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
 import { praiseDocumentListTransformer } from '@praise/transformers';
-import { PraiseDetailsDto, PraiseDto } from '@praise/types';
+import { PraiseDetailsDto, PraiseDto, Receiver, Quantifier } from '@praise/types';
 import { praiseWithScore } from '@praise/utils';
 import {
   getPraiseAllInput,
@@ -155,17 +155,6 @@ const assignedPraiseCount = (quantifier: Quantifier): number => {
   }, 0);
 };
 
-interface Receiver {
-  _id: string;
-  praiseCount: number;
-  praiseIds: string[];
-  assignedQuantifiers?: number;
-}
-
-interface Quantifier {
-  _id?: string;
-  receivers: Receiver[];
-}
 
 const assignQuantifiersDryRun = async (
   periodId: string
