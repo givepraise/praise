@@ -8,7 +8,7 @@ import { registerCommands } from './utils/registerCommands';
 const load = dotenv.config({ path: path.join(__dirname, '..', '/.env') });
 if (load.error) {
   logger.err(load.error.message);
-  process.exit();
+  throw load.error;
 }
 declare module 'discord.js' {
   export interface Client {
@@ -22,9 +22,15 @@ if (!process.env.PRAISE_GIVER_ROLE_ID) {
 
 // Start Discord bot
 const token = process.env.DISCORD_TOKEN;
+const backendURL = process.env.BACKEND_URL;
 if (!token) {
   logger.err('Discord token not set.');
-  process.exit();
+  throw new Error('Discord token not set.');
+}
+
+if (!backendURL) {
+  logger.err('Backend URL not set.');
+  throw new Error('Backend URL not set.');
 }
 
 // Create a new client instance
