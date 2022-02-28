@@ -46,7 +46,7 @@ export const calculateQuantificationsCompositeScore = async (
 };
 
 export const calculatePraiseScore = async (
-  quantifications: Quantification[],
+  praise: PraiseDocument
 ): Promise<number> => {
   const duplicatePraisePercentage = await settingFloat(
     'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
@@ -56,7 +56,7 @@ export const calculatePraiseScore = async (
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
     );
 
-  return calculateQuantificationsCompositeScore(quantifications, duplicatePraisePercentage);
+  return calculateQuantificationsCompositeScore(praise.quantifications, duplicatePraisePercentage);
 };
 
 export const praiseWithScore = async (
@@ -65,6 +65,6 @@ export const praiseWithScore = async (
   const praiseDetailsDto: PraiseDetailsDto = await praiseDocumentTransformer(
     praise
   );
-  praiseDetailsDto.score = await calculatePraiseScore(praise.quantifications);
+  praiseDetailsDto.score = await calculatePraiseScore(praise);
   return praiseDetailsDto;
 };
