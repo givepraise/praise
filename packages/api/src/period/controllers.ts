@@ -310,20 +310,19 @@ export const assignQuantifiers = async (
   // Quantifiers
   for (const q of assignedQuantifiers) {
     const quantifier = await UserModel.findById(q._id);
+    if (!quantifier) continue;
+
     // Receivers
     for (const receiver of q.receivers) {
-      // Praise
-      for (const praiseId of receiver.praiseIds) {
-        const praise = await PraiseModel.findById(praiseId);
-        if (quantifier && praise) {
-          praise.quantifications.push({
+      const praises = await PraiseModel.updateMany({ _id: { $in: receiver.praiseIds } }, {
+        $push: {
+          quantifications: {
             quantifier,
             score: 0,
-            dismissed: false,
-          });
-          await praise.save();
+            dismissed: false
+          }
         }
-      }
+      });
     }
   }
 
