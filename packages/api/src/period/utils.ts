@@ -13,6 +13,7 @@ import {
   PeriodDetailsQuantifierDto,
   PeriodDetailsReceiver,
 } from './types';
+import { sum } from 'lodash';
 
 // Returns previous period end date or 1970-01-01 if no previous period
 export const getPreviousPeriodEndDate = async (
@@ -40,13 +41,15 @@ const calculateReceiverScores = async (
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
     );
 
-  for (const r of receivers) {
-    let score = 0;
-    if (!r.quantifications) continue;
-    for (const quantification of r.quantifications) {
-      score += await calculatePraiseScore(quantification);
-    }
-    r.score = score;
+  const receiversWithQuantifications = receivers.filter((r) => r.quantifications);
+
+  for (const r of receiversWithQuantifications) {
+    const quantifierScores = await Promise.all(
+      //@ts-ignore
+      r.quantifications.map((q) => calculatePraiseScore(q))
+    );
+
+    r.score = sum(quantifierScores);
     delete r.quantifications;
   }
   return receivers;
