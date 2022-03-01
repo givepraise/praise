@@ -77,7 +77,7 @@ export const single = async (
   const praiseDetailsDto: PraiseDetailsDto = await praiseDocumentTransformer(
     praise
   );
-  praiseDetailsDto.score = await calculatePraiseScore(praise.quantifications);
+  praiseDetailsDto.score = await calculatePraiseScore(praise);
   res.status(200).json(praiseDetailsDto);
 };
 

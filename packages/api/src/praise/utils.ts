@@ -9,17 +9,10 @@ import {
   Quantification,
 } from './types';
 
-export const calculatePraiseScore = async (
-  quantifications: Quantification[]
+export const calculateQuantificationsCompositeScore = async (
+  quantifications: Quantification[],
+  duplicatePraisePercentage: number
 ): Promise<number> => {
-  const duplicatePraisePercentage = await settingFloat(
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
-  );
-  if (!duplicatePraisePercentage)
-    throw new BadRequestError(
-      "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
-    );
-
   if (!quantifications) return 0;
 
   let si = 0;
@@ -52,12 +45,26 @@ export const calculatePraiseScore = async (
   return 0;
 };
 
+export const calculatePraiseScore = async (
+  praise: PraiseDocument
+): Promise<number> => {
+  const duplicatePraisePercentage = await settingFloat(
+    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
+  );
+  if (!duplicatePraisePercentage)
+    throw new BadRequestError(
+      "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
+    );
+
+  return calculateQuantificationsCompositeScore(praise.quantifications, duplicatePraisePercentage);
+};
+
 export const praiseWithScore = async (
   praise: PraiseDocument
 ): Promise<PraiseDto> => {
   const praiseDetailsDto: PraiseDetailsDto = await praiseDocumentTransformer(
     praise
   );
-  praiseDetailsDto.score = await calculatePraiseScore(praise.quantifications);
+  praiseDetailsDto.score = await calculatePraiseScore(praise);
   return praiseDetailsDto;
 };

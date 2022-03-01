@@ -1,6 +1,6 @@
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
-import { calculatePraiseScore } from '@praise/utils';
+import { calculateQuantificationsCompositeScore } from '@praise/utils';
 import { settingFloat } from '@shared/settings';
 import { PeriodModel } from './entities';
 import {
@@ -13,6 +13,7 @@ import {
   PeriodDetailsQuantifierDto,
   PeriodDetailsReceiver,
 } from './types';
+import { sum } from 'lodash';
 
 // Returns previous period end date or 1970-01-01 if no previous period
 export const getPreviousPeriodEndDate = async (
@@ -40,16 +41,24 @@ const calculateReceiverScores = async (
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
     );
 
-  for (const r of receivers) {
-    let score = 0;
-    if (!r.quantifications) continue;
-    for (const quantification of r.quantifications) {
-      score += await calculatePraiseScore(quantification);
-    }
-    r.score = score;
-    delete r.quantifications;
-  }
-  return receivers;
+  const receiversWithQuantificationScores = await Promise.all(
+    receivers.map(async (r) => {
+      if (!r.quantifications) return r;
+
+      const quantifierScores = await Promise.all(
+        //@ts-ignore
+        r.quantifications.map((q) => calculateQuantificationsCompositeScore(q, duplicatePraisePercentage))
+      );
+
+      return {
+        ...r,
+        score: sum(quantifierScores),
+        quantifications: undefined
+      };
+    })
+  );
+
+  return receiversWithQuantificationScores;
 };
 
 export const findPeriodDetailsDto = async (
@@ -60,8 +69,8 @@ export const findPeriodDetailsDto = async (
 
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
-  const quantifiers: PeriodDetailsQuantifierDto[] = await PraiseModel.aggregate(
-    [
+  const [quantifiers, receivers]: [PeriodDetailsQuantifierDto[], PeriodDetailsReceiver[]] = await Promise.all([
+    PraiseModel.aggregate([
       {
         $match: {
           createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
@@ -86,40 +95,39 @@ export const findPeriodDetailsDto = async (
           finishedCount: { $sum: { $toInt: '$finished' } },
         },
       },
-    ]
-  );
-
-  const receivers: PeriodDetailsReceiver[] = await PraiseModel.aggregate([
-    {
-      $match: {
-        createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
-      },
-    },
-    {
-      $lookup: {
-        from: 'useraccounts',
-        localField: 'receiver',
-        foreignField: '_id',
-        as: 'userAccounts',
-      },
-    },
-    {
-      $group: {
-        _id: '$receiver',
-        praiseCount: { $count: {} },
-        quantifications: {
-          $push: '$quantifications',
+    ]),
+    PraiseModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
         },
-        userAccounts: { $first: '$userAccounts' },
       },
-    },
+      {
+        $lookup: {
+          from: 'useraccounts',
+          localField: 'receiver',
+          foreignField: '_id',
+          as: 'userAccounts',
+        },
+      },
+      {
+        $group: {
+          _id: '$receiver',
+          praiseCount: { $count: {} },
+          quantifications: {
+            $push: '$quantifications',
+          },
+          userAccounts: { $first: '$userAccounts' },
+        },
+      },
+    ]),
   ]);
 
-  await calculateReceiverScores(receivers);
+  const receiversWithScores = await calculateReceiverScores(receivers);
 
   const response = {
     ...periodDocumentTransformer(period),
-    receivers: await periodDetailsReceiverListTransformer(receivers),
+    receivers: await periodDetailsReceiverListTransformer(receiversWithScores),
     quantifiers: [...quantifiers],
   };
   return response;

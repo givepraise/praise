@@ -5,13 +5,14 @@ import {
 } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
 import { praiseDocumentListTransformer } from '@praise/transformers';
-import { PraiseDetailsDto, PraiseDto, Receiver, Quantifier } from '@praise/types';
-import { praiseWithScore } from '@praise/utils';
 import {
-  getPraiseAllInput,
-  getQueryInput,
-  getQuerySort,
-} from '@shared/functions';
+  PraiseDetailsDto,
+  PraiseDto,
+  Quantifier,
+  Receiver,
+} from '@praise/types';
+import { praiseWithScore } from '@praise/utils';
+import { getQueryInput, getQuerySort } from '@shared/functions';
 import { settingInt } from '@shared/settings';
 import {
   PaginatedResponseBody,
@@ -24,6 +25,7 @@ import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
 import { Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { flatten } from 'lodash';
 import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import { periodDocumentTransformer } from './transformers';
@@ -37,7 +39,6 @@ import {
   VerifyQuantifierPoolSizeResponse,
 } from './types';
 import { findPeriodDetailsDto, getPreviousPeriodEndDate } from './utils';
-import { flatten } from 'lodash';
 /**
  * Description
  * @param
@@ -155,6 +156,20 @@ const assignedPraiseCount = (quantifier: Quantifier): number => {
   }, 0);
 };
 
+const assignsRemaining = (
+  receivers: Receiver[],
+  quantifiersPerPraiseReceiver: number
+): boolean => {
+  for (const r of receivers) {
+    if (
+      !r.assignedQuantifiers ||
+      r.assignedQuantifiers < quantifiersPerPraiseReceiver
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
 
 const assignQuantifiersDryRun = async (
   periodId: string
@@ -162,6 +177,16 @@ const assignQuantifiersDryRun = async (
   const period = await PeriodModel.findById(periodId);
   if (!period) throw new NotFoundError('Period');
 
+  const quantifiersPerPraiseReceiver = await settingInt(
+    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER'
+  );
+  const tolerance = 1.05;
+  const praisePerQuantifier = await settingInt('PRAISE_PER_QUANTIFIER');
+
+  if (!quantifiersPerPraiseReceiver || !tolerance || !praisePerQuantifier)
+    throw new InternalServerError('Configuration error');
+
+  const maxPraisePerQuantifier = praisePerQuantifier * tolerance;
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
   // Aggregate all period praise receivers and count number of received praise
@@ -182,23 +207,23 @@ const assignQuantifiersDryRun = async (
     },
   ]);
 
-  const quantifierPool = await UserModel.find({ roles: UserRole.QUANTIFIER });
+  const quantifierPool = await UserModel.aggregate([
+    { $match: { roles: UserRole.QUANTIFIER } },
+    {
+      $lookup: {
+        from: 'useraccounts',
+        localField: '_id',
+        foreignField: 'user',
+        as: 'accounts',
+      },
+    },
+  ]);
+
   const poolIds: Quantifier[] = quantifierPool.map(
-    (user) => ({ _id: user._id, receivers: [] } as Quantifier)
+    (user) => ({ ...user, receivers: [] } as Quantifier)
   );
   // Scramble the quant pool to randomize who gets assigned
   const pool = poolIds.sort(() => 0.5 - Math.random()).slice(0, poolIds.length);
-
-  const quantifiersPerPraiseReceiver = await settingInt(
-    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER'
-  );
-  const tolerance = 1.05;
-  const praisePerQuantifier = await settingInt('PRAISE_PER_QUANTIFIER');
-
-  if (!quantifiersPerPraiseReceiver || !tolerance || !praisePerQuantifier)
-    throw new InternalServerError('Configuration error');
-
-  const maxPraisePerQuantifier = praisePerQuantifier * tolerance;
 
   for (let qi = 0; qi < pool.length; qi++) {
     const q = pool[qi];
@@ -212,15 +237,15 @@ const assignQuantifiersDryRun = async (
     for (let ri = 0; ri < receivers.length; ri++) {
       const r = receivers[ri];
 
-      // Quantify your own received praise not allowed
-      if (r._id.toString() === q._id?.toString()) {
-        continue;
-      }
+      const quantifierAccountIds: string[] = q.accounts.map((account) =>
+        account._id.toString()
+      );
 
       // Assign praise that meet criteria
       if (
-        (q.receivers.length === 0 && r.praiseCount >= praisePerQuantifier) ||
-        assignedPraiseCount(q) + r.praiseCount < maxPraisePerQuantifier
+        !quantifierAccountIds.includes(r._id.toString()) &&
+        ((q.receivers.length === 0 && r.praiseCount >= praisePerQuantifier) ||
+          assignedPraiseCount(q) + r.praiseCount < maxPraisePerQuantifier)
       ) {
         // Assign receiver to quantifier
         q.receivers.push(r);
@@ -235,22 +260,15 @@ const assignQuantifiersDryRun = async (
       }
     }
 
-    const assignsRemaining = (): boolean => {
-      for (const r of receivers) {
-        if (
-          !r.assignedQuantifiers ||
-          r.assignedQuantifiers < quantifiersPerPraiseReceiver
-        ) {
-          return true;
-        }
-      }
-      return false;
-    };
-
     // Extend the pool with dummy quantifiers if assigns remain to be done
     // when reaching the end of the pool
-    if (qi === pool.length - 1 && assignsRemaining()) {
+    if (
+      qi === pool.length - 1 &&
+      assignsRemaining(receivers, quantifiersPerPraiseReceiver)
+    ) {
       pool.push({
+        _id: undefined,
+        accounts: [],
         receivers: [],
       });
     }
@@ -318,13 +336,13 @@ export const assignQuantifiers = async (
               quantifications: {
                 quantifier: q._id,
                 score: 0,
-                dismissed: false
-              }
-            }
-          }
-        }
-      })
-    ))
+                dismissed: false,
+              },
+            },
+          },
+        },
+      }))
+    )
   );
 
   await PraiseModel.bulkWrite(bulkQueries);

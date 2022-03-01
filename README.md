@@ -1,12 +1,17 @@
 # Praise
 
-## 1. Install dependencies
+## 1. Switch to specified node version
+```
+nvm use
+```
+
+## 2. Install dependencies
 
 ```
 yarn
 ```
 
-## 2. Run MongoDB
+## 3. Run MongoDB
 
 Prerequisites:
 
@@ -33,7 +38,7 @@ Run mongo:
 yarn mongodb:start
 ```
 
-## 3. Start api backend
+## 4. Start api backend
 
 Copy `.env.template` into `.env`:
 
@@ -59,7 +64,7 @@ yarn workspace api import-praise ./sample_data/november.json
 yarn workspace api import-praise ./sample_data/december.json
 ```
 
-## 4. Start Discord bot
+## 5. Start Discord bot
 
 Copy `.env.template` into `.env`:
 
@@ -81,7 +86,7 @@ Start:
 yarn workspace discord-bot start
 ```
 
-## 5. Start frontend
+## 6. Start frontend
 
 Copy `.env.template` and rename `.env.development`.
 
