@@ -3,11 +3,17 @@ import { useQuantifyPraise } from '@/model/praise';
 import { SingleStringSetting } from '@/model/settings';
 import { Slider, Tooltip } from '@mui/material';
 import { PraiseDto } from 'api/dist/praise/types';
-import React, { FC } from 'react';
+import React from 'react';
 import { useRecoilValue } from 'recoil';
 
-const ValueLabelComponent: FC<any> = (props) => {
-  const { children, value } = props;
+interface ValueLabelComponentProps {
+  children: JSX.Element;
+  value: string;
+}
+const ValueLabelComponent = ({
+  children,
+  value,
+}: ValueLabelComponentProps): JSX.Element => {
   return (
     <Tooltip enterTouchDelay={0} placement="top" title={value}>
       {children}
@@ -24,7 +30,7 @@ interface QuantifySliderProps {
   praise: PraiseDto;
 }
 
-const QuantifySlider = ({ praise }: QuantifySliderProps) => {
+const QuantifySlider = ({ praise }: QuantifySliderProps): JSX.Element => {
   const [selectedSliderMark, setSelectedSliderMark] = React.useState<number>(0);
   const [sliderMarks, setSliderMarks] = React.useState<Mark[]>([]);
   const [scores, setScores] = React.useState<number[]>([]);

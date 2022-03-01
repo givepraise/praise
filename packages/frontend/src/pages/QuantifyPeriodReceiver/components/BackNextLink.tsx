@@ -1,14 +1,16 @@
 import { UserPseudonym } from '@/components/user/UserPseudonym';
-import { PeriodQuantifierReceivers } from '@/model/periods';
+import {
+  PeriodAndReceiverPageParams,
+  PeriodQuantifierReceivers,
+} from '@/model/periods';
 import { SingleBooleanSetting } from '@/model/settings';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
-export const QuantifyBackNextLink = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId, receiverId } = useParams() as any;
+export const QuantifyBackNextLink = (): JSX.Element | null => {
+  const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
   const receivers = useRecoilValue(PeriodQuantifierReceivers(periodId));
   const usePseudonyms = useRecoilValue(
     SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
@@ -33,7 +35,6 @@ export const QuantifyBackNextLink = () => {
         {backReceiver && (
           <Link
             replace
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             to={`/quantify/period/${periodId}/receiver/${backReceiver.receiverId}`}
           >
             <FontAwesomeIcon icon={faArrowLeft} size="1x" className="mr-2" />
@@ -52,7 +53,6 @@ export const QuantifyBackNextLink = () => {
         {forwardReceiver && (
           <Link
             replace
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             to={`/quantify/period/${periodId}/receiver/${forwardReceiver.receiverId}`}
           >
             {usePseudonyms ? (

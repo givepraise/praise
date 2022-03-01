@@ -10,18 +10,19 @@ import { useRecoilValue } from 'recoil';
 import EthAccount from './components/EthAccount';
 import { LoginButton } from './components/Login';
 
-const hasMetaMask = () => {
+const hasMetaMask = (): boolean => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return typeof (window as any).ethereum !== 'undefined';
 };
 
-export default function LoginPage() {
+export default function LoginPage(): JSX.Element {
   const {
     error: ethError,
     connector: ethConnector,
     activate: ethActivate,
   } = useWeb3React();
 
-  const ethState = useRecoilValue(EthState) as any;
+  const ethState = useRecoilValue(EthState);
 
   // Marks which ethConnector is being activated
   const [activatingConnector, setActivatingConnector] = React.useState<
@@ -71,7 +72,7 @@ export default function LoginPage() {
                     !hasMetaMask()
                   }
                   key={'Injected'}
-                  onClick={() => {
+                  onClick={(): void => {
                     setActivatingConnector(injected);
                     void ethActivate(injected, (error) => {
                       if (error.name === 'UnsupportedChainIdError')

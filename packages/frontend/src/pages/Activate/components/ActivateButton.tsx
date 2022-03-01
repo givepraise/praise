@@ -24,8 +24,8 @@ const generateLoginMessage = (
   );
 };
 
-export default function ActivateButton() {
-  const ActivateButtonInner = () => {
+export default function ActivateButton(): JSX.Element {
+  const ActivateButtonInner = (): JSX.Element => {
     const { account: ethereumAddress, library: ethLibrary } = useWeb3React();
     const [message, setMessage] = React.useState<string | undefined>(undefined);
     const [signature, setSignature] = React.useState<string | undefined>(
@@ -78,7 +78,7 @@ export default function ActivateButton() {
           setActivateResponse(response);
         }
       })();
-    }, [ethereumAddress, accountId, message, signature]);
+    }, [ethereumAddress, accountId, message, signature, activateAccount]);
 
     // 1. Generate login message to sign
     React.useEffect(() => {
@@ -97,9 +97,10 @@ export default function ActivateButton() {
       if (isResponseOk(activateResponse)) setAccountActivated(true);
     }, [activateResponse, setAccountActivated]);
 
-    const signLoginMessage = async () => {
+    const signLoginMessage = async (): Promise<void> => {
       // 2. Sign the message using Metamask
-      const _signature: any = await ethLibrary.getSigner().signMessage(message);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const _signature: any = await ethLibrary.getSigner().signMessage(message); //TODO better type handling for useWeb3React
       if (_signature) setSignature(_signature);
     };
 

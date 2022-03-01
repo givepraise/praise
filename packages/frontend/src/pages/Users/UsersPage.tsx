@@ -8,15 +8,15 @@ import { UserRole } from 'api/dist/user/types';
 import React from 'react';
 import UsersTable from './components/UsersTable';
 
-const AddRoleButton = () => {
+const AddRoleButton = (): JSX.Element => {
   const [isOpen, setIsOpen] = React.useState(false);
   const { addRole } = useAdminUsers();
 
-  const handleAddQuantifierClick = () => {
+  const handleAddQuantifierClick = (): void => {
     setIsOpen(true);
   };
 
-  const handleQuantifierAdded = (id: string) => {
+  const handleQuantifierAdded = (id: string): void => {
     void addRole(id, UserRole.QUANTIFIER);
   };
 
@@ -28,12 +28,12 @@ const AddRoleButton = () => {
         {isOpen ? (
           <Dialog
             open={isOpen}
-            onClose={() => setIsOpen(false)}
+            onClose={(): void => setIsOpen(false)}
             className="fixed inset-0 z-10 overflow-y-auto"
           >
             <div>
               <PoolAddDialog
-                onClose={() => setIsOpen(false)}
+                onClose={(): void => setIsOpen(false)}
                 onQuantifierAdded={handleQuantifierAdded}
               />
             </div>
@@ -44,7 +44,7 @@ const AddRoleButton = () => {
   );
 };
 
-const UsersPage = () => {
+const UsersPage = (): JSX.Element => {
   return (
     <>
       <BreadCrumb name="Quantifier pool" icon={faUserFriends} />

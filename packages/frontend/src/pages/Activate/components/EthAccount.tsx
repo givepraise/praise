@@ -3,7 +3,7 @@ import { shortenEthAddress } from '@/utils/index';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import { useRecoilValue } from 'recoil';
 
-export default function EthAccount() {
+export default function EthAccount(): JSX.Element | null {
   const ethState = useRecoilValue(EthState);
   if (ethState.connected && ethState.account)
     return (

@@ -6,7 +6,7 @@ import { InjectedConnector } from '@web3-react/injected-connector';
 import React from 'react';
 import { useSetRecoilState } from 'recoil';
 
-export default function EthConnection() {
+export default function EthConnection(): JSX.Element | null {
   const {
     error: ethError,
     connector: ethConnector,

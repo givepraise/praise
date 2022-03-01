@@ -4,7 +4,7 @@ import React from 'react';
 import DayPicker from 'react-day-picker';
 import { useField, useForm } from 'react-final-form';
 
-export const PeriodDayPicker = () => {
+export const PeriodDayPicker = (): JSX.Element => {
   const form = useForm();
 
   // Subscribe to the "active" event on the endDate input
@@ -34,8 +34,8 @@ export const PeriodDayPicker = () => {
     setVisibilityClass('hidden');
   }, [timestamp]);
 
-  const handleDayClick = (day: any) => {
-    form.mutators.setDate(formatDate(day));
+  const handleDayClick = (day: Date): void => {
+    form.mutators.setDate(formatDate(day.toISOString()));
     setVisibilityClass('hidden');
   };
 

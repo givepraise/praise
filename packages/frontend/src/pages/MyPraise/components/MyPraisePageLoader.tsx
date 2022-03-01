@@ -9,20 +9,20 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { MY_PRAISE_LIST_KEY } from './MyPraiseTable';
 
 //TODO add support for more than one user account connected to one user
-const getReceiverId = (user: UserDto | null) => {
+const getReceiverId = (user: UserDto | undefined): string | undefined => {
   const accounts = user?.accounts;
   return Array.isArray(accounts) && accounts.length > 0
     ? accounts[0]._id
-    : null;
+    : undefined;
 };
 
-const MyPraisePageLoader = () => {
+const MyPraisePageLoader = (): JSX.Element | null => {
   const userId = useRecoilValue(ActiveUserId);
   const user = useRecoilValue(SingleUser({ userId }));
 
   const receiverId = getReceiverId(user);
 
-  const MyPraisePageLoaderInner = () => {
+  const MyPraisePageLoaderInner = (): JSX.Element => {
     const [praisePagination, setPraisePagination] = useRecoilState(
       AllPraiseQueryPagination(MY_PRAISE_LIST_KEY)
     );

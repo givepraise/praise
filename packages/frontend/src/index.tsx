@@ -1,11 +1,11 @@
 import { ExternalProvider, Web3Provider } from '@ethersproject/providers';
 import { Web3ReactProvider } from '@web3-react/core';
-import React, { FC } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
-import useErrorBoundary from 'use-error-boundary';
+import { useErrorBoundary } from 'use-error-boundary';
 import EthConnection from './components/EthConnection';
 import Routes from './navigation/Routes';
 import ErrorPage from './pages/ErrorPage';
@@ -14,13 +14,18 @@ import './styles/globals.css';
 
 const LOAD_DELAY = 500;
 
-function getLibrary(provider: ExternalProvider) {
+function getLibrary(provider: ExternalProvider): Web3Provider {
   const library = new Web3Provider(provider);
   library.pollingInterval = 12000;
   return library;
 }
 
-const DelayedLoading: FC<any> = ({ children }) => {
+interface DelayedLoadingProps {
+  children: JSX.Element;
+}
+const DelayedLoading = ({
+  children,
+}: DelayedLoadingProps): JSX.Element | null => {
   const [delay, setDelay] = React.useState<boolean>(true);
 
   React.useEffect(() => {
@@ -34,13 +39,16 @@ const DelayedLoading: FC<any> = ({ children }) => {
   return children;
 };
 
-const ErrorBoundary: FC<any> = ({ children }) => {
+interface ErrorBoundaryProps {
+  children: JSX.Element;
+}
+const ErrorBoundary = ({ children }: ErrorBoundaryProps): JSX.Element => {
   const { ErrorBoundary } = useErrorBoundary();
 
   return (
     <ErrorBoundary
-      render={() => children}
-      renderError={({ error }) => <ErrorPage error={error} />}
+      render={(): JSX.Element => children}
+      renderError={({ error }): JSX.Element => <ErrorPage error={error} />}
     />
   );
 };

@@ -1,7 +1,7 @@
 import BreadCrumb from '@/components/BreadCrumb';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
-import { useSinglePraiseQuery } from '@/model/praise';
+import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
 import BackLink from '@/navigation/BackLink';
 import { formatDateLong } from '@/utils/date';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
@@ -10,9 +10,8 @@ import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import PraiseDetailTable from './components/PraiseDetailTable';
 
-const PeriodReceiverMessage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { praiseId } = useParams() as any;
+const PeriodReceiverMessage = (): JSX.Element | null => {
+  const { praiseId } = useParams<PraisePageParams>();
   const praise = useSinglePraiseQuery(praiseId);
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
@@ -40,7 +39,7 @@ const PeriodReceiverMessage = () => {
   );
 };
 
-const QuantSummaryPraisePage = () => {
+const QuantSummaryPraisePage = (): JSX.Element => {
   return (
     <>
       <BreadCrumb name={'Praise details'} icon={faCalendarAlt} />
