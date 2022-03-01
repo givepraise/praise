@@ -23,8 +23,6 @@ export function fieldTypeValidator(this: SettingDocument): Boolean {
     const valueArray = this.value.split(',').map((item) => item.trim());
 
     valueArray.forEach((element) => {
-      console.log(previous, parseInt(element));
-
       if (!isNumeric(element) || parseInt(element) < previous) {
         valid = false;
       }
