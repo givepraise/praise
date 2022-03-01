@@ -10,11 +10,6 @@ const settings = [
     type: 'Number',
   },
   {
-    key: 'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER_TOLERANCE',
-    value: process.env.PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER_TOLERANCE || 1.2,
-    type: 'Number',
-  },
-  {
     key: 'PRAISE_PER_QUANTIFIER',
     value: process.env.PRAISE_PER_QUANTIFIER || 50,
     type: 'Number',
