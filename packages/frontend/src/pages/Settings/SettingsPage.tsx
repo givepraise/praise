@@ -34,7 +34,7 @@ const SettingsForm = () => {
     for (const prop in values) {
       if (Object.prototype.hasOwnProperty.call(values, prop)) {
         const setting = settings?.find((s) => s.key === prop);
-        if (setting && values[prop] !== setting.value) {
+        if (setting && values[prop].toString() !== setting.value) {
           const updatedSetting = {
             ...setting,
             value: values[prop],
@@ -45,11 +45,129 @@ const SettingsForm = () => {
     }
   };
 
+  const getStringInput = (setting: Setting) => {
+    return (
+      <Field name={setting.key} key={setting.key}>
+        {({ input, meta }) => {
+          return (
+            <div className="mb-2">
+              <label className="block">{setting.key}</label>
+              <input
+                type="text"
+                id={setting.key}
+                {...input}
+                autoComplete="off"
+                className="block w-full"
+              />
+              {apiResponse && (
+                <FieldErrorMessage name="name" apiResponse={apiResponse} />
+              )}
+            </div>
+          );
+        }}
+      </Field>
+    );
+  };
+
+  const getNumberInput = (setting: Setting) => {
+    return (
+      <Field name={setting.key} key={setting.key}>
+        {({ input, meta }) => (
+          <div className="mb-2">
+            <label className="block">{setting.key}</label>
+            <input
+              type="number"
+              id={setting.key}
+              {...input}
+              autoComplete="off"
+              className="block w-full"
+            />
+            {apiResponse && (
+              <FieldErrorMessage name="name" apiResponse={apiResponse} />
+            )}
+          </div>
+        )}
+      </Field>
+    );
+  };
+
+  const getTextareaInput = (setting: Setting) => {
+    return (
+      <Field name={setting.key} key={setting.key}>
+        {({ input, meta }) => (
+          <div className="mb-2">
+            <label className="block">{setting.key}</label>
+            <textarea
+              type="text"
+              id={setting.key}
+              {...input}
+              autoComplete="off"
+              className="block w-full resize-y "
+            />
+            {apiResponse && (
+              <FieldErrorMessage name="name" apiResponse={apiResponse} />
+            )}
+          </div>
+        )}
+      </Field>
+    );
+  };
+
+  const getFileInput = (setting: Setting) => {
+    return (
+      <Field name={setting.key} key={setting.key}>
+        {({ input, meta }) => (
+          <div className="mb-2">
+            <label className="block">{setting.key}</label>
+            <input
+              type="text"
+              id={setting.key}
+              {...input}
+              autoComplete="off"
+              className="block w-full"
+            />
+            {apiResponse && (
+              <FieldErrorMessage name="name" apiResponse={apiResponse} />
+            )}
+          </div>
+        )}
+      </Field>
+    );
+  };
+
+  const getBooleanInput = (setting: Setting) => {
+    return (
+      <Field name={setting.key} key={setting.key} type="checkbox">
+        {({ input, meta }) => {
+          return (
+            <div className="mb-2">
+              <label className="block">{setting.key}</label>
+              <input id={setting.key} {...input} />
+              {apiResponse && (
+                <FieldErrorMessage name="name" apiResponse={apiResponse} />
+              )}
+            </div>
+          );
+        }}
+      </Field>
+    );
+  };
+
+  const getField = (setting: Setting) => {
+    if (setting.type === 'String' || setting.type === 'List')
+      return getStringInput(setting);
+    if (setting.type === 'Number') return getNumberInput(setting);
+    if (setting.type === 'Textarea') return getTextareaInput(setting);
+    if (setting.type === 'Boolean') return getBooleanInput(setting);
+    if (setting.type === 'File') return getFileInput(setting);
+  };
+
   if (!Array.isArray(settings) || settings.length === 0) return null;
 
   const initialValues = {} as any;
   for (const setting of settings) {
-    initialValues[setting.key] = setting.value;
+    initialValues[setting.key] =
+      setting.type === 'Boolean' ? setting.value === 'true' : setting.value;
   }
 
   return (
@@ -65,28 +183,7 @@ const SettingsForm = () => {
       render={({ handleSubmit, submitSucceeded }) => (
         <form onSubmit={handleSubmit} className="leading-loose">
           <div className="mb-3">
-            {settings.map((setting: Setting) => (
-              <Field name={setting.key} key={setting.key}>
-                {({ input, meta }) => (
-                  <div className="mb-2">
-                    <label className="block">{setting.key}</label>
-                    <input
-                      type="text"
-                      id="input-period-name"
-                      {...input}
-                      autoComplete="off"
-                      className="block w-full"
-                    />
-                    {apiResponse && (
-                      <FieldErrorMessage
-                        name="name"
-                        apiResponse={apiResponse}
-                      />
-                    )}
-                  </div>
-                )}
-              </Field>
-            ))}
+            {settings.map((setting: Setting) => getField(setting))}
           </div>
           <div className="mt-2">
             <SubmitButton />
@@ -103,10 +200,7 @@ const SettingsPage = () => {
       <BreadCrumb name="Settings" icon={faCogs} />
 
       <div className="w-2/3 praise-box">
-        <h2 className="mb-2">👷‍♀️👷‍♂️ Settings</h2>
-        <div className="mt-3 mb-2">
-          This page is still very much WIP. Saving works though.
-        </div>
+        <h2 className="mb-2">Settings</h2>
         <React.Suspense fallback="Loading…">
           <SettingsForm />
         </React.Suspense>
