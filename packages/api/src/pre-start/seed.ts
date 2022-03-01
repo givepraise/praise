@@ -4,6 +4,7 @@ import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { UserAccountDocument } from '@useraccount/types';
 import faker from 'faker';
+import logger from 'jet-logger';
 
 const PERIOD_NUMBER = 3;
 const PERIOD_LENGTH = 10;
@@ -37,6 +38,22 @@ const fetchTwoRandomUserAccounts = async (): Promise<UserAccountDocument[]> => {
   return useraccounts;
 };
 
+const seedUser = async (userData: Object = {}, userAccountData: Object = {}): Promise<void> => {
+    const user = await UserModel.create({
+      ethereumAddress: faker.finance.ethereumAddress(),
+      roles: ["USER"],
+      ...userData
+    });
+
+    await UserAccountModel.create({
+      user: user._id,
+      accountId: faker.datatype.uuid(),
+      name: faker.internet.userName(),
+      platform: 'DISCORD',
+      ...userAccountData
+    });
+};
+
 const seedPeriods = async (): Promise<void> => {
   const periodsCount = await PeriodModel.count();
 
@@ -60,16 +77,9 @@ const seedPredefinedUsers = async (): Promise<void> => {
   if (userCount < PREDEFINED_USERS.length) {
     for (let i = 0; i < PREDEFINED_USERS.length; i++) {
       try {
-        const user = await UserModel.create({
+        await seedUser({
           ethereumAddress: PREDEFINED_USERS[i].ethereumAddress,
           roles: PREDEFINED_USERS[i].roles,
-        });
-
-        await UserAccountModel.create({
-          user: user._id,
-          accountId: faker.datatype.uuid(),
-          name: faker.internet.userName(),
-          platform: 'DISCORD',
         });
       } catch (e) {
         console.log('ERROR:', e);
@@ -79,41 +89,33 @@ const seedPredefinedUsers = async (): Promise<void> => {
 };
 
 const seedRegularUsers = async (): Promise<void> => {
-  for (let i = 0; i < REGULAR_USERS_NUMBER; i++) {
-    try {
-      const user = await UserModel.create({
-        ethereumAddress: faker.finance.ethereumAddress(),
-        roles: ["USER"]
-      });
+  const userCount = await UserModel.count({ roles: ['USER']});
 
-      await UserAccountModel.create({
-        user: user._id,
-        accountId: faker.datatype.uuid(),
-        name: faker.internet.userName(),
-        platform: 'DISCORD',
-      });
-    } catch (e) {
-      console.log('ERROR:', e);
+  if (userCount < REGULAR_USERS_NUMBER) {
+    for (let i = 0; i < REGULAR_USERS_NUMBER; i++) {
+      try {
+        await seedUser({
+          roles: ["USER"]
+        });
+      } catch (e) {
+        console.log('ERROR:', e);
+      }
     }
   }
 };
 
 const seedQuantifierUsers = async (): Promise<void> => {
-  for (let i = 0; i < QUANTIFIER_USERS_NUMBER; i++) {
-    try {
-      const user = await UserModel.create({
-        ethereumAddress: faker.finance.ethereumAddress(),
-        roles: ["USER", "QUANTIFIER"]
-      });
+  const userCount = await UserModel.count({ roles: ['USER', 'QUANTIFIER']});
 
-      await UserAccountModel.create({
-        user: user._id,
-        accountId: faker.datatype.uuid(),
-        name: faker.internet.userName(),
-        platform: 'DISCORD',
-      });
-    } catch (e) {
-      console.log('ERROR:', e);
+  if (userCount < QUANTIFIER_USERS_NUMBER) {
+    for (let i = 0; i < QUANTIFIER_USERS_NUMBER; i++) {
+      try {
+        await seedUser({
+          roles: ["USER", "QUANTIFIER"]
+        });
+      } catch (e) {
+        console.log('ERROR:', e);
+      }
     }
   }
 };
