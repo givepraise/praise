@@ -154,7 +154,8 @@ const SettingsForm = () => {
   };
 
   const getField = (setting: Setting) => {
-    if (setting.type === 'String') return getStringInput(setting);
+    if (setting.type === 'String' || setting.type === 'List')
+      return getStringInput(setting);
     if (setting.type === 'Number') return getNumberInput(setting);
     if (setting.type === 'Textarea') return getTextareaInput(setting);
     if (setting.type === 'Boolean') return getBooleanInput(setting);

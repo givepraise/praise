@@ -27,8 +27,10 @@ export const set = async (
   res: TypedResponse<SettingDto>
 ): Promise<void> => {
   const { value } = req.body;
+
   if (typeof value === 'undefined')
     throw new BadRequestError('Value is required field');
+
   const { id } = req.params;
   const setting = await SettingsModel.findById(id);
   if (!setting) throw new NotFoundError('Settings');

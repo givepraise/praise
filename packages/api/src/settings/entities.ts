@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { SettingDocument } from './types';
+import { fieldTypeValidator } from './validators';
 
 export const settingsSchema = new mongoose.Schema(
   {
@@ -7,7 +8,8 @@ export const settingsSchema = new mongoose.Schema(
     value: { type: String, required: true },
     type: {
       type: String,
-      enum: ['Number', 'String', 'Textarea', 'Boolean', 'File'],
+      enum: ['Number', 'String', 'Textarea', 'Boolean', 'File', 'List'],
+      validate: fieldTypeValidator,
     },
   },
   {
