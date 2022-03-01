@@ -31,9 +31,7 @@ const PREDEFINED_USERS = [
 ];
 
 const fetchTwoRandomUserAccounts = async (): Promise<UserAccountDocument[]> => {
-  const n = await UserAccountModel.count();
-  const r = Math.floor(Math.random() * n);
-  const useraccounts = await UserAccountModel.find().limit(2).skip(r);
+  const useraccounts = await UserAccountModel.aggregate([{ $sample: { size: 2 } }]);
 
   return useraccounts;
 };
