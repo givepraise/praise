@@ -1,9 +1,5 @@
-import { isResponseOk } from '@/model/api';
-import { SetSettingApiResponse } from '@/model/settings';
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
 import { useFormState } from 'react-final-form';
-import { useRecoilValue } from 'recoil';
 
 const SubmitButton = (): JSX.Element => {
   const {
@@ -13,7 +9,6 @@ const SubmitButton = (): JSX.Element => {
     dirtySinceLastSubmit,
     pristine,
   } = useFormState();
-  const apiResponse = useRecoilValue(SetSettingApiResponse);
 
   const disabled =
     pristine ||
@@ -23,6 +18,17 @@ const SubmitButton = (): JSX.Element => {
 
   const className = disabled ? 'praise-button-disabled' : 'praise-button';
 
+  const [buttonText, setButtonText] = React.useState<string>('Save settings');
+
+  React.useEffect(() => {
+    if (submitSucceeded) {
+      setTimeout(() => setButtonText('Save settings'), 1000);
+    }
+    if (submitting) {
+      setButtonText('Saving…');
+    }
+  }, [submitSucceeded, submitting]);
+
   return (
     <button
       type="submit"
@@ -30,20 +36,7 @@ const SubmitButton = (): JSX.Element => {
       className={className}
       disabled={disabled}
     >
-      {apiResponse && isResponseOk(apiResponse) ? (
-        <>
-          <FontAwesomeIcon
-            icon={faCheckCircle}
-            size="1x"
-            className="inline-block mr-2"
-          />
-          Setting saved
-        </>
-      ) : submitting ? (
-        'Saving…'
-      ) : (
-        'Save settings'
-      )}
+      {buttonText}
     </button>
   );
 };
