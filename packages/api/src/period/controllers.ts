@@ -308,21 +308,23 @@ export const assignQuantifiers = async (
     throw new BadRequestError('Quantifier pool size too small.');
 
   // Quantifiers
-  for (const q of assignedQuantifiers) {
-    await Promise.all(
-      q.receivers.map((receiver) =>
-        PraiseModel.updateMany({ _id: { $in: receiver.praiseIds } }, {
-          $push: {
-            quantifications: {
-              quantifier: q._id,
-              score: 0,
-              dismissed: false
+  await Promise.all(
+    assignedQuantifiers.map((q) =>
+      Promise.all(
+        q.receivers.map((receiver) =>
+          PraiseModel.updateMany({ _id: { $in: receiver.praiseIds } }, {
+            $push: {
+              quantifications: {
+                quantifier: q._id,
+                score: 0,
+                dismissed: false
+              }
             }
-          }
-        })
+          })
+        )
       )
-    );
-  }
+    )
+  );
 
   period.status = PeriodStatusType.QUANTIFY;
   await period.save();
