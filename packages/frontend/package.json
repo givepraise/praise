@@ -59,7 +59,7 @@
   "scripts": {
     "build": "craco build",
     "start": "TAILWIND_MODE=watch craco start",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .ts --ext .tsx",
     "test": "jest",
     "test:watch": "jest --watch"
   },
