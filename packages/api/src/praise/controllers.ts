@@ -226,20 +226,24 @@ export const exportPraise = async (
 
   const docs = await Promise.all(
     praises.map(async (p) => {
-      const receiver = await UserModel.findOne({
-        accounts: p.receiver._id,
-      });
+      if (p.receiver) {
+        const receiver = await UserModel.findOne({
+          accounts: p.receiver._id,
+        });
 
-      const giver = await UserModel.findOne({
-        accounts: p.giver._id,
-      });
-
-      if (receiver) {
-        p.receiver.ethAddress = receiver.ethereumAddress;
+        if (receiver) {
+          p.receiver.ethAddress = receiver.ethereumAddress;
+        }
       }
 
-      if (giver) {
-        p.giver.ethAddress = giver.ethereumAddress;
+      if (p.giver) {
+        const giver = await UserModel.findOne({
+          accounts: p.giver._id,
+        });
+
+        if (giver) {
+          p.giver.ethAddress = giver.ethereumAddress;
+        }
       }
 
       return p;
@@ -252,7 +256,7 @@ export const exportPraise = async (
       value: 'createdAt',
     },
     {
-      label: 'TO',
+      label: 'TO USER ACCOUNT',
       value: 'receiver.username',
     },
     {
@@ -260,7 +264,7 @@ export const exportPraise = async (
       value: 'receiver.ethAddress',
     },
     {
-      label: 'FROM',
+      label: 'FROM USER ACCOUNT',
       value: 'giver.username',
     },
     {
@@ -283,7 +287,7 @@ export const exportPraise = async (
 
   for (let index = 0; index < quantificationsColumnsCount; index++) {
     const quantObj = {
-      label: `QUANT SCORE ${index + 1}`,
+      label: `SCORE ${index + 1}`,
       value: `quantifications[${index}].score`,
     };
 
