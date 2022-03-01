@@ -148,9 +148,13 @@ const seedPraises = async (): Promise<void> => {
 };
 
 export const seedData = async (): Promise<void> => {
+  logger.info('Seeding database with fake data.');
+
   await seedPeriods();
   await seedPredefinedUsers();
   await seedRegularUsers();
   await seedQuantifierUsers();
   await seedPraises();
+
+  logger.info('Seeding complete.')
 };
