@@ -6,12 +6,20 @@ import { useFormState } from 'react-final-form';
 import { useRecoilValue } from 'recoil';
 
 const SubmitButton = (): JSX.Element => {
-  const { invalid, submitting, submitSucceeded, dirtySinceLastSubmit } =
-    useFormState();
+  const {
+    invalid,
+    submitting,
+    submitSucceeded,
+    dirtySinceLastSubmit,
+    pristine,
+  } = useFormState();
   const apiResponse = useRecoilValue(SetSettingApiResponse);
 
   const disabled =
-    invalid || submitting || (submitSucceeded && !dirtySinceLastSubmit);
+    pristine ||
+    invalid ||
+    submitting ||
+    (submitSucceeded && !dirtySinceLastSubmit);
 
   const className = disabled ? 'praise-button-disabled' : 'praise-button';
 

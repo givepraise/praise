@@ -34,7 +34,7 @@ const SettingsForm = () => {
     for (const prop in values) {
       if (Object.prototype.hasOwnProperty.call(values, prop)) {
         const setting = settings?.find((s) => s.key === prop);
-        if (setting && values[prop] !== setting.value) {
+        if (setting && values[prop].toString() !== setting.value) {
           const updatedSetting = {
             ...setting,
             value: values[prop],
@@ -199,10 +199,7 @@ const SettingsPage = () => {
       <BreadCrumb name="Settings" icon={faCogs} />
 
       <div className="w-2/3 praise-box">
-        <h2 className="mb-2">👷‍♀️👷‍♂️ Settings</h2>
-        <div className="mt-3 mb-2">
-          This page is still very much WIP. Saving works though.
-        </div>
+        <h2 className="mb-2">Settings</h2>
         <React.Suspense fallback="Loading…">
           <SettingsForm />
         </React.Suspense>
