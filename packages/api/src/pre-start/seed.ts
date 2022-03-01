@@ -83,7 +83,7 @@ const seedData = async (): Promise<void> => {
   const praisesCount = await PraiseModel.count();
   const userCount = await UserModel.count();
 
-  if (periodsCount < PERIOD_NUMBER) {
+  if (periodsCount === 0) {
     const d = new Date();
     for (let i = 0; i < PERIOD_NUMBER; i++) {
       await PeriodModel.create({
@@ -96,7 +96,7 @@ const seedData = async (): Promise<void> => {
     }
   }
 
-  if (userCount < USERS.length) {
+  if (userCount === 0) {
     for (let i = 0; i < USERS.length; i++) {
       try {
         const user = await UserModel.create({
@@ -116,7 +116,7 @@ const seedData = async (): Promise<void> => {
     }
   }
 
-  if (praisesCount < PRAISE_NUMBER) {
+  if (praisesCount === 0) {
     for (let i = 0; i < PRAISE_NUMBER; i++) {
       const accounts = twoRandomAccountIndexes();
 
