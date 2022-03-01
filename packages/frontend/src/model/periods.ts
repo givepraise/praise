@@ -177,12 +177,19 @@ export const useAllPeriodsQuery = (
   const allPeriodsIds = useRecoilValue(AllPeriodIds);
 
   const saveAllPeriods = useRecoilCallback(
-    ({ set }) =>
+    ({ set, snapshot }) =>
       (periods: PeriodDetailsDto[]) => {
         const periodIds: string[] = [];
         for (const period of periods) {
           periodIds.push(period._id);
-          set(SinglePeriod(period._id), period);
+          const oldPeriod = snapshot.getLoadable(
+            SinglePeriod(period._id)
+          ).contents;
+          if (oldPeriod) {
+            set(SinglePeriod(period._id), { ...oldPeriod, ...period });
+          } else {
+            set(SinglePeriod(period._id), period);
+          }
         }
         set(AllPeriodIds, periodIds);
       }
