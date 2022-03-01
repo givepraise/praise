@@ -5,13 +5,14 @@ import {
 } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
 import { praiseDocumentListTransformer } from '@praise/transformers';
-import { PraiseDetailsDto, PraiseDto } from '@praise/types';
-import { praiseWithScore } from '@praise/utils';
 import {
-  getPraiseAllInput,
-  getQueryInput,
-  getQuerySort,
-} from '@shared/functions';
+  PraiseDetailsDto,
+  PraiseDto,
+  Quantifier,
+  Receiver,
+} from '@praise/types';
+import { praiseWithScore } from '@praise/utils';
+import { getQueryInput, getQuerySort } from '@shared/functions';
 import { settingInt } from '@shared/settings';
 import {
   PaginatedResponseBody,
@@ -22,9 +23,9 @@ import {
 } from '@shared/types';
 import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
-import { UserAccountDocument } from '@useraccount/types';
 import { Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { flatten } from 'lodash';
 import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import { periodDocumentTransformer } from './transformers';
@@ -38,7 +39,6 @@ import {
   VerifyQuantifierPoolSizeResponse,
 } from './types';
 import { findPeriodDetailsDto, getPreviousPeriodEndDate } from './utils';
-
 /**
  * Description
  * @param
@@ -156,19 +156,6 @@ const assignedPraiseCount = (quantifier: Quantifier): number => {
   }, 0);
 };
 
-interface Receiver {
-  _id: string;
-  praiseCount: number;
-  praiseIds: string[];
-  assignedQuantifiers?: number;
-}
-
-interface Quantifier {
-  _id?: string;
-  accounts: UserAccountDocument[];
-  receivers: Receiver[];
-}
-
 const assignsRemaining = (
   receivers: Receiver[],
   quantifiersPerPraiseReceiver: number
@@ -258,7 +245,7 @@ const assignQuantifiersDryRun = async (
       if (
         !quantifierAccountIds.includes(r._id.toString()) &&
         ((q.receivers.length === 0 && r.praiseCount >= praisePerQuantifier) ||
-        assignedPraiseCount(q) + r.praiseCount < maxPraisePerQuantifier)
+          assignedPraiseCount(q) + r.praiseCount < maxPraisePerQuantifier)
       ) {
         // Assign receiver to quantifier
         q.receivers.push(r);
@@ -338,25 +325,27 @@ export const assignQuantifiers = async (
   if (assignedQuantifiers.find((q) => typeof q._id === 'undefined'))
     throw new BadRequestError('Quantifier pool size too small.');
 
-  // Quantifiers
-  for (const q of assignedQuantifiers) {
-    const quantifier = await UserModel.findById(q._id);
-    // Receivers
-    for (const receiver of q.receivers) {
-      // Praise
-      for (const praiseId of receiver.praiseIds) {
-        const praise = await PraiseModel.findById(praiseId);
-        if (quantifier && praise) {
-          praise.quantifications.push({
-            quantifier,
-            score: 0,
-            dismissed: false,
-          });
-          await praise.save();
-        }
-      }
-    }
-  }
+  // Generate list of db queries to apply changes specified by assignedQuantifiers
+  const bulkQueries = flatten(
+    assignedQuantifiers.map((q) =>
+      q.receivers.map((receiver) => ({
+        updateMany: {
+          filter: { _id: { $in: receiver.praiseIds } },
+          update: {
+            $push: {
+              quantifications: {
+                quantifier: q._id,
+                score: 0,
+                dismissed: false,
+              },
+            },
+          },
+        },
+      }))
+    )
+  );
+
+  await PraiseModel.bulkWrite(bulkQueries);
 
   period.status = PeriodStatusType.QUANTIFY;
   await period.save();

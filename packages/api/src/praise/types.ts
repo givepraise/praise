@@ -68,6 +68,19 @@ export interface QuantificationCreateUpdateInput {
   duplicatePraise: string;
 }
 
+export interface Receiver {
+  _id: string;
+  praiseCount: number;
+  praiseIds: string[];
+  assignedQuantifiers?: number;
+}
+
+export interface Quantifier {
+  _id?: string;
+  accounts: UserAccountDocument[];
+  receivers: Receiver[];
+}
+
 export interface PraiseAllInput extends QueryInput {
   receiver?: string;
   periodStart?: string;
