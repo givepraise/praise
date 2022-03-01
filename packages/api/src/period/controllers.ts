@@ -309,18 +309,19 @@ export const assignQuantifiers = async (
 
   // Quantifiers
   for (const q of assignedQuantifiers) {
-    // Receivers
-    for (const receiver of q.receivers) {
-      const praises = await PraiseModel.updateMany({ _id: { $in: receiver.praiseIds } }, {
-        $push: {
-          quantifications: {
-            quantifier: q._id,
-            score: 0,
-            dismissed: false
+    await Promise.all(
+      q.receivers.map((receiver) =>
+        PraiseModel.updateMany({ _id: { $in: receiver.praiseIds } }, {
+          $push: {
+            quantifications: {
+              quantifier: q._id,
+              score: 0,
+              dismissed: false
+            }
           }
-        }
-      });
-    }
+        })
+      )
+    );
   }
 
   period.status = PeriodStatusType.QUANTIFY;
