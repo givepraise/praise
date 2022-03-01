@@ -37,10 +37,8 @@ const fetchTwoRandomUserAccounts = async (): Promise<UserAccountDocument[]> => {
   return useraccounts;
 };
 
-const seedData = async (): Promise<void> => {
+const seedPeriods = async (): Promise<void> => {
   const periodsCount = await PeriodModel.count();
-  const praisesCount = await PraiseModel.count();
-  const userCount = await UserModel.count();
 
   if (periodsCount === 0) {
     const d = new Date();
@@ -54,6 +52,10 @@ const seedData = async (): Promise<void> => {
       d.setDate(d.getDate() + PERIOD_LENGTH);
     }
   }
+};
+
+const seedPredefinedUsers = async (): Promise<void> => {
+  const userCount = await UserModel.count();
 
   if (userCount < PREDEFINED_USERS.length) {
     for (let i = 0; i < PREDEFINED_USERS.length; i++) {
@@ -74,7 +76,9 @@ const seedData = async (): Promise<void> => {
       }
     }
   }
+};
 
+const seedRegularUsers = async (): Promise<void> => {
   for (let i = 0; i < REGULAR_USERS_NUMBER; i++) {
     try {
       const user = await UserModel.create({
@@ -92,7 +96,9 @@ const seedData = async (): Promise<void> => {
       console.log('ERROR:', e);
     }
   }
+};
 
+const seedQuantifierUsers = async (): Promise<void> => {
   for (let i = 0; i < QUANTIFIER_USERS_NUMBER; i++) {
     try {
       const user = await UserModel.create({
@@ -110,6 +116,10 @@ const seedData = async (): Promise<void> => {
       console.log('ERROR:', e);
     }
   }
+};
+
+const seedPraises = async (): Promise<void> => {
+  const praisesCount = await PraiseModel.count();
 
   if (praisesCount < PRAISE_NUMBER) {
     for (let i = 0; i < PRAISE_NUMBER; i++) {
@@ -135,4 +145,10 @@ const seedData = async (): Promise<void> => {
   }
 };
 
-export { seedData };
+export const seedData = async (): Promise<void> => {
+  await seedPeriods();
+  await seedPredefinedUsers();
+  await seedRegularUsers();
+  await seedQuantifierUsers();
+  await seedPraises();
+};
