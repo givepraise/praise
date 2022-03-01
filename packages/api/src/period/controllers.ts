@@ -37,7 +37,7 @@ import {
   VerifyQuantifierPoolSizeResponse,
 } from './types';
 import { findPeriodDetailsDto, getPreviousPeriodEndDate } from './utils';
-
+import { flatten } from 'lodash';
 /**
  * Description
  * @param
@@ -307,12 +307,13 @@ export const assignQuantifiers = async (
   if (assignedQuantifiers.find((q) => typeof q._id === 'undefined'))
     throw new BadRequestError('Quantifier pool size too small.');
 
-  // Quantifiers
-  await Promise.all(
+  // Generate list of db queries to apply changes specified by assignedQuantifiers
+  const bulkQueries = flatten(
     assignedQuantifiers.map((q) =>
-      Promise.all(
-        q.receivers.map((receiver) =>
-          PraiseModel.updateMany({ _id: { $in: receiver.praiseIds } }, {
+      q.receivers.map((receiver) => ({
+        updateMany: {
+          filter: { _id: { $in: receiver.praiseIds } },
+          update: {
             $push: {
               quantifications: {
                 quantifier: q._id,
@@ -320,11 +321,13 @@ export const assignQuantifiers = async (
                 dismissed: false
               }
             }
-          })
-        )
-      )
-    )
+          }
+        }
+      })
+    ))
   );
+
+  await PraiseModel.bulkWrite(bulkQueries);
 
   period.status = PeriodStatusType.QUANTIFY;
   await period.save();
