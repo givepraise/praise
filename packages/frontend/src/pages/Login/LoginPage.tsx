@@ -1,4 +1,5 @@
 import { injected } from '@/eth/connectors';
+import { hasMetaMask } from '@/eth/wallet';
 import { EthState } from '@/model/eth';
 import { ReactComponent as MetamaskIcon } from '@/svg/metamask.svg';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
@@ -9,11 +10,6 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 import EthAccount from './components/EthAccount';
 import { LoginButton } from './components/Login';
-
-const hasMetaMask = (): boolean => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return typeof (window as any).ethereum !== 'undefined';
-};
 
 export default function LoginPage(): JSX.Element {
   const {

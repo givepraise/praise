@@ -1,4 +1,5 @@
 import { injected } from '@/eth/connectors';
+import { hasMetaMask } from '@/eth/wallet';
 import { AccountActivated } from '@/model/activate';
 import { EthState } from '@/model/eth';
 import { ReactComponent as MetamaskIcon } from '@/svg/metamask.svg';
@@ -12,11 +13,6 @@ import { useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import ActivateButton from './components/ActivateButton';
 import EthAccount from './components/EthAccount';
-
-const hasMetaMask = (): boolean => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return typeof (window as any).ethereum !== 'undefined';
-};
 
 const ActivateSuccessful = (): JSX.Element => {
   const { search } = useLocation();
