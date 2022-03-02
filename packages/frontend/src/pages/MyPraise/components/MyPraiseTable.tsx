@@ -5,7 +5,7 @@ import { formatDate } from '@/utils/date';
 import { faSadTear } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
-import React, { SyntheticEvent } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
@@ -13,13 +13,14 @@ import MyPraisePageLoader from './MyPraisePageLoader';
 
 export const MY_PRAISE_LIST_KEY = 'MY_PRAISE';
 
-const MyPraiseTable = () => {
+const MyPraiseTable = (): JSX.Element => {
   const history = useHistory();
   const allPraise = useRecoilValue(AllPraiseList(MY_PRAISE_LIST_KEY));
   const columns = React.useMemo(
     () => [
       {
         accessor: 'createdAt',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any) => (
           <div className="flex items-center w-full">
             <div className="flex items-center">
@@ -56,7 +57,7 @@ const MyPraiseTable = () => {
 
   const { getTableProps, getTableBodyProps, rows, prepareRow } = tableInstance;
 
-  const handleClick = (data: PraiseDto) => (e: SyntheticEvent) => {
+  const handleClick = (data: PraiseDto) => () => {
     history.push(`/praise/${data._id}`);
   };
 
@@ -82,10 +83,10 @@ const MyPraiseTable = () => {
                   {row.cells.map((cell) => {
                     return (
                       // eslint-disable-next-line react/jsx-key
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td> //TODO add key
+                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                     );
                   })}
-                </tr> //TODO Add key
+                </tr>
               );
             })}
           </tbody>

@@ -21,6 +21,13 @@ import {
 } from './api';
 
 /**
+ * Types for `useParams()`
+ */
+export type PraisePageParams = {
+  praiseId: string;
+};
+
+/**
  * Stores individual Praise items linked to one or more @PraiseIdList
  */
 export const SinglePraise = atomFamily<PraiseDto | undefined, string>({
@@ -250,10 +257,18 @@ export const useAllPraiseQuery = (
   return allPraiseQueryResponse;
 };
 
+type useQuantifyPraiseReturn = {
+  quantify: (
+    praiseId: string,
+    score: number,
+    dismissed: boolean,
+    duplicatePraise: string | null
+  ) => Promise<PraiseDto | undefined>;
+};
 /**
  * Hook that returns a function to use for closing a period
  */
-export const useQuantifyPraise = () => {
+export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
   const quantify = useRecoilCallback(
     ({ snapshot, set }) =>
       async (

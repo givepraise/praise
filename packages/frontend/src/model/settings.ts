@@ -46,7 +46,7 @@ export const AllSettings = atom<Setting[] | undefined>({
   default: undefined,
 });
 
-export const useAllSettingsQuery = () => {
+export const useAllSettingsQuery = (): AxiosResponse<unknown> => {
   const allSettingsQueryResponse = useAuthApiQuery(AllSettingsQuery);
   const [allSettings, setAllSettings] = useRecoilState(AllSettings);
 
@@ -75,9 +75,9 @@ export const SingleSetting = selectorFamily({
   key: 'SingleSetting',
   get:
     (key: string) =>
-    ({ get }) => {
+    ({ get }): Setting | undefined => {
       const allSettings = get(AllSettings);
-      if (!allSettings) return null;
+      if (!allSettings) return undefined;
       return allSettings.find((setting) => setting.key === key);
     },
 });
@@ -86,14 +86,14 @@ export const SingleFloatSetting = selectorFamily({
   key: 'SingleFloatSetting',
   get:
     (key: string) =>
-    ({ get }) => {
+    ({ get }): number | undefined => {
       const setting = get(SingleSetting(key));
-      if (!setting) return null;
+      if (!setting) return undefined;
       if (setting && setting.value) {
         const float = parseFloat(setting.value);
         if (!isNaN(float)) return float;
       }
-      return null;
+      return undefined;
     },
 });
 
@@ -101,14 +101,14 @@ export const SingleBooleanSetting = selectorFamily({
   key: 'SingleBooleanSetting',
   get:
     (key: string) =>
-    ({ get }) => {
+    ({ get }): boolean | undefined => {
       const setting = get(SingleSetting(key));
-      if (!setting) return null;
+      if (!setting) return undefined;
       if (setting && setting.value) {
         if (setting.value.toLowerCase() === 'true') return true;
         if (setting.value.toLowerCase() === 'false') return false;
       }
-      return null;
+      return undefined;
     },
 });
 
@@ -116,14 +116,14 @@ export const SingleIntSetting = selectorFamily({
   key: 'SingleIntSetting',
   get:
     (key: string) =>
-    ({ get }) => {
+    ({ get }): number | undefined => {
       const setting = get(SingleSetting(key));
-      if (!setting) return null;
+      if (!setting) return undefined;
       if (setting && setting.value) {
         const int = parseInt(setting.value);
         if (!isNaN(int)) return int;
       }
-      return null;
+      return undefined;
     },
 });
 
@@ -131,18 +131,23 @@ export const SingleStringSetting = selectorFamily({
   key: 'SingleStringSetting',
   get:
     (key: string) =>
-    ({ get }) => {
+    ({ get }): string | undefined => {
       const setting = get(SingleSetting(key));
-      if (!setting) return null;
+      if (!setting) return undefined;
       if (setting && setting.value) {
         const string = setting.value.toString();
         if (string && string !== '') return string;
       }
-      return null;
+      return undefined;
     },
 });
 
-export const useSetSetting = () => {
+type useSetSettingReturn = {
+  setSetting: (
+    setting: Setting
+  ) => Promise<AxiosResponse<unknown> | AxiosError<unknown>>;
+};
+export const useSetSetting = (): useSetSettingReturn => {
   const allSettings: Setting[] | undefined = useRecoilValue(AllSettings);
   const setSetting = useRecoilCallback(
     ({ snapshot, set }) =>

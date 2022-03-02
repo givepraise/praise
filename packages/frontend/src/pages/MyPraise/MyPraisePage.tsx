@@ -5,7 +5,7 @@ import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import PraiseTable from './components/MyPraiseTable';
 
-const MyPraise = () => {
+const MyPraise = (): JSX.Element => {
   return (
     <>
       <BreadCrumb name="My praise" icon={faPrayingHands} />

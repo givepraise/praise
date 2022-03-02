@@ -5,7 +5,7 @@ import { PraiseDto } from 'api/dist/praise/types';
 import PraiseAutosuggest from './PraiseAutosuggest';
 
 interface PoolDeleteDialogProps {
-  onClose(): any;
+  onClose(): void;
   onSelect(praiseId: string): void;
   praise: PraiseDto | undefined;
 }
@@ -13,7 +13,7 @@ const PoolDismissDialog = ({
   onSelect,
   onClose,
   praise,
-}: PoolDeleteDialogProps) => {
+}: PoolDeleteDialogProps): JSX.Element | null => {
   if (praise) {
     return (
       <div className="flex items-center justify-center min-h-screen">

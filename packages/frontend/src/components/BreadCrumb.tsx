@@ -5,7 +5,7 @@ interface BreadCrumbProps {
   name: string;
   icon: IconProp;
 }
-const BreadCrumb = ({ name, icon }: BreadCrumbProps) => {
+const BreadCrumb = ({ name, icon }: BreadCrumbProps): JSX.Element => {
   return (
     <div className="mb-4 text-sm">
       <h3>

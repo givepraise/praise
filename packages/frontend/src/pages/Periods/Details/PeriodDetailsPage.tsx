@@ -64,13 +64,12 @@ const PeriodDetailPage = (): JSX.Element => {
     }
   }, [period]);
 
+  if (!detailsLoaded) return <PeriodDetailLoader />;
+
   return (
     <>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
       <BackLink />
-
-      {/* Only load details once */}
-      {!detailsLoaded && <PeriodDetailLoader />}
 
       <div className="w-2/3 praise-box ">
         <React.Suspense fallback="Loading…">

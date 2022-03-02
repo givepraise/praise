@@ -5,11 +5,13 @@ export const getSessionToken = (
   return localStorage.getItem(`jwt_${account}`);
 };
 
-export const setSessionToken = (account: string, sessionId: string) => {
+export const setSessionToken = (account: string, sessionId: string): void => {
   localStorage.setItem(`jwt_${account}`, sessionId);
 };
 
-export const removeSessionToken = (account: string | null | undefined) => {
+export const removeSessionToken = (
+  account: string | null | undefined
+): void => {
   if (!account) return;
   localStorage.removeItem(`jwt_${account}`);
 };

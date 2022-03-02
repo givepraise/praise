@@ -1,6 +1,9 @@
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { ActiveUserId } from '@/model/auth';
-import { PeriodQuantifierReceiverPraise } from '@/model/periods';
+import {
+  PeriodAndReceiverPageParams,
+  PeriodQuantifierReceiverPraise,
+} from '@/model/periods';
 import { SingleBooleanSetting } from '@/model/settings';
 import { classNames } from '@/utils/index';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
@@ -12,7 +15,7 @@ import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 interface PraiseAutosuggestProps {
-  onClose(): any;
+  onClose(): void;
   onSelect(id: string): void;
   praise: PraiseDto;
 }
@@ -21,9 +24,8 @@ const PraiseAutosuggest = ({
   onSelect,
   onClose,
   praise,
-}: PraiseAutosuggestProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId, receiverId } = useParams() as any;
+}: PraiseAutosuggestProps): JSX.Element | null => {
+  const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
   const userId = useRecoilValue(ActiveUserId);
   const data = useRecoilValue(
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
@@ -44,7 +46,7 @@ const PraiseAutosuggest = ({
       p._id !== praise._id
   );
 
-  const DropdownCombobox = () => {
+  const DropdownCombobox = (): JSX.Element => {
     const [inputItems, setInputItems] = React.useState(filteredData);
     const {
       isOpen,
@@ -56,20 +58,19 @@ const PraiseAutosuggest = ({
     } = useCombobox({
       items: inputItems,
       onInputValueChange: ({ inputValue }) => {
+        const search = inputValue ? inputValue.toLocaleLowerCase() : '';
         if (filteredData) {
           setInputItems(
             filteredData.filter((praise) => {
-              if (
-                praise &&
-                `#${praise._id.slice(-4)}`.includes(inputValue!.toLowerCase())
-              )
+              if (praise && `#${praise._id.slice(-4)}`.includes(search))
                 return true;
               return false;
             })
           );
         }
       },
-      onSelectedItemChange: (data: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onSelectedItemChange: (data: any): void => {
         if (!data) return;
         const selectedItem = data.selectedItem as PraiseDto;
         onSelect(selectedItem._id);

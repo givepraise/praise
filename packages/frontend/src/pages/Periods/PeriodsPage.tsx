@@ -8,7 +8,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import PeriodsTable from './components/Table';
 
-const PeriodsPage = () => {
+const PeriodsPage = (): JSX.Element => {
   return (
     <>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />

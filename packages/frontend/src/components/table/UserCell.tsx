@@ -6,7 +6,7 @@ interface UserCellProps {
   userId: string | undefined;
 }
 
-export const UserCell = ({ userId }: UserCellProps) => {
+export const UserCell = ({ userId }: UserCellProps): JSX.Element => {
   const user = useRecoilValue(SingleUser({ userId }));
   if (user) return <div>{getUsername(user)}</div>;
   if (!userId) return <div>Unknown user</div>;

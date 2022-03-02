@@ -12,7 +12,7 @@ import LoginPage from '@/pages/Login/LoginPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import SettingsPage from '@/pages/Settings/SettingsPage';
 import StartPage from '@/pages/Start/StartPage';
-import React, { FC } from 'react';
+import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { StartupLoader } from '../startupLoader';
@@ -44,14 +44,15 @@ const QuantifyPage = React.lazy(
 );
 
 interface LoggedInOnlyRouteProps {
+  children: JSX.Element;
   exact?: boolean;
   path: string;
 }
 // A Route that requires user to be logged in
-const LoggedInOnlyRoute: FC<LoggedInOnlyRouteProps> = ({
+const LoggedInOnlyRoute = ({
   children,
   ...props
-}) => {
+}: LoggedInOnlyRouteProps): JSX.Element => {
   const ethState = useRecoilValue(EthState);
   const [sessionToken, setSessionToken] = useRecoilState(SessionToken);
   React.useEffect(() => {
@@ -63,7 +64,7 @@ const LoggedInOnlyRoute: FC<LoggedInOnlyRouteProps> = ({
   return (
     <Route
       {...props}
-      render={({ location }) =>
+      render={({ location }): JSX.Element | null =>
         sessionToken ? (
           children
         ) : sessionToken === undefined ? null : (
@@ -80,13 +81,14 @@ const LoggedInOnlyRoute: FC<LoggedInOnlyRouteProps> = ({
 };
 
 interface AuthRouteProps {
+  children: JSX.Element;
   exact?: boolean;
   path: string;
   roles: string[];
 }
 // A Route that takes an array of roles as argument and redirects
 // to frontpage if user do not belong to any of the given roles
-const AuthRoute: FC<AuthRouteProps> = ({ children, ...props }) => {
+const AuthRoute = ({ children, ...props }: AuthRouteProps): JSX.Element => {
   const userRoles = useRecoilValue(ActiveUserRoles);
 
   let authenticated = false;
@@ -100,7 +102,7 @@ const AuthRoute: FC<AuthRouteProps> = ({ children, ...props }) => {
   return (
     <Route
       {...props}
-      render={({ location }) =>
+      render={({ location }): JSX.Element =>
         authenticated ? (
           children
         ) : (
@@ -116,29 +118,29 @@ const AuthRoute: FC<AuthRouteProps> = ({ children, ...props }) => {
   );
 };
 
-const SubPages = () => {
+const SubPages = (): JSX.Element => {
   return (
     <Switch>
       <Route exact path="/mypraise">
         <MyPraisePage />
       </Route>
 
-      <AuthRoute roles={[ROLE_ADMIN]} path={`/pool`}>
+      <AuthRoute roles={[ROLE_ADMIN]} path={'/pool'}>
         <UsersPage />
       </AuthRoute>
 
-      <Route exact path={`/periods`}>
+      <Route exact path={'/periods'}>
         <PeriodsPage />
       </Route>
 
-      <AuthRoute roles={[ROLE_ADMIN]} path={`/periods/createupdate`}>
+      <AuthRoute roles={[ROLE_ADMIN]} path={'/periods/createupdate'}>
         <PeriodsCreateUpdatePage />
       </AuthRoute>
 
       <Route exact path="/period/:periodId/receiver/:receiverId">
         <PeriodReceiverSummaryPage />
       </Route>
-      <Route exact path={`/period/:periodId`}>
+      <Route exact path={'/period/:periodId'}>
         <PeriodDetailPage />
       </Route>
 
@@ -148,15 +150,15 @@ const SubPages = () => {
 
       <AuthRoute
         roles={[ROLE_QUANTIFIER]}
-        path={`/quantify/period/:periodId/receiver/:receiverId`}
+        path={'/quantify/period/:periodId/receiver/:receiverId'}
       >
         <QuantifyPage />
       </AuthRoute>
-      <AuthRoute roles={[ROLE_QUANTIFIER]} path={`/quantify/period/:periodId`}>
+      <AuthRoute roles={[ROLE_QUANTIFIER]} path={'/quantify/period/:periodId'}>
         <QuantifyPeriodPage />
       </AuthRoute>
 
-      <AuthRoute roles={[ROLE_ADMIN]} path={`/settings`}>
+      <AuthRoute roles={[ROLE_ADMIN]} path={'/settings'}>
         <SettingsPage />
       </AuthRoute>
 
@@ -171,7 +173,7 @@ const SubPages = () => {
   );
 };
 
-const Routes = () => {
+const Routes = (): JSX.Element => {
   return (
     <Switch>
       <Route exact path="/activate">
@@ -184,17 +186,19 @@ const Routes = () => {
         <ErrorPage error={{ message: 'Not found' }} />
       </Route>
       <LoggedInOnlyRoute path="/">
-        <StartupLoader />
-        <div className="flex min-h-screen">
-          <Nav />
-          <div className="flex w-full">
-            <div className="w-[920px] pt-4 px-5">
-              <div>
-                <SubPages />
+        <>
+          <StartupLoader />
+          <div className="flex min-h-screen">
+            <Nav />
+            <div className="flex w-full">
+              <div className="w-[920px] pt-4 px-5">
+                <div>
+                  <SubPages />
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       </LoggedInOnlyRoute>
     </Switch>
   );

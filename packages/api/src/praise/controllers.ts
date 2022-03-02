@@ -178,7 +178,7 @@ export const exportPraise = async (
     },
     {
       $match: {
-        createdAt: { $gte: req.query.periodStart, $lte: req.query.periodEnd },
+        createdAt: { $gte: req.query.periodStart, $lt: req.query.periodEnd },
       },
     },
     {

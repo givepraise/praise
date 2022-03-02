@@ -177,12 +177,19 @@ export const useAllPeriodsQuery = (
   const allPeriodsIds = useRecoilValue(AllPeriodIds);
 
   const saveAllPeriods = useRecoilCallback(
-    ({ set }) =>
+    ({ set, snapshot }) =>
       (periods: PeriodDetailsDto[]) => {
         const periodIds: string[] = [];
         for (const period of periods) {
           periodIds.push(period._id);
-          set(SinglePeriod(period._id), period);
+          const oldPeriod = snapshot.getLoadable(
+            SinglePeriod(period._id)
+          ).contents;
+          if (oldPeriod) {
+            set(SinglePeriod(period._id), { ...oldPeriod, ...period });
+          } else {
+            set(SinglePeriod(period._id), period);
+          }
         }
         set(AllPeriodIds, periodIds);
       }
@@ -216,10 +223,15 @@ export const CreatePeriodApiResponse = atom<
   default: null,
 });
 
+type useCreatePeriodReturn = {
+  createPeriod: (
+    period: PeriodCreateInput
+  ) => Promise<AxiosResponse<unknown> | AxiosError<unknown>>;
+};
 /**
  * Hook that returns a function to use for creating a new period.
  */
-export const useCreatePeriod = () => {
+export const useCreatePeriod = (): useCreatePeriodReturn => {
   const [allPeriodIds, setAllPeriodIds] = useRecoilState(AllPeriodIds);
 
   const createPeriod = useRecoilCallback(
@@ -255,10 +267,16 @@ export const useCreatePeriod = () => {
   return { createPeriod };
 };
 
+type useUpdatePeriodReturn = {
+  updatePeriod: (
+    period: PeriodUpdateInput
+  ) => Promise<AxiosResponse<unknown> | AxiosError<unknown>>;
+};
+
 /**
  * Hook that returns a function to use for updating a period.
  */
-export const useUpdatePeriod = () => {
+export const useUpdatePeriod = (): useUpdatePeriodReturn => {
   const updatePeriod = useRecoilCallback(
     ({ snapshot, set }) =>
       async (
@@ -287,10 +305,16 @@ export const useUpdatePeriod = () => {
   return { updatePeriod };
 };
 
+type useClosePeriodReturn = {
+  closePeriod: (
+    periodId: string
+  ) => Promise<AxiosResponse<unknown> | AxiosError<unknown>>;
+};
+
 /**
  * Hook that returns a function to use for closing a period.
  */
-export const useClosePeriod = () => {
+export const useClosePeriod = (): useClosePeriodReturn => {
   const closePeriod = useRecoilCallback(
     ({ snapshot, set }) =>
       async (
@@ -375,10 +399,18 @@ export const useVerifyQuantifierPoolSize = (
   return poolRequirements;
 };
 
+type useAssignQuantifiersReturn = {
+  assignQuantifiers: () => Promise<
+    AxiosResponse<unknown> | AxiosError<unknown> | undefined
+  >;
+};
+
 /**
  * Hook that returns function used to assign quantifiers
  */
-export const useAssignQuantifiers = (periodId: string) => {
+export const useAssignQuantifiers = (
+  periodId: string
+): useAssignQuantifiersReturn => {
   const [period, setPeriod] = useRecoilState(SinglePeriod(periodId));
 
   const saveIndividualPraise = useRecoilCallback(
@@ -391,7 +423,7 @@ export const useAssignQuantifiers = (periodId: string) => {
   );
 
   const assignQuantifiers = useRecoilCallback(
-    ({ snapshot, set }) =>
+    ({ snapshot }) =>
       async (): Promise<
         AxiosResponse<unknown> | AxiosError<unknown> | undefined
       > => {
@@ -499,10 +531,13 @@ export const usePeriodReceiverPraiseQuery = (
   return praiseList;
 };
 
+type useExportPraiseReturn = {
+  exportPraise: (period: PeriodDto) => Promise<string | undefined>;
+};
 /**
  * Hook that exports all praise in a period as csv data.
  */
-export const useExportPraise = () => {
+export const useExportPraise = (): useExportPraiseReturn => {
   const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
 
   const exportPraise = useRecoilCallback(

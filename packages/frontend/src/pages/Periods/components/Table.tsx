@@ -20,6 +20,7 @@ const PeriodsTable = (): JSX.Element => {
       {
         Header: 'End date',
         accessor: 'endDate',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): string => {
           return formatDate(data.value);
         },
@@ -27,6 +28,7 @@ const PeriodsTable = (): JSX.Element => {
       {
         Header: '',
         accessor: 'status',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => {
           return (
             <div className="w-full text-right">
@@ -81,7 +83,7 @@ const PeriodsTable = (): JSX.Element => {
                 {column.render('Header')}
               </th>
             ))}
-          </tr> //TODO add key
+          </tr>
         ))}
       </thead>
       <tbody {...getTableBodyProps()}>
@@ -102,7 +104,7 @@ const PeriodsTable = (): JSX.Element => {
                 // eslint-disable-next-line react/jsx-key
                 return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}
-            </tr> //TODO add key
+            </tr>
           );
         })}
       </tbody>

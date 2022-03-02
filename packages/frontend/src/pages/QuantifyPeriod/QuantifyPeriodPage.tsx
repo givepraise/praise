@@ -1,5 +1,9 @@
 import BreadCrumb from '@/components/BreadCrumb';
-import { PeriodQuantifierReceivers, SinglePeriod } from '@/model/periods';
+import {
+  PeriodPageParams,
+  PeriodQuantifierReceivers,
+  SinglePeriod,
+} from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
 import { getQuantificationStats } from '@/utils/periods';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
@@ -8,9 +12,8 @@ import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import QuantifyPeriodTable from './components/QuantifyPeriodTable';
 
-const PeriodMessage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId } = useParams() as any;
+const PeriodMessage = (): JSX.Element => {
+  const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
 
   const quantificationStats = getQuantificationStats(
@@ -32,7 +35,7 @@ const PeriodMessage = () => {
   );
 };
 
-const QuantifyPeriodPage = () => {
+const QuantifyPeriodPage = (): JSX.Element => {
   return (
     <>
       <BreadCrumb name="Quantify" icon={faCalendarAlt} />
