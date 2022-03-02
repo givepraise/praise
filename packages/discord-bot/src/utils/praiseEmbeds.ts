@@ -1,54 +1,83 @@
 import { GuildMember, MessageEmbed, Role } from 'discord.js';
+import { getSetting } from './getSettings';
 
-export const praiseSuccess = (praised: string[], reason: string): string => {
-  return `✅ Praise ${praised.join(', ')} ${reason}`;
+export const praiseSuccess = async (
+  praised: string[],
+  reason: string
+): Promise<string> => {
+  const msg = await getSetting('PRAISE_SUCCESS_MESSAGE');
+  if (msg && typeof msg === 'string') {
+    return msg
+      ?.replace('{praiseReceivers}', `${praised.join(', ')}`)
+      .replace('{reason}', reason);
+  } else {
+    return 'PRAISE SUCCESSFUL (message not set)';
+  }
 };
 
 export const praiseError = (title: string, description: string): string => {
   return `**❌ ${title}**\n${description}`;
 };
 
-export const notActivatedError = praiseError(
-  'Account Not Activated',
-  'Your Account is not activated in the praise system. Unactivated accounts can not praise users. Use the `/praise-activate` command to activate your praise account and to link your eth address.'
-);
+export const notActivatedError = async (): Promise<string> => {
+  const msg = await getSetting('PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR');
+  if (msg && typeof msg === 'string') {
+    return msg;
+  } else {
+    return 'PRAISE ACCOUNT NOT ACTIVATED (message not set)';
+  }
+};
 
-export const dmError = praiseError(
-  'Server not found',
-  'The praise command can only be used in the discord server.'
-);
+export const dmError = async (): Promise<string> => {
+  const msg = await getSetting('DM_ERROR');
+  if (msg && typeof msg === 'string') {
+    return msg;
+  } else {
+    return 'COMMAND CAN NOT BE USED IN DM (message not set)';
+  }
+};
 
-export const roleError = (
+export const roleError = async (
   praiseGiverRole: Role,
   user: GuildMember
-): MessageEmbed => {
-  return new MessageEmbed()
-    .setColor('#ff0000')
-    .setTitle(
-      'User does not have `{role}`'
-        .replace('{role}', praiseGiverRole?.name || '...')
-        .replace('{user}', user?.displayName || '...')
-        .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
-        .replace('{@user}', `<@!${user?.id || '...'}>`)
-    )
-    .setDescription(
-      'The praise command can only be used by members with the {@role} role. Attend an onboarding-call, or ask a steward or guide for an Intro to Praise.'
+): Promise<MessageEmbed> => {
+  const msg = await getSetting('PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR');
+  if (msg && typeof msg === 'string') {
+    return new MessageEmbed().setColor('#ff0000').setDescription(
+      msg
         .replace('{role}', praiseGiverRole?.name || '...')
         .replace('{user}', user?.displayName || '...')
         .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
         .replace('{@user}', `<@!${user?.id || '...'}>`)
     );
+  } else {
+    return new MessageEmbed().setColor('#ff0000').setDescription(
+      'USER DOES NOT HAVE {@role} role (message not set)'
+        .replace('{role}', praiseGiverRole?.name || '...')
+        .replace('{user}', user?.displayName || '...')
+        .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
+        .replace('{@user}', `<@!${user?.id || '...'}>`)
+    );
+  }
 };
 
-export const invalidReceiverError = praiseError(
-  'Receivers not mentioned',
-  'This command requires atleast one valid receiver to be mentioned, in order for praise to get dished.'
-);
+export const invalidReceiverError = async (): Promise<string> => {
+  const msg = await getSetting('PRAISE_INVALID_RECEIVERS_ERROR');
+  if (msg && typeof msg === 'string') {
+    return msg;
+  } else {
+    return 'VALID RECEIVERS NOT MENTIONED (message not set)';
+  }
+};
 
-export const missingReasonError = praiseError(
-  '`reason` not provided',
-  'Praise can not be dished or quantified without a `reason`.'
-);
+export const missingReasonError = async (): Promise<string> => {
+  const msg = await getSetting('PRAISE_INVALID_RECEIVERS_ERROR');
+  if (msg && typeof msg === 'string') {
+    return msg;
+  } else {
+    return 'REASON NOT MENTIONED (message not set)';
+  }
+};
 
 export const undefinedReceiverWarning = (
   receivers: string,

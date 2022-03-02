@@ -22,22 +22,22 @@ if (!process.env.PRAISE_GIVER_ROLE_ID) {
 
 // Start Discord bot
 const token = process.env.DISCORD_TOKEN;
-const backendURL = process.env.BACKEND_URL;
+const frontendUrl = process.env.FRONTEND_URL;
+
 if (!token) {
   logger.err('Discord token not set.');
   throw new Error('Discord token not set.');
 }
 
-if (!backendURL) {
-  logger.err('Backend URL not set.');
-  throw new Error('Backend URL not set.');
+if (!frontendUrl) {
+  logger.err('FRONTEND_URL not set.');
 }
 
 // Create a new client instance
 const discordClient = new Client({ intents: ['GUILDS', 'GUILD_MEMBERS'] });
 
 // Set bot commands
-(async () => {
+void (async () => {
   const registerSuccess = await registerCommands(
     discordClient,
     process.env.DISCORD_CLIENT_ID || '',
@@ -71,7 +71,7 @@ discordClient.on('interactionCreate', async (interaction) => {
 });
 
 // Connect to database
-(async () => {
+void (async () => {
   logger.info('Connecting to database…');
   const host = process.env.MONGO_HOST || '';
   const port = process.env.MONGO_PORT || '';
@@ -88,7 +88,6 @@ discordClient.on('interactionCreate', async (interaction) => {
   } catch (error) {
     logger.err('Could not connect to database.');
   }
+  // Login to Discord with your client's token
+  await discordClient.login(token);
 })();
-
-// Login to Discord with your client's token
-discordClient.login(token);

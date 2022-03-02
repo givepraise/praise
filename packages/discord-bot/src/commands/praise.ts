@@ -17,6 +17,7 @@ import {
   roleMentionWarning,
   undefinedReceiverWarning,
 } from '../utils/praiseEmbeds';
+import { getSetting } from '../utils/getSettings';
 
 const praise = async (
   interaction: CommandInteraction,
@@ -25,12 +26,13 @@ const praise = async (
   const { guild, channel, member } = interaction;
 
   if (!guild || !member) {
-    await interaction.editReply(dmError);
+    await interaction.editReply(await dmError());
     return;
   }
 
+  const praiseGiverRoleID = await getSetting('PRAISE_GIVER_ROLE_ID');
   const praiseGiverRole = guild.roles.cache.find(
-    (r) => r.id === process.env.PRAISE_GIVER_ROLE_ID
+    (r) => r.id === praiseGiverRoleID
   );
   const praiseGiver = await guild.members.fetch(member.user.id);
 
@@ -39,7 +41,7 @@ const praise = async (
     !praiseGiver.roles.cache.find((r) => r.id === praiseGiverRole?.id)
   ) {
     await interaction.editReply({
-      embeds: [roleError(praiseGiverRole, praiseGiver)],
+      embeds: [await roleError(praiseGiverRole, praiseGiver)],
     });
 
     return;
@@ -73,17 +75,17 @@ const praise = async (
     !receiverData.validReceiverIds ||
     receiverData.validReceiverIds?.length === 0
   ) {
-    await interaction.editReply(invalidReceiverError);
+    await interaction.editReply(await invalidReceiverError());
     return;
   }
 
   if (!reason || reason.length === 0) {
-    await interaction.editReply(missingReasonError);
+    await interaction.editReply(await missingReasonError());
     return;
   }
 
   if (!userAccount.user) {
-    await interaction.editReply(notActivatedError);
+    await interaction.editReply(await notActivatedError());
     return;
   }
 
@@ -127,7 +129,11 @@ const praise = async (
       receiver: receiverAccount._id,
     });
     if (praiseObj) {
-      await receiver.send({ embeds: [praiseSuccessDM(responseUrl)] });
+      try {
+        await receiver.send({ embeds: [praiseSuccessDM(responseUrl)] });
+      } catch (err) {
+        logger.warn(`Can't DM user - ${ra.name} [${ra.accountId}]`);
+      }
       praised.push(ra.accountId);
     } else {
       logger.err(
@@ -137,7 +143,7 @@ const praise = async (
   }
 
   const msg = (await interaction.editReply(
-    praiseSuccess(
+      await praiseSuccess(
       praised.map((id) => `<@!${id}>`),
       reason
     )
