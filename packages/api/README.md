@@ -1,10 +1,3 @@
-# Praise Backend
+# Praise - API
 
-`👷‍♂️👷‍♂️ WIP 👷‍♀️👷‍♀️`
-
-## 2. Start API backend
-
-```
-yarn
-yarn start:dev
-```
+The Praise REST API running on Node/Express, using MongoDB for storage.

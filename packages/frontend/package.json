@@ -1,6 +1,8 @@
 {
   "name": "frontend",
   "version": "0.0.1",
+  "license": "GPL-3.0-or-later",
+  "description": "The Praise dashboard built on React/Recoil/Tailwind CSS.",
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.2.0",
