@@ -1,13 +1,13 @@
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
 
 interface NotFoundProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: any;
 }
 
-const ErrorPage = ({ error }: NotFoundProps) => {
-  const logout = () => {
+const ErrorPage = ({ error }: NotFoundProps): JSX.Element => {
+  const logout = (): void => {
     localStorage.clear();
     window.location.href = '/';
   };

@@ -19,6 +19,7 @@ const ReceiverTable = (): JSX.Element | null => {
         {
           Header: 'Receiver',
           accessor: '_id',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           Cell: (data: any): JSX.Element => (
             <UserCell userId={data.row.original.userAccount.name} />
           ),
@@ -55,6 +56,7 @@ const ReceiverTable = (): JSX.Element | null => {
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
       tableInstance;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleClick = (data: any) => (): void => {
       history.push(`/period/${periodId}/receiver/${data._id}`);
     };
@@ -93,6 +95,7 @@ const ReceiverTable = (): JSX.Element | null => {
                     // eslint-disable-next-line react/jsx-key
                     <td
                       {...cell.getCellProps()}
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       className={(cell.column as any).className}
                     >
                       {cell.render('Cell')}

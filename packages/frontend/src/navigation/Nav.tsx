@@ -24,11 +24,11 @@ interface NavProps {
   description: string;
   to: string;
 }
-export const NavItem = ({ icon, description, to }: NavProps) => {
+export const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
   return (
     <Link
       to={to}
-      className="relative flex px-4 py-1 cursor-pointer hover:bg-gray-100 mr-[1px] no-underline flex items-center"
+      className="relative px-4 py-1 cursor-pointer hover:bg-gray-100 mr-[1px] no-underline flex items-center"
       id={to.substring(1) + '-nav-button'}
     >
       <FontAwesomeIcon
@@ -43,11 +43,11 @@ export const NavItem = ({ icon, description, to }: NavProps) => {
   );
 };
 
-export default function Nav() {
+export default function Nav(): JSX.Element {
   const setSessionToken = useSetRecoilState(SessionToken);
   const ethState = useRecoilValue(EthState);
 
-  const handleLogoutClick = () => {
+  const handleLogoutClick = (): void => {
     localStorage.removeSessionToken(ethState.account);
     setSessionToken(null);
   };
@@ -93,7 +93,7 @@ export default function Nav() {
                   style={{ width: '15px', height: '15px' }}
                   className="inline-block mr-2"
                 >
-                  <Jazzicon address={ethState.account!} />
+                  {ethState.account && <Jazzicon address={ethState.account} />}
                 </div>
                 {ethState.account?.substring(0, 6)}...
                 {ethState.account?.substring(ethState.account?.length - 4)}
@@ -117,7 +117,7 @@ export default function Nav() {
               <Menu.Items className="absolute w-56 -mt-12 bg-white rounded-md shadow-lg left-40 ring-1 ring-gray-800 ring-opacity-5 focus:outline-none">
                 <div className="py-1">
                   <Menu.Item>
-                    {({ active }) => (
+                    {({ active }): JSX.Element => (
                       <div
                         className={classNames(
                           active ? 'bg-gray-100' : 'text-gray-700',

@@ -30,7 +30,7 @@ export const DecodedSessionToken = selector({
   key: 'DecodedSessionToken',
   get: ({ get }) => {
     const token = get(SessionToken);
-    if (!token) return null;
+    if (!token) return undefined;
     return jwtDecode(token);
   },
 });
@@ -39,7 +39,7 @@ export const ActiveUserId = selector({
   key: 'ActiveUserId',
   get: ({ get }) => {
     const decodedToken = get(DecodedSessionToken);
-    if (!decodedToken) return null;
+    if (!decodedToken) return undefined;
     return (decodedToken as JWT).userId;
   },
 });
@@ -48,7 +48,7 @@ export const ActiveUserRoles = selector({
   key: 'ActiveUserRoles',
   get: ({ get }) => {
     const decodedToken = get(DecodedSessionToken);
-    if (!decodedToken) return null;
+    if (!decodedToken) return undefined;
     return (decodedToken as JWT).roles;
   },
 });

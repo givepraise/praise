@@ -1,4 +1,5 @@
 import { injected } from '@/eth/connectors';
+import { hasMetaMask } from '@/eth/wallet';
 import { AccountActivated } from '@/model/activate';
 import { EthState } from '@/model/eth';
 import { ReactComponent as MetamaskIcon } from '@/svg/metamask.svg';
@@ -13,11 +14,7 @@ import { useRecoilValue } from 'recoil';
 import ActivateButton from './components/ActivateButton';
 import EthAccount from './components/EthAccount';
 
-const hasMetaMask = () => {
-  return typeof (window as any).ethereum !== 'undefined';
-};
-
-const ActivateSuccessful = () => {
+const ActivateSuccessful = (): JSX.Element => {
   const { search } = useLocation();
   const { platform } = queryString.parse(search);
 
@@ -36,7 +33,7 @@ const ActivateSuccessful = () => {
   );
 };
 
-const ActivateDialog = () => {
+const ActivateDialog = (): JSX.Element => {
   const { search } = useLocation();
   const { accountName, platform } = queryString.parse(search);
   const {
@@ -45,7 +42,7 @@ const ActivateDialog = () => {
     activate: ethActivate,
   } = useWeb3React();
 
-  const ethState = useRecoilValue(EthState) as any;
+  const ethState = useRecoilValue(EthState);
 
   // Marks which ethConnector is being activated
   const [activatingConnector, setActivatingConnector] = React.useState<
@@ -138,7 +135,7 @@ const ActivateDialog = () => {
   );
 };
 
-export default function ActivatePage() {
+export default function ActivatePage(): JSX.Element {
   const accountActivated = useRecoilValue(AccountActivated);
 
   return accountActivated ? <ActivateSuccessful /> : <ActivateDialog />;

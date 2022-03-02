@@ -25,9 +25,9 @@ import DismissDialog from './DismissDialog';
 import DuplicateDialog from './DuplicateDialog';
 import QuantifySlider from './QuantifySlider';
 
-const getRemoveButton = (action: any): JSX.Element => {
+const getRemoveButton = (callback: () => void): JSX.Element => {
   return (
-    <button onClick={action} className="ml-2">
+    <button onClick={callback} className="ml-2">
       <FontAwesomeIcon
         className="text-white text-opacity-50 hover:text-opacity-100"
         icon={faTimes}
@@ -88,6 +88,11 @@ const QuantifyTable = (): JSX.Element | null => {
     if (selectedPraise) void quantify(selectedPraise._id, 0, false, null);
   };
 
+  const shortDuplicatePraiseId = (praise: PraiseDto): string => {
+    const q = quantification(praise);
+    return q && q.duplicatePraise ? q.duplicatePraise?.slice(-4) : '';
+  };
+
   return (
     <>
       <table className="w-full table-auto">
@@ -140,10 +145,9 @@ const QuantifyTable = (): JSX.Element | null => {
                       ) : duplicate(praise) ? (
                         <>
                           <InlineLabel
-                            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                            text={`Duplicate of: #${quantification(
+                            text={`Duplicate of: #${shortDuplicatePraiseId(
                               praise
-                            )!.duplicatePraise?.slice(-4)}`}
+                            )}`}
                             button={getRemoveButton(handleRemoveDuplicate)}
                           />
                           <span className="text-gray-400">{praise.reason}</span>

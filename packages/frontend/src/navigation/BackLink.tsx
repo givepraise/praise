@@ -1,11 +1,11 @@
 import { useHistory } from 'react-router-dom';
 
-const BackLink = () => {
+const BackLink = (): JSX.Element => {
   const history = useHistory();
 
   return (
     <div
-      onClick={() => {
+      onClick={(): void => {
         history.goBack();
       }}
       className="mb-2 text-sm cursor-pointer"

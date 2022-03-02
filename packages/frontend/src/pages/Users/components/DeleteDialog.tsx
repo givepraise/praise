@@ -9,7 +9,7 @@ import { Dialog } from '@headlessui/react';
 import { UserDto } from 'api/dist/user/types';
 
 interface PoolDeleteDialogProps {
-  onClose(): any;
+  onClose(): void;
   onQuantifierRemoved(id: string): void;
   quantifier: UserDto | undefined;
 }
@@ -17,7 +17,7 @@ const PoolDeleteDialog = ({
   onClose,
   onQuantifierRemoved,
   quantifier,
-}: PoolDeleteDialogProps) => {
+}: PoolDeleteDialogProps): JSX.Element | null => {
   if (quantifier) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -41,7 +41,7 @@ const PoolDeleteDialog = ({
             <div className="flex justify-center">
               <button
                 className="bg-red-600 praise-button"
-                onClick={() => {
+                onClick={(): void => {
                   if (quantifier._id) {
                     onQuantifierRemoved(quantifier._id);
                   }

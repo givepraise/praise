@@ -31,7 +31,7 @@ export const getPreviousPeriod = (
 
 export const getQuantifierData = (
   period: PeriodDetailsDto | undefined,
-  userId: string | null
+  userId: string | undefined
 ): PeriodDetailsQuantifierDto | undefined => {
   if (period && period.status === PeriodStatusType.QUANTIFY) {
     return period.quantifiers?.find((q) => q._id === userId);

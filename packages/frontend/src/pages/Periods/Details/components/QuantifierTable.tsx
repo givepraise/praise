@@ -15,6 +15,7 @@ const QuantifierTable = (): JSX.Element => {
         Header: 'Quantifier',
         accessor: '_id',
         className: 'text-left',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => (
           <UserCell userId={data.row.original._id} />
         ),
@@ -23,6 +24,7 @@ const QuantifierTable = (): JSX.Element => {
         Header: 'Finished items',
         accessor: '',
         className: 'text-center',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => (
           <div>
             {`${data.row.original.finishedCount} / ${data.row.original.praiseCount}`}
@@ -60,6 +62,7 @@ const QuantifierTable = (): JSX.Element => {
               // eslint-disable-next-line react/jsx-key
               <th
                 {...column.getHeaderProps()}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 className={(column as any).className}
               >
                 {column.render('Header')}
@@ -79,6 +82,7 @@ const QuantifierTable = (): JSX.Element => {
                   // eslint-disable-next-line react/jsx-key
                   <td
                     {...cell.getCellProps()}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     className={(cell.column as any).className}
                   >
                     {cell.render('Cell')}
