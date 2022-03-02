@@ -13,16 +13,6 @@ import { Field, Form } from 'react-final-form';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import SubmitButton from './components/SubmitButton';
 
-// const validate = (
-//   values: Record<string, any>
-// ): ValidationErrors | Promise<ValidationErrors> => {
-//   const errors = {} as any;
-
-//   // Currently no validation
-
-//   return errors as ValidationErrors;
-// };
-
 const SettingsForm = (): JSX.Element | null => {
   const [apiResponse] = useRecoilState(SetSettingApiResponse);
   const settings = useRecoilValue(AllSettings);
