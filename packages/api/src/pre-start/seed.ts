@@ -2,13 +2,16 @@ import { PeriodModel } from '@period/entities';
 import { PraiseModel } from '@praise/entities';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
+import { UserAccountDocument } from '@useraccount/types';
 import faker from 'faker';
+import logger from 'jet-logger';
 
 const PERIOD_NUMBER = 3;
 const PERIOD_LENGTH = 10;
 const PRAISE_NUMBER = 300;
-
-const USERS = [
+const QUANTIFIER_USERS_NUMBER = 10;
+const REGULAR_USERS_NUMBER = 10;
+const PREDEFINED_USERS = [
   {
     ethereumAddress: '0xa32aECda752cF4EF89956e83d60C04835d4FA867', // Kristofer
     roles: ['ADMIN', 'USER'],
@@ -25,63 +28,32 @@ const USERS = [
     ethereumAddress: '0x44FEa69505B8B3dA031Cf0cc2420f6114ED78E4f',
     roles: ['USER', 'QUANTIFIER'],
   },
-  {
-    ethereumAddress: '0xa1234000000000000000000000001000000006789',
-    roles: ['USER', 'QUANTIFIER'],
-  },
-  {
-    ethereumAddress: '0xa1234000000000000000000000000000020006789',
-    roles: ['USER', 'QUANTIFIER'],
-  },
-  {
-    ethereumAddress: '0xa1234000000000000000000000000003000006789',
-    roles: ['USER', 'QUANTIFIER'],
-  },
-  {
-    ethereumAddress: '0xa12340000001000000000000000000040000006789',
-    roles: ['USER'],
-  },
-  {
-    ethereumAddress: '0xa1234000000002000000000000000000000006789',
-    roles: ['USER'],
-  },
-  {
-    ethereumAddress: '0xa1234000000003000000000000000000000006789',
-    roles: ['USER'],
-  },
-  {
-    ethereumAddress: '0xa1234000000000400000000000000000000006789',
-    roles: ['USER'],
-  },
-  {
-    ethereumAddress: '0xa1234000000000050000000000000000000006789',
-    roles: ['USER'],
-  },
-  {
-    ethereumAddress: '0xa1234000000000060000000000000000000006789',
-    roles: ['USER'],
-  },
-  {
-    ethereumAddress: '0xa1234000000000000007000000000000000006789',
-    roles: ['USER'],
-  },
-  {
-    ethereumAddress: '0xa1234000000000000008000000000000000006789',
-    roles: ['USER'],
-  },
 ];
 
-const twoRandomAccountIndexes = (): Array<number> => {
-  const n1 = Math.floor(Math.random() * (USERS.length - 1));
-  let n2 = Math.floor(Math.random() * (USERS.length - 1));
-  n2 = n2 === n1 ? (n1 === USERS.length - 1 ? USERS.length - 2 : n1 + 1) : n2;
-  return [n1, n2];
+const fetchTwoRandomUserAccounts = async (): Promise<UserAccountDocument[]> => {
+  const useraccounts = await UserAccountModel.aggregate([{ $sample: { size: 2 } }]);
+
+  return useraccounts;
 };
 
-const seedData = async (): Promise<void> => {
+const seedUser = async (userData: Object = {}, userAccountData: Object = {}): Promise<void> => {
+    const user = await UserModel.create({
+      ethereumAddress: faker.finance.ethereumAddress(),
+      roles: ["USER"],
+      ...userData
+    });
+
+    await UserAccountModel.create({
+      user: user._id,
+      accountId: faker.datatype.uuid(),
+      name: faker.internet.userName(),
+      platform: 'DISCORD',
+      ...userAccountData
+    });
+};
+
+const seedPeriods = async (): Promise<void> => {
   const periodsCount = await PeriodModel.count();
-  const praisesCount = await PraiseModel.count();
-  const userCount = await UserModel.count();
 
   if (periodsCount === 0) {
     const d = new Date();
@@ -95,44 +67,73 @@ const seedData = async (): Promise<void> => {
       d.setDate(d.getDate() + PERIOD_LENGTH);
     }
   }
+};
 
-  if (userCount === 0) {
-    for (let i = 0; i < USERS.length; i++) {
+const seedPredefinedUsers = async (): Promise<void> => {
+  const userCount = await UserModel.count();
+
+  if (userCount < PREDEFINED_USERS.length) {
+    for (let i = 0; i < PREDEFINED_USERS.length; i++) {
       try {
-        const user = await UserModel.create({
-          ethereumAddress: USERS[i].ethereumAddress,
-          roles: USERS[i].roles,
-        });
-
-        await UserAccountModel.create({
-          user: user._id,
-          accountId: faker.datatype.uuid(),
-          name: faker.internet.userName(),
-          platform: 'DISCORD',
+        await seedUser({
+          ethereumAddress: PREDEFINED_USERS[i].ethereumAddress,
+          roles: PREDEFINED_USERS[i].roles,
         });
       } catch (e) {
         console.log('ERROR:', e);
       }
     }
   }
+};
 
-  if (praisesCount === 0) {
+const seedRegularUsers = async (): Promise<void> => {
+  const userCount = await UserModel.count({ roles: ['USER']});
+
+  if (userCount < REGULAR_USERS_NUMBER) {
+    for (let i = 0; i < REGULAR_USERS_NUMBER; i++) {
+      try {
+        await seedUser({
+          roles: ["USER"]
+        });
+      } catch (e) {
+        console.log('ERROR:', e);
+      }
+    }
+  }
+};
+
+const seedQuantifierUsers = async (): Promise<void> => {
+  const userCount = await UserModel.count({ roles: ['USER', 'QUANTIFIER']});
+
+  if (userCount < QUANTIFIER_USERS_NUMBER) {
+    for (let i = 0; i < QUANTIFIER_USERS_NUMBER; i++) {
+      try {
+        await seedUser({
+          roles: ["USER", "QUANTIFIER"]
+        });
+      } catch (e) {
+        console.log('ERROR:', e);
+      }
+    }
+  }
+};
+
+const seedPraises = async (): Promise<void> => {
+  const praisesCount = await PraiseModel.count();
+
+  if (praisesCount < PRAISE_NUMBER) {
     for (let i = 0; i < PRAISE_NUMBER; i++) {
-      const accounts = twoRandomAccountIndexes();
-
-      const giver = await UserAccountModel.findOne().skip(accounts[0]);
-      const receiver = await UserAccountModel.findOne().skip(accounts[1]);
-
+      const [giver, receiver] = await fetchTwoRandomUserAccounts();
       try {
         const randomDays = Math.floor(
           Math.random() * PERIOD_NUMBER * PERIOD_LENGTH
         );
         await PraiseModel.create({
           reason: faker.lorem.sentences(),
-          giver: giver!._id,
+          giver: giver._id,
           sourceId: faker.datatype.uuid(),
           sourceName: faker.lorem.word(),
-          receiver: receiver!._id,
+          receiver: receiver._id,
           createdAt: new Date(
             Date.now() + (randomDays - PERIOD_LENGTH) * 86400000
           ),
@@ -144,4 +145,14 @@ const seedData = async (): Promise<void> => {
   }
 };
 
-export { seedData };
+export const seedData = async (): Promise<void> => {
+  logger.info('Seeding database with fake data.');
+
+  await seedPeriods();
+  await seedPredefinedUsers();
+  await seedRegularUsers();
+  await seedQuantifierUsers();
+  await seedPraises();
+
+  logger.info('Seeding complete.')
+};
