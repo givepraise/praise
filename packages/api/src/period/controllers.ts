@@ -217,13 +217,15 @@ const assignQuantifiersDryRun = async (
         as: 'accounts',
       },
     },
+    {
+      $addFields: {
+        receivers: []
+      }
+    }
   ]);
 
-  const poolIds: Quantifier[] = quantifierPool.map(
-    (user) => ({ ...user, receivers: [] } as Quantifier)
-  );
   // Scramble the quant pool to randomize who gets assigned
-  const pool = poolIds.sort(() => 0.5 - Math.random()).slice(0, poolIds.length);
+  const pool = quantifierPool.sort(() => 0.5 - Math.random()).slice(0, quantifierPool.length);
 
   for (let qi = 0; qi < pool.length; qi++) {
     const q = pool[qi];
