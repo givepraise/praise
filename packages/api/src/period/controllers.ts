@@ -222,11 +222,9 @@ const assignQuantifiersDryRun = async (
   //    with a maximum 'bin' size of: PRAISE_PER_QUANTIFIER * tolerance
   //    where each item takes up bin space based on its' praiseCount
   const result: PackingOutput<Receiver> = firstFit(receivers, (r: Receiver) => r.praiseCount, maxPraisePerQuantifier);
-  //@ts-ignore
-  const bins: Receiver[][] = [...result.bins, ...result.oversized];
+  const bins: Receiver[][] = [...result.bins, ...result.oversized.map((r) => [r])];
 
   // Clone the bins for each redundant assignment (as defined by setting PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)
-  //@ts-ignore
   const redundantAssignmentBins: Receiver[][] = flatten(range(quantifiersPerPraiseReceiver).map((i) => bins.slice()))
 
   // Query the list of quantifiers & randomize order
