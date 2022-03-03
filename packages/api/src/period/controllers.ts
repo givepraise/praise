@@ -9,6 +9,7 @@ import {
   PraiseDetailsDto,
   PraiseDto,
   Quantifier,
+  QuantifierPoolById,
   Receiver,
 } from '@praise/types';
 import { praiseWithScore } from '@praise/utils';
@@ -23,9 +24,10 @@ import {
 } from '@shared/types';
 import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
+import { UserAccountDocument } from '@useraccount/types';
 import { Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { flatten } from 'lodash';
+import { flatten, range, intersection } from 'lodash';
 import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import { periodDocumentTransformer } from './transformers';
@@ -39,6 +41,8 @@ import {
   VerifyQuantifierPoolSizeResponse,
 } from './types';
 import { findPeriodDetailsDto, getPreviousPeriodEndDate } from './utils';
+import { firstFit, PackingOutput } from 'bin-packer';
+
 /**
  * Description
  * @param
@@ -189,7 +193,7 @@ const assignQuantifiersDryRun = async (
   const maxPraisePerQuantifier = praisePerQuantifier * tolerance;
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
-  // Aggregate all period praise receivers and count number of received praise
+  // Query a list of receivers with their collection of praise
   let receivers: Receiver[] = await PraiseModel.aggregate([
     {
       $match: {
@@ -205,9 +209,28 @@ const assignQuantifiersDryRun = async (
         },
       },
     },
+
+    // Sort decsending as first step of "First Fit Decreasing" bin-packing algorithm
+    {
+      $sort: {
+        praiseCount: -1
+      }
+    }
   ]);
 
-  const quantifierPool = await UserModel.aggregate([
+  // Run "First Fit" bin-packing algorithm on list of receivers
+  //    with a maximum 'bin' size of: PRAISE_PER_QUANTIFIER * tolerance
+  //    where each item takes up bin space based on its' praiseCount
+  const result: PackingOutput<Receiver> = firstFit(receivers, (r: Receiver) => r.praiseCount, maxPraisePerQuantifier);
+  //@ts-ignore
+  const bins: Receiver[][] = [...result.bins, ...result.oversized];
+
+  // Clone the bins for each redundant assignment (as defined by setting PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)
+  //@ts-ignore
+  const redundantAssignmentBins: Receiver[][] = flatten(range(quantifiersPerPraiseReceiver).map((i) => bins.slice()))
+
+  // Query the list of quantifiers & randomize order
+  let quantifierPool = await UserModel.aggregate([
     { $match: { roles: UserRole.QUANTIFIER } },
     {
       $lookup: {
@@ -223,65 +246,60 @@ const assignQuantifiersDryRun = async (
       }
     }
   ]);
+  quantifierPool = quantifierPool.sort(() => 0.5 - Math.random()).slice(0, quantifierPool.length);
 
-  // Scramble the quant pool to randomize who gets assigned
-  const pool = quantifierPool.sort(() => 0.5 - Math.random()).slice(0, quantifierPool.length);
+  // Convert array of quantifiers to a single object, keyed by _id
+  const quantifierPoolById: QuantifierPoolById = quantifierPool.reduce(
+    (poolById, q) => {
+      poolById[q._id] = q;
+      return poolById;
+    },
+    {}
+  );
 
-  for (let qi = 0; qi < pool.length; qi++) {
-    const q = pool[qi];
-
-    // Scramble receivers array to avoid same combinations of receivers being
-    // assigned to quantifiers.
-    receivers = receivers
-      .sort(() => 0.5 - Math.random())
-      .slice(0, receivers.length);
-
-    for (let ri = 0; ri < receivers.length; ri++) {
-      const r = receivers[ri];
-
-      const quantifierAccountIds: string[] = q.accounts.map((account) =>
-        account._id.toString()
-      );
-
-      // Assign praise that meet criteria
-      if (
-        !quantifierAccountIds.includes(r._id.toString()) &&
-        ((q.receivers.length === 0 && r.praiseCount >= praisePerQuantifier) ||
-          assignedPraiseCount(q) + r.praiseCount < maxPraisePerQuantifier)
-      ) {
-        // Assign receiver to quantifier
-        q.receivers.push(r);
-        r.assignedQuantifiers = r.assignedQuantifiers
-          ? r.assignedQuantifiers + 1
-          : 1;
-        // No more assigns needed for this receiver, splice from receiver array
-        if (r.assignedQuantifiers === quantifiersPerPraiseReceiver) {
-          receivers.splice(ri, 1);
-          ri--;
-        }
-      }
+  // Assign each bin to an available quantifier
+  const availableQuantifiers = quantifierPool.slice();
+  let quantifiersNeeded = 0;
+  redundantAssignmentBins.forEach((assignmentBin: Receiver[]) => {
+    if (availableQuantifiers.length === 0) {
+      quantifiersNeeded += 1;
+      return;
     }
 
-    // Extend the pool with dummy quantifiers if assigns remain to be done
-    // when reaching the end of the pool
-    if (
-      qi === pool.length - 1 &&
-      assignsRemaining(receivers, quantifiersPerPraiseReceiver)
-    ) {
-      pool.push({
-        _id: undefined,
-        accounts: [],
-        receivers: [],
-      });
+    const q = availableQuantifiers.pop();
+    const qUserAccountIds: string[] = q.accounts.map((account: UserAccountDocument) =>
+      account._id.toString()
+    );
+    const assignmentReceiverIds: string[] = assignmentBin.map((r: Receiver) =>
+      r._id.toString()
+    );
+
+    // Confirm none of the Receivers in the assignment bin belong to the Quantifier
+    const overlappingUserAccounts = intersection(qUserAccountIds, assignmentReceiverIds);
+    if (overlappingUserAccounts.length === 0) {
+      // assign Quantifier to original pool
+      quantifierPoolById[q._id.toString()].receivers.push(...assignmentBin);
+    } else {
+      // make quantifier available for assignment elsewhere
+      availableQuantifiers.unshift(q);
     }
-  }
+  });
 
-  // Trim any unassigned quantifiers from the returned pool
-  while (pool[pool.length - 1].receivers.length === 0) {
-    pool.pop();
-  }
+  // Convert object of quantifiers back to array & remove any unassigned
+  const poolAssignments: Quantifier[] = Object.values(quantifierPoolById)
+    .filter((q: Quantifier): boolean => q.receivers.length > 0);
 
-  return pool;
+  // Extend the pool with dummy quantifiers if assigns remain to be done
+  //  and no more quantifiers are available
+  const neededAssignments: Quantifier[] = range(quantifiersNeeded).map((i) => ({
+    _id: undefined,
+    accounts: [],
+    receivers: []
+  }));
+
+  const finalAssignments: Quantifier[] = poolAssignments.concat(neededAssignments);
+
+  return finalAssignments;
 };
 
 /**
