@@ -1,6 +1,6 @@
 import { PeriodModel } from './entities';
 
-async function validateEndDate(this: any, endDate: string) {
+async function validateEndDate(this: any, endDate: string): Promise<Boolean> {
   // This rule don't apply when no change to endDate has been made
   if (!this.$__.activePaths.states.modify.endDate) return true;
 

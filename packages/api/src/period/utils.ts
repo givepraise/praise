@@ -46,14 +46,15 @@ const calculateReceiverScores = async (
       if (!r.quantifications) return r;
 
       const quantifierScores = await Promise.all(
-        //@ts-ignore
-        r.quantifications.map((q) => calculateQuantificationsCompositeScore(q, duplicatePraisePercentage))
+        r.quantifications.map((q) =>
+          calculateQuantificationsCompositeScore(q, duplicatePraisePercentage)
+        )
       );
 
       return {
         ...r,
         score: sum(quantifierScores),
-        quantifications: undefined
+        quantifications: undefined,
       };
     })
   );
@@ -69,7 +70,10 @@ export const findPeriodDetailsDto = async (
 
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
-  const [quantifiers, receivers]: [PeriodDetailsQuantifierDto[], PeriodDetailsReceiver[]] = await Promise.all([
+  const [quantifiers, receivers]: [
+    PeriodDetailsQuantifierDto[],
+    PeriodDetailsReceiver[]
+  ] = await Promise.all([
     PraiseModel.aggregate([
       {
         $match: {
