@@ -59,7 +59,7 @@ const settings = [
   {
     key: 'PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR',
     value:
-      '**❌ User does not have `{role}`**\nThe praise command can only be used by members with the {@role} role. Attend an onboarding-call, or ask a steward or guide for an Intro to Praise.',
+      '**❌ User does not have `{role}` role**\nThe praise command can only be used by members with the {@role} role. Attend an onboarding-call, or ask a steward or guide for an Intro to Praise.',
     type: 'Textarea',
   },
   {
