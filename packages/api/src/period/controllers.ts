@@ -27,7 +27,7 @@ import { UserRole } from '@user/types';
 import { UserAccountDocument } from '@useraccount/types';
 import { Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { flatten, range, intersection } from 'lodash';
+import { flatten, range, intersection, sum, shuffle } from 'lodash';
 import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import { periodDocumentTransformer } from './transformers';
@@ -42,7 +42,7 @@ import {
 } from './types';
 import { findPeriodDetailsDto, getPreviousPeriodEndDate } from './utils';
 import { firstFit, PackingOutput } from 'bin-packer';
-
+import logger from 'jet-logger';
 /**
  * Description
  * @param
@@ -152,27 +152,6 @@ export const close = async (
   await period.save();
 
   res.status(StatusCodes.OK).json(periodDocumentTransformer(period));
-};
-
-const assignedPraiseCount = (quantifier: Quantifier): number => {
-  return quantifier.receivers.reduce((sum, receiver) => {
-    return sum + receiver.praiseCount;
-  }, 0);
-};
-
-const assignsRemaining = (
-  receivers: Receiver[],
-  quantifiersPerPraiseReceiver: number
-): boolean => {
-  for (const r of receivers) {
-    if (
-      !r.assignedQuantifiers ||
-      r.assignedQuantifiers < quantifiersPerPraiseReceiver
-    ) {
-      return true;
-    }
-  }
-  return false;
 };
 
 const assignQuantifiersDryRun = async (
