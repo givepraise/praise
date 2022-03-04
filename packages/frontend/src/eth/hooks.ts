@@ -2,9 +2,9 @@ import { useWeb3React } from '@web3-react/core';
 import { useEffect, useState } from 'react';
 import { injected } from './connectors';
 
-export function useEagerConnect() {
+export function useEagerConnect(): boolean {
   const { activate, active } = useWeb3React();
-  const [tried, setTried] = useState(false);
+  const [tried, setTried] = useState<boolean>(false);
 
   /* eslint-disable */
   useEffect(() => {
@@ -30,27 +30,34 @@ export function useEagerConnect() {
   return tried;
 }
 
-export function useInactiveListener(suppress = false) {
+export function useInactiveListener(suppress = false): void {
   const { active, error, activate } = useWeb3React();
 
-  useEffect((): any => {
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { ethereum } = window as any;
     if (ethereum && ethereum.on && !active && !error && !suppress) {
-      const handleConnect = async () => {
+      const handleConnect = async (): Promise<void> => {
         console.log("Handling 'connect' event");
         await activate(injected);
       };
-      const handleChainChanged = async (chainId: string | number) => {
+      const handleChainChanged = async (
+        chainId: string | number
+      ): Promise<void> => {
         console.log("Handling 'chainChanged' event with payload", chainId);
         await activate(injected);
       };
-      const handleAccountsChanged = async (accounts: string[]) => {
+      const handleAccountsChanged = async (
+        accounts: string[]
+      ): Promise<void> => {
         console.log("Handling 'accountsChanged' event with payload", accounts);
         if (accounts.length > 0) {
           await activate(injected);
         }
       };
-      const handleNetworkChanged = async (networkId: string | number) => {
+      const handleNetworkChanged = async (
+        networkId: string | number
+      ): Promise<void> => {
         console.log("Handling 'networkChanged' event with payload", networkId);
         await activate(injected);
       };

@@ -6,7 +6,7 @@ import { UserAccountDto } from 'api/dist/useraccount/types';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 
-const discordAvatarUrl = (account: UserAccountDto) => {
+const discordAvatarUrl = (account: UserAccountDto): string => {
   return `https://cdn.discordapp.com/avatars/${account.accountId}/${account.avatarId}.webp?size=128`;
 };
 

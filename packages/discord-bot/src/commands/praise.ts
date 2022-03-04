@@ -187,7 +187,7 @@ module.exports = {
           msg as APIMessage;
           await praise(
             interaction,
-            `https://discord.com/channels/${msg?.guild_id}/${msg?.channel_id}/${msg?.id}`
+            `https://discord.com/channels/${interaction.guildId}/${interaction.channelId}/${msg?.id}`
           );
         }
       }

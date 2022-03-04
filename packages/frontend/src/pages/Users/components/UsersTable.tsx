@@ -11,7 +11,7 @@ import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import PoolDeleteDialog from './DeleteDialog';
 
-const UsersTable = () => {
+const UsersTable = (): JSX.Element => {
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
   const { removeRole } = useAdminUsers();
 
@@ -25,7 +25,8 @@ const UsersTable = () => {
       {
         Header: 'Id',
         accessor: '_id',
-        Cell: (data: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Cell: (data: any): JSX.Element => {
           return (
             <div className="flex items-center w-full">
               <div className="flex items-center">
@@ -58,12 +59,12 @@ const UsersTable = () => {
   if (!allQuantifierUsers)
     return <div>There are no users in the Quantifier pool.</div>;
 
-  const handleDeleteQuantifierClick = (quantifier: UserDto) => {
+  const handleDeleteQuantifierClick = (quantifier: UserDto): void => {
     setSelectedQuantifier(quantifier);
     setIsOpen(true);
   };
 
-  const removeQuantifier = (id: string) => {
+  const removeQuantifier = (id: string): void => {
     void removeRole(id, UserRole.QUANTIFIER);
   };
 
@@ -81,7 +82,7 @@ const UsersTable = () => {
               })}
               <td className="w-8">
                 <button
-                  onClick={() =>
+                  onClick={(): void =>
                     handleDeleteQuantifierClick(row.original as UserDto)
                   }
                   className="hover:text-red-600"
@@ -100,14 +101,14 @@ const UsersTable = () => {
         {isOpen ? (
           <Dialog
             open={isOpen && !!selectedQuantifier}
-            onClose={() => setIsOpen(false)}
+            onClose={(): void => setIsOpen(false)}
             className="fixed inset-0 z-10 overflow-y-auto"
             initialFocus={deleteDialogRef}
           >
             <div ref={deleteDialogRef}>
               <PoolDeleteDialog
-                onClose={() => setIsOpen(false)}
-                onQuantifierRemoved={(id: string) => removeQuantifier(id)}
+                onClose={(): void => setIsOpen(false)}
+                onQuantifierRemoved={(id: string): void => removeQuantifier(id)}
                 quantifier={selectedQuantifier}
               />
             </div>

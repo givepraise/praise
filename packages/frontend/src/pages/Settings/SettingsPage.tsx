@@ -7,30 +7,20 @@ import {
   useSetSetting,
 } from '@/model/settings';
 import { faCogs } from '@fortawesome/free-solid-svg-icons';
-import { ValidationErrors } from 'final-form';
 import React from 'react';
 import 'react-day-picker/lib/style.css';
 import { Field, Form } from 'react-final-form';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import SubmitButton from './components/SubmitButton';
 
-const validate = (
-  values: Record<string, any>
-): ValidationErrors | Promise<ValidationErrors> => {
-  const errors = {} as any;
-
-  // Currently no validation
-
-  return errors as ValidationErrors;
-};
-
-const SettingsForm = () => {
+const SettingsForm = (): JSX.Element | null => {
   const [apiResponse] = useRecoilState(SetSettingApiResponse);
   const settings = useRecoilValue(AllSettings);
   const { setSetting } = useSetSetting();
 
   // Is only called if validate is successful
-  const onSubmit = async (values: Record<string, any>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onSubmit = async (values: Record<string, any>): Promise<void> => {
     for (const prop in values) {
       if (Object.prototype.hasOwnProperty.call(values, prop)) {
         const setting = settings?.find((s) => s.key === prop);
@@ -45,10 +35,10 @@ const SettingsForm = () => {
     }
   };
 
-  const getStringInput = (setting: Setting) => {
+  const getStringInput = (setting: Setting): JSX.Element => {
     return (
       <Field name={setting.key} key={setting.key}>
-        {({ input, meta }) => {
+        {({ input }): JSX.Element => {
           return (
             <div className="mb-2">
               <label className="block">{setting.key}</label>
@@ -69,10 +59,10 @@ const SettingsForm = () => {
     );
   };
 
-  const getNumberInput = (setting: Setting) => {
+  const getNumberInput = (setting: Setting): JSX.Element => {
     return (
       <Field name={setting.key} key={setting.key}>
-        {({ input, meta }) => (
+        {({ input }): JSX.Element => (
           <div className="mb-2">
             <label className="block">{setting.key}</label>
             <input
@@ -91,10 +81,10 @@ const SettingsForm = () => {
     );
   };
 
-  const getTextareaInput = (setting: Setting) => {
+  const getTextareaInput = (setting: Setting): JSX.Element => {
     return (
       <Field name={setting.key} key={setting.key}>
-        {({ input, meta }) => (
+        {({ input }): JSX.Element => (
           <div className="mb-2">
             <label className="block">{setting.key}</label>
             <textarea
@@ -113,10 +103,10 @@ const SettingsForm = () => {
     );
   };
 
-  const getFileInput = (setting: Setting) => {
+  const getFileInput = (setting: Setting): JSX.Element => {
     return (
       <Field name={setting.key} key={setting.key}>
-        {({ input, meta }) => (
+        {({ input }): JSX.Element => (
           <div className="mb-2">
             <label className="block">{setting.key}</label>
             <input
@@ -135,10 +125,10 @@ const SettingsForm = () => {
     );
   };
 
-  const getBooleanInput = (setting: Setting) => {
+  const getBooleanInput = (setting: Setting): JSX.Element => {
     return (
       <Field name={setting.key} key={setting.key} type="checkbox">
-        {({ input, meta }) => {
+        {({ input }): JSX.Element => {
           return (
             <div className="mb-2">
               <label className="block">{setting.key}</label>
@@ -153,17 +143,19 @@ const SettingsForm = () => {
     );
   };
 
-  const getField = (setting: Setting) => {
+  const getField = (setting: Setting): JSX.Element | null => {
     if (setting.type === 'String' || setting.type === 'List')
       return getStringInput(setting);
     if (setting.type === 'Number') return getNumberInput(setting);
     if (setting.type === 'Textarea') return getTextareaInput(setting);
     if (setting.type === 'Boolean') return getBooleanInput(setting);
     if (setting.type === 'File') return getFileInput(setting);
+    return null;
   };
 
   if (!Array.isArray(settings) || settings.length === 0) return null;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const initialValues = {} as any;
   for (const setting of settings) {
     initialValues[setting.key] =
@@ -173,14 +165,13 @@ const SettingsForm = () => {
   return (
     <Form
       onSubmit={onSubmit}
-      validate={validate}
       initialValues={initialValues}
       mutators={{
-        setDate: (args, state, utils) => {
+        setDate: (args, state, utils): void => {
           utils.changeValue(state, 'endDate', () => args);
         },
       }}
-      render={({ handleSubmit, submitSucceeded }) => (
+      render={({ handleSubmit }): JSX.Element => (
         <form onSubmit={handleSubmit} className="leading-loose">
           <div className="mb-3">
             {settings.map((setting: Setting) => getField(setting))}
@@ -194,7 +185,7 @@ const SettingsForm = () => {
   );
 };
 
-const SettingsPage = () => {
+const SettingsPage = (): JSX.Element => {
   return (
     <>
       <BreadCrumb name="Settings" icon={faCogs} />

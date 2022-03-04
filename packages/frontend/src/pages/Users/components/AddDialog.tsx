@@ -10,17 +10,17 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 
 interface UserAutosuggestProps {
-  onClose(): any;
+  onClose(): void;
   onQuantifierAdded(id: string): void;
 }
 
 const UserAutosuggest = ({
   onQuantifierAdded,
   onClose,
-}: UserAutosuggestProps) => {
+}: UserAutosuggestProps): JSX.Element => {
   const allUsers = useRecoilValue(AllUsers);
 
-  const DropdownCombobox = () => {
+  const DropdownCombobox = (): JSX.Element => {
     const [inputItems, setInputItems] = React.useState(
       allUsers ? allUsers : ([] as UserDto[])
     );
@@ -37,19 +37,20 @@ const UserAutosuggest = ({
         if (allUsers) {
           setInputItems(
             allUsers.filter((user) => {
+              if (!inputValue) return false;
               if (user.roles.includes(UserRole.QUANTIFIER)) return false;
-              if (user._id?.includes(inputValue!.toLowerCase())) return true;
+              if (user._id?.includes(inputValue.toLowerCase())) return true;
               if (
                 user.ethereumAddress &&
                 user.ethereumAddress.length > 0 &&
                 user.ethereumAddress
                   .toLowerCase()
-                  .includes(inputValue!.toLowerCase())
+                  .includes(inputValue.toLowerCase())
               )
                 return true;
               if (
                 user.accounts?.find((account) =>
-                  account.name.toLowerCase().includes(inputValue!.toLowerCase())
+                  account.name.toLowerCase().includes(inputValue.toLowerCase())
                     ? true
                     : false
                 )
@@ -60,6 +61,7 @@ const UserAutosuggest = ({
           );
         }
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onSelectedItemChange: (data: any) => {
         const selectedItem = data.selectedItem as UserDto;
         if (selectedItem._id) {
@@ -99,8 +101,7 @@ const UserAutosuggest = ({
                   highlightedIndex === index ? 'bg-gray-100' : '',
                   'py-2 pl-2'
                 )}
-                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                key={`${item}${index}`} //TODO fix
+                key={`${item}${index}`}
                 {...getItemProps({ item, index })}
               >
                 {getUsername(item)}
@@ -114,10 +115,13 @@ const UserAutosuggest = ({
 };
 
 interface PoolAddDialogProps {
-  onClose(): any;
+  onClose(): void;
   onQuantifierAdded(id: string): void;
 }
-const PoolAddDialog = ({ onClose, onQuantifierAdded }: PoolAddDialogProps) => {
+const PoolAddDialog = ({
+  onClose,
+  onQuantifierAdded,
+}: PoolAddDialogProps): JSX.Element => {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Dialog.Overlay className="fixed inset-0 bg-gray-800 opacity-30" />

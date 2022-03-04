@@ -52,7 +52,7 @@ export const AllQuantifierUsers = selector({
   },
 });
 
-export const useAllUsersQuery = () => {
+export const useAllUsersQuery = (): AxiosResponse<unknown> => {
   const allUsersQueryResponse = useAuthApiQuery(AllUsersQuery);
   const [allUsers, setAllUsers] = useRecoilState(AllUsers);
 
@@ -69,26 +69,32 @@ export const useAllUsersQuery = () => {
   return allUsersQueryResponse;
 };
 
+type SingleUserParams = {
+  userId: string | undefined;
+};
 export const SingleUser = selectorFamily({
   key: 'SingleUser',
   get:
-    (params: any) =>
-    ({ get }) => {
+    (params: SingleUserParams) =>
+    ({ get }): UserDto | undefined => {
       const { userId } = params;
       const allUsers = get(AllUsers);
-      if (!allUsers) return null;
+      if (!allUsers) return undefined;
       return allUsers.filter((user) => user._id === userId)[0];
     },
 });
 
+type SingleUserByReceiverIdParams = {
+  receiverId: string;
+};
 export const SingleUserByReceiverId = selectorFamily({
   key: 'SingleUserByReceiverId',
   get:
-    (params: any) =>
-    ({ get }) => {
+    (params: SingleUserByReceiverIdParams) =>
+    ({ get }): UserDto | undefined => {
       const { receiverId } = params;
       const allUsers = get(AllUsers);
-      if (!allUsers) return null;
+      if (!allUsers) return undefined;
       return allUsers.find((user) => {
         if (!user.accounts) return false;
         return user.accounts.find((account) => account._id === receiverId);
@@ -96,7 +102,7 @@ export const SingleUserByReceiverId = selectorFamily({
     },
 });
 
-const stringToNumber = (s: string) => {
+const stringToNumber = (s: string): number => {
   let value = 0;
   for (let i = s.length - 1; i >= 0; i--) {
     value = value * 256 + s.charCodeAt(i);
@@ -104,11 +110,15 @@ const stringToNumber = (s: string) => {
   return value;
 };
 
+type PseudonymForUserParams = {
+  periodId: string;
+  userId: string;
+};
 export const PseudonymForUser = selectorFamily({
   key: 'PseudonymForUser',
   get:
-    (params: any) =>
-    ({ get }) => {
+    (params: PseudonymForUserParams) =>
+    ({ get }): string => {
       const { periodId, userId } = params;
       const allPeriods = get(AllPeriods);
       if (!allPeriods) return 'Loading…';
@@ -133,8 +143,18 @@ export const AddUserRoleApiResponse = atom<
   default: null,
 });
 
+type useAdminUsersReturns = {
+  addRole: (
+    userId: string,
+    role: UserRole
+  ) => Promise<AxiosResponse<unknown> | AxiosError<unknown>>;
+  removeRole: (
+    userId: string,
+    role: UserRole
+  ) => Promise<AxiosResponse<unknown> | AxiosError<unknown>>;
+};
 // Hook that returns functions for administering users
-export const useAdminUsers = () => {
+export const useAdminUsers = (): useAdminUsersReturns => {
   const allUsers: UserDto[] | undefined = useRecoilValue(AllUsers);
 
   const addRole = useRecoilCallback(

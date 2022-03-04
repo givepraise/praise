@@ -5,7 +5,7 @@ import { BottomScrollListener } from 'react-bottom-scroll-listener';
 import { useRecoilState } from 'recoil';
 import { ALL_PRAISE_LIST_KEY } from './PraiseTable';
 
-const PraisePageLoader = () => {
+const PraisePageLoader = (): JSX.Element => {
   const [praisePagination, setPraisePagination] = useRecoilState(
     AllPraiseQueryPagination(ALL_PRAISE_LIST_KEY)
   );

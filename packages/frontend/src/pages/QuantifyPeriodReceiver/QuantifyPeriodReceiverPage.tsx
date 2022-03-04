@@ -1,6 +1,8 @@
 import BreadCrumb from '@/components/BreadCrumb';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import {
+  PeriodAndReceiverPageParams,
+  PeriodPageParams,
   PeriodQuantifierReceivers,
   SinglePeriod,
   usePeriodQuantifierPraiseQuery,
@@ -18,15 +20,14 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import QuantifyTable from './components/QuantifyTable';
 
-const PeriodBreadCrumb = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId } = useParams() as any;
+const PeriodBreadCrumb = (): JSX.Element | null => {
+  const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
   if (!period) return null;
   return <BreadCrumb name={`Quantify / ${period.name}`} icon={faCalendarAlt} />;
 };
 
-const DoneLabel = () => {
+const DoneLabel = (): JSX.Element => {
   return (
     <div className="pl-1 pr-1 ml-2 text-xs text-white no-underline bg-green-400 py-[3px] rounded inline-block relative top-[-1px]">
       <FontAwesomeIcon icon={faCheckCircle} size="1x" className="mr-2" />
@@ -35,9 +36,8 @@ const DoneLabel = () => {
   );
 };
 
-const PeriodMessage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId, receiverId } = useParams() as any;
+const PeriodMessage = (): JSX.Element | null => {
+  const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
   const { location } = useHistory();
   usePeriodQuantifierPraiseQuery(periodId, location.key);
   const usePseudonyms = useRecoilValue(
@@ -74,7 +74,7 @@ const PeriodMessage = () => {
   );
 };
 
-const QuantifyPeriodUserPage = () => {
+const QuantifyPeriodUserPage = (): JSX.Element => {
   return (
     <>
       <React.Suspense fallback="Loading…">

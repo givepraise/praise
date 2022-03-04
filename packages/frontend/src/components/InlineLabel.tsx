@@ -2,7 +2,7 @@ import { classNames } from '../utils';
 
 interface InlineLabelProps {
   text: string;
-  button?: any;
+  button?: JSX.Element;
   className?: string;
   onClick?: () => void;
 }
@@ -12,7 +12,7 @@ export const InlineLabel = ({
   button,
   className,
   onClick,
-}: InlineLabelProps) => {
+}: InlineLabelProps): JSX.Element => {
   return (
     <span
       onClick={onClick}

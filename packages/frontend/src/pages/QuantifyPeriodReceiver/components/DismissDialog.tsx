@@ -8,15 +8,15 @@ import { Dialog } from '@headlessui/react';
 import { PraiseDto } from 'api/dist/praise/types';
 
 interface DismissDialogProps {
-  onClose(): any;
-  onDismiss(): any;
+  onClose(): void;
+  onDismiss(): void;
   praise: PraiseDto | undefined;
 }
 const PoolDismissDialog = ({
   onClose,
   onDismiss,
   praise,
-}: DismissDialogProps) => {
+}: DismissDialogProps): JSX.Element | null => {
   if (praise) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -41,7 +41,7 @@ const PoolDismissDialog = ({
             <div className="flex justify-center">
               <button
                 className="mt-4 praise-button"
-                onClick={() => {
+                onClick={(): void => {
                   onDismiss();
                   onClose();
                 }}

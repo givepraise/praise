@@ -1,5 +1,6 @@
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import {
+  PeriodPageParams,
   PeriodQuantifierReceivers,
   QuantifierReceiverData,
   usePeriodQuantifierPraiseQuery,
@@ -12,7 +13,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 
-const DoneLabel = () => {
+const DoneLabel = (): JSX.Element => {
   return (
     <div className="pl-1 pr-1 ml-2 text-xs text-white no-underline bg-green-400 py-[3px] rounded inline-block relative top-[-1px]">
       <FontAwesomeIcon icon={faCheckCircle} size="1x" className="mr-2" />
@@ -21,10 +22,9 @@ const DoneLabel = () => {
   );
 };
 
-const QuantifyPeriodTable = () => {
+const QuantifyPeriodTable = (): JSX.Element => {
   const history = useHistory();
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { periodId } = useParams() as any;
+  const { periodId } = useParams<PeriodPageParams>();
   const { location } = useHistory();
   usePeriodQuantifierPraiseQuery(periodId, location.key);
   const data = useRecoilValue(PeriodQuantifierReceivers(periodId));
@@ -36,7 +36,8 @@ const QuantifyPeriodTable = () => {
       {
         Header: 'Receiver',
         accessor: 'receiverName',
-        Cell: (data: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Cell: (data: any): JSX.Element => {
           return usePseudonyms ? (
             <UserPseudonym
               userId={data.row.original.receiverId}
@@ -50,17 +51,18 @@ const QuantifyPeriodTable = () => {
       {
         Header: 'Remaining items',
         accessor: 'count',
-        Cell: (data: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Cell: (data: any): string | null => {
           const item = data.row.original;
           if (!item) return null;
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           return `${item.count - item.done} / ${item.count}`;
         },
       },
       {
         Header: '',
         accessor: 'done',
-        Cell: (data: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Cell: (data: any): JSX.Element | null => {
           const item = data.row.original;
           if (!item) return null;
           return item.count - item.done === 0 ? (

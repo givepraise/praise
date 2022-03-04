@@ -6,7 +6,9 @@ import { useRecoilValue } from 'recoil';
 interface QuantifierPeriodMessageProps {
   period: PeriodDetailsDto;
 }
-const QuantifierPeriodMessage = ({ period }: QuantifierPeriodMessageProps) => {
+const QuantifierPeriodMessage = ({
+  period,
+}: QuantifierPeriodMessageProps): JSX.Element | null => {
   if (!period?._id) return null;
   return (
     <li key={period._id}>
@@ -15,7 +17,7 @@ const QuantifierPeriodMessage = ({ period }: QuantifierPeriodMessageProps) => {
   );
 };
 
-export const ActiveUserQuantificationsMessage = () => {
+export const ActiveUserQuantificationsMessage = (): JSX.Element | null => {
   const activeUserQuantificationPeriods = useRecoilValue(
     AllActiveUserQuantificationPeriods
   );

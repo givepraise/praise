@@ -2,23 +2,24 @@ import { InlineLabel } from '@/components/InlineLabel';
 import { UserCell } from '@/components/table/UserCell';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
-import { useSinglePraiseQuery } from '@/model/praise';
+import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
 import { formatDate } from '@/utils/date';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 
 interface DuplicatePraiseLabelProps {
   praiseId: string;
 }
-const DuplicatePraiseLabel = ({ praiseId }: DuplicatePraiseLabelProps) => {
-  const history = useHistory();
+const DuplicatePraiseLabel = ({
+  praiseId,
+}: DuplicatePraiseLabelProps): JSX.Element => {
   return (
     <InlineLabel
-      onClick={() => {
+      onClick={(): void => {
         window.location.href = `/praise/${praiseId}`;
       }}
       text={`#${praiseId.slice(-4)}`}
@@ -26,9 +27,8 @@ const DuplicatePraiseLabel = ({ praiseId }: DuplicatePraiseLabelProps) => {
     />
   );
 };
-const PraiseDetailTable = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const { praiseId } = useParams() as any;
+const PraiseDetailTable = (): JSX.Element => {
+  const { praiseId } = useParams<PraisePageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const praise = useSinglePraiseQuery(praiseId);
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
@@ -39,18 +39,21 @@ const PraiseDetailTable = () => {
         Header: 'Quantifier',
         accessor: 'quantifier',
         className: 'text-left',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any) => <UserCell userId={data.value} />,
       },
       {
         Header: 'Date',
         accessor: 'updatedAt',
         className: 'text-left',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any) => formatDate(data.value),
       },
       {
         Header: 'Score',
         accessor: 'score',
         className: 'text-center',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any) =>
           data.row.original.duplicatePraise
             ? data.row.original.duplicateScore
@@ -64,6 +67,7 @@ const PraiseDetailTable = () => {
         Header: 'Dismissed',
         accessor: 'dismissed',
         className: 'text-center',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any) =>
           data.value === true ? (
             <FontAwesomeIcon icon={faCheckCircle} size="1x" />
@@ -75,7 +79,7 @@ const PraiseDetailTable = () => {
         Header: 'Duplicate',
         accessor: 'duplicatePraise',
         className: 'text-center',
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any) =>
           data.value ? <DuplicatePraiseLabel praiseId={data.value} /> : '',
       },
@@ -112,12 +116,13 @@ const PraiseDetailTable = () => {
               // eslint-disable-next-line react/jsx-key
               <th
                 {...column.getHeaderProps()}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 className={(column as any).className}
               >
                 {column.render('Header')}
               </th>
             ))}
-          </tr> //TODO fix
+          </tr>
         ))}
       </thead>
       <tbody {...getTableBodyProps()}>
@@ -131,13 +136,14 @@ const PraiseDetailTable = () => {
                   // eslint-disable-next-line react/jsx-key
                   <td
                     {...cell.getCellProps()}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     className={(cell.column as any).className}
                   >
                     {cell.render('Cell')}
                   </td>
                 );
               })}
-            </tr> //TODO fix key and id
+            </tr> //TODO fix id
           );
         })}
       </tbody>

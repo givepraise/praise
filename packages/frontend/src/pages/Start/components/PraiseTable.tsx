@@ -3,7 +3,7 @@ import { UserAvatar } from '@/components/user/UserAvatar';
 import { AllPraiseList } from '@/model/praise';
 import { formatDate } from '@/utils/date';
 import { PraiseDto } from 'api/dist/praise/types';
-import React, { SyntheticEvent } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
@@ -11,13 +11,14 @@ import PraisePageLoader from './PraisePageLoader';
 
 export const ALL_PRAISE_LIST_KEY = 'ALL_PRAISE';
 
-const PraiseTable = () => {
+const PraiseTable = (): JSX.Element => {
   const history = useHistory();
   const allPraise = useRecoilValue(AllPraiseList(ALL_PRAISE_LIST_KEY));
   const columns = React.useMemo(
     () => [
       {
         accessor: 'createdAt',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any) => (
           <div className="flex items-center w-full">
             <div className="flex items-center">
@@ -54,7 +55,7 @@ const PraiseTable = () => {
 
   const { getTableProps, getTableBodyProps, rows, prepareRow } = tableInstance;
 
-  const handleClick = (data: PraiseDto) => (e: SyntheticEvent) => {
+  const handleClick = (data: PraiseDto) => () => {
     history.push(`/praise/${data._id}`);
   };
 
