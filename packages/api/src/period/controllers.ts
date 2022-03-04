@@ -27,7 +27,7 @@ import { UserRole } from '@user/types';
 import { UserAccountDocument } from '@useraccount/types';
 import { Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { flatten, range, intersection, sum, shuffle } from 'lodash';
+import { flatten, range, intersection, sum } from 'lodash';
 import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import { periodDocumentTransformer } from './transformers';
@@ -246,22 +246,30 @@ const assignQuantifiersDryRun = async (
   );
 
   // Assign each bin to an available quantifier
-  let availableQuantifiers = quantifierPool.slice();
+  const availableQuantifiers = quantifierPool.slice();
   const availableBins = redundantAssignmentBins.slice();
 
-  const assignmentBinsNeedingQuantifiers: Receiver[][] = [];
-  const availableQuantifiersSkipped: Quantifier[] = [];
+  const skippedAssignmentBins: Receiver[][] = [];
+  const skippedAssignmentOptionIds: string[] = [];
 
   while (availableBins.length > 0) {
     const assignmentBin: Receiver[] | undefined = availableBins.pop();
     if (!assignmentBin) continue;
 
     if (availableQuantifiers.length === 0) {
-      assignmentBinsNeedingQuantifiers.push(assignmentBin);
+      skippedAssignmentBins.push(assignmentBin);
       continue;
     }
 
     const q = availableQuantifiers.pop();
+
+    // Generate a unique id to reference this assignment option (bin + quantifier)
+    const assignmentBinId: string = flatten(
+      assignmentBin.map((r: Receiver) => r.praiseIds)
+    ).join('+');
+    const assignmentOptionId = `${q._id.toString() as string
+      }-${assignmentBinId}`;
+
     const qUserAccountIds: string[] = q.accounts.map(
       (account: UserAccountDocument) => account._id.toString()
     );
@@ -277,20 +285,20 @@ const assignQuantifiersDryRun = async (
     if (overlappingUserAccounts.length === 0) {
       // assign Quantifier to original pool
       quantifierPoolById[q._id.toString()].receivers.push(...assignmentBin);
+    } else if (skippedAssignmentOptionIds.includes(assignmentOptionId)) {
+      // this assignment option has been skipped before
+      //  mark it as un-assignable by the current quantiifer set
+      skippedAssignmentBins.push(assignmentBin);
     } else {
-      // make quantifier & praise available for assignment elsewhere
+      // this assignment option has not been skipped yet
+      // make quantifier available again, at end of the line
       availableQuantifiers.unshift(q);
-      availableBins.unshift(assignmentBin);
 
-      // Shuffle order of quantifiers
-      //  or skip if unassignable twice.
-      if (availableQuantifiersSkipped.includes(q)) {
-        assignmentBinsNeedingQuantifiers.push(assignmentBin);
-        continue;
-      } else {
-        availableQuantifiers = shuffle(availableQuantifiers);
-        availableQuantifiersSkipped.push(q);
-      }
+      // make bin available again, at the beginning of the line
+      availableBins.push(assignmentBin);
+
+      // note that this assignment option has been skipped once
+      skippedAssignmentOptionIds.push(assignmentOptionId);
     }
   }
 
@@ -301,13 +309,11 @@ const assignQuantifiersDryRun = async (
 
   // Extend the pool with dummy quantifiers if assigns remain to be done
   //  and no more quantifiers are available
-  const neededAssignments: Quantifier[] = assignmentBinsNeedingQuantifiers.map(
-    (bin) => ({
-      _id: undefined,
-      accounts: [],
-      receivers: [...bin],
-    })
-  );
+  const neededAssignments: Quantifier[] = skippedAssignmentBins.map((bin) => ({
+    _id: undefined,
+    accounts: [],
+    receivers: [...bin],
+  }));
 
   poolAssignments.push(...neededAssignments);
 
@@ -320,7 +326,9 @@ const assignQuantifiersDryRun = async (
 
   const assignedPraiseCount: number = sum(
     flatten(
-      poolAssignments.map((a) => a.receivers.map((r) => r.praiseIds.length))
+      poolAssignments.map((q: Quantifier) =>
+        q.receivers.map((r: Receiver) => r.praiseIds.length)
+      )
     )
   );
 
