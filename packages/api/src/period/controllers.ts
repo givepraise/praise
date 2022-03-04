@@ -9,7 +9,6 @@ import {
   PraiseDetailsDto,
   PraiseDto,
   Quantifier,
-  QuantifierPoolById,
   Receiver,
 } from '@praise/types';
 import { praiseWithScore } from '@praise/utils';
@@ -43,6 +42,8 @@ import {
 import { findPeriodDetailsDto, getPreviousPeriodEndDate } from './utils';
 import { firstFit, PackingOutput } from 'bin-packer';
 import logger from 'jet-logger';
+import { maxWeightAssign, AssignResult } from 'munkres-algorithm';
+
 /**
  * Description
  * @param
@@ -236,88 +237,63 @@ const assignQuantifiersDryRun = async (
     .sort(() => 0.5 - Math.random())
     .slice(0, quantifierPool.length);
 
-  // Convert array of quantifiers to a single object, keyed by _id
-  const quantifierPoolById: QuantifierPoolById = quantifierPool.reduce(
-    (poolById, q) => {
-      poolById[q._id] = q;
-      return poolById;
-    },
-    {}
+  // Assign each bin to a quantifier
+  //  excluding any bins containing praise they received
+  // Generate a matrix for use by the restricted "Hungarian Assignment" algorithm
+  //    each column represents an element in redundantAssignmentBins
+  //    each row represents a Quantifier
+  //    the value represents the weight of selecting that assignment: either Infinity (permitted assignment) or - Infinity (forbidden assignment)
+  const assignmentOptionsMatrix: number[][] = redundantAssignmentBins.map(
+    (bin) =>
+      quantifierPool.map((q) => {
+        const qUserAccountIds: string[] = q.accounts.map(
+          (account: UserAccountDocument) => account._id.toString()
+        );
+        const receiverIds: string[] = bin.map((r: Receiver) =>
+          r._id.toString()
+        );
+
+        // Confirm quantifier can be assigned to this bin
+        //  i.e. none of the Receivers in the assignment bin belong to the Quantifier
+        const intersectionUserAccounts: string[] = intersection(
+          qUserAccountIds,
+          receiverIds
+        );
+
+        if (intersectionUserAccounts.length === 0) {
+          return Infinity;
+        } else {
+          return -Infinity;
+        }
+      })
   );
 
-  // Assign each bin to an available quantifier
-  const availableQuantifiers = quantifierPool.slice();
-  const availableBins = redundantAssignmentBins.slice();
+  // Generate assignment instructions using a restricted "Hungarian Assignment" algorithm
+  const assignResult: AssignResult = maxWeightAssign(assignmentOptionsMatrix);
 
-  const skippedAssignmentBins: Receiver[][] = [];
-  const skippedAssignmentOptionIds: string[] = [];
+  // Apply assignment instructions received to the final assignments
+  const poolAssignments: Quantifier[] = assignResult.assignments.map(
+    (qIndex: number | null, binIndex: number) => {
+      const bin = redundantAssignmentBins[binIndex];
 
-  while (availableBins.length > 0) {
-    const assignmentBin: Receiver[] | undefined = availableBins.pop();
-    if (!assignmentBin) continue;
+      if (qIndex === null) {
+        return {
+          _id: undefined,
+          accounts: [],
+          receivers: [...bin],
+        };
+      } else {
+        const q = quantifierPool[qIndex];
 
-    if (availableQuantifiers.length === 0) {
-      skippedAssignmentBins.push(assignmentBin);
-      continue;
+        return {
+          ...q,
+          receivers: q.receivers.concat(...bin),
+        };
+      }
     }
+  );
 
-    const q = availableQuantifiers.pop();
-
-    // Generate a unique id to reference this assignment option (bin + quantifier)
-    const assignmentBinId: string = flatten(
-      assignmentBin.map((r: Receiver) => r.praiseIds)
-    ).join('+');
-    const assignmentOptionId = `${q._id.toString() as string
-      }-${assignmentBinId}`;
-
-    const qUserAccountIds: string[] = q.accounts.map(
-      (account: UserAccountDocument) => account._id.toString()
-    );
-    const assignmentReceiverIds: string[] = assignmentBin.map((r: Receiver) =>
-      r._id.toString()
-    );
-
-    // Confirm none of the Receivers in the assignment bin belong to the Quantifier
-    const overlappingUserAccounts = intersection(
-      qUserAccountIds,
-      assignmentReceiverIds
-    );
-    if (overlappingUserAccounts.length === 0) {
-      // assign Quantifier to original pool
-      quantifierPoolById[q._id.toString()].receivers.push(...assignmentBin);
-    } else if (skippedAssignmentOptionIds.includes(assignmentOptionId)) {
-      // this assignment option has been skipped before
-      //  mark it as un-assignable by the current quantiifer set
-      skippedAssignmentBins.push(assignmentBin);
-    } else {
-      // this assignment option has not been skipped yet
-      // make quantifier available again, at end of the line
-      availableQuantifiers.unshift(q);
-
-      // make bin available again, at the beginning of the line
-      availableBins.push(assignmentBin);
-
-      // note that this assignment option has been skipped once
-      skippedAssignmentOptionIds.push(assignmentOptionId);
-    }
-  }
-
-  // Convert object of quantifiers back to array & remove any unassigned
-  const poolAssignments: Quantifier[] = Object.values<Quantifier>(
-    quantifierPoolById
-  ).filter((q: Quantifier): boolean => q.receivers.length > 0);
-
-  // Extend the pool with dummy quantifiers if assigns remain to be done
-  //  and no more quantifiers are available
-  const neededAssignments: Quantifier[] = skippedAssignmentBins.map((bin) => ({
-    _id: undefined,
-    accounts: [],
-    receivers: [...bin],
-  }));
-
-  poolAssignments.push(...neededAssignments);
-
-  // Final confirmation that all praise is accounted for in this model
+  // Log a confirmation that all praise is accounted for in this model
   const totalPraiseCount: number = await PraiseModel.count({
     createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
   });

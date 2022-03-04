@@ -374,6 +374,7 @@ export const VerifyQuantifierPoolSizeQuery = selectorFamily({
 export interface PoolRequirements {
   quantifierPoolSize: number;
   requiredPoolSize: number;
+  quantifierPoolDeficitSize: number;
 }
 
 /**
