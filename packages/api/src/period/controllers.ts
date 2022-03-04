@@ -329,14 +329,19 @@ export const verifyQuantifierPoolSize = async (
   req: Request,
   res: TypedResponse<VerifyQuantifierPoolSizeResponse>
 ): Promise<void> => {
-  const quantifierPool = await UserModel.find({ roles: UserRole.QUANTIFIER });
+  const quantifierPoolSize = await UserModel.count({
+    roles: UserRole.QUANTIFIER,
+  });
   const assignedQuantifiers = await assignQuantifiersDryRun(
     req.params.periodId
   );
+  const dummyQuantifiers: Quantifier[] = assignedQuantifiers.filter(
+    (q) => q._id === undefined
+  );
 
   res.status(StatusCodes.OK).json({
-    quantifierPoolSize: quantifierPool.length,
-    requiredPoolSize: assignedQuantifiers.length,
+    quantifierPoolSize,
+    quantifierPoolDeficitSize: dummyQuantifiers.length,
   });
 };
 

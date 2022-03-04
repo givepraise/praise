@@ -24,7 +24,7 @@ const DialogMessage = ({
   const poolRequirements = useVerifyQuantifierPoolSize(periodId, location.key);
 
   const quantPoolBigEnough = poolRequirements
-    ? poolRequirements.quantifierPoolSize >= poolRequirements.requiredPoolSize
+    ? poolRequirements.quantifierPoolDeficitSize === 0
     : false;
 
   return (
@@ -37,7 +37,7 @@ const DialogMessage = ({
         </div>
         <div className="mb-3">
           Members needed for quantification:{' '}
-          {poolRequirements ? poolRequirements.requiredPoolSize : '#'}
+          {poolRequirements ? poolRequirements.quantifierPoolDeficitSize : '#'}
         </div>
         <div>
           {quantPoolBigEnough ? (
