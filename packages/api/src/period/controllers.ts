@@ -169,7 +169,7 @@ const assignQuantifiersDryRun = async (
   if (!quantifiersPerPraiseReceiver || !tolerance || !praisePerQuantifier)
     throw new InternalServerError('Configuration error');
 
-  const maxPraisePerQuantifier = praisePerQuantifier * tolerance;
+  const maxPraisePerQuantifier = Math.ceil(praisePerQuantifier * tolerance);
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
   // Query a list of receivers with their collection of praise
@@ -196,6 +196,8 @@ const assignQuantifiersDryRun = async (
       }
     }
   ]);
+
+  const totalReceiverPraise = sum(receivers.map((r) => r.praiseIds.length));
 
   // Run "First Fit" bin-packing algorithm on list of receivers
   //    with a maximum 'bin' size of: PRAISE_PER_QUANTIFIER * tolerance
@@ -235,12 +237,19 @@ const assignQuantifiersDryRun = async (
   );
 
   // Assign each bin to an available quantifier
-  const availableQuantifiers = quantifierPool.slice();
-  let quantifiersNeeded = 0;
-  redundantAssignmentBins.forEach((assignmentBin: Receiver[]) => {
+  let availableQuantifiers = quantifierPool.slice();
+  const availableBins = redundantAssignmentBins.slice();
+
+  const assignmentBinsNeedingQuantifiers: Receiver[][] = [];
+  const availableQuantifiersSkipped: Quantifier[] = [];
+
+  while (availableBins.length > 0) {
+    const assignmentBin: Receiver[] | undefined = availableBins.pop();
+    if (!assignmentBin) continue;
+
     if (availableQuantifiers.length === 0) {
-      quantifiersNeeded += 1;
-      return;
+      assignmentBinsNeedingQuantifiers.push(assignmentBin);
+      continue;
     }
 
     const q = availableQuantifiers.pop();
@@ -257,10 +266,21 @@ const assignQuantifiersDryRun = async (
       // assign Quantifier to original pool
       quantifierPoolById[q._id.toString()].receivers.push(...assignmentBin);
     } else {
-      // make quantifier available for assignment elsewhere
+      // make quantifier & praise available for assignment elsewhere
       availableQuantifiers.unshift(q);
+      availableBins.unshift(assignmentBin);
+
+      // Shuffle order of quantifiers
+      //  or skip if unassignable twice.
+      if (availableQuantifiersSkipped.includes(q)) {
+        assignmentBinsNeedingQuantifiers.push(assignmentBin);
+        continue;
+      } else {
+        availableQuantifiers = shuffle(availableQuantifiers);
+        availableQuantifiersSkipped.push(q);
+      }
     }
-  });
+  }
 
   // Convert object of quantifiers back to array & remove any unassigned
   const poolAssignments: Quantifier[] = Object.values(quantifierPoolById)
@@ -268,13 +288,13 @@ const assignQuantifiersDryRun = async (
 
   // Extend the pool with dummy quantifiers if assigns remain to be done
   //  and no more quantifiers are available
-  const neededAssignments: Quantifier[] = range(quantifiersNeeded).map((i) => ({
+  const neededAssignments: Quantifier[] = assignmentBinsNeedingQuantifiers.map((bin) => ({
     _id: undefined,
     accounts: [],
-    receivers: []
+    receivers: [...bin]
   }));
 
-  const finalAssignments: Quantifier[] = poolAssignments.concat(neededAssignments);
+  poolAssignments.push(...neededAssignments);
 
   // Final confirmation that all praise is accounted for in this model
   const totalPraiseCount: number = await PraiseModel.count({
@@ -290,7 +310,7 @@ const assignQuantifiersDryRun = async (
     throw new InternalServerError(`Not all redundant praise assignments accounted for: ${assignedPraiseCount} assignments / ${expectedAssignedPraiseCount} expected in period`);
   }
 
-  return finalAssignments;
+  return poolAssignments;
 };
 
 /**
