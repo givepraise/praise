@@ -193,7 +193,7 @@ const assignQuantifiersDryRun = async (
   let receivers: Receiver[] = await PraiseModel.aggregate([
     {
       $match: {
-        createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
+        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
       },
     },
     {
@@ -373,7 +373,7 @@ export const receiverPraise = async (
 
   const praiseList = await PraiseModel.find()
     .where({
-      createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
+      createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
       receiver: new mongoose.Types.ObjectId(receiverId),
     })
     .sort({ createdAt: -1 })
@@ -410,7 +410,7 @@ export const quantifierPraise = async (
   const praiseList = await PraiseModel.aggregate([
     {
       $match: {
-        createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
+        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
       },
     },
     { $unwind: '$quantifications' },
