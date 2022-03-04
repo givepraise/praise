@@ -276,6 +276,20 @@ const assignQuantifiersDryRun = async (
 
   const finalAssignments: Quantifier[] = poolAssignments.concat(neededAssignments);
 
+  // Final confirmation that all praise is accounted for in this model
+  const totalPraiseCount: number = await PraiseModel.count({
+    createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate }
+  });
+  const expectedAssignedPraiseCount: number = totalPraiseCount * quantifiersPerPraiseReceiver;
+
+  const assignedPraiseCount: number = sum(flatten(poolAssignments.map((a) => a.receivers.map((r) => r.praiseIds.length))));
+
+  if (assignedPraiseCount === expectedAssignedPraiseCount) {
+    logger.info(`All redundant praise assignments accounted for: ${assignedPraiseCount} assignments / ${expectedAssignedPraiseCount} expected in period`);
+  } else {
+    throw new InternalServerError(`Not all redundant praise assignments accounted for: ${assignedPraiseCount} assignments / ${expectedAssignedPraiseCount} expected in period`);
+  }
+
   return finalAssignments;
 };
 
