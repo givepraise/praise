@@ -17,6 +17,7 @@ import {
   TypedResponse,
 } from '@shared/types';
 import { UserModel } from '@user/entities';
+import { UserAccountModel } from '@useraccount/entities';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { PraiseModel } from './entities';
@@ -183,7 +184,7 @@ export const exportPraise = async (
     },
     {
       $lookup: {
-        from: 'accounts',
+        from: 'useraccounts',
         localField: 'giver',
         foreignField: '_id',
         as: 'giver',
@@ -191,7 +192,7 @@ export const exportPraise = async (
     },
     {
       $lookup: {
-        from: 'accounts',
+        from: 'useraccounts',
         localField: 'receiver',
         foreignField: '_id',
         as: 'receiver',
@@ -246,6 +247,21 @@ export const exportPraise = async (
         }
       }
 
+      p.quantifications = await Promise.all(
+        p.quantifications.map(async (q: any) => {
+          const quantifier = await UserModel.findById(q.quantifier._id);
+
+          const account = await UserAccountModel.findOne({
+            user: q.quantifier._id,
+          });
+
+          q.quantifier = quantifier;
+          q.account = account;
+
+          return q;
+        })
+      );
+
       return p;
     })
   );
@@ -257,7 +273,7 @@ export const exportPraise = async (
     },
     {
       label: 'TO USER ACCOUNT',
-      value: 'receiver.username',
+      value: 'receiver.name',
     },
     {
       label: 'TO ETH ADDRESS',
@@ -265,7 +281,7 @@ export const exportPraise = async (
     },
     {
       label: 'FROM USER ACCOUNT',
-      value: 'giver.username',
+      value: 'giver.name',
     },
     {
       label: 'FROM ETH ADDRESS',
@@ -310,6 +326,22 @@ export const exportPraise = async (
     };
 
     fields.push(quantObj);
+  }
+
+  for (let index = 0; index < quantificationsColumnsCount; index++) {
+    const quantUserUsernameObj = {
+      label: `QUANTIFIER ${index + 1} USERNAME`,
+      value: `quantifications[${index}].account.name`,
+    };
+
+    fields.push(quantUserUsernameObj);
+
+    const quantUserEthAddressObj = {
+      label: `QUANTIFIER ${index + 1} ETH ADDRESS`,
+      value: `quantifications[${index}].quantifier.ethereumAddress`,
+    };
+
+    fields.push(quantUserEthAddressObj);
   }
 
   fields.push({

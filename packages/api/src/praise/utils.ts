@@ -56,7 +56,10 @@ export const calculatePraiseScore = async (
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
     );
 
-  return calculateQuantificationsCompositeScore(praise.quantifications, duplicatePraisePercentage);
+  return calculateQuantificationsCompositeScore(
+    praise.quantifications,
+    duplicatePraisePercentage
+  );
 };
 
 export const praiseWithScore = async (
