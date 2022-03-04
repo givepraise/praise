@@ -237,9 +237,7 @@ const assignQuantifiersDryRun = async (
     .sort(() => 0.5 - Math.random())
     .slice(0, quantifierPool.length);
 
-  // Assign each bin to a quantifier
-  //  excluding any bins containing praise they received
-  // Generate a matrix for use by the restricted "Hungarian Assignment" algorithm
+  // Prepare a matrix for use by the restricted "Hungarian Assignment" algorithm
   //    each column represents an element in redundantAssignmentBins
   //    each row represents a Quantifier
   //    the value represents the weight of selecting that assignment: either Infinity (permitted assignment) or - Infinity (forbidden assignment)
@@ -271,7 +269,7 @@ const assignQuantifiersDryRun = async (
   // Generate assignment instructions using a restricted "Hungarian Assignment" algorithm
   const assignResult: AssignResult = maxWeightAssign(assignmentOptionsMatrix);
 
-  // Apply assignment instructions received to the final assignments
+  // Transform assignments to final format
   const poolAssignments: Quantifier[] = assignResult.assignments.map(
     (qIndex: number | null, binIndex: number) => {
       const bin = redundantAssignmentBins[binIndex];
@@ -293,7 +291,7 @@ const assignQuantifiersDryRun = async (
     }
   );
 
-  // Log a confirmation that all praise is accounted for in this model
+  // Verify & log that all praise is accounted for in this model
   const totalPraiseCount: number = await PraiseModel.count({
     createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
   });
