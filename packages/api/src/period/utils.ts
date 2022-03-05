@@ -78,7 +78,10 @@ export const findPeriodDetailsDto = async (
     PraiseModel.aggregate([
       {
         $match: {
-          createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+          createdAt: {
+            $gt: previousPeriodEndDate,
+            $lte: period.endDate,
+          },
         },
       },
       { $unwind: '$quantifications' },
@@ -104,7 +107,10 @@ export const findPeriodDetailsDto = async (
     PraiseModel.aggregate([
       {
         $match: {
-          createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+          createdAt: {
+            $gt: previousPeriodEndDate,
+            $lte: period.endDate,
+          },
         },
       },
       {
