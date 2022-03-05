@@ -4,6 +4,7 @@ import logger from 'jet-logger';
 import mongoose, { ConnectOptions } from 'mongoose';
 import path from 'path';
 import { registerCommands } from './utils/registerCommands';
+import { CommandInt } from './interfaces/CommandInt';
 
 const load = dotenv.config({ path: path.join(__dirname, '..', '/.env') });
 if (load.error) {
@@ -12,7 +13,7 @@ if (load.error) {
 }
 declare module 'discord.js' {
   export interface Client {
-    commands: Collection<unknown, any>;
+    commands: Collection<string, CommandInt>;
   }
 }
 
@@ -37,7 +38,7 @@ if (!frontendUrl) {
 const discordClient = new Client({ intents: ['GUILDS', 'GUILD_MEMBERS'] });
 
 // Set bot commands
-void (async () => {
+void (async (): Promise<void> => {
   const registerSuccess = await registerCommands(
     discordClient,
     process.env.DISCORD_CLIENT_ID || '',
@@ -71,7 +72,7 @@ discordClient.on('interactionCreate', async (interaction) => {
 });
 
 // Connect to database
-void (async () => {
+void (async (): Promise<void> => {
   logger.info('Connecting to database…');
   const host = process.env.MONGO_HOST || '';
   const port = process.env.MONGO_PORT || '';
