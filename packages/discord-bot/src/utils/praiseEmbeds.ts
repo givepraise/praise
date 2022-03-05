@@ -1,4 +1,4 @@
-import { GuildMember, MessageEmbed, Role } from 'discord.js';
+import { User, MessageEmbed, Role } from 'discord.js';
 import { getSetting } from './getSettings';
 
 export const praiseSuccess = async (
@@ -8,7 +8,7 @@ export const praiseSuccess = async (
   const msg = await getSetting('PRAISE_SUCCESS_MESSAGE');
   if (msg && typeof msg === 'string') {
     return msg
-      ?.replace('{praiseReceivers}', `${praised.join(', ')}`)
+      ?.replace('{receivers}', `${praised.join(', ')}`)
       .replace('{reason}', reason);
   } else {
     return 'PRAISE SUCCESSFUL (message not set)';
@@ -39,14 +39,14 @@ export const dmError = async (): Promise<string> => {
 
 export const roleError = async (
   praiseGiverRole: Role,
-  user: GuildMember
+  user: User
 ): Promise<MessageEmbed> => {
   const msg = await getSetting('PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR');
   if (msg && typeof msg === 'string') {
     return new MessageEmbed().setColor('#ff0000').setDescription(
       msg
         .replace('{role}', praiseGiverRole?.name || '...')
-        .replace('{user}', user?.displayName || '...')
+        .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
         .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
         .replace('{@user}', `<@!${user?.id || '...'}>`)
     );
@@ -54,7 +54,7 @@ export const roleError = async (
     return new MessageEmbed().setColor('#ff0000').setDescription(
       'USER DOES NOT HAVE {@role} role (message not set)'
         .replace('{role}', praiseGiverRole?.name || '...')
-        .replace('{user}', user?.displayName || '...')
+        .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
         .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
         .replace('{@user}', `<@!${user?.id || '...'}>`)
     );
@@ -79,11 +79,19 @@ export const missingReasonError = async (): Promise<string> => {
   }
 };
 
-export const undefinedReceiverWarning = (
+export const undefinedReceiverWarning = async (
   receivers: string,
-  userId: string
-): string => {
-  return `**⚠️  Undefined Receivers**\nCould not praise ${receivers}.\n<@!${userId}>, this warning could have been caused when a user isn't mentioned properly in the praise receivers field OR when a user isn't found in the discord server.`;
+  user: User
+): Promise<string> => {
+  const msg = await getSetting('PRAISE_UNDEFINED_RECEIVERS_WARNING');
+  if (msg && typeof msg === 'string') {
+    return msg
+      .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
+      .replace('{@user}', `<@!${user?.id || '...'}>`)
+      .replace('{@receivers}', receivers);
+  } else {
+    return 'UNDEFINED RECEIVERS MENTIONED, UNABLE TO PRAISE THEM (message not set)';
+  }
 };
 
 export const roleMentionWarning = (

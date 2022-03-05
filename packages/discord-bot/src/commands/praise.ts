@@ -22,7 +22,7 @@ import { getSetting } from '../utils/getSettings';
 const praise = async (
   interaction: CommandInteraction,
   responseUrl: string
-) => {
+): Promise<void> => {
   const { guild, channel, member } = interaction;
 
   if (!guild || !member) {
@@ -41,7 +41,7 @@ const praise = async (
     !praiseGiver.roles.cache.find((r) => r.id === praiseGiverRole?.id)
   ) {
     await interaction.editReply({
-      embeds: [await roleError(praiseGiverRole, praiseGiver)],
+      embeds: [await roleError(praiseGiverRole, praiseGiver.user)],
     });
 
     return;
@@ -103,7 +103,7 @@ const praise = async (
     const ra = {
       accountId: receiver.user.id,
       name: receiver.user.username + '#' + receiver.user.discriminator,
-      avatarId: receiver.avatar,
+      avatarId: receiver.user.avatar,
       platform: 'DISCORD',
     } as UserAccount;
     const receiverAccount = await UserAccountModel.findOneAndUpdate(
@@ -143,7 +143,7 @@ const praise = async (
   }
 
   const msg = (await interaction.editReply(
-      await praiseSuccess(
+    await praiseSuccess(
       praised.map((id) => `<@!${id}>`),
       reason
     )
@@ -151,9 +151,9 @@ const praise = async (
 
   if (receiverData.undefinedReceivers) {
     await msg.reply(
-      undefinedReceiverWarning(
+      await undefinedReceiverWarning(
         receiverData.undefinedReceivers.join(', '),
-        ua.accountId
+        praiseGiver.user
       )
     );
   }
@@ -174,7 +174,7 @@ module.exports = {
       option
         .setName('receivers')
         .setDescription(
-          'Mention the users you would like to send this praice to'
+          'Mention the users you would like to send this praise to'
         )
         .setRequired(true)
     )
@@ -185,15 +185,27 @@ module.exports = {
         .setRequired(true)
     ),
 
-  async execute(interaction: Interaction) {
+  async execute(interaction: Interaction): Promise<void> {
     if (interaction.isCommand()) {
       if (interaction.commandName === 'praise') {
-        const msg = await interaction.deferReply({fetchReply: true}) as APIMessage | void;
+        const msg = (await interaction.deferReply({
+          fetchReply: true,
+        })) as APIMessage | void;
         if (msg !== undefined) {
-          msg as APIMessage;
+          const discordMsg: APIMessage = msg;
+          const getMsgLink = (
+            guildId: string,
+            channelId: string,
+            msgID: string
+          ): string =>
+            `https://discord.com/channels/${guildId}/${channelId}/${msgID}`;
           await praise(
             interaction,
-            `https://discord.com/channels/${interaction.guildId}/${interaction.channelId}/${msg?.id}`
+            getMsgLink(
+              interaction.guildId || '',
+              interaction.channelId || '',
+              discordMsg.id
+            )
           );
         }
       }

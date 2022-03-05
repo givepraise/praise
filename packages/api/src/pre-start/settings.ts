@@ -38,21 +38,18 @@ const settings = [
   {
     key: 'PRAISE_SUCCESS_MESSAGE',
     value:
-      process.env.PRAISE_SUCCESS_MESSAGE ||
-      '✅ Praise {praiseReceivers} {reason}',
+      '✅ Praise {receivers} {reason}',
     type: 'Textarea',
   },
   {
     key: 'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR',
     value:
-      process.env.PRAISE_NOT_ACTIVATED_ERROR ||
       '**❌ Account Not Activated**\nYour account is not activated in the praise system. Unactivated accounts can not praise users. Use the `/praise-activate` command to activate your praise account and to link your eth address.',
     type: 'Textarea',
   },
   {
     key: 'DM_ERROR',
     value:
-      process.env.DM_ERROR ||
       '**❌ Server Not Found**\nThe praise command can only be used in the discord server.',
     type: 'Textarea',
   },
@@ -72,8 +69,13 @@ const settings = [
     key: 'PRAISE_REASON_MISSING_ERROR',
     value:
       '**❌ `reason` Not Provided**\nPraise can not be dished or quantified without a reason.',
-    text: 'Textarea',
+    type: 'Textarea',
   },
+  {
+    key: 'PRAISE_UNDEFINED_RECEIVERS_WARNING',
+    value: '**⚠️  Undefined Receivers**\nCould not praise {@receivers}.\n{@user}, this warning could have been caused when a user isn\'t mentioned properly in the praise receivers field OR when a user isn\'t found in the discord server.',
+    type: 'Textarea',
+  }
 ];
 
 const seedSettings = async (): Promise<void> => {
