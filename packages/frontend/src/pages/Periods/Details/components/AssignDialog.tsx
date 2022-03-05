@@ -30,7 +30,7 @@ const DialogMessage = ({
   return (
     <>
       <div className="text-center mb-7">
-        <div>
+        <div className="mb-3">
           The quantifier pool has{' '}
           {poolRequirements ? poolRequirements.quantifierPoolSize : '#'}{' '}
           members.
@@ -38,8 +38,16 @@ const DialogMessage = ({
         <div>
           {quantPoolBigEnough ? (
             <>
-              <FontAwesomeIcon className="text-green" icon={faCheckSquare} />{' '}
-              Quantifier pool requirements are met.
+              <div className="mb-3">
+                No of members that will be assigned to this quantification:{' '}
+                {poolRequirements
+                  ? poolRequirements.quantifierPoolSizeNeeded
+                  : '#'}
+              </div>
+              <div className="mb-3">
+                <FontAwesomeIcon className="text-green" icon={faCheckSquare} />{' '}
+                Quantifier pool requirements are met.
+              </div>
             </>
           ) : (
             <>
@@ -49,8 +57,10 @@ const DialogMessage = ({
                   ? poolRequirements.quantifierPoolDeficitSize
                   : '#'}
               </div>
-              <FontAwesomeIcon className="text-green" icon={faTimesCircle} />{' '}
-              Quantifier pool requirements are not met.
+              <div className="mb-3">
+                <FontAwesomeIcon className="text-green" icon={faTimesCircle} />{' '}
+                Quantifier pool requirements are not met.
+              </div>
             </>
           )}
         </div>

@@ -24,10 +24,13 @@ import {
 import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
 import { UserAccountDocument } from '@useraccount/types';
+import { firstFit, PackingOutput } from 'bin-packer';
 import { Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { flatten, range, intersection, sum } from 'lodash';
+import logger from 'jet-logger';
+import { flatten, intersection, range, sum } from 'lodash';
 import mongoose from 'mongoose';
+import { AssignResult, maxWeightAssign } from 'munkres-algorithm';
 import { PeriodModel } from './entities';
 import { periodDocumentTransformer } from './transformers';
 import {
@@ -40,9 +43,6 @@ import {
   VerifyQuantifierPoolSizeResponse,
 } from './types';
 import { findPeriodDetailsDto, getPreviousPeriodEndDate } from './utils';
-import { firstFit, PackingOutput } from 'bin-packer';
-import logger from 'jet-logger';
-import { maxWeightAssign, AssignResult } from 'munkres-algorithm';
 
 /**
  * Description
@@ -339,6 +339,7 @@ export const verifyQuantifierPoolSize = async (
 
   res.status(StatusCodes.OK).json({
     quantifierPoolSize,
+    quantifierPoolSizeNeeded: assignedQuantifiers.length,
     quantifierPoolDeficitSize: dummyQuantifiers.length,
   });
 };

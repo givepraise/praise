@@ -57,6 +57,7 @@ export interface PeriodDetailsDto extends PeriodDto {
 
 export interface VerifyQuantifierPoolSizeResponse {
   quantifierPoolSize: number;
+  quantifierPoolSizeNeeded: number;
   quantifierPoolDeficitSize: number;
 }
 
