@@ -114,7 +114,7 @@ const praise = async (
 
     if (!receiverAccount.user) {
       try {
-        await receiver.send({ embeds: [notActivatedDM(responseUrl)] });
+        await receiver.send({ embeds: [await notActivatedDM(responseUrl)] });
       } catch (err) {
         logger.warn(`Can't DM user - ${ra.name} [${ra.accountId}]`);
       }
@@ -130,7 +130,7 @@ const praise = async (
     });
     if (praiseObj) {
       try {
-        await receiver.send({ embeds: [praiseSuccessDM(responseUrl)] });
+        await receiver.send({ embeds: [await praiseSuccessDM(responseUrl)] });
       } catch (err) {
         logger.warn(`Can't DM user - ${ra.name} [${ra.accountId}]`);
       }
@@ -159,7 +159,10 @@ const praise = async (
   }
   if (receiverData.roleMentions) {
     await msg.reply(
-      roleMentionWarning(receiverData.roleMentions.join(', '), ua.accountId)
+      await roleMentionWarning(
+        receiverData.roleMentions.join(', '),
+        praiseGiver.user
+      )
     );
   }
 

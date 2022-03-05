@@ -37,8 +37,7 @@ const settings = [
   },
   {
     key: 'PRAISE_SUCCESS_MESSAGE',
-    value:
-      '✅ Praise {receivers} {reason}',
+    value: '✅ Praise {receivers} {reason}',
     type: 'Textarea',
   },
   {
@@ -73,9 +72,28 @@ const settings = [
   },
   {
     key: 'PRAISE_UNDEFINED_RECEIVERS_WARNING',
-    value: '**⚠️  Undefined Receivers**\nCould not praise {@receivers}.\n{@user}, this warning could have been caused when a user isn\'t mentioned properly in the praise receivers field OR when a user isn\'t found in the discord server.',
+    value:
+      "**⚠️  Undefined Receivers**\nCould not praise {@receivers}.\n{@user}, this warning could have been caused when a user isn't mentioned properly in the praise receivers field OR when a user isn't found in the discord server.",
     type: 'Textarea',
-  }
+  },
+  {
+    key: 'PRAISE_TO_ROLE_WARNING',
+    value:
+      "**⚠️  Roles as Praise receivers**\nCouldn't praise roles - {@receivers}.\n {@user}, use the `/group-praise` for distribution of praise to all the members that have certain discord roles.",
+    type: 'Textarea',
+  },
+  {
+    key: 'PRAISE_SUCCESS_DM',
+    value:
+      '**👏 Congratulations! You have been Praised! 👏**\n[View your praise in the TEC]({praiseURL})\n**Thank you** for supporting the Token Engineering Commons!',
+    type: 'Textarea',
+  },
+  {
+    key: 'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM',
+    value:
+      "**You were just [praised in the TEC](praiseURL)\nIt looks like you haven't activated your account...To activate your account, use the `/praise-activate` command in the server.",
+    type: 'Textarea',
+  },
 ];
 
 const seedSettings = async (): Promise<void> => {

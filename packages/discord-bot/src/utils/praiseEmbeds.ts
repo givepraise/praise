@@ -50,33 +50,30 @@ export const roleError = async (
         .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
         .replace('{@user}', `<@!${user?.id || '...'}>`)
     );
-  } else {
-    return new MessageEmbed().setColor('#ff0000').setDescription(
-      'USER DOES NOT HAVE {@role} role (message not set)'
-        .replace('{role}', praiseGiverRole?.name || '...')
-        .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
-        .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
-        .replace('{@user}', `<@!${user?.id || '...'}>`)
-    );
   }
+  return new MessageEmbed().setColor('#ff0000').setDescription(
+    'USER DOES NOT HAVE {@role} role (message not set)'
+      .replace('{role}', praiseGiverRole?.name || '...')
+      .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
+      .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
+      .replace('{@user}', `<@!${user?.id || '...'}>`)
+  );
 };
 
 export const invalidReceiverError = async (): Promise<string> => {
   const msg = await getSetting('PRAISE_INVALID_RECEIVERS_ERROR');
   if (msg && typeof msg === 'string') {
     return msg;
-  } else {
-    return 'VALID RECEIVERS NOT MENTIONED (message not set)';
   }
+  return 'VALID RECEIVERS NOT MENTIONED (message not set)';
 };
 
 export const missingReasonError = async (): Promise<string> => {
   const msg = await getSetting('PRAISE_INVALID_RECEIVERS_ERROR');
   if (msg && typeof msg === 'string') {
     return msg;
-  } else {
-    return 'REASON NOT MENTIONED (message not set)';
   }
+  return 'REASON NOT MENTIONED (message not set)';
 };
 
 export const undefinedReceiverWarning = async (
@@ -89,34 +86,49 @@ export const undefinedReceiverWarning = async (
       .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
       .replace('{@user}', `<@!${user?.id || '...'}>`)
       .replace('{@receivers}', receivers);
-  } else {
-    return 'UNDEFINED RECEIVERS MENTIONED, UNABLE TO PRAISE THEM (message not set)';
   }
+  return 'UNDEFINED RECEIVERS MENTIONED, UNABLE TO PRAISE THEM (message not set)';
 };
 
-export const roleMentionWarning = (
+export const roleMentionWarning = async (
   receivers: string,
-  userId: string
-): string => {
-  return `**⚠️  Roles as Praise receivers**\nCouldn't praise roles - ${receivers}.\n<@!${userId}>, use the \`/group-praise\` for distribution of praise to all the members that have certain discord roles.`;
+  user: User
+): Promise<string> => {
+  const msg = await getSetting('PRAISE_TO_ROLE_WARNING');
+  if (msg && typeof msg === 'string') {
+    return msg
+      .replace('{@receivers}', receivers)
+      .replace('{@user}', `<@!${user?.id || '...'}>`)
+      .replace('{user}', `${user?.username}#${user?.discriminator}` || '...');
+  }
+  return "ROLES MENTIONED AS PRAISE RECEIVERS, PRAISE CAN'T BE DISHED TO ROLES (message not set)";
 };
 
-export const praiseSuccessDM = (msgUrl: string): MessageEmbed => {
-  return new MessageEmbed()
-    .setColor('#696969')
-    .setTitle('👏 Congratulations! You’ve been Praised! 👏')
-    .setDescription(
-      `[View your praise in the TEC](${msgUrl})\n**Thank you** for supporting the Token Engineering Commons!`
-    );
+export const praiseSuccessDM = async (
+  msgUrl: string
+): Promise<MessageEmbed> => {
+  const msg = await getSetting('PRAISE_SUCCESS_DM');
+  if (msg && typeof msg === 'string') {
+    return new MessageEmbed()
+      .setColor('#696969')
+      .setDescription(msg.replace('{praiseURL}', msgUrl));
+  }
+  return new MessageEmbed().setDescription(
+    `[YOU HAVE BEEN PRAISED!!!](${msgUrl}) (message not set)`
+  );
 };
 
-export const notActivatedDM = (msgUrl: string): MessageEmbed => {
-  return new MessageEmbed()
-    .setColor('#ff0000')
-    .setTitle('**⚠️  Praise Account Not Activated**')
-    .setDescription(
-      `You were just [praised in the TEC](${msgUrl})\nIt looks like you haven't activated your account... To activate your account, use the \`/praise-activate\` command in the server.`
-    );
+export const notActivatedDM = async (msgUrl: string): Promise<MessageEmbed> => {
+  const msg = await getSetting('PRAISE_SUCCESS_DM');
+  if (msg && typeof msg === 'string') {
+    return new MessageEmbed()
+      .setColor('#ff0000')
+      .setTitle('**⚠️  Praise Account Not Activated**')
+      .setDescription(msg.replace('{praiseURL}', msgUrl));
+  }
+  return new MessageEmbed().setDescription(
+    `**[YOU HAVE BEEN PRAISED](${msgUrl})\nPRAISE ACCOUNT NOT ACTIVATED. USE \`/praise-activate\` TO ACTIVATE YOUR ACCOUNT. (message not set)`
+  );
 };
 
 /*
