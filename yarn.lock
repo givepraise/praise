@@ -4631,6 +4631,7 @@ __metadata:
     "@types/randomstring": ^1.1.8
     "@types/supertest": ^2.0.11
     bcrypt: ^5.0.1
+    bin-packer: ^1.6.1
     chai: ^4.3.6
     chai-http: ^4.3.0
     command-line-args: ^5.2.0
@@ -4658,6 +4659,7 @@ __metadata:
     mongoose: ^6.1.2
     mongoose-paginate-ts: ^1.2.0
     morgan: ^1.10.0
+    munkres-algorithm: ^1.0.0
     nodemon: ^2.0.15
     prettier: ^2.5.1
     randomstring: ^1.2.1
@@ -5341,6 +5343,13 @@ __metadata:
   version: 9.0.2
   resolution: "bignumber.js@npm:9.0.2"
   checksum: 8637b71d0a99104b20413c47578953970006fec6b4df796b9dcfd9835ea9c402ea0e727eba9a5ca9f9a393c1d88b6168c5bbe0887598b708d4f8b4870ad62e1f
+  languageName: node
+  linkType: hard
+
+"bin-packer@npm:^1.6.1":
+  version: 1.6.1
+  resolution: "bin-packer@npm:1.6.1"
+  checksum: a338bb91944f6f08a6c9bc1a9dad9b94c500737f759c2f1cde4d7ee5871a0e2796ac13ca664fa3c99feee36e7c7da30e96a814406cb1d5f8a09aae2c8b136c1e
   languageName: node
   linkType: hard
 
@@ -13446,6 +13455,13 @@ __metadata:
     multibase: ^0.7.0
     varint: ^5.0.0
   checksum: 688731560cf7384e899dc75c0da51e426eb7d058c5ea5eb57b224720a1108deb8797f1cd7f45599344d512d2877de99dd6a7b7773a095812365dea4ffe6ebd4c
+  languageName: node
+  linkType: hard
+
+"munkres-algorithm@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "munkres-algorithm@npm:1.0.0"
+  checksum: bfea4a537a78a215245d9b1a98d26bbe98f6f53ef64c7c37447f2b67f4e321002abf73c7e961574b087ce77c54b686214fc33d0757b14884169ff6cf6399353b
   languageName: node
   linkType: hard
 
