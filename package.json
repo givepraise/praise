@@ -11,7 +11,7 @@
     "mongodb:start": "docker-compose up -d",
     "mongodb:clean": "docker exec -i mongodb-praise bash < ./packages/api/scripts/clean-database.sh",
     "mongodb:stop": "docker-compose down",
-    "docs": "yarn workspace docs docsify serve ."
+    "docs": "yarn workspace docs docsify serve . --port 45231"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.7.0",

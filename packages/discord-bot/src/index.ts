@@ -4,15 +4,16 @@ import logger from 'jet-logger';
 import mongoose, { ConnectOptions } from 'mongoose';
 import path from 'path';
 import { registerCommands } from './utils/registerCommands';
+import { CommandInt } from './interfaces/CommandInt';
 
 const load = dotenv.config({ path: path.join(__dirname, '..', '/.env') });
 if (load.error) {
   logger.err(load.error.message);
-  process.exit();
+  throw load.error;
 }
 declare module 'discord.js' {
   export interface Client {
-    commands: Collection<unknown, any>;
+    commands: Collection<string, CommandInt>;
   }
 }
 
@@ -22,16 +23,22 @@ if (!process.env.PRAISE_GIVER_ROLE_ID) {
 
 // Start Discord bot
 const token = process.env.DISCORD_TOKEN;
+const frontendUrl = process.env.FRONTEND_URL;
+
 if (!token) {
   logger.err('Discord token not set.');
-  process.exit();
+  throw new Error('Discord token not set.');
+}
+
+if (!frontendUrl) {
+  logger.err('FRONTEND_URL not set.');
 }
 
 // Create a new client instance
 const discordClient = new Client({ intents: ['GUILDS', 'GUILD_MEMBERS'] });
 
 // Set bot commands
-(async () => {
+void (async (): Promise<void> => {
   const registerSuccess = await registerCommands(
     discordClient,
     process.env.DISCORD_CLIENT_ID || '',
@@ -65,7 +72,7 @@ discordClient.on('interactionCreate', async (interaction) => {
 });
 
 // Connect to database
-(async () => {
+void (async (): Promise<void> => {
   logger.info('Connecting to database…');
   const host = process.env.MONGO_HOST || '';
   const port = process.env.MONGO_PORT || '';
@@ -82,7 +89,6 @@ discordClient.on('interactionCreate', async (interaction) => {
   } catch (error) {
     logger.err('Could not connect to database.');
   }
+  // Login to Discord with your client's token
+  await discordClient.login(token);
 })();
-
-// Login to Discord with your client's token
-discordClient.login(token);
