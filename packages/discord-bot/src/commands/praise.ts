@@ -2,9 +2,10 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { PraiseModel } from 'api/dist/praise/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
-import { CommandInteraction, Interaction, Message } from 'discord.js';
 import { APIMessage } from 'discord-api-types/v9';
+import { CommandInteraction, Interaction, Message } from 'discord.js';
 import logger from 'jet-logger';
+import { getSetting } from '../utils/getSettings';
 import {
   dmError,
   invalidReceiverError,
@@ -17,7 +18,6 @@ import {
   roleMentionWarning,
   undefinedReceiverWarning,
 } from '../utils/praiseEmbeds';
-import { getSetting } from '../utils/getSettings';
 
 const praise = async (
   interaction: CommandInteraction,
@@ -123,9 +123,9 @@ const praise = async (
       reason: reason,
       giver: userAccount._id,
       sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
-      sourceName: `DISCORD:${encodeURI(guild.name)}:${encodeURI(
-        guildChannel?.name || ''
-      )}`,
+      sourceName: `DISCORD:${encodeURIComponent(
+        guild.name
+      )}:${encodeURIComponent(guildChannel?.name || '')}`,
       receiver: receiverAccount._id,
     });
     if (praiseObj) {

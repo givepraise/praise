@@ -37,21 +37,19 @@ const activate = async (interaction: CommandInteraction): Promise<void> => {
     hash: string,
     token: string
   ): string =>
-    `${baseURL}/activate?accountId=${accountId}&accountName=${uname}/#${hash}&platform=DISCORD&token=${token}`;
+    `${baseURL}/activate?accountId=${accountId}&accountName=${encodeURIComponent(
+      `${uname}#${hash}`
+    )}&platform=DISCORD&token=${token}`;
 
-  const activationURL = encodeURI(
-    getActivationURL(
-      ua.accountId,
-      user.username,
-      user.discriminator,
-      ua.activateToken || 'undefined'
-    )
+  const activationURL = getActivationURL(
+    ua.accountId,
+    user.username,
+    user.discriminator,
+    ua.activateToken || 'undefined'
   );
 
   await interaction.reply({
-    content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${encodeURI(
-      activationURL
-    )}})`,
+    content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${activationURL})`,
     ephemeral: true,
   });
 };
