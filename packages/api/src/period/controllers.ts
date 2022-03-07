@@ -25,7 +25,7 @@ import {
 import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
 import { UserAccountDocument } from '@useraccount/types';
-import { bestFitDecreasing, PackingOutput } from 'bin-packer';
+import { firstFit, PackingOutput } from 'bin-packer';
 import { Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import logger from 'jet-logger';
@@ -165,13 +165,12 @@ const assignQuantifiersDryRun = async (
   const quantifiersPerPraiseReceiver = await settingInt(
     'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER'
   );
-  const tolerance = 1.05;
+  const tolerance = 1.2;
   const praisePerQuantifier = await settingInt('PRAISE_PER_QUANTIFIER');
 
-  if (!quantifiersPerPraiseReceiver || !tolerance || !praisePerQuantifier)
+  if (!quantifiersPerPraiseReceiver || !praisePerQuantifier)
     throw new InternalServerError('Configuration error');
 
-  const maxPraisePerQuantifier = Math.ceil(praisePerQuantifier * tolerance);
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
   // Query a list of receivers with their collection of praise
@@ -199,22 +198,30 @@ const assignQuantifiersDryRun = async (
     },
   ]);
 
-  // Run "Best Fit Decreasing" bin-packing algorithm on list of receivers
-  //    with a maximum 'bin' size of: PRAISE_PER_QUANTIFIER * tolerance
-  //    where each item takes up bin space based on its' praiseCount
-  const result: PackingOutput<Receiver> = bestFitDecreasing(
-    receivers,
-    (r: Receiver) => r.praiseCount,
-    maxPraisePerQuantifier
-  );
-  const bins: Receiver[][] = [
-    ...result.bins,
-    ...result.oversized.map((r) => [r]),
-  ];
-
-  // Clone the bins for each redundant assignment (as defined by setting PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)
+  // Clone the list of recievers for each redundant assignment
+  //  (as defined by setting PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)
   const redundantAssignmentBins: Receiver[][] = flatten(
-    range(quantifiersPerPraiseReceiver).map(() => bins.slice())
+    range(quantifiersPerPraiseReceiver).map(() => {
+      // Run "first Fit" randomized bin-packing algorithm on list of receivers
+      //    with a maximum 'bin' size of: PRAISE_PER_QUANTIFIER
+      //    where each item takes up bin space based on its' praiseCount
+      const receiversShuffled = receivers
+        .sort(() => 0.5 - Math.random())
+        .slice(0, receivers.length);
+
+      const result: PackingOutput<Receiver> = firstFit(
+        receiversShuffled,
+        (r: Receiver) => r.praiseCount,
+        praisePerQuantifier * tolerance
+      );
+
+      const bins: Receiver[][] = [
+        ...result.bins,
+        ...result.oversized.map((r) => [r]),
+      ];
+
+      return bins;
+    })
   );
 
   // Query the list of quantifiers & randomize order
