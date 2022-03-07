@@ -4659,7 +4659,6 @@ __metadata:
     mongoose: ^6.1.2
     mongoose-paginate-ts: ^1.2.0
     morgan: ^1.10.0
-    munkres-algorithm: ^1.0.0
     nodemon: ^2.0.15
     prettier: ^2.5.1
     randomstring: ^1.2.1
@@ -13455,13 +13454,6 @@ __metadata:
     multibase: ^0.7.0
     varint: ^5.0.0
   checksum: 688731560cf7384e899dc75c0da51e426eb7d058c5ea5eb57b224720a1108deb8797f1cd7f45599344d512d2877de99dd6a7b7773a095812365dea4ffe6ebd4c
-  languageName: node
-  linkType: hard
-
-"munkres-algorithm@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "munkres-algorithm@npm:1.0.0"
-  checksum: bfea4a537a78a215245d9b1a98d26bbe98f6f53ef64c7c37447f2b67f4e321002abf73c7e961574b087ce77c54b686214fc33d0757b14884169ff6cf6399353b
   languageName: node
   linkType: hard
 
