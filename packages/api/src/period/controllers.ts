@@ -9,6 +9,7 @@ import {
   PraiseDetailsDto,
   PraiseDto,
   Quantifier,
+  QuantifierPoolById,
   Receiver,
 } from '@praise/types';
 import { praiseWithScore } from '@praise/utils';
@@ -24,13 +25,12 @@ import {
 import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
 import { UserAccountDocument } from '@useraccount/types';
-import { firstFit, PackingOutput } from 'bin-packer';
+import { bestFitDecreasing, PackingOutput } from 'bin-packer';
 import { Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import logger from 'jet-logger';
 import { flatten, intersection, range, sum } from 'lodash';
 import mongoose from 'mongoose';
-import { AssignResult, maxWeightAssign } from 'munkres-algorithm';
 import { PeriodModel } from './entities';
 import { periodDocumentTransformer } from './transformers';
 import {
@@ -40,6 +40,7 @@ import {
   PeriodReceiverPraiseInput,
   PeriodStatusType,
   PeriodUpdateInput,
+  AssignQuantifiersDryRunOutput,
   VerifyQuantifierPoolSizeResponse,
 } from './types';
 import { findPeriodDetailsDto, getPreviousPeriodEndDate } from './utils';
@@ -157,7 +158,7 @@ export const close = async (
 
 const assignQuantifiersDryRun = async (
   periodId: string
-): Promise<Array<Quantifier>> => {
+): Promise<AssignQuantifiersDryRunOutput> => {
   const period = await PeriodModel.findById(periodId);
   if (!period) throw new NotFoundError('Period');
 
@@ -198,10 +199,10 @@ const assignQuantifiersDryRun = async (
     },
   ]);
 
-  // Run "First Fit" bin-packing algorithm on list of receivers
+  // Run "Best Fit Decreasing" bin-packing algorithm on list of receivers
   //    with a maximum 'bin' size of: PRAISE_PER_QUANTIFIER * tolerance
   //    where each item takes up bin space based on its' praiseCount
-  const result: PackingOutput<Receiver> = firstFit(
+  const result: PackingOutput<Receiver> = bestFitDecreasing(
     receivers,
     (r: Receiver) => r.praiseCount,
     maxPraisePerQuantifier
@@ -237,59 +238,86 @@ const assignQuantifiersDryRun = async (
     .sort(() => 0.5 - Math.random())
     .slice(0, quantifierPool.length);
 
-  // Prepare a matrix for use by the restricted "Hungarian Assignment" algorithm
-  //    each column represents an element in redundantAssignmentBins
-  //    each row represents a Quantifier
-  //    the value represents the weight of selecting that assignment: either Infinity (permitted assignment) or - Infinity (forbidden assignment)
-  const assignmentOptionsMatrix: number[][] = redundantAssignmentBins.map(
-    (bin) =>
-      quantifierPool.map((q) => {
-        const qUserAccountIds: string[] = q.accounts.map(
-          (account: UserAccountDocument) => account._id.toString()
-        );
-        const receiverIds: string[] = bin.map((r: Receiver) =>
-          r._id.toString()
-        );
-
-        // Confirm quantifier can be assigned to this bin
-        //  i.e. none of the Receivers in the assignment bin belong to the Quantifier
-        const intersectionUserAccounts: string[] = intersection(
-          qUserAccountIds,
-          receiverIds
-        );
-
-        if (intersectionUserAccounts.length === 0) {
-          return Infinity;
-        } else {
-          return -Infinity;
-        }
-      })
+  // Convert array of quantifiers to a single object, keyed by _id
+  const quantifierPoolById: QuantifierPoolById = quantifierPool.reduce(
+    (poolById, q) => {
+      poolById[q._id] = q;
+      return poolById;
+    },
+    {}
   );
 
-  // Generate assignment instructions using a restricted "Hungarian Assignment" algorithm
-  const assignResult: AssignResult = maxWeightAssign(assignmentOptionsMatrix);
+  // Assign each bin to an available quantifier
+  const availableQuantifiers = quantifierPool.slice();
+  const availableBins = redundantAssignmentBins.slice();
 
-  // Transform assignments to final format
-  const poolAssignments: Quantifier[] = assignResult.assignments.map(
-    (qIndex: number | null, binIndex: number) => {
-      const bin = redundantAssignmentBins[binIndex];
+  const skippedAssignmentBins: Receiver[][] = [];
+  const skippedAssignmentOptionIds: string[] = [];
 
-      if (qIndex === null) {
-        return {
-          _id: undefined,
-          accounts: [],
-          receivers: [...bin],
-        };
-      } else {
-        const q = quantifierPool[qIndex];
+  while (availableBins.length > 0) {
+    const assignmentBin: Receiver[] | undefined = availableBins.pop();
+    if (!assignmentBin) continue;
 
-        return {
-          ...q,
-          receivers: q.receivers.concat(...bin),
-        };
-      }
+    if (availableQuantifiers.length === 0) {
+      skippedAssignmentBins.push(assignmentBin);
+      continue;
     }
-  );
+
+    const q = availableQuantifiers.pop();
+
+    // Generate a unique id to reference this assignment option (bin + quantifier)
+    const assignmentBinId: string = flatten(
+      assignmentBin.map((r: Receiver) => r.praiseIds)
+    ).join('+');
+    const assignmentOptionId = `${q._id.toString() as string
+      }-${assignmentBinId}`;
+
+    const qUserAccountIds: string[] = q.accounts.map(
+      (account: UserAccountDocument) => account._id.toString()
+    );
+    const assignmentReceiverIds: string[] = assignmentBin.map((r: Receiver) =>
+      r._id.toString()
+    );
+
+    // Confirm none of the Receivers in the assignment bin belong to the Quantifier
+    const overlappingUserAccounts = intersection(
+      qUserAccountIds,
+      assignmentReceiverIds
+    );
+    if (overlappingUserAccounts.length === 0) {
+      // assign Quantifier to original pool
+      quantifierPoolById[q._id.toString()].receivers.push(...assignmentBin);
+    } else if (skippedAssignmentOptionIds.includes(assignmentOptionId)) {
+      // this assignment option has been skipped before
+      //  mark it as un-assignable by the current quantiifer set
+      skippedAssignmentBins.push(assignmentBin);
+    } else {
+      // this assignment option has not been skipped yet
+      // make quantifier available again, at end of the line
+      availableQuantifiers.unshift(q);
+
+      // make bin available again, at the beginning of the line
+      availableBins.push(assignmentBin);
+
+      // note that this assignment option has been skipped once
+      skippedAssignmentOptionIds.push(assignmentOptionId);
+    }
+  }
+
+  // Convert object of quantifiers back to array & remove any unassigned
+  const poolAssignments: Quantifier[] = Object.values<Quantifier>(
+    quantifierPoolById
+  ).filter((q: Quantifier): boolean => q.receivers.length > 0);
+
+  // Extend the pool with dummy quantifiers if assigns remain to be done
+  //  and no more quantifiers are available
+  const neededAssignments: Quantifier[] = skippedAssignmentBins.map((bin) => ({
+    _id: undefined,
+    accounts: [],
+    receivers: [...bin],
+  }));
+
+  poolAssignments.push(...neededAssignments);
 
   // Verify & log that all praise is accounted for in this model
   const totalPraiseCount: number = await PraiseModel.count({
@@ -316,7 +344,10 @@ const assignQuantifiersDryRun = async (
     );
   }
 
-  return poolAssignments;
+  return {
+    poolAssignments,
+    poolDeficit: neededAssignments.length,
+  };
 };
 
 /**
@@ -330,17 +361,13 @@ export const verifyQuantifierPoolSize = async (
   const quantifierPoolSize = await UserModel.count({
     roles: UserRole.QUANTIFIER,
   });
-  const assignedQuantifiers = await assignQuantifiersDryRun(
-    req.params.periodId
-  );
-  const dummyQuantifiers: Quantifier[] = assignedQuantifiers.filter(
-    (q) => q._id === undefined
-  );
+  const assignmentDryRun: AssignQuantifiersDryRunOutput =
+    await assignQuantifiersDryRun(req.params.periodId);
 
   res.status(StatusCodes.OK).json({
     quantifierPoolSize,
-    quantifierPoolSizeNeeded: assignedQuantifiers.length,
-    quantifierPoolDeficitSize: dummyQuantifiers.length,
+    quantifierPoolSizeNeeded: assignmentDryRun.poolAssignments.length,
+    quantifierPoolDeficitSize: assignmentDryRun.poolDeficit,
   });
 };
 
@@ -360,17 +387,15 @@ export const assignQuantifiers = async (
       'Quantifiers can only be assigned on OPEN periods.'
     );
 
-  const assignedQuantifiers = await assignQuantifiersDryRun(
-    req.params.periodId
-  );
+  const assignedQuantifiers: AssignQuantifiersDryRunOutput =
+    await assignQuantifiersDryRun(req.params.periodId);
 
-  // Undefined quantifers means pool size is too small
-  if (assignedQuantifiers.find((q) => typeof q._id === 'undefined'))
-    throw new BadRequestError('Quantifier pool size too small.');
+  if (assignedQuantifiers.poolDeficit > 0)
+    throw new BadRequestError(`Failed to assign ${assignedQuantifiers.poolDeficit} collection of praise to a quantifier`);
 
   // Generate list of db queries to apply changes specified by assignedQuantifiers
   const bulkQueries = flatten(
-    assignedQuantifiers.map((q) =>
+    assignedQuantifiers.poolAssignments.map((q) =>
       q.receivers.map((receiver) => ({
         updateMany: {
           filter: { _id: { $in: receiver.praiseIds } },
