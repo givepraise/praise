@@ -21,3 +21,7 @@ export interface NonceResponse {
   ethereumAddress: string;
   nonce: string;
 }
+
+export interface RefreshRequestInput {
+  refreshToken: string;
+}

@@ -19,6 +19,7 @@ import {
   AuthResponse,
   NonceRequestInput,
   NonceResponse,
+  RefreshRequestInput,
 } from './types';
 
 const jwtService = new JwtService();
@@ -64,6 +65,7 @@ export const auth = async (
     roles: user.roles,
   });
   user.accessToken = accessToken;
+  user.refreshToken = refreshToken;
   await user.save();
 
   res.status(200).json({
@@ -100,5 +102,39 @@ export const nonce = async (
   res.status(200).json({
     ethereumAddress,
     nonce,
+  });
+};
+
+/**
+ * Description
+ * @param
+ */
+
+export const refresh = async (
+  req: TypedRequestBody<RefreshRequestInput>,
+  res: TypedResponse<AuthResponse>
+): Promise<void> => {
+  // confirm refreshToken matches a single user.refreshToken
+  const user = (await UserModel.findOne({
+    refreshToken: req.params.refreshToken,
+  })
+    .select('nonce roles')
+    .exec()) as UserDocument;
+  if (!user || !user._id || !user.ethereumAddress) throw new NotFoundError('User');
+
+  // confirm refreshToken provided is valid
+  const jwt: Jwt = jwtService.refreshJwt(req.params.refreshToken);
+
+  // update user tokens
+  user.accessToken = jwt.accessToken;
+  user.refreshToken = jwt.refreshToken;
+  await user.save();
+
+  // return updated tokens
+  res.status(200).json({
+    accessToken: jwt.accessToken,
+    refreshToken: jwt.refreshToken,
+    ethereumAddress: user.ethereumAddress,
+    tokenType: 'Bearer',
   });
 };
