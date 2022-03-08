@@ -2,6 +2,7 @@ import { BadRequestError, NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
 import { calculateQuantificationsCompositeScore } from '@praise/utils';
 import { settingFloat } from '@shared/settings';
+import { sum } from 'lodash';
 import { PeriodModel } from './entities';
 import {
   periodDetailsReceiverListTransformer,
@@ -13,7 +14,6 @@ import {
   PeriodDetailsQuantifierDto,
   PeriodDetailsReceiver,
 } from './types';
-import { sum } from 'lodash';
 
 // Returns previous period end date or 1970-01-01 if no previous period
 export const getPreviousPeriodEndDate = async (
@@ -77,7 +77,10 @@ export const findPeriodDetailsDto = async (
     PraiseModel.aggregate([
       {
         $match: {
-          createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
+          createdAt: {
+            $gt: previousPeriodEndDate,
+            $lte: period.endDate,
+          },
         },
       },
       { $unwind: '$quantifications' },
@@ -103,7 +106,10 @@ export const findPeriodDetailsDto = async (
     PraiseModel.aggregate([
       {
         $match: {
-          createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
+          createdAt: {
+            $gt: previousPeriodEndDate,
+            $lte: period.endDate,
+          },
         },
       },
       {
