@@ -4,21 +4,12 @@ import { ForbiddenError, UnauthorizedError } from '@error/errors';
 import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
 import { NextFunction, Request, Response } from 'express';
+import { extractAccessTokenFromRequest } from './utils'
 
 export const authMiddleware = (role: UserRole) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     // Get authorization header
-    const AuthHeader = req.headers['authorization'];
-    if (typeof AuthHeader === 'undefined')
-      throw new UnauthorizedError('JWT not present in header.');
-
-    // Check authorization header format
-    const bearer = AuthHeader.split(' ');
-    if (!Array.isArray(bearer) || bearer.length !== 2)
-      throw new UnauthorizedError('Invalid authorization bearer format.');
-
-    // Separate the accessToken
-    const accessToken = bearer[1];
+    const accessToken = extractAccessTokenFromRequest(req);
 
     // Find User with matching token
     const user = await UserModel.findOne({
