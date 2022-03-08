@@ -1,85 +1,134 @@
-import { GuildMember, MessageEmbed, Role } from 'discord.js';
+import { User, MessageEmbed, Role } from 'discord.js';
+import { getSetting } from './getSettings';
 
-export const praiseSuccess = (praised: string[], reason: string): string => {
-  return `✅ Praise ${praised.join(', ')} ${reason}`;
+export const praiseSuccess = async (
+  praised: string[],
+  reason: string
+): Promise<string> => {
+  const msg = await getSetting('PRAISE_SUCCESS_MESSAGE');
+  if (msg && typeof msg === 'string') {
+    return msg
+      ?.replace('{receivers}', `${praised.join(', ')}`)
+      .replace('{reason}', reason);
+  } else {
+    return 'PRAISE SUCCESSFUL (message not set)';
+  }
 };
 
 export const praiseError = (title: string, description: string): string => {
   return `**❌ ${title}**\n${description}`;
 };
 
-export const notActivatedError = praiseError(
-  'Account Not Activated',
-  'Your Account is not activated in the praise system. Unactivated accounts can not praise users. Use the `/praise-activate` command to activate your praise account and to link your eth address.'
-);
+export const notActivatedError = async (): Promise<string> => {
+  const msg = await getSetting('PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR');
+  if (msg && typeof msg === 'string') {
+    return msg;
+  } else {
+    return 'PRAISE ACCOUNT NOT ACTIVATED (message not set)';
+  }
+};
 
-export const dmError = praiseError(
-  'Server not found',
-  'The praise command can only be used in the discord server.'
-);
+export const dmError = async (): Promise<string> => {
+  const msg = await getSetting('DM_ERROR');
+  if (msg && typeof msg === 'string') {
+    return msg;
+  } else {
+    return 'COMMAND CAN NOT BE USED IN DM (message not set)';
+  }
+};
 
-export const roleError = (
+export const roleError = async (
   praiseGiverRole: Role,
-  user: GuildMember
-): MessageEmbed => {
-  return new MessageEmbed()
-    .setColor('#ff0000')
-    .setTitle(
-      'User does not have `{role}`'
+  user: User
+): Promise<MessageEmbed> => {
+  const msg = await getSetting('PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR');
+  if (msg && typeof msg === 'string') {
+    return new MessageEmbed().setColor('#ff0000').setDescription(
+      msg
         .replace('{role}', praiseGiverRole?.name || '...')
-        .replace('{user}', user?.displayName || '...')
-        .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
-        .replace('{@user}', `<@!${user?.id || '...'}>`)
-    )
-    .setDescription(
-      'The praise command can only be used by members with the {@role} role. Attend an onboarding-call, or ask a steward or guide for an Intro to Praise.'
-        .replace('{role}', praiseGiverRole?.name || '...')
-        .replace('{user}', user?.displayName || '...')
+        .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
         .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
         .replace('{@user}', `<@!${user?.id || '...'}>`)
     );
+  }
+  return new MessageEmbed().setColor('#ff0000').setDescription(
+    'USER DOES NOT HAVE {@role} role (message not set)'
+      .replace('{role}', praiseGiverRole?.name || '...')
+      .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
+      .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
+      .replace('{@user}', `<@!${user?.id || '...'}>`)
+  );
 };
 
-export const invalidReceiverError = praiseError(
-  'Receivers not mentioned',
-  'This command requires atleast one valid receiver to be mentioned, in order for praise to get dished.'
-);
+export const invalidReceiverError = async (): Promise<string> => {
+  const msg = await getSetting('PRAISE_INVALID_RECEIVERS_ERROR');
+  if (msg && typeof msg === 'string') {
+    return msg;
+  }
+  return 'VALID RECEIVERS NOT MENTIONED (message not set)';
+};
 
-export const missingReasonError = praiseError(
-  '`reason` not provided',
-  'Praise can not be dished or quantified without a `reason`.'
-);
+export const missingReasonError = async (): Promise<string> => {
+  const msg = await getSetting('PRAISE_INVALID_RECEIVERS_ERROR');
+  if (msg && typeof msg === 'string') {
+    return msg;
+  }
+  return 'REASON NOT MENTIONED (message not set)';
+};
 
-export const undefinedReceiverWarning = (
+export const undefinedReceiverWarning = async (
   receivers: string,
-  userId: string
-): string => {
-  return `**⚠️  Undefined Receivers**\nCould not praise ${receivers}.\n<@!${userId}>, this warning could have been caused when a user isn't mentioned properly in the praise receivers field OR when a user isn't found in the discord server.`;
+  user: User
+): Promise<string> => {
+  const msg = await getSetting('PRAISE_UNDEFINED_RECEIVERS_WARNING');
+  if (msg && typeof msg === 'string') {
+    return msg
+      .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
+      .replace('{@user}', `<@!${user?.id || '...'}>`)
+      .replace('{@receivers}', receivers);
+  }
+  return 'UNDEFINED RECEIVERS MENTIONED, UNABLE TO PRAISE THEM (message not set)';
 };
 
-export const roleMentionWarning = (
+export const roleMentionWarning = async (
   receivers: string,
-  userId: string
-): string => {
-  return `**⚠️  Roles as Praise receivers**\nCouldn't praise roles - ${receivers}.\n<@!${userId}>, use the \`/group-praise\` for distribution of praise to all the members that have certain discord roles.`;
+  user: User
+): Promise<string> => {
+  const msg = await getSetting('PRAISE_TO_ROLE_WARNING');
+  if (msg && typeof msg === 'string') {
+    return msg
+      .replace('{@receivers}', receivers)
+      .replace('{@user}', `<@!${user?.id || '...'}>`)
+      .replace('{user}', `${user?.username}#${user?.discriminator}` || '...');
+  }
+  return "ROLES MENTIONED AS PRAISE RECEIVERS, PRAISE CAN'T BE DISHED TO ROLES (message not set)";
 };
 
-export const praiseSuccessDM = (msgUrl: string): MessageEmbed => {
-  return new MessageEmbed()
-    .setColor('#696969')
-    .setTitle('👏 Congratulations! You’ve been Praised! 👏')
-    .setDescription(
-      `[View your praise in the TEC](${msgUrl})\n**Thank you** for supporting the Token Engineering Commons!`
-    );
+export const praiseSuccessDM = async (
+  msgUrl: string
+): Promise<MessageEmbed> => {
+  const msg = await getSetting('PRAISE_SUCCESS_DM');
+  if (msg && typeof msg === 'string') {
+    return new MessageEmbed()
+      .setColor('#696969')
+      .setDescription(msg.replace('{praiseURL}', msgUrl));
+  }
+  return new MessageEmbed().setDescription(
+    `[YOU HAVE BEEN PRAISED!!!](${msgUrl}) (message not set)`
+  );
 };
 
-export const notActivatedDM = (msgUrl: string): MessageEmbed => {
-  return new MessageEmbed()
-    .setColor('#ff0000')
-    .setTitle('**⚠️  Praise Account Not Activated**')
-    .setDescription(
-      `You were just [praised in the TEC](${msgUrl})\nIt looks like you haven't activated your account... To activate your account, use the \`/praise-activate\` command in the server.`
-    );
+export const notActivatedDM = async (msgUrl: string): Promise<MessageEmbed> => {
+  const msg = await getSetting('PRAISE_SUCCESS_DM');
+  if (msg && typeof msg === 'string') {
+    return new MessageEmbed()
+      .setColor('#ff0000')
+      .setTitle('**⚠️  Praise Account Not Activated**')
+      .setDescription(msg.replace('{praiseURL}', msgUrl));
+  }
+  return new MessageEmbed().setDescription(
+    `**[YOU HAVE BEEN PRAISED](${msgUrl})\nPRAISE ACCOUNT NOT ACTIVATED. USE \`/praise-activate\` TO ACTIVATE YOUR ACCOUNT. (message not set)`
+  );
 };
 
 /*

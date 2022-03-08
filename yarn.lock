@@ -4631,6 +4631,7 @@ __metadata:
     "@types/randomstring": ^1.1.8
     "@types/supertest": ^2.0.11
     bcrypt: ^5.0.1
+    bin-packer: ^1.6.1
     chai: ^4.3.6
     chai-http: ^4.3.0
     command-line-args: ^5.2.0
@@ -5341,6 +5342,13 @@ __metadata:
   version: 9.0.2
   resolution: "bignumber.js@npm:9.0.2"
   checksum: 8637b71d0a99104b20413c47578953970006fec6b4df796b9dcfd9835ea9c402ea0e727eba9a5ca9f9a393c1d88b6168c5bbe0887598b708d4f8b4870ad62e1f
+  languageName: node
+  linkType: hard
+
+"bin-packer@npm:^1.6.1":
+  version: 1.6.1
+  resolution: "bin-packer@npm:1.6.1"
+  checksum: a338bb91944f6f08a6c9bc1a9dad9b94c500737f759c2f1cde4d7ee5871a0e2796ac13ca664fa3c99feee36e7c7da30e96a814406cb1d5f8a09aae2c8b136c1e
   languageName: node
   linkType: hard
 

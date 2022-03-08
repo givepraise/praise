@@ -4,9 +4,7 @@ import { UserAccount } from 'api/src/useraccount/types';
 import { CommandInteraction, Interaction } from 'discord.js';
 import randomstring from 'randomstring';
 
-const activate = async (
-  interaction: CommandInteraction
-): Promise<CommandInteraction | undefined> => {
+const activate = async (interaction: CommandInteraction): Promise<void> => {
   const { user } = interaction;
   const ua = {
     accountId: user.id,
@@ -25,9 +23,33 @@ const activate = async (
     await interaction.reply('Unable to create user account.');
     return;
   }
+  const baseURL = process.env.FRONTEND_URL;
+  if (!baseURL || baseURL === undefined) {
+    await interaction.reply(
+      'ERROR: `FRONTEND_URL` not defined in environment variables. Contact praise admin'
+    );
+    return;
+  }
+
+  const getActivationURL = (
+    accountId: string,
+    uname: string,
+    hash: string,
+    token: string
+  ): string =>
+    `${baseURL}/activate?accountId=${accountId}&accountName=${encodeURIComponent(
+      `${uname}#${hash}`
+    )}&platform=DISCORD&token=${token}`;
+
+  const activationURL = getActivationURL(
+    ua.accountId,
+    user.username,
+    user.discriminator,
+    ua.activateToken || 'undefined'
+  );
 
   await interaction.reply({
-    content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${process.env.FRONTEND_URL}/activate?accountId=${ua.accountId}&accountName=${user.username}%23${user.discriminator}&platform=DISCORD&token=${ua.activateToken})`,
+    content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${activationURL})`,
     ephemeral: true,
   });
 };
@@ -39,7 +61,7 @@ module.exports = {
       'Activates your praise account and links your eth address!'
     ),
 
-  async execute(interaction: Interaction) {
+  async execute(interaction: Interaction): Promise<void> {
     if (interaction.isCommand()) {
       if (interaction.commandName === 'praise-activate') {
         await activate(interaction);
