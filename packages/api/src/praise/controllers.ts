@@ -17,9 +17,11 @@ import {
   TypedResponse,
 } from '@shared/types';
 import { UserModel } from '@user/entities';
+import { UserDocument } from '@user/types';
 import { UserAccountModel } from '@useraccount/entities';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
+import mongoose from 'mongoose';
 import { PraiseModel } from './entities';
 import { praiseDocumentTransformer } from './transformers';
 import {
@@ -171,10 +173,8 @@ export const exportPraise = async (
         createdAt: {
           $dateToString: {
             date: '$createdAt',
-            format: '%Y-%m-%d',
           },
         },
-        averageScore: { $avg: '$quantifications.score' },
       },
     },
     {
@@ -207,7 +207,6 @@ export const exportPraise = async (
         createdAt: 1,
         giver: { $arrayElemAt: ['$giver', 0] },
         receiver: { $arrayElemAt: ['$receiver', 0] },
-        averageScore: 1,
       },
     },
   ]);
@@ -227,20 +226,16 @@ export const exportPraise = async (
 
   const docs = await Promise.all(
     praises.map(async (p) => {
-      if (p.receiver) {
-        const receiver = await UserModel.findOne({
-          accounts: p.receiver._id,
-        });
+      if (p.receiver && p.receiver.user) {
+        const receiver = await UserModel.findById(p.receiver.user);
 
         if (receiver) {
           p.receiver.ethAddress = receiver.ethereumAddress;
         }
       }
 
-      if (p.giver) {
-        const giver = await UserModel.findOne({
-          accounts: p.giver._id,
-        });
+      if (p.giver && p.giver.user) {
+        const giver = await UserModel.findById(p.giver.user);
 
         if (giver) {
           p.giver.ethAddress = giver.ethereumAddress;
@@ -262,11 +257,17 @@ export const exportPraise = async (
         })
       );
 
+      p.averageScore = await calculatePraiseScore(p);
+
       return p;
     })
   );
 
   const fields = [
+    {
+      label: 'ID',
+      value: '_id',
+    },
     {
       label: 'DATE',
       value: 'createdAt',
@@ -345,7 +346,7 @@ export const exportPraise = async (
   }
 
   fields.push({
-    label: 'AVG QUANT',
+    label: 'AVG SCORE',
     value: 'averageScore',
   });
 
