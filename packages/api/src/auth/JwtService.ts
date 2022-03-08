@@ -1,11 +1,12 @@
 import { UnauthorizedError } from '@error/errors';
-import { sign, verify } from 'jsonwebtoken';
+import { sign, verify, JwtPayload } from 'jsonwebtoken';
 import randomString from 'randomstring';
 
 export interface ClientData {
   userId: string;
   ethereumAddress: string;
   roles: string[];
+  isRefresh?: boolean;
 }
 
 export interface Jwt {
@@ -45,6 +46,21 @@ export class JwtService {
       );
     }
   }
+
+  /**
+   * Verify jwt and return decoded data, or throw error
+   *
+   * @param jwt
+   */
+  private _verifyOrFail(jwt: string): JwtPayload {
+    try {
+      const decoded: JwtPayload = verify(jwt, this.secret) as JwtPayload;
+      return decoded;
+    } catch (err) {
+      throw new UnauthorizedError(this.VALIDATION_ERROR);
+    }
+  }
+
   /**
    * Encrypt data and return jwt.
    *
@@ -54,9 +70,15 @@ export class JwtService {
     const accessToken = this._signOrFail(data, {
       expiresIn: this.accessExpiresIn,
     });
-    const refreshToken = this._signOrFail(data, {
-      expiresIn: this.refreshExpiresIn,
-    });
+    const refreshToken = this._signOrFail(
+      {
+        ...data,
+        isRefresh: true,
+      },
+      {
+        expiresIn: this.refreshExpiresIn,
+      }
+    );
 
     return {
       accessToken,
@@ -65,16 +87,35 @@ export class JwtService {
   }
 
   /**
-   * Decrypt JWT and extract client data.
+   * Decrypt refresh JWT, create new access JWT with extended expiration,
+   *  create new refresh JWT with same expiration, and return both new JWTs
    *
    * @param jwt
    */
-  public decodeJwt(jwt: string): Promise<ClientData> {
-    return new Promise((resolve) => {
-      verify(jwt, this.secret, (err, decoded) => {
-        if (err) throw new UnauthorizedError(this.VALIDATION_ERROR);
-        return resolve(decoded as ClientData);
-      });
+  public refreshJwt(jwt: string): Jwt {
+    const decoded = this._verifyOrFail(jwt);
+
+    if (!decoded.isRefresh) throw new UnauthorizedError(this.VALIDATION_ERROR);
+
+    // Generate new tokens, extending access token's expiration time by JWT_ACCESS_EXP
+    const accessToken = sign(
+      {
+        ...decoded,
+        isRefresh: false,
+      } as ClientData,
+      this.secret,
+      {
+        expiresIn: Number(decoded.exp) + Number(this.accessExpiresIn),
+      }
+    );
+
+    const refreshToken = sign(decoded as ClientData, this.secret, {
+      expiresIn: this.refreshExpiresIn,
     });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }
