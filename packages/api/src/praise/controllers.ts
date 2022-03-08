@@ -147,8 +147,6 @@ export const exportPraise = async (
     createdAt: undefined,
   };
 
-  console.log('REQ:', req.query);
-
   if (req.query.receiver) {
     query.receiver = String(req.query.receiver);
   }

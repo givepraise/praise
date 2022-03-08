@@ -276,8 +276,9 @@ const assignQuantifiersDryRun = async (
     const assignmentBinId: string = flatten(
       assignmentBin.map((r: Receiver) => r.praiseIds)
     ).join('+');
-    const assignmentOptionId = `${q._id.toString() as string
-      }-${assignmentBinId}`;
+    const assignmentOptionId = `${
+      q._id.toString() as string
+    }-${assignmentBinId}`;
 
     const qUserAccountIds: string[] = q.accounts.map(
       (account: UserAccountDocument) => account._id.toString()
@@ -398,7 +399,9 @@ export const assignQuantifiers = async (
     await assignQuantifiersDryRun(req.params.periodId);
 
   if (assignedQuantifiers.poolDeficit > 0)
-    throw new BadRequestError(`Failed to assign ${assignedQuantifiers.poolDeficit} collection of praise to a quantifier`);
+    throw new BadRequestError(
+      `Failed to assign ${assignedQuantifiers.poolDeficit} collection of praise to a quantifier`
+    );
 
   // Generate list of db queries to apply changes specified by assignedQuantifiers
   const bulkQueries = flatten(

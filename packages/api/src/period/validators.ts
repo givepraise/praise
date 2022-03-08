@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { PeriodModel } from './entities';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function validateEndDate(this: any, endDate: string): Promise<Boolean> {
   // This rule don't apply when no change to endDate has been made
   if (!this.$__.activePaths.states.modify.endDate) return true;
@@ -31,6 +33,7 @@ async function validateEndDate(this: any, endDate: string): Promise<Boolean> {
   return true;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function validateOnlyUpdateLastPeriod(this: any): Promise<boolean> {
   // This rule don't apply to new documents
   if (this.isNew) return true;
@@ -56,6 +59,7 @@ async function validateOnlyUpdateLastPeriod(this: any): Promise<boolean> {
   return true;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function validateOnlyUpdateOpenPeriod(this: any): boolean {
   // This rule don't apply to new documents
   if (this.isNew) return true;
