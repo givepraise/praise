@@ -1,7 +1,6 @@
 import { UnauthorizedError } from '@error/errors';
 import { sign, verify, JwtPayload } from 'jsonwebtoken';
 import randomString from 'randomstring';
-
 export interface ClientData {
   userId: string;
   ethereumAddress: string;
@@ -15,19 +14,19 @@ export interface Jwt {
 }
 
 interface JwtOptions {
-  expiresIn: string;
+  expiresIn: number;
 }
 
 export class JwtService {
   private readonly secret: string;
   private readonly VALIDATION_ERROR = 'JSON-web-token validation failed.';
-  private readonly refreshExpiresIn: string;
-  private readonly accessExpiresIn: string;
+  private readonly refreshExpiresIn: number;
+  private readonly accessExpiresIn: number;
 
   constructor() {
     this.secret = process.env.JWT_SECRET || randomString.generate(100);
-    this.accessExpiresIn = process.env.JWT_ACCESS_EXP || '1h';
-    this.refreshExpiresIn = process.env.JWT_REFRESH_EXP || '3d';
+    this.accessExpiresIn = Number(process.env.JWT_ACCESS_EXP) || 3600;
+    this.refreshExpiresIn = Number(process.env.JWT_REFRESH_EXP) || 259200;
   }
 
   /**
@@ -52,7 +51,7 @@ export class JwtService {
    *
    * @param jwt
    */
-  private _verifyOrFail(jwt: string): JwtPayload {
+  public verifyOrFail(jwt: string): JwtPayload {
     try {
       const decoded: JwtPayload = verify(jwt, this.secret) as JwtPayload;
       return decoded;
@@ -93,7 +92,7 @@ export class JwtService {
    * @param jwt
    */
   public refreshJwt(jwt: string): Jwt {
-    const decoded = this._verifyOrFail(jwt);
+    const decoded = this.verifyOrFail(jwt);
 
     if (!decoded.isRefresh) throw new UnauthorizedError(this.VALIDATION_ERROR);
 
