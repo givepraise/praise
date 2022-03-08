@@ -13,7 +13,7 @@ import { UserModel } from '@user/entities';
 import { UserDocument } from '@user/types';
 import { ethers } from 'ethers';
 import randomstring from 'randomstring';
-import { JwtService } from './JwtService';
+import { JwtService, Jwt } from './JwtService';
 import {
   AuthRequestInput,
   AuthResponse,
@@ -58,7 +58,7 @@ export const auth = async (
   if (signerAddress !== ethereumAddress)
     throw new UnauthorizedError('Verification failed.');
 
-  const accessToken = await jwtService.getJwt({
+  const { accessToken, refreshToken }: Jwt = jwtService.getJwt({
     userId: user._id,
     ethereumAddress,
     roles: user.roles,
@@ -68,6 +68,7 @@ export const auth = async (
 
   res.status(200).json({
     accessToken,
+    refreshToken,
     ethereumAddress,
     tokenType: 'Bearer',
   });

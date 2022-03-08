@@ -1,5 +1,4 @@
 import { UnauthorizedError } from '@error/errors';
-import { cookieProps } from '@shared/constants';
 import { sign, verify } from 'jsonwebtoken';
 import randomString from 'randomstring';
 
@@ -9,32 +8,60 @@ export interface ClientData {
   roles: string[];
 }
 
+export interface Jwt {
+  accessToken: string;
+  refreshToken: string;
+}
+
 interface JwtOptions {
   expiresIn: string;
 }
 
 export class JwtService {
   private readonly secret: string;
-  private readonly options: JwtOptions;
   private readonly VALIDATION_ERROR = 'JSON-web-token validation failed.';
+  private readonly refreshExpiresIn: string;
+  private readonly accessExpiresIn: string;
 
   constructor() {
     this.secret = process.env.JWT_SECRET || randomString.generate(100);
-    this.options = { expiresIn: cookieProps.options.maxAge.toString() };
+    this.accessExpiresIn = process.env.JWT_ACCESS_EXP || '1h';
+    this.refreshExpiresIn = process.env.JWT_REFRESH_EXP || '3d';
   }
 
+  /**
+   * Sign data and return jwt, or throw error
+   *
+   * @param data
+   * @param options
+   */
+  private _signOrFail(data: ClientData, options: JwtOptions): string {
+    try {
+      const token = sign(data, this.secret, options);
+      return token;
+    } catch (err) {
+      throw new UnauthorizedError(
+        (err as Error).message || 'Failed to sign data for new jwt'
+      );
+    }
+  }
   /**
    * Encrypt data and return jwt.
    *
    * @param data
    */
-  public getJwt(data: ClientData): Promise<string> {
-    return new Promise((resolve) => {
-      sign(data, this.secret, this.options, (err, token) => {
-        if (err) throw new UnauthorizedError(err.message);
-        return resolve(token || '');
-      });
+  public getJwt(data: ClientData): Jwt {
+    const accessToken = this._signOrFail(data, {
+      expiresIn: this.accessExpiresIn,
     });
+    const refreshToken = this._signOrFail(data, {
+      expiresIn: this.refreshExpiresIn,
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   /**

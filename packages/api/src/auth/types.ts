@@ -8,6 +8,7 @@ export interface AuthRequestInput {
 
 export interface AuthResponse {
   accessToken: string;
+  refreshToken: string;
   ethereumAddress: string;
   tokenType: string;
 }
