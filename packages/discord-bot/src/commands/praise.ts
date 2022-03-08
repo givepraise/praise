@@ -2,9 +2,10 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { PraiseModel } from 'api/dist/praise/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
-import { CommandInteraction, Interaction, Message } from 'discord.js';
 import { APIMessage } from 'discord-api-types/v9';
+import { CommandInteraction, Interaction, Message } from 'discord.js';
 import logger from 'jet-logger';
+import { getSetting } from '../utils/getSettings';
 import {
   dmError,
   invalidReceiverError,
@@ -21,16 +22,17 @@ import {
 const praise = async (
   interaction: CommandInteraction,
   responseUrl: string
-) => {
+): Promise<void> => {
   const { guild, channel, member } = interaction;
 
   if (!guild || !member) {
-    await interaction.editReply(dmError);
+    await interaction.editReply(await dmError());
     return;
   }
 
+  const praiseGiverRoleID = await getSetting('PRAISE_GIVER_ROLE_ID');
   const praiseGiverRole = guild.roles.cache.find(
-    (r) => r.id === process.env.PRAISE_GIVER_ROLE_ID
+    (r) => r.id === praiseGiverRoleID
   );
   const praiseGiver = await guild.members.fetch(member.user.id);
 
@@ -39,7 +41,7 @@ const praise = async (
     !praiseGiver.roles.cache.find((r) => r.id === praiseGiverRole?.id)
   ) {
     await interaction.editReply({
-      embeds: [roleError(praiseGiverRole, praiseGiver)],
+      embeds: [await roleError(praiseGiverRole, praiseGiver.user)],
     });
 
     return;
@@ -73,17 +75,17 @@ const praise = async (
     !receiverData.validReceiverIds ||
     receiverData.validReceiverIds?.length === 0
   ) {
-    await interaction.editReply(invalidReceiverError);
+    await interaction.editReply(await invalidReceiverError());
     return;
   }
 
   if (!reason || reason.length === 0) {
-    await interaction.editReply(missingReasonError);
+    await interaction.editReply(await missingReasonError());
     return;
   }
 
   if (!userAccount.user) {
-    await interaction.editReply(notActivatedError);
+    await interaction.editReply(await notActivatedError());
     return;
   }
 
@@ -101,7 +103,7 @@ const praise = async (
     const ra = {
       accountId: receiver.user.id,
       name: receiver.user.username + '#' + receiver.user.discriminator,
-      avatarId: receiver.avatar,
+      avatarId: receiver.user.avatar,
       platform: 'DISCORD',
     } as UserAccount;
     const receiverAccount = await UserAccountModel.findOneAndUpdate(
@@ -112,7 +114,7 @@ const praise = async (
 
     if (!receiverAccount.user) {
       try {
-        await receiver.send({ embeds: [notActivatedDM(responseUrl)] });
+        await receiver.send({ embeds: [await notActivatedDM(responseUrl)] });
       } catch (err) {
         logger.warn(`Can't DM user - ${ra.name} [${ra.accountId}]`);
       }
@@ -121,13 +123,17 @@ const praise = async (
       reason: reason,
       giver: userAccount._id,
       sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
-      sourceName: `DISCORD:${encodeURI(guild.name)}:${encodeURI(
-        guildChannel?.name || ''
-      )}`,
+      sourceName: `DISCORD:${encodeURIComponent(
+        guild.name
+      )}:${encodeURIComponent(guildChannel?.name || '')}`,
       receiver: receiverAccount._id,
     });
     if (praiseObj) {
-      await receiver.send({ embeds: [praiseSuccessDM(responseUrl)] });
+      try {
+        await receiver.send({ embeds: [await praiseSuccessDM(responseUrl)] });
+      } catch (err) {
+        logger.warn(`Can't DM user - ${ra.name} [${ra.accountId}]`);
+      }
       praised.push(ra.accountId);
     } else {
       logger.err(
@@ -137,7 +143,7 @@ const praise = async (
   }
 
   const msg = (await interaction.editReply(
-    praiseSuccess(
+    await praiseSuccess(
       praised.map((id) => `<@!${id}>`),
       reason
     )
@@ -145,15 +151,18 @@ const praise = async (
 
   if (receiverData.undefinedReceivers) {
     await msg.reply(
-      undefinedReceiverWarning(
+      await undefinedReceiverWarning(
         receiverData.undefinedReceivers.join(', '),
-        ua.accountId
+        praiseGiver.user
       )
     );
   }
   if (receiverData.roleMentions) {
     await msg.reply(
-      roleMentionWarning(receiverData.roleMentions.join(', '), ua.accountId)
+      await roleMentionWarning(
+        receiverData.roleMentions.join(', '),
+        praiseGiver.user
+      )
     );
   }
 
@@ -168,7 +177,7 @@ module.exports = {
       option
         .setName('receivers')
         .setDescription(
-          'Mention the users you would like to send this praice to'
+          'Mention the users you would like to send this praise to'
         )
         .setRequired(true)
     )
@@ -179,15 +188,27 @@ module.exports = {
         .setRequired(true)
     ),
 
-  async execute(interaction: Interaction) {
+  async execute(interaction: Interaction): Promise<void> {
     if (interaction.isCommand()) {
       if (interaction.commandName === 'praise') {
-        const msg = await interaction.deferReply({fetchReply: true}) as APIMessage | void;
+        const msg = (await interaction.deferReply({
+          fetchReply: true,
+        })) as APIMessage | void;
         if (msg !== undefined) {
-          msg as APIMessage;
+          const discordMsg: APIMessage = msg;
+          const getMsgLink = (
+            guildId: string,
+            channelId: string,
+            msgID: string
+          ): string =>
+            `https://discord.com/channels/${guildId}/${channelId}/${msgID}`;
           await praise(
             interaction,
-            `https://discord.com/channels/${interaction.guildId}/${interaction.channelId}/${msg?.id}`
+            getMsgLink(
+              interaction.guildId || '',
+              interaction.channelId || '',
+              discordMsg.id
+            )
           );
         }
       }

@@ -9,6 +9,7 @@ import {
   PraiseDetailsDto,
   PraiseDto,
   Quantifier,
+  QuantifierPoolById,
   Receiver,
 } from '@praise/types';
 import { praiseWithScore } from '@praise/utils';
@@ -23,9 +24,12 @@ import {
 } from '@shared/types';
 import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
+import { UserAccountDocument } from '@useraccount/types';
+import { firstFit, PackingOutput } from 'bin-packer';
 import { Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { flatten } from 'lodash';
+import logger from 'jet-logger';
+import { flatten, intersection, range, sum } from 'lodash';
 import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import { periodDocumentTransformer } from './transformers';
@@ -36,9 +40,11 @@ import {
   PeriodReceiverPraiseInput,
   PeriodStatusType,
   PeriodUpdateInput,
+  AssignQuantifiersDryRunOutput,
   VerifyQuantifierPoolSizeResponse,
 } from './types';
 import { findPeriodDetailsDto, getPreviousPeriodEndDate } from './utils';
+
 /**
  * Description
  * @param
@@ -150,50 +156,28 @@ export const close = async (
   res.status(StatusCodes.OK).json(periodDocumentTransformer(period));
 };
 
-const assignedPraiseCount = (quantifier: Quantifier): number => {
-  return quantifier.receivers.reduce((sum, receiver) => {
-    return sum + receiver.praiseCount;
-  }, 0);
-};
-
-const assignsRemaining = (
-  receivers: Receiver[],
-  quantifiersPerPraiseReceiver: number
-): boolean => {
-  for (const r of receivers) {
-    if (
-      !r.assignedQuantifiers ||
-      r.assignedQuantifiers < quantifiersPerPraiseReceiver
-    ) {
-      return true;
-    }
-  }
-  return false;
-};
-
 const assignQuantifiersDryRun = async (
   periodId: string
-): Promise<Array<Quantifier>> => {
+): Promise<AssignQuantifiersDryRunOutput> => {
   const period = await PeriodModel.findById(periodId);
   if (!period) throw new NotFoundError('Period');
 
   const quantifiersPerPraiseReceiver = await settingInt(
     'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER'
   );
-  const tolerance = 1.05;
+  const tolerance = 1.2;
   const praisePerQuantifier = await settingInt('PRAISE_PER_QUANTIFIER');
 
-  if (!quantifiersPerPraiseReceiver || !tolerance || !praisePerQuantifier)
+  if (!quantifiersPerPraiseReceiver || !praisePerQuantifier)
     throw new InternalServerError('Configuration error');
 
-  const maxPraisePerQuantifier = praisePerQuantifier * tolerance;
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
-  // Aggregate all period praise receivers and count number of received praise
-  let receivers: Receiver[] = await PraiseModel.aggregate([
+  // Query a list of receivers with their collection of praise
+  const receivers: Receiver[] = await PraiseModel.aggregate([
     {
       $match: {
-        createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
+        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
       },
     },
     {
@@ -205,9 +189,43 @@ const assignQuantifiersDryRun = async (
         },
       },
     },
+
+    // Sort decsending as first step of "First Fit Decreasing" bin-packing algorithm
+    {
+      $sort: {
+        praiseCount: -1,
+      },
+    },
   ]);
 
-  const quantifierPool = await UserModel.aggregate([
+  // Clone the list of recievers for each redundant assignment
+  //  (as defined by setting PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)
+  const redundantAssignmentBins: Receiver[][] = flatten(
+    range(quantifiersPerPraiseReceiver).map(() => {
+      // Run "first Fit" randomized bin-packing algorithm on list of receivers
+      //    with a maximum 'bin' size of: PRAISE_PER_QUANTIFIER
+      //    where each item takes up bin space based on its' praiseCount
+      const receiversShuffled = receivers
+        .sort(() => 0.5 - Math.random())
+        .slice(0, receivers.length);
+
+      const result: PackingOutput<Receiver> = firstFit(
+        receiversShuffled,
+        (r: Receiver) => r.praiseCount,
+        praisePerQuantifier * tolerance
+      );
+
+      const bins: Receiver[][] = [
+        ...result.bins,
+        ...result.oversized.map((r) => [r]),
+      ];
+
+      return bins;
+    })
+  );
+
+  // Query the list of quantifiers & randomize order
+  let quantifierPool = await UserModel.aggregate([
     { $match: { roles: UserRole.QUANTIFIER } },
     {
       $lookup: {
@@ -217,69 +235,126 @@ const assignQuantifiersDryRun = async (
         as: 'accounts',
       },
     },
-  ]);
-
-  const poolIds: Quantifier[] = quantifierPool.map(
-    (user) => ({ ...user, receivers: [] } as Quantifier)
-  );
-  // Scramble the quant pool to randomize who gets assigned
-  const pool = poolIds.sort(() => 0.5 - Math.random()).slice(0, poolIds.length);
-
-  for (let qi = 0; qi < pool.length; qi++) {
-    const q = pool[qi];
-
-    // Scramble receivers array to avoid same combinations of receivers being
-    // assigned to quantifiers.
-    receivers = receivers
-      .sort(() => 0.5 - Math.random())
-      .slice(0, receivers.length);
-
-    for (let ri = 0; ri < receivers.length; ri++) {
-      const r = receivers[ri];
-
-      const quantifierAccountIds: string[] = q.accounts.map((account) =>
-        account._id.toString()
-      );
-
-      // Assign praise that meet criteria
-      if (
-        !quantifierAccountIds.includes(r._id.toString()) &&
-        ((q.receivers.length === 0 && r.praiseCount >= praisePerQuantifier) ||
-          assignedPraiseCount(q) + r.praiseCount < maxPraisePerQuantifier)
-      ) {
-        // Assign receiver to quantifier
-        q.receivers.push(r);
-        r.assignedQuantifiers = r.assignedQuantifiers
-          ? r.assignedQuantifiers + 1
-          : 1;
-        // No more assigns needed for this receiver, splice from receiver array
-        if (r.assignedQuantifiers === quantifiersPerPraiseReceiver) {
-          receivers.splice(ri, 1);
-          ri--;
-        }
-      }
-    }
-
-    // Extend the pool with dummy quantifiers if assigns remain to be done
-    // when reaching the end of the pool
-    if (
-      qi === pool.length - 1 &&
-      assignsRemaining(receivers, quantifiersPerPraiseReceiver)
-    ) {
-      pool.push({
-        _id: undefined,
-        accounts: [],
+    {
+      $addFields: {
         receivers: [],
-      });
+      },
+    },
+  ]);
+  quantifierPool = quantifierPool
+    .sort(() => 0.5 - Math.random())
+    .slice(0, quantifierPool.length);
+
+  // Convert array of quantifiers to a single object, keyed by _id
+  const quantifierPoolById: QuantifierPoolById = quantifierPool.reduce(
+    (poolById, q) => {
+      poolById[q._id] = q;
+      return poolById;
+    },
+    {}
+  );
+
+  // Assign each bin to an available quantifier
+  const availableQuantifiers = quantifierPool.slice();
+  const availableBins = redundantAssignmentBins.slice();
+
+  const skippedAssignmentBins: Receiver[][] = [];
+  const skippedAssignmentOptionIds: string[] = [];
+
+  while (availableBins.length > 0) {
+    const assignmentBin: Receiver[] | undefined = availableBins.pop();
+    if (!assignmentBin) continue;
+
+    if (availableQuantifiers.length === 0) {
+      skippedAssignmentBins.push(assignmentBin);
+      continue;
+    }
+
+    const q = availableQuantifiers.pop();
+
+    // Generate a unique id to reference this assignment option (bin + quantifier)
+    const assignmentBinId: string = flatten(
+      assignmentBin.map((r: Receiver) => r.praiseIds)
+    ).join('+');
+    const assignmentOptionId = `${q._id.toString() as string
+      }-${assignmentBinId}`;
+
+    const qUserAccountIds: string[] = q.accounts.map(
+      (account: UserAccountDocument) => account._id.toString()
+    );
+    const assignmentReceiverIds: string[] = assignmentBin.map((r: Receiver) =>
+      r._id.toString()
+    );
+
+    // Confirm none of the Receivers in the assignment bin belong to the Quantifier
+    const overlappingUserAccounts = intersection(
+      qUserAccountIds,
+      assignmentReceiverIds
+    );
+    if (overlappingUserAccounts.length === 0) {
+      // assign Quantifier to original pool
+      quantifierPoolById[q._id.toString()].receivers.push(...assignmentBin);
+    } else if (skippedAssignmentOptionIds.includes(assignmentOptionId)) {
+      // this assignment option has been skipped before
+      //  mark it as un-assignable by the current quantiifer set
+      skippedAssignmentBins.push(assignmentBin);
+    } else {
+      // this assignment option has not been skipped yet
+      // make quantifier available again, at end of the line
+      availableQuantifiers.unshift(q);
+
+      // make bin available again, at the beginning of the line
+      availableBins.push(assignmentBin);
+
+      // note that this assignment option has been skipped once
+      skippedAssignmentOptionIds.push(assignmentOptionId);
     }
   }
 
-  // Trim any unassigned quantifiers from the returned pool
-  while (pool[pool.length - 1].receivers.length === 0) {
-    pool.pop();
+  // Convert object of quantifiers back to array & remove any unassigned
+  const poolAssignments: Quantifier[] = Object.values<Quantifier>(
+    quantifierPoolById
+  ).filter((q: Quantifier): boolean => q.receivers.length > 0);
+
+  // Extend the pool with dummy quantifiers if assigns remain to be done
+  //  and no more quantifiers are available
+  const neededAssignments: Quantifier[] = skippedAssignmentBins.map((bin) => ({
+    _id: undefined,
+    accounts: [],
+    receivers: [...bin],
+  }));
+
+  poolAssignments.push(...neededAssignments);
+
+  // Verify & log that all praise is accounted for in this model
+  const totalPraiseCount: number = await PraiseModel.count({
+    createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
+  });
+  const expectedAssignedPraiseCount: number =
+    totalPraiseCount * quantifiersPerPraiseReceiver;
+
+  const assignedPraiseCount: number = sum(
+    flatten(
+      poolAssignments.map((q: Quantifier) =>
+        q.receivers.map((r: Receiver) => r.praiseIds.length)
+      )
+    )
+  );
+
+  if (assignedPraiseCount === expectedAssignedPraiseCount) {
+    logger.info(
+      `All redundant praise assignments accounted for: ${assignedPraiseCount} assignments / ${expectedAssignedPraiseCount} expected in period`
+    );
+  } else {
+    throw new InternalServerError(
+      `Not all redundant praise assignments accounted for: ${assignedPraiseCount} assignments / ${expectedAssignedPraiseCount} expected in period`
+    );
   }
 
-  return pool;
+  return {
+    poolAssignments,
+    poolDeficit: neededAssignments.length,
+  };
 };
 
 /**
@@ -290,14 +365,16 @@ export const verifyQuantifierPoolSize = async (
   req: Request,
   res: TypedResponse<VerifyQuantifierPoolSizeResponse>
 ): Promise<void> => {
-  const quantifierPool = await UserModel.find({ roles: UserRole.QUANTIFIER });
-  const assignedQuantifiers = await assignQuantifiersDryRun(
-    req.params.periodId
-  );
+  const quantifierPoolSize = await UserModel.count({
+    roles: UserRole.QUANTIFIER,
+  });
+  const assignmentDryRun: AssignQuantifiersDryRunOutput =
+    await assignQuantifiersDryRun(req.params.periodId);
 
   res.status(StatusCodes.OK).json({
-    quantifierPoolSize: quantifierPool.length,
-    requiredPoolSize: assignedQuantifiers.length,
+    quantifierPoolSize,
+    quantifierPoolSizeNeeded: assignmentDryRun.poolAssignments.length,
+    quantifierPoolDeficitSize: assignmentDryRun.poolDeficit,
   });
 };
 
@@ -317,17 +394,15 @@ export const assignQuantifiers = async (
       'Quantifiers can only be assigned on OPEN periods.'
     );
 
-  const assignedQuantifiers = await assignQuantifiersDryRun(
-    req.params.periodId
-  );
+  const assignedQuantifiers: AssignQuantifiersDryRunOutput =
+    await assignQuantifiersDryRun(req.params.periodId);
 
-  // Undefined quantifers means pool size is too small
-  if (assignedQuantifiers.find((q) => typeof q._id === 'undefined'))
-    throw new BadRequestError('Quantifier pool size too small.');
+  if (assignedQuantifiers.poolDeficit > 0)
+    throw new BadRequestError(`Failed to assign ${assignedQuantifiers.poolDeficit} collection of praise to a quantifier`);
 
   // Generate list of db queries to apply changes specified by assignedQuantifiers
   const bulkQueries = flatten(
-    assignedQuantifiers.map((q) =>
+    assignedQuantifiers.poolAssignments.map((q) =>
       q.receivers.map((receiver) => ({
         updateMany: {
           filter: { _id: { $in: receiver.praiseIds } },
@@ -373,7 +448,7 @@ export const receiverPraise = async (
 
   const praiseList = await PraiseModel.find()
     .where({
-      createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
+      createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
       receiver: new mongoose.Types.ObjectId(receiverId),
     })
     .sort({ createdAt: -1 })
@@ -410,7 +485,7 @@ export const quantifierPraise = async (
   const praiseList = await PraiseModel.aggregate([
     {
       $match: {
-        createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
+        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
       },
     },
     { $unwind: '$quantifications' },
