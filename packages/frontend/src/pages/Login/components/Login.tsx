@@ -1,6 +1,10 @@
 import { isResponseOk } from '@/model/api';
-import { ActiveTokenSet, AuthQuery, NonceQuery, SessionToken } from '@/model/auth';
-import * as localStorage from '@/model/localStorage';
+import {
+  ActiveTokenSet,
+  AuthQuery,
+  NonceQuery,
+  SessionToken,
+} from '@/model/auth';
 import { useWeb3React } from '@web3-react/core';
 import { AuthResponse, NonceResponse } from 'api/dist/auth/types';
 import React, { ReactElement } from 'react';
@@ -54,8 +58,6 @@ const LoginButton: React.FC = (): ReactElement => {
       if (!ethereumAddress || !authResponse) return;
       if (isResponseOk(authResponse)) {
         const sessionData = authResponse.data as AuthResponse;
-        // Save session id for future api calls
-        localStorage.setSessionToken(ethereumAddress, sessionData.accessToken);
         // Set session token in global state
         setTokenSet({
           sessionToken: sessionData.accessToken,

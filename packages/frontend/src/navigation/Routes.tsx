@@ -6,7 +6,6 @@ import {
   SessionToken,
 } from '@/model/auth';
 import { EthState } from '@/model/eth';
-import * as localStorage from '@/model/localStorage';
 import ActivatePage from '@/pages/Activate/ActivatePage';
 import ErrorPage from '@/pages/ErrorPage';
 import LoginPage from '@/pages/Login/LoginPage';
@@ -15,7 +14,7 @@ import SettingsPage from '@/pages/Settings/SettingsPage';
 import StartPage from '@/pages/Start/StartPage';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { StartupLoader } from '../startupLoader';
 import Nav from './Nav';
 
@@ -54,19 +53,8 @@ const LoggedInOnlyRoute = ({
   children,
   ...props
 }: LoggedInOnlyRouteProps): JSX.Element => {
-  const ethState = useRecoilValue(EthState);
-  const [activeTokenSet, setActiveTokenSet] = useRecoilState(ActiveTokenSet);
-  React.useEffect(() => {
-    if (!ethState.account) return;
-    const sessionToken = localStorage.getSessionToken(ethState.account);
-    const refreshToken = localStorage.getRefreshToken(ethState.account);
-    if (!sessionToken || !refreshToken) return;
+  const activeTokenSet = useRecoilValue(ActiveTokenSet);
 
-    setActiveTokenSet({
-      sessionToken,
-      refreshToken
-    });
-  }, [ethState.account, setActiveTokenSet]);
   // ActiveTokenSet exists: Show content
   // ActiveTokenSet undefined: Unknown state => wait
   // Token null: Token doesn't exist => login

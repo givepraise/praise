@@ -9447,6 +9447,7 @@ __metadata:
     react-scripts: 5.0.0
     react-table: ^7.7.0
     recoil: ^0.5.2
+    recoil-persist: ^4.0.0
     tailwindcss: "npm:@tailwindcss/postcss7-compat@^2.2.7"
     tsconfig-paths: ^3.12.0
     typescript: ^4.5.5
@@ -16120,6 +16121,15 @@ __metadata:
   dependencies:
     picomatch: ^2.2.1
   checksum: 1ced032e6e45670b6d7352d71d21ce7edf7b9b928494dcaba6f11fba63180d9da6cd7061ebc34175ffda6ff529f481818c962952004d273178acd70f7059b320
+  languageName: node
+  linkType: hard
+
+"recoil-persist@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "recoil-persist@npm:4.0.0"
+  peerDependencies:
+    recoil: ^0.5.1
+  checksum: 95ac8d6bab6d5153fa0c608bd7b69ac5fd53a7b7863b9515b1917c42325682b28b272594467928743ffe5822bad9c099c7d9dcd1e16fb3ca5b16ca560e25df69
   languageName: node
   linkType: hard
 

@@ -4,11 +4,12 @@ import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
 import { ApiGet, ApiPost } from './api';
 import { isExpired, JWT } from '../utils/jwt';
+import { recoilPersist } from 'recoil-persist'
+const { persistAtom } = recoilPersist();
 
 export const ROLE_USER = 'USER';
 export const ROLE_ADMIN = 'ADMIN';
 export const ROLE_QUANTIFIER = 'QUANTIFIER';
-export const LOCALSTORAGE_KEY = 'praise';
 
 
 export interface TokenSet {
@@ -19,6 +20,7 @@ export interface TokenSet {
 export const ActiveTokenSet = atom<TokenSet | undefined>({
   key: 'ActiveTokenSet',
   default: undefined,
+  effects_UNSTABLE: [persistAtom],
 });
 
 export const SessionToken = selector<string>({
@@ -40,7 +42,7 @@ export const SessionToken = selector<string>({
 });
 
 export const RefreshToken = selector<string>({
-  key: 'SessionToken',
+  key: 'RefreshToken',
   //eslint-disable-next-line
   // @ts-ignore
   get: ({ get }) => {
@@ -128,3 +130,53 @@ export const AuthQuery = selectorFamily<
     },
 });
 
+export type RefreshQueryParams = {
+  refreshToken: string;
+};
+
+export const RefreshQuery = selectorFamily<
+  TokenSet | undefined,
+  RefreshQueryParams
+>({
+  key: 'RefreshQuery',
+  get:
+    (params: RefreshQueryParams) =>
+    ({ get }): TokenSet | undefined => {
+      const { refreshToken } = params;
+      if (!refreshToken) return undefined;
+
+      // Call api refresh endpoint
+      const data = JSON.stringify(params);
+      const response = get(ApiPost({ url: '/api/auth/refresh', data }));
+      const { accessToken: sessionToken, refreshToken: newRefreshToken } =
+        response.data as AuthResponse;
+
+      return {
+        sessionToken,
+        refreshToken: newRefreshToken,
+      };
+    },
+});
+
+export const ActiveTokenSetRefreshed = selector({
+  key: 'ActiveTokenSetRefreshQuery',
+  get: ({ get }): TokenSet | undefined => {
+    return get(ActiveTokenSet);
+  },
+  set: ({ get, set }): void => {
+    set(ActiveTokenSet, get(RefreshQuery({ refreshToken: get(RefreshToken) })));
+  },
+});
+
+
+export const SessionTokenRefreshed = selector({
+  key: 'SessionTokenRefreshed',
+  get: ({ get }): string | undefined => {
+    return get(SessionToken);
+  },
+  set: ({ get, set }): string | undefined => {
+    set(ActiveTokenSet, get(RefreshQuery({ refreshToken: get(RefreshToken) })));
+
+    return get(SessionToken);
+  },
+});
