@@ -3,20 +3,13 @@ import { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
 import { ApiGet, ApiPost } from './api';
+import { isExpired, JWT } from '../utils/jwt';
 
 export const ROLE_USER = 'USER';
 export const ROLE_ADMIN = 'ADMIN';
 export const ROLE_QUANTIFIER = 'QUANTIFIER';
 export const LOCALSTORAGE_KEY = 'praise';
 
-export interface JWT {
-  sub: string;
-  userId: string;
-  ethereumAddress: string;
-  roles: string[];
-  iat: number;
-  exp: number;
-}
 
 export interface TokenSet {
   sessionToken: string; // TODO: rename to accessToken
@@ -43,6 +36,19 @@ export const SessionToken = selector<string>({
       return undefined;
 
     return tokens.sessionToken;
+  },
+});
+
+export const RefreshToken = selector<string>({
+  key: 'SessionToken',
+  //eslint-disable-next-line
+  // @ts-ignore
+  get: ({ get }) => {
+    const tokens = get(ActiveTokenSet);
+    if (!tokens) return undefined;
+    if (isExpired(tokens.refreshToken)) return undefined;
+
+    return tokens.refreshToken;
   },
 });
 
@@ -121,3 +127,4 @@ export const AuthQuery = selectorFamily<
       return get(ApiPost({ url: '/api/auth', data }));
     },
 });
+
