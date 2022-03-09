@@ -1,14 +1,12 @@
 import { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
-import { atom, DefaultValue, selector, selectorFamily } from 'recoil';
+import { atom, selector, selectorFamily } from 'recoil';
 import { ApiGet, ApiPost } from './api';
-import { AuthResponse } from 'api/dist/auth/types';
-import { recoilPersist } from 'recoil-persist';
-const { persistAtom } = recoilPersist();
 
 export const ROLE_USER = 'USER';
 export const ROLE_ADMIN = 'ADMIN';
 export const ROLE_QUANTIFIER = 'QUANTIFIER';
+export const LOCALSTORAGE_KEY = 'praise';
 
 export interface JWT {
   sub: string;
@@ -32,7 +30,6 @@ export interface TokenSet {
 export const ActiveTokenSet = atom<TokenSet | undefined>({
   key: 'ActiveTokenSet',
   default: undefined,
-  effects_UNSTABLE: [persistAtom],
 });
 
 export const SessionToken = selector<string>({
