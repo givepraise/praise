@@ -17,8 +17,11 @@ import {
   TypedResponse,
 } from '@shared/types';
 import { UserModel } from '@user/entities';
+import { UserDocument } from '@user/types';
+import { UserAccountModel } from '@useraccount/entities';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
+import mongoose from 'mongoose';
 import { PraiseModel } from './entities';
 import { praiseDocumentTransformer } from './transformers';
 import {
@@ -170,10 +173,8 @@ export const exportPraise = async (
         createdAt: {
           $dateToString: {
             date: '$createdAt',
-            format: '%Y-%m-%d',
           },
         },
-        averageScore: { $avg: '$quantifications.score' },
       },
     },
     {
@@ -183,7 +184,7 @@ export const exportPraise = async (
     },
     {
       $lookup: {
-        from: 'accounts',
+        from: 'useraccounts',
         localField: 'giver',
         foreignField: '_id',
         as: 'giver',
@@ -191,7 +192,7 @@ export const exportPraise = async (
     },
     {
       $lookup: {
-        from: 'accounts',
+        from: 'useraccounts',
         localField: 'receiver',
         foreignField: '_id',
         as: 'receiver',
@@ -206,7 +207,6 @@ export const exportPraise = async (
         createdAt: 1,
         giver: { $arrayElemAt: ['$giver', 0] },
         receiver: { $arrayElemAt: ['$receiver', 0] },
-        averageScore: 1,
       },
     },
   ]);
@@ -226,21 +226,38 @@ export const exportPraise = async (
 
   const docs = await Promise.all(
     praises.map(async (p) => {
-      const receiver = await UserModel.findOne({
-        accounts: p.receiver._id,
-      });
+      if (p.receiver && p.receiver.user) {
+        const receiver = await UserModel.findById(p.receiver.user);
 
-      const giver = await UserModel.findOne({
-        accounts: p.giver._id,
-      });
-
-      if (receiver) {
-        p.receiver.ethAddress = receiver.ethereumAddress;
+        if (receiver) {
+          p.receiver.ethAddress = receiver.ethereumAddress;
+        }
       }
 
-      if (giver) {
-        p.giver.ethAddress = giver.ethereumAddress;
+      if (p.giver && p.giver.user) {
+        const giver = await UserModel.findById(p.giver.user);
+
+        if (giver) {
+          p.giver.ethAddress = giver.ethereumAddress;
+        }
       }
+
+      p.quantifications = await Promise.all(
+        p.quantifications.map(async (q: any) => {
+          const quantifier = await UserModel.findById(q.quantifier._id);
+
+          const account = await UserAccountModel.findOne({
+            user: q.quantifier._id,
+          });
+
+          q.quantifier = quantifier;
+          q.account = account;
+
+          return q;
+        })
+      );
+
+      p.averageScore = await calculatePraiseScore(p);
 
       return p;
     })
@@ -248,20 +265,24 @@ export const exportPraise = async (
 
   const fields = [
     {
+      label: 'ID',
+      value: '_id',
+    },
+    {
       label: 'DATE',
       value: 'createdAt',
     },
     {
-      label: 'TO',
-      value: 'receiver.username',
+      label: 'TO USER ACCOUNT',
+      value: 'receiver.name',
     },
     {
       label: 'TO ETH ADDRESS',
       value: 'receiver.ethAddress',
     },
     {
-      label: 'FROM',
-      value: 'giver.username',
+      label: 'FROM USER ACCOUNT',
+      value: 'giver.name',
     },
     {
       label: 'FROM ETH ADDRESS',
@@ -283,7 +304,7 @@ export const exportPraise = async (
 
   for (let index = 0; index < quantificationsColumnsCount; index++) {
     const quantObj = {
-      label: `QUANT SCORE ${index + 1}`,
+      label: `SCORE ${index + 1}`,
       value: `quantifications[${index}].score`,
     };
 
@@ -293,7 +314,7 @@ export const exportPraise = async (
   for (let index = 0; index < quantificationsColumnsCount; index++) {
     const quantObj = {
       label: `DUPLICATE ID ${index + 1}`,
-      value: `quantifications[${index}].duplicatePraise.sourceId`,
+      value: `quantifications[${index}].duplicatePraise`,
     };
 
     fields.push(quantObj);
@@ -308,8 +329,24 @@ export const exportPraise = async (
     fields.push(quantObj);
   }
 
+  for (let index = 0; index < quantificationsColumnsCount; index++) {
+    const quantUserUsernameObj = {
+      label: `QUANTIFIER ${index + 1} USERNAME`,
+      value: `quantifications[${index}].account.name`,
+    };
+
+    fields.push(quantUserUsernameObj);
+
+    const quantUserEthAddressObj = {
+      label: `QUANTIFIER ${index + 1} ETH ADDRESS`,
+      value: `quantifications[${index}].quantifier.ethereumAddress`,
+    };
+
+    fields.push(quantUserEthAddressObj);
+  }
+
   fields.push({
-    label: 'AVG QUANT',
+    label: 'AVG SCORE',
     value: 'averageScore',
   });
 

@@ -29,6 +29,20 @@ export const getPreviousPeriod = (
   return undefined;
 };
 
+// Returns previous period end date or 1970-01-01 if no previous period
+export const getPreviousPeriodEndDate = (
+  allPeriods: PeriodDto[],
+  period: PeriodDto
+): Date => {
+  const previousPeriod = getPreviousPeriod(allPeriods, period);
+
+  const previousEndDate = previousPeriod
+    ? new Date(previousPeriod.endDate)
+    : new Date(+0);
+
+  return previousEndDate;
+};
+
 export const getQuantifierData = (
   period: PeriodDetailsDto | undefined,
   userId: string | undefined
