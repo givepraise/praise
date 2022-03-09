@@ -5,7 +5,7 @@ import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
 import { NextFunction, Request, Response } from 'express';
 import { TokenExpiredError } from 'jsonwebtoken';
-import { extractAccessTokenFromRequest } from './utils'
+import { extractAccessTokenFromRequest } from './utils';
 import { JwtService } from './JwtService';
 
 export const authMiddleware = (role: UserRole) => {
@@ -22,18 +22,12 @@ export const authMiddleware = (role: UserRole) => {
     if (!user || !user.roles.includes(role))
       throw new ForbiddenError('User is not authorized to access resource.');
 
-    // Access token invalid = Forbidden
+    // Access token invalid or expired = Forbidden
     const jwtService = new JwtService();
     try {
       jwtService.verifyOrFail(accessToken);
     } catch (err) {
-      if (err instanceof TokenExpiredError) {
-        throw new UnauthorizedError(
-          'User is not authorized to access resource.'
-        );
-      } else {
-        throw new ForbiddenError('User is not authorized to access resource.');
-      }
+      throw new UnauthorizedError('User is not authorized to access resource.');
     }
 
     // Save auth role and current user for usage in controllers

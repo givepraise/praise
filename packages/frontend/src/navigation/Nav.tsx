@@ -1,7 +1,6 @@
 import AdminOnly from '@/components/auth/AdminOnly';
 import { ActiveTokenSet } from '@/model/auth';
 import { EthState } from '@/model/eth';
-import * as localStorage from '@/model/localStorage';
 import { ReactComponent as TECLogo } from '@/svg/tec-logo.svg';
 import { classNames } from '@/utils/index';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
@@ -48,7 +47,6 @@ export default function Nav(): JSX.Element {
   const ethState = useRecoilValue(EthState);
 
   const handleLogoutClick = (): void => {
-    localStorage.removeSessionToken(ethState.account);
     setActiveTokenSet(undefined);
   };
 
