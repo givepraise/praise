@@ -1,3 +1,4 @@
+import { AuthResponse } from 'api/dist/auth/types';
 import { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
@@ -22,11 +23,6 @@ export interface TokenSet {
   refreshToken: string;
 }
 
-/**
- * ActiveTokenSet differentiates between null and undefined
- * `undefined` - tokens not loaded yet
- * `null` - No tokens exists
- */
 export const ActiveTokenSet = atom<TokenSet | undefined>({
   key: 'ActiveTokenSet',
   default: undefined,
@@ -39,26 +35,23 @@ export const SessionToken = selector<string>({
   get: ({ get }) => {
     const tokens = get(ActiveTokenSet);
     if (!tokens) return undefined;
-    return tokens.sessionToken;
-  },
-  set: ({ get, set }, newValue: string) => {
-    const tokens = get(ActiveTokenSet);
 
-    if (tokens) {
-      set(ActiveTokenSet, {
-        ...tokens,
-        sessionToken: newValue,
-      });
-    }
+    // Check if stored session token is expired
+    const decodedSessionToken: JWT = jwtDecode(tokens.sessionToken);
+    const currentDatetimeSeconds = new Date().getTime() / 1000;
+    if (currentDatetimeSeconds >= Number(decodedSessionToken.exp))
+      return undefined;
+
+    return tokens.sessionToken;
   },
 });
 
 export const DecodedSessionToken = selector({
   key: 'DecodedSessionToken',
   get: ({ get }) => {
-    const tokens = get(ActiveTokenSet);
-    if (!tokens || !tokens.sessionToken) return undefined;
-    return jwtDecode(tokens.sessionToken);
+    const sessionToken = get(SessionToken);
+    if (!sessionToken) return undefined;
+    return jwtDecode(sessionToken);
   },
 });
 
