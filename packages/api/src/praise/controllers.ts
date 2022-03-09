@@ -314,7 +314,7 @@ export const exportPraise = async (
   for (let index = 0; index < quantificationsColumnsCount; index++) {
     const quantObj = {
       label: `DUPLICATE ID ${index + 1}`,
-      value: `quantifications[${index}].duplicatePraise.sourceId`,
+      value: `quantifications[${index}].duplicatePraise`,
     };
 
     fields.push(quantObj);
