@@ -1,7 +1,10 @@
 import { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
-import { atom, selector, selectorFamily } from 'recoil';
+import { atom, DefaultValue, selector, selectorFamily } from 'recoil';
 import { ApiGet, ApiPost } from './api';
+import { AuthResponse } from 'api/dist/auth/types';
+import { recoilPersist } from 'recoil-persist';
+const { persistAtom } = recoilPersist();
 
 export const ROLE_USER = 'USER';
 export const ROLE_ADMIN = 'ADMIN';
@@ -16,22 +19,49 @@ export interface JWT {
   exp: number;
 }
 
+export interface TokenSet {
+  sessionToken: string; // TODO: rename to accessToken
+  refreshToken: string;
+}
+
 /**
- * SessionToken differentiates between null and undefined
- * `undefined` - Session token not loaded yet
- * `null` - No session token exists
+ * ActiveTokenSet differentiates between null and undefined
+ * `undefined` - tokens not loaded yet
+ * `null` - No tokens exists
  */
-export const SessionToken = atom<string | null | undefined>({
-  key: 'SessionToken',
+export const ActiveTokenSet = atom<TokenSet | undefined>({
+  key: 'ActiveTokenSet',
   default: undefined,
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const SessionToken = selector<string>({
+  key: 'SessionToken',
+  //eslint-disable-next-line
+  // @ts-ignore
+  get: ({ get }) => {
+    const tokens = get(ActiveTokenSet);
+    if (!tokens) return undefined;
+    return tokens.sessionToken;
+  },
+  set: ({ get, set }, newValue: string) => {
+    const tokens = get(ActiveTokenSet);
+
+    if (tokens) {
+      set(ActiveTokenSet, {
+        ...tokens,
+        sessionToken: newValue,
+      });
+    }
+  },
 });
 
 export const DecodedSessionToken = selector({
   key: 'DecodedSessionToken',
   get: ({ get }) => {
-    const token = get(SessionToken);
-    if (!token) return undefined;
-    return jwtDecode(token);
+    const tokens = get(ActiveTokenSet);
+    if (!tokens || !tokens.sessionToken) return undefined;
+    return jwtDecode(tokens.sessionToken);
   },
 });
 

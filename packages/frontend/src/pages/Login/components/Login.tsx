@@ -1,5 +1,5 @@
 import { isResponseOk } from '@/model/api';
-import { AuthQuery, NonceQuery, SessionToken } from '@/model/auth';
+import { ActiveTokenSet, AuthQuery, NonceQuery, SessionToken } from '@/model/auth';
 import * as localStorage from '@/model/localStorage';
 import { useWeb3React } from '@web3-react/core';
 import { AuthResponse, NonceResponse } from 'api/dist/auth/types';
@@ -27,7 +27,8 @@ const LoginButton: React.FC = (): ReactElement => {
     const [signature, setSignature] = React.useState<string | undefined>(
       undefined
     );
-    const [sessionToken, setSessionToken] = useRecoilState(SessionToken);
+    const sessionToken = useRecoilValue(SessionToken);
+    const [tokenSet, setTokenSet] = useRecoilState(ActiveTokenSet);
     const history = useHistory();
     const location = useLocation<LocationState>();
 
@@ -56,9 +57,12 @@ const LoginButton: React.FC = (): ReactElement => {
         // Save session id for future api calls
         localStorage.setSessionToken(ethereumAddress, sessionData.accessToken);
         // Set session token in global state
-        setSessionToken(sessionData.accessToken);
+        setTokenSet({
+          sessionToken: sessionData.accessToken,
+          refreshToken: sessionData.refreshToken,
+        });
       }
-    }, [ethereumAddress, authResponse, setSessionToken]);
+    }, [ethereumAddress, authResponse, setTokenSet, tokenSet]);
 
     // 6. Redirect after login
     React.useEffect(() => {

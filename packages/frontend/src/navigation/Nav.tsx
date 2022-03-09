@@ -1,5 +1,5 @@
 import AdminOnly from '@/components/auth/AdminOnly';
-import { SessionToken } from '@/model/auth';
+import { ActiveTokenSet } from '@/model/auth';
 import { EthState } from '@/model/eth';
 import * as localStorage from '@/model/localStorage';
 import { ReactComponent as TECLogo } from '@/svg/tec-logo.svg';
@@ -44,12 +44,12 @@ export const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
 };
 
 export default function Nav(): JSX.Element {
-  const setSessionToken = useSetRecoilState(SessionToken);
+  const setActiveTokenSet = useSetRecoilState(ActiveTokenSet);
   const ethState = useRecoilValue(EthState);
 
   const handleLogoutClick = (): void => {
     localStorage.removeSessionToken(ethState.account);
-    setSessionToken(null);
+    setActiveTokenSet(undefined);
   };
 
   return (
