@@ -5024,6 +5024,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios-auth-refresh@npm:^3.2.2":
+  version: 3.2.2
+  resolution: "axios-auth-refresh@npm:3.2.2"
+  peerDependencies:
+    axios: ">= 0.18 < 0.19.0 || >= 0.19.1"
+  checksum: f72b5ce9f16f1624576dbe951c293f64566a0230cedb753ff85e938472145dbfdcaec4fe07d89027a8e717418e7f213dc4f6e93fb6fb6ad6301c63bbe441b6b9
+  languageName: node
+  linkType: hard
+
 "axios@npm:^0.22.0":
   version: 0.22.0
   resolution: "axios@npm:0.22.0"
@@ -9424,6 +9433,7 @@ __metadata:
     api: "workspace:^"
     autoprefixer: ^9.8.6
     axios: ^0.22.0
+    axios-auth-refresh: ^3.2.2
     craco-alias: ^3.0.1
     date-fns: ^2.25.0
     downshift: ^6.1.7
@@ -9447,6 +9457,7 @@ __metadata:
     react-scripts: 5.0.0
     react-table: ^7.7.0
     recoil: ^0.5.2
+    recoil-nexus: ^0.3.15
     recoil-persist: ^4.0.0
     tailwindcss: "npm:@tailwindcss/postcss7-compat@^2.2.7"
     tsconfig-paths: ^3.12.0
@@ -15400,6 +15411,7 @@ __metadata:
   dependencies:
     "@typescript-eslint/eslint-plugin": ^5.7.0
     "@typescript-eslint/parser": ^5.10.2
+    axios-auth-refresh: ^3.2.2
     docsify: ^4.12.2
     eslint: ^8.8.0
     eslint-config-prettier: ^8.3.0
@@ -16121,6 +16133,19 @@ __metadata:
   dependencies:
     picomatch: ^2.2.1
   checksum: 1ced032e6e45670b6d7352d71d21ce7edf7b9b928494dcaba6f11fba63180d9da6cd7061ebc34175ffda6ff529f481818c962952004d273178acd70f7059b320
+  languageName: node
+  linkType: hard
+
+"recoil-nexus@npm:^0.3.15":
+  version: 0.3.15
+  resolution: "recoil-nexus@npm:0.3.15"
+  peerDependencies:
+    "@types/react": ">=16.8.0"
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+    recoil: ">=0.2.0"
+    typescript: ">=4.1.0"
+  checksum: a95d69fe7e30d199f5aafe7009abcc9cfb0c25536bb7cd999cea2e50454301ac33922442cde79ede34ec7644091d9d29c142181c3f0fa75b2414c1161ae6b360
   languageName: node
   linkType: hard
 
