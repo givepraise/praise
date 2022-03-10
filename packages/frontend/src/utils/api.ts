@@ -19,7 +19,7 @@ const refreshAuthTokenSet = async (err: AxiosError): Promise<void> => {
   ] = `Bearer ${tokenSet.accessToken}`;
 };
 
-// Handle error responses
+// Handle error responses (excluding initial 401 response)
 const handleErrors = (err: AxiosError): void => {
   // Any HTTP Code which is not 2xx will be considered as error
   const statusCode = err?.response?.status;
@@ -39,7 +39,6 @@ const handleErrors = (err: AxiosError): void => {
       toast.error(apiError.message);
     });
   } else if (statusCode === 401) {
-    toast.error('Unauthorized. Please log in.');
     window.location.href = '/login';
   } else {
     toast.error('Unknown Error');
