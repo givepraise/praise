@@ -4,10 +4,8 @@ import createAuthRefreshInterceptor from 'axios-auth-refresh';
 import { AccessToken } from '../model/auth';
 import { toast } from 'react-hot-toast';
 import { requestApiAuthRefresh } from './auth';
-import { ApiErrorResponseData, ErrorInterface } from 'api/src/error/types';
 
 // Attempt to refresh auth token and retry request
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const refreshAuthTokenSet = async (err: AxiosError): Promise<void> => {
   if (!err?.response?.config?.headers)
     throw Error('Error response has no headers');
@@ -30,14 +28,10 @@ const handleErrors = (err: AxiosError): void => {
     window.location.href = '/404';
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-  } else if ([403, 400].includes(statusCode) && err?.response?.data?.errors) {
-    const apiErrors: ErrorInterface[] = Object.values(
-      (err.response.data as ApiErrorResponseData).errors
-    );
-
-    apiErrors.forEach((apiError) => {
-      toast.error(apiError.message);
-    });
+  } else if ([403, 400].includes(statusCode) && err?.response?.data?.message) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    toast.error(err.response.data.message);
   } else if (statusCode === 401) {
     window.location.href = '/login';
   } else {
