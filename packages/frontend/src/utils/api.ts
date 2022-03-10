@@ -22,10 +22,11 @@ const refreshAuthTokenSet = async (err: AxiosError): Promise<void> => {
 // Handle error responses
 const handleErrors = (err: AxiosError): void => {
   // Any HTTP Code which is not 2xx will be considered as error
-  if (!err?.response) return;
+  const statusCode = err?.response?.status;
 
-  const statusCode = err.response.status;
-  if (statusCode === 404) {
+  if (!statusCode) {
+    toast.error('Failed to communicate with server');
+  } else if (statusCode === 404) {
     window.location.href = '/404';
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
@@ -37,8 +38,11 @@ const handleErrors = (err: AxiosError): void => {
     apiErrors.forEach((apiError) => {
       toast.error(apiError.message);
     });
+  } else if (statusCode === 401) {
+    toast.error('Unauthorized. Please log in.');
+    window.location.href = '/login';
   } else {
-    toast.error('Unknown error.');
+    toast.error('Unknown Error');
   }
 };
 
