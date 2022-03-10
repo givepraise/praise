@@ -29,6 +29,7 @@ export const SessionToken = selector<string>({
   get: ({ get }) => {
     const tokens = get(ActiveTokenSet);
     if (!tokens) return undefined;
+    if (isExpired(tokens.sessionToken)) return undefined;
 
     return tokens.sessionToken;
   },
