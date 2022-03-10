@@ -31,25 +31,30 @@ const PREDEFINED_USERS = [
 ];
 
 const fetchTwoRandomUserAccounts = async (): Promise<UserAccountDocument[]> => {
-  const useraccounts = await UserAccountModel.aggregate([{ $sample: { size: 2 } }]);
+  const useraccounts = await UserAccountModel.aggregate([
+    { $sample: { size: 2 } },
+  ]);
 
   return useraccounts;
 };
 
-const seedUser = async (userData: Object = {}, userAccountData: Object = {}): Promise<void> => {
-    const user = await UserModel.create({
-      ethereumAddress: faker.finance.ethereumAddress(),
-      roles: ["USER"],
-      ...userData
-    });
+const seedUser = async (
+  userData: Object = {},
+  userAccountData: Object = {}
+): Promise<void> => {
+  const user = await UserModel.create({
+    ethereumAddress: faker.finance.ethereumAddress(),
+    roles: ['USER'],
+    ...userData,
+  });
 
-    await UserAccountModel.create({
-      user: user._id,
-      accountId: faker.datatype.uuid(),
-      name: faker.internet.userName(),
-      platform: 'DISCORD',
-      ...userAccountData
-    });
+  await UserAccountModel.create({
+    user: user._id,
+    accountId: faker.datatype.uuid(),
+    name: faker.internet.userName(),
+    platform: 'DISCORD',
+    ...userAccountData,
+  });
 };
 
 const seedPeriods = async (): Promise<void> => {
@@ -87,13 +92,13 @@ const seedPredefinedUsers = async (): Promise<void> => {
 };
 
 const seedRegularUsers = async (): Promise<void> => {
-  const userCount = await UserModel.count({ roles: ['USER']});
+  const userCount = await UserModel.count({ roles: ['USER'] });
 
   if (userCount < REGULAR_USERS_NUMBER) {
     for (let i = 0; i < REGULAR_USERS_NUMBER; i++) {
       try {
         await seedUser({
-          roles: ["USER"]
+          roles: ['USER'],
         });
       } catch (e) {
         console.log('ERROR:', e);
@@ -103,13 +108,13 @@ const seedRegularUsers = async (): Promise<void> => {
 };
 
 const seedQuantifierUsers = async (): Promise<void> => {
-  const userCount = await UserModel.count({ roles: ['USER', 'QUANTIFIER']});
+  const userCount = await UserModel.count({ roles: ['USER', 'QUANTIFIER'] });
 
   if (userCount < QUANTIFIER_USERS_NUMBER) {
     for (let i = 0; i < QUANTIFIER_USERS_NUMBER; i++) {
       try {
         await seedUser({
-          roles: ["USER", "QUANTIFIER"]
+          roles: ['USER', 'QUANTIFIER'],
         });
       } catch (e) {
         console.log('ERROR:', e);
@@ -154,5 +159,5 @@ export const seedData = async (): Promise<void> => {
   await seedQuantifierUsers();
   await seedPraises();
 
-  logger.info('Seeding complete.')
+  logger.info('Seeding complete.');
 };

@@ -9,6 +9,7 @@ import {
 } from '@/model/periods';
 import { AllQuantifierUsers } from '@/model/users';
 import { formatDate } from '@/utils/date';
+import { saveLocalFile } from '@/utils/file';
 import { getPreviousPeriod } from '@/utils/periods';
 import {
   faDownload,
@@ -75,7 +76,29 @@ const PeriodDetails = (): JSX.Element | null => {
   };
 
   const handleExport = (): void => {
-    void exportPraise(period);
+    const toastId = 'exportToast';
+    void toast.promise(
+      exportPraise(period),
+      {
+        loading: 'Exporting …',
+        success: (exportData: Blob | undefined) => {
+          if (exportData) {
+            saveLocalFile(exportData, 'quantification-export.csv');
+            setTimeout(() => toast.remove(toastId), 2000);
+            return 'Export done';
+          }
+          return 'Empty export returned';
+        },
+        error: 'Export failed',
+      },
+      {
+        id: toastId,
+        position: 'top-center',
+        loading: {
+          duration: Infinity,
+        },
+      }
+    );
   };
 
   if (!period) return <div>Period not found.</div>;
@@ -106,6 +129,14 @@ const PeriodDetails = (): JSX.Element | null => {
             ) : null}
             {period.status === 'QUANTIFY' ? (
               <div className="flex justify-between">
+                <button className="praise-button" onClick={handleExport}>
+                  <FontAwesomeIcon
+                    icon={faDownload}
+                    size="1x"
+                    className="mr-2"
+                  />
+                  Export
+                </button>
                 <button
                   className="hover:bg-red-600 praise-button"
                   onClick={(): void => setIsCloseDialogOpen(true)}

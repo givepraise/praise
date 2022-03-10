@@ -8,7 +8,7 @@ export const quantificationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      index: true
+      index: true,
     },
     score: { type: Number, default: 0, required: true },
     dismissed: { type: Boolean, default: false, required: true },
@@ -39,7 +39,7 @@ const praiseSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: 'UserAccount',
       required: true,
-      index: true
+      index: true,
     },
   },
   {

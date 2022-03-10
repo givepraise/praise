@@ -46,7 +46,9 @@ const calculateReceiverScores = async (
       if (!r.quantifications) return r;
 
       const quantifierScores = await Promise.all(
-        r.quantifications.map((q) => calculateQuantificationsCompositeScore(q, duplicatePraisePercentage))
+        r.quantifications.map((q) =>
+          calculateQuantificationsCompositeScore(q, duplicatePraisePercentage)
+        )
       );
 
       return {

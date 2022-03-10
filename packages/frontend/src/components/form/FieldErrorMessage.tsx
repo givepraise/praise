@@ -20,7 +20,10 @@ const FieldErrorMessage = ({
   // Display api error message for matching field if form has not
   // been edited since last submit
   if (touched && isApiResponseValidationError(apiResponse)) {
-    if (apiResponse.response?.data?.errors[name])
+    if (
+      apiResponse.response?.data?.errors &&
+      Array.isArray(apiResponse.response.data.errors)
+    )
       return (
         <span className="text-red-500">
           {apiResponse.response.data.errors[name].message}

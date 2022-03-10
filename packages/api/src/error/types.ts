@@ -8,7 +8,7 @@ export interface ErrorInterface {
 }
 
 export interface ApiErrorResponseData {
-  errors?: any;
+  errors?: Array<string>;
   message: string;
   name: string;
 }

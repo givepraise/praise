@@ -21,7 +21,7 @@ export interface Period {
   updatedAt: Date;
 }
 
-export interface PeriodDocument extends Period, mongoose.Document { }
+export interface PeriodDocument extends Period, mongoose.Document {}
 
 export interface PeriodDto {
   _id: string;
