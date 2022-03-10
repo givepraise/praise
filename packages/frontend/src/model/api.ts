@@ -53,13 +53,15 @@ export const isApiResponseAxiosError = (
 };
 
 export const isApiResponseValidationError = (
-  axiosResponse: AxiosResponse | AxiosError | null | unknown
+  axiosResponse: unknown
 ): axiosResponse is AxiosError<ApiErrorResponseData> => {
-  return (
+  if (
     isApiResponseAxiosError(axiosResponse) &&
     axiosResponse.response?.status === 400 &&
     axiosResponse.response.data.errors
-  );
+  )
+    return true;
+  return false;
 };
 
 const endpointUrl = (url: string): string => {

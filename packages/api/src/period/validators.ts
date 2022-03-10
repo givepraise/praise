@@ -2,7 +2,7 @@
 import { PeriodModel } from './entities';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function validateEndDate(this: any, endDate: string): Promise<Boolean> {
+async function validateEndDate(this: any, endDate: Date): Promise<Boolean> {
   // This rule don't apply when no change to endDate has been made
   if (!this.$__.activePaths.states.modify.endDate) return true;
 
@@ -17,8 +17,6 @@ async function validateEndDate(this: any, endDate: string): Promise<Boolean> {
   if (!twoLastPeriods || twoLastPeriods.length === 0) return true;
 
   let d1;
-  const d2 = new Date(endDate);
-
   // Save new period = compare to last period
   // Update period = compare to 2nd last period
   if (this.isNew) {
@@ -28,7 +26,7 @@ async function validateEndDate(this: any, endDate: string): Promise<Boolean> {
   }
   d1.setDate(d1.getDate() + 7);
 
-  if (d2 < d1) return false; // Must be minimum 7 days later than previous period
+  if (endDate < d1) return false; // Must be minimum 7 days later than previous period
 
   return true;
 }
