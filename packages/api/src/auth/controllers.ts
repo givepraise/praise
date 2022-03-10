@@ -109,21 +109,19 @@ export const nonce = async (
  * Description
  * @param
  */
-
 export const refresh = async (
   req: TypedRequestBody<RefreshRequestInput>,
   res: TypedResponse<AuthResponse>
 ): Promise<void> => {
   // confirm refreshToken matches a single user.refreshToken
-  const user = (await UserModel.findOne({
-    refreshToken: req.params.refreshToken,
-  })
-    .select('nonce roles')
-    .exec()) as UserDocument;
-  if (!user || !user._id || !user.ethereumAddress) throw new NotFoundError('User');
+  const { refreshToken } = req.body;
+
+  const user = await UserModel.findOne({ refreshToken });
+  if (!user || !user._id || !user.ethereumAddress)
+    throw new NotFoundError('User');
 
   // confirm refreshToken provided is valid
-  const jwt: JwtSet = jwtService.refreshJwt(req.params.refreshToken);
+  const jwt: JwtSet = jwtService.refreshJwt(refreshToken);
 
   // update user tokens
   user.accessToken = jwt.accessToken;

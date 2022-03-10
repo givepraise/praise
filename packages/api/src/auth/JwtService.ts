@@ -93,10 +93,17 @@ export class JwtService {
    */
   public refreshJwt(jwt: string): JwtSet {
     const decoded = this.verifyOrFail(jwt);
-
     if (!decoded.isRefresh) throw new UnauthorizedError(this.VALIDATION_ERROR);
 
-    // Generate new tokens, extending access token's expiration time by JWT_ACCESS_EXP
+    // Clear generated data from old refresh token
+    const originalRefreshTokenExpiration = Number(decoded.exp);
+    delete decoded.exp;
+    delete decoded.iat;
+    delete decoded.exp;
+    delete decoded.nbf;
+    delete decoded.jti;
+
+    // Generate new access token, with extended expiration of JWT_ACCESS_EXP
     const accessToken = sign(
       {
         ...decoded,
@@ -104,12 +111,13 @@ export class JwtService {
       } as ClientData,
       this.secret,
       {
-        expiresIn: Number(decoded.exp) + Number(this.accessExpiresIn),
+        expiresIn: Number(this.accessExpiresIn),
       }
     );
 
+    // Generate new refresh token, with same expiration
     const refreshToken = sign(decoded as ClientData, this.secret, {
-      expiresIn: this.refreshExpiresIn,
+      expiresIn: originalRefreshTokenExpiration,
     });
 
     return {
