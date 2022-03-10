@@ -104,7 +104,7 @@ export const SinglePeriodQuery = selectorFamily({
       const { periodId, refreshKey } = params;
       return get(
         ApiAuthGet({
-          url: `/api/periods/${periodId}`,
+          url: `/periods/${periodId}`,
           refreshKey,
         })
       );
@@ -158,7 +158,7 @@ export const AllPeriodsQuery = selectorFamily({
     ({ get }): AxiosResponse<unknown> => {
       const response = get(
         ApiAuthGet({
-          url: '/api/periods/all?sortColumn=endDate&sortType=desc',
+          url: '/periods/all?sortColumn=endDate&sortType=desc',
           refreshKey,
         })
       );
@@ -242,8 +242,8 @@ export const useCreatePeriod = (): useCreatePeriodReturn => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPost({
-              url: '/api/admin/periods/create',
-              data: JSON.stringify(period),
+              url: '/admin/periods/create',
+              data: { ...period },
             })
           )
         );
@@ -285,11 +285,10 @@ export const useUpdatePeriod = (): useUpdatePeriodReturn => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
-              url: `/api/admin/periods/${period._id}/update`,
-              data: JSON.stringify(period),
+              url: `/admin/periods/${period._id}/update`,
+              data: { ...period },
             })
-          ),
-          { errorToast: false }
+          )
         );
 
         // If OK response, add returned period object to local state
@@ -323,8 +322,8 @@ export const useClosePeriod = (): useClosePeriodReturn => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
-              url: `/api/admin/periods/${periodId}/close`,
-              data: JSON.stringify({}),
+              url: `/admin/periods/${periodId}/close`,
+              data: {},
             })
           )
         );
@@ -360,7 +359,7 @@ export const VerifyQuantifierPoolSizeQuery = selectorFamily({
       const { periodId, refreshKey } = params;
       const response = get(
         ApiAuthGet({
-          url: `/api/admin/periods/${periodId}/verifyQuantifierPoolSize`,
+          url: `/admin/periods/${periodId}/verifyQuantifierPoolSize`,
           refreshKey,
         })
       );
@@ -432,8 +431,8 @@ export const useAssignQuantifiers = (
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
-              url: `/api/admin/periods/${periodId}/assignQuantifiers`,
-              data: JSON.stringify({}),
+              url: `/admin/periods/${periodId}/assignQuantifiers`,
+              data: {},
             })
           )
         );
@@ -499,7 +498,7 @@ export const PeriodReceiverPraiseQuery = selectorFamily({
       const { periodId, receiverId, refreshKey } = params;
       return get(
         ApiAuthGet({
-          url: `/api/periods/${periodId}/receiverPraise?receiverId=${receiverId}`,
+          url: `/periods/${periodId}/receiverPraise?receiverId=${receiverId}`,
           refreshKey,
         })
       );
@@ -550,7 +549,7 @@ export const useExportPraise = (): useExportPraiseReturn => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthGet({
-              url: `/api/praise/export/?periodStart=${previousPeriod.endDate}&periodEnd=${period.endDate}`,
+              url: `/praise/export/?periodStart=${previousPeriod.endDate}&periodEnd=${period.endDate}`,
               config: { responseType: 'blob' },
             })
           )
@@ -588,7 +587,7 @@ export const PeriodQuantifierPraiseQuery = selectorFamily({
       if (!periodId || !quantifierId) return undefined;
       return get(
         ApiAuthGet({
-          url: `/api/periods/${periodId}/quantifierPraise?quantifierId=${quantifierId}`,
+          url: `/periods/${periodId}/quantifierPraise?quantifierId=${quantifierId}`,
           refreshKey,
         })
       );

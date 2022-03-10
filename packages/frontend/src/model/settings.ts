@@ -35,7 +35,7 @@ export const AllSettingsQuery = selector({
     get(AllSettingsRequestId);
     return get(
       ApiAuthGet({
-        url: '/api/settings/all',
+        url: '/settings/all',
       })
     );
   },
@@ -155,8 +155,8 @@ export const useSetSetting = (): useSetSettingReturn => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
-              url: `/api/admin/settings/${setting._id}/set`,
-              data: JSON.stringify({ value: setting.value }),
+              url: `/admin/settings/${setting._id}/set`,
+              data: { value: setting.value },
             })
           )
         );

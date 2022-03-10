@@ -30,7 +30,7 @@ export const AllUsersQuery = selector({
     }
     return get(
       ApiAuthGet({
-        url: `/api${endpoint}/all?sortColumn=ethereumAddress&sortType=desc`,
+        url: `${endpoint}/all?sortColumn=ethereumAddress&sortType=desc`,
       })
     );
   },
@@ -163,8 +163,8 @@ export const useAdminUsers = (): useAdminUsersReturns => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
-              url: `/api/admin/users/${userId}/addRole`,
-              data: JSON.stringify({ role }),
+              url: `/admin/users/${userId}/addRole`,
+              data: { role },
             })
           )
         );
@@ -196,8 +196,8 @@ export const useAdminUsers = (): useAdminUsersReturns => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
-              url: `/api/admin/users/${userId}/removeRole`,
-              data: JSON.stringify({ role }),
+              url: `/admin/users/${userId}/removeRole`,
+              data: { role },
             })
           )
         );

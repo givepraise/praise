@@ -3,9 +3,7 @@ import {
   ActiveUserRoles,
   ROLE_ADMIN,
   ROLE_QUANTIFIER,
-  SessionToken,
 } from '@/model/auth';
-import { EthState } from '@/model/eth';
 import ActivatePage from '@/pages/Activate/ActivatePage';
 import ErrorPage from '@/pages/ErrorPage';
 import LoginPage from '@/pages/Login/LoginPage';

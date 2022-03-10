@@ -23,14 +23,14 @@ export const AccountActivateQuery = selectorFamily<
       if (!ethereumAddress || !accountId || !message || !signature)
         throw new Error('Invalid activation request.');
 
-      const data = JSON.stringify({
+      const data = {
         ethereumAddress,
         accountId,
         message,
         signature,
-      });
+      };
 
-      const response = get(ApiPost({ url: '/api/activate', data }));
+      const response = get(ApiPost({ url: '/activate', data }));
       return response;
     },
 });

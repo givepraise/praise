@@ -12,7 +12,6 @@ export type AuthQueryParams = {
 export const requestApiAuth = async (
   params: AuthQueryParams
 ): Promise<TokenSet | undefined> => {
-  const data = JSON.stringify(params);
   const apiClient = makeApiClient();
   const response = await apiClient.post('/auth', params);
   if (!response) throw Error('Failed to request authorization');
@@ -44,12 +43,13 @@ export const requestApiAuthRefresh = async (): Promise<
     throw Error('Refresh token has expired');
   }
 
-  setRecoil(ActiveTokenSet, {
+  const newTokenSet = {
     sessionToken,
     refreshToken: newRefreshToken,
-  });
+  };
+  setRecoil(ActiveTokenSet, newTokenSet);
 
-  return getRecoil(ActiveTokenSet);
+  return newTokenSet;
 };
 
 export const requestNonce = async (

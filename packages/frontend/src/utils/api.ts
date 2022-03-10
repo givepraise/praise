@@ -4,18 +4,22 @@ import createAuthRefreshInterceptor from 'axios-auth-refresh';
 import { SessionToken } from '../model/auth';
 import { toast } from 'react-hot-toast';
 import { requestApiAuthRefresh } from './auth';
+import { ApiErrorResponseData, ErrorInterface } from 'api/src/error/types';
 
 // Attempt to refresh auth token and retry request
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const refreshAuthTokenSet = async (failedRequest: any): Promise<void> => {
+const refreshAuthTokenSet = async (err: AxiosError): Promise<void> => {
+  if (!err?.response?.config?.headers)
+    throw Error('Error response has no headers');
   const tokenSet = await requestApiAuthRefresh();
-  if (!tokenSet) return;
+  if (!tokenSet) throw Error('Invalid tokens from refresh');
 
-  failedRequest.response.config.headers[
+  err.response.config.headers[
     'Authorization'
   ] = `Bearer ${tokenSet.sessionToken}`;
 };
 
+// Handle error responses
 const handleErrors = (err: AxiosError): void => {
   // Any HTTP Code which is not 2xx will be considered as error
   if (!err?.response) return;
@@ -23,13 +27,19 @@ const handleErrors = (err: AxiosError): void => {
   const statusCode = err.response.status;
   if (statusCode === 404) {
     window.location.href = '/404';
-    return;
-  } else if (statusCode === 403) {
-    toast.error(err.message);
-    return;
-  }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+  } else if ([403, 400].includes(statusCode) && err?.response?.data?.errors) {
+    const apiErrors: ErrorInterface[] = Object.values(
+      (err.response.data as ApiErrorResponseData).errors
+    );
 
-  toast.error('Unknown error.');
+    apiErrors.forEach((apiError) => {
+      toast.error(apiError.message);
+    });
+  } else {
+    toast.error('Unknown error.');
+  }
 };
 
 // Api client for unathenticated requests
@@ -42,9 +52,10 @@ export const makeApiClient = (): AxiosInstance => {
   });
   apiClient.interceptors.response.use(
     (res) => res,
-    (err) => handleErrors
+    (err) => {
+      return handleErrors(err);
+    }
   );
-
   return apiClient;
 };
 
@@ -68,8 +79,9 @@ export const makeApiAuthClient = (): AxiosInstance => {
   });
   apiAuthClient.interceptors.response.use(
     (res) => res,
-    (err) => handleErrors
+    (err) => {
+      return handleErrors(err);
+    }
   );
-
   return apiAuthClient;
 };
