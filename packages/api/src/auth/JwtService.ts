@@ -96,8 +96,7 @@ export class JwtService {
     if (!decoded.isRefresh) throw new UnauthorizedError(this.VALIDATION_ERROR);
 
     // Clear generated data from old refresh token
-    const originalRefreshTokenExpiration = Number(decoded.exp);
-    delete decoded.exp;
+    const refreshTokenExpirationTimestamp = Number(decoded.exp);
     delete decoded.iat;
     delete decoded.exp;
     delete decoded.nbf;
@@ -115,9 +114,13 @@ export class JwtService {
       }
     );
 
-    // Generate new refresh token, with same expiration
+    // Generate new refresh token, with same expiration timestamp
+    const currentTimestamp = new Date().getTime() / 1000;
+    const expiresIn = Math.ceil(
+      refreshTokenExpirationTimestamp - currentTimestamp
+    );
     const refreshToken = sign(decoded as ClientData, this.secret, {
-      expiresIn: originalRefreshTokenExpiration,
+      expiresIn,
     });
 
     return {

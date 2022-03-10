@@ -12,7 +12,7 @@ const refreshAuthTokenSet = async (err: AxiosError): Promise<void> => {
   if (!err?.response?.config?.headers)
     throw Error('Error response has no headers');
   const tokenSet = await requestApiAuthRefresh();
-  if (!tokenSet) throw Error('Invalid tokens from refresh');
+  if (!tokenSet) return;
 
   err.response.config.headers[
     'Authorization'

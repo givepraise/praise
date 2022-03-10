@@ -32,24 +32,25 @@ export const requestApiAuthRefresh = async (): Promise<
 > => {
   const refreshToken = getRecoil(RefreshToken);
 
-  const apiClient = makeApiClient();
-  const response = await apiClient.post('auth/refresh', {
-    refreshToken,
-  });
-  const { accessToken: sessionToken, refreshToken: newRefreshToken } =
-    response.data as AuthResponse;
-  if (!sessionToken || !newRefreshToken) {
+  try {
+    const apiClient = makeApiClient();
+    const response = await apiClient.post('auth/refresh', {
+      refreshToken,
+    });
+    const { accessToken: sessionToken, refreshToken: newRefreshToken } =
+      response.data as AuthResponse;
+
+    const newTokenSet = {
+      sessionToken,
+      refreshToken: newRefreshToken,
+    };
+    setRecoil(ActiveTokenSet, newTokenSet);
+
+    return newTokenSet;
+  } catch (err) {
     setRecoil(ActiveTokenSet, undefined);
     throw Error('Refresh token has expired');
   }
-
-  const newTokenSet = {
-    sessionToken,
-    refreshToken: newRefreshToken,
-  };
-  setRecoil(ActiveTokenSet, newTokenSet);
-
-  return newTokenSet;
 };
 
 export const requestNonce = async (
