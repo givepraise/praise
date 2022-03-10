@@ -1,4 +1,4 @@
-import { PraiseAllInput } from '@praise/types';
+import { PraiseAllInput, PraiseExportInput } from '@praise/types';
 import logger from 'jet-logger';
 import { QueryInput } from './types';
 
@@ -12,21 +12,8 @@ export const getRandomInt = (): number => {
   return Math.floor(Math.random() * 1_000_000_000_000);
 };
 
-export const sanitize = (v: any) => {
-  if (v instanceof Object) {
-    for (const key in v) {
-      if (/^\$/.test(key)) {
-        delete v[key];
-      } else {
-        sanitize(v[key]);
-      }
-    }
-  }
-
-  return v;
-};
-
 export const getQuerySort = (input: QueryInput): Object => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sort: any = {};
 
   if (input.sortColumn) {
@@ -40,9 +27,9 @@ export const getQuerySort = (input: QueryInput): Object => {
   return sort;
 };
 
-export const getPraiseAllInput = (q: PraiseAllInput) => {
+export const getPraiseAllInput = (q: PraiseAllInput): Object => {
   const { receiver, periodStart, periodEnd } = q;
-  const query: any = {};
+  const query: PraiseExportInput = {};
 
   if (receiver) {
     query.receiver = encodeURIComponent(receiver);
@@ -58,9 +45,9 @@ export const getPraiseAllInput = (q: PraiseAllInput) => {
   return query;
 };
 
-export const getQueryInput = (q: QueryInput) => {
+export const getQueryInput = (q: QueryInput): Object => {
   const { sortColumn, sortType, limit, page } = q;
-  const query: any = {};
+  const query: QueryInput = {};
 
   query.sortColumn = sortColumn ? encodeURIComponent(sortColumn) : undefined;
   query.sortType = sortType ? encodeURIComponent(sortType) : undefined;

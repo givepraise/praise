@@ -17,17 +17,16 @@ import {
   TypedResponse,
 } from '@shared/types';
 import { UserModel } from '@user/entities';
-import { UserDocument } from '@user/types';
 import { UserAccountModel } from '@useraccount/entities';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
-import mongoose from 'mongoose';
 import { PraiseModel } from './entities';
 import { praiseDocumentTransformer } from './transformers';
 import {
   PraiseAllInput,
   PraiseDetailsDto,
   PraiseDto,
+  PraiseExportInput,
   QuantificationCreateUpdateInput,
 } from './types';
 import { calculatePraiseScore, praiseWithScore } from './utils';
@@ -141,18 +140,22 @@ export const quantify = async (
  * //TODO add descriptiom
  */
 export const exportPraise = async (
-  req: Request<any, QueryInput, any>, //TODO typed request
+  req: TypedRequestBody<QueryInput>,
   res: Response
 ): Promise<void> => {
-  const query: any = {};
+  const query: PraiseExportInput = {
+    receiver: undefined,
+    createdAt: undefined,
+  };
+
   if (req.query.receiver) {
-    query.receiver = req.query.receiver;
+    query.receiver = String(req.query.receiver);
   }
 
   if (req.query.periodStart && req.query.periodEnd) {
     query.createdAt = {
-      $gt: req.query.periodStart,
-      $lte: req.query.periodEnd,
+      $gt: String(req.query.periodStart),
+      $lte: String(req.query.periodEnd),
     };
   }
   if (!req.query.periodStart || !req.query.periodEnd) {

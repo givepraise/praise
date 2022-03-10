@@ -99,3 +99,11 @@ export interface PraiseImportInput {
   sourceId: string;
   sourceName: string;
 }
+
+export interface PraiseExportInput {
+  receiver?: string;
+  createdAt?: {
+    $gt: string;
+    $lte: string;
+  };
+}

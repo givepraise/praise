@@ -1,12 +1,9 @@
 import { SettingDocument } from './types';
-
-function isNumeric(num: any): Boolean {
-  return !isNaN(num);
-}
+import { isNumber } from 'lodash';
 
 export function fieldTypeValidator(this: SettingDocument): Boolean {
   if (this.type === 'Number') {
-    return isNumeric(this.value);
+    return isNumber(this.value);
   }
 
   if (this.type === 'String' || this.type === 'Textarea') {
@@ -23,7 +20,7 @@ export function fieldTypeValidator(this: SettingDocument): Boolean {
     const valueArray = this.value.split(',').map((item) => item.trim());
 
     valueArray.forEach((element) => {
-      if (!isNumeric(element) || parseInt(element) < previous) {
+      if (!isNumber(element) || parseInt(element) < previous) {
         valid = false;
       }
 
