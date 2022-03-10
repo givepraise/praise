@@ -13,13 +13,14 @@ import { UserModel } from '@user/entities';
 import { UserDocument } from '@user/types';
 import { ethers } from 'ethers';
 import randomstring from 'randomstring';
-import { JwtService, TokenSet } from './JwtService';
+import { JwtService } from './JwtService';
 import {
   AuthRequestInput,
   AuthResponse,
   NonceRequestInput,
   NonceResponse,
   RefreshRequestInput,
+  TokenSet,
 } from './types';
 
 const jwtService = new JwtService();

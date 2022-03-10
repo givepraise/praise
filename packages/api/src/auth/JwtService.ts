@@ -1,6 +1,7 @@
 import { UnauthorizedError } from '@error/errors';
 import { sign, verify, JwtPayload } from 'jsonwebtoken';
 import randomString from 'randomstring';
+import { TokenSet } from './types';
 export interface ClientData {
   userId: string;
   ethereumAddress: string;
@@ -8,10 +9,6 @@ export interface ClientData {
   isRefresh?: boolean;
 }
 
-export interface TokenSet {
-  accessToken: string;
-  refreshToken: string;
-}
 
 interface JwtOptions {
   expiresIn: number;

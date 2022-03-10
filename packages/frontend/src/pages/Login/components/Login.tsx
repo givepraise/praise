@@ -1,5 +1,5 @@
 import { isResponseOk } from '@/model/api';
-import { ActiveTokenSet, SessionToken } from '@/model/auth';
+import { ActiveTokenSet, AccessToken } from '@/model/auth';
 import { useWeb3React } from '@web3-react/core';
 import { NonceResponse } from 'api/dist/auth/types';
 import React, { ReactElement } from 'react';
@@ -24,7 +24,7 @@ const LoginButton: React.FC = (): ReactElement => {
   const LoginButtonInner: React.FC = (): ReactElement => {
     const { account: ethereumAddress, library: ethLibrary } = useWeb3React();
     const [message, setMessage] = React.useState<string | undefined>(undefined);
-    const sessionToken = useRecoilValue(SessionToken);
+    const accessToken = useRecoilValue(AccessToken);
     const activeTokenSet = useRecoilValue(ActiveTokenSet);
     const history = useHistory();
     const location = useLocation<LocationState>();
@@ -71,7 +71,7 @@ const LoginButton: React.FC = (): ReactElement => {
       );
     }
 
-    if (sessionToken)
+    if (accessToken)
       return (
         <div>
           <button className="px-4 py-2 font-bold text-gray-500 uppercase bg-gray-700 rounded cursor-default">

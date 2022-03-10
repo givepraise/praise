@@ -25,3 +25,8 @@ export interface NonceResponse {
 export interface RefreshRequestInput {
   refreshToken: string;
 }
+
+export interface TokenSet {
+  accessToken: string;
+  refreshToken: string;
+}

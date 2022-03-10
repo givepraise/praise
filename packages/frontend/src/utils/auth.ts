@@ -1,5 +1,5 @@
-import { AuthResponse, NonceResponse } from 'api/dist/auth/types';
-import { TokenSet, ActiveTokenSet, RefreshToken } from '../model/auth';
+import { AuthResponse, NonceResponse, TokenSet } from 'api/dist/auth/types';
+import { ActiveTokenSet, RefreshToken } from '../model/auth';
 import { makeApiClient } from './api';
 import { getRecoil, setRecoil } from 'recoil-nexus';
 
@@ -16,11 +16,11 @@ export const requestApiAuth = async (
   const response = await apiClient.post('/auth', params);
   if (!response) throw Error('Failed to request authorization');
 
-  const { accessToken: sessionToken, refreshToken } =
+  const { accessToken, refreshToken } =
     response.data as unknown as AuthResponse;
 
   setRecoil(ActiveTokenSet, {
-    sessionToken,
+    accessToken,
     refreshToken,
   });
 
@@ -37,11 +37,11 @@ export const requestApiAuthRefresh = async (): Promise<
     const response = await apiClient.post('auth/refresh', {
       refreshToken,
     });
-    const { accessToken: sessionToken, refreshToken: newRefreshToken } =
+    const { accessToken, refreshToken: newRefreshToken } =
       response.data as AuthResponse;
 
     const newTokenSet = {
-      sessionToken,
+      accessToken,
       refreshToken: newRefreshToken,
     };
     setRecoil(ActiveTokenSet, newTokenSet);

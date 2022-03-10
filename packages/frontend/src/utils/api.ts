@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import { getRecoil } from 'recoil-nexus';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
-import { SessionToken } from '../model/auth';
+import { AccessToken } from '../model/auth';
 import { toast } from 'react-hot-toast';
 import { requestApiAuthRefresh } from './auth';
 import { ApiErrorResponseData, ErrorInterface } from 'api/src/error/types';
@@ -16,7 +16,7 @@ const refreshAuthTokenSet = async (err: AxiosError): Promise<void> => {
 
   err.response.config.headers[
     'Authorization'
-  ] = `Bearer ${tokenSet.sessionToken}`;
+  ] = `Bearer ${tokenSet.accessToken}`;
 };
 
 // Handle error responses
@@ -69,13 +69,13 @@ export const makeApiAuthClient = (): AxiosInstance => {
   if (!process.env.REACT_APP_BACKEND_URL)
     throw new Error('REACT_APP_BACKEND_URL not defined');
 
-  const sessionToken = getRecoil(SessionToken);
-  if (!sessionToken) throw new Error('Session Token not found');
+  const accessToken = getRecoil(AccessToken);
+  if (!accessToken) throw new Error('Session Token not found');
 
   const apiAuthClient = axios.create({
     baseURL: `${process.env.REACT_APP_BACKEND_URL}/api/`,
     headers: {
-      Authorization: `Bearer ${sessionToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   createAuthRefreshInterceptor(apiAuthClient, refreshAuthTokenSet, {
