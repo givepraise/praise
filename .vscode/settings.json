@@ -1,0 +1,16 @@
+{
+  "eslint.workingDirectories": [
+    {
+      "directory": "./packages/api",
+      "changeProcessCWD": true
+    },
+    {
+      "directory": "./packages/discord-bot",
+      "changeProcessCWD": true
+    },
+    {
+      "directory": "./packages/frontend",
+      "changeProcessCWD": true
+    }
+  ]
+}

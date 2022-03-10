@@ -8,6 +8,12 @@ services:
     restart: unless-stopped
     volumes:
       - mongodb_data_container:/data/db
+      - './users_init.sh:/docker-entrypoint-initdb.d/users_init.sh:ro'
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME
+      MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD
 
 volumes:
   mongodb_data_container:
