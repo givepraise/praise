@@ -1547,14 +1547,14 @@ __metadata:
   linkType: hard
 
 "@csstools/postcss-color-function@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@csstools/postcss-color-function@npm:1.0.2"
+  version: 1.0.3
+  resolution: "@csstools/postcss-color-function@npm:1.0.3"
   dependencies:
     "@csstools/postcss-progressive-custom-properties": ^1.1.0
     postcss-value-parser: ^4.2.0
   peerDependencies:
     postcss: ^8.4
-  checksum: 0fc5c8924dbffca13307038e3363b4e75bd3f32769907b13309d7170c3ab0716ee9e7f7c7a4c4f972ddc6f1e2b4103f910f465a250062fdce5aef1fcd9579610
+  checksum: edb84cef5261f25282c7a660749ddce56c0a00a82f588c19f10e0e72a8c8c9cb4d573917a424b3e7fc2e77ab18860d972663d779614fccdeb7995e37c2b79c97
   languageName: node
   linkType: hard
 
@@ -1615,14 +1615,14 @@ __metadata:
   linkType: hard
 
 "@csstools/postcss-oklab-function@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@csstools/postcss-oklab-function@npm:1.0.1"
+  version: 1.0.2
+  resolution: "@csstools/postcss-oklab-function@npm:1.0.2"
   dependencies:
     "@csstools/postcss-progressive-custom-properties": ^1.1.0
     postcss-value-parser: ^4.2.0
   peerDependencies:
     postcss: ^8.4
-  checksum: 2de8f679a2ceccfa6c65cd349b8548a9c38627dfdcbde0cbbdaa82be6181bb63924ccdaac9fcbc2173be867e4f251eafbfe2af574ed79180de607809abdb45c2
+  checksum: 466992d88cfa5c01277732b9de9ce438f1eb205058e31a99c6308bebc46faaf9972d1d641b28af9eac516de6dc8ff928edd39def763f9523cc018396fb7fdd93
   languageName: node
   linkType: hard
 
@@ -6807,8 +6807,8 @@ __metadata:
   linkType: hard
 
 "css-loader@npm:^6.5.1":
-  version: 6.7.0
-  resolution: "css-loader@npm:6.7.0"
+  version: 6.7.1
+  resolution: "css-loader@npm:6.7.1"
   dependencies:
     icss-utils: ^5.1.0
     postcss: ^8.4.7
@@ -6820,7 +6820,7 @@ __metadata:
     semver: ^7.3.5
   peerDependencies:
     webpack: ^5.0.0
-  checksum: 222bbde35315f4cf723fb1dd3a7c5a21e073de2018e8a9475f89631a090f6fd829ef756972a0f15ed6298f6c852d0f45e46ee729625256397ee17638c0b4ae9d
+  checksum: 170fdbc630a05a43679ef60fa97694766b568dbde37adccc0faafa964fc675f08b976bc68837bb73b61d60240e8d2cbcbf51540fe94ebc9dafc56e7c46ba5527
   languageName: node
   linkType: hard
 
@@ -14703,14 +14703,14 @@ __metadata:
   linkType: hard
 
 "postcss-lab-function@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "postcss-lab-function@npm:4.1.1"
+  version: 4.1.2
+  resolution: "postcss-lab-function@npm:4.1.2"
   dependencies:
     "@csstools/postcss-progressive-custom-properties": ^1.1.0
     postcss-value-parser: ^4.2.0
   peerDependencies:
     postcss: ^8.4
-  checksum: 8f2b319c84494aef05b1a3bec08f4aa5b0ce199bc3154ba2297397955d74ef3c3e0dfa485b05d83a7a02347b8bedb9ee7a658c2cae71accbbb129ac91e71a99c
+  checksum: a25be050fc27e5bdd9ece81e164bbdbd1661813486ddda7c8eb550b609e6b8930a5b9a816ad377817c9bf1b86ba3eb27f638b075d42ff7c45a6871b786ab3397
   languageName: node
   linkType: hard
 

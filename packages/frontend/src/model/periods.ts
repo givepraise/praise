@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
 import {
-  getPreviousPeriod,
+  getPreviousPeriodEndDate,
   periodQuantifierPraiseListKey,
 } from '@/utils/periods';
 import {
@@ -533,7 +533,7 @@ export const usePeriodReceiverPraiseQuery = (
 };
 
 type useExportPraiseReturn = {
-  exportPraise: (period: PeriodDto) => Promise<string | undefined>;
+  exportPraise: (period: PeriodDto) => Promise<Blob | undefined>;
 };
 /**
  * Hook that exports all praise in a period as csv data.
@@ -543,14 +543,20 @@ export const useExportPraise = (): useExportPraiseReturn => {
 
   const exportPraise = useRecoilCallback(
     ({ snapshot }) =>
-      async (period: PeriodDto): Promise<string | undefined> => {
+      async (period: PeriodDto): Promise<Blob | undefined> => {
         if (!period || !allPeriods) return undefined;
-        const previousPeriod = getPreviousPeriod(allPeriods, period);
-        if (!previousPeriod) throw new Error('Invalid previous start date');
+        const previousPeriodEndDate = getPreviousPeriodEndDate(
+          allPeriods,
+          period
+        );
+        if (!previousPeriodEndDate)
+          throw new Error('Invalid previous period end date');
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthGet({
-              url: `/api/praise/export/?periodStart=${previousPeriod.endDate}&periodEnd=${period.endDate}`,
+              url: `/api/praise/export?periodStart=${encodeURI(
+                previousPeriodEndDate.toISOString()
+              )}&periodEnd=${encodeURI(period.endDate)}`,
               config: { responseType: 'blob' },
             })
           )
@@ -558,9 +564,7 @@ export const useExportPraise = (): useExportPraiseReturn => {
 
         // If OK response, add returned period object to local state
         if (isResponseOk(response)) {
-          const href = window.URL.createObjectURL(response.data);
-          window.location.href = href;
-          return href;
+          return response.data;
         }
       }
   );
