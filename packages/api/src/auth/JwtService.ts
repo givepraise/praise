@@ -8,7 +8,7 @@ export interface ClientData {
   isRefresh?: boolean;
 }
 
-export interface JwtSet {
+export interface TokenSet {
   accessToken: string;
   refreshToken: string;
 }
@@ -65,7 +65,7 @@ export class JwtService {
    *
    * @param data
    */
-  public getJwt(data: ClientData): JwtSet {
+  public getJwt(data: ClientData): TokenSet {
     const accessToken = this._signOrFail(data, {
       expiresIn: this.accessExpiresIn,
     });
@@ -91,7 +91,7 @@ export class JwtService {
    *
    * @param jwt
    */
-  public refreshJwt(jwt: string): JwtSet {
+  public refreshJwt(jwt: string): TokenSet {
     const decoded = this.verifyOrFail(jwt);
     if (!decoded.isRefresh) throw new UnauthorizedError(this.VALIDATION_ERROR);
 
