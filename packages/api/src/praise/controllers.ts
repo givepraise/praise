@@ -17,11 +17,9 @@ import {
   TypedResponse,
 } from '@shared/types';
 import { UserModel } from '@user/entities';
-import { UserDocument } from '@user/types';
 import { UserAccountModel } from '@useraccount/entities';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
-import mongoose from 'mongoose';
 import { PraiseModel } from './entities';
 import { praiseDocumentTransformer } from './transformers';
 import {
@@ -142,7 +140,7 @@ export const quantify = async (
  * //TODO add descriptiom
  */
 export const exportPraise = async (
-  req: TypedRequestBody<QueryInput>, //TODO typed request
+  req: TypedRequestBody<QueryInput>,
   res: Response
 ): Promise<void> => {
   const query: PraiseExportInput = {
