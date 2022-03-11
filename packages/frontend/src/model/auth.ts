@@ -15,10 +15,8 @@ export const ActiveTokenSet = atom<TokenSet | undefined>({
   effects_UNSTABLE: [persistAtom],
 });
 
-export const AccessToken = selector<string>({
+export const AccessToken = selector<string | undefined>({
   key: 'AccessToken',
-  //eslint-disable-next-line
-  // @ts-ignore
   get: ({ get }) => {
     const tokens = get(ActiveTokenSet);
     if (!tokens) return undefined;
@@ -28,10 +26,8 @@ export const AccessToken = selector<string>({
   },
 });
 
-export const RefreshToken = selector<string>({
+export const RefreshToken = selector<string | undefined>({
   key: 'RefreshToken',
-  //eslint-disable-next-line
-  // @ts-ignore
   get: ({ get }) => {
     const tokens = get(ActiveTokenSet);
     if (!tokens) return undefined;
