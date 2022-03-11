@@ -8,10 +8,3 @@ export interface JWT {
   iat: number;
   exp: number;
 }
-
-export const isExpired = (jwt: string): Boolean => {
-  const decoded: JWT = jwtDecode(jwt);
-  const currentDatetimeSeconds = new Date().getTime() / 1000;
-
-  return currentDatetimeSeconds >= decoded.exp;
-};

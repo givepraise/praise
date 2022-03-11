@@ -1,6 +1,6 @@
 import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
-import { isExpired, JWT } from '../utils/jwt';
+import { JWT } from '../utils/jwt';
 import { recoilPersist } from 'recoil-persist';
 import { TokenSet } from 'api/dist/auth/types';
 const { persistAtom } = recoilPersist();
@@ -20,8 +20,6 @@ export const AccessToken = selector<string | undefined>({
   get: ({ get }) => {
     const tokens = get(ActiveTokenSet);
     if (!tokens) return undefined;
-    if (isExpired(tokens.accessToken)) return undefined;
-
     return tokens.accessToken;
   },
 });
@@ -31,7 +29,6 @@ export const RefreshToken = selector<string | undefined>({
   get: ({ get }) => {
     const tokens = get(ActiveTokenSet);
     if (!tokens) return undefined;
-    if (isExpired(tokens.refreshToken)) return undefined;
 
     return tokens.refreshToken;
   },

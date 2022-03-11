@@ -23,7 +23,7 @@ const handleErrors = (err: AxiosError): void => {
   const statusCode = err?.response?.status;
 
   if (!statusCode) {
-    toast.error('Failed to communicate with server');
+    toast.error('Server did not respond');
   } else if (statusCode === 404) {
     window.location.href = '/404';
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
