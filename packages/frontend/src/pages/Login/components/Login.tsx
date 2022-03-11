@@ -1,5 +1,5 @@
-import { isResponseOk } from '@/model/api';
-import { ActiveTokenSet, AccessToken } from '@/model/auth';
+import LoaderSpinner from '@/components/LoaderSpinner';
+import { AccessToken } from '@/model/auth';
 import { EthState } from '@/model/eth';
 import { useWeb3React } from '@web3-react/core';
 import React, { ReactElement } from 'react';
@@ -69,42 +69,31 @@ const LoginButton: React.FC = (): ReactElement => {
 
     // 4. Redirect after login success
     React.useEffect(() => {
-      if (!activeTokenSet) return;
+      if (!accessToken) return;
       const { from } = location.state || { from: { pathname: '/' } };
       setTimeout(() => {
         history.replace(from);
       }, 1000);
-    }, [activeTokenSet, location, history]);
+    }, [accessToken, location, history]);
 
     if (!message) {
       return (
-        <div>
-          <button className="px-4 py-2 font-bold text-gray-500 uppercase bg-gray-700 rounded cursor-default">
-            Sign login message
-          </button>
-        </div>
+        <button className="px-4 py-2 font-bold text-gray-500 uppercase bg-gray-700 rounded cursor-default">
+          Sign login message
+        </button>
       );
-    }
-
-    if (accessToken)
+    } else if (accessToken) {
+      return <LoaderSpinner />;
+    } else {
       return (
-        <div>
-          <button className="px-4 py-2 font-bold text-gray-500 uppercase bg-gray-700 rounded cursor-default">
-            Logged in
-          </button>
-        </div>
-      );
-
-    return (
-      <div>
         <button
           className="px-4 py-2 font-bold text-white uppercase bg-gray-800 rounded hover:bg-gray-700"
           onClick={signLoginMessage}
         >
           Sign login message
         </button>
-      </div>
-    );
+      );
+    }
   };
 
   return (
