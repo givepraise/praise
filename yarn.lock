@@ -15275,7 +15275,6 @@ __metadata:
   dependencies:
     "@typescript-eslint/eslint-plugin": ^5.7.0
     "@typescript-eslint/parser": ^5.10.2
-    axios-auth-refresh: ^3.2.2
     docsify: ^4.12.2
     eslint: ^8.8.0
     eslint-config-prettier: ^8.3.0
