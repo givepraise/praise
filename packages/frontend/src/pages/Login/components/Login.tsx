@@ -1,12 +1,17 @@
 import { isResponseOk } from '@/model/api';
 import { ActiveTokenSet, AccessToken } from '@/model/auth';
+import { EthState } from '@/model/eth';
 import { useWeb3React } from '@web3-react/core';
-import { NonceResponse } from 'api/dist/auth/types';
 import React, { ReactElement } from 'react';
+import toast from 'react-hot-toast';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { requestApiAuth, requestNonce } from '../../../utils/auth';
+import { requestApiAuth, requestNonce } from '@/utils/auth';
 
+interface CodedError {
+  message?: string;
+  code?: number;
+}
 interface LocationState {
   from: {
     pathname: string;
@@ -22,10 +27,10 @@ const generateLoginMessage = (account: string, nonce: string): string => {
 
 const LoginButton: React.FC = (): ReactElement => {
   const LoginButtonInner: React.FC = (): ReactElement => {
-    const { account: ethereumAddress, library: ethLibrary } = useWeb3React();
+    const { library: ethLibrary } = useWeb3React();
     const [message, setMessage] = React.useState<string | undefined>(undefined);
     const accessToken = useRecoilValue(AccessToken);
-    const activeTokenSet = useRecoilValue(ActiveTokenSet);
+    const { account: ethereumAddress } = useRecoilValue(EthState);
     const history = useHistory();
     const location = useLocation<LocationState>();
 
@@ -33,7 +38,7 @@ const LoginButton: React.FC = (): ReactElement => {
     React.useEffect(() => {
       if (!ethereumAddress) return;
 
-      const createLoginMessage = async () => {
+      const createLoginMessage = async (): Promise<void> => {
         const nonce = await requestNonce(ethereumAddress);
         const _message = generateLoginMessage(ethereumAddress, nonce);
 
@@ -45,11 +50,21 @@ const LoginButton: React.FC = (): ReactElement => {
 
     // 2. User signs the message using Metamask
     const signLoginMessage = async (): Promise<void> => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const signature: any = await ethLibrary.getSigner().signMessage(message);
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const signature: any = await ethLibrary
+          .getSigner()
+          .signMessage(message);
 
-      // 3. Verify signature with server
-      await requestApiAuth({ ethereumAddress, message, signature });
+        // 3. Verify signature with server
+        await requestApiAuth({ ethereumAddress, message, signature });
+      } catch (err) {
+        if ((err as CodedError).code === 4001) {
+          toast.error('You declined login');
+        } else {
+          toast.error('Login failed');
+        }
+      }
     };
 
     // 4. Redirect after login success
