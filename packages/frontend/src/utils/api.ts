@@ -1,11 +1,13 @@
-import axios, { AxiosInstance, AxiosError } from 'axios';
-import { getRecoil } from 'recoil-nexus';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
-import { AccessToken } from '../model/auth';
 import { toast } from 'react-hot-toast';
+import { getRecoil } from 'recoil-nexus';
+import { AccessToken } from '../model/auth';
 import { requestApiAuthRefresh } from './auth';
 
-// Attempt to refresh auth token and retry request
+/**
+ * Attempt to refresh auth token and retry request
+ */
 const refreshAuthTokenSet = async (err: AxiosError): Promise<void> => {
   if (!err?.response?.config?.headers)
     throw Error('Error response has no headers');
@@ -17,7 +19,11 @@ const refreshAuthTokenSet = async (err: AxiosError): Promise<void> => {
   ] = `Bearer ${tokenSet.accessToken}`;
 };
 
-// Handle error responses (excluding initial 401 response)
+/**
+ * Handle error responses (excluding initial 401 response)
+ *
+ * @param err
+ */
 const handleErrors = (err: AxiosError): void => {
   // Any HTTP Code which is not 2xx will be considered as error
   const statusCode = err?.response?.status;
@@ -39,7 +45,11 @@ const handleErrors = (err: AxiosError): void => {
   }
 };
 
-// Api client for unathenticated requests
+/**
+ * Api client for unathenticated requests
+ *
+ * @returns
+ */
 export const makeApiClient = (): AxiosInstance => {
   if (!process.env.REACT_APP_BACKEND_URL)
     throw new Error('Backend URL not set.');
@@ -56,8 +66,11 @@ export const makeApiClient = (): AxiosInstance => {
   return apiClient;
 };
 
-// Api client for authenticated requests
-//  on 401 response: attempt refresh of access using refresh token & retry request
+/**
+ * Api client for authenticated requests.
+ * - On 401 response: attempt refresh of access using refresh token & retry request
+ * @returns
+ */
 export const makeApiAuthClient = (): AxiosInstance => {
   if (!process.env.REACT_APP_BACKEND_URL)
     throw new Error('REACT_APP_BACKEND_URL not defined');
