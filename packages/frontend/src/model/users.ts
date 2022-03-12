@@ -17,13 +17,16 @@ import {
   isResponseOk,
   useAuthApiQuery,
 } from './api';
-import { HasRole } from './auth';
+import { ActiveTokenSet, HasRole } from './auth';
 import { AllPeriods } from './periods';
 
 export const AllUsersQuery = selector({
   key: 'AllUsersQuery',
   get: ({ get }) => {
     const isAdmin = get(HasRole('ADMIN'));
+    const activeTokenSet = get(ActiveTokenSet);
+    if (!activeTokenSet) throw Error('Not authenticated');
+
     let endpoint = '/users';
     if (isAdmin) {
       endpoint = '/admin/users';
