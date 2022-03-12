@@ -76,7 +76,6 @@ export const makeApiAuthClient = (): AxiosInstance => {
     throw new Error('REACT_APP_BACKEND_URL not defined');
 
   const accessToken = getRecoil(AccessToken);
-  if (!accessToken) throw new Error('Session Token not found');
 
   const apiAuthClient = axios.create({
     baseURL: `${process.env.REACT_APP_BACKEND_URL}/api/`,

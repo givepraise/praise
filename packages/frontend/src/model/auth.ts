@@ -46,6 +46,9 @@ export const DecodedAccessToken = selector({
 export const ActiveUserId = selector({
   key: 'ActiveUserId',
   get: ({ get }) => {
+    const activeTokenSet = get(ActiveTokenSet);
+    if (!activeTokenSet) return;
+
     const decodedToken = get(DecodedAccessToken);
     if (!decodedToken) return undefined;
     return (decodedToken as JWT).userId;
@@ -55,8 +58,11 @@ export const ActiveUserId = selector({
 export const ActiveUserRoles = selector({
   key: 'ActiveUserRoles',
   get: ({ get }) => {
+    const activeTokenSet = get(ActiveTokenSet);
+    if (!activeTokenSet) return;
+
     const decodedToken = get(DecodedAccessToken);
-    if (!decodedToken) return undefined;
+    if (!decodedToken) return;
     return (decodedToken as JWT).roles;
   },
 });
