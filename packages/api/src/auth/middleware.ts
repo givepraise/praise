@@ -17,9 +17,9 @@ export const authMiddleware = (role: UserRole) => {
       accessToken,
     });
 
-    // No user or wrong permissions = Forbidden
-    if (!user || !user.roles.includes(role))
-      throw new ForbiddenError('User is not authorized to access resource.');
+    // No user = Forbidden
+    if (!user)
+      throw new UnauthorizedError('User is not authorized to access resource.');
 
     // Access token invalid or expired = Forbidden
     const jwtService = new JwtService();
@@ -28,6 +28,10 @@ export const authMiddleware = (role: UserRole) => {
     } catch (err) {
       throw new UnauthorizedError('User is not authorized to access resource.');
     }
+
+    // Wrong permissions = Forbidden
+    if (!user.roles.includes(role))
+      throw new ForbiddenError('User is not authorized to access resource.');
 
     // Save auth role and current user for usage in controllers
     res.locals.authRole = role;
