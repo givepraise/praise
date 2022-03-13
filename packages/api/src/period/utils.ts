@@ -15,6 +15,7 @@ import {
   PeriodDetailsQuantifierDto,
   PeriodDetailsReceiver,
   PeriodDateRange,
+  PeriodStatusType,
 } from './types';
 
 // Returns previous period end date or 1970-01-01 if no previous period
@@ -149,7 +150,7 @@ export const findActivePeriods = async (
   match: object = {}
 ): Promise<PeriodDocument[]> => {
   let periods: PeriodDocument[] | PeriodDocument = await PeriodModel.find({
-    endDate: { $lte: new Date() },
+    status: PeriodStatusType.QUANTIFY,
     ...match,
   });
   if (!Array.isArray(periods)) periods = [periods];
