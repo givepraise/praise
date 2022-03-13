@@ -1,4 +1,5 @@
 import { BadRequestError } from '@error/errors';
+import { PeriodDateRange } from '@period/types';
 import { settingFloat } from '@shared/settings';
 import { PraiseModel } from './entities';
 import { praiseDocumentTransformer } from './transformers';
@@ -70,4 +71,21 @@ export const praiseWithScore = async (
   );
   praiseDetailsDto.score = await calculatePraiseScore(praise);
   return praiseDetailsDto;
+};
+
+export const countPraiseWithinDateRanges = async (
+  dateRanges: PeriodDateRange[],
+  match: object = {}
+): Promise<number> => {
+  const withinDateRangeQueries: { $createdAt: PeriodDateRange }[] =
+    dateRanges.map((q) => ({
+      $createdAt: q,
+    }));
+
+  const assignedPraiseCount: number = await PraiseModel.count({
+    $or: withinDateRangeQueries,
+    ...match,
+  });
+
+  return assignedPraiseCount;
 };

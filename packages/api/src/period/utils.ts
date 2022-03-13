@@ -10,9 +10,11 @@ import {
 } from './transformers';
 import {
   Period,
+  PeriodDocument,
   PeriodDetailsDto,
   PeriodDetailsQuantifierDto,
   PeriodDetailsReceiver,
+  PeriodDateRange,
 } from './types';
 
 // Returns previous period end date or 1970-01-01 if no previous period
@@ -142,3 +144,22 @@ export const findPeriodDetailsDto = async (
   };
   return response;
 };
+
+export const findActivePeriods = async (
+  match: object = {}
+): Promise<PeriodDocument[]> => {
+  let periods: PeriodDocument[] | PeriodDocument = await PeriodModel.find({
+    endDate: { $lte: new Date() },
+    ...match,
+  });
+  if (!Array.isArray(periods)) periods = [periods];
+
+  return periods;
+};
+
+export const getPeriodDateRangeQuery = async (
+  period: Period
+): Promise<PeriodDateRange> => ({
+  $gt: await getPreviousPeriodEndDate(period),
+  $lte: period.endDate,
+});
