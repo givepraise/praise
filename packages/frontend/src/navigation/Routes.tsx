@@ -1,11 +1,9 @@
 import {
+  ActiveTokenSet,
   ActiveUserRoles,
   ROLE_ADMIN,
   ROLE_QUANTIFIER,
-  SessionToken,
 } from '@/model/auth';
-import { EthState } from '@/model/eth';
-import * as localStorage from '@/model/localStorage';
 import ActivatePage from '@/pages/Activate/ActivatePage';
 import ErrorPage from '@/pages/ErrorPage';
 import LoginPage from '@/pages/Login/LoginPage';
@@ -14,7 +12,7 @@ import SettingsPage from '@/pages/Settings/SettingsPage';
 import StartPage from '@/pages/Start/StartPage';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { StartupLoader } from '../startupLoader';
 import Nav from './Nav';
 
@@ -53,21 +51,18 @@ const LoggedInOnlyRoute = ({
   children,
   ...props
 }: LoggedInOnlyRouteProps): JSX.Element => {
-  const ethState = useRecoilValue(EthState);
-  const [sessionToken, setSessionToken] = useRecoilState(SessionToken);
-  React.useEffect(() => {
-    setSessionToken(localStorage.getSessionToken(ethState.account));
-  }, [ethState.account, setSessionToken]);
-  // Token exists: Show content
-  // Token undefined: Unknown state => wait
+  const activeTokenSet = useRecoilValue(ActiveTokenSet);
+
+  // ActiveTokenSet exists: Show content
+  // ActiveTokenSet undefined: Unknown state => wait
   // Token null: Token doesn't exist => login
   return (
     <Route
       {...props}
       render={({ location }): JSX.Element | null =>
-        sessionToken ? (
+        activeTokenSet ? (
           children
-        ) : sessionToken === undefined ? null : (
+        ) : (
           <Redirect
             to={{
               pathname: '/login',

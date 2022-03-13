@@ -13,6 +13,7 @@ export interface User {
   accounts?: UserAccountDocument[];
   nonce?: string;
   accessToken?: string;
+  refreshToken?: string;
   createdAt: Date;
   updatedAt: Date;
 }
