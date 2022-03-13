@@ -146,6 +146,11 @@ export const findPeriodDetailsDto = async (
   return response;
 };
 
+/**
+ * Find all Periods where status = QUANTIFY
+ * @param match Any paramaters to add to mongoose find query
+ * @returns
+ */
 export const findActivePeriods = async (
   match: object = {}
 ): Promise<PeriodDocument[]> => {
@@ -158,6 +163,11 @@ export const findActivePeriods = async (
   return periods;
 };
 
+/**
+ * Get mongoose query object representing date range of Period
+ * @param period
+ * @returns
+ */
 export const getPeriodDateRangeQuery = async (
   period: Period
 ): Promise<PeriodDateRange> => ({
