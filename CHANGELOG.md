@@ -7,8 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Praise on behalf. Will allow administrators to send praise on behalf of other community members. Useful for registering live praise from meeting.
-- All settings are currently global. Quantification settings should instead be tied to periods.
+### Added
+
+- Implements JWT refresh tokens. A user with an expired accessToken, but an active refreshToken, can request a new accessToken with a later expiration date.
+
+### Changed
+
+- Refactoring of Login component to improve flow & reliability
+- Refactoring of recoil axios request wrappers -- extracted into axios instances defined in utils/api. Recoil wrappers are kept, but simply call the axios instance, to limit the scope of this refactor.
+- Remove recoil auth query wrappers -- moved into utils/auth
+- Ensure expired tokens fail validation in api middleware
+- Logout user (redirect to /login and delete saved TokenSet) upon receiving a 401 response after refreshing tokens
 
 ## [0.0.1] - 2022-03-10
 
