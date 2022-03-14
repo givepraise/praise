@@ -1,12 +1,17 @@
-import { isResponseOk } from '@/model/api';
-import { AuthQuery, NonceQuery, SessionToken } from '@/model/auth';
-import * as localStorage from '@/model/localStorage';
+import LoaderSpinner from '@/components/LoaderSpinner';
+import { AccessToken, ActiveTokenSet } from '@/model/auth';
+import { EthState } from '@/model/eth';
 import { useWeb3React } from '@web3-react/core';
-import { AuthResponse, NonceResponse } from 'api/dist/auth/types';
 import React, { ReactElement } from 'react';
+import toast from 'react-hot-toast';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { requestApiAuth, requestNonce } from '@/utils/auth';
 
+interface CodedError {
+  message?: string;
+  code?: number;
+}
 interface LocationState {
   from: {
     pathname: string;
@@ -20,91 +25,66 @@ const generateLoginMessage = (account: string, nonce: string): string => {
   );
 };
 
-const LoginButton: React.FC = (): ReactElement => {
-  const LoginButtonInner: React.FC = (): ReactElement => {
-    const { account: ethereumAddress, library: ethLibrary } = useWeb3React();
-    const [message, setMessage] = React.useState<string | undefined>(undefined);
-    const [signature, setSignature] = React.useState<string | undefined>(
-      undefined
-    );
-    const [sessionToken, setSessionToken] = useRecoilState(SessionToken);
+const LoginButton: React.FC = (): ReactElement | null => {
+  const setActiveTokenSet = useSetRecoilState(ActiveTokenSet);
+
+  const LoginButtonInner: React.FC = (): ReactElement | null => {
+    const { library: ethLibrary } = useWeb3React();
+    const [signatureReceived, setSignatureReceived] =
+      React.useState<boolean>(false);
+    const accessToken = useRecoilValue(AccessToken);
+    const { account: ethereumAddress } = useRecoilValue(EthState);
     const history = useHistory();
     const location = useLocation<LocationState>();
 
-    // 1. Fetch nonce from server
-    const nonceResponse = useRecoilValue(NonceQuery(ethereumAddress));
+    const signLoginMessage = async (): Promise<void> => {
+      if (!ethereumAddress) return;
 
-    // 4. Verify signature with server
-    const authResponse = useRecoilValue(
-      AuthQuery({ ethereumAddress, message, signature })
-    );
+      try {
+        // 1. Fetch nonce from server & create message
+        const nonce = await requestNonce(ethereumAddress);
 
-    // 2. Generate login message to sign
-    React.useEffect(() => {
-      if (!ethereumAddress || !nonceResponse) return;
-      if (isResponseOk(nonceResponse)) {
-        const nonceData = nonceResponse.data as NonceResponse;
-        setMessage(generateLoginMessage(ethereumAddress, nonceData.nonce));
+        // 2. User signs the message using Metamask
+        const message = generateLoginMessage(ethereumAddress, nonce);
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const signature: any = await ethLibrary
+          .getSigner()
+          .signMessage(message);
+        setSignatureReceived(true);
+
+        // 3. Verify signature with server
+        await requestApiAuth({ ethereumAddress, message, signature });
+      } catch (err) {
+        if ((err as CodedError).code === 4001) {
+          toast.error('You declined login');
+        } else {
+          toast.error('Login failed');
+        }
       }
-    }, [ethereumAddress, nonceResponse]);
+    };
 
-    // 5. Authetication response
-    React.useEffect(() => {
-      if (!ethereumAddress || !authResponse) return;
-      if (isResponseOk(authResponse)) {
-        const sessionData = authResponse.data as AuthResponse;
-        // Save session id for future api calls
-        localStorage.setSessionToken(ethereumAddress, sessionData.accessToken);
-        // Set session token in global state
-        setSessionToken(sessionData.accessToken);
-      }
-    }, [ethereumAddress, authResponse, setSessionToken]);
+    // 4. Redirect after login success
 
-    // 6. Redirect after login
-    React.useEffect(() => {
-      if (!sessionToken) return;
+    if (accessToken) {
       const { from } = location.state || { from: { pathname: '/' } };
       setTimeout(() => {
         history.replace(from);
       }, 1000);
-    }, [sessionToken, location, history]);
-
-    const signLoginMessage = async (): Promise<void> => {
-      // 3. Sign the message using Metamask
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const _signature: any = await ethLibrary.getSigner().signMessage(message);
-      if (_signature) setSignature(_signature);
-    };
-
-    if (!nonceResponse || !isResponseOk(nonceResponse)) {
-      return (
-        <div>
-          <button className="px-4 py-2 font-bold text-gray-500 uppercase bg-gray-700 rounded cursor-default">
-            Sign login message
-          </button>
-        </div>
-      );
     }
 
-    if (sessionToken)
+    if (!accessToken && !signatureReceived) {
       return (
-        <div>
-          <button className="px-4 py-2 font-bold text-gray-500 uppercase bg-gray-700 rounded cursor-default">
-            Logged in
-          </button>
-        </div>
-      );
-
-    return (
-      <div>
         <button
           className="px-4 py-2 font-bold text-white uppercase bg-gray-800 rounded hover:bg-gray-700"
           onClick={signLoginMessage}
         >
           Sign login message
         </button>
-      </div>
-    );
+      );
+    } else {
+      return <LoaderSpinner />;
+    }
   };
 
   return (

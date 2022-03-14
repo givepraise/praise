@@ -8,6 +8,7 @@ export interface AuthRequestInput {
 
 export interface AuthResponse {
   accessToken: string;
+  refreshToken: string;
   ethereumAddress: string;
   tokenType: string;
 }
@@ -19,4 +20,13 @@ export interface NonceRequestInput extends QueryInput {
 export interface NonceResponse {
   ethereumAddress: string;
   nonce: string;
+}
+
+export interface RefreshRequestInput {
+  refreshToken: string;
+}
+
+export interface TokenSet {
+  accessToken: string;
+  refreshToken: string;
 }

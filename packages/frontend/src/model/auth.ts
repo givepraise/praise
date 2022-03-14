@@ -1,44 +1,55 @@
-import { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
-import { ApiGet, ApiPost } from './api';
+import { JWT } from '../utils/jwt';
+import { recoilPersist } from 'recoil-persist';
+import { TokenSet } from 'api/dist/auth/types';
+const { persistAtom } = recoilPersist();
 
 export const ROLE_USER = 'USER';
 export const ROLE_ADMIN = 'ADMIN';
 export const ROLE_QUANTIFIER = 'QUANTIFIER';
 
-export interface JWT {
-  sub: string;
-  userId: string;
-  ethereumAddress: string;
-  roles: string[];
-  iat: number;
-  exp: number;
-}
-
-/**
- * SessionToken differentiates between null and undefined
- * `undefined` - Session token not loaded yet
- * `null` - No session token exists
- */
-export const SessionToken = atom<string | null | undefined>({
-  key: 'SessionToken',
+export const ActiveTokenSet = atom<TokenSet | undefined>({
+  key: 'ActiveTokenSet',
   default: undefined,
+  effects_UNSTABLE: [persistAtom],
 });
 
-export const DecodedSessionToken = selector({
-  key: 'DecodedSessionToken',
+export const AccessToken = selector<string | undefined>({
+  key: 'AccessToken',
   get: ({ get }) => {
-    const token = get(SessionToken);
-    if (!token) return undefined;
-    return jwtDecode(token);
+    const tokens = get(ActiveTokenSet);
+    if (!tokens) return undefined;
+    return tokens.accessToken;
+  },
+});
+
+export const RefreshToken = selector<string | undefined>({
+  key: 'RefreshToken',
+  get: ({ get }) => {
+    const tokens = get(ActiveTokenSet);
+    if (!tokens) return undefined;
+
+    return tokens.refreshToken;
+  },
+});
+
+export const DecodedAccessToken = selector({
+  key: 'DecodedAccessToken',
+  get: ({ get }) => {
+    const accessToken = get(AccessToken);
+    if (!accessToken) return undefined;
+    return jwtDecode(accessToken);
   },
 });
 
 export const ActiveUserId = selector({
   key: 'ActiveUserId',
   get: ({ get }) => {
-    const decodedToken = get(DecodedSessionToken);
+    const activeTokenSet = get(ActiveTokenSet);
+    if (!activeTokenSet) return;
+
+    const decodedToken = get(DecodedAccessToken);
     if (!decodedToken) return undefined;
     return (decodedToken as JWT).userId;
   },
@@ -47,8 +58,11 @@ export const ActiveUserId = selector({
 export const ActiveUserRoles = selector({
   key: 'ActiveUserRoles',
   get: ({ get }) => {
-    const decodedToken = get(DecodedSessionToken);
-    if (!decodedToken) return undefined;
+    const activeTokenSet = get(ActiveTokenSet);
+    if (!activeTokenSet) return;
+
+    const decodedToken = get(DecodedAccessToken);
+    if (!decodedToken) return;
     return (decodedToken as JWT).roles;
   },
 });
@@ -61,43 +75,5 @@ export const HasRole = selectorFamily({
       const userRoles = get(ActiveUserRoles);
       if (!userRoles) return undefined;
       return userRoles.includes(role);
-    },
-});
-
-export const NonceQuery = selectorFamily<
-  AxiosResponse<unknown> | undefined,
-  string | null | undefined
->({
-  key: 'NonceQuery',
-  get:
-    (ethereumAddress: string | null | undefined) =>
-    ({ get }): AxiosResponse<unknown> | undefined => {
-      if (!ethereumAddress) return undefined;
-      return get(
-        ApiGet({
-          url: `/api/auth/nonce?ethereumAddress=${ethereumAddress}`,
-        })
-      );
-    },
-});
-
-export type AuthQueryParams = {
-  ethereumAddress: string | null | undefined;
-  message: string | undefined;
-  signature: string | undefined;
-};
-
-export const AuthQuery = selectorFamily<
-  AxiosResponse<unknown> | undefined,
-  AuthQueryParams
->({
-  key: 'AuthQuery',
-  get:
-    (params: AuthQueryParams) =>
-    ({ get }): AxiosResponse<unknown> | undefined => {
-      const { ethereumAddress, message, signature } = params;
-      if (!ethereumAddress || !message || !signature) return undefined;
-      const data = JSON.stringify(params);
-      return get(ApiPost({ url: '/api/auth', data }));
     },
 });
