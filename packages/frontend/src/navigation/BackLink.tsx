@@ -1,7 +1,7 @@
 import { useHistory } from 'react-router-dom';
 
 interface BackLinkProps {
-  to?: string;
+  to: string;
 }
 const BackLink = ({ to }: BackLinkProps): JSX.Element => {
   const history = useHistory();
@@ -9,8 +9,7 @@ const BackLink = ({ to }: BackLinkProps): JSX.Element => {
   return (
     <div
       onClick={(): void => {
-        if (to) history.push(to);
-        else history.goBack();
+        history.push(to);
       }}
       className="mb-2 text-sm cursor-pointer"
     >
