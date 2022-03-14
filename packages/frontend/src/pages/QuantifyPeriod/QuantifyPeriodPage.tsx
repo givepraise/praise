@@ -36,10 +36,12 @@ const PeriodMessage = (): JSX.Element => {
 };
 
 const QuantifyPeriodPage = (): JSX.Element => {
+  const { periodId } = useParams<PeriodPageParams>();
+
   return (
     <>
       <BreadCrumb name="Quantify" icon={faCalendarAlt} />
-      <BackLink />
+      <BackLink to={`/period/${periodId}`} />
 
       <div className="w-2/3 praise-box">
         <React.Suspense fallback="Loading…">
