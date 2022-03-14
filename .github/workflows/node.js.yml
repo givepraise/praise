@@ -26,8 +26,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: yarn workspace api lint
-    - run: yarn workspace frontend lint
+    - name: Lint api
+      run: yarn workspace api lint
+    - name: Lint frontend
+      run: yarn workspace frontend lint
     - name: Save Code Linting Report JSON
         # npm script for ESLint
         # eslint --output-file eslint_report.json --format json src
@@ -46,4 +48,4 @@ jobs:
         name: eslint_report.json
         path: eslint_report.json
 
-    
+
