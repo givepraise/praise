@@ -94,6 +94,11 @@ const settings = [
       "**You were just [praised in the TEC](praiseURL)\nIt looks like you haven't activated your account...To activate your account, use the `/praise-activate` command in the server.",
     type: 'Textarea',
   },
+  {
+    key: 'LOGO',
+    value: '',
+    type: 'Image',
+  },
 ];
 
 const seedSettings = async (): Promise<void> => {

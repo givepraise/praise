@@ -1,9 +1,13 @@
 import { SettingDocument } from './types';
-import { isNumber } from 'lodash';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isNumeric(num: any): Boolean {
+  return !isNaN(num);
+}
 
 export function fieldTypeValidator(this: SettingDocument): Boolean {
   if (this.type === 'Number') {
-    return isNumber(this.value);
+    return isNumeric(this.value);
   }
 
   if (this.type === 'String' || this.type === 'Textarea') {
@@ -20,7 +24,7 @@ export function fieldTypeValidator(this: SettingDocument): Boolean {
     const valueArray = this.value.split(',').map((item) => item.trim());
 
     valueArray.forEach((element) => {
-      if (!isNumber(element) || parseInt(element) < previous) {
+      if (!isNumeric(element) || parseInt(element) < previous) {
         valid = false;
       }
 
@@ -28,6 +32,12 @@ export function fieldTypeValidator(this: SettingDocument): Boolean {
     });
 
     return valid;
+  }
+
+  if (this.type === 'Image') {
+    return (
+      typeof this.value === 'string' && this.value.includes('/public/img/')
+    );
   }
 
   return typeof this.value === this.type;

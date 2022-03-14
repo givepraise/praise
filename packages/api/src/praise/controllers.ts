@@ -246,7 +246,7 @@ export const exportPraise = async (
       }
 
       p.quantifications = await Promise.all(
-        p.quantifications.map(async (q: any) => {
+        p.quantifications.map(async (q: unknown) => {
           const quantifier = await UserModel.findById(q.quantifier._id);
 
           const account = await UserAccountModel.findOne({

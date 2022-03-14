@@ -29,6 +29,7 @@ const SettingsForm = (): JSX.Element | null => {
             ...setting,
             value: values[prop],
           } as Setting;
+
           await setSetting(updatedSetting);
         }
       }
@@ -110,9 +111,8 @@ const SettingsForm = (): JSX.Element | null => {
           <div className="mb-2">
             <label className="block">{setting.key}</label>
             <input
-              type="text"
+              type="file"
               id={setting.key}
-              {...input}
               autoComplete="off"
               className="block w-full"
             />
@@ -149,7 +149,7 @@ const SettingsForm = (): JSX.Element | null => {
     if (setting.type === 'Number') return getNumberInput(setting);
     if (setting.type === 'Textarea') return getTextareaInput(setting);
     if (setting.type === 'Boolean') return getBooleanInput(setting);
-    if (setting.type === 'File') return getFileInput(setting);
+    if (setting.type === 'Image') return getFileInput(setting);
     return null;
   };
 
@@ -165,6 +165,7 @@ const SettingsForm = (): JSX.Element | null => {
   return (
     <Form
       onSubmit={onSubmit}
+      encType="multipart/form-data"
       initialValues={initialValues}
       mutators={{
         setDate: (args, state, utils): void => {
