@@ -172,7 +172,7 @@ const SettingsForm = (): JSX.Element | null => {
         },
       }}
       render={({ handleSubmit }): JSX.Element => (
-        <form onSubmit={handleSubmit} className="leading-loose">
+        <form onSubmit={void handleSubmit} className="leading-loose">
           <div className="mb-3">
             {settings.map((setting: Setting) => getField(setting))}
           </div>

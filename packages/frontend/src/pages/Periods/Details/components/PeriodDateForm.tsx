@@ -76,7 +76,7 @@ const PeriodDateForm = (): JSX.Element | null => {
       }}
       initialValues={{ endDate: formatDate(period.endDate) }}
       render={({ handleSubmit }): JSX.Element => (
-        <form onSubmit={handleSubmit} className="leading-loose">
+        <form onSubmit={void handleSubmit} className="leading-loose">
           <div>
             Period end:
             <Field name="endDate">
@@ -84,7 +84,7 @@ const PeriodDateForm = (): JSX.Element | null => {
                 <>
                   <div className="inline-block ml-1">
                     <OutsideClickHandler
-                      onOutsideClick={handleSubmit}
+                      onOutsideClick={void handleSubmit}
                       active={meta.active ? true : false}
                     >
                       <input

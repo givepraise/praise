@@ -26,8 +26,6 @@ export default function LoginPage(): JSX.Element {
     InjectedConnector | undefined
   >(undefined);
 
-  const activating = injected === activatingConnector;
-
   // handle logic to recognize the ethConnector currently being activated
   React.useEffect(() => {
     if (activatingConnector && activatingConnector === ethConnector) {

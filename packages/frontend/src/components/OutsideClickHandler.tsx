@@ -2,7 +2,7 @@ import { useOutsideAlerter } from '@/utils/index';
 import React from 'react';
 
 interface OutsideClickHandlerProps {
-  onOutsideClick(): void;
+  onOutsideClick: (() => void) | undefined;
   active: boolean;
   children?: React.ReactNode;
 }

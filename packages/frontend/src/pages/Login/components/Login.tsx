@@ -1,11 +1,11 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
-import { AccessToken, ActiveTokenSet } from '@/model/auth';
+import { AccessToken } from '@/model/auth';
 import { EthState } from '@/model/eth';
 import { useWeb3React } from '@web3-react/core';
 import React, { ReactElement } from 'react';
 import toast from 'react-hot-toast';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { requestApiAuth, requestNonce } from '@/utils/auth';
 
 interface CodedError {
@@ -26,8 +26,6 @@ const generateLoginMessage = (account: string, nonce: string): string => {
 };
 
 const LoginButton: React.FC = (): ReactElement | null => {
-  const setActiveTokenSet = useSetRecoilState(ActiveTokenSet);
-
   const LoginButtonInner: React.FC = (): ReactElement | null => {
     const { library: ethLibrary } = useWeb3React();
     const [signatureReceived, setSignatureReceived] =
@@ -77,7 +75,7 @@ const LoginButton: React.FC = (): ReactElement | null => {
       return (
         <button
           className="px-4 py-2 font-bold text-white uppercase bg-gray-800 rounded hover:bg-gray-700"
-          onClick={signLoginMessage}
+          onClick={void signLoginMessage}
         >
           Sign login message
         </button>
