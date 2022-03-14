@@ -8,7 +8,6 @@ export interface ClientData {
   ethereumAddress: string;
   roles: string[];
 }
-
 interface JwtOptions {
   expiresIn: string;
 }
