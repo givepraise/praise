@@ -13,3 +13,4 @@ jobs:
       - run: yarn install
       - run: yarn workspace api lint
       - run: yarn workspace frontend lint
+      - run: yarn workspace discord-bot lint
