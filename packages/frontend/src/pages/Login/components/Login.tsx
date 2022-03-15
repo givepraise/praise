@@ -1,12 +1,12 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
 import { AccessToken } from '@/model/auth';
 import { EthState } from '@/model/eth';
+import { requestApiAuth, requestNonce } from '@/utils/auth';
 import { useWeb3React } from '@web3-react/core';
 import React, { ReactElement } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { requestApiAuth, requestNonce } from '@/utils/auth';
 
 interface CodedError {
   message?: string;
