@@ -88,3 +88,8 @@ export interface AssignQuantifiersDryRunOutput {
   poolAssignments: Quantifier[];
   poolDeficit: number;
 }
+
+export interface PeriodDateRange {
+  $gt: Date;
+  $lte: Date;
+}
