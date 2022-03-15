@@ -3,11 +3,13 @@ import { atom, selector, selectorFamily } from 'recoil';
 import { JWT } from '../utils/jwt';
 import { recoilPersist } from 'recoil-persist';
 import { TokenSet } from 'api/dist/auth/types';
+import { UserRole } from 'api/dist/user/types';
+
 const { persistAtom } = recoilPersist();
 
-export const ROLE_USER = 'USER';
-export const ROLE_ADMIN = 'ADMIN';
-export const ROLE_QUANTIFIER = 'QUANTIFIER';
+export const ROLE_USER = UserRole.USER;
+export const ROLE_ADMIN = UserRole.ADMIN;
+export const ROLE_QUANTIFIER = UserRole.QUANTIFIER;
 
 export const ActiveTokenSet = atom<TokenSet | undefined>({
   key: 'ActiveTokenSet',
