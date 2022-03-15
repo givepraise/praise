@@ -106,7 +106,6 @@ export default function ActivateButton(): JSX.Element {
 
     const handleSignButtonClick = (): void => {
       void signLoginMessage();
-      return;
     };
 
     return (

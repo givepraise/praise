@@ -64,7 +64,6 @@ const LoginButton: React.FC = (): ReactElement | null => {
 
     const handleSignButtonClick = (): void => {
       void signLoginMessage();
-      return;
     };
 
     // 4. Redirect after login success
