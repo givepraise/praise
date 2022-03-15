@@ -59,7 +59,7 @@ const PraiseAutosuggest = ({
       items: inputItems,
       onInputValueChange: ({ inputValue }) => {
         const search = inputValue
-          ? inputValue.toLocaleLowerCase().replace('#', '')
+          ? inputValue.toLocaleLowerCase().replace('#', '').trim()
           : '';
         if (filteredData) {
           setInputItems(
