@@ -9,7 +9,6 @@ export interface ClientData {
   isRefresh?: boolean;
 }
 
-
 interface JwtOptions {
   expiresIn: number;
 }

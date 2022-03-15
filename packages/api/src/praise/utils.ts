@@ -73,7 +73,6 @@ export const praiseWithScore = async (
   return praiseDetailsDto;
 };
 
-
 /**
  * Count all praise within given date ranges
  * @param dateRanges
