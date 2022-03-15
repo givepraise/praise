@@ -83,7 +83,8 @@ const PeriodsForm = (): JSX.Element => {
         },
       }}
       render={({ handleSubmit }): JSX.Element => (
-        <form onSubmit={void handleSubmit} className="leading-loose">
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        <form onSubmit={handleSubmit} className="leading-loose">
           <div className="mb-3">
             <Field name="name">
               {({ input }): JSX.Element => (
