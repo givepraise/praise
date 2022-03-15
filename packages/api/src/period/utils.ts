@@ -10,9 +10,12 @@ import {
 } from './transformers';
 import {
   Period,
+  PeriodDocument,
   PeriodDetailsDto,
   PeriodDetailsQuantifierDto,
   PeriodDetailsReceiver,
+  PeriodDateRange,
+  PeriodStatusType,
 } from './types';
 
 // Returns previous period end date or 1970-01-01 if no previous period
@@ -142,3 +145,32 @@ export const findPeriodDetailsDto = async (
   };
   return response;
 };
+
+/**
+ * Find all Periods where status = QUANTIFY
+ * @param match Any paramaters to add to mongoose find query
+ * @returns
+ */
+export const findActivePeriods = async (
+  match: object = {}
+): Promise<PeriodDocument[]> => {
+  let periods: PeriodDocument[] | PeriodDocument = await PeriodModel.find({
+    status: PeriodStatusType.QUANTIFY,
+    ...match,
+  });
+  if (!Array.isArray(periods)) periods = [periods];
+
+  return periods;
+};
+
+/**
+ * Get mongoose query object representing date range of Period
+ * @param period
+ * @returns
+ */
+export const getPeriodDateRangeQuery = async (
+  period: Period
+): Promise<PeriodDateRange> => ({
+  $gt: await getPreviousPeriodEndDate(period),
+  $lte: period.endDate,
+});
