@@ -3,6 +3,9 @@ import {
   InternalServerError,
   NotFoundError,
 } from '@error/errors';
+import { PeriodDocument, PeriodDateRange } from '@period/types';
+import { findActivePeriods, getPeriodDateRangeQuery } from '@period/utils';
+import { countPraiseWithinDateRanges } from '@praise/utils';
 import {
   QueryInputParsedQs,
   SearchQueryInputParsedQs,
@@ -136,6 +139,26 @@ const removeRole = async (
   if (!role) throw new BadRequestError('Role is required');
 
   const roleIndex = user.roles.indexOf(role);
+
+  // If user is currently assigned to the active quantification round, and role is QUANTIFIER throw error
+  const activePeriods: PeriodDocument[] = await findActivePeriods();
+
+  if (
+    roleIndex > -1 &&
+    role === UserRole.QUANTIFIER &&
+    activePeriods.length > 0
+  ) {
+    const dateRanges: PeriodDateRange[] = await Promise.all(
+      activePeriods.map((period) => getPeriodDateRangeQuery(period))
+    );
+    const assignedPraiseCount = await countPraiseWithinDateRanges(dateRanges, {
+      'quantifications.quantifier': user._id,
+    });
+    if (assignedPraiseCount > 0)
+      throw new BadRequestError(
+        'Cannot remove quantifier currently assigned to quantification period'
+      );
+  }
 
   if (roleIndex > -1) {
     user.roles.splice(roleIndex, 1);

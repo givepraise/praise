@@ -1,5 +1,3 @@
-import jwtDecode from 'jwt-decode';
-
 export interface JWT {
   sub: string;
   userId: string;

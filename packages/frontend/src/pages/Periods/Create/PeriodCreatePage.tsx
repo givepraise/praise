@@ -83,7 +83,7 @@ const PeriodsForm = (): JSX.Element => {
         },
       }}
       render={({ handleSubmit }): JSX.Element => (
-        <form onSubmit={handleSubmit} className="leading-loose">
+        <form onSubmit={void handleSubmit} className="leading-loose">
           <div className="mb-3">
             <Field name="name">
               {({ input }): JSX.Element => (

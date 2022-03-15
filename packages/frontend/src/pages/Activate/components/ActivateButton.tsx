@@ -108,7 +108,7 @@ export default function ActivateButton(): JSX.Element {
       <div>
         <button
           className="px-4 py-2 font-bold text-white uppercase bg-gray-800 rounded hover:bg-gray-700"
-          onClick={signLoginMessage}
+          onClick={void signLoginMessage}
         >
           Sign activation message
         </button>
