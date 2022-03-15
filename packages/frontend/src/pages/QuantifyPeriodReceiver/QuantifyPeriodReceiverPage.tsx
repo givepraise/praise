@@ -75,12 +75,14 @@ const PeriodMessage = (): JSX.Element | null => {
 };
 
 const QuantifyPeriodUserPage = (): JSX.Element => {
+  const { periodId } = useParams<PeriodPageParams>();
+
   return (
     <>
       <React.Suspense fallback="Loading…">
         <PeriodBreadCrumb />
       </React.Suspense>
-      <BackLink />
+      <BackLink to={`/quantify/period/${periodId}`} />
 
       <div className="w-2/3 praise-box">
         <React.Suspense fallback="Loading…">

@@ -1,16 +1,17 @@
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-const BackLink = (): JSX.Element => {
-  const history = useHistory();
-
+interface BackLinkProps {
+  to: string;
+}
+const BackLink = ({ to }: BackLinkProps): JSX.Element => {
   return (
-    <div
-      onClick={(): void => {
-        history.goBack();
-      }}
-      className="mb-2 text-sm cursor-pointer"
-    >
-      ← Back
+    <div className="mb-2">
+      <Link
+        to={to}
+        className="mb-2 text-sm cursor-pointer no-underline hover:underline"
+      >
+        ← Back
+      </Link>
     </div>
   );
 };
