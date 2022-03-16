@@ -11,3 +11,6 @@ node_modules
 
 .env
 yarn-error.log
+
+/uploads
+/uploads/*

@@ -153,8 +153,8 @@ export const useSetSetting = (): useSetSettingReturn => {
     ({ snapshot, set }) =>
       async (setting: Setting) => {
         let params = {
-          url: `/api/admin/settings/${setting._id}/set`,
-          data: JSON.stringify({ value: setting.value }),
+          url: `/admin/settings/${setting._id}/set`,
+          data: { value: setting.value },
         };
 
         if (setting.type === 'Image') {

@@ -20,7 +20,8 @@ type RequestParams = {
 };
 
 type RequestDataParam = {
-  data: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   file?: any;
 };
@@ -118,33 +119,16 @@ export const ApiAuthPatch = selectorFamily<
   key: 'ApiAuthPatch',
   get:
     (params: PatchRequestParams) =>
-    // async ({ get }): Promise<AxiosResponse<unknown>> => {
-    //   const { config, headers, url, data, file } = params;
-    //   const formData = new FormData();
-    //   formData.append('value', file);
-
-    //   const reqData = file ? formData : data;
-
-    //   const response = await axios.patch(
-    //     endpointUrl(url),
-    //     reqData,
-    //     authRequestConfig(config, headers, get)
-
-    //     const response = await apiAuthClient.patch(url, data, config);
-    //   );
-
     async (): Promise<AxiosResponse<unknown>> => {
-      const { config, headers, url, data, file } = params;
+      const { config, url, data, file } = params;
+
       const formData = new FormData();
       formData.append('value', file);
 
       const reqData = file ? formData : data;
 
       const apiAuthClient = makeApiAuthClient();
-      const response = await apiAuthClient.patch(url, reqData, {
-        ...config,
-        ...headers,
-      });
+      const response = await apiAuthClient.patch(url, reqData, config);
 
       return response;
     },
