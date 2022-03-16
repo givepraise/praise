@@ -17,20 +17,23 @@ import {
   isResponseOk,
   useAuthApiQuery,
 } from './api';
-import { HasRole } from './auth';
+import { ActiveTokenSet, HasRole } from './auth';
 import { AllPeriods } from './periods';
 
 export const AllUsersQuery = selector({
   key: 'AllUsersQuery',
   get: ({ get }) => {
     const isAdmin = get(HasRole('ADMIN'));
+    const activeTokenSet = get(ActiveTokenSet);
+    if (!activeTokenSet) throw Error('Not authenticated');
+
     let endpoint = '/users';
     if (isAdmin) {
       endpoint = '/admin/users';
     }
     return get(
       ApiAuthGet({
-        url: `/api${endpoint}/all?sortColumn=ethereumAddress&sortType=desc`,
+        url: `${endpoint}/all?sortColumn=ethereumAddress&sortType=desc`,
       })
     );
   },
@@ -163,8 +166,8 @@ export const useAdminUsers = (): useAdminUsersReturns => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
-              url: `/api/admin/users/${userId}/addRole`,
-              data: JSON.stringify({ role }),
+              url: `/admin/users/${userId}/addRole`,
+              data: { role },
             })
           )
         );
@@ -196,8 +199,8 @@ export const useAdminUsers = (): useAdminUsersReturns => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
-              url: `/api/admin/users/${userId}/removeRole`,
-              data: JSON.stringify({ role }),
+              url: `/admin/users/${userId}/removeRole`,
+              data: { role },
             })
           )
         );

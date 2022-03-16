@@ -83,6 +83,7 @@ const PeriodsForm = (): JSX.Element => {
         },
       }}
       render={({ handleSubmit }): JSX.Element => (
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         <form onSubmit={handleSubmit} className="leading-loose">
           <div className="mb-3">
             <Field name="name">
@@ -139,7 +140,7 @@ const PeriodsCreatePage = (): JSX.Element => {
   return (
     <>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
-      <BackLink />
+      <BackLink to="/periods" />
 
       <div className="w-2/3 praise-box">
         <h2 className="mb-2">Create period</h2>

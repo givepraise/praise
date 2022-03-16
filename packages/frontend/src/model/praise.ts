@@ -52,7 +52,7 @@ export const SinglePraiseQuery = selectorFamily({
     (params: SinglePraiseQueryParams) =>
     ({ get }): AxiosResponse<unknown> => {
       const { praiseId, refreshKey } = params;
-      return get(ApiAuthGet({ url: `/api/praise/${praiseId}`, refreshKey }));
+      return get(ApiAuthGet({ url: `/praise/${praiseId}`, refreshKey }));
     },
 });
 
@@ -148,7 +148,7 @@ export const AllPraiseQuery = selectorFamily<
         .map((key) => `${key}=${query[key]}`)
         .join('&');
       const response = get(
-        ApiAuthGet({ url: `/api/praise/all${qs ? `?${qs}` : ''}` })
+        ApiAuthGet({ url: `/praise/all${qs ? `?${qs}` : ''}` })
       );
       if (isResponseOk(response)) {
         return response;
@@ -280,12 +280,12 @@ export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthPatch({
-              url: `/api/praise/${praiseId}/quantify`,
-              data: JSON.stringify({
+              url: `/praise/${praiseId}/quantify`,
+              data: {
                 score,
                 dismissed,
                 duplicatePraise,
-              }),
+              },
             })
           )
         );

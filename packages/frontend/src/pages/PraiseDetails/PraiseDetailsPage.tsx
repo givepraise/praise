@@ -40,10 +40,18 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
 };
 
 const QuantSummaryPraisePage = (): JSX.Element => {
+  const { praiseId } = useParams<PraisePageParams>();
+  const praise = useSinglePraiseQuery(praiseId);
+  const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
+  const backLinkUrl =
+    period?._id && praise?.receiver._id
+      ? `/period/${period?._id}/receiver/${praise?.receiver._id}`
+      : '/';
+
   return (
     <>
       <BreadCrumb name={'Praise details'} icon={faCalendarAlt} />
-      <BackLink />
+      <BackLink to={backLinkUrl} />
 
       <div className="w-2/3 praise-box">
         <React.Suspense fallback="Loading…">

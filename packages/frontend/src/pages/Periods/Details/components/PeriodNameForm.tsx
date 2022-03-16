@@ -66,13 +66,13 @@ const PeriodNameForm = (): JSX.Element | null => {
       validate={validate}
       initialValues={{ name: period.name }}
       render={({ handleSubmit, form }): JSX.Element => (
-        <form onSubmit={handleSubmit} className="leading-loose">
+        <form onSubmit={void handleSubmit} className="leading-loose">
           <div className="mb-3">
             <Field name="name">
               {({ input, meta }): JSX.Element => (
                 <div className="mb-2">
                   <OutsideClickHandler
-                    onOutsideClick={handleSubmit}
+                    onOutsideClick={void handleSubmit}
                     active={meta.active ? true : false}
                   >
                     <input

@@ -173,6 +173,7 @@ const SettingsForm = (): JSX.Element | null => {
         },
       }}
       render={({ handleSubmit }): JSX.Element => (
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         <form onSubmit={handleSubmit} className="leading-loose">
           <div className="mb-3">
             {settings.map((setting: Setting) => getField(setting))}

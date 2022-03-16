@@ -58,7 +58,9 @@ const PraiseAutosuggest = ({
     } = useCombobox({
       items: inputItems,
       onInputValueChange: ({ inputValue }) => {
-        const search = inputValue ? inputValue.toLocaleLowerCase() : '';
+        const search = inputValue
+          ? inputValue.toLocaleLowerCase().replace('#', '').trim()
+          : '';
         if (filteredData) {
           setInputItems(
             filteredData.filter((praise) => {

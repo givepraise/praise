@@ -69,7 +69,7 @@ const PeriodDetailPage = (): JSX.Element => {
   return (
     <>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
-      <BackLink />
+      <BackLink to="/periods" />
 
       <div className="w-2/3 praise-box ">
         <React.Suspense fallback="Loading…">

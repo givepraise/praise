@@ -3556,7 +3556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:^8.5.6":
+"@types/jsonwebtoken@npm:^8.5.8":
   version: 8.5.8
   resolution: "@types/jsonwebtoken@npm:8.5.8"
   dependencies:
@@ -4636,7 +4636,7 @@ __metadata:
     "@types/jasmine": ^3.10.2
     "@types/json2csv": ^5.0.3
     "@types/jsonfile": ^6.0.1
-    "@types/jsonwebtoken": ^8.5.6
+    "@types/jsonwebtoken": ^8.5.8
     "@types/lodash": ^4.14.179
     "@types/mime-types": ^2.1.1
     "@types/mocha": ^9.1.0
@@ -4679,7 +4679,6 @@ __metadata:
     morgan: ^1.10.0
     nodemon: ^2.0.15
     prettier: ^2.5.1
-    randomstring: ^1.2.1
     supertest: ^6.1.6
     ts-mocha: ^9.0.2
     ts-node: ^10.4.0
@@ -5039,6 +5038,15 @@ __metadata:
   version: 4.4.1
   resolution: "axe-core@npm:4.4.1"
   checksum: ad14c5b71059dc3d24ef2519b8cd96e98b4a572379396201ce449d1c4262181821d6ca9550df65b22371faf06d28bbe94d391fe5675f2a08e6550f7b5da8416d
+  languageName: node
+  linkType: hard
+
+"axios-auth-refresh@npm:^3.2.2":
+  version: 3.2.2
+  resolution: "axios-auth-refresh@npm:3.2.2"
+  peerDependencies:
+    axios: ">= 0.18 < 0.19.0 || >= 0.19.1"
+  checksum: f72b5ce9f16f1624576dbe951c293f64566a0230cedb753ff85e938472145dbfdcaec4fe07d89027a8e717418e7f213dc4f6e93fb6fb6ad6301c63bbe441b6b9
   languageName: node
   linkType: hard
 
@@ -9429,6 +9437,7 @@ __metadata:
     api: "workspace:^"
     autoprefixer: ^9.8.6
     axios: ^0.22.0
+    axios-auth-refresh: ^3.2.2
     craco-alias: ^3.0.1
     date-fns: ^2.25.0
     downshift: ^6.1.7
@@ -9452,6 +9461,8 @@ __metadata:
     react-scripts: 5.0.0
     react-table: ^7.7.0
     recoil: ^0.5.2
+    recoil-nexus: ^0.3.15
+    recoil-persist: ^4.0.0
     tailwindcss: "npm:@tailwindcss/postcss7-compat@^2.2.7"
     tsconfig-paths: ^3.12.0
     typescript: ^4.5.5
@@ -15692,7 +15703,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"randomstring@npm:^1.2.1, randomstring@npm:^1.2.2":
+"randomstring@npm:^1.2.2":
   version: 1.2.2
   resolution: "randomstring@npm:1.2.2"
   dependencies:
@@ -16041,6 +16052,28 @@ __metadata:
   dependencies:
     picomatch: ^2.2.1
   checksum: 1ced032e6e45670b6d7352d71d21ce7edf7b9b928494dcaba6f11fba63180d9da6cd7061ebc34175ffda6ff529f481818c962952004d273178acd70f7059b320
+  languageName: node
+  linkType: hard
+
+"recoil-nexus@npm:^0.3.15":
+  version: 0.3.15
+  resolution: "recoil-nexus@npm:0.3.15"
+  peerDependencies:
+    "@types/react": ">=16.8.0"
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+    recoil: ">=0.2.0"
+    typescript: ">=4.1.0"
+  checksum: a95d69fe7e30d199f5aafe7009abcc9cfb0c25536bb7cd999cea2e50454301ac33922442cde79ede34ec7644091d9d29c142181c3f0fa75b2414c1161ae6b360
+  languageName: node
+  linkType: hard
+
+"recoil-persist@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "recoil-persist@npm:4.0.0"
+  peerDependencies:
+    recoil: ^0.5.1
+  checksum: 95ac8d6bab6d5153fa0c608bd7b69ac5fd53a7b7863b9515b1917c42325682b28b272594467928743ffe5822bad9c099c7d9dcd1e16fb3ca5b16ca560e25df69
   languageName: node
   linkType: hard
 
