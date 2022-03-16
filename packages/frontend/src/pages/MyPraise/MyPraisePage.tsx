@@ -1,6 +1,5 @@
 import BreadCrumb from '@/components/BreadCrumb';
-import { ActivePeriodMessage } from '@/components/periods/ActivePeriodMessage';
-import { ActiveUserQuantificationsMessage } from '@/components/periods/ActiveUserQuantificationsMessage';
+import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import PraiseTable from './components/MyPraiseTable';
@@ -10,12 +9,7 @@ const MyPraise = (): JSX.Element => {
     <>
       <BreadCrumb name="My praise" icon={faPrayingHands} />
 
-      <div className="w-2/3 praise-box">
-        <React.Suspense fallback="Loading…">
-          <ActivePeriodMessage />
-          <ActiveUserQuantificationsMessage />
-        </React.Suspense>
-      </div>
+      <ActiveNoticesBoard />
 
       <div className="w-2/3 praise-box">
         <React.Suspense fallback="Loading…">

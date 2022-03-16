@@ -1,7 +1,6 @@
 import AdminOnly from '@/components/auth/AdminOnly';
 import BreadCrumb from '@/components/BreadCrumb';
-import { ActivePeriodMessage } from '@/components/periods/ActivePeriodMessage';
-import { ActiveUserQuantificationsMessage } from '@/components/periods/ActiveUserQuantificationsMessage';
+import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
 import { faCalendarAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
@@ -13,12 +12,7 @@ const PeriodsPage = (): JSX.Element => {
     <>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
 
-      <div className="w-2/3 praise-box">
-        <React.Suspense fallback="Loading…">
-          <ActivePeriodMessage />
-          <ActiveUserQuantificationsMessage />
-        </React.Suspense>
-      </div>
+      <ActiveNoticesBoard />
 
       <div className="w-2/3 praise-box">
         <AdminOnly>
