@@ -17,10 +17,14 @@ type RequestParams = {
   config?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   headers?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  file?: any;
 };
 
 type RequestDataParam = {
   data: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  file?: any;
 };
 
 type PatchRequestParams = RequestParams & RequestDataParam;
@@ -193,10 +197,15 @@ export const ApiAuthPatch = selectorFamily<
   get:
     (params: PatchRequestParams) =>
     async ({ get }): Promise<AxiosResponse<unknown>> => {
-      const { config, headers, url, data } = params;
+      const { config, headers, url, data, file } = params;
+      const formData = new FormData();
+      formData.append('value', file);
+
+      const reqData = file ? formData : parseData(data);
+
       const response = await axios.patch(
         endpointUrl(url),
-        parseData(data),
+        reqData,
         authRequestConfig(config, headers, get)
       );
       return response;

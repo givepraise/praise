@@ -152,13 +152,25 @@ export const useSetSetting = (): useSetSettingReturn => {
   const setSetting = useRecoilCallback(
     ({ snapshot, set }) =>
       async (setting: Setting) => {
+        let params = {
+          url: `/api/admin/settings/${setting._id}/set`,
+          data: JSON.stringify({ value: setting.value }),
+        };
+
+        if (setting.type === 'Image') {
+          params = {
+            ...params,
+            ...{
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+              file: setting.type === 'Image' ? setting.value : null,
+            },
+          };
+        }
+
         const response = await ApiQuery(
-          snapshot.getPromise(
-            ApiAuthPatch({
-              url: `/api/admin/settings/${setting._id}/set`,
-              data: JSON.stringify({ value: setting.value }),
-            })
-          )
+          snapshot.getPromise(ApiAuthPatch(params))
         );
 
         // If OK response, add returned period object to local state

@@ -3,6 +3,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '@error/errors';
+import { getRandomString } from '@shared/functions';
 import {
   Query,
   TypedRequestBody,
@@ -12,7 +13,6 @@ import {
 import { UserModel } from '@user/entities';
 import { UserDocument } from '@user/types';
 import { ethers } from 'ethers';
-import randomstring from 'randomstring';
 import { JwtService } from './JwtService';
 import {
   AuthRequestInput,
@@ -87,7 +87,7 @@ export const nonce = async (
   if (!ethereumAddress) throw new NotFoundError('ethereumAddress');
 
   // Generate random nonce used for auth request
-  const nonce = randomstring.generate();
+  const nonce = getRandomString();
 
   // Update existing user or create new
   await UserModel.findOneAndUpdate(

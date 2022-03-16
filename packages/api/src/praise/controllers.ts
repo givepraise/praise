@@ -246,7 +246,8 @@ export const exportPraise = async (
       }
 
       p.quantifications = await Promise.all(
-        p.quantifications.map(async (q: unknown) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        p.quantifications.map(async (q: any) => {
           const quantifier = await UserModel.findById(q.quantifier._id);
 
           const account = await UserAccountModel.findOne({

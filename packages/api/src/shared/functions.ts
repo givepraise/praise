@@ -17,7 +17,7 @@ export const getRandomInt = (): number => {
   return Math.floor(Math.random() * 1_000_000_000_000);
 };
 
-export const getRandomString = (length: number): string => {
+export const getRandomString = (length = 10): string => {
   let result = '';
   const characters =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -84,8 +84,8 @@ export const upload = async (req: Request, key: string): Promise<string> => {
     const logo: UploadedFile = file[key] as UploadedFile;
     const fileExtension: string = mime.extension(logo.mimetype) as string;
 
-    const filename = `${getRandomString(10)}.${fileExtension}`;
-    const dirname = '/public/img/';
+    const filename = `${getRandomString()}.${fileExtension}`;
+    const dirname = '/uploads/';
     const path = `${dirname}${filename}`;
 
     await logo.mv(`../..${path}`);

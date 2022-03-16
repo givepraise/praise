@@ -35,9 +35,7 @@ export function fieldTypeValidator(this: SettingDocument): Boolean {
   }
 
   if (this.type === 'Image') {
-    return (
-      typeof this.value === 'string' && this.value.includes('/public/img/')
-    );
+    return typeof this.value === 'string' && this.value.includes('/uploads');
   }
 
   return typeof this.value === this.type;

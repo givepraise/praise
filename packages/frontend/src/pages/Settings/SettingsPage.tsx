@@ -25,9 +25,11 @@ const SettingsForm = (): JSX.Element | null => {
       if (Object.prototype.hasOwnProperty.call(values, prop)) {
         const setting = settings?.find((s) => s.key === prop);
         if (setting && values[prop].toString() !== setting.value) {
+          const item = prop === 'LOGO' ? values[prop][0] : values[prop];
+
           const updatedSetting = {
             ...setting,
-            value: values[prop],
+            value: item,
           } as Setting;
 
           await setSetting(updatedSetting);
@@ -106,19 +108,17 @@ const SettingsForm = (): JSX.Element | null => {
 
   const getFileInput = (setting: Setting): JSX.Element => {
     return (
-      <Field name={setting.key} key={setting.key}>
-        {({ input }): JSX.Element => (
+      <Field<FileList> name={setting.key} key={setting.key}>
+        {({ input: { value, onChange, ...input } }): JSX.Element => (
           <div className="mb-2">
             <label className="block">{setting.key}</label>
             <input
-              type="file"
+              {...input}
               id={setting.key}
-              autoComplete="off"
+              type="file"
               className="block w-full"
+              onChange={({ target }) => onChange(target.files)}
             />
-            {apiResponse && (
-              <FieldErrorMessage name="name" apiResponse={apiResponse} />
-            )}
           </div>
         )}
       </Field>

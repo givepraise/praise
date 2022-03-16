@@ -1,7 +1,7 @@
 import { UnauthorizedError } from '@error/errors';
 import { cookieProps } from '@shared/constants';
+import { getRandomString } from '@shared/functions';
 import { sign, verify } from 'jsonwebtoken';
-import randomString from 'randomstring';
 
 export interface ClientData {
   userId: string;
@@ -19,7 +19,7 @@ export class JwtService {
   private readonly VALIDATION_ERROR = 'JSON-web-token validation failed.';
 
   constructor() {
-    this.secret = process.env.JWT_SECRET || randomString.generate(100);
+    this.secret = process.env.JWT_SECRET || getRandomString(100);
     this.options = { expiresIn: cookieProps.options.maxAge.toString() };
   }
 
