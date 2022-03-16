@@ -104,11 +104,15 @@ export default function ActivateButton(): JSX.Element {
       if (_signature) setSignature(_signature);
     };
 
+    const handleSignButtonClick = (): void => {
+      void signLoginMessage();
+    };
+
     return (
       <div>
         <button
           className="px-4 py-2 font-bold text-white uppercase bg-gray-800 rounded hover:bg-gray-700"
-          onClick={void signLoginMessage}
+          onClick={handleSignButtonClick}
         >
           Sign activation message
         </button>

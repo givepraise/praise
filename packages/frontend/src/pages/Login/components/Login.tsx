@@ -62,6 +62,10 @@ const LoginButton: React.FC = (): ReactElement | null => {
       }
     };
 
+    const handleSignButtonClick = (): void => {
+      void signLoginMessage();
+    };
+
     // 4. Redirect after login success
 
     if (accessToken) {
@@ -75,7 +79,7 @@ const LoginButton: React.FC = (): ReactElement | null => {
       return (
         <button
           className="px-4 py-2 font-bold text-white uppercase bg-gray-800 rounded hover:bg-gray-700"
-          onClick={void signLoginMessage}
+          onClick={handleSignButtonClick}
         >
           Sign login message
         </button>
