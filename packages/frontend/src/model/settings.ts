@@ -152,7 +152,7 @@ export const ImageSettingFullPath = selectorFamily({
       if (setting && setting.value) {
         const string = setting.value.toString();
         if (string && string !== '')
-          return `${process.env.REACT_APP_BACKEND_URL}${string}`;
+          return `${process.env.REACT_APP_BACKEND_URL}/${string}`;
       }
       return undefined;
     },
