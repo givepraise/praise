@@ -63,6 +63,10 @@ void (async (): Promise<void> => {
   }
   await seedSettings();
   await seedAdmins();
+
+  // Serve static files
+  app.use('/uploads', express.static('uploads'));
+
   // API routes
   app.use('/api', baseRouter);
 
