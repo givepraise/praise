@@ -96,7 +96,7 @@ const settings = [
   },
   {
     key: 'LOGO',
-    value: '/share.png',
+    value: '/upload/logo.png',
     type: 'Image',
   },
 ];
