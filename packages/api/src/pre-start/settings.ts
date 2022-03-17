@@ -96,16 +96,16 @@ const settings = [
   },
   {
     key: 'LOGO',
-    value: '',
+    value: '/upload/logo.png',
     type: 'Image',
   },
 ];
 
 const seedSettings = async (): Promise<void> => {
-  for (const s of settings) {
-    const document = await SettingsModel.findOne({ key: s.key });
-    if (!document && s.value) {
-      await SettingsModel.create(s);
+  for (const defaultSetting of settings) {
+    const setting = await SettingsModel.findOne({ key: defaultSetting.key });
+    if (!setting) {
+      await SettingsModel.create(defaultSetting);
     }
   }
 };

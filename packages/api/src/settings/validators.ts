@@ -10,7 +10,11 @@ export function fieldTypeValidator(this: SettingDocument): Boolean {
     return isNumeric(this.value);
   }
 
-  if (this.type === 'String' || this.type === 'Textarea') {
+  if (
+    this.type === 'String' ||
+    this.type === 'Textarea' ||
+    this.type === 'Image'
+  ) {
     return typeof this.value === 'string';
   }
 
@@ -32,10 +36,6 @@ export function fieldTypeValidator(this: SettingDocument): Boolean {
     });
 
     return valid;
-  }
-
-  if (this.type === 'Image') {
-    return typeof this.value === 'string' && this.value.includes('/uploads');
   }
 
   return typeof this.value === this.type;
