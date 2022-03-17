@@ -119,6 +119,11 @@ const SettingsForm = (): JSX.Element | null => {
               className="block w-full"
               onChange={({ target }) => onChange(target.files)}
             />
+            <img
+              src={`http://localhost:8088/${setting.value}`}
+              width="100"
+              height="100"
+            ></img>
           </div>
         )}
       </Field>

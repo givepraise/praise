@@ -85,20 +85,21 @@ export const upload = async (req: Request, key: string): Promise<string> => {
     const fileExtension: string = mime.extension(logo.mimetype) as string;
 
     const filename = `${getRandomString()}.${fileExtension}`;
-    const dirname = '/uploads/';
+    const dirname = 'uploads/';
     const path = `${dirname}${filename}`;
 
-    await logo.mv(`../..${path}`);
+    await logo.mv(path);
 
     return path;
   } catch (e) {
+    console.log('ERROR:', e);
     throw new InternalServerError('File upload failed.');
   }
 };
 
 export const removeFile = async (filepath: string): Promise<void> => {
   try {
-    await unlink(`../..${filepath}`);
+    await unlink(filepath);
   } catch (e) {
     logger.warn(`Could not find a file to remove: ${filepath}`);
   }
