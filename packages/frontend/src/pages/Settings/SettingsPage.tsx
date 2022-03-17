@@ -5,6 +5,7 @@ import {
   SetSettingApiResponse,
   Setting,
   useSetSetting,
+  ImageSettingFullPath,
 } from '@/model/settings';
 import { faCogs } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
@@ -17,6 +18,7 @@ const SettingsForm = (): JSX.Element | null => {
   const [apiResponse] = useRecoilState(SetSettingApiResponse);
   const settings = useRecoilValue(AllSettings);
   const { setSetting } = useSetSetting();
+  const logoPath = useRecoilValue(ImageSettingFullPath('LOGO'));
 
   // Is only called if validate is successful
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -119,11 +121,7 @@ const SettingsForm = (): JSX.Element | null => {
               className="block w-full"
               onChange={({ target }) => onChange(target.files)}
             />
-            <img
-              src={`http://localhost:8088/${setting.value}`}
-              width="100"
-              height="100"
-            ></img>
+            <img src={logoPath} width="100" height="100"></img>
           </div>
         )}
       </Field>
