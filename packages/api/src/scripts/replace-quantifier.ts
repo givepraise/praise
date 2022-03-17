@@ -26,11 +26,17 @@ const replaceActiveQuantifier = async (periodId: string, currentQuantifierId: st
     }, {
         $set: {
             // Reset score
-            "quantifications.$[].score": 0,
+            'quantifications.$[elem].score': 0,
 
             // Assign new quantifier
-            "quantifications.$[].quantifier": newQuantifierId,
+            'quantifications.$[elem].quantifier': newQuantifierId,
         }
+    }, {
+        arrayFilters: [
+            {
+                'elem.quantifier': currentQuantifierId
+            }
+        ]
     });
 
     if (result.modifiedCount === 0) {
