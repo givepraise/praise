@@ -2,10 +2,10 @@ import BreadCrumb from '@/components/BreadCrumb';
 import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import {
   AllSettings,
+  ImageSettingFullPath,
   SetSettingApiResponse,
   Setting,
   useSetSetting,
-  ImageSettingFullPath,
 } from '@/model/settings';
 import { faCogs } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
@@ -18,8 +18,6 @@ const SettingsForm = (): JSX.Element | null => {
   const [apiResponse] = useRecoilState(SetSettingApiResponse);
   const settings = useRecoilValue(AllSettings);
   const { setSetting } = useSetSetting();
-  const logoPath = useRecoilValue(ImageSettingFullPath('LOGO'));
-
   // Is only called if validate is successful
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: Record<string, any>): Promise<void> => {
@@ -108,6 +106,18 @@ const SettingsForm = (): JSX.Element | null => {
     );
   };
 
+  interface ImagePreviewProps {
+    settingsKey: string;
+  }
+  const ImagePreview = ({ settingsKey }: ImagePreviewProps): JSX.Element => {
+    const imagePath = useRecoilValue(ImageSettingFullPath(settingsKey));
+    return (
+      <div className="mt-2">
+        <img src={imagePath} width="100" height="100" />
+      </div>
+    );
+  };
+
   const getFileInput = (setting: Setting): JSX.Element => {
     return (
       <Field<FileList> name={setting.key} key={setting.key}>
@@ -121,7 +131,7 @@ const SettingsForm = (): JSX.Element | null => {
               className="block w-full"
               onChange={({ target }) => onChange(target.files)}
             />
-            <img src={logoPath} width="100" height="100"></img>
+            <ImagePreview settingsKey={setting.key} />
           </div>
         )}
       </Field>
