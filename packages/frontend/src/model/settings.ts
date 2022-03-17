@@ -142,6 +142,22 @@ export const SingleStringSetting = selectorFamily({
     },
 });
 
+export const ImageSettingFullPath = selectorFamily({
+  key: 'ImageSettingFullPath',
+  get:
+    (key: string) =>
+    ({ get }): string | undefined => {
+      const setting = get(SingleSetting(key));
+      if (!setting) return undefined;
+      if (setting && setting.value) {
+        const string = setting.value.toString();
+        if (string && string !== '')
+          return `${process.env.REACT_APP_BACKEND_URL}${string}`;
+      }
+      return undefined;
+    },
+});
+
 type useSetSettingReturn = {
   setSetting: (
     setting: Setting
