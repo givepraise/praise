@@ -25,7 +25,8 @@ const SettingsForm = (): JSX.Element | null => {
       if (Object.prototype.hasOwnProperty.call(values, prop)) {
         const setting = settings?.find((s) => s.key === prop);
         if (setting && values[prop].toString() !== setting.value) {
-          const item = prop === 'LOGO' ? values[prop][0] : values[prop];
+          const item =
+            setting.type === 'Image' ? values[prop][0] : values[prop];
 
           const updatedSetting = {
             ...setting,
