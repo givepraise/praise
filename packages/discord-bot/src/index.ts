@@ -4,7 +4,7 @@ import logger from 'jet-logger';
 import mongoose, { ConnectOptions } from 'mongoose';
 import path from 'path';
 import { registerCommands } from './utils/registerCommands';
-import { CommandInt } from './interfaces/CommandInt';
+import { Command } from './interfaces/Command';
 
 const load = dotenv.config({ path: path.join(__dirname, '..', '/.env') });
 if (load.error) {
@@ -13,7 +13,7 @@ if (load.error) {
 }
 declare module 'discord.js' {
   export interface Client {
-    commands: Collection<string, CommandInt>;
+    commands: Collection<string, Command>;
   }
 }
 

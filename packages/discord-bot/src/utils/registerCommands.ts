@@ -5,7 +5,7 @@ import { readdir } from 'fs/promises';
 import logger from 'jet-logger';
 import { join } from 'path';
 
-import { CommandInt } from '../interfaces/CommandInt';
+import { Command } from '../interfaces/Command';
 
 // const commandFiles = [activate, praise];
 
@@ -36,10 +36,9 @@ export const registerCommands = async (
     client.commands = new Collection();
 
     for (const file of commandFiles) {
-      const command: CommandInt = await import(
+      const command: Command = await import(
         join(process.cwd(), 'src', 'commands', file)
       );
-      console.log(command, typeof command.data.name, ':', typeof command);
       commandData.push(command.data);
       client.commands.set(command.data.name, command);
     }
