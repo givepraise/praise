@@ -119,7 +119,7 @@ export const refresh = async (
 
   const user = await UserModel.findOne({ refreshToken });
   if (!user || !user._id || !user.ethereumAddress)
-    throw new NotFoundError('User');
+    throw new UnauthorizedError('Invalid refresh token');
 
   // confirm refreshToken provided is valid
   const jwt: TokenSet = jwtService.refreshJwt(refreshToken);
