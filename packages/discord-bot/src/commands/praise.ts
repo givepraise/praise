@@ -3,12 +3,11 @@ import {
   SlashCommandSubcommandBuilder,
 } from '@discordjs/builders';
 import { APIMessage } from 'discord-api-types/v9';
-import { praiseHandler } from '../handlers/praise';
-import { activationHandler } from '../handlers/activate';
-import { Command } from '../interfaces/Command';
-
-import { getMsgLink } from '../utils/format';
 import logger from 'jet-logger';
+import { activationHandler } from '../handlers/activate';
+import { praiseHandler } from '../handlers/praise';
+import { Command } from '../interfaces/Command';
+import { getMsgLink } from '../utils/format';
 
 export const praise: Command = {
   data: new SlashCommandBuilder()
@@ -45,18 +44,18 @@ export const praise: Command = {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'praise')
         return;
-      const msg = (await interaction.deferReply({
-        fetchReply: true,
-      })) as APIMessage | void;
 
       const subCommand = interaction.options.getSubcommand();
 
-      if (msg === undefined) return;
       switch (subCommand) {
         case 'activate':
           await activationHandler(interaction);
           break;
-        case 'dish':
+        case 'dish': {
+          const msg = (await interaction.deferReply({
+            fetchReply: true,
+          })) as APIMessage | void;
+          if (msg === undefined) return;
           await praiseHandler(
             interaction,
             getMsgLink(
@@ -66,6 +65,7 @@ export const praise: Command = {
             )
           );
           break;
+        }
       }
     } catch (err) {
       logger.err(err);

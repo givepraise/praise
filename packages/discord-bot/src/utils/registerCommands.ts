@@ -1,23 +1,19 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
-import { Client, Collection } from 'discord.js';
+import { Collection } from 'discord.js';
 import { readdir } from 'fs/promises';
 import logger from 'jet-logger';
 import { join } from 'path';
-
 import { Command } from '../interfaces/Command';
-
-// const commandFiles = [activate, praise];
+import { DiscordClient } from '../interfaces/DiscordClient';
 
 export const registerCommands = async (
-  client: Client,
-  clientId: string,
-  guildId: string
+  client: DiscordClient
 ): Promise<boolean> => {
-  if (!clientId) {
+  if (!client.id) {
     logger.err('DISCORD_CLIENT_ID env variable not set.');
   }
-  if (!guildId) {
+  if (!client.guildId) {
     logger.err('DISCORD_GUILD_ID env variable not set.');
   }
 
@@ -36,14 +32,16 @@ export const registerCommands = async (
     client.commands = new Collection();
 
     for (const file of commandFiles) {
-      const command: Command = await import(
+      const fileData = await import(
         join(process.cwd(), 'src', 'commands', file)
       );
-      commandData.push(command.data);
+      const name = file.split('.')[0];
+      const command = fileData[name] as Command;
       client.commands.set(command.data.name, command);
+      commandData.push(command.data);
     }
 
-    await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
+    await rest.put(Routes.applicationGuildCommands(client.id, client.guildId), {
       body: commandData,
     });
 

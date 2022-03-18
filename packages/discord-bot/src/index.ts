@@ -1,20 +1,15 @@
-import { Client, Collection } from 'discord.js';
+import { Client } from 'discord.js';
 import * as dotenv from 'dotenv';
 import logger from 'jet-logger';
 import mongoose, { ConnectOptions } from 'mongoose';
 import path from 'path';
+import { DiscordClient } from './interfaces/DiscordClient';
 import { registerCommands } from './utils/registerCommands';
-import { Command } from './interfaces/Command';
 
 const load = dotenv.config({ path: path.join(__dirname, '..', '/.env') });
 if (load.error) {
   logger.err(load.error.message);
   throw load.error;
-}
-declare module 'discord.js' {
-  export interface Client {
-    commands: Collection<string, Command>;
-  }
 }
 
 if (!process.env.PRAISE_GIVER_ROLE_ID) {
@@ -35,15 +30,15 @@ if (!frontendUrl) {
 }
 
 // Create a new client instance
-const discordClient = new Client({ intents: ['GUILDS', 'GUILD_MEMBERS'] });
+const discordClient = new Client({
+  intents: ['GUILDS', 'GUILD_MEMBERS'],
+}) as DiscordClient;
 
 // Set bot commands
 void (async (): Promise<void> => {
-  const registerSuccess = await registerCommands(
-    discordClient,
-    process.env.DISCORD_CLIENT_ID || '',
-    process.env.DISCORD_GUILD_ID || ''
-  );
+  discordClient.id = process.env.DISCORD_CLIENT_ID || '';
+  discordClient.guildId = process.env.DISCORD_GUILD_ID || '';
+  const registerSuccess = await registerCommands(discordClient);
 
   if (registerSuccess) {
     logger.info('All bot commands registered in Guild.');
