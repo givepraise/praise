@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- New command structure for the discord-bot package, with subcommands under the /praise command (#167)
 - Github actions to build & lint PRs #152 #107
 - Implements JWT refresh tokens. A user with an expired accessToken, but an active refreshToken, can request a new accessToken with a later expiration date.
 
