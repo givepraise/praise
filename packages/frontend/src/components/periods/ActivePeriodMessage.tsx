@@ -4,16 +4,13 @@ import { getActivePeriod } from '@/utils/periods';
 import React, { ReactElement } from 'react';
 import { useRecoilValue } from 'recoil';
 
-export const ActivePeriodMessage: React.FC = (): ReactElement => {
+export const ActivePeriodMessage: React.FC = (): ReactElement | null => {
   const allPeriods = useRecoilValue(AllPeriods);
 
-  const noPeriodMessage = 'There is no active quantification period.';
-
-  if (!Array.isArray(allPeriods) || allPeriods.length === 0)
-    return <div>{noPeriodMessage}</div>;
+  if (!Array.isArray(allPeriods) || allPeriods.length === 0) return null;
 
   const activePeriod = getActivePeriod(allPeriods);
-  if (!activePeriod) return <div>{noPeriodMessage}</div>;
+  if (!activePeriod) return null;
 
   return (
     <div>
