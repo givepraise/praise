@@ -28,7 +28,7 @@ const handleErrors = (err: AxiosError): void => {
   // Any HTTP Code which is not 2xx will be considered as error
   const statusCode = err?.response?.status;
 
-  if (!statusCode) {
+  if (err?.request && !err?.response) {
     toast.error('Server did not respond');
   } else if (statusCode === 404) {
     window.location.href = '/404';
