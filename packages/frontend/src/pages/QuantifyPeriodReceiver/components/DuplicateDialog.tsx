@@ -20,7 +20,7 @@ const DuplicateDialog = ({
   if (!praise) return null;
 
   return (
-    <ScrollableDialog open={open}>
+    <ScrollableDialog open={open} onClose={onClose}>
       <div className="w-full h-full">
         <div className="flex justify-end p-6">
           <button className="praise-button-round" onClick={onClose}>
@@ -44,7 +44,6 @@ const DuplicateDialog = ({
           </div>
         </div>
       </div>
-
     </ScrollableDialog>
   );
 };
