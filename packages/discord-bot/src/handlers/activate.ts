@@ -1,10 +1,11 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
-import { CommandInteraction, Interaction } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import randomstring from 'randomstring';
 
-const activate = async (interaction: CommandInteraction): Promise<void> => {
+export const activationHandler = async (
+  interaction: CommandInteraction
+): Promise<void> => {
   const { user } = interaction;
   const ua = {
     accountId: user.id,
@@ -52,20 +53,4 @@ const activate = async (interaction: CommandInteraction): Promise<void> => {
     content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${activationURL})`,
     ephemeral: true,
   });
-};
-
-module.exports = {
-  data: new SlashCommandBuilder()
-    .setName('praise-activate')
-    .setDescription(
-      'Activates your praise account and links your eth address!'
-    ),
-
-  async execute(interaction: Interaction): Promise<void> {
-    if (interaction.isCommand()) {
-      if (interaction.commandName === 'praise-activate') {
-        await activate(interaction);
-      }
-    }
-  },
 };
