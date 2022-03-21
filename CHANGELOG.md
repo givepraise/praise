@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- New command structure for the discord-bot package, with subcommands under the /praise command (#167)
+- New command structure for the discord-bot package, with subcommands under the /praise command. #167
+- Settings now supports image uploads. Initially used for the top left logo. #124
 - Command-line script to replace an actively assigned quantifier with a new one, as a short-term workaround for #173.
 - Github actions to build & lint PRs #152 #107
 - Implements JWT refresh tokens. A user with an expired accessToken, but an active refreshToken, can request a new accessToken with a later expiration date.

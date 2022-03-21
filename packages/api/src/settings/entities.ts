@@ -8,7 +8,7 @@ export const settingsSchema = new mongoose.Schema(
     value: { type: String, required: true },
     type: {
       type: String,
-      enum: ['Number', 'String', 'Textarea', 'Boolean', 'File', 'List'],
+      enum: ['Number', 'String', 'Textarea', 'Boolean', 'List', 'Image'],
       validate: fieldTypeValidator,
     },
   },

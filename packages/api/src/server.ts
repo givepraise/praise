@@ -12,8 +12,15 @@ import { seedAdmins } from './pre-start/admins';
 import { seedData } from './pre-start/seed';
 import { seedSettings } from './pre-start/settings';
 import { baseRouter } from './routes';
+import fileUpload from 'express-fileupload';
 
 const app = express();
+
+app.use(
+  fileUpload({
+    createParentPath: true,
+  })
+);
 
 const username = process.env.MONGO_USERNAME || '';
 const password = process.env.MONGO_PASSWORD || '';
@@ -56,6 +63,10 @@ void (async (): Promise<void> => {
   }
   await seedSettings();
   await seedAdmins();
+
+  // Serve static files
+  app.use('/uploads', express.static('uploads'));
+
   // API routes
   app.use('/api', baseRouter);
 
