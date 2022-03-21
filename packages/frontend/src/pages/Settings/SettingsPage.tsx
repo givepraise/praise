@@ -4,7 +4,7 @@ import {
   AllSettings,
   ImageSettingFullPath,
   SetSettingApiResponse,
-  Setting,
+  StringSetting,
   useSetSetting,
 } from '@/model/settings';
 import { faCogs } from '@fortawesome/free-solid-svg-icons';
@@ -31,7 +31,7 @@ const SettingsForm = (): JSX.Element | null => {
           const updatedSetting = {
             ...setting,
             value: item,
-          } as Setting;
+          } as StringSetting;
 
           await setSetting(updatedSetting);
         }
@@ -39,7 +39,7 @@ const SettingsForm = (): JSX.Element | null => {
     }
   };
 
-  const getStringInput = (setting: Setting): JSX.Element => {
+  const getStringInput = (setting: StringSetting): JSX.Element => {
     return (
       <Field name={setting.key} key={setting.key}>
         {({ input }): JSX.Element => {
@@ -63,7 +63,7 @@ const SettingsForm = (): JSX.Element | null => {
     );
   };
 
-  const getNumberInput = (setting: Setting): JSX.Element => {
+  const getNumberInput = (setting: StringSetting): JSX.Element => {
     return (
       <Field name={setting.key} key={setting.key}>
         {({ input }): JSX.Element => (
@@ -85,7 +85,7 @@ const SettingsForm = (): JSX.Element | null => {
     );
   };
 
-  const getTextareaInput = (setting: Setting): JSX.Element => {
+  const getTextareaInput = (setting: StringSetting): JSX.Element => {
     return (
       <Field name={setting.key} key={setting.key}>
         {({ input }): JSX.Element => (
@@ -119,7 +119,7 @@ const SettingsForm = (): JSX.Element | null => {
     );
   };
 
-  const getFileInput = (setting: Setting): JSX.Element => {
+  const getFileInput = (setting: StringSetting): JSX.Element => {
     return (
       <Field<FileList> name={setting.key} key={setting.key}>
         {({ input: { value, onChange, ...input } }): JSX.Element => (
@@ -139,7 +139,7 @@ const SettingsForm = (): JSX.Element | null => {
     );
   };
 
-  const getBooleanInput = (setting: Setting): JSX.Element => {
+  const getBooleanInput = (setting: StringSetting): JSX.Element => {
     return (
       <Field name={setting.key} key={setting.key} type="checkbox">
         {({ input }): JSX.Element => {
@@ -157,7 +157,7 @@ const SettingsForm = (): JSX.Element | null => {
     );
   };
 
-  const getField = (setting: Setting): JSX.Element | null => {
+  const getField = (setting: StringSetting): JSX.Element | null => {
     if (setting.type === 'String' || setting.type === 'List')
       return getStringInput(setting);
     if (setting.type === 'Number') return getNumberInput(setting);
@@ -190,7 +190,7 @@ const SettingsForm = (): JSX.Element | null => {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         <form onSubmit={handleSubmit} className="leading-loose">
           <div className="mb-3">
-            {settings.map((setting: Setting) => getField(setting))}
+            {settings.map((setting: StringSetting) => getField(setting))}
           </div>
           <div className="mt-2">
             <SubmitButton />
