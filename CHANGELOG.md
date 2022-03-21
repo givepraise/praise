@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Export of quantified praise calculated wrong average score on duplicate praise. #183
+- Export of quantified praise calculated wrong average score on duplicate praise. #182
 
 ## [0.0.1] - 2022-03-10
 
