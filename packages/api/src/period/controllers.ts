@@ -34,13 +34,13 @@ import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import { periodDocumentTransformer } from './transformers';
 import {
+  AssignQuantifiersDryRunOutput,
   PeriodDetailsDto,
   PeriodDto,
   PeriodQuantifierPraiseInput,
   PeriodReceiverPraiseInput,
   PeriodStatusType,
   PeriodUpdateInput,
-  AssignQuantifiersDryRunOutput,
   VerifyQuantifierPoolSizeResponse,
 } from './types';
 import { findPeriodDetailsDto, getPreviousPeriodEndDate } from './utils';
@@ -329,7 +329,7 @@ const assignQuantifiersDryRun = async (
 
   // Verify & log that all praise is accounted for in this model
   const totalPraiseCount: number = await PraiseModel.count({
-    createdAt: { $gte: previousPeriodEndDate, $lt: period.endDate },
+    createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
   });
   const expectedAssignedPraiseCount: number =
     totalPraiseCount * quantifiersPerPraiseReceiver;

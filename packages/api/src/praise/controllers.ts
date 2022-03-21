@@ -153,8 +153,8 @@ export const exportPraise = async (
 
   const praises = await PraiseModel.find({
     createdAt: {
-      $gte: new Date(String(req.query.periodStart)),
-      $lt: new Date(String(req.query.periodEnd)),
+      $gt: new Date(String(req.query.periodStart)),
+      $lte: new Date(String(req.query.periodEnd)),
     },
   }).populate('giver receiver');
 
