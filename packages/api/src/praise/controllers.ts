@@ -21,7 +21,10 @@ import { UserAccountModel } from '@useraccount/entities';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { PraiseModel } from './entities';
-import { praiseDocumentTransformer } from './transformers';
+import {
+  calculateDuplicateScore,
+  praiseDocumentTransformer,
+} from './transformers';
 import {
   PraiseAllInput,
   PraiseDetailsDto,
@@ -143,76 +146,18 @@ export const exportPraise = async (
   req: TypedRequestBody<QueryInput>,
   res: Response
 ): Promise<void> => {
-  const query: PraiseExportInput = {
-    receiver: undefined,
-    createdAt: undefined,
-  };
-
-  if (req.query.receiver) {
-    query.receiver = String(req.query.receiver);
-  }
-
-  if (req.query.periodStart && req.query.periodEnd) {
-    query.createdAt = {
-      $gt: String(req.query.periodStart),
-      $lte: String(req.query.periodEnd),
-    };
-  }
   if (!req.query.periodStart || !req.query.periodEnd) {
     throw new BadRequestError(
       'You need to specify start and end date for period.'
     );
   }
 
-  const praises = await PraiseModel.aggregate([
-    {
-      $project: {
-        reason: 1,
-        quantifications: 1,
-        sourceId: 1,
-        sourceName: 1,
-        giver: 1,
-        receiver: 1,
-        createdAt: {
-          $dateToString: {
-            date: '$createdAt',
-          },
-        },
-      },
+  const praises = await PraiseModel.find({
+    createdAt: {
+      $gte: new Date(String(req.query.periodStart)),
+      $lt: new Date(String(req.query.periodEnd)),
     },
-    {
-      $match: {
-        createdAt: { $gt: req.query.periodStart, $lte: req.query.periodEnd },
-      },
-    },
-    {
-      $lookup: {
-        from: 'useraccounts',
-        localField: 'giver',
-        foreignField: '_id',
-        as: 'giver',
-      },
-    },
-    {
-      $lookup: {
-        from: 'useraccounts',
-        localField: 'receiver',
-        foreignField: '_id',
-        as: 'receiver',
-      },
-    },
-    {
-      $project: {
-        reason: 1,
-        quantifications: 1,
-        sourceId: 1,
-        sourceName: 1,
-        createdAt: 1,
-        giver: { $arrayElemAt: ['$giver', 0] },
-        receiver: { $arrayElemAt: ['$receiver', 0] },
-      },
-    },
-  ]);
+  }).populate('giver receiver');
 
   const praiseQuantifications = await PraiseModel.aggregate([
     {
@@ -227,30 +172,27 @@ export const exportPraise = async (
   const quantificationsColumnsCount =
     praiseQuantifications[0].quantificationsCount;
 
-  const docs = await Promise.all(
-    praises.map(async (p) => {
-      if (p.receiver && p.receiver.user) {
-        const receiver = await UserModel.findById(p.receiver.user);
+  const docs: PraiseDetailsDto[] = [];
+  if (praises) {
+    for (const praise of praises) {
+      const pws = await praiseWithScore(praise);
 
-        if (receiver) {
-          p.receiver.ethAddress = receiver.ethereumAddress;
-        }
+      const receiver = await UserModel.findById(pws.receiver.user);
+      if (receiver) {
+        pws.receiver.ethAddress = receiver.ethereumAddress;
       }
 
-      if (p.giver && p.giver.user) {
-        const giver = await UserModel.findById(p.giver.user);
-
+      if (pws.giver && pws.giver.user) {
+        const giver = await UserModel.findById(pws.giver.user);
         if (giver) {
-          p.giver.ethAddress = giver.ethereumAddress;
+          pws.giver.ethAddress = giver.ethereumAddress;
         }
       }
 
-      p.quantifications = await Promise.all(
+      pws.quantifications = await Promise.all(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        p.quantifications.map(async (q: any) => {
-          //TODO Fix any type            ☝️
+        pws.quantifications.map(async (q: any) => {
           const quantifier = await UserModel.findById(q.quantifier._id);
-
           const account = await UserAccountModel.findOne({
             user: q.quantifier._id,
           });
@@ -258,15 +200,27 @@ export const exportPraise = async (
           q.quantifier = quantifier;
           q.account = account;
 
+          if (q.duplicatePraise) {
+            const praise = await PraiseModel.findById(q.duplicatePraise._id);
+            if (praise && praise.quantifications) {
+              const quantification = praise.quantifications.find((q) =>
+                q.quantifier.equals(q.quantifier)
+              );
+              if (quantification) {
+                q.score = quantification.dismissed
+                  ? 0
+                  : await calculateDuplicateScore(quantification);
+              }
+            }
+          }
+
           return q;
         })
       );
 
-      p.averageScore = await calculatePraiseScore(p);
-
-      return p;
-    })
-  );
+      docs.push(pws);
+    }
+  }
 
   const fields = [
     {
@@ -352,7 +306,7 @@ export const exportPraise = async (
 
   fields.push({
     label: 'AVG SCORE',
-    value: 'averageScore',
+    value: 'score',
   });
 
   const json2csv = new Parser({ fields: fields });
