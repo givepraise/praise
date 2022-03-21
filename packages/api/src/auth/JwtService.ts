@@ -1,6 +1,6 @@
 import { UnauthorizedError } from '@error/errors';
+import { getRandomString } from '@shared/functions';
 import { sign, verify, JwtPayload } from 'jsonwebtoken';
-import randomString from 'randomstring';
 import { TokenSet } from './types';
 export interface ClientData {
   userId: string;
@@ -20,7 +20,7 @@ export class JwtService {
   private readonly accessExpiresIn: number;
 
   constructor() {
-    this.secret = process.env.JWT_SECRET || randomString.generate(100);
+    this.secret = process.env.JWT_SECRET || getRandomString(100);
     this.accessExpiresIn = Number(process.env.JWT_ACCESS_EXP) || 3600;
     this.refreshExpiresIn = Number(process.env.JWT_REFRESH_EXP) || 259200;
   }

@@ -2,8 +2,9 @@ import BreadCrumb from '@/components/BreadCrumb';
 import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import {
   AllSettings,
+  ImageSettingFullPath,
   SetSettingApiResponse,
-  Setting,
+  StringSetting,
   useSetSetting,
 } from '@/model/settings';
 import { faCogs } from '@fortawesome/free-solid-svg-icons';
@@ -17,7 +18,6 @@ const SettingsForm = (): JSX.Element | null => {
   const [apiResponse] = useRecoilState(SetSettingApiResponse);
   const settings = useRecoilValue(AllSettings);
   const { setSetting } = useSetSetting();
-
   // Is only called if validate is successful
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: Record<string, any>): Promise<void> => {
@@ -25,17 +25,21 @@ const SettingsForm = (): JSX.Element | null => {
       if (Object.prototype.hasOwnProperty.call(values, prop)) {
         const setting = settings?.find((s) => s.key === prop);
         if (setting && values[prop].toString() !== setting.value) {
+          const item =
+            setting.type === 'Image' ? values[prop][0] : values[prop];
+
           const updatedSetting = {
             ...setting,
-            value: values[prop],
-          } as Setting;
+            value: item,
+          } as StringSetting;
+
           await setSetting(updatedSetting);
         }
       }
     }
   };
 
-  const getStringInput = (setting: Setting): JSX.Element => {
+  const getStringInput = (setting: StringSetting): JSX.Element => {
     return (
       <Field name={setting.key} key={setting.key}>
         {({ input }): JSX.Element => {
@@ -59,7 +63,7 @@ const SettingsForm = (): JSX.Element | null => {
     );
   };
 
-  const getNumberInput = (setting: Setting): JSX.Element => {
+  const getNumberInput = (setting: StringSetting): JSX.Element => {
     return (
       <Field name={setting.key} key={setting.key}>
         {({ input }): JSX.Element => (
@@ -81,7 +85,7 @@ const SettingsForm = (): JSX.Element | null => {
     );
   };
 
-  const getTextareaInput = (setting: Setting): JSX.Element => {
+  const getTextareaInput = (setting: StringSetting): JSX.Element => {
     return (
       <Field name={setting.key} key={setting.key}>
         {({ input }): JSX.Element => (
@@ -103,29 +107,39 @@ const SettingsForm = (): JSX.Element | null => {
     );
   };
 
-  const getFileInput = (setting: Setting): JSX.Element => {
+  interface ImagePreviewProps {
+    settingsKey: string;
+  }
+  const ImagePreview = ({ settingsKey }: ImagePreviewProps): JSX.Element => {
+    const imagePath = useRecoilValue(ImageSettingFullPath(settingsKey));
     return (
-      <Field name={setting.key} key={setting.key}>
-        {({ input }): JSX.Element => (
+      <div className="mt-2">
+        <img src={imagePath} width="100" height="100" />
+      </div>
+    );
+  };
+
+  const getFileInput = (setting: StringSetting): JSX.Element => {
+    return (
+      <Field<FileList> name={setting.key} key={setting.key}>
+        {({ input: { value, onChange, ...input } }): JSX.Element => (
           <div className="mb-2">
             <label className="block">{setting.key}</label>
             <input
-              type="text"
-              id={setting.key}
               {...input}
-              autoComplete="off"
+              id={setting.key}
+              type="file"
               className="block w-full"
+              onChange={({ target }) => onChange(target.files)}
             />
-            {apiResponse && (
-              <FieldErrorMessage name="name" apiResponse={apiResponse} />
-            )}
+            <ImagePreview settingsKey={setting.key} />
           </div>
         )}
       </Field>
     );
   };
 
-  const getBooleanInput = (setting: Setting): JSX.Element => {
+  const getBooleanInput = (setting: StringSetting): JSX.Element => {
     return (
       <Field name={setting.key} key={setting.key} type="checkbox">
         {({ input }): JSX.Element => {
@@ -143,13 +157,13 @@ const SettingsForm = (): JSX.Element | null => {
     );
   };
 
-  const getField = (setting: Setting): JSX.Element | null => {
+  const getField = (setting: StringSetting): JSX.Element | null => {
     if (setting.type === 'String' || setting.type === 'List')
       return getStringInput(setting);
     if (setting.type === 'Number') return getNumberInput(setting);
     if (setting.type === 'Textarea') return getTextareaInput(setting);
     if (setting.type === 'Boolean') return getBooleanInput(setting);
-    if (setting.type === 'File') return getFileInput(setting);
+    if (setting.type === 'Image') return getFileInput(setting);
     return null;
   };
 
@@ -165,6 +179,7 @@ const SettingsForm = (): JSX.Element | null => {
   return (
     <Form
       onSubmit={onSubmit}
+      encType="multipart/form-data"
       initialValues={initialValues}
       mutators={{
         setDate: (args, state, utils): void => {
@@ -175,7 +190,7 @@ const SettingsForm = (): JSX.Element | null => {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         <form onSubmit={handleSubmit} className="leading-loose">
           <div className="mb-3">
-            {settings.map((setting: Setting) => getField(setting))}
+            {settings.map((setting: StringSetting) => getField(setting))}
           </div>
           <div className="mt-2">
             <SubmitButton />

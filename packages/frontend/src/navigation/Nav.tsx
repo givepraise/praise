@@ -1,7 +1,7 @@
 import AdminOnly from '@/components/auth/AdminOnly';
 import { ActiveTokenSet } from '@/model/auth';
 import { EthState } from '@/model/eth';
-import { ReactComponent as TECLogo } from '@/svg/tec-logo.svg';
+import { ImageSettingFullPath } from '@/model/settings';
 import { classNames } from '@/utils/index';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -45,6 +45,7 @@ export const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
 export default function Nav(): JSX.Element {
   const setActiveTokenSet = useSetRecoilState(ActiveTokenSet);
   const ethState = useRecoilValue(EthState);
+  const logoPath = useRecoilValue(ImageSettingFullPath('LOGO'));
 
   const handleLogoutClick = (): void => {
     setActiveTokenSet(undefined);
@@ -57,7 +58,7 @@ export default function Nav(): JSX.Element {
           <ul className="relative h-full p-0 m-0 list-none">
             <li className="relative flex justify-start w-full p-4 text-2xl font-bold">
               <Link to="/">
-                <TECLogo className={'inline-block w-52'} />
+                <img src={logoPath} className={'inline-block w-52'} />
               </Link>
             </li>
 

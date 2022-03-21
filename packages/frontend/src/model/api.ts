@@ -15,15 +15,19 @@ type RequestParams = {
   config?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   headers?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  file?: any;
 };
 
 type RequestDataParam = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  file?: any;
 };
 
-type PatchRequestParams = RequestParams & RequestDataParam;
-type PostRequestParams = RequestParams & RequestDataParam;
+export type PatchRequestParams = RequestParams & RequestDataParam;
+export type PostRequestParams = RequestParams & RequestDataParam;
 
 export const isResponseOk = (
   response: AxiosResponse | AxiosError | null | unknown
@@ -116,9 +120,15 @@ export const ApiAuthPatch = selectorFamily<
   get:
     (params: PatchRequestParams) =>
     async (): Promise<AxiosResponse<unknown>> => {
-      const { config, url, data } = params;
+      const { config, url, data, file } = params;
+
+      const formData = new FormData();
+      formData.append('value', file);
+
+      const reqData = file ? formData : data;
+
       const apiAuthClient = makeApiAuthClient();
-      const response = await apiAuthClient.patch(url, data, config);
+      const response = await apiAuthClient.patch(url, reqData, config);
 
       return response;
     },
