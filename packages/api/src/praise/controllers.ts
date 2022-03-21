@@ -29,7 +29,6 @@ import {
   PraiseAllInput,
   PraiseDetailsDto,
   PraiseDto,
-  PraiseExportInput,
   QuantificationCreateUpdateInput,
 } from './types';
 import { calculatePraiseScore, praiseWithScore } from './utils';
