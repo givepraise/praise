@@ -16,7 +16,7 @@ export const QuantifierMessage = (): JSX.Element | null => {
   if (!quantifierData) return null;
 
   return (
-    <div className="praise-box max-w-4xl">
+    <div className="praise-box">
       <div>
         <div>
           <strong>You are a quantifier for this period!</strong>

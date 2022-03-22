@@ -13,7 +13,7 @@ import {
   faHeartbeat,
   faCalendarAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
+import React, { Suspense } from 'react';
 import 'react-day-picker/lib/style.css';
 import {
   useHistory,
@@ -82,11 +82,11 @@ const PeriodDetailPage = (): JSX.Element => {
   if (!detailsLoaded) return <PeriodDetailLoader />;
 
   return (
-    <>
+    <div className="max-w-2xl mx-auto">
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 
-      <div className="praise-box ">
+      <div className="praise-box  max-w-4xl">
         <React.Suspense fallback="Loading…">
           <PeriodDetailHead />
         </React.Suspense>
@@ -97,7 +97,7 @@ const PeriodDetailPage = (): JSX.Element => {
       </React.Suspense>
 
       <div className="flex space-x-4">
-        <div className="w-64">
+        <div>
           <div className="praise-box">
             <nav>
               <NavItem
@@ -115,20 +115,22 @@ const PeriodDetailPage = (): JSX.Element => {
         </div>
 
         <div className="praise-box max-w-3xl w-full">
-          <Switch>
-            <Route exact path={`${path}`}>
-              <ReceiverTable />
-            </Route>
-            <Route path={`${path}/receivers`}>
-              <ReceiverTable />
-            </Route>
-            <Route path={`${path}/quantifiers`}>
-              <QuantifierTable />
-            </Route>
-          </Switch>
+          <Suspense fallback="Loading…">
+            <Switch>
+              <Route exact path={`${path}`}>
+                <Redirect to={`${url}/receivers`} />
+              </Route>
+              <Route path={`${path}/receivers`}>
+                <ReceiverTable />
+              </Route>
+              <Route path={`${path}/quantifiers`}>
+                <QuantifierTable />
+              </Route>
+            </Switch>
+          </Suspense>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
