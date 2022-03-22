@@ -3,7 +3,9 @@ import { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { faX, faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useRecoilValue } from 'recoil';
 import Nav from '../navigation/Nav';
+import { SingleStringSetting } from '@/model/settings';
 
 interface AuthenticatedLayoutProps {
   children: JSX.Element;
@@ -13,6 +15,7 @@ const AuthenticatedLayout = ({
   children,
 }: AuthenticatedLayoutProps): JSX.Element => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const siteName = useRecoilValue(SingleStringSetting('NAME'));
 
   return (
     <div>
@@ -87,7 +90,7 @@ const AuthenticatedLayout = ({
       </div>
 
       <div className="md:pl-64 flex flex-col flex-1">
-        <div className="sticky top-0 z-10 md:hidden py-1 px-1 bg-gray-50 border-b shadow-sm">
+        <div className="sticky top-0 z-10 md:hidden py-1 px-1 bg-gray-50 border-b shadow-sm flex justify-start items-center w-full">
           <button
             type="button"
             className="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
@@ -100,6 +103,9 @@ const AuthenticatedLayout = ({
               aria-hidden="true"
             />
           </button>
+          <div className="w-full flex justify-center">
+            <h1 className="font-lg">{siteName}</h1>
+          </div>
         </div>
         <main className="flex-1 flex justify-center px-4 py-4">
           <div className="block max-w-4xl w-full overflow-hidden">
