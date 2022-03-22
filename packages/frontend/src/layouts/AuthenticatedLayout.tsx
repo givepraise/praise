@@ -102,7 +102,9 @@ const AuthenticatedLayout = ({
           </button>
         </div>
         <main className="flex-1 flex justify-center px-4 py-4">
-          <div className="block max-w-4xl">{children}</div>
+          <div className="block max-w-4xl w-full overflow-hidden">
+            {children}
+          </div>
         </main>
       </div>
     </div>

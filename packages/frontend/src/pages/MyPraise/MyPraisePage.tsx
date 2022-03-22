@@ -6,7 +6,7 @@ import PraiseTable from './components/MyPraiseTable';
 
 const MyPraise = (): JSX.Element => {
   return (
-    <>
+    <div className="max-w-2xl mx-auto">
       <BreadCrumb name="My praise" icon={faPrayingHands} />
 
       <ActiveNoticesBoard />
@@ -16,7 +16,7 @@ const MyPraise = (): JSX.Element => {
           <PraiseTable />
         </React.Suspense>
       </div>
-    </>
+    </div>
   );
 };
 

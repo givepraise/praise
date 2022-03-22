@@ -21,32 +21,30 @@ const AddRoleButton = (): JSX.Element => {
   };
 
   return (
-    <>
-      <button className="praise-button" onClick={handleAddQuantifierClick}>
-        <FontAwesomeIcon icon={faPlus} size="1x" className="mr-2" />
-        Add quantifier
-        {isOpen ? (
-          <Dialog
-            open={isOpen}
-            onClose={(): void => setIsOpen(false)}
-            className="fixed inset-0 z-10 overflow-y-auto"
-          >
-            <div>
-              <PoolAddDialog
-                onClose={(): void => setIsOpen(false)}
-                onQuantifierAdded={handleQuantifierAdded}
-              />
-            </div>
-          </Dialog>
-        ) : null}
-      </button>
-    </>
+    <button className="praise-button" onClick={handleAddQuantifierClick}>
+      <FontAwesomeIcon icon={faPlus} size="1x" className="mr-2" />
+      Add quantifier
+      {isOpen ? (
+        <Dialog
+          open={isOpen}
+          onClose={(): void => setIsOpen(false)}
+          className="fixed inset-0 z-10 overflow-y-auto"
+        >
+          <div>
+            <PoolAddDialog
+              onClose={(): void => setIsOpen(false)}
+              onQuantifierAdded={handleQuantifierAdded}
+            />
+          </div>
+        </Dialog>
+      ) : null}
+    </button>
   );
 };
 
 const UsersPage = (): JSX.Element => {
   return (
-    <>
+    <div className="max-w-2xl mx-auto">
       <BreadCrumb name="Quantifier pool" icon={faUserFriends} />
 
       <div className="praise-box">
@@ -57,7 +55,7 @@ const UsersPage = (): JSX.Element => {
         </div>
         <UsersTable />
       </div>
-    </>
+    </div>
   );
 };
 

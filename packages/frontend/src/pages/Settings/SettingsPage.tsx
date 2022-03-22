@@ -203,16 +203,16 @@ const SettingsForm = (): JSX.Element | null => {
 
 const SettingsPage = (): JSX.Element => {
   return (
-    <>
+    <div className="max-w-2xl mx-auto">
       <BreadCrumb name="Settings" icon={faCogs} />
 
-      <div className="praise-box">
+      <div className="praise-box w-full">
         <h2 className="mb-2">Settings</h2>
         <React.Suspense fallback="Loading…">
           <SettingsForm />
         </React.Suspense>
       </div>
-    </>
+    </div>
   );
 };
 

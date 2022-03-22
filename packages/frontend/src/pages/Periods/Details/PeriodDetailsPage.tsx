@@ -67,7 +67,7 @@ const PeriodDetailPage = (): JSX.Element => {
   if (!detailsLoaded) return <PeriodDetailLoader />;
 
   return (
-    <>
+    <div className="max-w-2xl mx-auto">
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 
@@ -91,7 +91,7 @@ const PeriodDetailPage = (): JSX.Element => {
           <ReceiverTable />
         </React.Suspense>
       </div>
-    </>
+    </div>
   );
 };
 

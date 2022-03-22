@@ -78,7 +78,7 @@ const QuantifyPeriodUserPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
 
   return (
-    <>
+    <div className="max-w-4xl mx-auto">
       <React.Suspense fallback="Loading…">
         <PeriodBreadCrumb />
       </React.Suspense>
@@ -90,12 +90,12 @@ const QuantifyPeriodUserPage = (): JSX.Element => {
         </React.Suspense>
       </div>
 
-      <div className="praise-box">
+      <div className="praise-box overflow-x-auto">
         <React.Suspense fallback={null}>
           <QuantifyTable />
         </React.Suspense>
       </div>
-    </>
+    </div>
   );
 };
 
