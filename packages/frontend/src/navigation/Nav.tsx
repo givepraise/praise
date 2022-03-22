@@ -52,9 +52,9 @@ export default function Nav(): JSX.Element {
   };
 
   return (
-    <nav className="flex-shrink-0 w-64 border-r shadow-sm">
-      <div className="h-full bg-gray-50">
-        <div className="fixed top-0 left-0 w-64">
+    <nav className="flex md:w-64 md:flex-col md:fixed h-screen bg-gray-50 border-r shadow-sm">
+      <div className="flex flex-col h-full justify-between">
+        <div className="w-full">
           <ul className="relative h-full p-0 m-0 list-none">
             <li className="relative flex justify-start w-full p-4 text-2xl font-bold">
               <Link to="/">
@@ -84,7 +84,7 @@ export default function Nav(): JSX.Element {
             </AdminOnly>
           </ul>
         </div>
-        <div className="fixed bottom-0 left-0 w-64 px-4 py-3 border-t">
+        <div className="w-full px-4 py-3 border-t">
           <Menu as="div" className="relative inline-block mr-2">
             <div>
               <Menu.Button className=" hover:text-gray-500 focus:outline-none">
@@ -113,7 +113,7 @@ export default function Nav(): JSX.Element {
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
             >
-              <Menu.Items className="absolute w-56 -mt-12 bg-white rounded-md shadow-lg left-40 ring-1 ring-gray-800 ring-opacity-5 focus:outline-none">
+              <Menu.Items className="absolute w-56 -mt-20 bg-white rounded-md shadow-lg ring-1 ring-gray-800 ring-opacity-5 focus:outline-none">
                 <div className="py-1">
                   <Menu.Item>
                     {({ active }): JSX.Element => (
