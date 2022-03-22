@@ -18,6 +18,7 @@ import {
 } from '@shared/types';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
+import { UserAccountDto } from '@useraccount/types';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { PraiseModel } from './entities';
@@ -158,18 +159,9 @@ export const exportPraise = async (
     },
   }).populate('giver receiver');
 
-  const praiseQuantifications = await PraiseModel.aggregate([
-    {
-      $project: {
-        quantificationsCount: { $size: '$quantifications' },
-      },
-    },
-    { $sort: { quantificationsCount: -1 } },
-    { $limit: 1 },
-  ]);
-
-  const quantificationsColumnsCount =
-    praiseQuantifications[0].quantificationsCount;
+  const quantificationsColumnsCount = parseInt(
+    String(process.env.PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)
+  );
 
   const docs: PraiseDetailsDto[] = [];
   if (praises) {
@@ -178,13 +170,13 @@ export const exportPraise = async (
 
       const receiver = await UserModel.findById(pws.receiver.user);
       if (receiver) {
-        pws.receiver.ethAddress = receiver.ethereumAddress;
+        pws.receiver.user = receiver;
       }
 
       if (pws.giver && pws.giver.user) {
         const giver = await UserModel.findById(pws.giver.user);
         if (giver) {
-          pws.giver.ethAddress = giver.ethereumAddress;
+          pws.giver.user = giver;
         }
       }
 
@@ -236,7 +228,7 @@ export const exportPraise = async (
     },
     {
       label: 'TO ETH ADDRESS',
-      value: 'receiver.ethAddress',
+      value: 'receiver.user.ethereumAddress',
     },
     {
       label: 'FROM USER ACCOUNT',
@@ -244,7 +236,7 @@ export const exportPraise = async (
     },
     {
       label: 'FROM ETH ADDRESS',
-      value: 'giver.ethAddress',
+      value: 'giver.user.ethereumAddress',
     },
     {
       label: 'REASON',

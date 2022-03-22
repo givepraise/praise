@@ -10,7 +10,6 @@ const userAccountDocumentToDto = (
     name,
     avatarId,
     platform,
-    ethAddress,
     createdAt,
     updatedAt,
   } = userAccountDocument;
@@ -21,7 +20,6 @@ const userAccountDocumentToDto = (
     name,
     avatarId,
     platform,
-    ethAddress,
     createdAt: createdAt.toISOString(),
     updatedAt: updatedAt.toISOString(),
   };

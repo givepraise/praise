@@ -15,19 +15,16 @@ export interface UserAccount {
   updatedAt: Date;
 }
 
-export interface UserAccountDocument extends UserAccount, mongoose.Document {
-  ethAddress: string | undefined;
-}
+export interface UserAccountDocument extends UserAccount, mongoose.Document {}
 
 export interface UserAccountDto {
   _id: string;
-  user?: string;
+  user?: UserDocument;
   accountId: string;
   name: string;
   avatarId?: string;
   platform: UserAccountPlatform;
   activateToken?: string;
-  ethAddress: string | undefined;
   createdAt: string;
   updatedAt: string;
 }
