@@ -8,15 +8,28 @@ import {
 import BackLink from '@/navigation/BackLink';
 import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
 import { classNames } from '@/utils/index';
-import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+  faBalanceScaleLeft,
+  faHeartbeat,
+  faCalendarAlt,
+} from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import 'react-day-picker/lib/style.css';
-import { useHistory, useParams } from 'react-router-dom';
+import {
+  useHistory,
+  useParams,
+  useRouteMatch,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import PeriodNameForm from './components/PeriodNameForm';
 import { QuantifierMessage } from './components/QuantifierMessage';
+import NavItem from '../../../navigation/NavItem';
 import QuantifierTable from './components/QuantifierTable';
 import ReceiverTable from './components/ReceiverTable';
+import NotFoundPage from '@/pages/NotFoundPage';
 
 const PeriodDetailLoader = (): null => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -58,6 +71,8 @@ const PeriodDetailPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
   const [detailsLoaded, setDetailsLoaded] = React.useState<boolean>(false);
+  const { path, url } = useRouteMatch();
+
   React.useEffect(() => {
     if (period?.receivers) {
       setDetailsLoaded(true);
@@ -71,7 +86,7 @@ const PeriodDetailPage = (): JSX.Element => {
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 
-      <div className="w-2/3 praise-box ">
+      <div className="praise-box ">
         <React.Suspense fallback="Loading…">
           <PeriodDetailHead />
         </React.Suspense>
@@ -81,15 +96,37 @@ const PeriodDetailPage = (): JSX.Element => {
         <QuantifierMessage />
       </React.Suspense>
 
-      <div className="w-2/3 praise-box">
-        <React.Suspense fallback="Loading…">
-          <QuantifierTable />
-        </React.Suspense>
-      </div>
-      <div className="w-2/3 praise-box">
-        <React.Suspense fallback="Loading…">
-          <ReceiverTable />
-        </React.Suspense>
+      <div className="flex space-x-4">
+        <div className="w-64">
+          <div className="praise-box">
+            <nav>
+              <NavItem
+                to={`${url}/receivers`}
+                description="Receivers"
+                icon={faHeartbeat}
+              />
+              <NavItem
+                to={`${url}/quantifiers`}
+                description="Quantifiers"
+                icon={faBalanceScaleLeft}
+              />
+            </nav>
+          </div>
+        </div>
+
+        <div className="praise-box max-w-3xl w-full">
+          <Switch>
+            <Route exact path={`${path}`}>
+              <ReceiverTable />
+            </Route>
+            <Route path={`${path}/receivers`}>
+              <ReceiverTable />
+            </Route>
+            <Route path={`${path}/quantifiers`}>
+              <QuantifierTable />
+            </Route>
+          </Switch>
+        </div>
       </div>
     </>
   );

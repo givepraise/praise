@@ -135,7 +135,8 @@ const SubPages = (): JSX.Element => {
       <Route exact path="/period/:periodId/receiver/:receiverId">
         <PeriodReceiverSummaryPage />
       </Route>
-      <Route exact path={'/period/:periodId'}>
+
+      <Route path={'/period/:periodId'}>
         <PeriodDetailPage />
       </Route>
 
