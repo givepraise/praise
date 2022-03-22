@@ -3,7 +3,6 @@ import { ActiveTokenSet } from '@/model/auth';
 import { EthState } from '@/model/eth';
 import { ImageSettingFullPath } from '@/model/settings';
 import { classNames } from '@/utils/index';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import {
   faAngleRight,
   faCalculator,
@@ -17,30 +16,7 @@ import { Jazzicon } from '@ukstv/jazzicon-react';
 import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-
-interface NavProps {
-  icon: IconProp;
-  description: string;
-  to: string;
-}
-export const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
-  return (
-    <Link
-      to={to}
-      className="relative px-4 py-1 cursor-pointer hover:bg-gray-100 mr-[1px] no-underline flex items-center"
-      id={to.substring(1) + '-nav-button'}
-    >
-      <FontAwesomeIcon
-        icon={icon}
-        size="1x"
-        className="inline-block ml-2 mr-3"
-      />
-      <div className="flex-auto inline-block my-1">
-        <span>{description}</span>
-      </div>
-    </Link>
-  );
-};
+import NavItem from './NavItem';
 
 export default function Nav(): JSX.Element {
   const setActiveTokenSet = useSetRecoilState(ActiveTokenSet);
