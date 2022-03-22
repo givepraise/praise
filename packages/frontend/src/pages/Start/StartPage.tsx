@@ -11,7 +11,7 @@ const StartPage: React.FC = (): ReactElement => {
 
       <ActiveNoticesBoard />
 
-      <div className="w-2/3 praise-box">
+      <div className="praise-box">
         <React.Suspense fallback="Loading…">
           <PraiseTable />
         </React.Suspense>

@@ -53,7 +53,7 @@ const QuantSummaryPraisePage = (): JSX.Element => {
       <BreadCrumb name={'Praise details'} icon={faCalendarAlt} />
       <BackLink to={backLinkUrl} />
 
-      <div className="w-2/3 praise-box">
+      <div className="praise-box">
         <React.Suspense fallback="Loading…">
           <PeriodReceiverMessage />
         </React.Suspense>

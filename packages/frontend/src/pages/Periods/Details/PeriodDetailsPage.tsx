@@ -71,7 +71,7 @@ const PeriodDetailPage = (): JSX.Element => {
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 
-      <div className="w-2/3 praise-box ">
+      <div className="praise-box ">
         <React.Suspense fallback="Loading…">
           <PeriodDetailHead />
         </React.Suspense>
@@ -81,12 +81,12 @@ const PeriodDetailPage = (): JSX.Element => {
         <QuantifierMessage />
       </React.Suspense>
 
-      <div className="w-2/3 praise-box">
+      <div className="praise-box">
         <React.Suspense fallback="Loading…">
           <QuantifierTable />
         </React.Suspense>
       </div>
-      <div className="w-2/3 praise-box">
+      <div className="praise-box">
         <React.Suspense fallback="Loading…">
           <ReceiverTable />
         </React.Suspense>

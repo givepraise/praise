@@ -49,7 +49,7 @@ const UsersPage = (): JSX.Element => {
     <>
       <BreadCrumb name="Quantifier pool" icon={faUserFriends} />
 
-      <div className="w-2/3 praise-box">
+      <div className="praise-box">
         <div className="mb-2 text-right">
           <React.Suspense fallback="Loading…">
             <AddRoleButton />

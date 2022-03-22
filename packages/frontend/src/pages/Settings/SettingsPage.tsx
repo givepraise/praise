@@ -206,7 +206,7 @@ const SettingsPage = (): JSX.Element => {
     <>
       <BreadCrumb name="Settings" icon={faCogs} />
 
-      <div className="w-2/3 praise-box">
+      <div className="praise-box">
         <h2 className="mb-2">Settings</h2>
         <React.Suspense fallback="Loading…">
           <SettingsForm />
