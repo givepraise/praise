@@ -11,6 +11,8 @@ export const settingsSchema = new mongoose.Schema(
       enum: ['Number', 'String', 'Textarea', 'Boolean', 'List', 'Image'],
       validate: fieldTypeValidator,
     },
+    label: { type: String, required: true },
+    description: { type: String },
   },
   {
     collection: 'settings',
