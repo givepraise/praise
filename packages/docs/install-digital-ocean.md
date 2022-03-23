@@ -68,9 +68,13 @@ Nginx comes with a default startpage that runs on port 80. Remove that:
 sudo rm /etc/nginx/sites-enabled/default
 ```
 
+## Configure Nginx gzip settings
+
+Website performance can be vastly improved by ensuring Nginx returns gzip compressed responses. Follow all steps in the following setup instruction: [How To Improve Website Performance Using gzip and Nginx on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-improve-website-performance-using-gzip-and-nginx-on-ubuntu-20-04)
+
 ## Setup Let's encrypt
 
-Complete all steps in the following installation guide: [How To Secure Nginx with Let's Encrypt on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-18-04)
+Add support for https by completing all steps in the following installation guide: [How To Secure Nginx with Let's Encrypt on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-18-04)
 
 ## Install nvm and Node.js
 
