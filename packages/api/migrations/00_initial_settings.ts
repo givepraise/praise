@@ -110,7 +110,15 @@ const settings = [
 ];
 
 const up = async (): Promise<void> => {
-  await SettingsModel.insertMany(settings);
+  const settingUpdates = settings.map((s) => ({
+    updateOne: {
+      filter: { key: s.key },
+      update: s,
+      usert: true,
+    },
+  }));
+
+  await SettingsModel.bulkWrite(settingUpdates);
 };
 
 const down = async (): Promise<void> => {
