@@ -9,7 +9,6 @@ import logger from 'jet-logger';
 import morgan from 'morgan';
 import { seedAdmins } from './pre-start/admins';
 import { seedData } from './pre-start/seed';
-import { seedSettings } from './pre-start/settings';
 import { baseRouter } from './routes';
 import { connectDatabase } from './database';
 import fileUpload from 'express-fileupload';
@@ -60,7 +59,6 @@ void (async (): Promise<void> => {
   if (process.env.NODE_ENV === 'production') {
     app.use(helmet());
   }
-  await seedSettings();
   await seedAdmins();
 
   // Serve static files

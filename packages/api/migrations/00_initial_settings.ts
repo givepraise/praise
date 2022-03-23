@@ -1,4 +1,4 @@
-import { SettingsModel } from '@settings/entities';
+import { SettingsModel } from '../src/settings/entities';
 
 const settings = [
   {
@@ -150,13 +150,13 @@ const settings = [
   },
 ];
 
-const seedSettings = async (): Promise<void> => {
-  for (const defaultSetting of settings) {
-    const setting = await SettingsModel.findOne({ key: defaultSetting.key });
-    if (!setting) {
-      await SettingsModel.create(defaultSetting);
-    }
-  }
+const up = async (): Promise<void> => {
+  await SettingsModel.insertMany(settings);
 };
 
-export { seedSettings };
+const down = async (): Promise<void> => {
+  const allKeys = settings.map((s) => s.key);
+  await SettingsModel.deleteMany({ key: { $in: allKeys } });
+};
+
+export { up, down };
