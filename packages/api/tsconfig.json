@@ -25,6 +25,6 @@
       "@server": ["src/server"]
     }
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "migrations/**/*.ts"],
+  "include": ["src/**/*.ts", "test/**/*.ts"],
   "references": []
 }
