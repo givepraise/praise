@@ -115,8 +115,8 @@ const up = async (): Promise<void> => {
       filter: { key: s.key },
 
       // Insert setting if not found, otherwise continue
-      update: { $setOnInsert: s },
-      usert: true,
+      update: { $setOnInsert: { ...s } },
+      upsert: true,
     },
   }));
 
