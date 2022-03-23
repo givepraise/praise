@@ -113,7 +113,9 @@ const up = async (): Promise<void> => {
   const settingUpdates = settings.map((s) => ({
     updateOne: {
       filter: { key: s.key },
-      update: s,
+
+      // Insert setting if not found, otherwise continue
+      update: { $setOnInsert: s },
       usert: true,
     },
   }));
