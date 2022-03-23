@@ -2,7 +2,6 @@ import logger from 'jet-logger';
 import mongoose, { ConnectOptions } from 'mongoose';
 
 const connectDatabase = async (): Promise<mongoose.Connection> => {
-  logger.info('Connecting to database…');
   const username = process.env.MONGO_USERNAME || '';
   const password = process.env.MONGO_PASSWORD || '';
   const host = process.env.MONGO_HOST || '';
@@ -14,8 +13,6 @@ const connectDatabase = async (): Promise<mongoose.Connection> => {
     const connection = await mongoose.connect(uri, {
       useNewUrlParser: true,
     } as ConnectOptions);
-
-    logger.info('Connected to database.');
 
     return connection.connection;
   } catch (error) {

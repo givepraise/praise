@@ -23,7 +23,9 @@ app.use(
 );
 
 void (async (): Promise<void> => {
+  logger.info('Connecting to database…');
   const connection = await connectDatabase();
+  logger.info('Connected to database.');
 
   // Checks database migrations and run them if they are not already applied
   logger.info('Checking for pending migrations…');
