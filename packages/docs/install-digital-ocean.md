@@ -34,7 +34,7 @@ Follow steps 1-5 of this guide: [How To Install Nginx on Ubuntu 20.04](https://w
 
 We recommend using the `/var/www/praise` as install location for praise.
 
-Use the following block config for `/etc/nginx/sites-available/praise`:
+Use the following block config for `/etc/nginx/sites-available/praise`, be sure to replace the server_name with your domain name:
 
 ```
 server {
@@ -44,15 +44,14 @@ server {
   root /var/www/praise/packages/frontend/build;
   index index.html;
 
-  server_name praise www.praise;
+  server_name praise.tecommons.org www.praise.tecommons.org;
 
   location /api {
     proxy_pass http://localhost:8088;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection 'upgrade';
     proxy_set_header Host $host;
-    proxy_cache_bypass $http_upgrade;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
   }
 
   location / {
@@ -61,10 +60,6 @@ server {
 }
 ```
 
-## Setup Let's encrypt
-
-//TODO Write this section.
-
 ## Remove default Nginx startpage
 
 Nginx comes with a default startpage that runs on port 80. Remove that:
@@ -72,6 +67,14 @@ Nginx comes with a default startpage that runs on port 80. Remove that:
 ```
 sudo rm /etc/nginx/sites-enabled/default
 ```
+
+## Configure Nginx gzip settings
+
+Website performance can be vastly improved by ensuring Nginx returns gzip compressed responses. Follow all steps in the following setup instruction: [How To Improve Website Performance Using gzip and Nginx on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-improve-website-performance-using-gzip-and-nginx-on-ubuntu-20-04)
+
+## Setup Let's encrypt
+
+Add support for https by completing all steps in the following installation guide: [How To Secure Nginx with Let's Encrypt on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-18-04)
 
 ## Install nvm and Node.js
 
