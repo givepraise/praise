@@ -2,7 +2,7 @@ import { PeriodModel } from '@period/entities';
 import { PeriodDocument } from '@period/types';
 import { getPreviousPeriodEndDate } from '@period/utils';
 import { PraiseModel } from '@praise/entities';
-import { connectDb } from './core';
+import { connectDatabase } from './core';
 import yargs from 'yargs';
 import { exit } from 'process';
 
@@ -74,7 +74,7 @@ const run = async (): Promise<void> => {
     const { periodId, currentQuantifierId, newQuantifierId } = argv;
 
     console.log(argv.periodId);
-    await connectDb();
+    await connectDatabase();
     await replaceActiveQuantifier(periodId, currentQuantifierId, newQuantifierId);
     exit();
 };
