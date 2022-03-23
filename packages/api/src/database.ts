@@ -1,7 +1,7 @@
 import logger from 'jet-logger';
 import mongoose, { ConnectOptions } from 'mongoose';
 
-const connectDatabase = async (): Promise<mongoose.Connection | undefined> => {
+const connectDatabase = async (): Promise<mongoose.Connection> => {
   logger.info('Connecting to database…');
   const username = process.env.MONGO_USERNAME || '';
   const password = process.env.MONGO_PASSWORD || '';
@@ -19,7 +19,7 @@ const connectDatabase = async (): Promise<mongoose.Connection | undefined> => {
 
     return connection.connection;
   } catch (error) {
-    logger.err('Could not connect to database.');
+    throw Error('Could not connect to database');
   }
 };
 
