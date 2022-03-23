@@ -27,7 +27,7 @@ void (async (): Promise<void> => {
 
   // Checks database migrations and run them if they are not already applied
   const umzug = new Umzug({
-    migrations: { glob: 'migrations/*.ts' },
+    migrations: { glob: 'src/migrations/*.ts' },
     storage: new MongoDBStorage({ connection, collectionName: 'migrations' }),
     logger: console,
   });
