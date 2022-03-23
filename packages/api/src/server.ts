@@ -10,9 +10,9 @@ import morgan from 'morgan';
 import { seedAdmins } from './pre-start/admins';
 import { seedData } from './pre-start/seed';
 import { baseRouter } from './routes';
-import { connectDatabase } from './database';
+import { connectDatabase } from './database/connection';
+import { setupMigrator } from './database/migration';
 import fileUpload from 'express-fileupload';
-import { Umzug, MongoDBStorage } from 'umzug';
 
 const app = express();
 
@@ -26,13 +26,8 @@ void (async (): Promise<void> => {
   const connection = await connectDatabase();
 
   // Checks database migrations and run them if they are not already applied
-  const umzug = new Umzug({
-    migrations: { glob: 'src/migrations/*.ts' },
-    storage: new MongoDBStorage({ connection, collectionName: 'migrations' }),
-    logger: console,
-  });
-
   logger.info('Checking for pending migrations…');
+  const umzug = setupMigrator(connection);
   const migrations = await umzug.pending();
   logger.info(`Found ${migrations.length} pending migrations`);
   await umzug.up();

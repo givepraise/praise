@@ -1,4 +1,4 @@
-import { SettingsModel } from '../settings/entities';
+import { SettingsModel } from '../../settings/entities';
 
 const settings = [
   {
