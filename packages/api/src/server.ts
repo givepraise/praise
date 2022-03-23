@@ -13,6 +13,7 @@ import { seedSettings } from './pre-start/settings';
 import { baseRouter } from './routes';
 import { connectDatabase } from './database';
 import fileUpload from 'express-fileupload';
+import { Umzug, MongoDBStorage } from 'umzug';
 
 const app = express();
 
@@ -23,7 +24,20 @@ app.use(
 );
 
 void (async (): Promise<void> => {
-  await connectDatabase();
+  const connection = await connectDatabase();
+
+  // Checks database migrations and run them if they are not already applied
+  const umzug = new Umzug({
+    migrations: { glob: 'migrations/*.ts' },
+    storage: new MongoDBStorage({ connection, collectionName: 'migrations' }),
+    logger: console,
+  });
+
+  logger.info('Checking for pending migrations…');
+  const migrations = await umzug.pending();
+  logger.info(`Found ${migrations.length} pending migrations`);
+  await umzug.up();
+  logger.info('Migrations complete.');
 
   app.use(
     cors({
