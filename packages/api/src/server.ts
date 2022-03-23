@@ -6,12 +6,12 @@ import express, { json, urlencoded } from 'express';
 import 'express-async-errors';
 import helmet from 'helmet';
 import logger from 'jet-logger';
-import mongoose, { ConnectOptions } from 'mongoose';
 import morgan from 'morgan';
 import { seedAdmins } from './pre-start/admins';
 import { seedData } from './pre-start/seed';
 import { seedSettings } from './pre-start/settings';
 import { baseRouter } from './routes';
+import { connectDatabase } from './database';
 import fileUpload from 'express-fileupload';
 
 const app = express();
@@ -22,23 +22,8 @@ app.use(
   })
 );
 
-const username = process.env.MONGO_USERNAME || '';
-const password = process.env.MONGO_PASSWORD || '';
-const host = process.env.MONGO_HOST || '';
-const port = process.env.MONGO_PORT || '';
-const dbName = process.env.MONGO_DB || '';
-
-const db = `mongodb://${username}:${password}@${host}:${port}/${dbName}`;
 void (async (): Promise<void> => {
-  logger.info('Connecting to database…');
-  try {
-    await mongoose.connect(db, {
-      useNewUrlParser: true,
-    } as ConnectOptions);
-    logger.info('Connected to database.');
-  } catch (error) {
-    logger.err('Could not connect to database.');
-  }
+  await connectDatabase();
 
   app.use(
     cors({
