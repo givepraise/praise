@@ -12,7 +12,8 @@
     "start:dev": "nodemon ./src",
     "test": "ts-mocha --paths -p tsconfig.json src/**/*.spec.ts",
     "import-praise": "ts-node -r tsconfig-paths/register src/scripts/import-praise.ts",
-    "replace-quantifier": "ts-node -r tsconfig-paths/register src/scripts/replace-quantifier.ts"
+    "replace-quantifier": "ts-node -r tsconfig-paths/register src/scripts/replace-quantifier.ts",
+    "migrator": "ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts"
   },
   "nodemonConfig": {
     "watch": [
