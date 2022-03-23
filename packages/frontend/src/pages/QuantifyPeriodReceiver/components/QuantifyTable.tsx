@@ -55,6 +55,8 @@ const QuantifyTable = (): JSX.Element | null => {
     PraiseDto | undefined
   >(undefined);
 
+  let weeklyBorderDate: Date | undefined = undefined;
+
   if (!data) return null;
 
   const quantification = (praise: PraiseDto): QuantificationDto | undefined => {
@@ -93,16 +95,31 @@ const QuantifyTable = (): JSX.Element | null => {
     return q && q.duplicatePraise ? q.duplicatePraise?.slice(-4) : '';
   };
 
+  const getDividerClassName = (praise: PraiseDto): string => {
+    const date = new Date(praise.createdAt);
+
+    if (date.getDay() === 1) {
+      if (date.getTime() !== weeklyBorderDate?.getTime()) {
+        weeklyBorderDate = date;
+        return 'border-gray-600 border-t-2 mt-4';
+      }
+    }
+
+    return '';
+  };
+
   return (
     <>
       <table className="w-full table-auto">
         <tbody>
           {data.map((praise, index) => {
             if (!praise) return null;
+
             return (
               <tr
                 key={index}
                 onMouseDown={(): void => setSelectedPraise(praise)}
+                className={getDividerClassName(praise)}
               >
                 <td>
                   <div className="items-center w-full">
