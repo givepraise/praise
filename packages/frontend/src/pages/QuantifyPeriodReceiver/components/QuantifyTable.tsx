@@ -240,17 +240,12 @@ const QuantifyTable = (): JSX.Element | null => {
           </React.Suspense>
 
           <React.Suspense fallback={null}>
-            <Dialog
+            <DuplicateDialog
               open={isDuplicateDialogOpen}
+              praise={selectedPraise}
               onClose={(): void => setIsDuplicateDialogOpen(false)}
-              className="fixed inset-0 z-10 overflow-y-auto"
-            >
-              <DuplicateDialog
-                praise={selectedPraise}
-                onClose={(): void => setIsDuplicateDialogOpen(false)}
-                onSelect={handleDuplicate}
-              />
-            </Dialog>
+              onSelect={handleDuplicate}
+            />
           </React.Suspense>
         </tbody>
       </table>
