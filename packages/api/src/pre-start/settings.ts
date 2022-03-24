@@ -96,7 +96,7 @@ const settings = [
   },
   {
     key: 'LOGO',
-    value: '/upload/logo.png',
+    value: '/uploads/praise_logo.png',
     type: 'Image',
   },
 ];
