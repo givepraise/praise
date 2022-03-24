@@ -18,7 +18,7 @@ import {
 } from '@shared/types';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
-import { UserAccountDto } from '@useraccount/types';
+import { UserAccount, UserAccountDto } from '@useraccount/types';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { PraiseModel } from './entities';
@@ -139,6 +139,10 @@ export const quantify = async (
   res.status(200).json(response);
 };
 
+export interface UserAccountLocalDocument extends UserAccount {
+  ethAddress: string | undefined;
+}
+
 /**
  * //TODO add descriptiom
  */
@@ -170,13 +174,13 @@ export const exportPraise = async (
 
       const receiver = await UserModel.findById(pws.receiver.user);
       if (receiver) {
-        pws.receiver.user = receiver;
+        pws.receiver.ethAddress = receiver.ethereumAddress;
       }
 
       if (pws.giver && pws.giver.user) {
         const giver = await UserModel.findById(pws.giver.user);
         if (giver) {
-          pws.giver.user = giver;
+          pws.giver.ethAddress = giver.ethereumAddress;
         }
       }
 
@@ -228,7 +232,7 @@ export const exportPraise = async (
     },
     {
       label: 'TO ETH ADDRESS',
-      value: 'receiver.user.ethereumAddress',
+      value: 'receiver.ethAddress',
     },
     {
       label: 'FROM USER ACCOUNT',
@@ -236,7 +240,7 @@ export const exportPraise = async (
     },
     {
       label: 'FROM ETH ADDRESS',
-      value: 'giver.user.ethereumAddress',
+      value: 'giver.ethAddress',
     },
     {
       label: 'REASON',

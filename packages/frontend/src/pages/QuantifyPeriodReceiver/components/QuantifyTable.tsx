@@ -98,19 +98,18 @@ const QuantifyTable = (): JSX.Element | null => {
   interface DividerProps {
     praise: PraiseDto;
   }
-  const Divider = ({ praise }: DividerProps): JSX.Element | null => {
+
+  const isStartOfTheWeek = ({ praise }: DividerProps): Boolean => {
     const date = new Date(praise.createdAt);
+
     if (date.getDay() === 1) {
       if (date.getTime() !== weeklyBorderDate?.getTime()) {
         weeklyBorderDate = date;
-        return (
-          <tr>
-            <td className="mt-4 border-t-2 border-gray-600" colSpan={3}></td>
-          </tr>
-        );
+        return true;
       }
     }
-    return null;
+
+    return false;
   };
 
   return (
@@ -122,7 +121,13 @@ const QuantifyTable = (): JSX.Element | null => {
 
             return (
               <>
-                <Divider praise={praise} />
+                {isStartOfTheWeek({ praise }) && (
+                  <tr className="my-8">
+                    <td className="border-t border-gray-600" colSpan={3}>
+                      <div></div>
+                    </td>
+                  </tr>
+                )}
                 <tr
                   key={index}
                   onMouseDown={(): void => setSelectedPraise(praise)}
