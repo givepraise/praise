@@ -19,7 +19,7 @@ export interface UserAccountDocument extends UserAccount, mongoose.Document {}
 
 export interface UserAccountDto {
   _id: string;
-  user?: UserDocument;
+  user?: string;
   accountId: string;
   name: string;
   avatarId?: string;
