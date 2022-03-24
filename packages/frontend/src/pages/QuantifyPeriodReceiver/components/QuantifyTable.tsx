@@ -16,7 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
-import { PraiseDto, QuantificationDto } from 'api/dist/praise/types';
+import { Praise, PraiseDto, QuantificationDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
@@ -95,17 +95,22 @@ const QuantifyTable = (): JSX.Element | null => {
     return q && q.duplicatePraise ? q.duplicatePraise?.slice(-4) : '';
   };
 
-  const getDividerClassName = (praise: PraiseDto): string => {
+  interface DividerProps {
+    praise: PraiseDto;
+  }
+  const Divider = ({ praise }: DividerProps): JSX.Element | null => {
     const date = new Date(praise.createdAt);
-
     if (date.getDay() === 1) {
       if (date.getTime() !== weeklyBorderDate?.getTime()) {
         weeklyBorderDate = date;
-        return 'border-gray-600 border-t-2 mt-4';
+        return (
+          <tr>
+            <td className="mt-4 border-t-2 border-gray-600" colSpan={3}></td>
+          </tr>
+        );
       }
     }
-
-    return '';
+    return null;
   };
 
   return (
@@ -116,93 +121,102 @@ const QuantifyTable = (): JSX.Element | null => {
             if (!praise) return null;
 
             return (
-              <tr
-                key={index}
-                onMouseDown={(): void => setSelectedPraise(praise)}
-                className={getDividerClassName(praise)}
-              >
-                <td>
-                  <div className="items-center w-full">
-                    <div className="flex items-center">
-                      <UserAvatar userAccount={praise.giver} enablePseudomyms />
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div>
-                    <span className="font-bold">
-                      {usePseudonyms ? (
-                        <UserPseudonym
-                          userId={praise.giver._id}
-                          periodId={periodId}
+              <>
+                <Divider praise={praise} />
+                <tr
+                  key={index}
+                  onMouseDown={(): void => setSelectedPraise(praise)}
+                >
+                  <td>
+                    <div className="items-center w-full">
+                      <div className="flex items-center">
+                        <UserAvatar
+                          userAccount={praise.giver}
+                          enablePseudomyms
                         />
-                      ) : (
-                        praise.giver.name
-                      )}
-                    </span>
-                    <span className="ml-2 text-xs text-gray-500">
-                      {formatDate(praise.createdAt)}
-                    </span>
-                  </div>
-                  <div className="w-[550px] overflow-hidden overflow-ellipsis">
-                    <span>
-                      <InlineLabel
-                        text={`#${praise._id.slice(-4)}`}
-                        className="bg-gray-400"
-                      />
-                      {dismissed(praise) ? (
-                        <>
-                          <InlineLabel
-                            text="Dismissed"
-                            button={getRemoveButton(handleRemoveDismiss)}
-                            className="bg-red-600"
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      <span className="font-bold">
+                        {usePseudonyms ? (
+                          <UserPseudonym
+                            userId={praise.giver._id}
+                            periodId={periodId}
                           />
-                          <span className="line-through">{praise.reason}</span>
-                        </>
-                      ) : duplicate(praise) ? (
-                        <>
-                          <InlineLabel
-                            text={`Duplicate of: #${shortDuplicatePraiseId(
-                              praise
-                            )}`}
-                            button={getRemoveButton(handleRemoveDuplicate)}
-                          />
-                          <span className="text-gray-400">{praise.reason}</span>
-                        </>
-                      ) : (
-                        praise.reason
-                      )}
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <div className="flex">
-                    <QuantifySlider praise={praise} />
-                    <button
-                      className="pb-1 ml-4 hover:text-gray-400"
-                      disabled={duplicate(praise)}
-                      onClick={(): void => setIsDuplicateDialogOpen(true)}
-                    >
-                      <FontAwesomeIcon
-                        icon={faCopy}
-                        size="1x"
-                        className={duplicate(praise) ? 'text-gray-400' : ''}
-                      />
-                    </button>
-                    <button
-                      className="pb-1 ml-1 hover:text-gray-400"
-                      disabled={dismissed(praise)}
-                      onClick={(): void => setIsDismissDialogOpen(true)}
-                    >
-                      <FontAwesomeIcon
-                        icon={faTimesCircle}
-                        size="1x"
-                        className={dismissed(praise) ? 'text-gray-400' : ''}
-                      />
-                    </button>
-                  </div>
-                </td>
-              </tr>
+                        ) : (
+                          praise.giver.name
+                        )}
+                      </span>
+                      <span className="ml-2 text-xs text-gray-500">
+                        {formatDate(praise.createdAt)}
+                      </span>
+                    </div>
+                    <div className="w-[550px] overflow-hidden overflow-ellipsis">
+                      <span>
+                        <InlineLabel
+                          text={`#${praise._id.slice(-4)}`}
+                          className="bg-gray-400"
+                        />
+                        {dismissed(praise) ? (
+                          <>
+                            <InlineLabel
+                              text="Dismissed"
+                              button={getRemoveButton(handleRemoveDismiss)}
+                              className="bg-red-600"
+                            />
+                            <span className="line-through">
+                              {praise.reason}
+                            </span>
+                          </>
+                        ) : duplicate(praise) ? (
+                          <>
+                            <InlineLabel
+                              text={`Duplicate of: #${shortDuplicatePraiseId(
+                                praise
+                              )}`}
+                              button={getRemoveButton(handleRemoveDuplicate)}
+                            />
+                            <span className="text-gray-400">
+                              {praise.reason}
+                            </span>
+                          </>
+                        ) : (
+                          praise.reason
+                        )}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="flex">
+                      <QuantifySlider praise={praise} />
+                      <button
+                        className="pb-1 ml-4 hover:text-gray-400"
+                        disabled={duplicate(praise)}
+                        onClick={(): void => setIsDuplicateDialogOpen(true)}
+                      >
+                        <FontAwesomeIcon
+                          icon={faCopy}
+                          size="1x"
+                          className={duplicate(praise) ? 'text-gray-400' : ''}
+                        />
+                      </button>
+                      <button
+                        className="pb-1 ml-1 hover:text-gray-400"
+                        disabled={dismissed(praise)}
+                        onClick={(): void => setIsDismissDialogOpen(true)}
+                      >
+                        <FontAwesomeIcon
+                          icon={faTimesCircle}
+                          size="1x"
+                          className={dismissed(praise) ? 'text-gray-400' : ''}
+                        />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </>
             );
           })}
 
