@@ -12,7 +12,8 @@
     "start:dev": "nodemon ./src",
     "test": "ts-mocha --paths -p tsconfig.json src/**/*.spec.ts",
     "import-praise": "ts-node -r tsconfig-paths/register src/scripts/import-praise.ts",
-    "replace-quantifier": "ts-node -r tsconfig-paths/register src/scripts/replace-quantifier.ts"
+    "replace-quantifier": "ts-node -r tsconfig-paths/register src/scripts/replace-quantifier.ts",
+    "migrator": "ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts"
   },
   "nodemonConfig": {
     "watch": [
@@ -54,7 +55,8 @@
     "mongoose-paginate-ts": "^1.2.0",
     "morgan": "^1.10.0",
     "prettier": "^2.5.1",
-    "ts-mocha": "^9.0.2"
+    "ts-mocha": "^9.0.2",
+    "umzug": "^3.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

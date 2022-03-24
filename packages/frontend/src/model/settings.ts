@@ -16,6 +16,8 @@ export interface Setting {
   _id: string;
   key: string;
   type: string;
+  label: string;
+  description: string;
 }
 
 export interface StringSetting extends Setting {
