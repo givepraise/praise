@@ -17,6 +17,7 @@ import {
   TypedResponse,
 } from '@shared/types';
 import { UserModel } from '@user/entities';
+import { UserDocument } from '@user/types';
 import { UserAccountModel } from '@useraccount/entities';
 import { UserAccountDto } from '@useraccount/types';
 import { Request, Response } from 'express';
@@ -139,6 +140,11 @@ export const quantify = async (
   res.status(200).json(response);
 };
 
+interface PraiseDtoExtended extends PraiseDto {
+  receiverUserDocument?: UserDocument;
+  giverUserDocument?: UserDocument;
+}
+
 /**
  * //TODO add descriptiom
  */
@@ -166,17 +172,17 @@ export const exportPraise = async (
   const docs: PraiseDetailsDto[] = [];
   if (praises) {
     for (const praise of praises) {
-      const pws = await praiseWithScore(praise);
+      const pws: PraiseDtoExtended = await praiseWithScore(praise);
 
       const receiver = await UserModel.findById(pws.receiver.user);
       if (receiver) {
-        pws.receiver.user = receiver;
+        pws.receiverUserDocument = receiver;
       }
 
       if (pws.giver && pws.giver.user) {
         const giver = await UserModel.findById(pws.giver.user);
         if (giver) {
-          pws.giver.user = giver;
+          pws.giverUserDocument = giver;
         }
       }
 
@@ -228,7 +234,7 @@ export const exportPraise = async (
     },
     {
       label: 'TO ETH ADDRESS',
-      value: 'receiver.user.ethereumAddress',
+      value: 'receiverUserDocument.ethereumAddress',
     },
     {
       label: 'FROM USER ACCOUNT',
@@ -236,7 +242,7 @@ export const exportPraise = async (
     },
     {
       label: 'FROM ETH ADDRESS',
-      value: 'giver.user.ethereumAddress',
+      value: 'giverUserDocument.ethereumAddress',
     },
     {
       label: 'REASON',
