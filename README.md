@@ -6,9 +6,15 @@ Praise invites communities to build a culture of giving and gratitude, involving
 
 Praise allows communities to acknowledge the full spectrum of value created - ranging from small to large contributions over a number of platforms. Even contributions made outside of any tech platform can be praised.
 
-Praise believes that transparency and community involvement are key to successful contribution tracking and rewarding. All steps of the praise process are subject to community influence using the governance tool of choice.
+## Run Praise on a server
 
-## Run Praise
+We believe in the appropriate amount of decentralisation. Praise is not an onchain tool built on top of Ethereum. Instead, every community runs its own server. The longterm goal is to provide a 30 minute installation similar to [that of the forum software Discourse](https://github.com/discourse/discourse/blob/main/docs/INSTALL-cloud.md).
+
+Until that have been implemented, we provide a guide for an installation that will take slightly longer than 30 mins. The installation process is tested on a Digital Ocean droplet but should with little modifications work for any Ubuntu server.
+
+[How to install Praise on Digital Ocean](/packages/docs/install-digital-ocean.md)
+
+## Run Praise locally
 
 ### 1. Switch to specified node version
 
