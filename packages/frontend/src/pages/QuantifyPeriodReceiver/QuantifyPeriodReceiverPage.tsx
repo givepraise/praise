@@ -78,24 +78,24 @@ const QuantifyPeriodUserPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
 
   return (
-    <>
+    <div className="max-w-4xl mx-auto">
       <React.Suspense fallback="Loading…">
         <PeriodBreadCrumb />
       </React.Suspense>
       <BackLink to={`/quantify/period/${periodId}`} />
 
-      <div className="w-2/3 praise-box">
+      <div className="praise-box">
         <React.Suspense fallback="Loading…">
           <PeriodMessage />
         </React.Suspense>
       </div>
 
-      <div className="praise-box">
+      <div className="praise-box overflow-x-auto">
         <React.Suspense fallback={null}>
           <QuantifyTable />
         </React.Suspense>
       </div>
-    </>
+    </div>
   );
 };
 

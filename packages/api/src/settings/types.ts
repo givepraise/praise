@@ -4,6 +4,8 @@ export interface Setting {
   key: string;
   value: string;
   type: string;
+  label: string;
+  description?: string;
 }
 
 export interface SettingDocument extends Setting, mongoose.Document {}
@@ -13,6 +15,8 @@ export interface SettingDto {
   key: string;
   value: string;
   type: string;
+  label: string;
+  description?: string;
 }
 
 export interface SettingSetInput {
