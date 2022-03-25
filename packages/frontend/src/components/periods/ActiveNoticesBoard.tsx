@@ -12,7 +12,7 @@ export const ActiveNoticesBoard = (): JSX.Element | null => {
     return null;
 
   return (
-    <div className="w-2/3 praise-box">
+    <div className="praise-box">
       <Suspense fallback="Loading…">
         {activePeriodMessageRender && activePeriodMessageRender}
         {activeUserQuantificationMessageRender &&

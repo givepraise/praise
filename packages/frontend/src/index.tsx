@@ -60,23 +60,21 @@ ReactDOM.render(
       <RecoilNexus />
       <Web3ReactProvider getLibrary={getLibrary}>
         <Router>
-          <div>
-            <EthConnection />
-            <main>
-              <DelayedLoading>
-                <React.Suspense fallback={<LoadScreen />}>
-                  <ErrorBoundary>
-                    <Routes />
-                  </ErrorBoundary>
-                </React.Suspense>
-              </DelayedLoading>
-              <Toaster
-                position="bottom-right"
-                reverseOrder={false}
-                toastOptions={{ duration: 3000 }}
-              />
-            </main>
-          </div>
+          <EthConnection />
+          <main>
+            <DelayedLoading>
+              <React.Suspense fallback={<LoadScreen />}>
+                <ErrorBoundary>
+                  <Routes />
+                </ErrorBoundary>
+              </React.Suspense>
+            </DelayedLoading>
+            <Toaster
+              position="bottom-right"
+              reverseOrder={false}
+              toastOptions={{ duration: 3000 }}
+            />
+          </main>
         </Router>
       </Web3ReactProvider>
     </RecoilRoot>

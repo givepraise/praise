@@ -5,7 +5,7 @@ import { UserAccountDocument } from '@useraccount/types';
 import 'express-async-errors';
 import fs from 'fs';
 import path from 'path';
-import { connectDb } from './core';
+import { connectDatabase } from './core';
 
 const importPraise = async (
   praiseData: PraiseImportInput[],
@@ -100,7 +100,7 @@ const importPraise = async (
   process.exit();
 };
 
-connectDb().then(() => {
+connectDatabase().then(() => {
   const args = process.argv.slice(2);
   if (args.length == 0) {
     console.log('Usage: yarn workspace api import-praise [FILE] [OPTIONS]');
