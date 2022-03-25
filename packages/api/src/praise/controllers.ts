@@ -19,7 +19,6 @@ import {
 import { UserModel } from '@user/entities';
 import { UserDocument } from '@user/types';
 import { UserAccountModel } from '@useraccount/entities';
-import { UserAccountDto } from '@useraccount/types';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { PraiseModel } from './entities';
