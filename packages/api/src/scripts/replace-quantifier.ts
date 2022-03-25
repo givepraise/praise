@@ -2,9 +2,9 @@ import { PeriodModel } from '@period/entities';
 import { PeriodDocument } from '@period/types';
 import { getPreviousPeriodEndDate } from '@period/utils';
 import { PraiseModel } from '@praise/entities';
-import { exit } from 'process';
+import { connectDatabase } from './core';
 import yargs from 'yargs';
-import { connectDb } from './core';
+import { exit } from 'process';
 
 /**
  * Replace a currently assigned quantifier during an active period
@@ -89,7 +89,7 @@ const run = async (): Promise<void> => {
   const { periodId, currentQuantifierId, newQuantifierId } = argv;
 
   console.log(argv.periodId);
-  await connectDb();
+  await connectDatabase();
   await replaceActiveQuantifier(periodId, currentQuantifierId, newQuantifierId);
   exit();
 };
