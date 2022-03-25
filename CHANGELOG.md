@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Switch back to the old command structure for discord slash-commands.
 - Added a weekly divider to the quant page
 - Page layout and navbar have been made more responsive
 - System settings now have labels and descriptions
