@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure expired tokens fail validation in api middleware
 - Logout user (redirect to /login and delete saved TokenSet) upon receiving a 401 response after refreshing tokens
 
+### Fixed
+
+- Export of quantified praise calculated wrong average score on duplicate praise. #182
+
 ## [0.0.1] - 2022-03-10
 
 ### Added
