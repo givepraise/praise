@@ -1,3 +1,4 @@
+import { makeApiAuthClient } from '@/utils/api';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import { toast } from 'react-hot-toast';
@@ -9,20 +10,29 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
-import {
-  ApiAuthGet,
-  ApiAuthPatch,
-  ApiQuery,
-  isResponseOk,
-  useAuthApiQuery,
-} from './api';
+import { ApiAuthGet, isResponseOk, useAuthApiQuery } from './api';
 
 export interface Setting {
   _id: string;
   key: string;
-  value: string;
   type: string;
+  label: string;
+  description: string;
 }
+
+export interface StringSetting extends Setting {
+  value: string;
+}
+
+export interface FileSetting extends Setting {
+  value: File;
+}
+
+const isFileSetting = (setting: unknown): setting is FileSetting => {
+  const fileSetting = setting as FileSetting;
+  if (fileSetting.value?.name) return true;
+  return false;
+};
 
 const AllSettingsRequestId = atom({
   key: 'AllSettingsRequestId',
@@ -35,13 +45,13 @@ export const AllSettingsQuery = selector({
     get(AllSettingsRequestId);
     return get(
       ApiAuthGet({
-        url: '/api/settings/all',
+        url: '/settings/all',
       })
     );
   },
 });
 
-export const AllSettings = atom<Setting[] | undefined>({
+export const AllSettings = atom<StringSetting[] | undefined>({
   key: 'AllSettings',
   default: undefined,
 });
@@ -55,7 +65,7 @@ export const useAllSettingsQuery = (): AxiosResponse<unknown> => {
       isResponseOk(allSettingsQueryResponse) &&
       typeof allSettings === 'undefined'
     ) {
-      const settings = allSettingsQueryResponse.data as Setting[];
+      const settings = allSettingsQueryResponse.data as StringSetting[];
       if (Array.isArray(settings) && settings.length > 0)
         setAllSettings(settings);
     }
@@ -75,7 +85,7 @@ export const SingleSetting = selectorFamily({
   key: 'SingleSetting',
   get:
     (key: string) =>
-    ({ get }): Setting | undefined => {
+    ({ get }): StringSetting | undefined => {
       const allSettings = get(AllSettings);
       if (!allSettings) return undefined;
       return allSettings.find((setting) => setting.key === key);
@@ -142,28 +152,51 @@ export const SingleStringSetting = selectorFamily({
     },
 });
 
+export const ImageSettingFullPath = selectorFamily({
+  key: 'ImageSettingFullPath',
+  get:
+    (key: string) =>
+    ({ get }): string | undefined => {
+      const setting = get(SingleSetting(key));
+      if (!setting) return undefined;
+      if (setting && setting.value) {
+        const string = setting.value.toString();
+        if (string && string !== '')
+          return `${process.env.REACT_APP_BACKEND_URL}/${string}`;
+      }
+      return undefined;
+    },
+});
+
 type useSetSettingReturn = {
   setSetting: (
-    setting: Setting
+    setting: StringSetting | FileSetting
   ) => Promise<AxiosResponse<unknown> | AxiosError<unknown>>;
 };
 export const useSetSetting = (): useSetSettingReturn => {
-  const allSettings: Setting[] | undefined = useRecoilValue(AllSettings);
+  const allSettings: StringSetting[] | undefined = useRecoilValue(AllSettings);
   const setSetting = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async (setting: Setting) => {
-        const response = await ApiQuery(
-          snapshot.getPromise(
-            ApiAuthPatch({
-              url: `/api/admin/settings/${setting._id}/set`,
-              data: JSON.stringify({ value: setting.value }),
-            })
-          )
-        );
+    ({ set }) =>
+      async (setting: StringSetting | FileSetting) => {
+        const url = `/admin/settings/${setting._id}/set`;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const reqData = (setting: StringSetting | FileSetting): any => {
+          if (isFileSetting(setting)) {
+            const data = new FormData();
+            data.append('value', setting.value);
+            return data;
+          } else {
+            return setting;
+          }
+        };
+
+        const apiAuthClient = makeApiAuthClient();
+        const response = await apiAuthClient.patch(url, reqData(setting));
 
         // If OK response, add returned period object to local state
         if (isResponseOk(response)) {
-          const setting = response.data as Setting;
+          const setting = response.data as StringSetting;
           toast.success(`Saved ${setting.key}`);
           if (setting) {
             if (typeof allSettings !== 'undefined') {

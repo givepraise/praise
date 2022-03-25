@@ -6,32 +6,34 @@ import express, { json, urlencoded } from 'express';
 import 'express-async-errors';
 import helmet from 'helmet';
 import logger from 'jet-logger';
-import mongoose, { ConnectOptions } from 'mongoose';
 import morgan from 'morgan';
 import { seedAdmins } from './pre-start/admins';
 import { seedData } from './pre-start/seed';
-import { seedSettings } from './pre-start/settings';
 import { baseRouter } from './routes';
+import { connectDatabase } from './database/connection';
+import { setupMigrator } from './database/migration';
+import fileUpload from 'express-fileupload';
 
 const app = express();
 
-const username = process.env.MONGO_USERNAME || '';
-const password = process.env.MONGO_PASSWORD || '';
-const host = process.env.MONGO_HOST || '';
-const port = process.env.MONGO_PORT || '';
-const dbName = process.env.MONGO_DB || '';
+app.use(
+  fileUpload({
+    createParentPath: true,
+  })
+);
 
-const db = `mongodb://${username}:${password}@${host}:${port}/${dbName}`;
 void (async (): Promise<void> => {
   logger.info('Connecting to database…');
-  try {
-    await mongoose.connect(db, {
-      useNewUrlParser: true,
-    } as ConnectOptions);
-    logger.info('Connected to database.');
-  } catch (error) {
-    logger.err('Could not connect to database.');
-  }
+  const connection = await connectDatabase();
+  logger.info('Connected to database.');
+
+  // Checks database migrations and run them if they are not already applied
+  logger.info('Checking for pending migrations…');
+  const umzug = setupMigrator(connection);
+  const migrations = await umzug.pending();
+  logger.info(`Found ${migrations.length} pending migrations`);
+  await umzug.up();
+  logger.info('Migrations complete.');
 
   app.use(
     cors({
@@ -54,8 +56,11 @@ void (async (): Promise<void> => {
   if (process.env.NODE_ENV === 'production') {
     app.use(helmet());
   }
-  await seedSettings();
   await seedAdmins();
+
+  // Serve static files
+  app.use('/uploads', express.static('uploads'));
+
   // API routes
   app.use('/api', baseRouter);
 

@@ -3,3 +3,5 @@
 dist
 node_modules
 tsconfig.tsbuildinfo
+uploads/*
+!*uploads/praise_logo.png

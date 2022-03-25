@@ -2,21 +2,10 @@ import { PraiseModel } from '@praise/entities';
 import { PraiseImportInput } from '@praise/types';
 import { UserAccountModel } from '@useraccount/entities';
 import { UserAccountDocument } from '@useraccount/types';
-import * as dotenv from 'dotenv';
 import 'express-async-errors';
 import fs from 'fs';
-import mongoose, { ConnectOptions } from 'mongoose';
 import path from 'path';
-
-dotenv.config({ path: path.join(__dirname, '..', '..', '/.env') });
-
-const username = process.env.MONGO_USERNAME || '';
-const password = process.env.MONGO_PASSWORD || '';
-const host = process.env.MONGO_HOST || '';
-const port = process.env.MONGO_PORT || '';
-const dbName = process.env.MONGO_DB || '';
-
-const db = `mongodb://${username}:${password}@${host}:${port}/${dbName}`;
+import { connectDatabase } from './core';
 
 const importPraise = async (
   praiseData: PraiseImportInput[],
@@ -111,35 +100,31 @@ const importPraise = async (
   process.exit();
 };
 
-mongoose
-  .connect(db, {
-    useNewUrlParser: true,
-  } as ConnectOptions)
-  .then(() => {
-    const args = process.argv.slice(2);
-    if (args.length == 0) {
-      console.log('Usage: yarn workspace api import-praise [FILE] [OPTIONS]');
-      console.log(
-        'Options: \n--sloppy - Skip null account ids instead of terminating import'
-      );
-    }
-    if (args.length > 2) {
-      console.log(
-        'Too many arguments! Script accepts two arguments only - the filename containing the praise import data and option "--sloppy".'
-      );
-      process.exit();
-    }
-    const praiseDataFile = args[0];
-    const praiseData = JSON.parse(
-      fs.readFileSync(path.resolve(__dirname, praiseDataFile), {
-        encoding: 'utf-8',
-      })
+connectDatabase().then(() => {
+  const args = process.argv.slice(2);
+  if (args.length == 0) {
+    console.log('Usage: yarn workspace api import-praise [FILE] [OPTIONS]');
+    console.log(
+      'Options: \n--sloppy - Skip null account ids instead of terminating import'
     );
+  }
+  if (args.length > 2) {
+    console.log(
+      'Too many arguments! Script accepts two arguments only - the filename containing the praise import data and option "--sloppy".'
+    );
+    process.exit();
+  }
+  const praiseDataFile = args[0];
+  const praiseData = JSON.parse(
+    fs.readFileSync(path.resolve(__dirname, praiseDataFile), {
+      encoding: 'utf-8',
+    })
+  );
 
-    let sloppyImport = false;
-    if (args[1] === '--sloppy') {
-      sloppyImport = true;
-    }
-    console.log('Parsing praise …');
-    importPraise(praiseData, sloppyImport);
-  });
+  let sloppyImport = false;
+  if (args[1] === '--sloppy') {
+    sloppyImport = true;
+  }
+  console.log('Parsing praise …');
+  importPraise(praiseData, sloppyImport);
+});

@@ -1,3 +1,4 @@
+import LoaderSpinner from '@/components/LoaderSpinner';
 import { injected } from '@/eth/connectors';
 import { hasMetaMask } from '@/eth/wallet';
 import { EthState } from '@/model/eth';
@@ -24,8 +25,6 @@ export default function LoginPage(): JSX.Element {
   const [activatingConnector, setActivatingConnector] = React.useState<
     InjectedConnector | undefined
   >(undefined);
-
-  const activating = injected === activatingConnector;
 
   // handle logic to recognize the ethConnector currently being activated
   React.useEffect(() => {
@@ -56,50 +55,58 @@ export default function LoginPage(): JSX.Element {
           </div>
           <div className="mb-3 text-lg font-semibold ">1. Connect</div>
           <EthAccount />
-          {ethState.triedEager &&
-            (!ethState.connected || (ethState.connected && !!ethError)) && (
-              <div className="mb-5">
-                <button
-                  className={ethButtonClass}
-                  disabled={
-                    ethState.connectDisabled ||
-                    !!ethError ||
-                    activating ||
-                    !hasMetaMask()
-                  }
-                  key={'Injected'}
-                  onClick={(): void => {
-                    setActivatingConnector(injected);
-                    void ethActivate(injected, (error) => {
-                      if (error.name === 'UnsupportedChainIdError')
-                        alert('Please connect to Ethereum mainnet');
-                      setActivatingConnector(undefined);
-                    });
-                  }}
-                >
-                  {!ethError && activating && <div>Initializing …</div>}
-                  {!ethError && !activating && (
-                    <div>
-                      <MetamaskIcon
-                        className={'inline-block w-4 h-4 pb-1 mr-2'}
-                      />
-                      Connect to a wallet
-                    </div>
-                  )}
-                  {ethError && ethError.name === 'UnsupportedChainIdError' && (
-                    <div>Wrong network</div>
-                  )}
-                  {ethError && ethError.name !== 'UnsupportedChainIdError' && (
-                    <div>Unable to connect</div>
-                  )}
-                </button>
-                {!hasMetaMask() && (
-                  <div className="mt-3 text-center text-red-500">
-                    No MetaMask installed
+          <div className="mb-3">
+            {ethState.triedEager ? (
+              (!ethState.connected || (ethState.connected && !!ethError)) && (
+                <div>
+                  <div className="text-lg text-red-700 flex justify-center">
+                    {ethError && ethError.name === 'UnsupportedChainIdError' ? (
+                      <div>Wrong network</div>
+                    ) : (
+                      <div>Metamask Not Found</div>
+                    )}
                   </div>
-                )}
+                  <button
+                    className={ethButtonClass}
+                    disabled={
+                      ethState.connectDisabled ||
+                      !!ethError ||
+                      ethState.activating ||
+                      !hasMetaMask()
+                    }
+                    key={'Injected'}
+                    onClick={(): void => {
+                      setActivatingConnector(injected);
+                      void ethActivate(injected, (error) => {
+                        if (error.name === 'UnsupportedChainIdError')
+                          alert('Please connect to Ethereum mainnet');
+                        setActivatingConnector(undefined);
+                      });
+                    }}
+                  >
+                    {!ethError && !ethState.activating ? (
+                      <div>
+                        <MetamaskIcon
+                          className={'inline-block w-4 h-4 pb-1 mr-2'}
+                        />
+                        Connect to a wallet
+                      </div>
+                    ) : (
+                      <div className="flex justify-center">
+                        Initializing wallet connection
+                        <LoaderSpinner />
+                      </div>
+                    )}
+                  </button>
+                </div>
+              )
+            ) : (
+              <div className="flex justify-start items-center">
+                <LoaderSpinner />
+                <span>Initializing... </span>
               </div>
             )}
+          </div>
           <div className="mb-3 text-lg font-semibold">2. Login</div>
           <LoginButton />
         </div>

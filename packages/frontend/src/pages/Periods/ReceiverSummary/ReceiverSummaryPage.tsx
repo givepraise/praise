@@ -37,12 +37,14 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
 };
 
 const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
+  const { periodId } = useParams<PeriodAndReceiverPageParams>();
+
   return (
     <>
       <BreadCrumb name={'Receiver summary for period'} icon={faCalendarAlt} />
-      <BackLink />
+      <BackLink to={`/period/${periodId}`} />
 
-      <div className="w-2/3 praise-box">
+      <div className="praise-box">
         <React.Suspense fallback="Loading…">
           <PeriodReceiverMessage />
         </React.Suspense>

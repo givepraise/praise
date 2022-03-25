@@ -3,6 +3,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '@error/errors';
+import { getRandomString } from '@shared/functions';
 import {
   Query,
   TypedRequestBody,
@@ -12,13 +13,14 @@ import {
 import { UserModel } from '@user/entities';
 import { UserDocument } from '@user/types';
 import { ethers } from 'ethers';
-import randomstring from 'randomstring';
 import { JwtService } from './JwtService';
 import {
   AuthRequestInput,
   AuthResponse,
   NonceRequestInput,
   NonceResponse,
+  RefreshRequestInput,
+  TokenSet,
 } from './types';
 
 const jwtService = new JwtService();
@@ -58,16 +60,18 @@ export const auth = async (
   if (signerAddress !== ethereumAddress)
     throw new UnauthorizedError('Verification failed.');
 
-  const accessToken = await jwtService.getJwt({
+  const { accessToken, refreshToken }: TokenSet = jwtService.getJwt({
     userId: user._id,
     ethereumAddress,
     roles: user.roles,
   });
   user.accessToken = accessToken;
+  user.refreshToken = refreshToken;
   await user.save();
 
   res.status(200).json({
     accessToken,
+    refreshToken,
     ethereumAddress,
     tokenType: 'Bearer',
   });
@@ -87,7 +91,7 @@ export const nonce = async (
   if (!ethereumAddress) throw new NotFoundError('ethereumAddress');
 
   // Generate random nonce used for auth request
-  const nonce = randomstring.generate();
+  const nonce = getRandomString();
 
   // Update existing user or create new
   await UserModel.findOneAndUpdate(
@@ -99,5 +103,37 @@ export const nonce = async (
   res.status(200).json({
     ethereumAddress,
     nonce,
+  });
+};
+
+/**
+ * Description
+ * @param
+ */
+export const refresh = async (
+  req: TypedRequestBody<RefreshRequestInput>,
+  res: TypedResponse<AuthResponse>
+): Promise<void> => {
+  // confirm refreshToken matches a single user.refreshToken
+  const { refreshToken } = req.body;
+
+  const user = await UserModel.findOne({ refreshToken });
+  if (!user || !user._id || !user.ethereumAddress)
+    throw new UnauthorizedError('Invalid refresh token');
+
+  // confirm refreshToken provided is valid
+  const jwt: TokenSet = jwtService.refreshJwt(refreshToken);
+
+  // update user tokens
+  user.accessToken = jwt.accessToken;
+  user.refreshToken = jwt.refreshToken;
+  await user.save();
+
+  // return updated tokens
+  res.status(200).json({
+    accessToken: jwt.accessToken,
+    refreshToken: jwt.refreshToken,
+    ethereumAddress: user.ethereumAddress,
+    tokenType: 'Bearer',
   });
 };

@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
+import RecoilNexus from 'recoil-nexus';
 import { useErrorBoundary } from 'use-error-boundary';
 import EthConnection from './components/EthConnection';
 import Routes from './navigation/Routes';
@@ -56,25 +57,24 @@ const ErrorBoundary = ({ children }: ErrorBoundaryProps): JSX.Element => {
 ReactDOM.render(
   <React.StrictMode>
     <RecoilRoot>
+      <RecoilNexus />
       <Web3ReactProvider getLibrary={getLibrary}>
         <Router>
-          <div>
-            <EthConnection />
-            <main>
-              <DelayedLoading>
-                <React.Suspense fallback={<LoadScreen />}>
-                  <ErrorBoundary>
-                    <Routes />
-                  </ErrorBoundary>
-                </React.Suspense>
-              </DelayedLoading>
-              <Toaster
-                position="bottom-right"
-                reverseOrder={false}
-                toastOptions={{ duration: 3000 }}
-              />
-            </main>
-          </div>
+          <EthConnection />
+          <main>
+            <DelayedLoading>
+              <React.Suspense fallback={<LoadScreen />}>
+                <ErrorBoundary>
+                  <Routes />
+                </ErrorBoundary>
+              </React.Suspense>
+            </DelayedLoading>
+            <Toaster
+              position="bottom-right"
+              reverseOrder={false}
+              toastOptions={{ duration: 3000 }}
+            />
+          </main>
         </Router>
       </Web3ReactProvider>
     </RecoilRoot>

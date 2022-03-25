@@ -36,23 +36,25 @@ const PeriodMessage = (): JSX.Element => {
 };
 
 const QuantifyPeriodPage = (): JSX.Element => {
-  return (
-    <>
-      <BreadCrumb name="Quantify" icon={faCalendarAlt} />
-      <BackLink />
+  const { periodId } = useParams<PeriodPageParams>();
 
-      <div className="w-2/3 praise-box">
+  return (
+    <div className="max-w-2xl mx-auto">
+      <BreadCrumb name="Quantify" icon={faCalendarAlt} />
+      <BackLink to={`/period/${periodId}`} />
+
+      <div className="praise-box">
         <React.Suspense fallback="Loading…">
           <PeriodMessage />
         </React.Suspense>
       </div>
 
-      <div className="w-2/3 praise-box">
+      <div className="praise-box">
         <React.Suspense fallback="Loading…">
           <QuantifyPeriodTable />
         </React.Suspense>
       </div>
-    </>
+    </div>
   );
 };
 

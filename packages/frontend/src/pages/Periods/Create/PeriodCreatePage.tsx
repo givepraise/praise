@@ -83,6 +83,7 @@ const PeriodsForm = (): JSX.Element => {
         },
       }}
       render={({ handleSubmit }): JSX.Element => (
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         <form onSubmit={handleSubmit} className="leading-loose">
           <div className="mb-3">
             <Field name="name">
@@ -137,11 +138,11 @@ const PeriodsForm = (): JSX.Element => {
 
 const PeriodsCreatePage = (): JSX.Element => {
   return (
-    <>
+    <div className="max-w-2xl mx-auto">
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
-      <BackLink />
+      <BackLink to="/periods" />
 
-      <div className="w-2/3 praise-box">
+      <div className="praise-box">
         <h2 className="mb-2">Create period</h2>
         <div className="mb-2">
           A new period begins where the last one ended and ends at{' '}
@@ -151,7 +152,7 @@ const PeriodsCreatePage = (): JSX.Element => {
           <PeriodsForm />
         </React.Suspense>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -1,8 +1,16 @@
-import { SettingsModel } from '@settings/entities';
+import { SettingsModel } from '../../settings/entities';
 
 const settings = [
-  { key: 'NAME', value: process.env.NAME, type: 'String' },
-  { key: 'DESCRIPTION', value: process.env.DESCRIPTION, type: 'Textarea' },
+  {
+    key: 'NAME',
+    value: process.env.NAME,
+    type: 'String',
+  },
+  {
+    key: 'DESCRIPTION',
+    value: process.env.DESCRIPTION,
+    type: 'Textarea',
+  },
   {
     key: 'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
     value: process.env.PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER || 3,
@@ -94,15 +102,30 @@ const settings = [
       "**You were just [praised in the TEC](praiseURL)\nIt looks like you haven't activated your account...To activate your account, use the `/praise-activate` command in the server.",
     type: 'Textarea',
   },
+  {
+    key: 'LOGO',
+    value: '/uploads/praise_logo.png',
+    type: 'Image',
+  },
 ];
 
-const seedSettings = async (): Promise<void> => {
-  for (const s of settings) {
-    const document = await SettingsModel.findOne({ key: s.key });
-    if (!document && s.value) {
-      await SettingsModel.create(s);
-    }
-  }
+const up = async (): Promise<void> => {
+  const settingUpdates = settings.map((s) => ({
+    updateOne: {
+      filter: { key: s.key },
+
+      // Insert setting if not found, otherwise continue
+      update: { $setOnInsert: { ...s } },
+      upsert: true,
+    },
+  }));
+
+  await SettingsModel.bulkWrite(settingUpdates);
 };
 
-export { seedSettings };
+const down = async (): Promise<void> => {
+  const allKeys = settings.map((s) => s.key);
+  await SettingsModel.deleteMany({ key: { $in: allKeys } });
+};
+
+export { up, down };
