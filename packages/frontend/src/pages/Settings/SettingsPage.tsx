@@ -126,7 +126,7 @@ const SettingsForm = (): JSX.Element | null => {
               id={setting.key}
               type="file"
               className="block w-full"
-              onChange={({ target }) => onChange(target.files)}
+              onChange={({ target }): void => onChange(target.files)}
             />
             <ImagePreview settingsKey={setting.key} />
           </div>
@@ -167,7 +167,7 @@ const SettingsForm = (): JSX.Element | null => {
       <div className="mb-4" key={setting.key}>
         <label className="block font-bold">{setting.label}</label>
         {setting.description && (
-          <div className="text-sm mb-2 font-bold text-gray-400">
+          <div className="mb-2 text-sm font-bold text-gray-400">
             {setting.description}
           </div>
         )}
@@ -215,7 +215,7 @@ const SettingsPage = (): JSX.Element => {
     <div className="max-w-2xl mx-auto">
       <BreadCrumb name="Settings" icon={faCogs} />
 
-      <div className="praise-box w-full">
+      <div className="w-full praise-box">
         <h2 className="mb-2">Settings</h2>
         <React.Suspense fallback="Loading…">
           <SettingsForm />

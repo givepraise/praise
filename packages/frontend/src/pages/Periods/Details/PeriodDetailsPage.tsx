@@ -29,7 +29,6 @@ import { QuantifierMessage } from './components/QuantifierMessage';
 import NavItem from '../../../navigation/NavItem';
 import QuantifierTable from './components/QuantifierTable';
 import ReceiverTable from './components/ReceiverTable';
-import NotFoundPage from '@/pages/NotFoundPage';
 
 const PeriodDetailLoader = (): null => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -86,7 +85,7 @@ const PeriodDetailPage = (): JSX.Element => {
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 
-      <div className="praise-box  max-w-4xl">
+      <div className="max-w-4xl praise-box">
         <React.Suspense fallback="Loading…">
           <PeriodDetailHead />
         </React.Suspense>
@@ -114,7 +113,7 @@ const PeriodDetailPage = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="praise-box max-w-3xl w-full">
+        <div className="w-full max-w-3xl praise-box">
           <Suspense fallback="Loading…">
             <Switch>
               <Route exact path={`${path}`}>

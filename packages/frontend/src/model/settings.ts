@@ -176,7 +176,7 @@ type useSetSettingReturn = {
 export const useSetSetting = (): useSetSettingReturn => {
   const allSettings: StringSetting[] | undefined = useRecoilValue(AllSettings);
   const setSetting = useRecoilCallback(
-    ({ snapshot, set }) =>
+    ({ set }) =>
       async (setting: StringSetting | FileSetting) => {
         const url = `/admin/settings/${setting._id}/set`;
 
