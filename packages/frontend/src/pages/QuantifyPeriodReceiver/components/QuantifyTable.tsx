@@ -122,9 +122,9 @@ const QuantifyTable = (): JSX.Element | null => {
             return (
               <>
                 {isStartOfTheWeek({ praise }) && (
-                  <tr className="my-8">
-                    <td className="border-t border-gray-600" colSpan={3}>
-                      <div></div>
+                  <tr>
+                    <td colSpan={3}>
+                      <div className="border-t border-gray-400" />
                     </td>
                   </tr>
                 )}
