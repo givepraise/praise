@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { SettingDocument } from './types';
 import { fieldTypeValidator } from './validators';
 
-export const settingsSchema = new mongoose.Schema(
+const settingsSchema = new mongoose.Schema(
   {
     key: { type: String, required: true, unique: true },
     value: { type: String, required: true },
@@ -13,6 +13,7 @@ export const settingsSchema = new mongoose.Schema(
     },
     label: { type: String, required: true },
     description: { type: String },
+    periodOverridable: { type: Boolean, default: false },
   },
   {
     collection: 'settings',

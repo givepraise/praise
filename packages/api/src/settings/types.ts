@@ -6,6 +6,7 @@ export interface Setting {
   type: string;
   label: string;
   description?: string;
+  periodOverridable: boolean;
 }
 
 export interface SettingDocument extends Setting, mongoose.Document {}
