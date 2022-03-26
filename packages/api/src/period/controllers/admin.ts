@@ -4,97 +4,28 @@ import {
   NotFoundError,
 } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
-import { praiseDocumentListTransformer } from '@praise/transformers';
-import {
-  PraiseDetailsDto,
-  PraiseDto,
-  Quantifier,
-  QuantifierPoolById,
-  Receiver,
-} from '@praise/types';
-import { praiseWithScore } from '@praise/utils';
-import { getQueryInput, getQuerySort } from '@shared/functions';
+import { Quantifier, QuantifierPoolById, Receiver } from '@praise/types';
 import { settingInt } from '@shared/settings';
-import {
-  PaginatedResponseBody,
-  QueryInputParsedQs,
-  TypedRequestBody,
-  TypedRequestQuery,
-  TypedResponse,
-} from '@shared/types';
+import { TypedRequestBody, TypedResponse } from '@shared/types';
 import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
 import { UserAccountDocument } from '@useraccount/types';
 import { firstFit, PackingOutput } from 'bin-packer';
-import { Request } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import logger from 'jet-logger';
 import { flatten, intersection, range, sum } from 'lodash';
-import mongoose from 'mongoose';
-import { PeriodModel } from './entities';
-import { periodDocumentTransformer } from './transformers';
+import { StatusCodes } from 'http-status-codes';
+import { Request } from 'express';
+import { findPeriodDetailsDto, getPreviousPeriodEndDate } from '../utils';
 import {
   AssignQuantifiersDryRunOutput,
   PeriodDetailsDto,
   PeriodDto,
-  PeriodQuantifierPraiseInput,
-  PeriodReceiverPraiseInput,
   PeriodStatusType,
   PeriodUpdateInput,
   VerifyQuantifierPoolSizeResponse,
-} from './types';
-import { findPeriodDetailsDto, getPreviousPeriodEndDate } from './utils';
-
-/**
- * Description
- * @param
- */
-export const all = async (
-  req: TypedRequestQuery<QueryInputParsedQs>,
-  res: TypedResponse<PaginatedResponseBody<PeriodDetailsDto | undefined>>
-): Promise<void> => {
-  const query = getQueryInput(req.query);
-
-  const response = await PeriodModel.paginate({
-    ...query,
-    sort: getQuerySort(req.query),
-  });
-
-  const periodList = response?.docs;
-  if (periodList && Array.isArray(periodList) && periodList.length > 0) {
-    const periodDetailsList: PeriodDetailsDto[] = [];
-    for (const period of periodList) {
-      if (period?.status === PeriodStatusType.QUANTIFY) {
-        const periodDetails = await findPeriodDetailsDto(period._id);
-        periodDetailsList.push(periodDetails);
-        continue;
-      }
-      periodDetailsList.push(periodDocumentTransformer(period));
-    }
-    res.status(StatusCodes.OK).json({
-      ...response,
-      docs: periodDetailsList,
-    });
-  } else {
-    res.status(StatusCodes.OK).json({
-      ...response,
-      docs: [],
-    });
-  }
-};
-
-/**
- * Description
- * @param
- */
-export const single = async (
-  req: Request,
-  res: TypedResponse<PeriodDetailsDto>
-): Promise<void> => {
-  const { periodId } = req.params;
-  const periodDetailsDto = await findPeriodDetailsDto(periodId);
-  res.status(StatusCodes.OK).json(periodDetailsDto);
-};
+} from '../types';
+import { PeriodModel } from '../entities';
+import { periodDocumentTransformer } from '../transformers';
 
 /**
  * Description
@@ -430,82 +361,4 @@ export const assignQuantifiers = async (
 
   const periodDetailsDto = await findPeriodDetailsDto(periodId);
   res.status(StatusCodes.OK).json(periodDetailsDto);
-};
-
-/**
- * Description
- * @param
- */
-export const receiverPraise = async (
-  req: TypedRequestQuery<PeriodReceiverPraiseInput>,
-  // req: Request,
-  res: TypedResponse<PraiseDto[]>
-): Promise<void> => {
-  const period = await PeriodModel.findById(req.params.periodId);
-  if (!period) throw new NotFoundError('Period');
-
-  const { receiverId } = req.query;
-  if (!receiverId) throw new BadRequestError('Receiver Id is a required field');
-
-  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
-
-  const praiseList = await PraiseModel.find()
-    .where({
-      createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
-      receiver: new mongoose.Types.ObjectId(receiverId),
-    })
-    .sort({ createdAt: -1 })
-    .populate('receiver giver');
-
-  const praiseDetailsDtoList: PraiseDetailsDto[] = [];
-  if (praiseList) {
-    for (const praise of praiseList) {
-      praiseDetailsDtoList.push(await praiseWithScore(praise));
-    }
-  }
-
-  res.status(StatusCodes.OK).json(praiseDetailsDtoList);
-};
-
-/**
- * Description
- * @param
- */
-export const quantifierPraise = async (
-  req: TypedRequestQuery<PeriodQuantifierPraiseInput>,
-  // req: Request,
-  res: TypedResponse<PraiseDto[]>
-): Promise<void> => {
-  const period = await PeriodModel.findById(req.params.periodId);
-  if (!period) throw new NotFoundError('Period');
-
-  const { quantifierId } = req.query;
-  if (!quantifierId)
-    throw new BadRequestError('Quantifier Id is a required field');
-
-  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
-
-  const praiseList = await PraiseModel.aggregate([
-    {
-      $match: {
-        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
-      },
-    },
-    { $unwind: '$quantifications' },
-    {
-      $match: {
-        $expr: {
-          $eq: [
-            '$quantifications.quantifier',
-            new mongoose.Types.ObjectId(quantifierId),
-          ],
-        },
-      },
-    },
-  ]);
-
-  await PraiseModel.populate(praiseList, { path: 'receiver giver' });
-
-  const response = await praiseDocumentListTransformer(praiseList);
-  res.status(StatusCodes.OK).json(response);
 };
