@@ -14,6 +14,12 @@ const settingsSchema = new mongoose.Schema(
     label: { type: String, required: true },
     description: { type: String },
     periodOverridable: { type: Boolean, default: false },
+    period: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Period',
+      index: true,
+      default: undefined,
+    },
   },
   {
     collection: 'settings',

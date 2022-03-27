@@ -1,8 +1,10 @@
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
 import { calculateQuantificationsCompositeScore } from '@praise/utils';
+import { SettingsModel } from '@settings/entities';
 import { settingFloat } from '@shared/settings';
 import { sum } from 'lodash';
+import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import {
   periodDetailsReceiverListTransformer,
@@ -34,10 +36,12 @@ export const getPreviousPeriodEndDate = async (
 };
 
 const calculateReceiverScores = async (
-  receivers: PeriodDetailsReceiver[]
+  receivers: PeriodDetailsReceiver[],
+  periodId: mongoose.Schema.Types.ObjectId
 ): Promise<PeriodDetailsReceiver[]> => {
   const duplicatePraisePercentage = await settingFloat(
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
+    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
+    periodId
   );
   if (!duplicatePraisePercentage)
     throw new BadRequestError(
@@ -136,7 +140,10 @@ export const findPeriodDetailsDto = async (
     ]),
   ]);
 
-  const receiversWithScores = await calculateReceiverScores(receivers);
+  const receiversWithScores = await calculateReceiverScores(
+    receivers,
+    period._id
+  );
 
   const response = {
     ...periodDocumentTransformer(period),
@@ -174,3 +181,20 @@ export const getPeriodDateRangeQuery = async (
   $gt: await getPreviousPeriodEndDate(period),
   $lte: period.endDate,
 });
+
+export const insertNewPeriodSettings = async (
+  period: PeriodDocument
+): Promise<void> => {
+  const defaultSettings = await SettingsModel.find({
+    periodOverridable: true,
+    period: null,
+  });
+
+  const newPeriodSettings = defaultSettings.map((s) => ({
+    ...s,
+    period: period._id,
+    periodOverridable: false,
+  }));
+
+  await SettingsModel.insertMany(newPeriodSettings);
+};
