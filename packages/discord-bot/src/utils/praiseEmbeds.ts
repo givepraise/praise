@@ -8,7 +8,7 @@ export const praiseSuccess = async (
   const msg = await getSetting('PRAISE_SUCCESS_MESSAGE');
   if (msg && typeof msg === 'string') {
     return msg
-      ?.replace('{receivers}', `${praised.join(', ')}`)
+      ?.replace('{@receivers}', `${praised.join(', ')}`)
       .replace('{reason}', reason);
   } else {
     return 'PRAISE SUCCESSFUL (message not set)';
