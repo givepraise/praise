@@ -1,5 +1,6 @@
 import { BadRequestError } from '@error/errors';
-import { PeriodDateRange } from '@period/types';
+import { PeriodDateRange, PeriodDocument } from '@period/types';
+import { PeriodModel } from '@period/entities';
 import { settingFloat } from '@shared/settings';
 import { PraiseModel } from './entities';
 import { praiseDocumentTransformer } from './transformers';
@@ -94,4 +95,29 @@ export const countPraiseWithinDateRanges = async (
   });
 
   return assignedPraiseCount;
+};
+
+/**
+ * Workaround to get the period associated with a praise instance (as they are not related in database)
+ *
+ * Determines the associated period by:
+ *  finding the period with the lowest endDate, that is greater than the praise.createdAt date
+ *
+ *  @param praise the praise instance
+ */
+export const getPraisePeriod = async (
+  praise: PraiseDocument
+): Promise<PeriodDocument | undefined> => {
+  const period = await PeriodModel.find(
+    {
+      endDate: { $gt: praise.createdAt },
+    },
+    {
+      sort: { endDate: 1 },
+    }
+  ).limit(1);
+
+  if (!period || period.length === 0) return undefined;
+
+  return period[0];
 };
