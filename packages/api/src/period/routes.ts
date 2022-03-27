@@ -29,5 +29,9 @@ adminPeriodRouter.patchAsync(
   '/:periodId/assignQuantifiers',
   periodAdminController.assignQuantifiers
 );
+adminPeriodRouter.getAsync(
+  '/:periodId/export',
+  periodAdminController.exportPraise
+);
 
 export { periodRouter, adminPeriodRouter };

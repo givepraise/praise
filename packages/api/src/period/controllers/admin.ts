@@ -4,18 +4,33 @@ import {
   NotFoundError,
 } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
-import { Quantifier, QuantifierPoolById, Receiver } from '@praise/types';
-import { settingInt } from '@shared/settings';
-import { TypedRequestBody, TypedResponse } from '@shared/types';
+import {
+  Quantifier,
+  QuantifierPoolById,
+  Receiver,
+  PraiseDtoExtended,
+  PraiseDetailsDto,
+} from '@praise/types';
+import { calculateDuplicateScore } from '@praise/transformers';
+import { praiseWithScore } from '@praise/utils';
 import { UserModel } from '@user/entities';
+import { UserAccountModel } from '@useraccount/entities';
+import {
+  getPeriodDateRangeQuery,
+  findPeriodDetailsDto,
+  getPreviousPeriodEndDate,
+  insertNewPeriodSettings,
+} from '@period/utils';
+import { settingInt } from '@shared/settings';
+import { TypedRequestBody, TypedResponse, QueryInput } from '@shared/types';
 import { UserRole } from '@user/types';
 import { UserAccountDocument } from '@useraccount/types';
 import { firstFit, PackingOutput } from 'bin-packer';
 import logger from 'jet-logger';
 import { flatten, intersection, range, sum } from 'lodash';
 import { StatusCodes } from 'http-status-codes';
-import { Request } from 'express';
-import { findPeriodDetailsDto, getPreviousPeriodEndDate } from '../utils';
+import { Request, Response } from 'express';
+import { Parser } from 'json2csv';
 import {
   AssignQuantifiersDryRunOutput,
   PeriodDetailsDto,
@@ -37,6 +52,7 @@ export const create = async (
 ): Promise<void> => {
   const { name, endDate } = req.body;
   const period = await PeriodModel.create({ name, endDate });
+  await insertNewPeriodSettings(period);
   res.status(StatusCodes.OK).json(periodDocumentTransformer(period));
 };
 
@@ -94,10 +110,10 @@ const assignQuantifiersDryRun = async (
   if (!period) throw new NotFoundError('Period');
 
   const quantifiersPerPraiseReceiver = await settingInt(
-    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER'
+    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
   );
-  const tolerance = 1.2;
   const praisePerQuantifier = await settingInt('PRAISE_PER_QUANTIFIER');
+  const tolerance = 1.2;
 
   if (!quantifiersPerPraiseReceiver || !praisePerQuantifier)
     throw new InternalServerError('Configuration error');
@@ -361,4 +377,167 @@ export const assignQuantifiers = async (
 
   const periodDetailsDto = await findPeriodDetailsDto(periodId);
   res.status(StatusCodes.OK).json(periodDetailsDto);
+};
+
+/**
+ * //TODO add descriptiom
+ */
+export const exportPraise = async (
+  req: TypedRequestBody<QueryInput>,
+  res: Response
+): Promise<void> => {
+  const period = await PeriodModel.findOne({ _id: req.params.periodId });
+  if (!period) throw new NotFoundError('Period');
+  const periodDateRangeQuery = await getPeriodDateRangeQuery(period);
+
+  const praises = await PraiseModel.find({
+    createdAt: periodDateRangeQuery,
+  }).populate('giver receiver');
+
+  const quantificationsColumnsCount = parseInt(
+    String(process.env.PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)
+  );
+
+  const docs: PraiseDetailsDto[] = [];
+  if (praises) {
+    for (const praise of praises) {
+      const pws: PraiseDtoExtended = await praiseWithScore(praise);
+
+      const receiver = await UserModel.findById(pws.receiver.user);
+      if (receiver) {
+        pws.receiverUserDocument = receiver;
+      }
+
+      if (pws.giver && pws.giver.user) {
+        const giver = await UserModel.findById(pws.giver.user);
+        if (giver) {
+          pws.giverUserDocument = giver;
+        }
+      }
+
+      pws.quantifications = await Promise.all(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        pws.quantifications.map(async (q: any) => {
+          const quantifier = await UserModel.findById(q.quantifier._id);
+          const account = await UserAccountModel.findOne({
+            user: q.quantifier._id,
+          });
+
+          q.quantifier = quantifier;
+          q.account = account;
+
+          if (q.duplicatePraise) {
+            const praise = await PraiseModel.findById(q.duplicatePraise._id);
+            if (praise && praise.quantifications) {
+              const quantification = praise.quantifications.find((q) =>
+                q.quantifier.equals(q.quantifier)
+              );
+              if (quantification) {
+                q.score = quantification.dismissed
+                  ? 0
+                  : await calculateDuplicateScore(quantification);
+              }
+            }
+          }
+
+          return q;
+        })
+      );
+
+      docs.push(pws);
+    }
+  }
+
+  const fields = [
+    {
+      label: 'ID',
+      value: '_id',
+    },
+    {
+      label: 'DATE',
+      value: 'createdAt',
+    },
+    {
+      label: 'TO USER ACCOUNT',
+      value: 'receiver.name',
+    },
+    {
+      label: 'TO ETH ADDRESS',
+      value: 'receiverUserDocument.ethereumAddress',
+    },
+    {
+      label: 'FROM USER ACCOUNT',
+      value: 'giver.name',
+    },
+    {
+      label: 'FROM ETH ADDRESS',
+      value: 'giverUserDocument.ethereumAddress',
+    },
+    {
+      label: 'REASON',
+      value: 'reason',
+    },
+    {
+      label: 'SOURCE ID',
+      value: 'sourceId',
+    },
+    {
+      label: 'SOURCE NAME',
+      value: 'sourceName',
+    },
+  ];
+
+  for (let index = 0; index < quantificationsColumnsCount; index++) {
+    const quantObj = {
+      label: `SCORE ${index + 1}`,
+      value: `quantifications[${index}].score`,
+    };
+
+    fields.push(quantObj);
+  }
+
+  for (let index = 0; index < quantificationsColumnsCount; index++) {
+    const quantObj = {
+      label: `DUPLICATE ID ${index + 1}`,
+      value: `quantifications[${index}].duplicatePraise`,
+    };
+
+    fields.push(quantObj);
+  }
+
+  for (let index = 0; index < quantificationsColumnsCount; index++) {
+    const quantObj = {
+      label: `DISMISSED ${index + 1}`,
+      value: `quantifications[${index}].dismissed`,
+    };
+
+    fields.push(quantObj);
+  }
+
+  for (let index = 0; index < quantificationsColumnsCount; index++) {
+    const quantUserUsernameObj = {
+      label: `QUANTIFIER ${index + 1} USERNAME`,
+      value: `quantifications[${index}].account.name`,
+    };
+
+    fields.push(quantUserUsernameObj);
+
+    const quantUserEthAddressObj = {
+      label: `QUANTIFIER ${index + 1} ETH ADDRESS`,
+      value: `quantifications[${index}].quantifier.ethereumAddress`,
+    };
+
+    fields.push(quantUserEthAddressObj);
+  }
+
+  fields.push({
+    label: 'AVG SCORE',
+    value: 'score',
+  });
+
+  const json2csv = new Parser({ fields: fields });
+  const csv = json2csv.parse(docs);
+
+  res.attachment('data.csv');
+  res.status(200).send(csv);
 };

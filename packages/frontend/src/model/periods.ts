@@ -544,18 +544,10 @@ export const useExportPraise = (): useExportPraiseReturn => {
     ({ snapshot }) =>
       async (period: PeriodDto): Promise<Blob | undefined> => {
         if (!period || !allPeriods) return undefined;
-        const previousPeriodEndDate = getPreviousPeriodEndDate(
-          allPeriods,
-          period
-        );
-        if (!previousPeriodEndDate)
-          throw new Error('Invalid previous period end date');
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthGet({
-              url: `/praise/export?periodStart=${encodeURI(
-                previousPeriodEndDate.toISOString()
-              )}&periodEnd=${encodeURI(period.endDate)}`,
+              url: `/admin/periods/${period._id}/export`,
               config: { responseType: 'blob' },
             })
           )

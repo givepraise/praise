@@ -36,12 +36,10 @@ export const getPreviousPeriodEndDate = async (
 };
 
 const calculateReceiverScores = async (
-  receivers: PeriodDetailsReceiver[],
-  periodId: mongoose.Schema.Types.ObjectId
+  receivers: PeriodDetailsReceiver[]
 ): Promise<PeriodDetailsReceiver[]> => {
   const duplicatePraisePercentage = await settingFloat(
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
-    periodId
+    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
   );
   if (!duplicatePraisePercentage)
     throw new BadRequestError(
@@ -140,10 +138,7 @@ export const findPeriodDetailsDto = async (
     ]),
   ]);
 
-  const receiversWithScores = await calculateReceiverScores(
-    receivers,
-    period._id
-  );
+  const receiversWithScores = await calculateReceiverScores(receivers);
 
   const response = {
     ...periodDocumentTransformer(period),
