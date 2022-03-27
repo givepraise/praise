@@ -41,6 +41,11 @@ const praiseSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    forwarder: {
+      type: Schema.Types.ObjectId,
+      ref: 'UserAccount',
+      required: false,
+    },
   },
   {
     timestamps: true,
