@@ -14,6 +14,7 @@ export interface Praise {
   quantifications: Quantification[];
   giver: UserAccountDocument;
   receiver: UserAccountDocument;
+  forwarder?: UserAccountDocument;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -41,6 +42,7 @@ export interface PraiseDto {
   quantifications: QuantificationDto[];
   giver: UserAccountDto;
   receiver: UserAccountDto;
+  forwarder?: UserAccountDto;
   createdAt: string;
   updatedAt: string;
 }
