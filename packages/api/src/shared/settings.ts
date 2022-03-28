@@ -7,7 +7,7 @@ export const settingValue = async (
 ): Promise<string | null> => {
   const setting = await SettingsModel.findOne({
     key,
-    periodId,
+    period: periodId,
   });
   if (setting) return setting.value;
   return null;
