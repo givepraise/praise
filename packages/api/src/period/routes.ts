@@ -44,7 +44,7 @@ adminPeriodRouter.getAsync(
 
 // ADMIN Period Settings-routes
 adminPeriodRouter.patchAsync(
-  '/:periodId/settings/:id/set',
+  '/:periodId/settings/:settingId/set',
   periodSettingsController.set
 );
 
