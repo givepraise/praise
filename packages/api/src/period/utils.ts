@@ -2,9 +2,10 @@ import { BadRequestError, NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
 import { calculateQuantificationsCompositeScore } from '@praise/utils';
 import { SettingsModel } from '@settings/entities';
+import { SettingDocument } from '@settings/types';
 import { settingFloat } from '@shared/settings';
 import { sum } from 'lodash';
-import mongoose from 'mongoose';
+import logger from 'jet-logger';
 import { PeriodModel } from './entities';
 import {
   periodDetailsReceiverListTransformer,
@@ -180,16 +181,29 @@ export const getPeriodDateRangeQuery = async (
 export const insertNewPeriodSettings = async (
   period: PeriodDocument
 ): Promise<void> => {
-  const defaultSettings = await SettingsModel.find({
+  let defaultSettings = await SettingsModel.find({
     periodOverridable: true,
-    period: null,
+    period: { $exists: 0 },
   });
+  if (defaultSettings && !Array.isArray(defaultSettings))
+    defaultSettings = [defaultSettings];
 
-  const newPeriodSettings = defaultSettings.map((s) => ({
-    ...s,
-    period: period._id,
-    periodOverridable: false,
-  }));
+  const newPeriodSettings = (defaultSettings as SettingDocument[]).map(
+    (setting) => {
+      const { key, value, label, description } = setting;
+
+      return {
+        key,
+        value,
+        label,
+        description,
+        period: period._id,
+        periodOverridable: false,
+      };
+    }
+  );
+
+  logger.info(`${JSON.stringify(newPeriodSettings[0])}`);
 
   await SettingsModel.insertMany(newPeriodSettings);
 };

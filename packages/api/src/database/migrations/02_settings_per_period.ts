@@ -31,6 +31,9 @@ const up = async (): Promise<void> => {
     { $set: { periodOverridable: false, period: undefined } }
   );
 
+  // Update Settings Indexes to reflect new index of [key, period] defined in SettingsSchema
+  await SettingsModel.syncIndexes();
+
   // Copy default settings for all existing periods
   const allPeriods = await PeriodModel.find();
   await Promise.all(allPeriods.map((p) => insertNewPeriodSettings(p)));
@@ -39,7 +42,9 @@ const up = async (): Promise<void> => {
 const down = async (): Promise<void> => {
   await SettingsModel.updateMany({}, { $unset: { periodOverridable: 1 } });
 
-  await SettingsModel.deleteMany({ $isset: { period: 1 } });
+  await SettingsModel.deleteMany({ period: { $exists: 1 } });
+
+  await SettingsModel.syncIndexes();
 };
 
 export { up, down };

@@ -4,7 +4,7 @@ import { fieldTypeValidator } from './validators';
 
 const settingsSchema = new mongoose.Schema(
   {
-    key: { type: String, required: true, unique: true },
+    key: { type: String, required: true },
     value: { type: String, required: true },
     type: {
       type: String,
@@ -25,6 +25,8 @@ const settingsSchema = new mongoose.Schema(
     collection: 'settings',
   }
 );
+
+settingsSchema.index({ key: 1, period: 1 }, { unique: true });
 
 export const SettingsModel = mongoose.model<SettingDocument>(
   'Settings',
