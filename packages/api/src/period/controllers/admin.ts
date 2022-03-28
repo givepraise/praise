@@ -111,8 +111,12 @@ const assignQuantifiersDryRun = async (
 
   const quantifiersPerPraiseReceiver = await settingInt(
     'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
+    period._id
   );
-  const praisePerQuantifier = await settingInt('PRAISE_PER_QUANTIFIER');
+  const praisePerQuantifier = await settingInt(
+    'PRAISE_PER_QUANTIFIER',
+    period._id
+  );
   const tolerance = 1.2;
 
   if (!quantifiersPerPraiseReceiver || !praisePerQuantifier)
@@ -435,7 +439,7 @@ export const exportPraise = async (
               if (quantification) {
                 q.score = quantification.dismissed
                   ? 0
-                  : await calculateDuplicateScore(quantification);
+                  : await calculateDuplicateScore(quantification, period._id);
               }
             }
           }

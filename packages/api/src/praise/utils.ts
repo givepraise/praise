@@ -11,6 +11,36 @@ import {
   Quantification,
 } from './types';
 
+/**
+ * Workaround to get the period associated with a praise instance (as they are not related in database)
+ *
+ * Determines the associated period by:
+ *  finding the period with the lowest endDate, that is greater than the praise.createdAt date
+ *
+ *  @param praise the praise instance
+ */
+export const getPraisePeriod = async (
+  praise: PraiseDocument
+): Promise<PeriodDocument | undefined> => {
+  const period = await PeriodModel.find(
+    // only periods ending after praise created
+    {
+      endDate: { $gte: praise.createdAt },
+    },
+
+    // sort periods by ending date ascending
+    {
+      sort: { endDate: 1 },
+    }
+
+  // select the period with the earliest ending date
+  ).limit(1);
+
+  if (!period || period.length === 0) return undefined;
+
+  return period[0];
+};
+
 export const calculateQuantificationsCompositeScore = async (
   quantifications: Quantification[],
   duplicatePraisePercentage: number
@@ -50,8 +80,12 @@ export const calculateQuantificationsCompositeScore = async (
 export const calculatePraiseScore = async (
   praise: PraiseDocument
 ): Promise<number> => {
+  const period = await getPraisePeriod(praise);
+  if (!period) return 0;
+
   const duplicatePraisePercentage = await settingFloat(
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
+    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
+    period._id
   );
   if (!duplicatePraisePercentage)
     throw new BadRequestError(
@@ -95,29 +129,4 @@ export const countPraiseWithinDateRanges = async (
   });
 
   return assignedPraiseCount;
-};
-
-/**
- * Workaround to get the period associated with a praise instance (as they are not related in database)
- *
- * Determines the associated period by:
- *  finding the period with the lowest endDate, that is greater than the praise.createdAt date
- *
- *  @param praise the praise instance
- */
-export const getPraisePeriod = async (
-  praise: PraiseDocument
-): Promise<PeriodDocument | undefined> => {
-  const period = await PeriodModel.find(
-    {
-      endDate: { $gt: praise.createdAt },
-    },
-    {
-      sort: { endDate: 1 },
-    }
-  ).limit(1);
-
-  if (!period || period.length === 0) return undefined;
-
-  return period[0];
 };

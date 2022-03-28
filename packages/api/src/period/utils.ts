@@ -6,6 +6,7 @@ import { SettingDocument } from '@settings/types';
 import { settingFloat } from '@shared/settings';
 import { sum } from 'lodash';
 import logger from 'jet-logger';
+import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import {
   periodDetailsReceiverListTransformer,
@@ -37,10 +38,12 @@ export const getPreviousPeriodEndDate = async (
 };
 
 const calculateReceiverScores = async (
-  receivers: PeriodDetailsReceiver[]
+  receivers: PeriodDetailsReceiver[],
+  periodId: mongoose.Schema.Types.ObjectId
 ): Promise<PeriodDetailsReceiver[]> => {
   const duplicatePraisePercentage = await settingFloat(
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
+    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
+    periodId
   );
   if (!duplicatePraisePercentage)
     throw new BadRequestError(
@@ -139,7 +142,10 @@ export const findPeriodDetailsDto = async (
     ]),
   ]);
 
-  const receiversWithScores = await calculateReceiverScores(receivers);
+  const receiversWithScores = await calculateReceiverScores(
+    receivers,
+    period._id
+  );
 
   const response = {
     ...periodDocumentTransformer(period),
