@@ -49,9 +49,9 @@ export const set = async (
 
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
-  if (period.status === PeriodStatusType.QUANTIFY)
+  if (period.status !== PeriodStatusType.OPEN)
     throw new BadRequestError(
-      'Cannot change period settings while quantification in progress'
+      'Period settings can only be changed before the period begins'
     );
 
   const setting = await SettingsModel.findOne({
