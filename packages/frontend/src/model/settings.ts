@@ -4,6 +4,7 @@ import React from 'react';
 import { toast } from 'react-hot-toast';
 import {
   atom,
+  atomFamily,
   selector,
   selectorFamily,
   useRecoilCallback,
@@ -197,7 +198,7 @@ export const useSetSetting = (): useSetSettingReturn => {
         // If OK response, add returned period object to local state
         if (isResponseOk(response)) {
           const setting = response.data as StringSetting;
-          toast.success(`Saved ${setting.key}`);
+          toast.success(`Saved setting "${setting.label}"`);
           if (setting) {
             if (typeof allSettings !== 'undefined') {
               set(
@@ -218,4 +219,98 @@ export const useSetSetting = (): useSetSettingReturn => {
       }
   );
   return { setSetting };
+};
+
+export const AllPeriodSettings = atomFamily<
+  StringSetting[] | undefined,
+  string
+>({
+  key: 'AllPeriodSettings',
+  default: undefined,
+});
+
+export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
+  const allSettings: StringSetting[] | undefined = useRecoilValue(
+    AllPeriodSettings(periodId)
+  );
+  const setSetting = useRecoilCallback(
+    ({ set }) =>
+      async (setting: StringSetting | FileSetting) => {
+        const url = `/admin/periods/${periodId}/settings/${setting._id}/set`;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const reqData = (setting: StringSetting | FileSetting): any => {
+          if (isFileSetting(setting)) {
+            const data = new FormData();
+            data.append('value', setting.value);
+            return data;
+          } else {
+            return setting;
+          }
+        };
+
+        const apiAuthClient = makeApiAuthClient();
+        const response = await apiAuthClient.patch(url, reqData(setting));
+
+        // If OK response, add returned period object to local state
+        if (isResponseOk(response)) {
+          const setting = response.data as StringSetting;
+          toast.success(`Saved setting "${setting.label}"`);
+          if (setting) {
+            if (typeof allSettings !== 'undefined') {
+              set(
+                AllPeriodSettings(periodId),
+                allSettings.map(
+                  (oldSetting) =>
+                    oldSetting._id === setting._id ? setting : oldSetting,
+                  setting
+                )
+              );
+            } else {
+              set(AllPeriodSettings(periodId), [setting]);
+            }
+          }
+          set(SetSettingApiResponse, response);
+        }
+        return response;
+      }
+  );
+  return { setSetting };
+};
+
+export const AllPeriodSettingsQuery = selectorFamily({
+  key: 'AllPeriodSettingsQuery',
+  get:
+    (periodId: string) =>
+    ({ get }) => {
+      return get(
+        ApiAuthGet({
+          url: `/periods/${periodId}/settings/all`,
+        })
+      );
+    },
+});
+
+export const useAllPeriodSettingsQuery = (
+  periodId: string
+): AxiosResponse<unknown> => {
+  const allPeriodSettingsQueryResponse = useAuthApiQuery(
+    AllPeriodSettingsQuery(periodId)
+  );
+  const [allPeriodSettings, setAllPeriodSettings] = useRecoilState(
+    AllPeriodSettings(periodId)
+  );
+
+  React.useEffect(() => {
+    if (
+      isResponseOk(allPeriodSettingsQueryResponse) &&
+      typeof allPeriodSettings === 'undefined'
+    ) {
+      const settings = allPeriodSettingsQueryResponse.data as StringSetting[];
+      if (Array.isArray(settings) && settings.length > 0)
+        setAllPeriodSettings(settings);
+    }
+  }, [allPeriodSettingsQueryResponse, setAllPeriodSettings, allPeriodSettings]);
+
+  return allPeriodSettingsQueryResponse;
 };

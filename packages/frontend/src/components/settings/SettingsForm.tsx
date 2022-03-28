@@ -1,19 +1,24 @@
 import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import {
-  AllSettings,
   ImageSettingFullPath,
   SetSettingApiResponse,
   StringSetting,
-  useSetSetting,
 } from '@/model/settings';
 import { Field, Form } from 'react-final-form';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import SubmitButton from './SubmitButton';
+import SubmitButton from '../form/SubmitButton';
 
-const SettingsForm = (): JSX.Element | null => {
+interface SettingsFormProps {
+  settings: StringSetting[] | undefined;
+  setSetting: Function;
+}
+
+const SettingsForm = ({
+  settings,
+  setSetting,
+}: SettingsFormProps): JSX.Element | null => {
   const [apiResponse] = useRecoilState(SetSettingApiResponse);
-  const settings = useRecoilValue(AllSettings);
-  const { setSetting } = useSetSetting();
+
   // Is only called if validate is successful
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: Record<string, any>): Promise<void> => {

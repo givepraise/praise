@@ -12,6 +12,7 @@ import {
   faBalanceScaleLeft,
   faHeartbeat,
   faCalendarAlt,
+  faCog,
 } from '@fortawesome/free-solid-svg-icons';
 import React, { Suspense } from 'react';
 import 'react-day-picker/lib/style.css';
@@ -29,6 +30,7 @@ import { QuantifierMessage } from './components/QuantifierMessage';
 import NavItem from '../../../navigation/NavItem';
 import QuantifierTable from './components/QuantifierTable';
 import ReceiverTable from './components/ReceiverTable';
+import PeriodSettingsForm from './components/PeriodSettingsForm';
 
 const PeriodDetailLoader = (): null => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -49,8 +51,8 @@ const PeriodDetailHead = (): JSX.Element => {
           period?.status === 'OPEN'
             ? 'bg-green-300'
             : period?.status === 'QUANTIFY'
-            ? 'bg-pink-300'
-            : 'bg-gray-300',
+              ? 'bg-pink-300'
+              : 'bg-gray-300',
           'float-right px-2 py-1 text-xs text-white rounded-full'
         )}
       >
@@ -109,6 +111,11 @@ const PeriodDetailPage = (): JSX.Element => {
                 description="Quantifiers"
                 icon={faBalanceScaleLeft}
               />
+              <NavItem
+                to={`${url}/settings`}
+                description="Settings"
+                icon={faCog}
+              />
             </nav>
           </div>
         </div>
@@ -124,6 +131,9 @@ const PeriodDetailPage = (): JSX.Element => {
               </Route>
               <Route path={`${path}/quantifiers`}>
                 <QuantifierTable />
+              </Route>
+              <Route path={`${path}/settings`}>
+                <PeriodSettingsForm periodId={periodId} />
               </Route>
             </Switch>
           </Suspense>
