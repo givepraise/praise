@@ -5,7 +5,6 @@ import { SettingsModel } from '@settings/entities';
 import { SettingDocument } from '@settings/types';
 import { settingFloat } from '@shared/settings';
 import { sum } from 'lodash';
-import logger from 'jet-logger';
 import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import {
@@ -196,20 +195,16 @@ export const insertNewPeriodSettings = async (
 
   const newPeriodSettings = (defaultSettings as SettingDocument[]).map(
     (setting) => {
-      const { key, value, label, description } = setting;
+      const defaultSetting = setting.toObject();
+      delete defaultSetting._id;
 
       return {
-        key,
-        value,
-        label,
-        description,
+        ...defaultSetting,
         period: period._id,
         periodOverridable: false,
       };
     }
   );
-
-  logger.info(`${JSON.stringify(newPeriodSettings[0])}`);
 
   await SettingsModel.insertMany(newPeriodSettings);
 };
