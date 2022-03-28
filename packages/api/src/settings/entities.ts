@@ -10,6 +10,7 @@ const settingsSchema = new mongoose.Schema(
       type: String,
       enum: ['Number', 'String', 'Textarea', 'Boolean', 'List', 'Image'],
       validate: fieldTypeValidator,
+      required: true,
     },
     label: { type: String, required: true },
     description: { type: String },
