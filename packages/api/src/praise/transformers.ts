@@ -9,7 +9,7 @@ import {
   QuantificationDto,
 } from './types';
 
-const calculateDuplicateScore = async (
+export const calculateDuplicateScore = async (
   quantification: Quantification
 ): Promise<number> => {
   const duplicatePraisePercentage = await settingFloat(

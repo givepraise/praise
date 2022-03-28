@@ -9,12 +9,12 @@ import PeriodsTable from './components/Table';
 
 const PeriodsPage = (): JSX.Element => {
   return (
-    <>
+    <div className="max-w-2xl mx-auto">
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
 
       <ActiveNoticesBoard />
 
-      <div className="w-2/3 praise-box">
+      <div className="praise-box">
         <AdminOnly>
           <div className="mb-2 text-right">
             <Link to="/periods/createupdate">
@@ -29,7 +29,7 @@ const PeriodsPage = (): JSX.Element => {
           <PeriodsTable />
         </React.Suspense>
       </div>
-    </>
+    </div>
   );
 };
 

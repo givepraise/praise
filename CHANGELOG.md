@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2022-03-25
+
 ### Added
 
+- Switch back to the old command structure for discord slash-commands.
+- Added a weekly divider to the quant page
+- Page layout and navbar have been made more responsive
+- System settings now have labels and descriptions
+- Allow scrolling the quantification page while the duplicate dialog is open
 - New command structure for the discord-bot package, with subcommands under the /praise command. #167
 - Settings now supports image uploads. Initially used for the top left logo. #124
 - Command-line script to replace an actively assigned quantifier with a new one, as a short-term workaround for #173.
@@ -23,6 +30,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove recoil auth query wrappers -- moved into utils/auth
 - Ensure expired tokens fail validation in api middleware
 - Logout user (redirect to /login and delete saved TokenSet) upon receiving a 401 response after refreshing tokens
+
+### Fixed
+
+- Default logo is now included
+- Export of quantified praise calculated wrong average score on duplicate praise. #182
 
 ## [0.0.1] - 2022-03-10
 

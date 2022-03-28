@@ -1,8 +1,16 @@
-import { SettingsModel } from '@settings/entities';
+import { SettingsModel } from '../../settings/entities';
 
 const settings = [
-  { key: 'NAME', value: process.env.NAME, type: 'String' },
-  { key: 'DESCRIPTION', value: process.env.DESCRIPTION, type: 'Textarea' },
+  {
+    key: 'NAME',
+    value: process.env.NAME,
+    type: 'String',
+  },
+  {
+    key: 'DESCRIPTION',
+    value: process.env.DESCRIPTION,
+    type: 'Textarea',
+  },
   {
     key: 'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
     value: process.env.PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER || 3,
@@ -96,18 +104,28 @@ const settings = [
   },
   {
     key: 'LOGO',
-    value: '/upload/logo.png',
+    value: '/uploads/praise_logo.png',
     type: 'Image',
   },
 ];
 
-const seedSettings = async (): Promise<void> => {
-  for (const defaultSetting of settings) {
-    const setting = await SettingsModel.findOne({ key: defaultSetting.key });
-    if (!setting) {
-      await SettingsModel.create(defaultSetting);
-    }
-  }
+const up = async (): Promise<void> => {
+  const settingUpdates = settings.map((s) => ({
+    updateOne: {
+      filter: { key: s.key },
+
+      // Insert setting if not found, otherwise continue
+      update: { $setOnInsert: { ...s } },
+      upsert: true,
+    },
+  }));
+
+  await SettingsModel.bulkWrite(settingUpdates);
 };
 
-export { seedSettings };
+const down = async (): Promise<void> => {
+  const allKeys = settings.map((s) => s.key);
+  await SettingsModel.deleteMany({ key: { $in: allKeys } });
+};
+
+export { up, down };

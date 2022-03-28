@@ -49,11 +49,11 @@ const QuantSummaryPraisePage = (): JSX.Element => {
       : '/';
 
   return (
-    <>
+    <div className="max-w-2xl mx-auto">
       <BreadCrumb name={'Praise details'} icon={faCalendarAlt} />
       <BackLink to={backLinkUrl} />
 
-      <div className="w-2/3 praise-box">
+      <div className="praise-box">
         <React.Suspense fallback="Loading…">
           <PeriodReceiverMessage />
         </React.Suspense>
@@ -64,7 +64,7 @@ const QuantSummaryPraisePage = (): JSX.Element => {
           <PraiseDetailTable />
         </React.Suspense>
       </div>
-    </>
+    </div>
   );
 };
 
