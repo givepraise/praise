@@ -51,8 +51,8 @@ const PeriodDetailHead = (): JSX.Element => {
           period?.status === 'OPEN'
             ? 'bg-green-300'
             : period?.status === 'QUANTIFY'
-              ? 'bg-pink-300'
-              : 'bg-gray-300',
+            ? 'bg-pink-300'
+            : 'bg-gray-300',
           'float-right px-2 py-1 text-xs text-white rounded-full'
         )}
       >
