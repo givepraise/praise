@@ -1,9 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
-import {
-  getPreviousPeriodEndDate,
-  periodQuantifierPraiseListKey,
-} from '@/utils/periods';
+import { periodQuantifierPraiseListKey } from '@/utils/periods';
 import {
   PeriodCreateInput,
   PeriodDetailsDto,
