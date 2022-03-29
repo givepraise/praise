@@ -1,11 +1,14 @@
 import { SettingDocument } from './types';
+import { PeriodSettingDocument } from '@periodsettings/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isNumeric(num: any): Boolean {
   return !isNaN(num);
 }
 
-export function fieldTypeValidator(this: SettingDocument): Boolean {
+export function fieldTypeValidator(
+  this: SettingDocument | PeriodSettingDocument
+): Boolean {
   if (this.type === 'Float' || this.type === 'Integer') {
     return isNumeric(this.value);
   }

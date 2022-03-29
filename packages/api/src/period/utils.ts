@@ -1,8 +1,6 @@
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
 import { calculateQuantificationsCompositeScore } from '@praise/utils';
-import { SettingsModel } from '@settings/entities';
-import { SettingDocument } from '@settings/types';
 import { settingValue } from '@shared/settings';
 import { sum } from 'lodash';
 import mongoose from 'mongoose';
@@ -184,28 +182,3 @@ export const getPeriodDateRangeQuery = async (
   $lte: period.endDate,
 });
 
-export const insertNewPeriodSettings = async (
-  period: PeriodDocument
-): Promise<void> => {
-  let defaultSettings = await SettingsModel.find({
-    periodOverridable: true,
-    period: { $exists: 0 },
-  });
-  if (defaultSettings && !Array.isArray(defaultSettings))
-    defaultSettings = [defaultSettings];
-
-  const newPeriodSettings = (defaultSettings as SettingDocument[]).map(
-    (setting) => {
-      const defaultSetting = setting.toObject();
-      delete defaultSetting._id;
-
-      return {
-        ...defaultSetting,
-        period: period._id,
-        periodOverridable: false,
-      };
-    }
-  );
-
-  await SettingsModel.insertMany(newPeriodSettings);
-};

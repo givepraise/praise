@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 
-export type SettingValueNormalTypes = string | boolean | number | number[];
 export interface Setting {
   key: string;
   value: string;

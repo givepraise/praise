@@ -2,14 +2,14 @@ import { BadRequestError, NotFoundError } from '@error/errors';
 import { removeFile, upload } from '@shared/functions';
 import { TypedRequestBody, TypedResponse } from '@shared/types';
 import { Request } from 'express';
-import { SettingsModel } from '@settings/entities';
 import {
   settingListTransformer,
   settingTransformer,
 } from '@settings/transformers';
 import { SettingDto, SettingSetInput } from '@settings/types';
 import { PeriodStatusType } from '@period/types';
-import { PeriodModel } from '../entities';
+import { PeriodModel } from '@period/entities';
+import { PeriodSettingsModel } from './entities';
 
 export const all = async (
   req: Request,
@@ -18,7 +18,7 @@ export const all = async (
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
-  const settings = await SettingsModel.find({ period: period._id });
+  const settings = await PeriodSettingsModel.find({ period: period._id });
 
   res.status(200).json(settingListTransformer(settings));
 };
@@ -30,7 +30,7 @@ export const single = async (
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
-  const setting = await SettingsModel.findOne({
+  const setting = await PeriodSettingsModel.findOne({
     _id: req.params.settingId,
     period: period._id,
   });
@@ -54,7 +54,7 @@ export const set = async (
       'Period settings can only be changed before the period begins'
     );
 
-  const setting = await SettingsModel.findOne({
+  const setting = await PeriodSettingsModel.findOne({
     _id: req.params.settingId,
     period: period._id,
   });

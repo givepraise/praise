@@ -147,7 +147,7 @@ export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
   );
 
   const setSetting = useRecoilCallback(() => async (setting: Setting) => {
-    const url = `/admin/periods/${periodId}/settings/${setting._id}/set`;
+    const url = `/admin/periodsettings/${periodId}/settings/${setting._id}/set`;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const reqData = (setting: Setting): any => {
@@ -191,7 +191,7 @@ export const AllPeriodSettingsQuery = selectorFamily({
     ({ get }): AxiosResponse<unknown> => {
       return get(
         ApiAuthGet({
-          url: `/periods/${periodId}/settings/all`,
+          url: `/periodsettings/${periodId}/settings/all`,
         })
       );
     },

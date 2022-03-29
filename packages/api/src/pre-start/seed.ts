@@ -3,7 +3,7 @@ import { PraiseModel } from '@praise/entities';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { UserAccountDocument } from '@useraccount/types';
-import { insertNewPeriodSettings } from '@period/utils';
+import { insertNewPeriodSettings } from '@periodsettings/utils';
 import faker from 'faker';
 import logger from 'jet-logger';
 

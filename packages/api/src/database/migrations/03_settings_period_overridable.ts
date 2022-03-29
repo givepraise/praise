@@ -1,10 +1,9 @@
 import { SettingsModel } from '../../settings/entities';
 import { PeriodModel } from '../../period/entities';
-import { insertNewPeriodSettings } from '../../period/utils';
+import { PeriodSettingsModel } from '../../periodsettings/entities';
+import { insertNewPeriodSettings } from '../../periodsettings/utils';
 
 const up = async (): Promise<void> => {
-  // Define all existing settings as 'global'
-  //  some as overridable per-period
   const overridableSettingKeys = [
     'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
     'PRAISE_PER_QUANTIFIER',
@@ -13,13 +12,18 @@ const up = async (): Promise<void> => {
     'PRAISE_QUANTIFY_ALLOWED_VALUES',
   ];
 
+  // Update Settings Indexes to reflect new index of [key, period] defined in SettingsSchema
+  await SettingsModel.syncIndexes();
+  await PeriodSettingsModel.syncIndexes();
+
+  // Specify which settings are overridable per-period
   await SettingsModel.updateMany(
     {
       key: {
         $in: overridableSettingKeys,
       },
     },
-    { $set: { periodOverridable: true, period: undefined } }
+    { $set: { periodOverridable: true } }
   );
 
   await SettingsModel.updateMany(
@@ -28,11 +32,8 @@ const up = async (): Promise<void> => {
         $nin: overridableSettingKeys,
       },
     },
-    { $set: { periodOverridable: false, period: undefined } }
+    { $set: { periodOverridable: false } }
   );
-
-  // Update Settings Indexes to reflect new index of [key, period] defined in SettingsSchema
-  await SettingsModel.syncIndexes();
 
   // Copy default settings for all existing periods
   const allPeriods = await PeriodModel.find();
@@ -40,11 +41,12 @@ const up = async (): Promise<void> => {
 };
 
 const down = async (): Promise<void> => {
+  await SettingsModel.syncIndexes();
+  await PeriodSettingsModel.syncIndexes();
+
   await SettingsModel.updateMany({}, { $unset: { periodOverridable: 1 } });
 
-  await SettingsModel.deleteMany({ period: { $exists: 1 } });
-
-  await SettingsModel.syncIndexes();
+  await PeriodSettingsModel.deleteMany({});
 };
 
 export { up, down };

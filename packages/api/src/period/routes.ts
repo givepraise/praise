@@ -1,7 +1,6 @@
 import { Router } from '@awaitjs/express';
 import * as periodAdminController from '@period/controllers/admin';
 import * as periodController from '@period/controllers/core';
-import * as periodSettingsController from '@period/controllers/settings';
 
 // Period-routes
 const periodRouter = Router();
@@ -17,12 +16,6 @@ periodRouter.getAsync(
   periodController.quantifierPraise
 );
 
-// Period Settings-routes
-periodRouter.getAsync('/:periodId/settings/all', periodSettingsController.all);
-periodRouter.getAsync(
-  '/:periodId/settings/:settingId',
-  periodSettingsController.single
-);
 
 // ADMIN Period-routes
 const adminPeriodRouter = Router();
@@ -42,10 +35,5 @@ adminPeriodRouter.getAsync(
   periodAdminController.exportPraise
 );
 
-// ADMIN Period Settings-routes
-adminPeriodRouter.patchAsync(
-  '/:periodId/settings/:settingId/set',
-  periodSettingsController.set
-);
 
 export { periodRouter, adminPeriodRouter };

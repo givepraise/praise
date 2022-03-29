@@ -19,8 +19,8 @@ import {
   getPeriodDateRangeQuery,
   findPeriodDetailsDto,
   getPreviousPeriodEndDate,
-  insertNewPeriodSettings,
 } from '@period/utils';
+import { insertNewPeriodSettings } from '@periodsettings/utils';
 import { settingValue } from '@shared/settings';
 import { TypedRequestBody, TypedResponse, QueryInput } from '@shared/types';
 import { UserRole } from '@user/types';
