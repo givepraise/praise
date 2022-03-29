@@ -57,14 +57,15 @@ export const AllSettings = atom<Setting[]>({
 
 export const useAllSettingsQuery = (): void => {
   const allSettingsQueryResponse = useAuthApiQuery(AllSettingsQuery);
-  const setAllSettings = useSetRecoilState(AllSettings);
+  const [allSettings, setAllSettings] = useRecoilState(AllSettings);
 
   React.useEffect(() => {
     const settings = allSettingsQueryResponse.data as Setting[];
     if (!Array.isArray(settings) || settings.length === 0) return;
+    if (allSettings.length > 0) return;
 
     setAllSettings(settings);
-  }, [allSettingsQueryResponse, setAllSettings]);
+  }, [allSettingsQueryResponse, allSettings, setAllSettings]);
 };
 
 export const SetSettingApiResponse = atom<
@@ -119,7 +120,6 @@ export const useSetSetting = (): useSetSettingReturn => {
           allSettings,
           (s: Setting) => s._id === updatedSetting._id
         );
-        console.log('settingIndex', settingIndex);
 
         if (settingIndex === -1) {
           set(AllSettings, [updatedSetting]);
@@ -199,15 +199,18 @@ export const AllPeriodSettingsQuery = selectorFamily({
 });
 
 export const useAllPeriodSettingsQuery = (periodId: string): void => {
-  const queryResponse = useAuthApiQuery(AllPeriodSettingsQuery(periodId));
-  const [allSettings, setAllSettings] = useRecoilState(
+  const allPeriodSettingsQueryResponse = useAuthApiQuery(
+    AllPeriodSettingsQuery(periodId)
+  );
+  const [allPeriodSettings, setAllPeriodSettings] = useRecoilState(
     AllPeriodSettings(periodId)
   );
 
   React.useEffect(() => {
-    const settings = queryResponse.data as Setting[];
+    const settings = allPeriodSettingsQueryResponse.data as Setting[];
     if (!Array.isArray(settings) || settings.length === 0) return;
+    if (allPeriodSettings.length > 0) return;
 
-    setAllSettings(settings);
-  }, [queryResponse, setAllSettings, allSettings]);
+    setAllPeriodSettings(settings);
+  }, [allPeriodSettingsQueryResponse, allPeriodSettings, setAllPeriodSettings]);
 };
