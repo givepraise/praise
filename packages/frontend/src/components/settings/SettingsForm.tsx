@@ -3,6 +3,7 @@ import StringInput from '@/components/form/StringInput';
 import TextareaInput from '@/components/form/TextareaInput';
 import BooleanInput from '@/components/form/BooleanInput';
 import ImageFileInput from '@/components/form/ImageFileInput';
+import Notice from '@/components/Notice';
 import {
   SetSettingApiResponse,
   StringSetting,
@@ -34,10 +35,7 @@ const FormFields = (settings: Setting[]): JSX.Element => {
         else if (setting.type === 'Boolean')
           field = BooleanInput(setting.key, apiResponse);
         else if (setting.type === 'Image')
-          field = ImageFileInput(
-            setting.key,
-            setting.valueRealized as string
-          );
+          field = ImageFileInput(setting.key, setting.valueRealized as string);
 
         if (!field) return null;
 
@@ -59,9 +57,9 @@ const FormFields = (settings: Setting[]): JSX.Element => {
 
 const DisabledFormFields = (settings: Setting[]): JSX.Element => (
   <>
-    <div className="mb-8 p-4 text-center bg-red-200 text-white font-bold rounded-sm">
-      Settings locked for this period
-    </div>
+    <Notice type="danger" className="mb-8">
+      <span>Settings locked for this period</span>
+    </Notice>
     <div className="space-y-4 mb-2">
       {settings.map((setting: Setting) => (
         <div key={setting.key}>
