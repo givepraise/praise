@@ -36,7 +36,7 @@ const settingsSchema = new mongoose.Schema(
 );
 
 settingsSchema
-  .virtual('valueNormalized')
+  .virtual('valueRealized')
   .get(function (
     this: SettingDocument
   ): string | boolean | number | number[] | undefined {

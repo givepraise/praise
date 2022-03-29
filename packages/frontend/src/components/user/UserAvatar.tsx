@@ -26,7 +26,7 @@ const WrappedUserAvatar = ({
   );
   if (
     imageLoadError ||
-    (enablePseudomyms && (pseudonymSetting?.valueNormalized as boolean))
+    (enablePseudomyms && (pseudonymSetting?.valueRealized as boolean))
   )
     return <FontAwesomeIcon icon={faUserCircle} size="2x" />;
   let url;

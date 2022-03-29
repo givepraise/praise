@@ -36,7 +36,7 @@ const FormFields = (settings: Setting[]): JSX.Element => {
         else if (setting.type === 'Image')
           field = ImageFileInput(
             setting.key,
-            setting.valueNormalized as string
+            setting.valueRealized as string
           );
 
         if (!field) return null;

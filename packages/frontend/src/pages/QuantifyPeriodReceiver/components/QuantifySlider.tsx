@@ -42,8 +42,8 @@ const QuantifySlider = ({ praise }: QuantifySliderProps): JSX.Element => {
   );
 
   React.useEffect(() => {
-    if (!allowedValues?.valueNormalized) return;
-    setScores(allowedValues.valueNormalized as number[]);
+    if (!allowedValues?.valueRealized) return;
+    setScores(allowedValues.valueRealized as number[]);
   }, [allowedValues]);
 
   const allowedSliderValuesToMarks = React.useCallback((): Mark[] => {

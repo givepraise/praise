@@ -21,7 +21,7 @@ export interface Setting {
   label: string;
   description: string;
   value: string;
-  valueNormalized: string | Boolean | number | number[] | File;
+  valueRealized: string | Boolean | number | number[] | File;
 }
 
 export interface StringSetting extends Setting {

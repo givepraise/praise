@@ -14,5 +14,5 @@ export const settingValue = async (
     throw Error(`Setting ${key} does not exist for ${periodString}`);
   }
 
-  return setting.valueNormalized;
+  return setting.valueRealized;
 };

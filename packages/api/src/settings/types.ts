@@ -4,7 +4,7 @@ export type SettingValueNormalTypes = string | boolean | number | number[];
 export interface Setting {
   key: string;
   value: string;
-  valueNormalized: string | boolean | number | number[];
+  valueRealized: string | boolean | number | number[];
   type: string;
   label: string;
   description?: string;
@@ -17,7 +17,7 @@ export interface SettingDto {
   _id: string;
   key: string;
   value: string;
-  valueNormalized: string | boolean | number | number[];
+  valueRealized: string | boolean | number | number[];
   type: string;
   label: string;
   description?: string;

@@ -1,9 +1,9 @@
 import { SettingDocument, SettingDto } from './types';
 
 const settingDocumentToDto = (setting: SettingDocument): SettingDto => {
-  const { _id, key, value, valueNormalized, type, label, description } =
+  const { _id, key, value, valueRealized, type, label, description } =
     setting;
-  return { _id, key, value, valueNormalized, type, label, description };
+  return { _id, key, value, valueRealized, type, label, description };
 };
 
 export const settingListTransformer = (

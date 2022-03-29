@@ -36,7 +36,7 @@ export default function Nav(): JSX.Element {
               <Link to="/">
                 {logoSetting && (
                   <img
-                    src={logoSetting.valueNormalized as string}
+                    src={logoSetting.valueRealized as string}
                     className={'inline-block w-52'}
                   />
                 )}
