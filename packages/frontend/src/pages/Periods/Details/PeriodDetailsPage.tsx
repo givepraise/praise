@@ -8,6 +8,7 @@ import {
 import BackLink from '@/navigation/BackLink';
 import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
 import { classNames } from '@/utils/index';
+import { PeriodStatusType } from 'api/dist/period/types';
 import {
   faBalanceScaleLeft,
   faHeartbeat,
@@ -71,6 +72,7 @@ const PeriodDetailHead = (): JSX.Element => {
 const PeriodDetailPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
+  const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const [detailsLoaded, setDetailsLoaded] = React.useState<boolean>(false);
   const { path, url } = useRouteMatch();
 
@@ -80,7 +82,7 @@ const PeriodDetailPage = (): JSX.Element => {
     }
   }, [period]);
 
-  if (!detailsLoaded) return <PeriodDetailLoader />;
+  if (!detailsLoaded || !period) return <PeriodDetailLoader />;
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -133,7 +135,10 @@ const PeriodDetailPage = (): JSX.Element => {
                 <QuantifierTable />
               </Route>
               <Route path={`${path}/settings`}>
-                <PeriodSettingsForm periodId={periodId} />
+                <PeriodSettingsForm
+                  periodId={periodId}
+                  disabled={period.status !== PeriodStatusType.OPEN || !isAdmin}
+                />
               </Route>
             </Switch>
           </Suspense>
