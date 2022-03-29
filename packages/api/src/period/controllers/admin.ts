@@ -21,7 +21,7 @@ import {
   getPreviousPeriodEndDate,
   insertNewPeriodSettings,
 } from '@period/utils';
-import { settingInt } from '@shared/settings';
+import { settingValue } from '@shared/settings';
 import { TypedRequestBody, TypedResponse, QueryInput } from '@shared/types';
 import { UserRole } from '@user/types';
 import { UserAccountDocument } from '@useraccount/types';
@@ -109,14 +109,14 @@ const assignQuantifiersDryRun = async (
   const period = await PeriodModel.findById(periodId);
   if (!period) throw new NotFoundError('Period');
 
-  const quantifiersPerPraiseReceiver = await settingInt(
+  const quantifiersPerPraiseReceiver = (await settingValue(
     'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
     period._id
-  );
-  const praisePerQuantifier = await settingInt(
+  )) as number;
+  const praisePerQuantifier = (await settingValue(
     'PRAISE_PER_QUANTIFIER',
     period._id
-  );
+  )) as number;
   const tolerance = 1.2;
 
   if (!quantifiersPerPraiseReceiver || !praisePerQuantifier)

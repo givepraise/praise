@@ -1,5 +1,5 @@
 import { BadRequestError } from '@error/errors';
-import { settingFloat } from '@shared/settings';
+import { settingValue } from '@shared/settings';
 import { userAccountTransformer } from '@useraccount/transformers';
 import mongoose from 'mongoose';
 import { PraiseModel } from './entities';
@@ -15,10 +15,10 @@ export const calculateDuplicateScore = async (
   quantification: Quantification,
   periodId: mongoose.Schema.Types.ObjectId
 ): Promise<number> => {
-  const duplicatePraisePercentage = await settingFloat(
+  const duplicatePraisePercentage = (await settingValue(
     'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
     periodId
-  );
+  )) as number;
   if (!duplicatePraisePercentage)
     throw new BadRequestError(
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"

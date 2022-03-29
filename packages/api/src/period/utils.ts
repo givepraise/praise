@@ -3,7 +3,7 @@ import { PraiseModel } from '@praise/entities';
 import { calculateQuantificationsCompositeScore } from '@praise/utils';
 import { SettingsModel } from '@settings/entities';
 import { SettingDocument } from '@settings/types';
-import { settingFloat } from '@shared/settings';
+import { settingValue } from '@shared/settings';
 import { sum } from 'lodash';
 import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
@@ -40,10 +40,11 @@ const calculateReceiverScores = async (
   receivers: PeriodDetailsReceiver[],
   periodId: mongoose.Schema.Types.ObjectId
 ): Promise<PeriodDetailsReceiver[]> => {
-  const duplicatePraisePercentage = await settingFloat(
+  const duplicatePraisePercentage = (await settingValue(
     'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
     periodId
-  );
+  )) as number;
+
   if (!duplicatePraisePercentage)
     throw new BadRequestError(
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"

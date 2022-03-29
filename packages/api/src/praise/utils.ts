@@ -1,7 +1,7 @@
 import { BadRequestError } from '@error/errors';
 import { PeriodDateRange, PeriodDocument } from '@period/types';
 import { PeriodModel } from '@period/entities';
-import { settingFloat } from '@shared/settings';
+import { settingValue } from '@shared/settings';
 import { PraiseModel } from './entities';
 import { praiseDocumentTransformer } from './transformers';
 import {
@@ -33,7 +33,7 @@ export const getPraisePeriod = async (
       sort: { endDate: 1 },
     }
 
-  // select the period with the earliest ending date
+    // select the period with the earliest ending date
   ).limit(1);
 
   if (!period || period.length === 0) return undefined;
@@ -83,10 +83,10 @@ export const calculatePraiseScore = async (
   const period = await getPraisePeriod(praise);
   if (!period) return 0;
 
-  const duplicatePraisePercentage = await settingFloat(
+  const duplicatePraisePercentage = (await settingValue(
     'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
     period._id
-  );
+  )) as number;
   if (!duplicatePraisePercentage)
     throw new BadRequestError(
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"

@@ -6,7 +6,7 @@ function isNumeric(num: any): Boolean {
 }
 
 export function fieldTypeValidator(this: SettingDocument): Boolean {
-  if (this.type === 'Number') {
+  if (this.type === 'Float' || this.type === 'Integer') {
     return isNumeric(this.value);
   }
 
@@ -22,7 +22,7 @@ export function fieldTypeValidator(this: SettingDocument): Boolean {
     return this.value === 'true' || this.value === 'false';
   }
 
-  if (this.type === 'List') {
+  if (this.type === 'IntegerList') {
     let valid = true;
     let previous = 0;
     const valueArray = this.value.split(',').map((item) => item.trim());
