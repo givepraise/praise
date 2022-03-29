@@ -1,7 +1,7 @@
 import AdminOnly from '@/components/auth/AdminOnly';
 import { ActiveTokenSet } from '@/model/auth';
 import { EthState } from '@/model/eth';
-import { ImageSettingFullPath } from '@/model/settings';
+import { SingleSetting } from '@/model/settings';
 import { classNames } from '@/utils/index';
 import {
   faAngleRight,
@@ -21,7 +21,7 @@ import NavItem from './NavItem';
 export default function Nav(): JSX.Element {
   const setActiveTokenSet = useSetRecoilState(ActiveTokenSet);
   const ethState = useRecoilValue(EthState);
-  const logoPath = useRecoilValue(ImageSettingFullPath('LOGO'));
+  const logoSetting = useRecoilValue(SingleSetting('LOGO'));
 
   const handleLogoutClick = (): void => {
     setActiveTokenSet(undefined);
@@ -34,7 +34,12 @@ export default function Nav(): JSX.Element {
           <ul className="relative h-full p-0 m-0 list-none">
             <li className="relative flex justify-start w-full p-4 text-2xl font-bold">
               <Link to="/">
-                <img src={logoPath} className={'inline-block w-52'} />
+                {logoSetting && (
+                  <img
+                    src={logoSetting.valueNormalized as string}
+                    className={'inline-block w-52'}
+                  />
+                )}
               </Link>
             </li>
 

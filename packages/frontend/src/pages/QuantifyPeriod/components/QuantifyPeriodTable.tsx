@@ -5,7 +5,7 @@ import {
   QuantifierReceiverData,
   usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
-import { SingleBooleanSetting } from '@/model/settings';
+import { SingleSetting } from '@/model/settings';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
@@ -29,7 +29,7 @@ const QuantifyPeriodTable = (): JSX.Element => {
   usePeriodQuantifierPraiseQuery(periodId, location.key);
   const data = useRecoilValue(PeriodQuantifierReceivers(periodId));
   const usePseudonyms = useRecoilValue(
-    SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
+    SingleSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );
   const columns = React.useMemo(
     () => [

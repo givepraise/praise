@@ -7,7 +7,7 @@ import {
   PeriodQuantifierReceiverPraise,
 } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
-import { SingleBooleanSetting } from '@/model/settings';
+import { SingleSetting } from '@/model/settings';
 import { formatDate } from '@/utils/date';
 import {
   faCopy,
@@ -16,7 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
-import { Praise, PraiseDto, QuantificationDto } from 'api/dist/praise/types';
+import { PraiseDto, QuantificationDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
@@ -44,7 +44,7 @@ const QuantifyTable = (): JSX.Element | null => {
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
   );
   const usePseudonyms = useRecoilValue(
-    SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
+    SingleSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );
   const { quantify } = useQuantifyPraise();
 

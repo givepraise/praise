@@ -1,4 +1,4 @@
-import { SingleBooleanSetting } from '@/model/settings';
+import { SingleSetting } from '@/model/settings';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { UserDto } from 'api/dist/user/types';
@@ -22,9 +22,12 @@ const WrappedUserAvatar = ({
 }: UserAvatarProps): JSX.Element => {
   const [imageLoadError, setImageLoadError] = React.useState<boolean>(false);
   const pseudonymSetting = useRecoilValue(
-    SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
+    SingleSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
   );
-  if (imageLoadError || (enablePseudomyms && pseudonymSetting))
+  if (
+    imageLoadError ||
+    (enablePseudomyms && (pseudonymSetting?.valueNormalized as boolean))
+  )
     return <FontAwesomeIcon icon={faUserCircle} size="2x" />;
   let url;
   if (user) {

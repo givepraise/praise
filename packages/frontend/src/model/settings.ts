@@ -1,4 +1,5 @@
 import { makeApiAuthClient } from '@/utils/api';
+import { SettingValueNormalTypes } from 'api/src/settings/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import { toast } from 'react-hot-toast';
@@ -9,9 +10,9 @@ import {
   selectorFamily,
   useRecoilCallback,
   useRecoilState,
-  useRecoilValue,
 } from 'recoil';
-import { ApiAuthGet, isResponseOk, useAuthApiQuery } from './api';
+import { findIndex } from 'lodash';
+import { ApiAuthGet, useAuthApiQuery } from './api';
 
 export interface Setting {
   _id: string;
@@ -19,20 +20,16 @@ export interface Setting {
   type: string;
   label: string;
   description: string;
+  value: string;
+  valueNormalized: string | Boolean | number | number[] | File;
 }
 
 export interface StringSetting extends Setting {
   value: string;
 }
 
-export interface FileSetting extends Setting {
-  value: File;
-}
-
-const isFileSetting = (setting: unknown): setting is FileSetting => {
-  const fileSetting = setting as FileSetting;
-  if (fileSetting.value?.name) return true;
-  return false;
+const isImageSetting = (setting: Setting): Boolean => {
+  return setting.type === 'Image';
 };
 
 const AllSettingsRequestId = atom({
@@ -52,27 +49,21 @@ export const AllSettingsQuery = selector({
   },
 });
 
-export const AllSettings = atom<StringSetting[] | undefined>({
+export const AllSettings = atom<Setting[]>({
   key: 'AllSettings',
-  default: undefined,
+  default: [],
 });
 
-export const useAllSettingsQuery = (): AxiosResponse<unknown> => {
+export const useAllSettingsQuery = (): void => {
   const allSettingsQueryResponse = useAuthApiQuery(AllSettingsQuery);
   const [allSettings, setAllSettings] = useRecoilState(AllSettings);
 
   React.useEffect(() => {
-    if (
-      isResponseOk(allSettingsQueryResponse) &&
-      typeof allSettings === 'undefined'
-    ) {
-      const settings = allSettingsQueryResponse.data as StringSetting[];
-      if (Array.isArray(settings) && settings.length > 0)
-        setAllSettings(settings);
-    }
-  }, [allSettingsQueryResponse, setAllSettings, allSettings]);
+    const settings = allSettingsQueryResponse.data as Setting[];
+    if (!Array.isArray(settings) || settings.length === 0) return;
 
-  return allSettingsQueryResponse;
+    setAllSettings(settings);
+  }, [allSettingsQueryResponse, setAllSettings, allSettings]);
 };
 
 export const SetSettingApiResponse = atom<
@@ -86,195 +77,106 @@ export const SingleSetting = selectorFamily({
   key: 'SingleSetting',
   get:
     (key: string) =>
-    ({ get }): StringSetting | undefined => {
+    ({ get }): Setting | undefined => {
       const allSettings = get(AllSettings);
       if (!allSettings) return undefined;
-      return allSettings.find((setting) => setting.key === key);
-    },
-});
 
-export const SingleFloatSetting = selectorFamily({
-  key: 'SingleFloatSetting',
-  get:
-    (key: string) =>
-    ({ get }): number | undefined => {
-      const setting = get(SingleSetting(key));
+      const setting = allSettings.find((setting) => setting.key === key);
       if (!setting) return undefined;
-      if (setting && setting.value) {
-        const float = parseFloat(setting.value);
-        if (!isNaN(float)) return float;
-      }
-      return undefined;
-    },
-});
 
-export const SingleBooleanSetting = selectorFamily({
-  key: 'SingleBooleanSetting',
-  get:
-    (key: string) =>
-    ({ get }): boolean | undefined => {
-      const setting = get(SingleSetting(key));
-      if (!setting) return undefined;
-      if (setting && setting.value) {
-        if (setting.value.toLowerCase() === 'true') return true;
-        if (setting.value.toLowerCase() === 'false') return false;
-      }
-      return undefined;
-    },
-});
-
-export const SingleIntSetting = selectorFamily({
-  key: 'SingleIntSetting',
-  get:
-    (key: string) =>
-    ({ get }): number | undefined => {
-      const setting = get(SingleSetting(key));
-      if (!setting) return undefined;
-      if (setting && setting.value) {
-        const int = parseInt(setting.value);
-        if (!isNaN(int)) return int;
-      }
-      return undefined;
-    },
-});
-
-export const SingleStringSetting = selectorFamily({
-  key: 'SingleStringSetting',
-  get:
-    (key: string) =>
-    ({ get }): string | undefined => {
-      const setting = get(SingleSetting(key));
-      if (!setting) return undefined;
-      if (setting && setting.value) {
-        const string = setting.value.toString();
-        if (string && string !== '') return string;
-      }
-      return undefined;
-    },
-});
-
-export const ImageSettingFullPath = selectorFamily({
-  key: 'ImageSettingFullPath',
-  get:
-    (key: string) =>
-    ({ get }): string | undefined => {
-      const setting = get(SingleSetting(key));
-      if (!setting) return undefined;
-      if (setting && setting.value) {
-        const string = setting.value.toString();
-        if (string && string !== '')
-          return `${process.env.REACT_APP_BACKEND_URL}/${string}`;
-      }
-      return undefined;
+      return setting;
     },
 });
 
 type useSetSettingReturn = {
-  setSetting: (
-    setting: StringSetting | FileSetting
-  ) => Promise<AxiosResponse<unknown> | AxiosError<unknown>>;
+  setSetting: (setting: Setting) => Promise<void>;
 };
 export const useSetSetting = (): useSetSettingReturn => {
-  const allSettings: StringSetting[] | undefined = useRecoilValue(AllSettings);
-  const setSetting = useRecoilCallback(
-    ({ set }) =>
-      async (setting: StringSetting | FileSetting) => {
-        const url = `/admin/settings/${setting._id}/set`;
+  const [allSettings, setAllSettings] = useRecoilState(AllSettings);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const reqData = (setting: StringSetting | FileSetting): any => {
-          if (isFileSetting(setting)) {
-            const data = new FormData();
-            data.append('value', setting.value);
-            return data;
-          } else {
-            return setting;
-          }
-        };
+  const setSetting = useRecoilCallback(() => async (setting: Setting) => {
+    const url = `/admin/settings/${setting._id}/set`;
 
-        const apiAuthClient = makeApiAuthClient();
-        const response = await apiAuthClient.patch(url, reqData(setting));
-
-        // If OK response, add returned period object to local state
-        if (isResponseOk(response)) {
-          const setting = response.data as StringSetting;
-          toast.success(`Saved setting "${setting.label}"`);
-          if (setting) {
-            if (typeof allSettings !== 'undefined') {
-              set(
-                AllSettings,
-                allSettings.map(
-                  (oldSetting) =>
-                    oldSetting._id === setting._id ? setting : oldSetting,
-                  setting
-                )
-              );
-            } else {
-              set(AllSettings, [setting]);
-            }
-          }
-          set(SetSettingApiResponse, response);
-        }
-        return response;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const reqData = (setting: Setting): any => {
+      if (isImageSetting(setting)) {
+        const data = new FormData();
+        data.append('value', setting.value);
+        return data;
+      } else {
+        return setting;
       }
-  );
+    };
+
+    const apiAuthClient = makeApiAuthClient();
+    const response = await apiAuthClient.patch(url, reqData(setting));
+
+    const updatedSetting = response.data as Setting;
+    const settingIndex = findIndex(
+      allSettings,
+      (s) => s._id === updatedSetting._id
+    );
+
+    if (settingIndex === -1) {
+      setAllSettings([updatedSetting]);
+    } else {
+      const updatedAllSettings = allSettings.slice();
+      updatedAllSettings.splice(settingIndex, 1, updatedSetting);
+
+      setAllSettings(updatedAllSettings);
+    }
+
+    toast.success(`Saved setting "${updatedSetting.label}"`);
+  });
+
   return { setSetting };
 };
 
-export const AllPeriodSettings = atomFamily<
-  StringSetting[] | undefined,
-  string
->({
+export const AllPeriodSettings = atomFamily<Setting[], string>({
   key: 'AllPeriodSettings',
-  default: undefined,
+  default: [],
 });
 
 export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
-  const allSettings: StringSetting[] | undefined = useRecoilValue(
+  const [allSettings, setAllSettings] = useRecoilState(
     AllPeriodSettings(periodId)
   );
-  const setSetting = useRecoilCallback(
-    ({ set }) =>
-      async (setting: StringSetting | FileSetting) => {
-        const url = `/admin/periods/${periodId}/settings/${setting._id}/set`;
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const reqData = (setting: StringSetting | FileSetting): any => {
-          if (isFileSetting(setting)) {
-            const data = new FormData();
-            data.append('value', setting.value);
-            return data;
-          } else {
-            return setting;
-          }
-        };
+  const setSetting = useRecoilCallback(() => async (setting: Setting) => {
+    const url = `/admin/periods/${periodId}/settings/${setting._id}/set`;
 
-        const apiAuthClient = makeApiAuthClient();
-        const response = await apiAuthClient.patch(url, reqData(setting));
-
-        // If OK response, add returned period object to local state
-        if (isResponseOk(response)) {
-          const setting = response.data as StringSetting;
-          toast.success(`Saved setting "${setting.label}"`);
-          if (setting) {
-            if (typeof allSettings !== 'undefined') {
-              set(
-                AllPeriodSettings(periodId),
-                allSettings.map(
-                  (oldSetting) =>
-                    oldSetting._id === setting._id ? setting : oldSetting,
-                  setting
-                )
-              );
-            } else {
-              set(AllPeriodSettings(periodId), [setting]);
-            }
-          }
-          set(SetSettingApiResponse, response);
-        }
-        return response;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const reqData = (setting: Setting): any => {
+      if (isImageSetting(setting)) {
+        const data = new FormData();
+        data.append('value', setting.value);
+        return data;
+      } else {
+        return setting;
       }
-  );
+    };
+
+    const apiAuthClient = makeApiAuthClient();
+    const response = await apiAuthClient.patch(url, reqData(setting));
+
+    const updatedSetting = response.data as Setting;
+    const settingIndex = findIndex(
+      allSettings,
+      (s) => s._id === updatedSetting._id
+    );
+
+    if (settingIndex === -1) {
+      setAllSettings([updatedSetting]);
+    } else {
+      const updatedAllSettings = allSettings.slice();
+      updatedAllSettings.splice(settingIndex, 1, updatedSetting);
+
+      setAllSettings(updatedAllSettings);
+    }
+
+    toast.success(`Saved setting "${updatedSetting.label}"`);
+  });
+
   return { setSetting };
 };
 
@@ -282,7 +184,7 @@ export const AllPeriodSettingsQuery = selectorFamily({
   key: 'AllPeriodSettingsQuery',
   get:
     (periodId: string) =>
-    ({ get }) => {
+    ({ get }): AxiosResponse<unknown> => {
       return get(
         ApiAuthGet({
           url: `/periods/${periodId}/settings/all`,
@@ -291,26 +193,16 @@ export const AllPeriodSettingsQuery = selectorFamily({
     },
 });
 
-export const useAllPeriodSettingsQuery = (
-  periodId: string
-): AxiosResponse<unknown> => {
-  const allPeriodSettingsQueryResponse = useAuthApiQuery(
-    AllPeriodSettingsQuery(periodId)
-  );
-  const [allPeriodSettings, setAllPeriodSettings] = useRecoilState(
+export const useAllPeriodSettingsQuery = (periodId: string): void => {
+  const queryResponse = useAuthApiQuery(AllPeriodSettingsQuery(periodId));
+  const [allSettings, setAllSettings] = useRecoilState(
     AllPeriodSettings(periodId)
   );
 
   React.useEffect(() => {
-    if (
-      isResponseOk(allPeriodSettingsQueryResponse) &&
-      typeof allPeriodSettings === 'undefined'
-    ) {
-      const settings = allPeriodSettingsQueryResponse.data as StringSetting[];
-      if (Array.isArray(settings) && settings.length > 0)
-        setAllPeriodSettings(settings);
-    }
-  }, [allPeriodSettingsQueryResponse, setAllPeriodSettings, allPeriodSettings]);
+    const settings = queryResponse.data as Setting[];
+    if (!Array.isArray(settings) || settings.length === 0) return;
 
-  return allPeriodSettingsQueryResponse;
+    setAllSettings(settings);
+  }, [queryResponse, setAllSettings, allSettings]);
 };

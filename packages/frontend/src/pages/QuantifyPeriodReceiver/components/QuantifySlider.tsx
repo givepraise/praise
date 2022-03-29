@@ -1,6 +1,6 @@
 import { ActiveUserId } from '@/model/auth';
 import { useQuantifyPraise } from '@/model/praise';
-import { SingleStringSetting } from '@/model/settings';
+import { SingleSetting } from '@/model/settings';
 import { Slider, Tooltip } from '@mui/material';
 import { PraiseDto } from 'api/dist/praise/types';
 import React from 'react';
@@ -38,12 +38,12 @@ const QuantifySlider = ({ praise }: QuantifySliderProps): JSX.Element => {
   const { quantify } = useQuantifyPraise();
 
   const allowedValues = useRecoilValue(
-    SingleStringSetting('PRAISE_QUANTIFY_ALLOWED_VALUES')
+    SingleSetting('PRAISE_QUANTIFY_ALLOWED_VALUES')
   );
 
   React.useEffect(() => {
-    if (!allowedValues) return;
-    setScores(allowedValues.split(',').map((v) => Number.parseInt(v.trim())));
+    if (!allowedValues?.valueNormalized) return;
+    setScores(allowedValues.valueNormalized as number[]);
   }, [allowedValues]);
 
   const allowedSliderValuesToMarks = React.useCallback((): Mark[] => {

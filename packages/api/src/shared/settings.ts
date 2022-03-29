@@ -9,7 +9,10 @@ export const settingValue = async (
     key,
     period: periodId,
   });
-  if (!setting) throw Error(`Setting ${key} does not exist`);
+  if (!setting) {
+    const periodString = periodId ? `period ${periodId.toString()}` : 'global';
+    throw Error(`Setting ${key} does not exist for ${periodString}`);
+  }
 
   return setting.valueNormalized;
 };
