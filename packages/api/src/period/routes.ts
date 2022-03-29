@@ -1,6 +1,5 @@
 import { Router } from '@awaitjs/express';
-import * as periodAdminController from '@period/controllers/admin';
-import * as periodController from '@period/controllers/core';
+import * as periodController from '@period/controllers';
 
 // Period-routes
 const periodRouter = Router();
@@ -16,24 +15,19 @@ periodRouter.getAsync(
   periodController.quantifierPraise
 );
 
-
 // ADMIN Period-routes
 const adminPeriodRouter = Router();
-adminPeriodRouter.postAsync('/create', periodAdminController.create);
-adminPeriodRouter.patchAsync('/:periodId/update', periodAdminController.update);
-adminPeriodRouter.patchAsync('/:periodId/close', periodAdminController.close);
+adminPeriodRouter.postAsync('/create', periodController.create);
+adminPeriodRouter.patchAsync('/:periodId/update', periodController.update);
+adminPeriodRouter.patchAsync('/:periodId/close', periodController.close);
 adminPeriodRouter.getAsync(
   '/:periodId/verifyQuantifierPoolSize',
-  periodAdminController.verifyQuantifierPoolSize
+  periodController.verifyQuantifierPoolSize
 );
 adminPeriodRouter.patchAsync(
   '/:periodId/assignQuantifiers',
-  periodAdminController.assignQuantifiers
+  periodController.assignQuantifiers
 );
-adminPeriodRouter.getAsync(
-  '/:periodId/export',
-  periodAdminController.exportPraise
-);
-
+adminPeriodRouter.getAsync('/:periodId/export', periodController.exportPraise);
 
 export { periodRouter, adminPeriodRouter };
