@@ -1,23 +1,89 @@
-import FieldErrorMessage from '@/components/form/FieldErrorMessage';
+import NumberInput from '@/components/form/NumberInput';
+import StringInput from '@/components/form/StringInput';
+import TextareaInput from '@/components/form/TextareaInput';
+import BooleanInput from '@/components/form/BooleanInput';
+import ImageFileInput from '@/components/form/ImageFileInput';
 import {
-  ImageSettingFullPath,
   SetSettingApiResponse,
   StringSetting,
+  Setting,
 } from '@/model/settings';
-import { Field, Form } from 'react-final-form';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { Form } from 'react-final-form';
+import { useRecoilValue } from 'recoil';
 import SubmitButton from '../form/SubmitButton';
 
 interface SettingsFormProps {
-  settings: StringSetting[] | undefined;
+  settings: Setting[] | undefined;
   setSetting: Function;
+  disabled?: boolean;
 }
+
+const FormFields = (settings: Setting[]): JSX.Element => {
+  const apiResponse = useRecoilValue(SetSettingApiResponse);
+
+  return (
+    <div className="space-y-4 mb-2">
+      {settings.map((setting) => {
+        let field;
+        if (setting.type === 'String' || setting.type === 'IntegerList')
+          field = StringInput(setting.key, apiResponse);
+        else if (setting.type === 'Float' || setting.type === 'Integer')
+          field = NumberInput(setting.key, apiResponse);
+        else if (setting.type === 'Textarea')
+          field = TextareaInput(setting.key, apiResponse);
+        else if (setting.type === 'Boolean')
+          field = BooleanInput(setting.key, apiResponse);
+        else if (setting.type === 'Image')
+          field = ImageFileInput(
+            setting.key,
+            setting.valueNormalized as string
+          );
+
+        if (!field) return null;
+
+        return (
+          <div key={setting.key}>
+            <label className="block font-bold">{setting.label}</label>
+            {setting.description && (
+              <div className="mb-2 text-sm font-bold text-gray-400">
+                {setting.description}
+              </div>
+            )}
+            {field}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const DisabledFormFields = (settings: Setting[]): JSX.Element => (
+  <>
+    <div className="mb-8 p-4 text-center bg-red-200 text-white font-bold rounded-sm">
+      Settings locked for this period
+    </div>
+    <div className="space-y-4 mb-2">
+      {settings.map((setting: Setting) => (
+        <div key={setting.key}>
+          <label className="block font-bold">{setting.label}</label>
+          {setting.description && (
+            <div className="mb-2 text-sm font-bold text-gray-400">
+              {setting.description}
+            </div>
+          )}
+          <div className="p-2 bg-gray-200">{setting.value}</div>
+        </div>
+      ))}
+    </div>
+  </>
+);
 
 const SettingsForm = ({
   settings,
   setSetting,
+  disabled = false,
 }: SettingsFormProps): JSX.Element | null => {
-  const [apiResponse] = useRecoilState(SetSettingApiResponse);
+  if (!Array.isArray(settings) || settings.length === 0) return null;
 
   // Is only called if validate is successful
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,145 +106,6 @@ const SettingsForm = ({
     }
   };
 
-  const getStringInput = (setting: StringSetting): JSX.Element => {
-    return (
-      <Field name={setting.key} key={setting.key}>
-        {({ input }): JSX.Element => {
-          return (
-            <div>
-              <input
-                type="text"
-                id={setting.key}
-                {...input}
-                autoComplete="off"
-                className="block w-full"
-              />
-              {apiResponse && (
-                <FieldErrorMessage name="name" apiResponse={apiResponse} />
-              )}
-            </div>
-          );
-        }}
-      </Field>
-    );
-  };
-
-  const getNumberInput = (setting: StringSetting): JSX.Element => {
-    return (
-      <Field name={setting.key} key={setting.key}>
-        {({ input }): JSX.Element => (
-          <div>
-            <input
-              type="number"
-              id={setting.key}
-              {...input}
-              autoComplete="off"
-              className="block w-full"
-            />
-            {apiResponse && (
-              <FieldErrorMessage name="name" apiResponse={apiResponse} />
-            )}
-          </div>
-        )}
-      </Field>
-    );
-  };
-
-  const getTextareaInput = (setting: StringSetting): JSX.Element => {
-    return (
-      <Field name={setting.key} key={setting.key}>
-        {({ input }): JSX.Element => (
-          <div>
-            <textarea
-              type="text"
-              id={setting.key}
-              {...input}
-              autoComplete="off"
-              className="block w-full resize-y "
-            />
-            {apiResponse && (
-              <FieldErrorMessage name="name" apiResponse={apiResponse} />
-            )}
-          </div>
-        )}
-      </Field>
-    );
-  };
-
-  interface ImagePreviewProps {
-    settingsKey: string;
-  }
-  const ImagePreview = ({ settingsKey }: ImagePreviewProps): JSX.Element => {
-    const imagePath = useRecoilValue(ImageSettingFullPath(settingsKey));
-    return (
-      <div className="mt-2">
-        <img src={imagePath} width="100" height="100" />
-      </div>
-    );
-  };
-
-  const getFileInput = (setting: StringSetting): JSX.Element => {
-    return (
-      <Field<FileList> name={setting.key} key={setting.key}>
-        {({ input: { value, onChange, ...input } }): JSX.Element => (
-          <div>
-            <input
-              {...input}
-              id={setting.key}
-              type="file"
-              className="block w-full"
-              onChange={({ target }): void => onChange(target.files)}
-            />
-            <ImagePreview settingsKey={setting.key} />
-          </div>
-        )}
-      </Field>
-    );
-  };
-
-  const getBooleanInput = (setting: StringSetting): JSX.Element => {
-    return (
-      <Field name={setting.key} key={setting.key} type="checkbox">
-        {({ input }): JSX.Element => {
-          return (
-            <div>
-              <input id={setting.key} {...input} />
-              {apiResponse && (
-                <FieldErrorMessage name="name" apiResponse={apiResponse} />
-              )}
-            </div>
-          );
-        }}
-      </Field>
-    );
-  };
-
-  const getField = (setting: StringSetting): JSX.Element | null => {
-    let field;
-    if (setting.type === 'String' || setting.type === 'List')
-      field = getStringInput(setting);
-    else if (setting.type === 'Number') field = getNumberInput(setting);
-    else if (setting.type === 'Textarea') field = getTextareaInput(setting);
-    else if (setting.type === 'Boolean') field = getBooleanInput(setting);
-    else if (setting.type === 'Image') field = getFileInput(setting);
-
-    if (!field) return null;
-
-    return (
-      <div className="mb-4" key={setting.key}>
-        <label className="block font-bold">{setting.label}</label>
-        {setting.description && (
-          <div className="mb-2 text-sm font-bold text-gray-400">
-            {setting.description}
-          </div>
-        )}
-        {field}
-      </div>
-    );
-  };
-
-  if (!Array.isArray(settings) || settings.length === 0) return null;
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const initialValues = {} as any;
   for (const setting of settings) {
@@ -196,17 +123,19 @@ const SettingsForm = ({
           utils.changeValue(state, 'endDate', () => args);
         },
       }}
-      render={({ handleSubmit }): JSX.Element => (
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        <form onSubmit={handleSubmit} className="leading-loose">
-          <div className="mb-3">
-            {settings.map((setting: StringSetting) => getField(setting))}
-          </div>
-          <div className="mt-2">
-            <SubmitButton />
-          </div>
-        </form>
-      )}
+      render={({ handleSubmit }): JSX.Element => {
+        if (disabled) {
+          return DisabledFormFields(settings);
+        } else {
+          return (
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            <form onSubmit={handleSubmit} className="leading-loose">
+              {FormFields(settings)}
+              <SubmitButton />
+            </form>
+          );
+        }
+      }}
     />
   );
 };

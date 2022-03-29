@@ -1,5 +1,4 @@
 import { makeApiAuthClient } from '@/utils/api';
-import { SettingValueNormalTypes } from 'api/src/settings/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import { toast } from 'react-hot-toast';
@@ -10,6 +9,7 @@ import {
   selectorFamily,
   useRecoilCallback,
   useRecoilState,
+  useRecoilValue,
 } from 'recoil';
 import { findIndex } from 'lodash';
 import { ApiAuthGet, useAuthApiQuery } from './api';
@@ -92,42 +92,46 @@ type useSetSettingReturn = {
   setSetting: (setting: Setting) => Promise<void>;
 };
 export const useSetSetting = (): useSetSettingReturn => {
-  const [allSettings, setAllSettings] = useRecoilState(AllSettings);
+  const allSettings = useRecoilValue(AllSettings);
 
-  const setSetting = useRecoilCallback(() => async (setting: Setting) => {
-    const url = `/admin/settings/${setting._id}/set`;
+  const setSetting = useRecoilCallback(
+    ({ set }) =>
+      async (setting: Setting) => {
+        const url = `/admin/settings/${setting._id}/set`;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const reqData = (setting: Setting): any => {
-      if (isImageSetting(setting)) {
-        const data = new FormData();
-        data.append('value', setting.value);
-        return data;
-      } else {
-        return setting;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const reqData = (setting: Setting): any => {
+          if (isImageSetting(setting)) {
+            const data = new FormData();
+            data.append('value', setting.value);
+            return data;
+          } else {
+            return setting;
+          }
+        };
+
+        const apiAuthClient = makeApiAuthClient();
+        const response = await apiAuthClient.patch(url, reqData(setting));
+
+        const updatedSetting = response.data as Setting;
+        const settingIndex = findIndex(
+          allSettings,
+          (s: Setting) => s._id === updatedSetting._id
+        );
+        console.log('settingIndex', settingIndex);
+
+        if (settingIndex === -1) {
+          set(AllSettings, [updatedSetting]);
+        } else {
+          const updatedAllSettings = allSettings.slice();
+          updatedAllSettings.splice(settingIndex, 1, updatedSetting);
+
+          set(AllSettings, updatedAllSettings);
+        }
+
+        toast.success(`Saved setting "${updatedSetting.label}"`);
       }
-    };
-
-    const apiAuthClient = makeApiAuthClient();
-    const response = await apiAuthClient.patch(url, reqData(setting));
-
-    const updatedSetting = response.data as Setting;
-    const settingIndex = findIndex(
-      allSettings,
-      (s) => s._id === updatedSetting._id
-    );
-
-    if (settingIndex === -1) {
-      setAllSettings([updatedSetting]);
-    } else {
-      const updatedAllSettings = allSettings.slice();
-      updatedAllSettings.splice(settingIndex, 1, updatedSetting);
-
-      setAllSettings(updatedAllSettings);
-    }
-
-    toast.success(`Saved setting "${updatedSetting.label}"`);
-  });
+  );
 
   return { setSetting };
 };
