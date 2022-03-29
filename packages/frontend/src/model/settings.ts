@@ -10,6 +10,7 @@ import {
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
+  useSetRecoilState,
 } from 'recoil';
 import { findIndex } from 'lodash';
 import { ApiAuthGet, useAuthApiQuery } from './api';
@@ -56,14 +57,14 @@ export const AllSettings = atom<Setting[]>({
 
 export const useAllSettingsQuery = (): void => {
   const allSettingsQueryResponse = useAuthApiQuery(AllSettingsQuery);
-  const [allSettings, setAllSettings] = useRecoilState(AllSettings);
+  const setAllSettings = useSetRecoilState(AllSettings);
 
   React.useEffect(() => {
     const settings = allSettingsQueryResponse.data as Setting[];
     if (!Array.isArray(settings) || settings.length === 0) return;
 
     setAllSettings(settings);
-  }, [allSettingsQueryResponse, setAllSettings, allSettings]);
+  }, [allSettingsQueryResponse, setAllSettings]);
 };
 
 export const SetSettingApiResponse = atom<
