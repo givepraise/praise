@@ -21,14 +21,14 @@ export interface Setting {
   label: string;
   description: string;
   value: string;
-  valueRealized: string | Boolean | number | number[] | File;
+  valueRealized: string | boolean | number | number[] | File;
 }
 
 export interface StringSetting extends Setting {
   value: string;
 }
 
-export const isImageSetting = (setting: Setting): Boolean => {
+export const isImageSetting = (setting: Setting): boolean => {
   return setting.type === 'Image';
 };
 

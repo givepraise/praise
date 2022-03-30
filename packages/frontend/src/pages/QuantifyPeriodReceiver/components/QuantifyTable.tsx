@@ -7,7 +7,7 @@ import {
   PeriodQuantifierReceiverPraise,
 } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
-import { SingleSetting } from '@/model/settings';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { formatDate } from '@/utils/date';
 import {
   faCopy,
@@ -43,9 +43,10 @@ const QuantifyTable = (): JSX.Element | null => {
   const data = useRecoilValue(
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
   );
-  const usePseudonyms = useRecoilValue(
-    SingleSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
-  );
+  const usePseudonyms = usePeriodSettingValueRealized(
+    periodId,
+    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+  ) as boolean;
   const { quantify } = useQuantifyPraise();
 
   const [isDismissDialogOpen, setIsDismissDialogOpen] = React.useState(false);
@@ -137,7 +138,7 @@ const QuantifyTable = (): JSX.Element | null => {
                       <div className="flex items-center">
                         <UserAvatar
                           userAccount={praise.giver}
-                          enablePseudomyms
+                          usePseudonym={usePseudonyms}
                         />
                       </div>
                     </div>

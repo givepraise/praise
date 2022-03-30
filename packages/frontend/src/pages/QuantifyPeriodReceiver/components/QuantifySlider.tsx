@@ -1,6 +1,6 @@
 import { ActiveUserId } from '@/model/auth';
 import { useQuantifyPraise } from '@/model/praise';
-import { usePeriodSetting } from '@/model/periodsettings';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { Slider, Tooltip } from '@mui/material';
 import { PraiseDto } from 'api/dist/praise/types';
 import React from 'react';
@@ -40,14 +40,14 @@ const QuantifySlider = ({
   const [scores, setScores] = React.useState<number[]>([]);
   const activeUserId = useRecoilValue(ActiveUserId);
   const { quantify } = useQuantifyPraise();
-  const allowedValues = usePeriodSetting(
+  const allowedValues = usePeriodSettingValueRealized(
     periodId,
     'PRAISE_QUANTIFY_ALLOWED_VALUES'
-  );
+  ) as number[];
 
   React.useEffect(() => {
-    if (!allowedValues?.valueRealized) return;
-    setScores(allowedValues.valueRealized as number[]);
+    if (!allowedValues) return;
+    setScores(allowedValues);
   }, [allowedValues]);
 
   const allowedSliderValuesToMarks = React.useCallback((): Mark[] => {

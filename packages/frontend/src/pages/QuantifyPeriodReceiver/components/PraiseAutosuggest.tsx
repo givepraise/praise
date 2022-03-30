@@ -4,7 +4,7 @@ import {
   PeriodAndReceiverPageParams,
   PeriodQuantifierReceiverPraise,
 } from '@/model/periods';
-import { SingleSetting } from '@/model/settings';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { classNames } from '@/utils/index';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -31,9 +31,10 @@ const PraiseAutosuggest = ({
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
   );
 
-  const usePseudonyms = useRecoilValue(
-    SingleSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
-  );
+  const usePseudonyms = usePeriodSettingValueRealized(
+    periodId,
+    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+  ) as boolean;
 
   if (!data) return null;
 

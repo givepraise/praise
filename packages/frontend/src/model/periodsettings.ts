@@ -91,13 +91,13 @@ export const useAllPeriodSettingsQuery = (periodId: string): void => {
   }, [allPeriodSettingsQueryResponse, allPeriodSettings, setAllPeriodSettings]);
 };
 
-export const usePeriodSetting = (
+export const usePeriodSettingValueRealized = (
   periodId: string,
   key: string
-): Setting | undefined => {
+): string | number | number[] | boolean | File | undefined => {
   const settings = useRecoilValue(AllPeriodSettings(periodId));
   const setting = find(settings, { key });
   if (!setting) return undefined;
 
-  return setting;
+  return setting.valueRealized;
 };
