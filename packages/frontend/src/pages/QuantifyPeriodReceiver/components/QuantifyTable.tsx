@@ -195,7 +195,7 @@ const QuantifyTable = (): JSX.Element | null => {
                   </td>
                   <td>
                     <div className="flex">
-                      <QuantifySlider praise={praise} />
+                      <QuantifySlider praise={praise} periodId={periodId} />
                       <button
                         className="pb-1 ml-4 hover:text-gray-400"
                         disabled={duplicate(praise)}
