@@ -10,4 +10,6 @@ export interface PeriodSetting {
   period: boolean;
 }
 
-export interface PeriodSettingDocument extends PeriodSetting, mongoose.Document {}
+export interface PeriodSettingDocument
+  extends PeriodSetting,
+    mongoose.Document {}

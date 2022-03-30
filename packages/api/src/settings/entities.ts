@@ -60,7 +60,9 @@ const settingsSchema = new mongoose.Schema(
   }
 );
 
-settingsSchema.virtual(valueRealizedVirtualName).get(getGenericSettingValueRealized);
+settingsSchema
+  .virtual(valueRealizedVirtualName)
+  .get(getGenericSettingValueRealized);
 
 settingsSchema.index({ key: 1 }, { unique: true });
 

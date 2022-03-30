@@ -181,4 +181,3 @@ export const getPeriodDateRangeQuery = async (
   $gt: await getPreviousPeriodEndDate(period),
   $lte: period.endDate,
 });
-
