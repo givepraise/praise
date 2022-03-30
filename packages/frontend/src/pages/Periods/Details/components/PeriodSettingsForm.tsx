@@ -3,7 +3,7 @@ import {
   AllPeriodSettings,
   useSetPeriodSetting,
   useAllPeriodSettingsQuery,
-} from '@/model/settings';
+} from '@/model/periodsettings';
 import { useRecoilValue } from 'recoil';
 
 interface Params {
