@@ -18,7 +18,7 @@ export const dmTargetMenu = new MessageSelectMenu()
       label: 'All drafted Quantifiers',
       description:
         'Sends DM to all Quantifiers that are drafted in the latest praise period',
-      value: 'DRAFTED-QUANTIFERS',
+      value: 'DRAFTED-QUANTIFIERS',
     },
     {
       label: 'Pending Quantifiers',
