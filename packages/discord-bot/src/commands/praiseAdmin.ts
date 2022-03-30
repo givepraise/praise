@@ -3,17 +3,17 @@ import {
   SlashCommandSubcommandBuilder,
 } from '@discordjs/builders';
 import logger from 'jet-logger';
-import { dmHandler } from '../handlers/dm';
+import { announcementHandler } from '../handlers/announce';
 import { Command } from '../interfaces/Command';
 
 export const praiseAdmin: Command = {
   data: new SlashCommandBuilder()
-    .setName('praise-admin')
+    .setName('admin')
     .setDescription('Commands to perform admin actions for Praise')
     .addSubcommand(
       new SlashCommandSubcommandBuilder()
-        .setName('dm')
-        .setDescription('Sends automated DMs to Quantifiers')
+        .setName('announce')
+        .setDescription("Automatically announce messages in Users' DMs")
         .addStringOption((option) =>
           option
             .setName('message')
@@ -26,18 +26,15 @@ export const praiseAdmin: Command = {
 
   async execute(interaction) {
     try {
-      if (
-        !interaction.isCommand() ||
-        interaction.commandName !== 'praise-admin'
-      )
+      if (!interaction.isCommand() || interaction.commandName !== 'admin')
         return;
 
       const subCommand = interaction.options.getSubcommand();
 
       await interaction.deferReply({ ephemeral: true });
       switch (subCommand) {
-        case 'dm': {
-          await dmHandler(interaction);
+        case 'announce': {
+          await announcementHandler(interaction);
           break;
         }
       }

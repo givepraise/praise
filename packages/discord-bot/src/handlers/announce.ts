@@ -15,7 +15,7 @@ import {
 import { UserRole } from 'api/dist/user/types';
 import { dmTargets } from '../utils/dmTargets';
 
-export const dmHandler = async (
+export const announcementHandler = async (
   interaction: CommandInteraction
 ): Promise<void> => {
   const { user } = interaction;
@@ -54,7 +54,6 @@ export const dmHandler = async (
     });
     collector.on('collect', async (click) => {
       await click.deferUpdate();
-      console.log(click);
       switch (click.customId) {
         case 'confirm': {
           await interaction.editReply({
@@ -70,7 +69,7 @@ export const dmHandler = async (
         case 'dm-menu': {
           if (!click.isSelectMenu()) break;
           const menu: SelectMenuInteraction = click;
-          await dmTargets(interaction, menu.values, message || '');
+          await dmTargets(interaction, menu.values[0], message || '');
           return;
         }
       }
