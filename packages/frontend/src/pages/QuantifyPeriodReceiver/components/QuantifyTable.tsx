@@ -1,4 +1,5 @@
 import { InlineLabel } from '@/components/InlineLabel';
+import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { ActiveUserId } from '@/model/auth';
@@ -11,6 +12,8 @@ import { SingleBooleanSetting } from '@/model/settings';
 import { formatDate } from '@/utils/date';
 import {
   faCopy,
+  faForward,
+  faForwardFast,
   faTimes,
   faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
@@ -145,6 +148,7 @@ const QuantifyTable = (): JSX.Element | null => {
                   <td>
                     <div>
                       <span className="font-bold">
+                        <ForwarderTooltip praise={praise} />
                         {usePseudonyms ? (
                           <UserPseudonym
                             userId={praise.giver._id}

@@ -1,4 +1,5 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
+import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { AllPraiseList } from '@/model/praise';
 import { formatDate } from '@/utils/date';
@@ -28,6 +29,7 @@ const MyPraiseTable = (): JSX.Element => {
             </div>
             <div className="flex-grow p-3 overflow-hidden">
               <div>
+                <ForwarderTooltip praise={data.row.original} />
                 <span className="font-bold">
                   {data.row.original.giver.name}
                 </span>{' '}
