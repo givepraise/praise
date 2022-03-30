@@ -7,8 +7,9 @@ import {
   selectorFamily,
   useRecoilCallback,
   useRecoilState,
+  useRecoilValue,
 } from 'recoil';
-import { findIndex } from 'lodash';
+import { findIndex, find } from 'lodash';
 import { ApiAuthGet, useAuthApiQuery } from './api';
 import { Setting, useSetSettingReturn, isImageSetting } from './settings';
 
@@ -88,4 +89,15 @@ export const useAllPeriodSettingsQuery = (periodId: string): void => {
 
     setAllPeriodSettings(settings);
   }, [allPeriodSettingsQueryResponse, allPeriodSettings, setAllPeriodSettings]);
+};
+
+export const usePeriodSetting = (
+  periodId: string,
+  key: string
+): Setting | undefined => {
+  const settings = useRecoilValue(AllPeriodSettings(periodId));
+  const setting = find(settings, { key });
+  if (!setting) return undefined;
+
+  return setting;
 };
