@@ -19,9 +19,7 @@ interface SettingsFormProps {
   disabled?: boolean;
 }
 
-const FormFields = (settings: Setting[]): JSX.Element => {
-  const apiResponse = useRecoilValue(SetSettingApiResponse);
-
+const FormFields = (settings: Setting[], apiResponse): JSX.Element => {
   return (
     <div className="space-y-4 mb-2">
       {settings.map((setting) => {
@@ -81,6 +79,8 @@ const SettingsForm = ({
   setSetting,
   disabled = false,
 }: SettingsFormProps): JSX.Element | null => {
+  const apiResponse = useRecoilValue(SetSettingApiResponse);
+
   if (!Array.isArray(settings) || settings.length === 0) return null;
 
   // Is only called if validate is successful
@@ -128,7 +128,7 @@ const SettingsForm = ({
           return (
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             <form onSubmit={handleSubmit} className="leading-loose">
-              {FormFields(settings)}
+              {FormFields(settings, apiResponse)}
               <SubmitButton />
             </form>
           );
