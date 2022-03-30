@@ -50,7 +50,7 @@ export const all = async (
     query,
     ...queryInput,
     sort: getQuerySort(req.query),
-    populate: 'giver receiver',
+    populate: 'giver receiver forwarder',
   });
 
   const praiseDetailsDtoList: PraiseDetailsDto[] = [];
@@ -76,7 +76,7 @@ export const single = async (
   res: TypedResponse<PraiseDetailsDto>
 ): Promise<void> => {
   const praise = await PraiseModel.findById(req.params.id).populate(
-    'giver receiver'
+    'giver receiver forwarder'
   );
   if (!praise) throw new NotFoundError('Praise');
   const praiseDetailsDto: PraiseDetailsDto = await praiseDocumentTransformer(
@@ -94,7 +94,7 @@ export const quantify = async (
   res: TypedResponse<PraiseDto>
 ): Promise<void> => {
   const praise = await PraiseModel.findById(req.params.id).populate(
-    'giver receiver'
+    'giver receiver forwarder'
   );
   if (!praise) throw new NotFoundError('Praise');
 
@@ -162,7 +162,7 @@ export const exportPraise = async (
       $gt: new Date(String(req.query.periodStart)),
       $lte: new Date(String(req.query.periodEnd)),
     },
-  }).populate('giver receiver');
+  }).populate('giver receiver forwarder');
 
   const quantificationsColumnsCount = parseInt(
     String(process.env.PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)

@@ -88,6 +88,7 @@ const praiseDocumentToDto = async (
     quantifications,
     giver,
     receiver,
+    forwarder,
     createdAt,
     updatedAt,
   } = praiseDocument;
@@ -99,8 +100,9 @@ const praiseDocumentToDto = async (
     quantifications: await quantificationListTransformer(quantifications),
     giver: userAccountTransformer(giver),
     receiver: userAccountTransformer(receiver),
-    createdAt: createdAt.toISOString(),
-    updatedAt: updatedAt.toISOString(),
+    forwarder: forwarder ? userAccountTransformer(forwarder) : undefined,
+    createdAt: createdAt ? createdAt.toISOString() : '',
+    updatedAt: updatedAt ? updatedAt.toISOString() : '',
   };
 };
 
