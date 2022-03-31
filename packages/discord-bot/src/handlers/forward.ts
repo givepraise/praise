@@ -16,7 +16,6 @@ import {
   missingReasonError,
   notActivatedDM,
   notActivatedError,
-  praiseSuccess,
   praiseSuccessDM,
   roleMentionWarning,
   undefinedReceiverWarning,
