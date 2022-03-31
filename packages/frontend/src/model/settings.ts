@@ -4,7 +4,6 @@ import React from 'react';
 import { toast } from 'react-hot-toast';
 import {
   atom,
-  atomFamily,
   selector,
   selectorFamily,
   useRecoilCallback,
@@ -27,10 +26,6 @@ export interface Setting {
 export interface StringSetting extends Setting {
   value: string;
 }
-
-export const isImageSetting = (setting: Setting): boolean => {
-  return setting.type === 'Image';
-};
 
 const AllSettingsRequestId = atom({
   key: 'AllSettingsRequestId',
@@ -102,7 +97,7 @@ export const useSetSetting = (): useSetSettingReturn => {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const reqData = (setting: Setting): any => {
-          if (isImageSetting(setting)) {
+          if (setting.type === 'Image') {
             const data = new FormData();
             data.append('value', setting.value);
             return data;

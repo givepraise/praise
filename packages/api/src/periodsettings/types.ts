@@ -7,9 +7,20 @@ export interface PeriodSetting {
   type: string;
   label: string;
   description?: string;
-  period: boolean;
+  period: string;
 }
 
 export interface PeriodSettingDocument
   extends PeriodSetting,
     mongoose.Document {}
+
+export interface PeriodSettingDto {
+  _id: string;
+  key: string;
+  value: string;
+  valueRealized: string | boolean | number | number[];
+  type: string;
+  label: string;
+  description?: string;
+  period: string;
+}

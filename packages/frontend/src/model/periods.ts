@@ -30,6 +30,7 @@ import {
   useAuthApiQuery,
 } from './api';
 import { ActiveUserId } from './auth';
+import { AllPeriodSettings } from './periodsettings';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
 
 /**
@@ -186,6 +187,10 @@ export const useAllPeriodsQuery = (
             set(SinglePeriod(period._id), { ...oldPeriod, ...period });
           } else {
             set(SinglePeriod(period._id), period);
+          }
+
+          if (period.settings) {
+            set(AllPeriodSettings(period._id), period.settings);
           }
         }
         set(AllPeriodIds, periodIds);

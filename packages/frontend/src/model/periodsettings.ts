@@ -11,9 +11,10 @@ import {
 } from 'recoil';
 import { findIndex, find } from 'lodash';
 import { ApiAuthGet, useAuthApiQuery } from './api';
-import { Setting, useSetSettingReturn, isImageSetting } from './settings';
+import { Setting, useSetSettingReturn } from './settings';
+import { PeriodSettingDto } from 'api/src/periodsettings/types';
 
-export const AllPeriodSettings = atomFamily<Setting[], string>({
+export const AllPeriodSettings = atomFamily<PeriodSettingDto[], string>({
   key: 'AllPeriodSettings',
   default: [],
 });
@@ -28,7 +29,7 @@ export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const reqData = (setting: Setting): any => {
-      if (isImageSetting(setting)) {
+      if (setting.type === 'Image') {
         const data = new FormData();
         data.append('value', setting.value);
         return data;
@@ -40,7 +41,7 @@ export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
     const apiAuthClient = makeApiAuthClient();
     const response = await apiAuthClient.patch(url, reqData(setting));
 
-    const updatedSetting = response.data as Setting;
+    const updatedSetting = response.data as PeriodSettingDto;
     const settingIndex = findIndex(
       allSettings,
       (s) => s._id === updatedSetting._id
@@ -83,7 +84,7 @@ export const useAllPeriodSettingsQuery = (periodId: string): void => {
   );
 
   React.useEffect(() => {
-    const settings = allPeriodSettingsQueryResponse.data as Setting[];
+    const settings = allPeriodSettingsQueryResponse.data as PeriodSettingDto[];
     if (!Array.isArray(settings) || settings.length === 0) return;
     if (allPeriodSettings.length > 0) return;
 

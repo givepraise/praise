@@ -2,30 +2,31 @@ import { BadRequestError, NotFoundError } from '@error/errors';
 import { removeFile, upload } from '@shared/functions';
 import { TypedRequestBody, TypedResponse } from '@shared/types';
 import { Request } from 'express';
-import {
-  settingListTransformer,
-  settingTransformer,
-} from '@settings/transformers';
-import { SettingDto, SettingSetInput } from '@settings/types';
+import { SettingSetInput } from '@settings/types';
 import { PeriodStatusType } from '@period/types';
 import { PeriodModel } from '@period/entities';
+import {
+  periodsettingTransformer,
+  periodsettingListTransformer,
+} from './transformers';
 import { PeriodSettingsModel } from './entities';
+import { PeriodSettingDto } from './types';
 
 export const all = async (
   req: Request,
-  res: TypedResponse<SettingDto[]>
+  res: TypedResponse<PeriodSettingDto[]>
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
   const settings = await PeriodSettingsModel.find({ period: period._id });
 
-  res.status(200).json(settingListTransformer(settings));
+  res.status(200).json(periodsettingListTransformer(settings));
 };
 
 export const single = async (
   req: Request,
-  res: TypedResponse<SettingDto>
+  res: TypedResponse<PeriodSettingDto>
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
@@ -34,13 +35,13 @@ export const single = async (
     _id: req.params.settingId,
     period: period._id,
   });
-  if (!setting) throw new NotFoundError('Settings');
-  res.status(200).json(settingTransformer(setting));
+  if (!setting) throw new NotFoundError('Periodsetting');
+  res.status(200).json(periodsettingTransformer(setting));
 };
 
 export const set = async (
   req: TypedRequestBody<SettingSetInput>,
-  res: TypedResponse<SettingDto>
+  res: TypedResponse<PeriodSettingDto>
 ): Promise<void> => {
   const { value } = req.body;
 
@@ -71,5 +72,5 @@ export const set = async (
   }
 
   await setting.save();
-  res.status(200).json(settingTransformer(setting));
+  res.status(200).json(periodsettingTransformer(setting));
 };

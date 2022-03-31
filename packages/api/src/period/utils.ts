@@ -1,6 +1,8 @@
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
 import { calculateQuantificationsCompositeScore } from '@praise/utils';
+import { periodsettingListTransformer } from '@periodsettings/transformers';
+import { PeriodSettingsModel } from '@periodsettings/entities';
 import { settingValue } from '@shared/settings';
 import { sum } from 'lodash';
 import mongoose from 'mongoose';
@@ -145,10 +147,13 @@ export const findPeriodDetailsDto = async (
     period._id
   );
 
+  const periodsettings = await PeriodSettingsModel.find({ period: period._id });
+
   const response = {
     ...periodDocumentTransformer(period),
     receivers: await periodDetailsReceiverListTransformer(receiversWithScores),
     quantifiers: [...quantifiers],
+    settings: periodsettingListTransformer(periodsettings),
   };
   return response;
 };

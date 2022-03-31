@@ -11,15 +11,20 @@ import {
 } from '@/model/settings';
 import { Form } from 'react-final-form';
 import { useRecoilValue } from 'recoil';
+import { find } from 'lodash';
 import SubmitButton from '../form/SubmitButton';
+import { PeriodSettingDto } from 'api/src/periodsettings/types';
 
 interface SettingsFormProps {
-  settings: Setting[] | undefined;
+  settings: Setting[] | PeriodSettingDto[] | undefined;
   setSetting: Function;
   disabled?: boolean;
 }
 
-const FormFields = (settings: Setting[], apiResponse): JSX.Element => {
+const FormFields = (
+  settings: Setting[] | PeriodSettingDto[],
+  apiResponse
+): JSX.Element => {
   return (
     <div className="space-y-4 mb-2">
       {settings.map((setting) => {
@@ -53,13 +58,15 @@ const FormFields = (settings: Setting[], apiResponse): JSX.Element => {
   );
 };
 
-const DisabledFormFields = (settings: Setting[]): JSX.Element => (
+const DisabledFormFields = (
+  settings: Setting[] | PeriodSettingDto[]
+): JSX.Element => (
   <>
     <Notice type="danger" className="mb-8">
       <span>Settings locked for this period</span>
     </Notice>
     <div className="space-y-4 mb-2">
-      {settings.map((setting: Setting) => (
+      {settings.map((setting: Setting | PeriodSettingDto) => (
         <div key={setting.key}>
           <label className="block font-bold">{setting.label}</label>
           {setting.description && (
@@ -88,7 +95,11 @@ const SettingsForm = ({
   const onSubmit = async (values: Record<string, any>): Promise<void> => {
     for (const prop in values) {
       if (Object.prototype.hasOwnProperty.call(values, prop)) {
-        const setting = settings?.find((s) => s.key === prop);
+        const setting = find(
+          settings,
+          (s) => (s as Setting).key === prop
+        ) as Setting;
+
         if (setting && values[prop].toString() !== setting.value) {
           const item =
             setting.type === 'Image' ? values[prop][0] : values[prop];
