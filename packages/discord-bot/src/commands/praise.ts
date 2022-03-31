@@ -8,19 +8,17 @@ import { getMsgLink } from '../utils/format';
 export const praise: Command = {
   data: new SlashCommandBuilder()
     .setName('praise')
-    .setDescription('Dish praise to a User')
+    .setDescription('Praise a contribution! 🙏')
     .addStringOption((option) =>
       option
         .setName('receivers')
-        .setDescription(
-          'Mention the users you would like to send this praise to'
-        )
+        .setDescription('Mention the user(s) you would like to praise.')
         .setRequired(true)
     )
     .addStringOption((option) =>
       option
         .setName('reason')
-        .setDescription('The reason for this Praise')
+        .setDescription('Describe the reason for this praise.')
         .setRequired(true)
     ),
 

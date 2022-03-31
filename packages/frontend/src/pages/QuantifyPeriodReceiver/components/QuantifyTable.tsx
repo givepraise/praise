@@ -1,4 +1,5 @@
 import { InlineLabel } from '@/components/InlineLabel';
+import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { ActiveUserId } from '@/model/auth';
@@ -146,6 +147,7 @@ const QuantifyTable = (): JSX.Element | null => {
                   <td>
                     <div>
                       <span className="font-bold">
+                        <ForwarderTooltip praise={praise} />
                         {usePseudonyms ? (
                           <UserPseudonym
                             userId={praise.giver._id}

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2022-03-31
+
+### Added
+
+- New bot comand: `/forward`, give praise on behalf of other users. #208 #213
+
+### Fixed
+
+- Revert back to old command structure. #203
+  - `/praise dish` becomes `/praise`
+  - `/praise-activate` becomes `/activate`
+- Ensure api builds run properly with yarn 2. #205
+
 ## [0.1.0] - 2022-03-25
 
 ### Added
