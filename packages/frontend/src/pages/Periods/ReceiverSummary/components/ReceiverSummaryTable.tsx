@@ -1,3 +1,4 @@
+import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import {
   PeriodAndReceiverPageParams,
@@ -27,6 +28,7 @@ const PraiseRow = ({ praise }: PraiseRowProps): JSX.Element => {
       </div>
       <div className="ml-5 overflow-hidden">
         <div>
+          <ForwarderTooltip praise={praise} />
           <span className="font-bold">{praise.giver.name}</span>
           <span className="ml-3 text-xs text-gray-500">
             {formatDate(praise.createdAt)}

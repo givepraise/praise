@@ -455,7 +455,7 @@ export const receiverPraise = async (
       receiver: new mongoose.Types.ObjectId(receiverId),
     })
     .sort({ createdAt: -1 })
-    .populate('receiver giver');
+    .populate('receiver giver forwarder');
 
   const praiseDetailsDtoList: PraiseDetailsDto[] = [];
   if (praiseList) {
@@ -504,7 +504,7 @@ export const quantifierPraise = async (
     },
   ]);
 
-  await PraiseModel.populate(praiseList, { path: 'receiver giver' });
+  await PraiseModel.populate(praiseList, { path: 'receiver giver forwarder' });
 
   const response = await praiseDocumentListTransformer(praiseList);
   res.status(StatusCodes.OK).json(response);

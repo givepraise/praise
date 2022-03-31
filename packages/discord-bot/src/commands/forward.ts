@@ -1,18 +1,24 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { APIMessage } from 'discord-api-types/v9';
 import logger from 'jet-logger';
-import { praiseHandler } from '../handlers/praise';
+import { forwardHandler } from '../handlers/forward';
 import { Command } from '../interfaces/Command';
 import { getMsgLink } from '../utils/format';
 
-export const praise: Command = {
+export const forward: Command = {
   data: new SlashCommandBuilder()
-    .setName('praise')
-    .setDescription('Praise a contribution! 🙏')
+    .setName('forward')
+    .setDescription('Praise a contribution on behalf of another user.')
+    .addUserOption((option) =>
+      option
+        .setName('giver')
+        .setDescription('Mention the user for whom you forward the praise.')
+        .setRequired(true)
+    )
     .addStringOption((option) =>
       option
         .setName('receivers')
-        .setDescription('Mention the user(s) you would like to praise.')
+        .setDescription('Mention the user(s) who should receive the praise.')
         .setRequired(true)
     )
     .addStringOption((option) =>
@@ -24,14 +30,14 @@ export const praise: Command = {
 
   async execute(interaction) {
     try {
-      if (!interaction.isCommand() || interaction.commandName !== 'praise')
+      if (!interaction.isCommand() || interaction.commandName !== 'forward')
         return;
 
       const msg = (await interaction.deferReply({
         fetchReply: true,
       })) as APIMessage | void;
       if (msg === undefined) return;
-      await praiseHandler(
+      await forwardHandler(
         interaction,
         getMsgLink(
           interaction.guildId || '',
