@@ -101,8 +101,8 @@ const praiseDocumentToDto = async (
     giver: userAccountTransformer(giver),
     receiver: userAccountTransformer(receiver),
     forwarder: forwarder ? userAccountTransformer(forwarder) : undefined,
-    createdAt: createdAt ? createdAt.toISOString() : '',
-    updatedAt: updatedAt ? updatedAt.toISOString() : '',
+    createdAt: createdAt.toISOString(),
+    updatedAt: updatedAt.toISOString(),
   };
 };
 
