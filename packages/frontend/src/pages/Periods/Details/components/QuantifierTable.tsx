@@ -50,7 +50,16 @@ const QuantifierTable = (): JSX.Element => {
     return (
       <div className="w-full h-full flex items-center">
         <Notice type="danger">
-          <span>No quantifiers have been assigned</span>
+          <span>No quantifiers assigned in this period</span>
+        </Notice>
+      </div>
+    );
+
+  if (period?.receivers?.length === 0)
+    return (
+      <div className="w-full h-full flex items-center">
+        <Notice type="danger">
+          <span>No quantifiers found in this period</span>
         </Notice>
       </div>
     );
