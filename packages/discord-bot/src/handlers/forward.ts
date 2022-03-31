@@ -46,7 +46,7 @@ export const forwardHandler = async (
     return;
   }
 
-  const praiseGiver = interaction.options.getMember('from') as GuildMember;
+  const praiseGiver = interaction.options.getMember('giver') as GuildMember;
 
   const praiseGiverRoleID = await getSetting('PRAISE_GIVER_ROLE_ID');
   const praiseGiverRole = guild.roles.cache.find(
@@ -71,7 +71,7 @@ export const forwardHandler = async (
   }
   const giverAccount = await getUserAccount(praiseGiver);
 
-  const receivers = interaction.options.getString('to');
+  const receivers = interaction.options.getString('receivers');
   const reason = interaction.options.getString('reason');
 
   const receiverData = {
@@ -153,7 +153,7 @@ export const forwardHandler = async (
   const msg = (await interaction.editReply(
     `✅  Forward praise from <@!${praiseGiver.user.id}> to ${praised
       .map((id) => `<@!${id}>`)
-      .join(', ')} for ${reason}`
+      .join(', ')} ${reason}`
   )) as Message;
 
   if (receiverData.undefinedReceivers) {

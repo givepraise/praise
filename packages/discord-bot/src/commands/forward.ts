@@ -8,23 +8,23 @@ import { getMsgLink } from '../utils/format';
 export const forward: Command = {
   data: new SlashCommandBuilder()
     .setName('forward')
-    .setDescription('Forwards praise from one user to another user')
+    .setDescription('Praise a contribution on behalf of another user.')
     .addUserOption((option) =>
       option
-        .setName('from')
-        .setDescription('The person from whom the praise is coming from')
+        .setName('giver')
+        .setDescription('Mention the user for whom you forward the praise.')
         .setRequired(true)
     )
     .addStringOption((option) =>
       option
-        .setName('to')
-        .setDescription('Mention the users to whom this praise should go')
+        .setName('receivers')
+        .setDescription('Mention the user(s) who should receive the praise.')
         .setRequired(true)
     )
     .addStringOption((option) =>
       option
         .setName('reason')
-        .setDescription('The reason given for this Praise')
+        .setDescription('Describe the reason for this praise.')
         .setRequired(true)
     ),
 

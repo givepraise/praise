@@ -6,7 +6,9 @@ import { Command } from '../interfaces/Command';
 export const activate: Command = {
   data: new SlashCommandBuilder()
     .setName('activate')
-    .setDescription('Activate your praise account by linking your eth address'),
+    .setDescription(
+      'Activate your Praise account by linking your eth address.'
+    ),
 
   async execute(interaction) {
     try {
