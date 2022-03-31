@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - New bot comand: `/forward`, give praise on behalf of other users. #208 #213
+- Modify settings architecture so Periods have their own unique settings. New periods are created with the "global" settings as default values. #138 #116
 
 ### Fixed
 
