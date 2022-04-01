@@ -9,7 +9,7 @@ import { useWeb3React } from '@web3-react/core';
 import { InjectedConnector } from '@web3-react/injected-connector';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import EthAccount from './components/EthAccount';
+import EthAccount from '@/components/EthAccount';
 import { LoginButton } from './components/Login';
 
 export default function LoginPage(): JSX.Element {
