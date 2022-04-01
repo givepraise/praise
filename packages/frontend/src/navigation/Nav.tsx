@@ -1,4 +1,5 @@
 import AdminOnly from '@/components/auth/AdminOnly';
+import EthAccount from '@/components/EthAccount';
 import { ActiveTokenSet } from '@/model/auth';
 import { EthState } from '@/model/eth';
 import { ImageSettingFullPath } from '@/model/settings';
@@ -60,25 +61,12 @@ export default function Nav(): JSX.Element {
             </AdminOnly>
           </ul>
         </div>
-        <div className="w-full px-4 py-3 border-t">
-          <Menu as="div" className="relative inline-block mr-2">
-            <div>
-              <Menu.Button className=" hover:text-gray-500 focus:outline-none">
-                <div
-                  style={{ width: '15px', height: '15px' }}
-                  className="inline-block mr-2"
-                >
-                  {ethState.account && <Jazzicon address={ethState.account} />}
-                </div>
-                {ethState.account?.substring(0, 6)}...
-                {ethState.account?.substring(ethState.account?.length - 4)}
-                <FontAwesomeIcon
-                  icon={faAngleRight}
-                  size="1x"
-                  className="inline-block ml-4"
-                />
-              </Menu.Button>
-            </div>
+        <div className="w-full border-t">
+          <Menu as="div" className="flex flex-col justify-center">
+            <Menu.Button className="flex justify-between items-center px-4 py-3 w-full hover:text-gray-500 focus:outline-none">
+              <EthAccount />
+              <FontAwesomeIcon icon={faAngleRight} size="1x" className="ml-4" />
+            </Menu.Button>
 
             <Transition
               as={Fragment}
@@ -89,7 +77,7 @@ export default function Nav(): JSX.Element {
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
             >
-              <Menu.Items className="absolute w-56 -mt-20 bg-white rounded-md shadow-lg ring-1 ring-gray-800 ring-opacity-5 focus:outline-none">
+              <Menu.Items className="absolute -mt-20 ml-6 w-4/5 bg-white rounded-md shadow-lg ring-1 ring-gray-800 ring-opacity-5 focus:outline-none">
                 <div className="py-1">
                   <Menu.Item>
                     {({ active }): JSX.Element => (
