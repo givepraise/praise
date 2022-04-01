@@ -122,13 +122,15 @@ const QuantifyTable = (): JSX.Element | null => {
 
             return (
               <>
-                {isStartOfTheWeek({ praise }) && (
-                  <tr>
-                    <td colSpan={3}>
-                      <div className="border-t border-gray-400" />
-                    </td>
-                  </tr>
-                )}
+                {isStartOfTheWeek({ praise }) &&
+                  index !== 0 &&
+                  index !== data.length - 1 && (
+                    <tr>
+                      <td colSpan={3}>
+                        <div className="border-t border-gray-400" />
+                      </td>
+                    </tr>
+                  )}
                 <tr
                   key={index}
                   onMouseDown={(): void => setSelectedPraise(praise)}
