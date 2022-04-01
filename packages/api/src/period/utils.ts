@@ -4,7 +4,7 @@ import { calculateQuantificationsCompositeScore } from '@praise/utils';
 import { periodsettingListTransformer } from '@periodsettings/transformers';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 import { settingValue } from '@shared/settings';
-import { sum } from 'lodash';
+import { sum, some } from 'lodash';
 import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import {
@@ -186,3 +186,30 @@ export const getPeriodDateRangeQuery = async (
   $gt: await getPreviousPeriodEndDate(period),
   $lte: period.endDate,
 });
+
+/**
+ * Check if any praise in the given period has already been assigned to quantifiers
+ *
+ * @param period
+ * @returns
+ */
+export const verifyAnyPraiseAssigned = async (
+  period: PeriodDocument
+): Promise<boolean> => {
+  const periodDateRangeQuery = await getPeriodDateRangeQuery(period as Period);
+
+  const praises = await PraiseModel.find({
+    createdAt: periodDateRangeQuery,
+  });
+
+  const quantifiersPerPraiseReceiver = (await settingValue(
+    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
+    period._id
+  )) as number;
+
+  const praisesAssigned = praises.map(
+    (praise) => praise.quantifications.length === quantifiersPerPraiseReceiver
+  );
+
+  return some(praisesAssigned);
+};
