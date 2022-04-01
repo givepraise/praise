@@ -53,6 +53,7 @@ import {
   findPeriodDetailsDto,
   getPeriodDateRangeQuery,
   getPreviousPeriodEndDate,
+  verifyAnyPraiseAssigned,
 } from './utils';
 import { PeriodModel } from './entities';
 import { periodDocumentTransformer } from './transformers';
@@ -410,6 +411,12 @@ export const assignQuantifiers = async (
   if (period.status !== 'OPEN')
     throw new BadRequestError(
       'Quantifiers can only be assigned on OPEN periods.'
+    );
+
+  const anyPraiseAssigned = await verifyAnyPraiseAssigned(period);
+  if (anyPraiseAssigned)
+    throw new BadRequestError(
+      'Some praise has already been assigned for this period'
     );
 
   const assignedQuantifiers: AssignQuantifiersDryRunOutput =
