@@ -1,4 +1,5 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
+import Notice from '@/components/Notice';
 import { injected } from '@/eth/connectors';
 import { hasMetaMask } from '@/eth/wallet';
 import { EthState } from '@/model/eth';
@@ -7,7 +8,7 @@ import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useWeb3React } from '@web3-react/core';
 import { InjectedConnector } from '@web3-react/injected-connector';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 import EthAccount from '@/components/EthAccount';
 import { LoginButton } from './components/Login';
@@ -20,6 +21,7 @@ export default function LoginPage(): JSX.Element {
   } = useWeb3React();
 
   const ethState = useRecoilValue(EthState);
+  const [errorNotice, setErrorNotice] = useState<string | undefined>(undefined);
 
   // Marks which ethConnector is being activated
   const [activatingConnector, setActivatingConnector] = React.useState<
@@ -32,6 +34,18 @@ export default function LoginPage(): JSX.Element {
       setActivatingConnector(undefined);
     }
   }, [activatingConnector, ethConnector]);
+
+  useEffect(() => {
+    if (!ethState.account && !hasMetaMask()) {
+      setErrorNotice('MetaMask not found. Please install MetaMask to login.');
+    } else if (ethError && ethError.name === 'UnsupportedChainIdError') {
+      setErrorNotice('Wrong network');
+    } else if (ethError && ethError.name !== 'UnsupportedChainIdError') {
+      setErrorNotice('Unable to connect. Is Metamask installed?');
+    } else {
+      setErrorNotice(undefined);
+    }
+  }, [ethState, ethError]);
 
   const ethButtonClass =
     'px-4 py-2 font-bold text-white uppercase rounded ' +
@@ -58,46 +72,47 @@ export default function LoginPage(): JSX.Element {
           <div className="mb-3">
             {ethState.triedEager ? (
               (!ethState.connected || (ethState.connected && !!ethError)) && (
-                <div>
-                  <div className="text-lg text-red-700 flex justify-center">
-                    {ethError && ethError.name === 'UnsupportedChainIdError' ? (
-                      <div>Wrong network</div>
-                    ) : (
-                      <div>Metamask Not Found</div>
-                    )}
+                <div className="flex flex-col justify-center">
+                  {errorNotice && (
+                    <Notice type="danger" className="mb-3">
+                      <span>{errorNotice}</span>
+                    </Notice>
+                  )}
+
+                  <div className="mx-auto">
+                    <button
+                      className={ethButtonClass}
+                      disabled={
+                        ethState.connectDisabled ||
+                        !!ethError ||
+                        ethState.activating ||
+                        !hasMetaMask()
+                      }
+                      key={'Injected'}
+                      onClick={(): void => {
+                        setActivatingConnector(injected);
+                        void ethActivate(injected, (error) => {
+                          if (error.name === 'UnsupportedChainIdError')
+                            alert('Please connect to Ethereum mainnet');
+                          setActivatingConnector(undefined);
+                        });
+                      }}
+                    >
+                      {!ethError && !ethState.activating ? (
+                        <div>
+                          <MetamaskIcon
+                            className={'inline-block w-4 h-4 pb-1 mr-2'}
+                          />
+                          Connect to a wallet
+                        </div>
+                      ) : (
+                        <div className="flex justify-center">
+                          Initializing wallet connection
+                          <LoaderSpinner />
+                        </div>
+                      )}
+                    </button>
                   </div>
-                  <button
-                    className={ethButtonClass}
-                    disabled={
-                      ethState.connectDisabled ||
-                      !!ethError ||
-                      ethState.activating ||
-                      !hasMetaMask()
-                    }
-                    key={'Injected'}
-                    onClick={(): void => {
-                      setActivatingConnector(injected);
-                      void ethActivate(injected, (error) => {
-                        if (error.name === 'UnsupportedChainIdError')
-                          alert('Please connect to Ethereum mainnet');
-                        setActivatingConnector(undefined);
-                      });
-                    }}
-                  >
-                    {!ethError && !ethState.activating ? (
-                      <div>
-                        <MetamaskIcon
-                          className={'inline-block w-4 h-4 pb-1 mr-2'}
-                        />
-                        Connect to a wallet
-                      </div>
-                    ) : (
-                      <div className="flex justify-center">
-                        Initializing wallet connection
-                        <LoaderSpinner />
-                      </div>
-                    )}
-                  </button>
                 </div>
               )
             ) : (
