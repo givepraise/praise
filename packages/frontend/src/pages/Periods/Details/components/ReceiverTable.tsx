@@ -5,6 +5,7 @@ import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useSortBy, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
+import { sortBy } from 'lodash';
 
 const ReceiverTable = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -38,10 +39,22 @@ const ReceiverTable = (): JSX.Element | null => {
       ],
       []
     );
+    const data = period?.receivers
+      ? sortBy(period.receivers, [
+          // First, sort by reciever score
+          (receiver): number => {
+            if (!receiver?.score) return 0;
+            return receiver.score;
+          },
+
+          // Then by receiver _id
+          (receiver): string => receiver._id.toString(),
+        ])
+      : [];
 
     const options = {
       columns,
-      data: period?.receivers ? period.receivers : [],
+      data: data,
       initialState: {
         sortBy: [
           {
