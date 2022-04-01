@@ -111,7 +111,7 @@ const QuantifyTable = (): JSX.Element | null => {
               {index !== 0 && index !== data.length - 1 && (
                 <tr>
                   <td colSpan={3}>
-                    <div className="border-t border-gray-400" />
+                    <div className="border-t border-2 border-gray-400 my-4" />
                   </td>
                 </tr>
               )}
