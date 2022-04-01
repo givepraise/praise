@@ -7,7 +7,7 @@ interface Params {
 const Notice = ({
   children,
   type = 'danger',
-  className,
+  className = '',
 }: Params): JSX.Element => {
   let typeClasses = '';
 
@@ -15,6 +15,8 @@ const Notice = ({
     typeClasses = 'bg-red-200';
   } else if (type === 'success') {
     typeClasses = 'bg-green-300';
+  } else if (type === 'warning') {
+    typeClasses = 'bg-orange-300';
   }
 
   return (
