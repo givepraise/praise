@@ -1,7 +1,7 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { AllPraiseList } from '@/model/praise';
+import { AllPraiseListLocalized } from '@/model/praise';
 import { formatDate } from '@/utils/date';
 import { PraiseDto } from 'api/dist/praise/types';
 import React from 'react';
@@ -14,7 +14,7 @@ export const ALL_PRAISE_LIST_KEY = 'ALL_PRAISE';
 
 const PraiseTable = (): JSX.Element => {
   const history = useHistory();
-  const allPraise = useRecoilValue(AllPraiseList(ALL_PRAISE_LIST_KEY));
+  const allPraise = useRecoilValue(AllPraiseListLocalized(ALL_PRAISE_LIST_KEY));
   const columns = React.useMemo(
     () => [
       {
