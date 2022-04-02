@@ -1,4 +1,5 @@
 import { UserCell } from '@/components/table/UserCell';
+import Notice from '@/components/Notice';
 import { PeriodPageParams, SinglePeriod } from '@/model/periods';
 import React from 'react';
 import { useParams } from 'react-router-dom';
@@ -46,7 +47,22 @@ const QuantifierTable = (): JSX.Element => {
   if (!period) return <div>Period not found.</div>;
 
   if (period.status === 'OPEN')
-    return <div>No quantifiers have yet been assigned to this period.</div>;
+    return (
+      <div className="w-full h-full flex items-center">
+        <Notice type="danger">
+          <span>No quantifiers assigned in this period</span>
+        </Notice>
+      </div>
+    );
+
+  if (period?.receivers?.length === 0)
+    return (
+      <div className="w-full h-full flex items-center">
+        <Notice type="danger">
+          <span>No quantifiers found in this period</span>
+        </Notice>
+      </div>
+    );
 
   return (
     <table

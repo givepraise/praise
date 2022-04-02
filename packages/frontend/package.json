@@ -35,6 +35,7 @@
     "ethers": "^5.5.4",
     "final-form": "^4.20.4",
     "jwt-decode": "^3.1.2",
+    "lodash": "^4.17.21",
     "postcss": "^7.0.36",
     "prettier": "^2.5.1",
     "query-string": "^7.1.0",
