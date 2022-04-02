@@ -16,6 +16,7 @@
       "@auth/*": ["src/auth/*"],
       "@error/*": ["src/error/*"],
       "@middleware/*": ["src/middleware/*"],
+      "@database/*": ["src/database/*"],
       "@period/*": ["src/period/*"],
       "@praise/*": ["src/praise/*"],
       "@settings/*": ["src/settings/*"],
