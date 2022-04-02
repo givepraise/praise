@@ -32,6 +32,7 @@ import {
   isResponseOk,
   useAuthApiQuery,
 } from './api';
+import { utcDateToLocal } from '@/utils/date';
 import { ActiveUserId } from './auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
 
@@ -59,6 +60,28 @@ export const SinglePeriod = atomFamily<PeriodDetailsDto | undefined, string>({
 });
 
 /**
+ * One individual period, with dates localized
+ */
+export const SinglePeriodLocalized = selectorFamily<
+  PeriodDetailsDto | undefined,
+  string
+>({
+  key: 'SinglePeriodLocalized',
+  get:
+    (key: string) =>
+    ({ get }): PeriodDetailsDto | undefined => {
+      const period = get(SinglePeriod(key));
+      if (!period) return undefined;
+
+      return {
+        ...period,
+        createdAt: utcDateToLocal(new Date(period.createdAt)).toISOString(),
+        endDate: utcDateToLocal(new Date(period.endDate)).toISOString(),
+      } as PeriodDetailsDto;
+    },
+});
+
+/**
  * The full list of period Ids
  */
 export const AllPeriodIds = atom<string[] | undefined>({
@@ -82,6 +105,25 @@ export const AllPeriods = selector({
       }
     }
     return allPeriods;
+  },
+});
+
+/**
+ * Return AllPeriods with dates localized
+ */
+export const AllPeriodsLocalized = selector({
+  key: 'AllPeriodsLocalized',
+  get: ({ get }): PeriodDetailsDto[] | undefined => {
+    const periods = get(AllPeriods);
+    if (!periods) return undefined;
+
+    const periodsLocalized = periods.map((period) => ({
+      ...period,
+      createdAt: utcDateToLocal(new Date(period.createdAt)).toISOString(),
+      endDate: utcDateToLocal(new Date(period.endDate)).toISOString(),
+    }));
+
+    return periodsLocalized;
   },
 });
 
