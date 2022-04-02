@@ -1,4 +1,4 @@
-import { AllPeriods } from '@/model/periods';
+import { AllPeriodsLocalized } from '@/model/periods';
 import { formatDate } from '@/utils/date';
 import { classNames } from '@/utils/index';
 import { PeriodDto } from 'api/dist/period/types';
@@ -8,7 +8,7 @@ import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 
 const PeriodsTable = (): JSX.Element => {
-  const allPeriods = useRecoilValue(AllPeriods);
+  const allPeriods = useRecoilValue(AllPeriodsLocalized);
   const history = useHistory();
 
   const columns = React.useMemo(

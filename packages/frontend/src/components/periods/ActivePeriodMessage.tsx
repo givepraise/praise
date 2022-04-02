@@ -1,11 +1,11 @@
-import { AllPeriods } from '@/model/periods';
+import { AllPeriodsLocalized } from '@/model/periods';
 import { formatDate } from '@/utils/date';
 import { getActivePeriod } from '@/utils/periods';
 import React, { ReactElement } from 'react';
 import { useRecoilValue } from 'recoil';
 
 export const ActivePeriodMessage: React.FC = (): ReactElement | null => {
-  const allPeriods = useRecoilValue(AllPeriods);
+  const allPeriods = useRecoilValue(AllPeriodsLocalized);
 
   if (!Array.isArray(allPeriods) || allPeriods.length === 0) return null;
 

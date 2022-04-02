@@ -1,8 +1,8 @@
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
-  AllPeriods,
+  AllPeriodsLocalized,
   PeriodPageParams,
-  SinglePeriod,
+  SinglePeriodLocalized,
   useAssignQuantifiers,
   useClosePeriod,
   useExportPraise,
@@ -31,10 +31,10 @@ const PeriodDetails = (): JSX.Element | null => {
   const [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = React.useState(false);
 
-  const allPeriods = useRecoilValue(AllPeriods);
+  const allPeriods = useRecoilValue(AllPeriodsLocalized);
   const allQuantifiers = useRecoilValue(AllQuantifierUsers);
   const { periodId } = useParams<PeriodPageParams>();
-  const period = useRecoilValue(SinglePeriod(periodId));
+  const period = useRecoilValue(SinglePeriodLocalized(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
   const history = useHistory();
