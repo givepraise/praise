@@ -21,7 +21,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
-import 'react-day-picker/lib/style.css';
 import { toast } from 'react-hot-toast';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';

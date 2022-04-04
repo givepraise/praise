@@ -16,7 +16,6 @@ import {
   faCog,
 } from '@fortawesome/free-solid-svg-icons';
 import React, { Suspense } from 'react';
-import 'react-day-picker/lib/style.css';
 import {
   useHistory,
   useParams,
