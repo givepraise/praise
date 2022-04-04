@@ -8,10 +8,12 @@ import {
 import BackLink from '@/navigation/BackLink';
 import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
 import { classNames } from '@/utils/index';
+import { PeriodStatusType } from 'api/dist/period/types';
 import {
   faBalanceScaleLeft,
   faHeartbeat,
   faCalendarAlt,
+  faCog,
 } from '@fortawesome/free-solid-svg-icons';
 import React, { Suspense } from 'react';
 import 'react-day-picker/lib/style.css';
@@ -29,6 +31,7 @@ import { QuantifierMessage } from './components/QuantifierMessage';
 import NavItem from '../../../navigation/NavItem';
 import QuantifierTable from './components/QuantifierTable';
 import ReceiverTable from './components/ReceiverTable';
+import PeriodSettingsForm from './components/PeriodSettingsForm';
 
 const PeriodDetailLoader = (): null => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -69,6 +72,7 @@ const PeriodDetailHead = (): JSX.Element => {
 const PeriodDetailPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriodLocalized(periodId));
+  const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const [detailsLoaded, setDetailsLoaded] = React.useState<boolean>(false);
   const { path, url } = useRouteMatch();
 
@@ -78,7 +82,7 @@ const PeriodDetailPage = (): JSX.Element => {
     }
   }, [period]);
 
-  if (!detailsLoaded) return <PeriodDetailLoader />;
+  if (!detailsLoaded || !period) return <PeriodDetailLoader />;
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -109,6 +113,11 @@ const PeriodDetailPage = (): JSX.Element => {
                 description="Quantifiers"
                 icon={faBalanceScaleLeft}
               />
+              <NavItem
+                to={`${url}/settings`}
+                description="Settings"
+                icon={faCog}
+              />
             </nav>
           </div>
         </div>
@@ -124,6 +133,12 @@ const PeriodDetailPage = (): JSX.Element => {
               </Route>
               <Route path={`${path}/quantifiers`}>
                 <QuantifierTable />
+              </Route>
+              <Route path={`${path}/settings`}>
+                <PeriodSettingsForm
+                  periodId={periodId}
+                  disabled={period.status !== PeriodStatusType.OPEN || !isAdmin}
+                />
               </Route>
             </Switch>
           </Suspense>

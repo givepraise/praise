@@ -1,9 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
-import {
-  getPreviousPeriodEndDate,
-  periodQuantifierPraiseListKey,
-} from '@/utils/periods';
+import { periodQuantifierPraiseListKey } from '@/utils/periods';
 import {
   PeriodCreateInput,
   PeriodDetailsDto,
@@ -34,6 +31,7 @@ import {
 } from './api';
 import { utcDateToLocal } from '@/utils/date';
 import { ActiveUserId } from './auth';
+import { AllPeriodSettings } from './periodsettings';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
 
 /**
@@ -231,6 +229,10 @@ export const useAllPeriodsQuery = (
             set(SinglePeriod(period._id), { ...oldPeriod, ...period });
           } else {
             set(SinglePeriod(period._id), period);
+          }
+
+          if (period.settings) {
+            set(AllPeriodSettings(period._id), period.settings);
           }
         }
         set(AllPeriodIds, periodIds);
@@ -586,18 +588,10 @@ export const useExportPraise = (): useExportPraiseReturn => {
     ({ snapshot }) =>
       async (period: PeriodDto): Promise<Blob | undefined> => {
         if (!period || !allPeriods) return undefined;
-        const previousPeriodEndDate = getPreviousPeriodEndDate(
-          allPeriods,
-          period
-        );
-        if (!previousPeriodEndDate)
-          throw new Error('Invalid previous period end date');
         const response = await ApiQuery(
           snapshot.getPromise(
             ApiAuthGet({
-              url: `/praise/export?periodStart=${encodeURI(
-                previousPeriodEndDate.toISOString()
-              )}&periodEnd=${encodeURI(period.endDate)}`,
+              url: `/admin/periods/${period._id}/export`,
               config: { responseType: 'blob' },
             })
           )

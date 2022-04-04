@@ -10,7 +10,7 @@ export const all = async (
   req: Request,
   res: TypedResponse<SettingDto[]>
 ): Promise<void> => {
-  const settings = await SettingsModel.find({});
+  const settings = await SettingsModel.find({ period: { $exists: 0 } });
   res.status(200).json(settingListTransformer(settings));
 };
 
@@ -18,7 +18,10 @@ export const single = async (
   req: Request,
   res: TypedResponse<SettingDto>
 ): Promise<void> => {
-  const setting = await SettingsModel.findById(req.params.key);
+  const setting = await SettingsModel.findOne({
+    _id: req.params.key,
+    period: { $exists: 0 },
+  });
   if (!setting) throw new NotFoundError('Settings');
   res.status(200).json(settingTransformer(setting));
 };
@@ -33,7 +36,10 @@ export const set = async (
     throw new BadRequestError('Value is required field');
 
   const { id } = req.params;
-  const setting = await SettingsModel.findById(id);
+  const setting = await SettingsModel.findOne({
+    _id: id,
+    period: { $exists: 0 },
+  });
   if (!setting) throw new NotFoundError('Settings');
 
   if (req.files) {

@@ -1,6 +1,6 @@
 import { ActiveUserId } from '@/model/auth';
 import { useQuantifyPraise } from '@/model/praise';
-import { SingleStringSetting } from '@/model/settings';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { Slider, Tooltip } from '@mui/material';
 import { PraiseDto } from 'api/dist/praise/types';
 import React from 'react';
@@ -28,22 +28,26 @@ interface Mark {
 
 interface QuantifySliderProps {
   praise: PraiseDto;
+  periodId: string;
 }
 
-const QuantifySlider = ({ praise }: QuantifySliderProps): JSX.Element => {
+const QuantifySlider = ({
+  praise,
+  periodId,
+}: QuantifySliderProps): JSX.Element => {
   const [selectedSliderMark, setSelectedSliderMark] = React.useState<number>(0);
   const [sliderMarks, setSliderMarks] = React.useState<Mark[]>([]);
   const [scores, setScores] = React.useState<number[]>([]);
   const activeUserId = useRecoilValue(ActiveUserId);
   const { quantify } = useQuantifyPraise();
-
-  const allowedValues = useRecoilValue(
-    SingleStringSetting('PRAISE_QUANTIFY_ALLOWED_VALUES')
-  );
+  const allowedValues = usePeriodSettingValueRealized(
+    periodId,
+    'PRAISE_QUANTIFY_ALLOWED_VALUES'
+  ) as number[];
 
   React.useEffect(() => {
     if (!allowedValues) return;
-    setScores(allowedValues.split(',').map((v) => Number.parseInt(v.trim())));
+    setScores(allowedValues);
   }, [allowedValues]);
 
   const allowedSliderValuesToMarks = React.useCallback((): Mark[] => {
