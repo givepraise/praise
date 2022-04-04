@@ -1,26 +1,15 @@
-import { format, isValid, parse } from 'date-fns';
+import { format, parse, parseISO } from 'date-fns';
 import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
 import jstz from 'jstz';
 
 export const DATE_FORMAT = 'yyyy-MM-dd';
 export const DATE_FORMAT_LONG = 'yyyy-MM-dd HH:mm';
 
-export const formatDate = (
-  isoDate: string,
+export const parseDate = (
+  date: string,
   pattern: string = DATE_FORMAT
-): string => {
-  return format(new Date(isoDate), pattern);
-};
-
-export const formatDateLong = (isoDate: string): string => {
-  return formatDate(isoDate, DATE_FORMAT_LONG);
-};
-
-  return format(new Date(isoDate), DATE_FORMAT_LONG);
-};
-
-export const isValidDate = (inputString: string): boolean => {
-  return isValid(new Date(inputString));
+): Date => {
+  return parse(date, pattern, new Date());
 };
 
 export const localDateToUtc = (dateLocal: Date): Date => {
@@ -35,4 +24,18 @@ export const utcDateToLocal = (dateUtc: Date): Date => {
   const dateLocal = utcToZonedTime(dateUtc, timezone);
 
   return dateLocal;
+};
+
+export const localizeAndFormatIsoDate = (
+  dateIso: string,
+  pattern: string = DATE_FORMAT
+): string => {
+  const dateUtc = parseISO(dateIso);
+  const dateLocal = utcDateToLocal(dateUtc);
+
+  return format(dateLocal, pattern);
+};
+
+export const localizeAndFormatIsoDateLong = (dateIso: string): string => {
+  return localizeAndFormatIsoDate(dateIso, DATE_FORMAT_LONG);
 };

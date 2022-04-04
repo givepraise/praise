@@ -1,8 +1,8 @@
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
-  AllPeriodsLocalized,
+  AllPeriods,
   PeriodPageParams,
-  SinglePeriodLocalized,
+  SinglePeriod,
   useAssignQuantifiers,
   useClosePeriod,
   useExportPraise,
@@ -10,7 +10,7 @@ import {
 } from '@/model/periods';
 import { AllPeriodSettings } from '@/model/periodsettings';
 import { AllQuantifierUsers } from '@/model/users';
-import { formatDate } from '@/utils/date';
+import { localizeAndFormatIsoDate } from '@/utils/date';
 import { saveLocalFile } from '@/utils/file';
 import { getPreviousPeriod } from '@/utils/periods';
 import {
@@ -32,10 +32,10 @@ const PeriodDetails = (): JSX.Element | null => {
   const [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = React.useState(false);
 
-  const allPeriods = useRecoilValue(AllPeriodsLocalized);
+  const allPeriods = useRecoilValue(AllPeriods);
   const allQuantifiers = useRecoilValue(AllQuantifierUsers);
   const { periodId } = useParams<PeriodPageParams>();
-  const period = useRecoilValue(SinglePeriodLocalized(periodId));
+  const period = useRecoilValue(SinglePeriod(periodId));
   const periodsettings = useRecoilValue(AllPeriodSettings(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
@@ -55,7 +55,7 @@ const PeriodDetails = (): JSX.Element | null => {
 
   const previousPeriod = getPreviousPeriod(allPeriods, period);
   const periodStart = previousPeriod
-    ? formatDate(previousPeriod.endDate)
+    ? localizeAndFormatIsoDate(previousPeriod.endDate)
     : 'Dawn of time';
 
   const handleClosePeriod = (): void => {
@@ -113,7 +113,7 @@ const PeriodDetails = (): JSX.Element | null => {
     <div>
       <div>Period start: {periodStart}</div>
       {!isAdmin ? (
-        <div>Period end: {formatDate(period.endDate)}</div>
+        <div>Period end: {localizeAndFormatIsoDate(period.endDate)}</div>
       ) : (
         <>
           <PeriodDateForm />

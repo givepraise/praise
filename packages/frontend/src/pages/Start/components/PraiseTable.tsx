@@ -1,8 +1,8 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { AllPraiseListLocalized } from '@/model/praise';
-import { formatDate } from '@/utils/date';
+import { AllPraiseList } from '@/model/praise';
+import { localizeAndFormatIsoDate } from '@/utils/date';
 import { PraiseDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -14,7 +14,7 @@ export const ALL_PRAISE_LIST_KEY = 'ALL_PRAISE';
 
 const PraiseTable = (): JSX.Element => {
   const history = useHistory();
-  const allPraise = useRecoilValue(AllPraiseListLocalized(ALL_PRAISE_LIST_KEY));
+  const allPraise = useRecoilValue(AllPraiseList(ALL_PRAISE_LIST_KEY));
   const columns = React.useMemo(
     () => [
       {
@@ -36,7 +36,7 @@ const PraiseTable = (): JSX.Element => {
                   {data.row.original.receiver.name}
                 </span>
                 <span className="ml-2 text-xs text-gray-500">
-                  {formatDate(data.row.original.createdAt)}
+                  {localizeAndFormatIsoDate(data.row.original.createdAt)}
                 </span>
               </div>
 

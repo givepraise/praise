@@ -2,7 +2,7 @@ import BreadCrumb from '@/components/BreadCrumb';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   PeriodPageParams,
-  SinglePeriodLocalized,
+  SinglePeriod,
   useSinglePeriodQuery,
 } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
@@ -42,7 +42,7 @@ const PeriodDetailLoader = (): null => {
 const PeriodDetailHead = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const period = useRecoilValue(SinglePeriodLocalized(periodId));
+  const period = useRecoilValue(SinglePeriod(periodId));
   return (
     <>
       {' '}
@@ -70,7 +70,7 @@ const PeriodDetailHead = (): JSX.Element => {
 
 const PeriodDetailPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
-  const period = useRecoilValue(SinglePeriodLocalized(periodId));
+  const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const [detailsLoaded, setDetailsLoaded] = React.useState<boolean>(false);
   const { path, url } = useRouteMatch();

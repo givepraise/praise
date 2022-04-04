@@ -37,27 +37,6 @@ export const SinglePraise = atomFamily<PraiseDto | undefined, string>({
 });
 
 /**
- * return SinglePraise with
- */
-export const SinglePraiseLocalized = selectorFamily<
-  PraiseDto | undefined,
-  string
->({
-  key: 'SinglePraiseLocalized',
-  get:
-    (key: string) =>
-    ({ get }): PraiseDto | undefined => {
-      const praise = get(SinglePraise(key));
-      if (!praise) return undefined;
-
-      return {
-        ...praise,
-        createdAt: utcDateToLocal(new Date(praise.createdAt)).toISOString(),
-      };
-    },
-});
-
-/**
  * Params for @SinglePraiseQuery
  */
 type SinglePraiseQueryParams = {
@@ -127,26 +106,6 @@ export const AllPraiseList = selectorFamily({
         if (praise) allPraiseList.push(praise);
       }
       return allPraiseList;
-    },
-});
-
-/**
- * return AllPraiseList with dates converted to local tz
- */
-export const AllPraiseListLocalized = selectorFamily({
-  key: 'AllPraiseList',
-  get:
-    (key: string) =>
-    ({ get }): PraiseDto[] | undefined => {
-      const praises = get(AllPraiseList(key));
-      if (!praises) return undefined;
-
-      const praisesLocalized = praises.map((praise) => ({
-        ...praise,
-        createdAt: utcDateToLocal(new Date(praise.createdAt)).toISOString(),
-      }));
-
-      return praisesLocalized;
     },
 });
 

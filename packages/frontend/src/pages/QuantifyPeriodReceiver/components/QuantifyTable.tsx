@@ -9,7 +9,7 @@ import {
 } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
-import { formatDate } from '@/utils/date';
+import { localizeAndFormatIsoDate } from '@/utils/date';
 import {
   faCopy,
   faTimes,
@@ -158,7 +158,7 @@ const QuantifyTable = (): JSX.Element | null => {
                         )}
                       </span>
                       <span className="ml-2 text-xs text-gray-500">
-                        {formatDate(praise.createdAt)}
+                        {localizeAndFormatIsoDate(praise.createdAt)}
                       </span>
                     </div>
                     <div className="w-[550px] overflow-hidden overflow-ellipsis">

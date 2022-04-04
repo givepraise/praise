@@ -1,5 +1,5 @@
-import { AllPeriodsLocalized } from '@/model/periods';
-import { formatDate } from '@/utils/date';
+import { AllPeriods } from '@/model/periods';
+import { localizeAndFormatIsoDate } from '@/utils/date';
 import { classNames } from '@/utils/index';
 import { PeriodDto } from 'api/dist/period/types';
 import React from 'react';
@@ -8,7 +8,7 @@ import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 
 const PeriodsTable = (): JSX.Element => {
-  const allPeriods = useRecoilValue(AllPeriodsLocalized);
+  const allPeriods = useRecoilValue(AllPeriods);
   const history = useHistory();
 
   const columns = React.useMemo(
@@ -22,7 +22,7 @@ const PeriodsTable = (): JSX.Element => {
         accessor: 'endDate',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): string => {
-          return formatDate(data.value);
+          return localizeAndFormatIsoDate(data.value);
         },
       },
       {

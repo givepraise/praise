@@ -1,11 +1,11 @@
-import { AllPeriodsLocalized } from '@/model/periods';
-import { formatDate } from '@/utils/date';
+import { AllPeriods } from '@/model/periods';
+import { localizeAndFormatIsoDate } from '@/utils/date';
 import { getActivePeriod } from '@/utils/periods';
 import React, { ReactElement } from 'react';
 import { useRecoilValue } from 'recoil';
 
 export const ActivePeriodMessage: React.FC = (): ReactElement | null => {
-  const allPeriods = useRecoilValue(AllPeriodsLocalized);
+  const allPeriods = useRecoilValue(AllPeriods);
 
   if (!Array.isArray(allPeriods) || allPeriods.length === 0) return null;
 
@@ -14,7 +14,8 @@ export const ActivePeriodMessage: React.FC = (): ReactElement | null => {
 
   return (
     <div>
-      Current quantification period ends at: {formatDate(activePeriod.endDate)}
+      Current quantification period ends at:{' '}
+      {localizeAndFormatIsoDate(activePeriod.endDate)}
     </div>
   );
 };
