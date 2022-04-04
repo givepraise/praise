@@ -4,10 +4,10 @@ import DayInput from '@/components/form/DayInput';
 import { isResponseOk } from '@/model/api';
 import { CreatePeriodApiResponse, useCreatePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
-import { DATE_FORMAT, localDateToUtc } from '@/utils/date';
+import { DATE_FORMAT, internationalizeLocalIsoDate } from '@/utils/date';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { PeriodCreateInput } from 'api/dist/period/types';
-import { isMatch, parseISO } from 'date-fns';
+import { isMatch } from 'date-fns';
 import { ValidationErrors } from 'final-form';
 import React from 'react';
 import { Field, Form } from 'react-final-form';
@@ -58,7 +58,7 @@ const PeriodsForm = (): JSX.Element => {
       // Ensures the creator user see's a matching 'End Date' to the day they selected:
       //  - modify selected date to include the end-of-day time in the creators' local timezone
       //  - convert from user's local timezone to UTC
-      endDate: localDateToUtc(parseISO(values.endDate)).toISOString(),
+      endDate: internationalizeLocalIsoDate(`${values.endDate}T23:59:59.999`),
     };
 
     const response = await createPeriod(newPeriod);

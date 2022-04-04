@@ -39,3 +39,10 @@ export const localizeAndFormatIsoDate = (
 export const localizeAndFormatIsoDateLong = (dateIso: string): string => {
   return localizeAndFormatIsoDate(dateIso, DATE_FORMAT_LONG);
 };
+
+export const internationalizeLocalIsoDate = (dateLocalIso: string): string => {
+  const dateLocal = parseISO(dateLocalIso);
+  const dateUtc = localDateToUtc(dateLocal);
+
+  return dateUtc.toISOString();
+};

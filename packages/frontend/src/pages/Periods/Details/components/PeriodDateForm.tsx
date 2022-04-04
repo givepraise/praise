@@ -9,10 +9,10 @@ import {
 import {
   DATE_FORMAT,
   localizeAndFormatIsoDate,
-  localDateToUtc,
+  internationalizeLocalIsoDate,
 } from '@/utils/date';
 import { AxiosError, AxiosResponse } from 'axios';
-import { isMatch, parseISO } from 'date-fns';
+import { isMatch } from 'date-fns';
 import { ValidationErrors } from 'final-form';
 import { default as React } from 'react';
 import { Field, Form } from 'react-final-form';
@@ -49,7 +49,10 @@ const PeriodDateForm = (): JSX.Element | null => {
   const onSubmit = async (values: Record<string, string>): Promise<void> => {
     if (!period) return; // Only save if endDate has changed
     const newPeriod = { ...period };
-    newPeriod.endDate = localDateToUtc(parseISO(values.endDate)).toISOString();
+    newPeriod.endDate = internationalizeLocalIsoDate(
+      `${values.endDate}T23:59:59.999`
+    );
+
     const response = await updatePeriod(newPeriod);
     if (response) {
       if (isResponseOk(response)) {
