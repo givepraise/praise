@@ -11,11 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Modify settings architecture so Periods have their own unique settings. New periods are created with the "global" settings as default values. #138 #116
 - Verify no quantifiers have been assigned in period before assigning
+- Display dates in users' local timezone, store in UTC #204
 
 ### Fixed
 
 - Login page UX improvements
 - Minor refactor of praise/controllers/quantify to clarify logic flow. #221
+- Refactor / UX improvents to period end date picker #204
 
 ## [0.2.0] - 2022-03-31
 
