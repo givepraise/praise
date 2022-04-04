@@ -1,6 +1,7 @@
 import { BadRequestError } from '@error/errors';
-import { settingFloat } from '@shared/settings';
+import { settingValue } from '@shared/settings';
 import { userAccountTransformer } from '@useraccount/transformers';
+import mongoose from 'mongoose';
 import { PraiseModel } from './entities';
 import {
   PraiseDocument,
@@ -8,13 +9,16 @@ import {
   Quantification,
   QuantificationDto,
 } from './types';
+import { getPraisePeriod } from './utils';
 
 export const calculateDuplicateScore = async (
-  quantification: Quantification
+  quantification: Quantification,
+  periodId: mongoose.Schema.Types.ObjectId
 ): Promise<number> => {
-  const duplicatePraisePercentage = await settingFloat(
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
-  );
+  const duplicatePraisePercentage = (await settingValue(
+    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
+    periodId
+  )) as number;
   if (!duplicatePraisePercentage)
     throw new BadRequestError(
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
@@ -42,10 +46,16 @@ const quantificationToDto = async (
       const quantification = praise.quantifications.find((q) =>
         q.quantifier.equals(quantifier)
       );
-      if (quantification) {
-        duplicateScore = quantification.dismissed
-          ? 0
-          : await calculateDuplicateScore(quantification);
+      if (quantification && quantification.dismissed) {
+        duplicateScore = 0;
+      } else if (quantification && !quantification.dismissed) {
+        const period = await getPraisePeriod(praise);
+        if (!period) throw new Error('Quantification has no associated period');
+
+        duplicateScore = await calculateDuplicateScore(
+          quantification,
+          period._id
+        );
       }
     }
   }

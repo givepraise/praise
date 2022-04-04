@@ -2,6 +2,7 @@ import { formatDate } from '@/utils/date';
 import { useOutsideAlerter } from '@/utils/index';
 import React from 'react';
 import DayPicker from 'react-day-picker';
+import 'react-day-picker/lib/style.css';
 import { useField, useForm } from 'react-final-form';
 
 export const PeriodDayPicker = (): JSX.Element => {

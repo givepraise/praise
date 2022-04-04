@@ -1,4 +1,4 @@
-import { PeriodPageParams, useVerifyQuantifierPoolSize } from '@/model/periods';
+import { PoolRequirements } from '@/model/periods';
 import {
   faCheckSquare,
   faTimes,
@@ -8,21 +8,18 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
-import { useHistory, useParams } from 'react-router-dom';
 
 interface PeriodAssignDialogProps {
   onClose(): void;
   onAssign(): void;
+  poolRequirements: PoolRequirements | undefined;
 }
 
 const DialogMessage = ({
   onClose,
   onAssign,
+  poolRequirements,
 }: PeriodAssignDialogProps): JSX.Element => {
-  const { periodId } = useParams<PeriodPageParams>();
-  const { location } = useHistory();
-  const poolRequirements = useVerifyQuantifierPoolSize(periodId, location.key);
-
   const quantPoolBigEnough = poolRequirements
     ? poolRequirements.quantifierPoolDeficitSize === 0
     : false;
@@ -94,6 +91,7 @@ const DialogMessage = ({
 const PeriodAssignDialog = ({
   onClose,
   onAssign,
+  poolRequirements,
 }: PeriodAssignDialogProps): JSX.Element => {
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -112,7 +110,11 @@ const PeriodAssignDialog = ({
             Assign quantifiers
           </Dialog.Title>
           <React.Suspense fallback="Loading…">
-            <DialogMessage onAssign={onAssign} onClose={onClose} />
+            <DialogMessage
+              onAssign={onAssign}
+              onClose={onClose}
+              poolRequirements={poolRequirements}
+            />
           </React.Suspense>
         </div>
       </div>

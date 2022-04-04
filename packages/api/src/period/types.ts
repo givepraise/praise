@@ -5,6 +5,7 @@ import {
 } from '@praise/types';
 import { Query } from '@shared/types';
 import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
+import { PeriodSettingDto } from '@periodsettings/types';
 import mongoose, { Types } from 'mongoose';
 
 export enum PeriodStatusType {
@@ -57,6 +58,7 @@ export interface PeriodDetailsQuantifierDto {
 export interface PeriodDetailsDto extends PeriodDto {
   quantifiers?: PeriodDetailsQuantifierDto[];
   receivers?: PeriodDetailsReceiverDto[];
+  settings?: PeriodSettingDto[];
 }
 
 export interface VerifyQuantifierPoolSizeResponse {
