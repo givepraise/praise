@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Modify settings architecture so Periods have their own unique settings. New periods are created with the "global" settings as default values. #138 #116
+- Verify no quantifiers have been assigned in period before assigning
 
 ### Fixed
 
