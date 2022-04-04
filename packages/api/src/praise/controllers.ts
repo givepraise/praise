@@ -106,25 +106,26 @@ export const quantify = async (
 
   quantification.score = score;
   quantification.dismissed = dismissed;
+  quantification.duplicatePraise = undefined;
+
   if (duplicatePraise) {
     const dp = await PraiseModel.findById(duplicatePraise);
+    if (!dp) throw new BadRequestError('Duplicate praise item not found');
 
-    if (dp) {
-      const circularDependency = dp.quantifications.find((q) => {
-        if (!q.duplicatePraise) return null;
-        return q.duplicatePraise.equals(praise._id);
-      });
+    const isDuplicateCircular =
+      dp.quantifications.filter(
+        (q) =>
+          q.duplicatePraise &&
+          q.duplicatePraise.toString() === praise._id.toString()
+      ).length > 0;
 
-      if (duplicatePraise === praise.id || circularDependency) {
-        throw new BadRequestError(
-          'Selected praise cannot be set as duplicate.'
-        );
-      }
+    const isDuplicateSelf = duplicatePraise === praise.id;
 
-      quantification.duplicatePraise = dp._id;
+    if (isDuplicateSelf || isDuplicateCircular) {
+      throw new BadRequestError('Selected praise cannot be set as duplicate.');
     }
-  } else {
-    quantification.duplicatePraise = undefined;
+
+    quantification.duplicatePraise = dp._id;
   }
 
   await praise.save();
