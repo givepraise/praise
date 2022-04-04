@@ -542,9 +542,10 @@ export const exportPraise = async (
     createdAt: periodDateRangeQuery,
   }).populate('giver receiver forwarder');
 
-  const quantificationsColumnsCount = parseInt(
-    String(process.env.PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)
-  );
+  const quantificationsColumnsCount = (await settingValue(
+    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
+    period._id
+  )) as number;
 
   const docs: PraiseDetailsDto[] = [];
   if (praises) {
