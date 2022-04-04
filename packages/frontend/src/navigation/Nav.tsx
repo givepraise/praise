@@ -1,7 +1,6 @@
 import AdminOnly from '@/components/auth/AdminOnly';
 import EthAccount from '@/components/EthAccount';
 import { ActiveTokenSet } from '@/model/auth';
-import { EthState } from '@/model/eth';
 import { SingleSetting } from '@/model/settings';
 import { classNames } from '@/utils/index';
 import {
@@ -13,7 +12,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu, Transition } from '@headlessui/react';
-import { Jazzicon } from '@ukstv/jazzicon-react';
 import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -21,7 +19,6 @@ import NavItem from './NavItem';
 
 export default function Nav(): JSX.Element {
   const setActiveTokenSet = useSetRecoilState(ActiveTokenSet);
-  const ethState = useRecoilValue(EthState);
   const logoSetting = useRecoilValue(SingleSetting('LOGO'));
 
   const handleLogoutClick = (): void => {
@@ -29,8 +26,8 @@ export default function Nav(): JSX.Element {
   };
 
   return (
-    <nav className="flex md:w-64 md:flex-col md:fixed h-screen bg-gray-50 border-r shadow-sm">
-      <div className="flex flex-col h-full justify-between">
+    <nav className="flex h-screen border-r shadow-sm md:w-64 md:flex-col md:fixed bg-gray-50">
+      <div className="flex flex-col justify-between h-full">
         <div className="w-full">
           <ul className="relative h-full p-0 m-0 list-none">
             <li className="relative flex justify-start w-full p-4 text-2xl font-bold">
@@ -68,7 +65,7 @@ export default function Nav(): JSX.Element {
         </div>
         <div className="w-full border-t">
           <Menu as="div" className="flex flex-col justify-center">
-            <Menu.Button className="flex justify-between items-center px-4 py-3 w-full hover:text-gray-500 focus:outline-none">
+            <Menu.Button className="flex items-center justify-between w-full px-4 py-3 hover:text-gray-500 focus:outline-none">
               <EthAccount />
               <FontAwesomeIcon icon={faAngleRight} size="1x" className="ml-4" />
             </Menu.Button>
@@ -82,7 +79,7 @@ export default function Nav(): JSX.Element {
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
             >
-              <Menu.Items className="absolute -mt-20 ml-6 w-4/5 bg-white rounded-md shadow-lg ring-1 ring-gray-800 ring-opacity-5 focus:outline-none">
+              <Menu.Items className="absolute w-4/5 ml-6 -mt-20 bg-white rounded-md shadow-lg ring-1 ring-gray-800 ring-opacity-5 focus:outline-none">
                 <div className="py-1">
                   <Menu.Item>
                     {({ active }): JSX.Element => (
