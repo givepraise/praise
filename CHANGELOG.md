@@ -6,7 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Added
+
+- Modify settings architecture so Periods have their own unique settings. New periods are created with the "global" settings as default values. #138 #116
+
+### Fixed
+
+- Login page UX improvements
+- Minor refactor of praise/controllers/quantify to clarify logic flow. #221
 - Sort recievers table by score descending on period detail page
+
 ## [0.2.0] - 2022-03-31
 
 ### Added

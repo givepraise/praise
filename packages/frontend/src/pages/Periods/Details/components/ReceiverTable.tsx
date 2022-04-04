@@ -1,4 +1,5 @@
 import { UserCell } from '@/components/table/UserCell';
+import Notice from '@/components/Notice';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { PeriodPageParams, SinglePeriod } from '@/model/periods';
 import React from 'react';
@@ -126,7 +127,22 @@ const ReceiverTable = (): JSX.Element | null => {
   if (!period) return <div>Period not found.</div>;
 
   if (period.status === 'QUANTIFY' && !isAdmin)
-    return <div>Praise scores are not visible during quantification.</div>;
+    return (
+      <div className="w-full h-full flex items-center">
+        <Notice type="danger">
+          <span>Praise scores are not visible during quantification.</span>
+        </Notice>
+      </div>
+    );
+
+  if (period?.receivers?.length === 0)
+    return (
+      <div className="w-full h-full flex items-center">
+        <Notice type="danger">
+          <span>No receivers found in this period.</span>
+        </Notice>
+      </div>
+    );
 
   if (period.receivers) return <ReceiverTableInner />;
 

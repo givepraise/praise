@@ -3,12 +3,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const LoaderSpinner = (): JSX.Element => {
   return (
-    <div className="w-full my-2 text-center">
+    <div className="w-full text-center">
       <FontAwesomeIcon
         icon={faSpinner}
         size="1x"
         spin
-        className="inline-block mr-4"
+        className="inline-block"
       />
     </div>
   );

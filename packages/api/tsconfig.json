@@ -19,6 +19,7 @@
       "@period/*": ["src/period/*"],
       "@praise/*": ["src/praise/*"],
       "@settings/*": ["src/settings/*"],
+      "@periodsettings/*": ["src/periodsettings/*"],
       "@shared/*": ["src/shared/*"],
       "@user/*": ["src/user/*"],
       "@useraccount/*": ["src/useraccount/*"],

@@ -1,18 +1,20 @@
 import mongoose from 'mongoose';
 
-export interface Setting {
+export interface PeriodSetting {
   key: string;
   value: string;
   valueRealized: string | boolean | number | number[];
   type: string;
   label: string;
   description?: string;
-  periodOverridable: boolean;
+  period: string;
 }
 
-export interface SettingDocument extends Setting, mongoose.Document {}
+export interface PeriodSettingDocument
+  extends PeriodSetting,
+    mongoose.Document {}
 
-export interface SettingDto {
+export interface PeriodSettingDto {
   _id: string;
   key: string;
   value: string;
@@ -20,8 +22,5 @@ export interface SettingDto {
   type: string;
   label: string;
   description?: string;
-}
-
-export interface SettingSetInput {
-  value: string;
+  period: string;
 }
