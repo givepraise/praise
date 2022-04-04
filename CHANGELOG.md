@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
 - Modify settings architecture so Periods have their own unique settings. New periods are created with the "global" settings as default values. #138 #116
+
+### Fixed
+
+- Login page UX improvements
 
 ## [0.2.0] - 2022-03-31
 

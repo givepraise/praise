@@ -12,7 +12,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import ActivateButton from './components/ActivateButton';
-import EthAccount from './components/EthAccount';
+import EthAccount from '@/components/EthAccount';
 
 const ActivateSuccessful = (): JSX.Element => {
   const { search } = useLocation();
@@ -80,7 +80,7 @@ const ActivateDialog = (): JSX.Element => {
           </div>
           <div className="mb-3 text-center">Account: {accountName}</div>
           <div className="mb-3 text-lg font-semibold ">1. Connect</div>
-          <EthAccount />
+          <EthAccount className="mb-5" />
           {ethState.triedEager &&
             (!ethState.connected || (ethState.connected && !!ethError)) && (
               <div className="mb-5">
