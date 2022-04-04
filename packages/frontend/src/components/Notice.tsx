@@ -19,7 +19,7 @@ const Notice = ({
 
   return (
     <div
-      className={`w-full p-4 text-center text-white font-bold rounded-sm ${className} ${typeClasses}`}
+      className={`w-full p-4 text-center text-white rounded-sm ${className} ${typeClasses}`}
     >
       {children}
     </div>
