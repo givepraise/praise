@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Login page UX improvements
 - Minor refactor of praise/controllers/quantify to clarify logic flow. #221
+- Ensure period validator rules allow updating the end date of the one and only period. #241
 
 ## [0.2.0] - 2022-03-31
 
