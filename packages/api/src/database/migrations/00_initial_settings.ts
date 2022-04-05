@@ -8,7 +8,8 @@ const settings = [
   },
   {
     key: 'DESCRIPTION',
-    value: 'Praise community contributions, build a culture of giving and gratitude.',
+    value:
+      'Praise community contributions, build a culture of giving and gratitude.',
     type: 'Textarea',
   },
   {
