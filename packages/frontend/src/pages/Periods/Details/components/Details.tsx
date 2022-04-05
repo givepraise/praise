@@ -10,7 +10,7 @@ import {
 } from '@/model/periods';
 import { AllPeriodSettings } from '@/model/periodsettings';
 import { AllQuantifierUsers } from '@/model/users';
-import { localizeAndFormatIsoDate } from '@/utils/date';
+import { formatIsoDateUTC } from '@/utils/date';
 import { saveLocalFile } from '@/utils/file';
 import { getPreviousPeriod } from '@/utils/periods';
 import {
@@ -54,9 +54,6 @@ const PeriodDetails = (): JSX.Element | null => {
   if (!period || !allPeriods) return null;
 
   const previousPeriod = getPreviousPeriod(allPeriods, period);
-  const periodStart = previousPeriod
-    ? localizeAndFormatIsoDate(previousPeriod.endDate)
-    : 'Dawn of time';
 
   const handleClosePeriod = (): void => {
     void closePeriod(periodId);
@@ -111,9 +108,14 @@ const PeriodDetails = (): JSX.Element | null => {
 
   return (
     <div>
-      <div>Period start: {periodStart}</div>
+      <div>
+        Period start:{' '}
+        {previousPeriod
+          ? formatIsoDateUTC(previousPeriod.endDate)
+          : 'Dawn of time'}
+      </div>
       {!isAdmin ? (
-        <div>Period end: {localizeAndFormatIsoDate(period.endDate)}</div>
+        <div>Period end: {formatIsoDateUTC(period.endDate)}</div>
       ) : (
         <>
           <PeriodDateForm />

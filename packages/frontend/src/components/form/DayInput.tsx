@@ -1,4 +1,4 @@
-import { DATE_FORMAT, parseDate, localizeAndFormatIsoDate } from '@/utils/date';
+import { DATE_FORMAT, parseDate, formatIsoDateUTC } from '@/utils/date';
 import OutsideClickHandler from '@/components/OutsideClickHandler';
 import { useState } from 'react';
 import { DayPicker, useInput } from 'react-day-picker';
@@ -10,6 +10,7 @@ interface Params {
   value: string;
   className?: string;
   inputClassName?: string;
+  tzLabel?: string;
 }
 
 const DayInput = ({
@@ -18,6 +19,7 @@ const DayInput = ({
   value,
   className = '',
   inputClassName = '',
+  tzLabel = '',
 }: Params): JSX.Element => {
   const { inputProps, dayPickerProps } = useInput({
     defaultSelected: value ? parseDate(value) : undefined,
@@ -29,22 +31,26 @@ const DayInput = ({
   const [pickerVisible, setPickerVisible] = useState<boolean>(false);
 
   const handleDayClick = (day: Date): void => {
-    onChange(localizeAndFormatIsoDate(day.toISOString()));
+    console.log('day clicked is', day);
+    onChange(formatIsoDateUTC(day.toISOString(), DATE_FORMAT));
     setPickerVisible(false);
   };
 
   return (
     <div className={`w-full ${className}`}>
-      <input
-        {...inputProps}
-        type="text"
-        name={name}
-        value={value}
-        autoComplete="off"
-        placeholder="e.g. 2021-01-01"
-        onFocus={(): void => void setPickerVisible(true)}
-        className={inputClassName}
-      />
+      <div className="flex justify-start items-center">
+        <input
+          {...inputProps}
+          type="text"
+          name={name}
+          value={value}
+          autoComplete="off"
+          placeholder="e.g. 2021-01-01"
+          onFocus={(): void => void setPickerVisible(true)}
+          className={inputClassName}
+        />
+        {tzLabel && <div className="mx-1">{tzLabel}</div>}
+      </div>
 
       {pickerVisible && (
         <OutsideClickHandler

@@ -1,5 +1,5 @@
 import { AllPeriods } from '@/model/periods';
-import { localizeAndFormatIsoDate } from '@/utils/date';
+import { formatIsoDateUTC } from '@/utils/date';
 import { classNames } from '@/utils/index';
 import { PeriodDto } from 'api/dist/period/types';
 import React from 'react';
@@ -22,7 +22,7 @@ const PeriodsTable = (): JSX.Element => {
         accessor: 'endDate',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): string => {
-          return localizeAndFormatIsoDate(data.value);
+          return formatIsoDateUTC(data.value);
         },
       },
       {

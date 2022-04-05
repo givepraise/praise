@@ -6,11 +6,7 @@ import {
   SinglePeriod,
   useUpdatePeriod,
 } from '@/model/periods';
-import {
-  DATE_FORMAT,
-  localizeAndFormatIsoDate,
-  internationalizeLocalIsoDate,
-} from '@/utils/date';
+import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { AxiosError, AxiosResponse } from 'axios';
 import { isMatch } from 'date-fns';
 import { ValidationErrors } from 'final-form';
@@ -49,9 +45,7 @@ const PeriodDateForm = (): JSX.Element | null => {
   const onSubmit = async (values: Record<string, string>): Promise<void> => {
     if (!period) return; // Only save if endDate has changed
     const newPeriod = { ...period };
-    newPeriod.endDate = internationalizeLocalIsoDate(
-      `${values.endDate}T23:59:59.999`
-    );
+    newPeriod.endDate = `${values.endDate}T23:59:59.999Z`;
 
     const response = await updatePeriod(newPeriod);
     if (response) {
@@ -74,7 +68,9 @@ const PeriodDateForm = (): JSX.Element | null => {
           void onSubmit(state.formState.values as Record<string, string>);
         },
       }}
-      initialValues={{ endDate: localizeAndFormatIsoDate(period.endDate) }}
+      initialValues={{
+        endDate: formatIsoDateUTC(period.endDate, DATE_FORMAT),
+      }}
       render={({ handleSubmit }): JSX.Element => (
         <form onSubmit={void handleSubmit} className="leading-loose">
           <div>
@@ -90,7 +86,8 @@ const PeriodDateForm = (): JSX.Element | null => {
                         input.onChange(e);
                         void handleSubmit(e);
                       }}
-                      inputClassName="relative left-[-5px] py-0 pl-1 my-0 text-sm bg-transparent border border-transparent hover:border-gray-300 w-28"
+                      inputClassName="relative py-0 px-1 pl-1 my-0 text-sm bg-transparent border border-transparent hover:border-gray-300 w-24"
+                      tzLabel="UTC"
                     />
                   </div>
                   <div>

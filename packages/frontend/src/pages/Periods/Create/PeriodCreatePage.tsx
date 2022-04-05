@@ -4,7 +4,7 @@ import DayInput from '@/components/form/DayInput';
 import { isResponseOk } from '@/model/api';
 import { CreatePeriodApiResponse, useCreatePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
-import { DATE_FORMAT, internationalizeLocalIsoDate } from '@/utils/date';
+import { DATE_FORMAT } from '@/utils/date';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { PeriodCreateInput } from 'api/dist/period/types';
 import { isMatch } from 'date-fns';
@@ -56,9 +56,8 @@ const PeriodsForm = (): JSX.Element => {
       name: values.name,
 
       // Ensures the creator user see's a matching 'End Date' to the day they selected:
-      //  - modify selected date to include the end-of-day time in the creators' local timezone
-      //  - convert from user's local timezone to UTC
-      endDate: internationalizeLocalIsoDate(`${values.endDate}T23:59:59.999`),
+      //  - modify selected date to include the end-of-day time in UTC
+      endDate: `${values.endDate}T23:59:59.999Z`,
     };
 
     const response = await createPeriod(newPeriod);
@@ -99,7 +98,7 @@ const PeriodsForm = (): JSX.Element => {
             <Field name="endDate">
               {({ input }): JSX.Element => (
                 <div className="mb-5">
-                  <label className="block">End date</label>
+                  <label className="block">End date (UTC)</label>
                   <DayInput
                     name={input.name}
                     value={input.value}
@@ -134,8 +133,8 @@ const PeriodsCreatePage = (): JSX.Element => {
       <div className="praise-box">
         <h2 className="mb-2">Create period</h2>
         <div className="mb-2">
-          A new period begins where the last one ended and ends at{' '}
-          <i>end date</i>.
+          A new period begins where the last one ended, and finishes at
+          end-of-day on <i>end date</i>.
         </div>
         <React.Suspense fallback="Loading…">
           <PeriodsForm />
