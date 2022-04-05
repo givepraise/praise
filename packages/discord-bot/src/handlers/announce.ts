@@ -63,7 +63,10 @@ export const announcementHandler = async (
           break;
         }
         case 'cancel': {
-          await interaction.reply('User Cancelled Interaction.');
+          await interaction.editReply({
+            content: 'User Cancelled Interaction.',
+            components: [],
+          });
           return;
         }
         case 'dm-menu': {
@@ -74,12 +77,18 @@ export const announcementHandler = async (
         }
       }
     });
-    collector.on('end', async () => {
-      await interaction.editReply({
-        content: 'Interaction timed out...',
-        embeds: [],
-        components: [],
-      });
+    collector.on('end', async (collected) => {
+      const successfulEndEvents = ['cancel', 'dm-menu', 'praise-menu'];
+      const ended = collected.some((clk) =>
+        successfulEndEvents.includes(clk.customId)
+      );
+      if (!ended) {
+        await interaction.followUp({
+          content: 'Interaction timed out...',
+          embeds: [],
+          components: [],
+        });
+      }
     });
   } else {
     await interaction.editReply({

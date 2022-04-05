@@ -127,6 +127,15 @@ export const dmTargets = async (
         }
         await sendDMs(interaction, quantifiers, message);
       });
+      collector.on('end', async (collected) => {
+        if (collected.size === 0) {
+          await interaction.followUp({
+            content: 'Interaction timed out...',
+            embeds: [],
+            components: [],
+          });
+        }
+      });
       return;
     }
   }
