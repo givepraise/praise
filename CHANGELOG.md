@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Login page UX improvements
 - Minor refactor of praise/controllers/quantify to clarify logic flow. #221
 - Sort recievers table by score descending on period detail page
+- Ensure weekly divider in quant page displays every week & improve UX
 - Fix cli command 'mongodb:clean'
 - Refactor / UX improvents to period end date picker #204
 - Refactor praise page infinite scroll to prevent inconsistent duplicated requests or initial loading of all pages #240

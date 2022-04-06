@@ -17,6 +17,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
+import getWeek from 'date-fns/getWeek';
+import parseISO from 'date-fns/parseISO';
+import { groupBy } from 'lodash';
 import { PraiseDto, QuantificationDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useParams } from 'react-router-dom';
@@ -57,8 +60,6 @@ const QuantifyTable = (): JSX.Element | null => {
     PraiseDto | undefined
   >(undefined);
 
-  let weeklyBorderDate: Date | undefined = undefined;
-
   if (!data) return null;
 
   const quantification = (praise: PraiseDto): QuantificationDto | undefined => {
@@ -97,39 +98,26 @@ const QuantifyTable = (): JSX.Element | null => {
     return q && q.duplicatePraise ? q.duplicatePraise?.slice(-4) : '';
   };
 
-  interface DividerProps {
-    praise: PraiseDto;
-  }
-
-  const isStartOfTheWeek = ({ praise }: DividerProps): Boolean => {
-    const date = new Date(praise.createdAt);
-
-    if (date.getDay() === 1) {
-      if (date.getTime() !== weeklyBorderDate?.getTime()) {
-        weeklyBorderDate = date;
-        return true;
-      }
-    }
-
-    return false;
-  };
+  const weeklyData = groupBy(data, (praise: PraiseDto) => {
+    if (!praise) return 0;
+    return getWeek(parseISO(praise.createdAt), { weekStartsOn: 1 });
+  });
 
   return (
     <>
       <table className="w-full table-auto">
         <tbody>
-          {data.map((praise, index) => {
-            if (!praise) return null;
+          {Object.keys(weeklyData).map((weekKey, index) => (
+            <>
+              {index !== 0 && index !== data.length - 1 && (
+                <tr>
+                  <td colSpan={3}>
+                    <div className="border-t border-2 border-gray-400 my-4" />
+                  </td>
+                </tr>
+              )}
 
-            return (
-              <>
-                {isStartOfTheWeek({ praise }) && (
-                  <tr>
-                    <td colSpan={3}>
-                      <div className="border-t border-gray-400" />
-                    </td>
-                  </tr>
-                )}
+              {weeklyData[weekKey].map((praise, index) => (
                 <tr
                   key={index}
                   onMouseDown={(): void => setSelectedPraise(praise)}
@@ -224,9 +212,9 @@ const QuantifyTable = (): JSX.Element | null => {
                     </div>
                   </td>
                 </tr>
-              </>
-            );
-          })}
+              ))}
+            </>
+          ))}
 
           <React.Suspense fallback={null}>
             <Dialog
