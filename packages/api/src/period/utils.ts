@@ -12,7 +12,6 @@ import {
   periodDocumentTransformer,
 } from './transformers';
 import {
-  Period,
   PeriodDocument,
   PeriodDetailsDto,
   PeriodDetailsQuantifierDto,
@@ -23,9 +22,10 @@ import {
 
 // Returns previous period end date or 1970-01-01 if no previous period
 export const getPreviousPeriodEndDate = async (
-  period: Period
+  period: PeriodDocument
 ): Promise<Date> => {
   const previousPeriod = await PeriodModel.findOne({
+    _id: { $ne: period._id },
     endDate: { $lt: period.endDate },
   }).sort({ endDate: -1 });
 
@@ -181,7 +181,7 @@ export const findActivePeriods = async (
  * @returns
  */
 export const getPeriodDateRangeQuery = async (
-  period: Period
+  period: PeriodDocument
 ): Promise<PeriodDateRange> => ({
   $gt: await getPreviousPeriodEndDate(period),
   $lte: period.endDate,
@@ -196,7 +196,7 @@ export const getPeriodDateRangeQuery = async (
 export const verifyAnyPraiseAssigned = async (
   period: PeriodDocument
 ): Promise<boolean> => {
-  const periodDateRangeQuery = await getPeriodDateRangeQuery(period as Period);
+  const periodDateRangeQuery = await getPeriodDateRangeQuery(period);
 
   const praises = await PraiseModel.find({
     createdAt: periodDateRangeQuery,

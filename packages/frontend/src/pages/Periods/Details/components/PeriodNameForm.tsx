@@ -9,7 +9,6 @@ import {
 import { AxiosError, AxiosResponse } from 'axios';
 import { ValidationErrors } from 'final-form';
 import { default as React } from 'react';
-import 'react-day-picker/lib/style.css';
 import { Field, Form } from 'react-final-form';
 import { toast } from 'react-hot-toast';
 import { useParams } from 'react-router-dom';

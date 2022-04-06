@@ -22,7 +22,10 @@ export interface Period {
   updatedAt: Date;
 }
 
-export interface PeriodDocument extends Period, mongoose.Document {}
+export interface PeriodDocument extends Period, mongoose.Document {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  $__: any;
+}
 
 export interface PeriodDto {
   _id: string;
