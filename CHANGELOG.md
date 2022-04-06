@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
 - Modify settings architecture so Periods have their own unique settings. New periods are created with the "global" settings as default values. #138 #116
+- Verify no quantifiers have been assigned in period before assigning
+
+### Fixed
+
+- Login page UX improvements
+- Minor refactor of praise/controllers/quantify to clarify logic flow. #221
+- Sort recievers table by score descending on period detail page
 - Fix cli command 'mongodb:clean'
 
 ## [0.2.0] - 2022-03-31

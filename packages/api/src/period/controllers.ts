@@ -53,6 +53,7 @@ import {
   findPeriodDetailsDto,
   getPeriodDateRangeQuery,
   getPreviousPeriodEndDate,
+  verifyAnyPraiseAssigned,
 } from './utils';
 import { PeriodModel } from './entities';
 import { periodDocumentTransformer } from './transformers';
@@ -412,6 +413,12 @@ export const assignQuantifiers = async (
       'Quantifiers can only be assigned on OPEN periods.'
     );
 
+  const anyPraiseAssigned = await verifyAnyPraiseAssigned(period);
+  if (anyPraiseAssigned)
+    throw new BadRequestError(
+      'Some praise has already been assigned for this period'
+    );
+
   const assignedQuantifiers: AssignQuantifiersDryRunOutput =
     await assignQuantifiersDryRun(req.params.periodId);
 
@@ -542,9 +549,10 @@ export const exportPraise = async (
     createdAt: periodDateRangeQuery,
   }).populate('giver receiver forwarder');
 
-  const quantificationsColumnsCount = parseInt(
-    String(process.env.PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)
-  );
+  const quantificationsColumnsCount = (await settingValue(
+    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
+    period._id
+  )) as number;
 
   const docs: PraiseDetailsDto[] = [];
   if (praises) {

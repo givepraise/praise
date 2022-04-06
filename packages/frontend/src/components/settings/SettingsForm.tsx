@@ -26,7 +26,7 @@ const FormFields = (
   apiResponse
 ): JSX.Element => {
   return (
-    <div className="space-y-4 mb-2">
+    <div className="mb-2 space-y-4">
       {settings.map((setting) => {
         let field;
         if (setting.type === 'String' || setting.type === 'IntegerList')
@@ -46,7 +46,7 @@ const FormFields = (
           <div key={setting.key}>
             <label className="block font-bold">{setting.label}</label>
             {setting.description && (
-              <div className="mb-2 text-sm font-bold text-gray-400">
+              <div className="mb-2 text-sm text-gray-400">
                 {setting.description}
               </div>
             )}
@@ -65,12 +65,12 @@ const DisabledFormFields = (
     <Notice type="danger" className="mb-8">
       <span>Settings locked for this period</span>
     </Notice>
-    <div className="space-y-4 mb-2">
+    <div className="mb-2 space-y-4">
       {settings.map((setting: Setting | PeriodSettingDto) => (
         <div key={setting.key}>
           <label className="block font-bold">{setting.label}</label>
           {setting.description && (
-            <div className="mb-2 text-sm font-bold text-gray-400">
+            <div className="mb-2 text-sm text-gray-400">
               {setting.description}
             </div>
           )}

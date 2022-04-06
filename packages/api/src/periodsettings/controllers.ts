@@ -52,14 +52,14 @@ export const set = async (
   if (!period) throw new NotFoundError('Period');
   if (period.status !== PeriodStatusType.OPEN)
     throw new BadRequestError(
-      'Period settings can only be changed before the period begins'
+      'Period settings can only be changed when period status is OPEN.'
     );
 
   const setting = await PeriodSettingsModel.findOne({
     _id: req.params.settingId,
     period: period._id,
   });
-  if (!setting) throw new NotFoundError('Settings');
+  if (!setting) throw new NotFoundError('PeriodSettings');
 
   if (req.files) {
     await removeFile(setting.value);

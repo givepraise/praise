@@ -78,14 +78,21 @@ const LoginButton: React.FC = (): ReactElement | null => {
     if (!accessToken && !signatureReceived) {
       return (
         <button
-          className="px-4 py-2 font-bold text-white uppercase bg-gray-800 rounded hover:bg-gray-700"
+          className="w-48 px-4 py-2 font-bold text-white uppercase bg-gray-800 rounded hover:bg-gray-700"
           onClick={handleSignButtonClick}
         >
           Sign login message
         </button>
       );
     } else {
-      return <LoaderSpinner />;
+      return (
+        <button
+          className="w-48 px-4 py-2 font-bold text-white uppercase bg-gray-400 rounded hover:bg-gray-700"
+          disabled={true}
+        >
+          <LoaderSpinner />
+        </button>
+      );
     }
   };
 
