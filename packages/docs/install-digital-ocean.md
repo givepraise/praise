@@ -128,7 +128,7 @@ Complete step 1-2 of the installation guide: [How To Install and Use Docker on U
 
 ## Install Docker Compose
 
-Docker compose is utility for configuring and running Docker containers.
+Docker compose is utility for configuring and running Docker containers. Praise requires `docker compose` v2 to be installed.
 
 Complete step 1 in the installation guide: [How To Install and Use Docker Compose on Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04)
 
