@@ -2,7 +2,7 @@ import LoaderSpinner from '@/components/LoaderSpinner';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { AllPraiseList } from '@/model/praise';
-import { formatDate } from '@/utils/date';
+import { localizeAndFormatIsoDate } from '@/utils/date';
 import { PraiseDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -36,7 +36,7 @@ const PraiseTable = (): JSX.Element => {
                   {data.row.original.receiver.name}
                 </span>
                 <span className="ml-2 text-xs text-gray-500">
-                  {formatDate(data.row.original.createdAt)}
+                  {localizeAndFormatIsoDate(data.row.original.createdAt)}
                 </span>
               </div>
 

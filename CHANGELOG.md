@@ -11,12 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Modify settings architecture so Periods have their own unique settings. New periods are created with the "global" settings as default values. #138 #116
 - Verify no quantifiers have been assigned in period before assigning
+- Display Period start and end dates in UTC. All others in users' local timezone. #204
+- Duplicate dialog message: "Duplicate praise are given a score that is X% of the original quantification."
 
 ### Fixed
 
 - Login page UX improvements
 - Minor refactor of praise/controllers/quantify to clarify logic flow. #221
-- Duplicate Praise Dialog info text
+- Sort recievers table by score descending on period detail page
+- Fix cli command 'mongodb:clean'
+- Refactor / UX improvents to period end date picker #204
+- Refactor praise page infinite scroll to prevent inconsistent duplicated requests or initial loading of all pages #240
+- Ensure period validator rules allow updating the end date of the one and only period. #241
+- Hard-code settings directly in first db migration, remove from api .env
 
 ## [0.2.0] - 2022-03-31
 
@@ -30,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `/praise dish` becomes `/praise`
   - `/praise-activate` becomes `/activate`
 - Ensure api builds run properly with yarn 2. #205
+- Typo in default setting label and description
 
 ## [0.1.0] - 2022-03-25
 
