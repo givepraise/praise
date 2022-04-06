@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix cli command 'mongodb:clean'
 - Refactor / UX improvents to period end date picker #204
 - Refactor praise page infinite scroll to prevent inconsistent duplicated requests or initial loading of all pages #240
+- Ensure period validator rules allow updating the end date of the one and only period. #241
 
 ## [0.2.0] - 2022-03-31
 

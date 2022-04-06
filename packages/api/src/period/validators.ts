@@ -1,86 +1,70 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import { add } from 'date-fns';
 import { PeriodModel } from './entities';
+import { getPreviousPeriodEndDate } from './utils';
+import { PeriodDocument } from './types';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function validateEndDate(this: any, endDate: Date): Promise<Boolean> {
-  // This rule don't apply when no change to endDate has been made
-  if (!this.$__.activePaths.states.modify.endDate) return true;
+/**
+ * Validate period endDate is 7+ days after the previous period's endDate
+ * @param this
+ * @param endDate
+ * @returns
+ */
+async function validatePeriodEndDate7DaysLater(
+  this: PeriodDocument,
+  endDate: Date
+): Promise<Boolean> {
+  const previousPeriodEndDate = await getPreviousPeriodEndDate(this);
+  const earliestDate = add(previousPeriodEndDate, { days: 7 });
 
-  // Find two last periods
-  const twoLastPeriods = await PeriodModel.find(
-    {},
-    {},
-    { limit: 2, sort: { endDate: -1 } }
-  );
+  if (endDate.getTime() > earliestDate.getTime()) return true;
 
-  // No period exists = this is the first period = allow any date
-  if (!twoLastPeriods || twoLastPeriods.length === 0) return true;
-
-  let d1;
-  // Save new period = compare to last period
-  // Update period = compare to 2nd last period
-  if (this.isNew) {
-    d1 = twoLastPeriods[0].endDate;
-  } else {
-    d1 = twoLastPeriods[1].endDate;
-  }
-  d1.setDate(d1.getDate() + 7);
-
-  if (endDate < d1) return false; // Must be minimum 7 days later than previous period
-
-  return true;
+  return false;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function validateOnlyUpdateLastPeriod(this: any): Promise<boolean> {
-  // This rule don't apply to new documents
+/**
+ * Validate period has the latest endDate of all periods
+ * @param this
+ * @returns
+ */
+async function validatePeriodIsLatest(this: PeriodDocument): Promise<boolean> {
   if (this.isNew) return true;
 
-  // This rule don't apply when no change to endDate has been made
-  if (!this.$__.activePaths.states.modify.endDate) return true;
-
-  // Find two last periods
-  const twoLastPeriods = await PeriodModel.find(
+  const latestPeriod = await PeriodModel.findOne(
     {},
-    {},
-    { limit: 2, sort: { endDate: -1 } }
+    {
+      limit: 1,
+      sort: { endDate: -1 },
+    }
   );
 
-  // No period exists = this is the first period = allow any date
-  // Only one item in array, this is the last and first period = allow any date
-  if (!twoLastPeriods || twoLastPeriods.length === 1) return true;
+  if (!latestPeriod) return true;
+  if (latestPeriod._id.toString() === this._id.toString()) return true;
 
-  // Date change only allowed on last period
-  if (!twoLastPeriods[0]._id || !twoLastPeriods[0]._id.equals(this._id))
-    return false;
-
-  return true;
+  return false;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function validateOnlyUpdateOpenPeriod(this: any): boolean {
-  // This rule don't apply to new documents
-  if (this.isNew) return true;
+/**
+ * Validate period status is OPEN
+ * @param this
+ * @returns
+ */
+function validatePeriodIsOpen(this: PeriodDocument): boolean {
+  if (this.status === 'OPEN') return true;
 
-  // This rule don't apply when no change to endDate has been made
-  if (!this.$__.activePaths.states.modify.endDate) return true;
-
-  if (this.status !== 'OPEN') return false;
-
-  return true;
+  return false;
 }
 
 export const endDateValidators = [
   {
-    validator: validateEndDate,
+    validator: validatePeriodEndDate7DaysLater,
     msg: 'Must be minimum 7 days later than previous period.',
   },
   {
-    validator: validateOnlyUpdateLastPeriod,
+    validator: validatePeriodIsLatest,
     msg: 'Date change only allowed on last period.',
   },
   {
-    validator: validateOnlyUpdateOpenPeriod,
+    validator: validatePeriodIsOpen,
     msg: 'Date change only allowed on open periods.',
   },
 ];
