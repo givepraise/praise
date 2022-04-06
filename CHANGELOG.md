@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `/praise dish` becomes `/praise`
   - `/praise-activate` becomes `/activate`
 - Ensure api builds run properly with yarn 2. #205
+- Typo in default setting label and description
 
 ## [0.1.0] - 2022-03-25
 
