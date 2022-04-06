@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sort recievers table by score descending on period detail page
 - Fix cli command 'mongodb:clean'
 - Refactor / UX improvents to period end date picker #204
+- Refactor praise page infinite scroll to prevent inconsistent duplicated requests or initial loading of all pages #240
 
 ## [0.2.0] - 2022-03-31
 

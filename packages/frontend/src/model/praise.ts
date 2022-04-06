@@ -161,7 +161,6 @@ export const AllPraiseQuery = selectorFamily<
  *
  */
 export interface AllPraiseQueryPaginationInterface {
-  latestFetchPage: number;
   currentPage: number;
   totalPages: number;
 }
@@ -175,8 +174,7 @@ export const AllPraiseQueryPagination = atomFamily<
 >({
   key: 'AllPraiseQueryPagination',
   default: {
-    latestFetchPage: 1,
-    currentPage: 1,
+    currentPage: 0,
     totalPages: 0,
   },
 });
@@ -226,25 +224,27 @@ export const useAllPraiseQuery = (
       isApiResponseAxiosError(allPraiseQueryResponse)
     )
       return;
-    const { page, totalPages } = allPraiseQueryResponse.data;
-    if (!page || !totalPages) return;
-    if (
-      typeof allPraiseIdList === 'undefined' ||
-      (page > praisePagination.latestFetchPage &&
-        isResponseOk(allPraiseQueryResponse))
-    ) {
-      const paginatedResponse = allPraiseQueryResponse.data;
-      const praiseList = paginatedResponse.docs;
 
-      if (Array.isArray(praiseList) && praiseList.length > 0) {
-        void saveAllPraiseIdList(praiseList);
-        saveIndividualPraise(praiseList);
-        setPraisePagination({
-          ...praisePagination,
-          latestFetchPage: page,
-          totalPages: totalPages,
-        });
-      }
+    const paginatedResponse = allPraiseQueryResponse.data;
+
+    if (
+      !paginatedResponse.page ||
+      !paginatedResponse.totalPages ||
+      !isResponseOk(allPraiseQueryResponse) ||
+      paginatedResponse.page <= praisePagination.currentPage
+    )
+      return;
+
+    const praiseList = paginatedResponse.docs;
+
+    if (Array.isArray(praiseList) && praiseList.length > 0) {
+      void saveAllPraiseIdList(praiseList);
+      saveIndividualPraise(praiseList);
+      setPraisePagination({
+        ...praisePagination,
+        currentPage: paginatedResponse.page,
+        totalPages: paginatedResponse.totalPages,
+      });
     }
   }, [
     allPraiseQueryResponse,
