@@ -100,7 +100,7 @@ const QuantifyTable = (): JSX.Element | null => {
 
   const weeklyData = groupBy(data, (praise: PraiseDto) => {
     if (!praise) return 0;
-    return getWeek(parseISO(praise.createdAt));
+    return getWeek(parseISO(praise.createdAt), { weekStartsOn: 1 });
   });
 
   return (
