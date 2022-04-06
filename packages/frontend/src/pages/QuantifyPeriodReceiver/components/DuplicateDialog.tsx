@@ -3,6 +3,8 @@ import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
 import PraiseAutosuggest from './PraiseAutosuggest';
+import { AllSettings, SingleSetting } from '../../../model/settings';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 interface DuplicateDialogProps {
   onClose(): void;
@@ -17,6 +19,9 @@ const DuplicateDialog = ({
   open = false,
   praise,
 }: DuplicateDialogProps): JSX.Element | null => {
+  const duplicatePraisePercentageSetting = useRecoilValue(
+    SingleSetting('PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE')
+  );
   if (!praise) return null;
 
   return (
@@ -34,6 +39,11 @@ const DuplicateDialog = ({
           <h2 className="text-center mb-7">
             Mark praise #{praise._id.slice(-4)} as duplicate
           </h2>
+          <p className="text-center mb-7">
+            Duplicate praise are given a score that is{' '}
+            {duplicatePraisePercentageSetting?.value}% of the original
+            quantification.
+          </p>
 
           <div className="flex justify-center">
             <PraiseAutosuggest
