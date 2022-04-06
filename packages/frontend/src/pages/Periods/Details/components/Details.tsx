@@ -10,7 +10,7 @@ import {
 } from '@/model/periods';
 import { AllPeriodSettings } from '@/model/periodsettings';
 import { AllQuantifierUsers } from '@/model/users';
-import { formatDate } from '@/utils/date';
+import { formatIsoDateUTC } from '@/utils/date';
 import { saveLocalFile } from '@/utils/file';
 import { getPreviousPeriod } from '@/utils/periods';
 import {
@@ -21,7 +21,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
-import 'react-day-picker/lib/style.css';
 import { toast } from 'react-hot-toast';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
@@ -55,9 +54,6 @@ const PeriodDetails = (): JSX.Element | null => {
   if (!period || !allPeriods) return null;
 
   const previousPeriod = getPreviousPeriod(allPeriods, period);
-  const periodStart = previousPeriod
-    ? formatDate(previousPeriod.endDate)
-    : 'Dawn of time';
 
   const handleClosePeriod = (): void => {
     void closePeriod(periodId);
@@ -112,9 +108,14 @@ const PeriodDetails = (): JSX.Element | null => {
 
   return (
     <div>
-      <div>Period start: {periodStart}</div>
+      <div>
+        Period start:{' '}
+        {previousPeriod
+          ? formatIsoDateUTC(previousPeriod.endDate)
+          : 'Dawn of time'}
+      </div>
       {!isAdmin ? (
-        <div>Period end: {formatDate(period.endDate)}</div>
+        <div>Period end: {formatIsoDateUTC(period.endDate)}</div>
       ) : (
         <>
           <PeriodDateForm />
