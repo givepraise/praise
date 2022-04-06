@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "mongodb:start": "docker compose up -d",
-    "mongodb:clean": "docker exec -i mongodb-praise bash < ./packages/api/scripts/clean-database.sh",
+    "mongodb:clean": "yarn workspace api drop-database",
     "mongodb:stop": "docker compose down",
     "docs": "yarn workspace docs docsify serve . --port 45231"
   },

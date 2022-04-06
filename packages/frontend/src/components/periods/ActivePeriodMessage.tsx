@@ -1,5 +1,5 @@
 import { AllPeriods } from '@/model/periods';
-import { formatDate } from '@/utils/date';
+import { formatIsoDateUTC } from '@/utils/date';
 import { getActivePeriod } from '@/utils/periods';
 import React, { ReactElement } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -14,7 +14,8 @@ export const ActivePeriodMessage: React.FC = (): ReactElement | null => {
 
   return (
     <div>
-      Current quantification period ends at: {formatDate(activePeriod.endDate)}
+      Current quantification period ends at:{' '}
+      {formatIsoDateUTC(activePeriod.endDate)}
     </div>
   );
 };
