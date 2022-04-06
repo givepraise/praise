@@ -3,7 +3,7 @@ import {
   PeriodAndReceiverPageParams,
   PeriodQuantifierReceivers,
 } from '@/model/periods';
-import { SingleBooleanSetting } from '@/model/settings';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useParams } from 'react-router-dom';
@@ -12,9 +12,10 @@ import { useRecoilValue } from 'recoil';
 export const QuantifyBackNextLink = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
   const receivers = useRecoilValue(PeriodQuantifierReceivers(periodId));
-  const usePseudonyms = useRecoilValue(
-    SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
-  );
+  const usePseudonyms = usePeriodSettingValueRealized(
+    periodId,
+    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+  ) as boolean;
 
   let backReceiver, forwardReceiver;
 

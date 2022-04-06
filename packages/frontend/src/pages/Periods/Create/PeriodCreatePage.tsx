@@ -10,7 +10,6 @@ import { PeriodCreateInput } from 'api/dist/period/types';
 import { isMatch } from 'date-fns';
 import { ValidationErrors } from 'final-form';
 import React from 'react';
-import 'react-day-picker/lib/style.css';
 import { Field, Form } from 'react-final-form';
 import { useHistory } from 'react-router-dom';
 import { useRecoilState } from 'recoil';

@@ -7,7 +7,7 @@ import {
   SinglePeriod,
   usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
-import { SingleBooleanSetting } from '@/model/settings';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import BackLink from '@/navigation/BackLink';
 import { getQuantificationReceiverStats } from '@/utils/periods';
 import {
@@ -40,9 +40,10 @@ const PeriodMessage = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
   const { location } = useHistory();
   usePeriodQuantifierPraiseQuery(periodId, location.key);
-  const usePseudonyms = useRecoilValue(
-    SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
-  );
+  const usePseudonyms = usePeriodSettingValueRealized(
+    periodId,
+    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+  ) as boolean;
   const quantifierReceiverData = getQuantificationReceiverStats(
     useRecoilValue(PeriodQuantifierReceivers(periodId)),
     receiverId

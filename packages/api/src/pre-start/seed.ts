@@ -3,6 +3,7 @@ import { PraiseModel } from '@praise/entities';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { UserAccountDocument } from '@useraccount/types';
+import { insertNewPeriodSettings } from '@periodsettings/utils';
 import faker from 'faker';
 import logger from 'jet-logger';
 
@@ -63,12 +64,13 @@ const seedPeriods = async (): Promise<void> => {
   if (periodsCount === 0) {
     const d = new Date();
     for (let i = 0; i < PERIOD_NUMBER; i++) {
-      await PeriodModel.create({
+      const period = await PeriodModel.create({
         name: `Period ${i + 1}`,
         status: 'OPEN',
         endDate: d,
         quantifiers: [],
       });
+      await insertNewPeriodSettings(period);
       d.setDate(d.getDate() + PERIOD_LENGTH);
     }
   }

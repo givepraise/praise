@@ -8,7 +8,7 @@ import {
   PeriodQuantifierReceiverPraise,
 } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
-import { SingleBooleanSetting } from '@/model/settings';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { formatDate } from '@/utils/date';
 import {
   faCopy,
@@ -47,9 +47,10 @@ const QuantifyTable = (): JSX.Element | null => {
   const data = useRecoilValue(
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
   );
-  const usePseudonyms = useRecoilValue(
-    SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
-  );
+  const usePseudonyms = usePeriodSettingValueRealized(
+    periodId,
+    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+  ) as boolean;
   const { quantify } = useQuantifyPraise();
 
   const [isDismissDialogOpen, setIsDismissDialogOpen] = React.useState(false);
@@ -126,7 +127,7 @@ const QuantifyTable = (): JSX.Element | null => {
                       <div className="flex items-center">
                         <UserAvatar
                           userAccount={praise.giver}
-                          enablePseudomyms
+                          usePseudonym={usePseudonyms}
                         />
                       </div>
                     </div>
@@ -185,7 +186,7 @@ const QuantifyTable = (): JSX.Element | null => {
                   </td>
                   <td>
                     <div className="flex">
-                      <QuantifySlider praise={praise} />
+                      <QuantifySlider praise={praise} periodId={periodId} />
                       <button
                         className="pb-1 ml-4 hover:text-gray-400"
                         disabled={duplicate(praise)}

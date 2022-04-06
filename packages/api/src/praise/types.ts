@@ -47,6 +47,11 @@ export interface PraiseDto {
   updatedAt: string;
 }
 
+export interface PraiseDtoExtended extends PraiseDto {
+  receiverUserDocument?: UserDocument;
+  giverUserDocument?: UserDocument;
+}
+
 export interface QuantificationDto {
   quantifier: string;
   score: number;
