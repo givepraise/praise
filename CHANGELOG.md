@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Login page UX improvements
 - Minor refactor of praise/controllers/quantify to clarify logic flow. #221
 - Sort recievers table by score descending on period detail page
+- Fix cli command 'mongodb:clean'
 
 ## [0.2.0] - 2022-03-31
 

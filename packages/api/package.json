@@ -13,7 +13,8 @@
     "test": "ts-mocha --paths -p tsconfig.json src/**/*.spec.ts",
     "import-praise": "ts-node -r tsconfig-paths/register src/scripts/import-praise.ts",
     "replace-quantifier": "ts-node -r tsconfig-paths/register src/scripts/replace-quantifier.ts",
-    "migrator": "ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts"
+    "migrator": "ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts",
+    "drop-database": "ts-node -r tsconfig-paths/register src/scripts/drop-database.ts"
   },
   "nodemonConfig": {
     "watch": [
