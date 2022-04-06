@@ -3,7 +3,7 @@ import { UserCell } from '@/components/table/UserCell';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
 import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
-import { formatDate } from '@/utils/date';
+import { localizeAndFormatIsoDate } from '@/utils/date';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
@@ -47,7 +47,7 @@ const PraiseDetailTable = (): JSX.Element => {
         accessor: 'updatedAt',
         className: 'text-left',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Cell: (data: any) => formatDate(data.value),
+        Cell: (data: any) => localizeAndFormatIsoDate(data.value),
       },
       {
         Header: 'Score',

@@ -3,7 +3,7 @@ import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
 import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
 import BackLink from '@/navigation/BackLink';
-import { formatDateLong } from '@/utils/date';
+import { localizeAndFormatIsoDateLong } from '@/utils/date';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useParams } from 'react-router-dom';
@@ -20,7 +20,9 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
 
   return (
     <>
-      <div className="text-gray-500">{formatDateLong(praise.createdAt)}</div>
+      <div className="text-gray-500">
+        {localizeAndFormatIsoDateLong(praise.createdAt)}
+      </div>
       <h2>
         {praise.giver.name} <span className="font-normal">to</span>{' '}
         {praise.receiver.name}
