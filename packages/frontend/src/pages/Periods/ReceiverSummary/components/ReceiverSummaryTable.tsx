@@ -4,7 +4,7 @@ import {
   PeriodAndReceiverPageParams,
   usePeriodReceiverPraiseQuery,
 } from '@/model/periods';
-import { formatDate } from '@/utils/date';
+import { localizeAndFormatIsoDate } from '@/utils/date';
 import { PraiseDetailsDto } from 'api/dist/praise/types';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -31,7 +31,7 @@ const PraiseRow = ({ praise }: PraiseRowProps): JSX.Element => {
           <ForwarderTooltip praise={praise} />
           <span className="font-bold">{praise.giver.name}</span>
           <span className="ml-3 text-xs text-gray-500">
-            {formatDate(praise.createdAt)}
+            {localizeAndFormatIsoDate(praise.createdAt)}
           </span>
         </div>
         <div>{praise.reason}</div>

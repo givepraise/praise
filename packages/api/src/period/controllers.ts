@@ -39,6 +39,7 @@ import { flatten, intersection, range, sum } from 'lodash';
 import { StatusCodes } from 'http-status-codes';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
+import { parseISO } from 'date-fns';
 import {
   AssignQuantifiersDryRunOutput,
   PeriodDetailsDto,
@@ -141,10 +142,12 @@ export const update = async (
   }
 
   if (endDate) {
-    const d = new Date(endDate);
-    if (d.toString() === 'Invalid Date')
+    try {
+      const newEndDate = parseISO(endDate);
+      period.endDate = newEndDate;
+    } catch (e) {
       throw new BadRequestError('Invalid date format.');
-    period.endDate = d;
+    }
   }
 
   await period.save();
