@@ -11,6 +11,7 @@
     "mongodb:start": "docker compose up -d",
     "mongodb:clean": "yarn workspace api drop-database",
     "mongodb:stop": "docker compose down",
+    "api:start": "yarn workspace api start",
     "docs": "yarn workspace docs docsify serve . --port 45231"
   },
   "devDependencies": {
