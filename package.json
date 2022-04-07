@@ -1,6 +1,6 @@
 {
   "name": "praise",
-  "version": "0.0.1",
+  "version": "0.3.0",
   "license": "GPL-3.0-or-later",
   "description": "Praise community contributions to build a culture of giving and gratitude.",
   "private": true,
@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "mongodb:start": "docker compose up -d",
-    "mongodb:clean": "docker exec -i mongodb-praise bash < ./packages/api/scripts/clean-database.sh",
+    "mongodb:clean": "yarn workspace api drop-database",
     "mongodb:stop": "docker compose down",
     "docs": "yarn workspace docs docsify serve . --port 45231"
   },

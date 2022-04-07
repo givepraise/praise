@@ -5,6 +5,7 @@ import {
 } from '@praise/types';
 import { Query } from '@shared/types';
 import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
+import { PeriodSettingDto } from '@periodsettings/types';
 import mongoose, { Types } from 'mongoose';
 
 export enum PeriodStatusType {
@@ -21,7 +22,10 @@ export interface Period {
   updatedAt: Date;
 }
 
-export interface PeriodDocument extends Period, mongoose.Document {}
+export interface PeriodDocument extends Period, mongoose.Document {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  $__: any;
+}
 
 export interface PeriodDto {
   _id: string;
@@ -57,6 +61,7 @@ export interface PeriodDetailsQuantifierDto {
 export interface PeriodDetailsDto extends PeriodDto {
   quantifiers?: PeriodDetailsQuantifierDto[];
   receivers?: PeriodDetailsReceiverDto[];
+  settings?: PeriodSettingDto[];
 }
 
 export interface VerifyQuantifierPoolSizeResponse {

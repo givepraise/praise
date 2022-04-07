@@ -1,6 +1,6 @@
 import BreadCrumb from '@/components/BreadCrumb';
 import FieldErrorMessage from '@/components/form/FieldErrorMessage';
-import { PeriodDayPicker } from '@/components/periods/PeriodDayPicker';
+import DayInput from '@/components/form/DayInput';
 import { isResponseOk } from '@/model/api';
 import { CreatePeriodApiResponse, useCreatePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
@@ -10,7 +10,6 @@ import { PeriodCreateInput } from 'api/dist/period/types';
 import { isMatch } from 'date-fns';
 import { ValidationErrors } from 'final-form';
 import React from 'react';
-import 'react-day-picker/lib/style.css';
 import { Field, Form } from 'react-final-form';
 import { useHistory } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
@@ -53,15 +52,12 @@ const PeriodsForm = (): JSX.Element => {
 
   // Is only called if validate is successful
   const onSubmit = async (values: Record<string, string>): Promise<void> => {
-    // Selecting date from popup returns Array, setting manually
-    // returns string
-    const dateString =
-      Array.isArray(values.endDate) && values.endDate.length > 0
-        ? values.endDate[0]
-        : values.endDate;
     const newPeriod: PeriodCreateInput = {
       name: values.name,
-      endDate: new Date(dateString).toISOString(),
+
+      // Ensures the creator user see's a matching 'End Date' to the day they selected:
+      //  - modify selected date to include the end-of-day time in UTC
+      endDate: `${values.endDate}T23:59:59.999Z`,
     };
 
     const response = await createPeriod(newPeriod);
@@ -77,11 +73,6 @@ const PeriodsForm = (): JSX.Element => {
     <Form
       onSubmit={onSubmit}
       validate={validate}
-      mutators={{
-        setDate: (args, state, utils): void => {
-          utils.changeValue(state, 'endDate', () => args);
-        },
-      }}
       render={({ handleSubmit }): JSX.Element => (
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         <form onSubmit={handleSubmit} className="leading-loose">
@@ -107,16 +98,13 @@ const PeriodsForm = (): JSX.Element => {
             <Field name="endDate">
               {({ input }): JSX.Element => (
                 <div className="mb-5">
-                  <label className="block">End date</label>
-                  <input
-                    type="text"
-                    id="input-period-date"
-                    {...input}
-                    autoComplete="off"
-                    placeholder="e.g. 2021-01-01"
-                    className="block w-72"
+                  <label className="block">End date (UTC)</label>
+                  <DayInput
+                    name={input.name}
+                    value={input.value}
+                    onChange={input.onChange}
+                    className="w-72 block"
                   />
-                  <PeriodDayPicker />
                   {apiResponse && (
                     <FieldErrorMessage
                       name="endDate"
@@ -145,8 +133,8 @@ const PeriodsCreatePage = (): JSX.Element => {
       <div className="praise-box">
         <h2 className="mb-2">Create period</h2>
         <div className="mb-2">
-          A new period begins where the last one ended and ends at{' '}
-          <i>end date</i>.
+          A new period begins where the last one ended, and finishes at
+          end-of-day on <i>end date</i>.
         </div>
         <React.Suspense fallback="Loading…">
           <PeriodsForm />

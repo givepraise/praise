@@ -1,18 +1,16 @@
 import FieldErrorMessage from '@/components/form/FieldErrorMessage';
-import OutsideClickHandler from '@/components/OutsideClickHandler';
-import { PeriodDayPicker } from '@/components/periods/PeriodDayPicker';
+import DayInput from '@/components/form/DayInput';
 import { isResponseOk } from '@/model/api';
 import {
   PeriodPageParams,
   SinglePeriod,
   useUpdatePeriod,
 } from '@/model/periods';
-import { DATE_FORMAT, formatDate } from '@/utils/date';
+import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { AxiosError, AxiosResponse } from 'axios';
-import { isMatch, isSameDay } from 'date-fns';
+import { isMatch } from 'date-fns';
 import { ValidationErrors } from 'final-form';
 import { default as React } from 'react';
-import 'react-day-picker/lib/style.css';
 import { Field, Form } from 'react-final-form';
 import { toast } from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
@@ -42,17 +40,13 @@ const PeriodDateForm = (): JSX.Element | null => {
     AxiosResponse<unknown> | AxiosError<unknown> | null
   >(null);
   const { updatePeriod } = useUpdatePeriod();
-  const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   // Is only called if validate is successful
   const onSubmit = async (values: Record<string, string>): Promise<void> => {
-    if (
-      !period ||
-      isSameDay(new Date(period.endDate), new Date(values.endDate))
-    )
-      return; // Only save if endDate has changed
+    if (!period) return; // Only save if endDate has changed
     const newPeriod = { ...period };
-    newPeriod.endDate = values.endDate;
+    newPeriod.endDate = `${values.endDate}T23:59:59.999Z`;
+
     const response = await updatePeriod(newPeriod);
     if (response) {
       if (isResponseOk(response)) {
@@ -74,30 +68,27 @@ const PeriodDateForm = (): JSX.Element | null => {
           void onSubmit(state.formState.values as Record<string, string>);
         },
       }}
-      initialValues={{ endDate: formatDate(period.endDate) }}
+      initialValues={{
+        endDate: formatIsoDateUTC(period.endDate, DATE_FORMAT),
+      }}
       render={({ handleSubmit }): JSX.Element => (
         <form onSubmit={void handleSubmit} className="leading-loose">
           <div>
             Period end:
             <Field name="endDate">
-              {({ input, meta }): JSX.Element => (
+              {({ input }): JSX.Element => (
                 <>
                   <div className="inline-block ml-1">
-                    <OutsideClickHandler
-                      onOutsideClick={void handleSubmit}
-                      active={meta.active ? true : false}
-                    >
-                      <input
-                        type="text"
-                        id="input-period-date"
-                        {...input}
-                        ref={inputRef}
-                        autoComplete="off"
-                        placeholder="e.g. 2021-01-01"
-                        className="relative left-[-5px] py-0 pl-1 my-0 text-sm bg-transparent border border-transparent hover:border-gray-300 w-28"
-                      />
-                      <PeriodDayPicker />
-                    </OutsideClickHandler>
+                    <DayInput
+                      name={input.name}
+                      value={input.value}
+                      onChange={(e): void => {
+                        input.onChange(e);
+                        void handleSubmit(e);
+                      }}
+                      inputClassName="relative py-0 px-1 pl-1 my-0 text-sm bg-transparent border border-transparent hover:border-gray-300 w-24"
+                      tzLabel="UTC"
+                    />
                   </div>
                   <div>
                     <FieldErrorMessage

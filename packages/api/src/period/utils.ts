@@ -1,15 +1,17 @@
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
 import { calculateQuantificationsCompositeScore } from '@praise/utils';
-import { settingFloat } from '@shared/settings';
-import { sum } from 'lodash';
+import { periodsettingListTransformer } from '@periodsettings/transformers';
+import { PeriodSettingsModel } from '@periodsettings/entities';
+import { settingValue } from '@shared/settings';
+import { sum, some } from 'lodash';
+import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import {
   periodDetailsReceiverListTransformer,
   periodDocumentTransformer,
 } from './transformers';
 import {
-  Period,
   PeriodDocument,
   PeriodDetailsDto,
   PeriodDetailsQuantifierDto,
@@ -20,9 +22,10 @@ import {
 
 // Returns previous period end date or 1970-01-01 if no previous period
 export const getPreviousPeriodEndDate = async (
-  period: Period
+  period: PeriodDocument
 ): Promise<Date> => {
   const previousPeriod = await PeriodModel.findOne({
+    _id: { $ne: period._id },
     endDate: { $lt: period.endDate },
   }).sort({ endDate: -1 });
 
@@ -34,11 +37,14 @@ export const getPreviousPeriodEndDate = async (
 };
 
 const calculateReceiverScores = async (
-  receivers: PeriodDetailsReceiver[]
+  receivers: PeriodDetailsReceiver[],
+  periodId: mongoose.Schema.Types.ObjectId
 ): Promise<PeriodDetailsReceiver[]> => {
-  const duplicatePraisePercentage = await settingFloat(
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
-  );
+  const duplicatePraisePercentage = (await settingValue(
+    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
+    periodId
+  )) as number;
+
   if (!duplicatePraisePercentage)
     throw new BadRequestError(
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
@@ -136,12 +142,18 @@ export const findPeriodDetailsDto = async (
     ]),
   ]);
 
-  const receiversWithScores = await calculateReceiverScores(receivers);
+  const receiversWithScores = await calculateReceiverScores(
+    receivers,
+    period._id
+  );
+
+  const periodsettings = await PeriodSettingsModel.find({ period: period._id });
 
   const response = {
     ...periodDocumentTransformer(period),
     receivers: await periodDetailsReceiverListTransformer(receiversWithScores),
     quantifiers: [...quantifiers],
+    settings: periodsettingListTransformer(periodsettings),
   };
   return response;
 };
@@ -169,8 +181,35 @@ export const findActivePeriods = async (
  * @returns
  */
 export const getPeriodDateRangeQuery = async (
-  period: Period
+  period: PeriodDocument
 ): Promise<PeriodDateRange> => ({
   $gt: await getPreviousPeriodEndDate(period),
   $lte: period.endDate,
 });
+
+/**
+ * Check if any praise in the given period has already been assigned to quantifiers
+ *
+ * @param period
+ * @returns
+ */
+export const verifyAnyPraiseAssigned = async (
+  period: PeriodDocument
+): Promise<boolean> => {
+  const periodDateRangeQuery = await getPeriodDateRangeQuery(period);
+
+  const praises = await PraiseModel.find({
+    createdAt: periodDateRangeQuery,
+  });
+
+  const quantifiersPerPraiseReceiver = (await settingValue(
+    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
+    period._id
+  )) as number;
+
+  const praisesAssigned = praises.map(
+    (praise) => praise.quantifications.length === quantifiersPerPraiseReceiver
+  );
+
+  return some(praisesAssigned);
+};

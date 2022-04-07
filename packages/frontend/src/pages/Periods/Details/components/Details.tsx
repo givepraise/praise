@@ -6,9 +6,11 @@ import {
   useAssignQuantifiers,
   useClosePeriod,
   useExportPraise,
+  useVerifyQuantifierPoolSize,
 } from '@/model/periods';
+import { AllPeriodSettings } from '@/model/periodsettings';
 import { AllQuantifierUsers } from '@/model/users';
-import { formatDate } from '@/utils/date';
+import { formatIsoDateUTC } from '@/utils/date';
 import { saveLocalFile } from '@/utils/file';
 import { getPreviousPeriod } from '@/utils/periods';
 import {
@@ -19,7 +21,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
-import 'react-day-picker/lib/style.css';
 import { toast } from 'react-hot-toast';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
@@ -35,9 +36,14 @@ const PeriodDetails = (): JSX.Element | null => {
   const allQuantifiers = useRecoilValue(AllQuantifierUsers);
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
+  const periodsettings = useRecoilValue(AllPeriodSettings(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
   const history = useHistory();
+  const poolRequirements = useVerifyQuantifierPoolSize(
+    periodId,
+    JSON.stringify(periodsettings)
+  );
 
   const assignDialogRef = React.useRef(null);
   const closeDialogRef = React.useRef(null);
@@ -48,9 +54,6 @@ const PeriodDetails = (): JSX.Element | null => {
   if (!period || !allPeriods) return null;
 
   const previousPeriod = getPreviousPeriod(allPeriods, period);
-  const periodStart = previousPeriod
-    ? formatDate(previousPeriod.endDate)
-    : 'Dawn of time';
 
   const handleClosePeriod = (): void => {
     void closePeriod(periodId);
@@ -105,9 +108,14 @@ const PeriodDetails = (): JSX.Element | null => {
 
   return (
     <div>
-      <div>Period start: {periodStart}</div>
+      <div>
+        Period start:{' '}
+        {previousPeriod
+          ? formatIsoDateUTC(previousPeriod.endDate)
+          : 'Dawn of time'}
+      </div>
       {!isAdmin ? (
-        <div>Period end: {formatDate(period.endDate)}</div>
+        <div>Period end: {formatIsoDateUTC(period.endDate)}</div>
       ) : (
         <>
           <PeriodDateForm />
@@ -185,6 +193,7 @@ const PeriodDetails = (): JSX.Element | null => {
             <PeriodAssignDialog
               onClose={(): void => setIsAssignDialogOpen(false)}
               onAssign={(): void => handleAssign()}
+              poolRequirements={poolRequirements}
             />
           </div>
         </Dialog>

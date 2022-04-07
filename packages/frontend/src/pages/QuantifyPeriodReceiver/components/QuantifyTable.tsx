@@ -8,8 +8,8 @@ import {
   PeriodQuantifierReceiverPraise,
 } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
-import { SingleBooleanSetting } from '@/model/settings';
-import { formatDate } from '@/utils/date';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { localizeAndFormatIsoDate } from '@/utils/date';
 import {
   faCopy,
   faTimes,
@@ -17,6 +17,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
+import getWeek from 'date-fns/getWeek';
+import parseISO from 'date-fns/parseISO';
+import { groupBy } from 'lodash';
 import { PraiseDto, QuantificationDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useParams } from 'react-router-dom';
@@ -44,9 +47,10 @@ const QuantifyTable = (): JSX.Element | null => {
   const data = useRecoilValue(
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
   );
-  const usePseudonyms = useRecoilValue(
-    SingleBooleanSetting('PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS')
-  );
+  const usePseudonyms = usePeriodSettingValueRealized(
+    periodId,
+    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+  ) as boolean;
   const { quantify } = useQuantifyPraise();
 
   const [isDismissDialogOpen, setIsDismissDialogOpen] = React.useState(false);
@@ -55,8 +59,6 @@ const QuantifyTable = (): JSX.Element | null => {
   const [selectedPraise, setSelectedPraise] = React.useState<
     PraiseDto | undefined
   >(undefined);
-
-  let weeklyBorderDate: Date | undefined = undefined;
 
   if (!data) return null;
 
@@ -96,39 +98,26 @@ const QuantifyTable = (): JSX.Element | null => {
     return q && q.duplicatePraise ? q.duplicatePraise?.slice(-4) : '';
   };
 
-  interface DividerProps {
-    praise: PraiseDto;
-  }
-
-  const isStartOfTheWeek = ({ praise }: DividerProps): Boolean => {
-    const date = new Date(praise.createdAt);
-
-    if (date.getDay() === 1) {
-      if (date.getTime() !== weeklyBorderDate?.getTime()) {
-        weeklyBorderDate = date;
-        return true;
-      }
-    }
-
-    return false;
-  };
+  const weeklyData = groupBy(data, (praise: PraiseDto) => {
+    if (!praise) return 0;
+    return getWeek(parseISO(praise.createdAt), { weekStartsOn: 1 });
+  });
 
   return (
     <>
       <table className="w-full table-auto">
         <tbody>
-          {data.map((praise, index) => {
-            if (!praise) return null;
+          {Object.keys(weeklyData).map((weekKey, index) => (
+            <>
+              {index !== 0 && index !== data.length - 1 && (
+                <tr>
+                  <td colSpan={3}>
+                    <div className="border-t border-2 border-gray-400 my-4" />
+                  </td>
+                </tr>
+              )}
 
-            return (
-              <>
-                {isStartOfTheWeek({ praise }) && (
-                  <tr>
-                    <td colSpan={3}>
-                      <div className="border-t border-gray-400" />
-                    </td>
-                  </tr>
-                )}
+              {weeklyData[weekKey].map((praise, index) => (
                 <tr
                   key={index}
                   onMouseDown={(): void => setSelectedPraise(praise)}
@@ -138,7 +127,7 @@ const QuantifyTable = (): JSX.Element | null => {
                       <div className="flex items-center">
                         <UserAvatar
                           userAccount={praise.giver}
-                          enablePseudomyms
+                          usePseudonym={usePseudonyms}
                         />
                       </div>
                     </div>
@@ -157,7 +146,7 @@ const QuantifyTable = (): JSX.Element | null => {
                         )}
                       </span>
                       <span className="ml-2 text-xs text-gray-500">
-                        {formatDate(praise.createdAt)}
+                        {localizeAndFormatIsoDate(praise.createdAt)}
                       </span>
                     </div>
                     <div className="w-[550px] overflow-hidden overflow-ellipsis">
@@ -197,7 +186,7 @@ const QuantifyTable = (): JSX.Element | null => {
                   </td>
                   <td>
                     <div className="flex">
-                      <QuantifySlider praise={praise} />
+                      <QuantifySlider praise={praise} periodId={periodId} />
                       <button
                         className="pb-1 ml-4 hover:text-gray-400"
                         disabled={duplicate(praise)}
@@ -223,9 +212,9 @@ const QuantifyTable = (): JSX.Element | null => {
                     </div>
                   </td>
                 </tr>
-              </>
-            );
-          })}
+              ))}
+            </>
+          ))}
 
           <React.Suspense fallback={null}>
             <Dialog

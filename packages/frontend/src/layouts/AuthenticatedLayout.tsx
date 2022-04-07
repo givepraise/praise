@@ -5,7 +5,7 @@ import { faX, faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
 import Nav from '../navigation/Nav';
-import { SingleStringSetting } from '@/model/settings';
+import { SingleSetting } from '@/model/settings';
 
 interface AuthenticatedLayoutProps {
   children: JSX.Element;
@@ -15,7 +15,7 @@ const AuthenticatedLayout = ({
   children,
 }: AuthenticatedLayoutProps): JSX.Element => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const siteName = useRecoilValue(SingleStringSetting('NAME'));
+  const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
 
   return (
     <div>
@@ -104,7 +104,7 @@ const AuthenticatedLayout = ({
             />
           </button>
           <div className="w-full flex justify-center">
-            <h1 className="font-lg">{siteName}</h1>
+            <h1 className="font-lg">{siteNameSetting?.value}</h1>
           </div>
         </div>
         <main className="flex-1 flex justify-center px-4 py-4">

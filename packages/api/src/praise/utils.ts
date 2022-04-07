@@ -1,6 +1,7 @@
 import { BadRequestError } from '@error/errors';
-import { PeriodDateRange } from '@period/types';
-import { settingFloat } from '@shared/settings';
+import { PeriodDateRange, PeriodDocument } from '@period/types';
+import { PeriodModel } from '@period/entities';
+import { settingValue } from '@shared/settings';
 import { PraiseModel } from './entities';
 import { praiseDocumentTransformer } from './transformers';
 import {
@@ -9,6 +10,36 @@ import {
   PraiseDto,
   Quantification,
 } from './types';
+
+/**
+ * Workaround to get the period associated with a praise instance (as they are not related in database)
+ *
+ * Determines the associated period by:
+ *  finding the period with the lowest endDate, that is greater than the praise.createdAt date
+ *
+ *  @param praise the praise instance
+ */
+export const getPraisePeriod = async (
+  praise: PraiseDocument
+): Promise<PeriodDocument | undefined> => {
+  const period = await PeriodModel.find(
+    // only periods ending after praise created
+    {
+      endDate: { $gte: praise.createdAt },
+    },
+
+    // sort periods by ending date ascending
+    {
+      sort: { endDate: 1 },
+    }
+
+    // select the period with the earliest ending date
+  ).limit(1);
+
+  if (!period || period.length === 0) return undefined;
+
+  return period[0];
+};
 
 export const calculateQuantificationsCompositeScore = async (
   quantifications: Quantification[],
@@ -49,9 +80,13 @@ export const calculateQuantificationsCompositeScore = async (
 export const calculatePraiseScore = async (
   praise: PraiseDocument
 ): Promise<number> => {
-  const duplicatePraisePercentage = await settingFloat(
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
-  );
+  const period = await getPraisePeriod(praise);
+  if (!period) return 0;
+
+  const duplicatePraisePercentage = (await settingValue(
+    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
+    period._id
+  )) as number;
   if (!duplicatePraisePercentage)
     throw new BadRequestError(
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"

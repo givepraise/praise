@@ -9,6 +9,10 @@ import { settingsAdminRouter, settingsRouter } from '@settings/routes';
 import { adminUserRouter, userRouter } from '@user/routes';
 import { UserRole } from '@user/types';
 import { userAccountRouter } from '@useraccount/routes';
+import {
+  periodsettingsRouter,
+  adminPeriodsettingsRouter,
+} from '@periodsettings/routes';
 const baseRouter = Router();
 
 /* Open routes */
@@ -27,6 +31,9 @@ baseRouter.use('/users', userRouter);
 baseRouter.useAsync('/periods', authMiddleware(UserRole.USER));
 baseRouter.use('/periods', periodRouter);
 
+baseRouter.useAsync('/periodsettings', authMiddleware(UserRole.USER));
+baseRouter.use('/periodsettings', periodsettingsRouter);
+
 baseRouter.useAsync('/praise', authMiddleware(UserRole.USER));
 baseRouter.use('/praise', praiseRouter);
 
@@ -40,6 +47,9 @@ baseRouter.use('/admin/users', adminUserRouter);
 
 baseRouter.useAsync('/admin/periods', authMiddleware(UserRole.ADMIN));
 baseRouter.use('/admin/periods', adminPeriodRouter);
+
+baseRouter.useAsync('/admin/periodsettings', authMiddleware(UserRole.ADMIN));
+baseRouter.use('/admin/periodsettings', adminPeriodsettingsRouter);
 
 baseRouter.useAsync('/admin/settings', authMiddleware(UserRole.ADMIN));
 baseRouter.use('/admin/settings', settingsAdminRouter);
