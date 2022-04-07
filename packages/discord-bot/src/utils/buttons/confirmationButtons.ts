@@ -1,8 +1,8 @@
 import { MessageButton } from 'discord.js';
 
-export const confirmButton = new MessageButton()
-  .setCustomId('confirm')
-  .setLabel('Confirm')
+export const continueButton = new MessageButton()
+  .setCustomId('continue')
+  .setLabel('Continue')
   .setStyle('SUCCESS');
 
 export const cancelButton = new MessageButton()

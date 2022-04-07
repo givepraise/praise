@@ -1,5 +1,4 @@
 import { PeriodModel } from 'api/dist/period/entities';
-import { periodSelectMenu } from './menus/periodSelectMenu';
 import { UserModel } from 'api/dist/user/entities';
 import { UserRole, UserDocument } from 'api/dist/user/types';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
@@ -9,7 +8,7 @@ import {
   PeriodDetailsQuantifierDto,
 } from 'api/dist/period/types';
 
-import { Message, MessageActionRow, CommandInteraction } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { PraiseModel } from 'api/dist/praise/entities';
 
 const sendDMs = async (
@@ -56,9 +55,10 @@ const sendDMs = async (
   });
 };
 
-export const dmTargets = async (
+export const selectTargets = async (
   interaction: CommandInteraction,
   type: string,
+  period: string | undefined,
   message: string
 ): Promise<void> => {
   switch (type) {
@@ -74,78 +74,53 @@ export const dmTargets = async (
     }
     case 'ASSIGNED-QUANTIFIERS':
     case 'UNFINISHED-QUANTIFIERS': {
-      const openPeriods = await PeriodModel.find({ status: 'QUANTIFY' });
-      const periodMenuMsg = (await interaction.editReply({
-        content: 'Which period are you referring to?',
-        components: [
-          new MessageActionRow().addComponents([periodSelectMenu(openPeriods)]),
-        ],
-      })) as Message;
-      const collector = periodMenuMsg.createMessageComponentCollector({
-        filter: (click) => click.user.id === interaction.user.id,
-        time: 900000,
-      });
-      collector.on('collect', async (click) => {
-        if (!click.isSelectMenu()) return;
-
-        const selectedPeriod = (await PeriodModel.findOne({
-          name: click.values[0],
-        })) as PeriodDocument;
-        const previousPeriodEndDate = await getPreviousPeriodEndDate(
-          selectedPeriod
+      const selectedPeriod = (await PeriodModel.findOne({
+        name: period,
+      })) as PeriodDocument;
+      const previousPeriodEndDate = await getPreviousPeriodEndDate(
+        selectedPeriod
+      );
+      const quantifiers: PeriodDetailsQuantifierDto[] =
+        await PraiseModel.aggregate([
+          {
+            $match: {
+              createdAt: {
+                $gt: previousPeriodEndDate,
+                $lte: selectedPeriod?.endDate,
+              },
+            },
+          },
+          { $unwind: '$quantifications' },
+          {
+            $addFields: {
+              finished: {
+                $or: [
+                  { $ne: ['$quantifications.dismissed', false] },
+                  { $gt: ['$quantifications.score', 0] },
+                  { $gt: ['$quantifications.duplicatePraise', null] },
+                ],
+              },
+            },
+          },
+          {
+            $group: {
+              _id: '$quantifications.quantifier',
+              praiseCount: { $count: {} },
+              finishedCount: { $sum: { $toInt: '$finished' } },
+            },
+          },
+        ]);
+      if (type === 'UNFINISHED-QUANTIFIERS') {
+        await sendDMs(
+          interaction,
+          quantifiers.filter(
+            (quantifier) => quantifier.finishedCount !== quantifier.praiseCount
+          ),
+          message
         );
-        const quantifiers: PeriodDetailsQuantifierDto[] =
-          await PraiseModel.aggregate([
-            {
-              $match: {
-                createdAt: {
-                  $gt: previousPeriodEndDate,
-                  $lte: selectedPeriod?.endDate,
-                },
-              },
-            },
-            { $unwind: '$quantifications' },
-            {
-              $addFields: {
-                finished: {
-                  $or: [
-                    { $ne: ['$quantifications.dismissed', false] },
-                    { $gt: ['$quantifications.score', 0] },
-                    { $gt: ['$quantifications.duplicatePraise', null] },
-                  ],
-                },
-              },
-            },
-            {
-              $group: {
-                _id: '$quantifications.quantifier',
-                praiseCount: { $count: {} },
-                finishedCount: { $sum: { $toInt: '$finished' } },
-              },
-            },
-          ]);
-        if (type === 'UNFINISHED-QUANTIFIERS') {
-          await sendDMs(
-            interaction,
-            quantifiers.filter(
-              (quantifier) =>
-                quantifier.finishedCount !== quantifier.praiseCount
-            ),
-            message
-          );
-          return;
-        }
-        await sendDMs(interaction, quantifiers, message);
-      });
-      collector.on('end', async (collected) => {
-        if (collected.size === 0) {
-          await interaction.followUp({
-            content: 'Interaction timed out...',
-            embeds: [],
-            components: [],
-          });
-        }
-      });
+        return;
+      }
+      await sendDMs(interaction, quantifiers, message);
       return;
     }
   }

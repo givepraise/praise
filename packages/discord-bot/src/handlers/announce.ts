@@ -2,7 +2,7 @@ import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
 import { UserModel } from 'api/dist/user/entities';
 import {
-  confirmButton,
+  continueButton,
   cancelButton,
 } from '../utils/buttons/confirmationButtons';
 import { dmTargetMenu } from '../utils/menus/dmTargetmenu';
@@ -13,7 +13,10 @@ import {
   MessageActionRow,
 } from 'discord.js';
 import { UserRole } from 'api/dist/user/types';
-import { dmTargets } from '../utils/dmTargets';
+import { selectTargets } from '../utils/dmTargets';
+import { PeriodModel } from 'api/dist/period/entities';
+import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
+
 import { notActivatedError } from '../utils/praiseEmbeds';
 
 export const announcementHandler = async (
@@ -39,26 +42,77 @@ export const announcementHandler = async (
 
   if (currentUser?.roles.includes(UserRole.ADMIN)) {
     const message = interaction.options.getString('message');
-    const confirmMsg = (await interaction.editReply({
-      content: `Preview your message\n\n---\n${
-        message || ''
-      }\n---\n\nThis is the message that would be sent to the users. Press \`Confirm\` to continue...`,
-      components: [
-        new MessageActionRow().addComponents([confirmButton, cancelButton]),
-      ],
+
+    const userSelectionMsg = (await interaction.editReply({
+      content: 'Which users do you want to send the message to?',
+      components: [new MessageActionRow().addComponents([dmTargetMenu])],
     })) as Message;
-    const collector = confirmMsg.createMessageComponentCollector({
+
+    const collector = userSelectionMsg.createMessageComponentCollector({
       filter: (click) => click.user.id === interaction.user.id,
       time: 900000,
     });
+    let selectedUserType: string;
+    let selectedPeriod: string | undefined;
     collector.on('collect', async (click) => {
       await click.deferUpdate();
       switch (click.customId) {
-        case 'confirm': {
+        case 'dm-menu': {
+          if (!click.isSelectMenu()) break;
+          const menu: SelectMenuInteraction = click;
+          selectedUserType = menu.values[0];
+          if (
+            selectedUserType === 'ASSIGNED-QUANTIFIERS' ||
+            selectedUserType === 'UNFINISHED-QUANTIFIERS'
+          ) {
+            const openPeriods = await PeriodModel.find({ status: 'QUANTIFY' });
+            await interaction.editReply({
+              content: 'Which period are you referring to?',
+              components: [
+                new MessageActionRow().addComponents([
+                  periodSelectMenu(openPeriods),
+                ]),
+              ],
+            });
+            break;
+          }
+          selectedPeriod = '';
           await interaction.editReply({
-            content: 'Which users do you want to send the message to?',
-            components: [new MessageActionRow().addComponents([dmTargetMenu])],
+            content: `Preview announcement before continuing:\n---\n${
+              message || ''
+            }\n---`,
+            components: [
+              new MessageActionRow().addComponents([
+                continueButton,
+                cancelButton,
+              ]),
+            ],
           });
+          break;
+        }
+        case 'period-menu': {
+          if (!click.isSelectMenu()) return;
+          selectedPeriod = click.values[0];
+          await interaction.editReply({
+            content: `Preview announcement before continuing:\n---\n${
+              message || ''
+            }\n---`,
+            components: [
+              new MessageActionRow().addComponents([
+                continueButton,
+                cancelButton,
+              ]),
+            ],
+          });
+          break;
+        }
+        case 'continue': {
+          await selectTargets(
+            interaction,
+            selectedUserType,
+            selectedPeriod,
+            message || ''
+          );
           break;
         }
         case 'cancel': {
@@ -68,16 +122,10 @@ export const announcementHandler = async (
           });
           return;
         }
-        case 'dm-menu': {
-          if (!click.isSelectMenu()) break;
-          const menu: SelectMenuInteraction = click;
-          await dmTargets(interaction, menu.values[0], message || '');
-          return;
-        }
       }
     });
     collector.on('end', async (collected) => {
-      const successfulEndEvents = ['cancel', 'dm-menu', 'praise-menu'];
+      const successfulEndEvents = ['cancel', 'continue'];
       const ended = collected.some((clk) =>
         successfulEndEvents.includes(clk.customId)
       );
