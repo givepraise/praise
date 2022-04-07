@@ -1,8 +1,8 @@
 version: '3.8'
 services:
   mongodb:
-    image: mongo
     container_name: mongodb-praise
+    image: mongo
     ports:
       - 27017:27017
     restart: unless-stopped
@@ -14,6 +14,23 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD
+  api:
+    container_name: api-praise
+    image: api:1.0.0
+    restart: always
+    build: .
+    ports:
+      - "8088:8088"
+    links:
+      - mongodb
+  frontend:
+    container_name: frontend-praise
+    restart: always
+    image: frontend:1.0.0
+    ports:
+      - "80:80"
+    links:
+      - api
 
 volumes:
   mongodb_data_container:
