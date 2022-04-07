@@ -8,13 +8,13 @@ export const periodSelectMenu = (
 ): MessageSelectMenu => {
   const periodMenu = new MessageSelectMenu()
     .setCustomId('period-menu')
-    .setPlaceholder('Select Period from dropdown menu');
+    .setPlaceholder('Select period');
 
   for (const period of periods) {
     periodMenu.addOptions([
       {
         label: period['name'],
-        description: `Period with end date - ${period.endDate.toDateString()}`,
+        description: `End date: ${period.endDate.toDateString()}`,
         value: period['name'],
       },
     ]);

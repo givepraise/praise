@@ -2,28 +2,26 @@ import { MessageSelectMenu } from 'discord.js';
 
 export const dmTargetMenu = new MessageSelectMenu()
   .setCustomId('dm-menu')
-  .setPlaceholder('Select Target users from dropdown menu')
+  .setPlaceholder('Select user group')
   .addOptions([
     {
-      label: 'All Users',
-      description: 'Sends DM to all activated praise users',
+      label: 'All users',
+      description: 'Send to all activated Praise users',
       value: 'USERS',
     },
     {
-      label: 'All Quantifiers',
-      description: 'Sends DM to all Quantifiers',
+      label: 'All quantifiers',
+      description: 'Send to all quantifiers',
       value: 'QUANTIFIERS',
     },
     {
-      label: 'All drafted Quantifiers',
-      description:
-        'Sends DM to all Quantifiers that are drafted in the latest praise period',
-      value: 'DRAFTED-QUANTIFIERS',
+      label: 'All assigned quantifiers',
+      description: 'Send to all quantifiers assigned to a period',
+      value: 'ASSIGNED-QUANTIFIERS',
     },
     {
-      label: 'Pending Quantifiers',
-      description:
-        "Sends DM to all quantifers that aren't done with their Quantification",
-      value: 'PENDING-QUANTIFIERS',
+      label: 'All unfinished quantifiers',
+      description: 'Send to all unfinished quantifiers assigned to a period',
+      value: 'UNFINISHED-QUANTIFIERS',
     },
   ]);

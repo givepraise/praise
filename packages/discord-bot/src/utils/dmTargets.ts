@@ -19,6 +19,12 @@ const sendDMs = async (
 ): Promise<void> => {
   const successful = [];
   const failed = [];
+  if (!users || users.length === 0) {
+    await interaction.editReply(
+      'Message not sent. No recipients matched filter.'
+    );
+  }
+
   for (const user of users) {
     const userAccount = await UserAccountModel.findOne({
       user: user._id,
@@ -36,12 +42,16 @@ const sendDMs = async (
       failed.push(`<@!${userId}>`);
     }
   }
+  const failedMsg = `Announcement could not be delivered to ${failed.length} users.`;
+  const successMsg = `Announcement successfully delivered to ${successful.length} recipients.`;
+  const content =
+    successful.length === 0
+      ? failedMsg
+      : failed.length === 0
+      ? successMsg
+      : successMsg + '\n' + failedMsg;
   await interaction.editReply({
-    content: `Successfully announced message to ${
-      successful.join(', ') || 'null'
-    }.\nFailed to announce message to ${failed.join(
-      ', ' || 'null'
-    )} (maybe they're invalid users, or they are no longer present in the discord server, or they have DMs closed)`,
+    content: content,
     components: [],
   });
 };
@@ -62,8 +72,8 @@ export const dmTargets = async (
       await sendDMs(interaction, users, message);
       return;
     }
-    case 'DRAFTED-QUANTIFIERS':
-    case 'PENDING-QUANTIFIERS': {
+    case 'ASSIGNED-QUANTIFIERS':
+    case 'UNFINISHED-QUANTIFIERS': {
       const openPeriods = await PeriodModel.find({ status: 'QUANTIFY' });
       const periodMenuMsg = (await interaction.editReply({
         content: 'Which period are you referring to?',
@@ -114,7 +124,7 @@ export const dmTargets = async (
               },
             },
           ]);
-        if (type === 'PENDING-QUANTIFIERS') {
+        if (type === 'UNFINISHED-QUANTIFIERS') {
           await sendDMs(
             interaction,
             quantifiers.filter(

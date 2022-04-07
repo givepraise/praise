@@ -13,13 +13,13 @@ export const praiseAdmin: Command = {
     .addSubcommand(
       new SlashCommandSubcommandBuilder()
         .setName('announce')
-        .setDescription("Automatically announce messages in Users' DMs")
+        .setDescription(
+          'Publish announcements distributed as direct messages to Praise users.'
+        )
         .addStringOption((option) =>
           option
             .setName('message')
-            .setDescription(
-              'The message content that you want to send in the DMs'
-            )
+            .setDescription('The message content to publish.')
             .setRequired(true)
         )
     ),

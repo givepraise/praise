@@ -14,6 +14,7 @@ import {
 } from 'discord.js';
 import { UserRole } from 'api/dist/user/types';
 import { dmTargets } from '../utils/dmTargets';
+import { notActivatedError } from '../utils/praiseEmbeds';
 
 export const announcementHandler = async (
   interaction: CommandInteraction
@@ -31,9 +32,7 @@ export const announcementHandler = async (
     { upsert: true, new: true }
   );
   if (!userAccount.user) {
-    await interaction.editReply(
-      'USER NOT ACTIVATED. Activate your account by running the `/praise activate` command'
-    );
+    await interaction.editReply(await notActivatedError());
     return;
   }
   const currentUser = await UserModel.findOne({ _id: userAccount.user });
@@ -64,7 +63,7 @@ export const announcementHandler = async (
         }
         case 'cancel': {
           await interaction.editReply({
-            content: 'User Cancelled Interaction.',
+            content: 'User cancelled Interaction.',
             components: [],
           });
           return;
