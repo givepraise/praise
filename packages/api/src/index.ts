@@ -1,17 +1,10 @@
-import * as dotenv from 'dotenv';
+import './env';
 import 'express-async-errors';
 import logger from 'jet-logger';
-import path from 'path';
 import { app } from './server';
 
-const load = dotenv.config({ path: path.join(__dirname, '..', '/.env') });
-if (load.error) {
-  logger.err(load.error.message);
-  throw load.error;
-}
-
 // Start the server
-const port = Number(process.env.PORT || 3000);
+const port = 8088;
 app.listen(port, () => {
   logger.info(`Express server started on port: ${port}`);
 });

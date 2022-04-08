@@ -21,13 +21,16 @@ RUN yarn workspace frontend build
 
 # 
 #FROM nginx:alpine
-#FROM jonasal/nginx-certbot:latest
-#COPY ./packages/frontend/nginx_praise.conf /etc/nginx/conf.d/
+FROM jonasal/nginx-certbot:latest
+COPY conf.d/* /etc/nginx/conf.d/
+COPY ./packages/frontend/nginx.conf /etc/nginx/nginx.conf
 
 ## Remove default nginx index page
-#RUN rm -rf /usr/share/nginx/html/*
+RUN rm -rf /usr/share/nginx/html/*
 
 # Copy from the stage 1
-#COPY --from=builder /usr/src/packages/frontend/build /usr/share/nginx/html
+COPY --from=builder /usr/src/packages/frontend/build /usr/share/nginx/html
 
-#ENTRYPOINT ["nginx", "-g", "daemon off;"]
+EXPOSE 80
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

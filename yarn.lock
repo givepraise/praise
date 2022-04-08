@@ -4633,6 +4633,7 @@ __metadata:
     cors: ^2.8.5
     date-fns: ^2.28.0
     dotenv: ^10.0.0
+    dotenv-expand: ^8.0.3
     eslint: ^8.8.0
     ethers: ^5.5.2
     express: ^4.17.1
@@ -7348,6 +7349,13 @@ __metadata:
   version: 5.1.0
   resolution: "dotenv-expand@npm:5.1.0"
   checksum: 8017675b7f254384915d55f9eb6388e577cf0a1231a28d54b0ca03b782be9501b0ac90ac57338636d395fa59051e6209e9b44b8ddf169ce6076dffb5dea227d3
+  languageName: node
+  linkType: hard
+
+"dotenv-expand@npm:^8.0.3":
+  version: 8.0.3
+  resolution: "dotenv-expand@npm:8.0.3"
+  checksum: 128ce90ac825b543de3ece0154a51b056ab0dc36bb26d97a68cd0b8707327ecd3c182fb6ac63b26a0fcdfa85064419906a1065cb634f1f9dc08ad311375f1fc0
   languageName: node
   linkType: hard
 

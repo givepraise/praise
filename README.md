@@ -39,8 +39,8 @@ Copy root `.env.template` and rename `.env`. Configure database usernames and pa
 ```
 MONGO_INITDB_ROOT_USERNAME=
 MONGO_INITDB_ROOT_PASSWORD=
-MONGO_DB_USER=
-MONGO_DB_PASSWORD=
+MONGO_USERNAME=
+MONGO_PASSWORD=
 ```
 
 Pull mongo image:

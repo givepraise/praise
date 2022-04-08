@@ -12,7 +12,11 @@
     "mongodb:clean": "yarn workspace api drop-database",
     "mongodb:stop": "docker compose down",
     "api:start": "yarn workspace api start",
-    "docs": "yarn workspace docs docsify serve . --port 45231"
+    "discord-bot:start": "yarn workspace api start",
+    "docs": "yarn workspace docs docsify serve . --port 45231",
+    "docker-build:api": "docker build -t api -f packages/api/Dockerfile . --no-cache --progress plain",
+    "docker-build:discord-bot": "docker build -t discord-bot -f packages/discord-bot/Dockerfile . --no-cache",
+    "docker-build:frontend": "docker build -t frontend -f packages/frontend/Dockerfile . --no-cache"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.7.0",

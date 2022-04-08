@@ -28,5 +28,6 @@
     }
   },
   "include": ["src/**/*.ts", "test/**/*.ts"],
+  "exclude": ["src/scripts/*.ts"],
   "references": []
 }

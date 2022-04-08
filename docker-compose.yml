@@ -4,33 +4,51 @@ services:
     container_name: mongodb-praise
     image: mongo
     ports:
-      - 27017:27017
+      - $MONGO_PORT:$MONGO_PORT
     restart: unless-stopped
     volumes:
-      - mongodb_data_container:/data/db
+      - mongodb_data:/data/db
       - './users_init.sh:/docker-entrypoint-initdb.d/users_init.sh:ro'
     env_file:
       - .env
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD
+  
   api:
     container_name: api-praise
-    image: api:1.0.0
+    image: api
     restart: always
     build: .
     ports:
-      - "8088:8088"
+      - 8088:8088
     links:
       - mongodb
+  
   frontend:
     container_name: frontend-praise
-    restart: always
-    image: frontend:1.0.0
+    image: frontend
+    volumes:
+      - frontend_data:/usr/src
+  
+  nginx:
+    container_name: nginx-praise
+    image: jonasal/nginx-certbot:latest
+    restart: unless-stopped
+    environment:
+      CERTBOT_EMAIL: $CERTBOT_EMAIL
+      STAGING: "1"
     ports:
-      - "80:80"
+      - 80:80
+      - 443:443
+    volumes:
+      - nginx_secrets:/etc/letsencrypt
+      - ./user_conf.d:/etc/nginx/user_conf.d
+      - frontend_data:/usr/src
     links:
       - api
 
 volumes:
-  mongodb_data_container:
+  nginx_secrets:
+  mongodb_data:
+  frontend_data:

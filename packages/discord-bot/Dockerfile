@@ -7,17 +7,16 @@ WORKDIR /usr/src/
 COPY ./package*.json .
 COPY ./.yarnrc.yml .
 COPY ./yarn.lock .
-COPY ./.env .
 COPY ./.yarn ./.yarn
 
 # Copy packages
 COPY ./packages/api ./packages/api
+COPY ./packages/discord-bot ./packages/discord-bot
 
 # Install dependencies for packages
 RUN yarn set version berry
-#RUN echo $(ls -a /usr/src/)
 RUN yarn
+RUN yarn workspace api build
 
 # Run the app
-EXPOSE 8088
-CMD ["yarn", "api:start"]
+CMD ["yarn", "discord-bot:start"]
