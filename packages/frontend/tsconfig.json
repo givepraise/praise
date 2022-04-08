@@ -16,7 +16,7 @@
     "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,    
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"],
