@@ -451,9 +451,7 @@ export const assignQuantifiers = async (
   );
 
   await PraiseModel.bulkWrite(bulkQueries);
-
-  period.status = PeriodStatusType.QUANTIFY;
-  await period.save();
+  await PeriodModel.updateOne({_id: period._id}, {$set: {status: PeriodStatusType.QUANTIFY}});
 
   const periodDetailsDto = await findPeriodDetailsDto(periodId);
   res.status(StatusCodes.OK).json(periodDetailsDto);
