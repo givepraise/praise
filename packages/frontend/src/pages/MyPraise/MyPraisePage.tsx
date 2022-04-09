@@ -2,7 +2,7 @@ import BreadCrumb from '@/components/BreadCrumb';
 import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import PraiseTable from './components/MyPraiseTable';
+import MyPraiseTable from './components/MyPraiseTable';
 
 const MyPraise = (): JSX.Element => {
   return (
@@ -13,7 +13,7 @@ const MyPraise = (): JSX.Element => {
 
       <div className="praise-box">
         <React.Suspense fallback="Loading…">
-          <PraiseTable />
+          <MyPraiseTable />
         </React.Suspense>
       </div>
     </div>
