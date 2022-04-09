@@ -214,13 +214,14 @@ export const verifyAnyPraiseAssigned = async (
   return some(praisesAssigned);
 };
 
-
 /**
  * Does period have the latest endDate of all periods?
  * @param period
  * @returns
  */
-export const isPeriodLatest = async (period: PeriodDocument): Promise<boolean> => {
+export const isPeriodLatest = async (
+  period: PeriodDocument
+): Promise<boolean> => {
   const latestPeriod = await PeriodModel.findOne(
     {},
     {
@@ -233,4 +234,4 @@ export const isPeriodLatest = async (period: PeriodDocument): Promise<boolean> =
   if (latestPeriod._id.toString() === period._id.toString()) return true;
 
   return false;
-}
+};

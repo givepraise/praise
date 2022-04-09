@@ -143,7 +143,8 @@ export const update = async (
   }
 
   if (endDate) {
-    if (!isPeriodLatest(period))
+    const latest = await isPeriodLatest(period);
+    if (!latest)
       throw new BadRequestError('Date change only allowed on last period.');
 
     if (period.status !== PeriodStatusType.OPEN)
@@ -461,7 +462,10 @@ export const assignQuantifiers = async (
   );
 
   await PraiseModel.bulkWrite(bulkQueries);
-  await PeriodModel.updateOne({_id: period._id}, {$set: {status: PeriodStatusType.QUANTIFY}});
+  await PeriodModel.updateOne(
+    { _id: period._id },
+    { $set: { status: PeriodStatusType.QUANTIFY } }
+  );
 
   const periodDetailsDto = await findPeriodDetailsDto(periodId);
   res.status(StatusCodes.OK).json(periodDetailsDto);
