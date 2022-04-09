@@ -213,3 +213,24 @@ export const verifyAnyPraiseAssigned = async (
 
   return some(praisesAssigned);
 };
+
+
+/**
+ * Does period have the latest endDate of all periods?
+ * @param period
+ * @returns
+ */
+export const isPeriodLatest = async (period: PeriodDocument): Promise<boolean> => {
+  const latestPeriod = await PeriodModel.findOne(
+    {},
+    {
+      limit: 1,
+      sort: { endDate: -1 },
+    }
+  );
+
+  if (!latestPeriod) return true;
+  if (latestPeriod._id.toString() === period._id.toString()) return true;
+
+  return false;
+}
