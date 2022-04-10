@@ -10,13 +10,13 @@
   "scripts": {
     "mongodb:start": "docker compose up mongodb -d",
     "mongodb:clean": "yarn workspace api drop-database",
+    "api:build-docker": "docker compose build api --no-cache",
     "api:start": "yarn workspace api start",
+    "discord-bot:build-docker": "docker compose build discord-bot --no-cache",
     "discord-bot:start": "yarn workspace api start",
     "docs:start": "yarn workspace docs docsify serve . --port 45231",
-    "build:api": "docker compose build api --no-cache",
-    "build:discord-bot": "docker compose build discord-bot --no-cache",
-    "build:frontend": "docker compose build frontend --no-cache",
-    "build:all": "docker compose build --no-cache",
+    "frontend:build-docker": "docker compose build frontend --no-cache",
+    "build-docker": "docker compose build --no-cache",
     "start": "docker compose up -d"
   },
   "devDependencies": {
