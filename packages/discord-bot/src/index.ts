@@ -21,10 +21,6 @@ if (env.error) {
   throw env.error;
 }
 
-if (!process.env.PRAISE_GIVER_ROLE_ID) {
-  logger.err('Praise Giver Role not set.');
-}
-
 // Start Discord bot
 const token = process.env.DISCORD_TOKEN;
 
