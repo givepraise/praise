@@ -307,7 +307,7 @@ nano .env.production
 Set the API url to the following:
 
 ```
-REACT_APP_BACKEND_URL=/api/
+REACT_APP_API_URL=/api/
 ```
 
 ## Start MongoDB

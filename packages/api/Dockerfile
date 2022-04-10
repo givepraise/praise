@@ -15,7 +15,6 @@ COPY ./packages/api ./packages/api
 
 # Install dependencies for packages
 RUN yarn set version berry
-#RUN echo $(ls -a /usr/src/)
 RUN yarn
 
 # Run the app
