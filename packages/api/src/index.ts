@@ -1,4 +1,4 @@
-import './env';
+import './loadEnv';
 import 'express-async-errors';
 import logger from 'jet-logger';
 import { app } from './server';
