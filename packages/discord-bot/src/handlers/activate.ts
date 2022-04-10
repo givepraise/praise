@@ -24,13 +24,16 @@ export const activationHandler = async (
     await interaction.reply('Unable to create user account.');
     return;
   }
-  const baseURL = process.env.FRONTEND_URL;
-  if (!baseURL || baseURL === undefined) {
+  const server = process.env.SERVER;
+  if (!server || server === undefined) {
     await interaction.reply(
-      'ERROR: `FRONTEND_URL` not defined in environment variables. Contact praise admin'
+      'ERROR: `SERVER` not defined in environment variables. Contact praise admin'
     );
     return;
   }
+  const frontendUrl = `http://${
+    process.env.NODE_ENV === 'production' ? server : `${server}:3000`
+  }`; // Assume default craco port 3000 if not in production
 
   const getActivationURL = (
     accountId: string,
@@ -38,7 +41,7 @@ export const activationHandler = async (
     hash: string,
     token: string
   ): string =>
-    `${baseURL}/activate?accountId=${accountId}&accountName=${encodeURIComponent(
+    `${frontendUrl}/activate?accountId=${accountId}&accountName=${encodeURIComponent(
       `${uname}#${hash}`
     )}&platform=DISCORD&token=${token}`;
 

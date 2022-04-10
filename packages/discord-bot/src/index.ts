@@ -27,15 +27,10 @@ if (!process.env.PRAISE_GIVER_ROLE_ID) {
 
 // Start Discord bot
 const token = process.env.DISCORD_TOKEN;
-const frontendUrl = process.env.FRONTEND_URL;
 
 if (!token) {
   logger.err('Discord token not set.');
   throw new Error('Discord token not set.');
-}
-
-if (!frontendUrl) {
-  logger.err('FRONTEND_URL not set.');
 }
 
 // Create a new client instance
