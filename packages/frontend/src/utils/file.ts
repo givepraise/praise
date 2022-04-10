@@ -7,3 +7,8 @@ export const saveLocalFile = (data: Blob, fileName: string): void => {
   a.click();
   window.URL.revokeObjectURL(url);
 };
+
+export const imageFullPath = (filename: string): string => {
+  const apiUrl = process.env.REACT_APP_API_URL || '';
+  return `${apiUrl}/uploads/${filename}`;
+};

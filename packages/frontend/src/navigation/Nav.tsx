@@ -2,6 +2,7 @@ import AdminOnly from '@/components/auth/AdminOnly';
 import EthAccount from '@/components/EthAccount';
 import { ActiveTokenSet } from '@/model/auth';
 import { SingleSetting } from '@/model/settings';
+import { imageFullPath } from '@/utils/file';
 import { classNames } from '@/utils/index';
 import {
   faAngleRight,
@@ -34,7 +35,7 @@ export default function Nav(): JSX.Element {
               <Link to="/">
                 {logoSetting && (
                   <img
-                    src={logoSetting.valueRealized as string}
+                    src={imageFullPath(logoSetting.valueRealized as string)}
                     className={'inline-block w-52'}
                   />
                 )}
