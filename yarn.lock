@@ -12171,6 +12171,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mongodb@workspace:packages/mongodb":
+  version: 0.0.0-use.local
+  resolution: "mongodb@workspace:packages/mongodb"
+  languageName: unknown
+  linkType: soft
+
 "mongoose-paginate-ts@npm:^1.2.0":
   version: 1.2.6
   resolution: "mongoose-paginate-ts@npm:1.2.6"
@@ -13995,6 +14001,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.7.0
     "@typescript-eslint/parser": ^5.10.2
     docsify: ^4.12.2
+    dotenv: ^16.0.0
     eslint: ^8.8.0
     eslint-config-prettier: ^8.3.0
     eslint-import-resolver-node: ^0.3.6
