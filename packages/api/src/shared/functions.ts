@@ -90,14 +90,15 @@ export const upload = async (req: Request, key: string): Promise<string> => {
 
     await logo.mv(path);
 
-    return path;
+    return filename;
   } catch (e) {
     console.log('ERROR:', e);
     throw new InternalServerError('File upload failed.');
   }
 };
 
-export const removeFile = async (filepath: string): Promise<void> => {
+export const removeFile = async (filename: string): Promise<void> => {
+  const filepath = `uploads/${filename}`;
   try {
     await unlink(filepath);
   } catch (e) {
