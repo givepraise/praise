@@ -7,6 +7,7 @@ WORKDIR /usr/src/
 COPY ./package*.json .
 COPY ./.yarnrc.yml .
 COPY ./yarn.lock .
+COPY ./.env .
 COPY ./.yarn ./.yarn
 
 # Copy packages

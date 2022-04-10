@@ -16,7 +16,17 @@ services:
       - 8088:8088
     links:
       - mongodb
-  
+
+  discord-bot:
+    container_name: discord-bot-praise
+    image: discord-bot
+    build: 
+      context: ./
+      dockerfile: ./packages/discord-bot/Dockerfile
+    restart: always
+    links:
+      - mongodb
+
   frontend:
     container_name: frontend-praise
     image: frontend
