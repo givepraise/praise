@@ -6,10 +6,19 @@ import path from 'path';
 import { DiscordClient } from './interfaces/DiscordClient';
 import { registerCommands } from './utils/registerCommands';
 
-const load = dotenv.config({ path: path.join(__dirname, '..', '/.env') });
-if (load.error) {
-  logger.err(load.error.message);
-  throw load.error;
+let env = dotenv.config({
+  path: path.join(__dirname, '..', '..', '..', '/.env'),
+});
+if (env.error) {
+  logger.err(env.error.message);
+  throw env.error;
+}
+env = dotenv.config({
+  path: path.join(__dirname, '..', '/.env'),
+});
+if (env.error) {
+  logger.err(env.error.message);
+  throw env.error;
 }
 
 if (!process.env.PRAISE_GIVER_ROLE_ID) {
