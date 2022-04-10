@@ -19,15 +19,14 @@ RUN yarn
 RUN yarn workspace api build
 RUN yarn workspace frontend build
 
-# 
-#FROM nginx:alpine
-#FROM jonasal/nginx-certbot:latest
-#COPY ./packages/frontend/nginx_praise.conf /etc/nginx/conf.d/
+# note: never use the :latest tag in a production site
+FROM caddy:2.4.6-alpine
 
-## Remove default nginx index page
-#RUN rm -rf /usr/share/nginx/html/*
+ARG SERVER
 
-# Copy from the stage 1
-#COPY --from=builder /usr/src/packages/frontend/build /usr/share/nginx/html
+COPY ./packages/frontend/Caddyfile /etc/caddy/Caddyfile
+RUN sed -i "s/{SERVER}/$SERVER/" /etc/caddy/Caddyfile
+COPY --from=builder /usr/src/packages/frontend/build /var/www/praise
 
-#ENTRYPOINT ["nginx", "-g", "daemon off;"]
+EXPOSE 80
+EXPOSE 443

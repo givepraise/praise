@@ -1,25 +1,17 @@
 version: '3.8'
 services:
   mongodb:
-    container_name: mongodb-praise
-    image: mongo
-    ports:
-      - $MONGO_PORT:$MONGO_PORT
-    restart: unless-stopped
-    volumes:
-      - mongodb_data:/data/db
-      - './users_init.sh:/docker-entrypoint-initdb.d/users_init.sh:ro'
-    env_file:
-      - .env
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME
-      MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD
+    extends:
+      file: packages/mongodb/docker-compose.yml
+      service: mongodb
   
   api:
     container_name: api-praise
     image: api
+    build: 
+      context: ./
+      dockerfile: ./packages/api/Dockerfile
     restart: always
-    build: .
     ports:
       - 8088:8088
     links:
@@ -28,27 +20,22 @@ services:
   frontend:
     container_name: frontend-praise
     image: frontend
-    volumes:
-      - frontend_data:/usr/src
-  
-  nginx:
-    container_name: nginx-praise
-    image: jonasal/nginx-certbot:latest
+    build: 
+      context: ./
+      dockerfile: ./packages/frontend/Dockerfile
+      args:
+        SERVER: $SERVER
     restart: unless-stopped
-    environment:
-      CERTBOT_EMAIL: $CERTBOT_EMAIL
-      STAGING: "1"
     ports:
       - 80:80
       - 443:443
     volumes:
-      - nginx_secrets:/etc/letsencrypt
-      - ./user_conf.d:/etc/nginx/user_conf.d
-      - frontend_data:/usr/src
+      - caddy_data:/data
+      - caddy_config:/config
     links:
       - api
 
 volumes:
-  nginx_secrets:
   mongodb_data:
-  frontend_data:
+  caddy_data:
+  caddy_config:

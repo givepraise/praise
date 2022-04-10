@@ -1,0 +1,14 @@
+{SERVER} {
+  handle /api* {
+		reverse_proxy api:8088
+	}
+  handle /uploads* {
+		reverse_proxy api:8088
+	}
+  handle {
+    root * /var/www/praise
+    try_files {path} /index.html
+    encode zstd gzip
+    file_server
+  }
+}
