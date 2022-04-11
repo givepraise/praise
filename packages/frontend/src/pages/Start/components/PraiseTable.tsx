@@ -10,20 +10,13 @@ import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import PraisePageLoader from './PraisePageLoader';
 import { micromark } from 'micromark';
-import { unfurl } from 'unfurl.js';
-import Metascraper from 'metascraper';
-import { LinkPreview } from '@dhaiwat10/react-link-preview';
+import EmbeddedLink from '@/components/EmbeddedLink';
 
 export const ALL_PRAISE_LIST_KEY = 'ALL_PRAISE';
 
 const PraiseTable = (): JSX.Element => {
   const history = useHistory();
   const allPraise = useRecoilValue(AllPraiseList(ALL_PRAISE_LIST_KEY));
-
-  const getEmbedLink = async (text) => {
-    // const result = unfurl('https://github.com/trending');
-    // console.log('UNFURL:', result);
-  };
 
   const columns = React.useMemo(
     () => [
@@ -50,16 +43,16 @@ const PraiseTable = (): JSX.Element => {
                 </span>
               </div>
 
+              <div className="w-full">{data.row.original.reason}</div>
+
               <div className="w-full">
-                <LinkPreview url="https://github.com/nebs-dev" width="400px" />{' '}
+                <EmbeddedLink
+                  text={data.row.original.reason}
+                  width="570px"
+                  className="mt-4"
+                />
               </div>
             </div>
-
-            {/* <iframe
-              src="https://dnevnik.hr/showbuzz/celebrity/izabel-goulart-u-bikiniju-s-tangama-izvijala-se-pod-tusem-na-plazi---718391.html?itm_source=HomeTopRow&itm_medium=Dnevnik&itm_campaign=Naslovnica"
-              height="300"
-              width="300"
-            /> */}
           </div>
         ),
       },
