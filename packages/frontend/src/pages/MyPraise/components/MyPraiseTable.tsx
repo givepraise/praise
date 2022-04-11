@@ -6,17 +6,38 @@ import { localizeAndFormatIsoDate } from '@/utils/date';
 import { faSadTear } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
-import MyPraisePageLoader from './MyPraisePageLoader';
+import { ActiveUserId } from '@/model/auth';
+import { SingleUser } from '@/model/users';
+import { UserDto } from 'api/dist/user/types';
+import PraisePageLoader from '../../Start/components/PraisePageLoader';
 
 export const MY_PRAISE_LIST_KEY = 'MY_PRAISE';
+
+//TODO add support for more than one user account connected to one user
+const getReceiverId = (user: UserDto | undefined): string | undefined => {
+  const accounts = user?.accounts;
+  return Array.isArray(accounts) && accounts.length > 0
+    ? accounts[0]._id
+    : undefined;
+};
 
 const MyPraiseTable = (): JSX.Element => {
   const history = useHistory();
   const allPraise = useRecoilValue(AllPraiseList(MY_PRAISE_LIST_KEY));
+  const userId = useRecoilValue(ActiveUserId);
+  const user = useRecoilValue(SingleUser({ userId }));
+  const [receiverId, setReceiverId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (!user) return;
+
+    setReceiverId(getReceiverId(user));
+  }, [user]);
+
   const columns = React.useMemo(
     () => [
       {
@@ -101,7 +122,12 @@ const MyPraiseTable = (): JSX.Element => {
         </div>
       )}
       <React.Suspense fallback={<LoaderSpinner />}>
-        <MyPraisePageLoader />
+        {receiverId && (
+          <PraisePageLoader
+            listKey={MY_PRAISE_LIST_KEY}
+            receiverId={receiverId}
+          />
+        )}
       </React.Suspense>
     </>
   );
