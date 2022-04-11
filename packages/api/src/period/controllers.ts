@@ -175,9 +175,6 @@ export const close = async (
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
-  if (period.status !== PeriodStatusType.QUANTIFY)
-    throw Error('Only Periods with status QUANTIFY can be closed');
-
   period.status = PeriodStatusType.CLOSED;
   await period.save();
 
