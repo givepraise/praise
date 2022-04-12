@@ -7,14 +7,14 @@ import { DiscordClient } from './interfaces/DiscordClient';
 import { registerCommands } from './utils/registerCommands';
 
 let env = dotenv.config({
-  path: path.join(__dirname, '..', '..', '..', '/.env'),
+  path: path.join(__dirname, '../../../.env'),
 });
 if (env.error) {
   logger.err(env.error.message);
   throw env.error;
 }
 env = dotenv.config({
-  path: path.join(__dirname, '..', '/.env'),
+  path: path.join(__dirname, '../.env'),
 });
 if (env.error) {
   logger.err(env.error.message);
