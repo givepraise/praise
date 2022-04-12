@@ -89,7 +89,7 @@ const run = async (): Promise<void> => {
   const { periodId, currentQuantifierId, newQuantifierId } = argv;
 
   console.log(argv.periodId);
-  await connectDatabase();
+  await connectDatabase('localhost');
   await replaceActiveQuantifier(periodId, currentQuantifierId, newQuantifierId);
   exit();
 };
