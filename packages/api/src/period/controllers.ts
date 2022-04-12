@@ -55,6 +55,7 @@ import {
   getPeriodDateRangeQuery,
   getPreviousPeriodEndDate,
   verifyAnyPraiseAssigned,
+  isPeriodLatest,
 } from './utils';
 import { PeriodModel } from './entities';
 import { periodDocumentTransformer } from './transformers';
@@ -142,6 +143,13 @@ export const update = async (
   }
 
   if (endDate) {
+    const latest = await isPeriodLatest(period);
+    if (!latest)
+      throw new BadRequestError('Date change only allowed on last period.');
+
+    if (period.status !== PeriodStatusType.OPEN)
+      throw new BadRequestError('Date change only allowed on open periods.');
+
     try {
       const newEndDate = parseISO(endDate);
       period.endDate = newEndDate;
@@ -451,9 +459,10 @@ export const assignQuantifiers = async (
   );
 
   await PraiseModel.bulkWrite(bulkQueries);
-
-  period.status = PeriodStatusType.QUANTIFY;
-  await period.save();
+  await PeriodModel.updateOne(
+    { _id: period._id },
+    { $set: { status: PeriodStatusType.QUANTIFY } }
+  );
 
   const periodDetailsDto = await findPeriodDetailsDto(periodId);
   res.status(StatusCodes.OK).json(periodDetailsDto);

@@ -5,21 +5,29 @@ import { BottomScrollListener } from 'react-bottom-scroll-listener';
 import { useRecoilValue } from 'recoil';
 import { ALL_PRAISE_LIST_KEY } from './PraiseTable';
 
-const PraisePageLoader = (): JSX.Element => {
-  const praisePagination = useRecoilValue(
-    AllPraiseQueryPagination(ALL_PRAISE_LIST_KEY)
-  );
+interface Params {
+  listKey?: string;
+  receiverId?: string;
+}
+
+const PraisePageLoader = ({
+  listKey = ALL_PRAISE_LIST_KEY,
+  receiverId,
+}: Params): JSX.Element => {
+  const praisePagination = useRecoilValue(AllPraiseQueryPagination(listKey));
   const [nextPageNumber, setNextPageNumber] = useState<number>(
     praisePagination.currentPage + 1
   );
+  const receiverIdQuery = receiverId ? { receiver: receiverId } : {};
   const queryResponse = useAllPraiseQuery(
     {
       page: nextPageNumber,
       limit: 20,
       sortColumn: 'createdAt',
       sortType: 'desc',
+      ...receiverIdQuery,
     },
-    ALL_PRAISE_LIST_KEY
+    listKey
   );
   const [loading, setLoading] = React.useState(false);
 
