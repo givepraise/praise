@@ -67,12 +67,13 @@ Set database connection parameters. Do not use same username/password for `INITD
 
 ```
 MONGO_DB=praise_db
+# Use mongodb when running Praise on Docker, localhost otherwise
 MONGO_HOST=mongodb
 MONGO_PORT=27017
-MONGO_INITDB_ROOT_USERNAME=
-MONGO_INITDB_ROOT_PASSWORD=
-MONGO_USERNAME=
-MONGO_PASSWORD=
+MONGO_INITDB_ROOT_USERNAME=praiseDbRootUsername
+MONGO_INITDB_ROOT_PASSWORD=[any password]
+MONGO_USERNAME=praiseDbUsername
+MONGO_PASSWORD=[any password]
 ```
 
 ## Configure API
