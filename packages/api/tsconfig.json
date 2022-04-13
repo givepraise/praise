@@ -6,6 +6,7 @@
     "target": "ES2015",
     "module": "commonjs",
     "strict": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "declaration": true,
     "skipLibCheck": true,
@@ -27,6 +28,6 @@
       "@server": ["src/server"]
     }
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"],
+  "include": ["src/**/*.ts", "test/**/*.ts", "src/**/*.json",],
   "references": []
 }

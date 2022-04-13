@@ -4,6 +4,7 @@ import logger from 'jet-logger';
 import mongoose, { ConnectOptions } from 'mongoose';
 import path from 'path';
 import { DiscordClient } from './interfaces/DiscordClient';
+import { envCheck } from './pre-start/envCheck';
 import { registerCommands } from './utils/registerCommands';
 
 const load = dotenv.config({ path: path.join(__dirname, '..', '/.env') });
@@ -12,22 +13,11 @@ if (load.error) {
   throw load.error;
 }
 
-if (!process.env.PRAISE_GIVER_ROLE_ID) {
-  logger.err('Praise Giver Role not set.');
-}
+// Check for required ENV variables
+envCheck();
 
 // Start Discord bot
 const token = process.env.DISCORD_TOKEN;
-const frontendUrl = process.env.FRONTEND_URL;
-
-if (!token) {
-  logger.err('Discord token not set.');
-  throw new Error('Discord token not set.');
-}
-
-if (!frontendUrl) {
-  logger.err('FRONTEND_URL not set.');
-}
 
 // Create a new client instance
 const discordClient = new Client({

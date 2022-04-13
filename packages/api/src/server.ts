@@ -13,6 +13,7 @@ import { baseRouter } from './routes';
 import { connectDatabase } from './database/connection';
 import { setupMigrator } from './database/migration';
 import fileUpload from 'express-fileupload';
+import { envCheck } from './pre-start/envCheck';
 
 const app = express();
 
@@ -23,6 +24,9 @@ app.use(
 );
 
 void (async (): Promise<void> => {
+  // Check for required ENV variables
+  envCheck();
+
   logger.info('Connecting to database…');
   const db = await connectDatabase();
   logger.info('Connected to database.');
