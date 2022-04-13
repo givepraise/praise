@@ -44,7 +44,7 @@ const settings = [
   },
   {
     key: 'PRAISE_SUCCESS_MESSAGE',
-    value: '✅ Praise {receivers} {reason}',
+    value: '✅ Praise {@receivers} {reason}',
     type: 'Textarea',
   },
   {
@@ -98,7 +98,7 @@ const settings = [
   {
     key: 'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM',
     value:
-      "**You were just [praised in the TEC](praiseURL)\nIt looks like you haven't activated your account...To activate your account, use the `/praise-activate` command in the server.",
+      "**You were just [praised in the TEC](praiseURL)**\nIt looks like you haven't activated your account... To activate your account, use the `/praise-activate` command in the server.",
     type: 'Textarea',
   },
   {
