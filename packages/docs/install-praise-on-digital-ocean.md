@@ -44,7 +44,6 @@ Complete step 1 in the installation guide: [How To Install and Use Docker Compos
 Clone the Praise repository from GitHub:
 
 ```
-cd /var/www
 git clone https://github.com/CommonsBuild/praise.git
 ```
 
