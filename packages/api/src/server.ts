@@ -2,7 +2,7 @@ import { ErrorHandler } from '@error/ErrorHandler';
 import { cookieProps } from '@shared/constants';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import express, { json, urlencoded } from 'express';
+import express, { json, urlencoded, Express } from 'express';
 import 'express-async-errors';
 import helmet from 'helmet';
 import logger from 'jet-logger';
@@ -14,15 +14,15 @@ import { connectDatabase } from './database/connection';
 import { setupMigrator } from './database/migration';
 import fileUpload from 'express-fileupload';
 
-const app = express();
+const setup = async (): Promise<Express> => {
+  const app = express();
 
-app.use(
-  fileUpload({
-    createParentPath: true,
-  })
-);
+  app.use(
+    fileUpload({
+      createParentPath: true,
+    })
+  );
 
-void (async (): Promise<void> => {
   logger.info('Connecting to database…');
   const db = await connectDatabase();
   logger.info('Connected to database.');
@@ -66,6 +66,8 @@ void (async (): Promise<void> => {
 
   // Error handling
   app.use(ErrorHandler);
-})();
 
-export { app };
+  return app;
+};
+
+export { setup };
