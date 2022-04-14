@@ -33,9 +33,6 @@ const mochaHooks = async (): Promise<Mocha.RootHookObject> => {
     beforeEach(this: TestContext): void {
       this.client = request(this.app);
     },
-    afterAll(): void {
-      exit(0);
-    },
   });
 };
 
