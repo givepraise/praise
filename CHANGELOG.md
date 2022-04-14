@@ -32,7 +32,7 @@ Discord-bot:
 
 - Warn when no periods quantifying
 
-## [0.4.0] - 2022-04-07
+## [0.3.0] - 2022-04-07
 
 ### Added
 
