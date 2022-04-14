@@ -18,6 +18,16 @@ db.createUser({
     db: 'praise_db'
   }]
 });
+
+use praise_db_testing_tmp;
+db.createUser({
+  user:  '$MONGO_DB_USER',
+  pwd: '$MONGO_DB_PASSWORD',
+  roles: [{
+    role: 'readWrite',
+    db: 'praise_db_testing_tmp'
+  }]
+});
 EOF
 else
     echo "MONGO_INITDB_ROOT_USERNAME,MONGO_INITDB_ROOT_PASSWORD, MONGO_DB_USER and MONGO_DB_PASSWORD must be provided. Some of these are missing, hence exiting database and user creatioin"
