@@ -167,3 +167,123 @@ describe('POST /auth', () => {
     expect(response2.status).to.equal(401);
   });
 });
+
+describe('POST /auth/refresh', () => {
+  it('200 response with new accessToken & same refreshToken', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({ ethereumAddress: wallet.address });
+
+    const response = await this.client.get(
+      `/api/auth/nonce?ethereumAddress=${wallet.address}`
+    );
+
+    const message =
+      'SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n' +
+      `ADDRESS:\n${wallet.address}\n\n` +
+      `NONCE:\n${response.body.nonce as string}`;
+
+    const signature = await wallet.signMessage(message);
+
+    const login_data = {
+      ethereumAddress: wallet.address,
+      signature: signature,
+    };
+
+    const response2 = await this.client
+      .post('/api/auth/')
+      .set('Accept', 'application/json')
+      .send(login_data);
+
+    const FORM_DATA = {
+      refreshToken: response2.body.refreshToken,
+    };
+
+    const response3 = await this.client
+      .post('/api/auth/refresh')
+      .set('Accept', 'application/json')
+      .send(FORM_DATA);
+
+    expect(response3.status).to.equal(200);
+    expect(response3.body).to.have.property('accessToken');
+    expect(response3.body).to.have.property('refreshToken');
+    expect(response3.body.accessToken).to.not.equal(
+      response2.body.accessToken,
+      'Access Token not refreshed'
+    );
+    expect(response3.body.refreshToken).to.equal(
+      response2.body.refreshToken,
+      'Refresh Token was unexpectedly refreshed'
+    );
+  });
+
+  it('401 response when invalid refreshToken', async function () {
+    const BAD_REFRESH_TOKEN = 'ABCD12345';
+
+    const wallet = Wallet.createRandom();
+    await seedUser({ ethereumAddress: wallet.address });
+
+    const response = await this.client.get(
+      `/api/auth/nonce?ethereumAddress=${wallet.address}`
+    );
+
+    const message =
+      'SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n' +
+      `ADDRESS:\n${wallet.address}\n\n` +
+      `NONCE:\n${response.body.nonce as string}`;
+
+    const signature = await wallet.signMessage(message);
+
+    const login_data = {
+      ethereumAddress: wallet.address,
+      signature: signature,
+    };
+
+    const response2 = await this.client
+      .post('/api/auth/')
+      .set('Accept', 'application/json')
+      .send(login_data);
+
+    const FORM_DATA = {
+      refreshToken: BAD_REFRESH_TOKEN,
+    };
+
+    const response3 = await this.client
+      .post('/api/auth/refresh')
+      .set('Accept', 'application/json')
+      .send(FORM_DATA);
+
+    expect(response3.status).to.equal(401);
+  });
+
+  it('401 response when missing refreshToken', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({ ethereumAddress: wallet.address });
+
+    const response = await this.client.get(
+      `/api/auth/nonce?ethereumAddress=${wallet.address}`
+    );
+
+    const message =
+      'SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n' +
+      `ADDRESS:\n${wallet.address}\n\n` +
+      `NONCE:\n${response.body.nonce as string}`;
+
+    const signature = await wallet.signMessage(message);
+
+    const login_data = {
+      ethereumAddress: wallet.address,
+      signature: signature,
+    };
+
+    await this.client
+      .post('/api/auth/')
+      .set('Accept', 'application/json')
+      .send(login_data);
+
+    const response3 = await this.client
+      .post('/api/auth/refresh')
+      .set('Accept', 'application/json');
+
+    expect(response3.status).to.equal(401);
+  });
+});
