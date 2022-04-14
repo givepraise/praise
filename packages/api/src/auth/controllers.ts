@@ -51,7 +51,7 @@ export const auth = async (
     .exec()) as UserDocument;
   if (!user || !user._id) throw new NotFoundError('User');
   if (!user.nonce)
-    throw new BadRequestError('Noce not found. Call /api/nonce first.');
+    throw new BadRequestError('Nonce not found. Call /api/auth/nonce first.');
 
   // Generate expected message, nonce included.
   // Recover signer from generated message + signature
