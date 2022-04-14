@@ -1,6 +1,7 @@
 import { Wallet } from 'ethers';
 import { seedUser } from '../pre-start/seed';
 import { expect } from 'chai';
+import { loginUser } from './utils';
 
 describe('GET /api/auth/nonce', () => {
   it('200 response with json body', function () {
@@ -172,30 +173,10 @@ describe('POST /auth/refresh', () => {
   it('200 response with new accessToken & same refreshToken', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({ ethereumAddress: wallet.address });
-
-    const response = await this.client.get(
-      `/api/auth/nonce?ethereumAddress=${wallet.address}`
-    );
-
-    const message =
-      'SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n' +
-      `ADDRESS:\n${wallet.address}\n\n` +
-      `NONCE:\n${response.body.nonce as string}`;
-
-    const signature = await wallet.signMessage(message);
-
-    const login_data = {
-      ethereumAddress: wallet.address,
-      signature: signature,
-    };
-
-    const response2 = await this.client
-      .post('/api/auth/')
-      .set('Accept', 'application/json')
-      .send(login_data);
+    const { refreshToken, accessToken } = await loginUser(wallet, this.client);
 
     const FORM_DATA = {
-      refreshToken: response2.body.refreshToken,
+      refreshToken,
     };
 
     const response3 = await this.client
@@ -207,11 +188,11 @@ describe('POST /auth/refresh', () => {
     expect(response3.body).to.have.property('accessToken');
     expect(response3.body).to.have.property('refreshToken');
     expect(response3.body.accessToken).to.not.equal(
-      response2.body.accessToken,
+      accessToken,
       'Access Token not refreshed'
     );
     expect(response3.body.refreshToken).to.equal(
-      response2.body.refreshToken,
+      refreshToken,
       'Refresh Token was unexpectedly refreshed'
     );
   });
@@ -221,27 +202,7 @@ describe('POST /auth/refresh', () => {
 
     const wallet = Wallet.createRandom();
     await seedUser({ ethereumAddress: wallet.address });
-
-    const response = await this.client.get(
-      `/api/auth/nonce?ethereumAddress=${wallet.address}`
-    );
-
-    const message =
-      'SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n' +
-      `ADDRESS:\n${wallet.address}\n\n` +
-      `NONCE:\n${response.body.nonce as string}`;
-
-    const signature = await wallet.signMessage(message);
-
-    const login_data = {
-      ethereumAddress: wallet.address,
-      signature: signature,
-    };
-
-    const response2 = await this.client
-      .post('/api/auth/')
-      .set('Accept', 'application/json')
-      .send(login_data);
+    await loginUser(wallet, this.client);
 
     const FORM_DATA = {
       refreshToken: BAD_REFRESH_TOKEN,
@@ -258,27 +219,7 @@ describe('POST /auth/refresh', () => {
   it('401 response when missing refreshToken', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({ ethereumAddress: wallet.address });
-
-    const response = await this.client.get(
-      `/api/auth/nonce?ethereumAddress=${wallet.address}`
-    );
-
-    const message =
-      'SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n' +
-      `ADDRESS:\n${wallet.address}\n\n` +
-      `NONCE:\n${response.body.nonce as string}`;
-
-    const signature = await wallet.signMessage(message);
-
-    const login_data = {
-      ethereumAddress: wallet.address,
-      signature: signature,
-    };
-
-    await this.client
-      .post('/api/auth/')
-      .set('Accept', 'application/json')
-      .send(login_data);
+    await loginUser(wallet, this.client);
 
     const response3 = await this.client
       .post('/api/auth/refresh')
