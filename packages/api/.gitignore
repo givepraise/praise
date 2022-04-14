@@ -5,3 +5,4 @@ node_modules
 tsconfig.tsbuildinfo
 uploads/*
 !*uploads/praise_logo.png
+.nyc_output
