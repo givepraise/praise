@@ -1,4 +1,5 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
+import getMarkdownText from '@/components/MarkdownText';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { AllPraiseList } from '@/model/praise';
@@ -40,7 +41,12 @@ const PraiseTable = (): JSX.Element => {
                 </span>
               </div>
 
-              <div className="w-full">{data.row.original.reason}</div>
+              <div
+                className="w-full"
+                dangerouslySetInnerHTML={{
+                  __html: getMarkdownText(data.row.original.reason),
+                }}
+              ></div>
             </div>
           </div>
         ),

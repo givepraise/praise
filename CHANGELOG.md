@@ -7,7 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.0] - 2022-04-07
+## [0.4.0] - 2022-04-14
+
+### Added
+
+- Periods can now be closed without assigning quantifiers first
+- Dashboard now correctly displays markdown formatted messages
+- Script `not-yet-activated` lists all users ... not yet activated
+
+### Fixed
+
+API:
+
+- Prevent false mongoose validation error on assignQuantifiers
+
+Frontend:
+
+- Changed some column headers
+- Centered som column values
+- Removed mono typeface
+- Minor adjustment of navigation alignment
+
+Discord-bot:
+
+- Warn when no periods quantifying
+
+## [0.4.0] - 2022-04-07
 
 ### Added
 

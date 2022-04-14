@@ -66,6 +66,13 @@ export const announcementHandler = async (
             selectedUserType === 'UNFINISHED-QUANTIFIERS'
           ) {
             const openPeriods = await PeriodModel.find({ status: 'QUANTIFY' });
+            if (!openPeriods.length) {
+              await interaction.editReply({
+                content: 'No periods open for quantification.',
+                components: [],
+              });
+              return;
+            }
             await interaction.editReply({
               content: 'Which period are you referring to?',
               components: [

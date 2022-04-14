@@ -21,18 +21,19 @@ const ReceiverTable = (): JSX.Element | null => {
         {
           Header: 'Receiver',
           accessor: '_id',
+          className: 'text-left',
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           Cell: (data: any): JSX.Element => (
             <UserCell userId={data.row.original.userAccount.name} />
           ),
         },
         {
-          Header: 'Number of praise',
+          Header: 'Praise count',
           className: 'text-center',
           accessor: 'praiseCount',
         },
         {
-          Header: 'Total praise score',
+          Header: 'Praise score',
           className: 'text-center',
           accessor: 'score',
           sortType: 'basic',
@@ -87,7 +88,10 @@ const ReceiverTable = (): JSX.Element | null => {
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
                 // eslint-disable-next-line react/jsx-key
-                <th className="text-left" {...column.getHeaderProps()}>
+                <th
+                  className={(column as any).className}
+                  {...column.getHeaderProps()}
+                >
                   {column.render('Header')}
                 </th>
               ))}
