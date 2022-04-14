@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Periods can now be closed without assigning quantifiers first
 - Dashboard now correctly displays markdown formatted messages
+- Script `not-yet-activated` lists all users ... not yet activated
 
 ### Fixed
 
