@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .ts",
     "start": "ts-node -r tsconfig-paths/register --transpile-only ./src",
     "start:dev": "nodemon ./src",
-    "test": "mocha -r ts-node/register -r tsconfig-paths/register 'src/tests/**/*.spec.ts'",
+    "test": "mocha -r ts-node/register -r tsconfig-paths/register -r src/tests/setup.ts 'src/tests/**/*.spec.ts'",
     "import-praise": "ts-node -r tsconfig-paths/register src/scripts/import-praise.ts",
     "replace-quantifier": "ts-node -r tsconfig-paths/register src/scripts/replace-quantifier.ts",
     "migrator": "ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts",
