@@ -3,7 +3,6 @@ import * as dotenv from 'dotenv';
 import path from 'path';
 import { Express } from 'express';
 import request, { SuperTest, Test } from 'supertest';
-import { exit } from 'process';
 import { setup } from '../server';
 
 interface TestContext extends Mocha.Context {
@@ -25,7 +24,6 @@ const mochaHooks = async (): Promise<Mocha.RootHookObject> => {
       }
 
       this.app = await setup();
-      this.client = request(this.app);
       logger.info('Running api tests:\n\n');
 
       this.timeout(2000);
