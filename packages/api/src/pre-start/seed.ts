@@ -167,4 +167,4 @@ const seedData = async (): Promise<void> => {
   logger.info('Seeding complete.');
 };
 
-export { seedData, seedUser };
+export { seedData, seedUser, seedPeriods, seedPraises };
