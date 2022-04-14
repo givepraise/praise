@@ -113,31 +113,37 @@ const PeriodDetails = (): JSX.Element | null => {
         <>
           <PeriodDateForm />
           <div className="mt-5">
-            {period.status === 'OPEN' &&
-            period.receivers &&
-            period?.receivers.length > 0 &&
-            allQuantifiers &&
-            allQuantifiers.length > 0 ? (
-              <button
-                className="praise-button"
-                onClick={(): void => {
-                  setIsAssignDialogOpen(true);
-                }}
-              >
-                <FontAwesomeIcon icon={faUsers} size="1x" className="mr-2" />
-                Assign quantifiers
-              </button>
-            ) : null}
-            {period.status === 'QUANTIFY' ? (
+            {period.status === 'OPEN' || period.status === 'QUANTIFY' ? (
               <div className="flex justify-between">
-                <button className="praise-button" onClick={handleExport}>
-                  <FontAwesomeIcon
-                    icon={faDownload}
-                    size="1x"
-                    className="mr-2"
-                  />
-                  Export
-                </button>
+                {period.status === 'OPEN' &&
+                period.receivers &&
+                period?.receivers.length > 0 &&
+                allQuantifiers &&
+                allQuantifiers.length > 0 ? (
+                  <button
+                    className="praise-button"
+                    onClick={(): void => {
+                      setIsAssignDialogOpen(true);
+                    }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faUsers}
+                      size="1x"
+                      className="mr-2"
+                    />
+                    Assign quantifiers
+                  </button>
+                ) : null}
+                {period.status === 'QUANTIFY' ? (
+                  <button className="praise-button" onClick={handleExport}>
+                    <FontAwesomeIcon
+                      icon={faDownload}
+                      size="1x"
+                      className="mr-2"
+                    />
+                    Export
+                  </button>
+                ) : null}
                 <button
                   className="hover:bg-red-600 praise-button"
                   onClick={(): void => setIsCloseDialogOpen(true)}
