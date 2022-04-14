@@ -6,6 +6,7 @@ import { UserAccountDocument } from '@useraccount/types';
 import { insertNewPeriodSettings } from '@periodsettings/utils';
 import faker from 'faker';
 import logger from 'jet-logger';
+import { UserDocument } from '@user/types';
 
 const PERIOD_NUMBER = 3;
 const PERIOD_LENGTH = 10;
@@ -42,7 +43,7 @@ const fetchTwoRandomUserAccounts = async (): Promise<UserAccountDocument[]> => {
 const seedUser = async (
   userData: Object = {},
   userAccountData: Object = {}
-): Promise<void> => {
+): Promise<UserDocument> => {
   const user = await UserModel.create({
     ethereumAddress: faker.finance.ethereumAddress(),
     roles: ['USER'],
@@ -56,6 +57,8 @@ const seedUser = async (
     platform: 'DISCORD',
     ...userAccountData,
   });
+
+  return user;
 };
 
 const seedPeriods = async (): Promise<void> => {
@@ -152,7 +155,7 @@ const seedPraises = async (): Promise<void> => {
   }
 };
 
-export const seedData = async (): Promise<void> => {
+const seedData = async (): Promise<void> => {
   logger.info('Seeding database with fake data.');
 
   await seedPeriods();
@@ -163,3 +166,5 @@ export const seedData = async (): Promise<void> => {
 
   logger.info('Seeding complete.');
 };
+
+export { seedData, seedUser };
