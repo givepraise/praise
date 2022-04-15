@@ -176,7 +176,7 @@ export const praiseSuccessDM = async (
 };
 
 export const notActivatedDM = async (msgUrl: string): Promise<MessageEmbed> => {
-  const msg = await getSetting('PRAISE_SUCCESS_DM');
+  const msg = await getSetting('PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM');
   if (msg && typeof msg === 'string') {
     return new MessageEmbed()
       .setColor('#ff0000')

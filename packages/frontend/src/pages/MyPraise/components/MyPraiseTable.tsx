@@ -14,6 +14,7 @@ import { ActiveUserId } from '@/model/auth';
 import { SingleUser } from '@/model/users';
 import { UserDto } from 'api/dist/user/types';
 import PraisePageLoader from '../../Start/components/PraisePageLoader';
+import getMarkdownText from '@/components/MarkdownText';
 
 export const MY_PRAISE_LIST_KEY = 'MY_PRAISE';
 
@@ -63,7 +64,12 @@ const MyPraiseTable = (): JSX.Element => {
                 </span>
               </div>
 
-              <div className="w-full">{data.row.original.reason}</div>
+              <div
+                className="w-full"
+                dangerouslySetInnerHTML={{
+                  __html: getMarkdownText(data.row.original.reason),
+                }}
+              ></div>
             </div>
           </div>
         ),
