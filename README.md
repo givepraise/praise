@@ -2,6 +2,8 @@
 
 # Praise
 
+### 🎉 Praise is live! The Token Engineering Commons is the first community to use Praise. To see Praise in action, please join the [TEC Discord](https://discord.tecommons.org) or login to the [Prasie Dashboard](https://praise.tecommons.org) using any Ethereum address.
+
 ### ℹ️ Praise is under active development, codebase should be considered alpha stage. Breaking changes will happen.
 
 - [About](#about)
