@@ -4,8 +4,9 @@ import { Collection } from 'discord.js';
 import { readdir } from 'fs/promises';
 import logger from 'jet-logger';
 import { join } from 'path';
-import { Command } from '../interfaces/Command';
+import { Command, HelpCommandBuilder } from '../interfaces/Command';
 import { DiscordClient } from '../interfaces/DiscordClient';
+import { help } from '../commands/help';
 
 export const registerCommands = async (
   client: DiscordClient
@@ -36,10 +37,19 @@ export const registerCommands = async (
         join(process.cwd(), 'src', 'commands', file)
       );
       const name = file.split('.')[0];
-      const command = fileData[name] as Command;
-      client.commands.set(command.data.name, command);
-      commandData.push(command.data);
+      if (name !== 'help') {
+        const command = fileData[name] as Command;
+        client.commands.set(command.data.name, command);
+        commandData.push(command.data);
+      }
     }
+
+    const cmdList = Array.from(client.commands);
+    const helpCommandBuilder = help(cmdList.map((i) => [i[0], i[0]]));
+    // cmdList.map((i) => [`/${i[0]}`, `/${i[0]}`])
+    const helpCommand = helpCommandBuilder['help'];
+    client.commands.set(helpCommand.data.name, helpCommand);
+    commandData.push(helpCommand.data);
 
     await rest.put(Routes.applicationGuildCommands(client.id, client.guildId), {
       body: commandData,
