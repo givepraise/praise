@@ -37,7 +37,10 @@ void (async (): Promise<void> => {
   const migrations = await umzug.pending();
   logger.info(`Found ${migrations.length} pending migrations`);
   await umzug.up();
-  logger.info('Migrations complete.');
+
+  if (migrations.length > 0) {
+    logger.info('Migrations complete.');
+  }
 
   app.use(
     cors({
