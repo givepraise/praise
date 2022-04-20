@@ -1,5 +1,5 @@
-const envCheck = (jsonData: Array<string>): void => {
-  const unsetEnv = jsonData.filter(
+const envCheck = (requiredEnvVariables: Array<string>): void => {
+  const unsetEnv = requiredEnvVariables.filter(
     (env) =>
       !(typeof process.env[env] !== 'undefined') || process.env[env] === ''
   );
