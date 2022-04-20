@@ -6,8 +6,7 @@ const envCheck = (requiredEnvVariables: Array<string>): void => {
 
   if (unsetEnv.length > 0) {
     throw new Error(
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      'Required ENV variables are not set: [' + unsetEnv.join(', ') + ']'
+      `Required ENV variables are not set: [${unsetEnv.join(', ')}]`
     );
   }
 };
