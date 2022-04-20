@@ -6,22 +6,15 @@ import {
   cancelButton,
 } from '../utils/buttons/confirmationButtons';
 import { dmTargetMenu } from '../utils/menus/dmTargetmenu';
-import {
-  Message,
-  CommandInteraction,
-  SelectMenuInteraction,
-  MessageActionRow,
-} from 'discord.js';
+import { Message, SelectMenuInteraction, MessageActionRow } from 'discord.js';
 import { UserRole } from 'api/dist/user/types';
 import { selectTargets } from '../utils/dmTargets';
 import { PeriodModel } from 'api/dist/period/entities';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
-
 import { notActivatedError } from '../utils/praiseEmbeds';
+import { CommandHandler } from 'src/interfaces/CommandHandler';
 
-export const announcementHandler = async (
-  interaction: CommandInteraction
-): Promise<void> => {
+export const announcementHandler: CommandHandler = async (interaction) => {
   const { user } = interaction;
   const ua = {
     accountId: user.id,

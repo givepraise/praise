@@ -3,7 +3,10 @@ import logger from 'jet-logger';
 import { helpHandler } from '../handlers/help';
 import { HelpCommandBuilder, Command } from '../interfaces/Command';
 
-export const help: HelpCommandBuilder = (commandNames) => {
+export const help: HelpCommandBuilder = (commands) => {
+  const commandNames: [name: string, value: string][] = Array.from(
+    commands
+  ).map((i) => [i[0], i[0]]);
   return {
     help: {
       data: new SlashCommandBuilder()
@@ -26,7 +29,7 @@ export const help: HelpCommandBuilder = (commandNames) => {
             fetchReply: true,
           });
           if (msg === undefined) return;
-          await helpHandler(interaction);
+          await helpHandler(interaction, commands);
         } catch (err) {
           logger.err(err);
         }

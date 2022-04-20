@@ -4,7 +4,7 @@ import { Collection } from 'discord.js';
 import { readdir } from 'fs/promises';
 import logger from 'jet-logger';
 import { join } from 'path';
-import { Command, HelpCommandBuilder } from '../interfaces/Command';
+import { Command } from '../interfaces/Command';
 import { DiscordClient } from '../interfaces/DiscordClient';
 import { help } from '../commands/help';
 
@@ -44,8 +44,7 @@ export const registerCommands = async (
       }
     }
 
-    const cmdList = Array.from(client.commands);
-    const helpCommandBuilder = help(cmdList.map((i) => [i[0], i[0]]));
+    const helpCommandBuilder = help(client.commands);
     // cmdList.map((i) => [`/${i[0]}`, `/${i[0]}`])
     const helpCommand = helpCommandBuilder['help'];
     client.commands.set(helpCommand.data.name, helpCommand);

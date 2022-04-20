@@ -1,7 +1,7 @@
 import { PraiseModel } from 'api/dist/praise/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
-import { CommandInteraction, Message } from 'discord.js';
+import { Message } from 'discord.js';
 import logger from 'jet-logger';
 import { getSetting } from '../utils/getSettings';
 import {
@@ -17,11 +17,15 @@ import {
   undefinedReceiverWarning,
 } from '../utils/praiseEmbeds';
 
-export const praiseHandler = async (
-  interaction: CommandInteraction,
-  responseUrl: string
-): Promise<void> => {
+import { CommandHandler } from 'src/interfaces/CommandHandler';
+
+export const praiseHandler: CommandHandler = async (
+  interaction,
+  responseUrl
+) => {
   const { guild, channel, member } = interaction;
+
+  if (!responseUrl) return;
 
   if (!guild || !member) {
     await interaction.editReply(await dmError());
