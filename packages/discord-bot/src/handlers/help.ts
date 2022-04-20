@@ -5,7 +5,7 @@ export const helpHandler = async (
   interaction: CommandInteraction,
   commands: Collection<string, Command>
 ): Promise<void> => {
-  const cmd = interaction.options.getString('cmd');
+  const cmd = interaction.options.getString('command');
   if (!cmd) {
     await interaction.editReply('Help Command');
     return;

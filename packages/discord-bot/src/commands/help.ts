@@ -15,8 +15,8 @@ export const help: HelpCommandBuilder = (commands) => {
         .addStringOption((option) =>
           option
             .addChoices(commandNames)
-            .setName('cmd')
-            .setDescription('The command yuu want to look up')
+            .setName('command')
+            .setDescription('The command you want to look up')
             .setRequired(false)
         ),
 
