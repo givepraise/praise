@@ -1,10 +1,5 @@
 import { PraiseModel } from 'api/dist/praise/entities';
-import {
-  CommandInteraction,
-  Message,
-  GuildMember,
-  MessageEmbed,
-} from 'discord.js';
+import { CommandInteraction, Message, GuildMember } from 'discord.js';
 import { UserModel } from 'api/dist/user/entities';
 import logger from 'jet-logger';
 import { getSetting } from '../utils/getSettings';
@@ -19,6 +14,9 @@ import {
   praiseSuccessDM,
   roleMentionWarning,
   undefinedReceiverWarning,
+  giverRoleError,
+  forwardSuccess,
+  giverNotActivatedError,
 } from '../utils/praiseEmbeds';
 
 export const forwardHandler = async (
@@ -57,15 +55,8 @@ export const forwardHandler = async (
     !praiseGiver?.roles.cache.find((r) => r.id === praiseGiverRole?.id)
   ) {
     await interaction.editReply({
-      embeds: [
-        new MessageEmbed()
-          .setDescription(
-            `**❌ praiseGiver does not have \`${praiseGiverRole.name}\` role**\nPraise can only be dished by or forwarded from members with the <@&${praiseGiverRole.id}> role. Contact the praiseGiver, so that they can attend an onboarding-call, or ask a steward or guide for an Intro to Praise.`
-          )
-          .setColor('#f00'),
-      ],
+      embeds: [await giverRoleError(praiseGiverRole, praiseGiver.user)],
     });
-
     return;
   }
   const giverAccount = await getUserAccount(praiseGiver);
@@ -95,9 +86,7 @@ export const forwardHandler = async (
   }
 
   if (!giverAccount.user) {
-    await interaction.editReply(
-      `**❌ praiseGiver Account Not Activated**\n<@!${giverAccount.accountId}>'s account is not activated in the praise system. Unactivated accounts can not praise users. The praiseGiver would have to use the \`/activate\` command to activate their praise account and to link their eth address.`
-    );
+    await interaction.editReply(await giverNotActivatedError(praiseGiver.user));
     return;
   }
 
@@ -150,9 +139,11 @@ export const forwardHandler = async (
   }
 
   const msg = (await interaction.editReply(
-    `✅  Forward praise from <@!${praiseGiver.user.id}> to ${praised
-      .map((id) => `<@!${id}>`)
-      .join(', ')} ${reason}`
+    await forwardSuccess(
+      praiseGiver.user,
+      praised.map((id) => `<@!${id}>`),
+      reason
+    )
   )) as Message;
 
   if (receiverData.undefinedReceivers) {
