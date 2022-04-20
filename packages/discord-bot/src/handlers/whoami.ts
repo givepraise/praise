@@ -43,7 +43,7 @@ export const whoamiHandler = async (
   if (activatedAccounts) {
     state.activations = [];
     for (const account of activatedAccounts) {
-      state.activations?.push({
+      state.activations.push({
         platform: account.platform,
         user: account.name,
         activationDate: account.createdAt,

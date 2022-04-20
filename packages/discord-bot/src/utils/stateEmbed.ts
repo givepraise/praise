@@ -1,4 +1,4 @@
-import { MessageEmbed, StringMappedInteractionTypes } from 'discord.js';
+import { MessageEmbed } from 'discord.js';
 import { UserState } from '../interfaces/UserState';
 
 const formatDate = (date: Date): string =>
@@ -13,13 +13,21 @@ export const getStateEmbed = (state: UserState): MessageEmbed => {
         : state.hasPraiseGiverRole
         ? "You have praise powers, however your account isn't activated(use `/activate` command)."
         : "Your account is activated, however you don't have praise powers."
-    )
-    .setThumbnail(
-      `https://cdn.discordapp.com/avatars/${state.id}/${state.avatar || 'oops'}`
     );
+  if (state.avatar) {
+    embed.setThumbnail(
+      `https://cdn.discordapp.com/avatars/${state.id}/${state.avatar}`
+    );
+  }
   if (state.activated) {
-    embed.addField('User Roles', state.praiseRoles?.join(' | ') || 'oops');
-    embed.addField('Ethereum Address', state.address || 'oops');
+    embed.addField(
+      'User Roles',
+      state.praiseRoles?.join(' | ') || 'No Roles assigned to user.'
+    );
+    embed.addField(
+      'Ethereum Address',
+      state.address || 'No ethereum address found for user.'
+    );
     embed.addField(
       'Activations',
       state.activations
@@ -31,7 +39,7 @@ export const getStateEmbed = (state: UserState): MessageEmbed => {
               account.activationDate
             )}\n> Last Active: ${formatDate(account.latestUsageDate)}`
         )
-        .join('\n\n') || 'oops'
+        .join('\n\n') || 'No activated useraccounts associated with this User.'
     );
   }
 
