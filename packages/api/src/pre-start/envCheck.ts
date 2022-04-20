@@ -1,6 +1,4 @@
-import jsonData from './env-required.json';
-
-const envCheck = (): void => {
+const envCheck = (jsonData: Array<string>): void => {
   const unsetEnv = jsonData.filter(
     (env) =>
       !(typeof process.env[env] !== 'undefined') || process.env[env] === ''

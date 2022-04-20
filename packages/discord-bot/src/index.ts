@@ -4,8 +4,9 @@ import logger from 'jet-logger';
 import mongoose, { ConnectOptions } from 'mongoose';
 import path from 'path';
 import { DiscordClient } from './interfaces/DiscordClient';
-import { envCheck } from './pre-start/envCheck';
 import { registerCommands } from './utils/registerCommands';
+import { requiredEnvVariables } from './pre-start/env-required';
+import { envCheck } from 'api/src/pre-start/envCheck';
 
 const load = dotenv.config({ path: path.join(__dirname, '..', '/.env') });
 if (load.error) {
@@ -13,8 +14,10 @@ if (load.error) {
   throw load.error;
 }
 
+console.log('REQ:', requiredEnvVariables);
+
 // Check for required ENV variables
-envCheck();
+envCheck(requiredEnvVariables);
 
 // Start Discord bot
 const token = process.env.DISCORD_TOKEN;
