@@ -25,10 +25,9 @@ const mochaHooks = async (): Promise<Mocha.RootHookObject> => {
 
       this.app = await setup();
       logger.info('Running api tests:\n\n');
-
-      this.timeout(2000);
     },
     beforeEach(this: TestContext): void {
+      this.timeout(2000);
       this.client = request(this.app);
     },
   });
