@@ -15,6 +15,22 @@ export const praiseSuccess = async (
   }
 };
 
+export const forwardSuccess = async (
+  giver: User,
+  receivers: string[],
+  reason: string
+): Promise<string> => {
+  const msg = await getSetting('FORWARD_SUCCESS_MESSAGE');
+  if (msg && typeof msg === 'string') {
+    return msg
+      ?.replace('{@giver}', `<@!${giver.id}>`)
+      .replace('{@receivers}', `${receivers.join(', ')}`)
+      .replace('{reason}', reason);
+  } else {
+    return 'PRAISE SUCCESSFUL (message not set)';
+  }
+};
+
 export const praiseError = (title: string, description: string): string => {
   return `**❌ ${title}**\n${description}`;
 };
@@ -25,6 +41,22 @@ export const notActivatedError = async (): Promise<string> => {
     return msg;
   } else {
     return 'PRAISE ACCOUNT NOT ACTIVATED (message not set)';
+  }
+};
+
+export const giverNotActivatedError = async (
+  praiseGiver: User
+): Promise<string> => {
+  const msg = await getSetting('FORWARD_FROM_UNACTIVATED_GIVER_ERROR');
+  if (msg && typeof msg === 'string') {
+    return msg
+      .replace(
+        '{giver}',
+        `${praiseGiver.username}#${praiseGiver.discriminator}`
+      )
+      .replace('{@giver}', `<@!${praiseGiver.id}>`);
+  } else {
+    return "PRAISE GIVER'S ACCOUNT NOT ACTIVATED (message not set)";
   }
 };
 
@@ -53,6 +85,31 @@ export const roleError = async (
   }
   return new MessageEmbed().setColor('#ff0000').setDescription(
     'USER DOES NOT HAVE {@role} role (message not set)'
+      .replace('{role}', praiseGiverRole?.name || '...')
+      .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
+      .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
+      .replace('{@user}', `<@!${user?.id || '...'}>`)
+  );
+};
+
+export const giverRoleError = async (
+  praiseGiverRole: Role,
+  user: User
+): Promise<MessageEmbed> => {
+  const msg = await getSetting(
+    'FORWARD_FROM_USER_WITHOUT_PRAISE_GIVER_ROLE_ERROR'
+  );
+  if (msg && typeof msg === 'string') {
+    return new MessageEmbed().setColor('#ff0000').setDescription(
+      msg
+        .replace('{role}', praiseGiverRole?.name || '...')
+        .replace('{giver}', `${user?.username}#${user?.discriminator}` || '...')
+        .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
+        .replace('{@giver}', `<@!${user?.id || '...'}>`)
+    );
+  }
+  return new MessageEmbed().setColor('#ff0000').setDescription(
+    'GIVER DOES NOT HAVE {@role} role (message not set)'
       .replace('{role}', praiseGiverRole?.name || '...')
       .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
       .replace('{@role}', `<@&${praiseGiverRole?.id}>`)

@@ -1,4 +1,5 @@
-import { PoolRequirements } from '@/model/periods';
+import { PoolRequirements, useVerifyQuantifierPoolSize } from '@/model/periods';
+import { AllPeriodSettings } from '@/model/periodsettings';
 import {
   faCheckSquare,
   faTimes,
@@ -8,8 +9,15 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
+import { useRecoilValue } from 'recoil';
 
 interface PeriodAssignDialogProps {
+  onClose(): void;
+  onAssign(): void;
+  periodId: string;
+}
+
+interface DialogMessageProps {
   onClose(): void;
   onAssign(): void;
   poolRequirements: PoolRequirements | undefined;
@@ -19,7 +27,7 @@ const DialogMessage = ({
   onClose,
   onAssign,
   poolRequirements,
-}: PeriodAssignDialogProps): JSX.Element => {
+}: DialogMessageProps): JSX.Element => {
   const quantPoolBigEnough = poolRequirements
     ? poolRequirements.quantifierPoolDeficitSize === 0
     : false;
@@ -91,8 +99,14 @@ const DialogMessage = ({
 const PeriodAssignDialog = ({
   onClose,
   onAssign,
-  poolRequirements,
+  periodId,
 }: PeriodAssignDialogProps): JSX.Element => {
+  const periodsettings = useRecoilValue(AllPeriodSettings(periodId));
+  const poolRequirements = useVerifyQuantifierPoolSize(
+    periodId,
+    JSON.stringify(periodsettings)
+  );
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Dialog.Overlay className="fixed inset-0 bg-gray-800 opacity-30" />

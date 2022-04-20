@@ -66,11 +66,10 @@ export const praiseHandler: CommandHandler = async (
   const reason = interaction.options.getString('reason');
 
   const receiverData = {
-    validReceiverIds: receivers?.match(/<@!([0-9]+)>/g),
-    undefinedReceivers: receivers?.match(/@([a-z0-9]+)/gi),
+    validReceiverIds: receivers?.match(/<@!?([0-9]+)>/g),
+    undefinedReceivers: receivers?.match(/[^<]@([a-z0-9]+)/gi),
     roleMentions: receivers?.match(/<@&([0-9]+)>/g),
   };
-
   if (
     !receivers ||
     receivers.length === 0 ||
@@ -92,8 +91,8 @@ export const praiseHandler: CommandHandler = async (
   }
 
   const praised: string[] = [];
-  const receiverIds = receiverData.validReceiverIds.map((id) =>
-    id.substr(3, id.length - 4)
+  const receiverIds = receiverData.validReceiverIds.map((id: string) =>
+    id.replace(/\D/g, '')
   );
   const Receivers = (await guild.members.fetch({ user: receiverIds })).map(
     (u) => u
@@ -154,7 +153,9 @@ export const praiseHandler: CommandHandler = async (
   if (receiverData.undefinedReceivers) {
     await msg.reply(
       await undefinedReceiverWarning(
-        receiverData.undefinedReceivers.join(', '),
+        receiverData.undefinedReceivers
+          .map((id) => id.replace(/[<>]/, ''))
+          .join(', '),
         praiseGiver.user
       )
     );

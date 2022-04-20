@@ -13,6 +13,8 @@ import { baseRouter } from './routes';
 import { connectDatabase } from './database/connection';
 import { setupMigrator } from './database/migration';
 import fileUpload from 'express-fileupload';
+import { envCheck } from './pre-start/envCheck';
+import { requiredEnvVariables } from './pre-start/env-required';
 
 const app = express();
 
@@ -23,6 +25,9 @@ app.use(
 );
 
 void (async (): Promise<void> => {
+  // Check for required ENV variables
+  envCheck(requiredEnvVariables);
+
   logger.info('Connecting to database…');
   const db = await connectDatabase();
   logger.info('Connected to database.');
@@ -33,7 +38,10 @@ void (async (): Promise<void> => {
   const migrations = await umzug.pending();
   logger.info(`Found ${migrations.length} pending migrations`);
   await umzug.up();
-  logger.info('Migrations complete.');
+
+  if (migrations.length > 0) {
+    logger.info('Migrations complete.');
+  }
 
   app.use(
     cors({
