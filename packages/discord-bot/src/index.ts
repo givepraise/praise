@@ -14,8 +14,6 @@ if (load.error) {
   throw load.error;
 }
 
-console.log('REQ:', requiredEnvVariables);
-
 // Check for required ENV variables
 envCheck(requiredEnvVariables);
 
