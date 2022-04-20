@@ -6,9 +6,7 @@ import {
   useAssignQuantifiers,
   useClosePeriod,
   useExportPraise,
-  useVerifyQuantifierPoolSize,
 } from '@/model/periods';
-import { AllPeriodSettings } from '@/model/periodsettings';
 import { AllQuantifierUsers } from '@/model/users';
 import { formatIsoDateUTC } from '@/utils/date';
 import { saveLocalFile } from '@/utils/file';
@@ -36,14 +34,9 @@ const PeriodDetails = (): JSX.Element | null => {
   const allQuantifiers = useRecoilValue(AllQuantifierUsers);
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
-  const periodsettings = useRecoilValue(AllPeriodSettings(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
   const history = useHistory();
-  const poolRequirements = useVerifyQuantifierPoolSize(
-    periodId,
-    JSON.stringify(periodsettings)
-  );
 
   const assignDialogRef = React.useRef(null);
   const closeDialogRef = React.useRef(null);
@@ -199,7 +192,7 @@ const PeriodDetails = (): JSX.Element | null => {
             <PeriodAssignDialog
               onClose={(): void => setIsAssignDialogOpen(false)}
               onAssign={(): void => handleAssign()}
-              poolRequirements={poolRequirements}
+              periodId={periodId}
             />
           </div>
         </Dialog>

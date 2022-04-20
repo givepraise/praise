@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Updated Activation page to look and work similar to the login page
+- Prevent error display on Period Details Page due to improperly calling useVerifyQuantifierPoolSize
 
 ## [0.4.0] - 2022-04-14
 
