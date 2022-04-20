@@ -18,7 +18,7 @@ ssh root@xxx.xxx.xxx.xxx
 
 This guide installs Praise under the root user, making no effort to secure the server. The following steps are optional but highly recommended:
 
-- [Set up a firewall plus a user account with reduced privileges](digital-ocean-initial-setup)
+- [Set up a firewall plus a user account with reduced privileges](digital-ocean-initial-setup.md)
 
 ## Install Docker
 
@@ -29,7 +29,7 @@ Complete step 1-2 of the installation guide: [How To Install and Use Docker on U
 - Step 1 — Installing Docker
 - Step 2 — Executing the Docker Command Without Sudo
 
-⚠ If ou are using `ufw` as firewall, [additional configuration of Docker is needed](/packages/docs/configure-ufw-for-docker.md).
+⚠ If ou are using `ufw` as firewall, [additional configuration of Docker is needed](configure-ufw-for-docker.md).
 
 ## Install Docker Compose
 
@@ -156,7 +156,7 @@ REACT_APP_API_URL=
 ## Build and run all services
 
 ```
-yarn start
+docker compose up -d
 ```
 
 ## Finished 🎉
