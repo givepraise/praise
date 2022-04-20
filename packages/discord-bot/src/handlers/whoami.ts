@@ -53,7 +53,6 @@ export const whoamiHandler = async (
   }
 
   await interaction.editReply({
-    content: 'laaa',
     embeds: [getStateEmbed(state)],
   });
   return;
