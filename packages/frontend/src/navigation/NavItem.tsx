@@ -16,11 +16,9 @@ const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
       id={to.substring(1) + '-nav-button'}
     >
       {icon && (
-        <FontAwesomeIcon
-          icon={icon}
-          size="1x"
-          className="inline-block ml-2 mr-3"
-        />
+        <div className="inline-block w-8 text-center">
+          <FontAwesomeIcon icon={icon} size="1x" className="inline-block" />
+        </div>
       )}
       <div className="flex-auto inline-block my-1">
         <span>{description}</span>
