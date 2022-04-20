@@ -65,16 +65,23 @@ const seedPeriods = async (): Promise<void> => {
   const periodsCount = await PeriodModel.count();
 
   if (periodsCount === 0) {
-    const d = new Date();
-    for (let i = 0; i < PERIOD_NUMBER; i++) {
-      const period = await PeriodModel.create({
-        name: `Period ${i + 1}`,
-        status: 'OPEN',
-        endDate: d,
-        quantifiers: [],
-      });
-      await insertNewPeriodSettings(period);
-      d.setDate(d.getDate() + PERIOD_LENGTH);
+    try {
+      logger.info('Trying to seed database with periods.');
+      const d = new Date();
+      for (let i = 0; i < PERIOD_NUMBER; i++) {
+        const period = await PeriodModel.create({
+          name: `Period ${i + 1}`,
+          status: 'OPEN',
+          endDate: d,
+          quantifiers: [],
+        });
+        await insertNewPeriodSettings(period);
+        d.setDate(d.getDate() + PERIOD_LENGTH);
+      }
+
+      logger.info('Periods seeding completed.');
+    } catch (e) {
+      console.log('ERROR:', e);
     }
   }
 };
@@ -97,61 +104,84 @@ const seedPredefinedUsers = async (): Promise<void> => {
 };
 
 const seedRegularUsers = async (): Promise<void> => {
-  const userCount = await UserModel.count({ roles: ['USER'] });
+  try {
+    const userCount = await UserModel.count({ roles: ['USER'] });
 
-  if (userCount < REGULAR_USERS_NUMBER) {
-    for (let i = 0; i < REGULAR_USERS_NUMBER; i++) {
-      try {
-        await seedUser({
-          roles: ['USER'],
-        });
-      } catch (e) {
-        console.log('ERROR:', e);
+    if (userCount < REGULAR_USERS_NUMBER) {
+      logger.info('Trying to seed database with regular users.');
+      for (let i = 0; i < REGULAR_USERS_NUMBER; i++) {
+        try {
+          await seedUser({
+            roles: ['USER'],
+          });
+        } catch (e) {
+          console.log('ERROR:', e);
+        }
       }
+
+      logger.info('Regular users seeding completed.');
     }
+  } catch (e) {
+    console.log('ERROR:', e);
   }
 };
 
 const seedQuantifierUsers = async (): Promise<void> => {
-  const userCount = await UserModel.count({ roles: ['USER', 'QUANTIFIER'] });
+  try {
+    const userCount = await UserModel.count({ roles: ['USER', 'QUANTIFIER'] });
 
-  if (userCount < QUANTIFIER_USERS_NUMBER) {
-    for (let i = 0; i < QUANTIFIER_USERS_NUMBER; i++) {
-      try {
-        await seedUser({
-          roles: ['USER', 'QUANTIFIER'],
-        });
-      } catch (e) {
-        console.log('ERROR:', e);
+    if (userCount < QUANTIFIER_USERS_NUMBER) {
+      logger.info('Trying to seed database with quantifiers.');
+
+      for (let i = 0; i < QUANTIFIER_USERS_NUMBER; i++) {
+        try {
+          await seedUser({
+            roles: ['USER', 'QUANTIFIER'],
+          });
+        } catch (e) {
+          console.log('ERROR:', e);
+        }
       }
+
+      logger.info('Quantifiers seeding completed.');
     }
+  } catch (e) {
+    console.log('ERROR:', e);
   }
 };
 
 const seedPraises = async (): Promise<void> => {
-  const praisesCount = await PraiseModel.count();
+  try {
+    const praisesCount = await PraiseModel.count();
 
-  if (praisesCount < PRAISE_NUMBER) {
-    for (let i = 0; i < PRAISE_NUMBER; i++) {
-      const [giver, receiver] = await fetchTwoRandomUserAccounts();
-      try {
-        const randomDays = Math.floor(
-          Math.random() * PERIOD_NUMBER * PERIOD_LENGTH
-        );
-        await PraiseModel.create({
-          reason: faker.lorem.sentences(),
-          giver: giver._id,
-          sourceId: faker.datatype.uuid(),
-          sourceName: faker.lorem.word(),
-          receiver: receiver._id,
-          createdAt: new Date(
-            Date.now() + (randomDays - PERIOD_LENGTH) * 86400000
-          ),
-        });
-      } catch (e) {
-        console.log('ERROR:', e);
+    if (praisesCount < PRAISE_NUMBER) {
+      logger.info('Trying to seed database with praises.');
+
+      for (let i = 0; i < PRAISE_NUMBER; i++) {
+        const [giver, receiver] = await fetchTwoRandomUserAccounts();
+        try {
+          const randomDays = Math.floor(
+            Math.random() * PERIOD_NUMBER * PERIOD_LENGTH
+          );
+          await PraiseModel.create({
+            reason: faker.lorem.sentences(),
+            giver: giver._id,
+            sourceId: faker.datatype.uuid(),
+            sourceName: faker.lorem.word(),
+            receiver: receiver._id,
+            createdAt: new Date(
+              Date.now() + (randomDays - PERIOD_LENGTH) * 86400000
+            ),
+          });
+        } catch (e) {
+          console.log('ERROR:', e);
+        }
       }
+
+      logger.info('Praises seeding completed.');
     }
+  } catch (e) {
+    console.log('ERROR:', e);
   }
 };
 
@@ -163,8 +193,6 @@ const seedData = async (): Promise<void> => {
   await seedRegularUsers();
   await seedQuantifierUsers();
   await seedPraises();
-
-  logger.info('Seeding complete.');
 };
 
 export { seedData, seedUser, seedPeriods, seedPraises };

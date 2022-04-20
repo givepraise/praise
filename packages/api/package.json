@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "license": "GPL-3.0-or-later",
   "description": "The Praise REST API running on Node/Express, using MongoDB for storage.",
   "type": "commonjs",
@@ -12,6 +12,7 @@
     "start:dev": "nodemon ./src",
     "test": "NODE_ENV=testing nyc mocha -r ts-node/register -r tsconfig-paths/register -r src/tests/setup.ts 'src/tests/**/*.spec.ts' --exit",
     "import-praise": "ts-node -r tsconfig-paths/register src/scripts/import-praise.ts",
+    "not-yet-activated": "ts-node -r tsconfig-paths/register src/scripts/not-yet-activated.ts",
     "replace-quantifier": "ts-node -r tsconfig-paths/register src/scripts/replace-quantifier.ts",
     "migrator": "ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts",
     "drop-database": "ts-node -r tsconfig-paths/register src/scripts/drop-database.ts"
