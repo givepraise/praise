@@ -9,8 +9,6 @@ const requiredEnvVariables = [
   'MONGO_PASSWORD',
   'DISCORD_TOKEN',
   'DISCORD_CLIENT_ID',
-  'DISCORD_ACTIVATION',
-  'DISCORD_MESSAGE',
   'DISCORD_GUILD_ID',
   'NODE_ENV',
 ];
