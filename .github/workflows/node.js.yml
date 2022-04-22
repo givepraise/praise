@@ -3,7 +3,7 @@ on: [pull_request]
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    name: Build and test
+    name: Build, Lint & Test
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -17,3 +17,7 @@ jobs:
       - run: yarn workspace frontend build
       - run: yarn workspace discord-bot lint
       - run: yarn workspace discord-bot build
+      - run: echo "${{secrets.ROOT_ENV_TESTING }}" > .env
+      - run: echo "${{secrets.API_ENV_TESTING }}" > packages/api/.env
+      - run: yarn mongodb:start
+      - run: yarn workspace api test
