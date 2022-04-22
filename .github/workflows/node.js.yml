@@ -18,5 +18,6 @@ jobs:
       - run: yarn workspace discord-bot lint
       - run: yarn workspace discord-bot build
       - run: echo "${{secrets.ROOT_ENV_TESTING }}" > .env
+      - run: echo "${{secrets.API_ENV_TESTING }}" > api/.env
       - run: yarn mongodb:start
       - run: yarn workspace api test
