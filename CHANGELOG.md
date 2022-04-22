@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Check for required env variables on launch of api and discord-bot
 - Manage messages used by discord-bot /forward command via praise app settings page
+- /help command for getting more information about discord-bot commands
 
 ## [0.4.0] - 2022-04-14
 
