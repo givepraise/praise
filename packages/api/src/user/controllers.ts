@@ -5,7 +5,7 @@ import {
 } from '@error/errors';
 import { PeriodDocument, PeriodDateRange } from '@period/types';
 import { findActivePeriods, getPeriodDateRangeQuery } from '@period/utils';
-import { countPraiseWithinDateRanges } from '@praise/utils';
+import { countPraiseWithinDateRanges } from '@praise/utils/core';
 import {
   QueryInputParsedQs,
   SearchQueryInputParsedQs,

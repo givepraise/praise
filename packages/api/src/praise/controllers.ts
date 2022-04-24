@@ -25,7 +25,7 @@ import {
   PraiseDto,
   QuantificationCreateUpdateInput,
 } from './types';
-import { calculatePraiseScore, praiseWithScore } from './utils';
+import { calculatePraiseScore, praiseWithScore } from './utils/core';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 

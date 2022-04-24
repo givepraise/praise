@@ -2,14 +2,14 @@ import { BadRequestError } from '@error/errors';
 import { PeriodDateRange, PeriodDocument } from '@period/types';
 import { PeriodModel } from '@period/entities';
 import { settingValue } from '@shared/settings';
-import { PraiseModel } from './entities';
-import { praiseDocumentTransformer } from './transformers';
+import { PraiseModel } from '../entities';
+import { praiseDocumentTransformer } from '../transformers';
 import {
   PraiseDetailsDto,
   PraiseDocument,
   PraiseDto,
   Quantification,
-} from './types';
+} from '../types';
 
 /**
  * Workaround to get the period associated with a praise instance (as they are not related in database)

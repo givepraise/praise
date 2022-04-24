@@ -30,7 +30,7 @@ import {
 import { UserRole } from '@user/types';
 import { UserAccountDocument } from '@useraccount/types';
 import { getQueryInput, getQuerySort } from '@shared/functions';
-import { praiseWithScore } from '@praise/utils';
+import { praiseWithScore } from '@praise/utils/core';
 import { PraiseModel } from '@praise/entities';
 import mongoose from 'mongoose';
 import { firstFit, PackingOutput } from 'bin-packer';

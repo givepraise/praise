@@ -9,7 +9,7 @@ import {
   Quantification,
   QuantificationDto,
 } from './types';
-import { getPraisePeriod } from './utils';
+import { getPraisePeriod } from './utils/core';
 
 export const calculateDuplicateScore = async (
   quantification: Quantification,
