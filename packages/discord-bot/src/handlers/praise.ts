@@ -1,7 +1,7 @@
 import { PraiseModel } from 'api/dist/praise/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
-import { Message } from 'discord.js';
+import { Message, Util } from 'discord.js';
 import logger from 'jet-logger';
 import { getSetting } from '../utils/getSettings';
 import {
@@ -27,7 +27,7 @@ export const praiseHandler: CommandHandler = async (
 
   if (!responseUrl) return;
 
-  if (!guild || !member) {
+  if (!guild || !member || !channel) {
     await interaction.editReply(await dmError());
     return;
   }
@@ -122,7 +122,7 @@ export const praiseHandler: CommandHandler = async (
     }
     const praiseObj = await PraiseModel.create({
       reason: reason,
-      reasonRealized: reason,
+      reasonRealized: Util.cleanContent(reason, channel),
       giver: userAccount._id,
       sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
       sourceName: `DISCORD:${encodeURIComponent(
