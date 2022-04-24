@@ -38,7 +38,7 @@ const PeriodReceiverMessage = ({
       <div
         className="mt-2"
         dangerouslySetInnerHTML={{
-          __html: getMarkdownText(praise.reason),
+          __html: getMarkdownText(praise?.reasonRealized || praise.reason),
         }}
       ></div>
       <div className="mt-2">

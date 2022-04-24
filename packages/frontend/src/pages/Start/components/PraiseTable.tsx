@@ -44,7 +44,10 @@ const PraiseTable = (): JSX.Element => {
               <div
                 className="w-full"
                 dangerouslySetInnerHTML={{
-                  __html: getMarkdownText(data.row.original.reason),
+                  __html: getMarkdownText(
+                    data.row.original?.reasonRealized ||
+                      data.row.original.reason
+                  ),
                 }}
               ></div>
             </div>

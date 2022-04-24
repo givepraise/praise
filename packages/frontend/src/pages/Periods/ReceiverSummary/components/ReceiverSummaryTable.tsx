@@ -34,7 +34,7 @@ const PraiseRow = ({ praise }: PraiseRowProps): JSX.Element => {
             {localizeAndFormatIsoDate(praise.createdAt)}
           </span>
         </div>
-        <div>{praise.reason}</div>
+        <div>{praise?.reasonRealized || praise.reason}</div>
       </div>
       <div className="flex-grow text-right px-14 whitespace-nowrap">
         {praise.scoreRealized}
