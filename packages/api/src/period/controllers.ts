@@ -11,10 +11,8 @@ import {
   PraiseDetailsDto,
   PraiseDto,
 } from '@praise/types';
-import {
-  calculateDuplicateScore,
-  praiseDocumentListTransformer,
-} from '@praise/transformers';
+import { praiseDocumentListTransformer } from '@praise/transformers';
+import { calculateDuplicateScore } from '@praise/utils/score';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { insertNewPeriodSettings } from '@periodsettings/utils';
