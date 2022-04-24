@@ -23,6 +23,10 @@ const importPraise = async (
         praise.reason = 'No reason given.';
       }
 
+      if (!praise.reasonRealized || praise.reasonRealized === '') {
+        praise.reasonRealized = praise.reason;
+      }
+
       if (!praise.giver.accountId) {
         console.log(
           `${index}: Giver accountId for ${praise.giver.name} is missing.`
@@ -78,6 +82,7 @@ const importPraise = async (
         return {
           createdAt: praise.createdAt,
           reason: praise.reason,
+          reasonRealized: praise.reasonRealized,
           giver,
           receiver,
           sourceId: praise.sourceId,

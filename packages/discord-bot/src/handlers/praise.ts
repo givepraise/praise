@@ -122,6 +122,7 @@ export const praiseHandler: CommandHandler = async (
     }
     const praiseObj = await PraiseModel.create({
       reason: reason,
+      reasonRealized: reason,
       giver: userAccount._id,
       sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
       sourceName: `DISCORD:${encodeURIComponent(
