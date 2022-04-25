@@ -42,4 +42,17 @@ export const praiseAdmin: Command = {
       logger.err(err);
     }
   },
+
+  help: {
+    name: 'admin',
+    text: 'Command to perform admin actions in the Praise system and the PraiseBot\n\
+  **Usage**: `/admin <announce|...>`\n',
+    subCommands: [
+      {
+        name: 'announce',
+        text: 'Command to publish announcements that are distributed as direct messages to Praise users.\n\
+        Usage: `/admin announce message: <you have been selected for quantification...>`',
+      },
+    ],
+  },
 };
