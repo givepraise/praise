@@ -29,7 +29,6 @@ import {
   isResponseOk,
   useAuthApiQuery,
 } from './api';
-import { utcDateToLocal } from '@/utils/date';
 import { ActiveUserId } from './auth';
 import { AllPeriodSettings } from './periodsettings';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
@@ -333,6 +332,7 @@ export const useClosePeriod = (): useClosePeriodReturn => {
 
         if (isResponseOk(response)) {
           const period = response.data as PeriodDto;
+
           if (period) {
             set(SinglePeriod(period._id), period);
           }
