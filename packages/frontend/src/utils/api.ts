@@ -45,6 +45,10 @@ const handleErrors = (err: AxiosError): void => {
   }
 };
 
+const apiBaseURL = process.env.REACT_APP_API_URL
+  ? `${process.env.REACT_APP_API_URL}/api`
+  : '/api';
+
 /**
  * Api client for unathenticated requests
  *
@@ -52,7 +56,7 @@ const handleErrors = (err: AxiosError): void => {
  */
 export const makeApiClient = (): AxiosInstance => {
   const apiClient = axios.create({
-    baseURL: `${process.env.REACT_APP_API_URL}/api`,
+    baseURL: apiBaseURL,
   });
   apiClient.interceptors.response.use(
     (res) => res,
@@ -71,7 +75,7 @@ export const makeApiClient = (): AxiosInstance => {
 export const makeApiAuthClient = (): AxiosInstance => {
   const accessToken = getRecoil(AccessToken);
   const apiAuthClient = axios.create({
-    baseURL: `${process.env.REACT_APP_API_URL}/api`,
+    baseURL: apiBaseURL,
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
