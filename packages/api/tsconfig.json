@@ -28,6 +28,5 @@
     }
   },
   "include": ["src/**/*.ts", "test/**/*.ts", "src/**/*.json"],
-  "exclude": ["src/scripts/*.ts"],
   "references": []
 }
