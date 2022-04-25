@@ -1,4 +1,3 @@
-import { imageFullPath } from '@/utils/file';
 import { Field } from 'react-final-form';
 
 const ImageFileInput = (name: string, src: string | undefined): JSX.Element => {
@@ -16,7 +15,7 @@ const ImageFileInput = (name: string, src: string | undefined): JSX.Element => {
 
           <div className="mt-2">
             {src ? (
-              <img src={imageFullPath(src)} className="block w-auto h-48" />
+              <img src={src} className="block w-auto h-48" />
             ) : (
               <div className="block w-auto h-48 bg-gray-300 "></div>
             )}

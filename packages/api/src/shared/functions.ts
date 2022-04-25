@@ -90,7 +90,7 @@ export const upload = async (req: Request, key: string): Promise<string> => {
 
     await logo.mv(path);
 
-    return filename;
+    return path;
   } catch (e) {
     console.log('ERROR:', e);
     throw new InternalServerError('File upload failed.');
@@ -98,10 +98,9 @@ export const upload = async (req: Request, key: string): Promise<string> => {
 };
 
 export const removeFile = async (filename: string): Promise<void> => {
-  const filepath = `uploads/${filename}`;
   try {
-    await unlink(filepath);
+    await unlink(filename);
   } catch (e) {
-    logger.warn(`Could not find a file to remove: ${filepath}`);
+    logger.warn(`Could not find a file to remove: ${filename}`);
   }
 };
