@@ -24,23 +24,12 @@ export const activationHandler = async (
     await interaction.reply('Unable to create user account.');
     return;
   }
-  const server = process.env.SERVER;
-  const port = process.env.FRONTEND_DEVELOPMENT_PORT;
+  const server = process.env.SERVER as string;
+  const port = process.env.FRONTEND_DEVELOPMENT_PORT as string;
+  const nodeEnv = process.env.NODE_ENV as string;
 
-  if (!server || server === undefined) {
-    await interaction.reply(
-      'ERROR: `SERVER` not defined in environment variables. Contact praise admin'
-    );
-    return;
-  }
-  if (!port || port === undefined) {
-    await interaction.reply(
-      'ERROR: `FRONTEND_DEVELOPMENT_PORT` not defined in environment variables. Contact praise admin'
-    );
-    return;
-  }
   const frontendUrl = `http://${
-    process.env.NODE_ENV === 'production' ? server : `${server}:${port}`
+    nodeEnv === 'production' ? server : `${server}:${port}`
   }`;
 
   const getActivationURL = (
