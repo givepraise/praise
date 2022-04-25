@@ -7,7 +7,19 @@ export const helpHandler = async (
 ): Promise<void> => {
   const cmd = interaction.options.getString('command');
   if (!cmd) {
-    await interaction.editReply('Help Command');
+    const cmdDescription: string = Array.from(commands)
+      .map((i) => `**${i[1].data.name}** - ${i[1].data.description}`)
+      .join('\n');
+    await interaction.editReply({
+      embeds: [
+        new MessageEmbed()
+          .setTitle('help')
+          .setDescription(
+            'Welcome to the praise bot!\nTo start using praise, you need to activate praise by using the `/activate` command.\nTo praise, use the `/praise command`.'
+          )
+          .addField('Commands', cmdDescription),
+      ],
+    });
     return;
   }
   const commandHelp = commands.get(cmd)?.help;
