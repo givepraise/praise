@@ -83,7 +83,7 @@ Copy and rename `.env`.
 Set server domain:
 
 ```
-SERVER=localhost
+HOST=localhost
 ```
 
 Configure database usernames and passwords:

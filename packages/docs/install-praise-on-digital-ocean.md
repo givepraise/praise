@@ -56,10 +56,10 @@ cp .env.template .env
 nano .env
 ```
 
-Configure the `SERVER` variable with the domain name you would like to run Praise on. For local development, enter `localhost`.
+Configure the `HOST` variable with the domain name you would like to run Praise on. For local development, enter `localhost`.
 
 ```
-SERVER=
+HOST=
 ```
 
 Set database connection parameters. Do not use same username/password for `INITDB` user and regular user.
@@ -94,7 +94,7 @@ Make sure API is run with production setting:
 NODE_ENV=production
 ```
 
-Use same domain name for `COOKIE_DOMAIN` as in `SERVER` previously specified.
+Use same domain name for `COOKIE_DOMAIN` as in `HOST` previously specified.
 
 ```
 COOKIE_DOMAIN=
