@@ -12,7 +12,8 @@ import {
   PraiseDto,
 } from '@praise/types';
 import { praiseDocumentListTransformer } from '@praise/transformers';
-import { calculateDuplicateScore } from '@praise/utils/score';
+import { calculateQuantificationScore } from '@praise/utils/score';
+import { praiseWithScore } from '@praise/utils/core';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { insertNewPeriodSettings } from '@periodsettings/utils';
@@ -28,7 +29,6 @@ import {
 import { UserRole } from '@user/types';
 import { UserAccountDocument } from '@useraccount/types';
 import { getQueryInput, getQuerySort } from '@shared/functions';
-import { praiseWithScore } from '@praise/utils/core';
 import { PraiseModel } from '@praise/entities';
 import mongoose from 'mongoose';
 import { firstFit, PackingOutput } from 'bin-packer';
@@ -594,19 +594,7 @@ export const exportPraise = async (
           q.quantifier = quantifier;
           q.account = account;
 
-          if (q.duplicatePraise) {
-            const praise = await PraiseModel.findById(q.duplicatePraise._id);
-            if (praise && praise.quantifications) {
-              const quantification = praise.quantifications.find((q) =>
-                q.quantifier.equals(q.quantifier)
-              );
-              if (quantification) {
-                q.score = quantification.dismissed
-                  ? 0
-                  : await calculateDuplicateScore(quantification, period._id);
-              }
-            }
-          }
+          q.score = await calculateQuantificationScore(q, period._id);
 
           return q;
         })

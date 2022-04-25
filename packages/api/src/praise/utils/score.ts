@@ -1,6 +1,7 @@
 import { BadRequestError } from '@error/errors';
 import { settingValue } from '@shared/settings';
 import mongoose from 'mongoose';
+import { find } from 'lodash';
 import { PraiseModel } from '../entities';
 import { PraiseDocument, Quantification } from '../types';
 import { getPraisePeriod } from './core';
@@ -76,4 +77,28 @@ export const calculateDuplicateScore = async (
     );
 
   return Math.floor(quantification.score * duplicatePraisePercentage);
+};
+
+export const calculateQuantificationScore = async (
+  q: Quantification,
+  periodId: mongoose.Schema.Types.ObjectId
+): Promise<number> => {
+  let score = q.score;
+
+  if (q.duplicatePraise) {
+    const duplicatePraise = await PraiseModel.findById(q.duplicatePraise._id);
+
+    if (duplicatePraise && duplicatePraise.quantifications) {
+      const quantification = find(duplicatePraise.quantifications, (q2) =>
+        q2.quantifier.equals(q.quantifier)
+      );
+      if (quantification) {
+        score = quantification.dismissed
+          ? 0
+          : await calculateDuplicateScore(quantification, periodId);
+      }
+    }
+  }
+
+  return score;
 };
