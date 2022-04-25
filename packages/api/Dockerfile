@@ -7,7 +7,6 @@ WORKDIR /usr/src/
 COPY ./package*.json .
 COPY ./.yarnrc.yml .
 COPY ./yarn.lock .
-COPY ./.env .
 COPY ./.yarn ./.yarn
 
 # Copy packages
@@ -18,5 +17,4 @@ RUN yarn set version berry
 RUN yarn
 
 # Run the app
-EXPOSE 8088
 CMD ["yarn", "api:start"]

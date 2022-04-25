@@ -25,15 +25,23 @@ export const activationHandler = async (
     return;
   }
   const server = process.env.SERVER;
+  const port = process.env.FRONTEND_DEVELOPMENT_PORT;
+
   if (!server || server === undefined) {
     await interaction.reply(
       'ERROR: `SERVER` not defined in environment variables. Contact praise admin'
     );
     return;
   }
+  if (!port || port === undefined) {
+    await interaction.reply(
+      'ERROR: `FRONTEND_DEVELOPMENT_PORT` not defined in environment variables. Contact praise admin'
+    );
+    return;
+  }
   const frontendUrl = `http://${
-    process.env.NODE_ENV === 'production' ? server : `${server}:3000`
-  }`; // Assume default craco port 3000 if not in production
+    process.env.NODE_ENV === 'production' ? server : `${server}:${port}`
+  }`;
 
   const getActivationURL = (
     accountId: string,

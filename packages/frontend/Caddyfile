@@ -1,9 +1,9 @@
-{SERVER} {
+{$SERVER} {
   handle /api* {
-		reverse_proxy api:8088
+		reverse_proxy api:{$API_PORT}
 	}
   handle /uploads* {
-		reverse_proxy api:8088
+		reverse_proxy api:{$API_PORT}
 	}
   handle {
     root * /var/www/praise

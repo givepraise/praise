@@ -22,11 +22,5 @@ RUN yarn workspace frontend build
 # note: never use the :latest tag in a production site
 FROM caddy:2.4.6-alpine
 
-ARG SERVER
-
 COPY ./packages/frontend/Caddyfile /etc/caddy/Caddyfile
-RUN sed -i "s/{SERVER}/$SERVER/" /etc/caddy/Caddyfile
 COPY --from=builder /usr/src/packages/frontend/build /var/www/praise
-
-EXPOSE 80
-EXPOSE 443

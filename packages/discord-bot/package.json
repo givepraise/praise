@@ -10,7 +10,7 @@
     "api": "*",
     "discord-api-types": "^0.26.1",
     "discord.js": "^13.6.0",
-    "dotenv": "^16.0.0",
+    "env-cmd": "^10.1.0",
     "jet-logger": "^1.1.5",
     "mongoose": "^6.2.0",
     "randomstring": "^1.2.2",
@@ -25,8 +25,8 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint . --ext .ts",
-    "start": "ts-node --transpile-only ./src",
-    "start:dev": "nodemon ./src"
+    "start": "env-cmd --silent -f ../../.env ts-node --transpile-only ./src",
+    "start:dev": "env-cmd --silent -f ../../.env nodemon ./src"
   },
   "nodemonConfig": {
     "watch": [

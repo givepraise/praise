@@ -8,14 +8,14 @@
   "scripts": {
     "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "lint": "eslint . --ext .ts",
-    "start": "ts-node -r tsconfig-paths/register --transpile-only ./src",
-    "start:dev": "nodemon ./src",
-    "test": "ts-mocha --paths -p tsconfig.json src/**/*.spec.ts",
-    "import-praise": "ts-node -r tsconfig-paths/register src/scripts/import-praise.ts",
-    "not-yet-activated": "ts-node -r tsconfig-paths/register src/scripts/not-yet-activated.ts",
-    "replace-quantifier": "ts-node -r tsconfig-paths/register src/scripts/replace-quantifier.ts",
-    "migrator": "ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts",
-    "drop-database": "ts-node -r tsconfig-paths/register src/scripts/drop-database.ts"
+    "start": "env-cmd --silent -f ../../.env ts-node -r tsconfig-paths/register --transpile-only ./src",
+    "start:dev": "env-cmd --silent -f ../../.env nodemon ./src",
+    "test": "env-cmd --silent -f ../../.env ts-mocha --paths -p tsconfig.json src/**/*.spec.ts",
+    "import-praise": "env-cmd --silent -f ../../.env ts-node -r tsconfig-paths/register src/scripts/import-praise.ts",
+    "not-yet-activated": "env-cmd --silent -f ../../.env ts-node -r tsconfig-paths/register src/scripts/not-yet-activated.ts",
+    "replace-quantifier": "env-cmd --silent -f ../../.env ts-node -r tsconfig-paths/register src/scripts/replace-quantifier.ts",
+    "migrator": "env-cmd --silent -f ../../.env ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts",
+    "drop-database": "env-cmd --silent -f ../../.env ts-node -r tsconfig-paths/register src/scripts/drop-database.ts"
   },
   "nodemonConfig": {
     "watch": [
@@ -34,7 +34,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "date-fns": "^2.28.0",
-    "dotenv": "^10.0.0",
+    "env-cmd": "^10.1.0",
     "eslint": "^8.8.0",
     "ethers": "^5.5.2",
     "express": "^4.17.1",
