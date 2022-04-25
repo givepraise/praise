@@ -7,7 +7,7 @@ name: Create and publish api Docker image
 
 on:  
   push:
-    branches: ['dev']
+    branches: ['feat/dockerisation']
 
 env:
   REGISTRY: ghcr.io
