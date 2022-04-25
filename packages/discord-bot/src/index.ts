@@ -5,6 +5,8 @@ import mongoose, { ConnectOptions } from 'mongoose';
 import path from 'path';
 import { DiscordClient } from './interfaces/DiscordClient';
 import { registerCommands } from './utils/registerCommands';
+import { requiredEnvVariables } from './pre-start/env-required';
+import { envCheck } from 'api/src/pre-start/envCheck';
 
 let env = dotenv.config({
   path: path.join(__dirname, '../../../.env'),
@@ -13,21 +15,12 @@ if (env.error) {
   logger.err(env.error.message);
   throw env.error;
 }
-env = dotenv.config({
-  path: path.join(__dirname, '../.env'),
-});
-if (env.error) {
-  logger.err(env.error.message);
-  throw env.error;
-}
+
+// Check for required ENV variables
+envCheck(requiredEnvVariables);
 
 // Start Discord bot
 const token = process.env.DISCORD_TOKEN;
-
-if (!token) {
-  logger.err('Discord token not set.');
-  throw new Error('Discord token not set.');
-}
 
 // Create a new client instance
 const discordClient = new Client({

@@ -9,6 +9,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import PraiseDetailTable from './components/PraiseDetailTable';
+import getMarkdownText from '@/components/MarkdownText';
 
 const PeriodReceiverMessage = (): JSX.Element | null => {
   const { praiseId } = useParams<PraisePageParams>();
@@ -17,6 +18,12 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
 
   if (!praise) return null;
+
+  const componentDecorator = (href, text, key) => (
+    <a href={href} key={key} target="_blank">
+      {text}
+    </a>
+  );
 
   return (
     <>
@@ -27,7 +34,12 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
         {praise.giver.name} <span className="font-normal">to</span>{' '}
         {praise.receiver.name}
       </h2>
-      <div className="mt-2">{praise.reason}</div>
+      <div
+        className="mt-2"
+        dangerouslySetInnerHTML={{
+          __html: getMarkdownText(praise.reason),
+        }}
+      ></div>
       <div className="mt-2">
         Id: {praise._id}
         {praise.forwarder && <div>Forwarded by: {praise.forwarder.name}</div>}

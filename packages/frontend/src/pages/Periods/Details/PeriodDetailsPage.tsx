@@ -100,7 +100,7 @@ const PeriodDetailPage = (): JSX.Element => {
 
       <div className="flex space-x-4">
         <div>
-          <div className="praise-box">
+          <div className="w-40 py-5 mb-5 break-words border rounded-lg shadow-sm bg-gray-50">
             <nav>
               <NavItem
                 to={`${url}/receivers`}
