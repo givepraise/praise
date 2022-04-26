@@ -21,8 +21,8 @@ db.createUser({
 
 use praise_db_testing_tmp;
 db.createUser({
-  user:  '$MONGO_DB_USER',
-  pwd: '$MONGO_DB_PASSWORD',
+  user:  '$MONGO_USERNAME',
+  pwd: '$MONGO_PASSWORD',
   roles: [{
     role: 'readWrite',
     db: 'praise_db_testing_tmp'
