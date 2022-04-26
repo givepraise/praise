@@ -167,6 +167,12 @@ yarn workspace api import-praise ./sample_data/december.json
 
 ### 6. Start Discord bot
 
+Copy `.env.template` into `.env`:
+
+1. `DISCORD_TOKEN` - Your bot's discord token generated via the Discord Developer Portal. You'll need to invite the same bot to your server with the link - `https://discord.com/api/oauth2/authorize?client_id=<YOUR-BOT'S-CLIENT-ID>&permissions=378561611840&scope=bot%20applications.commands` (replace `<YOUR-BOT'S-CLIENT-ID>` with your bot's client ID), and with the SERVER MEMBERS and MESSAGE CONTENT Priviledged Intents enabled.
+2. `DISCORD_CLIENT_ID` - Your bot's discord client ID, which can be found in the Application settings on Discord Developer Portal
+3. `DISCORD_GUILD_ID` - The ID of the server in which you are using the bot. (this can be found by enabling developer mode in Discord, right clicking on te server icon and clicking "Copy Id").
+
 Build:
 
 ```
