@@ -27,6 +27,6 @@
       "@server": ["src/server"]
     }
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "src/**/*.json"],
+  "include": ["src/**/*.ts", "test/**/*.ts"],
   "references": []
 }

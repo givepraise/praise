@@ -1,11 +1,8 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
-import { CommandInteraction } from 'discord.js';
 import randomstring from 'randomstring';
-
-export const activationHandler = async (
-  interaction: CommandInteraction
-): Promise<void> => {
+import { CommandHandler } from 'src/interfaces/CommandHandler';
+export const activationHandler: CommandHandler = async (interaction) => {
   const { user } = interaction;
   const ua = {
     accountId: user.id,
