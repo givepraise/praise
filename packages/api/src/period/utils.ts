@@ -2,7 +2,7 @@ import { NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
 import {
   calculateQuantificationsCompositeScore,
-  calculateCompositeScore,
+  calculateReceiverCompositeScore,
 } from '@praise/utils/score';
 import { periodsettingListTransformer } from '@periodsettings/transformers';
 import { PeriodSettingsModel } from '@periodsettings/entities';
@@ -49,7 +49,7 @@ const calculateReceiverScores = async (
         r.quantifications.map((q) => calculateQuantificationsCompositeScore(q))
       );
 
-      const score = calculateCompositeScore(quantifierScores);
+      const score = calculateReceiverCompositeScore(quantifierScores);
 
       return {
         ...r,

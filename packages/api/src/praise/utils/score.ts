@@ -92,7 +92,7 @@ export const calculateQuantificationsCompositeScore = async (
  * @param scores list of receiver's praise composite scores
  * @returns
  */
-export const calculateCompositeScore = (scores: number[]): number =>
+export const calculateReceiverCompositeScore = (scores: number[]): number =>
   sum(scores);
 
 export const calculatePraiseScore = async (
