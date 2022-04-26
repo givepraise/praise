@@ -24,13 +24,6 @@ export const activationHandler = async (
     await interaction.reply('Unable to create user account.');
     return;
   }
-  const server = process.env.SERVER as string;
-  const port = process.env.FRONTEND_DEVELOPMENT_PORT as string;
-  const nodeEnv = process.env.NODE_ENV as string;
-
-  const frontendUrl = `http://${
-    nodeEnv === 'production' ? server : `${server}:${port}`
-  }`;
 
   const getActivationURL = (
     accountId: string,
@@ -38,7 +31,9 @@ export const activationHandler = async (
     hash: string,
     token: string
   ): string =>
-    `${frontendUrl}/activate?accountId=${accountId}&accountName=${encodeURIComponent(
+    `${
+      process.env.FRONTEND_URL as string
+    }/activate?accountId=${accountId}&accountName=${encodeURIComponent(
       `${uname}#${hash}`
     )}&platform=DISCORD&token=${token}`;
 

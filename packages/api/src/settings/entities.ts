@@ -40,8 +40,7 @@ export function getGenericSettingValueRealized(
       .split(',')
       .map((v: string) => Number.parseInt(v.trim()));
   } else if (this.type === 'Image') {
-    const apiURL = process.env.REACT_APP_API_URL;
-    normalizedValue = apiURL ? `${apiURL}/${this.value}` : `/${this.value}`;
+    normalizedValue = `${process.env.SERVER_URL as string}/${this.value}`;
   } else {
     normalizedValue = this.value;
   }

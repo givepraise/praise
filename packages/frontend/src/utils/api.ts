@@ -45,9 +45,7 @@ const handleErrors = (err: AxiosError): void => {
   }
 };
 
-const apiBaseURL = process.env.REACT_APP_API_URL
-  ? `${process.env.REACT_APP_API_URL}/api`
-  : '/api';
+const apiBaseURL = `${process.env.REACT_APP_SERVER_URL as string}/api`;
 
 /**
  * Api client for unathenticated requests

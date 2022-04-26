@@ -25,8 +25,9 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint . --ext .ts",
-    "start": "env-cmd --silent -f ../../.env ts-node --transpile-only ./src",
-    "start:dev": "env-cmd --silent -f ../../.env nodemon ./src"
+    "load-env": "env-cmd --silent -f ../../.env env-cmd --silent",
+    "start": "yarn run load-env ts-node --transpile-only ./src",
+    "start:dev": "yarn run load-env nodemon ./src"
   },
   "nodemonConfig": {
     "watch": [

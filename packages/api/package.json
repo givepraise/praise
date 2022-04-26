@@ -8,14 +8,15 @@
   "scripts": {
     "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "lint": "eslint . --ext .ts",
-    "start": "env-cmd --silent -f ../../.env ts-node -r tsconfig-paths/register --transpile-only ./src",
-    "start:dev": "env-cmd --silent -f ../../.env nodemon ./src",
-    "test": "env-cmd --silent -f ../../.env ts-mocha --paths -p tsconfig.json src/**/*.spec.ts",
-    "import-praise": "env-cmd --silent -f ../../.env ts-node -r tsconfig-paths/register src/scripts/import-praise.ts",
-    "not-yet-activated": "env-cmd --silent -f ../../.env ts-node -r tsconfig-paths/register src/scripts/not-yet-activated.ts",
-    "replace-quantifier": "env-cmd --silent -f ../../.env ts-node -r tsconfig-paths/register src/scripts/replace-quantifier.ts",
-    "migrator": "env-cmd --silent -f ../../.env ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts",
-    "drop-database": "env-cmd --silent -f ../../.env ts-node -r tsconfig-paths/register src/scripts/drop-database.ts"
+    "load-env": "env-cmd --silent -f ../../.env env-cmd --silent",
+    "start": "yarn run load-env ts-node -r tsconfig-paths/register --transpile-only ./src",
+    "start:dev": "yarn run load-env nodemon ./src",
+    "test": "yarn run load-env ts-mocha --paths -p tsconfig.json src/**/*.spec.ts",
+    "import-praise": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/import-praise.ts",
+    "not-yet-activated": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/not-yet-activated.ts",
+    "replace-quantifier": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/replace-quantifier.ts",
+    "migrator": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts",
+    "drop-database": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/drop-database.ts"
   },
   "nodemonConfig": {
     "watch": [
@@ -43,7 +44,7 @@
     "faker": "^5.5.3",
     "helmet": "^4.6.0",
     "http-status-codes": "^2.1.4",
-    "jet-logger": "^1.0.6",
+    "jet-logger": "^1.1.5",
     "json2csv": "^5.0.6",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",

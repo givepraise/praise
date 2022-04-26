@@ -64,7 +64,8 @@
   },
   "scripts": {
     "build": "craco build",
-    "start": "PORT=$(grep FRONTEND_DEVELOPMENT_PORT ../../.env | cut -d '=' -f2) && TAILWIND_MODE=watch env-cmd -f ../../.env craco start",
+    "load-env": "env-cmd --silent -f ../../.env env-cmd --silent",
+    "start": "TAILWIND_MODE=watch yarn run load-env craco start",
     "lint": "eslint . --ext .ts --ext .tsx",
     "test": "jest",
     "test:watch": "jest --watch"

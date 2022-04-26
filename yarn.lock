@@ -4657,7 +4657,7 @@ __metadata:
     faker: ^5.5.3
     helmet: ^4.6.0
     http-status-codes: ^2.1.4
-    jet-logger: ^1.0.6
+    jet-logger: ^1.1.5
     json2csv: ^5.0.6
     jsonwebtoken: ^8.5.1
     lodash: ^4.17.21
@@ -11018,7 +11018,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jet-logger@npm:^1.0.6, jet-logger@npm:^1.1.5":
+"jet-logger@npm:^1.1.5":
   version: 1.1.5
   resolution: "jet-logger@npm:1.1.5"
   dependencies:

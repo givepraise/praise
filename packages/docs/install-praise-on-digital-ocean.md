@@ -147,10 +147,10 @@ cp .env.template .env.production
 nano .env.production
 ```
 
-For local development, configure `REACT_APP_API_URL` with the server and port api is running on, most likely `http://localhost:8088`. For production, leave empty since api runs on same server domain as the frontend.
+For local development, configure `REACT_APP_SERVER_URL` with the server and port api is running on, most likely `http://localhost:8088`. For production, leave empty since api runs on same server domain as the frontend.
 
 ```
-REACT_APP_API_URL=
+REACT_APP_SERVER_URL=
 ```
 
 ## Build and run all services
