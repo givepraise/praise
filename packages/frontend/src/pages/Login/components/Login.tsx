@@ -52,7 +52,7 @@ const LoginButton: React.FC = (): ReactElement | null => {
         setSignatureReceived(true);
 
         // 3. Verify signature with server
-        await requestApiAuth({ ethereumAddress, signature });
+        await requestApiAuth({ ethereumAddress, message, signature });
       } catch (err) {
         if ((err as CodedError).code === 4001) {
           toast.error('You declined login');
