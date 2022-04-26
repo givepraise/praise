@@ -3,7 +3,7 @@ import { settingValue } from '@shared/settings';
 import { Types } from 'mongoose';
 import { find, sum } from 'lodash';
 import { PraiseModel } from '../entities';
-import { PraiseDocument, Quantification } from '../types';
+import { Quantification } from '../types';
 import { getPraisePeriod } from './core';
 
 /**
@@ -94,12 +94,6 @@ export const calculateQuantificationsCompositeScore = async (
  */
 export const calculateReceiverCompositeScore = (scores: number[]): number =>
   sum(scores);
-
-export const calculatePraiseScore = async (
-  praise: PraiseDocument
-): Promise<number> => {
-  return calculateQuantificationsCompositeScore(praise.quantifications);
-};
 
 export const calculateQuantificationScore = async (
   q: Quantification,

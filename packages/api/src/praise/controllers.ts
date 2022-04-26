@@ -26,7 +26,7 @@ import {
   QuantificationCreateUpdateInput,
 } from './types';
 import { praiseWithScore } from './utils/core';
-import { calculatePraiseScore } from './utils/score';
+import { calculateQuantificationsCompositeScore } from './utils/score';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
@@ -76,7 +76,9 @@ export const single = async (
   const praiseDetailsDto: PraiseDetailsDto = await praiseDocumentTransformer(
     praise
   );
-  praiseDetailsDto.score = await calculatePraiseScore(praise);
+  praiseDetailsDto.score = await calculateQuantificationsCompositeScore(
+    praise.quantifications
+  );
   res.status(200).json(praiseDetailsDto);
 };
 
