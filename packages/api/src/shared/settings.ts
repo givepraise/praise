@@ -1,10 +1,10 @@
 import { SettingsModel } from '@settings/entities';
 import { PeriodSettingsModel } from '@periodsettings/entities';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 
 export const settingValue = async (
   key: string,
-  periodId: mongoose.Schema.Types.ObjectId | undefined = undefined
+  periodId: Types.ObjectId | undefined = undefined
 ): Promise<string | boolean | number | number[]> => {
   let setting;
   if (!periodId) {

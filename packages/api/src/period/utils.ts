@@ -1,4 +1,4 @@
-import { BadRequestError, NotFoundError } from '@error/errors';
+import { NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
 import {
   calculateQuantificationsCompositeScore,
@@ -8,7 +8,7 @@ import { periodsettingListTransformer } from '@periodsettings/transformers';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 import { settingValue } from '@shared/settings';
 import { some } from 'lodash';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import { PeriodModel } from './entities';
 import {
   periodDetailsReceiverListTransformer,
@@ -41,25 +41,15 @@ export const getPreviousPeriodEndDate = async (
 
 const calculateReceiverScores = async (
   receivers: PeriodDetailsReceiver[],
-  periodId: mongoose.Schema.Types.ObjectId
+  periodId: Types.ObjectId
 ): Promise<PeriodDetailsReceiver[]> => {
-  const duplicatePraisePercentage = (await settingValue(
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
-    periodId
-  )) as number;
-
-  if (!duplicatePraisePercentage)
-    throw new BadRequestError(
-      "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
-    );
-
   const receiversWithQuantificationScores = await Promise.all(
     receivers.map(async (r) => {
       if (!r.quantifications) return r;
 
       const quantifierScores = await Promise.all(
         r.quantifications.map((q) =>
-          calculateQuantificationsCompositeScore(q, duplicatePraisePercentage)
+          calculateQuantificationsCompositeScore(q, periodId)
         )
       );
 

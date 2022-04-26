@@ -1,14 +1,30 @@
 import { BadRequestError } from '@error/errors';
 import { settingValue } from '@shared/settings';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import { find, sum } from 'lodash';
 import { PraiseModel } from '../entities';
 import { PraiseDocument, Quantification } from '../types';
 import { getPraisePeriod } from './core';
 
+const calculateDuplicateScore = async (
+  quantification: Quantification,
+  periodId: Types.ObjectId
+): Promise<number> => {
+  const duplicatePraisePercentage = (await settingValue(
+    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
+    periodId
+  )) as number;
+  if (!duplicatePraisePercentage)
+    throw new BadRequestError(
+      "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
+    );
+
+  return Math.floor(quantification.score * duplicatePraisePercentage);
+};
+
 export const calculateQuantificationsCompositeScore = async (
   quantifications: Quantification[],
-  duplicatePraisePercentage: number
+  periodId: Types.ObjectId
 ): Promise<number> => {
   if (!quantifications) return 0;
 
@@ -29,7 +45,7 @@ export const calculateQuantificationsCompositeScore = async (
             pq.quantifier.equals(quantification.quantifier) &&
             pq.score > 0
           ) {
-            s += Math.floor(pq.score * duplicatePraisePercentage);
+            s += await calculateDuplicateScore(pq, periodId);
             si++;
           }
         }
@@ -51,35 +67,10 @@ export const calculatePraiseScore = async (
   const period = await getPraisePeriod(praise);
   if (!period) return 0;
 
-  const duplicatePraisePercentage = (await settingValue(
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
-    period._id
-  )) as number;
-  if (!duplicatePraisePercentage)
-    throw new BadRequestError(
-      "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
-    );
-
   return calculateQuantificationsCompositeScore(
     praise.quantifications,
-    duplicatePraisePercentage
+    period._id
   );
-};
-
-const calculateDuplicateScore = async (
-  quantification: Quantification,
-  periodId: mongoose.Schema.Types.ObjectId
-): Promise<number> => {
-  const duplicatePraisePercentage = (await settingValue(
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
-    periodId
-  )) as number;
-  if (!duplicatePraisePercentage)
-    throw new BadRequestError(
-      "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
-    );
-
-  return Math.floor(quantification.score * duplicatePraisePercentage);
 };
 
 export const calculateQuantificationDuplicateScore = async (
@@ -115,7 +106,7 @@ export const calculateQuantificationDuplicateScore = async (
 
 export const calculateQuantificationScore = async (
   q: Quantification,
-  periodId: mongoose.Schema.Types.ObjectId
+  periodId: Types.ObjectId
 ): Promise<number> => {
   let score = q.score;
 
