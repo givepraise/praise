@@ -64,7 +64,7 @@
   },
   "scripts": {
     "build": "craco build",
-    "load-env": "env-cmd --silent -f ../../.env env-cmd --silent",
+    "load-env": "env-cmd --silent --no-override -f ../../.env env-cmd --silent --no-override",
     "start": "TAILWIND_MODE=watch yarn run load-env craco start",
     "lint": "eslint . --ext .ts --ext .tsx",
     "test": "jest",

@@ -25,7 +25,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint . --ext .ts",
-    "load-env": "env-cmd --silent -f ../../.env env-cmd --silent",
+    "load-env": "env-cmd --silent --no-override -f ../../.env env-cmd --silent --no-override",
     "start": "yarn run load-env ts-node --transpile-only ./src",
     "start:dev": "yarn run load-env nodemon ./src"
   },

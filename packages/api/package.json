@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "lint": "eslint . --ext .ts",
-    "load-env": "env-cmd --silent -f ../../.env env-cmd --silent",
+    "load-env": "env-cmd --silent --no-override -f ../../.env env-cmd --silent --no-override",
     "start": "yarn run load-env ts-node -r tsconfig-paths/register --transpile-only ./src",
     "start:dev": "yarn run load-env nodemon ./src",
     "test": "NODE_ENV=testing yarn run load-env nyc mocha -r ts-node/register -r tsconfig-paths/register -r src/tests/setup.ts 'src/tests/**/*.spec.ts' --exit",
