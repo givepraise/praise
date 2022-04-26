@@ -10,6 +10,7 @@
   "scripts": {
     "mongodb:start": "docker compose up mongodb -d",
     "mongodb:clean": "yarn workspace api drop-database",
+    "mongodb:stop": "docker compose down",
     "api:build-docker": "docker compose build api --no-cache",
     "api:start": "yarn workspace api start",
     "discord-bot:build-docker": "docker compose build discord-bot --no-cache",

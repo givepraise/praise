@@ -3977,6 +3977,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/yargs@npm:^17.0.10":
+  version: 17.0.10
+  resolution: "@types/yargs@npm:17.0.10"
+  dependencies:
+    "@types/yargs-parser": "*"
+  checksum: f0673cbfc08e17239dc58952a88350d6c4db04a027a28a06fbad27d87b670e909f9cd9e66f9c64cebdd5071d1096261e33454a55868395f125297e5c50992ca8
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/eslint-plugin@npm:^5.18.0":
   version: 5.18.0
   resolution: "@typescript-eslint/eslint-plugin@npm:5.18.0"
@@ -4780,6 +4789,7 @@ __metadata:
     "@types/morgan": ^1.9.3
     "@types/node": ^17.0.0
     "@types/supertest": ^2.0.12
+    "@types/yargs": ^17.0.10
     bin-packer: ^1.6.1
     chai: ^4.3.6
     cookie-parser: ^1.4.6
@@ -14700,6 +14710,7 @@ __metadata:
   dependencies:
     "@typescript-eslint/eslint-plugin": ^5.7.0
     "@typescript-eslint/parser": ^5.10.2
+    api: "workspace:^"
     docsify: ^4.12.2
     eslint: ^8.8.0
     eslint-config-prettier: ^8.3.0
@@ -14710,6 +14721,7 @@ __metadata:
     eslint-plugin-prettier: ^4.0.0
     prettier: ^2.5.1
     typescript: ^4.5.5
+    workspace: ^0.0.1-preview.1
   languageName: unknown
   linkType: soft
 
@@ -18453,6 +18465,13 @@ __metadata:
   version: 6.2.0
   resolution: "workerpool@npm:6.2.0"
   checksum: 3493b4f0ef979a23d2c1583d7ef85f62fc9463cc02f82829d3e7e663b517f8ae9707da0249b382e46ac58986deb0ca2232ee1081713741211bda9254b429c9bb
+  languageName: node
+  linkType: hard
+
+"workspace@npm:^0.0.1-preview.1":
+  version: 0.0.1-preview.1
+  resolution: "workspace@npm:0.0.1-preview.1"
+  checksum: 0d3a1ed8a5735bd3295f2685a92cfd59a53d9386d6177e3dc036416e0b200729632a3760d9b34d75597b826e30620d7b02d9852c9bc2e0028c64436c9c5cda2e
   languageName: node
   linkType: hard
 
