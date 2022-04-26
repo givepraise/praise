@@ -79,6 +79,37 @@ export const calculateDuplicateScore = async (
   return Math.floor(quantification.score * duplicatePraisePercentage);
 };
 
+export const calculateQuantificationDuplicateScore = async (
+  quantification: Quantification
+): Promise<number> => {
+  let duplicateScore = 0;
+
+  if (quantification.duplicatePraise) {
+    const praise = await PraiseModel.findById(
+      quantification.duplicatePraise._id
+    );
+
+    if (praise && praise.quantifications) {
+      const originalQuantification = praise.quantifications.find((q) =>
+        q.quantifier.equals(quantification.quantifier)
+      );
+      if (originalQuantification && originalQuantification.dismissed) {
+        duplicateScore = 0;
+      } else if (originalQuantification && !originalQuantification.dismissed) {
+        const period = await getPraisePeriod(praise);
+        if (!period) throw new Error('Quantification has no associated period');
+
+        duplicateScore = await calculateDuplicateScore(
+          originalQuantification,
+          period._id
+        );
+      }
+    }
+  }
+
+  return duplicateScore;
+};
+
 export const calculateQuantificationScore = async (
   q: Quantification,
   periodId: mongoose.Schema.Types.ObjectId

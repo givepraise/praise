@@ -24,8 +24,8 @@ export interface Quantification {
   score: number;
   dismissed: boolean;
   duplicatePraise?: PraiseDocument;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface PraiseDocument extends Praise, mongoose.Document {}
@@ -58,8 +58,8 @@ export interface QuantificationDto {
   dismissed: boolean;
   duplicatePraise?: string;
   duplicateScore?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type QuantificationDetailsDto = QuantificationDto;

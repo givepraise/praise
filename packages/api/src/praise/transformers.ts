@@ -1,13 +1,11 @@
 import { userAccountTransformer } from '@useraccount/transformers';
-import { PraiseModel } from './entities';
 import {
   PraiseDocument,
   PraiseDto,
   Quantification,
   QuantificationDto,
 } from './types';
-import { getPraisePeriod } from './utils/core';
-import { calculateDuplicateScore } from './utils/score';
+import { calculateQuantificationDuplicateScore } from './utils/score';
 
 const quantificationToDto = async (
   quantification: Quantification
@@ -21,34 +19,18 @@ const quantificationToDto = async (
     updatedAt,
   } = quantification;
 
-  let duplicateScore = 0;
-  if (duplicatePraise) {
-    const praise = await PraiseModel.findById(duplicatePraise._id);
-    if (praise && praise.quantifications) {
-      const quantification = praise.quantifications.find((q) =>
-        q.quantifier.equals(quantifier)
-      );
-      if (quantification && quantification.dismissed) {
-        duplicateScore = 0;
-      } else if (quantification && !quantification.dismissed) {
-        const period = await getPraisePeriod(praise);
-        if (!period) throw new Error('Quantification has no associated period');
+  const duplicateScore = await calculateQuantificationDuplicateScore(
+    quantification
+  );
 
-        duplicateScore = await calculateDuplicateScore(
-          quantification,
-          period._id
-        );
-      }
-    }
-  }
   return {
     quantifier: quantifier._id,
     score,
     dismissed,
     duplicatePraise: duplicatePraise ? duplicatePraise._id : undefined,
     duplicateScore,
-    createdAt: createdAt ? createdAt.toISOString() : undefined,
-    updatedAt: updatedAt ? updatedAt.toISOString() : undefined,
+    createdAt: createdAt.toISOString(),
+    updatedAt: updatedAt.toISOString(),
   };
 };
 
