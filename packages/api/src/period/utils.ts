@@ -8,7 +8,6 @@ import { periodsettingListTransformer } from '@periodsettings/transformers';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 import { settingValue } from '@shared/settings';
 import { some } from 'lodash';
-import { Types } from 'mongoose';
 import { PeriodModel } from './entities';
 import {
   periodDetailsReceiverListTransformer,
@@ -40,17 +39,14 @@ export const getPreviousPeriodEndDate = async (
 };
 
 const calculateReceiverScores = async (
-  receivers: PeriodDetailsReceiver[],
-  periodId: Types.ObjectId
+  receivers: PeriodDetailsReceiver[]
 ): Promise<PeriodDetailsReceiver[]> => {
   const receiversWithQuantificationScores = await Promise.all(
     receivers.map(async (r) => {
       if (!r.quantifications) return r;
 
       const quantifierScores = await Promise.all(
-        r.quantifications.map((q) =>
-          calculateQuantificationsCompositeScore(q, periodId)
-        )
+        r.quantifications.map((q) => calculateQuantificationsCompositeScore(q))
       );
 
       const score = calculateCompositeScore(quantifierScores);
@@ -137,10 +133,7 @@ export const findPeriodDetailsDto = async (
     ]),
   ]);
 
-  const receiversWithScores = await calculateReceiverScores(
-    receivers,
-    period._id
-  );
+  const receiversWithScores = await calculateReceiverScores(receivers);
 
   const periodsettings = await PeriodSettingsModel.find({ period: period._id });
 

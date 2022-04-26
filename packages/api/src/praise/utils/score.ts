@@ -22,57 +22,6 @@ const calculateDuplicateScore = async (
   return Math.floor(quantification.score * duplicatePraisePercentage);
 };
 
-export const calculateQuantificationsCompositeScore = async (
-  quantifications: Quantification[],
-  periodId: Types.ObjectId
-): Promise<number> => {
-  if (!quantifications) return 0;
-
-  let si = 0;
-  let s = 0;
-  for (const quantification of quantifications) {
-    if (quantification.score > 0) {
-      s += quantification.score;
-      si++;
-    }
-    if (quantification.duplicatePraise) {
-      const p = await PraiseModel.findById(quantification.duplicatePraise);
-      if (p) {
-        for (const pq of p.quantifications) {
-          if (
-            pq?.quantifier &&
-            quantification.quantifier &&
-            pq.quantifier.equals(quantification.quantifier) &&
-            pq.score > 0
-          ) {
-            s += await calculateDuplicateScore(pq, periodId);
-            si++;
-          }
-        }
-      }
-    }
-  }
-  if (s > 0) {
-    return Math.floor(s / si);
-  }
-  return 0;
-};
-
-export const calculateCompositeScore = (scores: number[]): number =>
-  sum(scores);
-
-export const calculatePraiseScore = async (
-  praise: PraiseDocument
-): Promise<number> => {
-  const period = await getPraisePeriod(praise);
-  if (!period) return 0;
-
-  return calculateQuantificationsCompositeScore(
-    praise.quantifications,
-    period._id
-  );
-};
-
 export const calculateQuantificationDuplicateScore = async (
   quantification: Quantification
 ): Promise<number> => {
@@ -102,6 +51,35 @@ export const calculateQuantificationDuplicateScore = async (
   }
 
   return duplicateScore;
+};
+
+export const calculateQuantificationsCompositeScore = async (
+  quantifications: Quantification[]
+): Promise<number> => {
+  let si = 0;
+  let s = 0;
+  for (const quantification of quantifications) {
+    if (quantification.score > 0 && !quantification.duplicatePraise) {
+      s += quantification.score;
+      si++;
+    } else if (quantification.duplicatePraise) {
+      s += await calculateQuantificationDuplicateScore(quantification);
+      si++;
+    }
+  }
+  if (s > 0) {
+    return Math.floor(s / si);
+  }
+  return 0;
+};
+
+export const calculateCompositeScore = (scores: number[]): number =>
+  sum(scores);
+
+export const calculatePraiseScore = async (
+  praise: PraiseDocument
+): Promise<number> => {
+  return calculateQuantificationsCompositeScore(praise.quantifications);
 };
 
 export const calculateQuantificationScore = async (
