@@ -1,10 +1,17 @@
 version: '3.8'
 services:
   mongodb:
-    extends:
-      file: packages/mongodb/docker-compose.yml
-      service: mongodb
-  
+    container_name: mongodb-praise
+    image: mongo
+    env_file:
+      - .env
+    ports:
+      - $MONGO_PORT:$MONGO_PORT
+    restart: unless-stopped
+    volumes:
+      - mongodb_data:/data/db
+      - './packages/mongodb/users_init.sh:/docker-entrypoint-initdb.d/users_init.sh:ro'
+
   api:
     container_name: api-praise
     image: api
