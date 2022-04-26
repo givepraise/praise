@@ -59,11 +59,11 @@ export const calculateQuantificationsCompositeScore = async (
   let si = 0;
   let s = 0;
   for (const quantification of quantifications) {
-    if (quantification.score > 0 && !quantification.duplicatePraise) {
-      s += quantification.score;
-      si++;
-    } else if (quantification.duplicatePraise) {
+    if (quantification.duplicatePraise) {
       s += await calculateQuantificationDuplicateScore(quantification);
+      si++;
+    } else if (quantification.score > 0) {
+      s += quantification.score;
       si++;
     }
   }
