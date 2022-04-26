@@ -9,8 +9,6 @@ const SettingsPage = (): JSX.Element => {
   const settings = useRecoilValue(AllSettings);
   const { setSetting } = useSetSetting();
 
-  console.log('ALL SETTINGS: ', settings);
-
   return (
     <div className="max-w-2xl mx-auto">
       <BreadCrumb name="Settings" icon={faCogs} />
