@@ -1,7 +1,7 @@
 import { BadRequestError } from '@error/errors';
 import { settingValue } from '@shared/settings';
 import { Types } from 'mongoose';
-import { find, sum } from 'lodash';
+import { sum } from 'lodash';
 import { PraiseModel } from '../entities';
 import { Quantification } from '../types';
 import { getPraisePeriod } from './core';
@@ -95,6 +95,12 @@ export const calculateQuantificationsCompositeScore = async (
 export const calculateReceiverCompositeScore = (scores: number[]): number =>
   sum(scores);
 
+/**
+ * Calculate the score of a given quantification - based on it's manual score value, marked duplicate value, and marked dismissed value
+ *
+ * @param quantification
+ * @returns
+ */
 export const calculateQuantificationScore = async (
   quantification: Quantification
 ): Promise<number> => {
