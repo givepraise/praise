@@ -63,7 +63,7 @@ export const calculatePraiseScore = async (
   );
 };
 
-export const calculateDuplicateScore = async (
+const calculateDuplicateScore = async (
   quantification: Quantification,
   periodId: mongoose.Schema.Types.ObjectId
 ): Promise<number> => {
