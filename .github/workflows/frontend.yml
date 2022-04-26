@@ -6,7 +6,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    name: Frontend -- Build & Lint
+    name: Build & Lint
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
