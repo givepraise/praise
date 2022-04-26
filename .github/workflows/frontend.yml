@@ -1,0 +1,19 @@
+name: frontend
+on:
+  pull_request:
+    paths:
+      - 'packages/frontend/**'
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    name: Frontend -- Build & Lint
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.13.2'
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn workspace api build
+      - run: yarn workspace frontend lint
+      - run: yarn workspace frontend build

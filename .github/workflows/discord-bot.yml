@@ -1,0 +1,19 @@
+name: discord-bot
+on:
+  pull_request:
+    paths:
+      - 'packages/discord-bot/**'
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    name: Discord Bot -- Build & Lint
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.13.2'
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn workspace api build
+      - run: yarn workspace discord-bot lint
+      - run: yarn workspace discord-bot build
