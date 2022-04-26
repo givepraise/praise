@@ -1,12 +1,33 @@
 import mongoose, { ConnectOptions } from 'mongoose';
 
-const connectDatabase = async (): Promise<typeof mongoose> => {
-  const username = process.env.MONGO_USERNAME || '';
-  const password = process.env.MONGO_PASSWORD || '';
-  const host = process.env.MONGO_HOST || '';
-  const port = process.env.MONGO_PORT || '';
-  const dbName = process.env.MONGO_DB || '';
-  const uri = `mongodb://${username}:${password}@${host}:${port}/${dbName}`;
+interface DatabaseConfig {
+  MONGO_USERNAME: string;
+  MONGO_PASSWORD: string;
+  MONGO_HOST: string;
+  MONGO_PORT: string;
+  MONGO_DB: string;
+}
+
+const connectDatabase = async (
+  configOverride: DatabaseConfig | {} = {}
+): Promise<typeof mongoose> => {
+  const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_HOST, MONGO_PORT, MONGO_DB } =
+    process.env;
+
+  const configEnv = {
+    MONGO_USERNAME,
+    MONGO_PASSWORD,
+    MONGO_HOST,
+    MONGO_PORT,
+    MONGO_DB,
+  } as DatabaseConfig;
+
+  const config = {
+    ...configEnv,
+    ...configOverride,
+  } as DatabaseConfig;
+
+  const uri = `mongodb://${config.MONGO_USERNAME}:${config.MONGO_PASSWORD}@${config.MONGO_HOST}:${config.MONGO_PORT}/${config.MONGO_DB}`;
 
   try {
     const db = await mongoose.connect(uri, {

@@ -2,7 +2,6 @@ import { QueryInput } from '@shared/types';
 
 export interface AuthRequestInput {
   ethereumAddress: string;
-  message: string;
   signature: string;
 }
 
