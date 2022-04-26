@@ -38,7 +38,7 @@ export const getPreviousPeriodEndDate = async (
   return previousEndDate;
 };
 
-const calculateReceiverScores = async (
+const receiversWithScores = async (
   receivers: PeriodDetailsReceiver[]
 ): Promise<PeriodDetailsReceiver[]> => {
   const receiversWithQuantificationScores = await Promise.all(
@@ -133,13 +133,15 @@ export const findPeriodDetailsDto = async (
     ]),
   ]);
 
-  const receiversWithScores = await calculateReceiverScores(receivers);
+  const receiversWithScoresData = await receiversWithScores(receivers);
 
   const periodsettings = await PeriodSettingsModel.find({ period: period._id });
 
   const response = {
     ...periodDocumentTransformer(period),
-    receivers: await periodDetailsReceiverListTransformer(receiversWithScores),
+    receivers: await periodDetailsReceiverListTransformer(
+      receiversWithScoresData
+    ),
     quantifiers: [...quantifiers],
     settings: periodsettingListTransformer(periodsettings),
   };
