@@ -60,6 +60,12 @@ export const calculateQuantificationDuplicateScore = async (
   return duplicateScore;
 };
 
+/**
+ * Calculates a single "composite" score from a list of quantifications (of the same praise)
+ *
+ * @param quantifications list of quantifications to be included in composite score
+ * @returns
+ */
 export const calculateQuantificationsCompositeScore = async (
   quantifications: Quantification[]
 ): Promise<number> => {
@@ -80,6 +86,12 @@ export const calculateQuantificationsCompositeScore = async (
   return 0;
 };
 
+/**
+ * Calculates a single "composite" score from a list of praise composite scores
+ *
+ * @param scores list of receiver's praise composite scores
+ * @returns
+ */
 export const calculateCompositeScore = (scores: number[]): number =>
   sum(scores);
 
