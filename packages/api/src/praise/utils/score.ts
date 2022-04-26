@@ -1,7 +1,7 @@
 import { BadRequestError } from '@error/errors';
 import { settingValue } from '@shared/settings';
 import mongoose from 'mongoose';
-import { find } from 'lodash';
+import { find, sum } from 'lodash';
 import { PraiseModel } from '../entities';
 import { PraiseDocument, Quantification } from '../types';
 import { getPraisePeriod } from './core';
@@ -41,6 +41,9 @@ export const calculateQuantificationsCompositeScore = async (
   }
   return 0;
 };
+
+export const calculateCompositeScore = (scores: number[]): number =>
+  sum(scores);
 
 export const calculatePraiseScore = async (
   praise: PraiseDocument

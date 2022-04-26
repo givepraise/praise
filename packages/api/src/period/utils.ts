@@ -1,10 +1,13 @@
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
-import { calculateQuantificationsCompositeScore } from '@praise/utils/score';
+import {
+  calculateQuantificationsCompositeScore,
+  calculateCompositeScore,
+} from '@praise/utils/score';
 import { periodsettingListTransformer } from '@periodsettings/transformers';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 import { settingValue } from '@shared/settings';
-import { sum, some } from 'lodash';
+import { some } from 'lodash';
 import mongoose from 'mongoose';
 import { PeriodModel } from './entities';
 import {
@@ -60,9 +63,11 @@ const calculateReceiverScores = async (
         )
       );
 
+      const score = calculateCompositeScore(quantifierScores);
+
       return {
         ...r,
-        score: sum(quantifierScores),
+        score,
         quantifications: undefined,
       };
     })
