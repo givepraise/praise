@@ -178,7 +178,9 @@ export const close = async (
   period.status = PeriodStatusType.CLOSED;
   await period.save();
 
-  res.status(StatusCodes.OK).json(periodDocumentTransformer(period));
+  const periodDetailsDto = await findPeriodDetailsDto(period._id);
+
+  res.status(StatusCodes.OK).json(periodDetailsDto);
 };
 
 const assignQuantifiersDryRun = async (

@@ -2,7 +2,7 @@
 import { UserDocument } from '@user/types';
 import mongoose from 'mongoose';
 
-export type UserAccountPlatform = 'DISCORD' | 'TELGRAM';
+export type UserAccountPlatform = 'DISCORD' | 'TELEGRAM';
 
 export interface UserAccount {
   user?: UserDocument;
