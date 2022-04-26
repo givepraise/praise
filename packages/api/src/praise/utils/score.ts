@@ -6,8 +6,15 @@ import { PraiseModel } from '../entities';
 import { PraiseDocument, Quantification } from '../types';
 import { getPraisePeriod } from './core';
 
+/**
+ * Calculate a quantification score of a praise marked duplicate
+ *
+ * @param originalQuantification the "original" praise's quantification (i.e. the quantification by the same user of the "original" praise instance)
+ * @param periodId
+ * @returns
+ */
 const calculateDuplicateScore = async (
-  quantification: Quantification,
+  originalQuantification: Quantification,
   periodId: Types.ObjectId
 ): Promise<number> => {
   const duplicatePraisePercentage = (await settingValue(
@@ -19,7 +26,7 @@ const calculateDuplicateScore = async (
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
     );
 
-  return Math.floor(quantification.score * duplicatePraisePercentage);
+  return Math.floor(originalQuantification.score * duplicatePraisePercentage);
 };
 
 export const calculateQuantificationDuplicateScore = async (
