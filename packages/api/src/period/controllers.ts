@@ -594,7 +594,7 @@ export const exportPraise = async (
           q.quantifier = quantifier;
           q.account = account;
 
-          q.score = await calculateQuantificationScore(q, period._id);
+          q.score = await calculateQuantificationScore(q);
 
           return q;
         })

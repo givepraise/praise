@@ -96,24 +96,12 @@ export const calculateReceiverCompositeScore = (scores: number[]): number =>
   sum(scores);
 
 export const calculateQuantificationScore = async (
-  q: Quantification,
-  periodId: Types.ObjectId
+  quantification: Quantification
 ): Promise<number> => {
-  let score = q.score;
+  let score = quantification.score;
 
-  if (q.duplicatePraise) {
-    const duplicatePraise = await PraiseModel.findById(q.duplicatePraise._id);
-
-    if (duplicatePraise && duplicatePraise.quantifications) {
-      const quantification = find(duplicatePraise.quantifications, (q2) =>
-        q2.quantifier.equals(q.quantifier)
-      );
-      if (quantification) {
-        score = quantification.dismissed
-          ? 0
-          : await calculateDuplicateScore(quantification, periodId);
-      }
-    }
+  if (quantification.duplicatePraise) {
+    score = await calculateQuantificationDuplicateScore(quantification);
   }
 
   return score;
