@@ -16,7 +16,7 @@ const PeriodSettingsForm = ({
 }: Params): JSX.Element | null => {
   useAllPeriodSettingsQuery(periodId);
 
-  const settings = useRecoilValue(AllPeriodSettings);
+  const settings = useRecoilValue(AllPeriodSettings(periodId));
   const { setSetting } = useSetPeriodSetting(periodId);
 
   return (

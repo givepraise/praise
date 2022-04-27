@@ -15,7 +15,7 @@ import { ApiAuthGet, useAuthApiQuery, isResponseOk } from './api';
 import { Setting, useSetSettingReturn } from './settings';
 import { PeriodSettingDto } from 'api/src/periodsettings/types';
 
-export const AllPeriodSettingIds = atom<string[] | undefined>({
+export const AllPeriodSettingIds = atomFamily<string[] | undefined, string>({
   key: 'PeriodSettingIdList',
   default: undefined,
 });
@@ -72,21 +72,23 @@ export const AllPeriodSettingsQuery = selectorFamily({
     },
 });
 
-export const AllPeriodSettings = selector({
+export const AllPeriodSettings = selectorFamily({
   key: 'AllPeriodSettings',
-  get: ({ get }): PeriodSettingDto[] | undefined => {
-    const allPeriodSettingIds = get(AllPeriodSettingIds);
-    if (!allPeriodSettingIds) return undefined;
+  get:
+    (periodId: string) =>
+    ({ get }): PeriodSettingDto[] | undefined => {
+      const allPeriodSettingIds = get(AllPeriodSettingIds(periodId));
+      if (!allPeriodSettingIds) return undefined;
 
-    const allPeriodSettings: PeriodSettingDto[] = [];
-    for (const settingId of allPeriodSettingIds) {
-      const setting = get(SinglePeriodSetting(settingId));
-      if (setting) {
-        allPeriodSettings.push(setting);
+      const allPeriodSettings: PeriodSettingDto[] = [];
+      for (const settingId of allPeriodSettingIds) {
+        const setting = get(SinglePeriodSetting(settingId));
+        if (setting) {
+          allPeriodSettings.push(setting);
+        }
       }
-    }
-    return allPeriodSettings;
-  },
+      return allPeriodSettings;
+    },
 });
 
 export const useAllPeriodSettingsQuery = (
@@ -95,7 +97,7 @@ export const useAllPeriodSettingsQuery = (
   const allPeriodSettingsQueryResponse = useAuthApiQuery(
     AllPeriodSettingsQuery(periodId)
   );
-  const allPeriodSettingsIds = useRecoilValue(AllPeriodSettingIds);
+  const allPeriodSettingsIds = useRecoilValue(AllPeriodSettingIds(periodId));
 
   const saveAllPeriodSettings = useRecoilCallback(
     ({ set, snapshot }) =>
@@ -115,7 +117,7 @@ export const useAllPeriodSettingsQuery = (
             set(SinglePeriodSetting(setting._id), setting);
           }
         }
-        set(AllPeriodSettingIds, settingIds);
+        set(AllPeriodSettingIds(periodId), settingIds);
       }
   );
 
@@ -144,7 +146,7 @@ export const usePeriodSettingValueRealized = (
   periodId: string,
   key: string
 ): string | number | number[] | boolean | File | undefined => {
-  const settings = useRecoilValue(AllPeriodSettings);
+  const settings = useRecoilValue(AllPeriodSettings(periodId));
   const setting = find(settings, { key });
   if (!setting) return undefined;
 
