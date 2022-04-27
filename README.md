@@ -180,3 +180,6 @@ Praise is an open source system developed by Commons Stack. To learn more about 
 - Discord: kristofer#1475
 
 ![Commons Stack](/media/cs.png)
+
+
+## Testing github branch protection -- please ignore
