@@ -122,25 +122,32 @@ export type useSetSettingReturn = {
 };
 
 export const useSetSetting = (): useSetSettingReturn => {
-  const setSetting = useRecoilCallback(() => async (setting: Setting) => {
-    const url = `/admin/settings/${setting._id}/set`;
+  const setSetting = useRecoilCallback(
+    ({ set }) =>
+      async (setting: Setting) => {
+        const url = `/admin/settings/${setting._id}/set`;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const reqData = (setting: Setting): any => {
-      if (setting.type === 'Image') {
-        const data = new FormData();
-        data.append('value', setting.value);
-        return data;
-      } else {
-        return setting;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const reqData = (setting: Setting): any => {
+          if (setting.type === 'Image') {
+            const data = new FormData();
+            data.append('value', setting.value);
+            return data;
+          } else {
+            return setting;
+          }
+        };
+
+        const apiAuthClient = makeApiAuthClient();
+        const response = await apiAuthClient.patch(url, reqData(setting));
+
+        if (response.data) {
+          set(SingleSetting(setting._id), response.data);
+        }
+
+        toast.success(`Saved setting "${response.data.label}"`);
       }
-    };
-
-    const apiAuthClient = makeApiAuthClient();
-    const response = await apiAuthClient.patch(url, reqData(setting));
-
-    toast.success(`Saved setting "${response.data.label}"`);
-  });
+  );
 
   return { setSetting };
 };

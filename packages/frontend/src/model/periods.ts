@@ -29,9 +29,8 @@ import {
   isResponseOk,
   useAuthApiQuery,
 } from './api';
-import { utcDateToLocal } from '@/utils/date';
 import { ActiveUserId } from './auth';
-import { AllPeriodSettings } from './periodsettings';
+import { SinglePeriodSetting } from './periodsettings';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
 
 /**
@@ -191,7 +190,9 @@ export const useAllPeriodsQuery = (
           }
 
           if (period.settings) {
-            set(AllPeriodSettings(period._id), period.settings);
+            for (const setting of period.settings) {
+              set(SinglePeriodSetting(period._id), setting);
+            }
           }
         }
         set(AllPeriodIds, periodIds);

@@ -101,7 +101,7 @@ const PeriodAssignDialog = ({
   onAssign,
   periodId,
 }: PeriodAssignDialogProps): JSX.Element => {
-  const periodsettings = useRecoilValue(AllPeriodSettings(periodId));
+  const periodsettings = useRecoilValue(AllPeriodSettings);
   const poolRequirements = useVerifyQuantifierPoolSize(
     periodId,
     JSON.stringify(periodsettings)
