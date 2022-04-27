@@ -23,6 +23,12 @@ export const quantificationSchema = new mongoose.Schema(
   }
 );
 
+quantificationSchema
+  .virtual('completed')
+  .get(function (this: QuantificationDocument) {
+    return this.dismissed || this.duplicatePraise || this.score > 0;
+  });
+
 const QuantificationModel = mongoose.model<QuantificationDocument>(
   'Quantification',
   quantificationSchema

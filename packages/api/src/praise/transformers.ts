@@ -17,6 +17,7 @@ const quantificationToDto = async (
     duplicatePraise,
     createdAt,
     updatedAt,
+    completed,
   } = quantification;
 
   const duplicateScore = await calculateQuantificationDuplicateScore(
@@ -31,6 +32,7 @@ const quantificationToDto = async (
     duplicateScore,
     createdAt: createdAt.toISOString(),
     updatedAt: updatedAt.toISOString(),
+    completed,
   };
 };
 
