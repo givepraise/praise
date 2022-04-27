@@ -143,9 +143,9 @@ export const useSetSetting = (): useSetSettingReturn => {
 
         if (response.data) {
           set(SingleSetting(setting._id), response.data);
-        }
 
-        toast.success(`Saved setting "${response.data.label}"`);
+          toast.success(`Saved setting "${response.data.label}"`);
+        }
       }
   );
 

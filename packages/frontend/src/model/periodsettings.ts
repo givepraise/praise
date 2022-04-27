@@ -50,9 +50,9 @@ export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
 
         if (response.data) {
           set(SinglePeriodSetting(setting._id), response.data);
-        }
 
-        toast.success(`Saved setting "${response.data.label}"`);
+          toast.success(`Saved setting "${response.data.label}"`);
+        }
       }
   );
 
