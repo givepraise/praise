@@ -1,6 +1,4 @@
 import logger from 'jet-logger';
-import * as dotenv from 'dotenv';
-import path from 'path';
 import { Express } from 'express';
 import request, { SuperTest, Test } from 'supertest';
 import { setup } from '../server';
@@ -15,13 +13,6 @@ const mochaHooks = async (): Promise<Mocha.RootHookObject> => {
     async beforeAll(this: TestContext): Promise<void> {
       // extend timeout to allow for long database migrations / application setup
       this.timeout(20000);
-
-      const load = dotenv.config({
-        path: path.join(__dirname, '..', '..', '/.env'),
-      });
-      if (load.error) {
-        throw load.error;
-      }
 
       this.app = await setup();
       logger.info('Running api tests:\n\n');

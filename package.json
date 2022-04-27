@@ -8,10 +8,17 @@
     "packages/*"
   ],
   "scripts": {
-    "mongodb:start": "docker compose up -d",
+    "mongodb:start": "docker compose up mongodb -d",
     "mongodb:clean": "yarn workspace api drop-database",
     "mongodb:stop": "docker compose down",
-    "docs": "yarn workspace docs docsify serve . --port 45231"
+    "api:build-docker": "docker compose build api --no-cache",
+    "api:start": "yarn workspace api start",
+    "discord-bot:build-docker": "docker compose build discord-bot --no-cache",
+    "discord-bot:start": "yarn workspace discord-bot start",
+    "docs:start": "yarn workspace docs docsify serve . --port 45231",
+    "frontend:build-docker": "docker compose build frontend --no-cache",
+    "build-docker": "docker compose build --no-cache",
+    "start": "docker compose up -d"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.7.0",

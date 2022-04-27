@@ -1,18 +1,10 @@
 import { Client } from 'discord.js';
-import * as dotenv from 'dotenv';
 import logger from 'jet-logger';
 import mongoose, { ConnectOptions } from 'mongoose';
-import path from 'path';
 import { DiscordClient } from './interfaces/DiscordClient';
 import { registerCommands } from './utils/registerCommands';
 import { requiredEnvVariables } from './pre-start/env-required';
 import { envCheck } from 'api/src/pre-start/envCheck';
-
-const load = dotenv.config({ path: path.join(__dirname, '..', '/.env') });
-if (load.error) {
-  logger.err(load.error.message);
-  throw load.error;
-}
 
 // Check for required ENV variables
 envCheck(requiredEnvVariables);

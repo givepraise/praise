@@ -21,13 +21,6 @@ export const activationHandler: CommandHandler = async (interaction) => {
     await interaction.reply('Unable to create user account.');
     return;
   }
-  const baseURL = process.env.FRONTEND_URL;
-  if (!baseURL || baseURL === undefined) {
-    await interaction.reply(
-      'ERROR: `FRONTEND_URL` not defined in environment variables. Contact praise admin'
-    );
-    return;
-  }
 
   const getActivationURL = (
     accountId: string,
@@ -35,7 +28,9 @@ export const activationHandler: CommandHandler = async (interaction) => {
     hash: string,
     token: string
   ): string =>
-    `${baseURL}/activate?accountId=${accountId}&accountName=${encodeURIComponent(
+    `${
+      process.env.FRONTEND_URL as string
+    }/activate?accountId=${accountId}&accountName=${encodeURIComponent(
       `${uname}#${hash}`
     )}&platform=DISCORD&token=${token}`;
 

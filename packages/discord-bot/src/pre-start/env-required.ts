@@ -1,7 +1,6 @@
 /** Here developers should specify required ENV variables */
 
 const requiredEnvVariables = [
-  'FRONTEND_URL',
   'MONGO_DB',
   'MONGO_HOST',
   'MONGO_PORT',
