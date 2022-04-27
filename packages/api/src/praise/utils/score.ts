@@ -72,7 +72,10 @@ export const calculateQuantificationsCompositeScore = async (
   let si = 0;
   let s = 0;
   for (const quantification of quantifications) {
-    if (quantification.duplicatePraise) {
+    if (quantification.dismissed) {
+      s += 0;
+      si++;
+    } else if (quantification.duplicatePraise) {
       s += await calculateQuantificationDuplicateScore(quantification);
       si++;
     } else if (quantification.score > 0) {
@@ -106,7 +109,9 @@ export const calculateQuantificationScore = async (
 ): Promise<number> => {
   let score = quantification.score;
 
-  if (quantification.duplicatePraise) {
+  if (quantification.dismissed) {
+    score = 0;
+  } else if (quantification.duplicatePraise) {
     score = await calculateQuantificationDuplicateScore(quantification);
   }
 
