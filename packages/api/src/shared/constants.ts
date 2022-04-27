@@ -1,8 +1,4 @@
-import * as dotenv from 'dotenv';
 import 'express-async-errors';
-import path from 'path';
-
-dotenv.config({ path: path.join(__dirname, '..', '..', '/.env') });
 
 // Cookie Properties
 export const cookieProps = Object.freeze({

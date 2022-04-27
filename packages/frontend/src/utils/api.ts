@@ -45,17 +45,16 @@ const handleErrors = (err: AxiosError): void => {
   }
 };
 
+const apiBaseURL = `${process.env.REACT_APP_SERVER_URL as string}/api`;
+
 /**
  * Api client for unathenticated requests
  *
  * @returns
  */
 export const makeApiClient = (): AxiosInstance => {
-  if (!process.env.REACT_APP_BACKEND_URL)
-    throw new Error('Backend URL not set.');
-
   const apiClient = axios.create({
-    baseURL: `${process.env.REACT_APP_BACKEND_URL}/api`,
+    baseURL: apiBaseURL,
   });
   apiClient.interceptors.response.use(
     (res) => res,
@@ -72,13 +71,9 @@ export const makeApiClient = (): AxiosInstance => {
  * @returns
  */
 export const makeApiAuthClient = (): AxiosInstance => {
-  if (!process.env.REACT_APP_BACKEND_URL)
-    throw new Error('REACT_APP_BACKEND_URL not defined');
-
   const accessToken = getRecoil(AccessToken);
-
   const apiAuthClient = axios.create({
-    baseURL: `${process.env.REACT_APP_BACKEND_URL}/api`,
+    baseURL: apiBaseURL,
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

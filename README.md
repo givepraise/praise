@@ -58,7 +58,7 @@ We believe in the appropriate amount of decentralisation. Praise is not an oncha
 
 Until that have been implemented, we provide a guide for an installation that will take slightly longer than 30 mins. The installation process is tested on a Digital Ocean droplet but should with little modifications work for any Ubuntu server.
 
-[How to install Praise on Digital Ocean](/packages/docs/install-digital-ocean.md)
+[How to install Praise on Digital Ocean](/packages/docs/install-praise-on-digital-ocean.md)
 
 ## Run Praise locally
 
@@ -74,20 +74,63 @@ nvm use
 yarn
 ```
 
-### 3. Run MongoDB
+### 3. Configure environment
+
+#### `/.env.template`
+
+Copy and rename `.env`.
+
+Set server domain:
+
+```
+HOST=localhost
+```
+
+Configure database usernames and passwords:
+
+```
+MONGO_DB=praise_db
+MONGO_HOST=mongodb
+MONGO_PORT=27017
+MONGO_INITDB_ROOT_USERNAME=praiseDbRootUsername
+MONGO_INITDB_ROOT_PASSWORD=[any password]
+MONGO_USERNAME=praiseDbUsername
+MONGO_PASSWORD=[any password]
+```
+
+#### `/packages/api/.env.template`
+
+Copy and rename `.env`.
+
+Add your Metamask ETH address to `ADMINS` to be able to access Praise dashboard as admin:
+
+```
+ADMINS=0x123..123,0x123..12
+```
+
+#### `/packages/discord-bot/.env.template`
+
+Copy and rename `.env`.
+
+- `DISCORD_TOKEN` - Your bot's discord token generated via the Discord Developer Portal. You'll need to invite the same bot to your server with the link - `https://discord.com/api/oauth2/authorize?client_id=<client-id>&permissions=378561611840&scope=bot%20applications.commands` (replace `<client-id>` with your bot's client ID), and with the SERVER MEMBERS and MESSAGE CONTENT Intents enabled.
+- `DISCORD_CLIENT_ID` - Your bot's discord client ID, which can be found in the Application settings on Discord Developer Portal
+- `DISCORD_GUILD_ID` - The ID of the server in which you are using the bot. (this can be found by enabling developer mode in Discord, right clicking on te server icon and clicking "Copy Id").
+
+```
+DISCORD_TOKEN=
+DISCORD_CLIENT_ID=
+DISCORD_GUILD_ID=
+```
+
+#### `/packages/frontend/.env.template`
+
+Copy and rename `.env.development`.
+
+### 4. Start MongoDB
 
 Prerequisites:
 
 - Docker installed
-
-Copy root `.env.template` and rename `.env`. Configure database usernames and passwords:
-
-```
-MONGO_INITDB_ROOT_USERNAME=
-MONGO_INITDB_ROOT_PASSWORD=
-MONGO_DB_USER=
-MONGO_DB_PASSWORD=
-```
 
 Pull mongo image:
 
@@ -101,12 +144,7 @@ Run mongo:
 yarn mongodb:start
 ```
 
-### 4. Start api backend
-
-Copy `.env.template` into `.env`:
-
-1. Add your Metamask ETH address to `ADMINS` to be able to access Praise dashboard as admin.
-2. Database username / password, same as in root `.env`
+### 5. Start api backend
 
 Build:
 
@@ -127,15 +165,13 @@ yarn workspace api import-praise ./sample_data/november.json
 yarn workspace api import-praise ./sample_data/december.json
 ```
 
-### 5. Start Discord bot
+### 6. Start Discord bot
 
 Copy `.env.template` into `.env`:
 
 1. `DISCORD_TOKEN` - Your bot's discord token generated via the Discord Developer Portal. You'll need to invite the same bot to your server with the link - `https://discord.com/api/oauth2/authorize?client_id=<YOUR-BOT'S-CLIENT-ID>&permissions=378561611840&scope=bot%20applications.commands` (replace `<YOUR-BOT'S-CLIENT-ID>` with your bot's client ID), and with the SERVER MEMBERS and MESSAGE CONTENT Priviledged Intents enabled.
 2. `DISCORD_CLIENT_ID` - Your bot's discord client ID, which can be found in the Application settings on Discord Developer Portal
 3. `DISCORD_GUILD_ID` - The ID of the server in which you are using the bot. (this can be found by enabling developer mode in Discord, right clicking on te server icon and clicking "Copy Id").
-4. `PRAISE_GIVER_ROLE_ID` - The ID of the role whose members can use the praise bot. (This can be found by enabling developer mode in Discord, going to the server settings > roles > <praise-giver-role>, right clicking on the role name and clicking "Copy Id").
-5. Database username / password, same as in root `.env`
 
 Build:
 
@@ -149,9 +185,7 @@ Start:
 yarn workspace discord-bot start
 ```
 
-### 6. Start frontend
-
-Copy `.env.template` and rename `.env.development`.
+### 7. Start frontend
 
 Build:
 

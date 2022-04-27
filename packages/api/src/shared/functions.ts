@@ -97,10 +97,10 @@ export const upload = async (req: Request, key: string): Promise<string> => {
   }
 };
 
-export const removeFile = async (filepath: string): Promise<void> => {
+export const removeFile = async (filename: string): Promise<void> => {
   try {
-    await unlink(filepath);
+    await unlink(filename);
   } catch (e) {
-    logger.warn(`Could not find a file to remove: ${filepath}`);
+    logger.warn(`Could not find a file to remove: ${filename}`);
   }
 };

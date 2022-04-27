@@ -1,6 +1,8 @@
 - **Installing Praise**
 
-  - [How to install Praise on Digital Ocean](install-digital-ocean.md)
+  - [How to install Praise on Digital Ocean](install-praise-on-digital-ocean.md)
+  - [Digital Ocean - Initial server setup](digital-ocean-initial-setup.md)
+  - [Configure ufw firewall to work with Docker](configure-ufw-for-docker.md)
 
 - [**Contributing to Praise**](contributing.md)
 
