@@ -61,44 +61,6 @@ export const calculateQuantificationDuplicateScore = async (
 };
 
 /**
- * Calculates a single "composite" score from a list of quantifications (of the same praise)
- *
- * @param quantifications list of quantifications to be included in composite score
- * @returns
- */
-export const calculateQuantificationsCompositeScore = async (
-  quantifications: Quantification[]
-): Promise<number> => {
-  let si = 0;
-  let s = 0;
-  for (const quantification of quantifications) {
-    if (quantification.dismissed) {
-      s += 0;
-      si++;
-    } else if (quantification.duplicatePraise) {
-      s += await calculateQuantificationDuplicateScore(quantification);
-      si++;
-    } else if (quantification.score > 0) {
-      s += quantification.score;
-      si++;
-    }
-  }
-  if (s > 0) {
-    return Math.floor(s / si);
-  }
-  return 0;
-};
-
-/**
- * Calculates a single "composite" score from a list of praise composite scores
- *
- * @param scores list of receiver's praise composite scores
- * @returns
- */
-export const calculateReceiverCompositeScore = (scores: number[]): number =>
-  sum(scores);
-
-/**
  * Calculate the score of a given quantification - based on it's manual score value, marked duplicate value, and marked dismissed value
  *
  * @param quantification
@@ -117,3 +79,35 @@ export const calculateQuantificationScore = async (
 
   return score;
 };
+
+/**
+ * Calculates a single "composite" score from a list of quantifications (of the same praise)
+ *
+ * @param quantifications list of quantifications to be included in composite score
+ * @returns
+ */
+export const calculateQuantificationsCompositeScore = async (
+  quantifications: Quantification[]
+): Promise<number> => {
+  const completedQuantifications = quantifications.filter((q) => q.completed);
+  if (completedQuantifications.length === 0) return 0;
+
+  const scores = await Promise.all(
+    completedQuantifications.map((q) => calculateQuantificationScore(q))
+  );
+
+  const compositeScore = Math.floor(
+    sum(scores) / completedQuantifications.length
+  );
+
+  return compositeScore;
+};
+
+/**
+ * Calculates a single "composite" score from a list of praise composite scores
+ *
+ * @param scores list of receiver's praise composite scores
+ * @returns
+ */
+export const calculateReceiverCompositeScore = (scores: number[]): number =>
+  sum(scores);
