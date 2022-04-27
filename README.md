@@ -181,5 +181,3 @@ Praise is an open source system developed by Commons Stack. To learn more about 
 
 ![Commons Stack](/media/cs.png)
 
-
-## Testing github branch protection -- please ignore
