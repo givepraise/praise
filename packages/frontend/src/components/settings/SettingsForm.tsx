@@ -14,15 +14,16 @@ import { useRecoilValue } from 'recoil';
 import { find } from 'lodash';
 import SubmitButton from '../form/SubmitButton';
 import { PeriodSettingDto } from 'api/src/periodsettings/types';
+import { SettingDto } from 'api/dist/settings/types';
 
 interface SettingsFormProps {
-  settings: Setting[] | PeriodSettingDto[] | undefined;
+  settings: SettingDto[] | PeriodSettingDto[] | undefined;
   setSetting: Function;
   disabled?: boolean;
 }
 
 const FormFields = (
-  settings: Setting[] | PeriodSettingDto[],
+  settings: SettingDto[] | PeriodSettingDto[],
   apiResponse
 ): JSX.Element => {
   return (
@@ -59,14 +60,14 @@ const FormFields = (
 };
 
 const DisabledFormFields = (
-  settings: Setting[] | PeriodSettingDto[]
+  settings: SettingDto[] | PeriodSettingDto[]
 ): JSX.Element => (
   <>
     <Notice type="danger" className="mb-8">
       <span>Settings locked for this period</span>
     </Notice>
     <div className="mb-2 space-y-4">
-      {settings.map((setting: Setting | PeriodSettingDto) => (
+      {settings.map((setting: SettingDto | PeriodSettingDto) => (
         <div key={setting.key}>
           <label className="block font-bold">{setting.label}</label>
           {setting.description && (
