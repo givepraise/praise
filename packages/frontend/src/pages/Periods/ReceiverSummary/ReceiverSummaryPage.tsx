@@ -9,7 +9,7 @@ import {
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import PeriodReceiverTable from './components/ReceiverSummaryTable';
+import ReceiverSummaryTable from './components/ReceiverSummaryTable';
 
 const getReceiver = (
   periodDetails: PeriodDetailsDto,
@@ -30,7 +30,7 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
       <div className="mt-5">
         Period: {periodDetails.name}
         <br />
-        Total praise score: {receiver?.score}
+        Total Score: {receiver?.score}
       </div>
     </>
   );
@@ -52,7 +52,7 @@ const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
 
       <div className="praise-box">
         <React.Suspense fallback="Loading…">
-          <PeriodReceiverTable />
+          <ReceiverSummaryTable />
         </React.Suspense>
       </div>
     </>

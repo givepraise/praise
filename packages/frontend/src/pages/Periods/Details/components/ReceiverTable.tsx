@@ -28,12 +28,12 @@ const ReceiverTable = (): JSX.Element | null => {
           ),
         },
         {
-          Header: 'Praise count',
+          Header: 'Praise Count',
           className: 'text-center',
           accessor: 'praiseCount',
         },
         {
-          Header: 'Praise score',
+          Header: 'Total Score',
           className: 'text-center',
           accessor: 'score',
           sortType: 'basic',
