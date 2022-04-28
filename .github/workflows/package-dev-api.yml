@@ -5,7 +5,7 @@ on:
     branches: ['feat/autobuild-packages']
 
 env:
-  IMAGE_NAME: ${{ github.repository }}/api-dev
+  IMAGE_NAME: praise-dev/api
 
 jobs:
   build-and-push-image:
@@ -25,6 +25,6 @@ jobs:
           tags: latest
           addTimestamp: true
           registry: ghcr.io
-          dockerfile: /packages/api/Dockerfile
+          dockerfile: packages/api/Dockerfile
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
