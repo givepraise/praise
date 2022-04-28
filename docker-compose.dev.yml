@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  mongodb:
+    container_name: mongodb-praise
+    image: mongo
+    env_file:
+      - .env
+    ports:
+      - $MONGO_PORT:$MONGO_PORT
+    restart: unless-stopped
+    volumes:
+      - mongodb_data:/data/db
+      - './packages/mongodb/users_init.sh:/docker-entrypoint-initdb.d/users_init.sh:ro'
+
+  api:
+    container_name: api-praise
+    image: ghcr.io/commonsbuild/praise-dev/api:latest
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - $API_PORT:$API_PORT
+    links:
+      - mongodb
+
+  discord-bot:
+    container_name: discord-bot-praise
+    image: ghcr.io/commonsbuild/praise-dev/discord-bot:latest
+    env_file:
+      - .env
+    restart: always
+    links:
+      - mongodb
+
+  frontend:
+    container_name: frontend-praise
+    image: ghcr.io/commonsbuild/praise-dev/frontend:latest
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    links:
+      - api
+
+volumes:
+  mongodb_data:
+  caddy_data:
+  caddy_config:
