@@ -45,8 +45,8 @@ const ReceiverTable = (): JSX.Element | null => {
       ? sortBy(period.receivers, [
           // First, sort by reciever score
           (receiver): number => {
-            if (!receiver?.score) return 0;
-            return receiver.score;
+            if (!receiver?.scoreRealized) return 0;
+            return receiver.scoreRealized;
           },
 
           // Then by receiver _id

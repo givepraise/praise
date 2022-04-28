@@ -49,11 +49,11 @@ const receiversWithScores = async (
         r.quantifications.map((q) => calculateQuantificationsCompositeScore(q))
       );
 
-      const score = calculateReceiverCompositeScore(quantifierScores);
+      const scoreRealized = calculateReceiverCompositeScore(quantifierScores);
 
       return {
         ...r,
-        score,
+        scoreRealized,
         quantifications: undefined,
       };
     })

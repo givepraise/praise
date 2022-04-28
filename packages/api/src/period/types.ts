@@ -40,7 +40,7 @@ export interface PeriodDetailsReceiver {
   _id: Types.ObjectId;
   praiseCount: number;
   quantifications?: Array<Array<QuantificationDocument>>;
-  score?: number;
+  scoreRealized: number;
   userAccounts: UserAccountDocument[];
 }
 
@@ -48,7 +48,7 @@ export interface PeriodDetailsReceiverDto {
   _id: string;
   praiseCount: number;
   quantifications?: Array<Array<QuantificationDto>>;
-  score?: number;
+  scoreRealized: number;
   userAccount?: UserAccountDto;
 }
 

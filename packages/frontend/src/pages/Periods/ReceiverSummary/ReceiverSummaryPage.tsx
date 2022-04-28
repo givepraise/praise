@@ -24,13 +24,15 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
 
   if (!periodDetails) return null;
   const receiver = getReceiver(periodDetails, receiverId);
+  if (!receiver || !receiver.userAccount) return null;
+
   return (
     <>
-      <h2>{receiver?.userAccount?.name}</h2>
+      <h2>{receiver.userAccount.name}</h2>
       <div className="mt-5">
         Period: {periodDetails.name}
         <br />
-        Total Score: {receiver?.score}
+        Total Score: {receiver.scoreRealized}
       </div>
     </>
   );
