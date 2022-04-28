@@ -519,26 +519,12 @@ export const quantifierPraise = async (
   if (!quantifierId)
     throw new BadRequestError('Quantifier Id is a required field');
 
-  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+  const periodDateRangeQuery = await getPeriodDateRangeQuery(period);
 
-  const praiseList = await PraiseModel.aggregate([
-    {
-      $match: {
-        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
-      },
-    },
-    { $unwind: '$quantifications' },
-    {
-      $match: {
-        $expr: {
-          $eq: [
-            '$quantifications.quantifier',
-            new mongoose.Types.ObjectId(quantifierId),
-          ],
-        },
-      },
-    },
-  ]);
+  const praiseList = await PraiseModel.find({
+    createdAt: periodDateRangeQuery,
+    'quantifications.quantifier': new mongoose.Types.ObjectId(quantifierId),
+  });
 
   await PraiseModel.populate(praiseList, { path: 'receiver giver forwarder' });
 
