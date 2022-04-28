@@ -10,14 +10,21 @@ import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import PraiseDetailTable from './components/PraiseDetailTable';
 import getMarkdownText from '@/components/MarkdownText';
+import { PraiseDetailsDto } from 'api/dist/praise/types';
+import { PeriodDetailsDto } from 'api/dist/period/types';
 
-const PeriodReceiverMessage = (): JSX.Element | null => {
-  const { praiseId } = useParams<PraisePageParams>();
-  const praise = useSinglePraiseQuery(praiseId);
-  const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
+interface Params {
+  period?: PeriodDetailsDto;
+  praise?: PraiseDetailsDto;
+}
+
+const PeriodReceiverMessage = ({
+  period,
+  praise,
+}: Params): JSX.Element | null => {
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
 
-  if (!praise) return null;
+  if (!praise || !period) return null;
 
   return (
     <>
@@ -61,7 +68,7 @@ const PraiseDetailsPage = (): JSX.Element => {
 
       <div className="praise-box">
         <React.Suspense fallback="Loading…">
-          <PeriodReceiverMessage />
+          <PeriodReceiverMessage praise={praise} period={period} />
         </React.Suspense>
       </div>
 
