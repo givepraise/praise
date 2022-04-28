@@ -5,7 +5,10 @@ import {
   Quantification,
   QuantificationDto,
 } from './types';
-import { calculateQuantificationDuplicateScore } from './utils/score';
+import {
+  calculateQuantificationDuplicateScore,
+  calculateQuantificationsCompositeScore,
+} from './utils/score';
 
 const quantificationToDto = async (
   quantification: Quantification
@@ -79,20 +82,20 @@ const praiseDocumentToDto = async (
     forwarder: forwarder ? userAccountTransformer(forwarder) : undefined,
     createdAt: createdAt.toISOString(),
     updatedAt: updatedAt.toISOString(),
+    scoreRealized: await calculateQuantificationsCompositeScore(
+      praiseDocument.quantifications
+    ),
   };
 };
 
 export const praiseDocumentListTransformer = async (
-  praiseDocuments: PraiseDocument[] | undefined
+  praiseDocuments: PraiseDocument[]
 ): Promise<PraiseDto[]> => {
-  if (praiseDocuments && Array.isArray(praiseDocuments)) {
-    const praiseDto: PraiseDto[] = [];
-    for (const pd of praiseDocuments) {
-      praiseDto.push(await praiseDocumentToDto(pd));
-    }
-    return praiseDto;
-  }
-  return [];
+  const praiseDtoList = await Promise.all(
+    praiseDocuments.map((p) => praiseDocumentToDto(p))
+  );
+
+  return praiseDtoList;
 };
 
 export const praiseDocumentTransformer = async (

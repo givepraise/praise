@@ -11,7 +11,7 @@ export interface Praise {
   reason: string;
   sourceId: string;
   sourceName: string;
-  quantifications: Quantification[];
+  quantifications: QuantificationDocument[];
   giver: UserAccountDocument;
   receiver: UserAccountDocument;
   forwarder?: UserAccountDocument;
@@ -29,7 +29,7 @@ export interface Quantification {
   completed: boolean;
 }
 
-export interface PraiseDocument extends Praise, mongoose.Document {}
+export interface PraiseDocument extends Praise, mongoose.Document { }
 
 export interface QuantificationDocument
   extends Quantification,
@@ -46,6 +46,7 @@ export interface PraiseDto {
   forwarder?: UserAccountDto;
   createdAt: string;
   updatedAt: string;
+  scoreRealized: number;
 }
 
 export interface PraiseDtoExtended extends PraiseDto {
@@ -67,7 +68,6 @@ export interface QuantificationDto {
 export type QuantificationDetailsDto = QuantificationDto;
 
 export interface PraiseDetailsDto extends PraiseDto {
-  score?: number;
   quantifications: QuantificationDetailsDto[];
 }
 

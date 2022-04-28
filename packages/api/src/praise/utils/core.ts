@@ -2,8 +2,7 @@ import { PeriodDateRange, PeriodDocument } from '@period/types';
 import { PeriodModel } from '@period/entities';
 import { PraiseModel } from '../entities';
 import { praiseDocumentTransformer } from '../transformers';
-import { PraiseDetailsDto, PraiseDocument, PraiseDto } from '../types';
-import { calculateQuantificationsCompositeScore } from './score';
+import { PraiseDocument, PraiseDetailsDto } from '../types';
 
 /**
  * Workaround to get the period associated with a praise instance (as they are not related in database)
@@ -37,13 +36,9 @@ export const getPraisePeriod = async (
 
 export const praiseWithScore = async (
   praise: PraiseDocument
-): Promise<PraiseDto> => {
-  const praiseDetailsDto: PraiseDetailsDto = await praiseDocumentTransformer(
-    praise
-  );
-  praiseDetailsDto.score = await calculateQuantificationsCompositeScore(
-    praise.quantifications
-  );
+): Promise<PraiseDetailsDto> => {
+  const praiseDetailsDto = await praiseDocumentTransformer(praise);
+
   return praiseDetailsDto;
 };
 

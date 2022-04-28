@@ -26,7 +26,6 @@ import {
   QuantificationCreateUpdateInput,
 } from './types';
 import { praiseWithScore } from './utils/core';
-import { calculateQuantificationsCompositeScore } from './utils/score';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
@@ -47,12 +46,12 @@ export const all = async (
     populate: 'giver receiver forwarder',
   });
 
-  const praiseDetailsDtoList: PraiseDetailsDto[] = [];
-  if (praisePagination?.docs) {
-    for (const praise of praisePagination.docs) {
-      praiseDetailsDtoList.push(await praiseWithScore(praise));
-    }
-  }
+  if (!praisePagination)
+    throw new BadRequestError('Failed to paginate praise data');
+
+  const praiseDetailsDtoList: PraiseDetailsDto[] = await Promise.all(
+    praisePagination.docs.map((p) => praiseWithScore(p))
+  );
 
   const response = {
     ...praisePagination,
@@ -76,9 +75,7 @@ export const single = async (
   const praiseDetailsDto: PraiseDetailsDto = await praiseDocumentTransformer(
     praise
   );
-  praiseDetailsDto.score = await calculateQuantificationsCompositeScore(
-    praise.quantifications
-  );
+
   res.status(200).json(praiseDetailsDto);
 };
 

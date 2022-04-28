@@ -38,7 +38,7 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
         Id: {praise._id}
         {praise.forwarder && <div>Forwarded by: {praise.forwarder.name}</div>}
         {period && (period.status === 'CLOSED' || isAdmin) ? (
-          <div>Score: {praise.score}</div>
+          <div>Score: {praise.scoreRealized}</div>
         ) : null}
       </div>
     </>
