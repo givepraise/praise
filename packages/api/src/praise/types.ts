@@ -29,7 +29,7 @@ export interface Quantification {
   completed: boolean;
 }
 
-export interface PraiseDocument extends Praise, mongoose.Document { }
+export interface PraiseDocument extends Praise, mongoose.Document {}
 
 export interface QuantificationDocument
   extends Quantification,
