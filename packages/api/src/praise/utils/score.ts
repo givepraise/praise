@@ -29,35 +29,32 @@ const calculateDuplicateScore = async (
   return Math.floor(originalQuantification.score * duplicatePraisePercentage);
 };
 
-export const calculateQuantificationDuplicateScore = async (
+const calculateQuantificationDuplicateScore = async (
   quantification: Quantification
 ): Promise<number> => {
-  let duplicateScore = 0;
-
-  if (quantification.duplicatePraise) {
-    const praise = await PraiseModel.findById(
-      quantification.duplicatePraise._id
+  if (!quantification.duplicatePraise)
+    throw Error(
+      'Quantification does not have duplicatePraise, cannot calculate duplicate score'
     );
 
-    if (praise && praise.quantifications) {
-      const originalQuantification = praise.quantifications.find((q) =>
-        q.quantifier.equals(quantification.quantifier)
-      );
-      if (originalQuantification && originalQuantification.dismissed) {
-        duplicateScore = 0;
-      } else if (originalQuantification && !originalQuantification.dismissed) {
-        const period = await getPraisePeriod(praise);
-        if (!period) throw new Error('Quantification has no associated period');
+  let score = 0;
+  const praise = await PraiseModel.findById(quantification.duplicatePraise._id);
 
-        duplicateScore = await calculateDuplicateScore(
-          originalQuantification,
-          period._id
-        );
-      }
+  if (praise && praise.quantifications) {
+    const originalQuantification = praise.quantifications.find((q) =>
+      q.quantifier.equals(quantification.quantifier)
+    );
+    if (originalQuantification && originalQuantification.dismissed) {
+      score = 0;
+    } else if (originalQuantification && !originalQuantification.dismissed) {
+      const period = await getPraisePeriod(praise);
+      if (!period) throw new Error('Quantification has no associated period');
+
+      score = await calculateDuplicateScore(originalQuantification, period._id);
     }
   }
 
-  return duplicateScore;
+  return score;
 };
 
 /**
