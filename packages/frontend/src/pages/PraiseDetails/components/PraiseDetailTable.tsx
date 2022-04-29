@@ -55,13 +55,9 @@ const PraiseDetailTable = (): JSX.Element => {
         className: 'text-center',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any) =>
-          data.row.original.duplicatePraise
-            ? data.row.original.duplicateScore
-              ? data.row.original.duplicateScore
-              : '–'
-            : data.row.original.score === 0
-            ? '–'
-            : data.row.original.score,
+          data.row.original.scoreRealized === 0
+            ? '-'
+            : data.row.original.scoreRealized,
       },
       {
         Header: 'Dismissed',

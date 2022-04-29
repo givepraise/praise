@@ -57,12 +57,11 @@ export interface PraiseDtoExtended extends PraiseDto {
 export interface QuantificationDto {
   quantifier: string;
   score: number;
+  scoreRealized?: number;
   dismissed: boolean;
   duplicatePraise?: string;
-  duplicateScore?: number;
   createdAt: string;
   updatedAt: string;
-  completed: boolean;
 }
 
 export type QuantificationDetailsDto = QuantificationDto;

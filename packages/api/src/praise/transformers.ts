@@ -6,7 +6,7 @@ import {
   QuantificationDto,
 } from './types';
 import {
-  calculateQuantificationDuplicateScore,
+  calculateQuantificationScore,
   calculateQuantificationsCompositeScore,
 } from './utils/score';
 
@@ -20,22 +20,18 @@ const quantificationToDto = async (
     duplicatePraise,
     createdAt,
     updatedAt,
-    completed,
   } = quantification;
 
-  const duplicateScore = await calculateQuantificationDuplicateScore(
-    quantification
-  );
+  const scoreRealized = await calculateQuantificationScore(quantification);
 
   return {
     quantifier: quantifier._id,
     score,
+    scoreRealized,
     dismissed,
     duplicatePraise: duplicatePraise ? duplicatePraise._id : undefined,
-    duplicateScore,
     createdAt: createdAt.toISOString(),
     updatedAt: updatedAt.toISOString(),
-    completed,
   };
 };
 
