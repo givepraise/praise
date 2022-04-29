@@ -674,7 +674,7 @@ export const exportPraise = async (
 
   fields.push({
     label: 'AVG SCORE',
-    value: 'score',
+    value: 'scoreRealized',
   });
 
   const json2csv = new Parser({ fields: fields });

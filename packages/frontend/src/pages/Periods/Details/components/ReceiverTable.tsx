@@ -35,7 +35,7 @@ const ReceiverTable = (): JSX.Element | null => {
         {
           Header: 'Total Score',
           className: 'text-center',
-          accessor: 'score',
+          accessor: 'scoreRealized',
           sortType: 'basic',
         },
       ],
