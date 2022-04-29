@@ -2,7 +2,7 @@ version: '3.8'
 services:
   mongodb:
     container_name: mongodb-praise
-    image: mongo
+    image: mongo:5.0.6
     env_file:
       - .env
     ports:
