@@ -2,7 +2,7 @@ import { PeriodDateRange, PeriodDocument } from '@period/types';
 import { PeriodModel } from '@period/entities';
 import { PraiseModel } from '../entities';
 import { praiseDocumentTransformer } from '../transformers';
-import { PraiseDocument, PraiseDetailsDto } from '../types';
+import { PraiseDocument, PraiseDetailsDto, Quantification } from '../types';
 
 /**
  * Workaround to get the period associated with a praise instance (as they are not related in database)
@@ -63,4 +63,14 @@ export const countPraiseWithinDateRanges = async (
   });
 
   return assignedPraiseCount;
+};
+
+export const isQuantificationCompleted = (
+  quantification: Quantification
+): boolean => {
+  return (
+    quantification.dismissed ||
+    quantification.duplicatePraise !== undefined ||
+    quantification.score > 0
+  );
 };

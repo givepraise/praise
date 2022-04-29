@@ -4,7 +4,7 @@ import { Types } from 'mongoose';
 import { sum } from 'lodash';
 import { PraiseModel } from '../entities';
 import { Quantification } from '../types';
-import { getPraisePeriod } from './core';
+import { getPraisePeriod, isQuantificationCompleted } from './core';
 
 /**
  * Calculate a quantification score of a praise marked duplicate
@@ -89,7 +89,9 @@ export const calculateQuantificationScore = async (
 export const calculateQuantificationsCompositeScore = async (
   quantifications: Quantification[]
 ): Promise<number> => {
-  const completedQuantifications = quantifications.filter((q) => q.completed);
+  const completedQuantifications = quantifications.filter((q) =>
+    isQuantificationCompleted(q)
+  );
   if (completedQuantifications.length === 0) return 0;
 
   const scores = await Promise.all(
