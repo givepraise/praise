@@ -2,7 +2,7 @@ name: Create and publish api Docker image
 
 on:
   push:
-    branches: ['feat/autobuild-packages']
+    branches: ['dev']
 
 env:
   IMAGE_NAME: praise-dev/discord-bot
