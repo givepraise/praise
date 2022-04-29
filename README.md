@@ -62,6 +62,13 @@ Until that have been implemented, we provide a guide for an installation that wi
 
 ## Run Praise locally
 
+Prerequisites:
+
+- `node`
+- `nvm`
+- `yarn`
+- `docker`
+
 ### 1. Switch to specified node version
 
 ```
@@ -71,72 +78,38 @@ nvm use
 ### 2. Install dependencies
 
 ```
+yarn set version berry
 yarn
 ```
 
 ### 3. Configure environment
 
-#### `/.env.template`
+#### `/.env.template.development`
 
-Copy and rename `.env`.
+Copy and rename `.env`. Set variables:
 
-Set server domain:
-
-```
-HOST=localhost
-```
-
-Configure database usernames and passwords:
-
-```
-MONGO_DB=praise_db
-MONGO_HOST=mongodb
-MONGO_PORT=27017
-MONGO_INITDB_ROOT_USERNAME=praiseDbRootUsername
-MONGO_INITDB_ROOT_PASSWORD=[any password]
-MONGO_USERNAME=praiseDbUsername
-MONGO_PASSWORD=[any password]
-```
+- `MONGO_INITDB_ROOT_PASSWORD` - Any password.
+- `MONGO_PASSWORD` - Any password
 
 #### `/packages/api/.env.template`
 
-Copy and rename `.env`.
+Copy and rename `.env`. Set variables:
 
-Add your Metamask ETH address to `ADMINS` to be able to access Praise dashboard as admin:
-
-```
-ADMINS=0x123..123,0x123..12
-```
+- `ADMINS` - Add your Metamask ETH address to `ADMINS` to be able to access Praise dashboard as admin.
 
 #### `/packages/discord-bot/.env.template`
 
-Copy and rename `.env`.
+Copy and rename `.env`. Set variables:
 
 - `DISCORD_TOKEN` - Your bot's discord token generated via the Discord Developer Portal. You'll need to invite the same bot to your server with the link - `https://discord.com/api/oauth2/authorize?client_id=<client-id>&permissions=378561611840&scope=bot%20applications.commands` (replace `<client-id>` with your bot's client ID), and with the SERVER MEMBERS and MESSAGE CONTENT Intents enabled.
 - `DISCORD_CLIENT_ID` - Your bot's discord client ID, which can be found in the Application settings on Discord Developer Portal
 - `DISCORD_GUILD_ID` - The ID of the server in which you are using the bot. (this can be found by enabling developer mode in Discord, right clicking on te server icon and clicking "Copy Id").
 
-```
-DISCORD_TOKEN=
-DISCORD_CLIENT_ID=
-DISCORD_GUILD_ID=
-```
+#### `/packages/frontend/.env.development.template`
 
-#### `/packages/frontend/.env.template`
-
-Copy and rename `.env.development`.
+Copy and rename `.env`.
 
 ### 4. Start MongoDB
-
-Prerequisites:
-
-- Docker installed
-
-Pull mongo image:
-
-```
-docker pull mongo
-```
 
 Run mongo:
 
@@ -144,17 +117,10 @@ Run mongo:
 yarn mongodb:start
 ```
 
-### 5. Start api backend
-
-Build:
+### 5. Build and start api backend
 
 ```
 yarn workspace api build
-```
-
-Start:
-
-```
 yarn workspace api start
 ```
 
@@ -165,37 +131,19 @@ yarn workspace api import-praise ./sample_data/november.json
 yarn workspace api import-praise ./sample_data/december.json
 ```
 
-### 6. Start Discord bot
-
-Copy `.env.template` into `.env`:
-
-1. `DISCORD_TOKEN` - Your bot's discord token generated via the Discord Developer Portal. You'll need to invite the same bot to your server with the link - `https://discord.com/api/oauth2/authorize?client_id=<YOUR-BOT'S-CLIENT-ID>&permissions=378561611840&scope=bot%20applications.commands` (replace `<YOUR-BOT'S-CLIENT-ID>` with your bot's client ID), and with the SERVER MEMBERS and MESSAGE CONTENT Priviledged Intents enabled.
-2. `DISCORD_CLIENT_ID` - Your bot's discord client ID, which can be found in the Application settings on Discord Developer Portal
-3. `DISCORD_GUILD_ID` - The ID of the server in which you are using the bot. (this can be found by enabling developer mode in Discord, right clicking on te server icon and clicking "Copy Id").
-
-Build:
+### 6. Build and start Discord bot
 
 ```
 yarn workspace discord-bot build
-```
-
-Start:
-
-```
 yarn workspace discord-bot start
 ```
 
-### 7. Start frontend
+### 7. Build and start frontend
 
 Build:
 
 ```
 yarn workspace frontend build
-```
-
-Start:
-
-```
 yarn workspace frontend start
 ```
 
@@ -214,4 +162,3 @@ Praise is an open source system developed by Commons Stack. To learn more about 
 - Discord: kristofer#1475
 
 ![Commons Stack](/media/cs.png)
-
