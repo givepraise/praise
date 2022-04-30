@@ -1,9 +1,6 @@
 import { NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
-import {
-  calculateQuantificationsCompositeScore,
-  calculateReceiverCompositeScore,
-} from '@praise/utils/score';
+import { calculateReceiverCompositeScore } from '@praise/utils/score';
 import { periodsettingListTransformer } from '@periodsettings/transformers';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 import { settingValue } from '@shared/settings';

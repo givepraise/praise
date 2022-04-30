@@ -387,7 +387,7 @@ describe('calculateReceiverCompositeScore', () => {
 
     const praise2 = await seedPraise({
       receiver: receiver._id,
-      createdAt: faker.date.soon(4)
+      createdAt: faker.date.soon(4),
     });
     await seedQuantification(praise2, quantifier, {
       dismissed: false,
@@ -408,7 +408,7 @@ describe('calculateReceiverCompositeScore', () => {
 
     const praise3 = await seedPraise({
       receiver: receiver._id,
-      createdAt: faker.date.soon(5)
+      createdAt: faker.date.soon(5),
     });
     await seedQuantification(praise3, quantifier, {
       dismissed: false,
