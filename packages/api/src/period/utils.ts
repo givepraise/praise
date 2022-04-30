@@ -43,13 +43,7 @@ const receiversWithScores = async (
 ): Promise<PeriodDetailsReceiver[]> => {
   const receiversWithQuantificationScores = await Promise.all(
     receivers.map(async (r) => {
-      if (!r.quantifications) return r;
-
-      const quantifierScores = await Promise.all(
-        r.quantifications.map((q) => calculateQuantificationsCompositeScore(q))
-      );
-
-      const scoreRealized = calculateReceiverCompositeScore(quantifierScores);
+      const scoreRealized = await calculateReceiverCompositeScore(r);
 
       return {
         ...r,

@@ -1,5 +1,6 @@
 import { BadRequestError } from '@error/errors';
 import { settingValue } from '@shared/settings';
+import { PeriodDetailsReceiver } from '@period/types';
 import { Types } from 'mongoose';
 import { sum } from 'lodash';
 import { PraiseModel } from '../entities';
@@ -108,5 +109,19 @@ export const calculateQuantificationsCompositeScore = async (
  * @param scores list of receiver's praise composite scores
  * @returns
  */
-export const calculateReceiverCompositeScore = (scores: number[]): number =>
-  sum(scores);
+export const calculateReceiverCompositeScore = async (
+  receiver: PeriodDetailsReceiver
+): Promise<number> => {
+  if (!receiver.quantifications) return 0;
+  if (receiver.quantifications.length === 0) return 0;
+
+  const compositeScores = await Promise.all(
+    receiver.quantifications.map((q) =>
+      calculateQuantificationsCompositeScore(q)
+    )
+  );
+
+  const score = sum(compositeScores);
+
+  return score;
+};
