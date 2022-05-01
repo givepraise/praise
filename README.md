@@ -56,7 +56,7 @@ Configure the RAD to export token a token distribution in any format. The RAD is
 
 We believe in the appropriate amount of decentralisation. Praise is not an onchain tool built on top of Ethereum. Instead, every community runs its own server. The longterm goal is to provide a 30 minute installation similar to [that of the forum software Discourse](https://github.com/discourse/discourse/blob/main/docs/INSTALL-cloud.md).
 
-Until that have been implemented, we provide a guide for an installation that will take slightly longer than 30 mins. The installation process is tested on a Digital Ocean droplet but should with little modifications work for any Ubuntu server.
+Until that has been implemented, we provide a guide for an installation that will take slightly longer than 30 mins. The installation process is tested on a Digital Ocean droplet but should with little modifications work for any Ubuntu server.
 
 [How to install Praise on Digital Ocean](/packages/docs/install-praise-on-digital-ocean.md)
 
