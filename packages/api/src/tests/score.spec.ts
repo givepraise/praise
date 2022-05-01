@@ -47,7 +47,7 @@ describe('calculateQuantificationScore', () => {
       createdAt: startDate.setDate(startDate.getDate() + 5),
     });
     const period = await seedPeriod({
-      endDate: startDate.setDate(startDate.getDate() + 10),
+      endDate: add(startDate, { days: 10 }),
     });
 
     const duplicatePraisePercentage = (await settingValue(
@@ -86,7 +86,7 @@ describe('calculateQuantificationScore', () => {
       createdAt: startDate.setDate(startDate.getDate() + 5),
     });
     await seedPeriod({
-      endDate: startDate.setDate(startDate.getDate() + 10),
+      endDate: add(startDate, { days: 10 }),
     });
 
     const quantifier = await seedUser();
@@ -111,7 +111,7 @@ describe('calculateQuantificationScore', () => {
       createdAt: startDate.setDate(startDate.getDate() + 5),
     });
     await seedPeriod({
-      endDate: startDate.setDate(startDate.getDate() + 10),
+      endDate: add(startDate, { days: 10 }),
     });
 
     const quantifier = await seedUser();
@@ -139,7 +139,7 @@ describe('calculateQuantificationsCompositeScore', () => {
       createdAt: startDate.setDate(startDate.getDate() + 5),
     });
     await seedPeriod({
-      endDate: startDate.setDate(startDate.getDate() + 10),
+      endDate: add(startDate, { days: 10 }),
     });
 
     const quantifier = await seedUser();
@@ -180,7 +180,7 @@ describe('calculateQuantificationsCompositeScore', () => {
       createdAt: startDate.setDate(startDate.getDate() + 5),
     });
     await seedPeriod({
-      endDate: startDate.setDate(startDate.getDate() + 10),
+      endDate: add(startDate, { days: 10 }),
     });
 
     const quantifier = await seedUser();
@@ -221,7 +221,7 @@ describe('calculateQuantificationsCompositeScore', () => {
       createdAt: startDate.setDate(startDate.getDate() + 5),
     });
     await seedPeriod({
-      endDate: startDate.setDate(startDate.getDate() + 10),
+      endDate: add(startDate, { days: 10 }),
     });
 
     const quantifier = await seedUser();
@@ -264,7 +264,7 @@ describe('calculateQuantificationsCompositeScore', () => {
       createdAt: startDate.setDate(startDate.getDate() + 5),
     });
     await seedPeriod({
-      endDate: startDate.setDate(startDate.getDate() + 10),
+      endDate: add(startDate, { days: 10 }),
     });
 
     const quantifier = await seedUser();
@@ -309,7 +309,7 @@ describe('calculateQuantificationsCompositeScore', () => {
       createdAt: startDate.setDate(startDate.getDate() + 5),
     });
     await seedPeriod({
-      endDate: startDate.setDate(startDate.getDate() + 10),
+      endDate: add(startDate, { days: 10 }),
     });
 
     const quantifier = await seedUser();
