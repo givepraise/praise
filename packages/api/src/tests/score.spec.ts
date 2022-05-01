@@ -18,6 +18,7 @@ import { settingValue } from '@shared/settings';
 import { sum } from 'lodash';
 import { getPeriodDateRangeQuery } from '@period/utils';
 import faker from 'faker';
+import { add } from 'date-fns';
 
 describe('calculateQuantificationScore', () => {
   beforeEach(async () => {
@@ -446,7 +447,7 @@ describe('calculateReceiverCompositeScore', () => {
     });
 
     const period = await seedPeriod({
-      endDate: faker.date.soon(7),
+      endDate: add(new Date(), { days: 10 }),
     });
 
     const dateRangeQuery = await getPeriodDateRangeQuery(period);
