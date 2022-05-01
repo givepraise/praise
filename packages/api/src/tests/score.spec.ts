@@ -15,7 +15,6 @@ import { PeriodModel } from '@period/entities';
 import { PeriodDetailsReceiver } from '@period/types';
 import { PraiseModel } from '@praise/entities';
 import { settingValue } from '@shared/settings';
-import { logger } from 'ethers';
 import { sum } from 'lodash';
 import { getPeriodDateRangeQuery } from '@period/utils';
 import faker from 'faker';
@@ -54,8 +53,6 @@ describe('calculateQuantificationScore', () => {
       'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
       period._id
     )) as number;
-
-    logger.info(`duplicatePraisePercentage ${duplicatePraisePercentage}`);
 
     const quantifier = await seedUser();
     const quantificationOriginal = await seedQuantification(
