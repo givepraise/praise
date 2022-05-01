@@ -7,7 +7,10 @@ import {
   SinglePeriod,
   usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import {
+  usePeriodSettingValueRealized,
+  useAllPeriodSettingsQuery,
+} from '@/model/periodsettings';
 import BackLink from '@/navigation/BackLink';
 import { getQuantificationReceiverStats } from '@/utils/periods';
 import {
@@ -40,6 +43,7 @@ const PeriodMessage = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
   const { location } = useHistory();
   usePeriodQuantifierPraiseQuery(periodId, location.key);
+  useAllPeriodSettingsQuery(periodId);
   const usePseudonyms = usePeriodSettingValueRealized(
     periodId,
     'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
