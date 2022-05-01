@@ -13,7 +13,7 @@ import { localizeAndFormatIsoDate } from '@/utils/date';
 import {
   faCopy,
   faTimes,
-  faTimesCircle,
+  faMinusCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
@@ -59,6 +59,9 @@ const QuantifyTable = (): JSX.Element | null => {
   const [selectedPraise, setSelectedPraise] = React.useState<
     PraiseDto | undefined
   >(undefined);
+  const [selectedPraiseIds, setSelectedPraiseIds] = React.useState<string[]>(
+    []
+  );
 
   if (!data) return null;
 
@@ -77,7 +80,13 @@ const QuantifyTable = (): JSX.Element | null => {
   };
 
   const handleDismiss = (): void => {
-    if (selectedPraise) void quantify(selectedPraise._id, 0, true, null);
+    if (selectedPraiseIds.length > 0) {
+      selectedPraiseIds.forEach((praiseId) => {
+        void quantify(praiseId, 0, true, null);
+      });
+
+      setSelectedPraiseIds([]);
+    }
   };
 
   const handleDuplicate = (duplicatePraiseId: string): void => {
@@ -93,6 +102,18 @@ const QuantifyTable = (): JSX.Element | null => {
     if (selectedPraise) void quantify(selectedPraise._id, 0, false, null);
   };
 
+  const handleToggleCheckbox = (praiseId: string): void => {
+    if (selectedPraiseIds.includes(praiseId)) {
+      const newSelectedPraiseIds = selectedPraiseIds.filter(
+        (p) => p !== praiseId
+      );
+
+      setSelectedPraiseIds(newSelectedPraiseIds);
+    } else {
+      setSelectedPraiseIds([...selectedPraiseIds, praiseId]);
+    }
+  };
+
   const shortDuplicatePraiseId = (praise: PraiseDto): string => {
     const q = quantification(praise);
     return q && q.duplicatePraise ? q.duplicatePraise?.slice(-4) : '';
@@ -105,6 +126,31 @@ const QuantifyTable = (): JSX.Element | null => {
 
   return (
     <>
+      <div className="p-5 relative space-x-2 bg-gray-200 w-full flex justify-start flex-wrap ">
+        <button
+          disabled={selectedPraiseIds.length === 0}
+          className={
+            selectedPraiseIds.length === 0
+              ? 'praise-button-disabled space-x-2'
+              : 'praise-button space-x-2'
+          }
+          onClick={(): void => setIsDismissDialogOpen(true)}
+        >
+          <FontAwesomeIcon icon={faMinusCircle} size="1x" />
+          <span>Dismiss</span>
+        </button>
+        <button
+          disabled={selectedPraiseIds.length < 2}
+          className={
+            selectedPraiseIds.length < 2
+              ? 'praise-button-disabled space-x-2'
+              : 'praise-button space-x-2'
+          }
+        >
+          <FontAwesomeIcon icon={faCopy} size="1x" />
+          <span>Mark as duplicates</span>
+        </button>
+      </div>
       <table className="w-full table-auto">
         <tbody>
           {Object.keys(weeklyData).map((weekKey, index) => (
@@ -122,6 +168,14 @@ const QuantifyTable = (): JSX.Element | null => {
                   key={index}
                   onMouseDown={(): void => setSelectedPraise(praise)}
                 >
+                  <td>
+                    <input
+                      type="checkbox"
+                      className="mr-4"
+                      checked={selectedPraiseIds.includes(praise._id)}
+                      onChange={(): void => handleToggleCheckbox(praise._id)}
+                    />
+                  </td>
                   <td>
                     <div className="items-center w-full">
                       <div className="flex items-center">
@@ -185,31 +239,7 @@ const QuantifyTable = (): JSX.Element | null => {
                     </div>
                   </td>
                   <td>
-                    <div className="flex">
-                      <QuantifySlider praise={praise} periodId={periodId} />
-                      <button
-                        className="pb-1 ml-4 hover:text-gray-400"
-                        disabled={duplicate(praise)}
-                        onClick={(): void => setIsDuplicateDialogOpen(true)}
-                      >
-                        <FontAwesomeIcon
-                          icon={faCopy}
-                          size="1x"
-                          className={duplicate(praise) ? 'text-gray-400' : ''}
-                        />
-                      </button>
-                      <button
-                        className="pb-1 ml-1 hover:text-gray-400"
-                        disabled={dismissed(praise)}
-                        onClick={(): void => setIsDismissDialogOpen(true)}
-                      >
-                        <FontAwesomeIcon
-                          icon={faTimesCircle}
-                          size="1x"
-                          className={dismissed(praise) ? 'text-gray-400' : ''}
-                        />
-                      </button>
-                    </div>
+                    <QuantifySlider praise={praise} periodId={periodId} />
                   </td>
                 </tr>
               ))}
@@ -223,7 +253,7 @@ const QuantifyTable = (): JSX.Element | null => {
               className="fixed inset-0 z-10 overflow-y-auto"
             >
               <DismissDialog
-                praise={selectedPraise}
+                praiseIds={selectedPraiseIds}
                 onClose={(): void => setIsDismissDialogOpen(false)}
                 onDismiss={(): void => handleDismiss()}
               />

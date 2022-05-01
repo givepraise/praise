@@ -7,17 +7,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import { PraiseDto } from 'api/dist/praise/types';
 
+const getPraisesString = (praiseIds: string[]): string =>
+  praiseIds.map((praiseId) => praiseId.slice(-5)).join(', ');
+
 interface DismissDialogProps {
   onClose(): void;
   onDismiss(): void;
-  praise: PraiseDto | undefined;
+  praiseIds: string[] | undefined;
 }
 const PoolDismissDialog = ({
   onClose,
   onDismiss,
-  praise,
+  praiseIds,
 }: DismissDialogProps): JSX.Element | null => {
-  if (praise) {
+  if (praiseIds && praiseIds.length > 0) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Dialog.Overlay className="fixed inset-0 bg-gray-800 opacity-30" />
@@ -32,7 +35,7 @@ const PoolDismissDialog = ({
               <FontAwesomeIcon icon={faCalculator} size="2x" />
             </div>
             <Dialog.Title className="text-center mb-7">
-              Dismiss praise #{praise._id.slice(-5)}
+              Dismiss praise #{getPraisesString(praiseIds)}
             </Dialog.Title>
             <Dialog.Description className="text-center mb-7">
               Dismiss a praise when it contains no praise information or is out
