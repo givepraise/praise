@@ -1,5 +1,6 @@
 import BreadCrumb from '@/components/BreadCrumb';
 import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
+import { useAllPeriodSettingsQuery } from '@/model/periodsettings';
 import BackLink from '@/navigation/BackLink';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -38,6 +39,7 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
 
 const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodAndReceiverPageParams>();
+  useAllPeriodSettingsQuery(periodId);
 
   return (
     <>
