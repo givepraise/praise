@@ -89,9 +89,16 @@ const QuantifyTable = (): JSX.Element | null => {
     }
   };
 
-  const handleDuplicate = (duplicatePraiseId: string): void => {
-    if (selectedPraise)
-      void quantify(selectedPraise._id, 0, false, duplicatePraiseId);
+  const handleDuplicate = (): void => {
+    if (selectedPraiseIds.length >= 2) {
+      const originalPraiseId = selectedPraiseIds[0];
+
+      selectedPraiseIds.slice(1).forEach((praiseId) => {
+        void quantify(praiseId, 0, false, originalPraiseId);
+      });
+
+      setSelectedPraiseIds([]);
+    }
   };
 
   const handleRemoveDismiss = (): void => {
@@ -146,6 +153,7 @@ const QuantifyTable = (): JSX.Element | null => {
               ? 'praise-button-disabled space-x-2'
               : 'praise-button space-x-2'
           }
+          onClick={(): void => setIsDuplicateDialogOpen(true)}
         >
           <FontAwesomeIcon icon={faCopy} size="1x" />
           <span>Mark as duplicates</span>
@@ -263,9 +271,9 @@ const QuantifyTable = (): JSX.Element | null => {
           <React.Suspense fallback={null}>
             <DuplicateDialog
               open={isDuplicateDialogOpen}
-              praise={selectedPraise}
+              praiseIds={selectedPraiseIds}
               onClose={(): void => setIsDuplicateDialogOpen(false)}
-              onSelect={handleDuplicate}
+              onConfirm={(): void => handleDuplicate()}
             />
           </React.Suspense>
         </tbody>

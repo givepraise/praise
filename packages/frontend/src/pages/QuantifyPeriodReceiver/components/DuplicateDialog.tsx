@@ -1,24 +1,29 @@
 import ScrollableDialog from '@/components/ScrollableDialog';
-import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalculator,
+  faTimes,
+  faCopy,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from 'api/dist/praise/types';
-import PraiseAutosuggest from './PraiseAutosuggest';
 import { PeriodPageParams } from '@/model/periods';
 import { useParams } from 'react-router-dom';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 
+const getPraisesString = (praiseIds: string[]): string =>
+  praiseIds.map((praiseId) => praiseId.slice(-5)).join(', ');
+
 interface DuplicateDialogProps {
   onClose(): void;
-  onSelect(praiseId: string): void;
+  onConfirm(): void;
   open: boolean;
-  praise: PraiseDto | undefined;
+  praiseIds: string[] | undefined;
 }
 
 const DuplicateDialog = ({
-  onSelect,
   onClose,
+  onConfirm,
   open = false,
-  praise,
+  praiseIds,
 }: DuplicateDialogProps): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
 
@@ -27,7 +32,7 @@ const DuplicateDialog = ({
     'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
   ) as number;
 
-  if (!praise) return null;
+  if (!praiseIds || praiseIds.length < 2) return null;
 
   return (
     <ScrollableDialog open={open} onClose={onClose}>
@@ -42,7 +47,7 @@ const DuplicateDialog = ({
             <FontAwesomeIcon icon={faCalculator} size="2x" />
           </div>
           <h2 className="text-center mb-7">
-            Mark praise #{praise._id.slice(-4)} as duplicate
+            Mark praise #{getPraisesString(praiseIds)} as duplicate
           </h2>
           {duplicatePraisePercentage && (
             <p className="text-center mb-7">
@@ -50,13 +55,17 @@ const DuplicateDialog = ({
               {duplicatePraisePercentage * 100}% of the original quantification.
             </p>
           )}
-
           <div className="flex justify-center">
-            <PraiseAutosuggest
-              onSelect={onSelect}
-              onClose={onClose}
-              praise={praise}
-            />
+            <button
+              className="mt-4 praise-button"
+              onClick={(): void => {
+                onConfirm();
+                onClose();
+              }}
+            >
+              <FontAwesomeIcon className="mr-2" icon={faCopy} size="1x" />
+              Mark as duplicates
+            </button>
           </div>
         </div>
       </div>
