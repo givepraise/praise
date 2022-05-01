@@ -8,17 +8,19 @@
     "packages/*"
   ],
   "scripts": {
-    "mongodb:start": "docker compose up mongodb -d",
+    "mongodb:start": "docker compose -f ./docker-compose.local.yml up mongodb -d",
     "mongodb:clean": "yarn workspace api drop-database",
-    "mongodb:stop": "docker compose down",
-    "api:build-docker": "docker compose build api --no-cache",
+    "mongodb:stop": "docker compose -f ./docker-compose.local.yml down",
+    "api:build-docker": "docker compose -f ./docker-compose.local.yml build api --no-cache",
     "api:start": "yarn workspace api start",
-    "discord-bot:build-docker": "docker compose build discord-bot --no-cache",
+    "discord-bot:build-docker": "docker compose -f ./docker-compose.local.yml build discord-bot --no-cache",
     "discord-bot:start": "yarn workspace discord-bot start",
     "docs:start": "yarn workspace docs docsify serve . --port 45231",
-    "frontend:build-docker": "docker compose build frontend --no-cache",
+    "frontend:build-docker": "docker compose -f ./docker-compose.local.yml build frontend --no-cache",
     "build-docker": "docker compose build --no-cache",
-    "start": "docker compose up -d"
+    "start-docker:local": "docker compose -f ./docker-compose.local.yml up -d",
+    "start-docker:dev": "docker compose -f ./docker-compose.development.yml up -d",
+    "start-docker:prod": "docker compose -f ./docker-compose.production.yml up -d"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.7.0",

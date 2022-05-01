@@ -1,0 +1,30 @@
+name: Create and publish api Docker image
+
+on:
+  push:
+    branches: ['dev']
+
+env:
+  IMAGE_NAME: praise-dev/api
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v2
+        name: Check out code
+
+      - uses: mr-smithers-excellent/docker-build-push@v5
+        name: Build and push Docker image
+        with:
+          image: $IMAGE_NAME
+          tags: latest
+          addTimestamp: true
+          registry: ghcr.io
+          dockerfile: packages/api/Dockerfile
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}

@@ -45,7 +45,17 @@ const handleErrors = (err: AxiosError): void => {
   }
 };
 
-const apiBaseURL = `${process.env.REACT_APP_SERVER_URL as string}/api`;
+/**
+ * We assume the API to be running on the same domain in production currently.
+ * Why? The frontend is built as a static website and cannot easily accept
+ * env variables. There are workarounds but we haven't prioritised to implement them yet.
+ *
+ * One example: https://jakobzanker.de/blog/inject-environment-variables-into-a-react-app-docker-on-runtime/
+ */
+const apiBaseURL =
+  process.env.NODE_ENV === 'production'
+    ? '/api'
+    : `${process.env.REACT_APP_SERVER_URL as string}/api`;
 
 /**
  * Api client for unathenticated requests
