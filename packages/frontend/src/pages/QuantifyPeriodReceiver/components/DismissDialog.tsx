@@ -4,52 +4,49 @@ import {
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Dialog } from '@headlessui/react';
+import ScrollableDialog from '@/components/ScrollableDialog';
 import { PraiseDto } from 'api/dist/praise/types';
 
 const getPraisesString = (praises: PraiseDto[]): string =>
   praises.map((p) => `#${p._id.slice(-5)}`).join(', ');
 
 interface DismissDialogProps {
+  open: boolean;
   onClose(): void;
-  onDismiss(): void;
+  onConfirm(): void;
   praises: PraiseDto[] | undefined;
 }
 const PoolDismissDialog = ({
+  open = false,
   onClose,
-  onDismiss,
+  onConfirm,
   praises,
 }: DismissDialogProps): JSX.Element | null => {
   if (!praises || praises.length === 0) return null;
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Dialog.Overlay className="fixed inset-0 bg-gray-800 opacity-30" />
-      <div className="relative max-w-xl pb-16 mx-auto bg-white rounded">
+    <ScrollableDialog open={open} onClose={onClose}>
+      <div className="w-full h-full">
         <div className="flex justify-end p-6">
           <button className="praise-button-round" onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} size="1x" />
           </button>
         </div>
-        <div className="px-20">
-          <div className="flex justify-center mb-7">
+        <div className="px-20 space-y-6">
+          <div className="flex justify-center">
             <FontAwesomeIcon icon={faCalculator} size="2x" />
           </div>
-          <Dialog.Title className="text-center mb-7">
-            Dismiss {praises.length} praise
-          </Dialog.Title>
-          <Dialog.Description className="text-center mb-7">
-            {getPraisesString(praises)}
-          </Dialog.Description>
-          <Dialog.Description className="text-center mb-7">
+          <h2 className="text-center">Dismiss {praises.length} praise</h2>
+          <p>
             Dismiss a praise when it contains no praise information or is out of
             scope for the praise system.
-          </Dialog.Description>
+          </p>
+          <p className="text-center">{getPraisesString(praises)}</p>
           <div className="flex justify-center">
             <button
               className="mt-4 praise-button"
               onClick={(): void => {
-                onDismiss();
+                onConfirm();
                 onClose();
               }}
             >
@@ -63,7 +60,7 @@ const PoolDismissDialog = ({
           </div>
         </div>
       </div>
-    </div>
+    </ScrollableDialog>
   );
 };
 

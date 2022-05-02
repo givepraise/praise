@@ -16,7 +16,6 @@ import {
   faMinusCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Dialog } from '@headlessui/react';
 import getWeek from 'date-fns/getWeek';
 import parseISO from 'date-fns/parseISO';
 import { groupBy, sortBy } from 'lodash';
@@ -253,33 +252,23 @@ const QuantifyTable = (): JSX.Element | null => {
               ))}
             </>
           ))}
-
-          <React.Suspense fallback={null}>
-            <Dialog
-              open={isDismissDialogOpen && !!selectedPraise}
-              onClose={(): void => setIsDismissDialogOpen(false)}
-              className="fixed inset-0 z-10 overflow-y-auto"
-            >
-              <DismissDialog
-                praises={selectedPraises}
-                onClose={(): void => setIsDismissDialogOpen(false)}
-                onDismiss={(): void => handleDismiss()}
-              />
-            </Dialog>
-          </React.Suspense>
-
-          <React.Suspense fallback={null}>
-            <DuplicateDialog
-              open={isDuplicateDialogOpen}
-              originalPraise={selectedPraises[0]}
-              duplicatesCount={selectedPraises.length}
-              onClose={(): void => setIsDuplicateDialogOpen(false)}
-              onConfirm={(): void => handleDuplicate()}
-            />
-          </React.Suspense>
         </tbody>
       </table>
       <QuantifyBackNextLink />
+      <DismissDialog
+        open={isDismissDialogOpen && !!selectedPraise}
+        onClose={(): void => setIsDismissDialogOpen(false)}
+        praises={selectedPraises}
+        onConfirm={(): void => handleDismiss()}
+      />
+
+      <DuplicateDialog
+        open={isDuplicateDialogOpen}
+        originalPraise={selectedPraises[0]}
+        duplicatesCount={selectedPraises.length}
+        onClose={(): void => setIsDuplicateDialogOpen(false)}
+        onConfirm={(): void => handleDuplicate()}
+      />
     </>
   );
 };
