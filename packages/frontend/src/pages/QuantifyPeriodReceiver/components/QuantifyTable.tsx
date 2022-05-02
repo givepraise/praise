@@ -27,6 +27,7 @@ import { QuantifyBackNextLink } from './BackNextLink';
 import DismissDialog from './DismissDialog';
 import DuplicateDialog from './DuplicateDialog';
 import QuantifySlider from './QuantifySlider';
+import SingleDuplicateDialog from './SingleDuplicateDialog';
 
 const getRemoveButton = (callback: () => void): JSX.Element => {
   return (
@@ -55,6 +56,8 @@ const QuantifyTable = (): JSX.Element | null => {
   const [isDismissDialogOpen, setIsDismissDialogOpen] = React.useState(false);
   const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] =
     React.useState(false);
+  const [singleDuplicateDialogPraise, setSingleDuplicateDialogPraise] =
+    React.useState<PraiseDto | undefined>(undefined);
   const [selectedPraise, setSelectedPraise] = React.useState<
     PraiseDto | undefined
   >(undefined);
@@ -96,6 +99,13 @@ const QuantifyTable = (): JSX.Element | null => {
 
       setSelectedPraises([]);
     }
+  };
+
+  const handleSingleDuplicate = (originalPraiseId: string): void => {
+    if (!singleDuplicateDialogPraise) return;
+
+    void quantify(singleDuplicateDialogPraise._id, 0, false, originalPraiseId);
+    setSingleDuplicateDialogPraise(undefined);
   };
 
   const handleRemoveDismiss = (): void => {
@@ -158,13 +168,14 @@ const QuantifyTable = (): JSX.Element | null => {
           <span>Mark as duplicates</span>
         </button>
       </div>
+
       <table className="w-full table-auto">
         <tbody>
           {Object.keys(weeklyData).map((weekKey, index) => (
             <>
               {index !== 0 && index !== data.length - 1 && (
                 <tr>
-                  <td colSpan={5}>
+                  <td colSpan={4}>
                     <div className="border-t border-2 border-gray-400 my-4" />
                   </td>
                 </tr>
@@ -172,6 +183,7 @@ const QuantifyTable = (): JSX.Element | null => {
 
               {weeklyData[weekKey].map((praise, index) => (
                 <tr
+                  className="group"
                   key={index}
                   onMouseDown={(): void => setSelectedPraise(praise)}
                 >
@@ -248,6 +260,19 @@ const QuantifyTable = (): JSX.Element | null => {
                   <td>
                     <QuantifySlider praise={praise} periodId={periodId} />
                   </td>
+                  <td>
+                    <div className="w-16">
+                      <button
+                        className="hidden group-hover:block text-gray-400 hover:text-gray-500"
+                        disabled={duplicate(praise)}
+                        onClick={(): void =>
+                          setSingleDuplicateDialogPraise(praise)
+                        }
+                      >
+                        <FontAwesomeIcon icon={faCopy} size="1x" />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </>
@@ -268,6 +293,12 @@ const QuantifyTable = (): JSX.Element | null => {
         duplicatesCount={selectedPraises.length}
         onClose={(): void => setIsDuplicateDialogOpen(false)}
         onConfirm={(): void => handleDuplicate()}
+      />
+      <SingleDuplicateDialog
+        open={singleDuplicateDialogPraise !== undefined}
+        selectedPraise={singleDuplicateDialogPraise}
+        onClose={(): void => setIsDuplicateDialogOpen(false)}
+        onConfirm={(praiseId: string): void => handleSingleDuplicate(praiseId)}
       />
     </>
   );
