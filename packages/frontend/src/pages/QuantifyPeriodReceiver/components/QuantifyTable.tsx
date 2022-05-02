@@ -19,7 +19,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import getWeek from 'date-fns/getWeek';
 import parseISO from 'date-fns/parseISO';
-import { groupBy } from 'lodash';
+import { groupBy, sortBy } from 'lodash';
 import { PraiseDto, QuantificationDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useParams } from 'react-router-dom';
@@ -59,9 +59,7 @@ const QuantifyTable = (): JSX.Element | null => {
   const [selectedPraise, setSelectedPraise] = React.useState<
     PraiseDto | undefined
   >(undefined);
-  const [selectedPraiseIds, setSelectedPraiseIds] = React.useState<string[]>(
-    []
-  );
+  const [selectedPraises, setSelectedPraises] = React.useState<PraiseDto[]>([]);
 
   if (!data) return null;
 
@@ -80,24 +78,24 @@ const QuantifyTable = (): JSX.Element | null => {
   };
 
   const handleDismiss = (): void => {
-    if (selectedPraiseIds.length > 0) {
-      selectedPraiseIds.forEach((praiseId) => {
-        void quantify(praiseId, 0, true, null);
+    if (selectedPraises.length > 0) {
+      selectedPraises.forEach((praise: PraiseDto) => {
+        void quantify(praise._id, 0, true, null);
       });
 
-      setSelectedPraiseIds([]);
+      setSelectedPraises([]);
     }
   };
 
   const handleDuplicate = (): void => {
-    if (selectedPraiseIds.length >= 2) {
-      const originalPraiseId = selectedPraiseIds[0];
+    if (selectedPraises.length >= 2) {
+      const originalPraise = selectedPraises[0];
 
-      selectedPraiseIds.slice(1).forEach((praiseId) => {
-        void quantify(praiseId, 0, false, originalPraiseId);
+      selectedPraises.slice(1).forEach((praise: PraiseDto) => {
+        void quantify(praise._id, 0, false, originalPraise._id);
       });
 
-      setSelectedPraiseIds([]);
+      setSelectedPraises([]);
     }
   };
 
@@ -109,15 +107,17 @@ const QuantifyTable = (): JSX.Element | null => {
     if (selectedPraise) void quantify(selectedPraise._id, 0, false, null);
   };
 
-  const handleToggleCheckbox = (praiseId: string): void => {
-    if (selectedPraiseIds.includes(praiseId)) {
-      const newSelectedPraiseIds = selectedPraiseIds.filter(
-        (p) => p !== praiseId
+  const handleToggleCheckbox = (praise: PraiseDto): void => {
+    if (selectedPraises.includes(praise)) {
+      const newSelectedPraiseIds = selectedPraises.filter(
+        (p) => p._id !== praise._id
       );
 
-      setSelectedPraiseIds(newSelectedPraiseIds);
+      setSelectedPraises(newSelectedPraiseIds);
     } else {
-      setSelectedPraiseIds([...selectedPraiseIds, praiseId]);
+      setSelectedPraises(
+        sortBy([...selectedPraises, praise], (p) => p.createdAt)
+      );
     }
   };
 
@@ -135,9 +135,9 @@ const QuantifyTable = (): JSX.Element | null => {
     <>
       <div className="p-5 relative space-x-2 bg-gray-200 w-full flex justify-start flex-wrap ">
         <button
-          disabled={selectedPraiseIds.length === 0}
+          disabled={selectedPraises.length === 0}
           className={
-            selectedPraiseIds.length === 0
+            selectedPraises.length === 0
               ? 'praise-button-disabled space-x-2'
               : 'praise-button space-x-2'
           }
@@ -147,9 +147,9 @@ const QuantifyTable = (): JSX.Element | null => {
           <span>Dismiss</span>
         </button>
         <button
-          disabled={selectedPraiseIds.length < 2}
+          disabled={selectedPraises.length < 2}
           className={
-            selectedPraiseIds.length < 2
+            selectedPraises.length < 2
               ? 'praise-button-disabled space-x-2'
               : 'praise-button space-x-2'
           }
@@ -165,7 +165,7 @@ const QuantifyTable = (): JSX.Element | null => {
             <>
               {index !== 0 && index !== data.length - 1 && (
                 <tr>
-                  <td colSpan={3}>
+                  <td colSpan={5}>
                     <div className="border-t border-2 border-gray-400 my-4" />
                   </td>
                 </tr>
@@ -180,8 +180,8 @@ const QuantifyTable = (): JSX.Element | null => {
                     <input
                       type="checkbox"
                       className="mr-4"
-                      checked={selectedPraiseIds.includes(praise._id)}
-                      onChange={(): void => handleToggleCheckbox(praise._id)}
+                      checked={selectedPraises.includes(praise)}
+                      onChange={(): void => handleToggleCheckbox(praise)}
                     />
                   </td>
                   <td>
@@ -261,7 +261,7 @@ const QuantifyTable = (): JSX.Element | null => {
               className="fixed inset-0 z-10 overflow-y-auto"
             >
               <DismissDialog
-                praiseIds={selectedPraiseIds}
+                praises={selectedPraises}
                 onClose={(): void => setIsDismissDialogOpen(false)}
                 onDismiss={(): void => handleDismiss()}
               />
@@ -271,7 +271,8 @@ const QuantifyTable = (): JSX.Element | null => {
           <React.Suspense fallback={null}>
             <DuplicateDialog
               open={isDuplicateDialogOpen}
-              praiseIds={selectedPraiseIds}
+              originalPraise={selectedPraises[0]}
+              duplicatesCount={selectedPraises.length}
               onClose={(): void => setIsDuplicateDialogOpen(false)}
               onConfirm={(): void => handleDuplicate()}
             />

@@ -1,4 +1,5 @@
 import ScrollableDialog from '@/components/ScrollableDialog';
+import Praise from '@/components/praise/Praise';
 import {
   faCalculator,
   faTimes,
@@ -6,24 +7,24 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PeriodPageParams } from '@/model/periods';
+import { PraiseDto } from 'api/dist/praise/types';
 import { useParams } from 'react-router-dom';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
-
-const getPraisesString = (praiseIds: string[]): string =>
-  praiseIds.map((praiseId) => praiseId.slice(-5)).join(', ');
 
 interface DuplicateDialogProps {
   onClose(): void;
   onConfirm(): void;
   open: boolean;
-  praiseIds: string[] | undefined;
+  originalPraise: PraiseDto | undefined;
+  duplicatesCount: number;
 }
 
 const DuplicateDialog = ({
   onClose,
   onConfirm,
   open = false,
-  praiseIds,
+  originalPraise,
+  duplicatesCount,
 }: DuplicateDialogProps): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
 
@@ -32,7 +33,7 @@ const DuplicateDialog = ({
     'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
   ) as number;
 
-  if (!praiseIds || praiseIds.length < 2) return null;
+  if (!originalPraise || duplicatesCount < 2) return null;
 
   return (
     <ScrollableDialog open={open} onClose={onClose}>
@@ -47,14 +48,18 @@ const DuplicateDialog = ({
             <FontAwesomeIcon icon={faCalculator} size="2x" />
           </div>
           <h2 className="text-center mb-7">
-            Mark praise #{getPraisesString(praiseIds)} as duplicate
+            Mark {duplicatesCount} praise as duplicates
           </h2>
           {duplicatePraisePercentage && (
-            <p className="text-center mb-7">
-              Duplicate praise are given a score that is{' '}
-              {duplicatePraisePercentage * 100}% of the original quantification.
+            <p className="text-center mb-7 max-w-2/3">
+              Set a score for the first praise in the series.
+              <br />
+              The remaining {duplicatesCount - 1} praise will be marked as
+              duplicates of that one and receive{' '}
+              {duplicatePraisePercentage * 100}% of its value.
             </p>
           )}
+          <Praise praise={originalPraise} className="bg-gray-100 px-4 mb-4" />
           <div className="flex justify-center">
             <button
               className="mt-4 praise-button"
@@ -64,7 +69,7 @@ const DuplicateDialog = ({
               }}
             >
               <FontAwesomeIcon className="mr-2" icon={faCopy} size="1x" />
-              Mark as duplicates
+              Mark duplicates
             </button>
           </div>
         </div>

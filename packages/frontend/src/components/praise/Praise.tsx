@@ -6,13 +6,14 @@ import { PraiseDto } from 'api/dist/praise/types';
 
 interface Params {
   praise: PraiseDto | undefined;
+  className?: string;
 }
 
-const Praise = ({ praise }: Params): JSX.Element | null => {
+const Praise = ({ praise, className = '' }: Params): JSX.Element | null => {
   if (!praise) return null;
 
   return (
-    <div className="flex items-center w-full">
+    <div className={`flex items-center w-full ${className}`}>
       <div className="flex items-center">
         <UserAvatar userAccount={praise.giver} />
       </div>
