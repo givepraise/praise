@@ -48,7 +48,7 @@ export const SingleSetting = atomFamily<SettingDto | undefined, string>({
   default: undefined,
 });
 
-export const AllSettingIds = atom<string[] | undefined>({
+export const AllSettingKeys = atom<string[] | undefined>({
   key: 'SettingIdList',
   default: undefined,
 });
@@ -56,11 +56,11 @@ export const AllSettingIds = atom<string[] | undefined>({
 export const AllSettings = selector({
   key: 'AllSettings',
   get: ({ get }): SettingDto[] | undefined => {
-    const allSettingIds = get(AllSettingIds);
-    if (!allSettingIds) return undefined;
+    const allSettingKeys = get(AllSettingKeys);
+    if (!allSettingKeys) return undefined;
 
     const allSettings: SettingDto[] = [];
-    for (const settingId of allSettingIds) {
+    for (const settingId of allSettingKeys) {
       const setting = get(SingleSetting(settingId));
       if (setting) {
         allSettings.push(setting);
@@ -72,24 +72,24 @@ export const AllSettings = selector({
 
 export const useAllSettingsQuery = (): AxiosResponse<unknown> => {
   const allSettingsQueryResponse = useAuthApiQuery(AllSettingsQuery);
-  const allSettingsIds = useRecoilValue(AllSettingIds);
+  const allSettingsIds = useRecoilValue(AllSettingKeys);
 
   const saveAllSettings = useRecoilCallback(
     ({ set, snapshot }) =>
       (settings: SettingDto[]) => {
-        const settingIds: string[] = [];
+        const settingKeys: string[] = [];
         for (const setting of settings) {
-          settingIds.push(setting._id);
+          settingKeys.push(setting.key);
           const oldsetting = snapshot.getLoadable(
-            SingleSetting(setting._id)
+            SingleSetting(setting.key)
           ).contents;
           if (oldsetting) {
-            set(SingleSetting(setting._id), { ...oldsetting, ...setting });
+            set(SingleSetting(setting.key), { ...oldsetting, ...setting });
           } else {
-            set(SingleSetting(setting._id), setting);
+            set(SingleSetting(setting.key), setting);
           }
         }
-        set(AllSettingIds, settingIds);
+        set(AllSettingKeys, settingKeys);
       }
   );
 
@@ -142,7 +142,7 @@ export const useSetSetting = (): useSetSettingReturn => {
         const response = await apiAuthClient.patch(url, reqData(setting));
 
         if (response.data) {
-          set(SingleSetting(setting._id), response.data);
+          set(SingleSetting(setting.key), response.data);
 
           toast.success(`Saved setting "${response.data.label}"`);
         }

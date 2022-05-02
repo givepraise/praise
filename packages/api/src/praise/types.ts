@@ -11,7 +11,7 @@ export interface Praise {
   reason: string;
   sourceId: string;
   sourceName: string;
-  quantifications: Quantification[];
+  quantifications: QuantificationDocument[];
   giver: UserAccountDocument;
   receiver: UserAccountDocument;
   forwarder?: UserAccountDocument;
@@ -24,8 +24,9 @@ export interface Quantification {
   score: number;
   dismissed: boolean;
   duplicatePraise?: PraiseDocument;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  completed: boolean;
 }
 
 export interface PraiseDocument extends Praise, mongoose.Document {}
@@ -45,6 +46,7 @@ export interface PraiseDto {
   forwarder?: UserAccountDto;
   createdAt: string;
   updatedAt: string;
+  scoreRealized: number;
 }
 
 export interface PraiseDtoExtended extends PraiseDto {
@@ -55,17 +57,16 @@ export interface PraiseDtoExtended extends PraiseDto {
 export interface QuantificationDto {
   quantifier: string;
   score: number;
+  scoreRealized?: number;
   dismissed: boolean;
   duplicatePraise?: string;
-  duplicateScore?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type QuantificationDetailsDto = QuantificationDto;
 
 export interface PraiseDetailsDto extends PraiseDto {
-  score?: number;
   quantifications: QuantificationDetailsDto[];
 }
 

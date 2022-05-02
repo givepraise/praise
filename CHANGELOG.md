@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure default logo image loads properly
 - Ensure receiver is parsed when praise is submitted via discord Android app (workaround for Discord Android app issue)
 - Ensure period details are still displayed properly after closing period
+- Fix bug where dismissed praise were not included in composite score in csv export
+- Refactor score calculation logic to reduce complexity and make verification simpler
 
 ### Added
 
@@ -26,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Run api tests via github actions
 - Split up github actions to only run checks relevant to the workspace where files were modified
 - Api tests for auth endpoints
+- Prevent devs accidentally pushing to 'dev' and 'main' branch with husky pre-push hooks
+- Api unit tests for score calculations
 
 ## [0.4.0] - 2022-04-14
 

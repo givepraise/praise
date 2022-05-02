@@ -1,5 +1,6 @@
 import BreadCrumb from '@/components/BreadCrumb';
 import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
+import { useAllPeriodSettingsQuery } from '@/model/periodsettings';
 import BackLink from '@/navigation/BackLink';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -9,7 +10,7 @@ import {
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import PeriodReceiverTable from './components/ReceiverSummaryTable';
+import ReceiverSummaryTable from './components/ReceiverSummaryTable';
 
 const getReceiver = (
   periodDetails: PeriodDetailsDto,
@@ -24,13 +25,15 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
 
   if (!periodDetails) return null;
   const receiver = getReceiver(periodDetails, receiverId);
+  if (!receiver || !receiver.userAccount) return null;
+
   return (
     <>
-      <h2>{receiver?.userAccount?.name}</h2>
+      <h2>{receiver.userAccount.name}</h2>
       <div className="mt-5">
         Period: {periodDetails.name}
         <br />
-        Total praise score: {receiver?.score}
+        Total Score: {receiver.scoreRealized}
       </div>
     </>
   );
@@ -38,6 +41,7 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
 
 const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodAndReceiverPageParams>();
+  useAllPeriodSettingsQuery(periodId);
 
   return (
     <>
@@ -52,7 +56,7 @@ const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
 
       <div className="praise-box">
         <React.Suspense fallback="Loading…">
-          <PeriodReceiverTable />
+          <ReceiverSummaryTable />
         </React.Suspense>
       </div>
     </>
