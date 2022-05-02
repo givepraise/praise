@@ -19,5 +19,6 @@ jobs:
       - run: echo "${{secrets.ROOT_ENV_TESTING }}" > .env
       - run: echo "${{secrets.API_ENV_TESTING }}" > packages/api/.env
       - run: echo "${{secrets.DISCORDBOT_ENV_TESTING }}" > packages/discord-bot/.env
+      - run: echo "${{secrets.FRONTEND_ENV_TESTING }}" > packages/frontend/.env
       - run: yarn mongodb:start
       - run: yarn workspace api test

@@ -53,7 +53,7 @@ export const listOfQuantificationListsTransformer = async (
 const periodDetailsReceiverToDto = async (
   periodDetailsReceiver: PeriodDetailsReceiver
 ): Promise<PeriodDetailsReceiverDto> => {
-  const { _id, praiseCount, quantifications, score, userAccounts } =
+  const { _id, praiseCount, quantifications, scoreRealized, userAccounts } =
     periodDetailsReceiver;
   return {
     _id: _id.toString(),
@@ -61,7 +61,7 @@ const periodDetailsReceiverToDto = async (
     quantifications: await listOfQuantificationListsTransformer(
       quantifications
     ),
-    score,
+    scoreRealized,
     userAccount:
       Array.isArray(userAccounts) && userAccounts.length > 0
         ? userAccountTransformer(userAccounts[0])
