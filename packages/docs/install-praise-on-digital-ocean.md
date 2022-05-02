@@ -35,7 +35,7 @@ Complete step 1-2 of the installation guide: [How To Install and Use Docker on U
 
 Docker compose is utility for configuring and running Docker containers. Praise requires `docker compose` v2 to be installed.
 
-Complete step 1 in the installation guide: [How To Install and Use Docker Compose on Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04)
+Complete step 1 in the installation guide: [How To Install and Use Docker Compose on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-22-04)
 
 - Step 1 — Installing Docker Compose
 
@@ -52,6 +52,7 @@ git clone https://github.com/CommonsBuild/praise.git
 Run the Praise setup script to configure the runtime environment:
 
 ```
+cd praise
 sh setup.sh
 ```
 
