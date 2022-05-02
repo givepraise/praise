@@ -65,13 +65,6 @@ const questions = [
     choices: ['production', 'development'],
     default: process.env.NODE_ENV,
   },
-  // {
-  //   type: 'confirm',
-  //   name: 'DOCKER',
-  //   message:
-  //     'Will you be running Praise using Docker? (Only applies when running in developmwent)',
-  //   default: true,
-  // },
   {
     type: 'password',
     name: 'MONGO_INITDB_ROOT_PASSWORD',
