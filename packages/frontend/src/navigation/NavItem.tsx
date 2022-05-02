@@ -12,7 +12,7 @@ const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
   return (
     <Link
       to={to}
-      className="relative px-4 py-1 cursor-pointer hover:bg-gray-100 mr-[1px] no-underline flex items-center"
+      className="relative px-4 py-1 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 mr-[1px] no-underline flex items-center"
       id={to.substring(1) + '-nav-button'}
     >
       {icon && (
