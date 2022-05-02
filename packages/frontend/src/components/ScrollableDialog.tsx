@@ -17,7 +17,7 @@ const ScrollableDialog = ({
       <div className="fixed w-full h-screen">
         <div className="flex items-center justify-center w-full h-full bg-gray-800 bg-opacity-30">
           <OutsideClickHandler onOutsideClick={onClose} active={open}>
-            <div className="z-20 h-64 max-w-xl bg-white rounded">
+            <div className="z-20 max-w-xl bg-white rounded">
               <div className="pb-16 bg-white rounded">{children}</div>
             </div>
           </OutsideClickHandler>

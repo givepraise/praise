@@ -1,5 +1,6 @@
 import ScrollableDialog from '@/components/ScrollableDialog';
 import Praise from '@/components/praise/Praise';
+import QuantifySlider from './QuantifySlider';
 import {
   faCalculator,
   faTimes,
@@ -43,15 +44,15 @@ const DuplicateDialog = ({
             <FontAwesomeIcon icon={faTimes} size="1x" />
           </button>
         </div>
-        <div className="px-20">
-          <div className="flex justify-center mb-7">
+        <div className="px-20 space-y-6">
+          <div className="flex justify-center">
             <FontAwesomeIcon icon={faCalculator} size="2x" />
           </div>
-          <h2 className="text-center mb-7">
+          <h2 className="text-center">
             Mark {duplicatesCount} praise as duplicates
           </h2>
           {duplicatePraisePercentage && (
-            <p className="text-center mb-7 max-w-2/3">
+            <p className="text-center">
               Set a score for the first praise in the series.
               <br />
               The remaining {duplicatesCount - 1} praise will be marked as
@@ -59,7 +60,10 @@ const DuplicateDialog = ({
               {duplicatePraisePercentage * 100}% of its value.
             </p>
           )}
-          <Praise praise={originalPraise} className="bg-gray-100 px-4 mb-4" />
+          <Praise praise={originalPraise} className="bg-gray-100 px-4" />
+          <div className="flex justify-center">
+            <QuantifySlider praise={originalPraise} periodId={periodId} />
+          </div>
           <div className="flex justify-center">
             <button
               className="mt-4 praise-button"
