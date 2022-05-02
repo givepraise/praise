@@ -47,116 +47,18 @@ Clone the Praise repository from GitHub:
 git clone https://github.com/CommonsBuild/praise.git
 ```
 
-## Configure the database and server name
+## Configure environment
 
-Make a copy of the env template file:
-
-```
-cp .env.template .env
-nano .env
-```
-
-Configure the `HOST` variable with the domain name you would like to run Praise on. For local development, enter `localhost`.
+Run the Praise setup script to configure the runtime environment:
 
 ```
-HOST=
-```
-
-Set database connection parameters. Do not use same username/password for `INITDB` user and regular user.
-
-```
-MONGO_DB=praise_db
-# Use mongodb when running Praise on Docker, localhost otherwise
-MONGO_HOST=mongodb
-MONGO_PORT=27017
-MONGO_INITDB_ROOT_USERNAME=praiseDbRootUsername
-MONGO_INITDB_ROOT_PASSWORD=[any password]
-MONGO_USERNAME=praiseDbUsername
-MONGO_PASSWORD=[any password]
-```
-
-## Configure API
-
-```
-cd packages/api/
-```
-
-Make a copy of the env template file:
-
-```
-cp .env.template .env
-nano .env
-```
-
-Make sure API is run with production setting:
-
-```
-NODE_ENV=production
-```
-
-Use same domain name for `COOKIE_DOMAIN` as in `HOST` previously specified.
-
-```
-COOKIE_DOMAIN=
-```
-
-Replace with an ethereum address to access Praise dashboard as Admin:
-
-```
-ADMINS=0x123...456
-```
-
-## Configure Discord bot
-
-```
-cd packages/discord-bot
-```
-
-Make a copy of the env template file:
-
-```
-cp .env.template .env
-nano .env
-```
-
-Make sure API is run with production setting:
-
-```
-NODE_ENV=production
-```
-
-Configure the bot to access your Discord guild:
-
-```
-DISCORD_TOKEN=
-DISCORD_CLIENT_ID=
-DISCORD_GUILD_ID=
-PRAISE_GIVER_ROLE_ID=
-```
-
-## Configure frontend
-
-```
-cd packages/frontend
-```
-
-Make a copy of the env template file:
-
-```
-cp .env.template .env.production
-nano .env.production
-```
-
-For local development, configure `REACT_APP_SERVER_URL` with the server and port api is running on, most likely `http://localhost:8088`. For production, leave empty since api runs on same server domain as the frontend.
-
-```
-REACT_APP_SERVER_URL=
+sh setup.sh
 ```
 
 ## Build and run all services
 
 ```
-docker compose up -d
+sh start.sh
 ```
 
 ## Finished 🎉
