@@ -16,6 +16,7 @@ const requiredEnvVariables = [
   'JWT_ACCESS_EXP',
   'JWT_REFRESH_EXP',
   'NODE_ENV',
+  'SERVER_URL',
 ];
 
 export { requiredEnvVariables };

@@ -37,7 +37,7 @@ const PraiseRow = ({ praise }: PraiseRowProps): JSX.Element => {
         <div>{praise.reason}</div>
       </div>
       <div className="flex-grow text-right px-14 whitespace-nowrap">
-        {praise.score}
+        {praise.scoreRealized}
       </div>
     </div>
   );

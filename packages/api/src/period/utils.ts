@@ -1,11 +1,10 @@
-import { BadRequestError, NotFoundError } from '@error/errors';
+import { NotFoundError } from '@error/errors';
 import { PraiseModel } from '@praise/entities';
-import { calculateQuantificationsCompositeScore } from '@praise/utils';
+import { calculateReceiverCompositeScore } from '@praise/utils/score';
 import { periodsettingListTransformer } from '@periodsettings/transformers';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 import { settingValue } from '@shared/settings';
-import { sum, some } from 'lodash';
-import mongoose from 'mongoose';
+import { some } from 'lodash';
 import { PeriodModel } from './entities';
 import {
   periodDetailsReceiverListTransformer,
@@ -36,33 +35,16 @@ export const getPreviousPeriodEndDate = async (
   return previousEndDate;
 };
 
-const calculateReceiverScores = async (
-  receivers: PeriodDetailsReceiver[],
-  periodId: mongoose.Schema.Types.ObjectId
+const receiversWithScores = async (
+  receivers: PeriodDetailsReceiver[]
 ): Promise<PeriodDetailsReceiver[]> => {
-  const duplicatePraisePercentage = (await settingValue(
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
-    periodId
-  )) as number;
-
-  if (!duplicatePraisePercentage)
-    throw new BadRequestError(
-      "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
-    );
-
   const receiversWithQuantificationScores = await Promise.all(
     receivers.map(async (r) => {
-      if (!r.quantifications) return r;
-
-      const quantifierScores = await Promise.all(
-        r.quantifications.map((q) =>
-          calculateQuantificationsCompositeScore(q, duplicatePraisePercentage)
-        )
-      );
+      const scoreRealized = await calculateReceiverCompositeScore(r);
 
       return {
         ...r,
-        score: sum(quantifierScores),
+        scoreRealized,
         quantifications: undefined,
       };
     })
@@ -142,16 +124,15 @@ export const findPeriodDetailsDto = async (
     ]),
   ]);
 
-  const receiversWithScores = await calculateReceiverScores(
-    receivers,
-    period._id
-  );
+  const receiversWithScoresData = await receiversWithScores(receivers);
 
   const periodsettings = await PeriodSettingsModel.find({ period: period._id });
 
   const response = {
     ...periodDocumentTransformer(period),
-    receivers: await periodDetailsReceiverListTransformer(receiversWithScores),
+    receivers: await periodDetailsReceiverListTransformer(
+      receiversWithScoresData
+    ),
     quantifiers: [...quantifiers],
     settings: periodsettingListTransformer(periodsettings),
   };
