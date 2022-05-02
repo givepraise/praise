@@ -144,6 +144,10 @@ This project uses JavaScript and the nodeJS environment. For setting up this env
   ```
   yarn
   ```
+- Install husky hooks
+  ```
+  yarn prepare
+  ```
 - Install Docker:
  
   If you're on Windows or Macos, you could download [Docker Desktop](https://docs.docker.com/desktop/), which includes all the things you need pre-packaged: 

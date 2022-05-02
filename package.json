@@ -8,6 +8,7 @@
     "packages/*"
   ],
   "scripts": {
+    "prepare": "husky install",
     "mongodb:start": "docker compose -f ./docker-compose.local.yml up mongodb -d",
     "mongodb:clean": "yarn workspace api drop-database",
     "mongodb:stop": "docker compose -f ./docker-compose.local.yml down",
@@ -33,6 +34,8 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "git-branch-is": "^4.0.0",
+    "husky": "^7.0.4",
     "prettier": "^2.5.1",
     "typescript": "^4.5.5"
   },

@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Run api tests via github actions
 - Split up github actions to only run checks relevant to the workspace where files were modified
 - Api tests for auth endpoints
+- Prevent devs accidentally pushing to 'dev' and 'main' branch with husky pre-push hooks
 - Api unit tests for score calculations
 
 ## [0.4.0] - 2022-04-14
