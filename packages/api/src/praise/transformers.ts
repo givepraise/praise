@@ -1,31 +1,14 @@
-import { BadRequestError } from '@error/errors';
-import { settingValue } from '@shared/settings';
 import { userAccountTransformer } from '@useraccount/transformers';
-import mongoose from 'mongoose';
-import { PraiseModel } from './entities';
 import {
   PraiseDocument,
   PraiseDto,
   Quantification,
   QuantificationDto,
 } from './types';
-import { getPraisePeriod } from './utils';
-
-export const calculateDuplicateScore = async (
-  quantification: Quantification,
-  periodId: mongoose.Schema.Types.ObjectId
-): Promise<number> => {
-  const duplicatePraisePercentage = (await settingValue(
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
-    periodId
-  )) as number;
-  if (!duplicatePraisePercentage)
-    throw new BadRequestError(
-      "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
-    );
-
-  return Math.floor(quantification.score * duplicatePraisePercentage);
-};
+import {
+  calculateQuantificationScore,
+  calculateQuantificationsCompositeScore,
+} from './utils/score';
 
 const quantificationToDto = async (
   quantification: Quantification
@@ -39,34 +22,16 @@ const quantificationToDto = async (
     updatedAt,
   } = quantification;
 
-  let duplicateScore = 0;
-  if (duplicatePraise) {
-    const praise = await PraiseModel.findById(duplicatePraise._id);
-    if (praise && praise.quantifications) {
-      const quantification = praise.quantifications.find((q) =>
-        q.quantifier.equals(quantifier)
-      );
-      if (quantification && quantification.dismissed) {
-        duplicateScore = 0;
-      } else if (quantification && !quantification.dismissed) {
-        const period = await getPraisePeriod(praise);
-        if (!period) throw new Error('Quantification has no associated period');
+  const scoreRealized = await calculateQuantificationScore(quantification);
 
-        duplicateScore = await calculateDuplicateScore(
-          quantification,
-          period._id
-        );
-      }
-    }
-  }
   return {
     quantifier: quantifier._id,
     score,
+    scoreRealized,
     dismissed,
     duplicatePraise: duplicatePraise ? duplicatePraise._id : undefined,
-    duplicateScore,
-    createdAt: createdAt ? createdAt.toISOString() : undefined,
-    updatedAt: updatedAt ? updatedAt.toISOString() : undefined,
+    createdAt: createdAt.toISOString(),
+    updatedAt: updatedAt.toISOString(),
   };
 };
 
@@ -113,20 +78,20 @@ const praiseDocumentToDto = async (
     forwarder: forwarder ? userAccountTransformer(forwarder) : undefined,
     createdAt: createdAt.toISOString(),
     updatedAt: updatedAt.toISOString(),
+    scoreRealized: await calculateQuantificationsCompositeScore(
+      praiseDocument.quantifications
+    ),
   };
 };
 
 export const praiseDocumentListTransformer = async (
-  praiseDocuments: PraiseDocument[] | undefined
+  praiseDocuments: PraiseDocument[]
 ): Promise<PraiseDto[]> => {
-  if (praiseDocuments && Array.isArray(praiseDocuments)) {
-    const praiseDto: PraiseDto[] = [];
-    for (const pd of praiseDocuments) {
-      praiseDto.push(await praiseDocumentToDto(pd));
-    }
-    return praiseDto;
-  }
-  return [];
+  const praiseDtoList = await Promise.all(
+    praiseDocuments.map((p) => praiseDocumentToDto(p))
+  );
+
+  return praiseDtoList;
 };
 
 export const praiseDocumentTransformer = async (

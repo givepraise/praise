@@ -3,32 +3,33 @@ import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
 import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
 import BackLink from '@/navigation/BackLink';
-import { localizeAndFormatIsoDateLong } from '@/utils/date';
+import { localizeAndFormatIsoDate, DATE_FORMAT_LONG } from '@/utils/date';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import PraiseDetailTable from './components/PraiseDetailTable';
 import getMarkdownText from '@/components/MarkdownText';
+import { PraiseDetailsDto } from 'api/dist/praise/types';
+import { PeriodDetailsDto } from 'api/dist/period/types';
 
-const PeriodReceiverMessage = (): JSX.Element | null => {
-  const { praiseId } = useParams<PraisePageParams>();
-  const praise = useSinglePraiseQuery(praiseId);
-  const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
+interface Params {
+  period?: PeriodDetailsDto;
+  praise?: PraiseDetailsDto;
+}
+
+const PeriodReceiverMessage = ({
+  period,
+  praise,
+}: Params): JSX.Element | null => {
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
 
-  if (!praise) return null;
-
-  const componentDecorator = (href, text, key) => (
-    <a href={href} key={key} target="_blank">
-      {text}
-    </a>
-  );
+  if (!praise || !period) return null;
 
   return (
     <>
       <div className="text-gray-500">
-        {localizeAndFormatIsoDateLong(praise.createdAt)}
+        {localizeAndFormatIsoDate(praise.createdAt, DATE_FORMAT_LONG)}
       </div>
       <h2>
         {praise.giver.name} <span className="font-normal">to</span>{' '}
@@ -44,14 +45,14 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
         Id: {praise._id}
         {praise.forwarder && <div>Forwarded by: {praise.forwarder.name}</div>}
         {period && (period.status === 'CLOSED' || isAdmin) ? (
-          <div>Score: {praise.score}</div>
+          <div>Score: {praise.scoreRealized}</div>
         ) : null}
       </div>
     </>
   );
 };
 
-const QuantSummaryPraisePage = (): JSX.Element => {
+const PraiseDetailsPage = (): JSX.Element => {
   const { praiseId } = useParams<PraisePageParams>();
   const praise = useSinglePraiseQuery(praiseId);
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
@@ -67,7 +68,7 @@ const QuantSummaryPraisePage = (): JSX.Element => {
 
       <div className="praise-box">
         <React.Suspense fallback="Loading…">
-          <PeriodReceiverMessage />
+          <PeriodReceiverMessage praise={praise} period={period} />
         </React.Suspense>
       </div>
 
@@ -80,4 +81,4 @@ const QuantSummaryPraisePage = (): JSX.Element => {
   );
 };
 
-export default QuantSummaryPraisePage;
+export default PraiseDetailsPage;

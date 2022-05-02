@@ -28,14 +28,14 @@ const ReceiverTable = (): JSX.Element | null => {
           ),
         },
         {
-          Header: 'Praise count',
+          Header: 'Praise Count',
           className: 'text-center',
           accessor: 'praiseCount',
         },
         {
-          Header: 'Praise score',
+          Header: 'Total Score',
           className: 'text-center',
-          accessor: 'score',
+          accessor: 'scoreRealized',
           sortType: 'basic',
         },
       ],
@@ -45,8 +45,8 @@ const ReceiverTable = (): JSX.Element | null => {
       ? sortBy(period.receivers, [
           // First, sort by reciever score
           (receiver): number => {
-            if (!receiver?.score) return 0;
-            return receiver.score;
+            if (!receiver?.scoreRealized) return 0;
+            return receiver.scoreRealized;
           },
 
           // Then by receiver _id
