@@ -11,10 +11,9 @@ import {
   PraiseDetailsDto,
   PraiseDto,
 } from '@praise/types';
-import {
-  calculateDuplicateScore,
-  praiseDocumentListTransformer,
-} from '@praise/transformers';
+import { praiseDocumentListTransformer } from '@praise/transformers';
+import { calculateQuantificationScore } from '@praise/utils/score';
+import { praiseWithScore } from '@praise/utils/core';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { insertNewPeriodSettings } from '@periodsettings/utils';
@@ -30,7 +29,6 @@ import {
 import { UserRole } from '@user/types';
 import { UserAccountDocument } from '@useraccount/types';
 import { getQueryInput, getQuerySort } from '@shared/functions';
-import { praiseWithScore } from '@praise/utils';
 import { PraiseModel } from '@praise/entities';
 import mongoose from 'mongoose';
 import { firstFit, PackingOutput } from 'bin-packer';
@@ -178,7 +176,9 @@ export const close = async (
   period.status = PeriodStatusType.CLOSED;
   await period.save();
 
-  res.status(StatusCodes.OK).json(periodDocumentTransformer(period));
+  const periodDetailsDto = await findPeriodDetailsDto(period._id);
+
+  res.status(StatusCodes.OK).json(periodDetailsDto);
 };
 
 const assignQuantifiersDryRun = async (
@@ -519,26 +519,12 @@ export const quantifierPraise = async (
   if (!quantifierId)
     throw new BadRequestError('Quantifier Id is a required field');
 
-  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+  const periodDateRangeQuery = await getPeriodDateRangeQuery(period);
 
-  const praiseList = await PraiseModel.aggregate([
-    {
-      $match: {
-        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
-      },
-    },
-    { $unwind: '$quantifications' },
-    {
-      $match: {
-        $expr: {
-          $eq: [
-            '$quantifications.quantifier',
-            new mongoose.Types.ObjectId(quantifierId),
-          ],
-        },
-      },
-    },
-  ]);
+  const praiseList = await PraiseModel.find({
+    createdAt: periodDateRangeQuery,
+    'quantifications.quantifier': new mongoose.Types.ObjectId(quantifierId),
+  });
 
   await PraiseModel.populate(praiseList, { path: 'receiver giver forwarder' });
 
@@ -594,19 +580,7 @@ export const exportPraise = async (
           q.quantifier = quantifier;
           q.account = account;
 
-          if (q.duplicatePraise) {
-            const praise = await PraiseModel.findById(q.duplicatePraise._id);
-            if (praise && praise.quantifications) {
-              const quantification = praise.quantifications.find((q) =>
-                q.quantifier.equals(q.quantifier)
-              );
-              if (quantification) {
-                q.score = quantification.dismissed
-                  ? 0
-                  : await calculateDuplicateScore(quantification, period._id);
-              }
-            }
-          }
+          q.scoreRealized = await calculateQuantificationScore(q);
 
           return q;
         })
@@ -700,7 +674,7 @@ export const exportPraise = async (
 
   fields.push({
     label: 'AVG SCORE',
-    value: 'score',
+    value: 'scoreRealized',
   });
 
   const json2csv = new Parser({ fields: fields });

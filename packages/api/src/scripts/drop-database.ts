@@ -7,23 +7,21 @@ import { PeriodSettingsModel } from '@periodsettings/entities';
 import { MigrationModel } from '@database/entities';
 import { connectDatabase } from './core';
 
-connectDatabase().then(async (connection) => {
-    try {
-        await Promise.all(
-            [
-                PeriodModel.deleteMany({}),
-                PraiseModel.deleteMany({}),
-                UserModel.deleteMany({}),
-                UserAccountModel.deleteMany({}),
-                SettingsModel.deleteMany({}),
-                PeriodSettingsModel.deleteMany({}),
-                MigrationModel.deleteMany({})
-            ]);
-        console.log('Deleted all collections');
+connectDatabase('localhost').then(async (connection) => {
+  try {
+    await Promise.all([
+      PeriodModel.deleteMany({}),
+      PraiseModel.deleteMany({}),
+      UserModel.deleteMany({}),
+      UserAccountModel.deleteMany({}),
+      SettingsModel.deleteMany({}),
+      PeriodSettingsModel.deleteMany({}),
+      MigrationModel.deleteMany({}),
+    ]);
+    console.log('Deleted all collections');
+  } catch (err) {
+    console.error(`Failed to delete all collections ${(err as Error).message}`);
+  }
 
-    } catch (err) {
-        console.error(`Failed to delete all collections ${(err as Error).message}`);
-    }
-
-    process.exit();
+  process.exit();
 });

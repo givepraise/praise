@@ -1,11 +1,8 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
-import { CommandInteraction } from 'discord.js';
 import randomstring from 'randomstring';
-
-export const activationHandler = async (
-  interaction: CommandInteraction
-): Promise<void> => {
+import { CommandHandler } from 'src/interfaces/CommandHandler';
+export const activationHandler: CommandHandler = async (interaction) => {
   const { user } = interaction;
   const ua = {
     accountId: user.id,
@@ -24,13 +21,6 @@ export const activationHandler = async (
     await interaction.reply('Unable to create user account.');
     return;
   }
-  const baseURL = process.env.FRONTEND_URL;
-  if (!baseURL || baseURL === undefined) {
-    await interaction.reply(
-      'ERROR: `FRONTEND_URL` not defined in environment variables. Contact praise admin'
-    );
-    return;
-  }
 
   const getActivationURL = (
     accountId: string,
@@ -38,7 +28,9 @@ export const activationHandler = async (
     hash: string,
     token: string
   ): string =>
-    `${baseURL}/activate?accountId=${accountId}&accountName=${encodeURIComponent(
+    `${
+      process.env.FRONTEND_URL as string
+    }/activate?accountId=${accountId}&accountName=${encodeURIComponent(
       `${uname}#${hash}`
     )}&platform=DISCORD&token=${token}`;
 

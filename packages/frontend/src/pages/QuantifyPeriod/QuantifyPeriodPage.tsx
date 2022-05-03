@@ -4,6 +4,7 @@ import {
   PeriodQuantifierReceivers,
   SinglePeriod,
 } from '@/model/periods';
+import { useAllPeriodSettingsQuery } from '@/model/periodsettings';
 import BackLink from '@/navigation/BackLink';
 import { getQuantificationStats } from '@/utils/periods';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
@@ -15,7 +16,7 @@ import QuantifyPeriodTable from './components/QuantifyPeriodTable';
 const PeriodMessage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
-
+  useAllPeriodSettingsQuery(periodId);
   const quantificationStats = getQuantificationStats(
     useRecoilValue(PeriodQuantifierReceivers(periodId))
   );

@@ -1,6 +1,6 @@
 {
   "name": "praise",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "license": "GPL-3.0-or-later",
   "description": "Praise community contributions to build a culture of giving and gratitude.",
   "private": true,
@@ -8,10 +8,20 @@
     "packages/*"
   ],
   "scripts": {
-    "mongodb:start": "docker compose up -d",
+    "prepare": "husky install",
+    "mongodb:start": "docker compose -f ./docker-compose.local.yml up mongodb -d",
     "mongodb:clean": "yarn workspace api drop-database",
-    "mongodb:stop": "docker compose down",
-    "docs": "yarn workspace docs docsify serve . --port 45231"
+    "mongodb:stop": "docker compose -f ./docker-compose.local.yml down",
+    "api:build-docker": "docker compose -f ./docker-compose.local.yml build api --no-cache",
+    "api:start": "yarn workspace api start",
+    "discord-bot:build-docker": "docker compose -f ./docker-compose.local.yml build discord-bot --no-cache",
+    "discord-bot:start": "yarn workspace discord-bot start",
+    "docs:start": "yarn workspace docs docsify serve . --port 45231",
+    "frontend:build-docker": "docker compose -f ./docker-compose.local.yml build frontend --no-cache",
+    "build-docker": "docker compose build --no-cache",
+    "start-docker:local": "docker compose -f ./docker-compose.local.yml up -d",
+    "start-docker:dev": "docker compose -f ./docker-compose.development.yml up -d",
+    "start-docker:prod": "docker compose -f ./docker-compose.production.yml up -d"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.7.0",
@@ -24,6 +34,8 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "git-branch-is": "^4.0.0",
+    "husky": "^7.0.4",
     "prettier": "^2.5.1",
     "typescript": "^4.5.5"
   },

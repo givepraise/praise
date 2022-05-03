@@ -1,11 +1,14 @@
 import { PeriodModel } from '@period/entities';
-import { PraiseModel } from '@praise/entities';
+import { PraiseModel, QuantificationModel } from '@praise/entities';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { UserAccountDocument } from '@useraccount/types';
+import { PraiseDocument, QuantificationDocument } from '@praise/types';
+import { PeriodDocument } from '@period/types';
 import { insertNewPeriodSettings } from '@periodsettings/utils';
 import faker from 'faker';
 import logger from 'jet-logger';
+import { UserDocument } from '@user/types';
 
 const PERIOD_NUMBER = 3;
 const PERIOD_LENGTH = 10;
@@ -39,23 +42,47 @@ const fetchTwoRandomUserAccounts = async (): Promise<UserAccountDocument[]> => {
   return useraccounts;
 };
 
-const seedUser = async (
-  userData: Object = {},
+const seedUserAccount = async (
+  user: UserDocument,
   userAccountData: Object = {}
-): Promise<void> => {
-  const user = await UserModel.create({
-    ethereumAddress: faker.finance.ethereumAddress(),
-    roles: ['USER'],
-    ...userData,
-  });
-
-  await UserAccountModel.create({
+): Promise<UserAccountDocument> => {
+  const userAccount = await UserAccountModel.create({
     user: user._id,
     accountId: faker.datatype.uuid(),
     name: faker.internet.userName(),
     platform: 'DISCORD',
     ...userAccountData,
   });
+
+  return userAccount;
+};
+
+const seedUser = async (
+  userData: Object = {},
+  userAccountData: Object = {}
+): Promise<UserDocument> => {
+  const user = await UserModel.create({
+    ethereumAddress: faker.finance.ethereumAddress(),
+    roles: ['USER'],
+    ...userData,
+  });
+
+  await seedUserAccount(user, userAccountData);
+
+  return user;
+};
+
+const seedPeriod = async (periodData: Object = {}): Promise<PeriodDocument> => {
+  const period = await PeriodModel.create({
+    name: `Period ${faker.random.alpha()}`,
+    status: 'OPEN',
+    endDate: new Date(),
+    quantifiers: [],
+    ...periodData,
+  });
+  await insertNewPeriodSettings(period);
+
+  return period;
 };
 
 const seedPeriods = async (): Promise<void> => {
@@ -66,13 +93,10 @@ const seedPeriods = async (): Promise<void> => {
       logger.info('Trying to seed database with periods.');
       const d = new Date();
       for (let i = 0; i < PERIOD_NUMBER; i++) {
-        const period = await PeriodModel.create({
+        await seedPeriod({
           name: `Period ${i + 1}`,
-          status: 'OPEN',
           endDate: d,
-          quantifiers: [],
         });
-        await insertNewPeriodSettings(period);
         d.setDate(d.getDate() + PERIOD_LENGTH);
       }
 
@@ -147,6 +171,23 @@ const seedQuantifierUsers = async (): Promise<void> => {
   }
 };
 
+const seedPraise = async (praiseData: Object = {}): Promise<PraiseDocument> => {
+  const [giver, receiver] = await fetchTwoRandomUserAccounts();
+
+  const randomDays = Math.floor(Math.random() * PERIOD_NUMBER * PERIOD_LENGTH);
+  const praise = await PraiseModel.create({
+    reason: faker.lorem.sentences(),
+    giver: giver._id,
+    sourceId: faker.datatype.uuid(),
+    sourceName: faker.lorem.word(),
+    receiver: receiver._id,
+    createdAt: new Date(Date.now() + (randomDays - PERIOD_LENGTH) * 86400000),
+    ...praiseData,
+  });
+
+  return praise;
+};
+
 const seedPraises = async (): Promise<void> => {
   try {
     const praisesCount = await PraiseModel.count();
@@ -155,24 +196,7 @@ const seedPraises = async (): Promise<void> => {
       logger.info('Trying to seed database with praises.');
 
       for (let i = 0; i < PRAISE_NUMBER; i++) {
-        const [giver, receiver] = await fetchTwoRandomUserAccounts();
-        try {
-          const randomDays = Math.floor(
-            Math.random() * PERIOD_NUMBER * PERIOD_LENGTH
-          );
-          await PraiseModel.create({
-            reason: faker.lorem.sentences(),
-            giver: giver._id,
-            sourceId: faker.datatype.uuid(),
-            sourceName: faker.lorem.word(),
-            receiver: receiver._id,
-            createdAt: new Date(
-              Date.now() + (randomDays - PERIOD_LENGTH) * 86400000
-            ),
-          });
-        } catch (e) {
-          console.log('ERROR:', e);
-        }
+        await seedPraise();
       }
 
       logger.info('Praises seeding completed.');
@@ -182,10 +206,46 @@ const seedPraises = async (): Promise<void> => {
   }
 };
 
-export const seedData = async (): Promise<void> => {
+const seedQuantification = async (
+  praise: PraiseDocument,
+  quantifierUser: UserDocument,
+  quantificationData: Object = {}
+): Promise<QuantificationDocument> => {
+  const createdAt = faker.date.recent();
+
+  const quantification: QuantificationDocument = new QuantificationModel({
+    quantifier: quantifierUser._id,
+    score: Math.random() * 150,
+    dismissed: faker.datatype.boolean(),
+    duplicatePraise: undefined,
+    createdAt,
+    updatedAt: createdAt,
+    ...quantificationData,
+  });
+
+  praise.quantifications.push(quantification);
+  await praise.save();
+
+  return quantification;
+};
+
+const seedData = async (): Promise<void> => {
+  logger.info('Seeding database with fake data.');
+
   await seedPeriods();
   await seedPredefinedUsers();
   await seedRegularUsers();
   await seedQuantifierUsers();
   await seedPraises();
+};
+
+export {
+  seedData,
+  seedUser,
+  seedUserAccount,
+  seedPeriod,
+  seedPeriods,
+  seedPraise,
+  seedPraises,
+  seedQuantification,
 };

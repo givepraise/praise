@@ -67,7 +67,7 @@ interface Arguments {
 }
 
 const run = async (): Promise<void> => {
-  const argv: Arguments = yargs
+  const argv: any = yargs
     .command('$0', 'Replace a specified quantifier who is currently assigned')
     .option('periodId', {
       type: 'string',
@@ -89,7 +89,7 @@ const run = async (): Promise<void> => {
   const { periodId, currentQuantifierId, newQuantifierId } = argv;
 
   console.log(argv.periodId);
-  await connectDatabase();
+  await connectDatabase('localhost');
   await replaceActiveQuantifier(periodId, currentQuantifierId, newQuantifierId);
   exit();
 };

@@ -1,16 +1,15 @@
-import { AuthResponse, NonceResponse, TokenSet } from 'api/dist/auth/types';
+import {
+  AuthRequestInput,
+  AuthResponse,
+  NonceResponse,
+  TokenSet,
+} from 'api/dist/auth/types';
 import { ActiveTokenSet, RefreshToken } from '../model/auth';
 import { makeApiClient } from './api';
 import { getRecoil, setRecoil } from 'recoil-nexus';
 
-export type AuthQueryParams = {
-  ethereumAddress: string | null | undefined;
-  message: string | undefined;
-  signature: string | undefined;
-};
-
 export const requestApiAuth = async (
-  params: AuthQueryParams
+  params: AuthRequestInput
 ): Promise<TokenSet | undefined> => {
   const apiClient = makeApiClient();
   const response = await apiClient.post('/auth', params);

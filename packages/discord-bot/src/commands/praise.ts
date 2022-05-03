@@ -43,4 +43,10 @@ export const praise: Command = {
       logger.err(err);
     }
   },
+
+  help: {
+    name: 'praise',
+    text: 'Command to praise users in the discord server. You need to have an activated account on the Praise System to use this command.\n\
+  **Usage**: `/praise receivers: <@user1 @user2 ...> reason: for something`\n',
+  },
 };

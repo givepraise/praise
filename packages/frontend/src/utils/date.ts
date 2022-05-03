@@ -37,10 +37,6 @@ export const localizeAndFormatIsoDate = (
   return format(dateLocal, pattern);
 };
 
-export const localizeAndFormatIsoDateLong = (dateIso: string): string => {
-  return localizeAndFormatIsoDate(dateIso, DATE_FORMAT_LONG);
-};
-
 export const formatIsoDateUTC = (
   dateIso: string,
   pattern: string = DATE_FORMAT_TZ

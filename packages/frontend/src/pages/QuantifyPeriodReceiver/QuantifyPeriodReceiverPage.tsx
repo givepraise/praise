@@ -7,7 +7,10 @@ import {
   SinglePeriod,
   usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import {
+  usePeriodSettingValueRealized,
+  useAllPeriodSettingsQuery,
+} from '@/model/periodsettings';
 import BackLink from '@/navigation/BackLink';
 import { getQuantificationReceiverStats } from '@/utils/periods';
 import {
@@ -40,6 +43,7 @@ const PeriodMessage = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
   const { location } = useHistory();
   usePeriodQuantifierPraiseQuery(periodId, location.key);
+  useAllPeriodSettingsQuery(periodId);
   const usePseudonyms = usePeriodSettingValueRealized(
     periodId,
     'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
@@ -75,11 +79,11 @@ const PeriodMessage = (): JSX.Element | null => {
   );
 };
 
-const QuantifyPeriodUserPage = (): JSX.Element => {
+const QuantifyPeriodReceiverPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto h-full">
       <React.Suspense fallback="Loading…">
         <PeriodBreadCrumb />
       </React.Suspense>
@@ -91,13 +95,11 @@ const QuantifyPeriodUserPage = (): JSX.Element => {
         </React.Suspense>
       </div>
 
-      <div className="praise-box overflow-x-auto">
-        <React.Suspense fallback={null}>
-          <QuantifyTable />
-        </React.Suspense>
-      </div>
+      <React.Suspense fallback={null}>
+        <QuantifyTable />
+      </React.Suspense>
     </div>
   );
 };
 
-export default QuantifyPeriodUserPage;
+export default QuantifyPeriodReceiverPage;

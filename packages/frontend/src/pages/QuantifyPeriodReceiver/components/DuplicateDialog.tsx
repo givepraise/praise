@@ -1,33 +1,39 @@
 import ScrollableDialog from '@/components/ScrollableDialog';
+import Praise from '@/components/praise/Praise';
+import QuantifySlider from './QuantifySlider';
 import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from 'api/dist/praise/types';
-import PraiseAutosuggest from './PraiseAutosuggest';
 import { PeriodPageParams } from '@/model/periods';
+import { PraiseDto } from 'api/dist/praise/types';
 import { useParams } from 'react-router-dom';
+import { useState } from 'react';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import MarkDuplicateButton from './MarkDuplicateButton';
 
 interface DuplicateDialogProps {
   onClose(): void;
-  onSelect(praiseId: string): void;
+  onConfirm(number): void;
   open: boolean;
-  praise: PraiseDto | undefined;
+  originalPraise: PraiseDto | undefined;
+  duplicatesCount: number;
 }
 
 const DuplicateDialog = ({
-  onSelect,
   onClose,
+  onConfirm,
   open = false,
-  praise,
+  originalPraise,
+  duplicatesCount,
 }: DuplicateDialogProps): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
+  const [score, setScore] = useState<number>(0);
 
   const duplicatePraisePercentage = usePeriodSettingValueRealized(
     periodId,
     'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
   ) as number;
 
-  if (!praise) return null;
+  if (!originalPraise || duplicatesCount < 2) return null;
 
   return (
     <ScrollableDialog open={open} onClose={onClose}>
@@ -37,25 +43,36 @@ const DuplicateDialog = ({
             <FontAwesomeIcon icon={faTimes} size="1x" />
           </button>
         </div>
-        <div className="px-20">
-          <div className="flex justify-center mb-7">
+        <div className="px-20 space-y-6">
+          <div className="flex justify-center">
             <FontAwesomeIcon icon={faCalculator} size="2x" />
           </div>
-          <h2 className="text-center mb-7">
-            Mark praise #{praise._id.slice(-4)} as duplicate
+          <h2 className="text-center">
+            Mark {duplicatesCount} praise as duplicates
           </h2>
           {duplicatePraisePercentage && (
-            <p className="text-center mb-7">
-              Duplicate praise are given a score that is{' '}
-              {duplicatePraisePercentage * 100}% of the original quantification.
+            <p className="text-center">
+              Set a score for the first praise in the series.
+              <br />
+              The remaining {duplicatesCount - 1} praise will be marked as
+              duplicates of that one and receive{' '}
+              {duplicatePraisePercentage * 100}% of its value.
             </p>
           )}
-
+          <Praise praise={originalPraise} className="bg-gray-100 px-4" />
           <div className="flex justify-center">
-            <PraiseAutosuggest
-              onSelect={onSelect}
-              onClose={onClose}
-              praise={praise}
+            <QuantifySlider
+              praise={originalPraise}
+              periodId={periodId}
+              onChange={(newScore): void => setScore(newScore)}
+            />
+          </div>
+          <div className="flex justify-center">
+            <MarkDuplicateButton
+              onClick={(): void => {
+                onConfirm(score);
+                onClose();
+              }}
             />
           </div>
         </div>
