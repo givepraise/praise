@@ -96,7 +96,11 @@ const QuantifyPeriodReceiverPage = (): JSX.Element => {
       </div>
 
       <React.Suspense fallback={null}>
-        <QuantifyTable periodId={periodId} receiverId={receiverId} />
+        <QuantifyTable
+          key={`${periodId}-${receiverId}`}
+          periodId={periodId}
+          receiverId={receiverId}
+        />
       </React.Suspense>
     </div>
   );

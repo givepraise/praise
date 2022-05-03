@@ -38,6 +38,7 @@ const getRemoveButton = (callback: () => void): JSX.Element => {
 interface Props {
   periodId: string;
   receiverId: string;
+  key: string;
 }
 
 const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
