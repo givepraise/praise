@@ -82,34 +82,21 @@ yarn set version berry
 yarn
 ```
 
-### 3. Configure environment
+### 3. Create Discord Bot
 
-#### `/.env.template.development`
+Create and setup the Discord bot. Be sure to take not of ENV variables during setup as these will be needed during the next step.
 
-Copy and rename `.env`. Set variables:
+[Create the Praise Discord bot](/packages/docs/create-discord-bot.md)
 
-- `MONGO_INITDB_ROOT_PASSWORD` - Any password.
-- `MONGO_PASSWORD` - Any password
+### 4. Configure environment
 
-#### `/packages/api/.env.template`
+Run the Praise setup script to configure the runtime environment:
 
-Copy and rename `.env`. Set variables:
+```
+sh setup.sh
+```
 
-- `ADMINS` - Add your Metamask ETH address to `ADMINS` to be able to access Praise dashboard as admin.
-
-#### `/packages/discord-bot/.env.template`
-
-Copy and rename `.env`. Set variables:
-
-- `DISCORD_TOKEN` - Your bot's discord token generated via the Discord Developer Portal. You'll need to invite the same bot to your server with the link - `https://discord.com/api/oauth2/authorize?client_id=<client-id>&permissions=378561611840&scope=bot%20applications.commands` (replace `<client-id>` with your bot's client ID), and with the SERVER MEMBERS and MESSAGE CONTENT Intents enabled.
-- `DISCORD_CLIENT_ID` - Your bot's discord client ID, which can be found in the Application settings on Discord Developer Portal
-- `DISCORD_GUILD_ID` - The ID of the server in which you are using the bot. (this can be found by enabling developer mode in Discord, right clicking on te server icon and clicking "Copy Id").
-
-#### `/packages/frontend/.env.development.template`
-
-Copy and rename `.env`.
-
-### 4. Start MongoDB
+### 5. Start MongoDB
 
 Run mongo:
 
@@ -117,30 +104,23 @@ Run mongo:
 yarn mongodb:start
 ```
 
-### 5. Build and start api backend
+### 6. Build and start api backend
+
+Api, discord-bot and frontend can also be started from the Visual Studio Code Launch menu.
 
 ```
 yarn workspace api build
 yarn workspace api start
 ```
 
-Seed your database with real praise data from the TEC:
-
-```
-yarn workspace api import-praise ./sample_data/november.json
-yarn workspace api import-praise ./sample_data/december.json
-```
-
-### 6. Build and start Discord bot
+### 7. Build and start Discord bot
 
 ```
 yarn workspace discord-bot build
 yarn workspace discord-bot start
 ```
 
-### 7. Build and start frontend
-
-Build:
+### 8. Build and start frontend
 
 ```
 yarn workspace frontend build
