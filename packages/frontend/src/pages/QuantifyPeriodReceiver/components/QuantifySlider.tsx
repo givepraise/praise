@@ -1,7 +1,7 @@
 import { ActiveUserId } from '@/model/auth';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { Slider, Tooltip } from '@mui/material';
-import { PraiseDto } from 'api/dist/praise/types';
+import { PraiseDto, QuantificationDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -28,12 +28,14 @@ interface Mark {
 interface QuantifySliderProps {
   praise: PraiseDto;
   periodId: string;
+  disabled?: boolean;
   onChange(number);
 }
 
 const QuantifySlider = ({
   praise,
   periodId,
+  disabled = false,
   onChange,
 }: QuantifySliderProps): JSX.Element => {
   const [selectedSliderMark, setSelectedSliderMark] = React.useState<number>(0);
@@ -66,22 +68,6 @@ const QuantifySlider = ({
       return praise.quantifications.find((q) => q.quantifier === activeUserId);
     },
     [activeUserId]
-  );
-
-  const dismissed = React.useCallback(
-    (praise: PraiseDto) => {
-      const q = quantification(praise);
-      return q ? !!q.dismissed : false;
-    },
-    [quantification]
-  );
-
-  const duplicate = React.useCallback(
-    (praise: PraiseDto) => {
-      const q = quantification(praise);
-      return q ? (q.duplicatePraise ? true : false) : false;
-    },
-    [quantification]
   );
 
   const score = React.useCallback(
@@ -155,7 +141,7 @@ const QuantifySlider = ({
         marks={sliderMarks}
         valueLabelFormat={valueLabelFormat}
         value={selectedSliderMark}
-        disabled={dismissed(praise) || duplicate(praise)}
+        disabled={disabled}
         onChange={handleOnChange}
         onChangeCommitted={handleOnChangeCommitted}
         min={0}

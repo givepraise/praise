@@ -140,10 +140,13 @@ const QuantifyTable = (): JSX.Element | null => {
     return q && q.duplicatePraise ? q.duplicatePraise?.slice(-4) : '';
   };
 
-  const weeklyData = groupBy(data, (praise: PraiseDto) => {
-    if (!praise) return 0;
-    return getWeek(parseISO(praise.createdAt), { weekStartsOn: 1 });
-  });
+  const weeklyData = groupBy(
+    sortBy(data, (p) => p.createdAt),
+    (praise: PraiseDto) => {
+      if (!praise) return 0;
+      return getWeek(parseISO(praise.createdAt), { weekStartsOn: 1 });
+    }
+  );
 
   return (
     <div className=" h-full">
@@ -251,6 +254,7 @@ const QuantifyTable = (): JSX.Element | null => {
                       <QuantifySlider
                         praise={praise}
                         periodId={periodId}
+                        disabled={dismissed(praise) || duplicate(praise)}
                         onChange={(newScore): void =>
                           handleSetScore(praise, newScore)
                         }
