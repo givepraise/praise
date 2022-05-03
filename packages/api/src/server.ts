@@ -1,6 +1,4 @@
 import { ErrorHandler } from '@error/ErrorHandler';
-import { cookieProps } from '@shared/constants';
-import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { json, urlencoded, Express } from 'express';
 import 'express-async-errors';
@@ -68,7 +66,6 @@ const setupApiServer = async (NODE_ENV = 'development'): Promise<Express> => {
   );
   app.use(json());
   app.use(urlencoded({ extended: true }));
-  app.use(cookieParser(cookieProps.secret));
 
   // Serve static files
   app.use('/uploads', express.static('uploads'));
