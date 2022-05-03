@@ -27,7 +27,11 @@ const calculateDuplicateScore = async (
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
     );
 
-  return Math.floor(originalQuantification.score * duplicatePraisePercentage);
+  const score = +(
+    originalQuantification.score * duplicatePraisePercentage
+  ).toFixed(2);
+
+  return score;
 };
 
 const calculateQuantificationDuplicateScore = async (
@@ -96,9 +100,9 @@ export const calculateQuantificationsCompositeScore = async (
     completedQuantifications.map((q) => calculateQuantificationScore(q))
   );
 
-  const compositeScore = Math.floor(
+  const compositeScore = +(
     sum(scores) / completedQuantifications.length
-  );
+  ).toFixed(2);
 
   return compositeScore;
 };
@@ -121,7 +125,7 @@ export const calculateReceiverCompositeScore = async (
     )
   );
 
-  const score = sum(compositeScores);
+  const score = +sum(compositeScores).toFixed(2);
 
   return score;
 };
