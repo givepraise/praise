@@ -3,10 +3,7 @@ import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { ActiveUserId } from '@/model/auth';
-import {
-  PeriodAndReceiverPageParams,
-  PeriodQuantifierReceiverPraise,
-} from '@/model/periods';
+import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { localizeAndFormatIsoDate } from '@/utils/date';
@@ -17,7 +14,6 @@ import parseISO from 'date-fns/parseISO';
 import { groupBy, sortBy } from 'lodash';
 import { PraiseDto, QuantificationDto } from 'api/dist/praise/types';
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { QuantifyBackNextLink } from './BackNextLink';
 import DismissDialog from './DismissDialog';
@@ -39,8 +35,13 @@ const getRemoveButton = (callback: () => void): JSX.Element => {
   );
 };
 
-const QuantifyTable = (): JSX.Element | null => {
-  const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
+interface Props {
+  periodId: string;
+  receiverId: string;
+  key: string;
+}
+
+const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
   const userId = useRecoilValue(ActiveUserId);
   const data = useRecoilValue(
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
@@ -280,7 +281,7 @@ const QuantifyTable = (): JSX.Element | null => {
             ))}
           </tbody>
         </table>
-        <QuantifyBackNextLink />
+        <QuantifyBackNextLink periodId={periodId} receiverId={receiverId} />
       </div>
 
       <DismissDialog
