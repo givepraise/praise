@@ -18,7 +18,7 @@ const AuthenticatedLayout = ({
   const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
 
   return (
-    <div>
+    <div className="h-full">
       <Transition.Root show={sidebarOpen} as={Fragment}>
         <Dialog
           as="div"
@@ -108,9 +108,7 @@ const AuthenticatedLayout = ({
           </div>
         </div>
         <main className="flex-1 flex justify-center px-4 py-4">
-          <div className="block max-w-4xl w-full overflow-hidden">
-            {children}
-          </div>
+          <div className="block max-w-5xl w-full">{children}</div>
         </main>
       </div>
     </div>
