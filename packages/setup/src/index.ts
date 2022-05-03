@@ -136,6 +136,17 @@ const setupAndWriteEnv = async (
   await fs.writeFile(outFileName, envVars.join(os.EOL));
 };
 
+export const randomString = (length = 32): string => {
+  let result = '';
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
+
 const run = async (): Promise<void> => {
   const answers = await inquirer.prompt(questions);
 
@@ -164,6 +175,7 @@ const run = async (): Promise<void> => {
   const apiEnv = {
     ADMINS: answers.ADMINS,
     COOKIE_DOMAIN: answers.HOST,
+    JWT_SECRET: process.env.JWT_SECRET || randomString(),
   };
   await setupAndWriteEnv(
     '/usr/praise/packages/api/.env.template',
