@@ -13,8 +13,8 @@ const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
     <NavLink
       to={to}
       className={(isActive): string =>
-        `relative px-4 py-1 cursor-pointer hover:bg-gray-100 mr-[1px] no-underline flex items-center${
-          isActive ? ' bg-gray-100' : ''
+        `relative px-4 py-1 cursor-pointer mr-[1px] no-underline flex items-center${
+          isActive ? ' bg-gray-800 text-white' : ' hover:bg-gray-100 text-black'
         }`
       }
       id={to.substring(1) + '-nav-button'}
