@@ -1,20 +1,18 @@
 import ScrollableDialog from '@/components/ScrollableDialog';
 import Praise from '@/components/praise/Praise';
 import QuantifySlider from './QuantifySlider';
-import {
-  faCalculator,
-  faTimes,
-  faCopy,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PeriodPageParams } from '@/model/periods';
 import { PraiseDto } from 'api/dist/praise/types';
 import { useParams } from 'react-router-dom';
+import { useState } from 'react';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import MarkDuplicateButton from './MarkDuplicateButton';
 
 interface DuplicateDialogProps {
   onClose(): void;
-  onConfirm(): void;
+  onConfirm(number): void;
   open: boolean;
   originalPraise: PraiseDto | undefined;
   duplicatesCount: number;
@@ -28,6 +26,7 @@ const DuplicateDialog = ({
   duplicatesCount,
 }: DuplicateDialogProps): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
+  const [score, setScore] = useState<number>(0);
 
   const duplicatePraisePercentage = usePeriodSettingValueRealized(
     periodId,
@@ -62,19 +61,19 @@ const DuplicateDialog = ({
           )}
           <Praise praise={originalPraise} className="bg-gray-100 px-4" />
           <div className="flex justify-center">
-            <QuantifySlider praise={originalPraise} periodId={periodId} />
+            <QuantifySlider
+              praise={originalPraise}
+              periodId={periodId}
+              onChange={(newScore): void => setScore(newScore)}
+            />
           </div>
           <div className="flex justify-center">
-            <button
-              className="mt-4 praise-button"
+            <MarkDuplicateButton
               onClick={(): void => {
-                onConfirm();
+                onConfirm(score);
                 onClose();
               }}
-            >
-              <FontAwesomeIcon className="mr-2" icon={faCopy} size="1x" />
-              Mark duplicates
-            </button>
+            />
           </div>
         </div>
       </div>

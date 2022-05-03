@@ -14,7 +14,7 @@ interface Props {
   selectedPraise: PraiseDto | undefined;
 }
 
-const SingleDuplicateDialog = ({
+const DuplicateSearchDialog = ({
   onClose,
   onConfirm,
   open = false,
@@ -44,10 +44,10 @@ const SingleDuplicateDialog = ({
           <h2 className="text-center">Mark praise as duplicate</h2>
           {duplicatePraisePercentage && (
             <p className="text-center">
-              Set the original praise.
+              Enter the original praise ID:
               <br />
-              The duplicate praise will receive{' '}
-              {duplicatePraisePercentage * 100}% of its value.
+              The duplicate will receive {duplicatePraisePercentage * 100}% of
+              its value.
             </p>
           )}
           <div className="flex justify-center">
@@ -63,4 +63,4 @@ const SingleDuplicateDialog = ({
   );
 };
 
-export default SingleDuplicateDialog;
+export default DuplicateSearchDialog;

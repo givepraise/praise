@@ -1,5 +1,4 @@
 import { ActiveUserId } from '@/model/auth';
-import { useQuantifyPraise } from '@/model/praise';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { Slider, Tooltip } from '@mui/material';
 import { PraiseDto } from 'api/dist/praise/types';
@@ -29,17 +28,18 @@ interface Mark {
 interface QuantifySliderProps {
   praise: PraiseDto;
   periodId: string;
+  onChange(number);
 }
 
 const QuantifySlider = ({
   praise,
   periodId,
+  onChange,
 }: QuantifySliderProps): JSX.Element => {
   const [selectedSliderMark, setSelectedSliderMark] = React.useState<number>(0);
   const [sliderMarks, setSliderMarks] = React.useState<Mark[]>([]);
   const [scores, setScores] = React.useState<number[]>([]);
   const activeUserId = useRecoilValue(ActiveUserId);
-  const { quantify } = useQuantifyPraise();
   const allowedValues = usePeriodSettingValueRealized(
     periodId,
     'PRAISE_QUANTIFY_ALLOWED_VALUES'
@@ -127,12 +127,8 @@ const QuantifySlider = ({
     const q = quantification(praise);
     const score = scores[sliderMarks.findIndex((mark) => mark.value === value)];
     if (!q) return;
-    void quantify(
-      praise._id,
-      score,
-      q.dismissed ? q.dismissed : false,
-      q.duplicatePraise ? q.duplicatePraise : null
-    );
+
+    onChange(score);
   };
 
   function valueLabelFormat(value: number): number {
