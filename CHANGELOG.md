@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Api tests for auth endpoints
 - Prevent devs accidentally pushing to 'dev' and 'main' branch with husky pre-push hooks
 - Api unit tests for score calculations
+- Improved quantification UX: dismiss & mark duplicates of multiple praise simultaneously
 
 ## [0.4.0] - 2022-04-14
 
