@@ -174,7 +174,6 @@ const run = async (): Promise<void> => {
 
   const apiEnv = {
     ADMINS: answers.ADMINS,
-    COOKIE_DOMAIN: answers.HOST,
     JWT_SECRET: process.env.JWT_SECRET || randomString(),
   };
   await setupAndWriteEnv(
