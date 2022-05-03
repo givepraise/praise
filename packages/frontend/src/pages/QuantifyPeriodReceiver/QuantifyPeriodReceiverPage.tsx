@@ -80,7 +80,7 @@ const PeriodMessage = (): JSX.Element | null => {
 };
 
 const QuantifyPeriodReceiverPage = (): JSX.Element => {
-  const { periodId } = useParams<PeriodPageParams>();
+  const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
 
   return (
     <div className="max-w-5xl mx-auto h-full">
@@ -96,7 +96,7 @@ const QuantifyPeriodReceiverPage = (): JSX.Element => {
       </div>
 
       <React.Suspense fallback={null}>
-        <QuantifyTable />
+        <QuantifyTable periodId={periodId} receiverId={receiverId} />
       </React.Suspense>
     </div>
   );
