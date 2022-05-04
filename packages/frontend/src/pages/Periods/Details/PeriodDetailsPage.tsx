@@ -98,9 +98,9 @@ const PeriodDetailPage = (): JSX.Element => {
         <QuantifierMessage />
       </React.Suspense>
 
-      <div className="flex space-x-4">
+      <div className="flex sm:space-x-4 sm:flex-row flex-col">
         <div>
-          <div className="w-40 py-5 mb-5 break-words border rounded-lg shadow-sm bg-gray-50">
+          <div className="w-full sm:w-40 py-5 mb-5 break-words border rounded-lg shadow-sm bg-gray-50">
             <nav>
               <NavItem
                 to={`${url}/receivers`}

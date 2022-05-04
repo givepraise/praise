@@ -104,6 +104,7 @@ const PeriodsForm = (): JSX.Element => {
                     value={input.value}
                     onChange={input.onChange}
                     className="w-72 block"
+                    inputClassName="w-100"
                   />
                   {apiResponse && (
                     <FieldErrorMessage
