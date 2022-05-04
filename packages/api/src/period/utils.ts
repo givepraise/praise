@@ -59,17 +59,14 @@ const quantifiersWithCounts = (
   quantifiers: PeriodDetailsQuantifier[]
 ): PeriodDetailsQuantifierDto[] => {
   const quantifiersWithQuantificationCounts = quantifiers.map((q) => {
-    let finishedCount = 0;
-    q.quantifications.forEach((quantification) => {
-      finishedCount = isQuantificationCompleted(quantification)
-        ? finishedCount + 1
-        : finishedCount;
-    });
+    const finishedQuantifications = q.quantifications.filter((quantification) =>
+      isQuantificationCompleted(quantification)
+    );
 
     return {
       _id: q._id,
       praiseCount: q.praiseCount,
-      finishedCount,
+      finishedCount: finishedQuantifications.length,
     };
   });
 
