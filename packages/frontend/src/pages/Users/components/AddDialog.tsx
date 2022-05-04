@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import { UserDto, UserRole } from 'api/dist/user/types';
 import { useCombobox } from 'downshift';
-import React from 'react';
+import React, { LegacyRef, useEffect, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 
 interface UserAutosuggestProps {
@@ -19,6 +19,7 @@ const UserAutosuggest = ({
   onClose,
 }: UserAutosuggestProps): JSX.Element => {
   const allUsers = useRecoilValue(AllUsers);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const DropdownCombobox = (): JSX.Element => {
     const [inputItems, setInputItems] = React.useState(
@@ -83,7 +84,7 @@ const UserAutosuggest = ({
               className="pl-8 text-sm w-80"
               type="text"
               placeholder="Search by Discord or Telegram Handle"
-              {...getInputProps()}
+              {...getInputProps({ ref: inputRef })}
             />
           </div>
         </div>
@@ -111,6 +112,13 @@ const UserAutosuggest = ({
       </div>
     );
   };
+
+  useEffect(() => {
+    if (inputRef && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [inputRef]);
+
   return <DropdownCombobox />;
 };
 
@@ -125,13 +133,13 @@ const PoolAddDialog = ({
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Dialog.Overlay className="fixed inset-0 bg-gray-800 opacity-30" />
-      <div className="relative max-w-xl pb-16 mx-auto bg-white rounded">
+      <div className="relative max-w-sm sm:max-w-xl pb-16 mx-auto bg-white rounded">
         <div className="flex justify-end p-6">
           <button className="praise-button-round" onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} size="1x" />
           </button>
         </div>
-        <div className="px-20">
+        <div className="px-6 sm:px-20">
           <div className="flex justify-center mb-7">
             <FontAwesomeIcon icon={faUser} size="2x" />
           </div>
