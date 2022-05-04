@@ -3,55 +3,15 @@ import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
 import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
 import BackLink from '@/navigation/BackLink';
-import { localizeAndFormatIsoDateLong } from '@/utils/date';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import PraiseDetailTable from './components/PraiseDetailTable';
-import getMarkdownText from '@/components/MarkdownText';
 
-const PeriodReceiverMessage = (): JSX.Element | null => {
-  const { praiseId } = useParams<PraisePageParams>();
-  const praise = useSinglePraiseQuery(praiseId);
-  const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
-  const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
+import Praise from '@/components/praise/Praise';
 
-  if (!praise) return null;
-
-  const componentDecorator = (href, text, key) => (
-    <a href={href} key={key} target="_blank">
-      {text}
-    </a>
-  );
-
-  return (
-    <>
-      <div className="text-gray-500">
-        {localizeAndFormatIsoDateLong(praise.createdAt)}
-      </div>
-      <h2>
-        {praise.giver.name} <span className="font-normal">to</span>{' '}
-        {praise.receiver.name}
-      </h2>
-      <div
-        className="mt-2"
-        dangerouslySetInnerHTML={{
-          __html: getMarkdownText(praise.reason),
-        }}
-      ></div>
-      <div className="mt-2">
-        Id: {praise._id}
-        {praise.forwarder && <div>Forwarded by: {praise.forwarder.name}</div>}
-        {period && (period.status === 'CLOSED' || isAdmin) ? (
-          <div>Score: {praise.score}</div>
-        ) : null}
-      </div>
-    </>
-  );
-};
-
-const QuantSummaryPraisePage = (): JSX.Element => {
+const PraiseDetailsPage = (): JSX.Element | null => {
   const { praiseId } = useParams<PraisePageParams>();
   const praise = useSinglePraiseQuery(praiseId);
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
@@ -60,16 +20,23 @@ const QuantSummaryPraisePage = (): JSX.Element => {
       ? `/period/${period?._id}/receiver/${praise?.receiver._id}`
       : '/';
 
+  const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
+
+  if (!praise) return null;
+
   return (
     <div className="max-w-2xl mx-auto">
       <BreadCrumb name={'Praise details'} icon={faCalendarAlt} />
       <BackLink to={backLinkUrl} />
 
-      <div className="praise-box">
-        <React.Suspense fallback="Loading…">
-          <PeriodReceiverMessage />
-        </React.Suspense>
-      </div>
+      <React.Suspense fallback="Loading…">
+        <div className="praise-box">
+          <Praise praise={praise} />
+          {period && (period.status === 'CLOSED' || isAdmin) ? (
+            <div>Score: {praise.scoreRealized}</div>
+          ) : null}
+        </div>
+      </React.Suspense>
 
       <div className="praise-box">
         <React.Suspense fallback="Loading…">
@@ -80,4 +47,4 @@ const QuantSummaryPraisePage = (): JSX.Element => {
   );
 };
 
-export default QuantSummaryPraisePage;
+export default PraiseDetailsPage;

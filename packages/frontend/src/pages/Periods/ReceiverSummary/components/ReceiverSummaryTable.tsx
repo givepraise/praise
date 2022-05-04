@@ -37,7 +37,7 @@ const PraiseRow = ({ praise }: PraiseRowProps): JSX.Element => {
         <div>{praise.reason}</div>
       </div>
       <div className="flex-grow text-right pl-3 whitespace-nowrap">
-        {praise.score}
+        {praise.scoreRealized}
       </div>
     </div>
   );
@@ -54,7 +54,7 @@ const PeriodReceiverTable = (): JSX.Element | null => {
 
   if (!praiseList) return null;
   return (
-    <div>
+    <div className="praise-box">
       {praiseList?.map((praise) => (
         <PraiseRow praise={praise} key={praise?._id} />
       ))}

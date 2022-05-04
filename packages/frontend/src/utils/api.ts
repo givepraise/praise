@@ -46,16 +46,25 @@ const handleErrors = (err: AxiosError): void => {
 };
 
 /**
+ * We assume the API to be running on the same domain in production currently.
+ * Why? The frontend is built as a static website and cannot easily accept
+ * env variables. There are workarounds but we haven't prioritised to implement them yet.
+ *
+ * One example: https://jakobzanker.de/blog/inject-environment-variables-into-a-react-app-docker-on-runtime/
+ */
+const apiBaseURL =
+  process.env.NODE_ENV === 'production'
+    ? '/api'
+    : `${process.env.REACT_APP_SERVER_URL as string}/api`;
+
+/**
  * Api client for unathenticated requests
  *
  * @returns
  */
 export const makeApiClient = (): AxiosInstance => {
-  if (!process.env.REACT_APP_BACKEND_URL)
-    throw new Error('Backend URL not set.');
-
   const apiClient = axios.create({
-    baseURL: `${process.env.REACT_APP_BACKEND_URL}/api`,
+    baseURL: apiBaseURL,
   });
   apiClient.interceptors.response.use(
     (res) => res,
@@ -72,13 +81,9 @@ export const makeApiClient = (): AxiosInstance => {
  * @returns
  */
 export const makeApiAuthClient = (): AxiosInstance => {
-  if (!process.env.REACT_APP_BACKEND_URL)
-    throw new Error('REACT_APP_BACKEND_URL not defined');
-
   const accessToken = getRecoil(AccessToken);
-
   const apiAuthClient = axios.create({
-    baseURL: `${process.env.REACT_APP_BACKEND_URL}/api`,
+    baseURL: apiBaseURL,
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

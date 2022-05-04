@@ -3,61 +3,58 @@ import { AxiosResponse } from 'axios';
 import React from 'react';
 import { toast } from 'react-hot-toast';
 import {
+  atom,
   atomFamily,
+  selector,
   selectorFamily,
   useRecoilCallback,
-  useRecoilState,
   useRecoilValue,
 } from 'recoil';
-import { findIndex, find } from 'lodash';
-import { ApiAuthGet, useAuthApiQuery } from './api';
+import { find } from 'lodash';
+import { ApiAuthGet, useAuthApiQuery, isResponseOk } from './api';
 import { Setting, useSetSettingReturn } from './settings';
 import { PeriodSettingDto } from 'api/src/periodsettings/types';
 
-export const AllPeriodSettings = atomFamily<PeriodSettingDto[], string>({
-  key: 'AllPeriodSettings',
-  default: [],
+export const AllPeriodSettingIds = atomFamily<string[] | undefined, string>({
+  key: 'PeriodSettingIdList',
+  default: undefined,
+});
+
+export const SinglePeriodSetting = atomFamily<
+  PeriodSettingDto | undefined,
+  string
+>({
+  key: 'SinglePeriodSetting',
+  default: undefined,
 });
 
 export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
-  const [allSettings, setAllSettings] = useRecoilState(
-    AllPeriodSettings(periodId)
-  );
+  const setSetting = useRecoilCallback(
+    ({ set }) =>
+      async (setting: Setting) => {
+        const url = `/admin/periodsettings/${periodId}/settings/${setting._id}/set`;
 
-  const setSetting = useRecoilCallback(() => async (setting: Setting) => {
-    const url = `/admin/periodsettings/${periodId}/settings/${setting._id}/set`;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const reqData = (setting: Setting): any => {
+          if (setting.type === 'Image') {
+            const data = new FormData();
+            data.append('value', setting.value);
+            return data;
+          } else {
+            return setting;
+          }
+        };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const reqData = (setting: Setting): any => {
-      if (setting.type === 'Image') {
-        const data = new FormData();
-        data.append('value', setting.value);
-        return data;
-      } else {
-        return setting;
+        const apiAuthClient = makeApiAuthClient();
+        const response = await apiAuthClient.patch(url, reqData(setting));
+
+        if (response.data) {
+          set(SinglePeriodSetting(setting._id), response.data);
+
+          toast.success(`Saved setting "${response.data.label}"`);
+        }
       }
-    };
-
-    const apiAuthClient = makeApiAuthClient();
-    const response = await apiAuthClient.patch(url, reqData(setting));
-
-    const updatedSetting = response.data as PeriodSettingDto;
-    const settingIndex = findIndex(
-      allSettings,
-      (s) => s._id === updatedSetting._id
-    );
-
-    if (settingIndex === -1) {
-      setAllSettings([updatedSetting]);
-    } else {
-      const updatedAllSettings = allSettings.slice();
-      updatedAllSettings.splice(settingIndex, 1, updatedSetting);
-
-      setAllSettings(updatedAllSettings);
-    }
-
-    toast.success(`Saved setting "${updatedSetting.label}"`);
-  });
+  );
 
   return { setSetting };
 };
@@ -75,21 +72,74 @@ export const AllPeriodSettingsQuery = selectorFamily({
     },
 });
 
-export const useAllPeriodSettingsQuery = (periodId: string): void => {
+export const AllPeriodSettings = selectorFamily({
+  key: 'AllPeriodSettings',
+  get:
+    (periodId: string) =>
+    ({ get }): PeriodSettingDto[] | undefined => {
+      const allPeriodSettingIds = get(AllPeriodSettingIds(periodId));
+      if (!allPeriodSettingIds) return undefined;
+
+      const allPeriodSettings: PeriodSettingDto[] = [];
+      for (const settingId of allPeriodSettingIds) {
+        const setting = get(SinglePeriodSetting(settingId));
+        if (setting) {
+          allPeriodSettings.push(setting);
+        }
+      }
+      return allPeriodSettings;
+    },
+});
+
+export const useAllPeriodSettingsQuery = (
+  periodId: string
+): AxiosResponse<unknown> => {
   const allPeriodSettingsQueryResponse = useAuthApiQuery(
     AllPeriodSettingsQuery(periodId)
   );
-  const [allPeriodSettings, setAllPeriodSettings] = useRecoilState(
-    AllPeriodSettings(periodId)
+  const allPeriodSettingsIds = useRecoilValue(AllPeriodSettingIds(periodId));
+
+  const saveAllPeriodSettings = useRecoilCallback(
+    ({ set, snapshot }) =>
+      (settings: PeriodSettingDto[]) => {
+        const settingIds: string[] = [];
+        for (const setting of settings) {
+          settingIds.push(setting._id);
+          const oldsetting = snapshot.getLoadable(
+            SinglePeriodSetting(setting._id)
+          ).contents;
+          if (oldsetting) {
+            set(SinglePeriodSetting(setting._id), {
+              ...oldsetting,
+              ...setting,
+            });
+          } else {
+            set(SinglePeriodSetting(setting._id), setting);
+          }
+        }
+        set(AllPeriodSettingIds(periodId), settingIds);
+      }
   );
 
+  // Only set AllSettings if not previously loaded
   React.useEffect(() => {
-    const settings = allPeriodSettingsQueryResponse.data as PeriodSettingDto[];
-    if (!Array.isArray(settings) || settings.length === 0) return;
-    if (allPeriodSettings.length > 0) return;
+    if (
+      isResponseOk(allPeriodSettingsQueryResponse) &&
+      typeof allPeriodSettingsIds === 'undefined'
+    ) {
+      const settings = allPeriodSettingsQueryResponse.data;
 
-    setAllPeriodSettings(settings);
-  }, [allPeriodSettingsQueryResponse, allPeriodSettings, setAllPeriodSettings]);
+      if (Array.isArray(settings)) {
+        void saveAllPeriodSettings(settings);
+      }
+    }
+  }, [
+    allPeriodSettingsQueryResponse,
+    allPeriodSettingsIds,
+    saveAllPeriodSettings,
+  ]);
+
+  return allPeriodSettingsQueryResponse;
 };
 
 export const usePeriodSettingValueRealized = (

@@ -100,7 +100,7 @@ const importPraise = async (
   process.exit();
 };
 
-connectDatabase().then(() => {
+connectDatabase('localhost').then(() => {
   const args = process.argv.slice(2);
   if (args.length == 0) {
     console.log('Usage: yarn workspace api import-praise [FILE] [OPTIONS]');

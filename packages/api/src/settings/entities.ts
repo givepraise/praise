@@ -40,7 +40,12 @@ export function getGenericSettingValueRealized(
       .split(',')
       .map((v: string) => Number.parseInt(v.trim()));
   } else if (this.type === 'Image') {
-    normalizedValue = `${process.env.SERVER_URL as string}/${this.value}`;
+    normalizedValue =
+      process.env.NODE_ENV === 'production'
+        ? `${process.env.SERVER_URL as string}/${this.value}`
+        : `${process.env.SERVER_URL as string}:${
+            process.env.API_PORT as string
+          }/${this.value}`;
   } else {
     normalizedValue = this.value;
   }

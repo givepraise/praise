@@ -2,13 +2,15 @@
 
 # Praise
 
+### 🎉 Praise is live! The Token Engineering Commons is the first community to use Praise. To see Praise in action, please join the [TEC Discord](https://discord.tecommons.org) or login to the [Praise Dashboard](https://praise.tecommons.org) using any Ethereum address.
+
 ### ℹ️ Praise is under active development, codebase should be considered alpha stage. Breaking changes will happen.
 
 - [About](#about)
   - [Step 1 - Acknowledgement](#step-1---acknowledgement)
-  - [Step 2 – Quantification](#step-2-–-quantification)
-  - [Step 3 - Analyze and allocate](#step-3-–-analyze-and-allocate)
-  - [Step 4 – Distribution](#step-4-–-distribution)
+  - [Step 2 – Quantification](#step-2---quantification)
+  - [Step 3 - Analyze and allocate](#step-3---analyze-and-allocate)
+  - [Step 4 – Distribution](#step-4---distribution)
 - [Run Praise on a server](#run-praise-on-a-server)
 - [Run Praise locally](#run-praise-locally)
 
@@ -34,13 +36,13 @@ All community members (or select ones) are allowed to praise contributions. When
 
 Praise integrates with the tools you already use daily - Discord currently, Telegram planned for. Praising is easy, just interact with the praise bot!
 
-### Step 2 – Quantification
+### Step 2 - Quantification
 
 A group of appointed quantifiers are responsible for quantifying the generated praise data, valuing each praise against the guidelines set in place by the community. How much is facilitating a workgroup meeting worth compared to let's say mentioning the project on Twitter? All the parameters are configurable and subject to community governance feedback or voting.
 
 The quantifiers work asynchronously at their own pace. Each quantifier only needs to process a little amount of praise data, ensuring a manageable workload for a task that otherwise can become tedious.
 
-### Step 3 – Analyze and allocate
+### Step 3 - Analyze and allocate
 
 When all praise data for a period have been compiled and quantified, individual token allocations are calculated based on a community specific algorithm.
 
@@ -48,7 +50,7 @@ Praise is built to work in tandem with the RAD - Rewards Analysis Dashboard - th
 
 Experience shows that holding open analysis sessions with the community builds acceptance and avoids groups and individuals feeling left out from getting their fair share of compensation. It also provides a rich cultural feedback loop which can help the community to maintain alignment with their mission.
 
-### Step 4 – Distribution
+### Step 4 - Distribution
 
 Configure the RAD to export token a token distribution in any format. The RAD is built in a modular fashion with plugins available for the most common distribution platforms such as Disperse.app, Aragon, 1Hive Gardens, etc.
 
@@ -56,11 +58,18 @@ Configure the RAD to export token a token distribution in any format. The RAD is
 
 We believe in the appropriate amount of decentralisation. Praise is not an onchain tool built on top of Ethereum. Instead, every community runs its own server. The longterm goal is to provide a 30 minute installation similar to [that of the forum software Discourse](https://github.com/discourse/discourse/blob/main/docs/INSTALL-cloud.md).
 
-Until that have been implemented, we provide a guide for an installation that will take slightly longer than 30 mins. The installation process is tested on a Digital Ocean droplet but should with little modifications work for any Ubuntu server.
+Until that has been implemented, we provide a guide for an installation that will take slightly longer than 30 mins. The installation process is tested on a Digital Ocean droplet but should with little modifications work for any Ubuntu server.
 
-[How to install Praise on Digital Ocean](/packages/docs/install-digital-ocean.md)
+[How to install Praise on Digital Ocean](/packages/docs/install-praise-on-digital-ocean.md)
 
 ## Run Praise locally
+
+Prerequisites:
+
+- `node`
+- `nvm`
+- `yarn`
+- `docker`
 
 ### 1. Switch to specified node version
 
@@ -71,29 +80,25 @@ nvm use
 ### 2. Install dependencies
 
 ```
+yarn set version berry
 yarn
 ```
 
-### 3. Run MongoDB
+### 3. Create Discord Bot
 
-Prerequisites:
+Create and setup the Discord bot. Be sure to take not of ENV variables during setup as these will be needed during the next step.
 
-- Docker installed
+[Create the Praise Discord bot](/packages/docs/create-discord-bot.md)
 
-Copy root `.env.template` and rename `.env`. Configure database usernames and passwords:
+### 4. Configure environment
 
-```
-MONGO_INITDB_ROOT_USERNAME=
-MONGO_INITDB_ROOT_PASSWORD=
-MONGO_DB_USER=
-MONGO_DB_PASSWORD=
-```
-
-Pull mongo image:
+Run the Praise setup script to configure the runtime environment:
 
 ```
-docker pull mongo
+sh setup.sh
 ```
+
+### 5. Start MongoDB
 
 Run mongo:
 
@@ -101,67 +106,26 @@ Run mongo:
 yarn mongodb:start
 ```
 
-### 4. Start api backend
+### 6. Build and start api backend
 
-Copy `.env.template` into `.env`:
-
-1. Add your Metamask ETH address to `ADMINS` to be able to access Praise dashboard as admin.
-2. Database username / password, same as in root `.env`
-
-Build:
+Api, discord-bot and frontend can also be started from the Visual Studio Code Launch menu.
 
 ```
 yarn workspace api build
-```
-
-Start:
-
-```
 yarn workspace api start
 ```
 
-Seed your database with real praise data from the TEC:
-
-```
-yarn workspace api import-praise ./sample_data/november.json
-yarn workspace api import-praise ./sample_data/december.json
-```
-
-### 5. Start Discord bot
-
-Copy `.env.template` into `.env`:
-
-1. `DISCORD_TOKEN` - Your bot's discord token generated via the Discord Developer Portal. You'll need to invite the same bot to your server with the link - `https://discord.com/api/oauth2/authorize?client_id=<client-id>&permissions=378561611840&scope=bot%20applications.commands` (replace `<client-id>` with your bot's client ID), and with the SERVER MEMBERS and MESSAGE CONTENT Intents enabled.
-2. `DISCORD_CLIENT_ID` - Your bot's discord client ID, which can be found in the Application settings on Discord Developer Portal
-3. `DISCORD_GUILD_ID` - The ID of the server in which you are using the bot. (this can be found by enabling developer mode in Discord, right clicking on te server icon and clicking "Copy Id").
-4. `PRAISE_GIVER_ROLE_ID` - The ID of the role whose members can use the praise bot. (This can be found by enabling developer mode in Discord, going to the server settings > roles > <praise-giver-role>, right clicking on the role name and clicking "Copy Id").
-5. Database username / password, same as in root `.env`
-
-Build:
+### 7. Build and start Discord bot
 
 ```
 yarn workspace discord-bot build
-```
-
-Start:
-
-```
 yarn workspace discord-bot start
 ```
 
-### 6. Start frontend
-
-Copy `.env.template` and rename `.env.development`.
-
-Build:
+### 8. Build and start frontend
 
 ```
 yarn workspace frontend build
-```
-
-Start:
-
-```
 yarn workspace frontend start
 ```
 

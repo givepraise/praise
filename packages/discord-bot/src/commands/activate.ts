@@ -19,4 +19,10 @@ export const activate: Command = {
       logger.err(err);
     }
   },
+
+  help: {
+    name: 'activate',
+    text: 'Command to activate praise for discord account. You need to open the link returned by the command and sign a message with your eth wallet to link and activate your discord account with your eth wallet address.\n\
+    **Usage**: `/activate`\n',
+  },
 };
