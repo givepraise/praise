@@ -8,7 +8,7 @@ import { Quantification } from '../types';
 import { getPraisePeriod, isQuantificationCompleted } from './core';
 
 /**
- * Use 2 digits of precision
+ * Digits of precision for rounding calculated scores
  */
 const DIGITS_PRECISION = 2;
 
