@@ -127,6 +127,10 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
     return q && q.duplicatePraise ? q.duplicatePraise?.slice(-4) : '';
   };
 
+  const isChecked = (praise: PraiseDto): boolean => {
+    return selectedPraises.map((p) => p._id).includes(praise._id);
+  };
+
   const weeklyData = groupBy(
     sortBy(data, (p) => p.createdAt),
     (praise: PraiseDto) => {
@@ -167,7 +171,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                       <input
                         type="checkbox"
                         className="mr-4 text-xl w-5 h-5"
-                        checked={selectedPraises.includes(praise)}
+                        checked={isChecked(praise)}
                         onChange={(): void => handleToggleCheckbox(praise)}
                       />
                     </td>
