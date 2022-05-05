@@ -1,5 +1,12 @@
 import { Document, Types } from 'mongoose';
 
+export enum EventLogTypeKey {
+  PERMISSION = 'PERMISSION',
+  AUTHENTICATION = 'AUTHENTICATION',
+  PERIOD = 'PERIOD',
+  PRAISE = 'PRAISE',
+}
+
 export interface EventLog {
   user: Types.ObjectId;
   type: Types.ObjectId;
@@ -14,8 +21,8 @@ export interface EventLogDto {
   user: string;
   type: EventLogTypeDto;
   description: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface EventLogType {
@@ -29,9 +36,7 @@ export interface EventLogType {
 export interface EventLogTypeDocument extends EventLogType, Document {}
 
 export interface EventLogTypeDto {
-  key: string;
+  _id: string;
   label: string;
   description: string;
-  createdAt: Date;
-  updatedAt: Date;
 }

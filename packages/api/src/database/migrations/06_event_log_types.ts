@@ -1,29 +1,25 @@
 import { EventLogTypeModel } from '../../eventlog/entities';
+import { EventLogTypeKey } from '../../eventlog/types';
 
 const eventLogTypes = [
   {
-    key: 'PERMISSION',
+    key: EventLogTypeKey.PERMISSION,
     label: 'User Permissions',
     description: 'An action that changes user permissions',
   },
   {
-    key: 'AUTHENTICATION',
+    key: EventLogTypeKey.AUTHENTICATION,
     label: 'User Authentication',
     description: 'An action to authenticate or register a user',
   },
   {
-    key: 'PERIOD',
-    label: 'Periods',
+    key: EventLogTypeKey.PERIOD,
+    label: 'Period',
     description: 'An action on a period',
   },
   {
-    key: 'PRAISE',
-    label: 'Periods',
-    description: 'A praise action',
-  },
-  {
-    key: 'PRAISE',
-    label: 'Periods',
+    key: EventLogTypeKey.PRAISE,
+    label: 'Praise',
     description: 'A praise action',
   },
 ];

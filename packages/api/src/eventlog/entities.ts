@@ -1,12 +1,22 @@
 import mongoose, { Schema } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-import { EventLogDocument, EventLogTypeDocument } from './types';
+import {
+  EventLogDocument,
+  EventLogTypeDocument,
+  EventLogTypeKey,
+} from './types';
 
 export const eventLogSchema = new mongoose.Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
       ref: 'UserAccount',
+      required: true,
+      index: true,
+    },
+    type: {
+      type: Schema.Types.ObjectId,
+      ref: 'eventLogTypeSchema',
       required: true,
       index: true,
     },
@@ -26,7 +36,12 @@ export const EventLogModel = mongoose.model<
 
 export const eventLogTypeSchema = new mongoose.Schema(
   {
-    key: { type: String, required: true },
+    key: {
+      type: String,
+      required: true,
+      unique: true,
+      enum: Object.values(EventLogTypeKey),
+    },
     label: { type: String, required: true },
     description: { type: String, required: true },
   },
@@ -38,4 +53,4 @@ export const eventLogTypeSchema = new mongoose.Schema(
 export const EventLogTypeModel = mongoose.model<
   EventLogTypeDocument,
   Pagination<EventLogTypeDocument>
->('EventLogType', eventLogSchema);
+>('EventLogType', eventLogTypeSchema);
