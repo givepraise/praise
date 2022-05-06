@@ -1,15 +1,12 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
-import getMarkdownText from '@/components/MarkdownText';
-import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
-import { UserAvatar } from '@/components/user/UserAvatar';
 import { AllPraiseList } from '@/model/praise';
-import { localizeAndFormatIsoDate } from '@/utils/date';
 import { PraiseDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import PraisePageLoader from './PraisePageLoader';
+import Praise from '../../../components/praise/Praise';
 
 export const ALL_PRAISE_LIST_KEY = 'ALL_PRAISE';
 
@@ -21,38 +18,7 @@ const PraiseTable = (): JSX.Element => {
       {
         accessor: 'createdAt',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Cell: (data: any) => (
-          <div className="flex items-center w-full">
-            <div className="flex items-center">
-              <UserAvatar userAccount={data.row.original.giver} />
-            </div>
-            <div className="flex-grow p-3 overflow-hidden">
-              <div>
-                <ForwarderTooltip praise={data.row.original} />
-                <span className="font-bold">
-                  {data.row.original.giver.name}
-                </span>{' '}
-                to{' '}
-                <span className="font-bold">
-                  {data.row.original.receiver.name}
-                </span>
-                <span className="ml-2 text-xs text-gray-500">
-                  {localizeAndFormatIsoDate(data.row.original.createdAt)}
-                </span>
-              </div>
-
-              <div
-                className="w-full"
-                dangerouslySetInnerHTML={{
-                  __html: getMarkdownText(
-                    data.row.original?.reasonRealized ||
-                      data.row.original.reason
-                  ),
-                }}
-              ></div>
-            </div>
-          </div>
-        ),
+        Cell: (data: any) => <Praise praise={data.row.original} />,
       },
     ],
     []

@@ -1,16 +1,19 @@
 import { UserPseudonym } from '@/components/user/UserPseudonym';
-import {
-  PeriodAndReceiverPageParams,
-  PeriodQuantifierReceivers,
-} from '@/model/periods';
+import { PeriodQuantifierReceivers } from '@/model/periods';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
-export const QuantifyBackNextLink = (): JSX.Element | null => {
-  const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
+interface Props {
+  periodId: string;
+  receiverId: string;
+}
+export const QuantifyBackNextLink = ({
+  periodId,
+  receiverId,
+}: Props): JSX.Element | null => {
   const receivers = useRecoilValue(PeriodQuantifierReceivers(periodId));
   const usePseudonyms = usePeriodSettingValueRealized(
     periodId,

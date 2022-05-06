@@ -54,7 +54,7 @@ const PeriodReceiverTable = (): JSX.Element | null => {
 
   if (!praiseList) return null;
   return (
-    <div>
+    <div className="praise-box">
       {praiseList?.map((praise) => (
         <PraiseRow praise={praise} key={praise?._id} />
       ))}
