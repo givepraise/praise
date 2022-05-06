@@ -75,6 +75,8 @@ const PeriodDetailPage = (): JSX.Element => {
   const [detailsLoaded, setDetailsLoaded] = React.useState<boolean>(false);
   const { path, url } = useRouteMatch();
 
+  PeriodDetailLoader();
+
   React.useEffect(() => {
     if (period?.receivers) {
       setDetailsLoaded(true);
