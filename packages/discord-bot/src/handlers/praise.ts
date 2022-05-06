@@ -122,6 +122,10 @@ export const praiseHandler: CommandHandler = async (
     }
     const praiseObj = await PraiseModel.create({
       reason: reason,
+      /**
+       * ! Util.cleanContent might get deprecated in the coming versions of discord.js
+       * * We would have to make our own implementation (ref: https://github.com/discordjs/discord.js/blob/988a51b7641f8b33cc9387664605ddc02134859d/src/util/Util.js#L557-L584)
+       */
       reasonRealized: Util.cleanContent(reason, channel),
       giver: userAccount._id,
       sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,

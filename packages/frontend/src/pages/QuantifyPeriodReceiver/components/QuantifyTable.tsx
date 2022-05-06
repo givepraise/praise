@@ -230,7 +230,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                                 className="bg-red-600"
                               />
                               <span className="line-through">
-                                {praise.reason}
+                                {praise?.reasonRealized || praise.reason}
                               </span>
                             </>
                           ) : duplicate(praise) ? (
@@ -242,11 +242,11 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                                 button={getRemoveButton(handleRemoveDuplicate)}
                               />
                               <span className="text-gray-400">
-                                {praise.reason}
+                                {praise?.reasonRealized || praise.reason}
                               </span>
                             </>
                           ) : (
-                            praise.reason
+                            praise?.reasonRealized || praise.reason
                           )}
                         </span>
                       </div>
