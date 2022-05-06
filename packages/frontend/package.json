@@ -42,7 +42,6 @@
     "jstz": "^2.1.1",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
-    "micromark-extension-gfm": "^2.0.1",
     "postcss": "^7.0.36",
     "prettier": "^2.5.1",
     "query-string": "^7.1.0",
