@@ -1,4 +1,4 @@
-export const markdownParser = (text: string) => {
+export const markdownParser = (text: string): string => {
   const toHTML = text
     .replace(/__([^_]*)__/gim, '<u>$1</u>') // underscore text
     .replace(/\*\*(.*)\*\*/gim, '<b>$1</b>') // bold text
