@@ -1,11 +1,7 @@
-import { micromark } from 'micromark';
-import { gfm, gfmHtml } from 'micromark-extension-gfm';
+import { markdownParser } from '@/utils/parser';
 
 const getMarkdownText = (text: string): string => {
-  return micromark(text, {
-    extensions: [gfm()],
-    htmlExtensions: [gfmHtml()],
-  });
+  return markdownParser(text);
 };
 
 export default getMarkdownText;
