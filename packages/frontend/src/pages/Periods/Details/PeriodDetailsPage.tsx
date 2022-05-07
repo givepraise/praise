@@ -68,22 +68,16 @@ const PeriodDetailHead = (): JSX.Element => {
   );
 };
 
-const PeriodDetailPage = (): JSX.Element => {
+const PeriodDetailPage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const [detailsLoaded, setDetailsLoaded] = React.useState<boolean>(false);
   const { path, url } = useRouteMatch();
+  const { location } = useHistory();
 
-  PeriodDetailLoader();
+  useSinglePeriodQuery(periodId, location.key);
 
-  React.useEffect(() => {
-    if (period?.receivers) {
-      setDetailsLoaded(true);
-    }
-  }, [period]);
-
-  if (!detailsLoaded || !period) return <PeriodDetailLoader />;
+  if (!period || !period.receivers) return null;
 
   return (
     <div className="max-w-2xl mx-auto">
