@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Quantifiers displayed as not being done when they in fact are done #349
 - UI issue: checkbox unchecked when praise score changes #354
+- Responds with an error message if the user tries to activate their account via the discord bot, and it has already been activated. #357 #362
 
 ## [0.5.0] - 2022-05-02
 
