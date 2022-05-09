@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - UI issue: checkbox unchecked when praise score changes #354
 - Responds with an error message if the user tries to activate their account via the discord bot, and it has already been activated. #357 #362
 - Better handling of env variable SERVER_URL #348
+- Setup script now cleans up any dangling Docker images
 
 ## [0.5.0] - 2022-05-02
 
