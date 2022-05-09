@@ -8,6 +8,11 @@ import { Quantification } from '../types';
 import { getPraisePeriod, isQuantificationCompleted } from './core';
 
 /**
+ * Digits of precision for rounding calculated scores
+ */
+const DIGITS_PRECISION = 2;
+
+/**
  * Calculate a quantification score of a praise marked duplicate
  *
  * @param originalQuantification the "original" praise's quantification (i.e. the quantification by the same user of the "original" praise instance)
@@ -27,7 +32,11 @@ const calculateDuplicateScore = async (
       "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'"
     );
 
-  return Math.floor(originalQuantification.score * duplicatePraisePercentage);
+  const score = +(
+    originalQuantification.score * duplicatePraisePercentage
+  ).toFixed(DIGITS_PRECISION);
+
+  return score;
 };
 
 const calculateQuantificationDuplicateScore = async (
@@ -96,9 +105,9 @@ export const calculateQuantificationsCompositeScore = async (
     completedQuantifications.map((q) => calculateQuantificationScore(q))
   );
 
-  const compositeScore = Math.floor(
+  const compositeScore = +(
     sum(scores) / completedQuantifications.length
-  );
+  ).toFixed(DIGITS_PRECISION);
 
   return compositeScore;
 };
@@ -121,7 +130,7 @@ export const calculateReceiverCompositeScore = async (
     )
   );
 
-  const score = sum(compositeScores);
+  const score = +sum(compositeScores).toFixed(DIGITS_PRECISION);
 
   return score;
 };
