@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add giver and receiver id to exported praise csv #364
+- Increased precision in calculation of duplicate praise score, from 0 to 2 decimals #342
+
 ### Fixed
 
-### Added
+- Quantifiers displayed as not being done when they in fact are done #349
 
 ## [0.5.0] - 2022-05-02
 
