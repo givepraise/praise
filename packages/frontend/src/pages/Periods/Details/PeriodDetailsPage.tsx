@@ -32,13 +32,6 @@ import QuantifierTable from './components/QuantifierTable';
 import ReceiverTable from './components/ReceiverTable';
 import PeriodSettingsForm from './components/PeriodSettingsForm';
 
-const PeriodDetailLoader = (): null => {
-  const { periodId } = useParams<PeriodPageParams>();
-  const { location } = useHistory();
-  useSinglePeriodQuery(periodId, location.key);
-  return null;
-};
-
 const PeriodDetailHead = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
