@@ -1,5 +1,5 @@
 import { Wallet } from 'ethers';
-import { seedEventLog, seedUser } from '../pre-start/seed';
+import { seedEventLog, seedUser, seedUserAccount } from '../pre-start/seed';
 import { expect } from 'chai';
 import { loginUser } from './utils';
 import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';
@@ -70,11 +70,37 @@ describe('logEvent', () => {
     const user = await seedUser({ ethereumAddress: wallet.address });
     const description = 'This is a description of an event';
 
-    await logEvent(user._id, eventTypeKey, description);
+    await logEvent(eventTypeKey, description, { userId: user._id });
 
     const eventLogs = await EventLogModel.find({});
 
     expect(eventLogs[0]).to.have.property('user');
+    expect(eventLogs[0]).to.have.property('description');
+    expect(eventLogs[0]).to.have.property('type');
+    expect(eventLogs[0]).to.have.property('createdAt');
+
+    expect(eventLogs[0].user.toString()).equals(user._id.toString());
+    expect(eventLogs[0].description).equals(description);
+    expect(eventLogs[0].type.toString()).equals(eventType._id.toString());
+  });
+  it('creates a new EventLogDocument with the given type key, useraccount, description', async () => {
+    const eventTypeKey = EventLogTypeKey.PERMISSION;
+    const eventType = await EventLogTypeModel.findOne({
+      key: eventTypeKey,
+    }).orFail();
+
+    const wallet = Wallet.createRandom();
+    const user = await seedUser({ ethereumAddress: wallet.address });
+    const useraccount = await seedUserAccount(user);
+    const description = 'This is a description of an event';
+
+    await logEvent(eventTypeKey, description, {
+      userAccountId: useraccount._id,
+    });
+
+    const eventLogs = await EventLogModel.find({});
+
+    expect(eventLogs[0]).to.have.property('useraccount');
     expect(eventLogs[0]).to.have.property('description');
     expect(eventLogs[0]).to.have.property('type');
     expect(eventLogs[0]).to.have.property('createdAt');

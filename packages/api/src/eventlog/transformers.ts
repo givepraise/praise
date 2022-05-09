@@ -12,7 +12,7 @@ const eventLogTypeTransformer = (
   const { _id, label, description } = eventLogType;
 
   return {
-    _id,
+    _id: _id.toString(),
     label,
     description,
   } as EventLogTypeDto;
@@ -27,10 +27,17 @@ export const eventLogTransformer = async (
 
   const eventLogTypeDto = eventLogTypeTransformer(eventLogType);
 
+  const user = eventLog.user ? eventLog.user.toString() : undefined;
+  const useraccount = eventLog.useraccount
+    ? eventLog.useraccount.toString()
+    : undefined;
+
   return {
-    ...eventLog,
-    user: eventLog.user.toString(),
+    _id: eventLog._id.toString(),
+    user,
+    useraccount,
     type: eventLogTypeDto,
+    description: eventLog.description,
     createdAt: eventLogType.createdAt.toISOString(),
     updatedAt: eventLogType.createdAt.toISOString(),
   } as EventLogDto;

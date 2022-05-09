@@ -2,18 +2,26 @@ import { Types } from 'mongoose';
 import { EventLogModel, EventLogTypeModel } from './entities';
 import { EventLogTypeKey } from './types';
 
+interface UserInfo {
+  userId?: Types.ObjectId;
+  userAccountId?: Types.ObjectId;
+}
+
 export const logEvent = async (
-  userId: Types.ObjectId,
   typeKey: EventLogTypeKey,
-  description: string
+  description: string,
+  userInfo: UserInfo = {}
 ): Promise<void> => {
   const type = await EventLogTypeModel.findOne({
     key: typeKey.toString(),
   }).orFail();
 
-  await EventLogModel.create({
-    user: userId,
+  const data = {
     type: type._id,
     description,
-  });
+    user: userInfo.userId ? userInfo.userId : undefined,
+    useraccount: userInfo.userAccountId ? userInfo.userAccountId : undefined,
+  };
+
+  await EventLogModel.create(data);
 };

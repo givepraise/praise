@@ -10,13 +10,17 @@ export const eventLogSchema = new mongoose.Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
+      ref: 'User',
+      index: true,
+    },
+    useraccount: {
+      type: Schema.Types.ObjectId,
       ref: 'UserAccount',
-      required: true,
       index: true,
     },
     type: {
       type: Schema.Types.ObjectId,
-      ref: 'eventLogTypeSchema',
+      ref: 'EventLogType',
       required: true,
       index: true,
     },

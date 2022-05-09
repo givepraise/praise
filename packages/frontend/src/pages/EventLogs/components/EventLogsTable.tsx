@@ -25,6 +25,10 @@ const EventLogsTable = (): JSX.Element | null => {
         accessor: 'user',
       },
       {
+        Header: 'User Account',
+        accessor: 'useraccount',
+      },
+      {
         Header: 'Date',
         accessor: 'createdAt',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
