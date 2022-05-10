@@ -6,6 +6,7 @@ import { SettingsModel } from '@settings/entities';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 import { MigrationModel } from '@database/entities';
 import { connectDatabase } from './core';
+import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';
 
 connectDatabase('localhost').then(async (connection) => {
   try {
@@ -16,6 +17,8 @@ connectDatabase('localhost').then(async (connection) => {
       UserAccountModel.deleteMany({}),
       SettingsModel.deleteMany({}),
       PeriodSettingsModel.deleteMany({}),
+      EventLogModel.deleteMany({}),
+      EventLogTypeModel.deleteMany({}),
       MigrationModel.deleteMany({}),
     ]);
     console.log('Deleted all collections');
