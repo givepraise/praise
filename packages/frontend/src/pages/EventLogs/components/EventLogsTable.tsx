@@ -1,24 +1,27 @@
-import { AllPeriods } from '@/model/periods';
-import { formatIsoDateUTC } from '@/utils/date';
-import { classNames } from '@/utils/index';
-import { PeriodDto } from 'api/dist/period/types';
-import React, { useState, useMemo, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { formatIsoDateUTC, DATE_FORMAT_LONG } from '@/utils/date';
+
+import { useState, useMemo } from 'react';
 import { TableOptions, useTable } from 'react-table';
-import { useRecoilValue } from 'recoil';
 import { useAllEventLogs } from '@/model/eventlogs';
-import { makeApiAuthClient } from '@/utils/api';
-import { EventLogDto } from 'api/dist/eventlog/types';
 
 const EventLogsTable = (): JSX.Element | null => {
-  const [page, setPage] = useState<number>(0);
-  const { data, loading } = useAllEventLogs({ limit: 100, page });
+  const [page, setPage] = useState<number>(1);
+  const { data } = useAllEventLogs({
+    sortColumn: 'createdAt',
+    sortType: 'desc',
+    limit: 100,
+    page,
+  });
 
   const columns = useMemo(
     () => [
       {
         Header: 'Event Type',
         accessor: 'type',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Cell: (data: any): JSX.Element => (
+          <span title={data.value.description}>{data.value.label}</span>
+        ),
       },
       {
         Header: 'User',
@@ -32,7 +35,8 @@ const EventLogsTable = (): JSX.Element | null => {
         Header: 'Date',
         accessor: 'createdAt',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Cell: (data: any): string => formatIsoDateUTC(data.value),
+        Cell: (data: any): string =>
+          formatIsoDateUTC(data.value, DATE_FORMAT_LONG),
       },
       {
         Header: 'Description',
@@ -53,39 +57,55 @@ const EventLogsTable = (): JSX.Element | null => {
   if (data.docs.length === 0) return null;
 
   return (
-    <table className="w-full table-auto" {...getTableProps()}>
-      <thead>
-        {headerGroups.map((headerGroup) => (
-          // eslint-disable-next-line react/jsx-key
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              // eslint-disable-next-line react/jsx-key
-              <th className="text-left" {...column.getHeaderProps()}>
-                {column.render('Header')}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row) => {
-          prepareRow(row);
-          return (
+    <div>
+      <table className="w-full table-auto" {...getTableProps()}>
+        <thead>
+          {headerGroups.map((headerGroup) => (
             // eslint-disable-next-line react/jsx-key
-            <tr {...row.getRowProps()}>
-              {row.cells.map((cell) => {
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
                 // eslint-disable-next-line react/jsx-key
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
-              })}
+                <th className="text-left" {...column.getHeaderProps()}>
+                  {column.render('Header')}
+                </th>
+              ))}
             </tr>
-          );
-        })}
-      </tbody>
-      <div>
-        <a onClick={(): void => setPage(page - 1)}>Previous</a>
-        <a onClick={(): void => setPage(page + 1)}>Next</a>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map((row, i) => {
+            prepareRow(row);
+            return (
+              // eslint-disable-next-line react/jsx-key
+              <tr {...row.getRowProps()}>
+                {row.cells.map((cell) => (
+                  // eslint-disable-next-line react/jsx-key
+                  <td
+                    className={`${i % 2 !== 0 && 'bg-gray-100'}`}
+                    {...cell.getCellProps()}
+                  >
+                    {cell.render('Cell')}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <div className="w-full flex justify-end space-x-4">
+        {data.hasPrevPage && (
+          <a className="cursor-pointer" onClick={(): void => setPage(page - 1)}>
+            Previous
+          </a>
+        )}
+
+        {data.hasNextPage && (
+          <a className="cursor-pointer" onClick={(): void => setPage(page + 1)}>
+            Next
+          </a>
+        )}
       </div>
-    </table>
+    </div>
   );
 };
 
