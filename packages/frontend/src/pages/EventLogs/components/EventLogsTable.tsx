@@ -24,19 +24,29 @@ const EventLogsTable = (): JSX.Element | null => {
         ),
       },
       {
+        Header: 'Date (UTC)',
+        accessor: 'createdAt',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Cell: (data: any): string =>
+          formatIsoDateUTC(data.value, DATE_FORMAT_LONG),
+      },
+      {
         Header: 'User',
         accessor: 'user',
       },
       {
         Header: 'User Account',
         accessor: 'useraccount',
-      },
-      {
-        Header: 'Date',
-        accessor: 'createdAt',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Cell: (data: any): string =>
-          formatIsoDateUTC(data.value, DATE_FORMAT_LONG),
+        Cell: (data: any): JSX.Element | null => {
+          if (!data.value) return null;
+
+          return (
+            <span title={data.value._id}>
+              {data.value.name} on {data.value.platform}
+            </span>
+          );
+        },
       },
       {
         Header: 'Description',

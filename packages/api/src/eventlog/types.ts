@@ -1,3 +1,4 @@
+import { UserAccountDto } from '@useraccount/types';
 import { Document, Types } from 'mongoose';
 
 export enum EventLogTypeKey {
@@ -22,7 +23,7 @@ export interface EventLogDocument extends EventLog, Document {}
 
 export interface EventLogDto {
   user?: string;
-  useraccount?: string;
+  useraccount?: UserAccountDto;
   type: EventLogTypeDto;
   description: string;
   createdAt: string;

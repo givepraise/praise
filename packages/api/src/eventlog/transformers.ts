@@ -1,3 +1,5 @@
+import { UserAccountModel } from '@useraccount/entities';
+import { userAccountTransformer } from '@useraccount/transformers';
 import { EventLogTypeModel } from './entities';
 import {
   EventLogDocument,
@@ -25,21 +27,28 @@ export const eventLogTransformer = async (
     _id: eventLog.type,
   }).orFail();
 
+  const _id = eventLog._id.toString();
+  const createdAt = eventLogType.createdAt.toISOString();
+  const updatedAt = eventLogType.updatedAt.toISOString();
   const eventLogTypeDto = eventLogTypeTransformer(eventLogType);
+  const user = eventLog.user ? eventLog.user : undefined;
 
-  const user = eventLog.user ? eventLog.user.toString() : undefined;
-  const useraccount = eventLog.useraccount
-    ? eventLog.useraccount.toString()
-    : undefined;
+  let useraccount = undefined;
+  if (eventLog.useraccount) {
+    const userAccountDocument = await UserAccountModel.findOne({
+      _id: eventLog.useraccount,
+    }).orFail();
+    useraccount = userAccountTransformer(userAccountDocument);
+  }
 
   return {
-    _id: eventLog._id.toString(),
+    _id,
     user,
     useraccount,
     type: eventLogTypeDto,
     description: eventLog.description,
-    createdAt: eventLogType.createdAt.toISOString(),
-    updatedAt: eventLogType.createdAt.toISOString(),
+    createdAt,
+    updatedAt,
   } as EventLogDto;
 };
 
