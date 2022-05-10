@@ -9,6 +9,7 @@ import { StatusCodes } from 'http-status-codes';
 import { EventLogModel } from './entities';
 import { EventLogDto } from './types';
 import { eventLogListTransformer } from './transformers';
+import { BadRequestError } from '@error/errors';
 
 /**
  * Fetch a paginated list of EventLogs
@@ -17,14 +18,21 @@ export const all = async (
   req: TypedRequestQuery<QueryInputParsedQs>,
   res: TypedResponse<PaginatedResponseBody<EventLogDto>>
 ): Promise<void> => {
-  const query = getQueryInput(req.query);
+  if (!req.query.limit || !req.query.page)
+    throw new BadRequestError('limit and page are required');
 
-  const response = await EventLogModel.paginate({
-    ...query,
+  const paginateQuery = {
+    query: {},
+    limit: parseInt(req.query.limit),
+    page: parseInt(req.query.page),
     sort: getQuerySort(req.query),
-  });
+  };
 
-  const docs = response?.docs ? response.docs : [];
+  const response = await EventLogModel.paginate(paginateQuery);
+
+  if (!response) throw new BadRequestError('Failed to query event logs');
+
+  const docs = response.docs ? response.docs : [];
   const docsTransfomed = await eventLogListTransformer(docs);
 
   res.status(StatusCodes.OK).json({

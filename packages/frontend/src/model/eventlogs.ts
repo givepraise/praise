@@ -30,7 +30,12 @@ export const useAllEventLogs = ({
 
       const apiAuthClient = makeApiAuthClient();
       const response = await apiAuthClient.get('/eventlogs/all', {
-        params: { page, limit },
+        params: {
+          page,
+          limit,
+          sortColumn,
+          sortType,
+        },
       });
 
       setData(response.data);
@@ -38,7 +43,7 @@ export const useAllEventLogs = ({
     };
 
     void fetchData(page, limit);
-  }, [page, limit, setData, setLoading]);
+  }, [page, limit, sortColumn, sortType, setData, setLoading]);
 
   return { data, loading };
 };
