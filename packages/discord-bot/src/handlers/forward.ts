@@ -131,7 +131,7 @@ export const forwardHandler: CommandHandler = async (
 
     await logEvent(
       EventLogTypeKey.PRAISE,
-      `${forwarderAccount.name} ran the /forward command on discord`,
+      'Created a new forwarded praise from discord',
       {
         userAccountId: forwarderAccount._id,
         userId: forwarderUser._id,

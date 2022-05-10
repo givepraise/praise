@@ -134,7 +134,7 @@ export const praiseHandler: CommandHandler = async (
     if (praiseObj) {
       await logEvent(
         EventLogTypeKey.PRAISE,
-        `${member.user.username}#${member.user.discriminator} ran the /praise command on discord`,
+        'Created a new praise from discord',
         {
           userAccountId: userAccount._id,
         }

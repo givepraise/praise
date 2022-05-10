@@ -185,7 +185,7 @@ export const update = async (
 
   await period.save();
 
-  await logEvent(EventLogTypeKey.PERIOD, eventLogMessages.join(','), {
+  await logEvent(EventLogTypeKey.PERIOD, eventLogMessages.join(', '), {
     userId: res.locals.currentUser._id,
   });
 
@@ -501,7 +501,7 @@ export const assignQuantifiers = async (
 
   await logEvent(
     EventLogTypeKey.PERIOD,
-    `Assigned random quantifiers for period "${period.name}"`,
+    `Assigned random quantifiers to all praise in period "${period.name}"`,
     {
       userId: res.locals.currentUser._id,
     }

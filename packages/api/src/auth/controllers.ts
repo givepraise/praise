@@ -71,7 +71,7 @@ export const auth = async (
   user.refreshToken = refreshToken;
   await user.save();
 
-  await logEvent(EventLogTypeKey.AUTHENTICATION, 'User logged in', {
+  await logEvent(EventLogTypeKey.AUTHENTICATION, 'Logged in', {
     userId: user._id,
   });
 

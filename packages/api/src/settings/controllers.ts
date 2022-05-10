@@ -59,9 +59,7 @@ export const set = async (
 
   await logEvent(
     EventLogTypeKey.SETTING,
-    `Updated global setting "${
-      setting.label
-    }" from ${originalValue} to ${setting.value.toString()}`,
+    `Updated global setting "${setting.label}" from "${originalValue}" to "${setting.value}"`,
     {
       userId: res.locals.currentUser._id,
     }

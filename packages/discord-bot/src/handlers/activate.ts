@@ -26,7 +26,7 @@ export const activationHandler: CommandHandler = async (interaction) => {
 
   await logEvent(
     EventLogTypeKey.AUTHENTICATION,
-    `${user.username}#${user.discriminator} ran the /activate command on discord`,
+    'Ran the /activate command on discord',
     {
       userAccountId: userAccount._id,
     }
