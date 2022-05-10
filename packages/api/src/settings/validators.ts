@@ -13,6 +13,22 @@ export function fieldTypeValidator(
     return isNumeric(this.value);
   }
 
+  if (this.type === 'Textarea' && this.key === 'PRAISE_FAQ') {
+    let response = true;
+    const data = JSON.parse(this.value);
+    if (!data.faq) {
+      response = false;
+    }
+
+    data.faq.forEach((item: any) => {
+      if (!item.question || !item.answer) {
+        response = false;
+      }
+    });
+
+    return response;
+  }
+
   if (
     this.type === 'String' ||
     this.type === 'Textarea' ||
