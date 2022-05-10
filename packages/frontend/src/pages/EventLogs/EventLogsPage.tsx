@@ -10,6 +10,9 @@ const EventLogsPage = (): JSX.Element => {
 
       <div className="w-full praise-box">
         <h2 className="mb-2">Event Log</h2>
+        <p className="my-4 text-gray-400">
+          A log of all user actions that change the database state.
+        </p>
         <Suspense fallback="Loading…">
           <EventLogsTable />
         </Suspense>
