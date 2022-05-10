@@ -20,12 +20,17 @@ const eventLogTypes = [
   {
     key: EventLogTypeKey.PRAISE,
     label: 'Praise',
-    description: 'A praise action',
+    description: 'An action to give praise',
   },
   {
-    key: EventLogTypeKey.COMMUNICATION,
-    label: 'Communication',
-    description: 'An action to send messages to users',
+    key: EventLogTypeKey.SETTING,
+    label: 'Setting',
+    description: 'An action that changes a setting',
+  },
+  {
+    key: EventLogTypeKey.QUANTIFICATION,
+    label: 'Quantification',
+    description: 'An action to quantify praise',
   },
 ];
 
