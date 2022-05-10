@@ -16,7 +16,10 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
+import { EventLogTypeKey } from '@eventlog/types';
+import { logEvent } from '@eventlog/utils';
 import { Request } from 'express';
+import { Types } from 'mongoose';
 import { PraiseModel } from './entities';
 import { praiseDocumentTransformer } from './transformers';
 import {
@@ -108,6 +111,11 @@ export const quantify = async (
   quantification.dismissed = dismissed;
   quantification.duplicatePraise = undefined;
 
+  const eventLogMessages = [
+    `score=${quantification.score}`,
+    `dismissed=${quantification.dismissed.toString()}`,
+  ];
+
   if (duplicatePraise) {
     const dp = await PraiseModel.findById(duplicatePraise);
     if (!dp) throw new BadRequestError('Duplicate praise item not found');
@@ -126,9 +134,25 @@ export const quantify = async (
     }
 
     quantification.duplicatePraise = dp._id;
+    eventLogMessages.push(
+      `duplicate of ${(dp._id as Types.ObjectId).toString()}`
+    );
+  } else {
+    eventLogMessages.push('not duplicate');
   }
 
   await praise.save();
+
+  await logEvent(
+    EventLogTypeKey.QUANTIFICATION,
+    `Quantified the praise with id ${(
+      praise._id as Types.ObjectId
+    ).toString()} as ${eventLogMessages.join(', ')}`,
+    {
+      userId: res.locals.currentUser._id,
+    }
+  );
+
   const response = await praiseDocumentTransformer(praise);
   res.status(200).json(response);
 };

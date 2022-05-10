@@ -1,4 +1,4 @@
-import { getQueryInput, getQuerySort } from '@shared/functions';
+import { getQuerySort } from '@shared/functions';
 import {
   PaginatedResponseBody,
   QueryInputParsedQs,

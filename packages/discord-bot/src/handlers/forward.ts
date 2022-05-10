@@ -1,6 +1,8 @@
 import { PraiseModel } from 'api/dist/praise/entities';
 import { Message, GuildMember } from 'discord.js';
 import { UserModel } from 'api/dist/user/entities';
+import { EventLogTypeKey } from 'api/src/eventlog/types';
+import { logEvent } from 'api/src/eventlog/utils';
 import logger from 'jet-logger';
 import { getSetting } from '../utils/getSettings';
 import { getUserAccount } from '../utils/getUserAccount';
@@ -126,6 +128,16 @@ export const forwardHandler: CommandHandler = async (
       )}:${encodeURIComponent(guildChannel?.name || '')}`,
       receiver: receiverAccount._id,
     });
+
+    await logEvent(
+      EventLogTypeKey.PRAISE,
+      `${forwarderAccount.name} ran the /forward command on discord`,
+      {
+        userAccountId: forwarderAccount._id,
+        userId: forwarderUser._id,
+      }
+    );
+
     if (praiseObj) {
       try {
         await receiver.send({ embeds: [await praiseSuccessDM(responseUrl)] });

@@ -13,8 +13,10 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
+import { EventLogTypeKey } from '@eventlog/types';
+import { logEvent } from '@eventlog/utils';
 import { Request } from 'express';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { UserModel } from './entities';
 import { userListTransformer, userTransformer } from './transformers';
 import { UserDocument, UserDto, UserRole, UserRoleChangeInput } from './types';
@@ -118,6 +120,16 @@ const addRole = async (
     user.nonce = undefined;
     await user.save();
   }
+
+  await logEvent(
+    EventLogTypeKey.PERMISSION,
+    `Added role "${role}" to user with id ${(
+      user._id as Types.ObjectId
+    ).toString()}`,
+    {
+      userId: res.locals.currentUser._id,
+    }
+  );
 
   const userWithDetails = await findUser(id);
   res.status(200).json(userTransformer(res, userWithDetails));

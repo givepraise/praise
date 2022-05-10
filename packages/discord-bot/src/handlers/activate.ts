@@ -1,5 +1,7 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
+import { EventLogTypeKey } from 'api/src/eventlog/types';
+import { logEvent } from 'api/src/eventlog/utils';
 import randomstring from 'randomstring';
 import { CommandHandler } from 'src/interfaces/CommandHandler';
 export const activationHandler: CommandHandler = async (interaction) => {
@@ -21,6 +23,14 @@ export const activationHandler: CommandHandler = async (interaction) => {
     await interaction.reply('Unable to create user account.');
     return;
   }
+
+  await logEvent(
+    EventLogTypeKey.AUTHENTICATION,
+    `${user.username}#${user.discriminator} ran the /activate command on discord`,
+    {
+      userAccountId: userAccount._id,
+    }
+  );
 
   const getActivationURL = (
     accountId: string,

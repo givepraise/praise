@@ -12,6 +12,8 @@ import {
 } from '@shared/types';
 import { UserModel } from '@user/entities';
 import { UserDocument } from '@user/types';
+import { EventLogTypeKey } from '@eventlog/types';
+import { logEvent } from '@eventlog/utils';
 import { ethers } from 'ethers';
 import { JwtService } from './JwtService';
 import {
@@ -68,6 +70,10 @@ export const auth = async (
   user.accessToken = accessToken;
   user.refreshToken = refreshToken;
   await user.save();
+
+  await logEvent(EventLogTypeKey.AUTHENTICATION, 'User logged in', {
+    userId: user._id,
+  });
 
   res.status(200).json({
     accessToken,

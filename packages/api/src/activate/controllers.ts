@@ -4,6 +4,8 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '@error/errors';
+import { EventLogTypeKey } from '@eventlog/types';
+import { logEvent } from '@eventlog/utils';
 import { TypedRequestBody } from '@shared/types';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
@@ -32,7 +34,7 @@ const activate = async (
 
   // Find previously generated token
   const userAccount = await UserAccountModel.findOne({ accountId })
-    .select('activateToken')
+    .select('name activateToken')
     .exec();
 
   if (!userAccount) throw new NotFoundError('UserAccount');
@@ -67,6 +69,15 @@ const activate = async (
   // Link user account with user
   userAccount.user = user;
   await userAccount.save();
+
+  await logEvent(
+    EventLogTypeKey.AUTHENTICATION,
+    `${userAccount.name} activated their account`,
+    {
+      userAccountId: userAccount._id,
+      userId: user._id,
+    }
+  );
 
   res.status(200).json(user);
 };
