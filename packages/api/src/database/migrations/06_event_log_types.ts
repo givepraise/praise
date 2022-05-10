@@ -22,6 +22,11 @@ const eventLogTypes = [
     label: 'Praise',
     description: 'A praise action',
   },
+  {
+    key: EventLogTypeKey.COMMUNICATION,
+    label: 'Communication',
+    description: 'An action to send messages to users',
+  },
 ];
 
 const up = async (): Promise<void> => {

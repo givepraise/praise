@@ -5,6 +5,7 @@ export enum EventLogTypeKey {
   AUTHENTICATION = 'AUTHENTICATION',
   PERIOD = 'PERIOD',
   PRAISE = 'PRAISE',
+  COMMUNICATION = 'COMMUNICATION',
 }
 
 export interface EventLog {
