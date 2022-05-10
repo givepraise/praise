@@ -9,7 +9,7 @@ const EventLogsTable = (): JSX.Element | null => {
   const { data } = useAllEventLogs({
     sortColumn: 'createdAt',
     sortType: 'desc',
-    limit: 100,
+    limit: 15,
     page,
   });
 
@@ -92,7 +92,7 @@ const EventLogsTable = (): JSX.Element | null => {
           })}
         </tbody>
       </table>
-      <div className="w-full flex justify-end space-x-4">
+      <div className="w-full flex justify-end space-x-4 mt-4">
         {data.hasPrevPage && (
           <a className="cursor-pointer" onClick={(): void => setPage(page - 1)}>
             Previous
