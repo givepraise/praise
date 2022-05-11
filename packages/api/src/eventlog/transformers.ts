@@ -28,8 +28,8 @@ export const eventLogTransformer = async (
   }).orFail();
 
   const _id = eventLog._id.toString();
-  const createdAt = eventLogType.createdAt.toISOString();
-  const updatedAt = eventLogType.updatedAt.toISOString();
+  const createdAt = eventLog.createdAt.toISOString();
+  const updatedAt = eventLog.updatedAt.toISOString();
   const eventLogTypeDto = eventLogTypeTransformer(eventLogType);
   const user = eventLog.user ? eventLog.user : undefined;
 

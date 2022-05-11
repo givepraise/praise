@@ -174,7 +174,7 @@ export const update = async (
       eventLogMessages.push(
         `Updated the end date of period "${
           period.name
-        }" to ${newEndDate.toString()}`
+        }" to ${endDate.toString()} UTC`
       );
 
       period.endDate = newEndDate;
