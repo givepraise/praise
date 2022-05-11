@@ -70,14 +70,10 @@ const activate = async (
   userAccount.user = user;
   await userAccount.save();
 
-  await logEvent(
-    EventLogTypeKey.AUTHENTICATION,
-    `${userAccount.name} activated their account`,
-    {
-      userAccountId: userAccount._id,
-      userId: user._id,
-    }
-  );
+  await logEvent(EventLogTypeKey.AUTHENTICATION, 'Activated their account', {
+    userAccountId: userAccount._id,
+    userId: user._id,
+  });
 
   res.status(200).json(user);
 };
