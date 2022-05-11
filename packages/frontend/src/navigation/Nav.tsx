@@ -8,7 +8,7 @@ import {
   faCalculator,
   faCog,
   faPrayingHands,
-  faQuestion,
+  faQuestionCircle,
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -62,7 +62,7 @@ export default function Nav(): JSX.Element {
             <AdminOnly>
               <NavItem icon={faCog} description="Settings" to="/settings" />
             </AdminOnly>
-            <NavItem icon={faQuestion} description="FAQ" to="/faq" />
+            <NavItem icon={faQuestionCircle} description="FAQ" to="/faq" />
           </ul>
         </div>
         <div className="w-full border-t">
