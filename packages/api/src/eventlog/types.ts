@@ -41,7 +41,7 @@ export interface EventLogType {
 export interface EventLogTypeDocument extends EventLogType, Document {}
 
 export interface EventLogTypeDto {
-  _id: string;
+  key: string;
   label: string;
   description: string;
 }

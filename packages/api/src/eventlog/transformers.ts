@@ -11,10 +11,10 @@ import {
 const eventLogTypeTransformer = (
   eventLogType: EventLogTypeDocument
 ): EventLogTypeDto => {
-  const { _id, label, description } = eventLogType;
+  const { key, label, description } = eventLogType;
 
   return {
-    _id: _id.toString(),
+    key,
     label,
     description,
   } as EventLogTypeDto;
