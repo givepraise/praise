@@ -63,8 +63,11 @@ const EventLogsTable = (): JSX.Element | null => {
                   <div className="text-xs font-bold text-gray-600">
                     User Account
                   </div>
-                  <code className="inset text-xs">
+                  <code className="block inset text-xs">
                     {eventlog.useraccount.name}
+                  </code>
+                  <code className="block inset text-xs">
+                    {eventlog.useraccount._id}
                   </code>
                 </div>
               )}
