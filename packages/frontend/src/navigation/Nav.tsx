@@ -59,7 +59,11 @@ export default function Nav(): JSX.Element {
               description="Quantification periods"
               to="/periods"
             />
-            <NavItem icon={faBook} description="Transparency Log" to="/eventlogs" />
+            <NavItem
+              icon={faBook}
+              description="Transparency Log"
+              to="/eventlogs"
+            />
             <AdminOnly>
               <NavItem icon={faCog} description="Settings" to="/settings" />
             </AdminOnly>
