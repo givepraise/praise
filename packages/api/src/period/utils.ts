@@ -203,16 +203,12 @@ export const verifyAnyPraiseAssigned = async (
 export const isPeriodLatest = async (
   period: PeriodDocument
 ): Promise<boolean> => {
-  const latestPeriod = await PeriodModel.findOne(
-    {},
-    {
-      limit: 1,
-      sort: { endDate: -1 },
-    }
-  );
+  const latestPeriods = await PeriodModel.find({})
+    .sort({ endDate: -1 })
+    .orFail();
 
-  if (!latestPeriod) return true;
-  if (latestPeriod._id.toString() === period._id.toString()) return true;
+  if (latestPeriods.length === 0) return true;
+  if (latestPeriods[0]._id.toString() === period._id.toString()) return true;
 
   return false;
 };
