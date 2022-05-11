@@ -2,6 +2,8 @@ import { PraiseModel } from '@praise/entities';
 import { PraiseImportInput } from '@praise/types';
 import { UserAccountModel } from '@useraccount/entities';
 import { UserAccountDocument } from '@useraccount/types';
+import { EventLogTypeKey } from '@eventlog/types';
+import { logEvent } from '@eventlog/utils';
 import 'express-async-errors';
 import fs from 'fs';
 import path from 'path';
@@ -90,6 +92,11 @@ const importPraise = async (
     console.log('Saving to database.');
 
     await PraiseModel.insertMany(data);
+
+    await logEvent(
+      EventLogTypeKey.PRAISE,
+      `Imported ${praiseData.length} praise from json file`,
+    );
 
     console.log('👍 SUCCESS!');
   } catch (e: any) {
