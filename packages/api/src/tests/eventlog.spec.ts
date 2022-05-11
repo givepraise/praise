@@ -19,7 +19,9 @@ describe('GET /api/eventlogs/all', () => {
     const { accessToken } = await loginUser(wallet, this.client);
 
     return this.client
-      .get('/api/eventlogs/all')
+      .get(
+        '/api/eventlogs/all?page=1&limit=10&sortColumn=createdAt&sortType=desc'
+      )
       .set('Authorization', `Bearer ${accessToken}`)
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
@@ -28,7 +30,9 @@ describe('GET /api/eventlogs/all', () => {
 
   it('401 response with json body if user not authenticated', function () {
     return this.client
-      .get('/api/eventlogs/all')
+      .get(
+        '/api/eventlogs/all?page=1&limit=10&sortColumn=createdAt&sortType=desc'
+      )
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(401);
@@ -37,6 +41,8 @@ describe('GET /api/eventlogs/all', () => {
   it('response body contains paginated list of eventlogs', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({ ethereumAddress: wallet.address });
+
+    // note: loginUser creates 1 UserEventLog
     const { accessToken } = await loginUser(wallet, this.client);
 
     await seedEventLog();
@@ -44,14 +50,16 @@ describe('GET /api/eventlogs/all', () => {
     await seedEventLog();
 
     const response = await this.client
-      .get('/api/eventlogs/all')
+      .get(
+        '/api/eventlogs/all?page=1&limit=10&sortColumn=createdAt&sortType=desc'
+      )
       .set('Authorization', `Bearer ${accessToken}`)
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200);
 
     expect(response.body).to.have.property('docs');
-    expect(response.body.docs.length).equals(3);
+    expect(response.body.docs.length).equals(4);
   });
 });
 
@@ -105,7 +113,9 @@ describe('logEvent', () => {
     expect(eventLogs[0]).to.have.property('type');
     expect(eventLogs[0]).to.have.property('createdAt');
 
-    expect(eventLogs[0].user.toString()).equals(user._id.toString());
+    expect(eventLogs[0].useraccount.toString()).equals(
+      useraccount._id.toString()
+    );
     expect(eventLogs[0].description).equals(description);
     expect(eventLogs[0].type.toString()).equals(eventType._id.toString());
   });
