@@ -52,10 +52,12 @@ const EventLogsTable = (): JSX.Element | null => {
                   {formatIsoDateUTC(eventlog.createdAt, DATE_FORMAT_LONG)} UTC
                 </code>
               </div>
-              <div>
-                <div className="text-xs font-bold text-gray-600">User</div>
-                <code className="inset text-xs">{eventlog.user}</code>
-              </div>
+              {eventlog.user && (
+                <div>
+                  <div className="text-xs font-bold text-gray-600">User</div>
+                  <code className="inset text-xs">{eventlog.user}</code>
+                </div>
+              )}
               {eventlog.useraccount && (
                 <div>
                   <div className="text-xs font-bold text-gray-600">
