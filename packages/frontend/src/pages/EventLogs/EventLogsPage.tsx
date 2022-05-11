@@ -1,7 +1,7 @@
 import BreadCrumb from '@/components/BreadCrumb';
 import { faBook } from '@fortawesome/free-solid-svg-icons';
 import { Suspense } from 'react';
-import EventLogsTable from './components/EventLogsTable';
+import EventLogsList from './components/EventLogsList';
 
 const EventLogsPage = (): JSX.Element => {
   return (
@@ -14,7 +14,7 @@ const EventLogsPage = (): JSX.Element => {
           A log of all user actions that change the database state.
         </p>
         <Suspense fallback="Loading…">
-          <EventLogsTable />
+          <EventLogsList />
         </Suspense>
       </div>
     </div>
