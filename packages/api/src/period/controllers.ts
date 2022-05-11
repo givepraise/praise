@@ -647,12 +647,20 @@ export const exportPraise = async (
       value: 'receiver.name',
     },
     {
+      label: 'TO USER ACCOUNT ID',
+      value: 'receiver._id',
+    },
+    {
       label: 'TO ETH ADDRESS',
       value: 'receiverUserDocument.ethereumAddress',
     },
     {
       label: 'FROM USER ACCOUNT',
       value: 'giver.name',
+    },
+    {
+      label: 'FROM USER ACCOUNT ID',
+      value: 'giver._id',
     },
     {
       label: 'FROM ETH ADDRESS',

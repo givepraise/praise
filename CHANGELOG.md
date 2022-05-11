@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add giver and receiver id to exported praise csv #364
+- Increased precision in calculation of duplicate praise score, from 0 to 2 decimals #342
+
 ### Fixed
 
-### Added
+- Quantifiers displayed as not being done when they in fact are done #349
+- UI issue: checkbox unchecked when praise score changes #354
+- Responds with an error message if the user tries to activate their account via the discord bot, and it has already been activated. #357 #362
+- Better handling of env variable SERVER_URL #348
 
 ## [0.5.0] - 2022-05-02
 
