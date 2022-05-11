@@ -8,7 +8,7 @@ const EventLogsPage = (): JSX.Element => {
     <div className="max-w-4xl mx-auto">
       <BreadCrumb name="Event Log" icon={faBook} />
 
-      <div className="w-full praise-box">
+      <div className="w-full praise-box overflow-x-auto">
         <h2 className="mb-2">Event Log</h2>
         <p className="my-4 text-gray-400">
           A log of all user actions that change the database state.
