@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PeriodPageParams } from '@/model/periods';
 import { PraiseDto } from 'api/dist/praise/types';
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import MarkDuplicateButton from './MarkDuplicateButton';
 
@@ -27,6 +27,11 @@ const DuplicateDialog = ({
 }: DuplicateDialogProps): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const [score, setScore] = useState<number>(0);
+
+  const allowedValues = usePeriodSettingValueRealized(
+    periodId,
+    'PRAISE_QUANTIFY_ALLOWED_VALUES'
+  ) as number[];
 
   const duplicatePraisePercentage = usePeriodSettingValueRealized(
     periodId,
@@ -62,8 +67,8 @@ const DuplicateDialog = ({
           <Praise praise={originalPraise} className="bg-gray-100 px-4" />
           <div className="flex justify-center">
             <QuantifySlider
-              praise={originalPraise}
-              periodId={periodId}
+              allowedScores={allowedValues}
+              score={score}
               onChange={(newScore): void => setScore(newScore)}
             />
           </div>
