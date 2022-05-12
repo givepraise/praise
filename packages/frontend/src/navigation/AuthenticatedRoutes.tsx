@@ -9,6 +9,9 @@ import { useRecoilValue } from 'recoil';
 import AuthenticatedLayout from '../layouts/AuthenticatedLayout';
 
 const MyPraisePage = React.lazy(() => import('@/pages/MyPraise/MyPraisePage'));
+const UserDetailsPage = React.lazy(
+  () => import('@/pages/UserDetails/UserDetailsPage')
+);
 const UsersPage = React.lazy(() => import('@/pages/Users/UsersPage'));
 
 const PeriodsPage = React.lazy(() => import('@/pages/Periods/PeriodsPage'));
@@ -78,8 +81,12 @@ const Routes = (): JSX.Element => {
         <MyPraisePage />
       </Route>
 
-      <AuthRoute roles={[ROLE_ADMIN]} path={'/pool'}>
+      <AuthRoute roles={[ROLE_ADMIN]} exact path={'/pool'}>
         <UsersPage />
+      </AuthRoute>
+
+      <AuthRoute roles={[ROLE_ADMIN]} path={'/pool/:userId'}>
+        <UserDetailsPage />
       </AuthRoute>
 
       <Route exact path={'/periods'}>
