@@ -1,13 +1,8 @@
-import { InlineLabel } from '@/components/InlineLabel';
-import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
-import { UserAvatar } from '@/components/user/UserAvatar';
-import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { ActiveUserId } from '@/model/auth';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
-import { localizeAndFormatIsoDate } from '@/utils/date';
-import { faCopy, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import getWeek from 'date-fns/getWeek';
 import parseISO from 'date-fns/parseISO';
@@ -22,18 +17,7 @@ import QuantifySlider from './QuantifySlider';
 import DuplicateSearchDialog from './DuplicateSearchDialog';
 import MarkDuplicateButton from './MarkDuplicateButton';
 import MarkDismissedButton from './MarkDismissedButton';
-
-const getRemoveButton = (callback: () => void): JSX.Element => {
-  return (
-    <button onClick={callback} className="ml-2">
-      <FontAwesomeIcon
-        className="text-white text-opacity-50 hover:text-opacity-100"
-        icon={faTimes}
-        size="1x"
-      />
-    </button>
-  );
-};
+import Praise from '@/components/praise/Praise';
 
 interface Props {
   periodId: string;
@@ -136,11 +120,6 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
     }
   };
 
-  const shortDuplicatePraiseId = (praise: PraiseDto): string => {
-    const q = quantification(praise);
-    return q && q.duplicatePraise ? q.duplicatePraise?.slice(-4) : '';
-  };
-
   const weeklyData = groupBy(
     sortBy(data, (p) => p.createdAt),
     (praise: PraiseDto) => {
@@ -189,68 +168,13 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                         onChange={(): void => handleToggleCheckbox(praise)}
                       />
                     </td>
-                    <td>
-                      <div className="items-center w-full">
-                        <div className="flex items-center">
-                          <UserAvatar
-                            userAccount={praise.giver}
-                            usePseudonym={usePseudonyms}
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div>
-                        <span className="font-bold">
-                          <ForwarderTooltip praise={praise} />
-                          {usePseudonyms ? (
-                            <UserPseudonym
-                              userId={praise.giver._id}
-                              periodId={periodId}
-                            />
-                          ) : (
-                            praise.giver.name
-                          )}
-                        </span>
-                        <span className="ml-2 text-xs text-gray-500">
-                          {localizeAndFormatIsoDate(praise.createdAt)}
-                        </span>
-                      </div>
-                      <div className="w-[550px] overflow-hidden overflow-ellipsis">
-                        <span>
-                          <InlineLabel
-                            text={`#${praise._id.slice(-4)}`}
-                            className="bg-gray-400"
-                          />
-                          {dismissed(praise) ? (
-                            <>
-                              <InlineLabel
-                                text="Dismissed"
-                                button={getRemoveButton(handleRemoveDismiss)}
-                                className="bg-red-600"
-                              />
-                              <span className="line-through">
-                                {praise.reason}
-                              </span>
-                            </>
-                          ) : duplicate(praise) ? (
-                            <>
-                              <InlineLabel
-                                text={`Duplicate of: #${shortDuplicatePraiseId(
-                                  praise
-                                )}`}
-                                button={getRemoveButton(handleRemoveDuplicate)}
-                              />
-                              <span className="text-gray-400">
-                                {praise.reason}
-                              </span>
-                            </>
-                          ) : (
-                            praise.reason
-                          )}
-                        </span>
-                      </div>
-                    </td>
+                    <Praise
+                      praise={praise}
+                      variant="quantify"
+                      periodId={periodId}
+                      handleRemoveDismiss={handleRemoveDismiss}
+                      handleRemoveDuplicate={handleRemoveDuplicate}
+                    />
                     <td>
                       <QuantifySlider
                         praise={praise}

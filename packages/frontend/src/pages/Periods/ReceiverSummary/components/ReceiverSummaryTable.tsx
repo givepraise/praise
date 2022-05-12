@@ -1,4 +1,5 @@
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
+import Praise from '@/components/praise/Praise';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import {
   PeriodAndReceiverPageParams,
@@ -23,19 +24,7 @@ const PraiseRow = ({ praise }: PraiseRowProps): JSX.Element => {
       className="flex items-center w-full p-5 cursor-pointer hover:bg-gray-100"
       onClick={handleClick}
     >
-      <div className="flex items-center">
-        <UserAvatar userAccount={praise.giver} />
-      </div>
-      <div className="ml-5 overflow-hidden">
-        <div>
-          <ForwarderTooltip praise={praise} />
-          <span className="font-bold">{praise.giver.name}</span>
-          <span className="ml-3 text-xs text-gray-500">
-            {localizeAndFormatIsoDate(praise.createdAt)}
-          </span>
-        </div>
-        <div>{praise.reason}</div>
-      </div>
+      <Praise praise={praise} />
       <div className="flex-grow text-right px-14 whitespace-nowrap">
         {praise.scoreRealized}
       </div>
