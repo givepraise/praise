@@ -1,121 +1,159 @@
-import { UserAvatar } from '@/components/user/UserAvatar';
-import { AllQuantifierUsers, useAdminUsers } from '@/model/users';
-import { shortenEthAddress } from '@/utils/index';
+import {
+  AllAdminUsers,
+  AllForwarderUsers,
+  AllQuantifierUsers,
+  AllUsers,
+} from '@/model/users';
 import { getUsername } from '@/utils/users';
-import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Dialog } from '@headlessui/react';
-import { UserDto, UserRole } from 'api/dist/user/types';
 import React from 'react';
-import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
-import PoolDeleteDialog from './DeleteDialog';
+import { UserDto, UserRole } from 'api/dist/user/types';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import UsersTableRow from './UsersTableRow';
+import UsersTableHeader from './UsersTableHeader';
+import UsersTablePagination from './UsersTablePagination';
+
+const roleOptions = [
+  { name: 'All users', value: UserRole.USER },
+  { name: 'Admins', value: UserRole.ADMIN },
+  { name: 'Forwarders', value: UserRole.FORWARDER },
+  { name: 'Quantifiers', value: UserRole.QUANTIFIER },
+];
 
 const UsersTable = (): JSX.Element => {
+  const allAdminUsers = useRecoilValue(AllAdminUsers);
+  const allForwarderUsers = useRecoilValue(AllForwarderUsers);
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
-  const { removeRole } = useAdminUsers();
-
-  const deleteDialogRef = React.useRef(null);
-
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [selectedQuantifier, setSelectedQuantifier] = React.useState<UserDto>();
-
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: 'Id',
-        accessor: '_id',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Cell: (data: any): JSX.Element => {
-          return (
-            <div className="flex items-center w-full">
-              <div className="flex items-center">
-                <UserAvatar user={data.row.original} />
-              </div>
-              <div className="flex-grow p-3 whitespace-nowrap">
-                {data.row.original.accounts?.length > 0 ? (
-                  <div>{getUsername(data.row.original)}</div>
-                ) : (
-                  ''
-                )}
-                {shortenEthAddress(data.row.original.ethereumAddress)}
-              </div>
-            </div>
-          );
-        },
-      },
-    ],
-    []
+  const allUsers = useRecoilValue(AllUsers);
+  const [tableData, setTableData] = React.useState<UserDto[]>();
+  const [selectedRole, setSelectedRole] = React.useState<UserRole>(
+    UserRole.USER
   );
+  const [filter, setFilter] = React.useState<string>('');
+  const [filterType, setFilterType] = React.useState<string>('user');
+  const [page, setPage] = React.useState<number>(1);
+  const [lastPage, setLastPage] = React.useState<number>(0);
 
-  const options = {
-    columns,
-    data: allQuantifierUsers ? allQuantifierUsers : [],
-  } as TableOptions<{}>;
-  const tableInstance = useTable(options);
+  React.useEffect(() => {
+    if (allUsers) {
+      setTableData(allUsers);
+    }
+  }, [allUsers]);
 
-  const { getTableProps, getTableBodyProps, rows, prepareRow } = tableInstance;
+  React.useEffect(() => {
+    if (filter && tableData) {
+      let filteredData: UserDto[];
+      if (filterType === 'user') {
+        filteredData = tableData.filter((user) => {
+          const username = getUsername(user)?.toLowerCase();
+          if (username?.includes(filter.toLocaleLowerCase())) {
+            return user;
+          }
+        });
+      } else {
+        filteredData = tableData.filter((user) => {
+          if (
+            user.ethereumAddress?.toLocaleLowerCase() ===
+            filter.toLocaleLowerCase()
+          ) {
+            return user;
+          }
+        });
+      }
+      setTableData(filteredData);
+    }
+  }, [filterType, filter]);
 
-  if (!allQuantifierUsers)
-    return <div>There are no users in the Quantifier pool.</div>;
+  React.useEffect(() => {
+    switch (selectedRole) {
+      case UserRole.USER:
+        setTableData(allUsers);
+        break;
+      case UserRole.ADMIN:
+        setTableData(allAdminUsers);
+        break;
+      case UserRole.FORWARDER:
+        setTableData(allForwarderUsers);
+        break;
+      case UserRole.QUANTIFIER:
+        setTableData(allQuantifierUsers);
+        break;
+    }
+    setFilter('');
+  }, [selectedRole]);
 
-  const handleDeleteQuantifierClick = (quantifier: UserDto): void => {
-    setSelectedQuantifier(quantifier);
-    setIsOpen(true);
-  };
+  React.useEffect(() => {
+    if (tableData) {
+      setPage(1);
 
-  const removeQuantifier = (id: string): void => {
-    void removeRole(id, UserRole.QUANTIFIER);
-  };
+      if (tableData.length % 5 === 0) {
+        setLastPage(Math.trunc(tableData.length / 5));
+      } else {
+        setLastPage(Math.trunc(tableData.length / 5) + 1);
+      }
+    }
+  }, [tableData]);
 
   return (
-    <table className="w-full table-auto" {...getTableProps()}>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row) => {
-          prepareRow(row);
-          return (
-            // eslint-disable-next-line react/jsx-key
-            <tr {...row.getRowProps()}>
-              {row.cells.map((cell) => {
-                // eslint-disable-next-line react/jsx-key
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
-              })}
-              <td className="w-8">
-                <button
-                  onClick={(): void =>
-                    handleDeleteQuantifierClick(row.original as UserDto)
-                  }
-                  className="hover:text-red-600"
-                >
-                  <FontAwesomeIcon
-                    icon={faTimesCircle}
-                    size="1x"
-                    className="inline-block"
-                  />
-                </button>
-              </td>
-            </tr>
-          );
-        })}
-
-        {isOpen ? (
-          <Dialog
-            open={isOpen && !!selectedQuantifier}
-            onClose={(): void => setIsOpen(false)}
-            className="fixed inset-0 z-10 overflow-y-auto"
-            initialFocus={deleteDialogRef}
+    <div>
+      <div className="flex gap-8">
+        <select
+          className="bg-transparent border-black"
+          onChange={(event: React.ChangeEvent<HTMLSelectElement>): void =>
+            setSelectedRole(UserRole[event.target.value])
+          }
+        >
+          {roleOptions.map((option) => (
+            <option key={option.name} value={option.value}>
+              {option.name}
+            </option>
+          ))}
+        </select>
+        <div className="flex items-center border border-black">
+          <label className="relative">
+            <FontAwesomeIcon
+              icon={faMagnifyingGlass}
+              size="1x"
+              className="absolute top-1/2 transform -translate-y-1/2 left-3"
+            />
+            <input
+              type="text"
+              name="search"
+              placeholder="Search"
+              className="bg-transparent outline-none border-none focus:ring-0 block pl-8"
+              value={filter}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>): void =>
+                setFilter(event.target.value)
+              }
+            />
+          </label>
+          <hr className="border-black w-6 rotate-90" />
+          <select
+            className="bg-transparent outline-none border-none focus:ring-0"
+            onChange={(event: React.ChangeEvent<HTMLSelectElement>): void =>
+              setFilterType(UserRole[event.target.value])
+            }
           >
-            <div ref={deleteDialogRef}>
-              <PoolDeleteDialog
-                onClose={(): void => setIsOpen(false)}
-                onQuantifierRemoved={(id: string): void => removeQuantifier(id)}
-                quantifier={selectedQuantifier}
-              />
-            </div>
-          </Dialog>
-        ) : null}
-      </tbody>
-    </table>
+            <option value="user">User</option>
+            <option value="discord">Discord</option>
+          </select>
+        </div>
+      </div>
+      <div className="flex justify-between px-4 mt-8">
+        <UsersTableHeader label="User" />
+        <UsersTableHeader label="Discord" />
+        <UsersTableHeader label="Roles" />
+      </div>
+      <React.Suspense fallback="Loading...">
+        {tableData?.map((row, index) => {
+          if (Math.trunc(index / 5) + 1 === page) {
+            return <UsersTableRow key={row._id} data={row} />;
+          }
+        })}
+      </React.Suspense>
+      <UsersTablePagination lastPage={lastPage} page={page} setPage={setPage} />
+    </div>
   );
 };
 
