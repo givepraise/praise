@@ -14,10 +14,12 @@ import {
   PeriodDocument,
   PeriodDetailsDto,
   PeriodDetailsQuantifierDto,
+  PeriodDetailsQuantifier,
   PeriodDetailsReceiver,
   PeriodDateRange,
   PeriodStatusType,
 } from './types';
+import { isQuantificationCompleted } from '@praise/utils/core';
 
 // Returns previous period end date or 1970-01-01 if no previous period
 export const getPreviousPeriodEndDate = async (
@@ -53,6 +55,24 @@ const receiversWithScores = async (
   return receiversWithQuantificationScores;
 };
 
+const quantifiersWithCounts = (
+  quantifiers: PeriodDetailsQuantifier[]
+): PeriodDetailsQuantifierDto[] => {
+  const quantifiersWithQuantificationCounts = quantifiers.map((q) => {
+    const finishedCount = q.quantifications.filter((quantification) =>
+      isQuantificationCompleted(quantification)
+    ).length;
+
+    return {
+      _id: q._id,
+      praiseCount: q.praiseCount,
+      finishedCount,
+    };
+  });
+
+  return quantifiersWithQuantificationCounts;
+};
+
 export const findPeriodDetailsDto = async (
   id: string
 ): Promise<PeriodDetailsDto> => {
@@ -62,7 +82,7 @@ export const findPeriodDetailsDto = async (
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
   const [quantifiers, receivers]: [
-    PeriodDetailsQuantifierDto[],
+    PeriodDetailsQuantifier[],
     PeriodDetailsReceiver[]
   ] = await Promise.all([
     PraiseModel.aggregate([
@@ -76,21 +96,12 @@ export const findPeriodDetailsDto = async (
       },
       { $unwind: '$quantifications' },
       {
-        $addFields: {
-          finished: {
-            $or: [
-              { $ne: ['$quantifications.dismissed', false] },
-              { $gt: ['$quantifications.score', 0] },
-              { $gt: ['$quantifications.duplicatePraise', null] },
-            ],
-          },
-        },
-      },
-      {
         $group: {
           _id: '$quantifications.quantifier',
           praiseCount: { $count: {} },
-          finishedCount: { $sum: { $toInt: '$finished' } },
+          quantifications: {
+            $push: '$quantifications',
+          },
         },
       },
     ]),
@@ -124,6 +135,7 @@ export const findPeriodDetailsDto = async (
     ]),
   ]);
 
+  const quantifiersWithCountsData = quantifiersWithCounts(quantifiers);
   const receiversWithScoresData = await receiversWithScores(receivers);
 
   const periodsettings = await PeriodSettingsModel.find({ period: period._id });
@@ -133,7 +145,7 @@ export const findPeriodDetailsDto = async (
     receivers: await periodDetailsReceiverListTransformer(
       receiversWithScoresData
     ),
-    quantifiers: [...quantifiers],
+    quantifiers: [...quantifiersWithCountsData],
     settings: periodsettingListTransformer(periodsettings),
   };
   return response;

@@ -157,7 +157,7 @@ const run = async (): Promise<void> => {
     SERVER_URL:
       answers.NODE_ENV === 'production'
         ? `https://${answers.HOST as string}`
-        : `http://${answers.HOST as string}`,
+        : `http://${answers.HOST as string}:${answers.API_PORT as string}`,
     FRONTEND_URL:
       answers.NODE_ENV === 'production'
         ? `https://${answers.HOST as string}`
