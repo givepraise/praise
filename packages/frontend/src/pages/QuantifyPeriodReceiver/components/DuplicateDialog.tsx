@@ -28,6 +28,12 @@ const DuplicateDialog = ({
   const { periodId } = useParams<PeriodPageParams>();
   const [score, setScore] = useState<number>(0);
 
+  useEffect(() => {
+    if (!originalPraise?.scoreRealized) return;
+
+    setScore(originalPraise.scoreRealized);
+  }, [originalPraise?.scoreRealized]);
+
   const allowedValues = usePeriodSettingValueRealized(
     periodId,
     'PRAISE_QUANTIFY_ALLOWED_VALUES'
