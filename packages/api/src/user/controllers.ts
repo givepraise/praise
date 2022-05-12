@@ -118,7 +118,6 @@ const addRole = async (
     user.nonce = undefined;
     await user.save();
   }
-
   const userWithDetails = await findUser(id);
   res.status(200).json(userTransformer(res, userWithDetails));
 };
@@ -137,6 +136,12 @@ const removeRole = async (
 
   const { role } = req.body;
   if (!role) throw new BadRequestError('Role is required');
+  if (role === UserRole.ADMIN) {
+    const allAdmins = await UserModel.find({ roles: { $in: ['ADMIN'] } });
+    if (allAdmins.length <= 1) {
+      throw new BadRequestError("You can't remove the last admin!");
+    }
+  }
 
   const roleIndex = user.roles.indexOf(role);
 
