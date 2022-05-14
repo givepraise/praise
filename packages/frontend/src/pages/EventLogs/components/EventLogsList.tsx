@@ -34,7 +34,11 @@ const EventLogsTable = (): JSX.Element | null => {
                 className="cursor-pointer"
                 onClick={(): void => setPage(page - 1)}
               >
-                <FontAwesomeIcon icon={faArrowLeft} size="1x" className="mr-2" />
+                <FontAwesomeIcon
+                  icon={faArrowLeft}
+                  size="1x"
+                  className="mr-2"
+                />
                 Previous
               </a>
             )}
@@ -47,7 +51,11 @@ const EventLogsTable = (): JSX.Element | null => {
                 onClick={(): void => setPage(page + 1)}
               >
                 Next
-                <FontAwesomeIcon icon={faArrowRight} size="1x" className="ml-2" />
+                <FontAwesomeIcon
+                  icon={faArrowRight}
+                  size="1x"
+                  className="ml-2"
+                />
               </a>
             )}
           </div>
