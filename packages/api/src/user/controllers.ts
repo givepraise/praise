@@ -177,6 +177,16 @@ const removeRole = async (
     user.accessToken = undefined;
     user.nonce = undefined;
     await user.save();
+
+    await logEvent(
+      EventLogTypeKey.PERMISSION,
+      `Removed role "${role}" from user with id ${(
+        user._id as Types.ObjectId
+      ).toString()}`,
+      {
+        userId: res.locals.currentUser._id,
+      }
+    );
   }
 
   const userWithDetails = await findUser(id);
