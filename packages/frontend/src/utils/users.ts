@@ -1,7 +1,7 @@
 import { UserDto } from 'api/dist/user/types';
 import { shortenEthAddress } from '.';
 
-export const getUsername = (user: UserDto): string | undefined => {
+export const getUsername = (user: UserDto): string => {
   let username = '';
   if (Array.isArray(user.accounts) && user.accounts.length > 0) {
     for (const account of user.accounts) {

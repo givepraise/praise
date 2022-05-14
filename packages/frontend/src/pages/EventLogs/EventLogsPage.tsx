@@ -5,18 +5,17 @@ import EventLogsList from './components/EventLogsList';
 
 const EventLogsPage = (): JSX.Element => {
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-2xl mx-auto">
       <BreadCrumb name="Transparency Log" icon={faBook} />
 
       <div className="w-full praise-box overflow-x-auto">
         <h2 className="mb-2">Transparency Log</h2>
-        <p className="my-4 text-gray-400">
-          A log of all user actions that change the database state.
-        </p>
-        <Suspense fallback="Loading…">
-          <EventLogsList />
-        </Suspense>
+        <p>A log of all user actions that change the database state.</p>
       </div>
+
+      <Suspense fallback="Loading…">
+        <EventLogsList />
+      </Suspense>
     </div>
   );
 };
