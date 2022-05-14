@@ -130,7 +130,9 @@ export const quantify = async (
     quantification.dismissed = false;
     quantification.duplicatePraise = dp._id;
 
-    eventLogMessage = `duplicate of another praise with id "${(
+    eventLogMessage = `Marked the praise with id "${(
+      praise._id as Types.ObjectId
+    ).toString()}" as duplicate of the praise with id "${(
       dp._id as Types.ObjectId
     ).toString()}"`;
   } else if (dismissed) {
@@ -138,26 +140,24 @@ export const quantify = async (
     quantification.dismissed = true;
     quantification.duplicatePraise = undefined;
 
-    eventLogMessage = 'dismissed';
+    eventLogMessage = `Dismissed the praise with id "${(
+      praise._id as Types.ObjectId
+    ).toString()}"`;
   } else {
     quantification.score = score;
     quantification.dismissed = false;
     quantification.duplicatePraise = undefined;
 
-    eventLogMessage = `manual score ${quantification.score}`;
+    eventLogMessage = `Gave a score of ${
+      quantification.score
+    } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
   }
 
   await praise.save();
 
-  await logEvent(
-    EventLogTypeKey.QUANTIFICATION,
-    `Quantified the praise with id "${(
-      praise._id as Types.ObjectId
-    ).toString()}" as "${eventLogMessage}"`,
-    {
-      userId: res.locals.currentUser._id,
-    }
-  );
+  await logEvent(EventLogTypeKey.QUANTIFICATION, eventLogMessage, {
+    userId: res.locals.currentUser._id,
+  });
 
   const response = await praiseDocumentTransformer(praise);
   res.status(200).json(response);
