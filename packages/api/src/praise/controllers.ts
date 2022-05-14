@@ -107,14 +107,7 @@ export const quantify = async (
   if (!quantification)
     throw new BadRequestError('User not assigned as quantifier for praise.');
 
-  quantification.score = score;
-  quantification.dismissed = dismissed;
-  quantification.duplicatePraise = undefined;
-
-  const eventLogMessages = [
-    `score=${quantification.score}`,
-    `dismissed=${quantification.dismissed.toString()}`,
-  ];
+  let eventLogMessage = '';
 
   if (duplicatePraise) {
     const dp = await PraiseModel.findById(duplicatePraise);
@@ -133,21 +126,34 @@ export const quantify = async (
       throw new BadRequestError('Selected praise cannot be set as duplicate.');
     }
 
+    quantification.score = 0;
+    quantification.dismissed = false;
     quantification.duplicatePraise = dp._id;
-    eventLogMessages.push(
-      `duplicate of ${(dp._id as Types.ObjectId).toString()}`
-    );
+
+    eventLogMessage = `duplicate of another praise with id "${(
+      dp._id as Types.ObjectId
+    ).toString()}"`;
+  } else if (dismissed) {
+    quantification.score = 0;
+    quantification.dismissed = true;
+    quantification.duplicatePraise = undefined;
+
+    eventLogMessage = 'dismissed';
   } else {
-    eventLogMessages.push('not duplicate');
+    quantification.score = score;
+    quantification.dismissed = false;
+    quantification.duplicatePraise = undefined;
+
+    eventLogMessage = `manual score ${quantification.score}`;
   }
 
   await praise.save();
 
   await logEvent(
     EventLogTypeKey.QUANTIFICATION,
-    `Quantified the praise with id ${(
+    `Quantified the praise with id "${(
       praise._id as Types.ObjectId
-    ).toString()} as ${eventLogMessages.join(', ')}`,
+    ).toString()}" as "${eventLogMessage}"`,
     {
       userId: res.locals.currentUser._id,
     }
