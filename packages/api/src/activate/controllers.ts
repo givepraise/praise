@@ -70,7 +70,7 @@ const activate = async (
   userAccount.user = user;
   await userAccount.save();
 
-  await logEvent(EventLogTypeKey.AUTHENTICATION, 'Activated their account', {
+  await logEvent(EventLogTypeKey.AUTHENTICATION, 'Activated account', {
     userAccountId: userAccount._id,
     userId: user._id,
   });
