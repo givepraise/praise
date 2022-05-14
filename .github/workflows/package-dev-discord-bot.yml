@@ -1,8 +1,8 @@
-name: Create and publish api Docker image
+name: Development - Create and publish discord-bot Docker image
 
 on:
   push:
-    branches: ['dev']
+    branches: ['main']
 
 env:
   IMAGE_NAME: praise-dev/discord-bot
