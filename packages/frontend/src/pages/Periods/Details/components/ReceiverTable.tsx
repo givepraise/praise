@@ -73,7 +73,7 @@ const ReceiverTable = (): JSX.Element | null => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleClick = (data: any) => (): void => {
-      history.push(`/period/${periodId}/receiver/${data._id}`);
+      history.push(`/periods/${periodId}/receiver/${data._id}`);
     };
 
     return (

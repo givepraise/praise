@@ -74,7 +74,7 @@ const AuthRoute = ({ children, ...props }: AuthRouteProps): JSX.Element => {
 const Routes = (): JSX.Element => {
   return (
     <Switch>
-      <Route exact path="/mypraise">
+      <Route path="/mypraise">
         <MyPraisePage />
       </Route>
 
@@ -82,40 +82,42 @@ const Routes = (): JSX.Element => {
         <UsersPage />
       </AuthRoute>
 
-      <Route exact path={'/periods'}>
-        <PeriodsPage />
-      </Route>
-
       <AuthRoute roles={[ROLE_ADMIN]} path={'/periods/createupdate'}>
         <PeriodsCreateUpdatePage />
       </AuthRoute>
 
-      <Route exact path="/period/:periodId/receiver/:receiverId">
+      <Route path="/periods/:periodId/receiver/:receiverId">
         <PeriodReceiverSummaryPage />
-      </Route>
-      <Route path={'/period/:periodId'}>
-        <PeriodDetailPage />
-      </Route>
-
-      <Route exact path="/praise/:praiseId">
-        <PraiseDetailsPage />
       </Route>
 
       <AuthRoute
         roles={[ROLE_QUANTIFIER]}
-        path={'/quantify/period/:periodId/receiver/:receiverId'}
+        path={'/periods/:periodId/quantify/receiver/:receiverId'}
       >
         <QuantifyPage />
       </AuthRoute>
-      <AuthRoute roles={[ROLE_QUANTIFIER]} path={'/quantify/period/:periodId'}>
+
+      <AuthRoute roles={[ROLE_QUANTIFIER]} path={'/periods/:periodId/quantify'}>
         <QuantifyPeriodPage />
       </AuthRoute>
+
+      <Route path={'/periods/:periodId'}>
+        <PeriodDetailPage />
+      </Route>
+
+      <Route path={'/periods'}>
+        <PeriodsPage />
+      </Route>
+
+      <Route path="/praise/:praiseId">
+        <PraiseDetailsPage />
+      </Route>
 
       <AuthRoute roles={[ROLE_ADMIN]} path={'/settings'}>
         <SettingsPage />
       </AuthRoute>
 
-      <Route exact path="/">
+      <Route path="/">
         <StartPage />
       </Route>
 

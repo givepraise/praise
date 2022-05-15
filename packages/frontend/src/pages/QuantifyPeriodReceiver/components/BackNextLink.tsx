@@ -36,7 +36,7 @@ export const QuantifyBackNextLink = (): JSX.Element | null => {
         {backReceiver && (
           <Link
             replace
-            to={`/quantify/period/${periodId}/receiver/${backReceiver.receiverId}`}
+            to={`/periods/${periodId}/quantify/receiver/${backReceiver.receiverId}`}
           >
             <FontAwesomeIcon icon={faArrowLeft} size="1x" className="mr-2" />
             {usePseudonyms ? (
@@ -54,7 +54,7 @@ export const QuantifyBackNextLink = (): JSX.Element | null => {
         {forwardReceiver && (
           <Link
             replace
-            to={`/quantify/period/${periodId}/receiver/${forwardReceiver.receiverId}`}
+            to={`/periods/${periodId}/quantify/receiver/${forwardReceiver.receiverId}`}
           >
             {usePseudonyms ? (
               <UserPseudonym

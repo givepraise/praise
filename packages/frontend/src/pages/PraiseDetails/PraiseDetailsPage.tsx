@@ -58,7 +58,7 @@ const PraiseDetailsPage = (): JSX.Element => {
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const backLinkUrl =
     period?._id && praise?.receiver._id
-      ? `/period/${period?._id}/receiver/${praise?.receiver._id}`
+      ? `/periods/${period?._id}/receiver/${praise?.receiver._id}`
       : '/';
 
   return (

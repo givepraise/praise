@@ -87,7 +87,7 @@ const QuantifyPeriodUserPage = (): JSX.Element => {
       <React.Suspense fallback="Loading…">
         <PeriodBreadCrumb />
       </React.Suspense>
-      <BackLink to={`/quantify/period/${periodId}`} />
+      <BackLink to={`/periods/${periodId}/quantify`} />
 
       <div className="praise-box">
         <React.Suspense fallback="Loading…">
