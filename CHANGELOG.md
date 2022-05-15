@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure period details are still displayed properly after closing period
 - Fix bug where dismissed praise were not included in composite score in csv export
 - Refactor score calculation logic to reduce complexity and make verification simpler
+- Remove 1s login delay
 
 ### Added
 - Check for required env variables on launch of api and discord-bot
@@ -28,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Api tests for auth endpoints
 - Prevent devs accidentally pushing to 'dev' and 'main' branch with husky pre-push hooks
 - Api unit tests for score calculations
+- Hightlight active page in Navbar, update page routes to nest under top-level routes
 
 ## [0.4.0] - 2022-04-14
 
