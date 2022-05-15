@@ -5,7 +5,9 @@ import { UserAccountDocument } from '@useraccount/types';
 import 'express-async-errors';
 import fs from 'fs';
 import path from 'path';
+import { Client, Util } from 'discord.js';
 import { connectDatabase } from './core';
+import { generateReasonRealized } from '@praise/utils/core';
 
 const importPraise = async (
   praiseData: PraiseImportInput[],
@@ -21,9 +23,6 @@ const importPraise = async (
       // Empty reason gets default text.
       if (!praise.reason || praise.reason === '') {
         praise.reason = 'No reason given.';
-      }
-
-      if (!praise.reasonRealized || praise.reasonRealized === '') {
         praise.reasonRealized = praise.reason;
       }
 
@@ -65,6 +64,11 @@ const importPraise = async (
       throw new Error('Invalid import format.');
     }
 
+    const discordClient = new Client({
+      intents: ['GUILDS', 'GUILD_MEMBERS'],
+    });
+    await discordClient.login(process.env.DISCORD_TOKEN);
+
     const data = await Promise.all(
       praiseData.map(async (praise: PraiseImportInput) => {
         const giver = await UserAccountModel.findOneAndUpdate(
@@ -78,6 +82,10 @@ const importPraise = async (
           praise.receiver as UserAccountDocument,
           { upsert: true, new: true }
         );
+
+        if (!praise.reasonRealized) {
+          praise.reasonRealized = await generateReasonRealized(discordClient, praise.sourceId, praise.reason);
+        }
 
         return {
           createdAt: praise.createdAt,
