@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Hightlight active page in Navbar, update page routes to nest under top-level routes
 
 ### Fixed
+- Remove 1s login delay
 
 ## [0.6.0] - 2022-05-09
 
@@ -36,7 +38,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure period details are still displayed properly after closing period
 - Fix bug where dismissed praise were not included in composite score in csv export
 - Refactor score calculation logic to reduce complexity and make verification simpler #315
-- Remove 1s login delay
 
 ### Added
 
@@ -53,7 +54,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prevent devs accidentally pushing to 'dev' and 'main' branch with husky pre-push hooks
 - Api unit tests for score calculations
 - Improved quantification UX: dismiss & mark duplicates of multiple praise simultaneously
-- Hightlight active page in Navbar, update page routes to nest under top-level routes
 
 ## [0.4.0] - 2022-04-14
 
