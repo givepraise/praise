@@ -1,5 +1,6 @@
-import { Client, Util } from 'discord.js';
-import { PraiseModel } from '../../praise/entities';
+import { Client } from 'discord.js';
+import { generateReasonRealized } from '@praise/utils/core';
+import { PraiseModel } from '@praise/entities';
 
 const up = async (): Promise<void> => {
   const praises = await PraiseModel.find({
@@ -16,17 +17,11 @@ const up = async (): Promise<void> => {
 
   const updates = await Promise.all(
     praises.map(async (s) => {
-      const parsedSourceId = s.sourceId.match(/DISCORD:[\d]+:([\d]+)/);
-
-      if (!parsedSourceId)
-        throw Error('Failed to parse discord channel id from source id');
-
-      const channel = await discordClient.channels.fetch(parsedSourceId[1]);
-
-      if (!channel) throw Error('Failed to fetch channel from discord api');
-      if (!channel.isText()) throw Error('Channel must be a TextChannel');
-
-      const reasonRealized = Util.cleanContent(s.reason, channel);
+      const reasonRealized = await generateReasonRealized(
+        discordClient,
+        s.sourceId,
+        s.reason
+      );
 
       return {
         updateOne: {

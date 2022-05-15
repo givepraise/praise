@@ -1,3 +1,4 @@
+import { Client, Util } from 'discord.js';
 import { PeriodDateRange, PeriodDocument } from '@period/types';
 import { PeriodModel } from '@period/entities';
 import { PraiseModel } from '../entities';
@@ -73,4 +74,24 @@ export const isQuantificationCompleted = (
     quantification.duplicatePraise !== undefined ||
     quantification.score > 0
   );
+};
+
+export const generateReasonRealized = async (
+  discordClient: Client,
+  sourceId: string,
+  reason: string
+): Promise<string> => {
+  const parsedSourceId = sourceId.match(/DISCORD:[\d]+:([\d]+)/);
+
+  if (!parsedSourceId)
+    throw Error('Failed to parse discord channel id from source id');
+
+  const channel = await discordClient.channels.fetch(parsedSourceId[1]);
+
+  if (!channel) throw Error('Failed to fetch channel from discord api');
+  if (!channel.isText()) throw Error('Channel must be a TextChannel');
+
+  const reasonRealized = Util.cleanContent(reason, channel);
+
+  return reasonRealized;
 };
