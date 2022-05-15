@@ -65,7 +65,7 @@ const PeriodsTable = (): JSX.Element => {
     return <div>Create your first period to get started quantifying.</div>;
 
   const handleClick = (periodId: string) => (): void => {
-    history.push(`/periods/${periodId}`);
+    history.push(`/periods/${periodId}/receivers`);
   };
   return (
     <table
