@@ -44,6 +44,15 @@ export const notActivatedError = async (): Promise<string> => {
   }
 };
 
+export const alreadyActivatedError = async (): Promise<string> => {
+  const msg = await getSetting('PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR');
+  if (msg && typeof msg === 'string') {
+    return msg;
+  } else {
+    return 'PRAISE ACCOUNT ALREADY ACTIVATED (message not set)';
+  }
+};
+
 export const giverNotActivatedError = async (
   praiseGiver: User
 ): Promise<string> => {

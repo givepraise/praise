@@ -28,14 +28,14 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
   if (!receiver || !receiver.userAccount) return null;
 
   return (
-    <>
+    <div className="praise-box">
       <h2>{receiver.userAccount.name}</h2>
       <div className="mt-5">
         Period: {periodDetails.name}
         <br />
         Total Score: {receiver.scoreRealized}
       </div>
-    </>
+    </div>
   );
 };
 
@@ -48,17 +48,13 @@ const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
       <BreadCrumb name={'Receiver summary for period'} icon={faCalendarAlt} />
       <BackLink to={`/periods/${periodId}`} />
 
-      <div className="praise-box">
-        <React.Suspense fallback="Loading…">
-          <PeriodReceiverMessage />
-        </React.Suspense>
-      </div>
+      <React.Suspense fallback="Loading…">
+        <PeriodReceiverMessage />
+      </React.Suspense>
 
-      <div className="praise-box">
-        <React.Suspense fallback="Loading…">
-          <ReceiverSummaryTable />
-        </React.Suspense>
-      </div>
+      <React.Suspense fallback="Loading…">
+        <ReceiverSummaryTable />
+      </React.Suspense>
     </>
   );
 };

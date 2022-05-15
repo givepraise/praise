@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+### Fixed
+
+## [0.6.0] - 2022-05-09
+
+### Added
+
+- Add giver and receiver id to exported praise csv #364
+- Increased precision in calculation of duplicate praise score, from 0 to 2 decimals #342
+
+### Fixed
+
+- Quantifiers displayed as not being done when they in fact are done #349
+- UI issue: checkbox unchecked when praise score changes #354
+- Responds with an error message if the user tries to activate their account via the discord bot, and it has already been activated. #357 #362
+- Better handling of env variable SERVER_URL #348
+
+## [0.5.0] - 2022-05-02
+
 ### Fixed
 
 - Updated Activation page to look and work similar to the login page
@@ -15,20 +35,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure receiver is parsed when praise is submitted via discord Android app (workaround for Discord Android app issue)
 - Ensure period details are still displayed properly after closing period
 - Fix bug where dismissed praise were not included in composite score in csv export
-- Refactor score calculation logic to reduce complexity and make verification simpler
+- Refactor score calculation logic to reduce complexity and make verification simpler #315
 - Remove 1s login delay
 
 ### Added
+
+- GitHub actions to auto build Docker images on dev and main. Images are pushed to [GitHub Packages](https://github.com/orgs/CommonsBuild/packages?repo_name=praise). #326
+- Setup script to configure Praise runtime environment #332
 - Check for required env variables on launch of api and discord-bot
 - Manage messages used by discord-bot /forward command via praise app settings page
-- /help command for getting more information about discord-bot commands
-- /whomai command for getting personal information inside praise from discord-bot
+- `/help` command for getting more information about discord-bot commands
+- `/whomai` command for getting personal information inside praise from discord-bot
 - Api testing harness setup
 - Run api tests via github actions
 - Split up github actions to only run checks relevant to the workspace where files were modified
 - Api tests for auth endpoints
 - Prevent devs accidentally pushing to 'dev' and 'main' branch with husky pre-push hooks
 - Api unit tests for score calculations
+- Improved quantification UX: dismiss & mark duplicates of multiple praise simultaneously
 - Hightlight active page in Navbar, update page routes to nest under top-level routes
 
 ## [0.4.0] - 2022-04-14

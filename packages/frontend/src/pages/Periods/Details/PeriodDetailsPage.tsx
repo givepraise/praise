@@ -32,13 +32,6 @@ import QuantifierTable from './components/QuantifierTable';
 import ReceiverTable from './components/ReceiverTable';
 import PeriodSettingsForm from './components/PeriodSettingsForm';
 
-const PeriodDetailLoader = (): null => {
-  const { periodId } = useParams<PeriodPageParams>();
-  const { location } = useHistory();
-  useSinglePeriodQuery(periodId, location.key);
-  return null;
-};
-
 const PeriodDetailHead = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
@@ -68,20 +61,16 @@ const PeriodDetailHead = (): JSX.Element => {
   );
 };
 
-const PeriodDetailPage = (): JSX.Element => {
+const PeriodDetailPage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const [detailsLoaded, setDetailsLoaded] = React.useState<boolean>(false);
   const { path, url } = useRouteMatch();
+  const { location } = useHistory();
 
-  React.useEffect(() => {
-    if (period?.receivers) {
-      setDetailsLoaded(true);
-    }
-  }, [period]);
+  useSinglePeriodQuery(periodId, location.key);
 
-  if (!detailsLoaded || !period) return <PeriodDetailLoader />;
+  if (!period || !period.receivers) return null;
 
   return (
     <div className="max-w-2xl mx-auto">

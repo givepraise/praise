@@ -1,0 +1,20 @@
+{
+  "name": "setup",
+  "version": "0.6.0",
+  "license": "GPL-3.0-or-later",
+  "type": "commonjs",
+  "description": "Praise ENV setup scripts.",
+  "scripts": {
+    "start": "ts-node --transpile-only ./src"
+  },
+  "dependencies": {
+    "@types/inquirer": "^8.2.1",
+    "dotenv": "^16.0.0",
+    "env-cmd": "^10.1.0",
+    "inquirer": "^8.2.4"
+  },
+  "devDependencies": {
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.4"
+  }
+}
