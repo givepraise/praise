@@ -30,7 +30,7 @@ const Praise = ({ praise, className = '' }: Params): JSX.Element | null => {
         <div
           className="w-full"
           dangerouslySetInnerHTML={{
-            __html: getMarkdownText(praise?.reasonRealized || praise.reason),
+            __html: getMarkdownText(praise.reasonRealized),
           }}
         ></div>
       </div>
