@@ -2,6 +2,7 @@ import {
   Quantifier,
   QuantificationDocument,
   QuantificationDto,
+  Quantification,
 } from '@praise/types';
 import { Query } from '@shared/types';
 import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
@@ -50,6 +51,12 @@ export interface PeriodDetailsReceiverDto {
   quantifications?: Array<Array<QuantificationDto>>;
   scoreRealized: number;
   userAccount?: UserAccountDto;
+}
+
+export interface PeriodDetailsQuantifier {
+  _id: string;
+  quantifications: Array<Quantification>;
+  praiseCount: number;
 }
 
 export interface PeriodDetailsQuantifierDto {
