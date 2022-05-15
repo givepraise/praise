@@ -117,7 +117,7 @@ const Routes = (): JSX.Element => {
         <SettingsPage />
       </AuthRoute>
 
-      <Route path="/">
+      <Route exact path="/">
         <StartPage />
       </Route>
 
