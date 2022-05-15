@@ -31,7 +31,7 @@ const QuantificationModel = mongoose.model<QuantificationDocument>(
 const praiseSchema = new mongoose.Schema(
   {
     reason: { type: String, required: true },
-    reasonRealized: { type: String, required: false },
+    reasonRealized: { type: String, required: true },
     sourceId: { type: String, required: true },
     sourceName: { type: String, required: true },
     quantifications: [quantificationSchema],

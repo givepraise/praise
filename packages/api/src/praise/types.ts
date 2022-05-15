@@ -9,7 +9,7 @@ import mongoose from 'mongoose';
 
 export interface Praise {
   reason: string;
-  reasonRealized?: string;
+  reasonRealized: string;
   sourceId: string;
   sourceName: string;
   quantifications: QuantificationDocument[];
@@ -38,8 +38,7 @@ export interface QuantificationDocument
 
 export interface PraiseDto {
   _id: string;
-  reason: string;
-  reasonRealized?: string;
+  reasonRealized: string;
   sourceId: string;
   sourceName: string;
   quantifications: QuantificationDto[];
