@@ -1,5 +1,7 @@
-import { Client } from 'discord.js';
-import { generateReasonRealized } from '@praise/utils/core';
+import {
+  generateReasonRealized,
+  prepareDiscordClient,
+} from '@praise/utils/core';
 import { PraiseModel } from '@praise/entities';
 
 const up = async (): Promise<void> => {
@@ -9,15 +11,7 @@ const up = async (): Promise<void> => {
 
   if (praises.length === 0) return;
 
-  const discordClient = new Client({
-    intents: ['GUILDS', 'GUILD_MEMBERS'],
-  });
-
-  await discordClient.login(process.env.DISCORD_TOKEN);
-  const discordGuild = await discordClient.guilds.fetch(
-    process.env.DISCORD_GUILD_ID as string
-  );
-  await discordGuild.members.fetch();
+  const discordClient = await prepareDiscordClient();
 
   const updates = await Promise.all(
     praises.map(async (s) => {

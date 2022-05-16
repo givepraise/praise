@@ -76,6 +76,20 @@ export const isQuantificationCompleted = (
   );
 };
 
+export const prepareDiscordClient = async (): Promise<Client> => {
+  const discordClient = new Client({
+    intents: ['GUILDS', 'GUILD_MEMBERS'],
+  });
+  await discordClient.login(process.env.DISCORD_TOKEN);
+  await discordClient.guilds.fetch();
+  const discordGuild = await discordClient.guilds.fetch(
+    process.env.DISCORD_GUILD_ID as string
+  );
+  await discordGuild.members.fetch();
+
+  return discordClient;
+};
+
 export const generateReasonRealized = async (
   discordClient: Client,
   sourceId: string,

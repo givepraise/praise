@@ -5,9 +5,8 @@ import { UserAccountDocument } from '@useraccount/types';
 import 'express-async-errors';
 import fs from 'fs';
 import path from 'path';
-import { Client, Util } from 'discord.js';
 import { connectDatabase } from './core';
-import { generateReasonRealized } from '@praise/utils/core';
+import { generateReasonRealized, prepareDiscordClient } from '@praise/utils/core';
 
 const importPraise = async (
   praiseData: PraiseImportInput[],
@@ -64,15 +63,7 @@ const importPraise = async (
       throw new Error('Invalid import format.');
     }
 
-    const discordClient = new Client({
-      intents: ['GUILDS', 'GUILD_MEMBERS'],
-    });
-    await discordClient.login(process.env.DISCORD_TOKEN);
-    await discordClient.guilds.fetch();
-    const discordGuild = await discordClient.guilds.fetch(
-      process.env.DISCORD_GUILD_ID as string
-    );
-    await discordGuild.members.fetch();
+    const discordClient = await prepareDiscordClient();
 
     const data = await Promise.all(
       praiseData.map(async (praise: PraiseImportInput) => {
