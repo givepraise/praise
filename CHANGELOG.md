@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Hightlight active page in Navbar, update page routes to nest under top-level routes
 
 ### Fixed
+- Remove 1s login delay
 
 ## [0.6.0] - 2022-05-09
 

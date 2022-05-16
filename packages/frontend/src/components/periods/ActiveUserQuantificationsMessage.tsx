@@ -12,7 +12,7 @@ const QuantifierPeriodMessage = ({
   if (!period?._id) return null;
   return (
     <li key={period._id}>
-      <Link to={`/quantify/period/${period._id}`}>{period.name}</Link>
+      <Link to={`/periods/${period._id}/quantify`}>{period.name}</Link>
     </li>
   );
 };
