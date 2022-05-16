@@ -1,5 +1,5 @@
 import {
-  generateReasonRealized,
+  realizeDiscordContent,
   prepareDiscordClient,
 } from '@praise/utils/core';
 import { PraiseModel } from '@praise/entities';
@@ -15,9 +15,14 @@ const up = async (): Promise<void> => {
 
   const updates = await Promise.all(
     praises.map(async (s) => {
-      const reasonRealized = await generateReasonRealized(
+      const parsedSourceId = s.sourceId.match(/DISCORD:[\d]+:([\d]+)/);
+
+      if (!parsedSourceId)
+        throw Error('Failed to parse discord channel id from source id');
+
+      const reasonRealized = await realizeDiscordContent(
         discordClient,
-        s.sourceId,
+        parsedSourceId[1],
         s.reason
       );
 

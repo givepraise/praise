@@ -76,6 +76,10 @@ export const isQuantificationCompleted = (
   );
 };
 
+/**
+ * Setup discord client and fetch guild members into client cache
+ * @returns
+ */
 export const prepareDiscordClient = async (): Promise<Client> => {
   const discordClient = new Client({
     intents: ['GUILDS', 'GUILD_MEMBERS'],
@@ -90,22 +94,25 @@ export const prepareDiscordClient = async (): Promise<Client> => {
   return discordClient;
 };
 
-export const generateReasonRealized = async (
+/**
+ * Convert text from discord into a "realized" form
+ *  replacing raw references to channels and users with their human-readable text
+ * @param discordClient
+ * @param discordChannelId
+ * @param text
+ * @returns
+ */
+export const realizeDiscordContent = async (
   discordClient: Client,
-  sourceId: string,
-  reason: string
+  discordChannelId: string,
+  text: string
 ): Promise<string> => {
-  const parsedSourceId = sourceId.match(/DISCORD:[\d]+:([\d]+)/);
-
-  if (!parsedSourceId)
-    throw Error('Failed to parse discord channel id from source id');
-
-  const channel = await discordClient.channels.fetch(parsedSourceId[1]);
+  const channel = await discordClient.channels.fetch(discordChannelId);
 
   if (!channel) throw Error('Failed to fetch channel from discord api');
   if (!channel.isText()) throw Error('Channel must be a TextChannel');
 
-  const reasonRealized = Util.cleanContent(reason, channel);
+  const textRealized = Util.cleanContent(text, channel);
 
-  return reasonRealized;
+  return textRealized;
 };

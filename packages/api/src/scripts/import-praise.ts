@@ -6,7 +6,7 @@ import 'express-async-errors';
 import fs from 'fs';
 import path from 'path';
 import { connectDatabase } from './core';
-import { generateReasonRealized, prepareDiscordClient } from '@praise/utils/core';
+import { realizeDiscordContent, prepareDiscordClient } from '@praise/utils/core';
 
 const importPraise = async (
   praiseData: PraiseImportInput[],
@@ -80,7 +80,16 @@ const importPraise = async (
         );
 
         if (!praise.reasonRealized) {
-          praise.reasonRealized = await generateReasonRealized(discordClient, praise.sourceId, praise.reason);
+          const parsedSourceId = praise.sourceId.match(/DISCORD:[\d]+:([\d]+)/);
+
+          if (!parsedSourceId)
+            throw Error('Failed to parse discord channel id from source id');
+
+          praise.reasonRealized = await realizeDiscordContent(
+            discordClient,
+            parsedSourceId[1],
+            praise.reason
+          );
         }
 
         return {
