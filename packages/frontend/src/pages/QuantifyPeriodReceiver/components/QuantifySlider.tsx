@@ -13,8 +13,6 @@ const ValueLabelComponent = ({
   children,
   value,
 }: ValueLabelComponentProps): JSX.Element => {
-  // console.log('TITLE:', value);
-
   return (
     <Tooltip enterTouchDelay={0} placement="top" title={value}>
       {children}

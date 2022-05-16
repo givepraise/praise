@@ -7,7 +7,7 @@ import { ActiveUserId } from '@/model/auth';
 import { InlineLabel } from '@/components/InlineLabel';
 import { dismissed, duplicate, shortDuplicatePraiseId } from '@/utils/praise';
 
-const ResetQuantificationButton = (praise: PraiseDto): JSX.Element => {
+const ResetQuantificationButton = ({ praise }: Props): JSX.Element => {
   const { quantify } = useQuantifyPraise();
 
   return (
@@ -39,7 +39,7 @@ export const PraiseInlineButtons = ({ praise }: Props): JSX.Element | null => {
         <>
           <InlineLabel
             text="Dismissed"
-            button={ResetQuantificationButton(praise)}
+            button={<ResetQuantificationButton praise={praise} />}
             className="bg-red-600"
           />
           <span className="line-through">{praise.reason}</span>
@@ -49,7 +49,7 @@ export const PraiseInlineButtons = ({ praise }: Props): JSX.Element | null => {
         <>
           <InlineLabel
             text={`Duplicate of: #${shortDuplicatePraiseId(praise, userId)}`}
-            button={ResetQuantificationButton(praise)}
+            button={<ResetQuantificationButton praise={praise} />}
           />
           <span className="text-gray-400">{praise.reason}</span>
         </>

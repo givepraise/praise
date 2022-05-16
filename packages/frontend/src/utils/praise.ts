@@ -9,9 +9,6 @@ export const quantification = (
 
 export const dismissed = (praise: PraiseDto, userId: string): boolean => {
   const q = quantification(praise, userId);
-
-  console.log('Q:', q);
-
   return q ? !!q.dismissed : false;
 };
 
