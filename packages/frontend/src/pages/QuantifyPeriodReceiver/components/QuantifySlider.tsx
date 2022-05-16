@@ -1,7 +1,7 @@
 import { ActiveUserId } from '@/model/auth';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { Slider, Tooltip } from '@mui/material';
-import { PraiseDto, QuantificationDto } from 'api/dist/praise/types';
+import { PraiseDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -13,6 +13,8 @@ const ValueLabelComponent = ({
   children,
   value,
 }: ValueLabelComponentProps): JSX.Element => {
+  // console.log('TITLE:', value);
+
   return (
     <Tooltip enterTouchDelay={0} placement="top" title={value}>
       {children}
@@ -37,7 +39,7 @@ const QuantifySlider = ({
   periodId,
   disabled = false,
   onChange,
-}: QuantifySliderProps): JSX.Element => {
+}: QuantifySliderProps): JSX.Element | null => {
   const [selectedSliderMark, setSelectedSliderMark] = React.useState<number>(0);
   const [sliderMarks, setSliderMarks] = React.useState<Mark[]>([]);
   const [scores, setScores] = React.useState<number[]>([]);
@@ -126,6 +128,8 @@ const QuantifySlider = ({
       ? sliderMarks[sliderMarks.length - 1].value
       : 0;
   };
+
+  if (!praise) return null;
 
   return (
     <div className="inline-block w-40">

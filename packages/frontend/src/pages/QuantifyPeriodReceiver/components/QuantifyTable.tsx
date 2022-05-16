@@ -123,7 +123,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
         <table className="w-full table-auto">
           <tbody>
             {Object.keys(weeklyData).map((weekKey, index) => (
-              <>
+              <React.Fragment key={index}>
                 {index !== 0 && index !== data.length - 1 && (
                   <tr>
                     <td colSpan={5}>
@@ -149,7 +149,9 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                         showReceiver={false}
                         periodId={periodId}
                         usePseudonyms={usePseudonyms}
-                        contentPrefixChildren={PraiseInlineButtons({ praise })}
+                        contentPrefixChildren={
+                          <PraiseInlineButtons praise={praise} />
+                        }
                       />
                     </td>
                     <td>
@@ -180,7 +182,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                     </td>
                   </tr>
                 ))}
-              </>
+              </React.Fragment>
             ))}
           </tbody>
         </table>

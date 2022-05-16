@@ -36,7 +36,7 @@ const Praise = ({
       </div>
       <div className="flex-grow p-3 overflow-hidden">
         <div>
-          <ForwarderTooltip praise={praise} />
+          {/* <ForwarderTooltip praise={praise} /> */}
           <span className="font-bold">
             {usePseudonyms && periodId ? (
               <UserPseudonym userId={praise.giver._id} periodId={periodId} />
