@@ -113,9 +113,6 @@ const PeriodDetailPage = (): JSX.Element | null => {
         <div className="w-full max-w-3xl praise-box">
           <Suspense fallback="Loading…">
             <Switch>
-              <Route exact path={`${path}`}>
-                <Redirect to={`${url}/receivers`} />
-              </Route>
               <Route path={`${path}/receivers`}>
                 <ReceiverTable />
               </Route>
@@ -127,6 +124,9 @@ const PeriodDetailPage = (): JSX.Element | null => {
                   periodId={periodId}
                   disabled={period.status !== PeriodStatusType.OPEN || !isAdmin}
                 />
+              </Route>
+              <Route path={`${path}`}>
+                <Redirect to={`${url}/receivers`} />
               </Route>
             </Switch>
           </Suspense>

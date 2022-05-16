@@ -69,10 +69,7 @@ const LoginButton: React.FC = (): ReactElement | null => {
     // 4. Redirect after login success
 
     if (accessToken) {
-      const { from } = location.state || { from: { pathname: '/' } };
-      setTimeout(() => {
-        history.replace(from);
-      }, 1000);
+      history.replace('/');
     }
 
     if (!accessToken && !signatureReceived) {

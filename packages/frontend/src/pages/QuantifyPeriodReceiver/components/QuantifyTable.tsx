@@ -50,6 +50,11 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
     React.useState<PraiseDto | undefined>(undefined);
   const [selectedPraises, setSelectedPraises] = React.useState<PraiseDto[]>([]);
 
+  const allowedValues = usePeriodSettingValueRealized(
+    periodId,
+    'PRAISE_QUANTIFY_ALLOWED_VALUES'
+  ) as number[];
+
   if (!data) return null;
 
   const quantification = (praise: PraiseDto): QuantificationDto | undefined => {
@@ -243,9 +248,9 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                     </td>
                     <td>
                       <QuantifySlider
-                        praise={praise}
-                        periodId={periodId}
+                        allowedScores={allowedValues}
                         disabled={dismissed(praise) || duplicate(praise)}
+                        score={praise.scoreRealized}
                         onChange={(newScore): void =>
                           handleSetScore(praise, newScore)
                         }
