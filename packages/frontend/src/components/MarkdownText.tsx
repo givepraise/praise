@@ -1,7 +1,8 @@
 import { markdownParser } from '@/utils/parser';
+import linkifyHtml from 'linkifyjs/html';
 
 const getMarkdownText = (text: string): string => {
-  return markdownParser(text);
+  return linkifyHtml(markdownParser(text), { target: '_blank' });
 };
 
 export default getMarkdownText;
