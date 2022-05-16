@@ -80,16 +80,15 @@ const importPraise = async (
         );
 
         if (!praise.reasonRealized) {
-          const parsedSourceId = praise.sourceId.match(/DISCORD:[\d]+:([\d]+)/);
+          if (praise.sourceId.includes('DISCORD')) {
+            const parsedSourceId = praise.sourceId.match(/DISCORD:[\d]+:([\d]+)/);
 
-          if (!parsedSourceId)
-            throw Error('Failed to parse discord channel id from source id');
-
-          praise.reasonRealized = await realizeDiscordContent(
-            discordClient,
-            parsedSourceId[1],
-            praise.reason
-          );
+            if (!parsedSourceId)
+              throw Error('Failed to parse discord channel id from source id');
+            praise.reasonRealized = await realizeDiscordContent(discordClient, praise.sourceId, praise.reason);
+          } else {
+            praise.reasonRealized = praise.reason;
+          }
         }
 
         return {
