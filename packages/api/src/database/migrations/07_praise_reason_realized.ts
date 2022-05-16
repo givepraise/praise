@@ -14,6 +14,10 @@ const up = async (): Promise<void> => {
   });
 
   await discordClient.login(process.env.DISCORD_TOKEN);
+  const discordGuild = await discordClient.guilds.fetch(
+    process.env.DISCORD_GUILD_ID as string
+  );
+  await discordGuild.members.fetch();
 
   const updates = await Promise.all(
     praises.map(async (s) => {

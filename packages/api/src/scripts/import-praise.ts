@@ -68,6 +68,11 @@ const importPraise = async (
       intents: ['GUILDS', 'GUILD_MEMBERS'],
     });
     await discordClient.login(process.env.DISCORD_TOKEN);
+    await discordClient.guilds.fetch();
+    const discordGuild = await discordClient.guilds.fetch(
+      process.env.DISCORD_GUILD_ID as string
+    );
+    await discordGuild.members.fetch();
 
     const data = await Promise.all(
       praiseData.map(async (praise: PraiseImportInput) => {
