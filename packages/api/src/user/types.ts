@@ -9,7 +9,7 @@ export enum UserRole {
 }
 
 export interface User {
-  ethereumAddress?: string;
+  ethereumAddress: string;
   roles: UserRole[];
   accounts?: UserAccountDocument[];
   nonce?: string;
@@ -19,7 +19,7 @@ export interface User {
   updatedAt: Date;
 }
 
-export interface UserDocument extends User, mongoose.Document {}
+export interface UserDocument extends User, mongoose.Document { }
 
 export interface UserDto {
   _id: string;
@@ -28,6 +28,7 @@ export interface UserDto {
   accounts?: UserAccountDto[];
   nonce?: string;
   accessToken?: string;
+  nameRealized: string;
   createdAt: string;
   updatedAt: string;
 }

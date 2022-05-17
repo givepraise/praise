@@ -40,7 +40,13 @@ const all = async (
     },
   ]);
   if (!users) throw new InternalServerError('No users found');
-  res.status(200).json(userListTransformer(res, users));
+
+  const usersTransformed = await userListTransformer(
+    users,
+    res.locals.currentUser.roles
+  );
+
+  res.status(200).json(usersTransformed);
 };
 
 const findUser = async (id: string): Promise<UserDocument> => {
@@ -70,7 +76,13 @@ const single = async (
 ): Promise<void> => {
   const { id } = req.params;
   const user = await findUser(id);
-  res.status(200).json(userTransformer(res, user));
+
+  const userTransformed = await userTransformer(
+    user,
+    res.locals.currentUser.roles
+  );
+
+  res.status(200).json(userTransformed);
 };
 
 /**
@@ -95,7 +107,13 @@ const search = async (
   ]);
   if (!Array.isArray(users) || users.length === 0)
     throw new NotFoundError('User');
-  res.status(200).json(userListTransformer(res, users));
+
+  const usersTransformed = await userListTransformer(
+    users,
+    res.locals.currentUser.roles
+  );
+
+  res.status(200).json(usersTransformed);
 };
 
 /**
@@ -132,7 +150,13 @@ const addRole = async (
   );
 
   const userWithDetails = await findUser(id);
-  res.status(200).json(userTransformer(res, userWithDetails));
+
+  const userTransformed = await userTransformer(
+    userWithDetails,
+    res.locals.currentUser.roles
+  );
+
+  res.status(200).json(userTransformed);
 };
 
 /**
@@ -190,7 +214,12 @@ const removeRole = async (
   }
 
   const userWithDetails = await findUser(id);
-  res.status(200).json(userTransformer(res, userWithDetails));
+
+  const userTransformed = await userTransformer(
+    userWithDetails,
+    res.locals.currentUser.roles
+  );
+  res.status(200).json(userTransformed);
 };
 
 export { all, single, search, addRole, removeRole };

@@ -1,19 +1,3 @@
-import { UserDto } from 'api/dist/user/types';
-import { shortenEthAddress } from '.';
-
-export const getUsername = (user: UserDto): string => {
-  let username = '';
-  if (Array.isArray(user.accounts) && user.accounts.length > 0) {
-    for (const account of user.accounts) {
-      username = account.name;
-      // Prefer DISCORD over others
-      if (account.platform === 'DISCORD') break;
-    }
-  } else if (username === '' && user.ethereumAddress)
-    return shortenEthAddress(user.ethereumAddress)?.toString();
-  return username;
-};
-
 export const psudonymAdjectives = [
   'Red',
   'Green',

@@ -1,7 +1,6 @@
+import { shortenEthAddress } from 'api/dist/user/utils';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { AllQuantifierUsers, useAdminUsers } from '@/model/users';
-import { shortenEthAddress } from '@/utils/index';
-import { getUsername } from '@/utils/users';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
@@ -27,18 +26,21 @@ const UsersTable = (): JSX.Element => {
         accessor: '_id',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => {
+          const shortenedEthAddress = shortenEthAddress(
+            data.row.original.ethereumAddress
+          );
+
           return (
             <div className="flex items-center w-full">
               <div className="flex items-center">
                 <UserAvatar user={data.row.original} />
               </div>
               <div className="flex-grow p-3 whitespace-nowrap">
-                {data.row.original.accounts?.length > 0 ? (
-                  <div>{getUsername(data.row.original)}</div>
-                ) : (
-                  ''
-                )}
-                {shortenEthAddress(data.row.original.ethereumAddress)}
+                <div>{data.row.original.nameRealized}</div>
+                <div>
+                  {data.row.original.nameRealized !== shortenedEthAddress &&
+                    shortenedEthAddress}
+                </div>
               </div>
             </div>
           );

@@ -7,7 +7,6 @@ import { UserAvatar } from '@/components/user/UserAvatar';
 import { EventLogDto, EventLogTypeKey } from 'api/dist/eventlog/types';
 import { SingleUser } from '@/model/users';
 import { useRecoilValue } from 'recoil';
-import { getUsername } from '@/utils/users';
 import { InlineLabel } from '../InlineLabel';
 import { UserDto } from 'api/dist/user/types';
 import { UserAccountDto } from 'api/dist/useraccount/types';
@@ -27,7 +26,7 @@ const getEventLogUsername = (
   useraccount: UserAccountDto | undefined
 ): string | undefined => {
   if (user) {
-    return getUsername(user);
+    return user.nameRealized;
   } else if (useraccount) {
     return useraccount.name;
   } else {
