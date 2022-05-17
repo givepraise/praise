@@ -11,8 +11,9 @@ export enum EventLogTypeKey {
 }
 
 export interface EventLog {
-  user: Types.ObjectId;
-  useraccount: Types.ObjectId;
+  user?: Types.ObjectId;
+  useraccount?: Types.ObjectId;
+  period?: Types.ObjectId;
   type: Types.ObjectId;
   description: string;
   createdAt: Date;
@@ -26,6 +27,7 @@ export interface EventLogDto {
   useraccount?: UserAccountDto;
   type: EventLogTypeDto;
   description: string;
+  hidden: boolean;
   createdAt: string;
   updatedAt: string;
 }

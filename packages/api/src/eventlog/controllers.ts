@@ -5,11 +5,14 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
+import { UserRole } from '@user/types';
+import { findActivePeriods } from '@period/utils';
+import { BadRequestError } from '@error/errors';
 import { StatusCodes } from 'http-status-codes';
+import { Types } from 'mongoose';
 import { EventLogModel } from './entities';
 import { EventLogDto } from './types';
 import { eventLogListTransformer } from './transformers';
-import { BadRequestError } from '@error/errors';
 
 /**
  * Fetch a paginated list of EventLogs
@@ -33,7 +36,10 @@ export const all = async (
   if (!response) throw new BadRequestError('Failed to query event logs');
 
   const docs = response.docs ? response.docs : [];
-  const docsTransfomed = await eventLogListTransformer(docs);
+  const docsTransfomed = await eventLogListTransformer(
+    docs,
+    res.locals.currentUser.roles
+  );
 
   res.status(StatusCodes.OK).json({
     ...response,

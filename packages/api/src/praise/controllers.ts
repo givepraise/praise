@@ -28,7 +28,7 @@ import {
   PraiseDto,
   QuantificationCreateUpdateInput,
 } from './types';
-import { praiseWithScore } from './utils/core';
+import { praiseWithScore, getPraisePeriod } from './utils/core';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
@@ -94,6 +94,10 @@ export const quantify = async (
   );
   if (!praise) throw new NotFoundError('Praise');
 
+  const period = await getPraisePeriod(praise);
+  if (!period)
+    throw new BadRequestError('Praise does not have an associated period');
+
   const { score, dismissed, duplicatePraise } = req.body;
 
   if (!res.locals.currentUser?._id) {
@@ -155,9 +159,14 @@ export const quantify = async (
 
   await praise.save();
 
-  await logEvent(EventLogTypeKey.QUANTIFICATION, eventLogMessage, {
-    userId: res.locals.currentUser._id,
-  });
+  await logEvent(
+    EventLogTypeKey.QUANTIFICATION,
+    eventLogMessage,
+    {
+      userId: res.locals.currentUser._id,
+    },
+    period._id
+  );
 
   const response = await praiseDocumentTransformer(praise);
   res.status(200).json(response);

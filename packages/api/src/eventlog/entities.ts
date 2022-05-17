@@ -18,6 +18,15 @@ export const eventLogSchema = new mongoose.Schema(
       ref: 'UserAccount',
       index: true,
     },
+
+    // "Related Period" of an eventlog - only used for quantification events
+    //    which are restricted to ADMIN users when period is active
+    period: {
+      type: Schema.Types.ObjectId,
+      ref: 'Period',
+      index: true,
+    },
+
     type: {
       type: Schema.Types.ObjectId,
       ref: 'EventLogType',

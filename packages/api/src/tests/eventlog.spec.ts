@@ -87,7 +87,7 @@ describe('logEvent', () => {
     expect(eventLogs[0]).to.have.property('type');
     expect(eventLogs[0]).to.have.property('createdAt');
 
-    expect(eventLogs[0].user.toString()).equals(user._id.toString());
+    expect(eventLogs[0].user?.toString()).equals(user._id.toString());
     expect(eventLogs[0].description).equals(description);
     expect(eventLogs[0].type.toString()).equals(eventType._id.toString());
   });
@@ -113,7 +113,7 @@ describe('logEvent', () => {
     expect(eventLogs[0]).to.have.property('type');
     expect(eventLogs[0]).to.have.property('createdAt');
 
-    expect(eventLogs[0].useraccount.toString()).equals(
+    expect(eventLogs[0].useraccount?.toString()).equals(
       useraccount._id.toString()
     );
     expect(eventLogs[0].description).equals(description);

@@ -1,3 +1,6 @@
+import { PeriodModel } from '@period/entities';
+import { PeriodStatusType } from '@period/types';
+import { UserRole } from '@user/types';
 import { UserAccountModel } from '@useraccount/entities';
 import { userAccountTransformer } from '@useraccount/transformers';
 import { EventLogTypeModel } from './entities';
@@ -21,7 +24,8 @@ const eventLogTypeTransformer = (
 };
 
 export const eventLogTransformer = async (
-  eventLog: EventLogDocument
+  eventLog: EventLogDocument,
+  currentUserRoles: UserRole[] = [UserRole.USER]
 ): Promise<EventLogDto> => {
   const eventLogType = await EventLogTypeModel.findOne({
     _id: eventLog.type,
@@ -41,22 +45,41 @@ export const eventLogTransformer = async (
     useraccount = userAccountTransformer(userAccountDocument);
   }
 
+  // Hide eventLog contents if related to a period
+  //  and period has status QUANTIFY
+  //  and user is not ADMIN
+  const period = eventLog.period
+    ? await PeriodModel.findOne({ _id: eventLog.period }).orFail()
+    : undefined;
+
+  let hidden = false;
+  let description = eventLog.description;
+  if (
+    period?.status === PeriodStatusType.QUANTIFY &&
+    !currentUserRoles.includes(UserRole.ADMIN)
+  ) {
+    description = '';
+    hidden = true;
+  }
+
   return {
     _id,
     user,
     useraccount,
     type: eventLogTypeDto,
-    description: eventLog.description,
+    description,
+    hidden,
     createdAt,
     updatedAt,
   } as EventLogDto;
 };
 
 export const eventLogListTransformer = async (
-  eventLogs: EventLogDocument[]
+  eventLogs: EventLogDocument[],
+  currentUserRoles: UserRole[] = [UserRole.USER]
 ): Promise<EventLogDto[]> => {
   const eventLogDtos = await Promise.all(
-    eventLogs.map((eventLog) => eventLogTransformer(eventLog))
+    eventLogs.map((eventLog) => eventLogTransformer(eventLog, currentUserRoles))
   );
 
   return eventLogDtos;

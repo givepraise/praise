@@ -10,7 +10,8 @@ interface UserInfo {
 export const logEvent = async (
   typeKey: EventLogTypeKey,
   description: string,
-  userInfo: UserInfo = {}
+  userInfo: UserInfo = {},
+  periodId: Types.ObjectId | undefined = undefined
 ): Promise<void> => {
   const type = await EventLogTypeModel.findOne({
     key: typeKey.toString(),
@@ -21,6 +22,7 @@ export const logEvent = async (
     description,
     user: userInfo.userId ? userInfo.userId : undefined,
     useraccount: userInfo.userAccountId ? userInfo.userAccountId : undefined,
+    period: periodId,
   };
 
   await EventLogModel.create(data);

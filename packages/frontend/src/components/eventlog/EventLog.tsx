@@ -11,6 +11,7 @@ import { getUsername } from '@/utils/users';
 import { InlineLabel } from '../InlineLabel';
 import { UserDto } from 'api/dist/user/types';
 import { UserAccountDto } from 'api/dist/useraccount/types';
+import Notice from '../Notice';
 
 const eventLogTypeColors = {
   [EventLogTypeKey.PERMISSION]: 'bg-orange-400',
@@ -69,7 +70,16 @@ const EventLog = ({ eventlog, className = '' }: Params): JSX.Element | null => {
             title={eventlog.type.description}
             className={eventLogTypeColors[eventlog.type.key]}
           />
-          {eventlog.description}
+
+          {eventlog.hidden ? (
+            <div className="w-full mt-1">
+              <Notice type="danger">
+                <>Praise scores are not visible during quantification.</>
+              </Notice>
+            </div>
+          ) : (
+            eventlog.description
+          )}
         </div>
       </div>
     </div>
