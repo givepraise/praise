@@ -59,7 +59,11 @@ export default function Nav(): JSX.Element {
               to="/periods"
             />
             <AdminOnly>
-              <NavItem icon={faCog} description="Settings" to="/settings/application" />
+              <NavItem
+                icon={faCog}
+                description="Settings"
+                to="/settings/application"
+              />
             </AdminOnly>
           </ul>
         </div>
