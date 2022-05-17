@@ -101,7 +101,7 @@ const settings = [
   {
     key: 'FORWARD_SUCCESS_MESSAGE',
     group: SettingGroup.DISCORD,
-  }
+  },
 ];
 
 const up = async (): Promise<void> => {
