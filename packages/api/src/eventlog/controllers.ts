@@ -5,11 +5,8 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
-import { UserRole } from '@user/types';
-import { findActivePeriods } from '@period/utils';
 import { BadRequestError } from '@error/errors';
 import { StatusCodes } from 'http-status-codes';
-import { Types } from 'mongoose';
 import { EventLogModel } from './entities';
 import { EventLogDto } from './types';
 import { eventLogListTransformer } from './transformers';

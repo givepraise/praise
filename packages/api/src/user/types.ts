@@ -19,7 +19,7 @@ export interface User {
   updatedAt: Date;
 }
 
-export interface UserDocument extends User, mongoose.Document { }
+export interface UserDocument extends User, mongoose.Document {}
 
 export interface UserDto {
   _id: string;
