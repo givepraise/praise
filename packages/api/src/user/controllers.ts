@@ -123,9 +123,9 @@ const addRole = async (
 
   await logEvent(
     EventLogTypeKey.PERMISSION,
-    `Added role "${role}" to user with id ${(
+    `Added role "${role}" to user with id "${(
       user._id as Types.ObjectId
-    ).toString()}`,
+    ).toString()}"`,
     {
       userId: res.locals.currentUser._id,
     }
@@ -180,7 +180,7 @@ const removeRole = async (
 
     await logEvent(
       EventLogTypeKey.PERMISSION,
-      `Removed role "${role}" from user with id ${(
+      `Removed role "${role}" from user with id "${(
         user._id as Types.ObjectId
       ).toString()}`,
       {
