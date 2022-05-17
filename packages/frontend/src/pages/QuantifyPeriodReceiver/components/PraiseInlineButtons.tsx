@@ -12,7 +12,7 @@ const ResetQuantificationButton = ({ praise }: Props): JSX.Element => {
 
   return (
     <button
-      onClick={void quantify(praise._id, 0, false, null)}
+      onClick={(): void => void quantify(praise._id, 0, false, null)}
       className="ml-2"
     >
       <FontAwesomeIcon
