@@ -35,7 +35,7 @@ const SettingsPage = (): JSX.Element | null => {
             <nav>
               <NavItem to={`${url}/application`} description="Application" />
               <NavItem to={`${url}/period`} description="Period Defaults" />
-              <NavItem to={`${url}/discord`} description="Discord" />
+              <NavItem to={`${url}/discord`} description="Discord Bot" />
             </nav>
           </div>
         </div>
