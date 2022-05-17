@@ -26,7 +26,7 @@ const EventLogsTable = (): JSX.Element | null => {
           />
         ))}
       </div>
-      {data.hasMore && (
+      {(data.hasNextPage || data.hasPrevPage) && (
         <div className="w-full flex justify-between space-x-4 mt-4">
           <div>
             {data.hasPrevPage && (
