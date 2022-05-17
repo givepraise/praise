@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { SettingDocument } from './types';
+import { SettingDocument, SettingGroup } from './types';
 import { fieldTypeValidator } from './validators';
 
 export const genericSettingsSchema = {
@@ -21,6 +21,7 @@ export const genericSettingsSchema = {
   },
   label: { type: String, required: true },
   description: { type: String },
+  group: { type: Number, enum: SettingGroup, required: true },
 };
 
 export function getGenericSettingValueRealized(
@@ -53,7 +54,6 @@ export const valueRealizedVirtualName = 'valueRealized';
 const settingsSchema = new mongoose.Schema(
   {
     ...genericSettingsSchema,
-    periodOverridable: { type: Boolean, default: false },
   },
   {
     collection: 'settings',
