@@ -47,6 +47,11 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
     React.useState<PraiseDto | undefined>(undefined);
   const [selectedPraises, setSelectedPraises] = React.useState<PraiseDto[]>([]);
 
+  const allowedValues = usePeriodSettingValueRealized(
+    periodId,
+    'PRAISE_QUANTIFY_ALLOWED_VALUES'
+  ) as number[];
+
   if (!data) return null;
   if (!userId) return null;
 
@@ -106,6 +111,10 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
     }
   );
 
+  const isChecked = (praise: PraiseDto): boolean => {
+    return selectedPraises.map((p) => p._id).includes(praise._id);
+  };
+
   return (
     <div className=" h-full">
       <div className="p-5 relative space-x-6 bg-gray-200 z-10 w-full rounded-t border-t border-l border-r sticky top-0">
@@ -138,7 +147,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                       <input
                         type="checkbox"
                         className="mr-4 text-xl w-5 h-5"
-                        checked={selectedPraises.includes(praise)}
+                        checked={isChecked(praise)}
                         onChange={(): void => handleToggleCheckbox(praise)}
                       />
                     </td>
@@ -156,8 +165,8 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                     </td>
                     <td>
                       <QuantifySlider
-                        praise={praise}
-                        periodId={periodId}
+                        allowedScores={allowedValues}
+                        score={praise.scoreRealized}
                         disabled={
                           dismissed(praise, userId) || duplicate(praise, userId)
                         }
