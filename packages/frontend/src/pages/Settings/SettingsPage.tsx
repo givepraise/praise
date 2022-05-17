@@ -43,7 +43,6 @@ const SettingsPage = (): JSX.Element | null => {
         <div className="w-full max-w-3xl praise-box">
           <Switch>
             <Route path={`${path}/application`}>
-              <h2 className="mb-2">Application Settings</h2>
               <React.Suspense fallback="Loading…">
                 <SettingsForm
                   settings={applicationSettings}
@@ -52,7 +51,6 @@ const SettingsPage = (): JSX.Element | null => {
               </React.Suspense>
             </Route>
             <Route path={`${path}/period`}>
-              <h2 className="mb-2">Period Default Settings</h2>
               <React.Suspense fallback="Loading…">
                 <SettingsForm
                   settings={periodDefaultSettings}
@@ -61,7 +59,6 @@ const SettingsPage = (): JSX.Element | null => {
               </React.Suspense>
             </Route>
             <Route path={`${path}/discord`}>
-              <h2 className="mb-2">Discord Settings</h2>
               <React.Suspense fallback="Loading…">
                 <SettingsForm
                   settings={discordSettings}
