@@ -66,7 +66,11 @@ export default function Nav(): JSX.Element {
               to="/eventlogs"
             />
             <AdminOnly>
-              <NavItem icon={faCog} description="Settings" to="/settings" />
+              <NavItem
+                icon={faCog}
+                description="Settings"
+                to="/settings/application"
+              />
             </AdminOnly>
             <NavItem icon={faQuestionCircle} description="FAQ" to="/faq" />
           </ul>
