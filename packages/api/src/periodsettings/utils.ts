@@ -1,5 +1,5 @@
 import { SettingsModel } from '@settings/entities';
-import { SettingDocument } from '@settings/types';
+import { SettingDocument, SettingGroup } from '@settings/types';
 import { PeriodDocument } from '@period/types';
 import { PeriodSettingsModel } from './entities';
 import { PeriodSetting } from './types';
@@ -8,7 +8,7 @@ export const insertNewPeriodSettings = async (
   period: PeriodDocument
 ): Promise<void> => {
   let settings = await SettingsModel.find({
-    periodOverridable: true,
+    group: SettingGroup.PERIOD_DEFAULT,
   });
   if (settings && !Array.isArray(settings)) settings = [settings];
 
@@ -22,7 +22,6 @@ export const insertNewPeriodSettings = async (
       // drop unused fields
       _id: undefined,
       __v: undefined,
-      periodOverridable: undefined,
 
       // set period
       period: period._id,

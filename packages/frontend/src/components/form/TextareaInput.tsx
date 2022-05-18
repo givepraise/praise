@@ -15,7 +15,8 @@ const TextareaInput = (
             id={name}
             {...input}
             autoComplete="off"
-            className="block w-full resize-y "
+            className="block w-full resize-y"
+            rows={4}
           />
           {apiResponse && (
             <FieldErrorMessage name="name" apiResponse={apiResponse} />
