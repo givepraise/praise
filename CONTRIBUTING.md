@@ -1,5 +1,18 @@
 # Contributing to Praise
 
+- [How to contribute?](#how-to-contribute)
+- [Setting up the project](#setting-up-the-project)
+- [Feedback, Bug Reports, Issues - How to open issues?](#feedback-bug-reports-issues---how-to-open-issues)
+- [Claiming an Issue](#claiming-an-issue)
+- [Working on your issue](#working-on-your-issue)
+  - [Syncing your fork with the project](#syncing-your-fork-with-the-project)
+  - [Creating a new branch](#creating-a-new-branch)
+  - [Commit Message Guidelines](#commit-message-guidelines)
+- [Submitting a Pull Request](#submitting-a-pull-request)
+- [Contributing in other ways](#contributing-in-other-ways)
+- [Setting up the dev environment](#setting-up-the-dev-environment)
+- [Project Structure](#project-structure)
+
 ## How to contribute?
 
 Thank you for showing interest in this project! We appreciate and encourage any and all contributions to the project. However, do keep in mind that it takes some time to get responses on issues and reviews on PRs. Before contributing, have a look at the [CODE of CONDUCT](./CODE_OF_CONDUCT.md) and try to comply with those guidelines.
@@ -9,29 +22,34 @@ If you are new to contributing to projects on GitHub, this project follows a cer
 Please ensure all pull requests and contributions comply with the [Developer Certificate of Origin](https://developercertificate.org/).
 
 ### Setting up the project
+
 First, [fork this repository](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) to your own account. Then use `git clone <forked-repo-url>` to clone your forked repository down to your local machine (remember to get the URL for _your_ repository - the fork, not the original repository).
 Use `git remote add upstream <original-repo-url>` to add the original repository as the upstream (this is helpful for keeping your fork up-to-date).
 
 ### Feedback, Bug Reports, Issues - How to open issues?
+
 If you have any feedback, bug reports, feature request or ideas, feel free to [open an issue](https://docs.github.com/en/github/managing-your-work-on-github/creating-an-issue) on the project's repository. We love issues! ;D
 Please try not to duplicate issues and always try to give enough context in the issues that you open.
 You could use some of the issues templates to make better structured issues with relevant labels.
 
 ### Claiming an Issue
+
 All of the issues on this repo are open to contributors! If you see an open issue you would like to work on, please comment on the issue so that you may get assigned to it.
 
 > NOTE: Assigned issues that have not had any activity in 2 weeks will be unassigned.
 
 If an issue is already assigned, please look for another issue to contribute to, or open an issue that you could work on and adds value to the project. We use labels to help categorise issues:
+
 - `good first issue` - These issues require minimal familiarity with our codebase. Please reserve these for first-time contributors.
 - `help wanted` - These issues are open to any contributors.
 - `staff only` - These issues are locked to project maintainers/collaborators. Pull requests on these issues will not be accepted from outside contributors.
 
 ### Working on your issue
+
 This project follows a certain development and contribution pattern([github-flow](https://docs.github.com/en/github/getting-started-with-github/github-flow)). If you have any confusion at any step in the process, refer to the [Github docs](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests). Feel free to comment on your assigned issue if you have any questions, doubts or need any help. (Do note that it might take some time to get help on the issues. It is highly suggested that you ask for help on [EddieHub's Everyone Helps Everyone forum](https://github.com/EddieHubCommunity/support/discussions/categories/q-a) or [freeCodeCamp's forum](https://forum.freecodecamp.org/) if you would prefer a quicker help response)
 
-
 #### Syncing your fork with the project
+
 Before starting any work, it is highly recommended that you ensure that your forked version of the repo is up to date. If you set the upstream as mentioned in [Setting Up The Project](#setting-up-the-project), run these commands in your terminal (with the terminal pointed at the root directory of your local files):
 
 - Switch to the `main` branch:
@@ -50,16 +68,19 @@ Before starting any work, it is highly recommended that you ensure that your for
   ```css
   git push -f
   ```
-> NOTE: Before you do the above, keep in mind that you will lose any changes you are currently working on. Do this with care.
+  > NOTE: Before you do the above, keep in mind that you will lose any changes you are currently working on. Do this with care.
 
 **If you are working on small changes directly on Github's UI**, you could also consider [using the `Fetch Upstream` button on Github's UI](https://twitter.com/i/status/1390382527588798477)
 
 #### Creating a new branch
+
 Before making code changes, it would be best if you create a new branch and make changes in that branch. It's always a good idea to avoid committing changes directly to your `main` branch - this keeps it clean and avoids errors when updating (above).
 You could use this command to create and switch to a new branch -
+
 ```rb
-git checkout -b <branchname> 
+git checkout -b <branchname>
 ```
+
 (Alternatively, you could also make a branch on github's UI and use `git fetch` and `git checkout <branch-name>` to switch to the created branch)
 
 Branch names should follow a convention of `type/issue/description` where:
@@ -73,6 +94,7 @@ Example - `docs/3/update=contribs`, when working on docs to update contributors 
 After this, you could start working on your code :D
 
 #### Commit Message Guidelines
+
 Now you are free to work on your code! When you are satisfied with your changes, you can commit them with `git commit -s -m "message"`, where:
 
 - `-s` flag signs the commit, to verify the connection with your GitHub account.
@@ -83,17 +105,19 @@ While writing the commit message, please try to be brief (if you want to add mor
 
 We prefer to follow a certain commit message styling format in order to make the commits easily readable by people as well as automation. You could refer to [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/) for more information about the format.
 
-
 All commit messages should follow this format- `<type>(optional scope): <description>`
 (The scope can be skipped, in order to make the commit message more succint)
 Examples-
+
 ```
 docs: update project links
 feat: set up project
 feat(deploy): deployment config
 fix: fix website crash bug
 ```
+
 **Type** - The type could be one of the following:
+
 - `fix`: bug patches, typo and lint corrections
 - `feat`: introduce new features to the codebase
 - `docs`: for documentation and README/CONTRIBUTING changes
@@ -101,6 +125,7 @@ fix: fix website crash bug
 - `chore`: project config, maintainance
 
 ### Submitting a Pull Request
+
 Once you have all of your changes made and committed, you can push them to your forked repository! Use `git push -u origin <branchname>`, where:
 
 - `-u` tells `git` to set the upstream (see below)
@@ -116,6 +141,7 @@ First, change the title of the pull request to match your branch name (following
 Congratulations! You've submitted your first pull request! It will be reviewed as quickly as possible, so keep an eye out for comments, approvals, or requested changes.
 
 ### Contributing in other ways
+
 If you aren't comfortable with the codebase, or would like to contribute in other ways, we have options for that!
 We like and appreciate good contributions of any kind!
 
@@ -125,11 +151,12 @@ We like and appreciate good contributions of any kind!
 - Bug Reports: We rely on our users to help identify bugs - if you see something wrong, please let us know with an issue!
 - Dropping reviews: If you want, you could also contribute by reviewing pull requests. (If you aren't familiar with the codebase, you could still drop reviews on documentation updates)
 
-
 ## Setting up the dev environment
 
 ### Set up node, yarn and docker -
+
 This project uses JavaScript and the nodeJS environment. For setting up this environment, you would need to install `node` on your machine.
+
 - You could install `node` using a [package manager](https://nodejs.dev/download/package-manager/) or with a pre-packaged installer from https://nodejs.org/en/download/
 - To check if node is installed, open a terminal(CMD Prompt) and run `node -v` and `npm -v`
 - `yarn` is a package manager for nodejs, that is needed in our project for smooth development. You could install yarn by running -
@@ -149,72 +176,32 @@ This project uses JavaScript and the nodeJS environment. For setting up this env
   yarn prepare
   ```
 - Install Docker:
- 
-  If you're on Windows or Macos, you could download [Docker Desktop](https://docs.docker.com/desktop/), which includes all the things you need pre-packaged: 
+
+  If you're on Windows or Macos, you could download [Docker Desktop](https://docs.docker.com/desktop/), which includes all the things you need pre-packaged:
+
   - [Install Docker Desktop on Mac](https://docs.docker.com/desktop/mac/install/)
   - [Install Docker Desktop on Windows](https://docs.docker.com/desktop/windows/install/)
 
-  If you're on Linux, you need to download [Docker Engine](https://docs.docker.com/engine/) and [Docker Compose](https://docs.docker.com/compose/): 
+  If you're on Linux, you need to download [Docker Engine](https://docs.docker.com/engine/) and [Docker Compose](https://docs.docker.com/compose/):
+
   - [Install Docker Engine](https://docs.docker.com/engine/install/)
   - [Install Docker Compose](https://docs.docker.com/compose/install/)
+
 - Pull the mongodb docker image
   ```
   docker pull mongo
   ```
 
-
-### Set up the project environment -
-#### for `frontend`:
-- #TODO
-
-#### for `api`:
-- #TODO
-
-#### for `discord-bot`:
-- You would need to enable `Developer Mode` in discord so that you can copy object IDs from discord's UI. You can toggle this setting in the `Advanced` section of your duscord User Settings (It is recommended that you toggle this as this would be useful later on)
-  ![Developer Mode toggle in Advanced section of Discord user settings](img/enabling-discord-developer-mode.png)
-- Go to the `packages/discord-bot` folder and copy `.env.template` file to `.env`.
-  ```
-  cd packages/discord-bot
-  cp .env.template .env
-  ```
-- Create a test discord server so that you can run the bot and check you changes using discord. Right click on the server icon and select `Copy ID` and add it as the value of the `DISCORD_GUILD_ID` variable in the `.env` file.
-- Create a Role for the PraiseGivers in the server you just created. You can do so by opening your server, selecting `Server Settings` from the dropdown menu next to the server name, opening the `Roles` tab and clicking on the `Create Role` button. Choose a suitable role name(praise giver), right click on the role name in the role menu and click on `Copy ID`.
-  Add this as the value of the `PRAISE_GIVER_ROLE` variable in the `.env` file.
-  
-- Log into the [Discord Developer Portal](https://discord.com/login?redirect_to=%2Fdevelopers%2Fapplications) using your discord credentials.
-- Open [Discord Developer Portal](https://discord.com/developers/applications) and click on `New Application Button` on the top right and choose a suitable name for your application.
-  ![New Application Button in top right of page](img/creating-new-application.png)
-- Open the `Bot` tab in the info page of the  application you just created, and create a bot using the `Add Bot` button.
-- In the `Bot` tab, find the `Privileged Gateway Intents` section and enable `SERVER MEMBERS INTENT` and `MESSAGE CONTENT INTENT`. Copy the Bot's token and add it as the value of the `DISCORD_TOKEN` variable in the `.env` file.
-  > NOTE - Do not share this token publically and ensure that it isn't posted anywhere.
-- Go to the `General Information` tab of your application and copy the `APPLICATION ID`. Invite the bot to your testing server using this link:
-  ```
-  https://discord.com/api/oauth2/authorize?client_id=<APPLICATION ID>&permissions=8&scope=bot%20applications.commands/
-  ```
-  (replace `<APPLICATION ID>` with the numeric APPLICATION ID you just copied. Ensure that the bot has Administrator permissions).
-  Add this `APPLICATION ID` as the value of the `DISCORD_CLIENT_ID` in the `.env` file.
-- Build the project in a yarn workspace
-  ```
-  yarn workspace discord-bot build
-  ```
-- Start the mongo database in a docker container
-  ```
-  yarn mongodb:start
-  ```
-- Run the bot
-  ```
-  yarn workspace discord-bot start
-  ```
-
 ## Project Structure
+
 - #TODO
+
 ```
 /packages
  |- api
  |- discord-bot
  |  |- commands
- |  |- utils 
+ |  |- utils
  |- frontend
 
 ```
