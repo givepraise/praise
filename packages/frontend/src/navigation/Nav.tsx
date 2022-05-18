@@ -10,6 +10,7 @@ import {
   faPrayingHands,
   faQuestionCircle,
   faUserFriends,
+  faBook,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu, Transition } from '@headlessui/react';
@@ -58,6 +59,11 @@ export default function Nav(): JSX.Element {
               icon={faCalculator}
               description="Quantification periods"
               to="/periods"
+            />
+            <NavItem
+              icon={faBook}
+              description="Transparency Log"
+              to="/eventlogs"
             />
             <AdminOnly>
               <NavItem icon={faCog} description="Settings" to="/settings" />

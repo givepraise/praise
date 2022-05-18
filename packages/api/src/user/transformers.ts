@@ -1,48 +1,56 @@
 import { userAccountListTransformer } from '@useraccount/transformers';
-import { Response } from 'express';
 import { UserDocument, UserDto, UserRole } from './types';
+import { generateUserName } from './utils';
 
-const userDocumentToUserDto = (
-  res: Response,
-  userDocument: UserDocument
-): UserDto => {
-  const { _id, roles, createdAt, updatedAt, ethereumAddress, accounts } =
-    userDocument;
-
-  const user: UserDto = {
-    _id,
-    roles,
-    createdAt: createdAt.toISOString(),
-    updatedAt: updatedAt.toISOString(),
-  };
+const userDocumentToUserDto = async (
+  userDocument: UserDocument,
+  currentUserRoles: UserRole[] = [UserRole.USER]
+): Promise<UserDto> => {
+  const { _id, roles, createdAt, updatedAt } = userDocument;
 
   /* Only return eth address to admin or quantifier */
+  let ethereumAddress;
   if (
-    res.locals?.authRole === UserRole.ADMIN ||
-    res.locals?.authRole === UserRole.QUANTIFIER
+    currentUserRoles.includes(UserRole.ADMIN) ||
+    currentUserRoles.includes(UserRole.QUANTIFIER)
   ) {
-    user.ethereumAddress = ethereumAddress;
+    ethereumAddress = userDocument.ethereumAddress;
   }
 
-  if (accounts) {
-    user.accounts = userAccountListTransformer(accounts);
+  let accounts;
+  if (userDocument.accounts) {
+    accounts = userAccountListTransformer(userDocument.accounts);
   }
-  return user;
+
+  // Generate user name
+  const nameRealized = await generateUserName(userDocument);
+
+  return {
+    _id,
+    roles,
+    ethereumAddress,
+    accounts,
+    nameRealized,
+    createdAt: createdAt.toISOString(),
+    updatedAt: updatedAt.toISOString(),
+  } as UserDto;
 };
 
 export const userListTransformer = (
-  res: Response,
-  userDocuments: UserDocument[]
-): UserDto[] => {
+  userDocuments: UserDocument[],
+  currentUserRoles: UserRole[] = [UserRole.USER]
+): Promise<UserDto[]> => {
   if (userDocuments && Array.isArray(userDocuments)) {
-    return userDocuments.map((d) => userDocumentToUserDto(res, d));
+    return Promise.all(
+      userDocuments.map((d) => userDocumentToUserDto(d, currentUserRoles))
+    );
   }
-  return [];
+  return Promise.resolve([]);
 };
 
 export const userTransformer = (
-  res: Response,
-  userDocument: UserDocument
-): UserDto => {
-  return userDocumentToUserDto(res, userDocument);
+  userDocument: UserDocument,
+  currentUserRoles: UserRole[] = [UserRole.USER]
+): Promise<UserDto> => {
+  return userDocumentToUserDto(userDocument, currentUserRoles);
 };

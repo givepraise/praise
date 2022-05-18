@@ -11,11 +11,9 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
-import { utcDateToLocal } from '@/utils/date';
+import { makeApiAuthClient } from '@/utils/api';
 import {
   ApiAuthGet,
-  ApiAuthPatch,
-  ApiQuery,
   isApiResponseAxiosError,
   isResponseOk,
   useAuthApiQuery,
@@ -270,32 +268,29 @@ type useQuantifyPraiseReturn = {
  * Hook that returns a function to use for closing a period
  */
 export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
+  const apiAuthClient = makeApiAuthClient();
+
   const quantify = useRecoilCallback(
-    ({ snapshot, set }) =>
+    ({ set }) =>
       async (
         praiseId: string,
         score: number,
         dismissed: boolean,
         duplicatePraise: string | null
       ): Promise<PraiseDto | undefined> => {
-        const response = await ApiQuery(
-          snapshot.getPromise(
-            ApiAuthPatch({
-              url: `/praise/${praiseId}/quantify`,
-              data: {
-                score,
-                dismissed,
-                duplicatePraise,
-              },
-            })
-          )
+        const response: AxiosResponse<PraiseDto> = await apiAuthClient.patch(
+          `/praise/${praiseId}/quantify`,
+          {
+            score,
+            dismissed,
+            duplicatePraise,
+          }
         );
 
-        if (isResponseOk(response)) {
-          const praise = response.data as PraiseDto;
-          set(SinglePraise(praise._id), praise);
-          return response.data as PraiseDto;
-        }
+        const praise = response.data;
+        set(SinglePraise(praise._id), praise);
+
+        return praise;
       }
   );
   return { quantify };

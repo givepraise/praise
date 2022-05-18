@@ -89,7 +89,7 @@ const QuantifyPeriodTable = (): JSX.Element => {
 
   const handleClick = (data: QuantifierReceiverData) => () => {
     history.push(
-      `/quantify/period/${data.periodId}/receiver/${data.receiverId}`
+      `/periods/${data.periodId}/quantify/receiver/${data.receiverId}`
     );
   };
   return (

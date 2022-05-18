@@ -5,6 +5,8 @@ import { Request } from 'express';
 import { SettingSetInput } from '@settings/types';
 import { PeriodStatusType } from '@period/types';
 import { PeriodModel } from '@period/entities';
+import { EventLogTypeKey } from '@eventlog/types';
+import { logEvent } from '@eventlog/utils';
 import {
   periodsettingTransformer,
   periodsettingListTransformer,
@@ -61,6 +63,7 @@ export const set = async (
   });
   if (!setting) throw new NotFoundError('PeriodSettings');
 
+  const originalValue = setting.value;
   if (req.files) {
     await removeFile(setting.value);
     const uploadRespone = await upload(req, 'value');
@@ -72,5 +75,18 @@ export const set = async (
   }
 
   await setting.save();
+
+  await logEvent(
+    EventLogTypeKey.SETTING,
+    `Updated period setting "${
+      setting.label
+    }" from ${originalValue} to ${setting.value.toString()} in period "${
+      period.name
+    }"`,
+    {
+      userId: res.locals.currentUser._id,
+    }
+  );
+
   res.status(200).json(periodsettingTransformer(setting));
 };

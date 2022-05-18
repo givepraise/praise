@@ -42,7 +42,7 @@ const QuantifyPeriodPage = (): JSX.Element => {
   return (
     <div className="max-w-2xl mx-auto">
       <BreadCrumb name="Quantify" icon={faCalendarAlt} />
-      <BackLink to={`/period/${periodId}`} />
+      <BackLink to={`/periods/${periodId}`} />
 
       <div className="praise-box">
         <React.Suspense fallback="Loading…">

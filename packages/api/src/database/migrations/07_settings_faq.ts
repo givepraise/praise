@@ -4,7 +4,7 @@ const settings = [
   {
     key: 'PRAISE_FAQ',
     value: '',
-    type: 'Textarea',
+    type: 'QuestionAnswerJSON',
     label: 'FAQ',
     description: 'FAQ in JSON format.',
   },

@@ -5,6 +5,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
+import { sortBy } from 'lodash';
 
 const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -36,9 +37,21 @@ const QuantifierTable = (): JSX.Element => {
     []
   );
 
+  const data = period?.quantifiers
+    ? sortBy(period.quantifiers, [
+        // First, sort by amount of praise remaining
+        (quantifier): number => {
+          return -1 * (quantifier.finishedCount / quantifier.praiseCount);
+        },
+
+        // Then by quantifier _id
+        (quantifier): string => quantifier._id.toString(),
+      ])
+    : [];
+
   const options = {
     columns,
-    data: period?.quantifiers ? period.quantifiers : [],
+    data,
   } as TableOptions<{}>;
   const tableInstance = useTable(options);
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =

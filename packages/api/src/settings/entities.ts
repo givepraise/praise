@@ -15,6 +15,7 @@ export const genericSettingsSchema = {
       'Boolean',
       'IntegerList',
       'Image',
+      'QuestionAnswerJSON',
     ],
     validate: fieldTypeValidator,
     required: true,

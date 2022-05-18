@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Hightlight active page in Navbar, update page routes to nest under top-level routes
+
+### Fixed
+- Remove 1s login delay
+
+## [0.6.0] - 2022-05-09
+
+### Added
 
 - Add giver and receiver id to exported praise csv #364
 - Increased precision in calculation of duplicate praise score, from 0 to 2 decimals #342
