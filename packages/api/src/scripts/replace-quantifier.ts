@@ -2,6 +2,8 @@ import { PeriodModel } from '@period/entities';
 import { PeriodDocument } from '@period/types';
 import { getPreviousPeriodEndDate } from '@period/utils';
 import { PraiseModel } from '@praise/entities';
+import { EventLogTypeKey } from '@eventlog/types';
+import { logEvent } from '@eventlog/utils';
 import { connectDatabase } from './core';
 import yargs from 'yargs';
 import { exit } from 'process';
@@ -47,6 +49,11 @@ const replaceActiveQuantifier = async (
         },
       ],
     }
+  );
+
+  await logEvent(
+    EventLogTypeKey.PERIOD,
+    `Reassigned all praise in period "${period.name}" that is currently assigned to user with id "${currentQuantifierId}", to user with id "${newQuantifierId}"`,
   );
 
   if (result.modifiedCount === 0) {

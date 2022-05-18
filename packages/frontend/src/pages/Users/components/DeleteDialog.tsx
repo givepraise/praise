@@ -1,4 +1,3 @@
-import { getUsername } from '@/utils/users';
 import {
   faTimes,
   faTimesCircle,
@@ -36,7 +35,7 @@ const PoolDeleteDialog = ({
               Removing 1 member from Quantifier Pool
             </Dialog.Title>
             <div className="flex justify-center mb-5">
-              {getUsername(quantifier)}
+              {quantifier.nameRealized}
             </div>
             <div className="flex justify-center">
               <button

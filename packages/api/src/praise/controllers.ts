@@ -16,7 +16,10 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
+import { EventLogTypeKey } from '@eventlog/types';
+import { logEvent } from '@eventlog/utils';
 import { Request } from 'express';
+import { Types } from 'mongoose';
 import { PraiseModel } from './entities';
 import { praiseDocumentTransformer } from './transformers';
 import {
@@ -25,7 +28,7 @@ import {
   PraiseDto,
   QuantificationCreateUpdateInput,
 } from './types';
-import { praiseWithScore } from './utils/core';
+import { praiseWithScore, getPraisePeriod } from './utils/core';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
@@ -91,6 +94,10 @@ export const quantify = async (
   );
   if (!praise) throw new NotFoundError('Praise');
 
+  const period = await getPraisePeriod(praise);
+  if (!period)
+    throw new BadRequestError('Praise does not have an associated period');
+
   const { score, dismissed, duplicatePraise } = req.body;
 
   if (!res.locals.currentUser?._id) {
@@ -104,9 +111,7 @@ export const quantify = async (
   if (!quantification)
     throw new BadRequestError('User not assigned as quantifier for praise.');
 
-  quantification.score = score;
-  quantification.dismissed = dismissed;
-  quantification.duplicatePraise = undefined;
+  let eventLogMessage = '';
 
   if (duplicatePraise) {
     const dp = await PraiseModel.findById(duplicatePraise);
@@ -125,10 +130,44 @@ export const quantify = async (
       throw new BadRequestError('Selected praise cannot be set as duplicate.');
     }
 
+    quantification.score = 0;
+    quantification.dismissed = false;
     quantification.duplicatePraise = dp._id;
+
+    eventLogMessage = `Marked the praise with id "${(
+      praise._id as Types.ObjectId
+    ).toString()}" as duplicate of the praise with id "${(
+      dp._id as Types.ObjectId
+    ).toString()}"`;
+  } else if (dismissed) {
+    quantification.score = 0;
+    quantification.dismissed = true;
+    quantification.duplicatePraise = undefined;
+
+    eventLogMessage = `Dismissed the praise with id "${(
+      praise._id as Types.ObjectId
+    ).toString()}"`;
+  } else {
+    quantification.score = score;
+    quantification.dismissed = false;
+    quantification.duplicatePraise = undefined;
+
+    eventLogMessage = `Gave a score of ${
+      quantification.score
+    } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
   }
 
   await praise.save();
+
+  await logEvent(
+    EventLogTypeKey.QUANTIFICATION,
+    eventLogMessage,
+    {
+      userId: res.locals.currentUser._id,
+    },
+    period._id
+  );
+
   const response = await praiseDocumentTransformer(praise);
   res.status(200).json(response);
 };

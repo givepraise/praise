@@ -18,7 +18,7 @@ const AuthenticatedLayout = ({
   const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
 
   return (
-    <div className="h-full">
+    <div className="h-full cursor-default">
       <Transition.Root show={sidebarOpen} as={Fragment}>
         <Dialog
           as="div"

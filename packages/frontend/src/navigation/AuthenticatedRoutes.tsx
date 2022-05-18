@@ -33,6 +33,10 @@ const QuantifyPage = React.lazy(
   () => import('@/pages/QuantifyPeriodReceiver/QuantifyPeriodReceiverPage')
 );
 
+const EventLogsPage = React.lazy(
+  () => import('@/pages/EventLogs/EventLogsPage')
+);
+
 interface AuthRouteProps {
   children: JSX.Element;
   exact?: boolean;
@@ -88,6 +92,10 @@ const Routes = (): JSX.Element => {
 
       <Route path="/periods/:periodId/receiver/:receiverId">
         <PeriodReceiverSummaryPage />
+      </Route>
+
+      <Route exact path="/eventlogs">
+        <EventLogsPage />
       </Route>
 
       <AuthRoute
