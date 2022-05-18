@@ -1,3 +1,4 @@
+import { SettingGroup } from '@settings/types';
 import { SettingsModel } from '../../settings/entities';
 
 const settings = [
@@ -7,6 +8,7 @@ const settings = [
     type: 'QuestionAnswerJSON',
     label: 'FAQ',
     description: 'FAQ in JSON format.',
+    group: SettingGroup.APPLICATION,
   },
 ];
 
