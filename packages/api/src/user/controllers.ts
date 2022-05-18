@@ -13,8 +13,10 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
+import { EventLogTypeKey } from '@eventlog/types';
+import { logEvent } from '@eventlog/utils';
 import { Request } from 'express';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { UserModel } from './entities';
 import { userListTransformer, userTransformer } from './transformers';
 import { UserDocument, UserDto, UserRole, UserRoleChangeInput } from './types';
@@ -38,7 +40,13 @@ const all = async (
     },
   ]);
   if (!users) throw new InternalServerError('No users found');
-  res.status(200).json(userListTransformer(res, users));
+
+  const usersTransformed = await userListTransformer(
+    users,
+    res.locals.currentUser.roles
+  );
+
+  res.status(200).json(usersTransformed);
 };
 
 const findUser = async (id: string): Promise<UserDocument> => {
@@ -68,7 +76,13 @@ const single = async (
 ): Promise<void> => {
   const { id } = req.params;
   const user = await findUser(id);
-  res.status(200).json(userTransformer(res, user));
+
+  const userTransformed = await userTransformer(
+    user,
+    res.locals.currentUser.roles
+  );
+
+  res.status(200).json(userTransformed);
 };
 
 /**
@@ -93,7 +107,13 @@ const search = async (
   ]);
   if (!Array.isArray(users) || users.length === 0)
     throw new NotFoundError('User');
-  res.status(200).json(userListTransformer(res, users));
+
+  const usersTransformed = await userListTransformer(
+    users,
+    res.locals.currentUser.roles
+  );
+
+  res.status(200).json(usersTransformed);
 };
 
 /**
@@ -119,8 +139,24 @@ const addRole = async (
     await user.save();
   }
 
+  await logEvent(
+    EventLogTypeKey.PERMISSION,
+    `Added role "${role}" to user with id "${(
+      user._id as Types.ObjectId
+    ).toString()}"`,
+    {
+      userId: res.locals.currentUser._id,
+    }
+  );
+
   const userWithDetails = await findUser(id);
-  res.status(200).json(userTransformer(res, userWithDetails));
+
+  const userTransformed = await userTransformer(
+    userWithDetails,
+    res.locals.currentUser.roles
+  );
+
+  res.status(200).json(userTransformed);
 };
 
 /**
@@ -165,10 +201,25 @@ const removeRole = async (
     user.accessToken = undefined;
     user.nonce = undefined;
     await user.save();
+
+    await logEvent(
+      EventLogTypeKey.PERMISSION,
+      `Removed role "${role}" from user with id "${(
+        user._id as Types.ObjectId
+      ).toString()}`,
+      {
+        userId: res.locals.currentUser._id,
+      }
+    );
   }
 
   const userWithDetails = await findUser(id);
-  res.status(200).json(userTransformer(res, userWithDetails));
+
+  const userTransformed = await userTransformer(
+    userWithDetails,
+    res.locals.currentUser.roles
+  );
+  res.status(200).json(userTransformed);
 };
 
 export { all, single, search, addRole, removeRole };

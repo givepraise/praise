@@ -24,7 +24,7 @@ const ReceiverTable = (): JSX.Element | null => {
           className: 'text-left',
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           Cell: (data: any): JSX.Element => (
-            <UserCell userId={data.row.original.userAccount.name} />
+            <div>{data.row.original.userAccount.name}</div>
           ),
         },
         {

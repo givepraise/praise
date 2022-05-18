@@ -4,7 +4,7 @@ import jstz from 'jstz';
 
 export const DATE_FORMAT = 'yyyy-MM-dd';
 export const DATE_FORMAT_TZ = 'yyyy-MM-dd z';
-export const DATE_FORMAT_LONG = 'yyyy-MM-dd HH:mm';
+export const DATE_FORMAT_LONG = 'yyyy-MM-dd HH:mm:ss';
 
 export const parseDate = (
   date: string,
