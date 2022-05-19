@@ -8,6 +8,7 @@ import {
   faCalculator,
   faCog,
   faPrayingHands,
+  faQuestionCircle,
   faUserFriends,
   faBook,
 } from '@fortawesome/free-solid-svg-icons';
@@ -71,6 +72,7 @@ export default function Nav(): JSX.Element {
                 to="/settings/application"
               />
             </AdminOnly>
+            <NavItem icon={faQuestionCircle} description="FAQ" to="/faq" />
           </ul>
         </div>
         <div className="w-full border-t">

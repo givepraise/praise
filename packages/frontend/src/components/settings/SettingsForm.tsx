@@ -34,7 +34,10 @@ const FormFields = (
           field = StringInput(setting.key, apiResponse);
         else if (setting.type === 'Float' || setting.type === 'Integer')
           field = NumberInput(setting.key, apiResponse);
-        else if (setting.type === 'Textarea')
+        else if (
+          setting.type === 'Textarea' ||
+          setting.type === 'QuestionAnswerJSON'
+        )
           field = TextareaInput(setting.key, apiResponse);
         else if (setting.type === 'Boolean')
           field = BooleanInput(setting.key, apiResponse);
