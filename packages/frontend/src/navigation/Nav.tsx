@@ -50,7 +50,7 @@ export default function Nav(): JSX.Element {
               <NavItem
                 icon={faUserFriends}
                 description="Quantifier pool"
-                to="/pool"
+                to="/users"
               />
             </AdminOnly>
             <NavItem

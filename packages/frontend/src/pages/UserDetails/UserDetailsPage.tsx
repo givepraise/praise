@@ -34,7 +34,7 @@ const UserDetailsPage = (): JSX.Element => {
   return (
     <div className="max-w-2xl mx-auto">
       <BreadCrumb name="User details" icon={faUserGroup} />
-      <BackLink to="/pool" />
+      <BackLink to="/users" />
       <div className="praise-box flex flex-col gap-2">
         <span>User identity</span>
         {!!user && (

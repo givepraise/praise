@@ -81,11 +81,11 @@ const Routes = (): JSX.Element => {
         <MyPraisePage />
       </Route>
 
-      <AuthRoute roles={[ROLE_ADMIN]} exact path={'/pool'}>
+      <AuthRoute roles={[ROLE_ADMIN]} exact path={'/users'}>
         <UsersPage />
       </AuthRoute>
 
-      <AuthRoute roles={[ROLE_ADMIN]} path={'/pool/:userId'}>
+      <AuthRoute roles={[ROLE_ADMIN]} path={'/users/:userId'}>
         <UserDetailsPage />
       </AuthRoute>
 

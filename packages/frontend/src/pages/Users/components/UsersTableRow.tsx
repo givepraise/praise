@@ -14,7 +14,7 @@ const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element => {
   return (
     <div
       className="my-3 px-4 flex justify-between items-center cursor-pointer h-12 rounded-md hover:bg-gray-100"
-      onClick={(): void => history.push(`pool/${data._id}`)}
+      onClick={(): void => history.push(`users/${data._id}`)}
     >
       <div className="w-1/3 flex items-center gap-4">
         <UserAvatar user={data} />
