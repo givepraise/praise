@@ -30,32 +30,34 @@ const UserDetailsPage = (): JSX.Element => {
       }
     };
   };
-
+  if (!user) return <></>;
   return (
     <div className="max-w-2xl mx-auto">
       <BreadCrumb name="User details" icon={faUserGroup} />
       <BackLink to="/users" />
       <div className="praise-box flex flex-col gap-2">
         <span>User identity</span>
-        {!!user && (
-          <>
-            <span className="text-xl font-bold">
-              {shortenEthAddress(user.ethereumAddress || '')}
-            </span>
-            <span>Created: {formatIsoDateUTC(user.createdAt)}</span>
-            <span>Last updated: {formatIsoDateUTC(user.updatedAt)}</span>
-          </>
-        )}
+        <span className="text-xl font-bold">
+          {shortenEthAddress(user.ethereumAddress || '')}
+        </span>
+        <div>
+          Created: {formatIsoDateUTC(user.createdAt)}
+          <br />
+          Last updated: {formatIsoDateUTC(user.updatedAt)}
+        </div>
       </div>
       <div className="praise-box flex flex-col gap-2">
-        <span>Linked Discord identities</span>
+        <span>Linked Discord identity</span>
         {user?.accounts?.map((account, index) => (
           <>
-            <span>User account #{index + 1}</span>
             <span className="text-xl font-bold">{account.name}</span>
-            <span>Discord User ID: {account.user}</span>
-            <span>Created: {formatIsoDateUTC(account.createdAt)}</span>
-            <span>Last updated: {formatIsoDateUTC(account.updatedAt)}</span>
+            <div>
+              Discord User ID: {account.user}
+              <br />
+              Created: {formatIsoDateUTC(account.createdAt)}
+              <br />
+              Last updated: {formatIsoDateUTC(account.updatedAt)}
+            </div>
           </>
         ))}
       </div>
