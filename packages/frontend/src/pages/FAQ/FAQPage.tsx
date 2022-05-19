@@ -1,9 +1,5 @@
 import BreadCrumb from '@/components/BreadCrumb';
-import {
-  faCogs,
-  faCaretUp,
-  faQuestionCircle,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCaretUp, faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { SingleSetting } from '@/model/settings';
 import { useRecoilValue } from 'recoil';
@@ -37,12 +33,12 @@ const FAQPage = (): JSX.Element | null => {
           {faq.map((data, index) => {
             return (
               <div key={index}>
-                <h3 className="mt-8 mb-4 block font-bold">{data.section}</h3>
+                <h3 className="block mt-8 mb-4 font-bold">{data.section}</h3>
 
                 {data.questions.map((item, i) => {
                   return (
                     <Disclosure defaultOpen={false} as="div" key={i}>
-                      {({ open }) => (
+                      {({ open }): JSX.Element => (
                         <>
                           <Disclosure.Button className="flex justify-between w-full px-4 py-2 mb-2 font-medium text-left bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none">
                             <span>{item.question}</span>
