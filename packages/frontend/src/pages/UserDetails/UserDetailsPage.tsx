@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { faUserGroup } from '@fortawesome/free-solid-svg-icons';
+import classnames from 'classnames';
 import BreadCrumb from '@/components/BreadCrumb';
 import BackLink from '@/navigation/BackLink';
 import { SingleUser, SingleUserParams, useAdminUsers } from '@/model/users';
@@ -16,21 +18,21 @@ const UserDetailsPage = (): JSX.Element => {
   const user = useRecoilValue(SingleUser({ userId }));
   const { addRole, removeRole } = useAdminUsers();
 
-  const handleRole = (role: UserRole, user: UserDto): void => {
+  const handleRole = async (role: UserRole, user: UserDto): Promise<void> => {
     let resp;
     const isRemove = user.roles.includes(role);
-    async (): Promise<void> => {
-      if (isRemove) {
-        resp = await removeRole(user._id, role);
-      } else {
-        resp = await addRole(user._id, role);
-      }
-      if (resp?.status === 200) {
-        toast.success(`Role ${isRemove ? 'removed' : 'added'} successfully!`);
-      }
-    };
+    if (isRemove) {
+      resp = await removeRole(user._id, role);
+    } else {
+      resp = await addRole(user._id, role);
+    }
+    if (resp?.status === 200) {
+      toast.success(`Role ${isRemove ? 'removed' : 'added'} successfully!`);
+    }
   };
+
   if (!user) return <></>;
+
   return (
     <div className="max-w-2xl mx-auto">
       <BreadCrumb name="User details" icon={faUserGroup} />
@@ -48,7 +50,7 @@ const UserDetailsPage = (): JSX.Element => {
       </div>
       <div className="praise-box flex flex-col gap-2">
         <span>Linked Discord identity</span>
-        {user?.accounts?.map((account, index) => (
+        {user?.accounts?.map((account) => (
           <>
             <span className="text-xl font-bold">{account.name}</span>
             <div>
@@ -64,23 +66,37 @@ const UserDetailsPage = (): JSX.Element => {
       <div className="praise-box">
         <span className="text-xl font-bold">Roles</span>
         <div className="flex gap-4 pt-5">
-          {!!user &&
-            roles.map((role) => (
-              <div
-                key={role}
-                className="flex gap-2 justify-center items-center bg-black py-2 px-3 rounded-md cursor-pointer"
-                onClick={(): void => handleRole(role, user)}
-              >
-                <input
-                  checked={user.roles.includes(role)}
-                  className="text-lime-500 cursor-pointer"
-                  name={role}
-                  type="checkbox"
-                  onChange={(): void => handleRole(role, user)}
-                />
-                <span className="text-white">{role}</span>
-              </div>
-            ))}
+          {roles.map((role) => (
+            <div
+              key={role}
+              className={classnames(
+                'flex',
+                'gap-2',
+                'justify-center',
+                'items-center',
+                'py-2',
+                'px-3',
+                'rounded-md',
+                'cursor-pointer',
+                'bg-black',
+                {
+                  ['opacity-60']: !user.roles.includes(role),
+                }
+              )}
+              onClick={async (): Promise<void> => handleRole(role, user)}
+            >
+              <input
+                checked={user.roles.includes(role)}
+                className="text-lime-500 cursor-pointer"
+                name={role}
+                type="checkbox"
+                readOnly
+              />
+              <label className="text-white cursor-pointer" htmlFor={role}>
+                {role}
+              </label>
+            </div>
+          ))}
         </div>
       </div>
     </div>
