@@ -11,7 +11,6 @@ import { UserDto, UserRole } from 'api/dist/user/types';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import UsersTableRow from './UsersTableRow';
-import UsersTableHeader from './UsersTableHeader';
 import UsersTablePagination from './UsersTablePagination';
 
 const roleOptions = [
@@ -141,9 +140,15 @@ const UsersTable = (): JSX.Element => {
         </div>
       </div>
       <div className="flex justify-between px-4 mt-8">
-        <UsersTableHeader label="User" />
-        <UsersTableHeader label="Discord" />
-        <UsersTableHeader label="Roles" />
+        <div className="w-1/3">
+          <span className="font-bold">User</span>
+        </div>
+        <div className="w-1/3">
+          <span className="font-bold">Discord</span>
+        </div>
+        <div className="w-1/3">
+          <span className="font-bold">Roles</span>
+        </div>
       </div>
       <React.Suspense fallback="Loading...">
         {tableData?.map((row, index) => {
