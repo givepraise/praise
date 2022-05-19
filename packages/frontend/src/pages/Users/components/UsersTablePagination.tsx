@@ -19,16 +19,16 @@ const UsersTablePagination = ({
   setPage,
 }: IUsersTablePagination): JSX.Element => {
   return (
-    <div className="flex gap-2 items-center select-none mt-8 pl-4">
+    <div className="flex gap-4 items-center select-none mt-8 pl-4">
       <FontAwesomeIcon
         icon={faAnglesLeft}
-        size="lg"
+        size="sm"
         className="cursor-pointer"
         onClick={(): void => setPage(1)}
       />
       <FontAwesomeIcon
         icon={faAngleLeft}
-        size="lg"
+        size="sm"
         className="cursor-pointer"
         onClick={(): void =>
           setPage((previousPage) =>
@@ -38,7 +38,7 @@ const UsersTablePagination = ({
       />
       <FontAwesomeIcon
         icon={faAngleRight}
-        size="lg"
+        size="sm"
         className="cursor-pointer"
         onClick={(): void =>
           setPage((previousPage) =>
@@ -48,7 +48,7 @@ const UsersTablePagination = ({
       />
       <FontAwesomeIcon
         icon={faAnglesRight}
-        size="lg"
+        size="sm"
         className="cursor-pointer"
         onClick={(): void => setPage(lastPage)}
       />
