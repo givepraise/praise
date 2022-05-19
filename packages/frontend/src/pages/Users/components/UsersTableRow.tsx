@@ -1,6 +1,6 @@
 import { useHistory } from 'react-router-dom';
 import { UserDto, UserRole } from 'api/dist/user/types';
-import RoleBadge from './RoleBadge';
+import { InlineLabel } from '@/components/InlineLabel';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { shortenEthAddress } from '@/utils/index';
 import { getUsername } from '@/utils/users';
@@ -26,7 +26,7 @@ const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element => {
       <div className="w-1/3">
         {data.roles.map((role, index) => {
           if (role !== UserRole.USER) {
-            return <RoleBadge key={`${role}-${index}`} label={role} />;
+            return <InlineLabel key={`${role}-${index}`} text={role} />;
           }
         })}
       </div>
