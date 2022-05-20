@@ -30,7 +30,6 @@ const UsersTable = (): JSX.Element => {
     UserRole.USER
   );
   const [filter, setFilter] = React.useState<string>('');
-  const [filterType, setFilterType] = React.useState<string>('user');
   const [page, setPage] = React.useState<number>(1);
   const [lastPage, setLastPage] = React.useState<number>(0);
 
@@ -39,30 +38,6 @@ const UsersTable = (): JSX.Element => {
       setTableData(allUsers);
     }
   }, [allUsers]);
-
-  React.useEffect(() => {
-    if (filter && tableData) {
-      let filteredData: UserDto[];
-      if (filterType === 'user') {
-        filteredData = tableData.filter((user) => {
-          const username = getUsername(user)?.toLowerCase();
-          if (username?.includes(filter.toLocaleLowerCase())) {
-            return user;
-          }
-        });
-      } else {
-        filteredData = tableData.filter((user) => {
-          if (
-            user.ethereumAddress?.toLocaleLowerCase() ===
-            filter.toLocaleLowerCase()
-          ) {
-            return user;
-          }
-        });
-      }
-      setTableData(filteredData);
-    }
-  }, [filterType, filter]);
 
   React.useEffect(() => {
     switch (selectedRole) {
@@ -80,7 +55,13 @@ const UsersTable = (): JSX.Element => {
         break;
     }
     setFilter('');
-  }, [selectedRole]);
+  }, [
+    selectedRole,
+    allUsers,
+    allAdminUsers,
+    allForwarderUsers,
+    allQuantifierUsers,
+  ]);
 
   React.useEffect(() => {
     if (tableData) {
@@ -93,6 +74,19 @@ const UsersTable = (): JSX.Element => {
       }
     }
   }, [tableData]);
+
+  const applyFilter = (data: UserDto[] | undefined): UserDto[] => {
+    if (!data) return [];
+    const filteredData = data.filter((user: UserDto) => {
+      const username = getUsername(user)?.toLowerCase();
+      const userAddress = user.ethereumAddress?.toLowerCase();
+      const filterData = filter.toLocaleLowerCase();
+      if (username?.includes(filterData) || userAddress?.includes(filterData)) {
+        return user;
+      }
+    });
+    return filteredData;
+  };
 
   return (
     <div>
@@ -127,16 +121,6 @@ const UsersTable = (): JSX.Element => {
               }
             />
           </label>
-          <hr className="border-black w-6 rotate-90" />
-          <select
-            className="bg-transparent outline-none border-none focus:ring-0"
-            onChange={(event: React.ChangeEvent<HTMLSelectElement>): void =>
-              setFilterType(UserRole[event.target.value])
-            }
-          >
-            <option value="user">User</option>
-            <option value="discord">Discord</option>
-          </select>
         </div>
       </div>
       <div className="flex justify-between px-4 mt-8">
@@ -151,7 +135,7 @@ const UsersTable = (): JSX.Element => {
         </div>
       </div>
       <React.Suspense fallback="Loading...">
-        {tableData?.map((row, index) => {
+        {applyFilter(tableData).map((row, index) => {
           if (Math.trunc(index / 5) + 1 === page) {
             return <UsersTableRow key={row._id} data={row} />;
           }
