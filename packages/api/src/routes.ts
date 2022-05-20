@@ -13,6 +13,8 @@ import {
   periodsettingsRouter,
   adminPeriodsettingsRouter,
 } from '@periodsettings/routes';
+import { eventLogRouter } from '@eventlog/routes';
+
 const baseRouter = Router();
 
 /* Open routes */
@@ -39,6 +41,9 @@ baseRouter.use('/praise', praiseRouter);
 
 baseRouter.useAsync('/useraccount', authMiddleware(UserRole.USER));
 baseRouter.use('/useraccount', userAccountRouter);
+
+baseRouter.useAsync('/eventlogs', authMiddleware(UserRole.USER));
+baseRouter.use('/eventlogs', eventLogRouter);
 
 /* ADMIN authentication */
 

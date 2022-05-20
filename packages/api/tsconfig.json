@@ -24,6 +24,7 @@
       "@shared/*": ["src/shared/*"],
       "@user/*": ["src/user/*"],
       "@useraccount/*": ["src/useraccount/*"],
+      "@eventlog/*": ["src/eventlog/*"],
       "@server": ["src/server"]
     }
   },

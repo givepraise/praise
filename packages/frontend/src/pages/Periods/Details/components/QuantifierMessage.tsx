@@ -28,7 +28,7 @@ export const QuantifierMessage = (): JSX.Element | null => {
           <button
             className="block mt-5 praise-button"
             onClick={(): void => {
-              history.push(`/quantify/period/${periodId}`);
+              history.push(`/periods/${periodId}/quantify`);
             }}
           >
             <FontAwesomeIcon icon={faCalculator} size="1x" className="mr-2" />

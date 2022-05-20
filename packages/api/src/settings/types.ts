@@ -1,5 +1,11 @@
 import mongoose from 'mongoose';
 
+export enum SettingGroup {
+  APPLICATION,
+  PERIOD_DEFAULT,
+  DISCORD,
+}
+
 export interface Setting {
   key: string;
   value: string;
@@ -7,7 +13,7 @@ export interface Setting {
   type: string;
   label: string;
   description?: string;
-  periodOverridable: boolean;
+  group: SettingGroup;
 }
 
 export interface SettingDocument extends Setting, mongoose.Document {}
@@ -20,6 +26,7 @@ export interface SettingDto {
   type: string;
   label: string;
   description?: string;
+  group: SettingGroup;
 }
 
 export interface SettingSetInput {

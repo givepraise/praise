@@ -9,6 +9,8 @@ import { insertNewPeriodSettings } from '@periodsettings/utils';
 import faker from 'faker';
 import logger from 'jet-logger';
 import { UserDocument } from '@user/types';
+import { EventLogDocument } from '@eventlog/types';
+import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';
 
 const PERIOD_NUMBER = 3;
 const PERIOD_LENGTH = 10;
@@ -229,6 +231,28 @@ const seedQuantification = async (
   return quantification;
 };
 
+const seedEventLog = async (
+  eventLogData: Object = {}
+): Promise<EventLogDocument> => {
+  const createdAt = faker.date.recent();
+  const randomUser = await seedUser();
+  const eventLogTypes = await EventLogTypeModel.find({});
+  const randomEventLogType = eventLogTypes
+    .sort(() => 0.5 - Math.random())
+    .slice(0, eventLogTypes.length)[0];
+
+  const eventLog = await EventLogModel.create({
+    user: randomUser._id,
+    type: randomEventLogType._id,
+    description: faker.lorem.lines(1),
+    createdAt,
+    updatedAt: createdAt,
+    ...eventLogData,
+  });
+
+  return eventLog;
+};
+
 const seedData = async (): Promise<void> => {
   logger.info('Seeding database with fake data.');
 
@@ -248,4 +272,5 @@ export {
   seedPraise,
   seedPraises,
   seedQuantification,
+  seedEventLog,
 };

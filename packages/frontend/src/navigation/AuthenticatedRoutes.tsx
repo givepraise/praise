@@ -36,6 +36,12 @@ const QuantifyPage = React.lazy(
   () => import('@/pages/QuantifyPeriodReceiver/QuantifyPeriodReceiverPage')
 );
 
+const EventLogsPage = React.lazy(
+  () => import('@/pages/EventLogs/EventLogsPage')
+);
+
+const FAQPage = React.lazy(() => import('@/pages/FAQ/FAQPage'));
+
 interface AuthRouteProps {
   children: JSX.Element;
   exact?: boolean;
@@ -77,7 +83,7 @@ const AuthRoute = ({ children, ...props }: AuthRouteProps): JSX.Element => {
 const Routes = (): JSX.Element => {
   return (
     <Switch>
-      <Route exact path="/mypraise">
+      <Route path="/mypraise">
         <MyPraisePage />
       </Route>
 
@@ -97,26 +103,36 @@ const Routes = (): JSX.Element => {
         <PeriodsCreateUpdatePage />
       </AuthRoute>
 
-      <Route exact path="/period/:periodId/receiver/:receiverId">
+      <Route path="/periods/:periodId/receiver/:receiverId">
         <PeriodReceiverSummaryPage />
       </Route>
-      <Route path={'/period/:periodId'}>
-        <PeriodDetailPage />
-      </Route>
 
-      <Route exact path="/praise/:praiseId">
-        <PraiseDetailsPage />
+      <Route exact path="/eventlogs">
+        <EventLogsPage />
       </Route>
 
       <AuthRoute
         roles={[ROLE_QUANTIFIER]}
-        path={'/quantify/period/:periodId/receiver/:receiverId'}
+        path={'/periods/:periodId/quantify/receiver/:receiverId'}
       >
         <QuantifyPage />
       </AuthRoute>
-      <AuthRoute roles={[ROLE_QUANTIFIER]} path={'/quantify/period/:periodId'}>
+
+      <AuthRoute roles={[ROLE_QUANTIFIER]} path={'/periods/:periodId/quantify'}>
         <QuantifyPeriodPage />
       </AuthRoute>
+
+      <Route path={'/periods/:periodId'}>
+        <PeriodDetailPage />
+      </Route>
+
+      <Route path={'/periods'}>
+        <PeriodsPage />
+      </Route>
+
+      <Route path="/praise/:praiseId">
+        <PraiseDetailsPage />
+      </Route>
 
       <AuthRoute roles={[ROLE_ADMIN]} path={'/settings'}>
         <SettingsPage />
@@ -124,6 +140,10 @@ const Routes = (): JSX.Element => {
 
       <Route exact path="/">
         <StartPage />
+      </Route>
+
+      <Route exact path="/faq">
+        <FAQPage />
       </Route>
 
       <Route path="/*">
