@@ -3,9 +3,7 @@ import { AxiosResponse } from 'axios';
 import React from 'react';
 import { toast } from 'react-hot-toast';
 import {
-  atom,
   atomFamily,
-  selector,
   selectorFamily,
   useRecoilCallback,
   useRecoilValue,

@@ -1,6 +1,5 @@
 import { AllUsers } from '@/model/users';
 import { classNames } from '@/utils/index';
-import { getUsername } from '@/utils/users';
 import { faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
@@ -105,7 +104,7 @@ const UserAutosuggest = ({
                 key={`${item}${index}`}
                 {...getItemProps({ item, index })}
               >
-                {getUsername(item)}
+                {item.nameRealized}
               </li>
             ))}
         </ul>

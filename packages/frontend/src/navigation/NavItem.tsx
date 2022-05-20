@@ -1,6 +1,6 @@
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 interface NavProps {
   icon?: IconProp;
@@ -10,9 +10,13 @@ interface NavProps {
 
 const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
   return (
-    <Link
+    <NavLink
       to={to}
-      className="relative px-4 py-1 cursor-pointer hover:bg-gray-100 mr-[1px] no-underline flex items-center"
+      className={(isActive): string =>
+        `relative px-4 py-1 cursor-pointer no-underline flex items-center text-black ${
+          isActive ? ' bg-gray-200' : ' hover:bg-gray-100'
+        }`
+      }
       id={to.substring(1) + '-nav-button'}
     >
       {icon && (
@@ -23,7 +27,7 @@ const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
       <div className="flex-auto inline-block my-1">
         <span>{description}</span>
       </div>
-    </Link>
+    </NavLink>
   );
 };
 

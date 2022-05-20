@@ -5,18 +5,14 @@ import { requestApiAuth, requestNonce } from '@/utils/auth';
 import { useWeb3React } from '@web3-react/core';
 import React, { ReactElement } from 'react';
 import { toast } from 'react-hot-toast';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 interface CodedError {
   message?: string;
   code?: number;
 }
-interface LocationState {
-  from: {
-    pathname: string;
-  };
-}
+
 const generateLoginMessage = (account: string, nonce: string): string => {
   return (
     'SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n' +
@@ -33,7 +29,6 @@ const LoginButton: React.FC = (): ReactElement | null => {
     const accessToken = useRecoilValue(AccessToken);
     const { account: ethereumAddress } = useRecoilValue(EthState);
     const history = useHistory();
-    const location = useLocation<LocationState>();
 
     const signLoginMessage = async (): Promise<void> => {
       if (!ethereumAddress) return;
@@ -69,10 +64,7 @@ const LoginButton: React.FC = (): ReactElement | null => {
     // 4. Redirect after login success
 
     if (accessToken) {
-      const { from } = location.state || { from: { pathname: '/' } };
-      setTimeout(() => {
-        history.replace(from);
-      }, 1000);
+      history.replace('/');
     }
 
     if (!accessToken && !signatureReceived) {

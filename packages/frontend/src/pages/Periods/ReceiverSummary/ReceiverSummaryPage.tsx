@@ -46,7 +46,7 @@ const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
   return (
     <>
       <BreadCrumb name={'Receiver summary for period'} icon={faCalendarAlt} />
-      <BackLink to={`/period/${periodId}`} />
+      <BackLink to={`/periods/${periodId}`} />
 
       <React.Suspense fallback="Loading…">
         <PeriodReceiverMessage />

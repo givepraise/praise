@@ -1,6 +1,8 @@
 import { PraiseModel } from 'api/dist/praise/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
+import { EventLogTypeKey } from 'api/src/eventlog/types';
+import { logEvent } from 'api/src/eventlog/utils';
 import { Message } from 'discord.js';
 import logger from 'jet-logger';
 import { getSetting } from '../utils/getSettings';
@@ -130,6 +132,14 @@ export const praiseHandler: CommandHandler = async (
       receiver: receiverAccount._id,
     });
     if (praiseObj) {
+      await logEvent(
+        EventLogTypeKey.PRAISE,
+        'Created a new praise from discord',
+        {
+          userAccountId: userAccount._id,
+        }
+      );
+
       try {
         await receiver.send({ embeds: [await praiseSuccessDM(responseUrl)] });
       } catch (err) {

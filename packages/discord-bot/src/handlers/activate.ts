@@ -1,9 +1,27 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
+import { EventLogTypeKey } from 'api/src/eventlog/types';
+import { logEvent } from 'api/src/eventlog/utils';
 import randomstring from 'randomstring';
 import { CommandHandler } from 'src/interfaces/CommandHandler';
+import { alreadyActivatedError } from '../utils/praiseEmbeds';
+
 export const activationHandler: CommandHandler = async (interaction) => {
   const { user } = interaction;
+
+  let userAccount = await UserAccountModel.findOne({
+    accountId: user.id,
+    platform: 'DISCORD',
+  });
+
+  if (userAccount?.user) {
+    await interaction.reply({
+      content: await alreadyActivatedError(),
+      ephemeral: true,
+    });
+    return;
+  }
+
   const ua = {
     accountId: user.id,
     name: user.username + '#' + user.discriminator,
@@ -11,7 +29,8 @@ export const activationHandler: CommandHandler = async (interaction) => {
     platform: 'DISCORD',
     activateToken: randomstring.generate(),
   } as UserAccount;
-  const userAccount = await UserAccountModel.findOneAndUpdate(
+
+  userAccount = await UserAccountModel.findOneAndUpdate(
     { accountId: user.id },
     ua,
     { upsert: true, new: true }
@@ -21,6 +40,14 @@ export const activationHandler: CommandHandler = async (interaction) => {
     await interaction.reply('Unable to create user account.');
     return;
   }
+
+  await logEvent(
+    EventLogTypeKey.AUTHENTICATION,
+    'Ran the /activate command on discord',
+    {
+      userAccountId: userAccount._id,
+    }
+  );
 
   const getActivationURL = (
     accountId: string,

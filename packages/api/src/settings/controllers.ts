@@ -1,6 +1,8 @@
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { removeFile, upload } from '@shared/functions';
 import { TypedRequestBody, TypedResponse } from '@shared/types';
+import { EventLogTypeKey } from '@eventlog/types';
+import { logEvent } from '@eventlog/utils';
 import { Request } from 'express';
 import { SettingsModel } from './entities';
 import { settingListTransformer, settingTransformer } from './transformers';
@@ -42,6 +44,7 @@ export const set = async (
   });
   if (!setting) throw new NotFoundError('Settings');
 
+  const originalValue = setting.value;
   if (req.files) {
     await removeFile(setting.value);
     const uploadRespone = await upload(req, 'value');
@@ -53,5 +56,14 @@ export const set = async (
   }
 
   await setting.save();
+
+  await logEvent(
+    EventLogTypeKey.SETTING,
+    `Updated global setting "${setting.label}" from "${originalValue}" to "${setting.value}"`,
+    {
+      userId: res.locals.currentUser._id,
+    }
+  );
+
   res.status(200).json(settingTransformer(setting));
 };

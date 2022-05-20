@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { SettingDocument } from './types';
+import { SettingDocument, SettingGroup } from './types';
 import { fieldTypeValidator } from './validators';
 
 export const genericSettingsSchema = {
@@ -15,12 +15,14 @@ export const genericSettingsSchema = {
       'Boolean',
       'IntegerList',
       'Image',
+      'QuestionAnswerJSON',
     ],
     validate: fieldTypeValidator,
     required: true,
   },
   label: { type: String, required: true },
   description: { type: String },
+  group: { type: Number, enum: SettingGroup, required: true },
 };
 
 export function getGenericSettingValueRealized(
@@ -40,12 +42,7 @@ export function getGenericSettingValueRealized(
       .split(',')
       .map((v: string) => Number.parseInt(v.trim()));
   } else if (this.type === 'Image') {
-    normalizedValue =
-      process.env.NODE_ENV === 'production'
-        ? `${process.env.SERVER_URL as string}/${this.value}`
-        : `${process.env.SERVER_URL as string}:${
-            process.env.API_PORT as string
-          }/${this.value}`;
+    normalizedValue = `${process.env.SERVER_URL as string}/${this.value}`;
   } else {
     normalizedValue = this.value;
   }
@@ -58,7 +55,6 @@ export const valueRealizedVirtualName = 'valueRealized';
 const settingsSchema = new mongoose.Schema(
   {
     ...genericSettingsSchema,
-    periodOverridable: { type: Boolean, default: false },
   },
   {
     collection: 'settings',
