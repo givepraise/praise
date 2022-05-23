@@ -12,7 +12,7 @@ import { toast } from 'react-hot-toast';
 
 const roles = [UserRole.ADMIN, UserRole.FORWARDER, UserRole.QUANTIFIER];
 
-const UserDetailsPage = (): JSX.Element => {
+const UserDetailsPage = (): JSX.Element | null => {
   const { userId } = useParams<SingleUserParams>();
   const user = useRecoilValue(SingleUser({ userId }));
   const { addRole, removeRole } = useAdminUsers();
@@ -30,7 +30,7 @@ const UserDetailsPage = (): JSX.Element => {
     }
   };
 
-  if (!user) return <></>;
+  if (!user) return null;
 
   return (
     <div className="max-w-2xl mx-auto">
