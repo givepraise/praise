@@ -1,12 +1,11 @@
 import { faUserGroup } from '@fortawesome/free-solid-svg-icons';
-import classnames from 'classnames';
 import BreadCrumb from '@/components/BreadCrumb';
 import BackLink from '@/navigation/BackLink';
 import { SingleUser, SingleUserParams, useAdminUsers } from '@/model/users';
 import { useRecoilValue } from 'recoil';
 import { useParams } from 'react-router-dom';
 import { formatIsoDateUTC } from '@/utils/date';
-import { shortenEthAddress } from '@/utils/index';
+import { shortenEthAddress, classNames } from '@/utils/index';
 import { UserDto, UserRole } from 'api/dist/user/types';
 import { toast } from 'react-hot-toast';
 
@@ -68,19 +67,9 @@ const UserDetailsPage = (): JSX.Element | null => {
           {roles.map((role) => (
             <div
               key={role}
-              className={classnames(
-                'flex',
-                'gap-2',
-                'justify-center',
-                'items-center',
-                'py-2',
-                'px-3',
-                'rounded-md',
-                'cursor-pointer',
-                'bg-black',
-                {
-                  ['opacity-60']: !user.roles.includes(role),
-                }
+              className={classNames(
+                'flex gap-2 justify-center items-center py-2 px-3 rounded-md cursor-pointer bg-black',
+                user.roles.includes(role) ? 'opacity-60' : ''
               )}
               onClick={(): void => void handleRole(role, user)}
             >
