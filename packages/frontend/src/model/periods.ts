@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
+import { makeApiAuthClient } from '@/utils/api';
 import { periodQuantifierPraiseListKey } from '@/utils/periods';
 import {
   PeriodCreateInput,
@@ -10,7 +11,7 @@ import {
 import { PraiseDto } from 'api/dist/praise/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   atom,
   atomFamily,
@@ -19,6 +20,7 @@ import {
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
+  useSetRecoilState,
 } from 'recoil';
 import {
   ApiAuthGet,
@@ -83,49 +85,20 @@ export const AllPeriods = selector({
 });
 
 /**
- * Paramas for SinglePeriodQuery
- */
-type SinglePeriodQueryParams = {
-  periodId: string;
-  refreshKey: string | undefined;
-};
-
-/**
- * Query selector that fetches details for a single period.
- */
-export const SinglePeriodQuery = selectorFamily({
-  key: 'SinglePeriodQuery',
-  get:
-    (params: SinglePeriodQueryParams) =>
-    ({ get }): AxiosResponse<unknown> => {
-      const { periodId, refreshKey } = params;
-      return get(
-        ApiAuthGet({
-          url: `/periods/${periodId}`,
-          refreshKey,
-        })
-      );
-    },
-});
-
-/**
  * Hook that fetches details for a single period from the API.
  */
-export const useSinglePeriodQuery = (
-  periodId: string,
-  refreshKey: string | undefined
-): PeriodDetailsDto | undefined => {
-  const [period, setPeriod] = useRecoilState(SinglePeriod(periodId));
-  const periodResponse = useRecoilValue(
-    SinglePeriodQuery({ periodId, refreshKey })
-  );
+export const useSinglePeriodQuery = (periodId: string): void => {
+  const apiAuthClient = makeApiAuthClient();
+  const setPeriod = useSetRecoilState(SinglePeriod(periodId));
 
-  React.useEffect(() => {
-    if (periodResponse.data !== period && isResponseOk(periodResponse)) {
-      setPeriod(periodResponse.data);
-    }
-  }, [period, periodResponse, setPeriod]);
-  return period;
+  useEffect(() => {
+    const fetchPeriod = async (): Promise<void> => {
+      const response = await apiAuthClient.get(`/periods/${periodId}`);
+      setPeriod(response.data);
+    };
+
+    void fetchPeriod();
+  }, [periodId, setPeriod, apiAuthClient]);
 };
 
 /**
