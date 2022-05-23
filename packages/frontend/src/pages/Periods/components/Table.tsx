@@ -1,7 +1,7 @@
 import { AllPeriods } from '@/model/periods';
 import { formatIsoDateUTC } from '@/utils/date';
 import { classNames } from '@/utils/index';
-import { PeriodDto } from 'api/dist/period/types';
+import { PeriodDetailsDto } from 'api/dist/period/types';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
@@ -98,7 +98,7 @@ const PeriodsTable = (): JSX.Element => {
               )}
               id="" //TODO set id
               {...row.getRowProps()}
-              onClick={handleClick((row.original as PeriodDto)._id)}
+              onClick={handleClick((row.original as PeriodDetailsDto)._id)}
             >
               {row.cells.map((cell) => {
                 // eslint-disable-next-line react/jsx-key
