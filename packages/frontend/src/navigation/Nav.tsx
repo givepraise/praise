@@ -49,11 +49,7 @@ export default function Nav(): JSX.Element {
               to="/mypraise"
             />
             <AdminOnly>
-              <NavItem
-                icon={faUserFriends}
-                description="Quantifier pool"
-                to="/users"
-              />
+              <NavItem icon={faUserFriends} description="Users" to="/users" />
             </AdminOnly>
             <NavItem
               icon={faCalculator}
