@@ -4,7 +4,6 @@ import {
   AllQuantifierUsers,
   AllUsers,
 } from '@/model/users';
-import { getUsername } from '@/utils/users';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { UserDto, UserRole } from 'api/dist/user/types';
@@ -78,12 +77,13 @@ const UsersTable = (): JSX.Element => {
   const applyFilter = (data: UserDto[] | undefined): UserDto[] => {
     if (!data) return [];
     const filteredData = data.filter((user: UserDto) => {
-      const username = getUsername(user)?.toLowerCase();
       const userAddress = user.ethereumAddress?.toLowerCase();
       const filterData = filter.toLocaleLowerCase();
-      if (username?.includes(filterData) || userAddress?.includes(filterData)) {
-        return user;
-      }
+
+      return (
+        user.nameRealized.includes(filterData) ||
+        userAddress?.includes(filterData)
+      );
     });
     return filteredData;
   };
