@@ -20,7 +20,7 @@ export const InlineLabel = ({
       onClick={onClick}
       className={classNames(
         className,
-        'h-6 pl-1 pr-1 mr-1 text-xs text-white no-underline bg-gray-800 py-[1px] rounded',
+        'inline-block pl-1 pr-1 mr-1 text-xs text-white no-underline bg-gray-800 py-[1px] rounded break-normal',
         onClick ? 'cursor-pointer' : ''
       )}
       title={title}
