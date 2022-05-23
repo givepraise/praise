@@ -4,7 +4,6 @@ import { periodQuantifierPraiseListKey } from '@/utils/periods';
 import {
   PeriodCreateInput,
   PeriodDetailsDto,
-  PeriodDto,
   PeriodStatusType,
   PeriodUpdateInput,
 } from 'api/dist/period/types';
@@ -333,7 +332,7 @@ export const useClosePeriod = (): useClosePeriodReturn => {
         );
 
         if (isResponseOk(response)) {
-          const period = response.data as PeriodDto;
+          const period = response.data as PeriodDetailsDto;
 
           if (period) {
             set(SinglePeriod(period._id), period);
@@ -537,7 +536,7 @@ export const usePeriodReceiverPraiseQuery = (
 };
 
 type useExportPraiseReturn = {
-  exportPraise: (period: PeriodDto) => Promise<Blob | undefined>;
+  exportPraise: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
 };
 /**
  * Hook that exports all praise in a period as csv data.
@@ -547,7 +546,7 @@ export const useExportPraise = (): useExportPraiseReturn => {
 
   const exportPraise = useRecoilCallback(
     ({ snapshot }) =>
-      async (period: PeriodDto): Promise<Blob | undefined> => {
+      async (period: PeriodDetailsDto): Promise<Blob | undefined> => {
         if (!period || !allPeriods) return undefined;
         const response = await ApiQuery(
           snapshot.getPromise(
