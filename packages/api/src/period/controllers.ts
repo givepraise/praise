@@ -43,7 +43,6 @@ import { parseISO } from 'date-fns';
 import {
   AssignQuantifiersDryRunOutput,
   PeriodDetailsDto,
-  PeriodDto,
   PeriodStatusType,
   PeriodUpdateInput,
   VerifyQuantifierPoolSizeResponse,
@@ -117,7 +116,7 @@ export const single = async (
  */
 export const create = async (
   req: TypedRequestBody<PeriodUpdateInput>,
-  res: TypedResponse<PeriodDto>
+  res: TypedResponse<PeriodDetailsDto>
 ): Promise<void> => {
   const { name, endDate } = req.body;
   const period = await PeriodModel.create({ name, endDate });
@@ -131,7 +130,9 @@ export const create = async (
     }
   );
 
-  res.status(StatusCodes.OK).json(periodDocumentTransformer(period));
+  const periodDetailsDto = await findPeriodDetailsDto(period._id);
+
+  res.status(StatusCodes.OK).json(periodDetailsDto);
 };
 
 /**
@@ -140,7 +141,7 @@ export const create = async (
  */
 export const update = async (
   req: TypedRequestBody<PeriodUpdateInput>,
-  res: TypedResponse<PeriodDto>
+  res: TypedResponse<PeriodDetailsDto>
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
@@ -199,7 +200,7 @@ export const update = async (
  */
 export const close = async (
   req: Request,
-  res: TypedResponse<PeriodDto>
+  res: TypedResponse<PeriodDetailsDto>
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');

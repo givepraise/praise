@@ -1,15 +1,14 @@
 import { QuantifierReceiverData } from '@/model/periods';
 import {
-  PeriodDetailsDto,
   PeriodDetailsQuantifierDto,
-  PeriodDto,
+  PeriodDetailsDto,
   PeriodStatusType,
 } from 'api/dist/period/types';
 import { compareDesc } from 'date-fns';
 
 export const getActivePeriod = (
-  allPeriods: PeriodDto[]
-): PeriodDto | undefined => {
+  allPeriods: PeriodDetailsDto[]
+): PeriodDetailsDto | undefined => {
   const today = new Date();
   for (const period of allPeriods) {
     if (compareDesc(today, new Date(period.endDate)) >= 0) return period;
@@ -18,9 +17,9 @@ export const getActivePeriod = (
 };
 
 export const getPreviousPeriod = (
-  allPeriods: PeriodDto[],
-  period: PeriodDto
-): PeriodDto | undefined => {
+  allPeriods: PeriodDetailsDto[],
+  period: PeriodDetailsDto
+): PeriodDetailsDto | undefined => {
   const endDate = new Date(period.endDate);
   for (let i = 0; i < allPeriods.length; i++) {
     if (compareDesc(endDate, new Date(allPeriods[i].endDate)) < 0)
