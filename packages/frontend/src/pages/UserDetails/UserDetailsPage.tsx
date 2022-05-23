@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import { faUserGroup } from '@fortawesome/free-solid-svg-icons';
 import classnames from 'classnames';
 import BreadCrumb from '@/components/BreadCrumb';
@@ -83,7 +82,7 @@ const UserDetailsPage = (): JSX.Element => {
                   ['opacity-60']: !user.roles.includes(role),
                 }
               )}
-              onClick={async (): Promise<void> => handleRole(role, user)}
+              onClick={(): void => void handleRole(role, user)}
             >
               <input
                 checked={user.roles.includes(role)}
