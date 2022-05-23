@@ -44,7 +44,7 @@ const AddRoleButton = (): JSX.Element => {
 
 const UsersPage = (): JSX.Element => {
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="praise-page">
       <BreadCrumb name="Quantifier pool" icon={faUserFriends} />
 
       <div className="praise-box">

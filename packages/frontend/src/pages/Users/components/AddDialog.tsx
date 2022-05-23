@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import { UserDto, UserRole } from 'api/dist/user/types';
 import { useCombobox } from 'downshift';
-import React, { LegacyRef, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 
 interface UserAutosuggestProps {

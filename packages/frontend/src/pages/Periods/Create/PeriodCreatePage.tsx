@@ -127,7 +127,7 @@ const PeriodsForm = (): JSX.Element => {
 
 const PeriodsCreatePage = (): JSX.Element => {
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="praise-page">
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 
