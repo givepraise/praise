@@ -9,8 +9,11 @@ interface IUsersTableRow {
   data: UserDto;
 }
 
-const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element => {
+const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element | null => {
   const history = useHistory();
+
+  if (!data.ethereumAddress) return null;
+
   return (
     <div
       className="my-3 px-4 flex justify-between items-center cursor-pointer h-12 rounded-md hover:bg-gray-100"
@@ -19,7 +22,7 @@ const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element => {
       <div className="w-1/3 flex items-center gap-4">
         <UserAvatar user={data} />
         <span className=" font-mono text-sm">
-          {shortenEthAddress(data.ethereumAddress!)}
+          {shortenEthAddress(data.ethereumAddress)}
         </span>
       </div>
       <div className="w-1/3">{getUsername(data)}</div>
