@@ -81,7 +81,7 @@ const UsersTable = (): JSX.Element => {
       const filterData = filter.toLocaleLowerCase();
 
       return (
-        user.nameRealized.includes(filterData) ||
+        user.nameRealized.toLowerCase().includes(filterData) ||
         userAddress?.includes(filterData)
       );
     });
