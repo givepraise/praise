@@ -70,7 +70,7 @@ const UserDetailsPage = (): JSX.Element | null => {
               key={role}
               className={classNames(
                 'flex gap-2 justify-center items-center py-2 px-3 rounded-md cursor-pointer bg-black',
-                user.roles.includes(role) ? 'opacity-60' : ''
+                user.roles.includes(role) ? '' : 'opacity-50'
               )}
               onClick={(): void => void handleRole(role, user)}
             >
