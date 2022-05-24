@@ -5,6 +5,7 @@ import jstz from 'jstz';
 export const DATE_FORMAT = 'yyyy-MM-dd';
 export const DATE_FORMAT_TZ = 'yyyy-MM-dd z';
 export const DATE_FORMAT_LONG = 'yyyy-MM-dd HH:mm:ss';
+export const DATE_FORMAT_LONG_NAME = 'dd MMM yyyy, HH:mm';
 
 export const parseDate = (
   date: string,
@@ -25,6 +26,35 @@ export const utcDateToLocal = (dateUtc: Date): Date => {
   const dateLocal = utcToZonedTime(dateUtc, timezone);
 
   return dateLocal;
+};
+
+const getLeadingZero = (number: number): string => {
+  return String(number).padStart(2, '0');
+};
+
+export const getTimeDifferenceFromNow = (
+  date: string,
+  pattern: string = DATE_FORMAT
+): string => {
+  const dateUtc = parseISO(date);
+  const dateLocal = utcDateToLocal(dateUtc);
+
+  const newDate = new Date(dateLocal);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  if (newDate.getDate() === today.getDate()) {
+    return `today ${getLeadingZero(newDate.getHours())}:${getLeadingZero(
+      newDate.getMinutes()
+    )}`;
+  } else if (newDate.getDate() === yesterday.getDate()) {
+    return `yesterday ${getLeadingZero(newDate.getHours())}:${getLeadingZero(
+      newDate.getMinutes()
+    )}`;
+  } else {
+    return format(dateLocal, pattern);
+  }
 };
 
 export const localizeAndFormatIsoDate = (
