@@ -1,12 +1,11 @@
-import { StartupLoader } from '../startupLoader';
 import NotFoundPage from '@/pages/NotFoundPage';
 import SettingsPage from '@/pages/Settings/SettingsPage';
 import StartPage from '@/pages/Start/StartPage';
-import { ROLE_ADMIN, ROLE_QUANTIFIER, ActiveUserRoles } from '@/model/auth';
+import { ActiveUserRoles, ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import { difference } from 'lodash';
 import { useRecoilValue } from 'recoil';
-import AuthenticatedLayout from '../layouts/AuthenticatedLayout';
 
 const MyPraisePage = React.lazy(() => import('@/pages/MyPraise/MyPraisePage'));
 const UsersPage = React.lazy(() => import('@/pages/Users/UsersPage'));
@@ -41,54 +40,58 @@ const FAQPage = React.lazy(() => import('@/pages/FAQ/FAQPage'));
 
 interface AuthRouteProps {
   children: JSX.Element;
-  exact?: boolean;
+  userRoles: string[];
   path: string;
-  roles: string[];
+  exact?: boolean;
+  roles?: string[];
 }
 // A Route that takes an array of roles as argument and redirects
 // to frontpage if user do not belong to any of the given roles
-const AuthRoute = ({ children, ...props }: AuthRouteProps): JSX.Element => {
-  const userRoles = useRecoilValue(ActiveUserRoles);
+const AuthRoute = ({
+  children,
+  userRoles,
+  path,
+  exact = false,
+  roles = [],
+}: AuthRouteProps): JSX.Element | null => {
+  // Check if user.roles contain all required roles
+  const authenticated = difference(roles, userRoles).length === 0;
 
-  let authenticated = false;
-  for (const role of props.roles) {
-    if (userRoles?.includes(role)) {
-      authenticated = true;
-      break;
-    }
-  }
+  if (!authenticated)
+    return (
+      <Redirect
+        to={{
+          pathname: '/',
+          state: { from: location },
+        }}
+      />
+    );
 
   return (
-    <Route
-      {...props}
-      render={({ location }): JSX.Element =>
-        authenticated ? (
-          children
-        ) : (
-          <Redirect
-            to={{
-              pathname: '/',
-              state: { from: location },
-            }}
-          />
-        )
-      }
-    />
+    <Route path={path} exact={exact}>
+      {children}
+    </Route>
   );
 };
 
-const Routes = (): JSX.Element => {
+const AuthenticatedRoutes = (): JSX.Element | null => {
+  const userRoles = useRecoilValue(ActiveUserRoles);
+
   return (
     <Switch>
       <Route path="/mypraise">
         <MyPraisePage />
       </Route>
 
-      <AuthRoute roles={[ROLE_ADMIN]} path={'/pool'}>
+      <AuthRoute userRoles={userRoles} roles={[ROLE_ADMIN]} path={'/pool'}>
         <UsersPage />
       </AuthRoute>
 
-      <AuthRoute roles={[ROLE_ADMIN]} path={'/periods/createupdate'}>
+      <AuthRoute
+        userRoles={userRoles}
+        roles={[ROLE_ADMIN]}
+        path={'/periods/createupdate'}
+      >
         <PeriodsCreateUpdatePage />
       </AuthRoute>
 
@@ -101,13 +104,18 @@ const Routes = (): JSX.Element => {
       </Route>
 
       <AuthRoute
+        userRoles={userRoles}
         roles={[ROLE_QUANTIFIER]}
         path={'/periods/:periodId/quantify/receiver/:receiverId'}
       >
         <QuantifyPage />
       </AuthRoute>
 
-      <AuthRoute roles={[ROLE_QUANTIFIER]} path={'/periods/:periodId/quantify'}>
+      <AuthRoute
+        userRoles={userRoles}
+        roles={[ROLE_QUANTIFIER]}
+        path={'/periods/:periodId/quantify'}
+      >
         <QuantifyPeriodPage />
       </AuthRoute>
 
@@ -123,7 +131,7 @@ const Routes = (): JSX.Element => {
         <PraiseDetailsPage />
       </Route>
 
-      <AuthRoute roles={[ROLE_ADMIN]} path={'/settings'}>
+      <AuthRoute userRoles={userRoles} roles={[ROLE_ADMIN]} path={'/settings'}>
         <SettingsPage />
       </AuthRoute>
 
@@ -139,17 +147,6 @@ const Routes = (): JSX.Element => {
         <NotFoundPage />
       </Route>
     </Switch>
-  );
-};
-
-const AuthenticatedRoutes = (): JSX.Element => {
-  return (
-    <>
-      <StartupLoader />
-      <AuthenticatedLayout>
-        <Routes />
-      </AuthenticatedLayout>
-    </>
   );
 };
 
