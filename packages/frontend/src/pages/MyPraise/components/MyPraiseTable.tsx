@@ -30,7 +30,7 @@ const MyPraiseTable = (): JSX.Element => {
   const history = useHistory();
   const allPraise = useRecoilValue(AllPraiseList(MY_PRAISE_LIST_KEY));
   const userId = useRecoilValue(ActiveUserId);
-  const user = useRecoilValue(SingleUser({ userId }));
+  const user = useRecoilValue(SingleUser(userId));
   const [receiverId, setReceiverId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
