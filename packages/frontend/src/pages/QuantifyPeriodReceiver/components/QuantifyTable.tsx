@@ -247,14 +247,23 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                       </div>
                     </td>
                     <td>
-                      <QuantifySlider
-                        allowedScores={allowedValues}
-                        disabled={dismissed(praise) || duplicate(praise)}
-                        score={praise.scoreRealized}
-                        onChange={(newScore): void =>
-                          handleSetScore(praise, newScore)
-                        }
-                      />
+                      {duplicate(praise) ? (
+                        <Notice type="info" className="w-40 py-2">
+                          <>
+                            Duplicate score: <br />
+                            {praise.scoreRealized}
+                          </>
+                        </Notice>
+                      ) : (
+                        <QuantifySlider
+                          allowedScores={allowedValues}
+                          disabled={dismissed(praise)}
+                          score={praise.scoreRealized}
+                          onChange={(newScore): void =>
+                            handleSetScore(praise, newScore)
+                          }
+                        />
+                      )}
                     </td>
                     <td>
                       <div className="w-3">

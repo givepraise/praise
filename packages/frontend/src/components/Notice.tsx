@@ -17,6 +17,8 @@ const Notice = ({
     typeClasses = 'bg-green-300';
   } else if (type === 'warning') {
     typeClasses = 'bg-orange-300';
+  } else if (type === 'info') {
+    typeClasses = 'bg-gray-300';
   }
 
   return (
