@@ -1,4 +1,5 @@
-import { PoolRequirements } from '@/model/periods';
+import { PeriodPoolRequirements, PoolRequirements, useVerifyQuantifierPoolSize } from '@/model/periods';
+import { AllPeriodSettings } from '@/model/periodsettings';
 import {
   faCheckSquare,
   faTimes,
@@ -8,17 +9,18 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
+import { useRecoilValue } from 'recoil';
 
 interface PeriodAssignDialogProps {
   onClose(): void;
   onAssign(): void;
-  poolRequirements: PoolRequirements | undefined;
+  periodId: string;
 }
 
 interface DialogMessageProps {
   onClose(): void;
   onAssign(): void;
-  poolRequirements: PoolRequirements;
+  poolRequirements: PoolRequirements | undefined;
 }
 
 const DialogMessage = ({
@@ -97,9 +99,10 @@ const DialogMessage = ({
 const PeriodAssignDialog = ({
   onClose,
   onAssign,
-  poolRequirements,
-}: PeriodAssignDialogProps): JSX.Element | null => {
-  if (!poolRequirements) return null;
+  periodId,
+}: PeriodAssignDialogProps): JSX.Element => {
+  const poolRequirements = useRecoilValue(PeriodPoolRequirements(periodId));
+  useVerifyQuantifierPoolSize(periodId);
 
   return (
     <div className="flex items-center justify-center min-h-screen">

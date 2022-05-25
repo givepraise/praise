@@ -2,12 +2,10 @@ import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   AllPeriods,
   PeriodPageParams,
-  PeriodPoolRequirements,
   SinglePeriod,
   useAssignQuantifiers,
   useClosePeriod,
   useExportPraise,
-  useVerifyQuantifierPoolSize,
 } from '@/model/periods';
 import { AllQuantifierUsers } from '@/model/users';
 import { formatIsoDateUTC } from '@/utils/date';
@@ -45,9 +43,6 @@ const PeriodDetails = (): JSX.Element | null => {
 
   const { closePeriod } = useClosePeriod();
   const { assignQuantifiers } = useAssignQuantifiers(periodId);
-
-  const poolRequirements = useRecoilValue(PeriodPoolRequirements(periodId));
-  useVerifyQuantifierPoolSize(periodId);
 
   if (!period || !allPeriods) return null;
 
@@ -197,7 +192,7 @@ const PeriodDetails = (): JSX.Element | null => {
             <PeriodAssignDialog
               onClose={(): void => setIsAssignDialogOpen(false)}
               onAssign={(): void => handleAssign()}
-              poolRequirements={poolRequirements}
+              periodId={periodId}
             />
           </div>
         </Dialog>
