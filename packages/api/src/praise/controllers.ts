@@ -21,14 +21,19 @@ import { logEvent } from '@eventlog/utils';
 import { Request } from 'express';
 import { Types } from 'mongoose';
 import { PraiseModel } from './entities';
-import { praiseDocumentTransformer } from './transformers';
+import {
+  praiseDocumentListTransformer,
+  praiseDocumentTransformer,
+} from './transformers';
 import {
   PraiseAllInput,
   PraiseDetailsDto,
+  PraiseDocument,
   PraiseDto,
   QuantificationCreateUpdateInput,
 } from './types';
 import { praiseWithScore, getPraisePeriod } from './utils/core';
+import logger from 'jet-logger';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
@@ -87,7 +92,7 @@ export const single = async (
  */
 export const quantify = async (
   req: TypedRequestBody<QuantificationCreateUpdateInput>,
-  res: TypedResponse<PraiseDto>
+  res: TypedResponse<PraiseDto[]>
 ): Promise<void> => {
   const praise = await PraiseModel.findById(req.params.id).populate(
     'giver receiver forwarder'
@@ -113,12 +118,33 @@ export const quantify = async (
 
   let eventLogMessage = '';
 
+  // Collect all affected praises (i.e. any praises whose scoreRealized will change as a result of this change)
+  const affectedPraises: PraiseDocument[] = [praise];
+
+  const praisesDuplicateOfThis = await PraiseModel.find({
+    quantifications: {
+      $elemMatch: {
+        quantifier: res.locals.currentUser._id,
+        duplicatePraise: praise._id,
+      },
+    },
+  }).populate('giver receiver forwarder');
+
+  if (praisesDuplicateOfThis?.length > 0)
+    affectedPraises.push(...praisesDuplicateOfThis);
+
+  // Modify praise quantification values
   if (duplicatePraise) {
     if (duplicatePraise === praise._id.toString())
       throw new BadRequestError('Praise cannot be a duplicate of itself');
 
     const dp = await PraiseModel.findById(duplicatePraise);
     if (!dp) throw new BadRequestError('Duplicate praise item not found');
+
+    if (praisesDuplicateOfThis?.length > 0)
+      throw new BadRequestError(
+        'Praise cannot be marked duplicate when it is the original of another duplicate'
+      );
 
     const praisesDuplicateOfAnotherDuplicate = await PraiseModel.find({
       _id: duplicatePraise,
@@ -133,20 +159,6 @@ export const quantify = async (
     if (praisesDuplicateOfAnotherDuplicate?.length > 0)
       throw new BadRequestError(
         'Praise cannot be marked duplicate of another duplicate'
-      );
-
-    const praisesDuplicateOfThis = await PraiseModel.find({
-      quantifications: {
-        $elemMatch: {
-          quantifier: res.locals.currentUser._id,
-          duplicatePraise: praise._id,
-        },
-      },
-    });
-
-    if (praisesDuplicateOfThis?.length > 0)
-      throw new BadRequestError(
-        'Praise cannot be marked duplicate when it is the original of another duplicate'
       );
 
     quantification.score = 0;
@@ -187,6 +199,6 @@ export const quantify = async (
     period._id
   );
 
-  const response = await praiseDocumentTransformer(praise);
+  const response = await praiseDocumentListTransformer(affectedPraises);
   res.status(200).json(response);
 };

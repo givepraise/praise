@@ -84,18 +84,14 @@ const praiseDocumentToDto = async (
   };
 };
 
-export const praiseDocumentListTransformer = async (
-  praiseDocuments: PraiseDocument[]
-): Promise<PraiseDto[]> => {
-  const praiseDtoList = await Promise.all(
-    praiseDocuments.map((p) => praiseDocumentToDto(p))
-  );
-
-  return praiseDtoList;
-};
-
 export const praiseDocumentTransformer = async (
   praiseDocument: PraiseDocument
 ): Promise<PraiseDto> => {
-  return await praiseDocumentToDto(praiseDocument);
+  return praiseDocumentToDto(praiseDocument);
+};
+
+export const praiseDocumentListTransformer = async (
+  praiseDocuments: PraiseDocument[]
+): Promise<PraiseDto[]> => {
+  return Promise.all(praiseDocuments.map((p) => praiseDocumentTransformer(p)));
 };
