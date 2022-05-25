@@ -3,6 +3,7 @@ import { InlineLabelClosable } from '@/components/InlineLabelClosable';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
+import Notice from '@/components/Notice';
 import { ActiveUserId } from '@/model/auth';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
@@ -267,16 +268,17 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                     </td>
                     <td>
                       <div className="w-3">
-                        <button
-                          className="hidden group-hover:block text-gray-400 hover:text-gray-500 cursor-pointer"
-                          disabled={duplicate(praise)}
-                          onClick={(): void => {
-                            setDuplicateSearchDialogPraise(praise);
-                            setIsDuplicateSearchDialogOpen(true);
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faCopy} size="1x" />
-                        </button>
+                        {!duplicate(praise) && (
+                          <button
+                            className="hidden group-hover:block text-gray-400 hover:text-gray-500 cursor-pointer"
+                            onClick={(): void => {
+                              setDuplicateSearchDialogPraise(praise);
+                              setIsDuplicateSearchDialogOpen(true);
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faCopy} size="1x" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
