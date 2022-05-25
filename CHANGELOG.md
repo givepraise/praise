@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Hightlight active page in Navbar, update page routes to nest under top-level routes
+- Display calculated score of praise marked as duplicate instead of disabled slider on Quantify page #378
 
 ### Fixed
 - Remove 1s login delay
