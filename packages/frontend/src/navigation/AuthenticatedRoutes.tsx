@@ -53,24 +53,26 @@ const AuthRoute = ({
   path,
   exact = false,
   roles = [],
-}: AuthRouteProps): JSX.Element | null => {
+}: AuthRouteProps): JSX.Element => {
   // Check if user.roles contain all required roles
-  const authenticated = difference(roles, userRoles).length === 0;
-
-  if (!authenticated)
-    return (
-      <Redirect
-        to={{
-          pathname: '/',
-          state: { from: location },
-        }}
-      />
-    );
+  const hasRequiredRoles = difference(roles, userRoles).length === 0;
 
   return (
-    <Route path={path} exact={exact}>
-      {children}
-    </Route>
+    <Route
+      path={path}
+      exact={exact}
+      render={(): JSX.Element =>
+        hasRequiredRoles ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: '/',
+            }}
+          />
+        )
+      }
+    />
   );
 };
 
