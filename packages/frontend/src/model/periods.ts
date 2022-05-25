@@ -121,29 +121,24 @@ export const SinglePeriodByDate = selectorFamily({
 /**
  * Query selector that fetches all praise periods from the API.
  */
-export const AllPeriodsQuery = selectorFamily({
+export const AllPeriodsQuery = selector({
   key: 'AllPeriodsQuery',
-  get:
-    (refreshKey: string | undefined) =>
-    ({ get }): AxiosResponse<unknown> => {
-      const response = get(
-        ApiAuthGet({
-          url: '/periods/all?sortColumn=endDate&sortType=desc',
-          refreshKey,
-        })
-      );
-      return response;
-    },
+  get: ({ get }): AxiosResponse<unknown> => {
+    const response = get(
+      ApiAuthGet({
+        url: '/periods/all?sortColumn=endDate&sortType=desc',
+      })
+    );
+    return response;
+  },
 });
 
 /**
  * Hook that fetches all periods. Period Ids are stored in @AllPeriods , each Period object is
  * stored individually in @SinglePeriod .
  */
-export const useAllPeriodsQuery = (
-  refreshKey: string | undefined
-): AxiosResponse<unknown> => {
-  const allPeriodsQueryResponse = useAuthApiQuery(AllPeriodsQuery(refreshKey));
+export const useAllPeriodsQuery = (): AxiosResponse<unknown> => {
+  const allPeriodsQueryResponse = useAuthApiQuery(AllPeriodsQuery);
   const allPeriodsIds = useRecoilValue(AllPeriodIds);
 
   const saveAllPeriods = useRecoilCallback(

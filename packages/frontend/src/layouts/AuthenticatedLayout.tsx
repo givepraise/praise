@@ -4,7 +4,6 @@ import { Dialog, Transition } from '@headlessui/react';
 import { faX, faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
-import { useHistory } from 'react-router-dom';
 import { SingleSetting, useAllSettingsQuery } from '@/model/settings';
 import { useAllPeriodsQuery } from '@/model/periods';
 import { useAllUsersQuery } from '@/model/users';
@@ -14,8 +13,7 @@ import AuthenticatedRoutes from '../navigation/AuthenticatedRoutes';
 const AuthenticatedLayout = (): JSX.Element | null => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
-  const { location } = useHistory();
-  useAllPeriodsQuery(location.key);
+  useAllPeriodsQuery();
   useAllSettingsQuery();
   useAllUsersQuery();
 
