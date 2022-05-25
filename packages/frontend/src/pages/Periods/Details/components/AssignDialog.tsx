@@ -1,4 +1,4 @@
-import { PeriodPoolRequirements, PoolRequirements, useVerifyQuantifierPoolSize } from '@/model/periods';
+import { PoolRequirements, useVerifyQuantifierPoolSize } from '@/model/periods';
 import { AllPeriodSettings } from '@/model/periodsettings';
 import {
   faCheckSquare,
@@ -101,8 +101,11 @@ const PeriodAssignDialog = ({
   onAssign,
   periodId,
 }: PeriodAssignDialogProps): JSX.Element => {
-  const poolRequirements = useRecoilValue(PeriodPoolRequirements(periodId));
-  useVerifyQuantifierPoolSize(periodId);
+  const periodsettings = useRecoilValue(AllPeriodSettings(periodId));
+  const poolRequirements = useVerifyQuantifierPoolSize(
+    periodId,
+    JSON.stringify(periodsettings)
+  );
 
   return (
     <div className="flex items-center justify-center min-h-screen">
