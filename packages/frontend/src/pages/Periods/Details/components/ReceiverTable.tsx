@@ -1,4 +1,3 @@
-import { UserCell } from '@/components/table/UserCell';
 import Notice from '@/components/Notice';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { PeriodPageParams, SinglePeriod } from '@/model/periods';
@@ -24,7 +23,7 @@ const ReceiverTable = (): JSX.Element | null => {
           className: 'text-left',
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           Cell: (data: any): JSX.Element => (
-            <UserCell userId={data.row.original.userAccount.name} />
+            <div>{data.row.original.userAccount.name}</div>
           ),
         },
         {
@@ -133,7 +132,7 @@ const ReceiverTable = (): JSX.Element | null => {
 
   if (period.status === 'QUANTIFY' && !isAdmin)
     return (
-      <div className="w-full h-full flex items-center">
+      <div className="flex items-center w-full h-full">
         <Notice type="danger">
           <span>Praise scores are not visible during quantification.</span>
         </Notice>
@@ -142,7 +141,7 @@ const ReceiverTable = (): JSX.Element | null => {
 
   if (period?.receivers?.length === 0)
     return (
-      <div className="w-full h-full flex items-center">
+      <div className="flex items-center w-full h-full">
         <Notice type="danger">
           <span>No receivers found in this period.</span>
         </Notice>

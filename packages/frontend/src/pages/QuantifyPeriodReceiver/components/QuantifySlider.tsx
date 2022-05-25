@@ -4,7 +4,6 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { useState, useEffect } from 'react';
-import { debounce } from 'lodash';
 interface ValueLabelComponentProps {
   children: JSX.Element;
   value: string;

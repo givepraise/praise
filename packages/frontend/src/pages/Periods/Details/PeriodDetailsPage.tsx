@@ -17,7 +17,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import React, { Suspense } from 'react';
 import {
-  useHistory,
   useParams,
   useRouteMatch,
   Switch,
@@ -66,9 +65,7 @@ const PeriodDetailPage = (): JSX.Element | null => {
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { path, url } = useRouteMatch();
-  const { location } = useHistory();
-
-  useSinglePeriodQuery(periodId, location.key);
+  useSinglePeriodQuery(periodId);
 
   if (!period || !period.receivers) return null;
 
