@@ -20,7 +20,7 @@ import {
 } from '../utils/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 
-import { CommandHandler } from 'src/interfaces/CommandHandler';
+import { CommandHandler } from '../interfaces/CommandHandler';
 
 export const forwardHandler: CommandHandler = async (
   interaction,

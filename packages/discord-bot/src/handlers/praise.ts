@@ -1,6 +1,4 @@
 import { PraiseModel } from 'api/dist/praise/entities';
-import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount } from 'api/src/useraccount/types';
 import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
 import logger from 'jet-logger';
@@ -17,7 +15,8 @@ import {
   undefinedReceiverWarning,
 } from '../utils/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
-import { CommandHandler } from 'src/interfaces/CommandHandler';
+import { CommandHandler } from '../interfaces/CommandHandler';
+import { getUserAccount } from '../utils/getUserAccount';
 
 export const praiseHandler: CommandHandler = async (
   interaction,
@@ -33,13 +32,6 @@ export const praiseHandler: CommandHandler = async (
 
   if (!(await assertPraiseGiver(member as GuildMember, interaction, true)))
     return;
-
-  const ua = {
-    accountId: member.user.id,
-    name: member.user.username + '#' + member.user.discriminator,
-    avatarId: member.user.avatar,
-    platform: 'DISCORD',
-  } as UserAccount;
 
   const receivers = interaction.options.getString('receivers');
   const receiverData = {
@@ -63,11 +55,8 @@ export const praiseHandler: CommandHandler = async (
     return;
   }
 
-  const userAccount = await UserAccountModel.findOneAndUpdate(
-    { accountId: ua.accountId },
-    ua,
-    { upsert: true, new: true }
-  );
+  const userAccount = await getUserAccount(member as GuildMember);
+
   if (!userAccount.user) {
     await interaction.editReply(await notActivatedError());
     return;
@@ -84,23 +73,15 @@ export const praiseHandler: CommandHandler = async (
   const guildChannel = await guild.channels.fetch(channel?.id || '');
 
   for (const receiver of Receivers) {
-    const ra = {
-      accountId: receiver.user.id,
-      name: receiver.user.username + '#' + receiver.user.discriminator,
-      avatarId: receiver.user.avatar,
-      platform: 'DISCORD',
-    } as UserAccount;
-    const receiverAccount = await UserAccountModel.findOneAndUpdate(
-      { accountId: ra.accountId },
-      ra,
-      { upsert: true, new: true }
-    );
+    const receiverAccount = await getUserAccount(receiver);
 
     if (!receiverAccount.user) {
       try {
         await receiver.send({ embeds: [await notActivatedDM(responseUrl)] });
       } catch (err) {
-        logger.warn(`Can't DM user - ${ra.name} [${ra.accountId}]`);
+        logger.warn(
+          `Can't DM user - ${receiverAccount.name} [${receiverAccount.accountId}]`
+        );
       }
     }
     const praiseObj = await PraiseModel.create({
@@ -129,12 +110,14 @@ export const praiseHandler: CommandHandler = async (
       try {
         await receiver.send({ embeds: [await praiseSuccessDM(responseUrl)] });
       } catch (err) {
-        logger.warn(`Can't DM user - ${ra.name} [${ra.accountId}]`);
+        logger.warn(
+          `Can't DM user - ${receiverAccount.name} [${receiverAccount.accountId}]`
+        );
       }
-      praised.push(ra.accountId);
+      praised.push(receiverAccount.accountId);
     } else {
       logger.err(
-        `Praise not registered for [${ua.accountId}] -> [${ra.accountId}] for [${reason}]`
+        `Praise not registered for [${userAccount.accountId}] -> [${receiverAccount.accountId}] for [${reason}]`
       );
     }
   }
