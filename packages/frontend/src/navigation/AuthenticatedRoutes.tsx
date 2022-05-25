@@ -1,4 +1,3 @@
-import NotFoundPage from '@/pages/NotFoundPage';
 import SettingsPage from '@/pages/Settings/SettingsPage';
 import StartPage from '@/pages/Start/StartPage';
 import { ActiveUserRoles, ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth';
@@ -67,7 +66,7 @@ const AuthRoute = ({
         ) : (
           <Redirect
             to={{
-              pathname: '/',
+              pathname: '/404',
             }}
           />
         )
@@ -146,7 +145,11 @@ const AuthenticatedRoutes = (): JSX.Element | null => {
       </Route>
 
       <Route path="/*">
-        <NotFoundPage />
+        <Redirect
+          to={{
+            pathname: '/404',
+          }}
+        />
       </Route>
     </Switch>
   );
