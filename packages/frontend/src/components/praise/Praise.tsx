@@ -3,7 +3,6 @@ import getMarkdownText from '@/components/MarkdownText';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { PraiseDto } from 'api/dist/praise/types';
-import ReactTooltip from 'react-tooltip';
 import { formatRelative } from 'date-fns';
 import { Tooltip } from '@mui/material';
 
