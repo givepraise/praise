@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Remove 1s login delay
 - Ensure period is updated reactively on frontend when closed, name changed, or end date changed #389 #390
-
+- Immediately reflect authorization changes after modifying your own user's roles
 ## [0.6.0] - 2022-05-09
 
 ### Added
