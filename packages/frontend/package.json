@@ -56,7 +56,6 @@
     "react-router-dom": "^5.2.1",
     "react-scripts": "5.0.0",
     "react-table": "^7.7.0",
-    "react-tooltip": "^4.2.21",
     "recoil": "^0.5.2",
     "recoil-nexus": "^0.3.15",
     "recoil-persist": "^4.0.0",

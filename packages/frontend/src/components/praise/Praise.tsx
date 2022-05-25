@@ -1,13 +1,11 @@
-import {
-  DATE_FORMAT_LONG_NAME,
-  getTimeDifferenceFromNow,
-  localizeAndFormatIsoDate,
-} from '@/utils/date';
+import { DATE_FORMAT_LONG_NAME, localizeAndFormatIsoDate } from '@/utils/date';
 import getMarkdownText from '@/components/MarkdownText';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { PraiseDto } from 'api/dist/praise/types';
 import ReactTooltip from 'react-tooltip';
+import { formatRelative } from 'date-fns';
+import { Tooltip } from '@mui/material';
 
 interface Params {
   praise: PraiseDto | undefined;
@@ -27,16 +25,18 @@ const Praise = ({ praise, className = '' }: Params): JSX.Element | null => {
           <ForwarderTooltip praise={praise} />
           <span className="font-bold">{praise.giver.name}</span> to{' '}
           <span className="font-bold">{praise.receiver.name}</span>
-          <span
-            className="ml-2 text-xs text-gray-500"
-            data-tip={localizeAndFormatIsoDate(
+          <Tooltip
+            placement="top-start"
+            title={localizeAndFormatIsoDate(
               praise.createdAt,
               DATE_FORMAT_LONG_NAME
             )}
+            arrow
           >
-            {getTimeDifferenceFromNow(praise.createdAt)}
-          </span>
-          <ReactTooltip />
+            <span className="ml-2 text-xs text-gray-500">
+              {formatRelative(new Date(praise.createdAt), new Date())}
+            </span>
+          </Tooltip>
         </div>
 
         <div

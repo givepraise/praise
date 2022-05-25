@@ -7,7 +7,7 @@ import { ActiveUserId } from '@/model/auth';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
-import { localizeAndFormatIsoDate } from '@/utils/date';
+import { DATE_FORMAT_LONG_NAME, localizeAndFormatIsoDate } from '@/utils/date';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import getWeek from 'date-fns/getWeek';
@@ -23,6 +23,8 @@ import QuantifySlider from './QuantifySlider';
 import DuplicateSearchDialog from './DuplicateSearchDialog';
 import MarkDuplicateButton from './MarkDuplicateButton';
 import MarkDismissedButton from './MarkDismissedButton';
+import { Tooltip } from '@mui/material';
+import { formatRelative } from 'date-fns';
 
 interface Props {
   periodId: string;
@@ -161,7 +163,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
         <table className="w-full table-auto">
           <tbody>
             {Object.keys(weeklyData).map((weekKey, index) => (
-              <>
+              <React.Fragment key={index}>
                 {index !== 0 && index !== data.length - 1 && (
                   <tr>
                     <td colSpan={5}>
@@ -203,9 +205,21 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                             praise.giver.name
                           )}
                         </span>
-                        <span className="ml-2 text-xs text-gray-500">
-                          {localizeAndFormatIsoDate(praise.createdAt)}
-                        </span>
+                        <Tooltip
+                          placement="top-start"
+                          title={localizeAndFormatIsoDate(
+                            praise.createdAt,
+                            DATE_FORMAT_LONG_NAME
+                          )}
+                          arrow
+                        >
+                          <span className="ml-2 text-xs text-gray-500">
+                            {formatRelative(
+                              new Date(praise.createdAt),
+                              new Date()
+                            )}
+                          </span>
+                        </Tooltip>
                       </div>
                       <div className="w-[550px] overflow-hidden overflow-ellipsis">
                         <span>
@@ -272,7 +286,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                     </td>
                   </tr>
                 ))}
-              </>
+              </React.Fragment>
             ))}
           </tbody>
         </table>

@@ -11,6 +11,7 @@ import { InlineLabel } from '../InlineLabel';
 import { UserDto } from 'api/dist/user/types';
 import { UserAccountDto } from 'api/dist/useraccount/types';
 import Notice from '../Notice';
+import { Tooltip } from '@mui/material';
 
 const eventLogTypeColors = {
   [EventLogTypeKey.PERMISSION]: 'bg-orange-400',
@@ -52,15 +53,18 @@ const EventLog = ({ eventlog, className = '' }: Params): JSX.Element | null => {
           <span className="font-bold">
             {getEventLogUsername(user, eventlog.useraccount)}
           </span>
-          <span
-            className="ml-2 text-xs text-gray-500"
+          <Tooltip
+            placement="right-end"
             title={`${formatIsoDateUTC(
               eventlog.createdAt,
               DATE_FORMAT_LONG
             )} UTC`}
+            arrow
           >
-            {localizeAndFormatIsoDate(eventlog.createdAt)}
-          </span>
+            <span className="ml-2 text-xs text-gray-500">
+              {localizeAndFormatIsoDate(eventlog.createdAt)}
+            </span>
+          </Tooltip>
         </div>
 
         <div className="w-full">
