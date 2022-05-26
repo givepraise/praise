@@ -1,17 +1,17 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
+import { makeApiAuthClient } from '@/utils/api';
 import { periodQuantifierPraiseListKey } from '@/utils/periods';
 import {
   PeriodCreateInput,
   PeriodDetailsDto,
-  PeriodDto,
   PeriodStatusType,
   PeriodUpdateInput,
 } from 'api/dist/period/types';
 import { PraiseDto } from 'api/dist/praise/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   atom,
   atomFamily,
@@ -20,6 +20,7 @@ import {
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
+  useSetRecoilState,
 } from 'recoil';
 import {
   ApiAuthGet,
@@ -84,49 +85,20 @@ export const AllPeriods = selector({
 });
 
 /**
- * Paramas for SinglePeriodQuery
- */
-type SinglePeriodQueryParams = {
-  periodId: string;
-  refreshKey: string | undefined;
-};
-
-/**
- * Query selector that fetches details for a single period.
- */
-export const SinglePeriodQuery = selectorFamily({
-  key: 'SinglePeriodQuery',
-  get:
-    (params: SinglePeriodQueryParams) =>
-    ({ get }): AxiosResponse<unknown> => {
-      const { periodId, refreshKey } = params;
-      return get(
-        ApiAuthGet({
-          url: `/periods/${periodId}`,
-          refreshKey,
-        })
-      );
-    },
-});
-
-/**
  * Hook that fetches details for a single period from the API.
  */
-export const useSinglePeriodQuery = (
-  periodId: string,
-  refreshKey: string | undefined
-): PeriodDetailsDto | undefined => {
-  const [period, setPeriod] = useRecoilState(SinglePeriod(periodId));
-  const periodResponse = useRecoilValue(
-    SinglePeriodQuery({ periodId, refreshKey })
-  );
+export const useSinglePeriodQuery = (periodId: string): void => {
+  const setPeriod = useSetRecoilState(SinglePeriod(periodId));
 
-  React.useEffect(() => {
-    if (periodResponse.data !== period && isResponseOk(periodResponse)) {
-      setPeriod(periodResponse.data);
-    }
-  }, [period, periodResponse, setPeriod]);
-  return period;
+  useEffect(() => {
+    const fetchPeriod = async (periodId): Promise<void> => {
+      const apiAuthClient = makeApiAuthClient();
+      const response = await apiAuthClient.get(`/periods/${periodId}`);
+      setPeriod(response.data);
+    };
+
+    void fetchPeriod(periodId);
+  }, [periodId, setPeriod]);
 };
 
 /**
@@ -149,29 +121,24 @@ export const SinglePeriodByDate = selectorFamily({
 /**
  * Query selector that fetches all praise periods from the API.
  */
-export const AllPeriodsQuery = selectorFamily({
+export const AllPeriodsQuery = selector({
   key: 'AllPeriodsQuery',
-  get:
-    (refreshKey: string | undefined) =>
-    ({ get }): AxiosResponse<unknown> => {
-      const response = get(
-        ApiAuthGet({
-          url: '/periods/all?sortColumn=endDate&sortType=desc',
-          refreshKey,
-        })
-      );
-      return response;
-    },
+  get: ({ get }): AxiosResponse<unknown> => {
+    const response = get(
+      ApiAuthGet({
+        url: '/periods/all?sortColumn=endDate&sortType=desc',
+      })
+    );
+    return response;
+  },
 });
 
 /**
  * Hook that fetches all periods. Period Ids are stored in @AllPeriods , each Period object is
  * stored individually in @SinglePeriod .
  */
-export const useAllPeriodsQuery = (
-  refreshKey: string | undefined
-): AxiosResponse<unknown> => {
-  const allPeriodsQueryResponse = useAuthApiQuery(AllPeriodsQuery(refreshKey));
+export const useAllPeriodsQuery = (): AxiosResponse<unknown> => {
+  const allPeriodsQueryResponse = useAuthApiQuery(AllPeriodsQuery);
   const allPeriodsIds = useRecoilValue(AllPeriodIds);
 
   const saveAllPeriods = useRecoilCallback(
@@ -333,7 +300,7 @@ export const useClosePeriod = (): useClosePeriodReturn => {
         );
 
         if (isResponseOk(response)) {
-          const period = response.data as PeriodDto;
+          const period = response.data as PeriodDetailsDto;
 
           if (period) {
             set(SinglePeriod(period._id), period);
@@ -346,33 +313,6 @@ export const useClosePeriod = (): useClosePeriodReturn => {
 };
 
 /**
- * Params for VerifyQuantifierPoolSizeQuery
- */
-type VerifyQuantifierPoolSizeQueryParams = {
-  periodId: string;
-  refreshKey: string | undefined;
-};
-
-/**
- * Selector query that fetches quantifier pool size requirements.
- */
-export const VerifyQuantifierPoolSizeQuery = selectorFamily({
-  key: 'VerifyQuantifierPoolSizeQuery',
-  get:
-    (params: VerifyQuantifierPoolSizeQueryParams) =>
-    ({ get }): AxiosResponse<unknown> => {
-      const { periodId, refreshKey } = params;
-      const response = get(
-        ApiAuthGet({
-          url: `/admin/periods/${periodId}/verifyQuantifierPoolSize`,
-          refreshKey,
-        })
-      );
-      return response;
-    },
-});
-
-/**
  * Quantifier pool size requirements returned by @useVerifyQuantifierPoolSize
  */
 export interface PoolRequirements {
@@ -381,27 +321,34 @@ export interface PoolRequirements {
   quantifierPoolDeficitSize: number;
 }
 
+export const PeriodPoolRequirements = atomFamily<
+  PoolRequirements | undefined,
+  string
+>({
+  key: 'SinglePeriodPoolRequirements',
+  default: undefined,
+});
+
 /**
  * Hook that fetches quantifier pool requirements.
  */
-export const useVerifyQuantifierPoolSize = (
-  periodId: string,
-  refreshKey: string | undefined
-): PoolRequirements | undefined => {
-  const response = useAuthApiQuery(
-    VerifyQuantifierPoolSizeQuery({ periodId, refreshKey })
+export const useVerifyQuantifierPoolSize = (periodId: string): void => {
+  const setPeriodPoolRequirements = useSetRecoilState(
+    PeriodPoolRequirements(periodId)
   );
-  const [poolRequirements, setPoolRequirements] = React.useState<
-    PoolRequirements | undefined
-  >(undefined);
 
-  React.useEffect(() => {
-    if (isResponseOk(response)) {
-      setPoolRequirements(response.data);
-    }
-  }, [response]);
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      const apiAuthClient = makeApiAuthClient();
 
-  return poolRequirements;
+      const response = await apiAuthClient.get(
+        `/admin/periods/${periodId}/verifyQuantifierPoolSize`
+      );
+      setPeriodPoolRequirements(response.data);
+    };
+
+    void fetchData();
+  }, [periodId, setPeriodPoolRequirements]);
 };
 
 type useAssignQuantifiersReturn = {
@@ -537,7 +484,7 @@ export const usePeriodReceiverPraiseQuery = (
 };
 
 type useExportPraiseReturn = {
-  exportPraise: (period: PeriodDto) => Promise<Blob | undefined>;
+  exportPraise: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
 };
 /**
  * Hook that exports all praise in a period as csv data.
@@ -547,7 +494,7 @@ export const useExportPraise = (): useExportPraiseReturn => {
 
   const exportPraise = useRecoilCallback(
     ({ snapshot }) =>
-      async (period: PeriodDto): Promise<Blob | undefined> => {
+      async (period: PeriodDetailsDto): Promise<Blob | undefined> => {
         if (!period || !allPeriods) return undefined;
         const response = await ApiQuery(
           snapshot.getPromise(

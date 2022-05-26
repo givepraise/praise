@@ -1,10 +1,12 @@
-import { parse, parseISO } from 'date-fns';
+import { parse, parseISO, formatRelative } from 'date-fns';
+import { enUS } from 'date-fns/esm/locale';
 import { zonedTimeToUtc, utcToZonedTime, format } from 'date-fns-tz';
 import jstz from 'jstz';
 
 export const DATE_FORMAT = 'yyyy-MM-dd';
 export const DATE_FORMAT_TZ = 'yyyy-MM-dd z';
-export const DATE_FORMAT_LONG = 'yyyy-MM-dd HH:mm';
+export const DATE_FORMAT_LONG = 'yyyy-MM-dd HH:mm:ss';
+export const DATE_FORMAT_LONG_NAME = 'EEEE, MMMM dd yyyy, HH:mm';
 
 export const parseDate = (
   date: string,
@@ -25,6 +27,27 @@ export const utcDateToLocal = (dateUtc: Date): Date => {
   const dateLocal = utcToZonedTime(dateUtc, timezone);
 
   return dateLocal;
+};
+
+export const localizeAndFormatIsoDateRelative = (dateIso: string): string => {
+  const formatRelativeLocale = {
+    lastWeek: "'last' eeee p",
+    yesterday: "'yesterday' p",
+    today: "'today' p",
+    tomorrow: "'tomorrow' p",
+    nextWeek: 'eeee p',
+    other: DATE_FORMAT,
+  };
+
+  const locale = {
+    ...enUS,
+    formatRelative: (token) => formatRelativeLocale[token],
+  };
+
+  const dateUtc = parseISO(dateIso);
+  const dateLocal = utcDateToLocal(dateUtc);
+
+  return formatRelative(dateLocal, new Date(), { locale });
 };
 
 export const localizeAndFormatIsoDate = (

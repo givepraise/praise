@@ -30,6 +30,8 @@ import { UserRole } from '@user/types';
 import { UserAccountDocument } from '@useraccount/types';
 import { getQueryInput, getQuerySort } from '@shared/functions';
 import { PraiseModel } from '@praise/entities';
+import { EventLogTypeKey } from '@eventlog/types';
+import { logEvent } from '@eventlog/utils';
 import mongoose from 'mongoose';
 import { firstFit, PackingOutput } from 'bin-packer';
 import logger from 'jet-logger';
@@ -41,7 +43,6 @@ import { parseISO } from 'date-fns';
 import {
   AssignQuantifiersDryRunOutput,
   PeriodDetailsDto,
-  PeriodDto,
   PeriodStatusType,
   PeriodUpdateInput,
   VerifyQuantifierPoolSizeResponse,
@@ -115,12 +116,23 @@ export const single = async (
  */
 export const create = async (
   req: TypedRequestBody<PeriodUpdateInput>,
-  res: TypedResponse<PeriodDto>
+  res: TypedResponse<PeriodDetailsDto>
 ): Promise<void> => {
   const { name, endDate } = req.body;
   const period = await PeriodModel.create({ name, endDate });
   await insertNewPeriodSettings(period);
-  res.status(StatusCodes.OK).json(periodDocumentTransformer(period));
+
+  await logEvent(
+    EventLogTypeKey.PERIOD,
+    `Created a new period "${period.name}"`,
+    {
+      userId: res.locals.currentUser._id,
+    }
+  );
+
+  const periodDetailsDto = await findPeriodDetailsDto(period._id);
+
+  res.status(StatusCodes.OK).json(periodDetailsDto);
 };
 
 /**
@@ -129,14 +141,23 @@ export const create = async (
  */
 export const update = async (
   req: TypedRequestBody<PeriodUpdateInput>,
-  res: TypedResponse<PeriodDto>
+  res: TypedResponse<PeriodDetailsDto>
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
   const { name, endDate } = req.body;
 
+  if (!name && !endDate)
+    throw new BadRequestError('Updated name or endDate to must be specified');
+
+  const eventLogMessages = [];
+
   if (name) {
+    eventLogMessages.push(
+      `Updated the name of period "${period.name}" to "${name}"`
+    );
+
     period.name = name;
   }
 
@@ -150,6 +171,13 @@ export const update = async (
 
     try {
       const newEndDate = parseISO(endDate);
+
+      eventLogMessages.push(
+        `Updated the end date of period "${
+          period.name
+        }" to ${endDate.toString()} UTC`
+      );
+
       period.endDate = newEndDate;
     } catch (e) {
       throw new BadRequestError('Invalid date format.');
@@ -157,6 +185,10 @@ export const update = async (
   }
 
   await period.save();
+
+  await logEvent(EventLogTypeKey.PERIOD, eventLogMessages.join(', '), {
+    userId: res.locals.currentUser._id,
+  });
 
   const periodDetailsDto = await findPeriodDetailsDto(period._id);
   res.status(StatusCodes.OK).json(periodDetailsDto);
@@ -168,13 +200,17 @@ export const update = async (
  */
 export const close = async (
   req: Request,
-  res: TypedResponse<PeriodDto>
+  res: TypedResponse<PeriodDetailsDto>
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
   period.status = PeriodStatusType.CLOSED;
   await period.save();
+
+  await logEvent(EventLogTypeKey.PERIOD, `Closed the period "${period.name}"`, {
+    userId: res.locals.currentUser._id,
+  });
 
   const periodDetailsDto = await findPeriodDetailsDto(period._id);
 
@@ -462,6 +498,14 @@ export const assignQuantifiers = async (
   await PeriodModel.updateOne(
     { _id: period._id },
     { $set: { status: PeriodStatusType.QUANTIFY } }
+  );
+
+  await logEvent(
+    EventLogTypeKey.PERIOD,
+    `Assigned random quantifiers to all praise in period "${period.name}"`,
+    {
+      userId: res.locals.currentUser._id,
+    }
   );
 
   const periodDetailsDto = await findPeriodDetailsDto(periodId);

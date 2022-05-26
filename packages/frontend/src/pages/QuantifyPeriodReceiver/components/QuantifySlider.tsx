@@ -1,6 +1,9 @@
 import { Slider, Tooltip } from '@mui/material';
+import { PraiseDto } from 'api/dist/praise/types';
+import React from 'react';
+import { useRecoilValue } from 'recoil';
+
 import { useState, useEffect } from 'react';
-import { debounce } from 'lodash';
 interface ValueLabelComponentProps {
   children: JSX.Element;
   value: string;
@@ -10,7 +13,12 @@ const ValueLabelComponent = ({
   value,
 }: ValueLabelComponentProps): JSX.Element => {
   return (
-    <Tooltip enterTouchDelay={0} placement="top" title={value}>
+    <Tooltip
+      enterTouchDelay={0}
+      placement="top"
+      title={value ? value : ''}
+      arrow
+    >
       {children}
     </Tooltip>
   );
@@ -98,6 +106,8 @@ const QuantifySlider = ({
 
   const maxMarkValue = (): number =>
     marks.length > 0 ? marks[marks.length - 1].value : 0;
+
+  // if (!praise) return null;
 
   return (
     <div className="inline-block w-40">

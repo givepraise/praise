@@ -1,5 +1,5 @@
 import { EthState } from '@/model/eth';
-import { shortenEthAddress } from '@/utils/index';
+import { shortenEthAddress } from 'api/dist/user/utils';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import { useRecoilValue } from 'recoil';
 

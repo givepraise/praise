@@ -1,13 +1,10 @@
-import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
-import { UserAvatar } from '@/components/user/UserAvatar';
+import { PraiseDetailsDto } from 'api/dist/praise/types';
+import { useHistory, useParams } from 'react-router-dom';
+import Praise from '@/components/praise/Praise';
 import {
   PeriodAndReceiverPageParams,
   usePeriodReceiverPraiseQuery,
 } from '@/model/periods';
-import { localizeAndFormatIsoDate } from '@/utils/date';
-import { PraiseDetailsDto } from 'api/dist/praise/types';
-import { useHistory, useParams } from 'react-router-dom';
-
 interface PraiseRowProps {
   praise: PraiseDetailsDto;
 }
@@ -23,22 +20,7 @@ const PraiseRow = ({ praise }: PraiseRowProps): JSX.Element => {
       className="flex items-center w-full p-5 cursor-pointer hover:bg-gray-100"
       onClick={handleClick}
     >
-      <div className="flex items-center">
-        <UserAvatar userAccount={praise.giver} />
-      </div>
-      <div className="ml-5 overflow-hidden">
-        <div>
-          <ForwarderTooltip praise={praise} />
-          <span className="font-bold">{praise.giver.name}</span>
-          <span className="ml-3 text-xs text-gray-500">
-            {localizeAndFormatIsoDate(praise.createdAt)}
-          </span>
-        </div>
-        <div>{praise.reasonRealized}</div>
-      </div>
-      <div className="flex-grow text-right px-14 whitespace-nowrap">
-        {praise.scoreRealized}
-      </div>
+      <Praise praise={praise} showReceiver={false} />
     </div>
   );
 };
