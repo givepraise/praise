@@ -95,7 +95,7 @@ const Praise = ({
           )}
           <span
             dangerouslySetInnerHTML={{
-              __html: getMarkdownText(praise.reason),
+              __html: getMarkdownText(praise.reasonRealized),
             }}
             className={classNames(
               dismissed ? 'line-through' : '',

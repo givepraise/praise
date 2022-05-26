@@ -3,8 +3,8 @@ import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
 import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
-import { Message } from 'discord.js';
 import logger from 'jet-logger';
+import { Message, Util } from 'discord.js';
 import { getSetting } from '../utils/getSettings';
 import {
   dmError,
@@ -29,7 +29,7 @@ export const praiseHandler: CommandHandler = async (
 
   if (!responseUrl) return;
 
-  if (!guild || !member) {
+  if (!guild || !member || !channel) {
     await interaction.editReply(await dmError());
     return;
   }
@@ -124,6 +124,11 @@ export const praiseHandler: CommandHandler = async (
     }
     const praiseObj = await PraiseModel.create({
       reason: reason,
+      /**
+       * ! Util.cleanContent might get deprecated in the coming versions of discord.js
+       * * We would have to make our own implementation (ref: https://github.com/discordjs/discord.js/blob/988a51b7641f8b33cc9387664605ddc02134859d/src/util/Util.js#L557-L584)
+       */
+      reasonRealized: Util.cleanContent(reason, channel),
       giver: userAccount._id,
       sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
       sourceName: `DISCORD:${encodeURIComponent(

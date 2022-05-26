@@ -13,6 +13,8 @@ const requiredEnvVariables = [
   'JWT_REFRESH_EXP',
   'NODE_ENV',
   'SERVER_URL',
+  'DISCORD_TOKEN',
+  'DISCORD_GUILD_ID',
 ];
 
 export { requiredEnvVariables };

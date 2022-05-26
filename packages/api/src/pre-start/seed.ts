@@ -177,8 +177,10 @@ const seedPraise = async (praiseData: Object = {}): Promise<PraiseDocument> => {
   const [giver, receiver] = await fetchTwoRandomUserAccounts();
 
   const randomDays = Math.floor(Math.random() * PERIOD_NUMBER * PERIOD_LENGTH);
+  const reason = faker.lorem.sentences();
   const praise = await PraiseModel.create({
-    reason: faker.lorem.sentences(),
+    reason,
+    reasonRealized: reason,
     giver: giver._id,
     sourceId: faker.datatype.uuid(),
     sourceName: faker.lorem.word(),

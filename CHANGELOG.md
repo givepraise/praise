@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Normalize format of praise reason, converting usernames and channel names into their human-readable text
 - Hightlight active page in Navbar, update page routes to nest under top-level routes
 - Praise dates now displayed in a "relative" format, with the absolute format displayed in a tooltip
 
@@ -23,7 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.6.0] - 2022-05-09
 
 ### Added
-
 - Add giver and receiver id to exported praise csv #364
 - Increased precision in calculation of duplicate praise score, from 0 to 2 decimals #342
 
