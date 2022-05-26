@@ -1,14 +1,16 @@
-import { DATE_FORMAT_LONG_NAME, localizeAndFormatIsoDate } from '@/utils/date';
+import { PraiseDto } from 'api/dist/praise/types';
 import getMarkdownText from '@/components/MarkdownText';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { PraiseDto } from 'api/dist/praise/types';
-import { formatRelative } from 'date-fns';
-import { Tooltip } from '@mui/material';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { InlineLabel } from '@/components/InlineLabel';
 import { classNames } from '@/utils/index';
-
+import {
+  localizeAndFormatIsoDate,
+  localizeAndFormatIsoDateRelative,
+  DATE_FORMAT_LONG_NAME,
+} from '@/utils/date';
+import { Tooltip } from '@mui/material';
 import ResetQuantificationButton from './ResetQuantificationButton';
 
 interface Props {
@@ -58,7 +60,7 @@ const Praise = ({
             </span>
           )}
           <Tooltip
-            placement="top-start"
+            placement="right-end"
             title={localizeAndFormatIsoDate(
               praise.createdAt,
               DATE_FORMAT_LONG_NAME
@@ -66,7 +68,7 @@ const Praise = ({
             arrow
           >
             <span className="ml-2 text-xs text-gray-500">
-              {formatRelative(new Date(praise.createdAt), new Date())}
+              {localizeAndFormatIsoDateRelative(praise.createdAt)}
             </span>
           </Tooltip>
         </div>
