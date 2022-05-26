@@ -111,7 +111,7 @@ const PraiseAutosuggest = ({
                   highlightedIndex === index ? 'bg-gray-100' : '',
                   'py-2 pl-2 cursor-pointer'
                 )}
-                key="" //TODO fix key
+                key={item._id} //TODO fix key
                 {...getItemProps({ item, index })}
               >
                 #{item && item._id.slice(-4)} -{' '}
