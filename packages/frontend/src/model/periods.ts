@@ -93,7 +93,6 @@ export const useSinglePeriodQuery = (periodId: string): void => {
   useEffect(() => {
     const fetchPeriod = async (periodId): Promise<void> => {
       const apiAuthClient = makeApiAuthClient();
-      console.log('periodId', periodId);
       const response = await apiAuthClient.get(`/periods/${periodId}`);
       setPeriod(response.data);
     };
