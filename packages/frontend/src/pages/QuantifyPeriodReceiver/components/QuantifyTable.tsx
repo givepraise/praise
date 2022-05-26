@@ -1,19 +1,12 @@
-import { InlineLabel } from '@/components/InlineLabel';
-import { InlineLabelClosable } from '@/components/InlineLabelClosable';
-import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
-import { UserAvatar } from '@/components/user/UserAvatar';
-import { UserPseudonym } from '@/components/user/UserPseudonym';
-import { ActiveUserId } from '@/model/auth';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
-import { localizeAndFormatIsoDate } from '@/utils/date';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import getWeek from 'date-fns/getWeek';
 import parseISO from 'date-fns/parseISO';
 import { groupBy, sortBy } from 'lodash';
-import { PraiseDto, QuantificationDto } from 'api/dist/praise/types';
+import { PraiseDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { QuantifyBackNextLink } from './BackNextLink';
@@ -23,6 +16,9 @@ import QuantifySlider from './QuantifySlider';
 import DuplicateSearchDialog from './DuplicateSearchDialog';
 import MarkDuplicateButton from './MarkDuplicateButton';
 import MarkDismissedButton from './MarkDismissedButton';
+import Praise from '@/components/praise/Praise';
+import { dismissed, duplicate, shortDuplicatePraiseId } from '@/utils/praise';
+import { ActiveUserId } from '@/model/auth';
 
 interface Props {
   periodId: string;
@@ -56,20 +52,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
   ) as number[];
 
   if (!data) return null;
-
-  const quantification = (praise: PraiseDto): QuantificationDto | undefined => {
-    return praise.quantifications.find((q) => q.quantifier === userId);
-  };
-
-  const dismissed = (praise: PraiseDto): boolean => {
-    const q = quantification(praise);
-    return q ? !!q.dismissed : false;
-  };
-
-  const duplicate = (praise: PraiseDto): boolean => {
-    const q = quantification(praise);
-    return q ? (q.duplicatePraise ? true : false) : false;
-  };
+  if (!userId) return null;
 
   const handleDismiss = (): void => {
     if (selectedPraises.length > 0) {
@@ -105,14 +88,6 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
     setDuplicateSearchDialogPraise(undefined);
   };
 
-  const handleRemoveDismiss = (praise: PraiseDto): void => {
-    void quantify(praise._id, 0, false, null);
-  };
-
-  const handleRemoveDuplicate = (praise: PraiseDto): void => {
-    void quantify(praise._id, 0, false, null);
-  };
-
   const handleToggleCheckbox = (praise: PraiseDto): void => {
     if (selectedPraises.includes(praise)) {
       const newSelectedPraiseIds = selectedPraises.filter(
@@ -127,15 +102,6 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
     }
   };
 
-  const shortDuplicatePraiseId = (praise: PraiseDto): string => {
-    const q = quantification(praise);
-    return q && q.duplicatePraise ? q.duplicatePraise?.slice(-4) : '';
-  };
-
-  const isChecked = (praise: PraiseDto): boolean => {
-    return selectedPraises.map((p) => p._id).includes(praise._id);
-  };
-
   const weeklyData = groupBy(
     sortBy(data, (p) => p.createdAt),
     (praise: PraiseDto) => {
@@ -143,6 +109,10 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
       return getWeek(parseISO(praise.createdAt), { weekStartsOn: 1 });
     }
   );
+
+  const isChecked = (praise: PraiseDto): boolean => {
+    return selectedPraises.map((p) => p._id).includes(praise._id);
+  };
 
   return (
     <div className=" h-full">
@@ -161,7 +131,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
         <table className="w-full table-auto">
           <tbody>
             {Object.keys(weeklyData).map((weekKey, index) => (
-              <>
+              <React.Fragment key={index}>
                 {index !== 0 && index !== data.length - 1 && (
                   <tr>
                     <td colSpan={5}>
@@ -181,76 +151,26 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                       />
                     </td>
                     <td>
-                      <div className="items-center w-full">
-                        <div className="flex items-center">
-                          <UserAvatar
-                            userAccount={praise.giver}
-                            usePseudonym={usePseudonyms}
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div>
-                        <span className="font-bold">
-                          <ForwarderTooltip praise={praise} />
-                          {usePseudonyms ? (
-                            <UserPseudonym
-                              userId={praise.giver._id}
-                              periodId={periodId}
-                            />
-                          ) : (
-                            praise.giver.name
-                          )}
-                        </span>
-                        <span className="ml-2 text-xs text-gray-500">
-                          {localizeAndFormatIsoDate(praise.createdAt)}
-                        </span>
-                      </div>
-                      <div className="w-[550px] overflow-hidden overflow-ellipsis">
-                        <span>
-                          <InlineLabel
-                            text={`#${praise._id.slice(-4)}`}
-                            className="bg-gray-400"
-                          />
-                          {dismissed(praise) ? (
-                            <>
-                              <InlineLabelClosable
-                                text="Dismissed"
-                                onClose={(): void =>
-                                  void handleRemoveDismiss(praise)
-                                }
-                                className="bg-red-600"
-                              />
-                              <span className="line-through">
-                                {praise.reason}
-                              </span>
-                            </>
-                          ) : duplicate(praise) ? (
-                            <>
-                              <InlineLabelClosable
-                                text={`Duplicate of: #${shortDuplicatePraiseId(
-                                  praise
-                                )}`}
-                                onClose={(): void =>
-                                  void handleRemoveDuplicate(praise)
-                                }
-                              />
-                              <span className="text-gray-400">
-                                {praise.reason}
-                              </span>
-                            </>
-                          ) : (
-                            praise.reason
-                          )}
-                        </span>
-                      </div>
+                      <Praise
+                        praise={praise}
+                        showIdPrefix={true}
+                        showReceiver={false}
+                        periodId={periodId}
+                        usePseudonyms={usePseudonyms}
+                        dismissed={dismissed(praise, userId)}
+                        shortDuplicatePraiseId={shortDuplicatePraiseId(
+                          praise,
+                          userId
+                        )}
+                      />
                     </td>
                     <td>
                       <QuantifySlider
                         allowedScores={allowedValues}
-                        disabled={dismissed(praise) || duplicate(praise)}
                         score={praise.scoreRealized}
+                        disabled={
+                          dismissed(praise, userId) || duplicate(praise, userId)
+                        }
                         onChange={(newScore): void =>
                           handleSetScore(praise, newScore)
                         }
@@ -260,7 +180,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                       <div className="w-3">
                         <button
                           className="hidden group-hover:block text-gray-400 hover:text-gray-500 cursor-pointer"
-                          disabled={duplicate(praise)}
+                          disabled={duplicate(praise, userId)}
                           onClick={(): void => {
                             setDuplicateSearchDialogPraise(praise);
                             setIsDuplicateSearchDialogOpen(true);
@@ -272,7 +192,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                     </td>
                   </tr>
                 ))}
-              </>
+              </React.Fragment>
             ))}
           </tbody>
         </table>
