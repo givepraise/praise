@@ -1,11 +1,8 @@
-import { micromark } from 'micromark';
-import { gfm, gfmHtml } from 'micromark-extension-gfm';
+import { markdownParser } from '@/utils/parser';
+import linkifyHtml from 'linkify-html';
 
 const getMarkdownText = (text: string): string => {
-  return micromark(text, {
-    extensions: [gfm()],
-    htmlExtensions: [gfmHtml()],
-  });
+  return linkifyHtml(markdownParser(text), { target: '_blank' });
 };
 
 export default getMarkdownText;
