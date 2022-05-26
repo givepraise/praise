@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Hightlight active page in Navbar, update page routes to nest under top-level routes
+- Praise dates now displayed in a "relative" format, with the absolute format displayed in a tooltip
 
 ### Fixed
 - Remove 1s login delay
