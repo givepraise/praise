@@ -262,7 +262,7 @@ type useQuantifyPraiseReturn = {
     score: number,
     dismissed: boolean,
     duplicatePraise: string | null
-  ) => Promise<PraiseDto | undefined>;
+  ) => Promise<void>;
 };
 /**
  * Hook that returns a function to use for closing a period
@@ -277,8 +277,8 @@ export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
         score: number,
         dismissed: boolean,
         duplicatePraise: string | null
-      ): Promise<PraiseDto | undefined> => {
-        const response: AxiosResponse<PraiseDto> = await apiAuthClient.patch(
+      ): Promise<void> => {
+        const response: AxiosResponse<PraiseDto[]> = await apiAuthClient.patch(
           `/praise/${praiseId}/quantify`,
           {
             score,
@@ -287,10 +287,11 @@ export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
           }
         );
 
-        const praise = response.data;
-        set(SinglePraise(praise._id), praise);
+        const praises = response.data;
 
-        return praise;
+        praises.forEach((praise) => {
+          set(SinglePraise(praise._id), praise);
+        });
       }
   );
   return { quantify };

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Normalize format of praise reason, converting usernames and channel names into their human-readable text
 - Hightlight active page in Navbar, update page routes to nest under top-level routes
 - Praise dates now displayed in a "relative" format, with the absolute format displayed in a tooltip
+- Display calculated score of praise marked as duplicate instead of disabled slider on Quantify page #378
 
 ### Fixed
 - Remove 1s login delay

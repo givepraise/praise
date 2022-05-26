@@ -1,3 +1,4 @@
+import Notice from '@/components/Notice';
 import { PraiseDto } from 'api/dist/praise/types';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
@@ -165,16 +166,26 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                       />
                     </td>
                     <td>
-                      <QuantifySlider
-                        allowedScores={allowedValues}
-                        score={praise.scoreRealized}
-                        disabled={
-                          dismissed(praise, userId) || duplicate(praise, userId)
-                        }
-                        onChange={(newScore): void =>
-                          handleSetScore(praise, newScore)
-                        }
-                      />
+                      {duplicate(praise, userId) ? (
+                        <Notice type="info" className="w-40 py-2">
+                          <>
+                            Duplicate score: <br />
+                            {praise.scoreRealized}
+                          </>
+                        </Notice>
+                      ) : (
+                        <QuantifySlider
+                          allowedScores={allowedValues}
+                          score={praise.scoreRealized}
+                          disabled={
+                            dismissed(praise, userId) ||
+                            duplicate(praise, userId)
+                          }
+                          onChange={(newScore): void =>
+                            handleSetScore(praise, newScore)
+                          }
+                        />
+                      )}
                     </td>
                     <td>
                       <div className="w-3">
