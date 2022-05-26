@@ -60,7 +60,7 @@ const Praise = ({
             </span>
           )}
           <Tooltip
-            placement="top-start"
+            placement="right-end"
             title={localizeAndFormatIsoDate(
               praise.createdAt,
               DATE_FORMAT_LONG_NAME
