@@ -14,6 +14,7 @@
     "@fortawesome/react-fontawesome": "^0.1.17",
     "@headlessui/react": "^1.4.1",
     "@mui/material": "^5.3.0",
+    "@rainbow-me/rainbowkit": "^0.2.0",
     "@tailwindcss/forms": "latest",
     "@typescript-eslint/eslint-plugin": "^5.18.0",
     "@typescript-eslint/parser": "^5.18.0",
@@ -38,6 +39,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
+    "ethers": "^5.6.8",
     "final-form": "^4.20.4",
     "jstz": "^2.1.1",
     "jwt-decode": "^3.1.2",
@@ -60,7 +62,9 @@
     "recoil-nexus": "^0.3.15",
     "recoil-persist": "^4.0.0",
     "tailwindcss": "^3.0.24",
-    "use-error-boundary": "^2.0.6"
+    "use-error-boundary": "^2.0.6",
+    "util": "^0.12.4",
+    "wagmi": "^0.4.3"
   },
   "scripts": {
     "build": "craco build",
