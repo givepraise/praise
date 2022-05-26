@@ -46,6 +46,7 @@ const Praise = ({
           </span>
           {showReceiver && (
             <span>
+              {' '}
               to <span className="font-bold">{praise.receiver.name}</span>
             </span>
           )}
