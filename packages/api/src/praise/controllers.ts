@@ -33,7 +33,6 @@ import {
   QuantificationCreateUpdateInput,
 } from './types';
 import { praiseWithScore, getPraisePeriod } from './utils/core';
-import logger from 'jet-logger';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
