@@ -20,4 +20,18 @@ module.exports = {
   eslint: {
     enable: false, //TODO enable eslint during build
   },
+  webpack: {
+    configure: {
+      resolve: {
+        /**
+         * create-react-app 5 uses webpack 5, which no longer ships with node polyfills.
+         * Craco's team is looking to give it up (https://github.com/gsoft-inc/craco/issues/415).
+         * Possible alternatives: react-app-rewired or ejecting from CRA
+         */
+        fallback: {
+          'util': require.resolve("util/"),
+        },
+      },
+    }
+  }
 };
