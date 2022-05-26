@@ -1,4 +1,4 @@
-import { parse, parseISO } from 'date-fns';
+import { parse, parseISO, formatRelative } from 'date-fns';
 import { zonedTimeToUtc, utcToZonedTime, format } from 'date-fns-tz';
 import jstz from 'jstz';
 
@@ -28,13 +28,12 @@ export const utcDateToLocal = (dateUtc: Date): Date => {
   return dateLocal;
 };
 
-// export const getTimeDifferenceFromNow = (date: string): string => {
-//   const dateUtc = parseISO(date);
-//   const dateLocal = utcDateToLocal(dateUtc);
-//   const newDate = new Date(dateLocal);
+export const localizeAndFormatIsoDateRelative = (dateIso: string): string => {
+  const dateUtc = parseISO(dateIso);
+  const dateLocal = utcDateToLocal(dateUtc);
 
-//   return formatRelative(new Date(date), new Date());
-// };
+  return formatRelative(dateLocal, new Date());
+};
 
 export const localizeAndFormatIsoDate = (
   dateIso: string,

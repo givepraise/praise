@@ -5,8 +5,11 @@ import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { InlineLabel } from '@/components/InlineLabel';
 import { classNames } from '@/utils/index';
-import { localizeAndFormatIsoDate, DATE_FORMAT_LONG_NAME } from '@/utils/date';
-import { formatRelative } from 'date-fns';
+import {
+  localizeAndFormatIsoDate,
+  localizeAndFormatIsoDateRelative,
+  DATE_FORMAT_LONG_NAME,
+} from '@/utils/date';
 import { Tooltip } from '@mui/material';
 import ResetQuantificationButton from './ResetQuantificationButton';
 
@@ -65,7 +68,7 @@ const Praise = ({
             arrow
           >
             <span className="ml-2 text-xs text-gray-500">
-              {formatRelative(new Date(praise.createdAt), new Date())}
+              {localizeAndFormatIsoDateRelative(praise.createdAt)}
             </span>
           </Tooltip>
         </div>
