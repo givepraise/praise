@@ -1,19 +1,22 @@
-import { localizeAndFormatIsoDate } from '@/utils/date';
+import { PraiseDto } from 'api/dist/praise/types';
 import getMarkdownText from '@/components/MarkdownText';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { PraiseDto } from 'api/dist/praise/types';
-import { UserPseudonym } from '../user/UserPseudonym';
-import { InlineLabel } from '../InlineLabel';
+import { UserPseudonym } from '@/components/user/UserPseudonym';
+import { InlineLabel } from '@/components/InlineLabel';
+import { classNames } from '@/utils/index';
+import { localizeAndFormatIsoDate } from '@/utils/date';
+import ResetQuantificationButton from './ResetQuantificationButton';
 
-interface Params {
+interface Props {
   praise: PraiseDto;
   showIdPrefix?: boolean;
   showReceiver?: boolean;
   periodId?: string;
   usePseudonyms?: boolean;
   className?: string;
-  contentPrefixChildren?: JSX.Element | null;
+  dismissed?: boolean;
+  shortDuplicatePraiseId?: string;
 }
 
 const Praise = ({
@@ -23,8 +26,9 @@ const Praise = ({
   periodId = undefined,
   usePseudonyms = false,
   className = '',
-  contentPrefixChildren = null,
-}: Params): JSX.Element | null => {
+  dismissed = false,
+  shortDuplicatePraiseId = undefined,
+}: Props): JSX.Element | null => {
   if (!praise) return null;
 
   if (usePseudonyms && !periodId) return null;
@@ -63,11 +67,27 @@ const Praise = ({
               className="bg-gray-400"
             />
           )}
-          {contentPrefixChildren && contentPrefixChildren}
+          {dismissed && (
+            <InlineLabel
+              text="Dismissed"
+              button={<ResetQuantificationButton praise={praise} />}
+              className="bg-red-600"
+            />
+          )}
+          {shortDuplicatePraiseId && (
+            <InlineLabel
+              text={`Duplicate of: #${shortDuplicatePraiseId}`}
+              button={<ResetQuantificationButton praise={praise} />}
+            />
+          )}
           <span
             dangerouslySetInnerHTML={{
               __html: getMarkdownText(praise.reason),
             }}
+            className={classNames(
+              dismissed ? 'line-through' : '',
+              shortDuplicatePraiseId ? 'text-gray-400' : ''
+            )}
           ></span>
         </div>
       </div>

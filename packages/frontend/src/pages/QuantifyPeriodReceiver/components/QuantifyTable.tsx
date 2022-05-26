@@ -16,9 +16,8 @@ import QuantifySlider from './QuantifySlider';
 import DuplicateSearchDialog from './DuplicateSearchDialog';
 import MarkDuplicateButton from './MarkDuplicateButton';
 import MarkDismissedButton from './MarkDismissedButton';
-import { PraiseInlineButtons } from './PraiseInlineButtons';
 import Praise from '@/components/praise/Praise';
-import { dismissed, duplicate } from '@/utils/praise';
+import { dismissed, duplicate, shortDuplicatePraiseId } from '@/utils/praise';
 import { ActiveUserId } from '@/model/auth';
 
 interface Props {
@@ -158,9 +157,11 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                         showReceiver={false}
                         periodId={periodId}
                         usePseudonyms={usePseudonyms}
-                        contentPrefixChildren={
-                          <PraiseInlineButtons praise={praise} />
-                        }
+                        dismissed={dismissed(praise, userId)}
+                        shortDuplicatePraiseId={shortDuplicatePraiseId(
+                          praise,
+                          userId
+                        )}
                       />
                     </td>
                     <td>
