@@ -2,6 +2,7 @@ import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSetRecoilState } from 'recoil';
 import { ActiveTokenSet } from '@/model/auth';
+import { useHistory } from 'react-router-dom';
 
 interface NotFoundProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -9,10 +10,12 @@ interface NotFoundProps {
 }
 
 const ErrorPage = ({ error }: NotFoundProps): JSX.Element => {
+  const history = useHistory();
   const setActiveTokenSet = useSetRecoilState(ActiveTokenSet);
 
   const logout = (): void => {
     setActiveTokenSet(undefined);
+    history.replace('/');
   };
 
   return (

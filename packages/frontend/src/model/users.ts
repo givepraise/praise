@@ -72,15 +72,11 @@ export const useAllUsersQuery = (): AxiosResponse<unknown> => {
   return allUsersQueryResponse;
 };
 
-type SingleUserParams = {
-  userId: string | undefined;
-};
 export const SingleUser = selectorFamily({
   key: 'SingleUser',
   get:
-    (params: SingleUserParams) =>
+    (userId: string | undefined) =>
     ({ get }): UserDto | undefined => {
-      const { userId } = params;
       const allUsers = get(AllUsers);
       if (!allUsers) return undefined;
       return allUsers.filter((user) => user._id === userId)[0];
