@@ -88,17 +88,17 @@ export const AllPeriods = selector({
  * Hook that fetches details for a single period from the API.
  */
 export const useSinglePeriodQuery = (periodId: string): void => {
-  const apiAuthClient = makeApiAuthClient();
   const setPeriod = useSetRecoilState(SinglePeriod(periodId));
 
   useEffect(() => {
-    const fetchPeriod = async (): Promise<void> => {
+    const fetchPeriod = async (periodId): Promise<void> => {
+      const apiAuthClient = makeApiAuthClient();
       const response = await apiAuthClient.get(`/periods/${periodId}`);
       setPeriod(response.data);
     };
 
-    void fetchPeriod();
-  }, [periodId, setPeriod, apiAuthClient]);
+    void fetchPeriod(periodId);
+  }, [periodId, setPeriod]);
 };
 
 /**
