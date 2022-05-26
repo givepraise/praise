@@ -1,9 +1,6 @@
 import { Slider, Tooltip } from '@mui/material';
-import { PraiseDto } from 'api/dist/praise/types';
-import React from 'react';
-import { useRecoilValue } from 'recoil';
+import React, { useState, useEffect } from 'react';
 
-import { useState, useEffect } from 'react';
 interface ValueLabelComponentProps {
   children: JSX.Element;
   value: string;

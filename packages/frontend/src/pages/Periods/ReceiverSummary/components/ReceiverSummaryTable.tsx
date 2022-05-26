@@ -1,11 +1,8 @@
-import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import Praise from '@/components/praise/Praise';
-import { UserAvatar } from '@/components/user/UserAvatar';
 import {
   PeriodAndReceiverPageParams,
   usePeriodReceiverPraiseQuery,
 } from '@/model/periods';
-import { localizeAndFormatIsoDate } from '@/utils/date';
 import { PraiseDetailsDto } from 'api/dist/praise/types';
 import { useHistory, useParams } from 'react-router-dom';
 
