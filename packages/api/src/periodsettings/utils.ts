@@ -13,7 +13,7 @@ export const insertNewPeriodSettings = async (
   if (settings && !Array.isArray(settings)) settings = [settings];
 
   const newPeriodSettings = settings.map((setting: SettingDocument) => {
-    const settingObj = setting.toObject();
+    const settingObj = setting.toObject() as SettingDocument;
 
     return {
       // copy original settings
@@ -24,7 +24,7 @@ export const insertNewPeriodSettings = async (
       __v: undefined,
 
       // set period
-      period: period._id,
+      period: period._id.toString(),
     } as PeriodSetting;
   });
 

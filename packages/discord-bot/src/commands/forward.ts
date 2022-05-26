@@ -33,9 +33,9 @@ export const forward: Command = {
       if (!interaction.isCommand() || interaction.commandName !== 'forward')
         return;
 
-      const msg = (await interaction.deferReply({
+      const msg = await interaction.deferReply({
         fetchReply: true,
-      })) as APIMessage | void;
+      });
       if (msg === undefined) return;
       await forwardHandler(
         interaction,
