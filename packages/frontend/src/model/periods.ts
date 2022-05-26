@@ -318,33 +318,6 @@ export const useClosePeriod = (): useClosePeriodReturn => {
 };
 
 /**
- * Params for VerifyQuantifierPoolSizeQuery
- */
-type VerifyQuantifierPoolSizeQueryParams = {
-  periodId: string;
-  refreshKey: string | undefined;
-};
-
-/**
- * Selector query that fetches quantifier pool size requirements.
- */
-export const VerifyQuantifierPoolSizeQuery = selectorFamily({
-  key: 'VerifyQuantifierPoolSizeQuery',
-  get:
-    (params: VerifyQuantifierPoolSizeQueryParams) =>
-    ({ get }): AxiosResponse<unknown> => {
-      const { periodId, refreshKey } = params;
-      const response = get(
-        ApiAuthGet({
-          url: `/admin/periods/${periodId}/verifyQuantifierPoolSize`,
-          refreshKey,
-        })
-      );
-      return response;
-    },
-});
-
-/**
  * Quantifier pool size requirements returned by @useVerifyQuantifierPoolSize
  */
 export interface PoolRequirements {
@@ -353,27 +326,34 @@ export interface PoolRequirements {
   quantifierPoolDeficitSize: number;
 }
 
+export const PeriodPoolRequirements = atomFamily<
+  PoolRequirements | undefined,
+  string
+>({
+  key: 'SinglePeriodPoolRequirements',
+  default: undefined,
+});
+
 /**
  * Hook that fetches quantifier pool requirements.
  */
-export const useVerifyQuantifierPoolSize = (
-  periodId: string,
-  refreshKey: string | undefined
-): PoolRequirements | undefined => {
-  const response = useAuthApiQuery(
-    VerifyQuantifierPoolSizeQuery({ periodId, refreshKey })
+export const useVerifyQuantifierPoolSize = (periodId: string): void => {
+  const setPeriodPoolRequirements = useSetRecoilState(
+    PeriodPoolRequirements(periodId)
   );
-  const [poolRequirements, setPoolRequirements] = React.useState<
-    PoolRequirements | undefined
-  >(undefined);
 
-  React.useEffect(() => {
-    if (isResponseOk(response)) {
-      setPoolRequirements(response.data);
-    }
-  }, [response]);
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      const apiAuthClient = makeApiAuthClient();
 
-  return poolRequirements;
+      const response = await apiAuthClient.get(
+        `/admin/periods/${periodId}/verifyQuantifierPoolSize`
+      );
+      setPeriodPoolRequirements(response.data);
+    };
+
+    void fetchData();
+  }, [periodId, setPeriodPoolRequirements]);
 };
 
 type useAssignQuantifiersReturn = {
