@@ -1,5 +1,6 @@
 import { faForward } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Tooltip } from '@mui/material';
 import { PraiseDto } from 'api/dist/praise/types';
 
 interface ForwarderTooltipProps {
@@ -10,13 +11,15 @@ export const ForwarderTooltip = ({
 }: ForwarderTooltipProps): JSX.Element | null => {
   if (praise.forwarder) {
     return (
-      <div className="inline-block mr-1">
-        <FontAwesomeIcon
-          icon={faForward}
-          size="1x"
-          title={`Forwarded by: ${praise.forwarder.name}`}
-        />
-      </div>
+      <Tooltip
+        placement="top-start"
+        title={`Forwarded by: ${praise.forwarder.name}`}
+        arrow
+      >
+        <div className="inline-block mr-1">
+          <FontAwesomeIcon icon={faForward} size="1x" />
+        </div>
+      </Tooltip>
     );
   }
   return null;

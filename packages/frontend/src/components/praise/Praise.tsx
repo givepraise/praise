@@ -5,7 +5,12 @@ import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { InlineLabel } from '@/components/InlineLabel';
 import { classNames } from '@/utils/index';
-import { localizeAndFormatIsoDate } from '@/utils/date';
+import {
+  localizeAndFormatIsoDate,
+  localizeAndFormatIsoDateRelative,
+  DATE_FORMAT_LONG_NAME,
+} from '@/utils/date';
+import { Tooltip } from '@mui/material';
 import ResetQuantificationButton from './ResetQuantificationButton';
 
 interface Props {
@@ -54,10 +59,18 @@ const Praise = ({
               to <span className="font-bold">{praise.receiver.name}</span>
             </span>
           )}
-
-          <span className="ml-2 text-xs text-gray-500">
-            {localizeAndFormatIsoDate(praise.createdAt)}
-          </span>
+          <Tooltip
+            placement="right-end"
+            title={localizeAndFormatIsoDate(
+              praise.createdAt,
+              DATE_FORMAT_LONG_NAME
+            )}
+            arrow
+          >
+            <span className="ml-2 text-xs text-gray-500">
+              {localizeAndFormatIsoDateRelative(praise.createdAt)}
+            </span>
+          </Tooltip>
         </div>
 
         <div className="w-full">

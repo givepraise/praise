@@ -1,12 +1,15 @@
+import { PraiseDto } from 'api/dist/praise/types';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import Praise from '@/components/praise/Praise';
+import { dismissed, duplicate, shortDuplicatePraiseId } from '@/utils/praise';
+import { ActiveUserId } from '@/model/auth';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import getWeek from 'date-fns/getWeek';
 import parseISO from 'date-fns/parseISO';
 import { groupBy, sortBy } from 'lodash';
-import { PraiseDto } from 'api/dist/praise/types';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { QuantifyBackNextLink } from './BackNextLink';
@@ -16,9 +19,6 @@ import QuantifySlider from './QuantifySlider';
 import DuplicateSearchDialog from './DuplicateSearchDialog';
 import MarkDuplicateButton from './MarkDuplicateButton';
 import MarkDismissedButton from './MarkDismissedButton';
-import Praise from '@/components/praise/Praise';
-import { dismissed, duplicate, shortDuplicatePraiseId } from '@/utils/praise';
-import { ActiveUserId } from '@/model/auth';
 
 interface Props {
   periodId: string;
