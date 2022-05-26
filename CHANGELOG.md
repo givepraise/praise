@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Remove 1s login delay
 - Ensure period is updated reactively on frontend when closed, name changed, or end date changed #389 #390
+- Immediately reflect authorization changes after modifying your own user's roles
 - Ensure'Assign Quantifiers' dialog is updated reactively when quantifier pool changes #388
 - Ensure period settings created before migration `07_settings_add_group` can be updated
 - Prevent users from marking a praise as duplicate, if it is already the original of another praise marked duplicate

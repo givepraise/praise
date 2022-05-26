@@ -40,7 +40,7 @@ interface Params {
 }
 
 const EventLog = ({ eventlog, className = '' }: Params): JSX.Element | null => {
-  const user = useRecoilValue(SingleUser({ userId: eventlog.user }));
+  const user = useRecoilValue(SingleUser(eventlog.user));
 
   return (
     <div className={`flex items-center w-full ${className}`}>
