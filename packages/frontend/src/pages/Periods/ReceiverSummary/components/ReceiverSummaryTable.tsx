@@ -1,11 +1,10 @@
+import { PraiseDetailsDto } from 'api/dist/praise/types';
+import { useHistory, useParams } from 'react-router-dom';
 import Praise from '@/components/praise/Praise';
 import {
   PeriodAndReceiverPageParams,
   usePeriodReceiverPraiseQuery,
 } from '@/model/periods';
-import { PraiseDetailsDto } from 'api/dist/praise/types';
-import { useHistory, useParams } from 'react-router-dom';
-
 interface PraiseRowProps {
   praise: PraiseDetailsDto;
 }
@@ -22,9 +21,6 @@ const PraiseRow = ({ praise }: PraiseRowProps): JSX.Element => {
       onClick={handleClick}
     >
       <Praise praise={praise} showReceiver={false} />
-      <div className="flex-grow text-right px-14 whitespace-nowrap">
-        {praise.scoreRealized}
-      </div>
     </div>
   );
 };

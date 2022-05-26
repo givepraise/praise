@@ -1,3 +1,4 @@
+import { Client, Util } from 'discord.js';
 import { PeriodDateRange, PeriodDocument } from '@period/types';
 import { PeriodModel } from '@period/entities';
 import { PraiseModel } from '../entities';
@@ -73,4 +74,45 @@ export const isQuantificationCompleted = (
     quantification.duplicatePraise !== undefined ||
     quantification.score > 0
   );
+};
+
+/**
+ * Setup discord client and fetch guild members into client cache
+ * @returns
+ */
+export const prepareDiscordClient = async (): Promise<Client> => {
+  const discordClient = new Client({
+    intents: ['GUILDS', 'GUILD_MEMBERS'],
+  });
+  await discordClient.login(process.env.DISCORD_TOKEN);
+  await discordClient.guilds.fetch();
+  const discordGuild = await discordClient.guilds.fetch(
+    process.env.DISCORD_GUILD_ID as string
+  );
+  await discordGuild.members.fetch();
+
+  return discordClient;
+};
+
+/**
+ * Convert text from discord into a "realized" form
+ *  replacing raw references to channels and users with their human-readable text
+ * @param discordClient
+ * @param discordChannelId
+ * @param text
+ * @returns
+ */
+export const realizeDiscordContent = async (
+  discordClient: Client,
+  discordChannelId: string,
+  text: string
+): Promise<string> => {
+  const channel = await discordClient.channels.fetch(discordChannelId);
+
+  if (!channel) throw Error('Failed to fetch channel from discord api');
+  if (!channel.isText()) throw Error('Channel must be a TextChannel');
+
+  const textRealized = Util.cleanContent(text, channel);
+
+  return textRealized;
 };

@@ -4677,6 +4677,7 @@ __metadata:
     chai: ^4.3.6
     cors: ^2.8.5
     date-fns: ^2.28.0
+    discord.js: ^13.7.0
     env-cmd: ^10.1.0
     eslint: ^8.8.0
     ethers: ^5.5.2
@@ -7045,7 +7046,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"discord.js@npm:^13.6.0":
+"discord.js@npm:^13.6.0, discord.js@npm:^13.7.0":
   version: 13.7.0
   resolution: "discord.js@npm:13.7.0"
   dependencies:

@@ -57,7 +57,7 @@ const praiseDocumentToDto = async (
 ): Promise<PraiseDto> => {
   const {
     _id,
-    reason,
+    reasonRealized,
     sourceId,
     sourceName,
     quantifications,
@@ -69,7 +69,7 @@ const praiseDocumentToDto = async (
   } = praiseDocument;
   return {
     _id,
-    reason,
+    reasonRealized,
     sourceId,
     sourceName,
     quantifications: await quantificationListTransformer(quantifications),
