@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Remove 1s login delay
 - Ensure period is updated reactively on frontend when closed, name changed, or end date changed #389 #390
+- Ensure period settings created before migration `07_settings_add_group` can be updated
+- Prevent users from marking a praise as duplicate, if it is already the original of another praise marked duplicate
+- Fetch period data on period detail page only once
 
 ## [0.6.0] - 2022-05-09
 
