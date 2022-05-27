@@ -10,6 +10,7 @@ import {
 
 import { CommandInteraction } from 'discord.js';
 import { PraiseModel } from 'api/dist/praise/entities';
+import { Buffer } from 'node:buffer';
 
 const sendDMs = async (
   interaction: CommandInteraction,
@@ -32,11 +33,11 @@ const sendDMs = async (
     try {
       const discordUser = await interaction.guild?.members.fetch(userId);
       if (!discordUser) {
-        failed.push(`<@!${userId}`);
+        failed.push(`<@!${userId}>`);
         continue;
       }
       await discordUser.send(message);
-      successful.push(`<@!${userId}>`);
+      successful.push(`${discordUser.user.tag}`);
     } catch (err) {
       failed.push(`<@!${userId}>`);
     }
@@ -49,9 +50,31 @@ const sendDMs = async (
       : failed.length === 0
       ? successMsg
       : successMsg + '\n' + failedMsg;
+
+  // TODO - Create a utility function to tabularise this data neatly
+  let summary = `User\t\t\t\tStatus\n`;
+  successful.forEach((username: string) => {
+    summary += `${username}${new String(' ').repeat(
+      32 - username.length
+    )}Delivered\n`;
+  });
+  failed.forEach((username: string) => {
+    summary += `${
+      username.length <= 32
+        ? username + new String(' ').repeat(24 - username.length)
+        : username.slice(0, 28) + '... '
+    }Not Delivered\n`;
+  });
+
   await interaction.editReply({
     content: content,
     components: [],
+    files: [
+      {
+        attachment: Buffer.from(summary, 'utf8'),
+        name: 'announcement_summary.txt',
+      },
+    ],
   });
 };
 
