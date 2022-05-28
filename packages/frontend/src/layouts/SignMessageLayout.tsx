@@ -40,7 +40,7 @@ const SignMessageLayout = ({
         <div className="p-4 py-8 m-auto border border-solid rounded-lg shadow-sm bg-gray-50 w-96 space-y-8">
           {children}
 
-          {isLoading || !message ? (
+          {isLoading && !data && !message ? (
             <LoaderSpinner />
           ) : (
             <div className="w-full flex justify-center items-center">
