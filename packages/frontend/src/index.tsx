@@ -84,13 +84,11 @@ const wagmiClient = createClient({
 
 const customRainbowkitTheme = merge(lightTheme(), {
   colors: {
-    accentColor: '#2d3748',
-    connectButtonBackground: '#2d3748', // bg-gray-800
-    connectButtonInnerBackground: '#2d3748', // bg-gray-800
+    accentColor: '#2d3748', // tailwind color gray-800
   },
   radii: {
-    connectButton: '0.25rem', // rounded
-    modal: '0.25rem', // rounded
+    connectButton: '0.25rem', // tailwind radius 'rounded'
+    modal: '0.25rem',
   },
 } as Theme);
 
