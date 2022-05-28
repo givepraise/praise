@@ -14,9 +14,7 @@ export default function EthAccount({
   if (!data?.address) return null;
 
   return (
-    <div
-      className={`inline-block flex justify-center items-center ${className}`}
-    >
+    <div className={`flex justify-center items-center ${className}`}>
       <div className="w-[15px] h-[15px] mr-2">
         <Jazzicon address={data.address} />
       </div>

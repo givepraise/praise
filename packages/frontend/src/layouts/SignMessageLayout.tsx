@@ -8,6 +8,7 @@ import { useRecoilValue } from 'recoil';
 import { AccessToken } from '@/model/auth';
 import { useHistory } from 'react-router-dom';
 import LoaderSpinner from '@/components/LoaderSpinner';
+import EthAccount from '@/components/EthAccount';
 
 interface Props {
   children: JSX.Element;
@@ -43,12 +44,18 @@ const SignMessageLayout = ({
             <LoaderSpinner />
           ) : (
             <div className="w-full flex justify-center items-center">
-              {data && (
-                <span className="text-lg font-semibold mr-2">Connected as</span>
-              )}
-              <div>
+              {data ? (
+                <div>
+                  <div className="text-lg font-semibold text-center mb-2">
+                    Connected as
+                  </div>
+                  <div>
+                    <EthAccount />
+                  </div>
+                </div>
+              ) : (
                 <ConnectButton showBalance={false} accountStatus="address" />
-              </div>
+              )}
             </div>
           )}
 
