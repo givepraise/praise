@@ -5,13 +5,17 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 import RecoilNexus from 'recoil-nexus';
 import { useErrorBoundary } from 'use-error-boundary';
+// eslint-disable-next-line import/no-unresolved
 import '@rainbow-me/rainbowkit/styles.css';
 import {
   Chain,
   connectorsForWallets,
   wallet,
   RainbowKitProvider,
+  lightTheme,
+  Theme,
 } from '@rainbow-me/rainbowkit';
+import { merge } from 'lodash';
 import { configureChains, createClient, WagmiConfig } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import Routes from './navigation/Routes';
@@ -78,6 +82,18 @@ const wagmiClient = createClient({
   provider,
 });
 
+const customRainbowkitTheme = merge(lightTheme(), {
+  colors: {
+    accentColor: '#2d3748',
+    connectButtonBackground: '#2d3748', // bg-gray-800
+    connectButtonInnerBackground: '#2d3748', // bg-gray-800
+  },
+  radii: {
+    connectButton: '0.25rem', // rounded
+    modal: '0.25rem', // rounded
+  },
+} as Theme);
+
 interface DelayedLoadingProps {
   children: JSX.Element;
 }
@@ -116,7 +132,7 @@ ReactDOM.render(
     <RecoilRoot>
       <RecoilNexus />
       <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains}>
+        <RainbowKitProvider chains={chains} theme={customRainbowkitTheme}>
           <Router>
             <main>
               <DelayedLoading>
