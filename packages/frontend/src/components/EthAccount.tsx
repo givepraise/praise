@@ -1,7 +1,6 @@
-import { EthState } from '@/model/eth';
 import { shortenEthAddress } from 'api/dist/user/utils';
 import { Jazzicon } from '@ukstv/jazzicon-react';
-import { useRecoilValue } from 'recoil';
+import { useAccount } from 'wagmi';
 
 interface EthAccountParams {
   className?: string;
@@ -10,18 +9,18 @@ interface EthAccountParams {
 export default function EthAccount({
   className,
 }: EthAccountParams): JSX.Element | null {
-  const ethState = useRecoilValue(EthState);
-  if (ethState.connected && ethState.account)
-    return (
-      <div
-        className={`inline-block flex justify-center items-center ${className}`}
-      >
-        <div className="w-[15px] h-[15px] mr-2">
-          <Jazzicon address={ethState.account} />
-        </div>
-        <div>{shortenEthAddress(ethState.account)}</div>
-      </div>
-    );
+  const { data } = useAccount();
 
-  return null;
+  if (!data?.address) return null;
+
+  return (
+    <div
+      className={`inline-block flex justify-center items-center ${className}`}
+    >
+      <div className="w-[15px] h-[15px] mr-2">
+        <Jazzicon address={data.address} />
+      </div>
+      <div>{shortenEthAddress(data.address)}</div>
+    </div>
+  );
 }
