@@ -7,6 +7,8 @@ import {
 import { ActivateRequestBody } from 'api/dist/activate/types';
 import { makeApiClient } from './api';
 import { getRecoil, setRecoil } from 'recoil-nexus';
+import { ActiveTokenSet, RefreshToken } from '@/model/auth';
+import { AccountActivated } from '@/model/activate';
 
 export const requestApiAuth = async (
   params: AuthRequestInput
@@ -82,4 +84,3 @@ export const requestApiActivate = async (
 
   return getRecoil(AccountActivated);
 };
-
