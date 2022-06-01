@@ -14,7 +14,7 @@ const roles = [UserRole.ADMIN, UserRole.FORWARDER, UserRole.QUANTIFIER];
 
 const UserDetailsPage = (): JSX.Element | null => {
   const { userId } = useParams<SingleUserParams>();
-  const user = useRecoilValue(SingleUser({ userId }));
+  const user = useRecoilValue(SingleUser(userId));
   const { addRole, removeRole } = useAdminUsers();
 
   const handleRole = async (role: UserRole, user: UserDto): Promise<void> => {
