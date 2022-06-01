@@ -32,6 +32,25 @@ const UsersTable = (): JSX.Element => {
   const [page, setPage] = React.useState<number>(1);
   const [lastPage, setLastPage] = React.useState<number>(0);
 
+  const applyFilter = React.useCallback(
+    (data: UserDto[] | undefined): UserDto[] => {
+      if (!data) return [];
+      const filteredData = data.filter((user: UserDto) => {
+        const userAddress = user.ethereumAddress?.toLowerCase();
+        const filterData = filter.toLocaleLowerCase();
+
+        return (
+          user.nameRealized.toLowerCase().includes(filterData) ||
+          userAddress?.includes(filterData)
+        );
+      });
+
+      return filteredData;
+    },
+
+    [filter]
+  );
+
   React.useEffect(() => {
     if (allUsers) {
       setTableData(allUsers);
@@ -65,28 +84,15 @@ const UsersTable = (): JSX.Element => {
   React.useEffect(() => {
     if (tableData) {
       setPage(1);
+      const filteredData = applyFilter(tableData);
 
-      if (tableData.length % 5 === 0) {
-        setLastPage(Math.trunc(tableData.length / 5));
+      if (filteredData.length % 5 === 0) {
+        setLastPage(Math.trunc(filteredData.length / 5));
       } else {
-        setLastPage(Math.trunc(tableData.length / 5) + 1);
+        setLastPage(Math.trunc(filteredData.length / 5) + 1);
       }
     }
-  }, [tableData]);
-
-  const applyFilter = (data: UserDto[] | undefined): UserDto[] => {
-    if (!data) return [];
-    const filteredData = data.filter((user: UserDto) => {
-      const userAddress = user.ethereumAddress?.toLowerCase();
-      const filterData = filter.toLocaleLowerCase();
-
-      return (
-        user.nameRealized.toLowerCase().includes(filterData) ||
-        userAddress?.includes(filterData)
-      );
-    });
-    return filteredData;
-  };
+  }, [tableData, filter, applyFilter]);
 
   return (
     <div>
@@ -140,8 +146,12 @@ const UsersTable = (): JSX.Element => {
             return <UsersTableRow key={row._id} data={row} />;
           }
         })}
+        <UsersTablePagination
+          lastPage={lastPage}
+          page={page}
+          setPage={setPage}
+        />
       </React.Suspense>
-      <UsersTablePagination lastPage={lastPage} page={page} setPage={setPage} />
     </div>
   );
 };
