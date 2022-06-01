@@ -12,7 +12,7 @@ const mochaHooks = async (): Promise<Mocha.RootHookObject> => {
   return Promise.resolve({
     async beforeAll(this: TestContext): Promise<void> {
       // extend timeout to allow for long database migrations / application setup
-      this.timeout(20000);
+      this.timeout(30000);
 
       this.app = await setup();
       logger.info('Running api tests:\n\n');

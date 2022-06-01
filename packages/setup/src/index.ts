@@ -175,6 +175,8 @@ const run = async (): Promise<void> => {
   const apiEnv = {
     ADMINS: answers.ADMINS,
     JWT_SECRET: process.env.JWT_SECRET || randomString(),
+    DISCORD_TOKEN: answers.DISCORD_TOKEN,
+    DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,
   };
   await setupAndWriteEnv(
     '/usr/praise/packages/api/.env.template',

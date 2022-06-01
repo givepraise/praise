@@ -27,9 +27,9 @@ export const praise: Command = {
       if (!interaction.isCommand() || interaction.commandName !== 'praise')
         return;
 
-      const msg = (await interaction.deferReply({
+      const msg = await interaction.deferReply({
         fetchReply: true,
-      })) as APIMessage | void;
+      });
       if (msg === undefined) return;
       await praiseHandler(
         interaction,

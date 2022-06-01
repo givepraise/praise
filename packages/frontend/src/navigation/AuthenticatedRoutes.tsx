@@ -1,12 +1,10 @@
-import { StartupLoader } from '../startupLoader';
-import NotFoundPage from '@/pages/NotFoundPage';
 import SettingsPage from '@/pages/Settings/SettingsPage';
 import StartPage from '@/pages/Start/StartPage';
-import { ROLE_ADMIN, ROLE_QUANTIFIER, ActiveUserRoles } from '@/model/auth';
+import { ActiveUserRoles, ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import { difference } from 'lodash';
 import { useRecoilValue } from 'recoil';
-import AuthenticatedLayout from '../layouts/AuthenticatedLayout';
 
 const MyPraisePage = React.lazy(() => import('@/pages/MyPraise/MyPraisePage'));
 const UserDetailsPage = React.lazy(
@@ -44,34 +42,34 @@ const FAQPage = React.lazy(() => import('@/pages/FAQ/FAQPage'));
 
 interface AuthRouteProps {
   children: JSX.Element;
-  exact?: boolean;
+  userRoles: string[];
   path: string;
-  roles: string[];
+  exact?: boolean;
+  roles?: string[];
 }
 // A Route that takes an array of roles as argument and redirects
 // to frontpage if user do not belong to any of the given roles
-const AuthRoute = ({ children, ...props }: AuthRouteProps): JSX.Element => {
-  const userRoles = useRecoilValue(ActiveUserRoles);
-
-  let authenticated = false;
-  for (const role of props.roles) {
-    if (userRoles?.includes(role)) {
-      authenticated = true;
-      break;
-    }
-  }
+const AuthRoute = ({
+  children,
+  userRoles,
+  path,
+  exact = false,
+  roles = [],
+}: AuthRouteProps): JSX.Element => {
+  // Check if user.roles contain all required roles
+  const hasRequiredRoles = difference(roles, userRoles).length === 0;
 
   return (
     <Route
-      {...props}
-      render={({ location }): JSX.Element =>
-        authenticated ? (
+      path={path}
+      exact={exact}
+      render={(): JSX.Element =>
+        hasRequiredRoles ? (
           children
         ) : (
           <Redirect
             to={{
-              pathname: '/',
-              state: { from: location },
+              pathname: '/404',
             }}
           />
         )
@@ -80,18 +78,29 @@ const AuthRoute = ({ children, ...props }: AuthRouteProps): JSX.Element => {
   );
 };
 
-const Routes = (): JSX.Element => {
+const AuthenticatedRoutes = (): JSX.Element | null => {
+  const userRoles = useRecoilValue(ActiveUserRoles);
+
   return (
     <Switch>
       <Route path="/mypraise">
         <MyPraisePage />
       </Route>
 
-      <AuthRoute roles={[ROLE_ADMIN]} exact path={'/users'}>
+      <AuthRoute
+        userRoles={userRoles}
+        roles={[ROLE_ADMIN]}
+        exact
+        path={'/users'}
+      >
         <UsersPage />
       </AuthRoute>
 
-      <AuthRoute roles={[ROLE_ADMIN]} path={'/users/:userId'}>
+      <AuthRoute
+        userRoles={userRoles}
+        roles={[ROLE_ADMIN]}
+        path={'/users/:userId'}
+      >
         <UserDetailsPage />
       </AuthRoute>
 
@@ -99,7 +108,11 @@ const Routes = (): JSX.Element => {
         <PeriodsPage />
       </Route>
 
-      <AuthRoute roles={[ROLE_ADMIN]} path={'/periods/createupdate'}>
+      <AuthRoute
+        userRoles={userRoles}
+        roles={[ROLE_ADMIN]}
+        path={'/periods/createupdate'}
+      >
         <PeriodsCreateUpdatePage />
       </AuthRoute>
 
@@ -112,13 +125,18 @@ const Routes = (): JSX.Element => {
       </Route>
 
       <AuthRoute
+        userRoles={userRoles}
         roles={[ROLE_QUANTIFIER]}
         path={'/periods/:periodId/quantify/receiver/:receiverId'}
       >
         <QuantifyPage />
       </AuthRoute>
 
-      <AuthRoute roles={[ROLE_QUANTIFIER]} path={'/periods/:periodId/quantify'}>
+      <AuthRoute
+        userRoles={userRoles}
+        roles={[ROLE_QUANTIFIER]}
+        path={'/periods/:periodId/quantify'}
+      >
         <QuantifyPeriodPage />
       </AuthRoute>
 
@@ -134,7 +152,7 @@ const Routes = (): JSX.Element => {
         <PraiseDetailsPage />
       </Route>
 
-      <AuthRoute roles={[ROLE_ADMIN]} path={'/settings'}>
+      <AuthRoute userRoles={userRoles} roles={[ROLE_ADMIN]} path={'/settings'}>
         <SettingsPage />
       </AuthRoute>
 
@@ -147,20 +165,13 @@ const Routes = (): JSX.Element => {
       </Route>
 
       <Route path="/*">
-        <NotFoundPage />
+        <Redirect
+          to={{
+            pathname: '/404',
+          }}
+        />
       </Route>
     </Switch>
-  );
-};
-
-const AuthenticatedRoutes = (): JSX.Element => {
-  return (
-    <>
-      <StartupLoader />
-      <AuthenticatedLayout>
-        <Routes />
-      </AuthenticatedLayout>
-    </>
   );
 };
 

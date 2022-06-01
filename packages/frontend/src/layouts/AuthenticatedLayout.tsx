@@ -4,18 +4,18 @@ import { Dialog, Transition } from '@headlessui/react';
 import { faX, faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
+import { SingleSetting, useAllSettingsQuery } from '@/model/settings';
+import { useAllPeriodsQuery } from '@/model/periods';
+import { useAllUsersQuery } from '@/model/users';
 import Nav from '../navigation/Nav';
-import { SingleSetting } from '@/model/settings';
+import AuthenticatedRoutes from '../navigation/AuthenticatedRoutes';
 
-interface AuthenticatedLayoutProps {
-  children: JSX.Element;
-}
-
-const AuthenticatedLayout = ({
-  children,
-}: AuthenticatedLayoutProps): JSX.Element => {
+const AuthenticatedLayout = (): JSX.Element | null => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
+  useAllPeriodsQuery();
+  useAllSettingsQuery();
+  useAllUsersQuery();
 
   return (
     <div className="h-full cursor-default">
@@ -103,12 +103,17 @@ const AuthenticatedLayout = ({
               aria-hidden="true"
             />
           </button>
-          <div className="w-full flex justify-center">
-            <h1 className="font-lg">{siteNameSetting?.value}</h1>
-          </div>
+
+          {siteNameSetting && (
+            <div className="flex-grow flex justify-center">
+              <h1 className="font-lg">{siteNameSetting.value}</h1>
+            </div>
+          )}
         </div>
         <main className="flex-1 flex justify-center px-4 py-4">
-          <div className="block max-w-5xl w-full">{children}</div>
+          <div className="block max-w-5xl w-full">
+            <AuthenticatedRoutes />
+          </div>
         </main>
       </div>
     </div>

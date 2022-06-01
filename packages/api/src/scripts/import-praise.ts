@@ -8,6 +8,7 @@ import 'express-async-errors';
 import fs from 'fs';
 import path from 'path';
 import { connectDatabase } from './core';
+import { realizeDiscordContent, prepareDiscordClient } from '@praise/utils/core';
 
 const importPraise = async (
   praiseData: PraiseImportInput[],
@@ -23,6 +24,7 @@ const importPraise = async (
       // Empty reason gets default text.
       if (!praise.reason || praise.reason === '') {
         praise.reason = 'No reason given.';
+        praise.reasonRealized = praise.reason;
       }
 
       if (!praise.giver.accountId) {
@@ -63,6 +65,8 @@ const importPraise = async (
       throw new Error('Invalid import format.');
     }
 
+    const discordClient = await prepareDiscordClient();
+
     const data = await Promise.all(
       praiseData.map(async (praise: PraiseImportInput) => {
         const giver = await UserAccountModel.findOneAndUpdate(
@@ -77,9 +81,22 @@ const importPraise = async (
           { upsert: true, new: true }
         );
 
+        if (!praise.reasonRealized) {
+          if (praise.sourceId.includes('DISCORD')) {
+            const parsedSourceId = praise.sourceId.match(/DISCORD:[\d]+:([\d]+)/);
+
+            if (!parsedSourceId)
+              throw Error('Failed to parse discord channel id from source id');
+            praise.reasonRealized = await realizeDiscordContent(discordClient, praise.sourceId, praise.reason);
+          } else {
+            praise.reasonRealized = praise.reason;
+          }
+        }
+
         return {
           createdAt: praise.createdAt,
           reason: praise.reason,
+          reasonRealized: praise.reasonRealized,
           giver,
           receiver,
           sourceId: praise.sourceId,

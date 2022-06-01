@@ -5,10 +5,12 @@ import {
   PeriodDetailsReceiver,
   PeriodDetailsReceiverDto,
   PeriodDocument,
-  PeriodDto,
+  PeriodDetailsDto,
 } from './types';
 
-const periodDocumentToDto = (periodDocument: PeriodDocument): PeriodDto => {
+const periodDocumentToDto = (
+  periodDocument: PeriodDocument
+): PeriodDetailsDto => {
   const { _id, name, status, endDate, createdAt, updatedAt } = periodDocument;
   return {
     _id,
@@ -22,7 +24,7 @@ const periodDocumentToDto = (periodDocument: PeriodDocument): PeriodDto => {
 
 export const periodDocumentListTransformer = (
   periodDocuments: PeriodDocument[] | undefined
-): PeriodDto[] => {
+): PeriodDetailsDto[] => {
   if (periodDocuments && Array.isArray(periodDocuments)) {
     return periodDocuments.map((periodDocument) =>
       periodDocumentToDto(periodDocument)
@@ -33,7 +35,7 @@ export const periodDocumentListTransformer = (
 
 export const periodDocumentTransformer = (
   periodDocument: PeriodDocument
-): PeriodDto => {
+): PeriodDetailsDto => {
   return periodDocumentToDto(periodDocument);
 };
 
