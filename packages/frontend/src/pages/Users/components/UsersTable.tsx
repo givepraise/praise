@@ -95,8 +95,8 @@ const UsersTable = (): JSX.Element => {
   }, [tableData, filter, applyFilter]);
 
   return (
-    <div>
-      <div className="flex gap-8">
+    <>
+      <div className="flex flex-col gap-4 sm:flex-row sm:gap-8">
         <select
           className="bg-transparent border-black"
           onChange={(event: React.ChangeEvent<HTMLSelectElement>): void =>
@@ -130,13 +130,13 @@ const UsersTable = (): JSX.Element => {
         </div>
       </div>
       <div className="flex justify-between px-4 mt-8">
-        <div className="w-1/3">
+        <div className="w-1/2 sm:w-1/3">
           <span className="font-bold">User</span>
         </div>
-        <div className="w-1/3">
+        <div className="w-1/2 pl-2 sm:w-1/3 sm:pl-0">
           <span className="font-bold">Discord</span>
         </div>
-        <div className="w-1/3">
+        <div className="hidden sm:w-1/3 sm:block">
           <span className="font-bold">Roles</span>
         </div>
       </div>
@@ -152,7 +152,7 @@ const UsersTable = (): JSX.Element => {
           setPage={setPage}
         />
       </React.Suspense>
-    </div>
+    </>
   );
 };
 
