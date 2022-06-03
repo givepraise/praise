@@ -19,6 +19,8 @@ const roleOptions = [
   { name: 'Quantifiers', value: UserRole.QUANTIFIER },
 ];
 
+const USERS_PER_PAGE = 10;
+
 const UsersTable = (): JSX.Element => {
   const allAdminUsers = useRecoilValue(AllAdminUsers);
   const allForwarderUsers = useRecoilValue(AllForwarderUsers);
@@ -86,10 +88,10 @@ const UsersTable = (): JSX.Element => {
       setPage(1);
       const filteredData = applyFilter(tableData);
 
-      if (filteredData.length % 5 === 0) {
-        setLastPage(Math.trunc(filteredData.length / 5));
+      if (filteredData.length % USERS_PER_PAGE === 0) {
+        setLastPage(Math.trunc(filteredData.length / USERS_PER_PAGE));
       } else {
-        setLastPage(Math.trunc(filteredData.length / 5) + 1);
+        setLastPage(Math.trunc(filteredData.length / USERS_PER_PAGE) + 1);
       }
     }
   }, [tableData, filter, applyFilter]);
@@ -114,13 +116,13 @@ const UsersTable = (): JSX.Element => {
             <FontAwesomeIcon
               icon={faMagnifyingGlass}
               size="1x"
-              className="absolute top-1/2 transform -translate-y-1/2 left-3"
+              className="absolute transform -translate-y-1/2 top-1/2 left-3"
             />
             <input
               type="text"
               name="search"
               placeholder="Search"
-              className="bg-transparent outline-none border-none focus:ring-0 block pl-8"
+              className="block pl-8 bg-transparent border-none outline-none focus:ring-0"
               value={filter}
               onChange={(event: React.ChangeEvent<HTMLInputElement>): void =>
                 setFilter(event.target.value)
@@ -142,7 +144,7 @@ const UsersTable = (): JSX.Element => {
       </div>
       <React.Suspense fallback="Loading...">
         {applyFilter(tableData).map((row, index) => {
-          if (Math.trunc(index / 5) + 1 === page) {
+          if (Math.trunc(index / USERS_PER_PAGE) + 1 === page) {
             return <UsersTableRow key={row._id} data={row} />;
           }
         })}
