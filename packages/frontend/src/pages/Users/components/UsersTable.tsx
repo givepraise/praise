@@ -132,13 +132,10 @@ const UsersTable = (): JSX.Element => {
         </div>
       </div>
       <div className="flex justify-between px-4 mt-8 mb-2">
-        <div className="w-1/2 sm:w-1/3">
+        <div className="w-1/2">
           <span className="font-bold">User</span>
         </div>
-        <div className="w-1/2 pl-2 sm:w-1/3 sm:pl-0">
-          <span className="font-bold">Discord</span>
-        </div>
-        <div className="hidden sm:w-1/3 sm:block">
+        <div className="w-1/2">
           <span className="font-bold">Roles</span>
         </div>
       </div>

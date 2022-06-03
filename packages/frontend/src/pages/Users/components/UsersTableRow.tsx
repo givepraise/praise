@@ -21,18 +21,18 @@ const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element | null => {
       onClick={(): void => history.push(`users/${data._id}`)}
     >
       <div className="flex items-center w-full ">
-        <div className="flex items-center w-1/3">
+        <div className="flex items-center w-1/2 pr-3">
           <div className="pr-3">
             <UserAvatar user={data} />
           </div>
-          <div className="">
-            <span className="font-mono text-sm ">{shortEthAddress}</span>
+          <div className="pr-3">
+            <div>
+              {shortEthAddress !== data.nameRealized ? data.nameRealized : '-'}
+            </div>
+            <div className="font-mono text-sm ">{shortEthAddress}</div>
           </div>
         </div>
-        <div className="w-1/3 pl-2 sm:pl-0">
-          {shortEthAddress !== data.nameRealized ? data.nameRealized : '-'}
-        </div>
-        <div className="w-1/3">
+        <div className="w-1/2">
           {data.roles.map((role, index) => {
             if (role !== UserRole.USER) {
               return <InlineLabel key={`${role}-${index}`} text={role} />;
