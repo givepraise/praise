@@ -1,4 +1,4 @@
-import { Client, Util } from 'discord.js';
+import { Client } from 'discord.js';
 import { PeriodDateRange, PeriodDocument } from '@period/types';
 import { PeriodModel } from '@period/entities';
 import { PraiseModel } from '../entities';
@@ -86,11 +86,6 @@ export const prepareDiscordClient = async (): Promise<Client> => {
   });
   await discordClient.login(process.env.DISCORD_TOKEN);
   await discordClient.guilds.fetch();
-  const discordGuild = await discordClient.guilds.fetch(
-    process.env.DISCORD_GUILD_ID as string
-  );
-  await discordGuild.members.fetch();
-
   return discordClient;
 };
 
@@ -98,21 +93,40 @@ export const prepareDiscordClient = async (): Promise<Client> => {
  * Convert text from discord into a "realized" form
  *  replacing raw references to channels and users with their human-readable text
  * @param discordClient
- * @param discordChannelId
  * @param text
  * @returns
  */
 export const realizeDiscordContent = async (
   discordClient: Client,
-  discordChannelId: string,
   text: string
 ): Promise<string> => {
-  const channel = await discordClient.channels.fetch(discordChannelId);
+  const discordGuild = await discordClient.guilds.fetch(
+    process.env.DISCORD_GUILD_ID as string
+  );
+  if (!discordGuild) throw Error('Failed to fetch guild from discord api');
+  await discordGuild.members.fetch();
+  await discordGuild.channels.fetch();
 
-  if (!channel) throw Error('Failed to fetch channel from discord api');
-  if (!channel.isText()) throw Error('Channel must be a TextChannel');
-
-  const textRealized = Util.cleanContent(text, channel);
-
+  const textRealized = text
+    .replace(/<@!?[0-9]+>/g, (input) => {
+      const id = input.replace(/<|!|>|@/g, '');
+      const member = discordGuild.members.cache.get(id);
+      if (member) {
+        return `@${member.displayName}`.replace('@', '@\u200b');
+      } else {
+        const user = discordClient.users.cache.get(id);
+        return user ? `@${user.username}`.replace('@', '@\u200b') : input;
+      }
+    })
+    .replace(/<#[0-9]+>/g, (input) => {
+      const mentionedChannel = discordGuild.channels.cache.get(
+        input.replace(/<|#|>/g, '')
+      );
+      return mentionedChannel ? `#${mentionedChannel.name}` : input;
+    })
+    .replace(/<@&[0-9]+>/g, (input) => {
+      const role = discordGuild.roles.cache.get(input.replace(/<|@|>|&/g, ''));
+      return role ? `@${role.name}` : input;
+    });
   return textRealized;
 };

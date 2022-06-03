@@ -8,7 +8,10 @@ import 'express-async-errors';
 import fs from 'fs';
 import path from 'path';
 import { connectDatabase } from './core';
-import { realizeDiscordContent, prepareDiscordClient } from '@praise/utils/core';
+import {
+  realizeDiscordContent,
+  prepareDiscordClient,
+} from '@praise/utils/core';
 
 const importPraise = async (
   praiseData: PraiseImportInput[],
@@ -83,11 +86,16 @@ const importPraise = async (
 
         if (!praise.reasonRealized) {
           if (praise.sourceId.includes('DISCORD')) {
-            const parsedSourceId = praise.sourceId.match(/DISCORD:[\d]+:([\d]+)/);
+            const parsedSourceId = praise.sourceId.match(
+              /DISCORD:[\d]+:([\d]+)/
+            );
 
             if (!parsedSourceId)
               throw Error('Failed to parse discord channel id from source id');
-            praise.reasonRealized = await realizeDiscordContent(discordClient, praise.sourceId, praise.reason);
+            praise.reasonRealized = await realizeDiscordContent(
+              discordClient,
+              praise.reason
+            );
           } else {
             praise.reasonRealized = praise.reason;
           }
@@ -112,7 +120,7 @@ const importPraise = async (
 
     await logEvent(
       EventLogTypeKey.PRAISE,
-      `Imported ${praiseData.length} praise from json file`,
+      `Imported ${praiseData.length} praise from json file`
     );
 
     console.log('👍 SUCCESS!');

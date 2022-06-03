@@ -18,14 +18,8 @@ const up = async (): Promise<void> => {
       let query = {};
 
       if (s.sourceId.includes('DISCORD')) {
-        const parsedSourceId = s.sourceId.match(/DISCORD:[\d]+:([\d]+)/);
-
-        if (!parsedSourceId)
-          throw Error('Failed to parse discord channel id from source id');
-
         const reasonRealized = await realizeDiscordContent(
           discordClient,
-          parsedSourceId[1],
           s.reason
         );
 
