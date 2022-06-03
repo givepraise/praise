@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Convert the Quantifier Pool screen to a User Admin screen #320 #395
+
 ### Fixed
 
 ## [0.7.0] - 2022-05-31
