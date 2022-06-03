@@ -78,7 +78,7 @@ export const dmError = async (): Promise<string> => {
   }
 };
 
-export const roleError = async (
+export const praiseRoleError = async (
   praiseGiverRole: Role,
   user: User
 ): Promise<MessageEmbed> => {
@@ -101,7 +101,7 @@ export const roleError = async (
   );
 };
 
-export const giverRoleError = async (
+export const forwardRoleError = async (
   praiseGiverRole: Role,
   user: User
 ): Promise<MessageEmbed> => {
