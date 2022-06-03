@@ -17,22 +17,28 @@ const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element | null => {
 
   return (
     <div
-      className="pb-16 sm:pb-4 p-4 gap-y-2 flex flex-wrap justify-between items-center cursor-pointer h-12 rounded-md hover:bg-gray-100"
+      className="flex items-center w-full p-3 cursor-pointer hover:bg-gray-100"
       onClick={(): void => history.push(`users/${data._id}`)}
     >
-      <div className="w-1/2 sm:w-1/3 flex items-center gap-4 text-xs">
-        <UserAvatar user={data} />
-        <span className=" font-mono text-sm">{shortEthAddress}</span>
-      </div>
-      <div className="w-1/2 pl-2 sm:w-1/3 sm:pl-0">
-        {shortEthAddress !== data.nameRealized ? data.nameRealized : '-'}
-      </div>
-      <div className="sm:w-1/3">
-        {data.roles.map((role, index) => {
-          if (role !== UserRole.USER) {
-            return <InlineLabel key={`${role}-${index}`} text={role} />;
-          }
-        })}
+      <div className="flex items-center w-full ">
+        <div className="flex items-center w-1/3">
+          <div className="pr-3">
+            <UserAvatar user={data} />
+          </div>
+          <div className="">
+            <span className="font-mono text-sm ">{shortEthAddress}</span>
+          </div>
+        </div>
+        <div className="w-1/3 pl-2 sm:pl-0">
+          {shortEthAddress !== data.nameRealized ? data.nameRealized : '-'}
+        </div>
+        <div className="w-1/3">
+          {data.roles.map((role, index) => {
+            if (role !== UserRole.USER) {
+              return <InlineLabel key={`${role}-${index}`} text={role} />;
+            }
+          })}
+        </div>
       </div>
     </div>
   );
