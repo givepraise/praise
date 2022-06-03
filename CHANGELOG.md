@@ -10,10 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Convert the Quantifier Pool screen to a User Admin screen #320 #395
+- Option - Require discord role to allow praise giving #434
 
 ### Fixed
 
 - Clicking a link within a Praise reason should _only_ trigger opening the link #427 #437
+- Whoami command says user does not have praise powers, when they do #419
 
 ## [0.7.0] - 2022-05-31
 
