@@ -98,7 +98,7 @@ const UsersTable = (): JSX.Element => {
 
   return (
     <>
-      <div className="flex flex-col gap-4 sm:flex-row sm:gap-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:gap-4">
         <select
           className="bg-transparent border-black"
           onChange={(event: React.ChangeEvent<HTMLSelectElement>): void =>
@@ -131,7 +131,7 @@ const UsersTable = (): JSX.Element => {
           </label>
         </div>
       </div>
-      <div className="flex justify-between px-4 mt-8 mb-2">
+      <div className="flex justify-between px-4 my-4">
         <div className="w-1/2">
           <span className="font-bold">User</span>
         </div>
