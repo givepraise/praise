@@ -12,6 +12,7 @@ import { ActiveUserId } from '@/model/auth';
 import { SingleUser } from '@/model/users';
 import Praise from '@/components/praise/Praise';
 import PraisePageLoader from '../../Start/components/PraisePageLoader';
+import PraiseRow from '@/components/praise/PraiseRow';
 
 export const MY_PRAISE_LIST_KEY = 'MY_PRAISE';
 
@@ -57,10 +58,6 @@ const MyPraiseTable = (): JSX.Element => {
 
   const { getTableProps, getTableBodyProps, rows, prepareRow } = tableInstance;
 
-  const handleClick = (data: PraiseDto) => () => {
-    history.push(`/praise/${data._id}`);
-  };
-
   return (
     <>
       {' '}
@@ -75,15 +72,12 @@ const MyPraiseTable = (): JSX.Element => {
               prepareRow(row);
               return (
                 // eslint-disable-next-line react/jsx-key
-                <tr
-                  className="cursor-pointer hover:bg-gray-100"
-                  {...row.getRowProps()}
-                  onClick={handleClick(row.original as PraiseDto)}
-                >
-                  {row.cells.map((cell) => {
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell, index) => {
                     return (
-                      // eslint-disable-next-line react/jsx-key
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                      <PraiseRow praise={row.original as PraiseDto} key={index}>
+                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                      </PraiseRow>
                     );
                   })}
                 </tr>
