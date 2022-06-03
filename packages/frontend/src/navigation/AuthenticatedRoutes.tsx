@@ -7,6 +7,9 @@ import { difference } from 'lodash';
 import { useRecoilValue } from 'recoil';
 
 const MyPraisePage = React.lazy(() => import('@/pages/MyPraise/MyPraisePage'));
+const UserDetailsPage = React.lazy(
+  () => import('@/pages/UserDetails/UserDetailsPage')
+);
 const UsersPage = React.lazy(() => import('@/pages/Users/UsersPage'));
 
 const PeriodsPage = React.lazy(() => import('@/pages/Periods/PeriodsPage'));
@@ -84,9 +87,26 @@ const AuthenticatedRoutes = (): JSX.Element | null => {
         <MyPraisePage />
       </Route>
 
-      <AuthRoute userRoles={userRoles} roles={[ROLE_ADMIN]} path={'/pool'}>
+      <AuthRoute
+        userRoles={userRoles}
+        roles={[ROLE_ADMIN]}
+        exact
+        path={'/users'}
+      >
         <UsersPage />
       </AuthRoute>
+
+      <AuthRoute
+        userRoles={userRoles}
+        roles={[ROLE_ADMIN]}
+        path={'/users/:userId'}
+      >
+        <UserDetailsPage />
+      </AuthRoute>
+
+      <Route exact path={'/periods'}>
+        <PeriodsPage />
+      </Route>
 
       <AuthRoute
         userRoles={userRoles}
