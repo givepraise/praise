@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { APIMessage } from 'discord-api-types/v9';
 import logger from 'jet-logger';
 import { praiseHandler } from '../handlers/praise';
 import { Command } from '../interfaces/Command';
@@ -22,9 +21,13 @@ export const praise: Command = {
         .setRequired(true)
     ),
 
-  async execute(interaction) {
+  async execute(interaction, client) {
     try {
-      if (!interaction.isCommand() || interaction.commandName !== 'praise')
+      if (
+        !interaction.isCommand() ||
+        interaction.commandName !== 'praise' ||
+        !client
+      )
         return;
 
       const msg = await interaction.deferReply({
@@ -37,7 +40,8 @@ export const praise: Command = {
           interaction.guildId || '',
           interaction.channelId || '',
           msg.id
-        )
+        ),
+        client
       );
     } catch (err) {
       logger.err(err);

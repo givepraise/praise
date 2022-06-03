@@ -39,7 +39,14 @@ discordClient.on('interactionCreate', async (interaction) => {
   const command = discordClient.commands.get(interaction.commandName);
   if (!command) return;
   try {
-    await command.execute(interaction);
+    if (
+      interaction.commandName === 'praise' ||
+      interaction.commandName === 'forward'
+    ) {
+      await command.execute(interaction, discordClient);
+    } else {
+      await command.execute(interaction);
+    }
   } catch (error) {
     logger.err(error);
     return interaction.reply({
