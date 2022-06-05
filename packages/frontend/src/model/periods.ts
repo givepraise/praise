@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
+import { UserRole } from 'api/dist/user/types';
 import { makeApiAuthClient } from '@/utils/api';
 import { periodQuantifierPraiseListKey } from '@/utils/periods';
 import {
@@ -30,7 +31,7 @@ import {
   isResponseOk,
   useAuthApiQuery,
 } from './api';
-import { ActiveUserId } from './auth';
+import { ActiveUserId, ActiveUserRoles } from './auth';
 import { SinglePeriodSetting } from './periodsettings';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
 
@@ -336,6 +337,7 @@ export const useVerifyQuantifierPoolSize = (periodId: string): void => {
   const setPeriodPoolRequirements = useSetRecoilState(
     PeriodPoolRequirements(periodId)
   );
+  const userRoles = useRecoilValue(ActiveUserRoles);
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -347,8 +349,10 @@ export const useVerifyQuantifierPoolSize = (periodId: string): void => {
       setPeriodPoolRequirements(response.data);
     };
 
-    void fetchData();
-  }, [periodId, setPeriodPoolRequirements]);
+    if (userRoles.includes(UserRole.ADMIN)) {
+      void fetchData();
+    }
+  }, [periodId, setPeriodPoolRequirements, userRoles]);
 };
 
 type useAssignQuantifiersReturn = {

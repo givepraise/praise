@@ -193,7 +193,7 @@ export const notActivatedDM = async (msgUrl: string): Promise<MessageEmbed> => {
       .setDescription(msg.replace('{praiseURL}', msgUrl));
   }
   return new MessageEmbed().setDescription(
-    `**[YOU HAVE BEEN PRAISED](${msgUrl})\nPRAISE ACCOUNT NOT ACTIVATED. USE \`/praise-activate\` TO ACTIVATE YOUR ACCOUNT. (message not set)`
+    `**[YOU HAVE BEEN PRAISED](${msgUrl})\nPRAISE ACCOUNT NOT ACTIVATED. USE \`/activate\` TO ACTIVATE YOUR ACCOUNT. (message not set)`
   );
 };
 

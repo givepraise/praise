@@ -57,7 +57,7 @@ const praiseDocumentToDto = async (
 ): Promise<PraiseDto> => {
   const {
     _id,
-    reason,
+    reasonRealized,
     sourceId,
     sourceName,
     quantifications,
@@ -69,7 +69,7 @@ const praiseDocumentToDto = async (
   } = praiseDocument;
   return {
     _id,
-    reason,
+    reasonRealized,
     sourceId,
     sourceName,
     quantifications: await quantificationListTransformer(quantifications),
@@ -84,18 +84,14 @@ const praiseDocumentToDto = async (
   };
 };
 
-export const praiseDocumentListTransformer = async (
-  praiseDocuments: PraiseDocument[]
-): Promise<PraiseDto[]> => {
-  const praiseDtoList = await Promise.all(
-    praiseDocuments.map((p) => praiseDocumentToDto(p))
-  );
-
-  return praiseDtoList;
-};
-
 export const praiseDocumentTransformer = async (
   praiseDocument: PraiseDocument
 ): Promise<PraiseDto> => {
-  return await praiseDocumentToDto(praiseDocument);
+  return praiseDocumentToDto(praiseDocument);
+};
+
+export const praiseDocumentListTransformer = async (
+  praiseDocuments: PraiseDocument[]
+): Promise<PraiseDto[]> => {
+  return Promise.all(praiseDocuments.map((p) => praiseDocumentTransformer(p)));
 };

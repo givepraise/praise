@@ -103,9 +103,12 @@ const AuthenticatedLayout = (): JSX.Element | null => {
               aria-hidden="true"
             />
           </button>
-          <div className="w-full flex justify-center">
-            <h1 className="font-lg">{siteNameSetting?.value}</h1>
-          </div>
+
+          {siteNameSetting && (
+            <div className="flex-grow flex justify-center">
+              <h1 className="font-lg">{siteNameSetting.value}</h1>
+            </div>
+          )}
         </div>
         <main className="flex-1 flex justify-center px-4 py-4">
           <div className="block max-w-5xl w-full">
