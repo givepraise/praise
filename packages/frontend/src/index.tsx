@@ -16,7 +16,7 @@ import {
   Theme,
 } from '@rainbow-me/rainbowkit';
 import { merge } from 'lodash';
-import { configureChains, createClient, WagmiConfig } from 'wagmi';
+import { configureChains, createClient, WagmiConfig, chain } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import Routes from './navigation/Routes';
 import ErrorPage from './pages/ErrorPage';
@@ -51,7 +51,10 @@ const gnosisChain: Chain = {
   testnet: false,
 };
 
-const { chains, provider } = configureChains([gnosisChain], [publicProvider()]);
+const { chains, provider } = configureChains(
+  [chain.mainnet, gnosisChain],
+  [publicProvider()]
+);
 
 const needsInjectedWalletFallback =
   typeof window !== 'undefined' &&
@@ -67,9 +70,8 @@ const connectors = connectorsForWallets([
       wallet.ledger({ chains }),
       wallet.coinbase({ appName: 'Praise', chains }),
       wallet.trust({ chains }),
-      wallet.argent({ chains }),
-      wallet.steak({ chains }),
       wallet.imToken({ chains }),
+      wallet.walletConnect({ chains }),
       wallet.rainbow({ chains }),
       ...(needsInjectedWalletFallback ? [wallet.injected({ chains })] : []),
     ],
