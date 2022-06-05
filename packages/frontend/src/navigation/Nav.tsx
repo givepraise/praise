@@ -1,10 +1,7 @@
 import AdminOnly from '@/components/auth/AdminOnly';
-import EthAccount from '@/components/EthAccount';
-import { ActiveTokenSet } from '@/model/auth';
+import EthAccount from '@/components/account/EthAccount';
 import { SingleSetting } from '@/model/settings';
-import { classNames } from '@/utils/index';
 import {
-  faAngleRight,
   faCalculator,
   faCog,
   faPrayingHands,
@@ -12,11 +9,9 @@ import {
   faUserFriends,
   faBook,
 } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Menu, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
+import { Menu } from '@headlessui/react';
 import { Link } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import NavItem from './NavItem';
 
 export default function Nav(): JSX.Element {
@@ -72,11 +67,11 @@ export default function Nav(): JSX.Element {
         </div>
         <div className="w-full border-t">
           <Menu as="div" className="flex flex-col justify-center">
-            <Menu.Button className="flex items-center justify-between w-full px-4 py-3 hover:text-gray-500 focus:outline-none">
+            <Menu.Button className="flex items-center justify-between w-full selection:hover:text-gray-500 focus:outline-none">
               <EthAccount
                 showDownCaret={false}
                 showRightCaret={true}
-                className="w-full"
+                className="w-full px-4 py-3"
               />
             </Menu.Button>
           </Menu>

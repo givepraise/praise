@@ -8,7 +8,7 @@ import { useRecoilValue } from 'recoil';
 import { AccessToken } from '@/model/auth';
 import { useHistory } from 'react-router-dom';
 import LoaderSpinner from '@/components/LoaderSpinner';
-import EthAccount from '@/components/EthAccount';
+import EthAccount from '@/components/account/EthAccount';
 
 interface Props {
   children: JSX.Element;

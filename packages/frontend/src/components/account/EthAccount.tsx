@@ -4,7 +4,7 @@ import { useAccount } from 'wagmi';
 import { faAngleDown, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
-import EthAccountDialog from './account/EthAccountDialog';
+import EthAccountDialog from './EthAccountDialog';
 
 interface EthAccountParams {
   className?: string;
