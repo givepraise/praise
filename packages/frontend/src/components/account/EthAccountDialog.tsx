@@ -43,7 +43,7 @@ const EthAccountDialog = ({
     <Dialog
       open={open}
       onClose={(): void => onClose()}
-      className="fixed inset-0 z-10 overflow-y-auto"
+      className="fixed inset-0 z-50 overflow-y-auto"
       initialFocus={contentRef}
     >
       <div className="flex items-center justify-center min-h-screen">
