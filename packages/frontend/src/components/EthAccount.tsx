@@ -1,24 +1,51 @@
 import { shortenEthAddress } from 'api/dist/user/utils';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import { useAccount } from 'wagmi';
+import { faAngleDown, faAngleRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useState } from 'react';
+import EthAccountDialog from './account/EthAccountDialog';
 
 interface EthAccountParams {
   className?: string;
+  showDownCaret?: boolean;
+  showRightCaret?: boolean;
 }
 
 export default function EthAccount({
   className,
+  showDownCaret = true,
+  showRightCaret = false,
 }: EthAccountParams): JSX.Element | null {
   const { data } = useAccount();
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   if (!data?.address) return null;
 
   return (
-    <div className={`flex justify-center items-center ${className}`}>
-      <div className="w-[15px] h-[15px] mr-2">
-        <Jazzicon address={data.address} />
+    <>
+      <div
+        className={`flex justify-between items-center cursor-pointer ${className}`}
+        onClick={(): void => setIsDialogOpen(true)}
+      >
+        <div className="flex items-center space-x-2">
+          <Jazzicon address={data.address} className="w-4 h-4 inline-block" />
+          <span>{shortenEthAddress(data.address)}</span>
+        </div>
+        <div>
+          {showDownCaret && (
+            <FontAwesomeIcon icon={faAngleDown} className="w-4 h-4" />
+          )}
+          {showRightCaret && (
+            <FontAwesomeIcon icon={faAngleRight} className="w-4 h-4" />
+          )}
+        </div>
       </div>
-      <div>{shortenEthAddress(data.address)}</div>
-    </div>
+      <EthAccountDialog
+        open={isDialogOpen}
+        address={data.address}
+        onClose={(): void => setIsDialogOpen(false)}
+      />
+    </>
   );
 }

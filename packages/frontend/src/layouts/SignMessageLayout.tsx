@@ -49,9 +49,7 @@ const SignMessageLayout = ({
                   <div className="text-lg font-semibold text-center mb-2">
                     Connected as
                   </div>
-                  <div>
-                    <EthAccount />
-                  </div>
+                  <EthAccount className="w-36" />
                 </div>
               ) : (
                 <ConnectButton showBalance={false} accountStatus="address" />
