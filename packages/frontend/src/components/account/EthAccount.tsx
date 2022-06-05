@@ -29,7 +29,9 @@ export default function EthAccount({
         onClick={(): void => setIsDialogOpen(true)}
       >
         <div className="flex items-center space-x-2">
-          <Jazzicon address={data.address} className="w-4 h-4 inline-block" />
+          <div className="inline-block h-5">
+            <Jazzicon address={data.address} className="w-4 h-4" />
+          </div>
           <span>{shortenEthAddress(data.address)}</span>
         </div>
         <div>
