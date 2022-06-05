@@ -24,7 +24,7 @@ module.exports = {
     configure: {
       resolve: {
         /**
-         * create-react-app 5 uses webpack 5, which no longer ships with node polyfills.
+         * with CRA 5 (webpack5), webpack no longer ships with node polyfills.
          * Craco's team is looking to give it up (https://github.com/gsoft-inc/craco/issues/415).
          * Possible alternatives: react-app-rewired or ejecting from CRA
          */
@@ -32,6 +32,10 @@ module.exports = {
           'util': require.resolve("util/"),
         },
       },
+      // with CRA 5 (webpack5), sourceMapLoader now complains about every third-party app that was compiled from
+      // typescript but doesn't have 'ts' files.  This line ignores them.
+      // See: https://github.com/facebook/create-react-app/issues/11924
+      ignoreWarnings: [/to parse source map/i],
     }
   }
 };
