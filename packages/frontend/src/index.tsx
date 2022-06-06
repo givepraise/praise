@@ -10,7 +10,7 @@ import { useErrorBoundary } from 'use-error-boundary';
 import EthConnection from './components/EthConnection';
 import Routes from './navigation/Routes';
 import ErrorPage from './pages/ErrorPage';
-import { LoadScreen } from './startupLoader';
+import LoadScreen from '@/components/LoadScreen';
 import './styles/globals.css';
 
 const LOAD_DELAY = 500;

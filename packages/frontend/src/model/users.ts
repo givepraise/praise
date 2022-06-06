@@ -44,12 +44,34 @@ export const AllUsers = atom<UserDto[] | undefined>({
   default: undefined,
 });
 
+export const AllAdminUsers = selector({
+  key: 'AllAdminUsers',
+  get: ({ get }) => {
+    const users = get(AllUsers);
+    if (users) {
+      return users.filter((user) => user.roles.includes(UserRole.ADMIN));
+    }
+    return undefined;
+  },
+});
+
 export const AllQuantifierUsers = selector({
   key: 'AllQuantifierUsers',
   get: ({ get }) => {
     const users = get(AllUsers);
     if (users) {
       return users.filter((user) => user.roles.includes(UserRole.QUANTIFIER));
+    }
+    return undefined;
+  },
+});
+
+export const AllForwarderUsers = selector({
+  key: 'AllForwarderUsers',
+  get: ({ get }) => {
+    const users = get(AllUsers);
+    if (users) {
+      return users.filter((user) => user.roles.includes(UserRole.FORWARDER));
     }
     return undefined;
   },
@@ -72,15 +94,18 @@ export const useAllUsersQuery = (): AxiosResponse<unknown> => {
   return allUsersQueryResponse;
 };
 
-type SingleUserParams = {
+/**
+ * Types for `useParams()`
+ */
+export type SingleUserParams = {
   userId: string | undefined;
 };
+
 export const SingleUser = selectorFamily({
   key: 'SingleUser',
   get:
-    (params: SingleUserParams) =>
+    (userId: string | undefined) =>
     ({ get }): UserDto | undefined => {
-      const { userId } = params;
       const allUsers = get(AllUsers);
       if (!allUsers) return undefined;
       return allUsers.filter((user) => user._id === userId)[0];

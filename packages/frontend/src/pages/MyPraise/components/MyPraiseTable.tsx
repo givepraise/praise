@@ -1,8 +1,6 @@
+import { UserDto } from 'api/dist/user/types';
 import LoaderSpinner from '@/components/LoaderSpinner';
-import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
-import { UserAvatar } from '@/components/user/UserAvatar';
 import { AllPraiseList } from '@/model/praise';
-import { localizeAndFormatIsoDate } from '@/utils/date';
 import { faSadTear } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
@@ -12,9 +10,9 @@ import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { ActiveUserId } from '@/model/auth';
 import { SingleUser } from '@/model/users';
-import { UserDto } from 'api/dist/user/types';
+import Praise from '@/components/praise/Praise';
 import PraisePageLoader from '../../Start/components/PraisePageLoader';
-import getMarkdownText from '@/components/MarkdownText';
+import PraiseRow from '@/components/praise/PraiseRow';
 
 export const MY_PRAISE_LIST_KEY = 'MY_PRAISE';
 
@@ -30,7 +28,7 @@ const MyPraiseTable = (): JSX.Element => {
   const history = useHistory();
   const allPraise = useRecoilValue(AllPraiseList(MY_PRAISE_LIST_KEY));
   const userId = useRecoilValue(ActiveUserId);
-  const user = useRecoilValue(SingleUser({ userId }));
+  const user = useRecoilValue(SingleUser(userId));
   const [receiverId, setReceiverId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -45,33 +43,7 @@ const MyPraiseTable = (): JSX.Element => {
         accessor: 'createdAt',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any) => (
-          <div className="flex items-center w-full">
-            <div className="flex items-center">
-              <UserAvatar userAccount={data.row.original.giver} />
-            </div>
-            <div className="flex-grow p-3 overflow-hidden">
-              <div>
-                <ForwarderTooltip praise={data.row.original} />
-                <span className="font-bold">
-                  {data.row.original.giver.name}
-                </span>{' '}
-                to{' '}
-                <span className="font-bold">
-                  {data.row.original.receiver.name}
-                </span>
-                <span className="ml-2 text-xs text-gray-500">
-                  {localizeAndFormatIsoDate(data.row.original.createdAt)}
-                </span>
-              </div>
-
-              <div
-                className="w-full"
-                dangerouslySetInnerHTML={{
-                  __html: getMarkdownText(data.row.original.reason),
-                }}
-              ></div>
-            </div>
-          </div>
+          <Praise praise={data.row.original} showReceiver={true} />
         ),
       },
     ],
@@ -85,10 +57,6 @@ const MyPraiseTable = (): JSX.Element => {
   const tableInstance = useTable(options);
 
   const { getTableProps, getTableBodyProps, rows, prepareRow } = tableInstance;
-
-  const handleClick = (data: PraiseDto) => () => {
-    history.push(`/praise/${data._id}`);
-  };
 
   return (
     <>
@@ -104,15 +72,12 @@ const MyPraiseTable = (): JSX.Element => {
               prepareRow(row);
               return (
                 // eslint-disable-next-line react/jsx-key
-                <tr
-                  className="cursor-pointer hover:bg-gray-100"
-                  {...row.getRowProps()}
-                  onClick={handleClick(row.original as PraiseDto)}
-                >
-                  {row.cells.map((cell) => {
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell, index) => {
                     return (
-                      // eslint-disable-next-line react/jsx-key
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                      <PraiseRow praise={row.original as PraiseDto} key={index}>
+                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                      </PraiseRow>
                     );
                   })}
                 </tr>

@@ -28,15 +28,6 @@ export interface PeriodDocument extends Period, mongoose.Document {
   $__: any;
 }
 
-export interface PeriodDto {
-  _id: string;
-  name: string;
-  status: PeriodStatusType;
-  endDate: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface PeriodDetailsReceiver {
   _id: Types.ObjectId;
   praiseCount: number;
@@ -65,7 +56,13 @@ export interface PeriodDetailsQuantifierDto {
   praiseCount: number;
 }
 
-export interface PeriodDetailsDto extends PeriodDto {
+export interface PeriodDetailsDto {
+  _id: string;
+  name: string;
+  status: PeriodStatusType;
+  endDate: string;
+  createdAt: string;
+  updatedAt: string;
   quantifiers?: PeriodDetailsQuantifierDto[];
   receivers?: PeriodDetailsReceiverDto[];
   settings?: PeriodSettingDto[];

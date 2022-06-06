@@ -2,9 +2,9 @@ import { ActiveTokenSet } from '@/model/auth';
 import ActivatePage from '@/pages/Activate/ActivatePage';
 import ErrorPage from '@/pages/ErrorPage';
 import LoginPage from '@/pages/Login/LoginPage';
+import AuthenticatedLayout from '../layouts/AuthenticatedLayout';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import AuthenticatedRoutes from '@/navigation/AuthenticatedRoutes';
 
 interface LoggedInOnlyRouteProps {
   children: JSX.Element;
@@ -53,7 +53,7 @@ const Routes = (): JSX.Element => {
         <ErrorPage error={{ message: 'Not found' }} />
       </Route>
       <LoggedInOnlyRoute path="/">
-        <AuthenticatedRoutes />
+        <AuthenticatedLayout />
       </LoggedInOnlyRoute>
     </Switch>
   );

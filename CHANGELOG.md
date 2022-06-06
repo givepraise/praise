@@ -8,10 +8,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Hightlight active page in Navbar, update page routes to nest under top-level routes
+
+- Convert the Quantifier Pool screen to a User Admin screen #320 #395
 
 ### Fixed
+
+- Clicking a link within a Praise reason should _only_ trigger opening the link #427 #437
+
+## [0.7.0] - 2022-05-31
+
+### Added
+
+- Group setting groups to improve settings UI #131 #333 #399
+- Normalize format of praise reason, converting usernames and channel names into their human-readable text #156 #397
+- Hightlight active page in Navbar, update page routes to nest under top-level routes #244 #396
+- Praise dates now displayed in a "relative" format, with the absolute format displayed in a tooltip #249 #404
+- Display calculated score of praise marked as duplicate instead of disabled slider on Quantify page #378 #407
+- Added FAQ page #219 #372
+- Removed docs package, move documentation to https://givepraise.xyz/docs
+
+### Fixed
+
 - Remove 1s login delay
+- Ensure period is updated reactively on frontend when closed, name changed, or end date changed #389 #390
+- Immediately reflect authorization changes after modifying your own user's roles #313
+- Ensure'Assign Quantifiers' dialog is updated reactively when quantifier pool changes #388 #408
+- Ensure period settings created before migration `07_settings_add_group` can be updated
+- Prevent users from marking a praise as duplicate, if it is already the original of another praise marked duplicate #394 #406
+- Fetch period data on period detail page only once
+- Prevent error notice when non-admin visits PeriodDetailPage #425
+- Upgraded to Create React App 5.0.1 and Tailwind 3 #416
+- Fixed bug affecting marking of duplicates #335 #389 #393
 
 ## [0.6.0] - 2022-05-09
 
