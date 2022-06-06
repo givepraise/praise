@@ -94,7 +94,7 @@ const PeriodsTable = (): JSX.Element => {
             <tr
               className={classNames(
                 row.values.status === 'CLOSED' ? 'text-gray-400' : '',
-                'cursor-pointer hover:bg-gray-100'
+                'cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-300'
               )}
               id="" //TODO set id
               {...row.getRowProps()}
