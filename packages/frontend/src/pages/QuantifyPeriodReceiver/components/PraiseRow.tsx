@@ -3,10 +3,8 @@ import Notice from '@/components/Notice';
 import Praise from '@/components/praise/Praise';
 import { ActiveUserId } from '@/model/auth';
 import {
-  dismissed,
-  duplicate,
-  quantification,
-  shortDuplicatePraiseId,
+  findPraiseQuantification,
+  shortenDuplicatePraiseId,
 } from '@/utils/praise';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -37,11 +35,11 @@ const PraiseRow = ({
   const userId = useRecoilValue(ActiveUserId);
   if (!userId) return null;
 
-  const quantificationData = quantification(praise, userId);
-  if (!quantificationData) return null;
+  const quantification = findPraiseQuantification(praise, userId);
+  if (!quantification) return null;
 
-  const isDismissed = dismissed(praise, userId);
-  const isDuplicate = duplicate(praise, userId);
+  const dismissed = quantification.dismissed;
+  const duplicate = !!quantification.duplicatePraise;
 
   return (
     <tr className="group">
@@ -60,23 +58,23 @@ const PraiseRow = ({
           showReceiver={false}
           periodId={periodId}
           usePseudonyms={usePseudonyms}
-          dismissed={isDismissed}
-          shortDuplicatePraiseId={shortDuplicatePraiseId(praise, userId)}
+          dismissed={dismissed}
+          shortDuplicatePraiseId={shortenDuplicatePraiseId(praise, userId)}
         />
       </td>
       <td>
-        {isDuplicate ? (
+        {duplicate ? (
           <Notice type="info" className="w-40 py-2">
             <>
               Duplicate score: <br />
-              {quantificationData.scoreRealized}
+              {quantification.scoreRealized}
             </>
           </Notice>
         ) : (
           <QuantifySlider
             allowedScores={allowedValues}
-            score={quantificationData.scoreRealized}
-            disabled={isDismissed || isDuplicate}
+            score={quantification.scoreRealized}
+            disabled={dismissed || duplicate}
             onChange={onSetScore}
           />
         )}
@@ -85,7 +83,7 @@ const PraiseRow = ({
         <div className="w-3">
           <button
             className="hidden group-hover:block text-gray-400 hover:text-gray-500 cursor-pointer"
-            disabled={isDuplicate}
+            disabled={duplicate}
             onClick={onDuplicateClick}
           >
             <FontAwesomeIcon icon={faCopy} size="1x" />
