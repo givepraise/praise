@@ -13,7 +13,7 @@ import DuplicateDialog from './DuplicateDialog';
 import DuplicateSearchDialog from './DuplicateSearchDialog';
 import MarkDuplicateButton from './MarkDuplicateButton';
 import MarkDismissedButton from './MarkDismissedButton';
-import PraiseRow from './PraiseRow';
+import QuantifyPraiseRow from './QuantifyPraiseRow';
 
 interface Props {
   periodId: string;
@@ -134,9 +134,9 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                 )}
 
                 {weeklyData[weekKey].map((praise) => (
-                  <PraiseRow
-                    praise={praise}
+                  <QuantifyPraiseRow
                     key={praise._id}
+                    praise={praise}
                     periodId={periodId}
                     usePseudonyms={usePseudonyms}
                     allowedValues={allowedValues}

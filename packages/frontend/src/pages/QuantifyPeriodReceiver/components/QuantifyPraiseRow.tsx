@@ -22,7 +22,7 @@ interface Props {
   onDuplicateClick();
 }
 
-const PraiseRow = ({
+const QuantifyPraiseRow = ({
   praise,
   periodId,
   usePseudonyms,
@@ -94,4 +94,4 @@ const PraiseRow = ({
   );
 };
 
-export default PraiseRow;
+export default QuantifyPraiseRow;
