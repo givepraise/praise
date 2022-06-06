@@ -9,10 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+## [0.8.0] - 2022-06-06
+
+### Added
+
 - Convert the Quantifier Pool screen to a User Admin screen #320 #395
 
 ### Fixed
 
+- Removed migration unable to fetch info from Discord threads #445
+- Quantify slider displaying praise score #444 #443
 - Clicking a link within a Praise reason should _only_ trigger opening the link #427 #437
 
 ## [0.7.0] - 2022-05-31
