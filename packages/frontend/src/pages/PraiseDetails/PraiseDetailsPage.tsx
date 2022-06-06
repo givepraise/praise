@@ -1,5 +1,4 @@
 import BreadCrumb from '@/components/BreadCrumb';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
 import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
 import BackLink from '@/navigation/BackLink';
@@ -20,8 +19,6 @@ const PraiseDetailsPage = (): JSX.Element | null => {
       ? `/periods/${period?._id}/receiver/${praise?.receiver._id}`
       : '/';
 
-  const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-
   if (!praise) return null;
 
   return (
@@ -32,9 +29,6 @@ const PraiseDetailsPage = (): JSX.Element | null => {
       <React.Suspense fallback="Loading…">
         <div className="praise-box">
           <Praise praise={praise} />
-          {period && (period.status === 'CLOSED' || isAdmin) ? (
-            <div>Score: {praise.scoreRealized}</div>
-          ) : null}
         </div>
       </React.Suspense>
 

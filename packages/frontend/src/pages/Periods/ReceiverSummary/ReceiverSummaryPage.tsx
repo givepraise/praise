@@ -44,7 +44,7 @@ const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
   useAllPeriodSettingsQuery(periodId);
 
   return (
-    <>
+    <div className="max-w-2xl mx-auto">
       <BreadCrumb name={'Receiver summary for period'} icon={faCalendarAlt} />
       <BackLink to={`/periods/${periodId}`} />
 
@@ -55,7 +55,7 @@ const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
       <React.Suspense fallback="Loading…">
         <ReceiverSummaryTable />
       </React.Suspense>
-    </>
+    </div>
   );
 };
 

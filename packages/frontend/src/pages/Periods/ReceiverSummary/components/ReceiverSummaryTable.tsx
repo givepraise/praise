@@ -17,10 +17,10 @@ const PeriodReceiverTable = (): JSX.Element | null => {
 
   if (!praiseList) return null;
   return (
-    <div className="praise-box">
+    <div className="praise-list-box">
       {praiseList?.map((praise) => (
         <PraiseRow praise={praise} key={praise?._id}>
-          <Praise praise={praise} showReceiver={false} />
+          <Praise praise={praise} className="p-5" />
         </PraiseRow>
       ))}
     </div>

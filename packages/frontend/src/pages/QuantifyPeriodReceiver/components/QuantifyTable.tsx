@@ -116,8 +116,8 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
   };
 
   return (
-    <div className=" h-full">
-      <div className="p-5 relative space-x-6 bg-gray-200 z-10 w-full rounded-t border-t border-l border-r sticky top-0">
+    <div className="h-full ">
+      <div className="relative sticky top-0 z-10 w-full p-5 space-x-6 bg-gray-200 border-t border-l border-r rounded-t">
         <MarkDismissedButton
           disabled={selectedPraises.length < 1}
           onClick={(): void => setIsDismissDialogOpen(true)}
@@ -128,7 +128,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
         />
       </div>
 
-      <div className="praise-box overflow-x-auto rounded-t-none">
+      <div className="overflow-x-auto rounded-t-none praise-box">
         <table className="w-full table-auto">
           <tbody>
             {Object.keys(weeklyData).map((weekKey, index) => (
@@ -136,7 +136,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                 {index !== 0 && index !== data.length - 1 && (
                   <tr>
                     <td colSpan={5}>
-                      <div className="border-t border-2 border-gray-400 my-4" />
+                      <div className="my-4 border-2 border-t border-gray-400" />
                     </td>
                   </tr>
                 )}
@@ -146,24 +146,26 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                     <td>
                       <input
                         type="checkbox"
-                        className="mr-4 text-xl w-5 h-5"
+                        className="w-5 h-5 mr-4 text-xl"
                         checked={isChecked(praise)}
                         onChange={(): void => handleToggleCheckbox(praise)}
                       />
                     </td>
                     <td>
-                      <Praise
-                        praise={praise}
-                        showIdPrefix={true}
-                        showReceiver={false}
-                        periodId={periodId}
-                        usePseudonyms={usePseudonyms}
-                        dismissed={dismissed(praise, userId)}
-                        shortDuplicatePraiseId={shortDuplicatePraiseId(
-                          praise,
-                          userId
-                        )}
-                      />
+                      <div className="max-w-xl">
+                        <Praise
+                          praise={praise}
+                          showIdPrefix={true}
+                          showReceiver={false}
+                          periodId={periodId}
+                          usePseudonyms={usePseudonyms}
+                          dismissed={dismissed(praise, userId)}
+                          shortDuplicatePraiseId={shortDuplicatePraiseId(
+                            praise,
+                            userId
+                          )}
+                        />
+                      </div>
                     </td>
                     <td>
                       {duplicate(praise, userId) ? (
@@ -190,7 +192,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                     <td>
                       <div className="w-3">
                         <button
-                          className="hidden group-hover:block text-gray-400 hover:text-gray-500 cursor-pointer"
+                          className="hidden text-gray-400 cursor-pointer group-hover:block hover:text-gray-500"
                           disabled={duplicate(praise, userId)}
                           onClick={(): void => {
                             setDuplicateSearchDialogPraise(praise);

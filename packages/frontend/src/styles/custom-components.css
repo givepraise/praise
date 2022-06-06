@@ -2,6 +2,10 @@
   @apply p-5 mb-5 break-words border rounded-lg shadow-sm bg-gray-50;
 }
 
+.praise-list-box {
+  @apply mb-5 break-words border rounded-lg shadow-sm bg-gray-50;
+}
+
 .praise-button-small {
   @apply py-0 text-sm;
 }

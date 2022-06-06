@@ -12,6 +12,7 @@ interface UserAvatarProps {
   user?: UserDto;
   userAccount?: UserAccountDto;
   usePseudonym?: boolean;
+  size?: string;
 }
 const WrappedUserAvatar = ({
   user,
@@ -20,7 +21,8 @@ const WrappedUserAvatar = ({
 }: UserAvatarProps): JSX.Element => {
   const [imageLoadError, setImageLoadError] = React.useState<boolean>(false);
   if (imageLoadError || usePseudonym)
-    return <FontAwesomeIcon icon={faUserCircle} size="2x" />;
+    return <FontAwesomeIcon icon={faUserCircle} size="1x" />;
+
   let url;
   if (user) {
     if (Array.isArray(user.accounts) && user.accounts.length > 0) {
@@ -44,10 +46,10 @@ const WrappedUserAvatar = ({
       src={url}
       onError={(): void => setImageLoadError(true)}
       alt="avatar"
-      className="rounded-full w-[29px] max-w-none"
+      className="object-contain h-[1em] rounded-full"
     />
   ) : (
-    <FontAwesomeIcon icon={faUserCircle} size="2x" />
+    <FontAwesomeIcon icon={faUserCircle} size="1x" />
   );
 };
 
