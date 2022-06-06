@@ -4,13 +4,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { RecoilRoot } from 'recoil';
+import { RecoilRoot, useRecoilValue } from 'recoil';
 import RecoilNexus from 'recoil-nexus';
 import { useErrorBoundary } from 'use-error-boundary';
 import EthConnection from './components/EthConnection';
 import Routes from './navigation/Routes';
 import ErrorPage from './pages/ErrorPage';
 import LoadScreen from '@/components/LoadScreen';
+import { Theme } from '@/model/theme';
 import './styles/globals.css';
 
 const LOAD_DELAY = 500;
@@ -28,12 +29,24 @@ const DelayedLoading = ({
   children,
 }: DelayedLoadingProps): JSX.Element | null => {
   const [delay, setDelay] = React.useState<boolean>(true);
+  const theme = useRecoilValue(Theme);
 
   React.useEffect(() => {
     setTimeout(() => {
       setDelay(false);
     }, LOAD_DELAY);
   }, []);
+
+  React.useEffect(() => {
+    const root = document.documentElement;
+    if (theme !== 'Light') {
+      root.classList.add('dark');
+      localStorage.setItem('theme', 'Dark');
+    } else {
+      localStorage.setItem('theme', 'Light');
+      root.classList.remove('dark');
+    }
+  }, [theme]);
 
   // Possibility to add loader here
   if (delay) return null;

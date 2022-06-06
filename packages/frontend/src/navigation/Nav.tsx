@@ -16,19 +16,32 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState, useRecoilState } from 'recoil';
+import { Switch } from '@mui/material';
+import { Theme } from '@/model/theme';
 import NavItem from './NavItem';
 
 export default function Nav(): JSX.Element {
   const setActiveTokenSet = useSetRecoilState(ActiveTokenSet);
+  const [theme, setTheme] = useRecoilState(Theme);
   const logoSetting = useRecoilValue(SingleSetting('LOGO'));
 
   const handleLogoutClick = (): void => {
     setActiveTokenSet(undefined);
   };
 
+  const handleTheme = (): void => {
+    if (theme === 'Light') {
+      setTheme('Dark');
+      localStorage.setItem('theme', 'Dark');
+    } else {
+      setTheme('Light');
+      localStorage.setItem('theme', 'Light');
+    }
+  };
+
   return (
-    <nav className="flex h-screen border-r shadow-sm md:w-64 md:flex-col md:fixed bg-gray-50">
+    <nav className="flex h-screen border-r shadow-sm md:w-64 md:flex-col md:fixed bg-gray-50 dark:bg-slate-900">
       <div className="flex flex-col justify-between h-full">
         <div className="w-full">
           <ul className="relative h-full p-0 m-0 list-none">
@@ -71,6 +84,12 @@ export default function Nav(): JSX.Element {
             <NavItem icon={faQuestionCircle} description="FAQ" to="/faq" />
           </ul>
         </div>
+        <div className="mt-auto mb-4 px-4 flex items-center justify-around">
+          <div>icon</div>
+          <div>{theme} mode</div>
+          <Switch checked={theme === 'Dark'} onChange={handleTheme} />
+        </div>
+
         <div className="w-full border-t">
           <Menu as="div" className="flex flex-col justify-center">
             <Menu.Button className="flex items-center justify-between w-full px-4 py-3 hover:text-gray-500 focus:outline-none">
