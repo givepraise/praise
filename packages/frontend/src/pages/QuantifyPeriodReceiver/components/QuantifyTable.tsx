@@ -4,7 +4,12 @@ import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import Praise from '@/components/praise/Praise';
-import { dismissed, duplicate, shortDuplicatePraiseId } from '@/utils/praise';
+import {
+  dismissed,
+  duplicate,
+  quantification,
+  shortDuplicatePraiseId,
+} from '@/utils/praise';
 import { ActiveUserId } from '@/model/auth';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -170,13 +175,13 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                         <Notice type="info" className="w-40 py-2">
                           <>
                             Duplicate score: <br />
-                            {praise.scoreRealized}
+                            {quantification(praise, userId)?.scoreRealized}
                           </>
                         </Notice>
                       ) : (
                         <QuantifySlider
                           allowedScores={allowedValues}
-                          score={praise.scoreRealized}
+                          score={quantification(praise, userId)?.scoreRealized}
                           disabled={
                             dismissed(praise, userId) ||
                             duplicate(praise, userId)
