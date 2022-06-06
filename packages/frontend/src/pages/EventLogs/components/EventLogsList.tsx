@@ -21,7 +21,7 @@ const EventLogsTable = (): JSX.Element | null => {
         {data.docs.map((eventlog, i) => (
           <EventLog
             eventlog={eventlog}
-            className={`${i % 2 === 0 && 'bg-gray-100'} px-2`}
+            className={`${i % 2 === 0 && 'bg-gray-100 dark:bg-slate-500'} px-2`}
             key={i}
           />
         ))}
