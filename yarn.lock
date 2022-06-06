@@ -8694,6 +8694,7 @@ __metadata:
     query-string: ^7.1.0
     react: ^17.0.2
     react-bottom-scroll-listener: ^5.0.0
+    react-csv: ^2.2.2
     react-day-picker: ^8.0.2
     react-dom: ^17.0.2
     react-final-form: ^6.5.7
@@ -14274,6 +14275,13 @@ __metadata:
     react: ^16.0.0 || ^17.0.0
     react-dom: ^16.0.0 || ^17.0.0
   checksum: 0a735bc8e12b88c8b713b9bbcdd15bd1c28a5f6f2b290c7216f4043c09d2b3ae453a9fe3ee2abefb758595faf6850f26cd721973d608fa39f1996326edaa5611
+  languageName: node
+  linkType: hard
+
+"react-csv@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "react-csv@npm:2.2.2"
+  checksum: a6ffabd67fc9ba1478b003977923cfa3ccdd9553ac5edcc3824b4a5ea849b87cb2acfcc0781b0cd0a259bf56e6a7dfd35cfc307576aa51819fc5a32b03118fab
   languageName: node
   linkType: hard
 
