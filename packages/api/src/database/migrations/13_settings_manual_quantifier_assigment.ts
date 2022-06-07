@@ -8,7 +8,7 @@ const settings = [
     type: 'Boolean',
     label: 'Assign praise to all quantifiers',
     description:
-      'Assign praise to all quantifiers, as evenly as possible. Enabling this setting will override the setting "Quantifiers Per Praise", as praise will be evenly split among all quantifiers.',
+      'Evenly assign praise among all quantifiers. If enabled, the setting "Quantifiers Per Praise" will be ignored',
     group: SettingGroup.PERIOD_DEFAULT,
   },
 ];
