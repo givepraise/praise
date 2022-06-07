@@ -1,22 +1,25 @@
-import { useState } from 'react';
-import { useAllEventLogs } from '@/model/eventlogs';
+import { eventLogsQueryParameters, useAllEventLogs } from '@/model/eventlogs';
 import EventLog from '@/components/eventlog/EventLog';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import EventLogsActions from '@/pages/EventLogs/components/EventLogsActions';
+import { useRecoilState } from 'recoil';
 
 const EventLogsTable = (): JSX.Element | null => {
-  const [page, setPage] = useState<number>(1);
-  const { data } = useAllEventLogs({
-    sortColumn: 'createdAt',
-    sortType: 'desc',
-    limit: 15,
-    page,
-  });
+  const [queryParameters, setQueryParameters] = useRecoilState(
+    eventLogsQueryParameters
+  );
 
-  if (data.docs.length === 0) return null;
+  const { data } = useAllEventLogs();
+
+  const setPage = (page: number): void => {
+    setQueryParameters({ ...queryParameters, ...{ page } });
+  };
 
   return (
     <div className="praise-box">
+      <EventLogsActions />
+
       <div className="w-full space-y-4">
         {data.docs.map((eventlog, i) => (
           <EventLog
@@ -32,7 +35,7 @@ const EventLogsTable = (): JSX.Element | null => {
             {data.hasPrevPage && (
               <a
                 className="cursor-pointer"
-                onClick={(): void => setPage(page - 1)}
+                onClick={(): void => setPage(queryParameters.page - 1)}
               >
                 <FontAwesomeIcon
                   icon={faArrowLeft}
@@ -48,7 +51,7 @@ const EventLogsTable = (): JSX.Element | null => {
             {data.hasNextPage && (
               <a
                 className="cursor-pointer"
-                onClick={(): void => setPage(page + 1)}
+                onClick={(): void => setPage(queryParameters.page + 1)}
               >
                 Next
                 <FontAwesomeIcon
