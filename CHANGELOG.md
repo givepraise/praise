@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support multiple wallets: WalletConneect, Trust, Rainbow etc #424
+
 ### Fixed
 
 - Improve dapp responsiviness #190 #356
