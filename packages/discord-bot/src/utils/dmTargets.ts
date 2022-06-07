@@ -52,7 +52,7 @@ const sendDMs = async (
       : successMsg + '\n' + failedMsg;
 
   // TODO - Create a utility function to tabularise this data neatly
-  let summary = `User\t\t\t\tStatus\n`;
+  let summary = 'User\t\t\t\tStatus\n';
   successful.forEach((username: string) => {
     summary += `${username}${new String(' ').repeat(
       32 - username.length
