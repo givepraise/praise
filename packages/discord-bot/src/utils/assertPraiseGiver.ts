@@ -14,39 +14,41 @@ export const assertPraiseGiver = async (
     'PRAISE_GIVER_ROLE_ID'
   )) as string;
 
-  if (praiseGiverRoleIDRequired) {
-    if (praiseGiverRoleID === '0') {
-      sendReply &&
-        (await interaction.editReply(
-          '**❌ No Praise Giver Discord Role ID specified.**'
-        ));
-      return false;
-    }
+  if (!praiseGiverRoleIDRequired) {
+    return true;
+  }
 
-    const { guild } = interaction;
-    if (!guild) {
-      sendReply && (await interaction.editReply(await dmError()));
-      return false;
-    }
+  if (praiseGiverRoleID === '0') {
+    sendReply &&
+      (await interaction.editReply(
+        '**❌ No Praise Giver Discord Role ID specified.**'
+      ));
+    return false;
+  }
 
-    const praiseGiverRole = guild.roles.cache.find(
-      (r) => r.id === praiseGiverRoleID
-    );
-    if (!praiseGiverRole) {
-      sendReply &&
-        (await interaction.editReply(
-          '**❌ Unknown Praise Giver Discord Role ID.**'
-        ));
-      return false;
-    }
+  const { guild } = interaction;
+  if (!guild) {
+    sendReply && (await interaction.editReply(await dmError()));
+    return false;
+  }
 
-    if (!praiseGiver.roles.cache.find((r) => r.id === praiseGiverRole.id)) {
-      sendReply &&
-        (await interaction.editReply({
-          embeds: [await praiseRoleError(praiseGiverRole, praiseGiver.user)],
-        }));
-      return false;
-    }
+  const praiseGiverRole = guild.roles.cache.find(
+    (r) => r.id === praiseGiverRoleID
+  );
+  if (!praiseGiverRole) {
+    sendReply &&
+      (await interaction.editReply(
+        '**❌ Unknown Praise Giver Discord Role ID.**'
+      ));
+    return false;
+  }
+
+  if (!praiseGiver.roles.cache.find((r) => r.id === praiseGiverRole.id)) {
+    sendReply &&
+      (await interaction.editReply({
+        embeds: [await praiseRoleError(praiseGiverRole, praiseGiver.user)],
+      }));
+    return false;
   }
 
   return true;
