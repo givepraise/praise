@@ -66,15 +66,27 @@ const questions = [
     default: process.env.NODE_ENV,
   },
   {
+    type: 'string',
+    name: 'MONGO_INITDB_ROOT_USERNAME',
+    message: 'MongoDB Root Username',
+    default: process.env.MONGO_INITDB_ROOT_USERNAME,
+  },
+  {
     type: 'password',
     name: 'MONGO_INITDB_ROOT_PASSWORD',
     message: 'MongoDB Root Password',
     default: process.env.MONGO_INITDB_ROOT_PASSWORD,
   },
   {
+    type: 'string',
+    name: 'MONGO_USERNAME',
+    message: 'MongoDB Praise Username',
+    default: process.env.MONGO_USERNAME,
+  },
+  {
     type: 'password',
     name: 'MONGO_PASSWORD',
-    message: 'MongoDB User Password',
+    message: 'MongoDB Praise Password',
     default: process.env.MONGO_PASSWORD,
   },
   {
@@ -163,7 +175,9 @@ const run = async (): Promise<void> => {
         ? `https://${answers.HOST as string}`
         : `http://${answers.HOST as string}:${answers.PORT as string}`,
     MONGO_HOST: answers.NODE_ENV === 'production' ? 'mongodb' : 'localhost',
+    MONGO_INITDB_ROOT_USERNAME: answers.MONGO_INITDB_ROOT_USERNAME,
     MONGO_INITDB_ROOT_PASSWORD: answers.MONGO_INITDB_ROOT_PASSWORD,
+    MONGO_USERNAME: answers.MONGO_USERNAME,
     MONGO_PASSWORD: answers.MONGO_PASSWORD,
   };
   await setupAndWriteEnv(
