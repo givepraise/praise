@@ -14,9 +14,10 @@ import { EventLogTypeKey } from '@eventlog/types';
 import { logEvent } from '@eventlog/utils';
 import { firstFit, PackingOutput } from 'bin-packer';
 import logger from 'jet-logger';
-import { flatten, intersection, range, sum } from 'lodash';
+import { flatten, intersection, range, sum, zip } from 'lodash';
 import { StatusCodes } from 'http-status-codes';
 import { Request } from 'express';
+import greedyPartitioning from 'greedy-number-partitioning';
 import {
   PeriodDocument,
   AssignQuantifiersDryRunOutput,
@@ -31,6 +32,20 @@ import {
 } from '../utils';
 import { PeriodModel } from '../entities';
 
+/**
+ * Apply a bin-packing algorithm to
+ *  fit differently-sized collections of praise (i.e. all praise given to a single receiver)
+ *  into a variable number of "bins" (i.e. quantifiers),
+ *  targeting a specified number of praise assigned to each quantifiers
+ *
+ *  See https://en.wikipedia.org/wiki/Bin_packing_problem
+ *
+ * @param period
+ * @param PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER
+ * @param PRAISE_PER_QUANTIFIER
+ * @param TOLERANCE
+ * @returns
+ */
 const prepareAssignmentsByTargetPraiseCount = async (
   period: PeriodDocument,
   PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number,
@@ -125,8 +140,8 @@ const prepareAssignmentsByTargetPraiseCount = async (
 
   // Assign each quantifier to an available bin
   //  or Assign each bin to an available quantifier
-  const availableQuantifiers = quantifierPool.slice();
-  const availableBins = redundantAssignmentBins.slice();
+  const availableQuantifiers = [...quantifierPool];
+  const availableBins = [...redundantAssignmentBins];
 
   const skippedAssignmentBins: Receiver[][] = [];
   const skippedAssignmentOptionIds: string[] = [];
@@ -228,25 +243,23 @@ const prepareAssignmentsByTargetPraiseCount = async (
   };
 };
 
+/**
+ * Apply a multiway number partitioning algorithm to
+ *  evenly distribute differently-sized collections of praise (i.e. all praise given to a single receiver)
+ *  into a fixed number of "bins" (i.e. quantifiers)
+ *
+ *  See https://en.wikipedia.org/wiki/Multiway_number_partitioning
+ *
+ * @param period
+ * @param PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER
+ * @param TOLERANCE
+ * @returns
+ */
 const prepareAssignmentsByAllQuantifiers = async (
   period: PeriodDocument,
-  PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number,
-  TOLERANCE = 1.2
+  PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number
 ): Promise<AssignQuantifiersDryRunOutput> => {
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
-
-  // Determine target bin size
-  const praisesCount = await PraiseModel.find({
-    createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
-  }).count();
-  const quantifiersCount = await UserModel.find({
-    roles: UserRole.QUANTIFIER,
-  }).count();
-  const targetBinSize = Math.ceil(
-    ((praisesCount * PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER) /
-      quantifiersCount) *
-      TOLERANCE
-  );
 
   // Query a list of receivers with their collection of praise
   const receivers: Receiver[] = await PraiseModel.aggregate([
@@ -273,32 +286,6 @@ const prepareAssignmentsByAllQuantifiers = async (
     },
   ]);
 
-  // Clone the list of recievers for each redundant assignment
-  //  (as defined by setting PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)
-  const redundantAssignmentBins: Receiver[][] = flatten(
-    range(PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER).map(() => {
-      // Run "first Fit" randomized bin-packing algorithm on list of receivers
-      //    with a maximum 'bin' size of: PRAISE_PER_QUANTIFIER
-      //    where each item takes up bin space based on its' praiseCount
-      const receiversShuffled = receivers
-        .sort(() => 0.5 - Math.random())
-        .slice(0, receivers.length);
-
-      const result: PackingOutput<Receiver> = firstFit(
-        receiversShuffled,
-        (r: Receiver) => r.praiseCount,
-        targetBinSize
-      );
-
-      const bins: Receiver[][] = [
-        ...result.bins,
-        ...result.oversized.map((r) => [r]),
-      ];
-
-      return bins;
-    })
-  );
-
   // Query the list of quantifiers & randomize order
   let quantifierPool = await UserModel.aggregate([
     { $match: { roles: UserRole.QUANTIFIER } },
@@ -320,6 +307,53 @@ const prepareAssignmentsByAllQuantifiers = async (
     .sort(() => 0.5 - Math.random())
     .slice(0, quantifierPool.length);
 
+  // Clone the list of recievers for each redundant assignment
+  //  (as defined by setting PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)
+  //  zip them together, rotated, to prevent identical redundant receivers in a single bin
+  const receiversShuffled = receivers
+    .sort(() => 0.5 - Math.random())
+    .slice(0, receivers.length);
+
+  if (PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER > quantifierPool.length)
+    throw new Error(
+      'Unable to assign redudant quantifications without more members in quantifier pool'
+    );
+
+  const redundantReceiversShuffled: Receiver[][] = zip(
+    ...range(PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER).map((i) => {
+      // Create a "rotated" copy of array for each redundant quantification
+      //   i.e. [a, b, c, d] => [b, c, d, a]
+      //  ensure each rotation does not overlap
+      const receiversShuffledClone = [...receiversShuffled];
+
+      range(i).forEach(() => {
+        const lastElem = receiversShuffledClone.pop();
+        if (!lastElem)
+          throw Error(
+            'Failed to generate list of redundant shuffled receivers'
+          );
+
+        receiversShuffledClone.unshift(lastElem);
+      });
+
+      return receiversShuffledClone;
+    })
+  ) as Receiver[][];
+
+  // Run "Greedy number partitioning" algorithm on list of receivers
+  //    with a fixed 'bin' size of: quantifierPool.length
+  //    where each item takes up bin space based on its praiseCount
+  const redundantAssignmentBins: Receiver[][][] = greedyPartitioning<
+    Receiver[]
+  >(
+    redundantReceiversShuffled,
+    quantifierPool.length,
+    (receivers: Receiver[]) => sum(receivers.map((r) => r.praiseCount))
+  );
+
+  const redundantAssignmentBinsFlattened: Receiver[][] =
+    redundantAssignmentBins.map((binOfBins) => flatten(binOfBins));
+
   // Convert array of quantifiers to a single object, keyed by _id
   const quantifierPoolById: QuantifierPoolById = quantifierPool.reduce(
     (poolById, q) => {
@@ -331,8 +365,8 @@ const prepareAssignmentsByAllQuantifiers = async (
 
   // Assign each quantifier to an available bin
   //  or Assign each bin to an available quantifier
-  const availableQuantifiers = quantifierPool.slice();
-  const availableBins = redundantAssignmentBins.slice();
+  const availableQuantifiers = [...quantifierPool];
+  const availableBins = [...redundantAssignmentBinsFlattened];
 
   const skippedAssignmentBins: Receiver[][] = [];
   const skippedAssignmentOptionIds: string[] = [];
@@ -457,20 +491,19 @@ const assignQuantifiersDryRun = async (
     period._id
   )) as boolean;
 
-  const PRAISE_PER_QUANTIFIER = (await settingValue(
-    'PRAISE_PER_QUANTIFIER',
+  const PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER = (await settingValue(
+    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
     period._id
   )) as number;
 
   if (PRAISE_QUANTIFIERS_ASSIGN_ALL) {
     return prepareAssignmentsByAllQuantifiers(
       period,
-      PRAISE_PER_QUANTIFIER,
-      1.2
+      PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER
     );
   } else {
-    const PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER = (await settingValue(
-      'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
+    const PRAISE_PER_QUANTIFIER = (await settingValue(
+      'PRAISE_PER_QUANTIFIER',
       period._id
     )) as number;
 
@@ -491,17 +524,38 @@ export const verifyQuantifierPoolSize = async (
   req: Request,
   res: TypedResponse<VerifyQuantifierPoolSizeResponse>
 ): Promise<void> => {
+  const period = await PeriodModel.findById(req.params.periodId);
+  if (!period) throw new NotFoundError('Period');
+
+  const PRAISE_QUANTIFIERS_ASSIGN_ALL = (await settingValue(
+    'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+    period._id
+  )) as boolean;
+
   const quantifierPoolSize = await UserModel.count({
     roles: UserRole.QUANTIFIER,
   });
-  const assignmentDryRun: AssignQuantifiersDryRunOutput =
-    await assignQuantifiersDryRun(req.params.periodId);
 
-  res.status(StatusCodes.OK).json({
-    quantifierPoolSize,
-    quantifierPoolSizeNeeded: assignmentDryRun.poolAssignments.length,
-    quantifierPoolDeficitSize: assignmentDryRun.poolDeficit,
-  });
+  let response;
+
+  if (PRAISE_QUANTIFIERS_ASSIGN_ALL) {
+    response = {
+      quantifierPoolSize,
+      quantifierPoolSizeNeeded: quantifierPoolSize,
+      quantifierPoolDeficitSize: 0,
+    };
+  } else {
+    const assignmentDryRun: AssignQuantifiersDryRunOutput =
+      await assignQuantifiersDryRun(req.params.periodId);
+
+    response = {
+      quantifierPoolSize,
+      quantifierPoolSizeNeeded: assignmentDryRun.poolAssignments.length,
+      quantifierPoolDeficitSize: assignmentDryRun.poolDeficit,
+    };
+  }
+
+  res.status(StatusCodes.OK).json(response);
 };
 
 /**
