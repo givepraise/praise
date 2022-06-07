@@ -49,7 +49,7 @@ const EthAccountDialog = ({
       <div className="flex items-center justify-center min-h-screen">
         <Dialog.Overlay className="fixed inset-0 bg-gray-800 opacity-30" />
         <div
-          className="relative max-w-xl mx-auto bg-white rounded p-6"
+          className="relative max-w-xl p-6 mx-auto bg-white rounded"
           ref={contentRef}
         >
           <div className="flex justify-end">
@@ -70,7 +70,7 @@ const EthAccountDialog = ({
                 onClick={(): void => void handleCopyAddress()}
               >
                 <FontAwesomeIcon className="mr-2" icon={faCopy} size="1x" />
-                Copy Address
+                Copy address
               </button>
               <button className="mt-4 praise-button" onClick={handleDisconnect}>
                 <FontAwesomeIcon

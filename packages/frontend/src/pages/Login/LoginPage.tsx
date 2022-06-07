@@ -49,9 +49,9 @@ const LoginPage = (): JSX.Element => {
     <SignMessageLayout
       onSignSuccess={(signature): void => void onSignSuccess(signature)}
       message={message}
-      buttonText="Sign Login Message"
+      buttonText="Sign login message"
     >
-      <div className="w-full flex justify-center">
+      <div className="flex justify-center w-full">
         <div>
           <div className="mb-2 text-xl font-semibold text-center">Login</div>
           <div className="text-center">

@@ -62,9 +62,9 @@ const ActivateDialog = ({ accountId, platform, token }: Props): JSX.Element => {
     <SignMessageLayout
       onSignSuccess={(signature): void => void onSignSuccess(signature)}
       message={message}
-      buttonText="Sign Activation Message"
+      buttonText="Sign activation message"
     >
-      <div className="w-full flex justify-center">
+      <div className="flex justify-center w-full">
         <div>
           <div className="mb-2 text-xl font-semibold text-center">Activate</div>
           <div className="text-center">

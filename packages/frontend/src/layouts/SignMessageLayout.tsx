@@ -21,7 +21,7 @@ const SignMessageLayout = ({
   children,
   onSignSuccess,
   message = undefined,
-  buttonText = 'Sign Message',
+  buttonText = 'Sign message',
 }: Props): JSX.Element => {
   const { data, isLoading } = useAccount();
   const accessToken = useRecoilValue(AccessToken);
@@ -37,16 +37,16 @@ const SignMessageLayout = ({
         <div className="w-full p-5 text-2xl font-bold">
           <FontAwesomeIcon icon={faPrayingHands} size="1x" className="m-2" />
         </div>
-        <div className="p-4 py-8 m-auto border border-solid rounded-lg shadow-sm bg-gray-50 w-96 space-y-8">
+        <div className="p-4 py-8 m-auto space-y-8 border border-solid rounded-lg shadow-sm bg-gray-50 w-96">
           {children}
 
           {isLoading && !data && !message ? (
             <LoaderSpinner />
           ) : (
-            <div className="w-full flex justify-center items-center">
+            <div className="flex items-center justify-center w-full">
               {data ? (
                 <div>
-                  <div className="text-lg font-semibold text-center mb-2">
+                  <div className="mb-2 text-lg font-semibold text-center">
                     Connected as
                   </div>
                   <EthAccount className="w-36" />
@@ -58,7 +58,7 @@ const SignMessageLayout = ({
           )}
 
           {data && message && (
-            <div className="w-full flex justify-center items-center">
+            <div className="flex items-center justify-center w-full">
               <SignMessageButton
                 text={buttonText}
                 message={message}
