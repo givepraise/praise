@@ -231,12 +231,34 @@ const assignQuantifiersDryRun = async (
     'PRAISE_PER_QUANTIFIER',
     period._id
   )) as number;
+  const quantifiersAssignedEvenly = (await settingValue(
+    'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+    period._id
+  )) as boolean;
   const tolerance = 1.2;
 
   if (!quantifiersPerPraiseReceiver || !praisePerQuantifier)
     throw new InternalServerError('Configuration error');
 
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+
+  // Determine target bin size
+  let targetBinSize = 0;
+  if (quantifiersAssignedEvenly) {
+    const praisesCount = await PraiseModel.find({
+      createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+    }).count();
+    const quantifiersCount = await UserModel.find({
+      roles: UserRole.QUANTIFIER,
+    }).count();
+
+    targetBinSize = Math.ceil(
+      ((praisesCount * quantifiersPerPraiseReceiver) / quantifiersCount) *
+        tolerance
+    );
+  } else {
+    targetBinSize = Math.ceil(praisePerQuantifier * tolerance);
+  }
 
   // Query a list of receivers with their collection of praise
   const receivers: Receiver[] = await PraiseModel.aggregate([
@@ -277,7 +299,7 @@ const assignQuantifiersDryRun = async (
       const result: PackingOutput<Receiver> = firstFit(
         receiversShuffled,
         (r: Receiver) => r.praiseCount,
-        praisePerQuantifier * tolerance
+        targetBinSize
       );
 
       const bins: Receiver[][] = [
@@ -319,7 +341,8 @@ const assignQuantifiersDryRun = async (
     {}
   );
 
-  // Assign each bin to an available quantifier
+  // Assign each quantifier to an available bin
+  //  or Assign each bin to an available quantifier
   const availableQuantifiers = quantifierPool.slice();
   const availableBins = redundantAssignmentBins.slice();
 
@@ -391,6 +414,19 @@ const assignQuantifiersDryRun = async (
   }));
 
   poolAssignments.push(...neededAssignments);
+
+  // Verify that all quantifiers were assigned if necessary
+  if (quantifiersAssignedEvenly) {
+    if (poolAssignments.length === quantifierPool.length) {
+      logger.info(
+        'All quantifiers were assigned praise, as expected with PRAISE_QUANTIFIERS_ASSIGN_EVENLY'
+      );
+    } else {
+      throw new InternalServerError(
+        `Not all quantifiers were assigned praise, missing ${neededAssignments.length}, despite PRAISE_QUANTIFIERS_ASSIGN_EVENLY`
+      );
+    }
+  }
 
   // Verify & log that all praise is accounted for in this model
   const totalPraiseCount: number = await PraiseModel.count({
