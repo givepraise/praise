@@ -6,6 +6,8 @@ import {
   AllQuantifierUsers,
   AllUsers,
 } from '@/model/users';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const UsersStatistics = (): JSX.Element => {
   const allAdminUsers = useRecoilValue(AllAdminUsers);
@@ -14,26 +16,25 @@ const UsersStatistics = (): JSX.Element => {
   const allUsers = useRecoilValue(AllUsers);
 
   return (
-    <div className="praise-box flex justify-between">
+    <div className="praise-box">
       {console.log(allUsers)}
-      <div className="max-w-1/2">
-        <div className="mb-4">
-          <span className="font-bold text-xl">User statistics</span>
-        </div>
-        <div>Activated users: {allUsers?.length}</div>
-        <div>Admins: {allAdminUsers?.length}</div>
-        <div>Forwarders: {allForwarderUsers?.length}</div>
-        <div>Quantifiers: {allQuantifierUsers?.length}</div>
+      <div className="mb-4">
+        <span className="text-xl font-bold">User statistics</span>
       </div>
-      <CSVLink
-        className="mt-auto praise-button-small h-fit bg-black px-2 py-1 rounded"
-        data={allUsers}
-        separator={';'}
-      >
-        <span className="font-medium text-white uppercase no-underline">
-          download csv
-        </span>
-      </CSVLink>
+      <div>Activated users: {allUsers?.length}</div>
+      <div>Admins: {allAdminUsers?.length}</div>
+      <div>Forwarders: {allForwarderUsers?.length}</div>
+      <div>Quantifiers: {allQuantifierUsers?.length}</div>
+      <div className="flex w-full mt-5">
+        {allUsers && (
+          <div className="praise-button">
+            <CSVLink className="no-underline" data={allUsers} separator={';'}>
+              <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
+              Export
+            </CSVLink>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
