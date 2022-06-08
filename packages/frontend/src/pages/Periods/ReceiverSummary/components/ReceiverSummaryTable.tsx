@@ -1,29 +1,10 @@
-import { PraiseDetailsDto } from 'api/dist/praise/types';
 import { useHistory, useParams } from 'react-router-dom';
 import Praise from '@/components/praise/Praise';
 import {
   PeriodAndReceiverPageParams,
   usePeriodReceiverPraiseQuery,
 } from '@/model/periods';
-interface PraiseRowProps {
-  praise: PraiseDetailsDto;
-}
-const PraiseRow = ({ praise }: PraiseRowProps): JSX.Element => {
-  const history = useHistory();
-
-  const handleClick = (): void => {
-    history.push(`/praise/${praise._id}`);
-  };
-
-  return (
-    <div
-      className="flex items-center w-full p-5 cursor-pointer hover:bg-gray-100"
-      onClick={handleClick}
-    >
-      <Praise praise={praise} showReceiver={false} />
-    </div>
-  );
-};
+import PraiseRow from '@/components/praise/PraiseRow';
 
 const PeriodReceiverTable = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
@@ -38,7 +19,9 @@ const PeriodReceiverTable = (): JSX.Element | null => {
   return (
     <div className="praise-box">
       {praiseList?.map((praise) => (
-        <PraiseRow praise={praise} key={praise?._id} />
+        <PraiseRow praise={praise} key={praise?._id}>
+          <Praise praise={praise} showReceiver={false} />
+        </PraiseRow>
       ))}
     </div>
   );
