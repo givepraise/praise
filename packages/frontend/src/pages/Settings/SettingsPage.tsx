@@ -26,7 +26,7 @@ const SettingsPage = (): JSX.Element | null => {
   );
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="praise-page">
       <BreadCrumb name="Settings" icon={faCogs} />
 
       <div className="flex space-x-4">

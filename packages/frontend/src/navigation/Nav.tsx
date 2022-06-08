@@ -1,10 +1,7 @@
 import AdminOnly from '@/components/auth/AdminOnly';
-import EthAccount from '@/components/EthAccount';
-import { ActiveTokenSet } from '@/model/auth';
+import EthAccount from '@/components/account/EthAccount';
 import { SingleSetting } from '@/model/settings';
-import { classNames } from '@/utils/index';
 import {
-  faAngleRight,
   faCalculator,
   faCog,
   faPrayingHands,
@@ -12,23 +9,16 @@ import {
   faUserFriends,
   faBook,
 } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Menu, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
+import { Menu } from '@headlessui/react';
 import { Link } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState, useRecoilState } from 'recoil';
+import { useRecoilValue, useRecoilState } from 'recoil';
 import { Switch } from '@mui/material';
 import { Theme } from '@/model/theme';
 import NavItem from './NavItem';
 
 export default function Nav(): JSX.Element {
-  const setActiveTokenSet = useSetRecoilState(ActiveTokenSet);
   const [theme, setTheme] = useRecoilState(Theme);
   const logoSetting = useRecoilValue(SingleSetting('LOGO'));
-
-  const handleLogoutClick = (): void => {
-    setActiveTokenSet(undefined);
-  };
 
   const handleTheme = (): void => {
     if (theme === 'Light') {
@@ -84,7 +74,7 @@ export default function Nav(): JSX.Element {
             <NavItem icon={faQuestionCircle} description="FAQ" to="/faq" />
           </ul>
         </div>
-        <div className="mt-auto mb-4 px-4 flex items-center justify-around">
+        <div className="flex items-center justify-around px-4 mt-auto mb-4">
           <div>icon</div>
           <div>{theme} mode</div>
           <Switch checked={theme === 'Dark'} onChange={handleTheme} />
@@ -92,38 +82,13 @@ export default function Nav(): JSX.Element {
 
         <div className="w-full border-t">
           <Menu as="div" className="flex flex-col justify-center">
-            <Menu.Button className="flex items-center justify-between w-full px-4 py-3 hover:text-gray-500 focus:outline-none">
-              <EthAccount />
-              <FontAwesomeIcon icon={faAngleRight} size="1x" className="ml-4" />
+            <Menu.Button className="flex items-center justify-between w-full selection:hover:text-gray-500 focus:outline-none">
+              <EthAccount
+                showDownCaret={false}
+                showRightCaret={true}
+                className="w-full px-4 py-3"
+              />
             </Menu.Button>
-
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
-              <Menu.Items className="absolute w-4/5 ml-6 -mt-20 bg-white rounded-md shadow-lg ring-1 ring-gray-800 ring-opacity-5 focus:outline-none">
-                <div className="py-1">
-                  <Menu.Item>
-                    {({ active }): JSX.Element => (
-                      <div
-                        className={classNames(
-                          active ? 'bg-gray-100' : 'text-gray-700',
-                          'block px-4 py-2 text-sm cursor-pointer'
-                        )}
-                        onClick={handleLogoutClick}
-                      >
-                        Logout
-                      </div>
-                    )}
-                  </Menu.Item>
-                </div>
-              </Menu.Items>
-            </Transition>
           </Menu>
         </div>
       </div>
