@@ -10,7 +10,7 @@ import {
   useRecoilValue,
 } from 'recoil';
 import { ApiAuthGet, useAuthApiQuery, isResponseOk } from './api';
-import { SettingDto } from 'api/dist/settings/types';
+import { SettingDto } from 'shared/dist/settings/types';
 
 export interface Setting {
   _id: string;

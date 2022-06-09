@@ -11,7 +11,7 @@ import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { ethers } from 'ethers';
 import { Response } from 'express';
-import { ActivateRequestBody } from './types';
+import { ActivateRequestBody } from 'shared/dist/activate/types';
 import { generateActivateMessage } from './utils';
 
 const activate = async (

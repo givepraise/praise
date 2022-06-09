@@ -1,7 +1,7 @@
 import { faForward } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Tooltip } from '@mui/material';
-import { PraiseDto } from 'api/dist/praise/types';
+import { PraiseDto } from 'shared/dist/praise/types';
 
 interface ForwarderTooltipProps {
   praise: PraiseDto;

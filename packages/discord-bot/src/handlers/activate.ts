@@ -1,6 +1,6 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount } from 'api/src/useraccount/types';
-import { EventLogTypeKey } from 'api/src/eventlog/types';
+import { UserAccount } from 'shared/dist/useraccount/types';
+import { EventLogTypeKey } from 'shared/dist/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
 import randomstring from 'randomstring';
 import { CommandHandler } from 'src/interfaces/CommandHandler';

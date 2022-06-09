@@ -7,7 +7,7 @@ import { useRecoilValue } from 'recoil';
 import { useParams } from 'react-router-dom';
 import { formatIsoDateUTC } from '@/utils/date';
 import { classNames } from '@/utils/index';
-import { UserDto, UserRole } from 'api/dist/user/types';
+import { UserDto, UserRole } from 'shared/dist/user/types';
 import { toast } from 'react-hot-toast';
 
 const roles = [UserRole.ADMIN, UserRole.FORWARDER, UserRole.QUANTIFIER];

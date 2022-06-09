@@ -1,11 +1,11 @@
 import { NotFoundError } from '@error/errors';
 import { getQueryInput, getQuerySort } from '@shared/functions';
 import {
-  PaginatedResponseBody,
   QueryInputParsedQs,
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
+import { PaginatedResponseBody } from 'shared/dist/query/types';
 import { Request } from 'express';
 import { UserAccountModel } from './entities';
 import {

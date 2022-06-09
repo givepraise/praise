@@ -8,7 +8,7 @@ import {
 import BackLink from '@/navigation/BackLink';
 import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
 import { classNames } from '@/utils/index';
-import { PeriodStatusType } from 'api/dist/period/types';
+import { PeriodStatusType } from 'shared/dist/period/types';
 import {
   faBalanceScaleLeft,
   faHeartbeat,
@@ -43,8 +43,8 @@ const PeriodDetailHead = (): JSX.Element => {
           period?.status === 'OPEN'
             ? 'bg-green-300'
             : period?.status === 'QUANTIFY'
-            ? 'bg-pink-300'
-            : 'bg-gray-300',
+              ? 'bg-pink-300'
+              : 'bg-gray-300',
           'float-right px-2 py-1 text-xs text-white rounded-full'
         )}
       >

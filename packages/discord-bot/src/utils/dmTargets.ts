@@ -1,12 +1,12 @@
 import { PeriodModel } from 'api/dist/period/entities';
 import { UserModel } from 'api/dist/user/entities';
-import { UserRole, UserDocument } from 'api/dist/user/types';
+import { UserRole, UserDocument } from 'shared/dist/user/types';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { getPreviousPeriodEndDate } from 'api/dist/period/utils';
 import {
   PeriodDocument,
   PeriodDetailsQuantifierDto,
-} from 'api/dist/period/types';
+} from 'shared/dist/period/types';
 
 import { CommandInteraction } from 'discord.js';
 import { PraiseModel } from 'api/dist/praise/entities';
@@ -47,8 +47,8 @@ const sendDMs = async (
     successful.length === 0
       ? failedMsg
       : failed.length === 0
-      ? successMsg
-      : successMsg + '\n' + failedMsg;
+        ? successMsg
+        : successMsg + '\n' + failedMsg;
   await interaction.editReply({
     content: content,
     components: [],

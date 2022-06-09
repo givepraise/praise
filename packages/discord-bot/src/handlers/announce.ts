@@ -1,5 +1,5 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount } from 'api/src/useraccount/types';
+import { UserAccount } from 'shared/dist/useraccount/types';
 import { UserModel } from 'api/dist/user/entities';
 import {
   continueButton,
@@ -7,7 +7,7 @@ import {
 } from '../utils/buttons/confirmationButtons';
 import { dmTargetMenu } from '../utils/menus/dmTargetmenu';
 import { Message, SelectMenuInteraction, MessageActionRow } from 'discord.js';
-import { UserRole } from 'api/dist/user/types';
+import { UserRole } from 'shared/dist/user/types';
 import { selectTargets } from '../utils/dmTargets';
 import { PeriodModel } from 'api/dist/period/entities';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';

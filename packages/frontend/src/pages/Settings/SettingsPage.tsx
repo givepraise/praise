@@ -1,4 +1,4 @@
-import { SettingGroup } from 'api/dist/settings/types';
+import { SettingGroup } from 'shared/dist/settings/types';
 import BreadCrumb from '@/components/BreadCrumb';
 import { faCogs } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';

@@ -1,5 +1,5 @@
 import { errorNames } from './constants';
-import { ErrorInterface } from './types';
+import { ErrorInterface } from 'shared/dist/error/types';
 
 class DomainError extends Error implements ErrorInterface {
   constructor(message: string) {

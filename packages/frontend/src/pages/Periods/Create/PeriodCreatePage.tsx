@@ -1,12 +1,11 @@
 import BreadCrumb from '@/components/BreadCrumb';
-import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import DayInput from '@/components/form/DayInput';
 import { isResponseOk } from '@/model/api';
 import { CreatePeriodApiResponse, useCreatePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
 import { DATE_FORMAT } from '@/utils/date';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
-import { PeriodCreateInput } from 'api/dist/period/types';
+import { PeriodCreateInput } from 'shared/dist/period/types';
 import { isMatch } from 'date-fns';
 import { ValidationErrors } from 'final-form';
 import React from 'react';
@@ -89,9 +88,6 @@ const PeriodsForm = (): JSX.Element => {
                     placeholder="e.g. May-June"
                     className="block w-72"
                   />
-                  {apiResponse && (
-                    <FieldErrorMessage name="name" apiResponse={apiResponse} />
-                  )}
                 </div>
               )}
             </Field>
@@ -106,12 +102,6 @@ const PeriodsForm = (): JSX.Element => {
                     className="w-72 block"
                     inputClassName="w-100"
                   />
-                  {apiResponse && (
-                    <FieldErrorMessage
-                      name="endDate"
-                      apiResponse={apiResponse}
-                    />
-                  )}
                 </div>
               )}
             </Field>

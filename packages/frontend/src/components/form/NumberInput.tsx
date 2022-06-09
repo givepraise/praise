@@ -1,11 +1,6 @@
-import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import { Field } from 'react-final-form';
-import { AxiosResponse, AxiosError } from 'axios';
 
-const NumberInput = (
-  name: string,
-  apiResponse: AxiosResponse<unknown> | AxiosError<unknown> | null
-): JSX.Element => {
+const NumberInput = (name: string): JSX.Element => {
   return (
     <Field name={name} key={name}>
       {({ input }): JSX.Element => (
@@ -17,9 +12,6 @@ const NumberInput = (
             autoComplete="off"
             className="block w-full"
           />
-          {apiResponse && (
-            <FieldErrorMessage name="name" apiResponse={apiResponse} />
-          )}
         </div>
       )}
     </Field>

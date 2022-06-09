@@ -11,7 +11,7 @@ import {
 import { find } from 'lodash';
 import { ApiAuthGet, useAuthApiQuery, isResponseOk } from './api';
 import { Setting, useSetSettingReturn } from './settings';
-import { PeriodSettingDto } from 'api/src/periodsettings/types';
+import { PeriodSettingDto } from 'shared/dist/periodsettings/types';
 
 export const AllPeriodSettingIds = atomFamily<string[] | undefined, string>({
   key: 'PeriodSettingIdList',
@@ -61,32 +61,32 @@ export const AllPeriodSettingsQuery = selectorFamily({
   key: 'AllPeriodSettingsQuery',
   get:
     (periodId: string) =>
-    ({ get }): AxiosResponse<unknown> => {
-      return get(
-        ApiAuthGet({
-          url: `/periodsettings/${periodId}/settings/all`,
-        })
-      );
-    },
+      ({ get }): AxiosResponse<unknown> => {
+        return get(
+          ApiAuthGet({
+            url: `/periodsettings/${periodId}/settings/all`,
+          })
+        );
+      },
 });
 
 export const AllPeriodSettings = selectorFamily({
   key: 'AllPeriodSettings',
   get:
     (periodId: string) =>
-    ({ get }): PeriodSettingDto[] | undefined => {
-      const allPeriodSettingIds = get(AllPeriodSettingIds(periodId));
-      if (!allPeriodSettingIds) return undefined;
+      ({ get }): PeriodSettingDto[] | undefined => {
+        const allPeriodSettingIds = get(AllPeriodSettingIds(periodId));
+        if (!allPeriodSettingIds) return undefined;
 
-      const allPeriodSettings: PeriodSettingDto[] = [];
-      for (const settingId of allPeriodSettingIds) {
-        const setting = get(SinglePeriodSetting(settingId));
-        if (setting) {
-          allPeriodSettings.push(setting);
+        const allPeriodSettings: PeriodSettingDto[] = [];
+        for (const settingId of allPeriodSettingIds) {
+          const setting = get(SinglePeriodSetting(settingId));
+          if (setting) {
+            allPeriodSettings.push(setting);
+          }
         }
-      }
-      return allPeriodSettings;
-    },
+        return allPeriodSettings;
+      },
 });
 
 export const useAllPeriodSettingsQuery = (

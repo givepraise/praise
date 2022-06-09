@@ -1,4 +1,4 @@
-import { PraiseDto } from 'api/dist/praise/types';
+import { PraiseDto } from 'shared/dist/praise/types';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';

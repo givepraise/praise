@@ -1,4 +1,4 @@
-import { AuthResponse } from '@auth/types';
+import { AuthResponse } from 'shared/dist/auth/types';
 import { Wallet } from 'ethers';
 import { SuperTest, Test } from 'supertest';
 

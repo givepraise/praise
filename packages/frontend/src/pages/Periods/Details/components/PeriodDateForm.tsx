@@ -1,4 +1,3 @@
-import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import DayInput from '@/components/form/DayInput';
 import { isResponseOk } from '@/model/api';
 import {
@@ -7,7 +6,6 @@ import {
   useUpdatePeriod,
 } from '@/model/periods';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
-import { AxiosError, AxiosResponse } from 'axios';
 import { isMatch } from 'date-fns';
 import { ValidationErrors } from 'final-form';
 import { default as React } from 'react';
@@ -36,9 +34,6 @@ const validate = (
 const PeriodDateForm = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
-  const [apiResponse, setApiResponse] = React.useState<
-    AxiosResponse<unknown> | AxiosError<unknown> | null
-  >(null);
   const { updatePeriod } = useUpdatePeriod();
 
   // Is only called if validate is successful
@@ -52,7 +47,6 @@ const PeriodDateForm = (): JSX.Element | null => {
       if (isResponseOk(response)) {
         toast.success('Period date saved');
       }
-      setApiResponse(response);
     }
   };
 
@@ -88,12 +82,6 @@ const PeriodDateForm = (): JSX.Element | null => {
                       }}
                       inputClassName="relative py-0 px-1 pl-1 my-0 text-sm bg-transparent border border-transparent hover:border-gray-300 w-24"
                       tzLabel="UTC"
-                    />
-                  </div>
-                  <div>
-                    <FieldErrorMessage
-                      name="endDate"
-                      apiResponse={apiResponse}
                     />
                   </div>
                 </>

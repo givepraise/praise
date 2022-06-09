@@ -1,10 +1,10 @@
 import { getQuerySort } from '@shared/functions';
 import {
-  PaginatedResponseBody,
   QueryInputParsedQs,
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
+import { PaginatedResponseBody } from 'shared/dist/query/types';
 import { BadRequestError } from '@error/errors';
 import { StatusCodes } from 'http-status-codes';
 import { EventLogModel } from './entities';

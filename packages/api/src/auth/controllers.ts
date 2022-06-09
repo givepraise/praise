@@ -23,7 +23,7 @@ import {
   NonceResponse,
   RefreshRequestInput,
   TokenSet,
-} from './types';
+} from 'shared/dist/auth/types';
 import { generateLoginMessage } from './utils';
 
 const jwtService = new JwtService();

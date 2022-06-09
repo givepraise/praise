@@ -4,12 +4,12 @@ import {
   localizeAndFormatIsoDate,
 } from '@/utils/date';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { EventLogDto, EventLogTypeKey } from 'api/dist/eventlog/types';
+import { EventLogDto, EventLogTypeKey } from 'shared/dist/eventlog/types';
 import { SingleUser } from '@/model/users';
 import { useRecoilValue } from 'recoil';
 import { InlineLabel } from '../InlineLabel';
-import { UserDto } from 'api/dist/user/types';
-import { UserAccountDto } from 'api/dist/useraccount/types';
+import { UserDto } from 'shared/dist/user/types';
+import { UserAccountDto } from 'shared/dist/useraccount/types';
 import Notice from '../Notice';
 import { Tooltip } from '@mui/material';
 

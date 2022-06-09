@@ -4,17 +4,12 @@ import TextareaInput from '@/components/form/TextareaInput';
 import BooleanInput from '@/components/form/BooleanInput';
 import ImageFileInput from '@/components/form/ImageFileInput';
 import Notice from '@/components/Notice';
-import {
-  SetSettingApiResponse,
-  StringSetting,
-  Setting,
-} from '@/model/settings';
+import { StringSetting, Setting } from '@/model/settings';
 import { Form } from 'react-final-form';
-import { useRecoilValue } from 'recoil';
 import { find } from 'lodash';
 import SubmitButton from '../form/SubmitButton';
-import { PeriodSettingDto } from 'api/src/periodsettings/types';
-import { SettingDto } from 'api/dist/settings/types';
+import { PeriodSettingDto } from 'shared/dist/periodsettings/types';
+import { SettingDto } from 'shared/dist/settings/types';
 
 interface SettingsFormProps {
   settings: SettingDto[] | PeriodSettingDto[] | undefined;
@@ -23,24 +18,22 @@ interface SettingsFormProps {
 }
 
 const FormFields = (
-  settings: SettingDto[] | PeriodSettingDto[],
-  apiResponse
+  settings: SettingDto[] | PeriodSettingDto[]
 ): JSX.Element => {
   return (
     <div className="mb-2 space-y-4">
       {settings.map((setting) => {
         let field;
         if (setting.type === 'String' || setting.type === 'IntegerList')
-          field = StringInput(setting.key, apiResponse);
+          field = StringInput(setting.key);
         else if (setting.type === 'Float' || setting.type === 'Integer')
-          field = NumberInput(setting.key, apiResponse);
+          field = NumberInput(setting.key);
         else if (
           setting.type === 'Textarea' ||
           setting.type === 'QuestionAnswerJSON'
         )
-          field = TextareaInput(setting.key, apiResponse);
-        else if (setting.type === 'Boolean')
-          field = BooleanInput(setting.key, apiResponse);
+          field = TextareaInput(setting.key);
+        else if (setting.type === 'Boolean') field = BooleanInput(setting.key);
         else if (setting.type === 'Image')
           field = ImageFileInput(setting.key, setting.valueRealized as string);
 
@@ -90,8 +83,6 @@ const SettingsForm = ({
   setSetting,
   disabled = false,
 }: SettingsFormProps): JSX.Element | null => {
-  const apiResponse = useRecoilValue(SetSettingApiResponse);
-
   if (!Array.isArray(settings) || settings.length === 0) return null;
 
   // Is only called if validate is successful
@@ -143,7 +134,7 @@ const SettingsForm = ({
           return (
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             <form onSubmit={handleSubmit} className="leading-loose">
-              {FormFields(settings, apiResponse)}
+              {FormFields(settings)}
               <SubmitButton />
             </form>
           );

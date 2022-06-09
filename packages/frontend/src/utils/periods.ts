@@ -3,7 +3,7 @@ import {
   PeriodDetailsQuantifierDto,
   PeriodDetailsDto,
   PeriodStatusType,
-} from 'api/dist/period/types';
+} from 'shared/dist/period/types';
 import { compareDesc } from 'date-fns';
 
 export const getActivePeriod = (

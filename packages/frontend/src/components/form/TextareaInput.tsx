@@ -1,11 +1,6 @@
-import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import { Field } from 'react-final-form';
-import { AxiosResponse, AxiosError } from 'axios';
 
-const TextareaInput = (
-  name: string,
-  apiResponse: AxiosResponse<unknown> | AxiosError<unknown> | null
-): JSX.Element => {
+const TextareaInput = (name: string): JSX.Element => {
   return (
     <Field name={name} key={name}>
       {({ input }): JSX.Element => (
@@ -18,9 +13,6 @@ const TextareaInput = (
             className="block w-full resize-y"
             rows={4}
           />
-          {apiResponse && (
-            <FieldErrorMessage name="name" apiResponse={apiResponse} />
-          )}
         </div>
       )}
     </Field>
