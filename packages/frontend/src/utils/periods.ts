@@ -4,7 +4,7 @@ import {
   PeriodDetailsDto,
   PeriodStatusType,
 } from 'shared/dist/period/types';
-import { compareDesc } from 'date-fns';
+import compareDesc from 'date-fns/compareDesc';
 
 export const getActivePeriod = (
   allPeriods: PeriodDetailsDto[]

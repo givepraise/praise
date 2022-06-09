@@ -39,7 +39,7 @@ import { flatten, intersection, range, sum } from 'lodash';
 import { StatusCodes } from 'http-status-codes';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
-import { parseISO } from 'date-fns';
+import parseISO from 'date-fns/parseISO';
 import {
   AssignQuantifiersDryRunOutput,
   PeriodDetailsDto,

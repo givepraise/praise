@@ -1,4 +1,4 @@
-import { add } from 'date-fns';
+import add from 'date-fns/add';
 import { getPreviousPeriodEndDate } from './utils';
 import { PeriodDocument } from 'shared/dist/period/types';
 

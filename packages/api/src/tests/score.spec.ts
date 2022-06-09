@@ -18,7 +18,7 @@ import { settingValue } from '@shared/settings';
 import { sum } from 'lodash';
 import { getPeriodDateRangeQuery } from '@period/utils';
 import faker from 'faker';
-import { add } from 'date-fns';
+import add from 'date-fns/add';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 
 describe('calculateQuantificationScore', () => {

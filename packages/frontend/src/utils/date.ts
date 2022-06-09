@@ -1,6 +1,10 @@
-import { parse, parseISO, formatRelative } from 'date-fns';
+import parse from 'date-fns/parse';
+import parseISO from 'date-fns/parseISO';
+import formatRelative from 'date-fns/formatRelative';
 import { enUS } from 'date-fns/esm/locale';
-import { zonedTimeToUtc, utcToZonedTime, format } from 'date-fns-tz';
+import zonedTimeToUtc from 'date-fns-tz/zonedTimeToUtc';
+import utcToZonedTime from 'date-fns-tz/utcToZonedTime';
+import format from 'date-fns-tz/format';
 import jstz from 'jstz';
 
 export const DATE_FORMAT = 'yyyy-MM-dd';

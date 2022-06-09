@@ -6,7 +6,7 @@ import {
   useUpdatePeriod,
 } from '@/model/periods';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
-import { isMatch } from 'date-fns';
+import isMatch from 'date-fns/isMatch';
 import { ValidationErrors } from 'final-form';
 import { default as React } from 'react';
 import { Field, Form } from 'react-final-form';

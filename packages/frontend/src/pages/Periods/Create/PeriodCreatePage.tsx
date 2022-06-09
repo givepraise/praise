@@ -6,7 +6,7 @@ import BackLink from '@/navigation/BackLink';
 import { DATE_FORMAT } from '@/utils/date';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { PeriodCreateInput } from 'shared/dist/period/types';
-import { isMatch } from 'date-fns';
+import isMatch from 'date-fns/isMatch';
 import { ValidationErrors } from 'final-form';
 import React from 'react';
 import { Field, Form } from 'react-final-form';
