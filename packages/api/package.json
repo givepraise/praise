@@ -5,6 +5,7 @@
   "description": "The Praise REST API running on Node/Express, using MongoDB for storage.",
   "type": "commonjs",
   "main": "dist/index",
+  "private": true,
   "scripts": {
     "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "lint": "eslint . --ext .ts",
@@ -51,6 +52,7 @@
     "mongoose": "^6.1.2",
     "mongoose-paginate-ts": "^1.2.0",
     "morgan": "^1.10.0",
+    "shared": "workspace:^",
     "umzug": "^3.0.0"
   },
   "devDependencies": {
