@@ -1,4 +1,4 @@
-import { shortenEthAddress } from 'api/dist/user/utils';
+import { shortenEthAddress } from 'shared/dist/user/utils';
 import { faUserGroup } from '@fortawesome/free-solid-svg-icons';
 import BreadCrumb from '@/components/BreadCrumb';
 import BackLink from '@/navigation/BackLink';
