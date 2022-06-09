@@ -208,3 +208,11 @@ export const notActivatedDM = async (msgUrl: string): Promise<MessageEmbed> => {
     `**[YOU HAVE BEEN PRAISED](${msgUrl})\nPRAISE ACCOUNT NOT ACTIVATED. USE \`/activate\` TO ACTIVATE YOUR ACCOUNT. (message not set)`
   );
 };
+
+export const selfPraiseWarning = async (): Promise<string> => {
+  const msg = (await settingValue('SELF_PRAISE_WARNING')) as string;
+  if (msg && typeof msg === 'string') {
+    return msg;
+  }
+  return 'SELF-PRAISE NOT ALLOWED, PRAISE GIVERS UNABLE TO PRAISE THEMSELVES (message not set)';
+};

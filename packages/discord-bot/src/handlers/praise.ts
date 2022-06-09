@@ -13,10 +13,12 @@ import {
   praiseSuccessDM,
   roleMentionWarning,
   undefinedReceiverWarning,
+  selfPraiseWarning,
 } from '../utils/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
+import { settingValue } from 'api/dist/shared/settings';
 
 export const praiseHandler: CommandHandler = async (
   interaction,
@@ -63,15 +65,26 @@ export const praiseHandler: CommandHandler = async (
   }
 
   const praised: string[] = [];
-  const receiverIds = receiverData.validReceiverIds.map((id: string) =>
-    id.replace(/\D/g, '')
-  );
+  const receiverIds = [
+    ...new Set(
+      receiverData.validReceiverIds.map((id: string) => id.replace(/\D/g, ''))
+    ),
+  ];
+
+  const selfPraiseAllowed = (await settingValue(
+    'SELF_PRAISE_ALLOWED'
+  )) as boolean;
+
+  let warnSelfPraise = false;
+  if (!selfPraiseAllowed && receiverIds.includes(userAccount.accountId)) {
+    warnSelfPraise = true;
+    receiverIds.splice(receiverIds.indexOf(userAccount.accountId), 1);
+  }
   const Receivers = (await guild.members.fetch({ user: receiverIds })).map(
     (u) => u
   );
 
   const guildChannel = await guild.channels.fetch(channel?.id || '');
-
   for (const receiver of Receivers) {
     const receiverAccount = await getUserAccount(receiver);
 
@@ -122,12 +135,16 @@ export const praiseHandler: CommandHandler = async (
     }
   }
 
-  const msg = (await interaction.editReply(
-    await praiseSuccess(
-      praised.map((id) => `<@!${id}>`),
-      reason
-    )
-  )) as Message;
+  const msg = (
+    Receivers.length !== 0
+      ? await interaction.editReply(
+          await praiseSuccess(
+            praised.map((id) => `<@!${id}>`),
+            reason
+          )
+        )
+      : await interaction.editReply(await invalidReceiverError())
+  ) as Message;
 
   if (receiverData.undefinedReceivers) {
     await msg.reply(
@@ -146,6 +163,10 @@ export const praiseHandler: CommandHandler = async (
         member.user as User
       )
     );
+  }
+
+  if (warnSelfPraise) {
+    await msg.reply(await selfPraiseWarning());
   }
 
   return;

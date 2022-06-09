@@ -17,9 +17,10 @@ import {
   undefinedReceiverWarning,
   forwardSuccess,
   giverNotActivatedError,
+  selfPraiseWarning,
 } from '../utils/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
-
+import { settingValue } from 'api/dist/shared/settings';
 import { CommandHandler } from '../interfaces/CommandHandler';
 
 export const forwardHandler: CommandHandler = async (
@@ -86,9 +87,21 @@ export const forwardHandler: CommandHandler = async (
   }
 
   const praised: string[] = [];
-  const receiverIds = receiverData.validReceiverIds.map((id) =>
-    id.substr(3, id.length - 4)
-  );
+  const receiverIds = [
+    ...new Set(
+      receiverData.validReceiverIds.map((id: string) => id.replace(/\D/g, ''))
+    ),
+  ];
+
+  const selfPraiseAllowed = (await settingValue(
+    'SELF_PRAISE_ALLOWED'
+  )) as boolean;
+
+  let warnSelfPraise = false;
+  if (!selfPraiseAllowed && receiverIds.includes(giverAccount.accountId)) {
+    warnSelfPraise = true;
+    receiverIds.splice(receiverIds.indexOf(giverAccount.accountId), 1);
+  }
   const Receivers = (await guild.members.fetch({ user: receiverIds })).map(
     (u) => u
   );
@@ -148,13 +161,17 @@ export const forwardHandler: CommandHandler = async (
     }
   }
 
-  const msg = (await interaction.editReply(
-    await forwardSuccess(
-      praiseGiver.user,
-      praised.map((id) => `<@!${id}>`),
-      reason
-    )
-  )) as Message;
+  const msg = (
+    Receivers.length !== 0
+      ? await interaction.editReply(
+          await forwardSuccess(
+            praiseGiver.user,
+            praised.map((id) => `<@!${id}>`),
+            reason
+          )
+        )
+      : await interaction.editReply(await invalidReceiverError())
+  ) as Message;
 
   if (receiverData.undefinedReceivers) {
     await msg.reply(
@@ -171,6 +188,9 @@ export const forwardHandler: CommandHandler = async (
         praiseGiver.user
       )
     );
+  }
+  if (warnSelfPraise) {
+    await msg.reply(await selfPraiseWarning());
   }
 
   return;
