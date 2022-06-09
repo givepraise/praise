@@ -1,4 +1,4 @@
-import { ApiAuthGet, useAuthApiQuery } from '@/model/api';
+import { useAuthApiQuery } from '@/model/api';
 import { makeApiAuthClient } from '@/utils/api';
 import { EventLogDto, EventLogTypeDto } from 'api/dist/eventlog/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
@@ -32,18 +32,14 @@ export const eventLogsQueryParameters = atom({
  */
 export const AllEventLogsQuery = selector({
   key: 'AllEventLogsQuery',
-  get: ({ get }): AxiosResponse<unknown> => {
-    const query = get(eventLogsQueryParameters);
+  get: async ({ get }): Promise<AxiosResponse<unknown>> => {
+    const queryParams = get(eventLogsQueryParameters);
 
-    const qs = Object.keys(query)
-      .map((key) => `${key}=${query[key]}`)
-      .join('&');
+    const apiAuthClient = makeApiAuthClient();
+    const response = await apiAuthClient.get('/eventlogs/all', {
+      params: queryParams,
+    });
 
-    const response = get(
-      ApiAuthGet({
-        url: `/eventlogs/all${qs ? `?${qs}` : ''}`,
-      })
-    );
     return response;
   },
 });
@@ -60,7 +56,7 @@ export const useAllEventLogs = (): {
   return { data: paginatedResponse, loading: false };
 };
 
-export const useAllEventTypeLogs = (): {
+export const useAllEventLogTypes = (): {
   types: PaginatedResponseBody<EventLogTypeDto>;
   loading: boolean;
 } => {
