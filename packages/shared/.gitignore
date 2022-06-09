@@ -1,0 +1,8 @@
+.env
+.DS_Store
+dist
+node_modules
+tsconfig.tsbuildinfo
+!*uploads/praise_logo.png
+!*uploads/gnosischain_logo.png
+.nyc_output

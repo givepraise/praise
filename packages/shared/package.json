@@ -1,0 +1,16 @@
+{
+  "name": "shared",
+  "version": "0.8.0",
+  "license": "GPL-3.0-or-later",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint . --ext .ts",
+    "load-env": "env-cmd --silent --no-override -f ../../.env env-cmd --silent --no-override"
+  },
+  "dependencies": {
+    "tsc": "^2.0.4",
+    "typescript": "^4.7.3"
+  }
+}
