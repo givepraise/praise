@@ -1,4 +1,4 @@
-import { PeriodDocument, PeriodStatusType } from '@period/types';
+import { PeriodDocument, PeriodStatusType } from 'shared/dist/period/types';
 import mongoose from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { endDateValidators } from './validators';

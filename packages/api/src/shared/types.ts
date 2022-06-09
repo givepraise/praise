@@ -1,16 +1,10 @@
 import { Request, Response } from 'express';
 import * as core from 'express-serve-static-core';
 import { Send } from 'express-serve-static-core';
+import { QueryInput } from 'shared/dist/query/types';
 
 export type Query = core.Query;
 export type Params = core.ParamsDictionary;
-
-export interface QueryInput {
-  sortColumn?: string;
-  sortType?: string;
-  limit?: string;
-  page?: string;
-}
 
 export interface QueryInputParsedQs extends QueryInput, Query {}
 

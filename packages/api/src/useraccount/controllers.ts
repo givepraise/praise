@@ -12,7 +12,7 @@ import {
   userAccountListTransformer,
   userAccountTransformer,
 } from './transformers';
-import { UserAccountDto } from './types';
+import { UserAccountDto } from 'shared/dist/useraccount/types';
 
 /**
  * Description

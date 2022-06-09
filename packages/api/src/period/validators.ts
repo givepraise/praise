@@ -1,6 +1,6 @@
 import { add } from 'date-fns';
 import { getPreviousPeriodEndDate } from './utils';
-import { PeriodDocument } from './types';
+import { PeriodDocument } from 'shared/dist/period/types';
 
 /**
  * Validate period endDate is 7+ days after the previous period's endDate

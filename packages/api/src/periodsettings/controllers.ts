@@ -2,17 +2,17 @@ import { BadRequestError, NotFoundError } from '@error/errors';
 import { removeFile, upload } from '@shared/functions';
 import { TypedRequestBody, TypedResponse } from '@shared/types';
 import { Request } from 'express';
-import { SettingSetInput } from '@settings/types';
-import { PeriodStatusType } from '@period/types';
+import { SettingSetInput } from 'shared/dist/settings/types';
+import { PeriodStatusType } from 'shared/dist/period/types';
 import { PeriodModel } from '@period/entities';
-import { EventLogTypeKey } from '@eventlog/types';
+import { EventLogTypeKey } from 'shared/dist/eventlog/types';
 import { logEvent } from '@eventlog/utils';
 import {
   periodsettingTransformer,
   periodsettingListTransformer,
 } from './transformers';
 import { PeriodSettingsModel } from './entities';
-import { PeriodSettingDto } from './types';
+import { PeriodSettingDto } from 'shared/dist/periodsettings/types';
 
 export const all = async (
   req: Request,

@@ -4,7 +4,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '@error/errors';
-import { EventLogTypeKey } from '@eventlog/types';
+import { EventLogTypeKey } from 'shared/dist/eventlog/types';
 import { logEvent } from '@eventlog/utils';
 import { TypedRequestBody } from '@shared/types';
 import { UserModel } from '@user/entities';

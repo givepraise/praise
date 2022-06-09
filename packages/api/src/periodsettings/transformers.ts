@@ -1,4 +1,7 @@
-import { PeriodSettingDocument, PeriodSettingDto } from './types';
+import {
+  PeriodSettingDocument,
+  PeriodSettingDto,
+} from 'shared/dist/periodsettings/types';
 
 export const periodsettingTransformer = (
   setting: PeriodSettingDocument

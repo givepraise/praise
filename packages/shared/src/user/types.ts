@@ -1,5 +1,5 @@
-import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
-import mongoose from 'mongoose';
+import { UserAccountDocument, UserAccountDto } from '../useraccount/types';
+import { Document } from 'mongoose';
 
 export enum UserRole {
   ADMIN = 'ADMIN',
@@ -19,7 +19,7 @@ export interface User {
   updatedAt: Date;
 }
 
-export interface UserDocument extends User, mongoose.Document {}
+export interface UserDocument extends User, Document {}
 
 export interface UserDto {
   _id: string;

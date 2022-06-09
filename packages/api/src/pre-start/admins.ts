@@ -1,5 +1,5 @@
 import { UserModel } from '@user/entities';
-import { UserRole } from '@user/types';
+import { UserRole } from 'shared/dist/user/types';
 
 const seedAdmins = async (): Promise<void> => {
   const admins = process.env.ADMINS as string;

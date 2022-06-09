@@ -1,11 +1,11 @@
-import { QueryInput } from '@shared/types';
-import { UserDocument } from '@user/types';
+import { QueryInput } from '../query/types';
+import { UserDocument } from '../user/types';
 import {
   PraiseImportUserAccountInput,
   UserAccountDocument,
   UserAccountDto,
-} from '@useraccount/types';
-import mongoose from 'mongoose';
+} from '../useraccount/types';
+import { Document } from 'mongoose';
 
 export interface Praise {
   reason: string;
@@ -30,11 +30,9 @@ export interface Quantification {
   completed: boolean;
 }
 
-export interface PraiseDocument extends Praise, mongoose.Document {}
+export interface PraiseDocument extends Praise, Document {}
 
-export interface QuantificationDocument
-  extends Quantification,
-    mongoose.Document {}
+export interface QuantificationDocument extends Quantification, Document {}
 
 export interface PraiseDto {
   _id: string;

@@ -10,7 +10,7 @@ import {
   PraiseDtoExtended,
   PraiseDetailsDto,
   PraiseDto,
-} from '@praise/types';
+} from 'shared/dist/praise/types';
 import { praiseDocumentListTransformer } from '@praise/transformers';
 import { calculateQuantificationScore } from '@praise/utils/score';
 import { praiseWithScore } from '@praise/utils/core';
@@ -21,16 +21,16 @@ import { settingValue } from '@shared/settings';
 import {
   TypedRequestBody,
   TypedResponse,
-  QueryInput,
   PaginatedResponseBody,
   QueryInputParsedQs,
   TypedRequestQuery,
 } from '@shared/types';
-import { UserRole } from '@user/types';
-import { UserAccountDocument } from '@useraccount/types';
+import { QueryInput } from 'shared/dist/query/types';
+import { UserRole } from 'shared/dist/user/types';
+import { UserAccountDocument } from 'shared/dist/useraccount/types';
 import { getQueryInput, getQuerySort } from '@shared/functions';
 import { PraiseModel } from '@praise/entities';
-import { EventLogTypeKey } from '@eventlog/types';
+import { EventLogTypeKey } from 'shared/dist/eventlog/types';
 import { logEvent } from '@eventlog/utils';
 import mongoose from 'mongoose';
 import { firstFit, PackingOutput } from 'bin-packer';
@@ -46,6 +46,8 @@ import {
   PeriodStatusType,
   PeriodUpdateInput,
   VerifyQuantifierPoolSizeResponse,
+} from 'shared/dist/period/types';
+import {
   PeriodQuantifierPraiseInput,
   PeriodReceiverPraiseInput,
 } from './types';

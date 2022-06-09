@@ -8,7 +8,7 @@ import {
 import { BadRequestError } from '@error/errors';
 import { StatusCodes } from 'http-status-codes';
 import { EventLogModel } from './entities';
-import { EventLogDto } from './types';
+import { EventLogDto } from 'shared/dist/eventlog/types';
 import { eventLogListTransformer } from './transformers';
 
 /**

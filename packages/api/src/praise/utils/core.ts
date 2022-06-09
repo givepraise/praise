@@ -1,9 +1,13 @@
 import { Client, Util } from 'discord.js';
-import { PeriodDateRange, PeriodDocument } from '@period/types';
+import { PeriodDateRange, PeriodDocument } from 'shared/dist/period/types';
 import { PeriodModel } from '@period/entities';
 import { PraiseModel } from '../entities';
 import { praiseDocumentTransformer } from '../transformers';
-import { PraiseDocument, PraiseDetailsDto, Quantification } from '../types';
+import {
+  PraiseDocument,
+  PraiseDetailsDto,
+  Quantification,
+} from 'shared/dist/praise/types';
 
 /**
  * Workaround to get the period associated with a praise instance (as they are not related in database)

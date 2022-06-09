@@ -1,6 +1,6 @@
 import { shortenEthAddress } from 'shared/dist/user/utils';
 import { UserAccountModel } from '@useraccount/entities';
-import { UserDocument } from './types';
+import { UserDocument } from 'shared/dist/user/types';
 
 export const generateUserName = async (user: UserDocument): Promise<string> => {
   let username = '';

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-import { UserDocument, UserRole } from './types';
+import { UserDocument, UserRole } from 'shared/dist/user/types';
 
 export const userSchema = new mongoose.Schema(
   {

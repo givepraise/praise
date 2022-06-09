@@ -1,6 +1,6 @@
 import { PeriodModel } from '@period/entities';
-import { PeriodStatusType } from '@period/types';
-import { UserRole } from '@user/types';
+import { PeriodStatusType } from 'shared/dist/period/types';
+import { UserRole } from 'shared/dist/user/types';
 import { UserAccountModel } from '@useraccount/entities';
 import { userAccountTransformer } from '@useraccount/transformers';
 import { EventLogTypeModel } from './entities';
@@ -9,7 +9,7 @@ import {
   EventLogDto,
   EventLogTypeDocument,
   EventLogTypeDto,
-} from './types';
+} from 'shared/dist/eventlog/types';
 
 const eventLogTypeTransformer = (
   eventLogType: EventLogTypeDocument

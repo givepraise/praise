@@ -1,5 +1,5 @@
 import { EventLogTypeModel } from '../../eventlog/entities';
-import { EventLogTypeKey } from '../../eventlog/types';
+import { EventLogTypeKey } from 'shared/dist/eventlog/types';
 
 const eventLogTypes = [
   {

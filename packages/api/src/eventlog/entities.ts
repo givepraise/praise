@@ -4,7 +4,7 @@ import {
   EventLogDocument,
   EventLogTypeDocument,
   EventLogTypeKey,
-} from './types';
+} from 'shared/dist/eventlog/types';
 
 export const eventLogSchema = new mongoose.Schema(
   {

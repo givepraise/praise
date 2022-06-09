@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { PeriodSettingDocument } from './types';
+import { PeriodSettingDocument } from 'shared/dist/periodsettings/types';
 import {
   genericSettingsSchema,
   getGenericSettingValueRealized,

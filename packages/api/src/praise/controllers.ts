@@ -11,12 +11,12 @@ import {
 import {
   PaginatedResponseBody,
   Query,
-  QueryInput,
   TypedRequestBody,
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
-import { EventLogTypeKey } from '@eventlog/types';
+import { QueryInput } from 'shared/dist/query/types';
+import { EventLogTypeKey } from 'shared/dist/eventlog/types';
 import { logEvent } from '@eventlog/utils';
 import { Request } from 'express';
 import { Types } from 'mongoose';
@@ -31,7 +31,7 @@ import {
   PraiseDocument,
   PraiseDto,
   QuantificationCreateUpdateInput,
-} from './types';
+} from 'shared/dist/praise/types';
 import { praiseWithScore, getPraisePeriod } from './utils/core';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}

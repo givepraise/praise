@@ -11,8 +11,8 @@ import {
   TypedResponse,
 } from '@shared/types';
 import { UserModel } from '@user/entities';
-import { UserDocument } from '@user/types';
-import { EventLogTypeKey } from '@eventlog/types';
+import { UserDocument } from 'shared/dist/user/types';
+import { EventLogTypeKey } from 'shared/dist/eventlog/types';
 import { logEvent } from '@eventlog/utils';
 import { ethers } from 'ethers';
 import { JwtService } from './JwtService';

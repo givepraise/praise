@@ -13162,6 +13162,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mongoose@npm:^6.3.6":
+  version: 6.3.6
+  resolution: "mongoose@npm:6.3.6"
+  dependencies:
+    bson: ^4.6.2
+    kareem: 2.3.5
+    mongodb: 4.5.0
+    mpath: 0.9.0
+    mquery: 4.0.3
+    ms: 2.1.3
+    sift: 16.0.0
+  checksum: 79d4477f203806a14fea5cf7af6a1efbc33bae76c2b3313ef7a390101eae3fbdbe0bfe84ec119353ba8ebffc51ebf1ac958c537f24a177ad64ec1781a8a258e1
+  languageName: node
+  linkType: hard
+
 "morgan@npm:^1.10.0":
   version: 1.10.0
   resolution: "morgan@npm:1.10.0"
@@ -16701,6 +16716,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "shared@workspace:packages/shared"
   dependencies:
+    mongoose: ^6.3.6
     tsc: ^2.0.4
     typescript: ^4.7.3
   languageName: unknown
