@@ -20,9 +20,9 @@ const SelectInput = ({
   options,
 }: SelectInputProps): JSX.Element => {
   return (
-    <div className="relative w-40">
+    <div className="relative w-40 h-[42px]">
       <Listbox value={selected} onChange={handleChange}>
-        <Listbox.Button className="border border-black w-full py-1.5 h-12 pl-3 pr-10 text-left bg-transparent ">
+        <Listbox.Button className="h-[42px] text-xs border border-gray-400 w-full py-1.5 pl-3 pr-10 text-left bg-transparent ">
           <span className="block truncate">{selected.label}</span>
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
             <span className="text-gray-800 ">
@@ -36,7 +36,7 @@ const SelectInput = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto bg-white py-1 border border-black">
+          <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto bg-white py-1 border border-gray-400">
             {options.map((s, sIdx) => (
               <Listbox.Option
                 key={sIdx}

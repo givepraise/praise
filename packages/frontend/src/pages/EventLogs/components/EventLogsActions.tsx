@@ -72,14 +72,18 @@ const EventLogsActions = (): JSX.Element => {
   return (
     <div className="flex mb-8">
       {/* Filter */}
-      <MultiselectInput
-        handleChange={setSelectedFilters}
-        selected={selectedFilters}
-        options={filterOptions}
-      />
+      <div>
+        <MultiselectInput
+          handleChange={setSelectedFilters}
+          selected={selectedFilters}
+          options={filterOptions}
+        />
+      </div>
 
       {/* Search */}
-      <SearchInput handleChange={setSearchValue} value={searchValue} />
+      <div className="ml-4">
+        <SearchInput handleChange={setSearchValue} value={searchValue} />
+      </div>
 
       {/* Sort */}
       <div className="ml-auto">
