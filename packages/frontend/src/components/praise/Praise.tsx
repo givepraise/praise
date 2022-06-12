@@ -95,7 +95,14 @@ const Praise = ({
           )}
           <span
             dangerouslySetInnerHTML={{
-              __html: getMarkdownText(praise.reasonRealized),
+              __html: getMarkdownText(
+                praise.reasonRealized.replace(
+                  /((http|https|ftp):\/\/[\w?=&.-;#~%-]+(?![\w\s?&.;#~%"=-]*>))/g,
+                  (url) => {
+                    return `[${url.slice(0, 50)}...](${url})`;
+                  }
+                )
+              ),
             }}
             className={classNames(
               dismissed ? 'line-through' : '',

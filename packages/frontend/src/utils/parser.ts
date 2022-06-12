@@ -6,6 +6,7 @@ export const markdownParser = (text: string): string => {
     .replace(/\*\*(.*)\*\*/gim, '<b>$1</b>') // bold text
     .replace(/_([^_]*)_/gim, '<i>$1</i>') // italic text
     .replace(/\*(.*)\*/gim, '<i>$1</i>') // italic text
-    .replace(/~~([^_]*)~~/gim, '<s>$1</s>'); // strikethrough text
+    .replace(/~~([^_]*)~~/gim, '<s>$1</s>') // strikethrough text
+    .replace(/\[([^]+)\](\(([^)]*))\)/gim, '<a href="$3">$1</a>'); // hyperlinks
   return toHTML.trim(); // using trim method to remove whitespace
 };
