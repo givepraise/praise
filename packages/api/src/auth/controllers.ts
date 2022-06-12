@@ -24,7 +24,7 @@ import {
   RefreshRequestInput,
   TokenSet,
 } from 'shared/dist/auth/types';
-import { generateLoginMessage } from './utils';
+import { generateLoginMessage } from 'shared/dist/auth/utils';
 
 const jwtService = new JwtService();
 

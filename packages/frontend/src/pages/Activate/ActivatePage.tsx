@@ -1,4 +1,4 @@
-import { generateActivateMessage } from 'api/dist/activate/utils';
+import { generateActivateMessage } from 'shared/dist/activate/utils';
 import { AccountActivated } from '@/model/activate';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
