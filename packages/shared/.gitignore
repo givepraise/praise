@@ -1,6 +1,6 @@
 .env
 .DS_Store
-dist
+dist/
 node_modules
 tsconfig.tsbuildinfo
 !*uploads/praise_logo.png
