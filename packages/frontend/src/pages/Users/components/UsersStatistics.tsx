@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { CSVLink } from 'react-csv';
 import {
@@ -8,16 +9,43 @@ import {
 } from '@/model/users';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type { UserDto } from 'api/dist/user/types';
+
+interface DownloadUserDto extends Omit<UserDto, 'accounts'> {
+  discordName: string | undefined;
+  discordAccountId: string | undefined;
+  accounts: string[] | undefined;
+}
 
 const UsersStatistics = (): JSX.Element => {
   const allAdminUsers = useRecoilValue(AllAdminUsers);
   const allForwarderUsers = useRecoilValue(AllForwarderUsers);
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
   const allUsers = useRecoilValue(AllUsers);
+  const [downloadData, setDownloadData] = useState<DownloadUserDto[]>([]);
+
+  const filterData = (): boolean => {
+    if (!allUsers) {
+      return false;
+    }
+    const data = allUsers.map((user) => {
+      const discordAccount = user.accounts?.find(
+        (account) => account.platform === 'DISCORD'
+      );
+      return {
+        ...user,
+        discordAccountId: discordAccount?.accountId,
+        discordName: discordAccount?.name,
+        accounts: user.accounts?.map((account) => account.platform),
+      };
+    });
+
+    setDownloadData(data);
+    return true;
+  };
 
   return (
     <div className="praise-box">
-      {console.log(allUsers)}
       <div className="mb-4">
         <span className="text-xl font-bold">User statistics</span>
       </div>
@@ -28,7 +56,13 @@ const UsersStatistics = (): JSX.Element => {
       <div className="flex w-full mt-5">
         {allUsers && (
           <div className="praise-button">
-            <CSVLink className="no-underline" data={allUsers} separator={';'}>
+            <CSVLink
+              className="no-underline"
+              data={downloadData}
+              onClick={(): boolean => filterData()}
+              separator={';'}
+              filename={'PraiseUserExport.csv'}
+            >
               <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
               Export
             </CSVLink>
