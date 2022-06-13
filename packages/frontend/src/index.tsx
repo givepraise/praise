@@ -14,6 +14,7 @@ import {
   RainbowKitProvider,
   lightTheme,
   Theme as RainbowTheme,
+  darkTheme,
 } from '@rainbow-me/rainbowkit';
 import { merge } from 'lodash';
 import { configureChains, createClient, WagmiConfig, chain } from 'wagmi';
@@ -140,12 +141,20 @@ const ErrorBoundary = ({ children }: ErrorBoundaryProps): JSX.Element => {
   );
 };
 
+const getRainbowTheme = (): RainbowTheme => {
+  const currentMode = localStorage.getItem('theme');
+  if (currentMode === 'Dark') {
+    return darkTheme();
+  }
+  return customRainbowkitTheme;
+};
+
 ReactDOM.render(
   <React.StrictMode>
     <RecoilRoot>
       <RecoilNexus />
       <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains} theme={customRainbowkitTheme}>
+        <RainbowKitProvider chains={chains} theme={getRainbowTheme()}>
           <Router>
             <main>
               <DelayedLoading>
