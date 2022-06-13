@@ -2,7 +2,6 @@ import { eventLogsQueryParameters, useAllEventLogs } from '@/model/eventlogs';
 import EventLog from '@/components/eventlog/EventLog';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import EventLogsActions from '@/pages/EventLogs/components/EventLogsActions';
 import { useRecoilState } from 'recoil';
 
 const EventLogsTable = (): JSX.Element | null => {
@@ -17,9 +16,7 @@ const EventLogsTable = (): JSX.Element | null => {
   };
 
   return (
-    <div className="praise-box">
-      <EventLogsActions />
-
+    <div className="w-full">
       <div className="w-full space-y-4">
         {data.docs.map((eventlog, i) => (
           <EventLog
