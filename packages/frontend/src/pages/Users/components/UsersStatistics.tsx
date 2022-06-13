@@ -14,6 +14,8 @@ import type { UserDto } from 'api/dist/user/types';
 interface DownloadUserDto extends Omit<UserDto, 'accounts'> {
   discordName: string | undefined;
   discordAccountId: string | undefined;
+  telegramName: string | undefined;
+  telegramAccountId: string | undefined;
   accounts: string[] | undefined;
 }
 
@@ -32,10 +34,15 @@ const UsersStatistics = (): JSX.Element => {
       const discordAccount = user.accounts?.find(
         (account) => account.platform === 'DISCORD'
       );
+      const telegramAccount = user.accounts?.find(
+        (account) => account.platform === 'DISCORD'
+      );
       return {
         ...user,
         discordAccountId: discordAccount?.accountId,
         discordName: discordAccount?.name,
+        telegramAccountId: telegramAccount?.accountId,
+        telegramName: telegramAccount?.name,
         accounts: user.accounts?.map((account) => account.platform),
       };
     });
