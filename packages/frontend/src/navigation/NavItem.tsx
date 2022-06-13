@@ -15,8 +15,8 @@ const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
       className={(isActive): string =>
         `relative px-4 py-1 cursor-pointer no-underline flex items-center ${
           isActive
-            ? ' bg-gray-200 dark:bg-slate-400'
-            : ' hover:bg-gray-100 dark:hover:bg-slate-300'
+            ? ' bg-gray-200 dark:bg-slate-700'
+            : ' hover:bg-gray-100 dark:hover:bg-slate-800'
         }`
       }
       id={to.substring(1) + '-nav-button'}
