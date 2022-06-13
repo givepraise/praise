@@ -11,7 +11,7 @@
 }
 
 .praise-button-round {
-  @apply flex items-center justify-center rounded-full hover:bg-gray-300 w-7 h-7;
+  @apply flex items-center justify-center rounded-full hover:bg-gray-300 w-7 h-7 dark:text-white dark:hover:bg-slate-800;
 }
 /*
 .praise-text-input {
