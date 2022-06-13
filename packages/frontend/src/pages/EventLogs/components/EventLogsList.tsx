@@ -16,12 +16,12 @@ const EventLogsTable = (): JSX.Element | null => {
   if (data.docs.length === 0) return null;
 
   return (
-    <div className="praise-box">
-      <div className="w-full space-y-4">
+    <div className="praise-box px-0">
+      <div className="w-full">
         {data.docs.map((eventlog, i) => (
           <EventLog
             eventlog={eventlog}
-            className={`${i % 2 === 0 && 'bg-gray-100 dark:bg-slate-500'} px-2`}
+            className={`${i % 2 === 0 && 'bg-gray-100 dark:bg-slate-500'} px-7`}
             key={i}
           />
         ))}
@@ -37,7 +37,7 @@ const EventLogsTable = (): JSX.Element | null => {
                 <FontAwesomeIcon
                   icon={faArrowLeft}
                   size="1x"
-                  className="mr-2"
+                  className="mr-2 pl-5"
                 />
                 Previous
               </a>
@@ -54,7 +54,7 @@ const EventLogsTable = (): JSX.Element | null => {
                 <FontAwesomeIcon
                   icon={faArrowRight}
                   size="1x"
-                  className="ml-2"
+                  className="ml-2 pr-5"
                 />
               </a>
             )}

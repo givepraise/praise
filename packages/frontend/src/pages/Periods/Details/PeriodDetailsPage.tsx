@@ -107,7 +107,7 @@ const PeriodDetailPage = (): JSX.Element | null => {
           </div>
         </div>
 
-        <div className="w-full praise-box">
+        <div className="w-full praise-box px-0">
           <Suspense fallback="Loading…">
             <Switch>
               <Route path={`${path}/receivers`}>
