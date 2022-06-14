@@ -47,8 +47,8 @@ const sendDMs = async (
     successful.length === 0
       ? failedMsg
       : failed.length === 0
-        ? successMsg
-        : successMsg + '\n' + failedMsg;
+      ? successMsg
+      : successMsg + '\n' + failedMsg;
   await interaction.editReply({
     content: content,
     components: [],

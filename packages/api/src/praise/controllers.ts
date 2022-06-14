@@ -182,7 +182,7 @@ export const quantify = async (
     quantification.duplicatePraise = undefined;
 
     eventLogMessage = `Gave a score of ${
-      quantification.score as number
+      quantification.score
     } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
   }
 

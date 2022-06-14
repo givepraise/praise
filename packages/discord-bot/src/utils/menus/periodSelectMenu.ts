@@ -2,9 +2,7 @@ import { MessageSelectMenu } from 'discord.js';
 import { PeriodDocument } from 'shared/dist/period/types';
 
 export const periodSelectMenu = (
-  periods: (PeriodDocument & {
-    _id: any;
-  })[]
+  periods: PeriodDocument[]
 ): MessageSelectMenu => {
   const periodMenu = new MessageSelectMenu()
     .setCustomId('period-menu')

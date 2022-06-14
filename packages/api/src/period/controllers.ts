@@ -24,8 +24,7 @@ import {
   QueryInputParsedQs,
   TypedRequestQuery,
 } from '@shared/types';
-import { PaginatedResponseBody } from 'shared/dist/query/types';
-import { QueryInput } from 'shared/dist/query/types';
+import { PaginatedResponseBody, QueryInput } from 'shared/dist/query/types';
 import { UserRole } from 'shared/dist/user/types';
 import { UserAccountDocument } from 'shared/dist/useraccount/types';
 import { getQueryInput, getQuerySort } from '@shared/functions';

@@ -1,6 +1,10 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount, UserAccountDocument } from 'shared/dist/useraccount/types';
+import {
+  UserAccount,
+  UserAccountDocument,
+} from 'shared/dist/useraccount/types';
 import { GuildMember } from 'discord.js';
+
 export const getUserAccount = async (
   member: GuildMember
 ): Promise<UserAccountDocument> => {
