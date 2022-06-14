@@ -1,6 +1,6 @@
 import { makeApiAuthClient } from '@/utils/api';
-import { EventLogDto } from 'shared/dist/eventlog/types';
-import { PaginatedResponseBody } from 'shared/dist/query/types';
+import { EventLogDto } from 'types/dist/eventlog/types';
+import { PaginatedResponseBody } from 'types/dist/query/types';
 import { useEffect, useState } from 'react';
 
 export type AllEventLogsQueryParameters = {

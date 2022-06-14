@@ -1,8 +1,8 @@
 import { SettingsModel } from '@settings/entities';
-import { SettingDocument, SettingGroup } from 'shared/dist/settings/types';
-import { PeriodDocument } from 'shared/dist/period/types';
+import { SettingDocument, SettingGroup } from 'types/dist/settings/types';
+import { PeriodDocument } from 'types/dist/period/types';
 import { PeriodSettingsModel } from './entities';
-import { PeriodSetting } from 'shared/dist/periodsettings/types';
+import { PeriodSetting } from 'types/dist/periodsettings/types';
 
 export const insertNewPeriodSettings = async (
   period: PeriodDocument

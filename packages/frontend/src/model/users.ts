@@ -1,5 +1,5 @@
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
-import { UserDto, UserRole } from 'shared/dist/user/types';
+import { UserDto, UserRole } from 'types/dist/user/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {

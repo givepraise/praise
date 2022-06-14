@@ -3,7 +3,7 @@ import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import {
   PraiseDocument,
   QuantificationDocument,
-} from 'shared/dist/praise/types';
+} from 'types/dist/praise/types';
 
 export const quantificationSchema = new mongoose.Schema(
   {

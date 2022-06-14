@@ -1,4 +1,4 @@
-import { shortenEthAddress } from 'shared/dist/user/utils';
+import { shortenEthAddress } from 'types/dist/user/utils';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import { useAccount } from 'wagmi';
 import { faAngleDown, faAngleRight } from '@fortawesome/free-solid-svg-icons';

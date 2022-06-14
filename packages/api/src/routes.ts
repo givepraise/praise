@@ -7,7 +7,7 @@ import { adminPeriodRouter, periodRouter } from '@period/routes';
 import { praiseRouter } from '@praise/routes';
 import { settingsAdminRouter, settingsRouter } from '@settings/routes';
 import { adminUserRouter, userRouter } from '@user/routes';
-import { UserRole } from 'shared/dist/user/types';
+import { UserRole } from 'types/dist/user/types';
 import { userAccountRouter } from '@useraccount/routes';
 import {
   periodsettingsRouter,

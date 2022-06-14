@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import { ErrorCodesInterface } from 'shared/dist/error/types';
+import { ErrorCodesInterface } from 'types/dist/error/types';
 
 export const {
   UNAUTHORIZED,

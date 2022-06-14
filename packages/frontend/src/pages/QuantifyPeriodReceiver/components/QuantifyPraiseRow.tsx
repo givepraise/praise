@@ -1,4 +1,4 @@
-import { PraiseDto } from 'shared/dist/praise/types';
+import { PraiseDto } from 'types/dist/praise/types';
 import Notice from '@/components/Notice';
 import Praise from '@/components/praise/Praise';
 import { ActiveUserId } from '@/model/auth';

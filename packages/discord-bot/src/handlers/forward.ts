@@ -1,11 +1,11 @@
 import { PraiseModel } from 'api/dist/praise/entities';
 import { Message, GuildMember, Util } from 'discord.js';
 import { UserModel } from 'api/dist/user/entities';
-import { EventLogTypeKey } from 'shared/dist/eventlog/types';
+import { EventLogTypeKey } from 'types/dist/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
 import logger from 'jet-logger';
 import { getUserAccount } from '../utils/getUserAccount';
-import { UserRole } from 'shared/dist/user/types';
+import { UserRole } from 'types/dist/user/types';
 import {
   dmError,
   invalidReceiverError,

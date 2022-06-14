@@ -1,5 +1,5 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount } from 'shared/dist/useraccount/types';
+import { UserAccount } from 'types/dist/useraccount/types';
 import { UserModel } from 'api/dist/user/entities';
 import {
   continueButton,
@@ -7,7 +7,7 @@ import {
 } from '../utils/buttons/confirmationButtons';
 import { dmTargetMenu } from '../utils/menus/dmTargetmenu';
 import { Message, SelectMenuInteraction, MessageActionRow } from 'discord.js';
-import { UserRole } from 'shared/dist/user/types';
+import { UserRole } from 'types/dist/user/types';
 import { selectTargets } from '../utils/dmTargets';
 import { PeriodModel } from 'api/dist/period/entities';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
@@ -78,9 +78,8 @@ export const announcementHandler: CommandHandler = async (interaction) => {
           }
           selectedPeriod = '';
           await interaction.editReply({
-            content: `Preview announcement before continuing:\n---\n${
-              message || ''
-            }\n---`,
+            content: `Preview announcement before continuing:\n---\n${message || ''
+              }\n---`,
             components: [
               new MessageActionRow().addComponents([
                 continueButton,
@@ -94,9 +93,8 @@ export const announcementHandler: CommandHandler = async (interaction) => {
           if (!click.isSelectMenu()) return;
           selectedPeriod = click.values[0];
           await interaction.editReply({
-            content: `Preview announcement before continuing:\n---\n${
-              message || ''
-            }\n---`,
+            content: `Preview announcement before continuing:\n---\n${message || ''
+              }\n---`,
             components: [
               new MessageActionRow().addComponents([
                 continueButton,

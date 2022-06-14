@@ -1,9 +1,9 @@
-import { UserDto } from 'shared/dist/user/types';
+import { UserDto } from 'types/dist/user/types';
 import LoaderSpinner from '@/components/LoaderSpinner';
 import { AllPraiseList } from '@/model/praise';
 import { faSadTear } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from 'shared/dist/praise/types';
+import { PraiseDto } from 'types/dist/praise/types';
 import React, { useEffect, useState } from 'react';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';

@@ -1,8 +1,8 @@
 import { PeriodModel } from '@period/entities';
-import { PeriodDocument } from 'shared/dist/period/types';
+import { PeriodDocument } from 'types/dist/period/types';
 import { getPreviousPeriodEndDate } from '@period/utils';
 import { PraiseModel } from '@praise/entities';
-import { EventLogTypeKey } from 'shared/dist/eventlog/types';
+import { EventLogTypeKey } from 'types/dist/eventlog/types';
 import { logEvent } from '@eventlog/utils';
 import { connectDatabase } from './core';
 import yargs from 'yargs';

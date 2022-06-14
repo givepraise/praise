@@ -1,4 +1,4 @@
-import { SettingDocument, SettingDto } from 'shared/dist/settings/types';
+import { SettingDocument, SettingDto } from 'types/dist/settings/types';
 
 const settingDocumentToDto = (setting: SettingDocument): SettingDto => {
   const { _id, key, value, valueRealized, type, label, description, group } =

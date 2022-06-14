@@ -52,7 +52,7 @@
     "mongoose": "^6.1.2",
     "mongoose-paginate-ts": "^1.2.0",
     "morgan": "^1.10.0",
-    "shared": "workspace:^",
+    "types": "workspace:^",
     "umzug": "^3.0.0"
   },
   "devDependencies": {

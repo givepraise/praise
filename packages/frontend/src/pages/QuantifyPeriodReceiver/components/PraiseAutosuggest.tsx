@@ -8,7 +8,7 @@ import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { classNames } from '@/utils/index';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from 'shared/dist/praise/types';
+import { PraiseDto } from 'types/dist/praise/types';
 import { useCombobox } from 'downshift';
 import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
@@ -50,7 +50,7 @@ const PraiseAutosuggest = ({
     (p) =>
       p &&
       p.quantifications.findIndex((quant) => quant.quantifier === userId) >=
-        0 &&
+      0 &&
       p.receiver._id === receiverId &&
       p._id !== praise._id
   );

@@ -1,6 +1,6 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount } from 'shared/dist/useraccount/types';
-import { EventLogTypeKey } from 'shared/dist/eventlog/types';
+import { UserAccount } from 'types/dist/useraccount/types';
+import { EventLogTypeKey } from 'types/dist/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
 import randomstring from 'randomstring';
 import { CommandHandler } from 'src/interfaces/CommandHandler';
@@ -55,8 +55,7 @@ export const activationHandler: CommandHandler = async (interaction) => {
     hash: string,
     token: string
   ): string =>
-    `${
-      process.env.FRONTEND_URL as string
+    `${process.env.FRONTEND_URL as string
     }/activate?accountId=${accountId}&accountName=${encodeURIComponent(
       `${uname}#${hash}`
     )}&platform=DISCORD&token=${token}`;

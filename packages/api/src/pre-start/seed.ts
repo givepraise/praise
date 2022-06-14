@@ -2,17 +2,17 @@ import { PeriodModel } from '@period/entities';
 import { PraiseModel, QuantificationModel } from '@praise/entities';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
-import { UserAccountDocument } from 'shared/dist/useraccount/types';
+import { UserAccountDocument } from 'types/dist/useraccount/types';
 import {
   PraiseDocument,
   QuantificationDocument,
-} from 'shared/dist/praise/types';
-import { PeriodDocument } from 'shared/dist/period/types';
+} from 'types/dist/praise/types';
+import { PeriodDocument } from 'types/dist/period/types';
 import { insertNewPeriodSettings } from '@periodsettings/utils';
 import faker from 'faker';
 import logger from 'jet-logger';
-import { UserDocument } from 'shared/dist/user/types';
-import { EventLogDocument } from 'shared/dist/eventlog/types';
+import { UserDocument } from 'types/dist/user/types';
+import { EventLogDocument } from 'types/dist/eventlog/types';
 import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';
 
 const PERIOD_NUMBER = 3;

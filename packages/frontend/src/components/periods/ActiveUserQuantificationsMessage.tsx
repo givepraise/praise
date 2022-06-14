@@ -1,5 +1,5 @@
 import { AllActiveUserQuantificationPeriods } from '@/model/periods';
-import { PeriodDetailsDto } from 'shared/dist/period/types';
+import { PeriodDetailsDto } from 'types/dist/period/types';
 import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 

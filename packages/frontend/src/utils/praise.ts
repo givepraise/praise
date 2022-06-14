@@ -1,4 +1,4 @@
-import { PraiseDto, QuantificationDto } from 'shared/dist/praise/types';
+import { PraiseDto, QuantificationDto } from 'types/dist/praise/types';
 
 export const findPraiseQuantification = (
   praise: PraiseDto,

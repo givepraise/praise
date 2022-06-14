@@ -8,8 +8,8 @@ import { StringSetting, Setting } from '@/model/settings';
 import { Form } from 'react-final-form';
 import { find } from 'lodash';
 import SubmitButton from '../form/SubmitButton';
-import { PeriodSettingDto } from 'shared/dist/periodsettings/types';
-import { SettingDto } from 'shared/dist/settings/types';
+import { PeriodSettingDto } from 'types/dist/periodsettings/types';
+import { SettingDto } from 'types/dist/settings/types';
 
 interface SettingsFormProps {
   settings: SettingDto[] | PeriodSettingDto[] | undefined;

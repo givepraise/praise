@@ -1,4 +1,4 @@
-import { PraiseDto } from 'shared/dist/praise/types';
+import { PraiseDto } from 'types/dist/praise/types';
 import getMarkdownText from '@/components/MarkdownText';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';

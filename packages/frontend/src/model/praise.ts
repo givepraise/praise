@@ -1,5 +1,5 @@
-import { PraiseDetailsDto, PraiseDto } from 'shared/dist/praise/types';
-import { PaginatedResponseBody } from 'shared/dist/query/types';
+import { PraiseDetailsDto, PraiseDto } from 'types/dist/praise/types';
+import { PaginatedResponseBody } from 'types/dist/query/types';
 import { AxiosResponse } from 'axios';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -49,10 +49,10 @@ export const SinglePraiseQuery = selectorFamily({
   key: 'SinglePraiseQuery',
   get:
     (params: SinglePraiseQueryParams) =>
-    ({ get }): AxiosResponse<unknown> => {
-      const { praiseId, refreshKey } = params;
-      return get(ApiAuthGet({ url: `/praise/${praiseId}`, refreshKey }));
-    },
+      ({ get }): AxiosResponse<unknown> => {
+        const { praiseId, refreshKey } = params;
+        return get(ApiAuthGet({ url: `/praise/${praiseId}`, refreshKey }));
+      },
 });
 
 /**
@@ -95,16 +95,16 @@ export const AllPraiseList = selectorFamily({
   key: 'AllPraiseList',
   get:
     (listKey: string) =>
-    ({ get }): PraiseDto[] | undefined => {
-      const praiseIdList = get(PraiseIdList(listKey));
-      const allPraiseList: PraiseDto[] = [];
-      if (!praiseIdList) return undefined;
-      for (const praiseId of praiseIdList) {
-        const praise = get(SinglePraise(praiseId));
-        if (praise) allPraiseList.push(praise);
-      }
-      return allPraiseList;
-    },
+      ({ get }): PraiseDto[] | undefined => {
+        const praiseIdList = get(PraiseIdList(listKey));
+        const allPraiseList: PraiseDto[] = [];
+        if (!praiseIdList) return undefined;
+        for (const praiseId of praiseIdList) {
+          const praise = get(SinglePraise(praiseId));
+          if (praise) allPraiseList.push(praise);
+        }
+        return allPraiseList;
+      },
 });
 
 /**
@@ -140,19 +140,19 @@ export const AllPraiseQuery = selectorFamily<
   key: 'AllPraiseQuery',
   get:
     (query: AllPraiseQueryParameters) =>
-    ({ get }): AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined => {
-      if (!query) throw new Error('Invalid query');
-      get(PraiseRequestId);
-      const qs = Object.keys(query)
-        .map((key) => `${key}=${query[key]}`)
-        .join('&');
-      const response = get(
-        ApiAuthGet({ url: `/praise/all${qs ? `?${qs}` : ''}` })
-      );
-      if (isResponseOk(response)) {
-        return response;
-      }
-    },
+      ({ get }): AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined => {
+        if (!query) throw new Error('Invalid query');
+        get(PraiseRequestId);
+        const qs = Object.keys(query)
+          .map((key) => `${key}=${query[key]}`)
+          .join('&');
+        const response = get(
+          ApiAuthGet({ url: `/praise/all${qs ? `?${qs}` : ''}` })
+        );
+        if (isResponseOk(response)) {
+          return response;
+        }
+      },
 });
 
 /**

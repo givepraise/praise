@@ -4,11 +4,11 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
-import { PaginatedResponseBody } from 'shared/dist/query/types';
+import { PaginatedResponseBody } from 'types/dist/query/types';
 import { BadRequestError } from '@error/errors';
 import { StatusCodes } from 'http-status-codes';
 import { EventLogModel } from './entities';
-import { EventLogDto } from 'shared/dist/eventlog/types';
+import { EventLogDto } from 'types/dist/eventlog/types';
 import { eventLogListTransformer } from './transformers';
 
 /**

@@ -11,8 +11,8 @@ import {
   TypedResponse,
 } from '@shared/types';
 import { UserModel } from '@user/entities';
-import { UserDocument } from 'shared/dist/user/types';
-import { EventLogTypeKey } from 'shared/dist/eventlog/types';
+import { UserDocument } from 'types/dist/user/types';
+import { EventLogTypeKey } from 'types/dist/eventlog/types';
 import { logEvent } from '@eventlog/utils';
 import { ethers } from 'ethers';
 import { JwtService } from './JwtService';
@@ -23,7 +23,7 @@ import {
   NonceResponse,
   RefreshRequestInput,
   TokenSet,
-} from 'shared/dist/auth/types';
+} from 'types/dist/auth/types';
 import { generateLoginMessage } from './utils';
 
 const jwtService = new JwtService();
@@ -76,7 +76,7 @@ export const auth = async (
   });
 };
 
-interface NonceRequestInputParsedQs extends Query, NonceRequestInput {}
+interface NonceRequestInputParsedQs extends Query, NonceRequestInput { }
 
 /**
  * Description

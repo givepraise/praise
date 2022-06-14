@@ -1,5 +1,5 @@
 import { PeriodSettingsModel } from '@periodsettings/entities';
-import { SettingGroup } from 'shared/dist/settings/types';
+import { SettingGroup } from 'types/dist/settings/types';
 
 const up = async (): Promise<void> => {
   await PeriodSettingsModel.updateMany(

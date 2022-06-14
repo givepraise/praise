@@ -15,8 +15,8 @@
     "jet-logger": "^1.1.5",
     "mongoose": "^6.2.0",
     "randomstring": "^1.2.2",
-    "shared": "workspace:^",
-    "ts-node": "^10.5.0"
+    "ts-node": "^10.5.0",
+    "types": "workspace:^"
   },
   "devDependencies": {
     "@types/randomstring": "^1.1.8",

@@ -5,7 +5,7 @@ import { CreatePeriodApiResponse, useCreatePeriod } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
 import { DATE_FORMAT } from '@/utils/date';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
-import { PeriodCreateInput } from 'shared/dist/period/types';
+import { PeriodCreateInput } from 'types/dist/period/types';
 import isMatch from 'date-fns/isMatch';
 import { ValidationErrors } from 'final-form';
 import React from 'react';

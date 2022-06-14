@@ -14,8 +14,8 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
-import { QueryInput, PaginatedResponseBody } from 'shared/dist/query/types';
-import { EventLogTypeKey } from 'shared/dist/eventlog/types';
+import { QueryInput, PaginatedResponseBody } from 'types/dist/query/types';
+import { EventLogTypeKey } from 'types/dist/eventlog/types';
 import { logEvent } from '@eventlog/utils';
 import { Request } from 'express';
 import { Types } from 'mongoose';
@@ -30,10 +30,10 @@ import {
   PraiseDocument,
   PraiseDto,
   QuantificationCreateUpdateInput,
-} from 'shared/dist/praise/types';
+} from 'types/dist/praise/types';
 import { praiseWithScore, getPraisePeriod } from './utils/core';
 
-interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
+interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput { }
 
 /**
  * //TODO add descriptiom
@@ -181,9 +181,8 @@ export const quantify = async (
     quantification.dismissed = false;
     quantification.duplicatePraise = undefined;
 
-    eventLogMessage = `Gave a score of ${
-      quantification.score
-    } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
+    eventLogMessage = `Gave a score of ${quantification.score
+      } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
   }
 
   await praise.save();

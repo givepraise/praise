@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import logger from 'jet-logger';
 import mongoose from 'mongoose';
 import { errorCodes } from './constants';
-import { AppError } from 'shared/dist/error/types';
+import { AppError } from 'types/dist/error/types';
 import { isAppError, isValidationError } from './utils';
 
 // const handleDuplicateKeyError = (err: any, res: Response): void => {

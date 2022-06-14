@@ -2,8 +2,8 @@ import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
 import { JWT } from '../utils/jwt';
 import { recoilPersist } from 'recoil-persist';
-import { TokenSet } from 'shared/dist/auth/types';
-import { UserRole } from 'shared/dist/user/types';
+import { TokenSet } from 'types/dist/auth/types';
+import { UserRole } from 'types/dist/user/types';
 import { SingleUser } from './users';
 
 const { persistAtom } = recoilPersist();
@@ -78,9 +78,9 @@ export const HasRole = selectorFamily({
   key: 'HasRole',
   get:
     (role: string) =>
-    ({ get }): boolean => {
-      const userRoles = get(ActiveUserRoles);
+      ({ get }): boolean => {
+        const userRoles = get(ActiveUserRoles);
 
-      return userRoles.includes(role);
-    },
+        return userRoles.includes(role);
+      },
 });

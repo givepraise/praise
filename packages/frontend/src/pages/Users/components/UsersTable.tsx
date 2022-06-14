@@ -6,7 +6,7 @@ import {
 } from '@/model/users';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { UserDto, UserRole } from 'shared/dist/user/types';
+import { UserDto, UserRole } from 'types/dist/user/types';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import UsersTableRow from './UsersTableRow';

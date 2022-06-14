@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { loginUser } from './utils';
 import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';
 import { logEvent } from '@eventlog/utils';
-import { EventLogTypeKey } from 'shared/dist/eventlog/types';
+import { EventLogTypeKey } from 'types/dist/eventlog/types';
 
 describe('GET /api/eventlogs/all', () => {
   beforeEach(async () => {

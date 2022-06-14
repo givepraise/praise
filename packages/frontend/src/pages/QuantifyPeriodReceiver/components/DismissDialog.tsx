@@ -1,7 +1,7 @@
 import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ScrollableDialog from '@/components/ScrollableDialog';
-import { PraiseDto } from 'shared/dist/praise/types';
+import { PraiseDto } from 'types/dist/praise/types';
 import MarkDismissedButton from './MarkDismissedButton';
 
 const getPraisesString = (praises: PraiseDto[]): string =>

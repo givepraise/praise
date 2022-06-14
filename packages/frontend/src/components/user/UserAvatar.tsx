@@ -1,7 +1,7 @@
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { UserDto } from 'shared/dist/user/types';
-import { UserAccountDto } from 'shared/dist/useraccount/types';
+import { UserDto } from 'types/dist/user/types';
+import { UserAccountDto } from 'types/dist/useraccount/types';
 import React from 'react';
 
 const discordAvatarUrl = (account: UserAccountDto): string => {

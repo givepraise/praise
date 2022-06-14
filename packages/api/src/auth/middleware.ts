@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { ForbiddenError, UnauthorizedError } from '@error/errors';
 import { UserModel } from '@user/entities';
-import { UserRole } from 'shared/dist/user/types';
+import { UserRole } from 'types/dist/user/types';
 import { NextFunction, Request, Response } from 'express';
 import { extractAccessTokenFromRequest } from './utils';
 import { JwtService } from './JwtService';

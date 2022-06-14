@@ -3,8 +3,8 @@ import {
   AuthResponse,
   NonceResponse,
   TokenSet,
-} from 'shared/dist/auth/types';
-import { ActivateRequestBody } from 'shared/dist/activate/types';
+} from 'types/dist/auth/types';
+import { ActivateRequestBody } from 'types/dist/activate/types';
 import { makeApiClient } from './api';
 import { getRecoil, setRecoil } from 'recoil-nexus';
 import { ActiveTokenSet, RefreshToken } from '@/model/auth';
