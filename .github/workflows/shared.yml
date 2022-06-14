@@ -1,4 +1,4 @@
-name: Api
+name: Shared
 on:
   pull_request:
     paths:
@@ -6,7 +6,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    name: Build, Lint & Test
+    name: Build & Lint
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
