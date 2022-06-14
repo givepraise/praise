@@ -7,7 +7,7 @@ import {
 import { Query } from '@shared/types';
 import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
 import { PeriodSettingDto } from '@periodsettings/types';
-import mongoose, { Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export enum PeriodStatusType {
   OPEN = 'OPEN',
@@ -23,7 +23,7 @@ export interface Period {
   updatedAt: Date;
 }
 
-export interface PeriodDocument extends Period, mongoose.Document {
+export interface PeriodDocument extends Period, Document {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   $__: any;
 }

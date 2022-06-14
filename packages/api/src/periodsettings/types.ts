@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import { Document } from 'mongoose';
 
 export interface PeriodSetting {
   key: string;
@@ -10,9 +10,7 @@ export interface PeriodSetting {
   period: string;
 }
 
-export interface PeriodSettingDocument
-  extends PeriodSetting,
-    mongoose.Document {}
+export interface PeriodSettingDocument extends PeriodSetting, Document {}
 
 export interface PeriodSettingDto {
   _id: string;

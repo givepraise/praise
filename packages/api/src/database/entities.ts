@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { MigrationDocument } from './types';
 
 /**
  * Database schema for Migration is *cloned* from the actual documents produced by umzug
  */
-const migrationSchema = new mongoose.Schema<MigrationDocument>(
+const migrationSchema = new Schema<MigrationDocument>(
   {
     migrationName: { type: String, required: true },
   },
@@ -13,7 +13,7 @@ const migrationSchema = new mongoose.Schema<MigrationDocument>(
   }
 );
 
-const MigrationModel = mongoose.model<MigrationDocument>(
+const MigrationModel = model<MigrationDocument>(
   'Migration',
   migrationSchema
 );

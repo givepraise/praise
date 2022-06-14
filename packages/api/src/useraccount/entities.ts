@@ -1,11 +1,11 @@
-import mongoose from 'mongoose';
+import { Schema, model} from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { UserAccountDocument } from './types';
 
-export const userAccountSchema = new mongoose.Schema(
+export const userAccountSchema = new Schema(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
       default: null,
     },
@@ -26,7 +26,7 @@ export const userAccountSchema = new mongoose.Schema(
 
 userAccountSchema.plugin(mongoosePagination);
 
-export const UserAccountModel = mongoose.model<
+export const UserAccountModel = model<
   UserAccountDocument,
   Pagination<UserAccountDocument>
 >('UserAccount', userAccountSchema);
