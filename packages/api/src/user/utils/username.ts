@@ -1,4 +1,4 @@
-import { shortenEthAddress } from 'shared/dist/user/utils';
+import { shortenEthAddress } from './core';
 import { UserAccountModel } from '@useraccount/entities';
 import { UserDocument } from 'shared/dist/user/types';
 

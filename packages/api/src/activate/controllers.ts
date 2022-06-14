@@ -12,7 +12,7 @@ import { UserAccountModel } from '@useraccount/entities';
 import { ethers } from 'ethers';
 import { Response } from 'express';
 import { ActivateRequestBody } from 'shared/dist/activate/types';
-import { generateActivateMessage } from 'shared/dist/activate/utils';
+import { generateActivateMessage } from './utils';
 
 const activate = async (
   req: TypedRequestBody<ActivateRequestBody>,

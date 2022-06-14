@@ -1,4 +1,4 @@
-import { generateLoginMessage } from 'shared/dist/auth/utils';
+import { generateLoginMessage } from 'api/dist/auth/utils';
 import { requestApiAuth, requestNonce } from '@/utils/auth';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
