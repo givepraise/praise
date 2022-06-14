@@ -1,12 +1,12 @@
-name: frontend
+name: Api
 on:
   pull_request:
     paths:
-      - 'packages/frontend/**'
+      - 'packages/shared/**'
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    name: Build & Lint
+    name: Build, Lint & Test
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -15,5 +15,4 @@ jobs:
           cache: 'yarn'
       - run: yarn install
       - run: yarn workspace shared build
-      - run: yarn workspace frontend lint
-      - run: yarn workspace frontend build
+      - run: yarn workspace shared lint
