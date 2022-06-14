@@ -50,7 +50,7 @@ const PraiseAutosuggest = ({
     (p) =>
       p &&
       p.quantifications.findIndex((quant) => quant.quantifier === userId) >=
-      0 &&
+        0 &&
       p.receiver._id === receiverId &&
       p._id !== praise._id
   );
