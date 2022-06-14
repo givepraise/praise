@@ -77,7 +77,8 @@ const MultiselectInput = ({
                       <input
                         type="checkbox"
                         className="mr-4 text-xs w-4 h-4 text-black focus:ring-0"
-                        defaultChecked={selected}
+                        checked={selected}
+                        onChange={(): void => {}}
                       />
                     </span>
                   </>

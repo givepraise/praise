@@ -4,56 +4,48 @@ import { EventLogDto, EventLogTypeDto } from 'api/dist/eventlog/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
-import { atom, selector } from 'recoil';
+import { selectorFamily } from 'recoil';
 
 export type AllEventLogsQueryParameters = {
-  sortColumn?: string;
-  sortType?: string;
-  limit?: number;
-  page?: number;
-  type?: string;
-  search?: string;
+  sortColumn: string;
+  sortType: string;
+  limit: number;
+  page: number;
+  type: string;
+  search: string;
 };
-
-export const eventLogsQueryParameters = atom({
-  key: 'QueryParameters',
-  default: {
-    sortColumn: 'createdAt',
-    sortType: 'desc',
-    limit: 15,
-    page: 1,
-    type: '',
-    search: '',
-  },
-});
 
 /**
  * Query selector that fetches all praise periods from the API.
  */
-export const AllEventLogsQuery = selector({
+export const AllEventLogsQuery = selectorFamily({
   key: 'AllEventLogsQuery',
-  get: async ({ get }): Promise<AxiosResponse<unknown>> => {
-    const queryParams = get(eventLogsQueryParameters);
+  get:
+    (queryParams: AllEventLogsQueryParameters) =>
+    async ({ get }): Promise<AxiosResponse<unknown>> => {
+      const apiAuthClient = makeApiAuthClient();
+      const response = await apiAuthClient.get('/eventlogs/all', {
+        params: queryParams,
+      });
 
-    const apiAuthClient = makeApiAuthClient();
-    const response = await apiAuthClient.get('/eventlogs/all', {
-      params: queryParams,
-    });
-
-    return response;
-  },
+      return response;
+    },
 });
 
-export const useAllEventLogs = (): {
-  data: PaginatedResponseBody<EventLogDto>;
+export const useAllEventLogs = (
+  queryParameters: AllEventLogsQueryParameters
+): {
+  logsData: PaginatedResponseBody<EventLogDto>;
   loading: boolean;
 } => {
-  const allEventLogsQueryResponse = useAuthApiQuery(AllEventLogsQuery);
+  const allEventLogsQueryResponse = useAuthApiQuery(
+    AllEventLogsQuery(queryParameters)
+  );
 
   const paginatedResponse =
     allEventLogsQueryResponse.data as PaginatedResponseBody<EventLogDto>;
 
-  return { data: paginatedResponse, loading: false };
+  return { logsData: paginatedResponse, loading: false };
 };
 
 export const useAllEventLogTypes = (): {

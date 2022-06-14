@@ -36,12 +36,12 @@ const SelectInput = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto bg-white py-1 border border-gray-400">
+          <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto bg-white py-1 border border-gray-400 text-xs">
             {options.map((s, sIdx) => (
               <Listbox.Option
                 key={sIdx}
                 className={({ active }): string =>
-                  `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                  `relative cursor-default select-none py-2 pl-4 pr-4 ${
                     active ? 'bg-gray-100 text-gray-900' : 'text-gray-600'
                   }`
                 }
