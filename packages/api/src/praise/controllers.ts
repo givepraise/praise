@@ -14,26 +14,28 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
-import { QueryInput, PaginatedResponseBody } from 'types/dist/query/types';
-import { EventLogTypeKey } from 'types/dist/eventlog/types';
-import { logEvent } from '@eventlog/utils';
-import { Request } from 'express';
-import { Types } from 'mongoose';
-import { PraiseModel } from './entities';
+import { QueryInput, PaginatedResponseBody } from 'types/dist/query';
+import { EventLogTypeKey } from 'types/dist/eventlog';
 import {
-  praiseDocumentListTransformer,
-  praiseDocumentTransformer,
-} from './transformers';
-import {
+  Quantification,
   PraiseAllInput,
   PraiseDetailsDto,
   PraiseDocument,
   PraiseDto,
   QuantificationCreateUpdateInput,
-} from 'types/dist/praise/types';
+} from 'types/dist/praise';
+import { logEvent } from '@eventlog/utils';
+import { Request } from 'express';
+import { Types } from 'mongoose';
+import { PaginationModel } from 'mongoose-paginate-ts';
+import { PraiseModel } from './entities';
+import {
+  praiseDocumentListTransformer,
+  praiseDocumentTransformer,
+} from './transformers';
 import { praiseWithScore, getPraisePeriod } from './utils/core';
 
-interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput { }
+interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
 /**
  * //TODO add descriptiom
@@ -45,12 +47,13 @@ export const all = async (
   const query = getPraiseAllInput(req.query);
   const queryInput = getQueryInput(req.query);
 
-  const praisePagination = await PraiseModel.paginate({
-    query,
-    ...queryInput,
-    sort: getQuerySort(req.query),
-    populate: 'giver receiver forwarder',
-  });
+  const praisePagination: PaginationModel<PraiseDocument> | undefined =
+    await PraiseModel.paginate({
+      query,
+      ...queryInput,
+      sort: getQuerySort(req.query),
+      populate: 'giver receiver forwarder',
+    });
 
   if (!praisePagination)
     throw new BadRequestError('Failed to paginate praise data');
@@ -107,7 +110,7 @@ export const quantify = async (
     throw new InternalServerError('Current user not found.');
   }
 
-  const quantification = praise.quantifications.find((q) =>
+  const quantification = praise.quantifications.find((q: Quantification) =>
     q.quantifier.equals(res.locals.currentUser._id)
   );
 
@@ -181,8 +184,9 @@ export const quantify = async (
     quantification.dismissed = false;
     quantification.duplicatePraise = undefined;
 
-    eventLogMessage = `Gave a score of ${quantification.score
-      } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
+    eventLogMessage = `Gave a score of ${
+      quantification.score
+    } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
   }
 
   await praise.save();

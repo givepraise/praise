@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { SettingDocument, SettingGroup } from 'types/dist/settings/types';
+import { SettingDocument, SettingGroup } from 'types/dist/settings';
 import { fieldTypeValidator } from './validators';
 
 export const genericSettingsSchema = {

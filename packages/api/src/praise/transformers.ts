@@ -4,7 +4,7 @@ import {
   PraiseDto,
   Quantification,
   QuantificationDto,
-} from 'types/dist/praise/types';
+} from 'types/dist/praise';
 import {
   calculateQuantificationScore,
   calculateQuantificationsCompositeScore,

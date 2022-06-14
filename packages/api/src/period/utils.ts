@@ -18,7 +18,7 @@ import {
   PeriodDetailsReceiver,
   PeriodDateRange,
   PeriodStatusType,
-} from 'types/dist/period/types';
+} from 'types/dist/period';
 import { isQuantificationCompleted } from '@praise/utils/core';
 
 // Returns previous period end date or 1970-01-01 if no previous period

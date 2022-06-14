@@ -1,4 +1,4 @@
-import { QueryInput } from '../query/types';
+import { QueryInput } from './query';
 
 export interface AuthRequestInput {
   ethereumAddress: string;

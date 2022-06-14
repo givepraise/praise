@@ -1,6 +1,6 @@
-import { shortenEthAddress } from 'types/dist/user/utils';
+import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { useHistory } from 'react-router-dom';
-import { UserDto, UserRole } from 'types/dist/user/types';
+import { UserDto, UserRole } from 'types/dist/user';
 import { InlineLabel } from '@/components/InlineLabel';
 import { UserAvatar } from '@/components/user/UserAvatar';
 

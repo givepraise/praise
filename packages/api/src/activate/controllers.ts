@@ -4,14 +4,14 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '@error/errors';
-import { EventLogTypeKey } from 'types/dist/eventlog/types';
+import { EventLogTypeKey } from 'types/dist/eventlog';
 import { logEvent } from '@eventlog/utils';
 import { TypedRequestBody } from '@shared/types';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { ethers } from 'ethers';
 import { Response } from 'express';
-import { ActivateRequestBody } from 'types/dist/activate/types';
+import { ActivateRequestBody } from 'types/dist/activate';
 import { generateActivateMessage } from './utils';
 
 const activate = async (

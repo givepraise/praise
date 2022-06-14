@@ -3,9 +3,9 @@ import {
   QuantificationDocument,
   QuantificationDto,
   Quantification,
-} from '../praise/types';
-import { UserAccountDocument, UserAccountDto } from '../useraccount/types';
-import { PeriodSettingDto } from '../periodsettings/types';
+} from './praise';
+import { UserAccountDocument, UserAccountDto } from './useraccount';
+import { PeriodSettingDto } from './periodsettings';
 import mongoose, { Types } from 'mongoose';
 
 export enum PeriodStatusType {

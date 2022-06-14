@@ -1,9 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-import {
-  PraiseDocument,
-  QuantificationDocument,
-} from 'types/dist/praise/types';
+import { PraiseDocument, QuantificationDocument } from 'types/dist/praise';
 
 export const quantificationSchema = new mongoose.Schema(
   {

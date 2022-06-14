@@ -6,7 +6,7 @@ import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import {
   PeriodDetailsDto,
   PeriodDetailsReceiverDto,
-} from 'types/dist/period/types';
+} from 'types/dist/period';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';

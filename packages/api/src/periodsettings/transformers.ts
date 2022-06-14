@@ -1,7 +1,7 @@
 import {
   PeriodSettingDocument,
   PeriodSettingDto,
-} from 'types/dist/periodsettings/types';
+} from 'types/dist/periodsettings';
 
 export const periodsettingTransformer = (
   setting: PeriodSettingDocument

@@ -1,7 +1,7 @@
 import { AllPeriods } from '@/model/periods';
 import { formatIsoDateUTC } from '@/utils/date';
 import { classNames } from '@/utils/index';
-import { PeriodDetailsDto } from 'types/dist/period/types';
+import { PeriodDetailsDto } from 'types/dist/period';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';

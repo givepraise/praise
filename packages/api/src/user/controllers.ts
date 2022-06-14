@@ -3,7 +3,7 @@ import {
   InternalServerError,
   NotFoundError,
 } from '@error/errors';
-import { PeriodDocument, PeriodDateRange } from 'types/dist/period/types';
+import { PeriodDocument, PeriodDateRange } from 'types/dist/period';
 import { findActivePeriods, getPeriodDateRangeQuery } from '@period/utils';
 import { countPraiseWithinDateRanges } from '@praise/utils/core';
 import {
@@ -13,7 +13,7 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
-import { EventLogTypeKey } from 'types/dist/eventlog/types';
+import { EventLogTypeKey } from 'types/dist/eventlog';
 import { logEvent } from '@eventlog/utils';
 import { Request } from 'express';
 import mongoose, { Types } from 'mongoose';
@@ -24,7 +24,7 @@ import {
   UserDto,
   UserRole,
   UserRoleChangeInput,
-} from 'types/dist/user/types';
+} from 'types/dist/user';
 
 /**
  * Description

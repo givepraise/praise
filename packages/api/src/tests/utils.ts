@@ -1,4 +1,4 @@
-import { AuthResponse } from 'types/dist/auth/types';
+import { AuthResponse } from 'types/dist/auth';
 import { Wallet } from 'ethers';
 import { SuperTest, Test } from 'supertest';
 

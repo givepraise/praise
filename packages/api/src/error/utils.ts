@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { errorNames } from './constants';
-import { AppError } from 'types/dist/error/types';
+import { AppError } from 'types/dist/error';
 
 export const isValidationError = (
   err: unknown

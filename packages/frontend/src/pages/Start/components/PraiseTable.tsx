@@ -1,6 +1,6 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
 import { AllPraiseList } from '@/model/praise';
-import { PraiseDto } from 'types/dist/praise/types';
+import { PraiseDto } from 'types/dist/praise';
 import React from 'react';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';

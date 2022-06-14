@@ -2,8 +2,8 @@ import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
 import { JWT } from '../utils/jwt';
 import { recoilPersist } from 'recoil-persist';
-import { TokenSet } from 'types/dist/auth/types';
-import { UserRole } from 'types/dist/user/types';
+import { TokenSet } from 'types/dist/auth';
+import { UserRole } from 'types/dist/user';
 import { SingleUser } from './users';
 
 const { persistAtom } = recoilPersist();

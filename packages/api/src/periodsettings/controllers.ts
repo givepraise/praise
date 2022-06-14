@@ -2,17 +2,17 @@ import { BadRequestError, NotFoundError } from '@error/errors';
 import { removeFile, upload } from '@shared/functions';
 import { TypedRequestBody, TypedResponse } from '@shared/types';
 import { Request } from 'express';
-import { SettingSetInput } from 'types/dist/settings/types';
-import { PeriodStatusType } from 'types/dist/period/types';
+import { SettingSetInput } from 'types/dist/settings';
+import { PeriodStatusType } from 'types/dist/period';
 import { PeriodModel } from '@period/entities';
-import { EventLogTypeKey } from 'types/dist/eventlog/types';
+import { EventLogTypeKey } from 'types/dist/eventlog';
 import { logEvent } from '@eventlog/utils';
 import {
   periodsettingTransformer,
   periodsettingListTransformer,
 } from './transformers';
 import { PeriodSettingsModel } from './entities';
-import { PeriodSettingDto } from 'types/dist/periodsettings/types';
+import { PeriodSettingDto } from 'types/dist/periodsettings';
 
 export const all = async (
   req: Request,
@@ -78,8 +78,10 @@ export const set = async (
 
   await logEvent(
     EventLogTypeKey.SETTING,
-    `Updated period setting "${setting.label
-    }" from ${originalValue} to ${setting.value.toString()} in period "${period.name
+    `Updated period setting "${
+      setting.label
+    }" from ${originalValue} to ${setting.value.toString()} in period "${
+      period.name
     }"`,
     {
       userId: res.locals.currentUser._id,

@@ -1,12 +1,12 @@
 import { quantificationListTransformer } from '@praise/transformers';
-import { Quantification, QuantificationDto } from 'types/dist/praise/types';
+import { Quantification, QuantificationDto } from 'types/dist/praise';
 import { userAccountTransformer } from '@useraccount/transformers';
 import {
   PeriodDetailsReceiver,
   PeriodDetailsReceiverDto,
   PeriodDocument,
   PeriodDetailsDto,
-} from 'types/dist/period/types';
+} from 'types/dist/period';
 
 const periodDocumentToDto = (
   periodDocument: PeriodDocument

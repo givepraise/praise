@@ -11,7 +11,7 @@ import {
 import { find } from 'lodash';
 import { ApiAuthGet, useAuthApiQuery, isResponseOk } from './api';
 import { Setting, useSetSettingReturn } from './settings';
-import { PeriodSettingDto } from 'types/dist/periodsettings/types';
+import { PeriodSettingDto } from 'types/dist/periodsettings';
 
 export const AllPeriodSettingIds = atomFamily<string[] | undefined, string>({
   key: 'PeriodSettingIdList',

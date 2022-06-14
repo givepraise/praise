@@ -5,14 +5,14 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
-import { PaginatedResponseBody } from 'types/dist/query/types';
+import { PaginatedResponseBody } from 'types/dist/query';
 import { Request } from 'express';
 import { UserAccountModel } from './entities';
 import {
   userAccountListTransformer,
   userAccountTransformer,
 } from './transformers';
-import { UserAccountDto } from 'types/dist/useraccount/types';
+import { UserAccountDto } from 'types/dist/useraccount';
 
 /**
  * Description

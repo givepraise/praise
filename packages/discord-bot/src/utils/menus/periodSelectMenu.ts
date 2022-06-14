@@ -1,5 +1,5 @@
 import { MessageSelectMenu } from 'discord.js';
-import { PeriodDocument } from 'types/dist/period/types';
+import { PeriodDocument } from 'types/dist/period';
 
 export const periodSelectMenu = (
   periods: PeriodDocument[]

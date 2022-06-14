@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { UserDocument } from '../user/types';
+import { UserDocument } from './user';
 import { Document } from 'mongoose';
 
 export type UserAccountPlatform = 'DISCORD' | 'TELEGRAM';

@@ -12,7 +12,7 @@ import {
 } from '../pre-start/seed';
 import { expect } from 'chai';
 import { PeriodModel } from '@period/entities';
-import { PeriodDetailsReceiver } from 'types/dist/period/types';
+import { PeriodDetailsReceiver } from 'types/dist/period';
 import { PraiseModel } from '@praise/entities';
 import { settingValue } from '@shared/settings';
 import { sum } from 'lodash';

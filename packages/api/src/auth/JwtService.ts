@@ -1,7 +1,7 @@
 import { UnauthorizedError } from '@error/errors';
 import { getRandomString } from '@shared/functions';
 import { sign, verify, JwtPayload } from 'jsonwebtoken';
-import { TokenSet } from 'types/dist/auth/types';
+import { TokenSet } from 'types/dist/auth';
 export interface ClientData {
   userId: string;
   ethereumAddress: string;

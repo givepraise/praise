@@ -1,7 +1,7 @@
 import { PraiseModel } from 'api/dist/praise/entities';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount } from 'types/dist/useraccount/types';
-import { EventLogTypeKey } from 'types/dist/eventlog/types';
+import { UserAccount } from 'types/dist/useraccount';
+import { EventLogTypeKey } from 'types/dist/eventlog';
 import { logEvent } from 'api/src/eventlog/utils';
 import logger from 'jet-logger';
 import { GuildMember, Message, User, Util } from 'discord.js';

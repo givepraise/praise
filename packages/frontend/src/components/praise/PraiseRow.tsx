@@ -1,4 +1,4 @@
-import { PraiseDto } from 'types/dist/praise/types';
+import { PraiseDto } from 'types/dist/praise';
 import { useHistory } from 'react-router-dom';
 
 interface PraiseRowProps {

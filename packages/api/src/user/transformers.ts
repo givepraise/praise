@@ -1,5 +1,5 @@
 import { userAccountListTransformer } from '@useraccount/transformers';
-import { UserDocument, UserDto, UserRole } from 'types/dist/user/types';
+import { UserDocument, UserDto, UserRole } from 'types/dist/user';
 import { generateUserName } from './utils/username';
 
 const userDocumentToUserDto = async (

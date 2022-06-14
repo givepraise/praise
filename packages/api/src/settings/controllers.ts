@@ -1,12 +1,12 @@
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { removeFile, upload } from '@shared/functions';
 import { TypedRequestBody, TypedResponse } from '@shared/types';
-import { EventLogTypeKey } from 'types/dist/eventlog/types';
+import { EventLogTypeKey } from 'types/dist/eventlog';
 import { logEvent } from '@eventlog/utils';
 import { Request } from 'express';
 import { SettingsModel } from './entities';
 import { settingListTransformer, settingTransformer } from './transformers';
-import { SettingDto, SettingSetInput } from 'types/dist/settings/types';
+import { SettingDto, SettingSetInput } from 'types/dist/settings';
 
 export const all = async (
   req: Request,

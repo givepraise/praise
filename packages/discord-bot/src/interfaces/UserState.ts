@@ -1,5 +1,5 @@
-import { UserAccountPlatform } from 'types/dist/useraccount/types';
-import { UserRole } from 'types/dist/user/types';
+import { UserAccountPlatform } from 'types/dist/useraccount';
+import { UserRole } from 'types/dist/user';
 
 interface ActivatedAccount {
   platform: UserAccountPlatform;

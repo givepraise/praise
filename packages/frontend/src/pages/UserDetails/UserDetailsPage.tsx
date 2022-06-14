@@ -1,4 +1,4 @@
-import { shortenEthAddress } from 'types/dist/user/utils';
+import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { faUserGroup } from '@fortawesome/free-solid-svg-icons';
 import BreadCrumb from '@/components/BreadCrumb';
 import BackLink from '@/navigation/BackLink';
@@ -7,7 +7,7 @@ import { useRecoilValue } from 'recoil';
 import { useParams } from 'react-router-dom';
 import { formatIsoDateUTC } from '@/utils/date';
 import { classNames } from '@/utils/index';
-import { UserDto, UserRole } from 'types/dist/user/types';
+import { UserDto, UserRole } from 'types/dist/user';
 import { toast } from 'react-hot-toast';
 
 const roles = [UserRole.ADMIN, UserRole.FORWARDER, UserRole.QUANTIFIER];

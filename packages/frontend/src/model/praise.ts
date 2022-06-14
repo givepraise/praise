@@ -1,5 +1,5 @@
-import { PraiseDetailsDto, PraiseDto } from 'types/dist/praise/types';
-import { PaginatedResponseBody } from 'types/dist/query/types';
+import { PraiseDetailsDto, PraiseDto } from 'types/dist/praise';
+import { PaginatedResponseBody } from 'types/dist/query';
 import { AxiosResponse } from 'axios';
 import React from 'react';
 import { useHistory } from 'react-router-dom';

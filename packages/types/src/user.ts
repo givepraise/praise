@@ -1,4 +1,4 @@
-import { UserAccountDocument, UserAccountDto } from '../useraccount/types';
+import { UserAccountDocument, UserAccountDto } from './useraccount';
 import { Document } from 'mongoose';
 
 export enum UserRole {

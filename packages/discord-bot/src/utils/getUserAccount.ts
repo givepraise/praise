@@ -2,7 +2,7 @@ import { UserAccountModel } from 'api/dist/useraccount/entities';
 import {
   UserAccount,
   UserAccountDocument,
-} from 'types/dist/useraccount/types';
+} from 'types/dist/useraccount';
 import { GuildMember } from 'discord.js';
 
 export const getUserAccount = async (

@@ -1,6 +1,6 @@
-import { PraiseAllInput, PraiseExportInput } from 'types/dist/praise/types';
+import { PraiseAllInput, PraiseExportInput } from 'types/dist/praise';
 import logger from 'jet-logger';
-import { QueryInput } from 'types/dist/query/types';
+import { QueryInput } from 'types/dist/query';
 import { Request } from 'express';
 import mime from 'mime-types';
 import { UploadedFile } from 'express-fileupload';

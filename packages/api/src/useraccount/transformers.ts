@@ -1,7 +1,4 @@
-import {
-  UserAccountDocument,
-  UserAccountDto,
-} from 'types/dist/useraccount/types';
+import { UserAccountDocument, UserAccountDto } from 'types/dist/useraccount';
 
 const userAccountDocumentToDto = (
   userAccountDocument: UserAccountDocument

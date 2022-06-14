@@ -10,7 +10,7 @@ import {
   PraiseDtoExtended,
   PraiseDetailsDto,
   PraiseDto,
-} from 'types/dist/praise/types';
+} from 'types/dist/praise';
 import { praiseDocumentListTransformer } from '@praise/transformers';
 import { calculateQuantificationScore } from '@praise/utils/score';
 import { praiseWithScore } from '@praise/utils/core';
@@ -24,12 +24,12 @@ import {
   QueryInputParsedQs,
   TypedRequestQuery,
 } from '@shared/types';
-import { PaginatedResponseBody, QueryInput } from 'types/dist/query/types';
-import { UserRole } from 'types/dist/user/types';
-import { UserAccountDocument } from 'types/dist/useraccount/types';
+import { PaginatedResponseBody, QueryInput } from 'types/dist/query';
+import { UserRole } from 'types/dist/user';
+import { UserAccountDocument } from 'types/dist/useraccount';
 import { getQueryInput, getQuerySort } from '@shared/functions';
 import { PraiseModel } from '@praise/entities';
-import { EventLogTypeKey } from 'types/dist/eventlog/types';
+import { EventLogTypeKey } from 'types/dist/eventlog';
 import { logEvent } from '@eventlog/utils';
 import mongoose from 'mongoose';
 import { firstFit, PackingOutput } from 'bin-packer';
@@ -45,7 +45,7 @@ import {
   PeriodStatusType,
   PeriodUpdateInput,
   VerifyQuantifierPoolSizeResponse,
-} from 'types/dist/period/types';
+} from 'types/dist/period';
 import {
   PeriodQuantifierPraiseInput,
   PeriodReceiverPraiseInput,
@@ -174,7 +174,8 @@ export const update = async (
       const newEndDate = parseISO(endDate);
 
       eventLogMessages.push(
-        `Updated the end date of period "${period.name
+        `Updated the end date of period "${
+          period.name
         }" to ${endDate.toString()} UTC`
       );
 
@@ -341,8 +342,9 @@ const assignQuantifiersDryRun = async (
     const assignmentBinId: string = flatten(
       assignmentBin.map((r: Receiver) => r.praiseIds)
     ).join('+');
-    const assignmentOptionId = `${q._id.toString() as string
-      }-${assignmentBinId}`;
+    const assignmentOptionId = `${
+      q._id.toString() as string
+    }-${assignmentBinId}`;
 
     const qUserAccountIds: string[] = q.accounts.map(
       (account: UserAccountDocument) => account._id.toString()

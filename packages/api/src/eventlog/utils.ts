@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import { EventLogModel, EventLogTypeModel } from './entities';
-import { EventLogTypeKey } from 'types/dist/eventlog/types';
+import { EventLogTypeKey } from 'types/dist/eventlog';
 
 interface UserInfo {
   userId?: Types.ObjectId;

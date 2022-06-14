@@ -1,7 +1,7 @@
 import { authMiddleware } from '@auth/middleware';
 import { Router } from '@awaitjs/express';
 import * as controller from '@praise/controllers';
-import { UserRole } from 'types/dist/user/types';
+import { UserRole } from 'types/dist/user';
 
 // Praise-routes
 const praiseRouter = Router();

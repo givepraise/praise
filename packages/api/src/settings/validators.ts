@@ -1,5 +1,5 @@
-import { SettingDocument } from 'types/dist/settings/types';
-import { PeriodSettingDocument } from 'types/dist/periodsettings/types';
+import { SettingDocument } from 'types/dist/settings';
+import { PeriodSettingDocument } from 'types/dist/periodsettings';
 import { Validator } from 'jsonschema';
 
 const QuestionAnswerJSONSchema = {

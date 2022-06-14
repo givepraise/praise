@@ -1,4 +1,4 @@
-import { ApiErrorResponseData } from 'types/dist/error/types';
+import { ApiErrorResponseData } from 'types/dist/error';
 import { AxiosError, AxiosResponse } from 'axios';
 import {
   RecoilValue,

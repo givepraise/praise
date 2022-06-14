@@ -1,4 +1,4 @@
-import { UserAccountDto } from '../useraccount/types';
+import { UserAccountDto } from './useraccount';
 import { Document, Types } from 'mongoose';
 
 export enum EventLogTypeKey {

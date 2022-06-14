@@ -8,7 +8,7 @@ import {
 import BackLink from '@/navigation/BackLink';
 import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
 import { classNames } from '@/utils/index';
-import { PeriodStatusType } from 'types/dist/period/types';
+import { PeriodStatusType } from 'types/dist/period';
 import {
   faBalanceScaleLeft,
   faHeartbeat,

@@ -1,4 +1,4 @@
-import { SettingGroup } from 'types/dist/settings/types';
+import { SettingGroup } from 'types/dist/settings';
 import { SettingsModel } from '../../settings/entities';
 
 const overridableSettingKeys = [

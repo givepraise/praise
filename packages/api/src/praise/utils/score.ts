@@ -1,10 +1,10 @@
 import { BadRequestError } from '@error/errors';
 import { settingValue } from '@shared/settings';
-import { PeriodDetailsReceiver } from 'types/dist/period/types';
+import { PeriodDetailsReceiver } from 'types/dist/period';
 import { Types } from 'mongoose';
 import { sum } from 'lodash';
 import { PraiseModel } from '../entities';
-import { Quantification } from 'types/dist/praise/types';
+import { Quantification } from 'types/dist/praise';
 import { getPraisePeriod, isQuantificationCompleted } from './core';
 
 /**

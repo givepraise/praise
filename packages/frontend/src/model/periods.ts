@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
-import { UserRole } from 'types/dist/user/types';
+import { UserRole } from 'types/dist/user';
 import { makeApiAuthClient } from '@/utils/api';
 import { periodQuantifierPraiseListKey } from '@/utils/periods';
 import {
@@ -8,9 +8,9 @@ import {
   PeriodDetailsDto,
   PeriodStatusType,
   PeriodUpdateInput,
-} from 'types/dist/period/types';
-import { PraiseDto } from 'types/dist/praise/types';
-import { PaginatedResponseBody } from 'types/dist/query/types';
+} from 'types/dist/period';
+import { PraiseDto } from 'types/dist/praise';
+import { PaginatedResponseBody } from 'types/dist/query';
 import { AxiosError, AxiosResponse } from 'axios';
 import React, { useEffect } from 'react';
 import {

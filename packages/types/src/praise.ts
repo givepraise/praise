@@ -1,10 +1,10 @@
-import { QueryInput } from '../query/types';
-import { UserDocument } from '../user/types';
+import { QueryInput } from './query';
+import { UserDocument } from './user';
 import {
   PraiseImportUserAccountInput,
   UserAccountDocument,
   UserAccountDto,
-} from '../useraccount/types';
+} from './useraccount';
 import { Document } from 'mongoose';
 
 export interface Praise {
