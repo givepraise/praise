@@ -5,7 +5,6 @@ import { faSadTear } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'shared/dist/praise/types';
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { ActiveUserId } from '@/model/auth';

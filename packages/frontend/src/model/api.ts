@@ -100,13 +100,13 @@ export const ApiAuthPost = selectorFamily<
   key: 'ApiAuthPost',
   get:
     (params: PostRequestParams) =>
-      async (): Promise<AxiosResponse<unknown>> => {
-        const { config, url, data } = params;
-        const apiAuthClient = makeApiAuthClient();
-        const response = await apiAuthClient.post(url, data, config);
+    async (): Promise<AxiosResponse<unknown>> => {
+      const { config, url, data } = params;
+      const apiAuthClient = makeApiAuthClient();
+      const response = await apiAuthClient.post(url, data, config);
 
-        return response;
-      },
+      return response;
+    },
 });
 
 /**
@@ -119,19 +119,19 @@ export const ApiAuthPatch = selectorFamily<
   key: 'ApiAuthPatch',
   get:
     (params: PatchRequestParams) =>
-      async (): Promise<AxiosResponse<unknown>> => {
-        const { config, url, data, file } = params;
+    async (): Promise<AxiosResponse<unknown>> => {
+      const { config, url, data, file } = params;
 
-        const formData = new FormData();
-        formData.append('value', file);
+      const formData = new FormData();
+      formData.append('value', file);
 
-        const reqData = file ? formData : data;
+      const reqData = file ? formData : data;
 
-        const apiAuthClient = makeApiAuthClient();
-        const response = await apiAuthClient.patch(url, reqData, config);
+      const apiAuthClient = makeApiAuthClient();
+      const response = await apiAuthClient.patch(url, reqData, config);
 
-        return response;
-      },
+      return response;
+    },
 });
 
 /**

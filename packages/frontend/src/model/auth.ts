@@ -78,9 +78,9 @@ export const HasRole = selectorFamily({
   key: 'HasRole',
   get:
     (role: string) =>
-      ({ get }): boolean => {
-        const userRoles = get(ActiveUserRoles);
+    ({ get }): boolean => {
+      const userRoles = get(ActiveUserRoles);
 
-        return userRoles.includes(role);
-      },
+      return userRoles.includes(role);
+    },
 });

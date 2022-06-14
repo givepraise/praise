@@ -105,11 +105,11 @@ export const SingleUser = selectorFamily({
   key: 'SingleUser',
   get:
     (userId: string | undefined) =>
-      ({ get }): UserDto | undefined => {
-        const allUsers = get(AllUsers);
-        if (!allUsers) return undefined;
-        return allUsers.filter((user) => user._id === userId)[0];
-      },
+    ({ get }): UserDto | undefined => {
+      const allUsers = get(AllUsers);
+      if (!allUsers) return undefined;
+      return allUsers.filter((user) => user._id === userId)[0];
+    },
 });
 
 type SingleUserByReceiverIdParams = {
@@ -119,15 +119,15 @@ export const SingleUserByReceiverId = selectorFamily({
   key: 'SingleUserByReceiverId',
   get:
     (params: SingleUserByReceiverIdParams) =>
-      ({ get }): UserDto | undefined => {
-        const { receiverId } = params;
-        const allUsers = get(AllUsers);
-        if (!allUsers) return undefined;
-        return allUsers.find((user) => {
-          if (!user.accounts) return false;
-          return user.accounts.find((account) => account._id === receiverId);
-        });
-      },
+    ({ get }): UserDto | undefined => {
+      const { receiverId } = params;
+      const allUsers = get(AllUsers);
+      if (!allUsers) return undefined;
+      return allUsers.find((user) => {
+        if (!user.accounts) return false;
+        return user.accounts.find((account) => account._id === receiverId);
+      });
+    },
 });
 
 const stringToNumber = (s: string): number => {
@@ -146,22 +146,22 @@ export const PseudonymForUser = selectorFamily({
   key: 'PseudonymForUser',
   get:
     (params: PseudonymForUserParams) =>
-      ({ get }): string => {
-        const { periodId, userId } = params;
-        const allPeriods = get(AllPeriods);
-        if (!allPeriods) return 'Loading…';
-        const periodIndex = allPeriods.findIndex((p) => p._id === periodId);
+    ({ get }): string => {
+      const { periodId, userId } = params;
+      const allPeriods = get(AllPeriods);
+      if (!allPeriods) return 'Loading…';
+      const periodIndex = allPeriods.findIndex((p) => p._id === periodId);
 
-        if (userId && periodIndex > -1) {
-          const u = stringToNumber(userId);
-          const p = stringToNumber(periodId);
-          const n = pseudonymNouns[(u + p) % pseudonymNouns.length];
-          const a = psudonymAdjectives[(u + p) % psudonymAdjectives.length];
-          return `${a} ${n}`;
-        }
+      if (userId && periodIndex > -1) {
+        const u = stringToNumber(userId);
+        const p = stringToNumber(periodId);
+        const n = pseudonymNouns[(u + p) % pseudonymNouns.length];
+        const a = psudonymAdjectives[(u + p) % psudonymAdjectives.length];
+        return `${a} ${n}`;
+      }
 
-        return 'Unknown user';
-      },
+      return 'Unknown user';
+    },
 });
 
 export const AddUserRoleApiResponse = atom<

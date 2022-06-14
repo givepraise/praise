@@ -11,7 +11,7 @@ import { ValidationErrors } from 'final-form';
 import React from 'react';
 import { Field, Form } from 'react-final-form';
 import { useHistory } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 import SubmitButton from './components/SubmitButton';
 
 const validate = (
@@ -45,7 +45,7 @@ const validate = (
 
 const PeriodsForm = (): JSX.Element => {
   const { createPeriod } = useCreatePeriod();
-  const [apiResponse, setApiResponse] = useRecoilState(CreatePeriodApiResponse);
+  const setApiResponse = useSetRecoilState(CreatePeriodApiResponse);
 
   const history = useHistory();
 

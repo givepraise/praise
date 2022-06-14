@@ -33,7 +33,7 @@ import {
 } from 'shared/dist/praise/types';
 import { praiseWithScore, getPraisePeriod } from './utils/core';
 
-interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput { }
+interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
 /**
  * //TODO add descriptiom
@@ -181,8 +181,9 @@ export const quantify = async (
     quantification.dismissed = false;
     quantification.duplicatePraise = undefined;
 
-    eventLogMessage = `Gave a score of ${quantification.score
-      } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
+    eventLogMessage = `Gave a score of ${
+      quantification.score as number
+    } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
   }
 
   await praise.save();
