@@ -35,7 +35,7 @@ const sendDMs = async (
     const userAccount = await UserAccountModel.findOne({
       user: user._id,
     });
-    const userId: string = userAccount?.accountId || 'oops';
+    const userId: string = userAccount?.accountId || 'Unknown user';
     const userName: string = userAccount?.name || userId;
     try {
       const discordUser = await interaction.guild?.members.fetch(userId);
