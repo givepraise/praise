@@ -67,7 +67,4 @@ settingsSchema
 
 settingsSchema.index({ key: 1 }, { unique: true });
 
-export const SettingsModel = model<SettingDocument>(
-  'Settings',
-  settingsSchema
-);
+export const SettingsModel = model<SettingDocument>('Settings', settingsSchema);

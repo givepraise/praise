@@ -13,9 +13,6 @@ const migrationSchema = new Schema<MigrationDocument>(
   }
 );
 
-const MigrationModel = model<MigrationDocument>(
-  'Migration',
-  migrationSchema
-);
+const MigrationModel = model<MigrationDocument>('Migration', migrationSchema);
 
 export { MigrationModel };

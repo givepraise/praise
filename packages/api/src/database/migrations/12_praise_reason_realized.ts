@@ -1,7 +1,3 @@
-import {
-  realizeDiscordContent,
-  prepareDiscordClient,
-} from '@praise/utils/core';
 import { PraiseModel } from '@praise/entities';
 
 const up = async (): Promise<void> => {
