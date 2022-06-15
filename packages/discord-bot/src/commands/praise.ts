@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { APIMessage } from 'discord-api-types/v9';
 import logger from 'jet-logger';
 import { praiseHandler } from '../handlers/praise';
 import { Command } from '../interfaces/Command';
