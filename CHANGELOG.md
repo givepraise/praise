@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Export the user list as csv #402 #450
 - Option to turn on/off the Discord role requirement for Praise givers #419 #434 #440
 - Support multiple wallets: WalletConneect, Trust, Rainbow etc #424
+- Option to assign praise evenly between all quantifiers #263
 - More verbose output from the `/admin announce` command #317 #441
 
 ### Fixed
