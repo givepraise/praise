@@ -29,7 +29,7 @@ export const ActiveUserQuantificationsMessage = (): JSX.Element | null => {
     return null;
 
   return (
-    <div className="mt-2">
+    <div>
       Quantification is open! You can perform quantifications for the following
       periods:
       <ul className="list-disc list-inside">
