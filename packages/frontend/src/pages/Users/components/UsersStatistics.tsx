@@ -35,7 +35,7 @@ const UsersStatistics = (): JSX.Element => {
         (account) => account.platform === 'DISCORD'
       );
       const telegramAccount = user.accounts?.find(
-        (account) => account.platform === 'DISCORD'
+        (account) => account.platform === 'TELEGRAM'
       );
       return {
         ...user,
