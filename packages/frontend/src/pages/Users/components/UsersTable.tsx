@@ -103,7 +103,7 @@ const UsersTable = (): JSX.Element => {
 
   return (
     <>
-      <div className="flex flex-col gap-4 sm:flex-row sm:gap-4">
+      <div className="flex flex-col gap-4 mx-5 sm:flex-row">
         <SelectInput
           handleChange={setSelectedRole}
           selected={selectedRole}

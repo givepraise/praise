@@ -11,9 +11,9 @@ const SearchInput = ({
   value,
 }: SearchInputProps): JSX.Element => {
   return (
-    <div className="relative flex items-center border border-gray-400 text-xs h-[42px]">
+    <div className="relative flex items-center border border-gray-400 h-[42px]">
       <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-        <span className="text-gray-800 xs:text-xs">
+        <span className="text-gray-800">
           <FontAwesomeIcon
             icon={faMagnifyingGlass}
             size="1x"
@@ -22,7 +22,7 @@ const SearchInput = ({
         </span>
       </div>
       <input
-        className="h-[42px] block pl-8 bg-transparent border-none outline-none focus:ring-0 text-sm"
+        className="h-[42px] block pl-8 bg-transparent border-none outline-none focus:ring-0"
         name="search"
         type="text"
         placeholder="Search"

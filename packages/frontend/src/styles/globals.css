@@ -11,7 +11,7 @@
     @apply dark:border-slate-700;
   }
   #root {
-    @apply min-h-screen bg-[#f3f4f6] text-gray-800 dark:bg-slate-800 dark:text-white;
+    @apply min-h-screen bg-[#f3f4f6] text-gray-800 dark:bg-slate-800 dark:text-white text-base;
   }
 
   h2 {
@@ -31,6 +31,24 @@
     @apply dark:bg-slate-500 dark:border-slate-900; 
   }
 
+  [type='text'], 
+    [type='email'], 
+    [type='url'], 
+    [type='password'], 
+    [type='number'], 
+    [type='date'], 
+    [type='datetime-local'], 
+    [type='month'], 
+    [type='search'], 
+    [type='tel'], 
+    [type='time'], 
+    [type='week'], 
+    [multiple], 
+    textarea, 
+    select { 
+      @apply text-base 
+    }
+
   [type='text']:focus,
     [type='email']:focus,
     [type='url']:focus,
@@ -46,7 +64,7 @@
     [multiple]:focus,
     textarea:focus,
     select:focus {
-        @apply dark:focus:ring-teal-300 dark:focus:ring-2;
+      @apply  dark:focus:ring-teal-300 dark:focus:ring-2;
     }
 
   .praise-box {
