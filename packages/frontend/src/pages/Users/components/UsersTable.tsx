@@ -98,9 +98,9 @@ const UsersTable = (): JSX.Element => {
 
   return (
     <>
-      <div className="flex flex-col gap-4 sm:flex-row sm:gap-4">
+      <div className="flex flex-col gap-4 px-5 sm:flex-row sm:gap-4">
         <select
-          className="bg-transparent border-black"
+          className="bg-transparent border-black dark:bg-slate-500 dark:text-white/50"
           onChange={(event: React.ChangeEvent<HTMLSelectElement>): void =>
             setSelectedRole(UserRole[event.target.value])
           }
@@ -122,7 +122,7 @@ const UsersTable = (): JSX.Element => {
               type="text"
               name="search"
               placeholder="Search"
-              className="block pl-8 bg-transparent border-none outline-none focus:ring-0"
+              className="block pl-8 bg-transparent border-none outline-none focus:ring-0 dark:placeholder:text-white/50"
               value={filter}
               onChange={(event: React.ChangeEvent<HTMLInputElement>): void =>
                 setFilter(event.target.value)
@@ -131,7 +131,7 @@ const UsersTable = (): JSX.Element => {
           </label>
         </div>
       </div>
-      <div className="flex justify-between px-4 my-4">
+      <div className="flex justify-between px-9 my-4">
         <div className="w-1/2">
           <span className="font-bold">User</span>
         </div>
