@@ -7,6 +7,7 @@ import { AllSettings, useSetSetting } from '@/model/settings';
 import { useRecoilValue } from 'recoil';
 import NavItem from '@/navigation/NavItem';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { SubPageNav } from '@/navigation/SubPageNav';
 
 const SettingsPage = (): JSX.Element | null => {
   const settings = useRecoilValue(AllSettings);
@@ -29,18 +30,18 @@ const SettingsPage = (): JSX.Element | null => {
     <div className="praise-page">
       <BreadCrumb name="Settings" icon={faCogs} />
 
-      <div className="flex space-x-4">
+      <div className="flex flex-col space-y-5 xl:space-x-5 xl:flex-row xl:space-y-0">
         <div>
-          <div className="w-40 py-5 mb-5 break-words border rounded-lg shadow-sm bg-gray-50 dark:bg-slate-600">
-            <nav>
+          <SubPageNav>
+            <ul>
               <NavItem to={`${url}/application`} description="Application" />
               <NavItem to={`${url}/period`} description="Period Defaults" />
               <NavItem to={`${url}/discord`} description="Discord Bot" />
-            </nav>
-          </div>
+            </ul>
+          </SubPageNav>
         </div>
 
-        <div className="w-full max-w-3xl praise-box">
+        <div className="praise-box">
           <Switch>
             <Route path={`${path}/application`}>
               <React.Suspense fallback="Loading…">

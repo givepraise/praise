@@ -13,11 +13,13 @@ const PraiseTable = (): JSX.Element => {
 
   return (
     <>
-      {allPraise?.map((praise, index) => (
-        <PraiseRow praise={praise} key={index}>
-          <Praise praise={praise} className="p-5" />
-        </PraiseRow>
-      ))}
+      <ul>
+        {allPraise?.map((praise, index) => (
+          <PraiseRow praise={praise} key={index}>
+            <Praise praise={praise} />
+          </PraiseRow>
+        ))}
+      </ul>
       <React.Suspense fallback={<LoaderSpinner />}>
         <PraisePageLoader />
       </React.Suspense>

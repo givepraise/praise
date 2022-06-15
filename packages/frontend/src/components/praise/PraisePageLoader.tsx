@@ -43,7 +43,12 @@ const PraisePageLoader = ({
     setNextPageNumber(praisePagination.currentPage + 1);
   }, [praisePagination, loading, setNextPageNumber]);
 
-  if (loading) return <LoaderSpinner />;
+  if (loading)
+    return (
+      <div className="pb-20">
+        <LoaderSpinner />
+      </div>
+    );
 
   /* This will trigger handleOnDocumentBottom when the body of the page hits the bottom */
   return <BottomScrollListener onBottom={handleContainerOnBottom} />;

@@ -8,7 +8,7 @@ export const ActiveNoticesBoardInner = (): JSX.Element | null => {
   if (!activeUserQuantificationMessageRender) return null;
 
   return (
-    <div className="praise-box">
+    <div className="mb-5 praise-box">
       {activeUserQuantificationMessageRender &&
         activeUserQuantificationMessageRender}
     </div>

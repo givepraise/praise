@@ -34,7 +34,7 @@ export default function Nav(): JSX.Element {
   };
 
   return (
-    <nav className="flex h-screen border-r shadow-sm md:w-64 md:flex-col md:fixed bg-gray-50 dark:bg-slate-900 dark:text-white">
+    <nav className="flex h-screen border-r shadow-sm lg:w-64 lg:flex-col lg:fixed bg-gray-50 dark:bg-slate-900 dark:text-white">
       <div className="flex flex-col justify-between h-full">
         <div className="w-full">
           <ul className="relative h-full p-0 m-0 list-none">
@@ -77,7 +77,7 @@ export default function Nav(): JSX.Element {
             <NavItem icon={faQuestionCircle} description="FAQ" to="/faq" />
           </ul>
         </div>
-        <div className="h-12 m-4 mt-auto flex">
+        <div className="flex h-12 m-4 mt-auto">
           {/* <div>{theme} mode</div>
           <Switch
             checked={theme === 'Dark'}

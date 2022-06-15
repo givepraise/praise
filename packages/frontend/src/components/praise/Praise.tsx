@@ -87,7 +87,7 @@ const Praise = ({
               )}
               arrow
             >
-              <div className="flex items-center text-xs text-gray-500">
+              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                 {localizeAndFormatIsoDateRelative(praise.createdAt)}
               </div>
             </Tooltip>
@@ -122,7 +122,7 @@ const Praise = ({
               )}
             ></span>
           </div>
-          <div className="flex items-center text-xs text-gray-500">
+          <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
             {period && (period.status === 'CLOSED' || isAdmin) && (
               <>
                 <FontAwesomeIcon

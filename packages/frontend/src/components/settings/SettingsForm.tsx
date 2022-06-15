@@ -69,7 +69,7 @@ const DisabledFormFields = (
     <Notice type="danger" className="mb-8">
       <span>Settings locked for this period</span>
     </Notice>
-    <div className="mb-2 space-y-4 px-5">
+    <div className="px-5 mb-2 space-y-4">
       {settings.map((setting: SettingDto | PeriodSettingDto) => (
         <div key={setting.key}>
           <label className="block font-bold">{setting.label}</label>
@@ -144,7 +144,9 @@ const SettingsForm = ({
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             <form onSubmit={handleSubmit} className="leading-loose">
               {FormFields(settings, apiResponse)}
-              <SubmitButton />
+              <div className="mt-4">
+                <SubmitButton />
+              </div>
             </form>
           );
         }
