@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support multiple wallets: WalletConneect, Trust, Rainbow etc #424
+- Support multiple wallets: WalletConnect, Trust, Rainbow etc #424
+- Export teh user list as csv #402 #450
 
 ### Fixed
 
