@@ -37,8 +37,8 @@ const PeriodsTable = (): JSX.Element => {
                   data.value === 'OPEN'
                     ? 'bg-green-300'
                     : data.value === 'QUANTIFY'
-                      ? 'bg-pink-300'
-                      : 'bg-gray-300',
+                    ? 'bg-pink-300'
+                    : 'bg-gray-300',
                   'inline-block px-2 py-1 text-xs text-white bg-gray-800 rounded-full'
                 )}
               >

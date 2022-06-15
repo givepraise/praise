@@ -3,10 +3,7 @@ import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
 import { useAllPeriodSettingsQuery } from '@/model/periodsettings';
 import BackLink from '@/navigation/BackLink';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
-import {
-  PeriodDetailsDto,
-  PeriodDetailsReceiverDto,
-} from 'types/dist/period';
+import { PeriodDetailsDto, PeriodDetailsReceiverDto } from 'types/dist/period';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';

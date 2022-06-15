@@ -15,5 +15,6 @@ jobs:
           cache: 'yarn'
       - run: yarn install
       - run: yarn workspace types build
+      - run: yarn workspace api build
       - run: yarn workspace frontend lint
       - run: yarn workspace frontend build

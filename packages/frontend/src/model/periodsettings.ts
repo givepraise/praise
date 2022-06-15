@@ -61,32 +61,32 @@ export const AllPeriodSettingsQuery = selectorFamily({
   key: 'AllPeriodSettingsQuery',
   get:
     (periodId: string) =>
-      ({ get }): AxiosResponse<unknown> => {
-        return get(
-          ApiAuthGet({
-            url: `/periodsettings/${periodId}/settings/all`,
-          })
-        );
-      },
+    ({ get }): AxiosResponse<unknown> => {
+      return get(
+        ApiAuthGet({
+          url: `/periodsettings/${periodId}/settings/all`,
+        })
+      );
+    },
 });
 
 export const AllPeriodSettings = selectorFamily({
   key: 'AllPeriodSettings',
   get:
     (periodId: string) =>
-      ({ get }): PeriodSettingDto[] | undefined => {
-        const allPeriodSettingIds = get(AllPeriodSettingIds(periodId));
-        if (!allPeriodSettingIds) return undefined;
+    ({ get }): PeriodSettingDto[] | undefined => {
+      const allPeriodSettingIds = get(AllPeriodSettingIds(periodId));
+      if (!allPeriodSettingIds) return undefined;
 
-        const allPeriodSettings: PeriodSettingDto[] = [];
-        for (const settingId of allPeriodSettingIds) {
-          const setting = get(SinglePeriodSetting(settingId));
-          if (setting) {
-            allPeriodSettings.push(setting);
-          }
+      const allPeriodSettings: PeriodSettingDto[] = [];
+      for (const settingId of allPeriodSettingIds) {
+        const setting = get(SinglePeriodSetting(settingId));
+        if (setting) {
+          allPeriodSettings.push(setting);
         }
-        return allPeriodSettings;
-      },
+      }
+      return allPeriodSettings;
+    },
 });
 
 export const useAllPeriodSettingsQuery = (
