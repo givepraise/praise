@@ -143,6 +143,8 @@ export const praiseHandler: CommandHandler = async (
             reason
           )
         )
+      : warnSelfPraise
+      ? await interaction.editReply(await selfPraiseWarning())
       : await interaction.editReply(await invalidReceiverError())
   ) as Message;
 
@@ -165,7 +167,7 @@ export const praiseHandler: CommandHandler = async (
     );
   }
 
-  if (warnSelfPraise) {
+  if (Receivers.length !== 0 && warnSelfPraise) {
     await msg.reply(await selfPraiseWarning());
   }
 
