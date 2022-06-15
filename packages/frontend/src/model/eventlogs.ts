@@ -22,7 +22,7 @@ export const AllEventLogsQuery = selectorFamily({
   key: 'AllEventLogsQuery',
   get:
     (queryParams: AllEventLogsQueryParameters) =>
-    async ({ get }): Promise<AxiosResponse<unknown>> => {
+    async (): Promise<AxiosResponse<unknown>> => {
       const apiAuthClient = makeApiAuthClient();
       const response = await apiAuthClient.get('/eventlogs/all', {
         params: queryParams,
