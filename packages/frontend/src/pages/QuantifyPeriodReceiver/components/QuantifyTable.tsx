@@ -1,13 +1,7 @@
-import Notice from '@/components/Notice';
 import { PraiseDto } from 'api/dist/praise/types';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { useQuantifyPraise } from '@/model/praise';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
-import Praise from '@/components/praise/Praise';
-import { dismissed, duplicate, shortDuplicatePraiseId } from '@/utils/praise';
-import { ActiveUserId } from '@/model/auth';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import getWeek from 'date-fns/getWeek';
 import parseISO from 'date-fns/parseISO';
 import { groupBy, sortBy } from 'lodash';
@@ -16,10 +10,10 @@ import { useRecoilValue } from 'recoil';
 import { QuantifyBackNextLink } from './BackNextLink';
 import DismissDialog from './DismissDialog';
 import DuplicateDialog from './DuplicateDialog';
-import QuantifySlider from './QuantifySlider';
 import DuplicateSearchDialog from './DuplicateSearchDialog';
 import MarkDuplicateButton from './MarkDuplicateButton';
 import MarkDismissedButton from './MarkDismissedButton';
+import QuantifyPraiseRow from './QuantifyPraiseRow';
 
 interface Props {
   periodId: string;
@@ -28,7 +22,6 @@ interface Props {
 }
 
 const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
-  const userId = useRecoilValue(ActiveUserId);
   const data = useRecoilValue(
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
   );
@@ -53,7 +46,6 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
   ) as number[];
 
   if (!data) return null;
-  if (!userId) return null;
 
   const handleDismiss = (): void => {
     if (selectedPraises.length > 0) {
@@ -141,69 +133,21 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                   </tr>
                 )}
 
-                {weeklyData[weekKey].map((praise, index) => (
-                  <tr className="group" key={index}>
-                    <td>
-                      <input
-                        type="checkbox"
-                        className="w-5 h-5 mr-4 text-xl"
-                        checked={isChecked(praise)}
-                        onChange={(): void => handleToggleCheckbox(praise)}
-                      />
-                    </td>
-                    <td>
-                      <div className="max-w-xl">
-                        <Praise
-                          praise={praise}
-                          showIdPrefix={true}
-                          showReceiver={false}
-                          periodId={periodId}
-                          usePseudonyms={usePseudonyms}
-                          dismissed={dismissed(praise, userId)}
-                          shortDuplicatePraiseId={shortDuplicatePraiseId(
-                            praise,
-                            userId
-                          )}
-                        />
-                      </div>
-                    </td>
-                    <td>
-                      {duplicate(praise, userId) ? (
-                        <Notice type="info" className="w-40 py-2">
-                          <>
-                            Duplicate score: <br />
-                            {praise.scoreRealized}
-                          </>
-                        </Notice>
-                      ) : (
-                        <QuantifySlider
-                          allowedScores={allowedValues}
-                          score={praise.scoreRealized}
-                          disabled={
-                            dismissed(praise, userId) ||
-                            duplicate(praise, userId)
-                          }
-                          onChange={(newScore): void =>
-                            handleSetScore(praise, newScore)
-                          }
-                        />
-                      )}
-                    </td>
-                    <td>
-                      <div className="w-3">
-                        <button
-                          className="hidden text-gray-400 cursor-pointer group-hover:block hover:text-gray-500"
-                          disabled={duplicate(praise, userId)}
-                          onClick={(): void => {
-                            setDuplicateSearchDialogPraise(praise);
-                            setIsDuplicateSearchDialogOpen(true);
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faCopy} size="1x" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                {weeklyData[weekKey].map((praise) => (
+                  <QuantifyPraiseRow
+                    key={praise._id}
+                    praise={praise}
+                    periodId={periodId}
+                    usePseudonyms={usePseudonyms}
+                    allowedValues={allowedValues}
+                    checked={isChecked(praise)}
+                    onToggleCheck={(): void => handleToggleCheckbox(praise)}
+                    onSetScore={(score): void => handleSetScore(praise, score)}
+                    onDuplicateClick={(): void => {
+                      setDuplicateSearchDialogPraise(praise);
+                      setIsDuplicateSearchDialogOpen(true);
+                    }}
+                  />
                 ))}
               </React.Fragment>
             ))}

@@ -13,8 +13,10 @@ const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
     <NavLink
       to={to}
       className={(isActive): string =>
-        `relative px-4 py-1 cursor-pointer no-underline flex items-center text-black ${
-          isActive ? ' bg-gray-200' : ' hover:bg-gray-100'
+        `relative px-4 py-1 cursor-pointer no-underline flex items-center ${
+          isActive
+            ? ' bg-gray-100 dark:bg-slate-800'
+            : ' hover:bg-gray-100 dark:hover:bg-slate-800'
         }`
       }
       id={to.substring(1) + '-nav-button'}
@@ -24,8 +26,8 @@ const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
           <FontAwesomeIcon icon={icon} size="1x" className="inline-block" />
         </div>
       )}
-      <div className="flex-auto inline-block my-1">
-        <span>{description}</span>
+      <div className="flex-auto inline-block my-1 whitespace-nowrap">
+        {description}
       </div>
     </NavLink>
   );

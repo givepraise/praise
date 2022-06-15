@@ -40,7 +40,7 @@ const QuantifyPeriodPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="praise-page">
       <BreadCrumb name="Quantify" icon={faCalendarAlt} />
       <BackLink to={`/periods/${periodId}`} />
 
@@ -50,7 +50,7 @@ const QuantifyPeriodPage = (): JSX.Element => {
         </React.Suspense>
       </div>
 
-      <div className="praise-box">
+      <div className="praise-box px-0">
         <React.Suspense fallback="Loading…">
           <QuantifyPeriodTable />
         </React.Suspense>

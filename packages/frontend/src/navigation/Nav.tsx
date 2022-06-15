@@ -1,34 +1,40 @@
 import AdminOnly from '@/components/auth/AdminOnly';
-import EthAccount from '@/components/EthAccount';
-import { ActiveTokenSet } from '@/model/auth';
+import EthAccount from '@/components/account/EthAccount';
 import { SingleSetting } from '@/model/settings';
-import { classNames } from '@/utils/index';
 import {
-  faAngleRight,
   faCalculator,
   faCog,
   faPrayingHands,
   faQuestionCircle,
   faUserFriends,
   faBook,
+  faMoon,
+  faSun,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Menu, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
+import { Menu } from '@headlessui/react';
 import { Link } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useRecoilState } from 'recoil';
+import { Theme } from '@/model/theme';
 import NavItem from './NavItem';
+import { classNames } from '../utils';
 
 export default function Nav(): JSX.Element {
-  const setActiveTokenSet = useSetRecoilState(ActiveTokenSet);
+  const [theme, setTheme] = useRecoilState(Theme);
   const logoSetting = useRecoilValue(SingleSetting('LOGO'));
 
-  const handleLogoutClick = (): void => {
-    setActiveTokenSet(undefined);
+  const handleTheme = (theme: string): void => {
+    if (theme === 'Dark') {
+      setTheme('Dark');
+      localStorage.setItem('theme', 'Dark');
+    } else {
+      setTheme('Light');
+      localStorage.setItem('theme', 'Light');
+    }
   };
 
   return (
-    <nav className="flex h-screen border-r shadow-sm md:w-64 md:flex-col md:fixed bg-gray-50">
+    <nav className="flex h-screen border-r shadow-sm md:w-64 md:flex-col md:fixed bg-gray-50 dark:bg-slate-900 dark:text-white">
       <div className="flex flex-col justify-between h-full">
         <div className="w-full">
           <ul className="relative h-full p-0 m-0 list-none">
@@ -71,40 +77,45 @@ export default function Nav(): JSX.Element {
             <NavItem icon={faQuestionCircle} description="FAQ" to="/faq" />
           </ul>
         </div>
+        <div className="h-12 m-4 mt-auto flex">
+          {/* <div>{theme} mode</div>
+          <Switch
+            checked={theme === 'Dark'}
+            onChange={handleTheme}
+            icon={<FontAwesomeIcon icon={faSun} size="lg" />}
+            checkedIcon={<FontAwesomeIcon icon={faMoon} size="lg" />}
+          /> */}
+          <div
+            className={classNames(
+              theme === 'Light' ? 'bg-blue-100/50 text-blue-500' : '',
+              'cursor-pointer grow rounded-l-lg border-2 border-r flex items-center justify-center gap-4'
+            )}
+            onClick={(): void => handleTheme('Light')}
+          >
+            <FontAwesomeIcon icon={faSun} size="lg" />
+            Light
+          </div>
+          <div
+            className={classNames(
+              theme === 'Dark' ? 'bg-blue-800/20' : '',
+              'cursor-pointer grow rounded-r-lg border-2 border-l flex items-center justify-center gap-4'
+            )}
+            onClick={(): void => handleTheme('Dark')}
+          >
+            Dark
+            <FontAwesomeIcon icon={faMoon} size="lg" />
+          </div>
+        </div>
+
         <div className="w-full border-t">
           <Menu as="div" className="flex flex-col justify-center">
-            <Menu.Button className="flex items-center justify-between w-full px-4 py-3 hover:text-gray-500 focus:outline-none">
-              <EthAccount />
-              <FontAwesomeIcon icon={faAngleRight} size="1x" className="ml-4" />
+            <Menu.Button className="flex items-center justify-between w-full selection:hover:text-gray-500 focus:outline-none">
+              <EthAccount
+                showDownCaret={false}
+                showRightCaret={true}
+                className="w-full px-4 py-3"
+              />
             </Menu.Button>
-
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
-              <Menu.Items className="absolute w-4/5 ml-6 -mt-20 bg-white rounded-md shadow-lg ring-1 ring-gray-800 ring-opacity-5 focus:outline-none">
-                <div className="py-1">
-                  <Menu.Item>
-                    {({ active }): JSX.Element => (
-                      <div
-                        className={classNames(
-                          active ? 'bg-gray-100' : 'text-gray-700',
-                          'block px-4 py-2 text-sm cursor-pointer'
-                        )}
-                        onClick={handleLogoutClick}
-                      >
-                        Logout
-                      </div>
-                    )}
-                  </Menu.Item>
-                </div>
-              </Menu.Items>
-            </Transition>
           </Menu>
         </div>
       </div>

@@ -9,11 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Convert the Quantifier Pool screen to a User Admin screen #320 #395
+- Filter, search and sort the event log #376 #455
+- Dark mode! #420 #453
+- Support multiple wallets: WalletConnect, Trust, Rainbow etc #424
+- Export the user list as csv #402 #450
+- Option to turn on/off the Discord role requirement for Praise givers #419 #434 #440
+- Support multiple wallets: WalletConneect, Trust, Rainbow etc #424
+- Option to assign praise evenly between all quantifiers #263
+- More verbose output from the `/admin announce` command #317 #441
 
 ### Fixed
 
+- Improve dapp responsiviness #190 #356
+- Opening dialog to mark praise as duplicate should place focus on input #80
+
+## [0.8.0] - 2022-06-06
+
+### Added
+
+- Convert the Quantifier Pool screen to a User Admin screen #320 #395
+- Option - Require discord role to allow praise giving #434
+
+### Fixed
+
+- Removed migration unable to fetch info from Discord threads #445
+- Quantify slider displaying praise score #444 #443
 - Clicking a link within a Praise reason should _only_ trigger opening the link #427 #437
+- Whoami command says user does not have praise powers, when they do #419
 
 ## [0.7.0] - 2022-05-31
 
