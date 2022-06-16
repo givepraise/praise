@@ -4,15 +4,23 @@ import ErrorPage from '@/pages/ErrorPage';
 import LoginPage from '@/pages/Login/LoginPage';
 import AuthenticatedLayout from '../layouts/AuthenticatedLayout';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { useAccount } from 'wagmi';
+import { useEffect } from 'react';
 
 const Routes = (): JSX.Element => {
-  const activeTokenSet = useRecoilValue(ActiveTokenSet);
+  const [tokenSet, setTokenSet] = useRecoilState(ActiveTokenSet);
   const decodedToken = useRecoilValue(DecodedAccessToken);
   const { data } = useAccount();
 
-  return activeTokenSet && decodedToken?.ethereumAddress === data?.address ? (
+  // Clear ActiveTokenSet if ethereum address changes
+  useEffect(() => {
+    if (tokenSet && decodedToken?.ethereumAddress !== data?.address) {
+      setTokenSet(undefined);
+    }
+  }, [tokenSet, data?.address, decodedToken?.ethereumAddress, setTokenSet]);
+
+  return tokenSet && decodedToken?.ethereumAddress === data?.address ? (
     <Switch>
       <Route exact path="/activate">
         <ActivatePage />
