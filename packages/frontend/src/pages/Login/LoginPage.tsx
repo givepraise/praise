@@ -5,13 +5,13 @@ import { toast } from 'react-hot-toast';
 import { useRecoilValue } from 'recoil';
 import { useHistory } from 'react-router-dom';
 import { useAccount } from 'wagmi';
-import { AccessToken } from '@/model/auth';
+import { ActiveTokenSet } from '@/model/auth';
 import SignMessageLayout from '../../layouts/SignMessageLayout';
 
 const LoginPage = (): JSX.Element => {
   const { data } = useAccount();
   const [message, setMessage] = useState<string | undefined>(undefined);
-  const accessToken = useRecoilValue(AccessToken);
+  const tokenSet = useRecoilValue(ActiveTokenSet);
   const history = useHistory();
 
   useEffect(() => {
@@ -42,8 +42,8 @@ const LoginPage = (): JSX.Element => {
   };
 
   useEffect(() => {
-    if (accessToken) history.replace('/');
-  }, [accessToken, history]);
+    if (tokenSet) history.replace('/');
+  }, [tokenSet, history]);
 
   return (
     <SignMessageLayout

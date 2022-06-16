@@ -5,7 +5,7 @@ import { useAccount } from 'wagmi';
 import { toast } from 'react-hot-toast';
 import { SignMessageButton } from '@/components/auth/SignMessageButton';
 import { useRecoilValue } from 'recoil';
-import { AccessToken } from '@/model/auth';
+import { ActiveTokenSet } from '@/model/auth';
 import { useHistory } from 'react-router-dom';
 import LoaderSpinner from '@/components/LoaderSpinner';
 import EthAccount from '@/components/account/EthAccount';
@@ -24,10 +24,10 @@ const SignMessageLayout = ({
   buttonText = 'Sign message',
 }: Props): JSX.Element => {
   const { data, isLoading } = useAccount();
-  const accessToken = useRecoilValue(AccessToken);
+  const tokenSet = useRecoilValue(ActiveTokenSet);
   const history = useHistory();
 
-  if (accessToken) {
+  if (tokenSet) {
     history.replace('/');
   }
 
