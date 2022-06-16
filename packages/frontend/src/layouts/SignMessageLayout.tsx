@@ -4,9 +4,6 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { toast } from 'react-hot-toast';
 import { SignMessageButton } from '@/components/auth/SignMessageButton';
-import { useRecoilValue } from 'recoil';
-import { ActiveTokenSet } from '@/model/auth';
-import { useHistory } from 'react-router-dom';
 import LoaderSpinner from '@/components/LoaderSpinner';
 import EthAccount from '@/components/account/EthAccount';
 
@@ -24,12 +21,6 @@ const SignMessageLayout = ({
   buttonText = 'Sign message',
 }: Props): JSX.Element => {
   const { data, isLoading } = useAccount();
-  const tokenSet = useRecoilValue(ActiveTokenSet);
-  const history = useHistory();
-
-  if (tokenSet) {
-    history.replace('/');
-  }
 
   return (
     <div className="w-full">

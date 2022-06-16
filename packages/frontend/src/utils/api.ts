@@ -39,7 +39,7 @@ const handleErrors = (err: AxiosError): void => {
     //@ts-ignore
     toast.error(err.response.data.message);
   } else if (statusCode === 401) {
-    window.location.href = '/login';
+    window.location.href = '/';
   } else {
     toast.error('Unknown Error');
   }
