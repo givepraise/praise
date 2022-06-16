@@ -1,8 +1,7 @@
 import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
-import { JWT } from '../utils/jwt';
 import { recoilPersist } from 'recoil-persist';
-import { TokenSet } from 'api/dist/auth/types';
+import { TokenSet, JwtTokenData } from 'api/dist/auth/types';
 import { UserRole } from 'api/dist/user/types';
 import { SingleUser } from './users';
 
@@ -37,7 +36,7 @@ export const RefreshToken = selector<string | undefined>({
   },
 });
 
-export const DecodedAccessToken = selector({
+export const DecodedAccessToken = selector<JwtTokenData | undefined>({
   key: 'DecodedAccessToken',
   get: ({ get }) => {
     const accessToken = get(AccessToken);
@@ -46,19 +45,20 @@ export const DecodedAccessToken = selector({
   },
 });
 
-export const ActiveUserId = selector({
+export const ActiveUserId = selector<string | undefined>({
   key: 'ActiveUserId',
   get: ({ get }) => {
     const activeTokenSet = get(ActiveTokenSet);
     if (!activeTokenSet) return;
 
     const decodedToken = get(DecodedAccessToken);
-    if (!decodedToken) return undefined;
-    return (decodedToken as JWT).userId;
+    if (!decodedToken) return;
+
+    return decodedToken.userId;
   },
 });
 
-export const ActiveUserRoles = selector({
+export const ActiveUserRoles = selector<string[]>({
   key: 'ActiveUserRoles',
   get: ({ get }): string[] => {
     const user = get(SingleUser(get(ActiveUserId)));
@@ -70,7 +70,7 @@ export const ActiveUserRoles = selector({
     const decodedToken = get(DecodedAccessToken);
     if (!decodedToken) return [];
 
-    return (decodedToken as JWT).roles;
+    return decodedToken.roles;
   },
 });
 

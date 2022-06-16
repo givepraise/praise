@@ -29,3 +29,16 @@ export interface TokenSet {
   accessToken: string;
   refreshToken: string;
 }
+
+export interface TokenData {
+  userId: string;
+  ethereumAddress: string;
+  roles: string[];
+  isRefresh?: boolean;
+}
+
+export interface JwtTokenData extends TokenData {
+  sub: string;
+  iat: number;
+  exp: number;
+}
