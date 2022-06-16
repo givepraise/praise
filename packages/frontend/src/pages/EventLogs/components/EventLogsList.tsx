@@ -24,7 +24,9 @@ const EventLogsTable = ({
         {logsData.docs.map((eventlog, i) => (
           <EventLog
             eventlog={eventlog}
-            className={`${i % 2 === 0 && 'bg-gray-100 dark:bg-slate-500'} px-7`}
+            className={`${
+              i % 2 === 0 && 'bg-warm-gray-100 dark:bg-slate-500'
+            } px-7`}
             key={i}
           />
         ))}

@@ -12,7 +12,6 @@ interface UserAvatarProps {
   user?: UserDto;
   userAccount?: UserAccountDto;
   usePseudonym?: boolean;
-  size?: string;
 }
 const WrappedUserAvatar = ({
   user,

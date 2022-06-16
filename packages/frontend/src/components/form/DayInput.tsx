@@ -59,7 +59,7 @@ const DayInput = ({
         >
           <DayPicker
             {...dayPickerProps}
-            className="absolute mt-1 p-2 border text-xs rounded-lg shadow-lg bg-gray-50 z-20"
+            className="absolute mt-1 p-2 border text-xs rounded-lg shadow-lg bg-warm-gray-50 z-20"
             onDayClick={handleDayClick}
             selected={parseDate(value)}
           />

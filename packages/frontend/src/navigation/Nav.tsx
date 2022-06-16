@@ -34,16 +34,18 @@ export default function Nav(): JSX.Element {
   };
 
   return (
-    <nav className="flex h-screen border-r shadow-sm lg:w-64 lg:flex-col lg:fixed bg-gray-50 dark:bg-slate-900 dark:text-white">
+    <nav className="flex h-screen border-r shadow-m lg:w-64 lg:flex-col lg:fixed bg-warm-gray-50 dark:bg-slate-900 dark:text-white">
       <div className="flex flex-col justify-between h-full">
         <div className="w-full">
           <ul className="relative h-full p-0 m-0 list-none">
-            <li className="relative flex justify-start w-full p-4 text-2xl font-bold">
+            <li className="relative flex justify-center w-full p-5">
               <Link to="/">
                 {logoSetting && (
                   <img
                     src={logoSetting.valueRealized as string}
-                    className={'inline-block w-52'}
+                    className={
+                      'inline-block w-32 h-32 object-center object-cover rounded-full border'
+                    }
                   />
                 )}
               </Link>

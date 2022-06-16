@@ -86,7 +86,7 @@ const PeriodDetailPage = (): JSX.Element | null => {
 
       <div className="flex flex-col sm:space-x-4 sm:flex-row">
         <div>
-          <div className="w-40 py-5 mb-5 break-words border rounded-lg shadow-sm bg-gray-50 dark:bg-slate-600">
+          <div className="w-40 py-5 mb-5 break-words border rounded-lg shadow-sm bg-warm-gray-50 dark:bg-slate-600">
             <nav>
               <NavItem
                 to={`${url}/receivers`}

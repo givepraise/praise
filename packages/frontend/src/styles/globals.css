@@ -11,16 +11,11 @@
     @apply dark:border-slate-700;
   }
   #root {
-    @apply min-h-screen bg-[#f3f4f6] text-gray-800 dark:bg-slate-800 dark:text-white text-base;
+    @apply min-h-screen bg-[#E7E5E4] text-gray-800 dark:bg-slate-800 dark:text-white text-sm;
   }
 
   h2 {
     @apply text-xl font-semibold mb-1.5;
-  }
-
-  td,
-  th {
-    @apply py-2 px-7;
   }
 
   a {
@@ -28,7 +23,7 @@
   }
 
   input, textarea {
-    @apply text-base dark:border-slate-400 dark:bg-slate-500; 
+    @apply text-sm dark:border-slate-400 dark:bg-slate-500; 
   }
 
 

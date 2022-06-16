@@ -16,8 +16,8 @@ const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
         className={(isActive): string =>
           `relative group-first:rounded-t-lg group-last:rounded-b-lg px-5 py-2 cursor-pointer no-underline flex items-center ${
             isActive
-              ? ' bg-gray-100 dark:bg-slate-700'
-              : ' hover:bg-gray-100 dark:hover:bg-slate-700'
+              ? ' bg-warm-gray-100 dark:bg-slate-700'
+              : ' hover:bg-warm-gray-100 dark:hover:bg-slate-700'
           }`
         }
         id={to.substring(1) + '-nav-button'}

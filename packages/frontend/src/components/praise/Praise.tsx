@@ -17,6 +17,8 @@ import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { SinglePeriodByDate } from '@/model/periods';
 import { useRecoilValue } from 'recoil';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { UserPopover } from '@/components/user/UserPopover';
+import { UserName } from '@/components/user/UserName';
 
 const formatSourceName = (sourceName: string): string => {
   return decodeURIComponent(sourceName).replace(/:/g, ' / ');
@@ -52,31 +54,55 @@ const Praise = ({
   return (
     <div className="w-full">
       <div className={`flex ${className}`}>
-        <div className="flex items-start pt-[2px] pr-3 text-3xl">
-          <UserAvatar userAccount={praise.giver} usePseudonym={usePseudonyms} />
+        <div className="flex items-start pt-[2px] text-3xl mr-3">
+          <UserPopover
+            userAccount={praise.giver}
+            className="w-8"
+            usePseudonym={usePseudonyms}
+          >
+            <UserAvatar
+              userAccount={praise.giver}
+              usePseudonym={usePseudonyms}
+            />
+          </UserPopover>
         </div>
-        <div className="flex-grow overflow-hidden">
+        <div className="overflow-hidden">
           <div className="flex w-full">
             <ForwarderTooltip praise={praise} />
-            <div className="flex items-center pr-2 font-bold">
-              {usePseudonyms && periodId ? (
-                <UserPseudonym userId={praise.giver._id} periodId={periodId} />
-              ) : (
-                praise.giver.name
-              )}
-            </div>
+            <UserPopover
+              userAccount={praise.giver}
+              usePseudonym={usePseudonyms}
+            >
+              <div className="flex items-center pr-2 font-bold">
+                {usePseudonyms && periodId ? (
+                  <UserPseudonym
+                    userId={praise.giver._id}
+                    periodId={periodId}
+                  />
+                ) : (
+                  <UserName userAccount={praise.giver} />
+                )}
+              </div>
+            </UserPopover>
             {showReceiver && (
               <>
                 <div className="flex items-center pr-2">→</div>
-                <div className="flex items-center pr-2 font-bold">
-                  <UserAvatar
-                    userAccount={praise.receiver}
-                    usePseudonym={usePseudonyms}
-                  />
-                </div>
-                <div className="flex items-center pr-2 font-bold">
-                  {praise.receiver.name}
-                </div>
+                <UserPopover
+                  userAccount={praise.receiver}
+                  usePseudonym={usePseudonyms}
+                >
+                  <div className="flex whitespace-nowrap">
+                    <div className="flex items-center pr-2 font-bold">
+                      <UserAvatar
+                        userAccount={praise.receiver}
+                        usePseudonym={usePseudonyms}
+                      />
+                    </div>
+                    <div className="flex items-center pr-2 font-bold">
+                      <UserName userAccount={praise.receiver} />
+                    </div>
+                  </div>
+                </UserPopover>
               </>
             )}
             <Tooltip

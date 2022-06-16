@@ -58,7 +58,7 @@ const MultiselectInput = ({
                 key={filterIdx}
                 className={({ active }): string =>
                   `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-600'
+                    active ? 'bg-warm-gray-100 text-gray-900' : 'text-gray-600'
                   }`
                 }
                 value={filter}

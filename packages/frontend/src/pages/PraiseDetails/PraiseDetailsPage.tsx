@@ -27,7 +27,7 @@ const PraiseDetailsPage = (): JSX.Element | null => {
       <BackLink to={backLinkUrl} />
 
       <React.Suspense fallback="Loading…">
-        <div className="praise-box">
+        <div className="mb-5 praise-box">
           <Praise praise={praise} />
         </div>
       </React.Suspense>

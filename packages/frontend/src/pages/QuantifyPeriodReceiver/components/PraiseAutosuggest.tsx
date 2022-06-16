@@ -116,7 +116,7 @@ const PraiseAutosuggest = ({
             inputItems.map((item, index) => (
               <li
                 className={classNames(
-                  highlightedIndex === index ? 'bg-gray-100' : '',
+                  highlightedIndex === index ? 'bg-warm-gray-100' : '',
                   'py-2 pl-2 cursor-pointer'
                 )}
                 key={item._id} //TODO fix key
