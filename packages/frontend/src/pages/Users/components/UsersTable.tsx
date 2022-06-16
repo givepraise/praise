@@ -103,7 +103,7 @@ const UsersTable = (): JSX.Element => {
 
   return (
     <>
-      <div className="flex flex-col gap-4 mx-5 sm:flex-row">
+      <div className="flex flex-col gap-4 mx-5 mb-5 sm:flex-row">
         <SelectInput
           handleChange={setSelectedRole}
           selected={selectedRole}
@@ -112,7 +112,7 @@ const UsersTable = (): JSX.Element => {
         <SearchInput handleChange={setFilter} value={filter} />
       </div>
 
-      <div className="flex justify-between px-4 my-4">
+      <div className="flex justify-between px-5 mb-2">
         <div className="w-1/2">
           <span className="font-bold">User</span>
         </div>

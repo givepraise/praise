@@ -26,7 +26,7 @@ const EventLogsTable = ({
             eventlog={eventlog}
             className={`${
               i % 2 === 0 && 'bg-warm-gray-100 dark:bg-slate-500'
-            } px-7`}
+            } px-5`}
             key={i}
           />
         ))}

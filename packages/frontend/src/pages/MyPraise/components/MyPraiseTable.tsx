@@ -32,11 +32,13 @@ const MyPraiseTable = (): JSX.Element => {
 
   return (
     <>
-      {allPraise?.map((praise, index) => (
-        <PraiseRow praise={praise} key={index}>
-          <Praise praise={praise} className="p-5" showReceiver={false} />
-        </PraiseRow>
-      ))}
+      <ul>
+        {allPraise?.map((praise, index) => (
+          <PraiseRow praise={praise} key={index}>
+            <Praise praise={praise} className="p-3" showReceiver={false} />
+          </PraiseRow>
+        ))}
+      </ul>
       <React.Suspense fallback={<LoaderSpinner />}>
         <PraisePageLoader listKey={PRAISE_LIST_KEY} receiverId={receiverId} />
       </React.Suspense>

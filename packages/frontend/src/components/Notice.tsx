@@ -1,3 +1,5 @@
+import { classNames } from '../utils';
+
 interface Params {
   children?: JSX.Element;
   type?: string;
@@ -23,7 +25,11 @@ const Notice = ({
 
   return (
     <div
-      className={`w-full p-4 text-center text-white rounded-sm ${className} ${typeClasses}`}
+      className={classNames(
+        'w-full p-4 text-center text-white rounded-sm',
+        className,
+        typeClasses
+      )}
     >
       {children}
     </div>

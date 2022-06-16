@@ -19,9 +19,25 @@ module.exports = {
           300: '#D6D3D1',
           400: '#A8A29E',
           500: '#78716C',
+        },
+        themecolor: {
+          1:   "#FF33A7",
+          2:   "#FF0A95",
+          3:   "#E1007F",
+          4:   "#B80068",
+          5:   "#8F0051",  
+        },
+        "themecolor-alt": {
+          1:   "#564148",
+          2:   "#BDA5AC",
+          3:   "#946F00",
+          4:   "#D0A200",
         }
       }
     }
   },
   plugins: [require('@tailwindcss/forms')],
 };
+
+
+

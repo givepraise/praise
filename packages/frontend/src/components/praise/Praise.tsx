@@ -19,6 +19,7 @@ import { useRecoilValue } from 'recoil';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { UserPopover } from '@/components/user/UserPopover';
 import { UserName } from '@/components/user/UserName';
+import { UserAvatarAndName } from '../user/UserAvatarAndName';
 
 const formatSourceName = (sourceName: string): string => {
   return decodeURIComponent(sourceName).replace(/:/g, ' / ');
@@ -33,6 +34,7 @@ interface Props {
   className?: string;
   dismissed?: boolean;
   shortDuplicatePraiseId?: string;
+  bigGiverAvatar?: boolean;
 }
 
 const Praise = ({
@@ -44,6 +46,7 @@ const Praise = ({
   className = '',
   dismissed = false,
   shortDuplicatePraiseId = undefined,
+  bigGiverAvatar = true,
 }: Props): JSX.Element | null => {
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
@@ -53,19 +56,21 @@ const Praise = ({
 
   return (
     <div className="w-full">
-      <div className={`flex ${className}`}>
-        <div className="flex items-start pt-[2px] text-3xl mr-3">
-          <UserPopover
-            userAccount={praise.giver}
-            className="w-8"
-            usePseudonym={usePseudonyms}
-          >
-            <UserAvatar
+      <div className={classNames(className, 'flex')}>
+        {bigGiverAvatar && (
+          <div className="flex items-start pt-[2px] text-3xl mr-3">
+            <UserPopover
               userAccount={praise.giver}
+              className="w-8"
               usePseudonym={usePseudonyms}
-            />
-          </UserPopover>
-        </div>
+            >
+              <UserAvatar
+                userAccount={praise.giver}
+                usePseudonym={usePseudonyms}
+              />
+            </UserPopover>
+          </div>
+        )}
         <div className="overflow-hidden">
           <div className="flex w-full">
             <ForwarderTooltip praise={praise} />
@@ -73,36 +78,31 @@ const Praise = ({
               userAccount={praise.giver}
               usePseudonym={usePseudonyms}
             >
-              <div className="flex items-center pr-2 font-bold">
-                {usePseudonyms && periodId ? (
-                  <UserPseudonym
-                    userId={praise.giver._id}
-                    periodId={periodId}
-                  />
-                ) : (
-                  <UserName userAccount={praise.giver} />
-                )}
-              </div>
+              {bigGiverAvatar ? (
+                <UserName
+                  userAccount={praise.giver}
+                  usePseudonym={usePseudonyms}
+                  periodId={periodId}
+                  className="font-bold"
+                />
+              ) : (
+                <UserAvatarAndName
+                  userAccount={praise.giver}
+                  usePseudonym={usePseudonyms}
+                  periodId={periodId}
+                  nameClassName="font-bold"
+                />
+              )}
             </UserPopover>
             {showReceiver && (
               <>
-                <div className="flex items-center pr-2">→</div>
-                <UserPopover
+                <div className="flex items-center px-2">→</div>
+                <UserAvatarAndName
                   userAccount={praise.receiver}
                   usePseudonym={usePseudonyms}
-                >
-                  <div className="flex whitespace-nowrap">
-                    <div className="flex items-center pr-2 font-bold">
-                      <UserAvatar
-                        userAccount={praise.receiver}
-                        usePseudonym={usePseudonyms}
-                      />
-                    </div>
-                    <div className="flex items-center pr-2 font-bold">
-                      <UserName userAccount={praise.receiver} />
-                    </div>
-                  </div>
-                </UserPopover>
+                  periodId={periodId}
+                  nameClassName="font-bold"
+                />
               </>
             )}
             <Tooltip

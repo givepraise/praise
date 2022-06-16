@@ -7,6 +7,8 @@ import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { UserDto } from 'api/dist/user/types';
 import { UserAccountDto } from 'api/dist/useraccount/types';
+import { useRecoilValue } from 'recoil';
+import { SingleUser } from '@/model/users';
 
 interface UserPopoverProps {
   user?: UserDto;
@@ -16,7 +18,7 @@ interface UserPopoverProps {
   usePseudonym?: boolean;
 }
 
-export const UserPopover = ({
+export const WrappedUserPopover = ({
   user,
   userAccount,
   children,
@@ -30,8 +32,11 @@ export const UserPopover = ({
   const [closeTimeout, setCloseTimeout] = React.useState<NodeJS.Timeout | null>(
     null
   );
+  const user2 = useRecoilValue(SingleUser(userAccount?.user));
 
-  if ((!user && !userAccount) || usePseudonym) return null;
+  if (!user && !userAccount) return null;
+
+  if (usePseudonym) return children;
 
   let discord: string | undefined;
   let ethereumAddress: string | undefined;
@@ -43,6 +48,13 @@ export const UserPopover = ({
     ethereumAddress = user.ethereumAddress;
   }
 
+  if (user2) {
+    discord = user2.accounts?.find(
+      (account) => account.platform === 'DISCORD'
+    )?.name;
+    ethereumAddress = user2.ethereumAddress;
+  }
+
   if (userAccount && userAccount.platform === 'DISCORD') {
     discord = userAccount.name;
   }
@@ -50,7 +62,7 @@ export const UserPopover = ({
   return (
     <Popover className={className}>
       <Popover.Button
-        className="cursor-default"
+        className=""
         onMouseEnter={(): void => {
           closeTimeout && clearTimeout(closeTimeout);
           !open && setOpenTimeout(setTimeout(() => setOpen(true), 500));
@@ -66,7 +78,6 @@ export const UserPopover = ({
       {open && (
         <div
           onMouseOver={(): void => {
-            console.log(closeTimeout);
             closeTimeout && clearTimeout(closeTimeout);
           }}
           onMouseLeave={(): void => {
@@ -98,3 +109,5 @@ export const UserPopover = ({
     </Popover>
   );
 };
+
+export const UserPopover = React.memo(WrappedUserPopover);

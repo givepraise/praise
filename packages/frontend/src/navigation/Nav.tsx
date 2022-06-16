@@ -10,6 +10,7 @@ import {
   faBook,
   faMoon,
   faSun,
+  faCalendarAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
@@ -56,19 +57,7 @@ export default function Nav(): JSX.Element {
               description="My praise"
               to="/mypraise"
             />
-            <AdminOnly>
-              <NavItem icon={faUserFriends} description="Users" to="/users" />
-            </AdminOnly>
-            <NavItem
-              icon={faCalculator}
-              description="Quantification periods"
-              to="/periods"
-            />
-            <NavItem
-              icon={faBook}
-              description="Transparency Log"
-              to="/eventlogs"
-            />
+            <NavItem icon={faCalendarAlt} description="Periods" to="/periods" />
             <AdminOnly>
               <NavItem
                 icon={faCog}
@@ -76,6 +65,10 @@ export default function Nav(): JSX.Element {
                 to="/settings/application"
               />
             </AdminOnly>
+            <AdminOnly>
+              <NavItem icon={faUserFriends} description="Users" to="/users" />
+            </AdminOnly>
+            <NavItem icon={faBook} description="Logs" to="/eventlogs" />
             <NavItem icon={faQuestionCircle} description="FAQ" to="/faq" />
           </ul>
         </div>
@@ -89,7 +82,7 @@ export default function Nav(): JSX.Element {
           /> */}
           <div
             className={classNames(
-              theme === 'Light' ? 'bg-blue-100/50 text-blue-500' : '',
+              theme === 'Light' ? 'bg-themecolor-3/20  text-themecolor-3' : '',
               'cursor-pointer grow rounded-l-lg border-2 border-r flex items-center justify-center gap-4'
             )}
             onClick={(): void => handleTheme('Light')}

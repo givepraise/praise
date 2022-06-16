@@ -46,7 +46,7 @@ const QuantifyPraiseRow = ({
       <td>
         <input
           type="checkbox"
-          className="mr-4 text-xl w-5 h-5"
+          className="w-5 h-5 mr-4 text-xl"
           checked={checked}
           onChange={onToggleCheck}
         />
@@ -60,6 +60,7 @@ const QuantifyPraiseRow = ({
           usePseudonyms={usePseudonyms}
           dismissed={dismissed}
           shortDuplicatePraiseId={shortenDuplicatePraiseId(praise, userId)}
+          bigGiverAvatar={false}
         />
       </td>
       <td>
@@ -82,7 +83,7 @@ const QuantifyPraiseRow = ({
       <td>
         <div className="w-3">
           <button
-            className="hidden group-hover:block text-gray-400 hover:text-gray-500 cursor-pointer"
+            className="hidden text-gray-400 cursor-pointer group-hover:block hover:text-gray-500"
             disabled={duplicate}
             onClick={onDuplicateClick}
           >

@@ -16,7 +16,7 @@ const PraiseTable = (): JSX.Element => {
       <ul>
         {allPraise?.map((praise, index) => (
           <PraiseRow praise={praise} key={index}>
-            <Praise praise={praise} />
+            <Praise praise={praise} className="p-3" />
           </PraiseRow>
         ))}
       </ul>

@@ -1,8 +1,10 @@
+/* eslint-disable react/jsx-key */
 import { InlineLabel } from '@/components/InlineLabel';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
 import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
+import { classNames } from '@/utils/index';
 import { localizeAndFormatIsoDate } from '@/utils/date';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -117,18 +119,17 @@ const PraiseDetailTable = (): JSX.Element => {
         ))}
       </thead>
       <tbody {...getTableBodyProps()}>
-        {rows.map((row, rowIndex) => {
+        {rows.map((row) => {
           prepareRow(row);
           return (
-            <tr {...row.getRowProps()} key={`row-${rowIndex}`}>
-              {row.cells.map((cell, cellIndex) => {
+            <tr {...row.getRowProps()}>
+              {row.cells.map((cell) => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const className = (cell.column as any).className as string;
                 return (
                   <td
                     {...cell.getCellProps()}
-                    className={className + ' pt-5'}
-                    key={`td-${rowIndex}-${cellIndex}`}
+                    className={classNames(className, 'pt-5')}
                   >
                     {cell.render('Cell')}
                   </td>

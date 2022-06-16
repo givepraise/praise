@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-key */
+import { InlineLabel } from '@/components/InlineLabel';
 import { AllPeriods } from '@/model/periods';
 import { formatIsoDateUTC } from '@/utils/date';
 import { classNames } from '@/utils/index';
@@ -16,10 +18,12 @@ const PeriodsTable = (): JSX.Element => {
       {
         Header: 'Period',
         accessor: 'name',
+        className: 'pl-5 text-left',
       },
       {
         Header: 'End date',
         accessor: 'endDate',
+        className: 'text-left',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): string => {
           return formatIsoDateUTC(data.value);
@@ -28,22 +32,21 @@ const PeriodsTable = (): JSX.Element => {
       {
         Header: '',
         accessor: 'status',
+        className: 'pr-5',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => {
           return (
             <div className="w-full text-right">
-              <div
-                className={classNames(
+              <InlineLabel
+                text={data.value}
+                className={
                   data.value === 'OPEN'
-                    ? 'bg-green-300'
+                    ? 'bg-themecolor-alt-1/50'
                     : data.value === 'QUANTIFY'
-                    ? 'bg-pink-300'
-                    : 'bg-gray-300',
-                  'inline-block px-2 py-1 text-xs text-white bg-gray-800 rounded-full'
-                )}
-              >
-                {data.value === 'QUANTIFY' ? 'QUANTIFYING' : data.value}
-              </div>
+                    ? 'bg-themecolor-alt-1'
+                    : 'bg-themecolor-alt-1/30'
+                }
+              />
             </div>
           );
         },
@@ -75,12 +78,16 @@ const PeriodsTable = (): JSX.Element => {
     >
       <thead>
         {headerGroups.map((headerGroup) => (
-          // eslint-disable-next-line react/jsx-key
           <tr className="px-5">
-            {headerGroup.headers.map((column) => (
-              // eslint-disable-next-line react/jsx-key
-              <th className="text-left">{column.render('Header')}</th>
-            ))}
+            {headerGroup.headers.map((column) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const className = (column as any).className as string;
+              return (
+                <th className={classNames(className, 'pb-2')}>
+                  {column.render('Header')}
+                </th>
+              );
+            })}
           </tr>
         ))}
       </thead>
@@ -88,19 +95,25 @@ const PeriodsTable = (): JSX.Element => {
         {rows.map((row) => {
           prepareRow(row);
           return (
-            // eslint-disable-next-line react/jsx-key
             <tr
               className={classNames(
                 row.values.status === 'CLOSED' ? 'text-gray-400' : '',
                 'px-5 cursor-pointer hover:bg-warm-gray-100 dark:hover:bg-slate-500'
               )}
-              id="" //TODO set id
               {...row.getRowProps()}
               onClick={handleClick((row.original as PeriodDetailsDto)._id)}
             >
               {row.cells.map((cell) => {
-                // eslint-disable-next-line react/jsx-key
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const className = (cell.column as any).className as string;
+                return (
+                  <td
+                    {...cell.getCellProps()}
+                    className={classNames(className, 'py-3')}
+                  >
+                    {cell.render('Cell')}
+                  </td>
+                );
               })}
             </tr>
           );

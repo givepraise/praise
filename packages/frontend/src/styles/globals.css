@@ -11,7 +11,7 @@
     @apply dark:border-slate-700;
   }
   #root {
-    @apply min-h-screen bg-[#E7E5E4] text-gray-800 dark:bg-slate-800 dark:text-white text-sm;
+    @apply min-h-screen text-sm text-gray-800 dark:bg-slate-800 dark:text-white bg-warm-gray-300;
   }
 
   h2 {
@@ -23,7 +23,7 @@
   }
 
   input, textarea {
-    @apply text-sm dark:border-slate-400 dark:bg-slate-500; 
+    @apply text-sm dark:border-slate-400 dark:bg-slate-500 dark:placeholder-white; 
   }
 
 
@@ -50,11 +50,11 @@
     }
 
     .praise-button {
-      @apply px-4 py-2 font-bold text-white bg-gray-800 rounded hover:bg-gray-700;
+      @apply px-4 py-2 font-bold text-white rounded-md bg-themecolor-3 hover:bg-themecolor-4;
     }
     
     .praise-button-disabled {
-      @apply px-4 py-2 font-bold text-gray-500 bg-gray-700 rounded cursor-default;
+      @apply cursor-default praise-button bg-themecolor-3/50 text-white/50 hover:bg-themecolor-3/50;
     }
     
     .praise-button-small {
@@ -66,3 +66,4 @@
     }
     
   }
+
