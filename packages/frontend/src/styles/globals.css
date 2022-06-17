@@ -57,10 +57,6 @@
       @apply cursor-default praise-button bg-themecolor-3/50 text-white/50 hover:bg-themecolor-3/50;
     }
     
-    .praise-button-small {
-      @apply py-0 text-sm;
-    }
-    
     .praise-button-round {
       @apply flex items-center justify-center rounded-full hover:bg-warm-gray-300 w-7 h-7 dark:text-white dark:hover:bg-slate-800;
     }
