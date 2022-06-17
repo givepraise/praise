@@ -32,31 +32,31 @@ export const WrappedUserPopover = ({
   const [closeTimeout, setCloseTimeout] = React.useState<NodeJS.Timeout | null>(
     null
   );
-  const user2 = useRecoilValue(SingleUser(userAccount?.user));
+  const userAccountUser = useRecoilValue(SingleUser(userAccount?.user));
 
   if (!user && !userAccount) return null;
 
   if (usePseudonym) return children;
 
-  let discord: string | undefined;
+  let discordUsername: string | undefined;
   let ethereumAddress: string | undefined;
 
   if (user) {
-    discord = user.accounts?.find(
+    discordUsername = user.accounts?.find(
       (account) => account.platform === 'DISCORD'
     )?.name;
     ethereumAddress = user.ethereumAddress;
-  }
-
-  if (user2) {
-    discord = user2.accounts?.find(
-      (account) => account.platform === 'DISCORD'
-    )?.name;
-    ethereumAddress = user2.ethereumAddress;
-  }
-
-  if (userAccount && userAccount.platform === 'DISCORD') {
-    discord = userAccount.name;
+  } else {
+    if (userAccountUser) {
+      discordUsername = userAccountUser.accounts?.find(
+        (account) => account.platform === 'DISCORD'
+      )?.name;
+      ethereumAddress = userAccountUser.ethereumAddress;
+    } else {
+      if (userAccount && userAccount.platform === 'DISCORD') {
+        discordUsername = userAccount.name;
+      }
+    }
   }
 
   return (
@@ -90,10 +90,10 @@ export const WrappedUserPopover = ({
               <div className="mb-5 text-4xl">
                 <UserAvatar user={user} userAccount={userAccount} />
               </div>
-              {discord && (
+              {discordUsername && (
                 <div className="flex items-center space-x-2">
                   <FontAwesomeIcon icon={faDiscord} size="1x" />
-                  <span>{discord}</span>
+                  <span>{discordUsername}</span>
                 </div>
               )}
               {ethereumAddress && (
