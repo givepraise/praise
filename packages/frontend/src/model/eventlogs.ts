@@ -15,7 +15,7 @@ export type AllEventLogsQueryParameters = {
 export const useAllEventLogs = (
   queryParameters: AllEventLogsQueryParameters
 ): {
-  logsData: PaginatedResponseBody<EventLogDto>;
+  data: PaginatedResponseBody<EventLogDto>;
   loading: boolean;
 } => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -39,7 +39,7 @@ export const useAllEventLogs = (
     void fetchData();
   }, [setLogs, setLoading, queryParameters]);
 
-  return { logsData: logs, loading };
+  return { data: logs, loading };
 };
 
 export const useAllEventLogTypes = (): {
