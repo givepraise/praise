@@ -20,7 +20,7 @@ const PraiseRow = ({ praise, children }: PraiseRowProps): JSX.Element => {
 
   return (
     <li className="p-5 cursor-pointer first:rounded-t-lg hover:bg-warm-gray-100 dark:hover:bg-slate-500">
-      <div onClick={handleClick(praise)}>{children}</div>
+      <div onClickCapture={handleClick(praise)}>{children}</div>
     </li>
   );
 };
