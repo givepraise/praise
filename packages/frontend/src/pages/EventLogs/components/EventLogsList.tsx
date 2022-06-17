@@ -24,7 +24,7 @@ const EventLogsTable = ({
         {data.docs.map((eventlog, i) => (
           <EventLog
             eventlog={eventlog}
-            className={`${i % 2 === 0 && 'bg-gray-100'} px-2`}
+            className={`${i % 2 === 0 && 'bg-gray-100 dark:bg-slate-500'} px-7`}
             key={i}
           />
         ))}
@@ -40,7 +40,7 @@ const EventLogsTable = ({
                 <FontAwesomeIcon
                   icon={faArrowLeft}
                   size="1x"
-                  className="mr-2"
+                  className="pl-5 mr-2"
                 />
                 Previous
               </a>
@@ -58,7 +58,7 @@ const EventLogsTable = ({
                 <FontAwesomeIcon
                   icon={faArrowRight}
                   size="1x"
-                  className="ml-2"
+                  className="pr-5 ml-2"
                 />
               </a>
             )}

@@ -1,5 +1,8 @@
 import BreadCrumb from '@/components/BreadCrumb';
-import { faBook } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowDownWideShort,
+  faBook,
+} from '@fortawesome/free-solid-svg-icons';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import EventLogsList from './components/EventLogsList';
 import LoaderSpinner from '@/components/LoaderSpinner';
@@ -85,7 +88,7 @@ const EventLogsPage = (): JSX.Element => {
     <div className="praise-page">
       <BreadCrumb name="Transparency Log" icon={faBook} />
 
-      <div className="w-full praise-box overflow-x-auto">
+      <div className="w-full overflow-x-auto praise-box">
         <h2 className="mb-2">Transparency Log</h2>
         <p>A log of all user actions that change the database state.</p>
       </div>
@@ -101,6 +104,7 @@ const EventLogsPage = (): JSX.Element => {
               }}
               selected={selectedFilters}
               options={filterOptions}
+              noSelectedMessage="All log items"
             />
           </div>
 
@@ -124,6 +128,7 @@ const EventLogsPage = (): JSX.Element => {
               }}
               selected={selectedSort}
               options={sortOptions}
+              icon={faArrowDownWideShort}
             />
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Listbox, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
@@ -12,20 +12,23 @@ interface MultiselectInputProps {
   selected: ISelectedItem[];
   handleChange: (element) => void;
   options: ISelectedItem[];
+  noSelectedMessage: string;
 }
 
 const MultiselectInput = ({
   handleChange,
   selected,
   options,
+  noSelectedMessage,
 }: MultiselectInputProps): JSX.Element => {
   return (
     <div className="relative w-60 border border-gray-400 h-[42px]">
       <Listbox value={selected} onChange={handleChange} multiple>
-        <Listbox.Button className="text-xs pl-2 pr-8 text-left h-[42px] w-full bg-transparent border-none outline-none focus:ring-0 ">
-          {({ open }): JSX.Element => (
+        <Listbox.Button className=" pl-2 pr-8 text-left h-[42px] w-full bg-transparent border-none outline-none focus:ring-0 ">
+          {(): JSX.Element => (
             <>
               <span className="block truncate">
+                {selected.length === 0 && noSelectedMessage}
                 {selected.length > 3
                   ? `${selected.length} items.`
                   : selected
@@ -37,11 +40,7 @@ const MultiselectInput = ({
 
               <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                 <span className="text-gray-800">
-                  {open ? (
-                    <FontAwesomeIcon icon={faSortDown} className="mt-[-1]" />
-                  ) : (
-                    <FontAwesomeIcon icon={faSortUp} className="mt-2" />
-                  )}
+                  <FontAwesomeIcon icon={faChevronDown} className="mt-[-1]" />
                 </span>
               </div>
             </>
@@ -53,7 +52,7 @@ const MultiselectInput = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto bg-white py-1 border border-gray-400 text-xs">
+          <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto bg-white border border-gray-400 max-h-60">
             {options.map((filter, filterIdx) => (
               <Listbox.Option
                 key={filterIdx}
@@ -76,7 +75,7 @@ const MultiselectInput = ({
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">
                       <input
                         type="checkbox"
-                        className="mr-4 text-xs w-4 h-4 text-black focus:ring-0"
+                        className="w-4 h-4 mr-4 text-black focus:ring-0"
                         checked={selected}
                         onChange={(): void => {}}
                       />
