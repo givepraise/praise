@@ -355,7 +355,7 @@ export const exportPraise = async (
     },
     {
       label: 'REASON',
-      value: 'reason',
+      value: 'reasonRealized',
     },
     {
       label: 'SOURCE ID',
