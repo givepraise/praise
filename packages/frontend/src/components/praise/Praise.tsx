@@ -19,10 +19,7 @@ import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { UserPopover } from '@/components/user/UserPopover';
 import { UserName } from '@/components/user/UserName';
 import { UserAvatarAndName } from '../user/UserAvatarAndName';
-
-const formatSourceName = (sourceName: string): string => {
-  return decodeURIComponent(sourceName).replace(/:/g, ' / ');
-};
+import { SourceName } from './SourceName';
 
 interface Props {
   praise: PraiseDto;
@@ -155,14 +152,14 @@ const Praise = ({
                 <FontAwesomeIcon
                   icon={faStar}
                   size="1x"
-                  className="pr-2 text-yellow-400"
+                  className="mr-1 text-yellow-400"
                   color=""
                 />
                 {praise.scoreRealized}
                 {' • '}
               </>
             )}
-            {formatSourceName(praise.sourceName)}
+            <SourceName sourceName={praise.sourceName} />
           </div>
         </div>
       </div>
