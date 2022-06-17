@@ -1,5 +1,5 @@
 .praise-defaults {
-  @apply w-full p-5;
+  @apply w-full px-0 py-5 md:px-5;
 }
 
 .praise-page {

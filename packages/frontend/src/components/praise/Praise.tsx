@@ -111,7 +111,7 @@ const Praise = ({
               )}
               arrow
             >
-              <div className="flex items-center pl-2 text-xs text-gray-500 dark:text-gray-400">
+              <div className="items-center hidden pl-2 text-xs text-gray-500 md:flex dark:text-gray-400">
                 {localizeAndFormatIsoDateRelative(praise.createdAt)}
               </div>
             </Tooltip>
@@ -145,6 +145,9 @@ const Praise = ({
                 shortDuplicatePraiseId ? 'text-gray-400' : ''
               )}
             ></span>
+          </div>
+          <div className="flex items-center pb-2 text-xs text-gray-500 md:hidden dark:text-gray-400">
+            {localizeAndFormatIsoDateRelative(praise.createdAt)}
           </div>
           <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
             {showScore && period && (period.status === 'CLOSED' || isAdmin) && (
