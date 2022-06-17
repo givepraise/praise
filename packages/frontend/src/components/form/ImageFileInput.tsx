@@ -17,7 +17,7 @@ const ImageFileInput = (name: string, src: string | undefined): JSX.Element => {
             {src ? (
               <img src={src} className="block w-auto h-48" />
             ) : (
-              <div className="block w-auto h-48 bg-gray-300 "></div>
+              <div className="block w-auto h-48 bg-warm-gray-300 "></div>
             )}
           </div>
         </div>

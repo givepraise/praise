@@ -27,7 +27,7 @@ const SettingsPage = (): JSX.Element | null => {
   );
 
   return (
-    <div className="praise-page">
+    <div className="praise-page-wide">
       <BreadCrumb name="Settings" icon={faCogs} />
 
       <div className="flex flex-col space-y-5 xl:space-x-5 xl:flex-row xl:space-y-0">

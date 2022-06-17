@@ -67,8 +67,8 @@ const PeriodDetailPage = (): JSX.Element | null => {
   if (!period || !period.receivers) return null;
 
   return (
-    <div className="praise-page">
-      <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
+    <div className="praise-page-wide">
+      <BreadCrumb name="Periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 
       <React.Suspense fallback={null}>

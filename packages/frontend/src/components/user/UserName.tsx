@@ -43,19 +43,22 @@ export const WrappedUserName = ({
   if ((!user && !userAccount) || (usePseudonym && !periodId))
     name = 'Unknown username';
 
+  console.log(user);
+  console.log(userAccount);
+
   if (user) {
     if (usePseudonym && periodId) {
       name = <UserPseudonym userId={user._id} periodId={periodId} />;
     } else {
       name = nameFromUser(user);
     }
-  }
-
-  if (userAccount) {
-    if (usePseudonym && periodId) {
-      name = <UserPseudonym userId={userAccount._id} periodId={periodId} />;
-    } else {
-      name = nameFromUserAccount(userAccount);
+  } else {
+    if (userAccount) {
+      if (usePseudonym && periodId) {
+        name = <UserPseudonym userId={userAccount._id} periodId={periodId} />;
+      } else {
+        name = nameFromUserAccount(userAccount);
+      }
     }
   }
 

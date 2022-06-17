@@ -28,10 +28,7 @@ const SignMessageButton = ({
   return isLoading || isSuccess ? (
     <LoaderSpinner />
   ) : (
-    <button
-      className="px-4 py-2 font-bold text-white bg-gray-800 rounded hover:bg-gray-700"
-      onClick={(): void => signMessage()}
-    >
+    <button className="praise-button" onClick={(): void => signMessage()}>
       {text}
     </button>
   );

@@ -92,15 +92,15 @@ const EventLogsPage = (): JSX.Element => {
     <div className="praise-page">
       <BreadCrumb name="Transparency Log" icon={faBook} />
 
-      <div className="w-full overflow-x-auto praise-box">
+      <div className="mb-5 praise-box">
         <h2 className="mb-2">Transparency Log</h2>
         <p>A log of all user actions that change the database state.</p>
       </div>
 
-      <div className="praise-box">
+      <div className="p-0 praise-box">
         <div className="flex mb-8">
           {/* Filter */}
-          <div>
+          <div className="mt-5 mb-5 ml-5 mr-4">
             <MultiselectInput
               handleChange={(e): void => {
                 setSelectedFilters(e);
@@ -113,7 +113,7 @@ const EventLogsPage = (): JSX.Element => {
           </div>
 
           {/* Search */}
-          <div className="ml-4">
+          <div className="mt-5 mb-5 mr-4">
             <SearchInput
               handleChange={(e): void => {
                 setSearchValue(e);
@@ -124,7 +124,7 @@ const EventLogsPage = (): JSX.Element => {
           </div>
 
           {/* Sort */}
-          <div className="ml-auto">
+          <div className="mt-5 mb-5 ml-auto mr-5">
             <SelectInput
               handleChange={(e): void => {
                 setSelectedSort(e);

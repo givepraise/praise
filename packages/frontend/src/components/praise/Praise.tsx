@@ -123,7 +123,7 @@ const Praise = ({
             {showIdPrefix && (
               <InlineLabel
                 text={`#${praise._id.slice(-4)}`}
-                className="bg-gray-400"
+                className="bg-warm-gray-400"
               />
             )}
             {dismissed && (

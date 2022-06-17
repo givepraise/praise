@@ -25,7 +25,7 @@ const DuplicatePraiseLabel = ({
         window.location.href = `/praise/${praiseId}`;
       }}
       text={`#${praiseId.slice(-4)}`}
-      className="bg-gray-400"
+      className="bg-warm-gray-400"
     />
   );
 };

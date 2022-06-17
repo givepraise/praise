@@ -78,7 +78,7 @@ const DisabledFormFields = (
               {setting.description}
             </div>
           )}
-          <div className="p-2 bg-gray-200">{setting.value}</div>
+          <div className="p-2 bg-warm-gray-200">{setting.value}</div>
         </div>
       ))}
     </div>

@@ -32,7 +32,7 @@ const EventLogsTable = ({
         ))}
       </div>
       {(logsData.hasNextPage || logsData.hasPrevPage) && (
-        <div className="flex justify-between w-full mt-4 space-x-4">
+        <div className="flex justify-between w-full mt-4 mb-5 space-x-4">
           <div>
             {logsData.hasPrevPage && (
               <a

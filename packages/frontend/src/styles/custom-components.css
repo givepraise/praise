@@ -1,5 +1,13 @@
+.praise-defaults {
+  @apply w-full p-5;
+}
+
 .praise-page {
-  @apply p-5;
+  @apply praise-defaults md:w-[750px];
+}
+
+.praise-page-wide {
+  @apply praise-defaults md:w-[750px] xl:w-[1000px];
 }
 
 .praise-box-defaults {
@@ -11,7 +19,7 @@
 }
 
 .praise-box-wide {
-  @apply praise-box-defaults w-full xl:w-[960px] p-5;
+  @apply praise-box-defaults w-full md:w-[710px] xl:w-[960px] p-5;
 }
 
 
