@@ -2,7 +2,6 @@ import { PraiseDto } from 'api/dist/praise/types';
 import getMarkdownText from '@/components/MarkdownText';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { InlineLabel } from '@/components/InlineLabel';
 import { classNames } from '@/utils/index';
 import {
@@ -35,6 +34,7 @@ interface Props {
   dismissed?: boolean;
   shortDuplicatePraiseId?: string;
   bigGiverAvatar?: boolean;
+  showScore?: boolean;
 }
 
 const Praise = ({
@@ -47,6 +47,7 @@ const Praise = ({
   dismissed = false,
   shortDuplicatePraiseId = undefined,
   bigGiverAvatar = true,
+  showScore = true,
 }: Props): JSX.Element | null => {
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
@@ -113,7 +114,7 @@ const Praise = ({
               )}
               arrow
             >
-              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+              <div className="flex items-center pl-2 text-xs text-gray-500 dark:text-gray-400">
                 {localizeAndFormatIsoDateRelative(praise.createdAt)}
               </div>
             </Tooltip>
@@ -149,7 +150,7 @@ const Praise = ({
             ></span>
           </div>
           <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-            {period && (period.status === 'CLOSED' || isAdmin) && (
+            {showScore && period && (period.status === 'CLOSED' || isAdmin) && (
               <>
                 <FontAwesomeIcon
                   icon={faStar}

@@ -42,7 +42,9 @@ const PraiseDetailTable = (): JSX.Element => {
         accessor: 'quantifier',
         className: 'text-left',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Cell: (data: any) => <UserAvatarAndName userId={data.value} />,
+        Cell: (data: any) => (
+          <UserAvatarAndName userId={data.value} avatarClassName="text-2xl" />
+        ),
       },
       {
         Header: 'Date',

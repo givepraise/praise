@@ -7,7 +7,6 @@ import {
 } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
 import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
-import { classNames } from '@/utils/index';
 import { PeriodStatusType } from 'api/dist/period/types';
 import {
   faBalanceScaleLeft,
@@ -72,13 +71,13 @@ const PeriodDetailPage = (): JSX.Element | null => {
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 
-      <div className="mb-5 praise-box-wide">
-        <React.Suspense fallback="Loading…">
+      <React.Suspense fallback={null}>
+        <div className="mb-5 praise-box-wide">
           <PeriodDetailHead />
-        </React.Suspense>
-      </div>
+        </div>
+      </React.Suspense>
 
-      <React.Suspense fallback="Loading…">
+      <React.Suspense fallback={null}>
         <QuantifierMessage />
       </React.Suspense>
 
@@ -105,8 +104,8 @@ const PeriodDetailPage = (): JSX.Element | null => {
           </SubPageNav>
         </div>
 
-        <div className="w-full px-0 praise-box">
-          <Suspense fallback="Loading…">
+        <div className="px-0 praise-box">
+          <Suspense fallback={null}>
             <Switch>
               <Route path={`${path}/receivers`}>
                 <ReceiverTable />

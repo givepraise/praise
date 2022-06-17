@@ -117,7 +117,7 @@ const PeriodAssignDialog = ({
           <Dialog.Title className="text-center mb-7">
             Assign quantifiers
           </Dialog.Title>
-          <React.Suspense fallback="Loading…">
+          <React.Suspense fallback={null}>
             <DialogMessage
               onAssign={onAssign}
               onClose={onClose}

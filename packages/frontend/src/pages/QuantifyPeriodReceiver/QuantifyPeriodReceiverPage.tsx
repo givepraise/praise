@@ -83,17 +83,17 @@ const QuantifyPeriodReceiverPage = (): JSX.Element => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
 
   return (
-    <div className="h-full max-w-4xl mx-auto">
-      <React.Suspense fallback="Loading…">
+    <div className="praise-page">
+      <React.Suspense fallback={null}>
         <PeriodBreadCrumb />
       </React.Suspense>
       <BackLink to={`/periods/${periodId}/quantify`} />
 
-      <div className="praise-box">
-        <React.Suspense fallback="Loading…">
+      <React.Suspense fallback={null}>
+        <div className="mb-5 praise-box-wide">
           <PeriodMessage />
-        </React.Suspense>
-      </div>
+        </div>
+      </React.Suspense>
 
       <React.Suspense fallback={null}>
         <QuantifyTable

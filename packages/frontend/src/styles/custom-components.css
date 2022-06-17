@@ -11,7 +11,7 @@
 }
 
 .praise-box-wide {
-  @apply praise-box-defaults w-full md:w-[950px] p-5;
+  @apply praise-box-defaults w-full xl:w-[960px] p-5;
 }
 
 

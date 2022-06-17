@@ -15,8 +15,8 @@ const MarkDismissedButton = ({
       disabled={disabled}
       className={
         disabled
-          ? 'praise-button-disabled space-x-2 bg-red-200 text-white'
-          : 'praise-button space-x-2 bg-red-500 hover:bg-red-600 text-white'
+          ? 'praise-button-disabled space-x-2'
+          : 'praise-button space-x-2'
       }
       onClick={onClick}
     >

@@ -44,7 +44,7 @@ const SettingsPage = (): JSX.Element | null => {
         <div className="praise-box">
           <Switch>
             <Route path={`${path}/application`}>
-              <React.Suspense fallback="Loading…">
+              <React.Suspense fallback={null}>
                 <SettingsForm
                   settings={applicationSettings}
                   setSetting={setSetting}
@@ -52,7 +52,7 @@ const SettingsPage = (): JSX.Element | null => {
               </React.Suspense>
             </Route>
             <Route path={`${path}/period`}>
-              <React.Suspense fallback="Loading…">
+              <React.Suspense fallback={null}>
                 <SettingsForm
                   settings={periodDefaultSettings}
                   setSetting={setSetting}
@@ -60,7 +60,7 @@ const SettingsPage = (): JSX.Element | null => {
               </React.Suspense>
             </Route>
             <Route path={`${path}/discord`}>
-              <React.Suspense fallback="Loading…">
+              <React.Suspense fallback={null}>
                 <SettingsForm
                   settings={discordSettings}
                   setSetting={setSetting}

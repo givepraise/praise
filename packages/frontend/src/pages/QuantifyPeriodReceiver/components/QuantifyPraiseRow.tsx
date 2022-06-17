@@ -43,15 +43,10 @@ const QuantifyPraiseRow = ({
 
   return (
     <tr className="group">
-      <td>
-        <input
-          type="checkbox"
-          className="w-5 h-5 mr-4 text-xl"
-          checked={checked}
-          onChange={onToggleCheck}
-        />
+      <td className="pr-5">
+        <input type="checkbox" checked={checked} onChange={onToggleCheck} />
       </td>
-      <td>
+      <td className="pb-5 pr-5">
         <Praise
           praise={praise}
           showIdPrefix={true}
@@ -61,9 +56,10 @@ const QuantifyPraiseRow = ({
           dismissed={dismissed}
           shortDuplicatePraiseId={shortenDuplicatePraiseId(praise, userId)}
           bigGiverAvatar={false}
+          showScore={false}
         />
       </td>
-      <td>
+      <td className="pr-5">
         {duplicate ? (
           <Notice type="info" className="w-40 py-2">
             <>

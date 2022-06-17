@@ -26,14 +26,14 @@ const PraiseDetailsPage = (): JSX.Element | null => {
       <BreadCrumb name={'Praise details'} icon={faCalendarAlt} />
       <BackLink to={backLinkUrl} />
 
-      <React.Suspense fallback="Loading…">
+      <React.Suspense fallback={null}>
         <div className="mb-5 praise-box">
           <Praise praise={praise} />
         </div>
       </React.Suspense>
 
       <div className="praise-box">
-        <React.Suspense fallback="Loading…">
+        <React.Suspense fallback={null}>
           <PraiseDetailTable />
         </React.Suspense>
       </div>

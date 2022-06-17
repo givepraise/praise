@@ -66,10 +66,10 @@ const DisabledFormFields = (
   settings: SettingDto[] | PeriodSettingDto[]
 ): JSX.Element => (
   <>
-    <Notice type="danger" className="mb-8">
+    <Notice type="info" className="mb-8">
       <span>Settings locked for this period</span>
     </Notice>
-    <div className="px-5 mb-2 space-y-4">
+    <div className="mb-2 space-y-4">
       {settings.map((setting: SettingDto | PeriodSettingDto) => (
         <div key={setting.key}>
           <label className="block font-bold">{setting.label}</label>

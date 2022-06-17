@@ -12,7 +12,7 @@ const MyPraise = (): JSX.Element => {
       <ActiveNoticesBoard />
 
       <div className="praise-box p-0">
-        <React.Suspense fallback="Loading…">
+        <React.Suspense fallback={null}>
           <MyPraiseTable />
         </React.Suspense>
       </div>

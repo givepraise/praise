@@ -8,6 +8,7 @@ import { TableOptions, useSortBy, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { sortBy } from 'lodash';
 import { classNames } from '@/utils/index';
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
 const ReceiverTable = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -25,7 +26,10 @@ const ReceiverTable = (): JSX.Element | null => {
           className: 'text-left pl-5',
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           Cell: (data: any): JSX.Element => (
-            <div>{data.row.original.userAccount.name}</div>
+            <UserAvatarAndName
+              userAccount={data.row.original.userAccount}
+              avatarClassName="text-2xl"
+            />
           ),
         },
         {
@@ -108,7 +112,7 @@ const ReceiverTable = (): JSX.Element | null => {
               <tr
                 className="cursor-pointer hover:bg-warm-gray-100 dark:hover:bg-slate-500"
                 {...row.getRowProps()}
-                onClick={handleClick(row.original)}
+                onClickCapture={handleClick(row.original)}
               >
                 {row.cells.map((cell) => {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any

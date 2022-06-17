@@ -25,7 +25,7 @@ const PeriodsPage = (): JSX.Element => {
             </Link>
           </div>
         </AdminOnly>
-        <React.Suspense fallback="Loading…">
+        <React.Suspense fallback={null}>
           <PeriodsTable />
         </React.Suspense>
       </div>

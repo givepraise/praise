@@ -21,10 +21,16 @@ const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element | null => {
         <div className="flex items-center w-1/2 pr-3">
           <UserAvatarAndName user={data} avatarClassName="text-2xl" />
         </div>
-        <div className="w-1/2">
+        <div className="w-1/2 text-right">
           {data.roles.map((role, index) => {
             if (role !== UserRole.USER) {
-              return <InlineLabel key={`${role}-${index}`} text={role} />;
+              return (
+                <InlineLabel
+                  key={`${role}-${index}`}
+                  text={role}
+                  className="bg-themecolor-alt-1"
+                />
+              );
             }
           })}
         </div>

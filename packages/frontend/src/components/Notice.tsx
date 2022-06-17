@@ -20,7 +20,7 @@ const Notice = ({
   } else if (type === 'warning') {
     typeClasses = 'bg-orange-300';
   } else if (type === 'info') {
-    typeClasses = 'bg-gray-300';
+    typeClasses = 'bg-gray-300 dark:bg-slate-700';
   }
 
   return (

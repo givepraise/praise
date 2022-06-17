@@ -70,7 +70,13 @@ const DuplicateDialog = ({
               {duplicatePraisePercentage * 100}% of its value.
             </p>
           )}
-          <Praise praise={originalPraise} className="bg-warm-gray-100 px-4" />
+          <Praise
+            praise={originalPraise}
+            className="p-5 rounded-md bg-warm-gray-100"
+            showScore={false}
+            bigGiverAvatar={false}
+            showReceiver={false}
+          />
           <div className="flex justify-center">
             <QuantifySlider
               allowedScores={allowedValues}

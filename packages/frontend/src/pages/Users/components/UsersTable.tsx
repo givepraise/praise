@@ -116,9 +116,6 @@ const UsersTable = (): JSX.Element => {
         <div className="w-1/2">
           <span className="font-bold">User</span>
         </div>
-        <div className="w-1/2">
-          <span className="font-bold">Roles</span>
-        </div>
       </div>
       <React.Suspense fallback="Loading...">
         {applyFilter(tableData).map((row, index) => {

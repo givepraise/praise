@@ -108,19 +108,19 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
   };
 
   return (
-    <div className="h-full ">
-      <div className="relative sticky top-0 z-10 w-full p-5 space-x-6 bg-gray-200 border-t border-l border-r rounded-t">
-        <MarkDismissedButton
-          disabled={selectedPraises.length < 1}
-          onClick={(): void => setIsDismissDialogOpen(true)}
-        />
+    <div>
+      <div className="sticky top-0 z-10 w-full p-5 space-x-4 border-t border-l border-r rounded-t-xl bg-warm-gray-100 dark:bg-slate-700">
         <MarkDuplicateButton
           disabled={selectedPraises.length < 2}
           onClick={(): void => setIsDuplicateDialogOpen(true)}
         />
+        <MarkDismissedButton
+          disabled={selectedPraises.length < 1}
+          onClick={(): void => setIsDismissDialogOpen(true)}
+        />
       </div>
 
-      <div className="overflow-x-auto rounded-t-none praise-box">
+      <div className="overflow-x-auto rounded-t-none praise-box-wide">
         <table className="w-full table-auto">
           <tbody>
             {Object.keys(weeklyData).map((weekKey, index) => (
@@ -128,7 +128,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                 {index !== 0 && index !== data.length - 1 && (
                   <tr>
                     <td colSpan={5}>
-                      <div className="my-4 border-2 border-t border-gray-400" />
+                      <div className="mb-5 border-2 border-t border-gray-400" />
                     </td>
                   </tr>
                 )}

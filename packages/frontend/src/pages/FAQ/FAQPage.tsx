@@ -29,7 +29,7 @@ const FAQPage = (): JSX.Element | null => {
 
       <div className="w-full praise-box">
         <h2 className="mb-4">FAQ</h2>
-        <React.Suspense fallback="Loading…">
+        <React.Suspense fallback={null}>
           {faq.map((data, index) => {
             return (
               <div key={index}>

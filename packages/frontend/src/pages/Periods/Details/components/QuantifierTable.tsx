@@ -8,6 +8,7 @@ import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { sortBy } from 'lodash';
 import { classNames } from '@/utils/index';
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
 const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -21,7 +22,10 @@ const QuantifierTable = (): JSX.Element => {
         className: 'text-left pl-5',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => (
-          <UserCell userId={data.row.original._id} />
+          <UserAvatarAndName
+            userId={data.row.original._id}
+            avatarClassName="text-2xl"
+          />
         ),
       },
       {
@@ -63,10 +67,8 @@ const QuantifierTable = (): JSX.Element => {
 
   if (period.status === 'OPEN')
     return (
-      <div className="flex items-center w-full h-full">
-        <Notice type="danger">
-          <span>No quantifiers assigned in this period</span>
-        </Notice>
+      <div className="flex items-center justify-center w-full h-full">
+        No quantifiers have been assigned for this period.
       </div>
     );
 

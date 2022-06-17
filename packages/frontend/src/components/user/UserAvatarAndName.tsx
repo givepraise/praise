@@ -43,7 +43,7 @@ export const WrappedUserAvatarAndName = ({
             usePseudonym={usePseudonym}
           />
         </div>
-        <div className={`flex items-center pr-2 ${nameClassName}`}>
+        <div className={`flex items-center ${nameClassName}`}>
           <UserName
             user={mergedUser}
             userAccount={userAccount}

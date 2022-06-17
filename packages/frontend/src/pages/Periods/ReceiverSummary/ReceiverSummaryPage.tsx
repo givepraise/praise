@@ -28,7 +28,7 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
   if (!receiver || !receiver.userAccount) return null;
 
   return (
-    <div className="praise-box">
+    <div className="mb-5 praise-box">
       <h2>{receiver.userAccount.name}</h2>
       <div className="mt-5">
         Period: {periodDetails.name}
@@ -44,15 +44,15 @@ const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
   useAllPeriodSettingsQuery(periodId);
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="praise-page">
       <BreadCrumb name={'Receiver summary for period'} icon={faCalendarAlt} />
       <BackLink to={`/periods/${periodId}`} />
 
-      <React.Suspense fallback="Loading…">
+      <React.Suspense fallback={null}>
         <PeriodReceiverMessage />
       </React.Suspense>
 
-      <React.Suspense fallback="Loading…">
+      <React.Suspense fallback={null}>
         <ReceiverSummaryTable />
       </React.Suspense>
     </div>
