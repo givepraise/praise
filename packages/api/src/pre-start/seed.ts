@@ -59,19 +59,24 @@ const seedUserAccount = async (
   return userAccount;
 };
 
-const seedUser = async (
-  userData: Object = {},
-  userAccountData: Object = {}
-): Promise<UserDocument> => {
+const seedUser = async (userData: Object = {}): Promise<UserDocument> => {
   const user = await UserModel.create({
     ethereumAddress: faker.finance.ethereumAddress(),
     roles: ['USER'],
     ...userData,
   });
 
-  await seedUserAccount(user, userAccountData);
-
   return user;
+};
+
+const seedUserAndUserAccount = async (
+  userData: Object = {},
+  userAccountData: Object = {}
+): Promise<[UserDocument, UserAccountDocument]> => {
+  const user = await seedUser(userData);
+  const userAccount = await seedUserAccount(user, userAccountData);
+
+  return [user, userAccount];
 };
 
 const seedPeriod = async (periodData: Object = {}): Promise<PeriodDocument> => {
@@ -269,6 +274,7 @@ export {
   seedData,
   seedUser,
   seedUserAccount,
+  seedUserAndUserAccount,
   seedPeriod,
   seedPeriods,
   seedPraise,
