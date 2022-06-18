@@ -99,7 +99,7 @@ describe('logEvent', () => {
 
     const wallet = Wallet.createRandom();
     const user = await seedUser({ ethereumAddress: wallet.address });
-    const useraccount = await seedUserAccount(user);
+    const useraccount = await seedUserAccount({ user: user._id });
     const description = 'This is a description of an event';
 
     await logEvent(eventTypeKey, description, {

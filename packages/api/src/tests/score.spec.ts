@@ -471,7 +471,7 @@ describe('calculateReceiverCompositeScore', () => {
 
   it('receiver composite score is sum of all quantification composite scores', async () => {
     const user = await seedUser();
-    const receiver = await seedUserAccount(user);
+    const receiver = await seedUserAccount({ user: user._id });
 
     const praise = await seedPraise({
       receiver: receiver._id,

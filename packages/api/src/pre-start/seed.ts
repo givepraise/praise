@@ -45,11 +45,9 @@ const fetchTwoRandomUserAccounts = async (): Promise<UserAccountDocument[]> => {
 };
 
 const seedUserAccount = async (
-  user: UserDocument,
   userAccountData: Object = {}
 ): Promise<UserAccountDocument> => {
   const userAccount = await UserAccountModel.create({
-    user: user._id,
     accountId: faker.datatype.uuid(),
     name: faker.internet.userName(),
     platform: 'DISCORD',
@@ -74,7 +72,10 @@ const seedUserAndUserAccount = async (
   userAccountData: Object = {}
 ): Promise<[UserDocument, UserAccountDocument]> => {
   const user = await seedUser(userData);
-  const userAccount = await seedUserAccount(user, userAccountData);
+  const userAccount = await seedUserAccount({
+    user: user._id,
+    ...userAccountData,
+  });
 
   return [user, userAccount];
 };
