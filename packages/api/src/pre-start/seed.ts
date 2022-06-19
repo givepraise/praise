@@ -84,7 +84,7 @@ const seedPeriod = async (periodData: Object = {}): Promise<PeriodDocument> => {
   const period = await PeriodModel.create({
     name: `Period ${faker.random.alpha()}`,
     status: 'OPEN',
-    endDate: new Date(),
+    endDate: faker.date.future(),
     quantifiers: [],
     ...periodData,
   });
