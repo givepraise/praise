@@ -134,6 +134,8 @@ describe('GET /api/period/:periodId/receiverPraise', () => {
 
     const period = await seedPeriod();
     const userAccount = await seedUserAccount();
+    await seedUserAccount();
+
     await seedPraise({
       receiver: userAccount._id,
       createdAt: faker.date.past(),
