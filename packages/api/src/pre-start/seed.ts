@@ -6,7 +6,7 @@ import { UserAccountDocument } from '@useraccount/types';
 import { PraiseDocument, QuantificationDocument } from '@praise/types';
 import { PeriodDocument } from '@period/types';
 import { insertNewPeriodSettings } from '@periodsettings/utils';
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import logger from 'jet-logger';
 import { UserDocument } from '@user/types';
 import { EventLogDocument } from '@eventlog/types';

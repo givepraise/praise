@@ -10,7 +10,7 @@ import {
 import { expect } from 'chai';
 import { PeriodModel } from '@period/entities';
 import { csvToJson, loginUser } from './utils';
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import { PraiseModel } from '@praise/entities';
 import { addDays } from 'date-fns';
 import { PeriodSettingsModel } from '@periodsettings/entities';
