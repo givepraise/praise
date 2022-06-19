@@ -421,6 +421,5 @@ export const exportPraise = async (
   const json2csv = new Parser({ fields: fields });
   const csv = json2csv.parse(docs);
 
-  res.attachment('data.csv');
-  res.status(200).send(csv);
+  res.status(200).contentType('text/csv').attachment('data.csv').send(csv);
 };
