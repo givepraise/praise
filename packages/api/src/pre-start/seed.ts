@@ -85,7 +85,6 @@ const seedPeriod = async (periodData: Object = {}): Promise<PeriodDocument> => {
     name: `Period ${faker.random.alpha()}`,
     status: 'OPEN',
     endDate: faker.date.future(),
-    quantifiers: [],
     ...periodData,
   });
   await insertNewPeriodSettings(period);
