@@ -5,8 +5,7 @@ import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
 import { realizeDiscordContent } from 'api/dist/praise/utils/core';
 import logger from 'jet-logger';
-import { Message } from 'discord.js';
-import { getSetting } from '../utils/getSettings';
+import { GuildMember, Message, User, Util } from 'discord.js';
 import {
   dmError,
   invalidReceiverError,
@@ -15,11 +14,10 @@ import {
   notActivatedError,
   praiseSuccess,
   praiseSuccessDM,
-  roleError,
   roleMentionWarning,
   undefinedReceiverWarning,
 } from '../utils/praiseEmbeds';
-
+import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { CommandHandler } from 'src/interfaces/CommandHandler';
 
 export const praiseHandler: CommandHandler = async (
@@ -27,31 +25,16 @@ export const praiseHandler: CommandHandler = async (
   responseUrl,
   client
 ) => {
-  const { guild, channel, member } = interaction;
-
   if (!responseUrl) return;
 
-  if (!guild || !member || !client) {
+  const { guild, channel, member } = interaction;
+  if (!guild || !member || !channel || !client) {
     await interaction.editReply(await dmError());
     return;
   }
 
-  const praiseGiverRoleID = await getSetting('PRAISE_GIVER_ROLE_ID');
-  const praiseGiverRole = guild.roles.cache.find(
-    (r) => r.id === praiseGiverRoleID
-  );
-  const praiseGiver = await guild.members.fetch(member.user.id);
-
-  if (
-    praiseGiverRole &&
-    !praiseGiver.roles.cache.find((r) => r.id === praiseGiverRole?.id)
-  ) {
-    await interaction.editReply({
-      embeds: [await roleError(praiseGiverRole, praiseGiver.user)],
-    });
-
+  if (!(await assertPraiseGiver(member as GuildMember, interaction, true)))
     return;
-  }
 
   const ua = {
     accountId: member.user.id,
@@ -60,15 +43,7 @@ export const praiseHandler: CommandHandler = async (
     platform: 'DISCORD',
   } as UserAccount;
 
-  const userAccount = await UserAccountModel.findOneAndUpdate(
-    { accountId: ua.accountId },
-    ua,
-    { upsert: true, new: true }
-  );
-
   const receivers = interaction.options.getString('receivers');
-  const reason = interaction.options.getString('reason');
-
   const receiverData = {
     validReceiverIds: receivers?.match(/<@!?([0-9]+)>/g),
     undefinedReceivers: receivers?.match(/[^<]@([a-z0-9]+)/gi),
@@ -84,11 +59,17 @@ export const praiseHandler: CommandHandler = async (
     return;
   }
 
+  const reason = interaction.options.getString('reason');
   if (!reason || reason.length === 0) {
     await interaction.editReply(await missingReasonError());
     return;
   }
 
+  const userAccount = await UserAccountModel.findOneAndUpdate(
+    { accountId: ua.accountId },
+    ua,
+    { upsert: true, new: true }
+  );
   if (!userAccount.user) {
     await interaction.editReply(await notActivatedError());
     return;
@@ -169,7 +150,7 @@ export const praiseHandler: CommandHandler = async (
         receiverData.undefinedReceivers
           .map((id) => id.replace(/[<>]/, ''))
           .join(', '),
-        praiseGiver.user
+        member.user as User
       )
     );
   }
@@ -177,7 +158,7 @@ export const praiseHandler: CommandHandler = async (
     await msg.reply(
       await roleMentionWarning(
         receiverData.roleMentions.join(', '),
-        praiseGiver.user
+        member.user as User
       )
     );
   }

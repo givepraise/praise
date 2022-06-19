@@ -97,13 +97,14 @@ const PeriodsForm = (): JSX.Element => {
             </Field>
             <Field name="endDate">
               {({ input }): JSX.Element => (
-                <div className="mb-5">
+                <div className="mb-5 w-72">
                   <label className="block">End date (UTC)</label>
                   <DayInput
                     name={input.name}
                     value={input.value}
                     onChange={input.onChange}
-                    className="w-72 block"
+                    className="block w-72"
+                    inputClassName="w-full"
                   />
                   {apiResponse && (
                     <FieldErrorMessage
@@ -126,7 +127,7 @@ const PeriodsForm = (): JSX.Element => {
 
 const PeriodsCreatePage = (): JSX.Element => {
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="praise-page">
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 

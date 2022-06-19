@@ -6,12 +6,12 @@ import MyPraiseTable from './components/MyPraiseTable';
 
 const MyPraise = (): JSX.Element => {
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="praise-page">
       <BreadCrumb name="My praise" icon={faPrayingHands} />
 
       <ActiveNoticesBoard />
 
-      <div className="praise-box">
+      <div className="praise-box px-0">
         <React.Suspense fallback="Loading…">
           <MyPraiseTable />
         </React.Suspense>
