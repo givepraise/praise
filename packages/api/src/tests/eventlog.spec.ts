@@ -63,6 +63,35 @@ describe('GET /api/eventlogs/all', () => {
   });
 });
 
+describe('GET /api/eventlogs/types', () => {
+  beforeEach(async () => {
+    await EventLogModel.deleteMany({});
+  });
+
+  it('200 response with json body', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    return this.client
+      .get('/api/eventlogs/types')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+  });
+
+  it('401 response with json body if user not authenticated', function () {
+    return this.client
+      .get('/api/eventlogs/types')
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(401);
+  });
+});
+
 describe('logEvent', () => {
   beforeEach(async () => {
     await EventLogModel.deleteMany({});
