@@ -5,12 +5,15 @@ import {
   seedQuantification,
   seedUser,
   seedUserAccount,
+  seedUserAndUserAccount,
 } from '../pre-start/seed';
 import { expect } from 'chai';
 import { PeriodModel } from '@period/entities';
-import { loginUser } from './utils';
+import { csvToJson, loginUser } from './utils';
 import faker from 'faker';
 import { PraiseModel } from '@praise/entities';
+import { addDays } from 'date-fns';
+import { PeriodSettingsModel } from '@periodsettings/entities';
 
 describe('GET /api/periods/all', () => {
   beforeEach(async () => {
@@ -53,10 +56,10 @@ describe('GET /api/periods/all', () => {
 
     const period = await seedPeriod();
     const period2 = await seedPeriod({
-      endDate: faker.date.future(1, period.endDate),
+      endDate: faker.date.future(1, addDays(period.endDate, 10)),
     });
     await seedPeriod({
-      endDate: faker.date.future(1, period2.endDate),
+      endDate: faker.date.future(1, addDays(period2.endDate, 10)),
     });
 
     const response = await this.client
@@ -223,7 +226,8 @@ describe('GET /api/period/:periodId/receiverPraise', () => {
 
     return this.client
       .get(
-        `/api/periods/${period._id.toString() as string
+        `/api/periods/${
+          period._id.toString() as string
         }/receiverPraise?receiverId=${userAccount._id.toString() as string}`
       )
       .set('Accept', 'application/json')
@@ -360,7 +364,8 @@ describe('GET /api/period/:periodId/quantifierPraise', () => {
 
     return this.client
       .get(
-        `/api/periods/${period._id.toString() as string
+        `/api/periods/${
+          period._id.toString() as string
         }/quantifierPraise?quantifierId=${userAccount._id.toString() as string}`
       )
       .set('Accept', 'application/json')
@@ -641,6 +646,186 @@ describe('PATCH /api/admin/periods/:periodId/close', () => {
     return this.client
       .patch(`/api/admin/periods/${period._id.toString() as string}/close`)
       .set('Accept', 'application/json')
+      .expect(401);
+  });
+});
+
+describe('GET /api/admin/periods/:periodId/export', () => {
+  beforeEach(async () => {
+    await PeriodModel.deleteMany({});
+    await PraiseModel.deleteMany({});
+    await PeriodSettingsModel.deleteMany({});
+  });
+
+  it('200 response with csv file body', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+      roles: ['USER', 'ADMIN'],
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const [receiverUser, receiverUserAccount] = await seedUserAndUserAccount();
+    const [giverUser, giverUserAccount] = await seedUserAndUserAccount();
+
+    await seedUserAccount();
+    await seedUserAccount();
+
+    // Create some praise
+    const praise = await seedPraise({
+      receiver: receiverUserAccount._id,
+      giver: giverUserAccount._id,
+      createdAt: new Date(),
+    });
+    const praise2 = await seedPraise({
+      createdAt: addDays(praise.createdAt, 5),
+    });
+    const praise3 = await seedPraise({
+      createdAt: addDays(praise2.createdAt, 5),
+    });
+    const praise4 = await seedPraise({
+      createdAt: addDays(praise3.createdAt, 5),
+    });
+
+    // Create period containing all praise
+    const period = await seedPeriod({
+      endDate: addDays(praise4.createdAt, 10),
+    });
+
+    await PeriodSettingsModel.updateOne(
+      {
+        period: period._id,
+        key: 'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
+      },
+      { $set: { value: 3 } }
+    );
+
+    // Quantify praise
+    const [quantifier1User, quantifier1UserAccount] =
+      await seedUserAndUserAccount();
+    await seedQuantification(praise, quantifier1User, {
+      dismissed: false,
+      score: 10,
+    });
+
+    const quantifier2 = await seedUser();
+    await seedQuantification(praise, quantifier2, {
+      dismissed: false,
+      score: 30,
+    });
+
+    const quantifier3 = await seedUser();
+    await seedQuantification(praise, quantifier3, {
+      dismissed: false,
+      score: 50,
+    });
+
+    const response = await this.client
+      .get(`/api/admin/periods/${period._id.toString() as string}/export`)
+      .responseType('blob')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect('Content-Type', 'text/csv; charset=utf-8')
+      .expect(200);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const responseJson: any[] = csvToJson(new String(response.body) as string);
+    expect(responseJson[0]['ID']).to.equal(
+      praise._id.toString(),
+      'Praise ids in row 1 do not match'
+    );
+    expect(responseJson[1]['ID']).to.equal(
+      praise2._id.toString(),
+      'Praise ids in row 2 do not match'
+    );
+    expect(responseJson[2]['ID']).to.equal(
+      praise3._id.toString(),
+      'Praise ids in row 3 do not match'
+    );
+    expect(responseJson[3]['ID']).to.equal(
+      praise4._id.toString(),
+      'Praise ids in row 4 do not match'
+    );
+
+    expect(responseJson[0]['DATE']).to.equal(praise.createdAt.toISOString());
+
+    expect(responseJson[0]['TO USER ACCOUNT ID']).to.equal(
+      receiverUserAccount._id.toString(),
+      'Receiver user account ids do not match'
+    );
+    expect(responseJson[0]['TO USER ACCOUNT']).to.equal(
+      receiverUserAccount.name
+    );
+    expect(responseJson[0]['TO ETH ADDRESS']).to.equal(
+      receiverUser.ethereumAddress
+    );
+
+    expect(responseJson[0]['FROM USER ACCOUNT ID']).to.equal(
+      giverUserAccount._id.toString(),
+      'Giver user account ids do not match'
+    );
+    expect(responseJson[0]['FROM USER ACCOUNT']).to.equal(
+      giverUserAccount.name
+    );
+    expect(responseJson[0]['FROM ETH ADDRESS']).to.equal(
+      giverUser.ethereumAddress
+    );
+
+    expect(responseJson[0]['REASON']).to.equal(praise.reasonRealized);
+
+    expect(responseJson[0]['SOURCE ID']).to.equal(praise.sourceId);
+    expect(responseJson[0]['SOURCE NAME']).to.equal(praise.sourceName);
+
+    expect(responseJson[0]['SCORE 1']).to.equal('10');
+    expect(responseJson[0]['SCORE 2']).to.equal('30');
+    expect(responseJson[0]['SCORE 3']).to.equal('50');
+    expect(responseJson[0]['AVG SCORE']).to.equal('30');
+
+    expect(responseJson[0]['DUPLICATE ID 1']).to.equal('');
+    expect(responseJson[0]['DUPLICATE ID 2']).to.equal('');
+    expect(responseJson[0]['DUPLICATE ID 3']).to.equal('');
+
+    expect(responseJson[0]['DISMISSED 1']).to.equal('false');
+    expect(responseJson[0]['DISMISSED 2']).to.equal('false');
+    expect(responseJson[0]['DISMISSED 3']).to.equal('false');
+
+    expect(responseJson[0]['QUANTIFIER 1 USERNAME']).to.equal(
+      quantifier1UserAccount.name
+    );
+    expect(responseJson[0]['QUANTIFIER 1 ETH ADDRESS']).to.equal(
+      quantifier1User.ethereumAddress
+    );
+  });
+
+  it('403 response if user is not ADMIN', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const period = await seedPeriod();
+    await seedPraise();
+    await seedPraise();
+    await seedPraise();
+    await seedPraise();
+
+    return this.client
+      .get(`/api/admin/periods/${period._id.toString() as string}/export`)
+      .responseType('blob')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(403);
+  });
+
+  it('401 response if user not authenticated', async function () {
+    const period = await seedPeriod();
+    await seedPraise();
+    await seedPraise();
+    await seedPraise();
+    await seedPraise();
+
+    return this.client
+      .get(`/api/admin/periods/${period._id.toString() as string}/export`)
+      .responseType('blob')
       .expect(401);
   });
 });
