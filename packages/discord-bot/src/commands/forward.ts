@@ -27,7 +27,7 @@ export const forward: Command = {
         .setRequired(true)
     ),
 
-  async execute(interaction) {
+  async execute(interaction, client) {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'forward')
         return;
@@ -42,7 +42,8 @@ export const forward: Command = {
           interaction.guildId || '',
           interaction.channelId || '',
           msg.id
-        )
+        ),
+        client
       );
     } catch (err) {
       logger.err(err);
