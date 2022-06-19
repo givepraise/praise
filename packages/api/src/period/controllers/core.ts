@@ -186,6 +186,9 @@ export const close = async (
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
+  if (period.status === PeriodStatusType.CLOSED)
+    throw new BadRequestError('Period is already closed');
+
   period.status = PeriodStatusType.CLOSED;
   await period.save();
 
