@@ -17,11 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple wallets: WalletConneect, Trust, Rainbow etc #424
 - Option to assign praise evenly between all quantifiers #263
 - More verbose output from the `/admin announce` command #317 #441
+- Option to disable self-praise (#464)
 
 ### Fixed
 
 - Improve dapp responsiviness #190 #356
 - Opening dialog to mark praise as duplicate should place focus on input #80
+- Prevent unncessary import of mongoose package by frontend #466
 
 ## [0.8.0] - 2022-06-06
 
