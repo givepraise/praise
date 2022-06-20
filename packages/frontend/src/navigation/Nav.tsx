@@ -89,7 +89,7 @@ export default function Nav(): JSX.Element {
 
         <div className="w-full border-t">
           <Menu as="div" className="flex flex-col justify-center">
-            <Menu.Button className="flex items-center justify-between w-full selection:hover:text-gray-500 focus:outline-none">
+            <Menu.Button className="flex items-center justify-between w-full selection:hover:text-warm-gray-500 focus:outline-none">
               <EthAccount
                 showDownCaret={false}
                 showRightCaret={true}

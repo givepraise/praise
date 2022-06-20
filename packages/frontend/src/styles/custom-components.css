@@ -25,9 +25,9 @@
 
 /* MUI Slider styles */
 .local-MuiSlider-colorPrimary {
-  @apply !text-gray-800;
+  @apply !text-warm-gray-800;
 }
 
 .local-MuiSlider-disabled {
-  @apply text-gray-400;
+  @apply text-warm-gray-400;
 }

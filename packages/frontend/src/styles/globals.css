@@ -11,7 +11,7 @@
     @apply dark:border-slate-700;
   }
   #root {
-    @apply min-h-screen text-sm text-gray-800 dark:bg-slate-800 dark:text-white bg-warm-gray-300;
+    @apply min-h-screen text-sm text-warm-gray-800 dark:bg-slate-800 dark:text-white bg-warm-gray-300;
   }
 
   h2 {
@@ -42,11 +42,11 @@
     [multiple]:focus,
     textarea:focus,
     select:focus {
-      @apply  border-gray-900 dark:border-slate-300 dark:focus:ring-slate-300 focus:ring-gray-900;
+      @apply  border-warm-gray-900 dark:border-slate-300 dark:focus:ring-slate-300 focus:ring-warm-gray-900;
     }
     
     [type='checkbox'] {
-      @apply text-black border border-gray-900 focus:border-gray-900 focus:border-2 focus:ring-0;
+      @apply text-black border border-warm-gray-900 focus:border-warm-gray-900 focus:border-2 focus:ring-0;
     }
 
     .praise-button {

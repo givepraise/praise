@@ -58,13 +58,13 @@ const AuthenticatedLayout = (): JSX.Element | null => {
                 <div className="absolute top-0 right-0 pt-2 -mr-12">
                   <button
                     type="button"
-                    className="flex items-center justify-center w-10 h-10 ml-1 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white dark:focus:ring-gray-800"
+                    className="flex items-center justify-center w-10 h-10 ml-1 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white dark:focus:ring-warm-gray-800"
                     onClick={(): void => setSidebarOpen(false)}
                   >
                     <span className="sr-only">Close sidebar</span>
                     <FontAwesomeIcon
                       icon={faX}
-                      className="w-6 h-6 text-white dark:text-gray-800"
+                      className="w-6 h-6 text-white dark:text-warm-gray-800"
                       aria-hidden="true"
                     />
                   </button>
@@ -84,7 +84,7 @@ const AuthenticatedLayout = (): JSX.Element | null => {
       {/* Static sidebar for desktop */}
       <div className="hidden w-64 lg:flex lg:flex-col lg:fixed lg:inset-y-0">
         {/* Sidebar component, swap this element with another sidebar if you like */}
-        <div className="flex flex-col flex-1 min-h-0 bg-white border-r border-gray-200">
+        <div className="flex flex-col flex-1 min-h-0 bg-white border-r border-warm-gray-200">
           <Nav />
         </div>
       </div>
@@ -93,7 +93,7 @@ const AuthenticatedLayout = (): JSX.Element | null => {
         <div className="sticky top-0 z-10 flex items-center justify-start w-full px-1 py-1 border-b shadow-sm lg:hidden bg-warm-gray-50 dark:bg-slate-900">
           <button
             type="button"
-            className="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+            className="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-warm-gray-500 hover:text-warm-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
             onClick={(): void => setSidebarOpen(true)}
           >
             <span className="sr-only">Open sidebar</span>

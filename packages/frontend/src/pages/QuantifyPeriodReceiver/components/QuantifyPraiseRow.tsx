@@ -79,7 +79,7 @@ const QuantifyPraiseRow = ({
       <td>
         <div className="w-3">
           <button
-            className="hidden text-gray-400 cursor-pointer group-hover:block hover:text-gray-500"
+            className="hidden text-warm-gray-400 cursor-pointer group-hover:block hover:text-warm-gray-500"
             disabled={duplicate}
             onClick={onDuplicateClick}
           >

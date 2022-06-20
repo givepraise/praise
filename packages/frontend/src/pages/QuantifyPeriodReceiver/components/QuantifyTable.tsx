@@ -128,7 +128,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                 {index !== 0 && index !== data.length - 1 && (
                   <tr>
                     <td colSpan={5}>
-                      <div className="mb-5 border-2 border-t border-gray-400" />
+                      <div className="mb-5 border-2 border-t border-warm-gray-400" />
                     </td>
                   </tr>
                 )}

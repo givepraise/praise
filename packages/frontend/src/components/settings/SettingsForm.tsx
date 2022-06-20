@@ -50,7 +50,7 @@ const FormFields = (
           <div key={setting.key}>
             <label className="block font-bold">{setting.label}</label>
             {setting.description && (
-              <div className="mb-2 text-sm text-gray-400">
+              <div className="mb-2 text-sm text-warm-gray-400">
                 {setting.description}
               </div>
             )}
@@ -74,7 +74,7 @@ const DisabledFormFields = (
         <div key={setting.key}>
           <label className="block font-bold">{setting.label}</label>
           {setting.description && (
-            <div className="mb-2 text-sm text-gray-400">
+            <div className="mb-2 text-sm text-warm-gray-400">
               {setting.description}
             </div>
           )}

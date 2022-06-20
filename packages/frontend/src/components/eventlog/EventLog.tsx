@@ -65,7 +65,7 @@ const EventLog = ({ eventlog, className = '' }: Params): JSX.Element | null => {
             )} UTC`}
             arrow
           >
-            <span className="ml-2 text-xs text-gray-300">
+            <span className="ml-2 text-xs text-warm-gray-300">
               {localizeAndFormatIsoDate(eventlog.createdAt)}
             </span>
           </Tooltip>
