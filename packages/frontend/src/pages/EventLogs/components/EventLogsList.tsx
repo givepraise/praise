@@ -17,12 +17,12 @@ const EventLogsTable = ({
   queryParameters,
   setPage,
 }: EventLogsTableProps): JSX.Element | null => {
-  const { logsData } = useAllEventLogs(queryParameters);
+  const { data } = useAllEventLogs(queryParameters);
 
   return (
     <div className="w-full">
       <div className="w-full space-y-4">
-        {logsData.docs.map((eventlog, i) => (
+        {data.docs.map((eventlog, i) => (
           <EventLog
             eventlog={eventlog}
             className={classNames(
@@ -33,10 +33,10 @@ const EventLogsTable = ({
           />
         ))}
       </div>
-      {(logsData.hasNextPage || logsData.hasPrevPage) && (
-        <div className="flex justify-between w-full mt-4 mb-5 space-x-4">
+      {(data.hasNextPage || data.hasPrevPage) && (
+        <div className="flex justify-between w-full mt-4 space-x-4">
           <div>
-            {logsData.hasPrevPage && (
+            {data.hasPrevPage && (
               <a
                 className="cursor-pointer"
                 onClick={(): void => setPage(queryParameters.page - 1)}
@@ -52,7 +52,7 @@ const EventLogsTable = ({
           </div>
 
           <div>
-            {logsData.hasNextPage && (
+            {data.hasNextPage && (
               <a
                 className="cursor-pointer"
                 // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
