@@ -35,7 +35,7 @@ export default function Nav(): JSX.Element {
   };
 
   return (
-    <nav className="flex h-screen text-sm border-r shadow-m lg:w-64 lg:flex-col lg:fixed bg-warm-gray-50 dark:bg-slate-900 dark:text-white">
+    <nav className="flex flex-col w-64 h-screen text-sm border-r shadow-m lg:fixed bg-warm-gray-50 dark:bg-slate-900 dark:text-white">
       <div className="flex flex-col justify-between h-full">
         <div className="w-full">
           <ul className="relative h-full p-0 m-0 list-none">

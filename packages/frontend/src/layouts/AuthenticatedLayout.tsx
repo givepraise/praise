@@ -34,7 +34,7 @@ const AuthenticatedLayout = (): JSX.Element | null => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0 bg-warm-gray-600 bg-opacity-75" />
+            <Dialog.Overlay className="fixed inset-0 bg-opacity-75 bg-warm-gray-600" />
           </Transition.Child>
           <Transition.Child
             as={Fragment}
@@ -45,7 +45,7 @@ const AuthenticatedLayout = (): JSX.Element | null => {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <div className="relative flex flex-col lg:w-64">
+            <div className="relative flex flex-col w-64">
               <Transition.Child
                 as={Fragment}
                 enter="ease-in-out duration-300"
@@ -58,13 +58,13 @@ const AuthenticatedLayout = (): JSX.Element | null => {
                 <div className="absolute top-0 right-0 pt-2 -mr-12">
                   <button
                     type="button"
-                    className="flex items-center justify-center w-10 h-10 ml-1 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                    className="flex items-center justify-center w-10 h-10 ml-1 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white dark:focus:ring-gray-800"
                     onClick={(): void => setSidebarOpen(false)}
                   >
                     <span className="sr-only">Close sidebar</span>
                     <FontAwesomeIcon
                       icon={faX}
-                      className="w-6 h-6 text-white"
+                      className="w-6 h-6 text-white dark:text-gray-800"
                       aria-hidden="true"
                     />
                   </button>
@@ -82,7 +82,7 @@ const AuthenticatedLayout = (): JSX.Element | null => {
       </Transition.Root>
 
       {/* Static sidebar for desktop */}
-      <div className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0">
+      <div className="hidden w-64 lg:flex lg:flex-col lg:fixed lg:inset-y-0">
         {/* Sidebar component, swap this element with another sidebar if you like */}
         <div className="flex flex-col flex-1 min-h-0 bg-white border-r border-gray-200">
           <Nav />
