@@ -1,7 +1,7 @@
 import { UserAvatar } from './UserAvatar';
 import { Popover } from '@headlessui/react';
 import React from 'react';
-import { shortenEthAddress } from 'api/dist/user/utils';
+import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
