@@ -16,7 +16,7 @@ import {
 import { EventLogTypeKey } from '@eventlog/types';
 import { logEvent } from '@eventlog/utils';
 import { Request } from 'express';
-import mongoose, { Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { UserModel } from './entities';
 import { userListTransformer, userTransformer } from './transformers';
 import { UserDocument, UserDto, UserRole, UserRoleChangeInput } from './types';
@@ -51,7 +51,7 @@ const all = async (
 
 const findUser = async (id: string): Promise<UserDocument> => {
   const users: UserDocument[] = await UserModel.aggregate([
-    { $match: { _id: new mongoose.Types.ObjectId(id) } },
+    { $match: { _id: new Types.ObjectId(id) } },
     {
       $lookup: {
         from: 'useraccounts',

@@ -17,12 +17,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support multiple wallets: WalletConneect, Trust, Rainbow etc #424
 - Option to assign praise evenly between all quantifiers #263
 - More verbose output from the `/admin announce` command #317 #441
+- Option to disable self-praise (#464)
 
 ### Fixed
 
 - Improve dapp responsiviness #190 #356
 - Opening dialog to mark praise as duplicate should place focus on input #80
 - Prevent Quantify Table from overflowing content area #458
+- Ensure human-readable praise reason is included in exported csv #467
+- Prevent unncessary import of mongoose package by frontend #466
+- Switching eth wallet should result in logging out the user #469
+- Logging out of MetaMask causes EthAccount in navigation to disappear #470
 
 ## [0.8.0] - 2022-06-06
 

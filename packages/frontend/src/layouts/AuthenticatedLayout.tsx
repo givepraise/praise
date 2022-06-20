@@ -9,10 +9,12 @@ import { useAllPeriodsQuery } from '@/model/periods';
 import { useAllUsersQuery } from '@/model/users';
 import Nav from '../navigation/Nav';
 import AuthenticatedRoutes from '../navigation/AuthenticatedRoutes';
+import { ActiveUserRoles } from '@/model/auth';
 
 const AuthenticatedLayout = (): JSX.Element | null => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
+  const activeUserRoles = useRecoilValue(ActiveUserRoles);
   useAllPeriodsQuery();
   useAllSettingsQuery();
   useAllUsersQuery();
@@ -112,7 +114,7 @@ const AuthenticatedLayout = (): JSX.Element | null => {
         </div>
         <main className="flex-1 flex justify-center px-4 py-4">
           <div className="block max-w-5xl w-full">
-            <AuthenticatedRoutes />
+            <AuthenticatedRoutes userRoles={activeUserRoles} />
           </div>
         </main>
       </div>

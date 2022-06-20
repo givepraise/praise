@@ -6,7 +6,7 @@ export const praiseSuccess = async (
   reason: string
 ): Promise<string> => {
   const msg = (await settingValue('PRAISE_SUCCESS_MESSAGE')) as string;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return msg
       ?.replace('{@receivers}', `${praised.join(', ')}`)
       .replace('{reason}', reason);
@@ -21,7 +21,7 @@ export const forwardSuccess = async (
   reason: string
 ): Promise<string> => {
   const msg = (await settingValue('FORWARD_SUCCESS_MESSAGE')) as string;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return msg
       ?.replace('{@giver}', `<@!${giver.id}>`)
       .replace('{@receivers}', `${receivers.join(', ')}`)
@@ -39,7 +39,7 @@ export const notActivatedError = async (): Promise<string> => {
   const msg = (await settingValue(
     'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR'
   )) as string;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return msg;
   } else {
     return 'PRAISE ACCOUNT NOT ACTIVATED (message not set)';
@@ -50,7 +50,7 @@ export const alreadyActivatedError = async (): Promise<string> => {
   const msg = (await settingValue(
     'PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR'
   )) as string;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return msg;
   } else {
     return 'PRAISE ACCOUNT ALREADY ACTIVATED (message not set)';
@@ -63,7 +63,7 @@ export const giverNotActivatedError = async (
   const msg = (await settingValue(
     'FORWARD_FROM_UNACTIVATED_GIVER_ERROR'
   )) as string;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return msg
       .replace(
         '{giver}',
@@ -77,7 +77,7 @@ export const giverNotActivatedError = async (
 
 export const dmError = async (): Promise<string> => {
   const msg = (await settingValue('DM_ERROR')) as string;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return msg;
   } else {
     return 'COMMAND CAN NOT BE USED IN DM (message not set)';
@@ -91,7 +91,7 @@ export const praiseRoleError = async (
   const msg = (await settingValue(
     'PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR'
   )) as string;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return new MessageEmbed().setColor('#ff0000').setDescription(
       msg
         .replace('{role}', praiseGiverRole?.name || '...')
@@ -116,7 +116,7 @@ export const forwardRoleError = async (
   const msg = (await settingValue(
     'FORWARD_FROM_USER_WITHOUT_PRAISE_GIVER_ROLE_ERROR'
   )) as string;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return new MessageEmbed().setColor('#ff0000').setDescription(
       msg
         .replace('{role}', praiseGiverRole?.name || '...')
@@ -136,7 +136,7 @@ export const forwardRoleError = async (
 
 export const invalidReceiverError = async (): Promise<string> => {
   const msg = (await settingValue('PRAISE_INVALID_RECEIVERS_ERROR')) as string;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return msg;
   }
   return 'VALID RECEIVERS NOT MENTIONED (message not set)';
@@ -144,7 +144,7 @@ export const invalidReceiverError = async (): Promise<string> => {
 
 export const missingReasonError = async (): Promise<string> => {
   const msg = (await settingValue('PRAISE_INVALID_RECEIVERS_ERROR')) as string;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return msg;
   }
   return 'REASON NOT MENTIONED (message not set)';
@@ -157,7 +157,7 @@ export const undefinedReceiverWarning = async (
   const msg = (await settingValue(
     'PRAISE_UNDEFINED_RECEIVERS_WARNING'
   )) as string;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return msg
       .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
       .replace('{@user}', `<@!${user?.id || '...'}>`)
@@ -171,7 +171,7 @@ export const roleMentionWarning = async (
   user: User
 ): Promise<string> => {
   const msg = (await settingValue('PRAISE_TO_ROLE_WARNING')) as String;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return msg
       .replace('{@receivers}', receivers)
       .replace('{@user}', `<@!${user?.id || '...'}>`)
@@ -184,7 +184,7 @@ export const praiseSuccessDM = async (
   msgUrl: string
 ): Promise<MessageEmbed> => {
   const msg = (await settingValue('PRAISE_SUCCESS_DM')) as string;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return new MessageEmbed()
       .setColor('#696969')
       .setDescription(msg.replace('{praiseURL}', msgUrl));
@@ -198,7 +198,7 @@ export const notActivatedDM = async (msgUrl: string): Promise<MessageEmbed> => {
   const msg = (await settingValue(
     'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM'
   )) as string;
-  if (msg && typeof msg === 'string') {
+  if (msg) {
     return new MessageEmbed()
       .setColor('#ff0000')
       .setTitle('**⚠️  Praise Account Not Activated**')
@@ -207,4 +207,12 @@ export const notActivatedDM = async (msgUrl: string): Promise<MessageEmbed> => {
   return new MessageEmbed().setDescription(
     `**[YOU HAVE BEEN PRAISED](${msgUrl})\nPRAISE ACCOUNT NOT ACTIVATED. USE \`/activate\` TO ACTIVATE YOUR ACCOUNT. (message not set)`
   );
+};
+
+export const selfPraiseWarning = async (): Promise<string> => {
+  const msg = (await settingValue('SELF_PRAISE_WARNING')) as string;
+  if (msg) {
+    return msg;
+  }
+  return 'SELF-PRAISE NOT ALLOWED, PRAISE GIVERS UNABLE TO PRAISE THEMSELVES (message not set)';
 };
