@@ -6,6 +6,7 @@ import EventLog from '@/components/eventlog/EventLog';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dispatch, SetStateAction } from 'react';
+import { classNames } from '@/utils/index';
 
 interface EventLogsTableProps {
   queryParameters: AllEventLogsQueryParameters;
@@ -24,9 +25,10 @@ const EventLogsTable = ({
         {logsData.docs.map((eventlog, i) => (
           <EventLog
             eventlog={eventlog}
-            className={`${
-              i % 2 === 0 && 'bg-warm-gray-100 dark:bg-slate-500'
-            } px-5`}
+            className={classNames(
+              i % 2 === 0 ? 'bg-warm-gray-100 dark:bg-slate-500' : undefined,
+              'px-5'
+            )}
             key={i}
           />
         ))}
