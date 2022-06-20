@@ -149,7 +149,7 @@ export const PseudonymForUser = selectorFamily({
     ({ get }): string => {
       const { periodId, userId } = params;
       const allPeriods = get(AllPeriods);
-      if (!allPeriods) return 'null';
+      if (!allPeriods) return 'Loading…';
       const periodIndex = allPeriods.findIndex((p) => p._id === periodId);
 
       if (userId && periodIndex > -1) {
