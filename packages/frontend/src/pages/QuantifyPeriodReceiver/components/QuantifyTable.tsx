@@ -108,8 +108,8 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
   };
 
   return (
-    <div className=" h-full">
-      <div className="p-5 relative space-x-6 bg-gray-200 dark:bg-slate-700 z-10 w-full rounded-t border-t border-l border-r sticky top-0">
+    <div>
+      <div className="p-5 space-x-6 bg-gray-200 dark:bg-slate-700 z-10 w-full rounded-t border-t border-l border-r sticky top-14 md:top-0">
         <MarkDismissedButton
           disabled={selectedPraises.length < 1}
           onClick={(): void => setIsDismissDialogOpen(true)}
