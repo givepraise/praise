@@ -2,7 +2,6 @@ import AdminOnly from '@/components/auth/AdminOnly';
 import EthAccount from '@/components/account/EthAccount';
 import { SingleSetting } from '@/model/settings';
 import {
-  faCalculator,
   faCog,
   faPrayingHands,
   faQuestionCircle,
@@ -15,13 +14,12 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
 import { Link } from 'react-router-dom';
-import { useRecoilValue, useRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { Theme } from '@/model/theme';
 import NavItem from './NavItem';
-import { classNames } from '../utils';
 
 export default function Nav(): JSX.Element {
-  const [theme, setTheme] = useRecoilState(Theme);
+  const setTheme = useSetRecoilState(Theme);
   const logoSetting = useRecoilValue(SingleSetting('LOGO'));
 
   const handleTheme = (theme: string): void => {
@@ -73,28 +71,15 @@ export default function Nav(): JSX.Element {
           </ul>
         </div>
         <div className="flex h-12 m-4 mt-auto">
-          {/* <div>{theme} mode</div>
-          <Switch
-            checked={theme === 'Dark'}
-            onChange={handleTheme}
-            icon={<FontAwesomeIcon icon={faSun} size="lg" />}
-            checkedIcon={<FontAwesomeIcon icon={faMoon} size="lg" />}
-          /> */}
           <div
-            className={classNames(
-              theme === 'Light' ? 'bg-themecolor-3/20  text-themecolor-3' : '',
-              'cursor-pointer grow rounded-l-lg border-2 border-r flex items-center justify-center gap-4'
-            )}
+            className="flex items-center justify-center gap-4 border-2 border-r border-transparent rounded-l-lg cursor-pointer bg-themecolor-3/20 dark:bg-transparent dark:text-white text-themecolor-3 grow dark:border-slate-700"
             onClick={(): void => handleTheme('Light')}
           >
             <FontAwesomeIcon icon={faSun} size="lg" />
             Light
           </div>
           <div
-            className={classNames(
-              theme === 'Dark' ? 'bg-blue-800/20' : '',
-              'cursor-pointer grow rounded-r-lg border-2 border-l flex items-center justify-center gap-4'
-            )}
+            className="flex items-center justify-center gap-4 border-2 border-l rounded-r-lg cursor-pointer dark:bg-slate-700 grow border-themecolor-3/20 dark:border-slate-700"
             onClick={(): void => handleTheme('Dark')}
           >
             Dark
