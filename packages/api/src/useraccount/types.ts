@@ -22,6 +22,7 @@ export interface UserAccountDto {
   user?: string;
   accountId: string;
   name: string;
+  nameRealized: string;
   avatarId?: string;
   platform: UserAccountPlatform;
   activateToken?: string;

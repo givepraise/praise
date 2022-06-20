@@ -1,4 +1,5 @@
 import { UserAccountDocument, UserAccountDto } from './types';
+import { generateUserAccountNameRealized } from './utils';
 
 const userAccountDocumentToDto = (
   userAccountDocument: UserAccountDocument
@@ -18,6 +19,7 @@ const userAccountDocumentToDto = (
     user: user?._id,
     accountId,
     name,
+    nameRealized: generateUserAccountNameRealized(userAccountDocument),
     avatarId,
     platform,
     createdAt: createdAt.toISOString(),
