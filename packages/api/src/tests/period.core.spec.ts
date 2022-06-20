@@ -73,7 +73,7 @@ describe('GET /api/periods/all', () => {
 
     expect(response.body).to.have.property('docs');
     expect(response.body.docs.length).equals(3);
-    expect(response.body.docs[0]).to.have.any.keys(
+    expect(response.body.docs[0]).to.have.all.keys(
       '_id',
       'name',
       'endDate',
