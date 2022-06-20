@@ -94,3 +94,110 @@ describe('GET /api/periods/:periodId/settings/all', () => {
   });
 });
 
+describe('GET /api/periods/:periodId/settings/:settingId', () => {
+  beforeEach(async () => {
+    await PeriodModel.deleteMany({});
+  });
+
+  it('200 response with json body containing a periodsetting', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const period = await seedPeriod();
+    const periodsetting = await PeriodSettingsModel.findOne({
+      period: period._id,
+      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+    });
+
+    const response = await this.client
+      .get(
+        `/api/periodsettings/${period._id.toString() as string}/settings/${
+          periodsetting?._id.toString() as string
+        }`
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body._id).to.equal(periodsetting?._id.toString());
+    expect(response.body).to.have.all.keys(
+      '_id',
+      'key',
+      'value',
+      'valueRealized',
+      'type',
+      'label',
+      'description',
+      'period'
+    );
+  });
+
+  it('404 response with json body if period does not exist', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const period = await seedPeriod();
+    const periodsetting = await PeriodSettingsModel.findOne({
+      period: period._id,
+      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+    });
+
+    return this.client
+      .get(
+        `/api/periodsettings/${faker.database.mongodbObjectId()}/settings/${
+          periodsetting?._id.toString() as string
+        }`
+      )
+
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(404);
+  });
+
+  it('404 response with json body if periodsetting does not exist', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const period = await seedPeriod();
+
+    return this.client
+      .get(
+        `/api/periodsettings/${
+          period._id.toString() as string
+        }/settings/${faker.database.mongodbObjectId()}`
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(404);
+  });
+
+  it('401 response with json body if user not authenticated', async function () {
+    const period = await seedPeriod();
+    const periodsetting = await PeriodSettingsModel.findOne({
+      period: period._id,
+      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+    });
+
+    return this.client
+      .get(
+        `/api/periodsettings/${period._id.toString() as string}/settings/${
+          periodsetting?._id.toString() as string
+        }`
+      )
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(401);
+  });
+});
