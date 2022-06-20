@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve dapp responsiviness #190 #356
 - Opening dialog to mark praise as duplicate should place focus on input #80
 - Prevent unncessary import of mongoose package by frontend #466
+- Switching eth wallet should result in logging out the user #469
+- Logging out of MetaMask causes EthAccount in navigation to disappear #470
 
 ## [0.8.0] - 2022-06-06
 

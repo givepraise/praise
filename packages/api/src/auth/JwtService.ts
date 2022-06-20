@@ -1,13 +1,7 @@
 import { UnauthorizedError } from '@error/errors';
 import { getRandomString } from '@shared/functions';
 import { sign, verify, JwtPayload } from 'jsonwebtoken';
-import { TokenSet } from './types';
-export interface ClientData {
-  userId: string;
-  ethereumAddress: string;
-  roles: string[];
-  isRefresh?: boolean;
-}
+import { TokenSet, TokenData } from './types';
 
 interface JwtOptions {
   expiresIn: number;
@@ -31,7 +25,7 @@ export class JwtService {
    * @param data
    * @param options
    */
-  private _signOrFail(data: ClientData, options: JwtOptions): string {
+  private _signOrFail(data: TokenData, options: JwtOptions): string {
     try {
       const token = sign(data, this.secret, options);
       return token;
@@ -61,7 +55,7 @@ export class JwtService {
    *
    * @param data
    */
-  public getJwt(data: ClientData): TokenSet {
+  public getJwt(data: TokenData): TokenSet {
     const accessToken = this._signOrFail(data, {
       expiresIn: this.accessExpiresIn,
     });
@@ -103,7 +97,7 @@ export class JwtService {
       {
         ...decoded,
         isRefresh: false,
-      } as ClientData,
+      } as TokenData,
       this.secret,
       {
         expiresIn: Number(this.accessExpiresIn),
@@ -115,7 +109,7 @@ export class JwtService {
     const expiresIn = Math.ceil(
       refreshTokenExpirationTimestamp - currentTimestamp
     );
-    const refreshToken = sign(decoded as ClientData, this.secret, {
+    const refreshToken = sign(decoded as TokenData, this.secret, {
       expiresIn,
     });
 

@@ -7,7 +7,7 @@ import {
 import { ActivateRequestBody } from 'api/dist/activate/types';
 import { makeApiClient } from './api';
 import { getRecoil, setRecoil } from 'recoil-nexus';
-import { ActiveTokenSet, RefreshToken } from '@/model/auth';
+import { ActiveTokenSet } from '@/model/auth';
 import { AccountActivated } from '@/model/activate';
 
 export const requestApiAuth = async (
@@ -31,12 +31,12 @@ export const requestApiAuth = async (
 export const requestApiAuthRefresh = async (): Promise<
   TokenSet | undefined
 > => {
-  const refreshToken = getRecoil(RefreshToken);
+  const tokenSet = getRecoil(ActiveTokenSet);
 
   try {
     const apiClient = makeApiClient();
     const response = await apiClient.post('auth/refresh', {
-      refreshToken,
+      refreshToken: tokenSet?.refreshToken,
     });
     const { accessToken, refreshToken: newRefreshToken } =
       response.data as AuthResponse;
