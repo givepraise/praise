@@ -382,9 +382,12 @@ const prepareAssignmentsByAllQuantifiers = async (
   );
 
   // Verify that all quantifiers were assigned if necessary
-  if (assignments.poolAssignments.length === quantifierPool.length) {
+  logger.info(
+    `verify even assigment assignments: ${assignments.poolAssignments.length} q pool: ${quantifierPool.length}`
+  );
+  if (assignments.remainingAssignmentsCount === 0) {
     logger.info(
-      'All quantifiers were assigned praise, as expected with PRAISE_QUANTIFIERS_ASSIGN_ALL'
+      'All quantifiers that could be assigned, were assigned praise, as expected with PRAISE_QUANTIFIERS_ASSIGN_ALL'
     );
   } else {
     throw new InternalServerError(
