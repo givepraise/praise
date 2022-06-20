@@ -1,5 +1,4 @@
 import LoaderSpinner from '@/components/LoaderSpinner';
-import { useEffect } from 'react';
 import { useSignMessage } from 'wagmi';
 
 interface Props {

@@ -19,7 +19,7 @@ import { getQueryInput, getQuerySort } from '@shared/functions';
 import { PraiseModel } from '@praise/entities';
 import { EventLogTypeKey } from '@eventlog/types';
 import { logEvent } from '@eventlog/utils';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import { StatusCodes } from 'http-status-codes';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
@@ -218,7 +218,7 @@ export const receiverPraise = async (
   const praiseList = await PraiseModel.find()
     .where({
       createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
-      receiver: new mongoose.Types.ObjectId(receiverId),
+      receiver: new Types.ObjectId(receiverId),
     })
     .sort({ createdAt: -1 })
     .populate('receiver giver forwarder');
@@ -253,7 +253,7 @@ export const quantifierPraise = async (
 
   const praiseList = await PraiseModel.find({
     createdAt: periodDateRangeQuery,
-    'quantifications.quantifier': new mongoose.Types.ObjectId(quantifierId),
+    'quantifications.quantifier': new Types.ObjectId(quantifierId),
   });
 
   await PraiseModel.populate(praiseList, { path: 'receiver giver forwarder' });
@@ -355,7 +355,7 @@ export const exportPraise = async (
     },
     {
       label: 'REASON',
-      value: 'reason',
+      value: 'reasonRealized',
     },
     {
       label: 'SOURCE ID',

@@ -1,4 +1,4 @@
-import { shortenEthAddress } from 'api/dist/user/utils';
+import { shortenEthAddress } from 'api/dist/user/utils/core';
 import {
   faTimes,
   faCopy,

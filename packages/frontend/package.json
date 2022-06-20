@@ -69,7 +69,7 @@
   },
   "scripts": {
     "build": "craco build",
-    "analyze": "yarn run build && source-map-explorer 'build/static/js/*.js'",
+    "analyze": "yarn run build && source-map-explorer --gzip 'build/static/js/*.js'",
     "load-env": "env-cmd --silent --no-override -f ../../.env env-cmd --silent --no-override",
     "start": "TAILWIND_MODE=watch yarn run load-env craco start",
     "lint": "eslint . --ext .ts --ext .tsx",

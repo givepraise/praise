@@ -109,7 +109,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
 
   return (
     <div>
-      <div className="sticky top-0 z-10 w-full p-5 space-x-4 border-t border-l border-r rounded-t-xl bg-warm-gray-100 dark:bg-slate-700">
+      <div className="sticky z-10 w-full p-5 space-x-4 border-t border-l border-r top-14 lg:top-0 rounded-t-xl bg-warm-gray-100 dark:bg-slate-700">
         <MarkDuplicateButton
           disabled={selectedPraises.length < 2}
           onClick={(): void => setIsDuplicateDialogOpen(true)}

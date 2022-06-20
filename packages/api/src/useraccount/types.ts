@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { UserDocument } from '@user/types';
-import mongoose from 'mongoose';
+import { Document } from 'mongoose';
 
 export type UserAccountPlatform = 'DISCORD' | 'TELEGRAM';
 
@@ -15,7 +15,7 @@ export interface UserAccount {
   updatedAt: Date;
 }
 
-export interface UserAccountDocument extends UserAccount, mongoose.Document {}
+export interface UserAccountDocument extends UserAccount, Document {}
 
 export interface UserAccountDto {
   _id: string;
