@@ -1,23 +1,24 @@
-import { ActivePeriodMessage } from './ActivePeriodMessage';
 import { ActiveUserQuantificationsMessage } from './ActiveUserQuantificationsMessage';
 import { Suspense } from 'react';
 
-export const ActiveNoticesBoard = (): JSX.Element | null => {
-  const activePeriodMessageRender = ActivePeriodMessage({});
-
+export const ActiveNoticesBoardInner = (): JSX.Element | null => {
   const activeUserQuantificationMessageRender =
     ActiveUserQuantificationsMessage();
 
-  if (!activePeriodMessageRender && !activeUserQuantificationMessageRender)
-    return null;
+  if (!activeUserQuantificationMessageRender) return null;
 
   return (
-    <div className="praise-box">
-      <Suspense fallback="Loading…">
-        {activePeriodMessageRender && activePeriodMessageRender}
-        {activeUserQuantificationMessageRender &&
-          activeUserQuantificationMessageRender}
-      </Suspense>
+    <div className="mb-5 praise-box">
+      {activeUserQuantificationMessageRender &&
+        activeUserQuantificationMessageRender}
     </div>
+  );
+};
+
+export const ActiveNoticesBoard = (): JSX.Element | null => {
+  return (
+    <Suspense fallback={null}>
+      <ActiveNoticesBoardInner />
+    </Suspense>
   );
 };

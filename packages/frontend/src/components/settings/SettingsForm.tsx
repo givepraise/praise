@@ -50,7 +50,7 @@ const FormFields = (
           <div key={setting.key}>
             <label className="block font-bold">{setting.label}</label>
             {setting.description && (
-              <div className="mb-2 text-sm text-gray-400">
+              <div className="mb-2 text-sm text-warm-gray-400">
                 {setting.description}
               </div>
             )}
@@ -66,19 +66,19 @@ const DisabledFormFields = (
   settings: SettingDto[] | PeriodSettingDto[]
 ): JSX.Element => (
   <>
-    <Notice type="danger" className="mb-8">
+    <Notice type="info" className="mb-8">
       <span>Settings locked for this period</span>
     </Notice>
-    <div className="mb-2 space-y-4 px-5">
+    <div className="mb-2 space-y-4">
       {settings.map((setting: SettingDto | PeriodSettingDto) => (
         <div key={setting.key}>
           <label className="block font-bold">{setting.label}</label>
           {setting.description && (
-            <div className="mb-2 text-sm text-gray-400">
+            <div className="mb-2 text-sm text-warm-gray-400">
               {setting.description}
             </div>
           )}
-          <div className="p-2 bg-gray-200">{setting.value}</div>
+          <div className="p-2 bg-warm-gray-200">{setting.value}</div>
         </div>
       ))}
     </div>
@@ -144,7 +144,9 @@ const SettingsForm = ({
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             <form onSubmit={handleSubmit} className="leading-loose">
               {FormFields(settings, apiResponse)}
-              <SubmitButton />
+              <div className="mt-4">
+                <SubmitButton />
+              </div>
             </form>
           );
         }

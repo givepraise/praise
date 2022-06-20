@@ -29,7 +29,7 @@ const FAQPage = (): JSX.Element | null => {
 
       <div className="w-full praise-box">
         <h2 className="mb-4">FAQ</h2>
-        <React.Suspense fallback="Loading…">
+        <React.Suspense fallback={null}>
           {faq.map((data, index) => {
             return (
               <div key={index}>
@@ -40,7 +40,7 @@ const FAQPage = (): JSX.Element | null => {
                     <Disclosure defaultOpen={false} as="div" key={i}>
                       {({ open }): JSX.Element => (
                         <>
-                          <Disclosure.Button className="flex justify-between w-full px-4 py-2 mb-2 font-medium text-left bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none">
+                          <Disclosure.Button className="flex justify-between w-full px-4 py-2 mb-2 font-medium text-left rounded-lg bg-warm-gray-100 hover:bg-warm-gray-200 focus:outline-none dark:bg-slate-700">
                             <span>{item.question}</span>
                             <FontAwesomeIcon
                               icon={faCaretUp}

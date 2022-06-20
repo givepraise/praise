@@ -10,26 +10,28 @@ interface NavProps {
 
 const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
   return (
-    <NavLink
-      to={to}
-      className={(isActive): string =>
-        `relative px-4 py-1 cursor-pointer no-underline flex items-center ${
-          isActive
-            ? ' bg-gray-200 dark:bg-slate-700'
-            : ' hover:bg-gray-100 dark:hover:bg-slate-800'
-        }`
-      }
-      id={to.substring(1) + '-nav-button'}
-    >
-      {icon && (
-        <div className="inline-block w-8 text-center">
-          <FontAwesomeIcon icon={icon} size="1x" className="inline-block" />
+    <li className="group">
+      <NavLink
+        to={to}
+        className={(isActive): string =>
+          `relative group-first:rounded-t-lg group-last:rounded-b-lg px-5 py-2 cursor-pointer no-underline flex items-center ${
+            isActive
+              ? ' bg-warm-gray-100 dark:bg-slate-700'
+              : ' hover:bg-warm-gray-100 dark:hover:bg-slate-700'
+          }`
+        }
+        id={to.substring(1) + '-nav-button'}
+      >
+        {icon && (
+          <div className="inline-block w-8 text-center">
+            <FontAwesomeIcon icon={icon} size="1x" className="inline-block" />
+          </div>
+        )}
+        <div className="flex-auto inline-block my-1 whitespace-nowrap">
+          {description}
         </div>
-      )}
-      <div className="flex-auto inline-block my-1 whitespace-nowrap">
-        {description}
-      </div>
-    </NavLink>
+      </NavLink>
+    </li>
   );
 };
 

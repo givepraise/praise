@@ -15,8 +15,8 @@ const MarkDuplicateButton = ({
       disabled={disabled}
       className={
         disabled
-          ? 'praise-button-disabled space-x-2 bg-blue-200 text-white'
-          : 'praise-button space-x-2 bg-blue-500 hover:bg-blue-600 text-white'
+          ? 'praise-button-disabled space-x-2'
+          : 'praise-button space-x-2'
       }
       onClick={onClick}
     >

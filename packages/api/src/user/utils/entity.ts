@@ -1,23 +1,15 @@
 import { UserAccountModel } from '@useraccount/entities';
+import { generateUserAccountNameRealized } from '@useraccount/utils';
 import { UserDocument } from '../types';
 import { shortenEthAddress } from './core';
 
 export const generateUserName = async (user: UserDocument): Promise<string> => {
-  let username = '';
-
   const accounts = await UserAccountModel.find({ user: user._id });
+  if (!accounts || accounts.length === 0)
+    return shortenEthAddress(user.ethereumAddress);
 
-  if (!accounts || accounts.length === 0) {
-    username = shortenEthAddress(user.ethereumAddress);
-  } else {
-    const discordAccount = accounts.find((a) => a.platform === 'DISCORD');
+  const discordAccount = accounts.find((a) => a.platform === 'DISCORD');
+  if (discordAccount) return generateUserAccountNameRealized(discordAccount);
 
-    if (discordAccount) {
-      username = discordAccount.name;
-    } else {
-      username = accounts[0].name;
-    }
-  }
-
-  return username;
+  return generateUserAccountNameRealized(accounts[0]);
 };

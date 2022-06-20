@@ -7,8 +7,10 @@ const UsersPage = (): JSX.Element => {
   return (
     <div className="praise-page">
       <BreadCrumb name="Users" icon={faUserFriends} />
-      <UsersStatistics />
-      <div className="praise-box px-0">
+      <div className="mb-5 praise-box">
+        <UsersStatistics />
+      </div>
+      <div className="px-0 praise-box">
         <UsersTable />
       </div>
     </div>

@@ -119,7 +119,7 @@ const PeriodDetails = (): JSX.Element | null => {
           <PeriodDateForm />
           <div className="mt-5">
             {period.status === 'OPEN' || period.status === 'QUANTIFY' ? (
-              <div className="flex gap-4 justify-between">
+              <div className="flex justify-between gap-4">
                 {period.status === 'OPEN' &&
                 period.receivers &&
                 period?.receivers.length > 0 &&
@@ -150,7 +150,7 @@ const PeriodDetails = (): JSX.Element | null => {
                   </button>
                 ) : null}
                 <button
-                  className="hover:bg-red-600 praise-button"
+                  className="praise-button-outline"
                   onClick={(): void => setIsCloseDialogOpen(true)}
                 >
                   <FontAwesomeIcon

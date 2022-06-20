@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import Notice from '@/components/Notice';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { PeriodPageParams, SinglePeriod } from '@/model/periods';
@@ -6,6 +7,8 @@ import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useSortBy, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { sortBy } from 'lodash';
+import { classNames } from '@/utils/index';
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
 const ReceiverTable = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -20,20 +23,23 @@ const ReceiverTable = (): JSX.Element | null => {
         {
           Header: 'Receiver',
           accessor: '_id',
-          className: 'text-left',
+          className: 'text-left pl-5',
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           Cell: (data: any): JSX.Element => (
-            <div>{data.row.original.userAccount.name}</div>
+            <UserAvatarAndName
+              userAccount={data.row.original.userAccount}
+              avatarClassName="text-2xl"
+            />
           ),
         },
         {
           Header: 'Praise Count',
-          className: 'text-center',
+          className: 'text-right',
           accessor: 'praiseCount',
         },
         {
           Header: 'Total Score',
-          className: 'text-center',
+          className: 'text-right pr-5',
           accessor: 'scoreRealized',
           sortType: 'basic',
         },
@@ -83,18 +89,19 @@ const ReceiverTable = (): JSX.Element | null => {
       >
         <thead>
           {headerGroups.map((headerGroup) => (
-            // eslint-disable-next-line react/jsx-key
             <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                // eslint-disable-next-line react/jsx-key
-                <th
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  className={(column as any).className}
-                  {...column.getHeaderProps()}
-                >
-                  {column.render('Header')}
-                </th>
-              ))}
+              {headerGroup.headers.map((column) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const className = (column as any).className as string;
+                return (
+                  <th
+                    className={classNames(className, 'pb-2')}
+                    {...column.getHeaderProps()}
+                  >
+                    {column.render('Header')}
+                  </th>
+                );
+              })}
             </tr>
           ))}
         </thead>
@@ -102,19 +109,18 @@ const ReceiverTable = (): JSX.Element | null => {
           {rows.map((row) => {
             prepareRow(row);
             return (
-              // eslint-disable-next-line react/jsx-key
               <tr
-                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-500"
+                className="cursor-pointer hover:bg-warm-gray-100 dark:hover:bg-slate-500"
                 {...row.getRowProps()}
-                onClick={handleClick(row.original)}
+                onClickCapture={handleClick(row.original)}
               >
                 {row.cells.map((cell) => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const className = (cell.column as any).className as string;
                   return (
-                    // eslint-disable-next-line react/jsx-key
                     <td
                       {...cell.getCellProps()}
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      className={(cell.column as any).className}
+                      className={classNames(className, 'py-3')}
                     >
                       {cell.render('Cell')}
                     </td>

@@ -46,12 +46,8 @@ const EthAccountDialog = ({
       className="fixed inset-0 z-50 overflow-y-auto"
       initialFocus={contentRef}
     >
-      <div className="flex items-center justify-center min-h-screen">
-        <Dialog.Overlay className="fixed inset-0 bg-gray-800 opacity-30" />
-        <div
-          className="relative max-w-xl p-6 mx-auto bg-white rounded dark:bg-slate-900"
-          ref={contentRef}
-        >
+      <div className="flex items-center justify-center min-h-screen bg-black/30">
+        <div className="p-10 praise-box-defaults" ref={contentRef}>
           <div className="flex justify-end">
             <button className="praise-button-round" onClick={onClose}>
               <FontAwesomeIcon icon={faTimes} size="1x" />

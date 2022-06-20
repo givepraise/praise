@@ -33,10 +33,10 @@ const UserDetailsPage = (): JSX.Element | null => {
   if (!user) return null;
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="praise-page">
       <BreadCrumb name="User details" icon={faUserGroup} />
       <BackLink to="/users" />
-      <div className="praise-box flex flex-col gap-2">
+      <div className="flex flex-col gap-2 mb-5 praise-box">
         <span>User identity</span>
         <span className="text-xl font-bold">
           {user.ethereumAddress && shortenEthAddress(user.ethereumAddress)}
@@ -47,7 +47,7 @@ const UserDetailsPage = (): JSX.Element | null => {
           Last updated: {formatIsoDateUTC(user.updatedAt)}
         </div>
       </div>
-      <div className="praise-box flex flex-col gap-2">
+      <div className="flex flex-col gap-2 mb-5 praise-box">
         <span>Linked Discord identity</span>
         {user?.accounts?.map((account) => (
           <>
@@ -69,14 +69,14 @@ const UserDetailsPage = (): JSX.Element | null => {
             <div
               key={role}
               className={classNames(
-                'flex gap-2 justify-center items-center py-2 px-3 rounded-md cursor-pointer bg-black',
+                'flex gap-2 justify-center items-center py-2 px-3 rounded-md cursor-pointer bg-themecolor-alt-2',
                 user.roles.includes(role) ? '' : 'opacity-50'
               )}
               onClick={(): void => void handleRole(role, user)}
             >
               <input
                 checked={user.roles.includes(role)}
-                className="text-lime-500 cursor-pointer"
+                className="cursor-pointer"
                 name={role}
                 type="checkbox"
                 readOnly
