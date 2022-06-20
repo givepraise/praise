@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { PeriodSettingDocument } from './types';
 import {
   genericSettingsSchema,
@@ -6,11 +6,11 @@ import {
   valueRealizedVirtualName,
 } from '@settings/entities';
 
-const periodSettingsSchema = new mongoose.Schema(
+const periodSettingsSchema = new Schema(
   {
     ...genericSettingsSchema,
     period: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Period',
       index: true,
       required: true,
@@ -27,7 +27,7 @@ periodSettingsSchema
 
 periodSettingsSchema.index({ key: 1, period: 1 }, { unique: true });
 
-export const PeriodSettingsModel = mongoose.model<PeriodSettingDocument>(
+export const PeriodSettingsModel = model<PeriodSettingDocument>(
   'PeriodSettings',
   periodSettingsSchema
 );
