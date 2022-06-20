@@ -6,6 +6,7 @@ import { SingleUser } from '@/model/users';
 import { useRecoilValue } from 'recoil';
 import { UserPopover } from './UserPopover';
 import React from 'react';
+import { classNames } from '@/utils/index';
 
 interface UserNameProps {
   user?: UserDto;
@@ -36,14 +37,14 @@ export const WrappedUserAvatarAndName = ({
   return (
     <UserPopover userAccount={userAccount} user={mergedUser}>
       <div className="flex whitespace-nowrap">
-        <div className={`flex items-center pr-2 ${avatarClassName}`}>
+        <div className={classNames('flex items-center pr-2', avatarClassName)}>
           <UserAvatar
             user={mergedUser}
             userAccount={userAccount}
             usePseudonym={usePseudonym}
           />
         </div>
-        <div className={`flex items-center ${nameClassName}`}>
+        <div className={classNames('flex items-center', nameClassName)}>
           <UserName
             user={mergedUser}
             userAccount={userAccount}
