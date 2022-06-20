@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { UserDocument, UserRole } from './types';
 
-export const userSchema = new mongoose.Schema(
+export const userSchema = new Schema(
   {
     ethereumAddress: { type: String, required: true, unique: true },
     roles: {
@@ -25,7 +25,7 @@ export const userSchema = new mongoose.Schema(
 
 userSchema.plugin(mongoosePagination);
 
-export const UserModel = mongoose.model<UserDocument, Pagination<UserDocument>>(
+export const UserModel = model<UserDocument, Pagination<UserDocument>>(
   'User',
   userSchema
 );
