@@ -10,54 +10,13 @@ import { PeriodSettingsModel } from '@periodsettings/entities';
 describe('GET /api/periodsettings/:periodId/settings/all', () => {
   beforeEach(async () => {
     await PeriodModel.deleteMany({});
+    await PeriodSettingsModel.deleteMany({});
   });
 
-  it('200 response with json body', async function () {
-    const wallet = Wallet.createRandom();
-    await seedUser({
-      ethereumAddress: wallet.address,
-    });
-    const { accessToken } = await loginUser(wallet, this.client);
-
-    const period = await seedPeriod();
-
-    return this.client
-      .get(
-        `/api/periodsettings/${period._id.toString() as string}/settings/all`
-      )
-      .set('Authorization', `Bearer ${accessToken}`)
-      .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
-      .expect(200);
-  });
-
-  it('401 response with json body if user not authenticated', async function () {
-    const period = await seedPeriod();
-
-    return this.client
-      .get(
-        `/api/periodsettings/${period._id.toString() as string}/settings/all`
-      )
-      .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
-      .expect(401);
-  });
-
-  it('401 response with json body if period does not exist', function () {
-    return this.client
-      .get(
-        `/api/periodsettings/${faker.database.mongodbObjectId()}/settings/all`
-      )
-      .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
-      .expect(401);
-  });
-
-  it('response body contains list of settings', async function () {
+  it('200 response with json body contains list of settings', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({ ethereumAddress: wallet.address });
 
-    // note: loginUser creates 1 UserEventLog
     const { accessToken } = await loginUser(wallet, this.client);
 
     const period = await seedPeriod();
@@ -82,21 +41,45 @@ describe('GET /api/periodsettings/:periodId/settings/all', () => {
     });
 
     expect(response.body.length).equals(periodSettings.length);
-    expect(response.body[0]).to.have.any.keys(
+    expect(response.body[0]).to.have.all.keys(
       '_id',
       'key',
       'label',
       'type',
-      'group',
       'description',
-      'value'
+      'value',
+      'valueRealized',
+      'period'
     );
+  });
+
+  it('401 response with json body if user not authenticated', async function () {
+    const period = await seedPeriod();
+
+    return this.client
+      .get(
+        `/api/periodsettings/${period._id.toString() as string}/settings/all`
+      )
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(401);
+  });
+
+  it('401 response with json body if period does not exist', function () {
+    return this.client
+      .get(
+        `/api/periodsettings/${faker.database.mongodbObjectId()}/settings/all`
+      )
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(401);
   });
 });
 
 describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
   beforeEach(async () => {
     await PeriodModel.deleteMany({});
+    await PeriodSettingsModel.deleteMany({});
   });
 
   it('200 response with json body containing a periodsetting', async function () {
@@ -136,7 +119,7 @@ describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
     );
   });
 
-  it('404 response with json body if period does not exist', async function () {
+  it('404 response if period does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
       ethereumAddress: wallet.address,
@@ -162,7 +145,7 @@ describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
       .expect(404);
   });
 
-  it('404 response with json body if periodsetting does not exist', async function () {
+  it('404 response if periodsetting does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
       ethereumAddress: wallet.address,
@@ -183,7 +166,7 @@ describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
       .expect(404);
   });
 
-  it('401 response with json body if user not authenticated', async function () {
+  it('401 response if user not authenticated', async function () {
     const period = await seedPeriod();
     const periodsetting = await PeriodSettingsModel.findOne({
       period: period._id,
@@ -375,7 +358,7 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
       .expect(403);
   });
 
-  it('401 response with json body if user not authenticated', async function () {
+  it('401 response if user not authenticated', async function () {
     const period = await seedPeriod();
     const periodsetting = await PeriodSettingsModel.findOne({
       period: period._id,
