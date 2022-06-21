@@ -23,7 +23,7 @@ const SelectInput = ({
   icon,
 }: SelectInputProps): JSX.Element => {
   return (
-    <div className="relative w-40 h-[42px]">
+    <div className="relative h-[42px]">
       <Listbox value={selected} onChange={handleChange}>
         <Listbox.Button className="h-[42px] border border-warm-gray-400 w-full py-1.5 pl-3 pr-10 text-left bg-transparent  ">
           <span className="block truncate">{selected.label}</span>

@@ -16,7 +16,7 @@ import {
   Theme as RainbowTheme,
   darkTheme,
 } from '@rainbow-me/rainbowkit';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 import { configureChains, createClient, WagmiConfig, chain } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import Routes from './navigation/Routes';

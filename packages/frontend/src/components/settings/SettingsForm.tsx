@@ -11,7 +11,7 @@ import {
 } from '@/model/settings';
 import { Form } from 'react-final-form';
 import { useRecoilValue } from 'recoil';
-import { find } from 'lodash';
+import find from 'lodash/find';
 import SubmitButton from '../form/SubmitButton';
 import { PeriodSettingDto } from 'api/src/periodsettings/types';
 import { SettingDto } from 'api/dist/settings/types';
