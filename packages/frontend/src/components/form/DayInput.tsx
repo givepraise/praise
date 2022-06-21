@@ -32,7 +32,6 @@ const DayInput = ({
   const [pickerVisible, setPickerVisible] = useState<boolean>(false);
 
   const handleDayClick = (day: Date): void => {
-    console.log('day clicked is', day);
     onChange(formatIsoDateUTC(day.toISOString(), DATE_FORMAT));
     setPickerVisible(false);
   };

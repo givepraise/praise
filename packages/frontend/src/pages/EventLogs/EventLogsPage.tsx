@@ -96,7 +96,7 @@ const EventLogsPage = (): JSX.Element => {
       <div className="p-0 praise-box">
         <div className="flex mb-8">
           {/* Filter */}
-          <div className="mt-5 mb-5 ml-5 mr-4">
+          <div className="w-3/12 mt-5 mb-5 ml-5 mr-4">
             <MultiselectInput
               handleChange={(e): void => {
                 setSelectedFilters(e);
@@ -109,7 +109,7 @@ const EventLogsPage = (): JSX.Element => {
           </div>
 
           {/* Search */}
-          <div className="mt-5 mb-5 mr-4">
+          <div className="w-5/12 mt-5 mb-5 mr-4">
             <SearchInput
               handleChange={(e): void => {
                 setSearchValue(e);
@@ -120,7 +120,7 @@ const EventLogsPage = (): JSX.Element => {
           </div>
 
           {/* Sort */}
-          <div className="mt-5 mb-5 ml-auto mr-5">
+          <div className="w-2/12 mt-5 mb-5 ml-auto mr-5">
             <SelectInput
               handleChange={(e): void => {
                 setSelectedSort(e);
