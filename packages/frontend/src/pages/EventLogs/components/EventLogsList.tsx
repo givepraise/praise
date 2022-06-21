@@ -34,8 +34,8 @@ const EventLogsTable = ({
         ))}
       </div>
       {(data.hasNextPage || data.hasPrevPage) && (
-        <div className="flex justify-between w-full mt-4 space-x-4">
-          <div>
+        <div className="flex justify-between w-full mt-5">
+          <div className="mb-5 ml-5 text-left">
             {data.hasPrevPage && (
               <a
                 className="cursor-pointer"
@@ -44,14 +44,14 @@ const EventLogsTable = ({
                 <FontAwesomeIcon
                   icon={faArrowLeft}
                   size="1x"
-                  className="pl-5 mr-2"
+                  className="mr-2"
                 />
                 Previous
               </a>
             )}
           </div>
 
-          <div>
+          <div className="mb-5 mr-5 text-right">
             {data.hasNextPage && (
               <a
                 className="cursor-pointer"
@@ -62,7 +62,7 @@ const EventLogsTable = ({
                 <FontAwesomeIcon
                   icon={faArrowRight}
                   size="1x"
-                  className="pr-5 ml-2"
+                  className="ml-2"
                 />
               </a>
             )}

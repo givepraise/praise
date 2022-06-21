@@ -6,7 +6,7 @@ import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useSortBy, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
-import { sortBy } from 'lodash';
+import sortBy from 'lodash/sortBy';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 

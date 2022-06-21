@@ -2,7 +2,7 @@ import { BadRequestError } from '@error/errors';
 import { settingValue } from '@shared/settings';
 import { PeriodDetailsReceiver } from '@period/types';
 import { Types } from 'mongoose';
-import { sum } from 'lodash';
+import sum from 'lodash/sum';
 import { PraiseModel } from '../entities';
 import { Quantification } from '../types';
 import { getPraisePeriod, isQuantificationCompleted } from './core';

@@ -8,7 +8,7 @@ import {
   useRecoilCallback,
   useRecoilValue,
 } from 'recoil';
-import { find } from 'lodash';
+import find from 'lodash/find';
 import { ApiAuthGet, useAuthApiQuery, isResponseOk } from './api';
 import { Setting, useSetSettingReturn } from './settings';
 import { PeriodSettingDto } from 'api/src/periodsettings/types';
