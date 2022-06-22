@@ -236,7 +236,7 @@ const seedQuantification = async (
     ...quantificationData,
   });
 
-  praise.quantifications.push(quantification);
+  praise.quantifications = [...praise.quantifications, quantification];
   await praise.save();
 
   return quantification;
