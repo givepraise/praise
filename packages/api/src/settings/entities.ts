@@ -30,24 +30,24 @@ export function getGenericSettingValueRealized(
 ): string | boolean | number | number[] | undefined {
   if (!this) return undefined;
 
-  let normalizedValue;
+  let realizedValue;
   if (this.type === 'Integer') {
-    normalizedValue = Number.parseInt(this.value);
+    realizedValue = Number.parseInt(this.value);
   } else if (this.type === 'Float') {
-    normalizedValue = parseFloat(this.value);
+    realizedValue = parseFloat(this.value);
   } else if (this.type === 'Boolean') {
-    normalizedValue = this.value === 'true' ? true : false;
+    realizedValue = this.value === 'true' ? true : false;
   } else if (this.type === 'IntegerList') {
-    normalizedValue = this.value
+    realizedValue = this.value
       .split(',')
       .map((v: string) => Number.parseInt(v.trim()));
   } else if (this.type === 'Image') {
-    normalizedValue = `${process.env.SERVER_URL as string}/${this.value}`;
+    realizedValue = `${process.env.SERVER_URL as string}/${this.value}`;
   } else {
-    normalizedValue = this.value;
+    realizedValue = this.value;
   }
 
-  return normalizedValue;
+  return realizedValue;
 }
 
 export const valueRealizedVirtualName = 'valueRealized';
