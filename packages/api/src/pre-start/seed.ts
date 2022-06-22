@@ -122,7 +122,7 @@ const seedPredefinedUsers = async (): Promise<void> => {
   if (userCount < PREDEFINED_USERS.length) {
     for (let i = 0; i < PREDEFINED_USERS.length; i++) {
       try {
-        await seedUser({
+        await seedUserAndUserAccount({
           ethereumAddress: PREDEFINED_USERS[i].ethereumAddress,
           roles: PREDEFINED_USERS[i].roles,
         });
@@ -141,7 +141,7 @@ const seedRegularUsers = async (): Promise<void> => {
       logger.info('Trying to seed database with regular users.');
       for (let i = 0; i < REGULAR_USERS_NUMBER; i++) {
         try {
-          await seedUser({
+          await seedUserAndUserAccount({
             roles: ['USER'],
           });
         } catch (e) {
@@ -165,7 +165,7 @@ const seedQuantifierUsers = async (): Promise<void> => {
 
       for (let i = 0; i < QUANTIFIER_USERS_NUMBER; i++) {
         try {
-          await seedUser({
+          await seedUserAndUserAccount({
             roles: ['USER', 'QUANTIFIER'],
           });
         } catch (e) {
