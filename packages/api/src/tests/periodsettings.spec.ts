@@ -1,5 +1,5 @@
 import { Wallet } from 'ethers';
-import { seedPeriod, seedUser } from '../pre-start/seed';
+import { seedPeriod, seedPeriodSetting, seedUser } from '../pre-start/seed';
 import { expect } from 'chai';
 import { PeriodModel } from '@period/entities';
 import { loginUser } from './utils';
@@ -380,5 +380,155 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
       .send(FORM_DATA)
       .expect('Content-Type', /json/)
       .expect(401);
+  });
+});
+
+describe('periodsetting.valueRealized conversions', () => {
+  it('periodsetting.type "Integer" converted to integer number', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const period = await seedPeriod();
+    const setting = await seedPeriodSetting({
+      period: period._id,
+      type: 'Integer',
+      value: 10,
+    });
+
+    const response = await this.client
+      .get(
+        `/api/periodsettings/${period?._id.toString() as string}/settings/${
+          setting?._id.toString() as string
+        }`
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(typeof response.body.valueRealized).to.equal('number');
+    expect(response.body.valueRealized % 1).to.equal(0);
+  });
+
+  it('periodsetting.type "Float" converted to float number', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const period = await seedPeriod();
+    const setting = await seedPeriodSetting({
+      period: period._id,
+      type: 'Float',
+      value: 10.55,
+    });
+
+    const response = await this.client
+      .get(
+        `/api/periodsettings/${period?._id.toString() as string}/settings/${
+          setting?._id.toString() as string
+        }`
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(typeof response.body.valueRealized).to.equal('number');
+    expect(response.body.valueRealized % 1).to.be.greaterThan(0);
+  });
+
+  it('periodsetting.type "Boolean" converted to boolean', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const period = await seedPeriod();
+    const setting = await seedPeriodSetting({
+      period: period._id,
+      type: 'Boolean',
+      value: false,
+    });
+
+    const response = await this.client
+      .get(
+        `/api/periodsettings/${period?._id.toString() as string}/settings/${
+          setting?._id.toString() as string
+        }`
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(typeof response.body.valueRealized).to.equal('boolean');
+    expect(response.body.valueRealized).to.equal(false);
+  });
+
+  it('periodsetting.type "IntegerList" converted to number[] of integers', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const period = await seedPeriod();
+    const setting = await seedPeriodSetting({
+      period: period._id,
+      type: 'IntegerList',
+      value: '1, 2, 3',
+    });
+
+    const response = await this.client
+      .get(
+        `/api/periodsettings/${period?._id.toString() as string}/settings/${
+          setting?._id.toString() as string
+        }`
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(Array.isArray(response.body.valueRealized)).to.be.true;
+    expect(typeof response.body.valueRealized[0]).to.equal('number');
+    expect(response.body.valueRealized[0] % 1).to.equal(0);
+  });
+
+  it('periodsetting.type "Image" converted to string uri', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const period = await seedPeriod();
+    const setting = await seedPeriodSetting({
+      type: 'Image',
+      value: 'file.png',
+      period: period._id,
+    });
+
+    const response = await this.client
+      .get(
+        `/api/periodsettings/${period?._id.toString() as string}/settings/${
+          setting?._id.toString() as string
+        }`
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(typeof response.body.valueRealized[0]).to.equal('string');
+    expect(response.body.valueRealized).to.include(process.env.SERVER_URL);
+    expect(response.body.valueRealized).to.include(setting.value);
+    expect(() => new URL(response.body.valueRealized)).to.not.throw();
   });
 });
