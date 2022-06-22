@@ -321,7 +321,7 @@ const prepareAssignmentsByTargetPraiseCount = async (
  * @param TOLERANCE
  * @returns
  */
-const prepareAssignmentsByAllQuantifiers = async (
+const prepareAssignmentsByEvenDistribution = async (
   period: PeriodDocument,
   PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number
 ): Promise<Assignments> => {
@@ -394,8 +394,8 @@ const assignQuantifiersDryRun = async (
   const period = await PeriodModel.findById(periodId);
   if (!period) throw new NotFoundError('Period');
 
-  const PRAISE_QUANTIFIERS_ASSIGN_ALL = (await settingValue(
-    'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+  const PRAISE_QUANTIFIERS_ASSIGN_EVENLY = (await settingValue(
+    'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
     period._id
   )) as boolean;
 
@@ -404,8 +404,8 @@ const assignQuantifiersDryRun = async (
     period._id
   )) as number;
 
-  if (PRAISE_QUANTIFIERS_ASSIGN_ALL) {
-    return prepareAssignmentsByAllQuantifiers(
+  if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
+    return prepareAssignmentsByEvenDistribution(
       period,
       PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER
     );
@@ -436,8 +436,8 @@ export const verifyQuantifierPoolSize = async (
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
-  const PRAISE_QUANTIFIERS_ASSIGN_ALL = (await settingValue(
-    'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+  const PRAISE_QUANTIFIERS_ASSIGN_EVENLY = (await settingValue(
+    'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
     period._id
   )) as boolean;
 
@@ -447,7 +447,7 @@ export const verifyQuantifierPoolSize = async (
 
   let response;
 
-  if (PRAISE_QUANTIFIERS_ASSIGN_ALL) {
+  if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
     response = {
       quantifierPoolSize,
       quantifierPoolSizeNeeded: quantifierPoolSize,
