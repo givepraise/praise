@@ -384,6 +384,10 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
 });
 
 describe('periodsetting.valueRealized conversions', () => {
+  beforeEach(async () => {
+    await PeriodModel.deleteMany({});
+  });
+
   it('periodsetting.type "Integer" converted to integer number', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
