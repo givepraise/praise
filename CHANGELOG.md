@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Switching eth wallet should result in logging out the user #469
 - Logging out of MetaMask causes EthAccount in navigation to disappear #470
 - Changed lodash imports to single method import #486
-- Stop throwing error if not all quantifers are assigned praise and "Assign praise evenly" setting enabled
+- Prevent error when not all quantifers are assigned praise and "Assign praise evenly" setting enabled
 
 ## [0.8.0] - 2022-06-06
 
