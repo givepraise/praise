@@ -1,0 +1,105 @@
+import { Wallet } from 'ethers';
+import { seedPraise, seedUser, seedUserAccount } from '../pre-start/seed';
+import { expect } from 'chai';
+import { PeriodModel } from '@period/entities';
+import { loginUser } from './utils';
+import { PraiseModel } from '@praise/entities';
+
+describe('GET /api/praise/all', () => {
+  beforeEach(async () => {
+    await PeriodModel.deleteMany({});
+    await PraiseModel.deleteMany({});
+  });
+
+  it('200 response with json body containing paginated list of praises', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    await seedPraise();
+    await seedPraise();
+    await seedPraise();
+
+    const response = await this.client
+      .get('/api/praise/all?page=1&limit=10&sortColumn=createdAt&sortType=desc')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).to.have.property('docs');
+    expect(response.body.docs.length).equals(3);
+    expect(response.body.docs[0]).to.have.all.keys(
+      '_id',
+      'reasonRealized',
+      'sourceId',
+      'sourceName',
+      'quantifications',
+      'giver',
+      'receiver',
+      'createdAt',
+      'updatedAt',
+      'scoreRealized'
+    );
+  });
+
+  it('200 response with json body containing paginated list of praises, filtered by reciever', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const receiver = await seedUserAccount();
+    const receiver2 = await seedUserAccount();
+
+    await seedPraise({ receiver: receiver._id });
+    await seedPraise({ receiver: receiver._id });
+    await seedPraise({ receiver: receiver._id });
+    await seedPraise({ receiver: receiver2._id });
+
+    const response = await this.client
+      .get(
+        `/api/praise/all?page=1&limit=10&sortColumn=createdAt&sortType=desc&receiver=${
+          receiver._id.toString() as string
+        }`
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).to.have.property('docs');
+    expect(response.body.docs.length).equals(3);
+    expect(response.body.docs[0]).to.have.all.keys(
+      '_id',
+      'reasonRealized',
+      'sourceId',
+      'sourceName',
+      'quantifications',
+      'giver',
+      'receiver',
+      'createdAt',
+      'updatedAt',
+      'scoreRealized'
+    );
+    expect(
+      response.body.docs.filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (d: any) => d.receiver._id === receiver._id.toString()
+      ).length
+    )
+      .to.equal(response.body.docs.length)
+      .to.equal(3);
+  });
+
+  it('401 response with json body if user not authenticated', function () {
+    return this.client
+      .get('/api/praise/all?page=1&limit=10&sortColumn=createdAt&sortType=desc')
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(401);
+  });
+});
