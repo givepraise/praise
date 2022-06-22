@@ -401,17 +401,6 @@ const prepareAssignmentsByAllQuantifiers = async (
     assignments
   );
 
-  // Verify that all quantifiers were assigned if necessary
-  if (assignments.poolAssignments.length === quantifierPool.length) {
-    logger.info(
-      'All quantifiers were assigned praise, as expected with PRAISE_QUANTIFIERS_ASSIGN_ALL'
-    );
-  } else {
-    throw new InternalServerError(
-      `Not all quantifiers were assigned praise, missing ${assignments.remainingAssignmentsCount}, despite PRAISE_QUANTIFIERS_ASSIGN_EVENLY`
-    );
-  }
-
   return assignments;
 };
 
