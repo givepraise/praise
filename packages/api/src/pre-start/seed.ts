@@ -13,6 +13,8 @@ import { EventLogDocument } from '@eventlog/types';
 import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';
 import { SettingGroup, SettingDocument } from '@settings/types';
 import { SettingsModel } from '@settings/entities';
+import { PeriodSettingsModel } from '@periodsettings/entities';
+import { PeriodSettingDocument } from '@periodsettings/types';
 
 const PERIOD_NUMBER = 3;
 const PERIOD_LENGTH = 10;
@@ -282,6 +284,34 @@ const seedSetting = async (
   return setting;
 };
 
+const seedPeriodSetting = async (
+  periodSettingData: Object = {}
+): Promise<PeriodSettingDocument> => {
+  const createdAt = faker.date.recent();
+
+  const periods: PeriodDocument[] = await PeriodModel.aggregate([
+    { $sample: { size: 1 } },
+  ]);
+  if (!periods) throw new Error('No periods exist to seed PeriodSettings for');
+
+  const period = periods[0];
+
+  const periodsetting = await PeriodSettingsModel.create({
+    key: faker.word.noun().toUpperCase(),
+    label: faker.word.noun(),
+    type: 'Boolean',
+    group: SettingGroup.APPLICATION,
+    description: faker.lorem.sentence(),
+    value: faker.datatype.boolean(),
+    createdAt,
+    updatedAt: createdAt,
+    period: period._id,
+    ...periodSettingData,
+  });
+
+  return periodsetting;
+};
+
 const seedData = async (): Promise<void> => {
   logger.info('Seeding database with fake data.');
 
@@ -304,4 +334,5 @@ export {
   seedQuantification,
   seedEventLog,
   seedSetting,
+  seedPeriodSetting,
 };
