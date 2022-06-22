@@ -1,13 +1,11 @@
 import { Wallet } from 'ethers';
 import { seedPraise, seedUser, seedUserAccount } from '../pre-start/seed';
 import { expect } from 'chai';
-import { PeriodModel } from '@period/entities';
 import { loginUser } from './utils';
 import { PraiseModel } from '@praise/entities';
 
 describe('GET /api/praise/all', () => {
   beforeEach(async () => {
-    await PeriodModel.deleteMany({});
     await PraiseModel.deleteMany({});
   });
 
@@ -101,5 +99,85 @@ describe('GET /api/praise/all', () => {
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(401);
+  });
+});
+
+describe('GET /api/praise/:id', () => {
+  beforeEach(async () => {
+    await PraiseModel.deleteMany({});
+  });
+
+  it('200 response with json body containing a praise', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const praise = await seedPraise();
+
+    const response = await this.client
+      .get(`/api/praise/${praise._id.toString() as string}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body._id).equals(praise._id.toString());
+    expect(response.body).to.have.all.keys(
+      '_id',
+      'reasonRealized',
+      'sourceId',
+      'sourceName',
+      'quantifications',
+      'giver',
+      'receiver',
+      'createdAt',
+      'updatedAt',
+      'scoreRealized'
+    );
+  });
+
+  it('401 response with json body if user not authenticated', async function () {
+    const praise = await seedPraise();
+
+    return this.client
+      .get(`/api/praise/${praise._id.toString() as string}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(401);
+  });
+
+  it('praise may contain a forwarder', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const forwarder = await seedUserAccount();
+    const praise = await seedPraise({ forwarder: forwarder._id });
+
+    const response = await this.client
+      .get(`/api/praise/${praise._id.toString() as string}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body._id).equals(praise._id.toString());
+    expect(response.body).to.have.all.keys(
+      '_id',
+      'reasonRealized',
+      'sourceId',
+      'sourceName',
+      'quantifications',
+      'giver',
+      'receiver',
+      'createdAt',
+      'updatedAt',
+      'scoreRealized',
+      'forwarder'
+    );
   });
 });
