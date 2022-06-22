@@ -33,6 +33,7 @@ import {
   QuantificationCreateUpdateInput,
 } from './types';
 import { praiseWithScore, getPraisePeriod } from './utils/core';
+import { PeriodStatusType } from '@period/types';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
@@ -101,6 +102,11 @@ export const quantify = async (
   const period = await getPraisePeriod(praise);
   if (!period)
     throw new BadRequestError('Praise does not have an associated period');
+
+  if (period.status !== PeriodStatusType.QUANTIFY)
+    throw new BadRequestError(
+      'Period associated with praise does have status QUANTIFY'
+    );
 
   const { score, dismissed, duplicatePraise } = req.body;
 
