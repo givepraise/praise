@@ -11,6 +11,8 @@ import logger from 'jet-logger';
 import { UserDocument } from '@user/types';
 import { EventLogDocument } from '@eventlog/types';
 import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';
+import { SettingGroup, SettingDocument } from '@settings/types';
+import { SettingsModel } from '@settings/entities';
 
 const PERIOD_NUMBER = 3;
 const PERIOD_LENGTH = 10;
@@ -260,6 +262,26 @@ const seedEventLog = async (
   return eventLog;
 };
 
+const seedSetting = async (
+  settingData: Object = {}
+): Promise<SettingDocument> => {
+  const createdAt = faker.date.recent();
+
+  const setting = await SettingsModel.create({
+    key: faker.word.noun().toUpperCase(),
+    label: faker.word.noun(),
+    type: 'Boolean',
+    group: SettingGroup.APPLICATION,
+    description: faker.lorem.sentence(),
+    value: faker.datatype.boolean(),
+    createdAt,
+    updatedAt: createdAt,
+    ...settingData,
+  });
+
+  return setting;
+};
+
 const seedData = async (): Promise<void> => {
   logger.info('Seeding database with fake data.');
 
@@ -281,4 +303,5 @@ export {
   seedPraises,
   seedQuantification,
   seedEventLog,
+  seedSetting,
 };
