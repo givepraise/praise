@@ -109,7 +109,7 @@ const EventLogsPage = (): JSX.Element => {
           </div>
 
           {/* Search */}
-          <div className="w-5/12 mt-5 mb-5 mr-4">
+          <div className="w-5/12 mt-5 mb-5 mr-4 h-[42px]">
             <SearchInput
               handleChange={(e): void => {
                 setSearchValue(e);
@@ -120,7 +120,7 @@ const EventLogsPage = (): JSX.Element => {
           </div>
 
           {/* Sort */}
-          <div className="w-2/12 mt-5 mb-5 ml-auto mr-5">
+          <div className="w-2/12 mt-5 mb-5 ml-auto mr-5 h-[42px]">
             <SelectInput
               handleChange={(e): void => {
                 setSelectedSort(e);

@@ -31,6 +31,7 @@ import {
   PraiseDocument,
   PraiseDto,
   QuantificationCreateUpdateInput,
+  QuantifyMultiplePraiseInput,
 } from './types';
 import { praiseWithScore, getPraisePeriod } from './utils/core';
 
@@ -199,5 +200,52 @@ export const quantify = async (
   );
 
   const response = await praiseDocumentListTransformer(affectedPraises);
+  res.status(200).json(response);
+};
+
+export const quantifyMultiple = async (
+  req: TypedRequestBody<QuantifyMultiplePraiseInput>,
+  res: TypedResponse<PraiseDto[]>
+): Promise<void> => {
+  const { score, praiseIds } = req.body;
+
+  const affectedPraises = await Promise.all(
+    praiseIds.map(async (id) => {
+      const praise = await PraiseModel.findById(id).populate(
+        'giver receiver forwarder'
+      );
+
+      if (!praise) throw new NotFoundError('Praise');
+
+      const period = await getPraisePeriod(praise);
+
+      if (!period)
+        throw new BadRequestError('Praise does not have an associated period');
+
+      if (!res.locals.currentUser?._id) {
+        throw new InternalServerError('Current user not found.');
+      }
+
+      const quantification = praise.quantifications.find((q) =>
+        q.quantifier.equals(res.locals.currentUser._id)
+      );
+
+      if (!quantification)
+        throw new BadRequestError(
+          'User not assigned as quantifier for praise.'
+        );
+
+      quantification.score = score;
+      quantification.dismissed = false;
+      quantification.duplicatePraise = undefined;
+
+      await praise.save();
+
+      return praise;
+    })
+  );
+
+  const response = await praiseDocumentListTransformer(affectedPraises);
+  console.log('RESPONSE:', response);
   res.status(200).json(response);
 };
