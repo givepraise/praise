@@ -246,6 +246,5 @@ export const quantifyMultiple = async (
   );
 
   const response = await praiseDocumentListTransformer(affectedPraises);
-  console.log('RESPONSE:', response);
   res.status(200).json(response);
 };

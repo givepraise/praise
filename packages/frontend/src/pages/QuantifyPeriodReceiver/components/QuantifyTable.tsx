@@ -16,8 +16,8 @@ import MarkDuplicateButton from './MarkDuplicateButton';
 import MarkDismissedButton from './MarkDismissedButton';
 import QuantifyPraiseRow from './QuantifyPraiseRow';
 import SearchInput from '@/components/form/SearchInput';
-import PraiseMultipleDialog from '@/pages/QuantifyPeriodReceiver/components/PraiseMultipleDialog';
-import PraiseMultipleButton from '@/pages/QuantifyPeriodReceiver/components/PraiseMultipleButton';
+import QuantifyMultipleDialog from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleDialog';
+import QuantifyMultipleButton from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleButton';
 
 interface Props {
   periodId: string;
@@ -45,7 +45,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
     React.useState(false);
   const [isDuplicateSearchDialogOpen, setIsDuplicateSearchDialogOpen] =
     React.useState(false);
-  const [isPraiseMultipleDialogOpen, setIsPraiseMultipleDialogOpen] =
+  const [isQuantifyMultipleDialogOpen, setIsQuantifyMultipleDialogOpen] =
     React.useState(false);
   const [duplicateSearchDialogPraise, setDuplicateSearchDialogPraise] =
     React.useState<PraiseDto | undefined>(undefined);
@@ -179,9 +179,9 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
         </div>
 
         <div>
-          <PraiseMultipleButton
+          <QuantifyMultipleButton
             disabled={selectedPraises.length < 1}
-            onClick={(): void => setIsPraiseMultipleDialogOpen(true)}
+            onClick={(): void => setIsQuantifyMultipleDialogOpen(true)}
           />
         </div>
 
@@ -266,9 +266,9 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
           handleDuplicateSearchPraise(praiseId)
         }
       />
-      <PraiseMultipleDialog
-        open={isPraiseMultipleDialogOpen}
-        onClose={(): void => setIsPraiseMultipleDialogOpen(false)}
+      <QuantifyMultipleDialog
+        open={isQuantifyMultipleDialogOpen}
+        onClose={(): void => setIsQuantifyMultipleDialogOpen(false)}
         selectedPraises={selectedPraises}
         allowedValues={allowedValues}
         onSetScore={(score, selectedPraises): void =>

@@ -6,7 +6,7 @@ interface Props {
   onClick();
 }
 
-const PraiseMultipleButton = ({
+const QuantifyMultipleButton = ({
   disabled = false,
   onClick,
 }: Props): JSX.Element => {
@@ -21,9 +21,9 @@ const PraiseMultipleButton = ({
       onClick={onClick}
     >
       <FontAwesomeIcon icon={faPrayingHands} size="1x" />
-      <span>Praise</span>
+      <span>Quantify</span>
     </button>
   );
 };
 
-export default PraiseMultipleButton;
+export default QuantifyMultipleButton;

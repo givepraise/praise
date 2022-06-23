@@ -1,12 +1,12 @@
 import ScrollableDialog from '@/components/ScrollableDialog';
-import PraiseMultipleButton from '@/pages/QuantifyPeriodReceiver/components/PraiseMultipleButton';
+import QuantifyMultipleButton from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleButton';
 import QuantifySlider from '@/pages/QuantifyPeriodReceiver/components/QuantifySlider';
 import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
 import { useState } from 'react';
 
-interface PraiseMultipleDialogProps {
+interface QuantifyMultipleDialogProps {
   open: boolean;
   onClose(): void;
   selectedPraises: PraiseDto[];
@@ -14,13 +14,13 @@ interface PraiseMultipleDialogProps {
   onSetScore(newScore: number, selectedPraises: PraiseDto[]);
 }
 
-const PraiseMultipleDialog = ({
+const QuantifyMultipleDialog = ({
   open = false,
   onClose,
   selectedPraises,
   allowedValues,
   onSetScore,
-}: PraiseMultipleDialogProps): JSX.Element | null => {
+}: QuantifyMultipleDialogProps): JSX.Element | null => {
   const [score, setScore] = useState<number>(0);
 
   return (
@@ -47,7 +47,7 @@ const PraiseMultipleDialog = ({
           </div>
 
           <div className="flex justify-center">
-            <PraiseMultipleButton
+            <QuantifyMultipleButton
               onClick={(): void => {
                 onSetScore(score, selectedPraises);
                 onClose();
@@ -60,4 +60,4 @@ const PraiseMultipleDialog = ({
   );
 };
 
-export default PraiseMultipleDialog;
+export default QuantifyMultipleDialog;
