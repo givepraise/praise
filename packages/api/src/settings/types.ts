@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import { Document } from 'mongoose';
 
 export enum SettingGroup {
   APPLICATION,
@@ -16,7 +16,7 @@ export interface Setting {
   group: SettingGroup;
 }
 
-export interface SettingDocument extends Setting, mongoose.Document {}
+export interface SettingDocument extends Setting, Document {}
 
 export interface SettingDto {
   _id: string;

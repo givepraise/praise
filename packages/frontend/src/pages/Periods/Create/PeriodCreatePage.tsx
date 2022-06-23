@@ -137,7 +137,7 @@ const PeriodsCreatePage = (): JSX.Element => {
           A new period begins where the last one ended, and finishes at
           end-of-day on <i>end date</i>.
         </div>
-        <React.Suspense fallback="Loading…">
+        <React.Suspense fallback={null}>
           <PeriodsForm />
         </React.Suspense>
       </div>

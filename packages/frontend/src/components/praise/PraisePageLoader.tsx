@@ -3,7 +3,7 @@ import { AllPraiseQueryPagination, useAllPraiseQuery } from '@/model/praise';
 import React, { useCallback, useState, useEffect } from 'react';
 import { BottomScrollListener } from 'react-bottom-scroll-listener';
 import { useRecoilValue } from 'recoil';
-import { ALL_PRAISE_LIST_KEY } from './PraiseTable';
+import { PRAISE_LIST_KEY } from '../../pages/Start/components/PraiseTable';
 
 interface Params {
   listKey?: string;
@@ -11,7 +11,7 @@ interface Params {
 }
 
 const PraisePageLoader = ({
-  listKey = ALL_PRAISE_LIST_KEY,
+  listKey = PRAISE_LIST_KEY,
   receiverId,
 }: Params): JSX.Element => {
   const praisePagination = useRecoilValue(AllPraiseQueryPagination(listKey));
@@ -43,7 +43,12 @@ const PraisePageLoader = ({
     setNextPageNumber(praisePagination.currentPage + 1);
   }, [praisePagination, loading, setNextPageNumber]);
 
-  if (loading) return <LoaderSpinner />;
+  if (loading)
+    return (
+      <div className="pb-20">
+        <LoaderSpinner />
+      </div>
+    );
 
   /* This will trigger handleOnDocumentBottom when the body of the page hits the bottom */
   return <BottomScrollListener onBottom={handleContainerOnBottom} />;

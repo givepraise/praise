@@ -52,7 +52,7 @@ const UsersStatistics = (): JSX.Element => {
   };
 
   return (
-    <div className="praise-box">
+    <>
       <div className="mb-4">
         <span className="text-xl font-bold">User statistics</span>
       </div>
@@ -76,7 +76,7 @@ const UsersStatistics = (): JSX.Element => {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 

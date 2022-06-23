@@ -4,9 +4,6 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { toast } from 'react-hot-toast';
 import { SignMessageButton } from '@/components/auth/SignMessageButton';
-import { useRecoilValue } from 'recoil';
-import { AccessToken } from '@/model/auth';
-import { useHistory } from 'react-router-dom';
 import LoaderSpinner from '@/components/LoaderSpinner';
 import EthAccount from '@/components/account/EthAccount';
 
@@ -24,12 +21,6 @@ const SignMessageLayout = ({
   buttonText = 'Sign message',
 }: Props): JSX.Element => {
   const { data, isLoading } = useAccount();
-  const accessToken = useRecoilValue(AccessToken);
-  const history = useHistory();
-
-  if (accessToken) {
-    history.replace('/');
-  }
 
   return (
     <div className="w-full">
@@ -37,7 +28,7 @@ const SignMessageLayout = ({
         <div className="w-full p-5 text-2xl font-bold">
           <FontAwesomeIcon icon={faPrayingHands} size="1x" className="m-2" />
         </div>
-        <div className="p-4 py-8 m-auto space-y-8 border border-solid rounded-lg shadow-sm bg-gray-50 w-96 dark:bg-slate-900">
+        <div className="p-4 py-8 m-auto space-y-8 border border-solid rounded-lg shadow-sm bg-warm-gray-50 w-96 dark:bg-slate-900">
           {children}
 
           {isLoading && !data && !message ? (

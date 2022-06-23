@@ -11,16 +11,11 @@
     @apply dark:border-slate-700;
   }
   #root {
-    @apply min-h-screen bg-[#f3f4f6] text-gray-800 dark:bg-slate-800 dark:text-white text-base;
+    @apply min-h-screen text-sm text-warm-gray-800 dark:bg-slate-800 dark:text-white bg-warm-gray-300;
   }
 
   h2 {
     @apply text-xl font-semibold mb-1.5;
-  }
-
-  td,
-  th {
-    @apply py-2 px-7;
   }
 
   a {
@@ -28,26 +23,9 @@
   }
 
   input, textarea {
-    @apply dark:bg-slate-500 dark:border-slate-900; 
+    @apply text-sm dark:border-slate-400 dark:bg-slate-500 dark:placeholder-white; 
   }
 
-  [type='text'], 
-    [type='email'], 
-    [type='url'], 
-    [type='password'], 
-    [type='number'], 
-    [type='date'], 
-    [type='datetime-local'], 
-    [type='month'], 
-    [type='search'], 
-    [type='tel'], 
-    [type='time'], 
-    [type='week'], 
-    [multiple], 
-    textarea, 
-    select { 
-      @apply text-base 
-    }
 
   [type='text']:focus,
     [type='email']:focus,
@@ -64,18 +42,28 @@
     [multiple]:focus,
     textarea:focus,
     select:focus {
-      @apply  dark:focus:ring-teal-300 dark:focus:ring-2;
+      @apply  border-warm-gray-900 dark:border-slate-300 dark:focus:ring-slate-300 focus:ring-warm-gray-900;
+    }
+    
+    [type='checkbox'] {
+      @apply text-black border border-warm-gray-900 focus:border-warm-gray-900 focus:border-2 focus:ring-0;
     }
 
-  .praise-box {
-    @apply dark:bg-slate-600;
+    .praise-button {
+      @apply px-4 py-2 font-bold text-white rounded-md bg-themecolor-3 hover:bg-themecolor-4;
+    }
+
+    .praise-button-outline {
+      @apply px-4 py-2 font-bold border-2 rounded-md text-themecolor-3 border-themecolor-3 hover:bg-themecolor-4 hover:text-white hover:border-themecolor-4;
+    }
+    
+    .praise-button-disabled {
+      @apply cursor-default praise-button bg-themecolor-3/50 text-white/50 hover:bg-themecolor-3/50;
+    }
+    
+    .praise-button-round {
+      @apply flex items-center justify-center rounded-full hover:bg-warm-gray-300 w-7 h-7 dark:text-white dark:hover:bg-slate-800;
+    }
+    
   }
 
-  .praise-button {
-    @apply px-4 py-2 font-bold text-white bg-gray-800 rounded hover:bg-gray-700;
-  }
-
-  .praise-button-disabled {
-    @apply px-4 py-2 font-bold text-gray-500 bg-gray-700 rounded cursor-default;
-  }
-}

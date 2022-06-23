@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import { UserCell } from '@/components/table/UserCell';
 import Notice from '@/components/Notice';
 import { PeriodPageParams, SinglePeriod } from '@/model/periods';
@@ -5,7 +6,9 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
-import { sortBy } from 'lodash';
+import sortBy from 'lodash/sortBy';
+import { classNames } from '@/utils/index';
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
 const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -16,16 +19,19 @@ const QuantifierTable = (): JSX.Element => {
       {
         Header: 'Quantifier',
         accessor: '_id',
-        className: 'text-left',
+        className: 'text-left pl-5',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => (
-          <UserCell userId={data.row.original._id} />
+          <UserAvatarAndName
+            userId={data.row.original._id}
+            avatarClassName="text-2xl"
+          />
         ),
       },
       {
         Header: 'Finished items',
         accessor: '',
-        className: 'text-center',
+        className: 'text-right pr-5',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => (
           <div>
@@ -61,16 +67,14 @@ const QuantifierTable = (): JSX.Element => {
 
   if (period.status === 'OPEN')
     return (
-      <div className="w-full h-full flex items-center">
-        <Notice type="danger">
-          <span>No quantifiers assigned in this period</span>
-        </Notice>
+      <div className="flex items-center justify-center w-full h-full">
+        No quantifiers have been assigned for this period.
       </div>
     );
 
   if (period?.receivers?.length === 0)
     return (
-      <div className="w-full h-full flex items-center">
+      <div className="flex items-center w-full h-full">
         <Notice type="danger">
           <span>No quantifiers found in this period</span>
         </Notice>
@@ -85,18 +89,19 @@ const QuantifierTable = (): JSX.Element => {
     >
       <thead>
         {headerGroups.map((headerGroup) => (
-          // eslint-disable-next-line react/jsx-key
           <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              // eslint-disable-next-line react/jsx-key
-              <th
-                {...column.getHeaderProps()}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                className={(column as any).className}
-              >
-                {column.render('Header')}
-              </th>
-            ))}
+            {headerGroup.headers.map((column) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const className = (column as any).className as string;
+              return (
+                <th
+                  {...column.getHeaderProps()}
+                  className={classNames(className, 'pb-2')}
+                >
+                  {column.render('Header')}
+                </th>
+              );
+            })}
           </tr>
         ))}
       </thead>
@@ -104,15 +109,14 @@ const QuantifierTable = (): JSX.Element => {
         {rows.map((row) => {
           prepareRow(row);
           return (
-            // eslint-disable-next-line react/jsx-key
             <tr id="" {...row.getRowProps()}>
               {row.cells.map((cell) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const className = (cell.column as any).className as string;
                 return (
-                  // eslint-disable-next-line react/jsx-key
                   <td
                     {...cell.getCellProps()}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    className={(cell.column as any).className}
+                    className={classNames(className, 'py-3')}
                   >
                     {cell.render('Cell')}
                   </td>

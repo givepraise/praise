@@ -1,3 +1,5 @@
+import { classNames } from '../utils';
+
 interface Params {
   children?: JSX.Element;
   type?: string;
@@ -18,12 +20,16 @@ const Notice = ({
   } else if (type === 'warning') {
     typeClasses = 'bg-orange-300';
   } else if (type === 'info') {
-    typeClasses = 'bg-gray-300';
+    typeClasses = 'bg-warm-gray-300 dark:bg-slate-700';
   }
 
   return (
     <div
-      className={`w-full p-4 text-center text-white rounded-sm ${className} ${typeClasses}`}
+      className={classNames(
+        'w-full p-4 text-center text-white rounded-sm',
+        className,
+        typeClasses
+      )}
     >
       {children}
     </div>

@@ -1,11 +1,11 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { PraiseDocument, QuantificationDocument } from './types';
 
-export const quantificationSchema = new mongoose.Schema(
+export const quantificationSchema = new Schema(
   {
     quantifier: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
       index: true,
@@ -13,7 +13,7 @@ export const quantificationSchema = new mongoose.Schema(
     score: { type: Number, default: 0, required: true },
     dismissed: { type: Boolean, default: false, required: true },
     duplicatePraise: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Praise',
       default: undefined,
     },
@@ -23,12 +23,12 @@ export const quantificationSchema = new mongoose.Schema(
   }
 );
 
-const QuantificationModel = mongoose.model<QuantificationDocument>(
+const QuantificationModel = model<QuantificationDocument>(
   'Quantification',
   quantificationSchema
 );
 
-const praiseSchema = new mongoose.Schema(
+const praiseSchema = new Schema(
   {
     reason: { type: String, required: true },
     reasonRealized: { type: String, required: true },
@@ -55,7 +55,7 @@ const praiseSchema = new mongoose.Schema(
 
 praiseSchema.plugin(mongoosePagination);
 
-const PraiseModel = mongoose.model<PraiseDocument, Pagination<PraiseDocument>>(
+const PraiseModel = model<PraiseDocument, Pagination<PraiseDocument>>(
   'Praise',
   praiseSchema
 );

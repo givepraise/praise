@@ -15,7 +15,7 @@ import { PeriodModel } from '@period/entities';
 import { PeriodDetailsReceiver } from '@period/types';
 import { PraiseModel } from '@praise/entities';
 import { settingValue } from '@shared/settings';
-import { sum } from 'lodash';
+import sum from 'lodash/sum';
 import { getPeriodDateRangeQuery } from '@period/utils';
 import { faker } from '@faker-js/faker';
 import { add } from 'date-fns';

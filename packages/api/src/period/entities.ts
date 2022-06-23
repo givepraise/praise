@@ -1,9 +1,9 @@
 import { PeriodDocument, PeriodStatusType } from '@period/types';
-import mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { endDateValidators } from './validators';
 
-export const periodSchema = new mongoose.Schema<PeriodDocument>(
+export const periodSchema = new Schema<PeriodDocument>(
   {
     name: { type: String, required: true, minlength: 3, maxlength: 64 },
     status: {
@@ -24,7 +24,7 @@ export const periodSchema = new mongoose.Schema<PeriodDocument>(
 
 periodSchema.plugin(mongoosePagination);
 
-const PeriodModel = mongoose.model<PeriodDocument, Pagination<PeriodDocument>>(
+const PeriodModel = model<PeriodDocument, Pagination<PeriodDocument>>(
   'Period',
   periodSchema
 );

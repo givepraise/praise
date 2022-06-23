@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosInstance } from 'axios';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
 import { toast } from 'react-hot-toast';
 import { getRecoil } from 'recoil-nexus';
-import { AccessToken } from '../model/auth';
+import { ActiveTokenSet } from '@/model/auth';
 import { requestApiAuthRefresh } from './auth';
 
 /**
@@ -39,7 +39,7 @@ const handleErrors = (err: AxiosError): void => {
     //@ts-ignore
     toast.error(err.response.data.message);
   } else if (statusCode === 401) {
-    window.location.href = '/login';
+    window.location.href = '/';
   } else {
     toast.error('Unknown Error');
   }
@@ -81,11 +81,11 @@ export const makeApiClient = (): AxiosInstance => {
  * @returns
  */
 export const makeApiAuthClient = (): AxiosInstance => {
-  const accessToken = getRecoil(AccessToken);
+  const tokenSet = getRecoil(ActiveTokenSet);
   const apiAuthClient = axios.create({
     baseURL: apiBaseURL,
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${tokenSet?.accessToken}`,
     },
   });
   createAuthRefreshInterceptor(apiAuthClient, refreshAuthTokenSet, {

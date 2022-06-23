@@ -7,7 +7,6 @@ import {
 } from '@/model/periods';
 import BackLink from '@/navigation/BackLink';
 import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
-import { classNames } from '@/utils/index';
 import { PeriodStatusType } from 'api/dist/period/types';
 import {
   faBalanceScaleLeft,
@@ -30,6 +29,8 @@ import NavItem from '../../../navigation/NavItem';
 import QuantifierTable from './components/QuantifierTable';
 import ReceiverTable from './components/ReceiverTable';
 import PeriodSettingsForm from './components/PeriodSettingsForm';
+import { SubPageNav } from '@/navigation/SubPageNav';
+import { InlineLabel } from '@/components/InlineLabel';
 
 const PeriodDetailHead = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -37,22 +38,18 @@ const PeriodDetailHead = (): JSX.Element => {
   const period = useRecoilValue(SinglePeriod(periodId));
   return (
     <>
-      {' '}
-      <div
-        className={classNames(
-          period?.status === 'OPEN'
-            ? 'bg-green-300'
-            : period?.status === 'QUANTIFY'
-            ? 'bg-pink-300'
-            : 'bg-gray-300',
-          'float-right px-2 py-1 text-xs text-white rounded-full'
-        )}
-      >
-        {period
-          ? period.status === 'QUANTIFY'
-            ? 'QUANTIFYING'
-            : period.status
-          : null}
+      <div className={'float-right'}>
+        {' '}
+        <InlineLabel
+          text={period?.status as string}
+          className={
+            period?.status === 'OPEN'
+              ? 'bg-themecolor-alt-1/50'
+              : period?.status === 'QUANTIFY'
+              ? 'bg-themecolor-alt-1'
+              : 'bg-themecolor-alt-1/30'
+          }
+        />
       </div>
       {isAdmin ? <PeriodNameForm /> : <h2>{period?.name}</h2>}
       <PeriodDetailsComponent />
@@ -70,24 +67,24 @@ const PeriodDetailPage = (): JSX.Element | null => {
   if (!period || !period.receivers) return null;
 
   return (
-    <div className="praise-page">
-      <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
+    <div className="praise-page-wide">
+      <BreadCrumb name="Periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 
-      <div className="praise-box">
-        <React.Suspense fallback="Loading…">
+      <React.Suspense fallback={null}>
+        <div className="mb-5 praise-box-wide">
           <PeriodDetailHead />
-        </React.Suspense>
-      </div>
+        </div>
+      </React.Suspense>
 
-      <React.Suspense fallback="Loading…">
+      <React.Suspense fallback={null}>
         <QuantifierMessage />
       </React.Suspense>
 
-      <div className="flex flex-col sm:space-x-4 sm:flex-row">
+      <div className="flex flex-col space-y-5 xl:space-x-5 xl:flex-row xl:space-y-0">
         <div>
-          <div className="w-40 py-5 mb-5 break-words border rounded-lg shadow-sm bg-gray-50 dark:bg-slate-600">
-            <nav>
+          <SubPageNav>
+            <ul>
               <NavItem
                 to={`${url}/receivers`}
                 description="Receivers"
@@ -103,12 +100,12 @@ const PeriodDetailPage = (): JSX.Element | null => {
                 description="Settings"
                 icon={faCog}
               />
-            </nav>
-          </div>
+            </ul>
+          </SubPageNav>
         </div>
 
-        <div className="w-full praise-box px-0">
-          <Suspense fallback="Loading…">
+        <div className="px-0 praise-box">
+          <Suspense fallback={null}>
             <Switch>
               <Route path={`${path}/receivers`}>
                 <ReceiverTable />

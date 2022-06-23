@@ -2,17 +2,12 @@ import { generateLoginMessage } from 'api/dist/auth/utils';
 import { requestApiAuth, requestNonce } from '@/utils/auth';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import { useRecoilValue } from 'recoil';
-import { useHistory } from 'react-router-dom';
 import { useAccount } from 'wagmi';
-import { AccessToken } from '@/model/auth';
 import SignMessageLayout from '../../layouts/SignMessageLayout';
 
 const LoginPage = (): JSX.Element => {
   const { data } = useAccount();
   const [message, setMessage] = useState<string | undefined>(undefined);
-  const accessToken = useRecoilValue(AccessToken);
-  const history = useHistory();
 
   useEffect(() => {
     const generateNewMessage = async (address): Promise<void> => {
@@ -30,7 +25,6 @@ const LoginPage = (): JSX.Element => {
   }, [data]);
 
   const onSignSuccess = async (signature): Promise<void> => {
-    console.log('onSignSuccess');
     try {
       if (!data?.address) throw new Error();
 
@@ -40,10 +34,6 @@ const LoginPage = (): JSX.Element => {
       toast.error('Login failed');
     }
   };
-
-  useEffect(() => {
-    if (accessToken) history.replace('/');
-  }, [accessToken, history]);
 
   return (
     <SignMessageLayout
