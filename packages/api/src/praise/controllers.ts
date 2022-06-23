@@ -34,7 +34,6 @@ import {
 } from './types';
 import { praiseWithScore, getPraisePeriod } from './utils/core';
 import { PeriodStatusType } from '@period/types';
-
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
 /**
@@ -109,10 +108,6 @@ export const quantify = async (
     );
 
   const { score, dismissed, duplicatePraise } = req.body;
-
-  if (!res.locals.currentUser?._id) {
-    throw new InternalServerError('Current user not found.');
-  }
 
   const quantification = praise.quantifications.find((q) =>
     q.quantifier.equals(res.locals.currentUser._id)
