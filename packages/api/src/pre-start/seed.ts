@@ -270,7 +270,7 @@ const seedSetting = async (
   const createdAt = faker.date.recent();
 
   const setting = await SettingsModel.create({
-    key: faker.word.noun().toUpperCase(),
+    key: faker.random.alphaNumeric(25),
     label: faker.word.noun(),
     type: 'Boolean',
     group: SettingGroup.APPLICATION,
@@ -297,7 +297,7 @@ const seedPeriodSetting = async (
   const period = periods[0];
 
   const periodsetting = await PeriodSettingsModel.create({
-    key: faker.word.noun().toUpperCase(),
+    key: faker.random.alphaNumeric(25),
     label: faker.word.noun(),
     type: 'Boolean',
     group: SettingGroup.APPLICATION,
