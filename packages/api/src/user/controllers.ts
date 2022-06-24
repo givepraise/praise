@@ -96,12 +96,13 @@ const addRole = async (
   if (!role) throw new BadRequestError('Role is required');
   if (!(role in UserRole)) throw new BadRequestError('Invalid role');
 
-  if (!user.roles.includes(role)) {
-    user.roles.push(role);
-    user.accessToken = undefined;
-    user.nonce = undefined;
-    await user.save();
-  }
+  if (user.roles.includes(role))
+    throw new BadRequestError(`User already has role ${role}`);
+
+  user.roles.push(role);
+  user.accessToken = undefined;
+  user.nonce = undefined;
+  await user.save();
 
   await logEvent(
     EventLogTypeKey.PERMISSION,
