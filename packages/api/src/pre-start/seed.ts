@@ -183,7 +183,14 @@ const seedQuantifierUsers = async (): Promise<void> => {
 };
 
 const seedPraise = async (praiseData: Object = {}): Promise<PraiseDocument> => {
-  const [giver, receiver] = await fetchTwoRandomUserAccounts();
+  let [giver, receiver] = await fetchTwoRandomUserAccounts();
+
+  if (!giver) {
+    giver = await seedUserAccount();
+  }
+  if (!receiver) {
+    receiver = await seedUserAccount();
+  }
 
   const randomDays = Math.floor(Math.random() * PERIOD_NUMBER * PERIOD_LENGTH);
   const reason = faker.lorem.sentences();
