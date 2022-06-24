@@ -8,7 +8,6 @@ import { praiseRouter } from '@praise/routes';
 import { settingsAdminRouter, settingsRouter } from '@settings/routes';
 import { adminUserRouter, userRouter } from '@user/routes';
 import { UserRole } from '@user/types';
-import { userAccountRouter } from '@useraccount/routes';
 import {
   periodsettingsRouter,
   adminPeriodsettingsRouter,
@@ -38,9 +37,6 @@ baseRouter.use('/periodsettings', periodsettingsRouter);
 
 baseRouter.useAsync('/praise', authMiddleware(UserRole.USER));
 baseRouter.use('/praise', praiseRouter);
-
-baseRouter.useAsync('/useraccount', authMiddleware(UserRole.USER));
-baseRouter.use('/useraccount', userAccountRouter);
 
 baseRouter.useAsync('/eventlogs', authMiddleware(UserRole.USER));
 baseRouter.use('/eventlogs', eventLogRouter);
