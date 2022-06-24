@@ -1,13 +1,15 @@
 import { PeriodModel } from '@period/entities';
-import { PraiseModel } from '@praise/entities';
 import { UserModel } from '@user/entities';
 import { UserRole } from '@user/types';
 import { seedUserAndUserAccount, seedPeriod, seedPraise } from './entities';
+import addDays from 'date-fns/addDays';
+import { faker } from '@faker-js/faker';
+import { range } from 'lodash';
 import logger from 'jet-logger';
 
 const PERIOD_NUMBER = 3;
-const PERIOD_LENGTH = 10;
-const PRAISE_NUMBER = 300;
+const PERIOD_LENGTH_DAYS = 10;
+const PRAISE_PER_PERIOD_NUMBER = 100;
 const QUANTIFIER_USERS_NUMBER = 10;
 const REGULAR_USERS_NUMBER = 10;
 const PREDEFINED_USERS = [
@@ -28,28 +30,6 @@ const PREDEFINED_USERS = [
     roles: ['USER', 'QUANTIFIER'],
   },
 ];
-
-export const seedPeriods = async (): Promise<void> => {
-  const periodsCount = await PeriodModel.count();
-
-  if (periodsCount === 0) {
-    try {
-      logger.info('Trying to seed database with periods.');
-      const d = new Date();
-      for (let i = 0; i < PERIOD_NUMBER; i++) {
-        await seedPeriod({
-          name: `Period ${i + 1}`,
-          endDate: d,
-        });
-        d.setDate(d.getDate() + PERIOD_LENGTH);
-      }
-
-      logger.info('Periods seeding completed.');
-    } catch (e) {
-      console.log('ERROR:', e);
-    }
-  }
-};
 
 export const seedPredefinedUsers = async (): Promise<void> => {
   const userCount = await UserModel.count();
@@ -145,30 +125,50 @@ export const seedAdminUsers = async (): Promise<void> => {
   }
 };
 
-export const seedPraises = async (): Promise<void> => {
-  try {
-    const praisesCount = await PraiseModel.count();
+export const seedPeriodsWithPraises = async (): Promise<void> => {
+  const periodsCount = await PeriodModel.count();
 
-    if (praisesCount < PRAISE_NUMBER) {
-      logger.info('Trying to seed database with praises.');
+  if (periodsCount === 0) {
+    try {
+      logger.info('Trying to seed database with periods.');
 
-      for (let i = 0; i < PRAISE_NUMBER; i++) {
-        await seedPraise();
+      const daysInPast = PERIOD_NUMBER * PERIOD_LENGTH_DAYS;
+      let startDate = addDays(new Date(), -1 * daysInPast);
+
+      for (let i = 0; i < PERIOD_NUMBER; i++) {
+        const endDate = addDays(startDate, PERIOD_LENGTH_DAYS);
+
+        // Seed period
+        await seedPeriod({
+          name: `Period ${i + 1}`,
+          endDate,
+        });
+
+        // Seed all praises for period
+        await Promise.all(
+          range(0, PRAISE_PER_PERIOD_NUMBER).map(() =>
+            seedPraise({
+              createdAt: faker.date.between(startDate, endDate),
+            })
+          )
+        );
+
+        startDate = endDate;
       }
 
-      logger.info('Praises seeding completed.');
+      logger.info('Periods seeding completed.');
+    } catch (e) {
+      console.log('ERROR:', e);
     }
-  } catch (e) {
-    console.log('ERROR:', e);
   }
 };
 
 export const seedData = async (): Promise<void> => {
   logger.info('Seeding database with fake data.');
 
-  await seedPeriods();
   await seedPredefinedUsers();
   await seedRegularUsers();
   await seedQuantifierUsers();
-  await seedPraises();
+
+  await seedPeriodsWithPraises();
 };
