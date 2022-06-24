@@ -1,8 +1,4 @@
-import {
-  BadRequestError,
-  InternalServerError,
-  NotFoundError,
-} from '@error/errors';
+import { BadRequestError, NotFoundError } from '@error/errors';
 import {
   getPraiseAllInput,
   getQueryInput,

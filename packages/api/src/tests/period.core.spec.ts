@@ -155,7 +155,8 @@ describe('GET /api/period/:periodId/receiverPraise', () => {
 
     const response = await this.client
       .get(
-        `/api/periods/${period._id.toString() as string
+        `/api/periods/${
+          period._id.toString() as string
         }/receiverPraise?receiverId=${userAccount._id.toString() as string}`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -227,7 +228,8 @@ describe('GET /api/period/:periodId/receiverPraise', () => {
 
     return this.client
       .get(
-        `/api/periods/${period._id.toString() as string
+        `/api/periods/${
+          period._id.toString() as string
         }/receiverPraise?receiverId=${userAccount._id.toString() as string}`
       )
       .set('Accept', 'application/json')
@@ -291,7 +293,8 @@ describe('GET /api/period/:periodId/quantifierPraise', () => {
 
     const response = await this.client
       .get(
-        `/api/periods/${period._id.toString() as string
+        `/api/periods/${
+          period._id.toString() as string
         }/quantifierPraise?quantifierId=${quantifier._id.toString() as string}`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -363,7 +366,8 @@ describe('GET /api/period/:periodId/quantifierPraise', () => {
 
     return this.client
       .get(
-        `/api/periods/${period._id.toString() as string
+        `/api/periods/${
+          period._id.toString() as string
         }/quantifierPraise?quantifierId=${userAccount._id.toString() as string}`
       )
       .set('Accept', 'application/json')

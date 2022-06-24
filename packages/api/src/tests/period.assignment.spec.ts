@@ -115,7 +115,8 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
 
     const response = await this.client
       .patch(
-        `/api/admin/periods/${period._id.toString() as string
+        `/api/admin/periods/${
+          period._id.toString() as string
         }/assignQuantifiers`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -244,7 +245,8 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
 
     const response = await this.client
       .patch(
-        `/api/admin/periods/${period._id.toString() as string
+        `/api/admin/periods/${
+          period._id.toString() as string
         }/assignQuantifiers`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -310,7 +312,8 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
 
     return this.client
       .patch(
-        `/api/admin/periods/${period._id.toString() as string
+        `/api/admin/periods/${
+          period._id.toString() as string
         }/assignQuantifiers`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -330,7 +333,8 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
 
     await this.client
       .patch(
-        `/api/admin/periods/${period._id.toString() as string
+        `/api/admin/periods/${
+          period._id.toString() as string
         }/assignQuantifiers`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -338,7 +342,8 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
 
     return this.client
       .patch(
-        `/api/admin/periods/${period._id.toString() as string
+        `/api/admin/periods/${
+          period._id.toString() as string
         }/assignQuantifiers`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -358,7 +363,8 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
 
     return this.client
       .patch(
-        `/api/admin/periods/${period._id.toString() as string
+        `/api/admin/periods/${
+          period._id.toString() as string
         }/assignQuantifiers`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -372,7 +378,8 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
 
     return this.client
       .patch(
-        `/api/admin/periods/${period._id.toString() as string
+        `/api/admin/periods/${
+          period._id.toString() as string
         }/assignQuantifiers`
       )
       .expect(401);

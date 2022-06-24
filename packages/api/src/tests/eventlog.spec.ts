@@ -1,5 +1,9 @@
 import { Wallet } from 'ethers';
-import { seedEventLog, seedUser, seedUserAccount } from '@database/seeder/entities';
+import {
+  seedEventLog,
+  seedUser,
+  seedUserAccount,
+} from '@database/seeder/entities';
 import { expect } from 'chai';
 import { loginUser } from './utils';
 import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';
