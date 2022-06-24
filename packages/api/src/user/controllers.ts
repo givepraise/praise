@@ -4,7 +4,6 @@ import { findActivePeriods, getPeriodDateRangeQuery } from '@period/utils';
 import { countPraiseWithinDateRanges } from '@praise/utils/core';
 import {
   QueryInputParsedQs,
-  SearchQueryInputParsedQs,
   TypedRequestBody,
   TypedRequestQuery,
   TypedResponse,
