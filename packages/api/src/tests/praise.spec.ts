@@ -5,7 +5,7 @@ import {
   seedQuantification,
   seedUser,
   seedUserAccount,
-} from '../pre-start/seed';
+} from '@database/seeder/entities';
 import { expect } from 'chai';
 import { loginUser } from './utils';
 import { PraiseModel } from '@praise/entities';
@@ -69,8 +69,7 @@ describe('GET /api/praise/all', () => {
 
     const response = await this.client
       .get(
-        `/api/praise/all?page=1&limit=10&sortColumn=createdAt&sortType=desc&receiver=${
-          receiver._id.toString() as string
+        `/api/praise/all?page=1&limit=10&sortColumn=createdAt&sortType=desc&receiver=${receiver._id.toString() as string
         }`
       )
       .set('Authorization', `Bearer ${accessToken}`)

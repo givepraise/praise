@@ -9,7 +9,7 @@ import {
   seedQuantification,
   seedPeriod,
   seedUserAccount,
-} from '../pre-start/seed';
+} from '@database/seeder/entities';
 import { expect } from 'chai';
 import { PeriodModel } from '@period/entities';
 import { PeriodDetailsReceiver } from '@period/types';

@@ -3,7 +3,7 @@ import {
   seedUser,
   seedUserAccount,
   seedUserAndUserAccount,
-} from '../pre-start/seed';
+} from '@database/seeder/entities';
 import { expect } from 'chai';
 import { faker } from '@faker-js/faker';
 import { UserAccountModel } from '@useraccount/entities';

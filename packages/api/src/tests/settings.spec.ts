@@ -1,5 +1,5 @@
 import { Wallet } from 'ethers';
-import { seedSetting, seedUser } from '../pre-start/seed';
+import { seedSetting, seedUser } from '@database/seeder/entities';
 import { expect } from 'chai';
 import { loginUser } from './utils';
 import { faker } from '@faker-js/faker';

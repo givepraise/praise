@@ -7,7 +7,6 @@ import { PraiseDocument, QuantificationDocument } from '@praise/types';
 import { PeriodDocument } from '@period/types';
 import { insertNewPeriodSettings } from '@periodsettings/utils';
 import { faker } from '@faker-js/faker';
-import logger from 'jet-logger';
 import { UserDocument } from '@user/types';
 import { EventLogDocument } from '@eventlog/types';
 import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';
@@ -15,30 +14,6 @@ import { SettingGroup, SettingDocument } from '@settings/types';
 import { SettingsModel } from '@settings/entities';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 import { PeriodSettingDocument } from '@periodsettings/types';
-
-const PERIOD_NUMBER = 3;
-const PERIOD_LENGTH = 10;
-const PRAISE_NUMBER = 300;
-const QUANTIFIER_USERS_NUMBER = 10;
-const REGULAR_USERS_NUMBER = 10;
-const PREDEFINED_USERS = [
-  {
-    ethereumAddress: '0xa32aECda752cF4EF89956e83d60C04835d4FA867', // Kristofer
-    roles: ['ADMIN', 'USER'],
-  },
-  {
-    ethereumAddress: '0x826976d7C600d45FB8287CA1d7c76FC8eb732030', // Mitch
-    roles: ['ADMIN', 'USER'],
-  },
-  {
-    ethereumAddress: '0xc617C1B5c78E76aaA33e6d1964b24A4f923077f7', // Nebs
-    roles: ['ADMIN', 'USER'],
-  },
-  {
-    ethereumAddress: '0x44FEa69505B8B3dA031Cf0cc2420f6114ED78E4f',
-    roles: ['USER', 'QUANTIFIER'],
-  },
-];
 
 const fetchTwoRandomUserAccounts = async (): Promise<UserAccountDocument[]> => {
   const useraccounts = await UserAccountModel.aggregate([
@@ -48,7 +23,7 @@ const fetchTwoRandomUserAccounts = async (): Promise<UserAccountDocument[]> => {
   return useraccounts;
 };
 
-const seedUserAccount = async (
+export const seedUserAccount = async (
   userAccountData: Object = {}
 ): Promise<UserAccountDocument> => {
   const userAccount = await UserAccountModel.create({
@@ -61,7 +36,9 @@ const seedUserAccount = async (
   return userAccount;
 };
 
-const seedUser = async (userData: Object = {}): Promise<UserDocument> => {
+export const seedUser = async (
+  userData: Object = {}
+): Promise<UserDocument> => {
   const user = await UserModel.create({
     ethereumAddress: faker.finance.ethereumAddress(),
     roles: ['USER'],
@@ -71,7 +48,7 @@ const seedUser = async (userData: Object = {}): Promise<UserDocument> => {
   return user;
 };
 
-const seedUserAndUserAccount = async (
+export const seedUserAndUserAccount = async (
   userData: Object = {},
   userAccountData: Object = {}
 ): Promise<[UserDocument, UserAccountDocument]> => {
@@ -84,7 +61,9 @@ const seedUserAndUserAccount = async (
   return [user, userAccount];
 };
 
-const seedPeriod = async (periodData: Object = {}): Promise<PeriodDocument> => {
+export const seedPeriod = async (
+  periodData: Object = {}
+): Promise<PeriodDocument> => {
   const period = await PeriodModel.create({
     name: `Period ${faker.random.alpha()}`,
     status: 'OPEN',
@@ -96,93 +75,9 @@ const seedPeriod = async (periodData: Object = {}): Promise<PeriodDocument> => {
   return period;
 };
 
-const seedPeriods = async (): Promise<void> => {
-  const periodsCount = await PeriodModel.count();
-
-  if (periodsCount === 0) {
-    try {
-      logger.info('Trying to seed database with periods.');
-      const d = new Date();
-      for (let i = 0; i < PERIOD_NUMBER; i++) {
-        await seedPeriod({
-          name: `Period ${i + 1}`,
-          endDate: d,
-        });
-        d.setDate(d.getDate() + PERIOD_LENGTH);
-      }
-
-      logger.info('Periods seeding completed.');
-    } catch (e) {
-      console.log('ERROR:', e);
-    }
-  }
-};
-
-const seedPredefinedUsers = async (): Promise<void> => {
-  const userCount = await UserModel.count();
-
-  if (userCount < PREDEFINED_USERS.length) {
-    for (let i = 0; i < PREDEFINED_USERS.length; i++) {
-      try {
-        await seedUserAndUserAccount({
-          ethereumAddress: PREDEFINED_USERS[i].ethereumAddress,
-          roles: PREDEFINED_USERS[i].roles,
-        });
-      } catch (e) {
-        console.log('ERROR:', e);
-      }
-    }
-  }
-};
-
-const seedRegularUsers = async (): Promise<void> => {
-  try {
-    const userCount = await UserModel.count({ roles: ['USER'] });
-
-    if (userCount < REGULAR_USERS_NUMBER) {
-      logger.info('Trying to seed database with regular users.');
-      for (let i = 0; i < REGULAR_USERS_NUMBER; i++) {
-        try {
-          await seedUserAndUserAccount({
-            roles: ['USER'],
-          });
-        } catch (e) {
-          console.log('ERROR:', e);
-        }
-      }
-
-      logger.info('Regular users seeding completed.');
-    }
-  } catch (e) {
-    console.log('ERROR:', e);
-  }
-};
-
-const seedQuantifierUsers = async (): Promise<void> => {
-  try {
-    const userCount = await UserModel.count({ roles: ['USER', 'QUANTIFIER'] });
-
-    if (userCount < QUANTIFIER_USERS_NUMBER) {
-      logger.info('Trying to seed database with quantifiers.');
-
-      for (let i = 0; i < QUANTIFIER_USERS_NUMBER; i++) {
-        try {
-          await seedUserAndUserAccount({
-            roles: ['USER', 'QUANTIFIER'],
-          });
-        } catch (e) {
-          console.log('ERROR:', e);
-        }
-      }
-
-      logger.info('Quantifiers seeding completed.');
-    }
-  } catch (e) {
-    console.log('ERROR:', e);
-  }
-};
-
-const seedPraise = async (praiseData: Object = {}): Promise<PraiseDocument> => {
+export const seedPraise = async (
+  praiseData: Object = {}
+): Promise<PraiseDocument> => {
   let [giver, receiver] = await fetchTwoRandomUserAccounts();
 
   if (!giver) {
@@ -192,7 +87,6 @@ const seedPraise = async (praiseData: Object = {}): Promise<PraiseDocument> => {
     receiver = await seedUserAccount();
   }
 
-  const randomDays = Math.floor(Math.random() * PERIOD_NUMBER * PERIOD_LENGTH);
   const reason = faker.lorem.sentences();
   const praise = await PraiseModel.create({
     reason,
@@ -201,32 +95,14 @@ const seedPraise = async (praiseData: Object = {}): Promise<PraiseDocument> => {
     sourceId: faker.datatype.uuid(),
     sourceName: faker.lorem.word(),
     receiver: receiver._id,
-    createdAt: new Date(Date.now() + (randomDays - PERIOD_LENGTH) * 86400000),
+    createdAt: faker.date.future(),
     ...praiseData,
   });
 
   return praise;
 };
 
-const seedPraises = async (): Promise<void> => {
-  try {
-    const praisesCount = await PraiseModel.count();
-
-    if (praisesCount < PRAISE_NUMBER) {
-      logger.info('Trying to seed database with praises.');
-
-      for (let i = 0; i < PRAISE_NUMBER; i++) {
-        await seedPraise();
-      }
-
-      logger.info('Praises seeding completed.');
-    }
-  } catch (e) {
-    console.log('ERROR:', e);
-  }
-};
-
-const seedQuantification = async (
+export const seedQuantification = async (
   praise: PraiseDocument,
   quantifierUser: UserDocument,
   quantificationData: Object = {}
@@ -249,7 +125,7 @@ const seedQuantification = async (
   return quantification;
 };
 
-const seedEventLog = async (
+export const seedEventLog = async (
   eventLogData: Object = {}
 ): Promise<EventLogDocument> => {
   const createdAt = faker.date.recent();
@@ -271,7 +147,7 @@ const seedEventLog = async (
   return eventLog;
 };
 
-const seedSetting = async (
+export const seedSetting = async (
   settingData: Object = {}
 ): Promise<SettingDocument> => {
   const createdAt = faker.date.recent();
@@ -291,7 +167,7 @@ const seedSetting = async (
   return setting;
 };
 
-const seedPeriodSetting = async (
+export const seedPeriodSetting = async (
   periodSettingData: Object = {}
 ): Promise<PeriodSettingDocument> => {
   const createdAt = faker.date.recent();
@@ -317,29 +193,4 @@ const seedPeriodSetting = async (
   });
 
   return periodsetting;
-};
-
-const seedData = async (): Promise<void> => {
-  logger.info('Seeding database with fake data.');
-
-  await seedPeriods();
-  await seedPredefinedUsers();
-  await seedRegularUsers();
-  await seedQuantifierUsers();
-  await seedPraises();
-};
-
-export {
-  seedData,
-  seedUser,
-  seedUserAccount,
-  seedUserAndUserAccount,
-  seedPeriod,
-  seedPeriods,
-  seedPraise,
-  seedPraises,
-  seedQuantification,
-  seedEventLog,
-  seedSetting,
-  seedPeriodSetting,
 };

@@ -1,5 +1,5 @@
 import { Wallet } from 'ethers';
-import { seedPeriod, seedPeriodSetting, seedUser } from '../pre-start/seed';
+import { seedPeriod, seedPeriodSetting, seedUser } from '@database/seeder/entities';
 import { expect } from 'chai';
 import { PeriodModel } from '@period/entities';
 import { loginUser } from './utils';
@@ -97,8 +97,7 @@ describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
 
     const response = await this.client
       .get(
-        `/api/periodsettings/${period._id.toString() as string}/settings/${
-          periodsetting?._id.toString() as string
+        `/api/periodsettings/${period._id.toString() as string}/settings/${periodsetting?._id.toString() as string
         }`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -134,8 +133,7 @@ describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
 
     return this.client
       .get(
-        `/api/periodsettings/${faker.database.mongodbObjectId()}/settings/${
-          periodsetting?._id.toString() as string
+        `/api/periodsettings/${faker.database.mongodbObjectId()}/settings/${periodsetting?._id.toString() as string
         }`
       )
 
@@ -156,8 +154,7 @@ describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
 
     return this.client
       .get(
-        `/api/periodsettings/${
-          period._id.toString() as string
+        `/api/periodsettings/${period._id.toString() as string
         }/settings/${faker.database.mongodbObjectId()}`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -175,8 +172,7 @@ describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
 
     return this.client
       .get(
-        `/api/periodsettings/${period._id.toString() as string}/settings/${
-          periodsetting?._id.toString() as string
+        `/api/periodsettings/${period._id.toString() as string}/settings/${periodsetting?._id.toString() as string
         }`
       )
       .set('Accept', 'application/json')
@@ -212,8 +208,7 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
 
     const response = await this.client
       .patch(
-        `/api/admin/periodsettings/${
-          period._id.toString() as string
+        `/api/admin/periodsettings/${period._id.toString() as string
         }/settings/${periodsetting?._id.toString() as string}/set`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -257,8 +252,7 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
 
     return this.client
       .patch(
-        `/api/admin/periodsettings/${faker.database.mongodbObjectId()}/settings/${
-          periodsetting?._id.toString() as string
+        `/api/admin/periodsettings/${faker.database.mongodbObjectId()}/settings/${periodsetting?._id.toString() as string
         }/set`
       )
       .send(FORM_DATA)
@@ -289,8 +283,7 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
 
     return this.client
       .patch(
-        `/api/admin/periodsettings/${
-          period._id.toString() as string
+        `/api/admin/periodsettings/${period._id.toString() as string
         }/settings/${faker.database.mongodbObjectId()}/set`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -318,8 +311,7 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
 
     return this.client
       .patch(
-        `/api/admin/periodsettings/${
-          period._id.toString() as string
+        `/api/admin/periodsettings/${period._id.toString() as string
         }/settings/${periodsetting?._id.toString() as string}/set`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -347,8 +339,7 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
 
     return this.client
       .patch(
-        `/api/admin/periodsettings/${
-          period._id.toString() as string
+        `/api/admin/periodsettings/${period._id.toString() as string
         }/settings/${periodsetting?._id.toString() as string}/set`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -372,8 +363,7 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
 
     return this.client
       .patch(
-        `/api/admin/periodsettings/${
-          period._id.toString() as string
+        `/api/admin/periodsettings/${period._id.toString() as string
         }/settings/${periodsetting?._id.toString() as string}/set`
       )
       .set('Accept', 'application/json')
@@ -404,8 +394,7 @@ describe('periodsetting.valueRealized conversions', () => {
 
     const response = await this.client
       .get(
-        `/api/periodsettings/${period?._id.toString() as string}/settings/${
-          setting?._id.toString() as string
+        `/api/periodsettings/${period?._id.toString() as string}/settings/${setting?._id.toString() as string
         }`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -433,8 +422,7 @@ describe('periodsetting.valueRealized conversions', () => {
 
     const response = await this.client
       .get(
-        `/api/periodsettings/${period?._id.toString() as string}/settings/${
-          setting?._id.toString() as string
+        `/api/periodsettings/${period?._id.toString() as string}/settings/${setting?._id.toString() as string
         }`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -462,8 +450,7 @@ describe('periodsetting.valueRealized conversions', () => {
 
     const response = await this.client
       .get(
-        `/api/periodsettings/${period?._id.toString() as string}/settings/${
-          setting?._id.toString() as string
+        `/api/periodsettings/${period?._id.toString() as string}/settings/${setting?._id.toString() as string
         }`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -491,8 +478,7 @@ describe('periodsetting.valueRealized conversions', () => {
 
     const response = await this.client
       .get(
-        `/api/periodsettings/${period?._id.toString() as string}/settings/${
-          setting?._id.toString() as string
+        `/api/periodsettings/${period?._id.toString() as string}/settings/${setting?._id.toString() as string
         }`
       )
       .set('Authorization', `Bearer ${accessToken}`)
@@ -521,8 +507,7 @@ describe('periodsetting.valueRealized conversions', () => {
 
     const response = await this.client
       .get(
-        `/api/periodsettings/${period?._id.toString() as string}/settings/${
-          setting?._id.toString() as string
+        `/api/periodsettings/${period?._id.toString() as string}/settings/${setting?._id.toString() as string
         }`
       )
       .set('Authorization', `Bearer ${accessToken}`)

@@ -7,7 +7,7 @@ import {
   seedUser,
   seedUserAccount,
   seedUserAndUserAccount,
-} from '../pre-start/seed';
+} from '@database/seeder/entities';
 import { loginUser } from './utils';
 import { faker } from '@faker-js/faker';
 import { UserModel } from '@user/entities';
