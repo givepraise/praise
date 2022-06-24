@@ -166,22 +166,23 @@ const removeRole = async (
       );
   }
 
-  if (roleIndex > -1) {
-    user.roles.splice(roleIndex, 1);
-    user.accessToken = undefined;
-    user.nonce = undefined;
-    await user.save();
+  if (roleIndex === -1)
+    throw new BadRequestError(`User does not have the role ${role}`);
 
-    await logEvent(
-      EventLogTypeKey.PERMISSION,
-      `Removed role "${role}" from user with id "${(
-        user._id as Types.ObjectId
-      ).toString()}`,
-      {
-        userId: res.locals.currentUser._id,
-      }
-    );
-  }
+  user.roles.splice(roleIndex, 1);
+  user.accessToken = undefined;
+  user.nonce = undefined;
+  await user.save();
+
+  await logEvent(
+    EventLogTypeKey.PERMISSION,
+    `Removed role "${role}" from user with id "${(
+      user._id as Types.ObjectId
+    ).toString()}`,
+    {
+      userId: res.locals.currentUser._id,
+    }
+  );
 
   const userWithDetails = await findUser(id);
 
