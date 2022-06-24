@@ -1,8 +1,4 @@
-import {
-  BadRequestError,
-  InternalServerError,
-  NotFoundError,
-} from '@error/errors';
+import { BadRequestError, NotFoundError } from '@error/errors';
 import { PeriodDocument, PeriodDateRange } from '@period/types';
 import { findActivePeriods, getPeriodDateRangeQuery } from '@period/utils';
 import { countPraiseWithinDateRanges } from '@praise/utils/core';
@@ -39,7 +35,6 @@ const all = async (
       },
     },
   ]);
-  if (!users) throw new InternalServerError('No users found');
 
   const usersTransformed = await userListTransformer(
     users,
