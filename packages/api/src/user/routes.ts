@@ -8,8 +8,6 @@ userRouter.getAsync('/:id', single);
 
 // User admin only routes
 const adminUserRouter = Router();
-adminUserRouter.getAsync('/all', all);
-adminUserRouter.getAsync('/:id', single);
 adminUserRouter.patchAsync('/:id/addRole', addRole);
 adminUserRouter.patchAsync('/:id/removeRole', removeRole);
 
