@@ -148,14 +148,13 @@ const removeRole = async (
 
   const roleIndex = user.roles.indexOf(role);
 
+  if (roleIndex === -1)
+    throw new BadRequestError(`User does not have the role ${role}`);
+
   // If user is currently assigned to the active quantification round, and role is QUANTIFIER throw error
   const activePeriods: PeriodDocument[] = await findActivePeriods();
 
-  if (
-    roleIndex > -1 &&
-    role === UserRole.QUANTIFIER &&
-    activePeriods.length > 0
-  ) {
+  if (role === UserRole.QUANTIFIER && activePeriods.length > 0) {
     const dateRanges: PeriodDateRange[] = await Promise.all(
       activePeriods.map((period) => getPeriodDateRangeQuery(period))
     );
@@ -167,9 +166,6 @@ const removeRole = async (
         'Cannot remove quantifier currently assigned to quantification period'
       );
   }
-
-  if (roleIndex === -1)
-    throw new BadRequestError(`User does not have the role ${role}`);
 
   user.roles.splice(roleIndex, 1);
   user.accessToken = undefined;
