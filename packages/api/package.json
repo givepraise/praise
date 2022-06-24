@@ -14,7 +14,7 @@
     "load-env": "env-cmd --silent --no-override -f ../../.env env-cmd --silent --no-override",
     "start": "yarn run load-env ts-node -r tsconfig-paths/register --transpile-only ./src",
     "start:dev": "yarn run load-env nodemon ./src",
-    "test": "NODE_ENV=testing yarn run load-env nyc mocha -r ts-node/register -r tsconfig-paths/register -r src/tests/setup.ts 'src/tests/**/*.spec.ts' --exit",
+    "test": "NODE_ENV=testing yarn run load-env nyc --exclude '**/*.spec.ts' mocha -r ts-node/register -r tsconfig-paths/register -r src/tests/setup.ts 'src/tests/**/*.spec.ts' --exit",
     "import-praise": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/import-praise.ts",
     "not-yet-activated": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/not-yet-activated.ts",
     "replace-quantifier": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/replace-quantifier.ts",
