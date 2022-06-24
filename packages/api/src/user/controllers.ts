@@ -84,37 +84,6 @@ const single = async (
  * Description
  * @param
  */
-const search = async (
-  req: TypedRequestQuery<SearchQueryInputParsedQs>,
-  res: TypedResponse<UserDto[]>
-): Promise<void> => {
-  //TODO Support searching more than eth address
-  const users: UserDocument[] = await UserModel.aggregate([
-    { $match: { ethereumAddress: { $regex: req.query.search } } },
-    {
-      $lookup: {
-        from: 'UserAccount',
-        localField: '_id',
-        foreignField: 'user',
-        as: 'accounts',
-      },
-    },
-  ]);
-  if (!Array.isArray(users) || users.length === 0)
-    throw new NotFoundError('User');
-
-  const usersTransformed = await userListTransformer(
-    users,
-    res.locals.currentUser.roles
-  );
-
-  res.status(200).json(usersTransformed);
-};
-
-/**
- * Description
- * @param
- */
 const addRole = async (
   req: TypedRequestBody<UserRoleChangeInput>,
   res: TypedResponse<UserDto>
@@ -223,4 +192,4 @@ const removeRole = async (
   res.status(200).json(userTransformed);
 };
 
-export { all, single, search, addRole, removeRole };
+export { all, single, addRole, removeRole };
