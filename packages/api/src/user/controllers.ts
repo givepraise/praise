@@ -137,6 +137,8 @@ const removeRole = async (
 
   const { role } = req.body;
   if (!role) throw new BadRequestError('Role is required');
+  if (!(role in UserRole)) throw new BadRequestError('Invalid role');
+
   if (role === UserRole.ADMIN) {
     const allAdmins = await UserModel.find({ roles: { $in: ['ADMIN'] } });
     if (allAdmins.length <= 1) {
