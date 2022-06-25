@@ -1,6 +1,9 @@
 import { Wallet } from 'ethers';
 import { seedSetting, seedUser } from '@database/seeder/entities';
-import { expect } from 'chai';
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 import { loginUser } from './utils';
 import { faker } from '@faker-js/faker';
 import { SettingsModel } from '@settings/entities';
@@ -352,5 +355,82 @@ describe('setting.valueRealized conversions', () => {
     expect(response.body.valueRealized).to.include(process.env.SERVER_URL);
     expect(response.body.valueRealized).to.include(setting.value);
     expect(() => new URL(response.body.valueRealized)).to.not.throw();
+  });
+
+  it('setting.type "QuestionAnswerJSON"', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const setting = await seedSetting({
+      type: 'QuestionAnswerJSON',
+      value:
+        '[{"section": "section A", "questions": [{"question": "this is a question", "answer": "this is the answer"}]}]',
+    });
+
+    const response = await this.client
+      .get(`/api/settings/${setting?._id.toString() as string}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(Array.isArray(response.body.valueRealized)).be.true;
+    expect(response.body.valueRealized[0].section).to.equal('section A');
+    expect(response.body.valueRealized[0].questions[0].question).to.equal(
+      'this is a question'
+    );
+    expect(response.body.valueRealized[0].questions[0].answer).to.equal(
+      'this is the answer'
+    );
+  });
+});
+
+describe('setting type and value validations', () => {
+  it('setting.type "IntegerList" validates list of comma-seperated ascending integers', () => {
+    expect(async () => {
+      await seedSetting({
+        type: 'IntegerList',
+        value: '1,2,3',
+      });
+    }).to.not.throw();
+  });
+
+  it('setting.type "IntegerList" throws error if comma-seperated list of non-ascending integers', () => {
+    expect(
+      seedSetting({
+        type: 'IntegerList',
+        value: '3,2,1',
+      })
+    ).to.be.rejected;
+  });
+
+  it('setting.type "IntegerList" throws error if comma-seperated list of non-integers', () => {
+    expect(
+      seedSetting({
+        type: 'IntegerList',
+        value: '1,X,3',
+      })
+    ).to.be.rejected;
+  });
+
+  it('setting.type "QuestionAnswerJSON" throws error if not JSON', () => {
+    expect(
+      seedSetting({
+        type: 'QuestionAnswerJSON',
+        value: '1',
+      })
+    ).to.be.rejected;
+  });
+
+  it('setting.type "QuestionAnswerJSON" if not properly formatted', () => {
+    expect(
+      seedSetting({
+        type: 'QuestionAnswerJSON',
+        value: '{"key": "value"}',
+      })
+    ).to.be.rejected;
   });
 });
