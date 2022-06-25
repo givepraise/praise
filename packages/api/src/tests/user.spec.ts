@@ -558,10 +558,10 @@ describe('PATCH /api/admin/users/:id/removeRole', () => {
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
-    const user = await seedUser({ roles: ['USER'] });
+    const user = await seedUser({ roles: ['USER', 'ADMIN'] });
 
     const FORM_DATA = {
-      role: 'ADMIN',
+      role: 'QUANTIFIER',
     };
 
     return this.client
