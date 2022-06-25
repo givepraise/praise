@@ -43,6 +43,8 @@ export function getGenericSettingValueRealized(
       .map((v: string) => Number.parseInt(v.trim()));
   } else if (this.type === 'Image') {
     realizedValue = `${process.env.SERVER_URL as string}/${this.value}`;
+  } else if (this.type === 'QuestionAnswerJSON') {
+    realizedValue = this.value ? JSON.parse(this.value) : [];
   } else {
     realizedValue = this.value;
   }
