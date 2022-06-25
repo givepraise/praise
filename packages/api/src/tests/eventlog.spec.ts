@@ -9,6 +9,8 @@ import { loginUser } from './utils';
 import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';
 import { logEvent } from '@eventlog/utils';
 import { EventLogTypeKey } from '@eventlog/types';
+import { faker } from '@faker-js/faker';
+import some from 'lodash/some';
 
 describe('GET /api/eventlogs/all', () => {
   beforeEach(async () => {
@@ -30,6 +32,188 @@ describe('GET /api/eventlogs/all', () => {
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200);
+  });
+
+  it('200 response with search parameter contains matching search results', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const description = faker.random.alphaNumeric(25);
+    const eventlog = await seedEventLog({ description });
+    await seedEventLog();
+    await seedEventLog();
+    await seedEventLog();
+
+    const response = await this.client
+      .get(
+        `/api/eventlogs/all?page=1&limit=10&sortColumn=createdAt&sortType=desc&search=${description}`
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(some(response.body.docs, { _id: eventlog._id.toString() })).is.true;
+  });
+
+  it('200 response with search parameter does not contain non-matching search results', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const description = faker.random.alphaNumeric(25);
+    await seedEventLog({ description });
+    const eventlog = await seedEventLog();
+    const eventlog2 = await seedEventLog();
+    const eventlog3 = await seedEventLog();
+
+    const response = await this.client
+      .get(
+        `/api/eventlogs/all?page=1&limit=10&sortColumn=createdAt&sortType=desc&search=${description}`
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(some(response.body.docs, { _id: eventlog._id.toString() })).is.false;
+    expect(some(response.body.docs, { _id: eventlog2._id.toString() })).is
+      .false;
+    expect(some(response.body.docs, { _id: eventlog3._id.toString() })).is
+      .false;
+  });
+
+  it('200 response with type parameter contains matching type results', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const eventlogtype = await EventLogTypeModel.findOne({
+      type: EventLogTypeKey.PERIOD,
+    });
+
+    const eventlog = await seedEventLog({ type: eventlogtype?._id });
+    await seedEventLog();
+    await seedEventLog();
+    await seedEventLog();
+
+    const response = await this.client
+      .get(
+        `/api/eventlogs/all?page=1&limit=10&sortColumn=createdAt&sortType=desc&type=${
+          eventlogtype?.key as string
+        }`
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(some(response.body.docs, { _id: eventlog._id.toString() })).is.true;
+  });
+
+  it('200 response with type array parameter contains matching multiple type results', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const eventlogtype = await EventLogTypeModel.findOne({
+      type: EventLogTypeKey.PERIOD,
+    });
+
+    const eventlogtype2 = await EventLogTypeModel.findOne({
+      type: EventLogTypeKey.PRAISE,
+    });
+
+    const eventlog = await seedEventLog({ type: eventlogtype?._id });
+    const eventlog2 = await seedEventLog({ type: eventlogtype2?._id });
+    await seedEventLog();
+    await seedEventLog();
+    await seedEventLog();
+
+    const response = await this.client
+      .get(
+        `/api/eventlogs/all?page=1&limit=10&sortColumn=createdAt&sortType=desc&type=${eventlogtype?.key},${eventlogtype2?.key}`
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(some(response.body.docs, { _id: eventlog._id.toString() })).is.true;
+    expect(some(response.body.docs, { _id: eventlog2._id.toString() })).is.true;
+  });
+
+  it('200 response with type parameter does not contain non-matching type results', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const eventlogtype = await EventLogTypeModel.findOne({
+      type: EventLogTypeKey.PERIOD,
+    });
+
+    await seedEventLog({ type: eventlogtype?._id });
+    const eventlog = await seedEventLog();
+    const eventlog2 = await seedEventLog();
+    const eventlog3 = await seedEventLog();
+
+    const response = await this.client
+      .get(
+        `/api/eventlogs/all?page=1&limit=10&sortColumn=createdAt&sortType=desc&type=${
+          eventlogtype?._id.toString() as string
+        }`
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(some(response.body.docs, { _id: eventlog._id.toString() })).is.false;
+    expect(some(response.body.docs, { _id: eventlog2._id.toString() })).is
+      .false;
+    expect(some(response.body.docs, { _id: eventlog3._id.toString() })).is
+      .false;
+  });
+
+  it('400 response if missing limit parameter', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    return this.client
+      .get('/api/eventlogs/all?page=1&sortColumn=createdAt&sortType=desc')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400);
+  });
+
+  it('400 response if missing page parameter', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    return this.client
+      .get('/api/eventlogs/all?limit=10&sortColumn=createdAt&sortType=desc')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400);
   });
 
   it('401 response with json body if user not authenticated', function () {
