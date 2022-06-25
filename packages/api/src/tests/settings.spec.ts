@@ -399,7 +399,7 @@ describe('setting type and value validations', () => {
   });
 
   it('setting.type "IntegerList" throws error if comma-seperated list of non-ascending integers', () => {
-    expect(
+    void expect(
       seedSetting({
         type: 'IntegerList',
         value: '3,2,1',
@@ -408,7 +408,7 @@ describe('setting type and value validations', () => {
   });
 
   it('setting.type "IntegerList" throws error if comma-seperated list of non-integers', () => {
-    expect(
+    void expect(
       seedSetting({
         type: 'IntegerList',
         value: '1,X,3',
@@ -417,7 +417,7 @@ describe('setting type and value validations', () => {
   });
 
   it('setting.type "QuestionAnswerJSON" throws error if not JSON', () => {
-    expect(
+    void expect(
       seedSetting({
         type: 'QuestionAnswerJSON',
         value: '1',
@@ -426,7 +426,7 @@ describe('setting type and value validations', () => {
   });
 
   it('setting.type "QuestionAnswerJSON" if not properly formatted', () => {
-    expect(
+    void expect(
       seedSetting({
         type: 'QuestionAnswerJSON',
         value: '{"key": "value"}',

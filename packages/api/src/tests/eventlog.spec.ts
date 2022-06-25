@@ -141,7 +141,9 @@ describe('GET /api/eventlogs/all', () => {
 
     const response = await this.client
       .get(
-        `/api/eventlogs/all?page=1&limit=10&sortColumn=createdAt&sortType=desc&type=${eventlogtype?.key},${eventlogtype2?.key}`
+        `/api/eventlogs/all?page=1&limit=10&sortColumn=createdAt&sortType=desc&type=${
+          eventlogtype?.key as string
+        },${eventlogtype2?.key as string}`
       )
       .set('Authorization', `Bearer ${accessToken}`)
       .set('Accept', 'application/json')
