@@ -15,6 +15,7 @@ import { Types } from 'mongoose';
 import { UserModel } from './entities';
 import { userListTransformer, userTransformer } from './transformers';
 import { UserDocument, UserDto, UserRole, UserRoleChangeInput } from './types';
+import { findUser } from './utils/entity';
 
 /**
  * Description
@@ -41,23 +42,6 @@ const all = async (
   );
 
   res.status(200).json(usersTransformed);
-};
-
-const findUser = async (id: string): Promise<UserDocument> => {
-  const users: UserDocument[] = await UserModel.aggregate([
-    { $match: { _id: new Types.ObjectId(id) } },
-    {
-      $lookup: {
-        from: 'useraccounts',
-        localField: '_id',
-        foreignField: 'user',
-        as: 'accounts',
-      },
-    },
-  ]);
-  if (!Array.isArray(users) || users.length === 0)
-    throw new NotFoundError('User');
-  return users[0];
 };
 
 /**
