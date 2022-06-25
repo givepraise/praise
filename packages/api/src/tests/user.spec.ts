@@ -12,7 +12,7 @@ import { loginUser } from './utils';
 import { faker } from '@faker-js/faker';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
-import { some } from 'lodash';
+import some from 'lodash/some';
 import { PraiseModel } from '@praise/entities';
 import { PeriodModel } from '@period/entities';
 

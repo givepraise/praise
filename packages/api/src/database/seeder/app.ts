@@ -4,7 +4,7 @@ import { UserRole } from '@user/types';
 import { seedUserAndUserAccount, seedPeriod, seedPraise } from './entities';
 import addDays from 'date-fns/addDays';
 import { faker } from '@faker-js/faker';
-import { range } from 'lodash';
+import range from 'lodash/range';
 import logger from 'jet-logger';
 
 const PERIOD_NUMBER = 3;
