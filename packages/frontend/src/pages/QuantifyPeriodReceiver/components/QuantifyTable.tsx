@@ -161,22 +161,20 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
         open={isDismissDialogOpen}
         onClose={(): void => setIsDismissDialogOpen(false)}
         praises={selectedPraises}
-        onConfirm={(): void => handleDismiss()}
+        onConfirm={handleDismiss}
       />
       <DuplicateDialog
         open={isDuplicateDialogOpen}
         originalPraise={selectedPraises[0]}
         duplicatesCount={selectedPraises.length}
         onClose={(): void => setIsDuplicateDialogOpen(false)}
-        onConfirm={(originalScore): void => handleDuplicate(originalScore)}
+        onConfirm={handleDuplicate}
       />
       <DuplicateSearchDialog
         open={isDuplicateSearchDialogOpen}
         selectedPraise={duplicateSearchDialogPraise}
         onClose={(): void => setIsDuplicateSearchDialogOpen(false)}
-        onConfirm={(praiseId: string): void =>
-          handleDuplicateSearchPraise(praiseId)
-        }
+        onConfirm={handleDuplicateSearchPraise}
       />
     </div>
   );
