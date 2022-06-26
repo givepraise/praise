@@ -561,3 +561,77 @@ export const assignQuantifiers = async (
   const periodDetailsDto = await findPeriodDetailsDto(periodId);
   res.status(StatusCodes.OK).json(periodDetailsDto);
 };
+
+export const replaceQuantifier = async (
+  req: Request,
+  res: TypedResponse<PeriodDetailsDto>
+): Promise<void> => {
+  const { periodId } = req.params;
+  const { currentQuantifierId, newQuantifierId } = req.body;
+  const period = await PeriodModel.findById(periodId);
+  if (!period) throw new NotFoundError('Period');
+  if (period.status !== 'QUANTIFY')
+    throw new BadRequestError(
+      'Quantifiers can only be replaced on periods with status QUANTIFY.'
+    );
+
+  if (!currentQuantifierId || !newQuantifierId)
+    throw new BadRequestError(
+      'Both originalQuantifierId and newQuantifierId must be specified'
+    );
+
+  if (currentQuantifierId === newQuantifierId)
+    throw new BadRequestError('Cannot replace a quantifier with themselves');
+
+  const currentQuantifier = await UserModel.findById(currentQuantifierId);
+  if (!currentQuantifier)
+    throw new BadRequestError('Current quantifier does not exist');
+
+  const newQuantifier = await UserModel.findById(newQuantifierId);
+  if (!newQuantifier)
+    throw new BadRequestError('Replacement quantifier does not exist');
+
+  if (!newQuantifier.roles.includes(UserRole.QUANTIFIER))
+    throw new BadRequestError(
+      'Replacement quantifier does not have role QUANTIFIER'
+    );
+
+  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+  await PraiseModel.updateMany(
+    {
+      // Praise within time period
+      createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+
+      // Original quantifier
+      'quantifications.quantifier': currentQuantifierId,
+    },
+    {
+      $set: {
+        // Reset score
+        'quantifications.$[elem].score': 0,
+
+        // Assign new quantifier
+        'quantifications.$[elem].quantifier': newQuantifierId,
+      },
+    },
+    {
+      arrayFilters: [
+        {
+          'elem.quantifier': currentQuantifierId,
+        },
+      ],
+    }
+  );
+
+  await logEvent(
+    EventLogTypeKey.PERIOD,
+    `Reassigned all praise in period "${
+      period.name
+    }" that is currently assigned to user with id "${
+      currentQuantifierId as string
+    }", to user with id "${newQuantifierId as string}"`
+  );
+
+  const periodDetailsDto = await findPeriodDetailsDto(periodId);
+  res.status(StatusCodes.OK).json(periodDetailsDto);
+};
