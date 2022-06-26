@@ -14,7 +14,6 @@
     "test": "NODE_ENV=testing yarn run load-env nyc mocha -r ts-node/register -r tsconfig-paths/register -r src/tests/setup.ts 'src/tests/**/*.spec.ts' --exit",
     "import-praise": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/import-praise.ts",
     "not-yet-activated": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/not-yet-activated.ts",
-    "replace-quantifier": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/replace-quantifier.ts",
     "migrator": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts",
     "drop-database": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/drop-database.ts"
   },
