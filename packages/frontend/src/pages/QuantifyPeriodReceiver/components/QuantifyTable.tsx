@@ -12,9 +12,9 @@ import { QuantifyBackNextLink } from './BackNextLink';
 import DismissDialog from './DismissDialog';
 import DuplicateDialog from './DuplicateDialog';
 import DuplicateSearchDialog from './DuplicateSearchDialog';
-import MarkDuplicateButton from './MarkDuplicateButton';
-import MarkDismissedButton from './MarkDismissedButton';
 import QuantifyPraiseRow from './QuantifyPraiseRow';
+import IconButton from '@/components/IconButton';
+import { faCopy, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
   periodId: string;
@@ -111,11 +111,15 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
   return (
     <div>
       <div className="sticky z-10 w-full p-5 space-x-4 border-t border-l border-r top-14 lg:top-0 rounded-t-xl bg-warm-gray-100 dark:bg-slate-700">
-        <MarkDuplicateButton
+        <IconButton
+          icon={faCopy}
+          text="Mark as duplicates"
           disabled={selectedPraises.length < 2}
           onClick={(): void => setIsDuplicateDialogOpen(true)}
         />
-        <MarkDismissedButton
+        <IconButton
+          icon={faMinusCircle}
+          text="Dismiss"
           disabled={selectedPraises.length < 1}
           onClick={(): void => setIsDismissDialogOpen(true)}
         />
