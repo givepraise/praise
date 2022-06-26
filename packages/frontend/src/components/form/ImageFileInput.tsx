@@ -3,10 +3,11 @@ import { Field } from 'react-final-form';
 const ImageFileInput = (name: string, src: string | undefined): JSX.Element => {
   return (
     <Field<FileList> name={name} key={name}>
-      {({ input: { value, onChange, ...input } }): JSX.Element => (
+      {({ input: { onChange, onBlur, onFocus } }): JSX.Element => (
         <div>
           <input
-            {...input}
+            onBlur={onBlur}
+            onFocus={onFocus}
             id={name}
             type="file"
             className="block w-full"
@@ -17,7 +18,7 @@ const ImageFileInput = (name: string, src: string | undefined): JSX.Element => {
             {src ? (
               <img src={src} className="block w-auto h-48" />
             ) : (
-              <div className="block w-auto h-48 bg-gray-300 "></div>
+              <div className="block w-auto h-48 bg-warm-gray-300 "></div>
             )}
           </div>
         </div>

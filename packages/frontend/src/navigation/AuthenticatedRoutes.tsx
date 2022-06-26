@@ -1,10 +1,9 @@
 import SettingsPage from '@/pages/Settings/SettingsPage';
 import StartPage from '@/pages/Start/StartPage';
-import { ActiveUserRoles, ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth';
+import { ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { difference } from 'lodash';
-import { useRecoilValue } from 'recoil';
+import difference from 'lodash/difference';
 
 const MyPraisePage = React.lazy(() => import('@/pages/MyPraise/MyPraisePage'));
 const UserDetailsPage = React.lazy(
@@ -78,9 +77,11 @@ const AuthRoute = ({
   );
 };
 
-const AuthenticatedRoutes = (): JSX.Element | null => {
-  const userRoles = useRecoilValue(ActiveUserRoles);
+interface Props {
+  userRoles: string[];
+}
 
+const AuthenticatedRoutes = ({ userRoles }: Props): JSX.Element | null => {
   return (
     <Switch>
       <Route path="/mypraise">

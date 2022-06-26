@@ -1,8 +1,10 @@
+/* eslint-disable react/jsx-key */
 import { InlineLabel } from '@/components/InlineLabel';
-import { UserCell } from '@/components/table/UserCell';
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
 import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
+import { classNames } from '@/utils/index';
 import { localizeAndFormatIsoDate } from '@/utils/date';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -23,7 +25,7 @@ const DuplicatePraiseLabel = ({
         window.location.href = `/praise/${praiseId}`;
       }}
       text={`#${praiseId.slice(-4)}`}
-      className="bg-gray-400"
+      className="bg-warm-gray-400"
     />
   );
 };
@@ -40,19 +42,21 @@ const PraiseDetailTable = (): JSX.Element => {
         accessor: 'quantifier',
         className: 'text-left',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Cell: (data: any) => <UserCell userId={data.value} />,
+        Cell: (data: any) => (
+          <UserAvatarAndName userId={data.value} avatarClassName="text-2xl" />
+        ),
       },
       {
         Header: 'Date',
         accessor: 'updatedAt',
-        className: 'text-left',
+        className: 'text-left whitespace-nowrap',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any) => localizeAndFormatIsoDate(data.value),
       },
       {
         Header: 'Score',
         accessor: 'score',
-        className: 'text-center',
+        className: 'text-right',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any) =>
           data.row.original.scoreRealized === 0
@@ -99,21 +103,16 @@ const PraiseDetailTable = (): JSX.Element => {
     return <div>Praise scores are not visible during quantification.</div>;
 
   return (
-    <table
-      id="periods-table"
-      className="w-full table-auto"
-      {...getTableProps()}
-    >
+    <table id="periods-table" className="w-full" {...getTableProps()}>
       <thead>
-        {headerGroups.map((headerGroup) => (
-          // eslint-disable-next-line react/jsx-key
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              // eslint-disable-next-line react/jsx-key
+        {headerGroups.map((headerGroup, rowIndex) => (
+          <tr {...headerGroup.getHeaderGroupProps()} key={`row-${rowIndex}`}>
+            {headerGroup.headers.map((column, colIndex) => (
               <th
                 {...column.getHeaderProps()}
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 className={(column as any).className}
+                key={`td-${rowIndex}-${colIndex}`}
               >
                 {column.render('Header')}
               </th>
@@ -125,21 +124,20 @@ const PraiseDetailTable = (): JSX.Element => {
         {rows.map((row) => {
           prepareRow(row);
           return (
-            // eslint-disable-next-line react/jsx-key
-            <tr id="" {...row.getRowProps()}>
+            <tr {...row.getRowProps()}>
               {row.cells.map((cell) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const className = (cell.column as any).className as string;
                 return (
-                  // eslint-disable-next-line react/jsx-key
                   <td
                     {...cell.getCellProps()}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    className={(cell.column as any).className}
+                    className={classNames(className, 'pt-5')}
                   >
                     {cell.render('Cell')}
                   </td>
                 );
               })}
-            </tr> //TODO fix id
+            </tr>
           );
         })}
       </tbody>

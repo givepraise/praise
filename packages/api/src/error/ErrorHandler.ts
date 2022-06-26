@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import logger from 'jet-logger';
-import mongoose from 'mongoose';
+import { Error } from 'mongoose';
 import { errorCodes } from './constants';
 import { AppError } from './types';
 import { isAppError, isValidationError } from './utils';
@@ -13,7 +13,7 @@ import { isAppError, isValidationError } from './utils';
 // };
 
 const handleValidationError = (
-  err: mongoose.Error.ValidationError,
+  err: Error.ValidationError,
   res: Response
 ): void => {
   const code = 400;

@@ -1,10 +1,11 @@
-import { shortenEthAddress } from 'api/dist/user/utils';
+import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import { useAccount } from 'wagmi';
 import { faAngleDown, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import EthAccountDialog from './EthAccountDialog';
+import { classNames } from '@/utils/index';
 
 interface EthAccountParams {
   className?: string;
@@ -25,7 +26,10 @@ export default function EthAccount({
   return (
     <>
       <div
-        className={`flex justify-between items-center cursor-pointer ${className}`}
+        className={classNames(
+          'flex justify-between items-center cursor-pointer',
+          className
+        )}
         onClick={(): void => setIsDialogOpen(true)}
       >
         <div className="flex items-center space-x-2">

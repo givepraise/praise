@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { SettingDocument, SettingGroup } from './types';
 import { fieldTypeValidator } from './validators';
 
@@ -52,7 +52,7 @@ export function getGenericSettingValueRealized(
 
 export const valueRealizedVirtualName = 'valueRealized';
 
-const settingsSchema = new mongoose.Schema(
+const settingsSchema = new Schema(
   {
     ...genericSettingsSchema,
   },
@@ -67,7 +67,4 @@ settingsSchema
 
 settingsSchema.index({ key: 1 }, { unique: true });
 
-export const SettingsModel = mongoose.model<SettingDocument>(
-  'Settings',
-  settingsSchema
-);
+export const SettingsModel = model<SettingDocument>('Settings', settingsSchema);

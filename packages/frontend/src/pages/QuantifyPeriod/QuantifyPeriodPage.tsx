@@ -44,17 +44,17 @@ const QuantifyPeriodPage = (): JSX.Element => {
       <BreadCrumb name="Quantify" icon={faCalendarAlt} />
       <BackLink to={`/periods/${periodId}`} />
 
-      <div className="praise-box">
-        <React.Suspense fallback="Loading…">
+      <React.Suspense fallback={null}>
+        <div className="mb-5 praise-box">
           <PeriodMessage />
-        </React.Suspense>
-      </div>
+        </div>
+      </React.Suspense>
 
-      <div className="praise-box">
-        <React.Suspense fallback="Loading…">
+      <React.Suspense fallback={null}>
+        <div className="px-0 praise-box">
           <QuantifyPeriodTable />
-        </React.Suspense>
-      </div>
+        </div>
+      </React.Suspense>
     </div>
   );
 };

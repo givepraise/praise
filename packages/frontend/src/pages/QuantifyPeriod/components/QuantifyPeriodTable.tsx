@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import {
   PeriodPageParams,
@@ -6,6 +7,7 @@ import {
   usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { classNames } from '@/utils/index';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
@@ -38,6 +40,7 @@ const QuantifyPeriodTable = (): JSX.Element => {
       {
         Header: 'Receiver',
         accessor: 'receiverName',
+        className: 'pl-5 text-left',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => {
           return usePseudonyms ? (
@@ -53,6 +56,7 @@ const QuantifyPeriodTable = (): JSX.Element => {
       {
         Header: 'Remaining items',
         accessor: 'count',
+        className: 'text-right',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): string | null => {
           const item = data.row.original;
@@ -63,6 +67,7 @@ const QuantifyPeriodTable = (): JSX.Element => {
       {
         Header: '',
         accessor: 'done',
+        className: 'pr-5 text-center',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element | null => {
           const item = data.row.original;
@@ -100,14 +105,19 @@ const QuantifyPeriodTable = (): JSX.Element => {
     >
       <thead>
         {headerGroups.map((headerGroup) => (
-          // eslint-disable-next-line react/jsx-key
           <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              // eslint-disable-next-line react/jsx-key
-              <th className="text-left" {...column.getHeaderProps()}>
-                {column.render('Header')}
-              </th>
-            ))}
+            {headerGroup.headers.map((column) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const className = (column as any).className as string;
+              return (
+                <th
+                  className={classNames(className, 'mb-2')}
+                  {...column.getHeaderProps()}
+                >
+                  {column.render('Header')}
+                </th>
+              );
+            })}
           </tr>
         ))}
       </thead>
@@ -115,16 +125,23 @@ const QuantifyPeriodTable = (): JSX.Element => {
         {rows.map((row) => {
           prepareRow(row);
           return (
-            // eslint-disable-next-line react/jsx-key
             <tr
-              className="cursor-pointer hover:bg-gray-100"
+              className="cursor-pointer hover:bg-warm-gray-100 dark:hover:bg-slate-500"
               id=""
               {...row.getRowProps()}
               onClick={handleClick(row.original as QuantifierReceiverData)}
             >
               {row.cells.map((cell) => {
-                // eslint-disable-next-line react/jsx-key
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const className = (cell.column as any).className as string;
+                return (
+                  <td
+                    {...cell.getCellProps()}
+                    className={classNames(className, 'py-3')}
+                  >
+                    {cell.render('Cell')}
+                  </td>
+                );
               })}
             </tr>
           );

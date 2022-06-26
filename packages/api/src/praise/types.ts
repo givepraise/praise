@@ -5,7 +5,7 @@ import {
   UserAccountDocument,
   UserAccountDto,
 } from '@useraccount/types';
-import mongoose from 'mongoose';
+import { Document } from 'mongoose';
 
 export interface Praise {
   reason: string;
@@ -30,11 +30,9 @@ export interface Quantification {
   completed: boolean;
 }
 
-export interface PraiseDocument extends Praise, mongoose.Document {}
+export interface PraiseDocument extends Praise, Document {}
 
-export interface QuantificationDocument
-  extends Quantification,
-    mongoose.Document {}
+export interface QuantificationDocument extends Quantification, Document {}
 
 export interface PraiseDto {
   _id: string;
@@ -85,7 +83,7 @@ export interface Receiver {
 }
 
 export interface Quantifier {
-  _id?: string;
+  _id: string;
   accounts: UserAccountDocument[];
   receivers: Receiver[];
 }

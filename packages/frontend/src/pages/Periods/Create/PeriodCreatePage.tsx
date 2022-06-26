@@ -97,14 +97,14 @@ const PeriodsForm = (): JSX.Element => {
             </Field>
             <Field name="endDate">
               {({ input }): JSX.Element => (
-                <div className="mb-5">
+                <div className="mb-5 w-72">
                   <label className="block">End date (UTC)</label>
                   <DayInput
                     name={input.name}
                     value={input.value}
                     onChange={input.onChange}
-                    className="w-72 block"
-                    inputClassName="w-100"
+                    className="block w-72"
+                    inputClassName="w-full"
                   />
                   {apiResponse && (
                     <FieldErrorMessage
@@ -137,7 +137,7 @@ const PeriodsCreatePage = (): JSX.Element => {
           A new period begins where the last one ended, and finishes at
           end-of-day on <i>end date</i>.
         </div>
-        <React.Suspense fallback="Loading…">
+        <React.Suspense fallback={null}>
           <PeriodsForm />
         </React.Suspense>
       </div>

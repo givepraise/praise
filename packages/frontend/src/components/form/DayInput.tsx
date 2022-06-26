@@ -3,6 +3,7 @@ import OutsideClickHandler from '@/components/OutsideClickHandler';
 import { useState } from 'react';
 import { DayPicker, useInput } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
+import { classNames } from '@/utils/index';
 
 interface Params {
   name: string;
@@ -31,14 +32,13 @@ const DayInput = ({
   const [pickerVisible, setPickerVisible] = useState<boolean>(false);
 
   const handleDayClick = (day: Date): void => {
-    console.log('day clicked is', day);
     onChange(formatIsoDateUTC(day.toISOString(), DATE_FORMAT));
     setPickerVisible(false);
   };
 
   return (
-    <div className={`w-full ${className}`}>
-      <div className="flex justify-start items-center">
+    <div className={classNames('w-full', className)}>
+      <div className="flex items-center justify-start">
         <input
           {...inputProps}
           type="text"
@@ -59,7 +59,7 @@ const DayInput = ({
         >
           <DayPicker
             {...dayPickerProps}
-            className="absolute mt-1 p-2 border text-xs rounded-lg shadow-lg bg-gray-50 z-20"
+            className="absolute z-20 p-2 mt-1 text-xs border rounded-lg shadow-lg bg-warm-gray-50"
             onDayClick={handleDayClick}
             selected={parseDate(value)}
           />

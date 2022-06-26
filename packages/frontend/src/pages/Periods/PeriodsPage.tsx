@@ -14,9 +14,9 @@ const PeriodsPage = (): JSX.Element => {
 
       <ActiveNoticesBoard />
 
-      <div className="praise-box">
+      <div className="px-0 praise-box">
         <AdminOnly>
-          <div className="mb-2 text-right">
+          <div className="mb-2 text-right px-5">
             <Link to="/periods/createupdate">
               <button className="praise-button" id="create-period-button">
                 <FontAwesomeIcon icon={faPlus} size="1x" className="mr-2" />
@@ -25,7 +25,7 @@ const PeriodsPage = (): JSX.Element => {
             </Link>
           </div>
         </AdminOnly>
-        <React.Suspense fallback="Loading…">
+        <React.Suspense fallback={null}>
           <PeriodsTable />
         </React.Suspense>
       </div>

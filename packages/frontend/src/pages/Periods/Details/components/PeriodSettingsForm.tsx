@@ -20,11 +20,13 @@ const PeriodSettingsForm = ({
   const { setSetting } = useSetPeriodSetting(periodId);
 
   return (
-    <SettingsForm
-      settings={settings}
-      setSetting={setSetting}
-      disabled={disabled}
-    />
+    <div className="px-5">
+      <SettingsForm
+        settings={settings}
+        setSetting={setSetting}
+        disabled={disabled}
+      />
+    </div>
   );
 };
 

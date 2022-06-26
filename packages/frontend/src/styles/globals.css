@@ -7,29 +7,63 @@
 @import './custom-utilities.css';
 
 @layer base {
-  html {
-    background-color: #f3f4f6;
-    @apply text-gray-800;
+  * {
+    @apply dark:border-slate-700;
+  }
+  #root {
+    @apply min-h-screen text-sm text-warm-gray-800 dark:bg-slate-800 dark:text-white bg-warm-gray-300;
   }
 
   h2 {
     @apply text-xl font-semibold mb-1.5;
   }
 
-  td,
-  th {
-    @apply p-2;
-  }
-
   a {
     @apply underline;
   }
 
-  .praise-button {
-    @apply px-4 py-2 font-bold text-white bg-gray-800 rounded hover:bg-gray-700;
+  input, textarea {
+    @apply text-sm dark:border-slate-400 dark:bg-slate-500 dark:placeholder-white; 
   }
 
-  .praise-button-disabled {
-    @apply px-4 py-2 font-bold text-gray-500 bg-gray-700 rounded cursor-default;
+
+  [type='text']:focus,
+    [type='email']:focus,
+    [type='url']:focus,
+    [type='password']:focus,
+    [type='number']:focus,
+    [type='date']:focus,
+    [type='datetime-local']:focus,
+    [type='month']:focus,
+    [type='search']:focus,
+    [type='tel']:focus,
+    [type='time']:focus,
+    [type='week']:focus,
+    [multiple]:focus,
+    textarea:focus,
+    select:focus {
+      @apply  border-warm-gray-900 dark:border-slate-300 dark:focus:ring-slate-300 focus:ring-warm-gray-900;
+    }
+    
+    [type='checkbox'] {
+      @apply text-black border border-warm-gray-900 focus:border-warm-gray-900 focus:border-2 focus:ring-0;
+    }
+
+    .praise-button {
+      @apply px-4 py-2 font-bold text-white rounded-md bg-themecolor-3 hover:bg-themecolor-4;
+    }
+
+    .praise-button-outline {
+      @apply px-4 py-2 font-bold border-2 rounded-md text-themecolor-3 border-themecolor-3 hover:bg-themecolor-4 hover:text-white hover:border-themecolor-4;
+    }
+    
+    .praise-button-disabled {
+      @apply cursor-default praise-button bg-themecolor-3/50 text-white/50 hover:bg-themecolor-3/50;
+    }
+    
+    .praise-button-round {
+      @apply flex items-center justify-center rounded-full hover:bg-warm-gray-300 w-7 h-7 dark:text-white dark:hover:bg-slate-800;
+    }
+    
   }
-}
+

@@ -1,11 +1,11 @@
-import mongoose from 'mongoose';
+import { Error } from 'mongoose';
 import { errorNames } from './constants';
 import { AppError } from './types';
 
 export const isValidationError = (
   err: unknown
-): err is mongoose.Error.ValidationError => {
-  return err instanceof mongoose.Error.ValidationError;
+): err is Error.ValidationError => {
+  return err instanceof Error.ValidationError;
 };
 
 export const isAppError = (err: unknown): err is AppError => {

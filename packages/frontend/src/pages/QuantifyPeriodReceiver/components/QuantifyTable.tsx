@@ -4,7 +4,8 @@ import { useQuantifyPraise } from '@/model/praise';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import getWeek from 'date-fns/getWeek';
 import parseISO from 'date-fns/parseISO';
-import { groupBy, sortBy } from 'lodash';
+import groupBy from 'lodash/groupBy';
+import sortBy from 'lodash/sortBy';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { QuantifyBackNextLink } from './BackNextLink';
@@ -108,19 +109,19 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
   };
 
   return (
-    <div className=" h-full">
-      <div className="p-5 relative space-x-6 bg-gray-200 z-10 w-full rounded-t border-t border-l border-r sticky top-0">
-        <MarkDismissedButton
-          disabled={selectedPraises.length < 1}
-          onClick={(): void => setIsDismissDialogOpen(true)}
-        />
+    <div>
+      <div className="sticky z-10 w-full p-5 space-x-4 border-t border-l border-r top-14 lg:top-0 rounded-t-xl bg-warm-gray-100 dark:bg-slate-700">
         <MarkDuplicateButton
           disabled={selectedPraises.length < 2}
           onClick={(): void => setIsDuplicateDialogOpen(true)}
         />
+        <MarkDismissedButton
+          disabled={selectedPraises.length < 1}
+          onClick={(): void => setIsDismissDialogOpen(true)}
+        />
       </div>
 
-      <div className="praise-box overflow-x-auto rounded-t-none">
+      <div className="overflow-x-auto rounded-t-none praise-box-wide">
         <table className="w-full table-auto">
           <tbody>
             {Object.keys(weeklyData).map((weekKey, index) => (
@@ -128,7 +129,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                 {index !== 0 && index !== data.length - 1 && (
                   <tr>
                     <td colSpan={5}>
-                      <div className="border-t border-2 border-gray-400 my-4" />
+                      <div className="mb-5 border-2 border-t border-warm-gray-400" />
                     </td>
                   </tr>
                 )}

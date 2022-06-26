@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import {
   EventLogDocument,
@@ -6,7 +6,7 @@ import {
   EventLogTypeKey,
 } from './types';
 
-export const eventLogSchema = new mongoose.Schema(
+export const eventLogSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
@@ -42,12 +42,12 @@ export const eventLogSchema = new mongoose.Schema(
 
 eventLogSchema.plugin(mongoosePagination);
 
-export const EventLogModel = mongoose.model<
+export const EventLogModel = model<
   EventLogDocument,
   Pagination<EventLogDocument>
 >('EventLog', eventLogSchema);
 
-export const eventLogTypeSchema = new mongoose.Schema(
+export const eventLogTypeSchema = new Schema(
   {
     key: {
       type: String,
@@ -63,7 +63,7 @@ export const eventLogTypeSchema = new mongoose.Schema(
   }
 );
 
-export const EventLogTypeModel = mongoose.model<
+export const EventLogTypeModel = model<
   EventLogTypeDocument,
   Pagination<EventLogTypeDocument>
 >('EventLogType', eventLogTypeSchema);

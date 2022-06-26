@@ -8,10 +8,11 @@ import { EventLogDto, EventLogTypeKey } from 'api/dist/eventlog/types';
 import { SingleUser } from '@/model/users';
 import { useRecoilValue } from 'recoil';
 import { InlineLabel } from '../InlineLabel';
-import { UserDto } from 'api/dist/user/types';
-import { UserAccountDto } from 'api/dist/useraccount/types';
 import Notice from '../Notice';
 import { Tooltip } from '@mui/material';
+import { classNames } from '@/utils/index';
+import { UserName } from '../user/UserName';
+import { UserPopover } from '../user/UserPopover';
 
 const eventLogTypeColors = {
   [EventLogTypeKey.PERMISSION]: 'bg-orange-400',
@@ -20,19 +21,6 @@ const eventLogTypeColors = {
   [EventLogTypeKey.PRAISE]: 'bg-yellow-400',
   [EventLogTypeKey.QUANTIFICATION]: 'bg-green-400',
   [EventLogTypeKey.SETTING]: 'bg-indigo-400',
-};
-
-const getEventLogUsername = (
-  user: UserDto | undefined,
-  useraccount: UserAccountDto | undefined
-): string | undefined => {
-  if (user) {
-    return user.nameRealized;
-  } else if (useraccount) {
-    return useraccount.name;
-  } else {
-    return undefined;
-  }
 };
 
 interface Params {
@@ -44,15 +32,29 @@ const EventLog = ({ eventlog, className = '' }: Params): JSX.Element | null => {
   const user = useRecoilValue(SingleUser(eventlog.user));
 
   return (
-    <div className={`flex items-center w-full ${className}`}>
-      <div className="flex items-center">
-        <UserAvatar userAccount={eventlog.useraccount} user={user} />
+    <div className={classNames('flex items-center w-full', className)}>
+      <div className="flex items-center text-2xl">
+        <UserPopover
+          user={user}
+          userAccount={eventlog.useraccount}
+          className="inline-block"
+        >
+          <UserAvatar userAccount={eventlog.useraccount} user={user} />
+        </UserPopover>
       </div>
       <div className="flex-grow p-3 overflow-hidden">
         <div>
-          <span className="font-bold">
-            {getEventLogUsername(user, eventlog.useraccount)}
-          </span>
+          <UserPopover
+            user={user}
+            userAccount={eventlog.useraccount}
+            className="inline-block"
+          >
+            <UserName
+              user={user}
+              userAccount={eventlog.useraccount}
+              className="font-bold"
+            />
+          </UserPopover>
           <Tooltip
             placement="right-end"
             title={`${formatIsoDateUTC(
@@ -61,7 +63,7 @@ const EventLog = ({ eventlog, className = '' }: Params): JSX.Element | null => {
             )} UTC`}
             arrow
           >
-            <span className="ml-2 text-xs text-gray-500">
+            <span className="ml-2 text-xs text-warm-gray-300">
               {localizeAndFormatIsoDate(eventlog.createdAt)}
             </span>
           </Tooltip>

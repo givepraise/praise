@@ -4,7 +4,7 @@ import { calculateReceiverCompositeScore } from '@praise/utils/score';
 import { periodsettingListTransformer } from '@periodsettings/transformers';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 import { settingValue } from '@shared/settings';
-import { some } from 'lodash';
+import some from 'lodash/some';
 import { PeriodModel } from './entities';
 import {
   periodDetailsReceiverListTransformer,

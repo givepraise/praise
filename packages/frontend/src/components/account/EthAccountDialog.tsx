@@ -1,4 +1,4 @@
-import { shortenEthAddress } from 'api/dist/user/utils';
+import { shortenEthAddress } from 'api/dist/user/utils/core';
 import {
   faTimes,
   faCopy,
@@ -46,12 +46,8 @@ const EthAccountDialog = ({
       className="fixed inset-0 z-50 overflow-y-auto"
       initialFocus={contentRef}
     >
-      <div className="flex items-center justify-center min-h-screen">
-        <Dialog.Overlay className="fixed inset-0 bg-gray-800 opacity-30" />
-        <div
-          className="relative max-w-xl p-6 mx-auto bg-white rounded"
-          ref={contentRef}
-        >
+      <div className="flex items-center justify-center min-h-screen bg-black/30">
+        <div className="p-10 praise-box-defaults" ref={contentRef}>
           <div className="flex justify-end">
             <button className="praise-button-round" onClick={onClose}>
               <FontAwesomeIcon icon={faTimes} size="1x" />
@@ -61,7 +57,7 @@ const EthAccountDialog = ({
             <div className="flex justify-center mb-8">
               <Jazzicon address={address} className="w-12 h-12" />
             </div>
-            <Dialog.Title className="text-center">
+            <Dialog.Title className="text-center dark:text-white">
               {shortenEthAddress(address)}
             </Dialog.Title>
             <div className="flex justify-center space-x-4">
