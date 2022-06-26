@@ -34,6 +34,7 @@ import {
 import { ActiveUserId, ActiveUserRoles } from './auth';
 import { SinglePeriodSetting } from './periodsettings';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
+import { toast } from 'react-hot-toast';
 
 /**
  * Types for `useParams()`
@@ -713,3 +714,41 @@ export const PeriodQuantifierReceiverPraise = selectorFamily({
       );
     },
 });
+
+type useReplaceQuantifierReturn = {
+  replaceQuantifier: (
+    currentQuantifierId: string,
+    newQuantifierId: string
+  ) => Promise<void>;
+};
+
+/**
+ * Hook that returns function used to assign quantifiers
+ */
+export const useReplaceQuantifier = (
+  periodId: string
+): useReplaceQuantifierReturn => {
+  const apiAuthClient = makeApiAuthClient();
+
+  const replaceQuantifier = useRecoilCallback(
+    ({ set }) =>
+      async (
+        currentQuantifierId: string,
+        newQuantifierId: string
+      ): Promise<void> => {
+        const response: AxiosResponse<PeriodDetailsDto> =
+          await apiAuthClient.patch(
+            `/admin/periods/${periodId}/replaceQuantifier`,
+            {
+              currentQuantifierId,
+              newQuantifierId,
+            }
+          );
+
+        set(SinglePeriod(response.data._id), response.data);
+
+        toast.success('Replaced quantifier');
+      }
+  );
+  return { replaceQuantifier };
+};
