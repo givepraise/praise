@@ -3,6 +3,7 @@ import {
   QuantificationDocument,
   QuantificationDto,
   Quantification,
+  PraiseDto,
 } from '@praise/types';
 import { Query } from '@shared/types';
 import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
@@ -102,4 +103,9 @@ export interface Assignments {
 export interface PeriodDateRange {
   $gt: Date;
   $lte: Date;
+}
+
+export interface PeriodReplaceQuantifierDto {
+  period: PeriodDetailsDto;
+  praises: PraiseDto[];
 }

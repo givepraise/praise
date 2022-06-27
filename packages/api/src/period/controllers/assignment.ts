@@ -28,6 +28,7 @@ import {
   PeriodDetailsDto,
   PeriodStatusType,
   VerifyQuantifierPoolSizeResponse,
+  PeriodReplaceQuantifierDto,
 } from '../types';
 import {
   findPeriodDetailsDto,
@@ -35,6 +36,7 @@ import {
   getPeriodDateRangeQuery,
 } from '../utils';
 import { PeriodModel } from '../entities';
+import { praiseDocumentListTransformer } from '@praise/transformers';
 
 /**
  * Get all receivers with praise data
@@ -564,7 +566,7 @@ export const assignQuantifiers = async (
 
 export const replaceQuantifier = async (
   req: Request,
-  res: TypedResponse<PeriodDetailsDto>
+  res: TypedResponse<PeriodReplaceQuantifierDto>
 ): Promise<void> => {
   const { periodId } = req.params;
   const { currentQuantifierId, newQuantifierId } = req.body;
@@ -597,6 +599,14 @@ export const replaceQuantifier = async (
     );
 
   const dateRangeQuery = await getPeriodDateRangeQuery(period);
+  const affectedPraiseIds = await PraiseModel.find({
+    // Praise within time period
+    createdAt: dateRangeQuery,
+
+    // Original quantifier
+    'quantifications.quantifier': currentQuantifierId,
+  }).distinct('_id');
+
   await PraiseModel.updateMany(
     {
       // Praise within time period
@@ -636,6 +646,15 @@ export const replaceQuantifier = async (
     }", to user with id "${newQuantifierId as string}"`
   );
 
+  const updatedPraises = await PraiseModel.find({
+    _id: { $in: affectedPraiseIds },
+  }).populate('giver receiver forwarder');
+
+  const affectedPraises = await praiseDocumentListTransformer(updatedPraises);
   const periodDetailsDto = await findPeriodDetailsDto(periodId);
-  res.status(StatusCodes.OK).json(periodDetailsDto);
+
+  res.status(StatusCodes.OK).json({
+    period: periodDetailsDto,
+    praises: affectedPraises,
+  });
 };

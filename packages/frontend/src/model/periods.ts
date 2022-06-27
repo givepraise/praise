@@ -8,6 +8,7 @@ import {
   PeriodDetailsDto,
   PeriodStatusType,
   PeriodUpdateInput,
+  PeriodReplaceQuantifierDto,
 } from 'api/dist/period/types';
 import { PraiseDto } from 'api/dist/praise/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
@@ -736,7 +737,7 @@ export const useReplaceQuantifier = (
         currentQuantifierId: string,
         newQuantifierId: string
       ): Promise<void> => {
-        const response: AxiosResponse<PeriodDetailsDto> =
+        const response: AxiosResponse<PeriodReplaceQuantifierDto> =
           await apiAuthClient.patch(
             `/admin/periods/${periodId}/replaceQuantifier`,
             {
@@ -745,8 +746,11 @@ export const useReplaceQuantifier = (
             }
           );
 
-        set(SinglePeriod(response.data._id), response.data);
+        set(SinglePeriod(response.data.period._id), response.data.period);
 
+        response.data.praises.forEach((praise) => {
+          set(SinglePraise(praise._id), praise);
+        });
         toast.success('Replaced quantifier');
       }
   );
