@@ -643,7 +643,10 @@ export const replaceQuantifier = async (
       period.name
     }" that is currently assigned to user with id "${
       currentQuantifierId as string
-    }", to user with id "${newQuantifierId as string}"`
+    }", to user with id "${newQuantifierId as string}"`,
+    {
+      userId: res.locals.currentUser._id,
+    }
   );
 
   const updatedPraises = await PraiseModel.find({
