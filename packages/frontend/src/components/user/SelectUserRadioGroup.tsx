@@ -17,23 +17,22 @@ const SelectUserRadioGroup = ({
 }: Props): JSX.Element => {
   return (
     <RadioGroup value={value} onChange={onSelect} className="w-full">
-      <div className="space-y-2 p-4 max-h-64 overflow-y-auto">
+      <div className="space-y-2 p-4 max-h-64 overflow-y-auto dark:bg-slate-600 dark:text-white">
         {userIds.map((userId) => (
           <RadioGroup.Option
             value={userId}
             key={userId}
-            className={({ active, checked }): string =>
+            className={({ checked }): string =>
               classNames(
-                active
-                  ? 'ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-sky-300'
+                checked
+                  ? 'text-white bg-warm-gray-500 hover:bg-warm-gray-500 dark:bg-slate-800 dark:hover:bg-slate-800'
                   : '',
-                checked ? 'bg-sky-900 bg-opacity-75 text-white' : 'bg-white',
-                'relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md focus:outline-none'
+                'relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md hover:bg-warm-gray-100 dark:hover:bg-slate-700 bg-warm-gray-100 dark:bg-slate-500'
               )
             }
           >
-            {({ active, checked }): JSX.Element => (
-              <div className="flex w-full items-center justify-between">
+            {({ checked }): JSX.Element => (
+              <div className="w-full flex items-center justify-between">
                 <div className="text-lg mx-4 pr-8">
                   <UserAvatarAndName userId={userId} />
                 </div>
