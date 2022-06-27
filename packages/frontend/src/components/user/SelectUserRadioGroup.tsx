@@ -2,26 +2,27 @@ import { classNames } from '@/utils/index';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { RadioGroup } from '@headlessui/react';
+import { UserDto } from 'api/dist/user/types';
 import { UserAvatarAndName } from './UserAvatarAndName';
 
 interface Props {
-  userIds?: string[];
+  users?: UserDto[];
   value?: string;
   onSelect(userId: string): void;
 }
 
 const SelectUserRadioGroup = ({
-  userIds = [],
+  users = [],
   value = undefined,
   onSelect,
 }: Props): JSX.Element => {
   return (
     <RadioGroup value={value} onChange={onSelect} className="w-full">
       <div className="space-y-2 p-4 max-h-64 overflow-y-auto dark:bg-slate-600 dark:text-white">
-        {userIds.map((userId) => (
+        {users.map((user) => (
           <RadioGroup.Option
-            value={userId}
-            key={userId}
+            value={user._id}
+            key={user._id}
             className={({ checked }): string =>
               classNames(
                 checked
@@ -34,7 +35,7 @@ const SelectUserRadioGroup = ({
             {({ checked }): JSX.Element => (
               <div className="w-full flex items-center justify-between">
                 <div className="text-lg mx-4 pr-8">
-                  <UserAvatarAndName userId={userId} />
+                  <UserAvatarAndName user={user} />
                 </div>
                 <div className="shrink-0 w-8 text-white">
                   {checked && (

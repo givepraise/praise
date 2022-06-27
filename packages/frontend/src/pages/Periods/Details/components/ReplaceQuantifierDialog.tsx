@@ -10,13 +10,14 @@ import { useState } from 'react';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import SelectUserRadioGroup from '@/components/user/SelectUserRadioGroup';
 import Notice from '@/components/Notice';
+import { useRecoilValue } from 'recoil';
+import { AllQuantifierUsers } from '@/model/users';
 
 interface Props {
   onClose(): void;
   onConfirm(newQuantifierId: string): void;
   open: boolean;
   selectedUserId: string | undefined;
-  availableUserIds: string[];
 }
 
 const ReplaceQuantifierDialog = ({
@@ -24,14 +25,14 @@ const ReplaceQuantifierDialog = ({
   onConfirm,
   open = false,
   selectedUserId,
-  availableUserIds,
 }: Props): JSX.Element | null => {
   const [replacementUserId, setReplacementUserId] = useState<
     string | undefined
   >(undefined);
+  const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
 
   if (!selectedUserId) return null;
-  if (!availableUserIds) return null;
+  if (!allQuantifierUsers) return null;
 
   const resetAndClose = (): void => {
     setReplacementUserId(undefined);
@@ -64,7 +65,7 @@ const ReplaceQuantifierDialog = ({
             be deleted.
           </div>
 
-          {availableUserIds.length === 0 ? (
+          {allQuantifierUsers.length === 0 ? (
             <Notice type="danger">
               <span>
                 There are no unassigned quantifiers available. Please add
@@ -75,7 +76,7 @@ const ReplaceQuantifierDialog = ({
             <>
               <div>
                 <SelectUserRadioGroup
-                  userIds={availableUserIds}
+                  users={allQuantifierUsers}
                   value={replacementUserId}
                   onSelect={setReplacementUserId}
                 />

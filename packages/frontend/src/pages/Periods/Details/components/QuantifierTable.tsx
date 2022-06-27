@@ -10,7 +10,6 @@ import { useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import sortBy from 'lodash/sortBy';
-import difference from 'lodash/difference';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -18,13 +17,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Quantifier } from 'api/dist/praise/types';
 import ReplaceQuantifierDialog from './ReplaceQuantifierDialog';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import { AllQuantifierUsers } from '@/model/users';
 
 const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const period = useRecoilValue(SinglePeriod(periodId));
-  const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
 
   const [isReplaceQuantifierDialogOpen, setIsReplaceQuantifierDialogOpen] =
     useState<boolean>(false);
@@ -90,11 +87,6 @@ const QuantifierTable = (): JSX.Element => {
       },
     ],
     [isAdmin]
-  );
-
-  const unassignedQuantifierUserIds = difference(
-    allQuantifierUsers?.map((u) => u._id),
-    period?.quantifiers ? period.quantifiers.map((u) => u._id) : []
   );
 
   const data = period?.quantifiers
@@ -185,7 +177,6 @@ const QuantifierTable = (): JSX.Element => {
       <ReplaceQuantifierDialog
         open={isReplaceQuantifierDialogOpen}
         selectedUserId={quantifierToReplace?._id}
-        availableUserIds={unassignedQuantifierUserIds}
         onClose={(): void => {
           setIsReplaceQuantifierDialogOpen(false);
           setQuantifierToReplace(undefined);
