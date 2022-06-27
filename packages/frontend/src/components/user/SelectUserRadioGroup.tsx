@@ -17,7 +17,7 @@ const SelectUserRadioGroup = ({
 }: Props): JSX.Element => {
   return (
     <RadioGroup value={value} onChange={onSelect} className="w-full">
-      <div className="space-y-2 p-4 h-64 overflow-y-scroll">
+      <div className="space-y-2 p-4 max-h-64 overflow-y-auto">
         {userIds.map((userId) => (
           <RadioGroup.Option
             value={userId}
