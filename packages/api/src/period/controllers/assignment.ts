@@ -31,8 +31,8 @@ import {
 } from '../types';
 import {
   findPeriodDetailsDto,
-  getPreviousPeriodEndDate,
   verifyAnyPraiseAssigned,
+  getPeriodDateRangeQuery,
 } from '../utils';
 import { PeriodModel } from '../entities';
 
@@ -44,12 +44,12 @@ import { PeriodModel } from '../entities';
 const queryReceiversWithPraise = async (
   period: PeriodDocument
 ): Promise<Receiver[]> => {
-  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+  const dateRangeQuery = await getPeriodDateRangeQuery(period);
 
   return PraiseModel.aggregate([
     {
       $match: {
-        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+        createdAt: dateRangeQuery,
       },
     },
     {
@@ -215,10 +215,10 @@ const verifyAssignments = async (
   PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number,
   assignments: Assignments
 ): Promise<void> => {
-  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+  const dateRangeQuery = await getPeriodDateRangeQuery(period);
 
   const totalPraiseCount: number = await PraiseModel.count({
-    createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+    createdAt: dateRangeQuery,
   });
   const expectedAccountedPraiseCount: number =
     totalPraiseCount * PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER;
@@ -596,11 +596,11 @@ export const replaceQuantifier = async (
       'Replacement quantifier does not have role QUANTIFIER'
     );
 
-  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+  const dateRangeQuery = await getPeriodDateRangeQuery(period);
   await PraiseModel.updateMany(
     {
       // Praise within time period
-      createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+      createdAt: dateRangeQuery,
 
       // Original quantifier
       'quantifications.quantifier': currentQuantifierId,
