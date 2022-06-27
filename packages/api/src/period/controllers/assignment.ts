@@ -609,9 +609,13 @@ export const replaceQuantifier = async (
       $set: {
         // Reset score
         'quantifications.$[elem].score': 0,
+        'quantifications.$[elem].dismissed': false,
 
         // Assign new quantifier
         'quantifications.$[elem].quantifier': newQuantifierId,
+      },
+      $unset: {
+        'quantifications.$[elem].duplicatePraise': 1,
       },
     },
     {
