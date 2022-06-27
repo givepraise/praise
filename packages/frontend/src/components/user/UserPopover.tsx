@@ -85,7 +85,7 @@ export const WrappedUserPopover = ({
             setTimeout(() => setOpen(false), 300);
           }}
         >
-          <div className="p-5 text-sm border border-solid rounded-lg shadow-m bg-warm-gray-50 dark:bg-slate-900">
+          <div className="p-5 text-sm border border-solid rounded-lg shadow-m text-black dark:text-white bg-warm-gray-50 dark:bg-slate-900">
             <div className="mb-5 text-4xl">
               <UserAvatar user={user} userAccount={userAccount} />
             </div>
