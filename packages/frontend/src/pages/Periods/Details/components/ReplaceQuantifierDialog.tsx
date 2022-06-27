@@ -9,6 +9,7 @@ import IconButton from '@/components/IconButton';
 import { useState } from 'react';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import SelectUserRadioGroup from '@/components/user/SelectUserRadioGroup';
+import Notice from '@/components/Notice';
 
 interface Props {
   onClose(): void;
@@ -28,8 +29,6 @@ const ReplaceQuantifierDialog = ({
   const [replacementUserId, setReplacementUserId] = useState<
     string | undefined
   >(undefined);
-
-  const availableQuantifiers = [{ _id: 1 }, { _id: 2 }];
 
   if (!selectedUserId) return null;
   if (!availableUserIds) return null;
@@ -65,10 +64,13 @@ const ReplaceQuantifierDialog = ({
             be deleted.
           </div>
 
-          {availableQuantifiers.length === 0 ? (
-            <div className="text-center">
-              There are no quantifiers available.
-            </div>
+          {availableUserIds.length === 0 ? (
+            <Notice type="danger">
+              <span>
+                There are no unassigned quantifiers available. Please add
+                additional quantifiers before replacing this one.
+              </span>
+            </Notice>
           ) : (
             <>
               <div>
