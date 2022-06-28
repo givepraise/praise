@@ -11,6 +11,7 @@ import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import SelectUserRadioGroup from '@/components/user/SelectUserRadioGroup';
 import Notice from '@/components/Notice';
 import { useRecoilValue } from 'recoil';
+import differenceBy from 'lodash/differenceBy';
 import { AllQuantifierUsers } from '@/model/users';
 
 interface Props {
@@ -30,6 +31,11 @@ const ReplaceQuantifierDialog = ({
     string | undefined
   >(undefined);
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
+  const possibleReplacementUsers = differenceBy(
+    allQuantifierUsers,
+    [{ _id: selectedUserId }],
+    (u) => u._id
+  );
 
   if (!selectedUserId) return null;
   if (!allQuantifierUsers) return null;
@@ -79,7 +85,7 @@ const ReplaceQuantifierDialog = ({
             <>
               <div>
                 <SelectUserRadioGroup
-                  users={allQuantifierUsers}
+                  users={possibleReplacementUsers}
                   value={replacementUserId}
                   onSelect={setReplacementUserId}
                 />
