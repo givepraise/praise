@@ -572,6 +572,23 @@ export const replaceQuantifier = async (
     );
 
   const dateRangeQuery = await getPeriodDateRangeQuery(period);
+
+  const praiseAlreadyAssignedToNewQuantifier = await PraiseModel.find({
+    // Praise within time period
+    createdAt: dateRangeQuery,
+
+    // Both original and new quantifiers assigned
+    $and: [
+      { 'quantifications.quantifier': currentQuantifierId },
+      { 'quantifications.quantifier': newQuantifierId },
+    ],
+  });
+
+  if (praiseAlreadyAssignedToNewQuantifier?.length > 0)
+    throw new BadRequestError(
+      "Replacement quantifier is already assigned to some of the original quantifier's praise"
+    );
+
   const affectedPraiseIds = await PraiseModel.find({
     // Praise within time period
     createdAt: dateRangeQuery,
