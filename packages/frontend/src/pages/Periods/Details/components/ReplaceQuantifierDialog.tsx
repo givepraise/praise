@@ -93,7 +93,7 @@ const ReplaceQuantifierDialog = ({
                     if (!replacementUserId) return;
 
                     onConfirm(replacementUserId);
-                    onClose();
+                    resetAndClose();
                   }}
                 />
               </div>
