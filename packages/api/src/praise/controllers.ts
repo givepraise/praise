@@ -33,7 +33,11 @@ import { PeriodStatusType } from '@period/types';
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
 /**
- * //TODO add descriptiom
+ * Fetch paginated list of Praise
+ *
+ * @param {TypedRequestQuery<PraiseAllInputParsedQs>} req
+ * @param {TypedResponse<PaginatedResponseBody<PraiseDetailsDto>>} res
+ * @returns {Promise<void>}
  */
 export const all = async (
   req: TypedRequestQuery<PraiseAllInputParsedQs>,
@@ -65,7 +69,11 @@ export const all = async (
 };
 
 /**
- * //TODO add descriptiom
+ * Fetch a single Praise
+ *
+ * @param {Request} req
+ * @param {TypedResponse<PraiseDetailsDto>} res
+ * @returns {Promise<void>}
  */
 export const single = async (
   req: Request,
@@ -83,7 +91,11 @@ export const single = async (
 };
 
 /**
- * //TODO add descriptiom
+ * Update a Praise.quantification's score, dismissed, duplicatePraise
+ *
+ * @param {TypedRequestBody<QuantificationCreateUpdateInput>} req
+ * @param {TypedResponse<PraiseDto[]>} res
+ * @returns {Promise<void>}
  */
 export const quantify = async (
   req: TypedRequestBody<QuantificationCreateUpdateInput>,
