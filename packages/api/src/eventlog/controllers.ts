@@ -18,6 +18,10 @@ import mongoose from 'mongoose';
 
 /**
  * Fetch a paginated list of EventLogs
+ *
+ * @param  {TypedRequestQuery<EventLogsQueryInputParsedQs>} req
+ * @param  {TypedResponse<PaginatedResponseBody<EventLogDto>>} res
+ * @returns Promise
  */
 export const all = async (
   req: TypedRequestQuery<EventLogsQueryInputParsedQs>,
@@ -64,7 +68,11 @@ export const all = async (
 };
 
 /**
- * Fetch a list of EventLogsTypes
+ * Fetch a list of all EventLogsTypes
+ *
+ * @param  {TypedRequestQuery<QueryInputParsedQs>} req
+ * @param  {TypedResponse<PaginatedResponseBody<EventLogTypeDto>>} res
+ * @returns Promise
  */
 export const types = async (
   req: TypedRequestQuery<QueryInputParsedQs>,

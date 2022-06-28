@@ -23,12 +23,25 @@ const QuestionAnswerJSONSchema = {
   },
 };
 
+/**
+ * Check if a given string can be parsed into a number
+ *
+ * @param {any} num
+ * @returns {Boolean}
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isNumeric(num: any): Boolean {
   return !isNaN(num);
 }
 
-export function fieldTypeValidator(
+/**
+ *
+ *
+ * @exports
+ * @param {(SettingDocument | PeriodSettingDocument)} this
+ * @returns {Boolean}
+ */
+export function isSettingValueAllowedBySettingType(
   this: SettingDocument | PeriodSettingDocument
 ): Boolean {
   if (this.type === 'Float' || this.type === 'Integer') {

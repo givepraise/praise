@@ -18,10 +18,13 @@ import { UserDocument, UserDto, UserRole, UserRoleChangeInput } from './types';
 import { findUser } from './utils/entity';
 
 /**
- * Description
- * @param
+ * Fetch all Users with their associated UserAccounts
+ *
+ * @param {TypedRequestQuery<QueryInputParsedQs>} req
+ * @param {TypedResponse<UserDto[]>} res
+ * @returns {Promise<void>}
  */
-const all = async (
+export const all = async (
   req: TypedRequestQuery<QueryInputParsedQs>,
   res: TypedResponse<UserDto[]>
 ): Promise<void> => {
@@ -45,10 +48,13 @@ const all = async (
 };
 
 /**
- * Description
- * @param
+ * Fetch a User with their associated UserAccounts
+ *
+ * @param {Request} req
+ * @param {TypedResponse<UserDto>} res
+ * @returns {Promise<void>}
  */
-const single = async (
+export const single = async (
   req: Request,
   res: TypedResponse<UserDto>
 ): Promise<void> => {
@@ -64,10 +70,13 @@ const single = async (
 };
 
 /**
- * Description
- * @param
+ * Update a User, adding an additional role
+ *
+ * @param {TypedRequestBody<UserRoleChangeInput>} req
+ * @param {TypedResponse<UserDto>} res
+ * @returns {Promise<void>}
  */
-const addRole = async (
+export const addRole = async (
   req: TypedRequestBody<UserRoleChangeInput>,
   res: TypedResponse<UserDto>
 ): Promise<void> => {
@@ -108,10 +117,13 @@ const addRole = async (
 };
 
 /**
- * Description
- * @param
+ * Update a User, removing a role
+ *
+ * @param {TypedRequestBody<UserRoleChangeInput>} req
+ * @param {TypedResponse<UserDto>} res
+ * @returns {Promise<void>}
  */
-const removeRole = async (
+export const removeRole = async (
   req: TypedRequestBody<UserRoleChangeInput>,
   res: TypedResponse<UserDto>
 ): Promise<void> => {
@@ -174,5 +186,3 @@ const removeRole = async (
   );
   res.status(200).json(userTransformed);
 };
-
-export { all, single, addRole, removeRole };

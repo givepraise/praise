@@ -1,3 +1,9 @@
+/**
+ * Check if a list of variables are present in env,
+ *  otherwise throw error
+ *
+ * @param {Array<string>} requiredEnvVariables
+ */
 const envCheck = (requiredEnvVariables: Array<string>): void => {
   const unsetEnv = requiredEnvVariables.filter(
     (env) =>

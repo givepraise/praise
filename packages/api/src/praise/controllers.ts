@@ -28,7 +28,7 @@ import {
   PraiseDto,
   QuantificationCreateUpdateInput,
 } from './types';
-import { praiseWithScore, getPraisePeriod } from './utils/core';
+import { getPraisePeriod } from './utils/core';
 import { PeriodStatusType } from '@period/types';
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
@@ -53,7 +53,7 @@ export const all = async (
     throw new BadRequestError('Failed to paginate praise data');
 
   const praiseDetailsDtoList: PraiseDetailsDto[] = await Promise.all(
-    praisePagination.docs.map((p) => praiseWithScore(p))
+    praisePagination.docs.map((p) => praiseDocumentTransformer(p))
   );
 
   const response = {

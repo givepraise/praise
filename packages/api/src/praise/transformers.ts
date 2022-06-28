@@ -10,6 +10,12 @@ import {
   calculateQuantificationsCompositeScore,
 } from './utils/score';
 
+/**
+ * Serialize a Praise.quantification
+ *
+ * @param {Quantification} quantification
+ * @returns {Promise<QuantificationDto>}
+ */
 const quantificationToDto = async (
   quantification: Quantification
 ): Promise<QuantificationDto> => {
@@ -35,6 +41,12 @@ const quantificationToDto = async (
   };
 };
 
+/**
+ * Serialize a list of Praise.quantification
+ *
+ * @param {(Quantification[] | Quantification | undefined)} quantifications
+ * @returns {Promise<QuantificationDto[]>}
+ */
 export const quantificationListTransformer = async (
   quantifications: Quantification[] | Quantification | undefined
 ): Promise<QuantificationDto[]> => {
@@ -52,6 +64,12 @@ export const quantificationListTransformer = async (
   return [];
 };
 
+/**
+ * Serialize a Praise
+ *
+ * @param {PraiseDocument} praiseDocument
+ * @returns {Promise<PraiseDto>}
+ */
 const praiseDocumentToDto = async (
   praiseDocument: PraiseDocument
 ): Promise<PraiseDto> => {
@@ -84,12 +102,24 @@ const praiseDocumentToDto = async (
   };
 };
 
+/**
+ * Serialize a Praise
+ *
+ * @param {PraiseDocument} praiseDocument
+ * @returns {Promise<PraiseDto>}
+ */
 export const praiseDocumentTransformer = async (
   praiseDocument: PraiseDocument
 ): Promise<PraiseDto> => {
   return praiseDocumentToDto(praiseDocument);
 };
 
+/**
+ * Serialize a list of Praise
+ *
+ * @param {PraiseDocument[]} praiseDocuments
+ * @returns {Promise<PraiseDto[]>}
+ */
 export const praiseDocumentListTransformer = async (
   praiseDocuments: PraiseDocument[]
 ): Promise<PraiseDto[]> => {

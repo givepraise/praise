@@ -6,6 +6,14 @@ import { Types } from 'mongoose';
 import { UserDocument } from '../types';
 import { shortenEthAddress } from './core';
 
+/**
+ * Generate a display name for a given User,
+ *  either by an associated UserAccount name,
+ *  or by ethereum address shortened
+ *
+ * @param {UserDocument} user
+ * @returns {Promise<string>}
+ */
 export const generateUserName = async (user: UserDocument): Promise<string> => {
   const accounts = await UserAccountModel.find({ user: user._id });
   if (!accounts || accounts.length === 0)
@@ -17,6 +25,12 @@ export const generateUserName = async (user: UserDocument): Promise<string> => {
   return generateUserAccountNameRealized(accounts[0]);
 };
 
+/**
+ * Fetch a user with a list of their associated user accounts
+ *
+ * @param {string} id
+ * @returns {Promise<UserDocument>}
+ */
 export const findUser = async (id: string): Promise<UserDocument> => {
   const users: UserDocument[] = await UserModel.aggregate([
     { $match: { _id: new Types.ObjectId(id) } },

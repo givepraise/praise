@@ -1,5 +1,11 @@
 import { PeriodSettingDocument, PeriodSettingDto } from './types';
 
+/**
+ * Serialize a PeriodSetting
+ *
+ * @param {PeriodSettingDocument} setting
+ * @returns {PeriodSettingDto}
+ */
 export const periodsettingTransformer = (
   setting: PeriodSettingDocument
 ): PeriodSettingDto => {
@@ -8,6 +14,12 @@ export const periodsettingTransformer = (
   return { _id, key, value, valueRealized, type, label, description, period };
 };
 
+/**
+ * Serialize a list of PeriodSettings
+ *
+ * @param {(PeriodSettingDocument[] | undefined)} settings
+ * @returns {PeriodSettingDto[]}
+ */
 export const periodsettingListTransformer = (
   settings: PeriodSettingDocument[] | undefined
 ): PeriodSettingDto[] => {

@@ -31,6 +31,11 @@ const PREDEFINED_USERS = [
   },
 ];
 
+/**
+ * Seed users into database from PREDEFINED_USERS list
+ *
+ * @returns Promise
+ */
 export const seedPredefinedUsers = async (): Promise<void> => {
   const userCount = await UserModel.count();
 
@@ -48,6 +53,12 @@ export const seedPredefinedUsers = async (): Promise<void> => {
   }
 };
 
+/**
+ * Seed fake users into database with only USER role,
+ *  up to count of REGULAR_USERS_NUMBER
+ *
+ * @returns Promise
+ */
 export const seedRegularUsers = async (): Promise<void> => {
   try {
     const userCount = await UserModel.count({ roles: ['USER'] });
@@ -71,6 +82,12 @@ export const seedRegularUsers = async (): Promise<void> => {
   }
 };
 
+/**
+ * Seed fake users into database with USER and QUANTIFIER roles,
+ *  up to count of QUANTIFIER_USERS_NUMBER
+ *
+ * @returns Promise
+ */
 export const seedQuantifierUsers = async (): Promise<void> => {
   try {
     const userCount = await UserModel.count({ roles: ['USER', 'QUANTIFIER'] });
@@ -95,6 +112,12 @@ export const seedQuantifierUsers = async (): Promise<void> => {
   }
 };
 
+/**
+ * Seed users into database with USER and ADMIN roles,
+ *  as defined in env variable ADMINS
+ *
+ * @returns Promise
+ */
 export const seedAdminUsers = async (): Promise<void> => {
   const admins = process.env.ADMINS as string;
   const ethAddresses = admins
@@ -125,6 +148,12 @@ export const seedAdminUsers = async (): Promise<void> => {
   }
 };
 
+/**
+ * Seed fake periods and fake praises associated with each period into database
+ * Based on PERIOD_NUMBER, PERIOD_LENGTH_DAYS, PRAISE_PER_PERIOD_NUMBER
+ *
+ * @returns Promise
+ */
 export const seedPeriodsWithPraises = async (): Promise<void> => {
   const periodsCount = await PeriodModel.count();
 
@@ -163,6 +192,11 @@ export const seedPeriodsWithPraises = async (): Promise<void> => {
   }
 };
 
+/**
+ * Seed database with all fake data necessary for usable development environment
+ *
+ * @returns Promise
+ */
 export const seedData = async (): Promise<void> => {
   logger.info('Seeding database with fake data.');
 

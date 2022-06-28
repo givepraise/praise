@@ -14,6 +14,13 @@ import { Response } from 'express';
 import { ActivateRequestBody } from './types';
 import { generateActivateMessage } from './utils';
 
+/**
+ * Activate a useraccount and associate it with a user.
+ *
+ * @param  {TypedRequestBody<ActivateRequestBody>} req
+ * @param  {Response} res
+ * @returns Promise
+ */
 const activate = async (
   req: TypedRequestBody<ActivateRequestBody>,
   res: Response

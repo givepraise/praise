@@ -2,6 +2,13 @@ import { userAccountListTransformer } from '@useraccount/transformers';
 import { UserDocument, UserDto, UserRole } from './types';
 import { generateUserName } from './utils/entity';
 
+/**
+ * Serialize a User
+ *
+ * @param {UserDocument} userDocument
+ * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
+ * @returns {Promise<UserDto>}
+ */
 const userDocumentToUserDto = async (
   userDocument: UserDocument,
   currentUserRoles: UserRole[] = [UserRole.USER]
@@ -36,6 +43,13 @@ const userDocumentToUserDto = async (
   } as UserDto;
 };
 
+/**
+ * Serialize a list of Users
+ *
+ * @param {UserDocument[]} userDocuments
+ * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
+ * @returns {Promise<UserDto[]>}
+ */
 export const userListTransformer = (
   userDocuments: UserDocument[],
   currentUserRoles: UserRole[] = [UserRole.USER]
@@ -48,6 +62,13 @@ export const userListTransformer = (
   return Promise.resolve([]);
 };
 
+/**
+ * Serialize a User
+ *
+ * @param {UserDocument} userDocument
+ * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
+ * @returns {Promise<UserDto>}
+ */
 export const userTransformer = (
   userDocument: UserDocument,
   currentUserRoles: UserRole[] = [UserRole.USER]

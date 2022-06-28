@@ -1,5 +1,11 @@
 import { SettingDocument, SettingDto } from './types';
 
+/**
+ * Serialize a Setting
+ *
+ * @param {SettingDocument} setting
+ * @returns {SettingDto}
+ */
 const settingDocumentToDto = (setting: SettingDocument): SettingDto => {
   const { _id, key, value, valueRealized, type, label, description, group } =
     setting;
@@ -16,6 +22,12 @@ const settingDocumentToDto = (setting: SettingDocument): SettingDto => {
   };
 };
 
+/**
+ * Serialize a list of Settings
+ *
+ * @param {(SettingDocument[] | undefined)} settings
+ * @returns {SettingDto[]}
+ */
 export const settingListTransformer = (
   settings: SettingDocument[] | undefined
 ): SettingDto[] => {
@@ -25,6 +37,12 @@ export const settingListTransformer = (
   return [];
 };
 
+/**
+ * Serialize a Setting
+ *
+ * @param {SettingDocument} setting
+ * @returns {SettingDto}
+ */
 export const settingTransformer = (setting: SettingDocument): SettingDto => {
   return settingDocumentToDto(setting);
 };

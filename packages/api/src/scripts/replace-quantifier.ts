@@ -10,9 +10,10 @@ import { exit } from 'process';
 
 /**
  * Replace a currently assigned quantifier during an active period
- * @param periodId
- * @param currentQuantifierId
- * @param newQuantifierId
+ *
+ * @param {string} periodId
+ * @param {string} currentQuantifierId
+ * @param {string} newQuantifierId
  */
 const replaceActiveQuantifier = async (
   periodId: string,

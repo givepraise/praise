@@ -1,8 +1,10 @@
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { PraiseDtoExtended, PraiseDetailsDto, PraiseDto } from '@praise/types';
-import { praiseDocumentListTransformer } from '@praise/transformers';
+import {
+  praiseDocumentListTransformer,
+  praiseDocumentTransformer,
+} from '@praise/transformers';
 import { calculateQuantificationScore } from '@praise/utils/score';
-import { praiseWithScore } from '@praise/utils/core';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { insertNewPeriodSettings } from '@periodsettings/utils';
@@ -41,8 +43,11 @@ import { PeriodModel } from '../entities';
 import { periodDocumentTransformer } from '../transformers';
 
 /**
- * Description
- * @param
+ * Fetch a paginated list of Periods
+ *
+ * @param {TypedRequestQuery<QueryInputParsedQs>} req
+ * @param {(TypedResponse<PaginatedResponseBody<PeriodDetailsDto | undefined>>)} res
+ * @returns {Promise<void>}
  */
 export const all = async (
   req: TypedRequestQuery<QueryInputParsedQs>,
@@ -79,8 +84,11 @@ export const all = async (
 };
 
 /**
- * Description
- * @param
+ * Fetch a single Period
+ *
+ * @param {Request} req
+ * @param {TypedResponse<PeriodDetailsDto>} res
+ * @returns {Promise<void>}
  */
 export const single = async (
   req: Request,
@@ -92,8 +100,11 @@ export const single = async (
 };
 
 /**
- * Description
- * @param
+ * Create a Period
+ *
+ * @param {TypedRequestBody<PeriodUpdateInput>} req
+ * @param {TypedResponse<PeriodDetailsDto>} res
+ * @returns {Promise<void>}
  */
 export const create = async (
   req: TypedRequestBody<PeriodUpdateInput>,
@@ -119,6 +130,13 @@ export const create = async (
 /**
  * Description
  * @param
+ */
+/**
+ * Update a Period's endDate or name
+ *
+ * @param {TypedRequestBody<PeriodUpdateInput>} req
+ * @param {TypedResponse<PeriodDetailsDto>} res
+ * @returns {Promise<void>}
  */
 export const update = async (
   req: TypedRequestBody<PeriodUpdateInput>,
@@ -176,8 +194,11 @@ export const update = async (
 };
 
 /**
- * Description
- * @param
+ * Close a Period (change status from 'QUANTIFY' to 'CLOSED')
+ *
+ * @param {Request} req
+ * @param {TypedResponse<PeriodDetailsDto>} res
+ * @returns {Promise<void>}
  */
 export const close = async (
   req: Request,
@@ -202,8 +223,11 @@ export const close = async (
 };
 
 /**
- * Description
- * @param
+ * Fetch all Praise in a period with a given receiver
+ *
+ * @param {TypedRequestQuery<PeriodReceiverPraiseInput>} req
+ * @param {TypedResponse<PraiseDto[]>} res
+ * @returns {Promise<void>}
  */
 export const receiverPraise = async (
   req: TypedRequestQuery<PeriodReceiverPraiseInput>,
@@ -229,7 +253,7 @@ export const receiverPraise = async (
   const praiseDetailsDtoList: PraiseDetailsDto[] = [];
   if (praiseList) {
     for (const praise of praiseList) {
-      praiseDetailsDtoList.push(await praiseWithScore(praise));
+      praiseDetailsDtoList.push(await praiseDocumentTransformer(praise));
     }
   }
 
@@ -237,8 +261,11 @@ export const receiverPraise = async (
 };
 
 /**
- * Description
- * @param
+ * Fetch all praise in a period assigned to a given quantifier
+ *
+ * @param {TypedRequestQuery<PeriodQuantifierPraiseInput>} req
+ * @param {TypedResponse<PraiseDto[]>} res
+ * @returns {Promise<void>}
  */
 export const quantifierPraise = async (
   req: TypedRequestQuery<PeriodQuantifierPraiseInput>,
@@ -266,7 +293,11 @@ export const quantifierPraise = async (
 };
 
 /**
- * //TODO add descriptiom
+ * Generate a CSV of Praise and quantification data for a period
+ *
+ * @param {TypedRequestBody<QueryInput>} req
+ * @param {Response} res
+ * @returns {Promise<void>}
  */
 export const exportPraise = async (
   req: TypedRequestBody<QueryInput>,
@@ -288,7 +319,7 @@ export const exportPraise = async (
   const docs: PraiseDetailsDto[] = [];
   if (praises) {
     for (const praise of praises) {
-      const pws: PraiseDtoExtended = await praiseWithScore(praise);
+      const pws: PraiseDtoExtended = await praiseDocumentTransformer(praise);
 
       const receiver = await UserModel.findById(pws.receiver.user);
       if (receiver) {

@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { SettingDocument, SettingGroup } from './types';
-import { fieldTypeValidator } from './validators';
+import { isSettingValueAllowedBySettingType } from './validators';
 
 export const genericSettingsSchema = {
   key: { type: String, required: true },
@@ -17,7 +17,7 @@ export const genericSettingsSchema = {
       'Image',
       'QuestionAnswerJSON',
     ],
-    validate: fieldTypeValidator,
+    validate: isSettingValueAllowedBySettingType,
     required: true,
   },
   label: { type: String, required: true },

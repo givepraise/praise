@@ -21,7 +21,13 @@ import {
 } from './types';
 import { isQuantificationCompleted } from '@praise/utils/core';
 
-// Returns previous period end date or 1970-01-01 if no previous period
+/**
+ * Fetch the previous period's endDate,
+ *  or 1970-01-01 if no previous period exists
+ *
+ * @param {PeriodDocument} period
+ * @returns {Promise<Date>}
+ */
 export const getPreviousPeriodEndDate = async (
   period: PeriodDocument
 ): Promise<Date> => {
@@ -37,6 +43,12 @@ export const getPreviousPeriodEndDate = async (
   return previousEndDate;
 };
 
+/**
+ * Fetch a list of receivers detailed
+ *
+ * @param {PeriodDetailsReceiver[]} receivers
+ * @returns {Promise<PeriodDetailsReceiver[]>}
+ */
 const receiversWithScores = async (
   receivers: PeriodDetailsReceiver[]
 ): Promise<PeriodDetailsReceiver[]> => {
@@ -55,6 +67,12 @@ const receiversWithScores = async (
   return receiversWithQuantificationScores;
 };
 
+/**
+ * Attach finishedCounts to a list of Praise.quantifiers with details in a period
+ *
+ * @param {PeriodDetailsQuantifier[]} quantifiers
+ * @returns {PeriodDetailsQuantifierDto[]}
+ */
 const quantifiersWithCounts = (
   quantifiers: PeriodDetailsQuantifier[]
 ): PeriodDetailsQuantifierDto[] => {
@@ -73,6 +91,12 @@ const quantifiersWithCounts = (
   return quantifiersWithQuantificationCounts;
 };
 
+/**
+ * Fetch a period with details about it's receivers and quantifiers
+ *
+ * @param {string} id
+ * @returns {Promise<PeriodDetailsDto>}
+ */
 export const findPeriodDetailsDto = async (
   id: string
 ): Promise<PeriodDetailsDto> => {
@@ -158,8 +182,9 @@ export const findPeriodDetailsDto = async (
 
 /**
  * Find all Periods where status = QUANTIFY
- * @param match Any paramaters to add to mongoose find query
- * @returns
+ *
+ * @param {object} [match={}]
+ * @returns {Promise<PeriodDocument[]>}
  */
 export const findActivePeriods = async (
   match: object = {}
@@ -174,9 +199,11 @@ export const findActivePeriods = async (
 };
 
 /**
- * Get mongoose query object representing date range of Period
- * @param period
- * @returns
+ * Generate object for use in mongoose queries,
+ *  to filter by date range of a Period
+ *
+ * @param {PeriodDocument} period
+ * @returns {Promise<PeriodDateRange>}
  */
 export const getPeriodDateRangeQuery = async (
   period: PeriodDocument
@@ -188,10 +215,10 @@ export const getPeriodDateRangeQuery = async (
 /**
  * Check if any praise in the given period has already been assigned to quantifiers
  *
- * @param period
- * @returns
+ * @param {PeriodDocument} period
+ * @returns {Promise<boolean>}
  */
-export const verifyAnyPraiseAssigned = async (
+export const isAnyPraiseAssigned = async (
   period: PeriodDocument
 ): Promise<boolean> => {
   const periodDateRangeQuery = await getPeriodDateRangeQuery(period);
@@ -213,9 +240,10 @@ export const verifyAnyPraiseAssigned = async (
 };
 
 /**
- * Does period have the latest endDate of all periods?
- * @param period
- * @returns
+ * Check if period has the latest endDate of all periods?
+ *
+ * @param {PeriodDocument} period
+ * @returns {Promise<boolean>}
  */
 export const isPeriodLatest = async (
   period: PeriodDocument

@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 import { MigrationDocument } from './types';
 
 /**
- * Database schema for Migration is *cloned* from the actual documents produced by umzug
+ * Database schema for Migration reflects the documents produced by Umzug
  */
 const migrationSchema = new Schema<MigrationDocument>(
   {

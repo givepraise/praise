@@ -10,6 +10,13 @@ import path from 'path';
 import { connectDatabase } from './core';
 import { realizeDiscordContent, prepareDiscordClient } from '@praise/utils/core';
 
+/**
+ * Import list of Praise from a given JSON file,
+ *  see ./sample_data for examples
+ *
+ * @param {PraiseImportInput[]} praiseData
+ * @param {boolean} sloppyImport
+ */
 const importPraise = async (
   praiseData: PraiseImportInput[],
   sloppyImport: boolean

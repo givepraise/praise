@@ -32,14 +32,15 @@ import {
 import {
   findPeriodDetailsDto,
   getPreviousPeriodEndDate,
-  verifyAnyPraiseAssigned,
+  isAnyPraiseAssigned,
 } from '../utils';
 import { PeriodModel } from '../entities';
 
 /**
  * Get all receivers with praise data
- * @param period
- * @returns
+ *
+ * @param  {PeriodDocument} period
+ * @returns Promise
  */
 const queryReceiversWithPraise = async (
   period: PeriodDocument
@@ -496,7 +497,7 @@ export const assignQuantifiers = async (
       'Quantifiers can only be assigned on OPEN periods.'
     );
 
-  const anyPraiseAssigned = await verifyAnyPraiseAssigned(period);
+  const anyPraiseAssigned = await isAnyPraiseAssigned(period);
   if (anyPraiseAssigned)
     throw new BadRequestError(
       'Some praise has already been assigned for this period'

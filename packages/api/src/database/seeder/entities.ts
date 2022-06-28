@@ -15,6 +15,11 @@ import { SettingsModel } from '@settings/entities';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 import { PeriodSettingDocument } from '@periodsettings/types';
 
+/**
+ * Query database for two random useraccounts
+ *
+ * @returns {Promise<UserAccountDocument[]>}
+ */
 const fetchTwoRandomUserAccounts = async (): Promise<UserAccountDocument[]> => {
   const useraccounts = await UserAccountModel.aggregate([
     { $sample: { size: 2 } },
@@ -23,6 +28,12 @@ const fetchTwoRandomUserAccounts = async (): Promise<UserAccountDocument[]> => {
   return useraccounts;
 };
 
+/**
+ * Generate and save a fake UserAccount
+ *
+ * @param {Object} [userAccountData={}]
+ * @return {Promise<UserAccountDocument>}
+ */
 export const seedUserAccount = async (
   userAccountData: Object = {}
 ): Promise<UserAccountDocument> => {
@@ -36,6 +47,12 @@ export const seedUserAccount = async (
   return userAccount;
 };
 
+/**
+ * Generate and save a fake User
+ *
+ * @param {Object} [userData={}]
+ * @returns {Promise<UserDocument>}
+ */
 export const seedUser = async (
   userData: Object = {}
 ): Promise<UserDocument> => {
@@ -48,6 +65,13 @@ export const seedUser = async (
   return user;
 };
 
+/**
+ * Generate and save a fake User and associated fake UserAccount
+ *
+ * @param {Object} [userData={}]
+ * @param {Object} [userAccountData={}]
+ * @returns {Promise<[UserDocument, UserAccountDocument]>}
+ */
 export const seedUserAndUserAccount = async (
   userData: Object = {},
   userAccountData: Object = {}
@@ -61,6 +85,12 @@ export const seedUserAndUserAccount = async (
   return [user, userAccount];
 };
 
+/**
+ * Genreate and save a fake Period
+ *
+ * @param {Object} [periodData={}]
+ * @returns {Promise<PeriodDocument>}
+ */
 export const seedPeriod = async (
   periodData: Object = {}
 ): Promise<PeriodDocument> => {
@@ -75,6 +105,12 @@ export const seedPeriod = async (
   return period;
 };
 
+/**
+ * Generate and save a fake Praise
+ *
+ * @param {Object} [praiseData={}]
+ * @returns {Promise<PraiseDocument>}
+ */
 export const seedPraise = async (
   praiseData: Object = {}
 ): Promise<PraiseDocument> => {
@@ -102,6 +138,14 @@ export const seedPraise = async (
   return praise;
 };
 
+/**
+ * Generate a fake quantification and save to a given Praise
+ *
+ * @param {PraiseDocument} praise
+ * @param {UserDocument} quantifierUser
+ * @param {Object} [quantificationData={}]
+ * @returns {Promise<QuantificationDocument>}
+ */
 export const seedQuantification = async (
   praise: PraiseDocument,
   quantifierUser: UserDocument,
@@ -125,6 +169,12 @@ export const seedQuantification = async (
   return quantification;
 };
 
+/**
+ * Generate and save a fake EventLog
+ *
+ * @param {Object} [eventLogData={}]
+ * @returns {Promise<EventLogDocument>}
+ */
 export const seedEventLog = async (
   eventLogData: Object = {}
 ): Promise<EventLogDocument> => {
@@ -147,6 +197,12 @@ export const seedEventLog = async (
   return eventLog;
 };
 
+/**
+ * Generate and save a fake Setting
+ *
+ * @param {Object} [settingData={}]
+ * @returns {Promise<SettingDocument>}
+ */
 export const seedSetting = async (
   settingData: Object = {}
 ): Promise<SettingDocument> => {
@@ -167,6 +223,12 @@ export const seedSetting = async (
   return setting;
 };
 
+/**
+ * Generate and save a fake PeriodSetting
+ *
+ * @param {Object} [periodSettingData={}]
+ * @returns {Promise<PeriodSettingDocument>}
+ */
 export const seedPeriodSetting = async (
   periodSettingData: Object = {}
 ): Promise<PeriodSettingDocument> => {

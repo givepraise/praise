@@ -8,6 +8,13 @@ import { SettingsModel } from './entities';
 import { settingListTransformer, settingTransformer } from './transformers';
 import { SettingDto, SettingSetInput } from './types';
 
+/**
+ * Fetch all settings
+ *
+ * @param {Request} req
+ * @param {TypedResponse<SettingDto[]>} res
+ * @returns {Promise<void>}
+ */
 export const all = async (
   req: Request,
   res: TypedResponse<SettingDto[]>
@@ -17,6 +24,13 @@ export const all = async (
   res.status(200).json(settingListTransformer(settings));
 };
 
+/**
+ * Fetch single Setting
+ *
+ * @param {Request} req
+ * @param {TypedResponse<SettingDto>} res
+ * @returns {Promise<void>}
+ */
 export const single = async (
   req: Request,
   res: TypedResponse<SettingDto>
@@ -29,6 +43,13 @@ export const single = async (
   res.status(200).json(settingTransformer(setting));
 };
 
+/**
+ * Update a Setting's value
+ *
+ * @param {TypedRequestBody<SettingSetInput>} req
+ * @param {TypedResponse<SettingDto>} res
+ * @returns {Promise<void>}
+ */
 export const set = async (
   req: TypedRequestBody<SettingSetInput>,
   res: TypedResponse<SettingDto>

@@ -13,6 +13,13 @@ import fileUpload from 'express-fileupload';
 import { envCheck } from './pre-start/envCheck';
 import { requiredEnvVariables } from './pre-start/env-required';
 
+/**
+ * Connect to database, run necessary migrations, and seed fake data,
+ *  depending on NODE_ENV
+ *
+ * @param {string} [NODE_ENV='development']
+ * @returns {Promise<void>}
+ */
 const setupDatabase = async (NODE_ENV = 'development'): Promise<void> => {
   let db;
 
@@ -49,6 +56,12 @@ const setupDatabase = async (NODE_ENV = 'development'): Promise<void> => {
   }
 };
 
+/**
+ * Prepare and initialize express server
+ *
+ * @param {string} [NODE_ENV='development']
+ * @returns {*}  {Promise<Express>}
+ */
 const setupApiServer = async (NODE_ENV = 'development'): Promise<Express> => {
   const app = express();
 
@@ -89,11 +102,14 @@ const setupApiServer = async (NODE_ENV = 'development'): Promise<Express> => {
   return app;
 };
 
-const setup = async (): Promise<Express> => {
+/**
+ * Run application
+ *
+ * @returns {Promise<Express>}
+ */
+export const setup = async (): Promise<Express> => {
   await setupDatabase(process.env.NODE_ENV);
   const app = setupApiServer(process.env.NODE_ENV);
 
   return app;
 };
-
-export { setup };

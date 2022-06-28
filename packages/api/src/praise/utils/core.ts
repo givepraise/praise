@@ -2,16 +2,17 @@ import { Client, Util } from 'discord.js';
 import { PeriodDateRange, PeriodDocument } from '@period/types';
 import { PeriodModel } from '@period/entities';
 import { PraiseModel } from '../entities';
-import { praiseDocumentTransformer } from '../transformers';
-import { PraiseDocument, PraiseDetailsDto, Quantification } from '../types';
+import { PraiseDocument, Quantification } from '../types';
 
 /**
- * Workaround to get the period associated with a praise instance (as they are not related in database)
+ * Fetch the period associated with a praise instance,
+ *  (as they are currently not related in database)
  *
  * Determines the associated period by:
  *  finding the period with the lowest endDate, that is greater than the praise.createdAt date
  *
- *  @param praise the praise instance
+ * @param {PraiseDocument} praise
+ * @returns {(Promise<PeriodDocument | undefined>)}
  */
 export const getPraisePeriod = async (
   praise: PraiseDocument
@@ -35,19 +36,12 @@ export const getPraisePeriod = async (
   return period[0];
 };
 
-export const praiseWithScore = async (
-  praise: PraiseDocument
-): Promise<PraiseDetailsDto> => {
-  const praiseDetailsDto = await praiseDocumentTransformer(praise);
-
-  return praiseDetailsDto;
-};
-
 /**
- * Count all praise within given date ranges
- * @param dateRanges
- * @param match
- * @returns
+ * Count Praise created within any given date range
+ *
+ * @param {PeriodDateRange[]} dateRanges
+ * @param {object} [match={}]
+ * @returns {Promise<number>}
  */
 export const countPraiseWithinDateRanges = async (
   dateRanges: PeriodDateRange[],
@@ -66,6 +60,12 @@ export const countPraiseWithinDateRanges = async (
   return assignedPraiseCount;
 };
 
+/**
+ * Check if Praise.quantification was completed
+ *
+ * @param {Quantification} quantification
+ * @returns {boolean}
+ */
 export const isQuantificationCompleted = (
   quantification: Quantification
 ): boolean => {
@@ -77,8 +77,10 @@ export const isQuantificationCompleted = (
 };
 
 /**
- * Setup discord client and fetch guild members into client cache
- * @returns
+ * Configure and initialize discord client,
+ *  and fetch guild members into client cache
+ *
+ * @returns {Promise<Client>}
  */
 export const prepareDiscordClient = async (): Promise<Client> => {
   const discordClient = new Client({
@@ -97,10 +99,11 @@ export const prepareDiscordClient = async (): Promise<Client> => {
 /**
  * Convert text from discord into a "realized" form
  *  replacing raw references to channels and users with their human-readable text
- * @param discordClient
- * @param discordChannelId
- * @param text
- * @returns
+ *
+ * @param {Client} discordClient
+ * @param {string} discordChannelId
+ * @param {string} text
+ * @returns {Promise<string>}
  */
 export const realizeDiscordContent = async (
   discordClient: Client,

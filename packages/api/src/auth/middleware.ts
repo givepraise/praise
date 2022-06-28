@@ -7,7 +7,18 @@ import { NextFunction, Request, Response } from 'express';
 import { extractAccessTokenFromRequest } from './utils';
 import { JwtService } from './JwtService';
 
+/**
+ * express middleware to authenticate user,
+ *  makes authRole and currentUser available to all controllers
+ *
+ * @param  {UserRole} role
+ */
 export const authMiddleware = (role: UserRole) => {
+  /**
+   * @param  {Request} req
+   * @param  {Response} res
+   * @param  {NextFunction} next
+   */
   return async (req: Request, res: Response, next: NextFunction) => {
     // Get authorization header
     const accessToken = extractAccessTokenFromRequest(req);

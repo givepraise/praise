@@ -11,6 +11,12 @@ import {
   EventLogTypeDto,
 } from './types';
 
+/**
+ * Serialize an EventLogTypeDocument
+ *
+ * @param {EventLogTypeDocument} eventLogType
+ * @returns {EventLogTypeDto}
+ */
 const eventLogTypeTransformer = (
   eventLogType: EventLogTypeDocument
 ): EventLogTypeDto => {
@@ -23,6 +29,12 @@ const eventLogTypeTransformer = (
   } as EventLogTypeDto;
 };
 
+/**
+ * Serialize a list of EventLogTypeDocuments
+ *
+ * @param {EventLogTypeDocument[]} eventLogTypes
+ * @returns {Promise<EventLogTypeDto[]>}
+ */
 export const eventLogTypeListTransformer = async (
   eventLogTypes: EventLogTypeDocument[]
 ): Promise<EventLogTypeDto[]> => {
@@ -33,6 +45,13 @@ export const eventLogTypeListTransformer = async (
   return eventLogTypeDtos;
 };
 
+/**
+ * Serialize an EventLogDocument
+ *
+ * @param {EventLogDocument} eventLog
+ * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
+ * @returns {Promise<EventLogDto>}
+ */
 export const eventLogTransformer = async (
   eventLog: EventLogDocument,
   currentUserRoles: UserRole[] = [UserRole.USER]
@@ -84,6 +103,13 @@ export const eventLogTransformer = async (
   } as EventLogDto;
 };
 
+/**
+ * Serialize a list of EventLogDocuments
+ *
+ * @param {EventLogDocument[]} eventLogs
+ * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
+ * @returns {Promise<EventLogDto[]>}
+ */
 export const eventLogListTransformer = async (
   eventLogs: EventLogDocument[],
   currentUserRoles: UserRole[] = [UserRole.USER]

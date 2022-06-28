@@ -9,15 +9,18 @@ import { getPraisePeriod, isQuantificationCompleted } from './core';
 
 /**
  * Digits of precision for rounding calculated scores
+ *
+ * @type {number}
  */
 const DIGITS_PRECISION = 2;
 
 /**
  * Calculate a quantification score of a praise marked duplicate
  *
- * @param originalQuantification the "original" praise's quantification (i.e. the quantification by the same user of the "original" praise instance)
- * @param periodId
- * @returns
+ * @param {Quantification} originalQuantification
+ *  the "original" praise's quantification (i.e. the quantification by the same user of the "original" praise instance)
+ * @param {Types.ObjectId} periodId
+ * @returns {Promise<number>}
  */
 const calculateDuplicateScore = async (
   originalQuantification: Quantification,
@@ -39,6 +42,12 @@ const calculateDuplicateScore = async (
   return score;
 };
 
+/**
+ * Find a quantification's duplicatePraise quantification and calculate its score
+ *
+ * @param {Quantification} quantification
+ * @returns {Promise<number>}
+ */
 const calculateQuantificationDuplicateScore = async (
   quantification: Quantification
 ): Promise<number> => {
@@ -70,8 +79,8 @@ const calculateQuantificationDuplicateScore = async (
 /**
  * Calculate the score of a given quantification - based on it's manual score value, marked duplicate value, and marked dismissed value
  *
- * @param quantification
- * @returns
+ * @param {Quantification} quantification
+ * @returns {Promise<number>}
  */
 export const calculateQuantificationScore = async (
   quantification: Quantification
@@ -90,8 +99,9 @@ export const calculateQuantificationScore = async (
 /**
  * Calculates a single "composite" score from a list of quantifications (of the same praise)
  *
- * @param quantifications list of quantifications to be included in composite score
- * @returns
+ * @param {Quantification[]} quantifications
+ *  list of quantifications to be included in composite score
+ * @returns {Promise<number>}
  */
 export const calculateQuantificationsCompositeScore = async (
   quantifications: Quantification[]
@@ -113,10 +123,10 @@ export const calculateQuantificationsCompositeScore = async (
 };
 
 /**
- * Calculates a single "composite" score from a list of praise composite scores
+ * Calculates a single "composite" score for a receiver of praise in a period
  *
- * @param scores list of receiver's praise composite scores
- * @returns
+ * @param {PeriodDetailsReceiver} receiver
+ * @returns {Promise<number>}
  */
 export const calculateReceiverCompositeScore = async (
   receiver: PeriodDetailsReceiver

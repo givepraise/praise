@@ -1,14 +1,15 @@
 import { add } from 'date-fns';
-import { getPreviousPeriodEndDate } from './utils';
 import { PeriodDocument } from './types';
+import { getPreviousPeriodEndDate } from './utils';
 
 /**
- * Validate period endDate is 7+ days after the previous period's endDate
- * @param this
- * @param endDate
- * @returns
+ * Check if period endDate is 7+ days after the previous period's endDate
+ *
+ * @param {PeriodDocument} this
+ * @param {Date} endDate
+ * @returns {Promise<Boolean>}
  */
-async function validatePeriodEndDate7DaysLater(
+async function isPeriodEndDate7DaysLater(
   this: PeriodDocument,
   endDate: Date
 ): Promise<Boolean> {
@@ -22,7 +23,7 @@ async function validatePeriodEndDate7DaysLater(
 
 export const endDateValidators = [
   {
-    validator: validatePeriodEndDate7DaysLater,
+    validator: isPeriodEndDate7DaysLater,
     msg: 'Must be minimum 7 days later than previous period.',
   },
 ];

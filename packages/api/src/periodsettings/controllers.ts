@@ -14,6 +14,13 @@ import {
 import { PeriodSettingsModel } from './entities';
 import { PeriodSettingDto } from './types';
 
+/**
+ * Fetch all PeriodSettings for a given Period
+ *
+ * @param {Request} req
+ * @param {TypedResponse<PeriodSettingDto[]>} res
+ * @returns {Promise<void>}
+ */
 export const all = async (
   req: Request,
   res: TypedResponse<PeriodSettingDto[]>
@@ -26,6 +33,13 @@ export const all = async (
   res.status(200).json(periodsettingListTransformer(settings));
 };
 
+/**
+ * Fetch single PeriodSetting
+ *
+ * @param {Request} req
+ * @param {TypedResponse<PeriodSettingDto>} res
+ * @returns {Promise<void>}
+ */
 export const single = async (
   req: Request,
   res: TypedResponse<PeriodSettingDto>
@@ -41,6 +55,13 @@ export const single = async (
   res.status(200).json(periodsettingTransformer(setting));
 };
 
+/**
+ * Update a PeriodSetting's value
+ *
+ * @param {TypedRequestBody<SettingSetInput>} req
+ * @param {TypedResponse<PeriodSettingDto>} res
+ * @returns {Promise<void>}
+ */
 export const set = async (
   req: TypedRequestBody<SettingSetInput>,
   res: TypedResponse<PeriodSettingDto>

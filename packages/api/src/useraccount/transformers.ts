@@ -1,6 +1,12 @@
 import { UserAccountDocument, UserAccountDto } from './types';
 import { generateUserAccountNameRealized } from './utils';
 
+/**
+ * Serialize a UserAccount
+ *
+ * @param {UserAccountDocument} userAccountDocument
+ * @returns {UserAccountDto}
+ */
 const userAccountDocumentToDto = (
   userAccountDocument: UserAccountDocument
 ): UserAccountDto => {
@@ -27,6 +33,12 @@ const userAccountDocumentToDto = (
   };
 };
 
+/**
+ * Serialize a list of UserAccounts
+ *
+ * @param {(UserAccountDocument[] | undefined)} userAccountDocuments
+ * @returns {UserAccountDto[]}
+ */
 export const userAccountListTransformer = (
   userAccountDocuments: UserAccountDocument[] | undefined
 ): UserAccountDto[] => {
@@ -36,6 +48,12 @@ export const userAccountListTransformer = (
   return [];
 };
 
+/**
+ * Serialize a UserAccount
+ *
+ * @param {UserAccountDocument} userAccountDocument
+ * @returns {UserAccountDto}
+ */
 export const userAccountTransformer = (
   userAccountDocument: UserAccountDocument
 ): UserAccountDto => {

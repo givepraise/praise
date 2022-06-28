@@ -8,6 +8,12 @@ import {
   PeriodDetailsDto,
 } from './types';
 
+/**
+ * Serialize a PeriodDocument
+ *
+ * @param {PeriodDocument} periodDocument
+ * @returns {PeriodDetailsDto}
+ */
 const periodDocumentToDto = (
   periodDocument: PeriodDocument
 ): PeriodDetailsDto => {
@@ -22,6 +28,12 @@ const periodDocumentToDto = (
   };
 };
 
+/**
+ * Serialize a list of PeriodDocuments
+ *
+ * @param {(PeriodDocument[] | undefined)} periodDocuments
+ * @returns {PeriodDetailsDto[]}
+ */
 export const periodDocumentListTransformer = (
   periodDocuments: PeriodDocument[] | undefined
 ): PeriodDetailsDto[] => {
@@ -33,12 +45,24 @@ export const periodDocumentListTransformer = (
   return [];
 };
 
+/**
+ * Serialize a PeriodDocument
+ *
+ * @param {PeriodDocument} periodDocument
+ * @returns {PeriodDetailsDto}
+ */
 export const periodDocumentTransformer = (
   periodDocument: PeriodDocument
 ): PeriodDetailsDto => {
   return periodDocumentToDto(periodDocument);
 };
 
+/**
+ * Serialize a list of Praise.quantification lists
+ *
+ * @param {(Quantification[][] | undefined)} listOfQuantificationLists
+ * @returns {Promise<Array<Array<QuantificationDto>>>}
+ */
 export const listOfQuantificationListsTransformer = async (
   listOfQuantificationLists: Quantification[][] | undefined
 ): Promise<Array<Array<QuantificationDto>>> => {
@@ -52,6 +76,12 @@ export const listOfQuantificationListsTransformer = async (
   return [];
 };
 
+/**
+ * Serialize relevant details about a Praise receiver in a period
+ *
+ * @param {PeriodDetailsReceiver} periodDetailsReceiver
+ * @returns {Promise<PeriodDetailsReceiverDto>}
+ */
 const periodDetailsReceiverToDto = async (
   periodDetailsReceiver: PeriodDetailsReceiver
 ): Promise<PeriodDetailsReceiverDto> => {
@@ -71,6 +101,12 @@ const periodDetailsReceiverToDto = async (
   };
 };
 
+/**
+ * Serialize relevant details about a list of Praise receivers in a period
+ *
+ * @param {(PeriodDetailsReceiver[] | undefined)} periodDetailsReceiverList
+ * @returns {Promise<PeriodDetailsReceiverDto[]>}
+ */
 export const periodDetailsReceiverListTransformer = async (
   periodDetailsReceiverList: PeriodDetailsReceiver[] | undefined
 ): Promise<PeriodDetailsReceiverDto[]> => {
@@ -84,6 +120,12 @@ export const periodDetailsReceiverListTransformer = async (
   return [];
 };
 
+/**
+ * Serialize relevant details about a Praise receiver in a period
+ *
+ * @param {PeriodDetailsReceiver} periodDetailsReceiver
+ * @returns {Promise<PeriodDetailsReceiverDto>}
+ */
 export const periodDetailsReceiverTransformer = async (
   periodDetailsReceiver: PeriodDetailsReceiver
 ): Promise<PeriodDetailsReceiverDto> => {

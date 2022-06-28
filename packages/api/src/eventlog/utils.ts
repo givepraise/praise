@@ -7,6 +7,17 @@ interface UserInfo {
   userAccountId?: Types.ObjectId;
 }
 
+/**
+ * Create a new EventLog for a given event,
+ *  intended to represent a user-initiated action in the system,
+ *  for community transparency
+ *
+ * @param {EventLogTypeKey} typeKey
+ * @param {string} description
+ * @param {UserInfo} [userInfo={}]
+ * @param {(Types.ObjectId | undefined)} [periodId=undefined]
+ * @returns {Promise<void>}
+ */
 export const logEvent = async (
   typeKey: EventLogTypeKey,
   description: string,
