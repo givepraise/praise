@@ -3,25 +3,26 @@ import { faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
   disabled?: boolean;
+  small?: boolean;
   onClick();
 }
 
 const MarkDismissedButton = ({
   disabled = false,
   onClick,
+  small,
 }: Props): JSX.Element => {
+  const disabledClass = disabled ? 'praise-button-disabled' : 'praise-button';
+  const smallClass = small ? 'praise-button-round' : '';
+
   return (
     <button
       disabled={disabled}
-      className={
-        disabled
-          ? 'praise-button-disabled space-x-2'
-          : 'praise-button space-x-2'
-      }
+      className={`space-x-2 ${disabledClass} ${smallClass}`}
       onClick={onClick}
     >
       <FontAwesomeIcon icon={faMinusCircle} size="1x" />
-      <span>Dismiss</span>
+      {!small ? <span>Dismiss</span> : null}
     </button>
   );
 };

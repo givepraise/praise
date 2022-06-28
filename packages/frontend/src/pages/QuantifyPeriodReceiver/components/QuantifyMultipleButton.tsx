@@ -1,27 +1,28 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
+import { faScaleUnbalanced } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
   disabled?: boolean;
+  small?: boolean;
   onClick();
 }
 
 const QuantifyMultipleButton = ({
   disabled = false,
   onClick,
+  small,
 }: Props): JSX.Element => {
+  const disabledClass = disabled ? 'praise-button-disabled' : 'praise-button';
+  const smallClass = small ? 'praise-button-round' : '';
+
   return (
     <button
       disabled={disabled}
-      className={
-        disabled
-          ? 'praise-button-disabled space-x-2'
-          : 'praise-button space-x-2'
-      }
+      className={`space-x-2 ${disabledClass} ${smallClass}`}
       onClick={onClick}
     >
-      <FontAwesomeIcon icon={faPrayingHands} size="1x" />
-      <span>Quantify</span>
+      <FontAwesomeIcon icon={faScaleUnbalanced} size="1x" />
+      {!small ? <span>Quantify</span> : null}
     </button>
   );
 };

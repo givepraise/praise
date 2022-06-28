@@ -13,7 +13,7 @@ const SearchInput = ({
   placeholder = 'Search',
 }: SearchInputProps): JSX.Element => {
   return (
-    <div className="relative flex items-center border border-warm-gray-400">
+    <div className="relative flex items-center border border-warm-gray-400 h-10">
       <div className="absolute inset-y-0 left-0 flex items-center pl-3">
         <span className="text-warm-gray-800 dark:text-white">
           <FontAwesomeIcon

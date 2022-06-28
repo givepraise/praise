@@ -36,7 +36,7 @@ const QuantifyMultipleDialog = ({
             <FontAwesomeIcon icon={faCalculator} size="2x" />
           </div>
           <h2 className="text-center">
-            Quantify selected ({selectedPraises.length}) praises
+            Quantify selected ({selectedPraises.length}) praise items.
           </h2>
 
           <div className="text-center">

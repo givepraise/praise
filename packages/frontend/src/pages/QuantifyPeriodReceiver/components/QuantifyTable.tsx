@@ -18,6 +18,7 @@ import QuantifyPraiseRow from './QuantifyPraiseRow';
 import SearchInput from '@/components/form/SearchInput';
 import QuantifyMultipleDialog from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleDialog';
 import QuantifyMultipleButton from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleButton';
+import { Tooltip } from '@mui/material';
 
 interface Props {
   periodId: string;
@@ -58,13 +59,17 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
     'PRAISE_QUANTIFY_ALLOWED_VALUES'
   ) as number[];
 
-  const applyFilter = React.useCallback(
+  const filterBySearchValue = React.useCallback(
     (data: PraiseDto[] | undefined): PraiseDto[] => {
       if (!data) return [];
       if (!searchValue) return data;
 
       const filteredData = data.filter((praise: PraiseDto) => {
-        return praise.reasonRealized.includes(searchValue);
+        const searchString = searchValue.toLowerCase();
+        const reason = praise.reasonRealized.toLowerCase();
+        const giver = praise.giver.name.toLowerCase();
+
+        return reason.includes(searchString) || giver.includes(searchString);
       });
 
       return filteredData;
@@ -140,7 +145,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
     if (selectAllChecked) {
       setSelectedPraises([]);
     } else {
-      setSelectedPraises(applyFilter(data));
+      setSelectedPraises(filterBySearchValue(data));
     }
   };
 
@@ -150,7 +155,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
   };
 
   const weeklyData = groupBy(
-    sortBy(applyFilter(data), (p) => p.createdAt),
+    sortBy(filterBySearchValue(data), (p) => p.createdAt),
     (praise: PraiseDto) => {
       if (!praise) return 0;
       return getWeek(parseISO(praise.createdAt), { weekStartsOn: 1 });
@@ -163,55 +168,64 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
 
   return (
     <div>
-      <div className="flex sticky z-10 w-full p-5 border-t border-l border-r top-14 lg:top-0 rounded-t-xl bg-warm-gray-100 dark:bg-slate-700">
-        <div className="mr-4">
-          <MarkDuplicateButton
-            disabled={selectedPraises.length < 2}
-            onClick={(): void => setIsDuplicateDialogOpen(true)}
-          />
-        </div>
+      <div className="sticky z-10 w-full p-5 border-t border-l border-r top-14 lg:top-0 rounded-t-xl bg-warm-gray-100 dark:bg-slate-700">
+        <div className="flex">
+          <div className="mr-6 mt-1">
+            <input
+              type="checkbox"
+              onChange={handleToggleSelectAll}
+              checked={selectAllChecked}
+            />
+          </div>
 
-        <div className="mr-4">
-          <MarkDismissedButton
-            disabled={selectedPraises.length < 1}
-            onClick={(): void => setIsDismissDialogOpen(true)}
-          />
-        </div>
+          <div className="mr-4">
+            <Tooltip placement="bottom" title="Mark as duplicates" arrow>
+              <div>
+                <MarkDuplicateButton
+                  disabled={selectedPraises.length < 2}
+                  onClick={(): void => setIsDuplicateDialogOpen(true)}
+                  small={true}
+                />
+              </div>
+            </Tooltip>
+          </div>
 
-        <div>
-          <QuantifyMultipleButton
-            disabled={selectedPraises.length < 1}
-            onClick={(): void => setIsQuantifyMultipleDialogOpen(true)}
-          />
-        </div>
+          <div className="mr-4">
+            <Tooltip placement="bottom" title="Dismiss" arrow>
+              <div>
+                <MarkDismissedButton
+                  disabled={selectedPraises.length < 1}
+                  onClick={(): void => setIsDismissDialogOpen(true)}
+                  small={true}
+                />
+              </div>
+            </Tooltip>
+          </div>
 
-        <div className="w-22 ml-auto h-8">
-          <SearchInput
-            handleChange={(e): void => handleSearchInput(e)}
-            placeholder="Filter"
-          />
+          <div>
+            <Tooltip placement="bottom" title="Quantify" arrow>
+              <div>
+                <QuantifyMultipleButton
+                  disabled={selectedPraises.length < 1}
+                  onClick={(): void => setIsQuantifyMultipleDialogOpen(true)}
+                  small={true}
+                />
+              </div>
+            </Tooltip>
+          </div>
+
+          <div className="w-22 ml-auto h-8">
+            <SearchInput
+              handleChange={(e): void => handleSearchInput(e)}
+              placeholder="Filter"
+            />
+          </div>
         </div>
       </div>
 
       <div className="overflow-x-auto rounded-t-none praise-box-wide">
         <table className="w-full table-auto">
           <tbody>
-            <tr>
-              <td colSpan={2} className="pb-4">
-                <input
-                  type="checkbox"
-                  onChange={handleToggleSelectAll}
-                  checked={selectAllChecked}
-                />
-                <span className="ml-4">Select All</span>
-              </td>
-            </tr>
-            <tr>
-              <td colSpan={5}>
-                <div className="mb-5 border-2 border-t border-warm-gray-400" />
-              </td>
-            </tr>
-
             {Object.keys(weeklyData).map((weekKey, index) => (
               <React.Fragment key={index}>
                 {index !== 0 && index !== data.length - 1 && (

@@ -22,9 +22,9 @@ const MultiselectInput = ({
   noSelectedMessage,
 }: MultiselectInputProps): JSX.Element => {
   return (
-    <div className="relative border border-warm-gray-400 h-[42px]">
+    <div className="relative border border-warm-gray-400 h-10">
       <Listbox value={selected} onChange={handleChange} multiple>
-        <Listbox.Button className=" pl-2 pr-8 text-left h-[42px] w-full bg-transparent border-none outline-none focus:ring-0 ">
+        <Listbox.Button className=" pl-2 pr-8 text-left h-10 w-full bg-transparent border-none outline-none focus:ring-0 ">
           {(): JSX.Element => (
             <>
               <span className="block truncate">

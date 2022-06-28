@@ -28,6 +28,7 @@ import {
 import {
   PraiseAllInput,
   PraiseDetailsDto,
+  Praise,
   PraiseDocument,
   PraiseDto,
   QuantificationCreateUpdateInput,
@@ -203,13 +204,21 @@ export const quantify = async (
   res.status(200).json(response);
 };
 
+/**
+ * Quantify multiple praise items
+ * @param req
+ * @param res
+ */
 export const quantifyMultiple = async (
   req: TypedRequestBody<QuantifyMultiplePraiseInput>,
   res: TypedResponse<PraiseDto[]>
 ): Promise<void> => {
   const { score, praiseIds } = req.body;
 
-  const affectedPraises = await Promise.all(
+  let eventLogMessage = '';
+  const duplicatePraises: PraiseDocument[] = [];
+
+  const praiseItems = await Promise.all(
     praiseIds.map(async (id) => {
       const praise = await PraiseModel.findById(id).populate(
         'giver receiver forwarder'
@@ -235,16 +244,42 @@ export const quantifyMultiple = async (
           'User not assigned as quantifier for praise.'
         );
 
+      const praisesDuplicateOfThis = await PraiseModel.find({
+        quantifications: {
+          $elemMatch: {
+            quantifier: res.locals.currentUser._id,
+            duplicatePraise: praise._id,
+          },
+        },
+      }).populate('giver receiver forwarder');
+
+      if (praisesDuplicateOfThis?.length > 0)
+        duplicatePraises.push(...praisesDuplicateOfThis);
+
       quantification.score = score;
       quantification.dismissed = false;
       quantification.duplicatePraise = undefined;
 
       await praise.save();
 
+      eventLogMessage = `Gave a score of ${
+        quantification.score
+      } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
+
+      await logEvent(
+        EventLogTypeKey.QUANTIFICATION,
+        eventLogMessage,
+        {
+          userId: res.locals.currentUser._id,
+        },
+        period._id
+      );
+
       return praise;
     })
   );
 
-  const response = await praiseDocumentListTransformer(affectedPraises);
+  const affectedPraiseItems = [...praiseItems, ...duplicatePraises];
+  const response = await praiseDocumentListTransformer(affectedPraiseItems);
   res.status(200).json(response);
 };
