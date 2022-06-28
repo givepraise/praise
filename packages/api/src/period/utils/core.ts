@@ -5,11 +5,11 @@ import { periodsettingListTransformer } from '@periodsettings/transformers';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 import { settingValue } from '@shared/settings';
 import some from 'lodash/some';
-import { PeriodModel } from './entities';
+import { PeriodModel } from '../entities';
 import {
   periodDetailsReceiverListTransformer,
   periodDocumentTransformer,
-} from './transformers';
+} from '../transformers';
 import {
   PeriodDocument,
   PeriodDetailsDto,
@@ -18,7 +18,7 @@ import {
   PeriodDetailsReceiver,
   PeriodDateRange,
   PeriodStatusType,
-} from './types';
+} from '../types';
 import { isQuantificationCompleted } from '@praise/utils/core';
 
 /**

@@ -38,7 +38,7 @@ import {
   getPeriodDateRangeQuery,
   getPreviousPeriodEndDate,
   isPeriodLatest,
-} from '../utils';
+} from '../utils/core';
 import { PeriodModel } from '../entities';
 import { periodDocumentTransformer } from '../transformers';
 

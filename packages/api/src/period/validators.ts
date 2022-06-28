@@ -1,6 +1,6 @@
 import { add } from 'date-fns';
 import { PeriodDocument } from './types';
-import { getPreviousPeriodEndDate } from './utils';
+import { getPreviousPeriodEndDate } from './utils/core';
 
 /**
  * Check if period endDate is 7+ days after the previous period's endDate
