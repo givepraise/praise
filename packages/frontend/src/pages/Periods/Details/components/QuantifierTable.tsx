@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-key */
-import { UserCell } from '@/components/table/UserCell';
 import Notice from '@/components/Notice';
 import { PeriodPageParams, SinglePeriod } from '@/model/periods';
 import React from 'react';
