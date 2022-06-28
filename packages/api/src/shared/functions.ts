@@ -44,18 +44,11 @@ export const getQuerySort = (input: QueryInput): Object => {
 };
 
 export const getPraiseAllInput = (q: PraiseAllInput): Object => {
-  const { receiver, periodStart, periodEnd } = q;
+  const { receiver } = q;
   const query: PraiseExportInput = {};
 
   if (receiver) {
     query.receiver = encodeURIComponent(receiver);
-  }
-
-  if (periodStart && periodEnd) {
-    query.createdAt = {
-      $gt: encodeURIComponent(periodStart),
-      $lte: encodeURIComponent(periodEnd),
-    };
   }
 
   return query;

@@ -132,6 +132,11 @@ export const findPeriodDetailsDto = async (
           userAccounts: { $first: '$userAccounts' },
         },
       },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
     ]),
   ]);
 
