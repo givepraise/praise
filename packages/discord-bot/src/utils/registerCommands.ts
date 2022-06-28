@@ -45,7 +45,6 @@ export const registerCommands = async (
     }
 
     const helpCommandBuilder = help(client.commands);
-    // cmdList.map((i) => [`/${i[0]}`, `/${i[0]}`])
     const helpCommand = helpCommandBuilder['help'];
     client.commands.set(helpCommand.data.name, helpCommand);
     commandData.push(helpCommand.data);

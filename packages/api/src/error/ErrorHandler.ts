@@ -5,13 +5,6 @@ import { errorCodes } from './constants';
 import { AppError } from './types';
 import { isAppError, isValidationError } from './utils';
 
-// const handleDuplicateKeyError = (err: any, res: Response): void => {
-//   const field = Object.keys(err.keyValue);
-//   const code = 409;
-//   const error = `An account with that ${field} already exists.`;
-//   res.status(code).send({ messages: error, fields: field });
-// };
-
 const handleValidationError = (
   err: Error.ValidationError,
   res: Response
@@ -44,12 +37,6 @@ export const ErrorHandler = (
     handleAppError(err, res);
     return;
   }
-
-  // const anyError = err as Error;
-  // if (anyError.code && anyError.code === 11000) {
-  //   handleDuplicateKeyError(err, res);
-  //   return;
-  // }
 
   res.status(500).send('An unknown error occurred.');
 };
