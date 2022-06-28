@@ -53,9 +53,12 @@ const ReplaceQuantifierDialog = ({
           </div>
           <h2 className="text-center">Replace Quantifier</h2>
           <div className="text-center">
-            <UserAvatarAndName userId={selectedUserId} />
+            <UserAvatarAndName
+              userId={selectedUserId}
+              avatarClassName="text-2xl"
+            />
           </div>
-          <div className="text-center px-12">
+          <div className="px-12 text-center">
             <FontAwesomeIcon
               icon={faWarning}
               size="1x"

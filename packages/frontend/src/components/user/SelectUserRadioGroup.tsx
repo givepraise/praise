@@ -18,7 +18,7 @@ const SelectUserRadioGroup = ({
 }: Props): JSX.Element => {
   return (
     <RadioGroup value={value} onChange={onSelect} className="w-full">
-      <div className="space-y-2 p-4 max-h-64 overflow-y-auto dark:bg-slate-600 dark:text-white">
+      <div className="p-4 space-y-3 overflow-y-auto border rounded-lg max-h-64 dark:bg-slate-600 dark:text-white">
         {users.map((user) => (
           <RadioGroup.Option
             value={user._id}
@@ -26,20 +26,20 @@ const SelectUserRadioGroup = ({
             className={({ checked }): string =>
               classNames(
                 checked
-                  ? 'text-white bg-warm-gray-500 hover:bg-warm-gray-500 dark:bg-slate-800 dark:hover:bg-slate-800'
-                  : '',
-                'relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md hover:bg-warm-gray-100 dark:hover:bg-slate-700 bg-warm-gray-100 dark:bg-slate-500'
+                  ? 'bg-warm-gray-200 hover:bg-warm-gray-300 dark:bg-slate-700 dark:hover:bg-slate-800'
+                  : 'hover:bg-warm-gray-200 dark:hover:bg-slate-700 bg-warm-gray-100 dark:bg-slate-500',
+                'relative flex cursor-pointer rounded-lg px-5 py-3'
               )
             }
           >
             {({ checked }): JSX.Element => (
-              <div className="w-full flex items-center justify-between">
-                <div className="text-lg mx-4 pr-8">
-                  <UserAvatarAndName user={user} />
+              <div className="flex items-center justify-between w-full">
+                <div className="flex flex-col justify-center">
+                  <UserAvatarAndName user={user} avatarClassName="text-2xl" />
                 </div>
-                <div className="shrink-0 w-8 text-white">
+                <div>
                   {checked && (
-                    <FontAwesomeIcon icon={faCheckCircle} size="2x" />
+                    <FontAwesomeIcon icon={faCheckCircle} size="1x" />
                   )}
                 </div>
               </div>
