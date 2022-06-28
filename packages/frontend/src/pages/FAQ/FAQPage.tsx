@@ -1,3 +1,4 @@
+import { FAQItem } from 'api/dist/settings/types';
 import BreadCrumb from '@/components/BreadCrumb';
 import { faCaretUp, faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
@@ -6,20 +7,9 @@ import { useRecoilValue } from 'recoil';
 import { Disclosure } from '@headlessui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-export interface FAQItem {
-  section: string;
-  questions: Question[];
-}
-
-export interface Question {
-  question: string;
-  answer: string;
-}
-
 const FAQPage = (): JSX.Element | null => {
   const siteFAQSetting = useRecoilValue(SingleSetting('PRAISE_FAQ'));
-  const data = siteFAQSetting?.value ? JSON.parse(siteFAQSetting?.value) : [];
-  const faq: FAQItem[] = data;
+  const faq = siteFAQSetting?.valueRealized as FAQItem[];
 
   if (!faq || !faq.length) return null;
 

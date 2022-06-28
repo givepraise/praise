@@ -5,8 +5,7 @@ import 'express-async-errors';
 import helmet from 'helmet';
 import logger from 'jet-logger';
 import morgan from 'morgan';
-import { seedAdmins } from './pre-start/admins';
-import { seedData } from './pre-start/seed';
+import { seedData, seedAdminUsers } from '@database/seeder/app';
 import { baseRouter } from './routes';
 import { connectDatabase } from './database/connection';
 import { setupMigrator } from './database/migration';
@@ -77,13 +76,13 @@ const setupApiServer = async (NODE_ENV = 'development'): Promise<Express> => {
   app.use(ErrorHandler);
 
   if (NODE_ENV === 'development') {
-    await seedAdmins();
+    await seedAdminUsers();
     app.use(morgan('dev'));
   } else if (NODE_ENV === 'production') {
-    await seedAdmins();
+    await seedAdminUsers();
     app.use(helmet());
   } else if (NODE_ENV === 'testing') {
-    await seedAdmins();
+    await seedAdminUsers();
     app.use(morgan('dev'));
   }
 

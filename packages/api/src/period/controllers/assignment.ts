@@ -265,21 +265,11 @@ const prepareAssignmentsByTargetPraiseCount = async (
   PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number,
   targetBinSize: number
 ): Promise<Assignments> => {
-  logger.info('prepareAssignmentsByTargetPraiseCount');
-
   // Query a list of receivers with their collection of praise
   const receivers: Receiver[] = await queryReceiversWithPraise(period);
 
-  logger.info(
-    `prepareAssignmentsByTargetPraiseCount receivers: ${receivers.length}`
-  );
-
   // Query the list of quantifiers & randomize order
   const quantifierPool = await queryQuantifierPoolRandomized();
-
-  logger.info(
-    `prepareAssignmentsByTargetPraiseCount quantifierPool: ${quantifierPool.length}`
-  );
 
   // Clone the list of recievers for each redundant assignment
   //  (as defined by setting PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)
@@ -312,12 +302,6 @@ const prepareAssignmentsByTargetPraiseCount = async (
     quantifierPool
   );
 
-  logger.info(
-    `prepareAssignmentsByTargetPraiseCount assignments: ${JSON.stringify(
-      assignments
-    )}`
-  );
-
   await verifyAssignments(
     period,
     PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER,
@@ -339,7 +323,7 @@ const prepareAssignmentsByTargetPraiseCount = async (
  * @param TOLERANCE
  * @returns
  */
-const prepareAssignmentsByAllQuantifiers = async (
+const prepareAssignmentsByEvenDistribution = async (
   period: PeriodDocument,
   PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number
 ): Promise<Assignments> => {
@@ -403,17 +387,6 @@ const prepareAssignmentsByAllQuantifiers = async (
     assignments
   );
 
-  // Verify that all quantifiers were assigned if necessary
-  if (assignments.poolAssignments.length === quantifierPool.length) {
-    logger.info(
-      'All quantifiers were assigned praise, as expected with PRAISE_QUANTIFIERS_ASSIGN_ALL'
-    );
-  } else {
-    throw new InternalServerError(
-      `Not all quantifiers were assigned praise, missing ${assignments.remainingAssignmentsCount}, despite PRAISE_QUANTIFIERS_ASSIGN_EVENLY`
-    );
-  }
-
   return assignments;
 };
 
@@ -423,8 +396,8 @@ const assignQuantifiersDryRun = async (
   const period = await PeriodModel.findById(periodId);
   if (!period) throw new NotFoundError('Period');
 
-  const PRAISE_QUANTIFIERS_ASSIGN_ALL = (await settingValue(
-    'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+  const PRAISE_QUANTIFIERS_ASSIGN_EVENLY = (await settingValue(
+    'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
     period._id
   )) as boolean;
 
@@ -433,8 +406,8 @@ const assignQuantifiersDryRun = async (
     period._id
   )) as number;
 
-  if (PRAISE_QUANTIFIERS_ASSIGN_ALL) {
-    return prepareAssignmentsByAllQuantifiers(
+  if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
+    return prepareAssignmentsByEvenDistribution(
       period,
       PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER
     );
@@ -465,8 +438,8 @@ export const verifyQuantifierPoolSize = async (
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
-  const PRAISE_QUANTIFIERS_ASSIGN_ALL = (await settingValue(
-    'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+  const PRAISE_QUANTIFIERS_ASSIGN_EVENLY = (await settingValue(
+    'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
     period._id
   )) as boolean;
 
@@ -476,7 +449,7 @@ export const verifyQuantifierPoolSize = async (
 
   let response;
 
-  if (PRAISE_QUANTIFIERS_ASSIGN_ALL) {
+  if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
     response = {
       quantifierPoolSize,
       quantifierPoolSizeNeeded: quantifierPoolSize,

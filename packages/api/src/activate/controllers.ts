@@ -20,9 +20,14 @@ const activate = async (
 ): Promise<void> => {
   const { ethereumAddress, signature, accountId } = req.body;
 
+  if (!ethereumAddress || !signature || !accountId)
+    throw new BadRequestError(
+      'ethereumAddress, signature, and accountId required'
+    );
+
   // Find previously generated token
   const userAccount = await UserAccountModel.findOne({ accountId })
-    .select('name activateToken')
+    .select('_id user activateToken')
     .exec();
 
   if (!userAccount) throw new NotFoundError('UserAccount');

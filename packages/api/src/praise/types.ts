@@ -94,8 +94,6 @@ export interface QuantifierPoolById {
 
 export interface PraiseAllInput extends QueryInput {
   receiver?: string;
-  periodStart?: string;
-  periodEnd?: string;
 }
 
 export interface PraiseImportInput {
