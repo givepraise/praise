@@ -751,7 +751,7 @@ export const useReplaceQuantifier = (
         response.data.praises.forEach((praise) => {
           set(SinglePraise(praise._id), praise);
         });
-        toast.success('Replaced quantifier');
+        toast.success('Replaced quantifier and reset their scores');
       }
   );
   return { replaceQuantifier };
