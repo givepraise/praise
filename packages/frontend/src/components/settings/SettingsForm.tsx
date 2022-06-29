@@ -1,3 +1,8 @@
+import { Form } from 'react-final-form';
+import { useRecoilValue } from 'recoil';
+import find from 'lodash/find';
+import { PeriodSettingDto } from 'api/src/periodsettings/types';
+import { SettingDto } from 'api/dist/settings/types';
 import NumberInput from '@/components/form/NumberInput';
 import StringInput from '@/components/form/StringInput';
 import TextareaInput from '@/components/form/TextareaInput';
@@ -9,12 +14,7 @@ import {
   StringSetting,
   Setting,
 } from '@/model/settings';
-import { Form } from 'react-final-form';
-import { useRecoilValue } from 'recoil';
-import find from 'lodash/find';
 import SubmitButton from '../form/SubmitButton';
-import { PeriodSettingDto } from 'api/src/periodsettings/types';
-import { SettingDto } from 'api/dist/settings/types';
 
 interface SettingsFormProps {
   settings: SettingDto[] | PeriodSettingDto[] | undefined;

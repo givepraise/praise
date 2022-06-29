@@ -1,4 +1,7 @@
 import { PraiseDto } from 'api/dist/praise/types';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useRecoilValue } from 'recoil';
 import Notice from '@/components/Notice';
 import Praise from '@/components/praise/Praise';
 import { ActiveUserId } from '@/model/auth';
@@ -6,9 +9,6 @@ import {
   findPraiseQuantification,
   shortenDuplicatePraiseId,
 } from '@/utils/praise';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useRecoilValue } from 'recoil';
 import QuantifySlider from './QuantifySlider';
 
 interface Props {

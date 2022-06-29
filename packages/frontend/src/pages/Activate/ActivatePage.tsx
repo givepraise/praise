@@ -1,5 +1,4 @@
 import { generateActivateMessage } from 'api/dist/activate/utils';
-import { AccountActivated } from '@/model/activate';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import queryString from 'query-string';
@@ -10,6 +9,7 @@ import { useRecoilValue } from 'recoil';
 import upperFirst from 'lodash/upperFirst';
 import lowerCase from 'lodash/lowerCase';
 import { useAccount } from 'wagmi';
+import { AccountActivated } from '@/model/activate';
 import { requestApiActivate } from '@/utils/auth';
 import SignMessageLayout from '../../layouts/SignMessageLayout';
 

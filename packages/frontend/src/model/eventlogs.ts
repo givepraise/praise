@@ -1,7 +1,7 @@
-import { makeApiAuthClient } from '@/utils/api';
 import { EventLogDto, EventLogTypeDto } from 'api/dist/eventlog/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { useEffect, useState } from 'react';
+import { makeApiAuthClient } from '@/utils/api';
 
 export type AllEventLogsQueryParameters = {
   sortColumn: string;

@@ -1,4 +1,10 @@
 /* eslint-disable react/jsx-key */
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { TableOptions, useTable } from 'react-table';
+import { useRecoilValue } from 'recoil';
 import { InlineLabel } from '@/components/InlineLabel';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
@@ -6,12 +12,6 @@ import { SinglePeriodByDate } from '@/model/periods';
 import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
 import { classNames } from '@/utils/index';
 import { localizeAndFormatIsoDate } from '@/utils/date';
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { TableOptions, useTable } from 'react-table';
-import { useRecoilValue } from 'recoil';
 
 interface DuplicatePraiseLabelProps {
   praiseId: string;

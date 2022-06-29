@@ -1,6 +1,6 @@
-import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import { Field } from 'react-final-form';
 import { AxiosResponse, AxiosError } from 'axios';
+import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 
 const TextareaInput = (
   name: string,

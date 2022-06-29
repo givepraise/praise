@@ -1,5 +1,5 @@
-import BreadCrumb from '@/components/BreadCrumb';
 import { faUserFriends } from '@fortawesome/free-solid-svg-icons';
+import BreadCrumb from '@/components/BreadCrumb';
 import UsersStatistics from './components/UsersStatistics';
 import UsersTable from './components/UsersTable';
 

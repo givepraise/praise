@@ -1,7 +1,3 @@
-import BreadCrumb from '@/components/BreadCrumb';
-import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
-import { useAllPeriodSettingsQuery } from '@/model/periodsettings';
-import BackLink from '@/navigation/BackLink';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import {
   PeriodDetailsDto,
@@ -10,6 +6,10 @@ import {
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import BackLink from '@/navigation/BackLink';
+import { useAllPeriodSettingsQuery } from '@/model/periodsettings';
+import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
+import BreadCrumb from '@/components/BreadCrumb';
 import ReceiverSummaryTable from './components/ReceiverSummaryTable';
 
 const getReceiver = (

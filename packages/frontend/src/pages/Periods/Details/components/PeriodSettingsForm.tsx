@@ -1,10 +1,10 @@
+import { useRecoilValue } from 'recoil';
 import SettingsForm from '@/components/settings/SettingsForm';
 import {
   AllPeriodSettings,
   useSetPeriodSetting,
   useAllPeriodSettingsQuery,
 } from '@/model/periodsettings';
-import { useRecoilValue } from 'recoil';
 
 interface Params {
   periodId: string;

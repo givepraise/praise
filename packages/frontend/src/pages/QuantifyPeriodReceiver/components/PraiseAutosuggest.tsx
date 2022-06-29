@@ -1,11 +1,3 @@
-import { UserPseudonym } from '@/components/user/UserPseudonym';
-import { ActiveUserId } from '@/model/auth';
-import {
-  PeriodAndReceiverPageParams,
-  PeriodQuantifierReceiverPraise,
-} from '@/model/periods';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
-import { classNames } from '@/utils/index';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
@@ -13,6 +5,14 @@ import { useCombobox } from 'downshift';
 import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import { classNames } from '@/utils/index';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import {
+  PeriodAndReceiverPageParams,
+  PeriodQuantifierReceiverPraise,
+} from '@/model/periods';
+import { ActiveUserId } from '@/model/auth';
+import { UserPseudonym } from '@/components/user/UserPseudonym';
 
 interface PraiseAutosuggestProps {
   onClose(): void;

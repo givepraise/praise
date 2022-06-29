@@ -1,7 +1,7 @@
-import BreadCrumb from '@/components/BreadCrumb';
-import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
+import BreadCrumb from '@/components/BreadCrumb';
+import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
 import MyPraiseTable from './components/MyPraiseTable';
 
 const MyPraise = (): JSX.Element => {

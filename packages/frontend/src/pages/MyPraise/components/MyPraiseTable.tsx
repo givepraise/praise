@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useRecoilValue } from 'recoil';
+import { UserDto } from 'api/dist/user/types';
 import LoaderSpinner from '@/components/LoaderSpinner';
 import { AllPraiseList } from '@/model/praise';
-import { useRecoilValue } from 'recoil';
 import PraisePageLoader from '@/components/praise/PraisePageLoader';
 import Praise from '@/components/praise/Praise';
 import PraiseRow from '@/components/praise/PraiseRow';
 import { ActiveUserId } from '@/model/auth';
 import { SingleUser } from '@/model/users';
-import { UserDto } from 'api/dist/user/types';
 
 const PRAISE_LIST_KEY = 'MY_PRAISE';
 

@@ -1,11 +1,11 @@
-import ScrollableDialog from '@/components/ScrollableDialog';
-import PraiseAutosuggest from './PraiseAutosuggest';
 import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PeriodPageParams } from '@/model/periods';
 import { PraiseDto } from 'api/dist/praise/types';
 import { useParams } from 'react-router-dom';
+import { PeriodPageParams } from '@/model/periods';
+import ScrollableDialog from '@/components/ScrollableDialog';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import PraiseAutosuggest from './PraiseAutosuggest';
 
 interface Props {
   onClose(): void;

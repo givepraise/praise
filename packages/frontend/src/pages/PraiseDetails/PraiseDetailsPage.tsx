@@ -1,14 +1,13 @@
-import BreadCrumb from '@/components/BreadCrumb';
-import { SinglePeriodByDate } from '@/model/periods';
-import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
-import BackLink from '@/navigation/BackLink';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import PraiseDetailTable from './components/PraiseDetailTable';
-
+import BreadCrumb from '@/components/BreadCrumb';
+import { SinglePeriodByDate } from '@/model/periods';
+import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
+import BackLink from '@/navigation/BackLink';
 import Praise from '@/components/praise/Praise';
+import PraiseDetailTable from './components/PraiseDetailTable';
 
 const PraiseDetailsPage = (): JSX.Element | null => {
   const { praiseId } = useParams<PraisePageParams>();

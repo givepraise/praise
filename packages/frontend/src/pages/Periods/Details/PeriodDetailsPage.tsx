@@ -1,12 +1,3 @@
-import BreadCrumb from '@/components/BreadCrumb';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import {
-  PeriodPageParams,
-  SinglePeriod,
-  useSinglePeriodQuery,
-} from '@/model/periods';
-import BackLink from '@/navigation/BackLink';
-import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
 import { PeriodStatusType } from 'api/dist/period/types';
 import {
   faBalanceScaleLeft,
@@ -23,14 +14,23 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import BreadCrumb from '@/components/BreadCrumb';
+import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import {
+  PeriodPageParams,
+  SinglePeriod,
+  useSinglePeriodQuery,
+} from '@/model/periods';
+import BackLink from '@/navigation/BackLink';
+import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
+import { SubPageNav } from '@/navigation/SubPageNav';
+import { InlineLabel } from '@/components/InlineLabel';
 import PeriodNameForm from './components/PeriodNameForm';
 import { QuantifierMessage } from './components/QuantifierMessage';
-import NavItem from '../../../navigation/NavItem';
 import QuantifierTable from './components/QuantifierTable';
 import ReceiverTable from './components/ReceiverTable';
 import PeriodSettingsForm from './components/PeriodSettingsForm';
-import { SubPageNav } from '@/navigation/SubPageNav';
-import { InlineLabel } from '@/components/InlineLabel';
+import NavItem from '../../../navigation/NavItem';
 
 const PeriodDetailHead = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();

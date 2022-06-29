@@ -1,11 +1,11 @@
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dispatch, SetStateAction } from 'react';
+import EventLog from '@/components/eventlog/EventLog';
 import {
   AllEventLogsQueryParameters,
   useAllEventLogs,
 } from '@/model/eventlogs';
-import EventLog from '@/components/eventlog/EventLog';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Dispatch, SetStateAction } from 'react';
 import { classNames } from '@/utils/index';
 
 interface EventLogsTableProps {

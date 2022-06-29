@@ -1,4 +1,3 @@
-import { makeApiAuthClient } from '@/utils/api';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import { toast } from 'react-hot-toast';
@@ -9,8 +8,9 @@ import {
   useRecoilCallback,
   useRecoilValue,
 } from 'recoil';
-import { ApiAuthGet, useAuthApiQuery, isResponseOk } from './api';
 import { SettingDto } from 'api/dist/settings/types';
+import { makeApiAuthClient } from '@/utils/api';
+import { ApiAuthGet, useAuthApiQuery, isResponseOk } from './api';
 
 export interface Setting {
   _id: string;

@@ -1,9 +1,9 @@
-import { isResponseOk } from '@/model/api';
-import { CreatePeriodApiResponse } from '@/model/periods';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useFormState } from 'react-final-form';
 import { useRecoilValue } from 'recoil';
+import { CreatePeriodApiResponse } from '@/model/periods';
+import { isResponseOk } from '@/model/api';
 
 const SubmitButton = (): JSX.Element => {
   const { invalid, submitting, submitSucceeded, dirtySinceLastSubmit } =

@@ -1,8 +1,8 @@
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSetRecoilState } from 'recoil';
-import { ActiveTokenSet } from '@/model/auth';
 import { useHistory } from 'react-router-dom';
+import { ActiveTokenSet } from '@/model/auth';
 
 interface NotFoundProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

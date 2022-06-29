@@ -1,7 +1,7 @@
-import BreadCrumb from '@/components/BreadCrumb';
-import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import React, { ReactElement } from 'react';
+import BreadCrumb from '@/components/BreadCrumb';
+import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
 import PraiseTable from './components/PraiseTable';
 
 const StartPage: React.FC = (): ReactElement => {

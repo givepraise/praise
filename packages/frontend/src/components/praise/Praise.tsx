@@ -1,4 +1,8 @@
 import { PraiseDto } from 'api/dist/praise/types';
+import { Tooltip } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { useRecoilValue } from 'recoil';
 import getMarkdownText from '@/components/MarkdownText';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
@@ -9,18 +13,14 @@ import {
   localizeAndFormatIsoDateRelative,
   DATE_FORMAT_LONG_NAME,
 } from '@/utils/date';
-import { Tooltip } from '@mui/material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { SinglePeriodByDate } from '@/model/periods';
-import { useRecoilValue } from 'recoil';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { UserPopover } from '@/components/user/UserPopover';
 import { UserName } from '@/components/user/UserName';
-import { UserAvatarAndName } from '../user/UserAvatarAndName';
-import { SourceName } from './SourceName';
-import { InlineLabelClosable } from '../InlineLabelClosable';
 import { useQuantifyPraise } from '@/model/praise';
+import { SourceName } from './SourceName';
+import { UserAvatarAndName } from '../user/UserAvatarAndName';
+import { InlineLabelClosable } from '../InlineLabelClosable';
 
 interface Props {
   praise: PraiseDto;

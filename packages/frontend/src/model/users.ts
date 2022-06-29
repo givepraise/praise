@@ -1,4 +1,3 @@
-import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
 import { UserDto, UserRole } from 'api/dist/user/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
@@ -10,6 +9,7 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
+import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
 import {
   ApiAuthGet,
   ApiAuthPatch,

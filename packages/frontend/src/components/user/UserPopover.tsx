@@ -1,4 +1,3 @@
-import { UserAvatar } from './UserAvatar';
 import { Popover } from '@headlessui/react';
 import React from 'react';
 import { shortenEthAddress } from 'api/dist/user/utils/core';
@@ -9,6 +8,7 @@ import { UserDto } from 'api/dist/user/types';
 import { UserAccountDto } from 'api/dist/useraccount/types';
 import { useRecoilValue } from 'recoil';
 import { SingleUser } from '@/model/users';
+import { UserAvatar } from './UserAvatar';
 
 interface UserPopoverProps {
   user?: UserDto;

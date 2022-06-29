@@ -1,9 +1,9 @@
-import SettingsPage from '@/pages/Settings/SettingsPage';
-import StartPage from '@/pages/Start/StartPage';
-import { ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import difference from 'lodash/difference';
+import SettingsPage from '@/pages/Settings/SettingsPage';
+import StartPage from '@/pages/Start/StartPage';
+import { ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth';
 
 const MyPraisePage = React.lazy(() => import('@/pages/MyPraise/MyPraisePage'));
 const UserDetailsPage = React.lazy(

@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { CSVLink } from 'react-csv';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type { UserDto } from 'api/dist/user/types';
 import {
   AllAdminUsers,
   AllForwarderUsers,
   AllQuantifierUsers,
   AllUsers,
 } from '@/model/users';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type { UserDto } from 'api/dist/user/types';
 
 interface DownloadUserDto extends Omit<UserDto, 'accounts'> {
   discordName: string | undefined;

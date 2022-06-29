@@ -1,6 +1,3 @@
-import AdminOnly from '@/components/auth/AdminOnly';
-import EthAccount from '@/components/account/EthAccount';
-import { SingleSetting } from '@/model/settings';
 import {
   faCog,
   faPrayingHands,
@@ -15,6 +12,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
 import { Link } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { SingleSetting } from '@/model/settings';
+import EthAccount from '@/components/account/EthAccount';
+import AdminOnly from '@/components/auth/AdminOnly';
 import { Theme } from '@/model/theme';
 import NavItem from './NavItem';
 

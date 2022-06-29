@@ -1,8 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
 import { UserRole } from 'api/dist/user/types';
-import { makeApiAuthClient } from '@/utils/api';
-import { periodQuantifierPraiseListKey } from '@/utils/periods';
 import {
   PeriodCreateInput,
   PeriodDetailsDto,
@@ -23,6 +21,8 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil';
+import { periodQuantifierPraiseListKey } from '@/utils/periods';
+import { makeApiAuthClient } from '@/utils/api';
 import {
   ApiAuthGet,
   ApiAuthPatch,

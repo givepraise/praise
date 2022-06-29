@@ -1,18 +1,3 @@
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import {
-  AllPeriods,
-  PeriodPageParams,
-  PeriodPoolRequirements,
-  SinglePeriod,
-  useAssignQuantifiers,
-  useClosePeriod,
-  useExportPraise,
-  useVerifyQuantifierPoolSize,
-} from '@/model/periods';
-import { AllQuantifierUsers } from '@/model/users';
-import { formatIsoDateUTC } from '@/utils/date';
-import { saveLocalFile } from '@/utils/file';
-import { getPreviousPeriod } from '@/utils/periods';
 import {
   faDownload,
   faTimesCircle,
@@ -24,6 +9,21 @@ import React from 'react';
 import { toast } from 'react-hot-toast';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import { getPreviousPeriod } from '@/utils/periods';
+import { saveLocalFile } from '@/utils/file';
+import { formatIsoDateUTC } from '@/utils/date';
+import { AllQuantifierUsers } from '@/model/users';
+import {
+  AllPeriods,
+  PeriodPageParams,
+  PeriodPoolRequirements,
+  SinglePeriod,
+  useAssignQuantifiers,
+  useClosePeriod,
+  useExportPraise,
+  useVerifyQuantifierPoolSize,
+} from '@/model/periods';
+import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import PeriodAssignDialog from './AssignDialog';
 import PeriodCloseDialog from './CloseDialog';
 import PeriodDateForm from './PeriodDateForm';

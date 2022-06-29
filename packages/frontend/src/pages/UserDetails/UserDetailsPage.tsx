@@ -1,14 +1,14 @@
 import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { faUserGroup } from '@fortawesome/free-solid-svg-icons';
+import { useRecoilValue } from 'recoil';
+import { useParams } from 'react-router-dom';
+import { UserDto, UserRole } from 'api/dist/user/types';
+import { toast } from 'react-hot-toast';
 import BreadCrumb from '@/components/BreadCrumb';
 import BackLink from '@/navigation/BackLink';
 import { SingleUser, SingleUserParams, useAdminUsers } from '@/model/users';
-import { useRecoilValue } from 'recoil';
-import { useParams } from 'react-router-dom';
 import { formatIsoDateUTC } from '@/utils/date';
 import { classNames } from '@/utils/index';
-import { UserDto, UserRole } from 'api/dist/user/types';
-import { toast } from 'react-hot-toast';
 
 const roles = [UserRole.ADMIN, UserRole.FORWARDER, UserRole.QUANTIFIER];
 

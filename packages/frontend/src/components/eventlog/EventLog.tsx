@@ -1,16 +1,16 @@
+import { EventLogDto, EventLogTypeKey } from 'api/dist/eventlog/types';
+import { useRecoilValue } from 'recoil';
+import { Tooltip } from '@mui/material';
 import {
   formatIsoDateUTC,
   DATE_FORMAT_LONG,
   localizeAndFormatIsoDate,
 } from '@/utils/date';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { EventLogDto, EventLogTypeKey } from 'api/dist/eventlog/types';
 import { SingleUser } from '@/model/users';
-import { useRecoilValue } from 'recoil';
+import { classNames } from '@/utils/index';
 import { InlineLabel } from '../InlineLabel';
 import Notice from '../Notice';
-import { Tooltip } from '@mui/material';
-import { classNames } from '@/utils/index';
 import { UserName } from '../user/UserName';
 import { UserPopover } from '../user/UserPopover';
 

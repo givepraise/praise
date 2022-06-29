@@ -1,13 +1,13 @@
 import { PraiseDto } from 'api/dist/praise/types';
-import { PeriodQuantifierReceiverPraise } from '@/model/periods';
-import { useQuantifyPraise } from '@/model/praise';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import getWeek from 'date-fns/getWeek';
 import parseISO from 'date-fns/parseISO';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { useQuantifyPraise } from '@/model/praise';
+import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { QuantifyBackNextLink } from './BackNextLink';
 import DismissDialog from './DismissDialog';
 import DuplicateDialog from './DuplicateDialog';

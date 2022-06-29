@@ -1,8 +1,8 @@
-import LoaderSpinner from '@/components/LoaderSpinner';
-import { AllPraiseQueryPagination, useAllPraiseQuery } from '@/model/praise';
 import React, { useCallback, useState, useEffect } from 'react';
 import { BottomScrollListener } from 'react-bottom-scroll-listener';
 import { useRecoilValue } from 'recoil';
+import { AllPraiseQueryPagination, useAllPraiseQuery } from '@/model/praise';
+import LoaderSpinner from '@/components/LoaderSpinner';
 import { PRAISE_LIST_KEY } from '../../pages/Start/components/PraiseTable';
 
 interface Params {

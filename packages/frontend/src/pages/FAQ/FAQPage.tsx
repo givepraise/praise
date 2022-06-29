@@ -1,11 +1,11 @@
 import { FAQItem } from 'api/dist/settings/types';
-import BreadCrumb from '@/components/BreadCrumb';
 import { faCaretUp, faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import { SingleSetting } from '@/model/settings';
 import { useRecoilValue } from 'recoil';
 import { Disclosure } from '@headlessui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { SingleSetting } from '@/model/settings';
+import BreadCrumb from '@/components/BreadCrumb';
 
 const FAQPage = (): JSX.Element | null => {
   const siteFAQSetting = useRecoilValue(SingleSetting('PRAISE_FAQ'));
