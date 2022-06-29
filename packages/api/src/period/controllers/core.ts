@@ -40,7 +40,7 @@ import {
   isPeriodLatest,
 } from '../utils/core';
 import { PeriodModel } from '../entities';
-import { periodDocumentTransformer } from '../transformers';
+import { periodTransformer } from '../transformers';
 
 /**
  * Fetch a paginated list of Periods
@@ -69,7 +69,7 @@ export const all = async (
         periodDetailsList.push(periodDetails);
         continue;
       }
-      periodDetailsList.push(periodDocumentTransformer(period));
+      periodDetailsList.push(periodTransformer(period));
     }
     res.status(StatusCodes.OK).json({
       ...response,
@@ -172,8 +172,7 @@ export const update = async (
       const newEndDate = parseISO(endDate);
 
       eventLogMessages.push(
-        `Updated the end date of period "${
-          period.name
+        `Updated the end date of period "${period.name
         }" to ${endDate.toString()} UTC`
       );
 

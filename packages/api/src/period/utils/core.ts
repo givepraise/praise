@@ -8,7 +8,7 @@ import some from 'lodash/some';
 import { PeriodModel } from '../entities';
 import {
   periodDetailsReceiverListTransformer,
-  periodDocumentTransformer,
+  periodTransformer,
 } from '../transformers';
 import {
   PeriodDocument,
@@ -170,7 +170,7 @@ export const findPeriodDetailsDto = async (
   const periodsettings = await PeriodSettingsModel.find({ period: period._id });
 
   const response = {
-    ...periodDocumentTransformer(period),
+    ...periodTransformer(period),
     receivers: await periodDetailsReceiverListTransformer(
       receiversWithScoresData
     ),

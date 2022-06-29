@@ -14,7 +14,7 @@ import {
  * @param {PeriodDocument} periodDocument
  * @returns {PeriodDetailsDto}
  */
-const periodDocumentToDto = (
+export const periodTransformer = (
   periodDocument: PeriodDocument
 ): PeriodDetailsDto => {
   const { _id, name, status, endDate, createdAt, updatedAt } = periodDocument;
@@ -26,18 +26,6 @@ const periodDocumentToDto = (
     createdAt: createdAt.toISOString(),
     updatedAt: updatedAt.toISOString(),
   };
-};
-
-/**
- * Serialize a PeriodDocument
- *
- * @param {PeriodDocument} periodDocument
- * @returns {PeriodDetailsDto}
- */
-export const periodDocumentTransformer = (
-  periodDocument: PeriodDocument
-): PeriodDetailsDto => {
-  return periodDocumentToDto(periodDocument);
 };
 
 /**
