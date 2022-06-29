@@ -9,7 +9,7 @@ import { generateUserName } from './utils/entity';
  * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
  * @returns {Promise<UserDto>}
  */
-const userDocumentToUserDto = async (
+export const userTransformer = async (
   userDocument: UserDocument,
   currentUserRoles: UserRole[] = [UserRole.USER]
 ): Promise<UserDto> => {
@@ -54,24 +54,7 @@ export const userListTransformer = (
   userDocuments: UserDocument[],
   currentUserRoles: UserRole[] = [UserRole.USER]
 ): Promise<UserDto[]> => {
-  if (userDocuments && Array.isArray(userDocuments)) {
-    return Promise.all(
-      userDocuments.map((d) => userDocumentToUserDto(d, currentUserRoles))
-    );
-  }
-  return Promise.resolve([]);
-};
-
-/**
- * Serialize a User
- *
- * @param {UserDocument} userDocument
- * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
- * @returns {Promise<UserDto>}
- */
-export const userTransformer = (
-  userDocument: UserDocument,
-  currentUserRoles: UserRole[] = [UserRole.USER]
-): Promise<UserDto> => {
-  return userDocumentToUserDto(userDocument, currentUserRoles);
+  return Promise.all(
+    userDocuments.map((d) => userTransformer(d, currentUserRoles))
+  );
 };
