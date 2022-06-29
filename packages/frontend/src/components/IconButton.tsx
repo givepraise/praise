@@ -1,14 +1,18 @@
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
   disabled?: boolean;
   small?: boolean;
+  icon: IconProp;
+  text: string;
   onClick();
 }
 
-const MarkDismissedButton = ({
+const IconButton = ({
   disabled = false,
+  icon,
+  text,
   onClick,
   small,
 }: Props): JSX.Element => {
@@ -21,10 +25,10 @@ const MarkDismissedButton = ({
       className={`space-x-2 ${disabledClass} ${smallClass}`}
       onClick={onClick}
     >
-      <FontAwesomeIcon icon={faMinusCircle} size="1x" />
-      {!small ? <span>Dismiss</span> : null}
+      <FontAwesomeIcon icon={icon} size="1x" />
+      {!small ? <span>{text}</span> : null}
     </button>
   );
 };
 
-export default MarkDismissedButton;
+export default IconButton;

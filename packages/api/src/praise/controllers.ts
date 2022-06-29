@@ -1,4 +1,8 @@
-import { BadRequestError, NotFoundError } from '@error/errors';
+import {
+  BadRequestError,
+  InternalServerError,
+  NotFoundError,
+} from '@error/errors';
 import {
   getPraiseAllInput,
   getQueryInput,
@@ -32,6 +36,7 @@ import {
 } from './types';
 import { praiseWithScore, getPraisePeriod } from './utils/core';
 import { PeriodStatusType } from '@period/types';
+import { quantifyPraise } from '@praise/utils/quantify';
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
 /**
@@ -91,111 +96,11 @@ export const quantify = async (
   req: TypedRequestBody<QuantificationCreateUpdateInput>,
   res: TypedResponse<PraiseDto[]>
 ): Promise<void> => {
-  const praise = await PraiseModel.findById(req.params.id).populate(
-    'giver receiver forwarder'
-  );
-  if (!praise) throw new NotFoundError('Praise');
-
-  const period = await getPraisePeriod(praise);
-  if (!period)
-    throw new BadRequestError('Praise does not have an associated period');
-
-  if (period.status !== PeriodStatusType.QUANTIFY)
-    throw new BadRequestError(
-      'Period associated with praise does have status QUANTIFY'
-    );
-
-  const { score, dismissed, duplicatePraise } = req.body;
-
-  const quantification = praise.quantifications.find((q) =>
-    q.quantifier.equals(res.locals.currentUser._id)
-  );
-
-  if (!quantification)
-    throw new BadRequestError('User not assigned as quantifier for praise.');
-
-  let eventLogMessage = '';
-
-  // Collect all affected praises (i.e. any praises whose scoreRealized will change as a result of this change)
-  const affectedPraises: PraiseDocument[] = [praise];
-
-  const praisesDuplicateOfThis = await PraiseModel.find({
-    quantifications: {
-      $elemMatch: {
-        quantifier: res.locals.currentUser._id,
-        duplicatePraise: praise._id,
-      },
-    },
-  }).populate('giver receiver forwarder');
-
-  if (praisesDuplicateOfThis?.length > 0)
-    affectedPraises.push(...praisesDuplicateOfThis);
-
-  // Modify praise quantification values
-  if (duplicatePraise) {
-    if (duplicatePraise === praise._id.toString())
-      throw new BadRequestError('Praise cannot be a duplicate of itself');
-
-    const dp = await PraiseModel.findById(duplicatePraise);
-    if (!dp) throw new BadRequestError('Duplicate praise item not found');
-
-    if (praisesDuplicateOfThis?.length > 0)
-      throw new BadRequestError(
-        'Praise cannot be marked duplicate when it is the original of another duplicate'
-      );
-
-    const praisesDuplicateOfAnotherDuplicate = await PraiseModel.find({
-      _id: duplicatePraise,
-      quantifications: {
-        $elemMatch: {
-          quantifier: res.locals.currentUser._id,
-          duplicatePraise: { $exists: 1 },
-        },
-      },
-    });
-
-    if (praisesDuplicateOfAnotherDuplicate?.length > 0)
-      throw new BadRequestError(
-        'Praise cannot be marked duplicate of another duplicate'
-      );
-
-    quantification.score = 0;
-    quantification.dismissed = false;
-    quantification.duplicatePraise = dp._id;
-
-    eventLogMessage = `Marked the praise with id "${(
-      praise._id as Types.ObjectId
-    ).toString()}" as duplicate of the praise with id "${(
-      dp._id as Types.ObjectId
-    ).toString()}"`;
-  } else if (dismissed) {
-    quantification.score = 0;
-    quantification.dismissed = true;
-    quantification.duplicatePraise = undefined;
-
-    eventLogMessage = `Dismissed the praise with id "${(
-      praise._id as Types.ObjectId
-    ).toString()}"`;
-  } else {
-    quantification.score = score;
-    quantification.dismissed = false;
-    quantification.duplicatePraise = undefined;
-
-    eventLogMessage = `Gave a score of ${
-      quantification.score
-    } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
-  }
-
-  await praise.save();
-
-  await logEvent(
-    EventLogTypeKey.QUANTIFICATION,
-    eventLogMessage,
-    {
-      userId: res.locals.currentUser._id,
-    },
-    period._id
-  );
+  const affectedPraises = await quantifyPraise({
+    id: req.params.id,
+    bodyParams: req.body,
+    currentUser: res.locals.currentUser,
+  });
 
   const response = await praiseDocumentListTransformer(affectedPraises);
   res.status(200).json(response);
@@ -210,73 +115,20 @@ export const quantifyMultiple = async (
   req: TypedRequestBody<QuantifyMultiplePraiseInput>,
   res: TypedResponse<PraiseDto[]>
 ): Promise<void> => {
-  const { score, praiseIds } = req.body;
-
-  let eventLogMessage = '';
-  const duplicatePraises: PraiseDocument[] = [];
+  const { praiseIds } = req.body;
 
   const praiseItems = await Promise.all(
     praiseIds.map(async (id) => {
-      const praise = await PraiseModel.findById(id).populate(
-        'giver receiver forwarder'
-      );
+      const affectedPraises = await quantifyPraise({
+        id,
+        bodyParams: req.body,
+        currentUser: res.locals.currentUser,
+      });
 
-      if (!praise) throw new NotFoundError('Praise');
-
-      const period = await getPraisePeriod(praise);
-
-      if (!period)
-        throw new BadRequestError('Praise does not have an associated period');
-
-      if (!res.locals.currentUser?._id) {
-        throw new InternalServerError('Current user not found.');
-      }
-
-      const quantification = praise.quantifications.find((q) =>
-        q.quantifier.equals(res.locals.currentUser._id)
-      );
-
-      if (!quantification)
-        throw new BadRequestError(
-          'User not assigned as quantifier for praise.'
-        );
-
-      const praisesDuplicateOfThis = await PraiseModel.find({
-        quantifications: {
-          $elemMatch: {
-            quantifier: res.locals.currentUser._id,
-            duplicatePraise: praise._id,
-          },
-        },
-      }).populate('giver receiver forwarder');
-
-      if (praisesDuplicateOfThis?.length > 0)
-        duplicatePraises.push(...praisesDuplicateOfThis);
-
-      quantification.score = score;
-      quantification.dismissed = false;
-      quantification.duplicatePraise = undefined;
-
-      await praise.save();
-
-      eventLogMessage = `Gave a score of ${
-        quantification.score
-      } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
-
-      await logEvent(
-        EventLogTypeKey.QUANTIFICATION,
-        eventLogMessage,
-        {
-          userId: res.locals.currentUser._id,
-        },
-        period._id
-      );
-
-      return praise;
+      return affectedPraises;
     })
   );
 
-  const affectedPraiseItems = [...praiseItems, ...duplicatePraises];
-  const response = await praiseDocumentListTransformer(affectedPraiseItems);
+  const response = await praiseDocumentListTransformer(praiseItems.flat());
   res.status(200).json(response);
 };

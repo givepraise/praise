@@ -1,7 +1,11 @@
+import IconButton from '@/components/IconButton';
 import ScrollableDialog from '@/components/ScrollableDialog';
-import QuantifyMultipleButton from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleButton';
 import QuantifySlider from '@/pages/QuantifyPeriodReceiver/components/QuantifySlider';
-import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalculator,
+  faScaleUnbalanced,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
 import { useState } from 'react';
@@ -47,7 +51,9 @@ const QuantifyMultipleDialog = ({
           </div>
 
           <div className="flex justify-center">
-            <QuantifyMultipleButton
+            <IconButton
+              icon={faScaleUnbalanced}
+              text="Quantify"
               onClick={(): void => {
                 onSetScore(score, selectedPraises);
                 onClose();

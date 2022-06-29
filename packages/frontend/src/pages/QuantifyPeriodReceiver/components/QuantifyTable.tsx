@@ -12,13 +12,16 @@ import { QuantifyBackNextLink } from './BackNextLink';
 import DismissDialog from './DismissDialog';
 import DuplicateDialog from './DuplicateDialog';
 import DuplicateSearchDialog from './DuplicateSearchDialog';
-import MarkDuplicateButton from './MarkDuplicateButton';
-import MarkDismissedButton from './MarkDismissedButton';
 import QuantifyPraiseRow from './QuantifyPraiseRow';
 import SearchInput from '@/components/form/SearchInput';
 import QuantifyMultipleDialog from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleDialog';
-import QuantifyMultipleButton from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleButton';
 import { Tooltip } from '@mui/material';
+import IconButton from '@/components/IconButton';
+import {
+  faCopy,
+  faMinusCircle,
+  faScaleUnbalanced,
+} from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
   periodId: string;
@@ -179,11 +182,13 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
           </div>
 
           <div className="mr-4">
-            <Tooltip placement="bottom" title="Mark as duplicates" arrow>
+            <Tooltip placement="bottom" title="Dismiss" arrow>
               <div>
-                <MarkDuplicateButton
-                  disabled={selectedPraises.length < 2}
-                  onClick={(): void => setIsDuplicateDialogOpen(true)}
+                <IconButton
+                  icon={faMinusCircle}
+                  text="Dismiss"
+                  disabled={selectedPraises.length < 1}
+                  onClick={(): void => setIsDismissDialogOpen(true)}
                   small={true}
                 />
               </div>
@@ -191,11 +196,13 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
           </div>
 
           <div className="mr-4">
-            <Tooltip placement="bottom" title="Dismiss" arrow>
+            <Tooltip placement="bottom" title="Mark as duplicates" arrow>
               <div>
-                <MarkDismissedButton
-                  disabled={selectedPraises.length < 1}
-                  onClick={(): void => setIsDismissDialogOpen(true)}
+                <IconButton
+                  icon={faCopy}
+                  text="Mark as duplicates"
+                  disabled={selectedPraises.length < 2}
+                  onClick={(): void => setIsDuplicateDialogOpen(true)}
                   small={true}
                 />
               </div>
@@ -205,7 +212,9 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
           <div>
             <Tooltip placement="bottom" title="Quantify" arrow>
               <div>
-                <QuantifyMultipleButton
+                <IconButton
+                  icon={faScaleUnbalanced}
+                  text="Quantify"
                   disabled={selectedPraises.length < 1}
                   onClick={(): void => setIsQuantifyMultipleDialogOpen(true)}
                   small={true}
@@ -263,22 +272,20 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
         open={isDismissDialogOpen}
         onClose={(): void => setIsDismissDialogOpen(false)}
         praises={selectedPraises}
-        onConfirm={(): void => handleDismiss()}
+        onConfirm={handleDismiss}
       />
       <DuplicateDialog
         open={isDuplicateDialogOpen}
         originalPraise={selectedPraises[0]}
         duplicatesCount={selectedPraises.length}
         onClose={(): void => setIsDuplicateDialogOpen(false)}
-        onConfirm={(originalScore): void => handleDuplicate(originalScore)}
+        onConfirm={handleDuplicate}
       />
       <DuplicateSearchDialog
         open={isDuplicateSearchDialogOpen}
         selectedPraise={duplicateSearchDialogPraise}
         onClose={(): void => setIsDuplicateSearchDialogOpen(false)}
-        onConfirm={(praiseId: string): void =>
-          handleDuplicateSearchPraise(praiseId)
-        }
+        onConfirm={handleDuplicateSearchPraise}
       />
       <QuantifyMultipleDialog
         open={isQuantifyMultipleDialogOpen}

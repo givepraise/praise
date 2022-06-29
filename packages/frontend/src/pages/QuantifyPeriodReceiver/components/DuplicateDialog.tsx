@@ -1,14 +1,18 @@
 import ScrollableDialog from '@/components/ScrollableDialog';
 import Praise from '@/components/praise/Praise';
 import QuantifySlider from './QuantifySlider';
-import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalculator,
+  faCopy,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PeriodPageParams } from '@/model/periods';
 import { PraiseDto } from 'api/dist/praise/types';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
-import MarkDuplicateButton from './MarkDuplicateButton';
+import IconButton from '@/components/IconButton';
 
 interface DuplicateDialogProps {
   onClose(): void;
@@ -85,7 +89,9 @@ const DuplicateDialog = ({
             />
           </div>
           <div className="flex justify-center">
-            <MarkDuplicateButton
+            <IconButton
+              icon={faCopy}
+              text="Mark as duplicates"
               onClick={(): void => {
                 onConfirm(score);
                 onClose();
