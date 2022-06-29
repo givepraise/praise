@@ -17,9 +17,7 @@ interface TestContext extends Mocha.Context {
 const mochaHooks = async (): Promise<Mocha.RootHookObject> => {
   return Promise.resolve({
     async beforeAll(this: TestContext): Promise<void> {
-      // You may need to extend this timeout
-      //  to allow more time for database migrations
-      this.timeout(60000);
+      this.timeout(0);
 
       this.app = await setup();
       logger.info('Running api tests:\n\n');
