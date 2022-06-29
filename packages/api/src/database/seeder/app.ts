@@ -36,7 +36,7 @@ const PREDEFINED_USERS = [
  *
  * @returns Promise
  */
-export const seedPredefinedUsers = async (): Promise<void> => {
+const seedPredefinedUsers = async (): Promise<void> => {
   const userCount = await UserModel.count();
 
   if (userCount < PREDEFINED_USERS.length) {
@@ -59,7 +59,7 @@ export const seedPredefinedUsers = async (): Promise<void> => {
  *
  * @returns Promise
  */
-export const seedRegularUsers = async (): Promise<void> => {
+const seedRegularUsers = async (): Promise<void> => {
   try {
     const userCount = await UserModel.count({ roles: ['USER'] });
 
@@ -88,7 +88,7 @@ export const seedRegularUsers = async (): Promise<void> => {
  *
  * @returns Promise
  */
-export const seedQuantifierUsers = async (): Promise<void> => {
+const seedQuantifierUsers = async (): Promise<void> => {
   try {
     const userCount = await UserModel.count({ roles: ['USER', 'QUANTIFIER'] });
 
@@ -154,7 +154,7 @@ export const seedAdminUsers = async (): Promise<void> => {
  *
  * @returns Promise
  */
-export const seedPeriodsWithPraises = async (): Promise<void> => {
+const seedPeriodsWithPraises = async (): Promise<void> => {
   const periodsCount = await PeriodModel.count();
 
   if (periodsCount === 0) {

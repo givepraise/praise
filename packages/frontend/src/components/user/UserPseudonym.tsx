@@ -5,7 +5,7 @@ interface UserPseudonymParams {
   userId: string;
   periodId: string;
 }
-export const WrappedUserPseudonym = ({
+const WrappedUserPseudonym = ({
   userId,
   periodId,
 }: UserPseudonymParams): JSX.Element => {

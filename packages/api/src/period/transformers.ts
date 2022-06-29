@@ -46,7 +46,7 @@ export const periodDocumentTransformer = (
  * @param {(Quantification[][] | undefined)} listOfQuantificationLists
  * @returns {Promise<Array<Array<QuantificationDto>>>}
  */
-export const listOfQuantificationListsTransformer = async (
+const listOfQuantificationListsTransformer = async (
   listOfQuantificationLists: Quantification[][] | undefined
 ): Promise<Array<Array<QuantificationDto>>> => {
   if (listOfQuantificationLists && Array.isArray(listOfQuantificationLists)) {

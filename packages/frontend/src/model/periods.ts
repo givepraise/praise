@@ -61,7 +61,7 @@ export const SinglePeriod = atomFamily<PeriodDetailsDto | undefined, string>({
 /**
  * The full list of period Ids
  */
-export const AllPeriodIds = atom<string[] | undefined>({
+const AllPeriodIds = atom<string[] | undefined>({
   key: 'PeriodIdList',
   default: undefined,
 });
@@ -122,7 +122,7 @@ export const SinglePeriodByDate = selectorFamily({
 /**
  * Query selector that fetches all praise periods from the API.
  */
-export const AllPeriodsQuery = selector({
+const AllPeriodsQuery = selector({
   key: 'AllPeriodsQuery',
   get: ({ get }): AxiosResponse<unknown> => {
     const response = get(
@@ -446,7 +446,7 @@ type PeriodReceiverPraiseQueryParams = {
 /**
  * Selector query that fetches all praise received by a user for a period.
  */
-export const PeriodReceiverPraiseQuery = selectorFamily({
+const PeriodReceiverPraiseQuery = selectorFamily({
   key: 'PeriodReceiverPraiseQuery',
   get:
     (params: PeriodReceiverPraiseQueryParams) =>
@@ -529,7 +529,7 @@ type PeriodQuantifierPraiseQueryParams = {
 /**
  * Query that fetches all praise assigned to the currently active quantifier for a period
  */
-export const PeriodQuantifierPraiseQuery = selectorFamily({
+const PeriodQuantifierPraiseQuery = selectorFamily({
   key: 'PeriodQuantifierPraiseQuery',
   get:
     (params: PeriodQuantifierPraiseQueryParams) =>

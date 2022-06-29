@@ -7,7 +7,7 @@ import {
 } from '@useraccount/types';
 import { Document } from 'mongoose';
 
-export interface Praise {
+interface Praise {
   reason: string;
   reasonRealized: string;
   sourceId: string;
@@ -62,11 +62,8 @@ export interface QuantificationDto {
   createdAt: string;
   updatedAt: string;
 }
-
-export type QuantificationDetailsDto = QuantificationDto;
-
 export interface PraiseDetailsDto extends PraiseDto {
-  quantifications: QuantificationDetailsDto[];
+  quantifications: QuantificationDto[];
 }
 
 export interface QuantificationCreateUpdateInput {

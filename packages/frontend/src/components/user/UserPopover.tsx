@@ -18,7 +18,7 @@ interface UserPopoverProps {
   usePseudonym?: boolean;
 }
 
-export const WrappedUserPopover = ({
+const WrappedUserPopover = ({
   user,
   userAccount,
   children,

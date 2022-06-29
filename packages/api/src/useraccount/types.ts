@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 
 export type UserAccountPlatform = 'DISCORD' | 'TELEGRAM';
 
-export interface UserAccount {
+interface UserAccount {
   user?: UserDocument;
   accountId: string;
   name: string;

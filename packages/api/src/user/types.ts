@@ -8,7 +8,7 @@ export enum UserRole {
   FORWARDER = 'FORWARDER',
 }
 
-export interface User {
+interface User {
   ethereumAddress: string;
   roles: UserRole[];
   accounts?: UserAccountDocument[];

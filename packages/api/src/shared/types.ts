@@ -13,11 +13,7 @@ export interface QueryInput {
 
 export interface QueryInputParsedQs extends QueryInput, Query {}
 
-export interface SearchQueryInput extends QueryInput {
-  search?: string;
-}
-
-export interface EventLogsQueryInput extends QueryInput {
+interface EventLogsQueryInput extends QueryInput {
   search?: string;
   type?: string;
 }

@@ -18,7 +18,7 @@ interface UserNameProps {
   nameClassName?: string;
 }
 
-export const WrappedUserAvatarAndName = ({
+const WrappedUserAvatarAndName = ({
   user,
   userId,
   userAccount,

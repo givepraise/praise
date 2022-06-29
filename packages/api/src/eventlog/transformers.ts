@@ -52,7 +52,7 @@ export const eventLogTypeListTransformer = async (
  * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
  * @returns {Promise<EventLogDto>}
  */
-export const eventLogTransformer = async (
+const eventLogTransformer = async (
   eventLog: EventLogDocument,
   currentUserRoles: UserRole[] = [UserRole.USER]
 ): Promise<EventLogDto> => {

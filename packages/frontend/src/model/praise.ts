@@ -45,7 +45,7 @@ type SinglePraiseQueryParams = {
 /**
  * Selector query to fetch a single praise from the api.
  */
-export const SinglePraiseQuery = selectorFamily({
+const SinglePraiseQuery = selectorFamily({
   key: 'SinglePraiseQuery',
   get:
     (params: SinglePraiseQueryParams) =>
@@ -112,7 +112,7 @@ export const AllPraiseList = selectorFamily({
  * AllPraiseQuery subscribes to the value. Increase to trigger
  * refresh.
  */
-export const PraiseRequestId = atom({
+const PraiseRequestId = atom({
   key: 'PraiseRequestId',
   default: 0,
 });
@@ -120,7 +120,7 @@ export const PraiseRequestId = atom({
 /**
  * Parameters for @AllPraiseQuery
  */
-export type AllPraiseQueryParameters = {
+type AllPraiseQueryParameters = {
   sortColumn?: string;
   sortType?: string;
   limit?: number;
@@ -131,7 +131,7 @@ export type AllPraiseQueryParameters = {
 /**
  * Query selector to fetch a list of praise from the api.
  */
-export const AllPraiseQuery = selectorFamily<
+const AllPraiseQuery = selectorFamily<
   AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined,
   AllPraiseQueryParameters
 >({
@@ -156,7 +156,7 @@ export const AllPraiseQuery = selectorFamily<
 /**
  *
  */
-export interface AllPraiseQueryPaginationInterface {
+interface AllPraiseQueryPaginationInterface {
   currentPage: number;
   totalPages: number;
 }

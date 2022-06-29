@@ -1,7 +1,7 @@
 import { ActiveUserQuantificationsMessage } from './ActiveUserQuantificationsMessage';
 import { Suspense } from 'react';
 
-export const ActiveNoticesBoardInner = (): JSX.Element | null => {
+const ActiveNoticesBoardInner = (): JSX.Element | null => {
   const activeUserQuantificationMessageRender =
     ActiveUserQuantificationsMessage();
 

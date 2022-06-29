@@ -13,7 +13,7 @@ import { ApiAuthGet, useAuthApiQuery, isResponseOk } from './api';
 import { Setting, useSetSettingReturn } from './settings';
 import { PeriodSettingDto } from 'api/src/periodsettings/types';
 
-export const AllPeriodSettingIds = atomFamily<string[] | undefined, string>({
+const AllPeriodSettingIds = atomFamily<string[] | undefined, string>({
   key: 'PeriodSettingIdList',
   default: undefined,
 });
@@ -57,7 +57,7 @@ export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
   return { setSetting };
 };
 
-export const AllPeriodSettingsQuery = selectorFamily({
+const AllPeriodSettingsQuery = selectorFamily({
   key: 'AllPeriodSettingsQuery',
   get:
     (periodId: string) =>

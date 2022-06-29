@@ -8,10 +8,17 @@ interface TestContext extends Mocha.Context {
   client?: SuperTest<Test>;
 }
 
+/**
+ * Prepare environment for running test suite,
+ *  executed by Mocha before any tests are run
+ *
+ * @returns {Promise<Mocha.RootHookObject>}
+ */
 const mochaHooks = async (): Promise<Mocha.RootHookObject> => {
   return Promise.resolve({
     async beforeAll(this: TestContext): Promise<void> {
-      // extend timeout to allow for long database migrations / application setup
+      // You may need to extend this timeout
+      //  to allow more time for database migrations
       this.timeout(60000);
 
       this.app = await setup();

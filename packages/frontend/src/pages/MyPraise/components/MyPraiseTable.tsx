@@ -9,7 +9,7 @@ import { ActiveUserId } from '@/model/auth';
 import { SingleUser } from '@/model/users';
 import { UserDto } from 'api/dist/user/types';
 
-export const PRAISE_LIST_KEY = 'MY_PRAISE';
+const PRAISE_LIST_KEY = 'MY_PRAISE';
 
 const getReceiverId = (user: UserDto | undefined): string | undefined => {
   const accounts = user?.accounts;

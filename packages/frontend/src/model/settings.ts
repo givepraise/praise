@@ -31,7 +31,7 @@ const AllSettingsRequestId = atom({
   default: 0,
 });
 
-export const AllSettingsQuery = selector({
+const AllSettingsQuery = selector({
   key: 'AllSettingsQuery',
   get: ({ get }) => {
     get(AllSettingsRequestId);
@@ -48,7 +48,7 @@ export const SingleSetting = atomFamily<SettingDto | undefined, string>({
   default: undefined,
 });
 
-export const AllSettingKeys = atom<string[] | undefined>({
+const AllSettingKeys = atom<string[] | undefined>({
   key: 'SettingIdList',
   default: undefined,
 });

@@ -26,8 +26,8 @@ type RequestDataParam = {
   file?: any;
 };
 
-export type PatchRequestParams = RequestParams & RequestDataParam;
-export type PostRequestParams = RequestParams & RequestDataParam;
+type PatchRequestParams = RequestParams & RequestDataParam;
+type PostRequestParams = RequestParams & RequestDataParam;
 
 export const isResponseOk = (
   response: AxiosResponse | AxiosError | null | unknown

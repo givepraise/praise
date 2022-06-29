@@ -20,7 +20,7 @@ import {
 import { ActiveTokenSet } from './auth';
 import { AllPeriods } from './periods';
 
-export const AllUsersQuery = selector({
+const AllUsersQuery = selector({
   key: 'AllUsersQuery',
   get: ({ get }) => {
     const activeTokenSet = get(ActiveTokenSet);
@@ -141,7 +141,7 @@ export const PseudonymForUser = selectorFamily({
     },
 });
 
-export const AddUserRoleApiResponse = atom<
+const AddUserRoleApiResponse = atom<
   AxiosResponse<unknown> | AxiosError<unknown> | null
 >({
   key: 'AddUserRoleApiResponse',

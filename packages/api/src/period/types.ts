@@ -15,7 +15,7 @@ export enum PeriodStatusType {
   CLOSED = 'CLOSED',
 }
 
-export interface Period {
+interface Period {
   name: string;
   status: PeriodStatusType;
   endDate: Date;

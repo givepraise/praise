@@ -3,7 +3,7 @@ import { Schema, model } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { endDateValidators } from './validators';
 
-export const periodSchema = new Schema<PeriodDocument>(
+const periodSchema = new Schema<PeriodDocument>(
   {
     name: { type: String, required: true, minlength: 3, maxlength: 64 },
     status: {
