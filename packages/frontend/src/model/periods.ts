@@ -8,6 +8,7 @@ import {
   PeriodDetailsDto,
   PeriodStatusType,
   PeriodUpdateInput,
+  PeriodReplaceQuantifierDto,
 } from 'api/dist/period/types';
 import { PraiseDto } from 'api/dist/praise/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
@@ -34,6 +35,7 @@ import {
 import { ActiveUserId, ActiveUserRoles } from './auth';
 import { SinglePeriodSetting } from './periodsettings';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
+import { toast } from 'react-hot-toast';
 
 /**
  * Types for `useParams()`
@@ -713,3 +715,44 @@ export const PeriodQuantifierReceiverPraise = selectorFamily({
       );
     },
 });
+
+type useReplaceQuantifierReturn = {
+  replaceQuantifier: (
+    currentQuantifierId: string,
+    newQuantifierId: string
+  ) => Promise<void>;
+};
+
+/**
+ * Hook that returns function used to assign quantifiers
+ */
+export const useReplaceQuantifier = (
+  periodId: string
+): useReplaceQuantifierReturn => {
+  const apiAuthClient = makeApiAuthClient();
+
+  const replaceQuantifier = useRecoilCallback(
+    ({ set }) =>
+      async (
+        currentQuantifierId: string,
+        newQuantifierId: string
+      ): Promise<void> => {
+        const response: AxiosResponse<PeriodReplaceQuantifierDto> =
+          await apiAuthClient.patch(
+            `/admin/periods/${periodId}/replaceQuantifier`,
+            {
+              currentQuantifierId,
+              newQuantifierId,
+            }
+          );
+
+        set(SinglePeriod(response.data.period._id), response.data.period);
+
+        response.data.praises.forEach((praise) => {
+          set(SinglePraise(praise._id), praise);
+        });
+        toast.success('Replaced quantifier and reset their scores');
+      }
+  );
+  return { replaceQuantifier };
+};

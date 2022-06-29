@@ -1,18 +1,41 @@
 /* eslint-disable react/jsx-key */
-import { UserCell } from '@/components/table/UserCell';
 import Notice from '@/components/Notice';
-import { PeriodPageParams, SinglePeriod } from '@/model/periods';
-import React from 'react';
+import {
+  PeriodPageParams,
+  SinglePeriod,
+  useReplaceQuantifier,
+} from '@/model/periods';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import sortBy from 'lodash/sortBy';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
+import { faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Quantifier } from 'api/dist/praise/types';
+import ReplaceQuantifierDialog from './ReplaceQuantifierDialog';
+import { HasRole, ROLE_ADMIN } from '@/model/auth';
 
 const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
+  const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const period = useRecoilValue(SinglePeriod(periodId));
+
+  const [isReplaceQuantifierDialogOpen, setIsReplaceQuantifierDialogOpen] =
+    useState<boolean>(false);
+  const [quantifierToReplace, setQuantifierToReplace] = useState<
+    Quantifier | undefined
+  >(undefined);
+
+  const { replaceQuantifier } = useReplaceQuantifier(periodId);
+
+  const handleReplaceQuantifier = (newQuantifierUserId: string): void => {
+    if (!quantifierToReplace) return;
+
+    void replaceQuantifier(quantifierToReplace?._id, newQuantifierUserId);
+  };
 
   const columns = React.useMemo(
     () => [
@@ -39,8 +62,31 @@ const QuantifierTable = (): JSX.Element => {
           </div>
         ),
       },
+      {
+        id: 3,
+        accessor: '',
+        className: 'text-right',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Cell: (data: any): JSX.Element | null => {
+          if (!isAdmin) return null;
+
+          return (
+            <div className="w-3">
+              <button
+                className="hidden text-warm-gray-400 cursor-pointer group-hover:block hover:text-warm-gray-500"
+                onClick={(): void => {
+                  setQuantifierToReplace(data.row.original);
+                  setIsReplaceQuantifierDialogOpen(true);
+                }}
+              >
+                <FontAwesomeIcon icon={faArrowRightArrowLeft} size="1x" />
+              </button>
+            </div>
+          );
+        },
+      },
     ],
-    []
+    [isAdmin]
   );
 
   const data = period?.quantifiers
@@ -82,51 +128,62 @@ const QuantifierTable = (): JSX.Element => {
     );
 
   return (
-    <table
-      id="periods-table"
-      className="w-full table-auto"
-      {...getTableProps()}
-    >
-      <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const className = (column as any).className as string;
-              return (
-                <th
-                  {...column.getHeaderProps()}
-                  className={classNames(className, 'pb-2')}
-                >
-                  {column.render('Header')}
-                </th>
-              );
-            })}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row) => {
-          prepareRow(row);
-          return (
-            <tr id="" {...row.getRowProps()}>
-              {row.cells.map((cell) => {
+    <>
+      <table
+        id="periods-table"
+        className="w-full table-auto"
+        {...getTableProps()}
+      >
+        <thead>
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const className = (cell.column as any).className as string;
+                const className = (column as any).className as string;
                 return (
-                  <td
-                    {...cell.getCellProps()}
-                    className={classNames(className, 'py-3')}
+                  <th
+                    {...column.getHeaderProps()}
+                    className={classNames(className, 'pb-2')}
                   >
-                    {cell.render('Cell')}
-                  </td>
+                    {column.render('Header')}
+                  </th>
                 );
               })}
             </tr>
-          );
-        })}
-      </tbody>
-    </table>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row);
+            return (
+              <tr id="" {...row.getRowProps()} className="group">
+                {row.cells.map((cell) => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const className = (cell.column as any).className as string;
+                  return (
+                    <td
+                      {...cell.getCellProps()}
+                      className={classNames(className, 'py-3')}
+                    >
+                      {cell.render('Cell')}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <ReplaceQuantifierDialog
+        open={isReplaceQuantifierDialogOpen}
+        selectedUserId={quantifierToReplace?._id}
+        onClose={(): void => {
+          setIsReplaceQuantifierDialogOpen(false);
+          setQuantifierToReplace(undefined);
+        }}
+        onConfirm={handleReplaceQuantifier}
+      />
+    </>
   );
 };
 

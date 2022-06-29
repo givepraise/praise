@@ -8,6 +8,7 @@ import { loginUser } from './utils';
 import { faker } from '@faker-js/faker';
 import { SettingsModel } from '@settings/entities';
 import { URL } from 'url';
+import logger from 'jet-logger';
 
 describe('GET /api/settings/all', () => {
   it('200 response with json body containing list of settings', async function () {
@@ -114,8 +115,9 @@ describe('PATCH /api/admin/settings/:id/set', () => {
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
-    const setting = await SettingsModel.findOne({
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+    const setting = await seedSetting({
+      type: 'Boolean',
+      value: 'true',
     });
     const originalValueRealized = setting?.valueRealized;
 
@@ -128,7 +130,6 @@ describe('PATCH /api/admin/settings/:id/set', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .set('Accept', 'application/json')
       .send(FORM_DATA)
-      .expect('Content-Type', /json/)
       .expect(200);
 
     expect(response.body._id).to.equal(setting?._id.toString());
@@ -153,8 +154,9 @@ describe('PATCH /api/admin/settings/:id/set', () => {
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
-    const setting = await SettingsModel.findOne({
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+    const setting = await seedSetting({
+      type: 'Boolean',
+      value: 'true',
     });
     const originalValueRealized = setting?.valueRealized;
 
@@ -179,8 +181,9 @@ describe('PATCH /api/admin/settings/:id/set', () => {
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
-    const setting = await SettingsModel.findOne({
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+    const setting = await seedSetting({
+      type: 'Boolean',
+      value: 'true',
     });
     const FORM_DATA = {};
 
@@ -220,8 +223,9 @@ describe('PATCH /api/admin/settings/:id/set', () => {
   });
 
   it('401 response if user not authenticated', async function () {
-    const setting = await SettingsModel.findOne({
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+    const setting = await seedSetting({
+      type: 'Boolean',
+      value: 'true',
     });
     const originalValueRealized = setting?.valueRealized;
 

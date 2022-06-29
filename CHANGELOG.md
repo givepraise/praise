@@ -8,10 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Admins can replace an actively assigned quantifier with another
+
 - Additional test coverage for api
 
 ### Fixed
+
 - Seeder generates periods and praise in the past, not future
+- Remove check that was throwing an error when not all quantifiers were assigned praise and `PRAISE_QUANTIFIERS_ASSIGN_ALL` was enabled #492 #498
 
 ## [0.9.0] - 2022-06-20
 
@@ -36,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Switching eth wallet should result in logging out the user #469
 - Logging out of MetaMask causes EthAccount in navigation to disappear #470
 - Changed lodash imports to single method import #486
+- Prevent error when not all quantifers are assigned praise and "Assign praise evenly" setting enabled
 
 ## [0.8.0] - 2022-06-06
 

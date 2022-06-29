@@ -28,13 +28,15 @@ import {
   PeriodDetailsDto,
   PeriodStatusType,
   VerifyQuantifierPoolSizeResponse,
+  PeriodReplaceQuantifierDto,
 } from '../types';
 import {
   findPeriodDetailsDto,
-  getPreviousPeriodEndDate,
   verifyAnyPraiseAssigned,
+  getPeriodDateRangeQuery,
 } from '../utils';
 import { PeriodModel } from '../entities';
+import { praiseDocumentListTransformer } from '@praise/transformers';
 
 /**
  * Get all receivers with praise data
@@ -44,12 +46,12 @@ import { PeriodModel } from '../entities';
 const queryReceiversWithPraise = async (
   period: PeriodDocument
 ): Promise<Receiver[]> => {
-  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+  const dateRangeQuery = await getPeriodDateRangeQuery(period);
 
   return PraiseModel.aggregate([
     {
       $match: {
-        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+        createdAt: dateRangeQuery,
       },
     },
     {
@@ -215,10 +217,10 @@ const verifyAssignments = async (
   PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number,
   assignments: Assignments
 ): Promise<void> => {
-  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+  const dateRangeQuery = await getPeriodDateRangeQuery(period);
 
   const totalPraiseCount: number = await PraiseModel.count({
-    createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+    createdAt: dateRangeQuery,
   });
   const expectedAccountedPraiseCount: number =
     totalPraiseCount * PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER;
@@ -321,7 +323,7 @@ const prepareAssignmentsByTargetPraiseCount = async (
  * @param TOLERANCE
  * @returns
  */
-const prepareAssignmentsByAllQuantifiers = async (
+const prepareAssignmentsByEvenDistribution = async (
   period: PeriodDocument,
   PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number
 ): Promise<Assignments> => {
@@ -385,20 +387,6 @@ const prepareAssignmentsByAllQuantifiers = async (
     assignments
   );
 
-  // Verify that all quantifiers were assigned if necessary
-  logger.info(
-    `verify even assigment assignments: ${assignments.poolAssignments.length} q pool: ${quantifierPool.length}`
-  );
-  if (assignments.remainingAssignmentsCount === 0) {
-    logger.info(
-      'All quantifiers that could be assigned, were assigned praise, as expected with PRAISE_QUANTIFIERS_ASSIGN_ALL'
-    );
-  } else {
-    throw new InternalServerError(
-      `Not all quantifiers were assigned praise, missing ${assignments.remainingAssignmentsCount}, despite PRAISE_QUANTIFIERS_ASSIGN_EVENLY`
-    );
-  }
-
   return assignments;
 };
 
@@ -408,8 +396,8 @@ const assignQuantifiersDryRun = async (
   const period = await PeriodModel.findById(periodId);
   if (!period) throw new NotFoundError('Period');
 
-  const PRAISE_QUANTIFIERS_ASSIGN_ALL = (await settingValue(
-    'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+  const PRAISE_QUANTIFIERS_ASSIGN_EVENLY = (await settingValue(
+    'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
     period._id
   )) as boolean;
 
@@ -418,8 +406,8 @@ const assignQuantifiersDryRun = async (
     period._id
   )) as number;
 
-  if (PRAISE_QUANTIFIERS_ASSIGN_ALL) {
-    return prepareAssignmentsByAllQuantifiers(
+  if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
+    return prepareAssignmentsByEvenDistribution(
       period,
       PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER
     );
@@ -450,8 +438,8 @@ export const verifyQuantifierPoolSize = async (
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
-  const PRAISE_QUANTIFIERS_ASSIGN_ALL = (await settingValue(
-    'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+  const PRAISE_QUANTIFIERS_ASSIGN_EVENLY = (await settingValue(
+    'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
     period._id
   )) as boolean;
 
@@ -461,7 +449,7 @@ export const verifyQuantifierPoolSize = async (
 
   let response;
 
-  if (PRAISE_QUANTIFIERS_ASSIGN_ALL) {
+  if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
     response = {
       quantifierPoolSize,
       quantifierPoolSizeNeeded: quantifierPoolSize,
@@ -547,4 +535,119 @@ export const assignQuantifiers = async (
 
   const periodDetailsDto = await findPeriodDetailsDto(periodId);
   res.status(StatusCodes.OK).json(periodDetailsDto);
+};
+
+export const replaceQuantifier = async (
+  req: Request,
+  res: TypedResponse<PeriodReplaceQuantifierDto>
+): Promise<void> => {
+  const { periodId } = req.params;
+  const { currentQuantifierId, newQuantifierId } = req.body;
+  const period = await PeriodModel.findById(periodId);
+  if (!period) throw new NotFoundError('Period');
+  if (period.status !== 'QUANTIFY')
+    throw new BadRequestError(
+      'Quantifiers can only be replaced on periods with status QUANTIFY.'
+    );
+
+  if (!currentQuantifierId || !newQuantifierId)
+    throw new BadRequestError(
+      'Both originalQuantifierId and newQuantifierId must be specified'
+    );
+
+  if (currentQuantifierId === newQuantifierId)
+    throw new BadRequestError('Cannot replace a quantifier with themselves');
+
+  const currentQuantifier = await UserModel.findById(currentQuantifierId);
+  if (!currentQuantifier)
+    throw new BadRequestError('Current quantifier does not exist');
+
+  const newQuantifier = await UserModel.findById(newQuantifierId);
+  if (!newQuantifier)
+    throw new BadRequestError('Replacement quantifier does not exist');
+
+  if (!newQuantifier.roles.includes(UserRole.QUANTIFIER))
+    throw new BadRequestError(
+      'Replacement quantifier does not have role QUANTIFIER'
+    );
+
+  const dateRangeQuery = await getPeriodDateRangeQuery(period);
+
+  const praiseAlreadyAssignedToNewQuantifier = await PraiseModel.find({
+    // Praise within time period
+    createdAt: dateRangeQuery,
+
+    // Both original and new quantifiers assigned
+    $and: [
+      { 'quantifications.quantifier': currentQuantifierId },
+      { 'quantifications.quantifier': newQuantifierId },
+    ],
+  });
+
+  if (praiseAlreadyAssignedToNewQuantifier?.length > 0)
+    throw new BadRequestError(
+      "Replacement quantifier is already assigned to some of the original quantifier's praise"
+    );
+
+  const affectedPraiseIds = await PraiseModel.find({
+    // Praise within time period
+    createdAt: dateRangeQuery,
+
+    // Original quantifier
+    'quantifications.quantifier': currentQuantifierId,
+  }).distinct('_id');
+
+  await PraiseModel.updateMany(
+    {
+      // Praise within time period
+      createdAt: dateRangeQuery,
+
+      // Original quantifier
+      'quantifications.quantifier': currentQuantifierId,
+    },
+    {
+      $set: {
+        // Reset score
+        'quantifications.$[elem].score': 0,
+        'quantifications.$[elem].dismissed': false,
+
+        // Assign new quantifier
+        'quantifications.$[elem].quantifier': newQuantifierId,
+      },
+      $unset: {
+        'quantifications.$[elem].duplicatePraise': 1,
+      },
+    },
+    {
+      arrayFilters: [
+        {
+          'elem.quantifier': currentQuantifierId,
+        },
+      ],
+    }
+  );
+
+  await logEvent(
+    EventLogTypeKey.PERIOD,
+    `Reassigned all praise in period "${
+      period.name
+    }" that is currently assigned to user with id "${
+      currentQuantifierId as string
+    }", to user with id "${newQuantifierId as string}"`,
+    {
+      userId: res.locals.currentUser._id,
+    }
+  );
+
+  const updatedPraises = await PraiseModel.find({
+    _id: { $in: affectedPraiseIds },
+  }).populate('giver receiver forwarder');
+
+  const affectedPraises = await praiseDocumentListTransformer(updatedPraises);
+  const periodDetailsDto = await findPeriodDetailsDto(periodId);
+
+  res.status(StatusCodes.OK).json({
+    period: periodDetailsDto,
+    praises: affectedPraises,
+  });
 };
