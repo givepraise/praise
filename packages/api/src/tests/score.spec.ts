@@ -9,7 +9,7 @@ import {
   seedQuantification,
   seedPeriod,
   seedUserAccount,
-} from '../pre-start/seed';
+} from '@database/seeder/entities';
 import { expect } from 'chai';
 import { PeriodModel } from '@period/entities';
 import { PeriodDetailsReceiver } from '@period/types';
@@ -17,7 +17,7 @@ import { PraiseModel } from '@praise/entities';
 import { settingValue } from '@shared/settings';
 import sum from 'lodash/sum';
 import { getPeriodDateRangeQuery } from '@period/utils';
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import { add } from 'date-fns';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 
@@ -471,7 +471,7 @@ describe('calculateReceiverCompositeScore', () => {
 
   it('receiver composite score is sum of all quantification composite scores', async () => {
     const user = await seedUser();
-    const receiver = await seedUserAccount(user);
+    const receiver = await seedUserAccount({ user: user._id });
 
     const praise = await seedPraise({
       receiver: receiver._id,

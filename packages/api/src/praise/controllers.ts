@@ -1,8 +1,4 @@
-import {
-  BadRequestError,
-  InternalServerError,
-  NotFoundError,
-} from '@error/errors';
+import { BadRequestError, NotFoundError } from '@error/errors';
 import {
   getPraiseAllInput,
   getQueryInput,
@@ -33,7 +29,7 @@ import {
   QuantificationCreateUpdateInput,
 } from './types';
 import { praiseWithScore, getPraisePeriod } from './utils/core';
-
+import { PeriodStatusType } from '@period/types';
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
 /**
@@ -102,11 +98,12 @@ export const quantify = async (
   if (!period)
     throw new BadRequestError('Praise does not have an associated period');
 
-  const { score, dismissed, duplicatePraise } = req.body;
+  if (period.status !== PeriodStatusType.QUANTIFY)
+    throw new BadRequestError(
+      'Period associated with praise does have status QUANTIFY'
+    );
 
-  if (!res.locals.currentUser?._id) {
-    throw new InternalServerError('Current user not found.');
-  }
+  const { score, dismissed, duplicatePraise } = req.body;
 
   const quantification = praise.quantifications.find((q) =>
     q.quantifier.equals(res.locals.currentUser._id)

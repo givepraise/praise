@@ -1,5 +1,5 @@
 import { Router } from '@awaitjs/express';
-import { addRole, all, removeRole, search, single } from './controllers';
+import { addRole, all, removeRole, single } from './controllers';
 
 // User routes
 const userRouter = Router();
@@ -8,9 +8,6 @@ userRouter.getAsync('/:id', single);
 
 // User admin only routes
 const adminUserRouter = Router();
-adminUserRouter.getAsync('/all', all);
-adminUserRouter.getAsync('/search', search);
-adminUserRouter.getAsync('/:id', single);
 adminUserRouter.patchAsync('/:id/addRole', addRole);
 adminUserRouter.patchAsync('/:id/removeRole', removeRole);
 

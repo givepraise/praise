@@ -1,13 +1,17 @@
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
   disabled?: boolean;
+  icon: IconProp;
+  text: string;
   onClick();
 }
 
-const MarkDuplicateButton = ({
+const IconButton = ({
   disabled = false,
+  icon,
+  text,
   onClick,
 }: Props): JSX.Element => {
   return (
@@ -20,10 +24,10 @@ const MarkDuplicateButton = ({
       }
       onClick={onClick}
     >
-      <FontAwesomeIcon icon={faCopy} size="1x" />
-      <span>Mark as duplicates</span>
+      <FontAwesomeIcon icon={icon} size="1x" />
+      <span>{text}</span>
     </button>
   );
 };
 
-export default MarkDuplicateButton;
+export default IconButton;

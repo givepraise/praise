@@ -46,7 +46,7 @@
     }
     
     [type='checkbox'] {
-      @apply text-black border border-warm-gray-900 focus:border-warm-gray-900 focus:border-2 focus:ring-0;
+      @apply text-gray-900 border border-warm-gray-900 focus:border-warm-gray-900 focus:border-2 focus:ring-0;
     }
 
     .praise-button {
