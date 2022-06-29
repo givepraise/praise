@@ -6,11 +6,11 @@ import { useRecoilValue } from 'recoil';
 import sortBy from 'lodash/sortBy';
 import { PeriodPageParams, SinglePeriod } from '@/model/periods';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import Notice from '@/components/Notice';
+import { Notice } from '@/components/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
-const ReceiverTable = (): JSX.Element | null => {
+export const ReceiverTable = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const period = useRecoilValue(SinglePeriod(periodId));
@@ -158,5 +158,3 @@ const ReceiverTable = (): JSX.Element | null => {
 
   return null;
 };
-
-export default ReceiverTable;

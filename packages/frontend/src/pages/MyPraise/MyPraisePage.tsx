@@ -1,8 +1,8 @@
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import BreadCrumb from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/BreadCrumb';
 import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
-import MyPraiseTable from './components/MyPraiseTable';
+import { MyPraiseTable } from './components/MyPraiseTable';
 
 const MyPraise = (): JSX.Element => {
   return (
@@ -20,4 +20,5 @@ const MyPraise = (): JSX.Element => {
   );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default MyPraise;

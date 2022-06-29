@@ -18,7 +18,8 @@ interface EthAccountDialogProps {
   onClose(): void;
   address: string;
 }
-const EthAccountDialog = ({
+
+export const EthAccountDialog = ({
   open = false,
   onClose,
   address,
@@ -83,5 +84,3 @@ const EthAccountDialog = ({
     </Dialog>
   );
 };
-
-export default EthAccountDialog;

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import difference from 'lodash/difference';
-import SettingsPage from '@/pages/Settings/SettingsPage';
-import StartPage from '@/pages/Start/StartPage';
 import { ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth';
 
+const StartPage = React.lazy(() => import('@/pages/Start/StartPage'));
+const SettingsPage = React.lazy(() => import('@/pages/Settings/SettingsPage'));
 const MyPraisePage = React.lazy(() => import('@/pages/MyPraise/MyPraisePage'));
 const UserDetailsPage = React.lazy(
   () => import('@/pages/UserDetails/UserDetailsPage')
@@ -15,7 +15,7 @@ const PeriodsPage = React.lazy(() => import('@/pages/Periods/PeriodsPage'));
 const PeriodsCreateUpdatePage = React.lazy(
   () => import('@/pages/Periods/Create/PeriodCreatePage')
 );
-const PeriodDetailPage = React.lazy(
+const PeriodDetailsPage = React.lazy(
   () => import('@/pages/Periods/Details/PeriodDetailsPage')
 );
 const PeriodReceiverSummaryPage = React.lazy(
@@ -81,7 +81,9 @@ interface Props {
   userRoles: string[];
 }
 
-const AuthenticatedRoutes = ({ userRoles }: Props): JSX.Element | null => {
+export const AuthenticatedRoutes = ({
+  userRoles,
+}: Props): JSX.Element | null => {
   return (
     <Switch>
       <Route path="/mypraise">
@@ -142,7 +144,7 @@ const AuthenticatedRoutes = ({ userRoles }: Props): JSX.Element | null => {
       </AuthRoute>
 
       <Route path={'/periods/:periodId'}>
-        <PeriodDetailPage />
+        <PeriodDetailsPage />
       </Route>
 
       <Route path={'/periods'}>
@@ -175,5 +177,3 @@ const AuthenticatedRoutes = ({ userRoles }: Props): JSX.Element | null => {
     </Switch>
   );
 };
-
-export default AuthenticatedRoutes;

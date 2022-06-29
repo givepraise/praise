@@ -9,12 +9,12 @@ import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { useQuantifyPraise } from '@/model/praise';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { QuantifyBackNextLink } from './BackNextLink';
-import DismissDialog from './DismissDialog';
-import DuplicateDialog from './DuplicateDialog';
-import DuplicateSearchDialog from './DuplicateSearchDialog';
-import MarkDuplicateButton from './MarkDuplicateButton';
-import MarkDismissedButton from './MarkDismissedButton';
-import QuantifyPraiseRow from './QuantifyPraiseRow';
+import { DismissDialog } from './DismissDialog';
+import { DuplicateDialog } from './DuplicateDialog';
+import { DuplicateSearchDialog } from './DuplicateSearchDialog';
+import { MarkDuplicateButton } from './MarkDuplicateButton';
+import { MarkDismissedButton } from './MarkDismissedButton';
+import { QuantifyPraiseRow } from './QuantifyPraiseRow';
 
 interface Props {
   periodId: string;
@@ -22,7 +22,10 @@ interface Props {
   key: string;
 }
 
-const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
+export const QuantifyTable = ({
+  periodId,
+  receiverId,
+}: Props): JSX.Element | null => {
   const data = useRecoilValue(
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
   );
@@ -181,5 +184,3 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
     </div>
   );
 };
-
-export default QuantifyTable;

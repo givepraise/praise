@@ -1,13 +1,14 @@
 import { Wallet } from 'ethers';
-import { seedSetting, seedUser } from '@database/seeder/entities';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-chai.use(chaiAsPromised);
-const expect = chai.expect;
 import { faker } from '@faker-js/faker';
 import { URL } from 'url';
+import { seedSetting, seedUser } from '@database/seeder/entities';
 import { SettingsModel } from '@settings/entities';
 import { loginUser } from './utils';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('GET /api/settings/all', () => {
   it('200 response with json body containing list of settings', async function () {

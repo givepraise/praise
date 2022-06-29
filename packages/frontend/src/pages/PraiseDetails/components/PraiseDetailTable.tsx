@@ -16,6 +16,7 @@ import { localizeAndFormatIsoDate } from '@/utils/date';
 interface DuplicatePraiseLabelProps {
   praiseId: string;
 }
+
 const DuplicatePraiseLabel = ({
   praiseId,
 }: DuplicatePraiseLabelProps): JSX.Element => {
@@ -29,7 +30,8 @@ const DuplicatePraiseLabel = ({
     />
   );
 };
-const PraiseDetailTable = (): JSX.Element => {
+
+export const PraiseDetailTable = (): JSX.Element => {
   const { praiseId } = useParams<PraisePageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const praise = useSinglePraiseQuery(praiseId);
@@ -144,5 +146,3 @@ const PraiseDetailTable = (): JSX.Element => {
     </table>
   );
 };
-
-export default PraiseDetailTable;

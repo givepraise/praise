@@ -3,9 +3,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
 import { useParams } from 'react-router-dom';
 import { PeriodPageParams } from '@/model/periods';
-import ScrollableDialog from '@/components/ScrollableDialog';
+import { ScrollableDialog } from '@/components/ScrollableDialog';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
-import PraiseAutosuggest from './PraiseAutosuggest';
+import { PraiseAutosuggest } from './PraiseAutosuggest';
 
 interface Props {
   onClose(): void;
@@ -14,7 +14,7 @@ interface Props {
   selectedPraise: PraiseDto | undefined;
 }
 
-const DuplicateSearchDialog = ({
+export const DuplicateSearchDialog = ({
   onClose,
   onConfirm,
   open = false,
@@ -62,5 +62,3 @@ const DuplicateSearchDialog = ({
     </ScrollableDialog>
   );
 };
-
-export default DuplicateSearchDialog;

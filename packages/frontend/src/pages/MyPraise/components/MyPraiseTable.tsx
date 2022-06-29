@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { UserDto } from 'api/dist/user/types';
-import LoaderSpinner from '@/components/LoaderSpinner';
+import { LoaderSpinner } from '@/components/LoaderSpinner';
 import { AllPraiseList } from '@/model/praise';
-import PraisePageLoader from '@/components/praise/PraisePageLoader';
-import Praise from '@/components/praise/Praise';
-import PraiseRow from '@/components/praise/PraiseRow';
+import { PraisePageLoader } from '@/components/praise/PraisePageLoader';
+import { Praise } from '@/components/praise/Praise';
+import { PraiseRow } from '@/components/praise/PraiseRow';
 import { ActiveUserId } from '@/model/auth';
 import { SingleUser } from '@/model/users';
 
@@ -18,7 +18,7 @@ const getReceiverId = (user: UserDto | undefined): string | undefined => {
     : undefined;
 };
 
-const MyPraiseTable = (): JSX.Element => {
+export const MyPraiseTable = (): JSX.Element => {
   const allPraise = useRecoilValue(AllPraiseList(PRAISE_LIST_KEY));
   const [receiverId, setReceiverId] = useState<string | undefined>(undefined);
   const userId = useRecoilValue(ActiveUserId);
@@ -44,5 +44,3 @@ const MyPraiseTable = (): JSX.Element => {
     </>
   );
 };
-
-export default MyPraiseTable;

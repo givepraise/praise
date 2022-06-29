@@ -3,7 +3,7 @@ import { Tooltip } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { useRecoilValue } from 'recoil';
-import getMarkdownText from '@/components/MarkdownText';
+import { getMarkdownText } from '@/components/MarkdownText';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { InlineLabel } from '@/components/InlineLabel';
@@ -35,7 +35,7 @@ interface Props {
   showScore?: boolean;
 }
 
-const Praise = ({
+export const Praise = ({
   praise,
   showIdPrefix = false,
   showReceiver = true,
@@ -172,5 +172,3 @@ const Praise = ({
     </div>
   );
 };
-
-export default Praise;

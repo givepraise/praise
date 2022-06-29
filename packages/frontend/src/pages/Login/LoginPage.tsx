@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { useAccount } from 'wagmi';
 import { requestApiAuth, requestNonce } from '@/utils/auth';
-import SignMessageLayout from '../../layouts/SignMessageLayout';
+import { SignMessageLayout } from '../../layouts/SignMessageLayout';
 
 const LoginPage = (): JSX.Element => {
   const { data } = useAccount();
@@ -54,4 +54,5 @@ const LoginPage = (): JSX.Element => {
   );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default LoginPage;

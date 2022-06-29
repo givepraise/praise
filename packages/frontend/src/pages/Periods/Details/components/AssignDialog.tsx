@@ -94,7 +94,7 @@ const DialogMessage = ({
   );
 };
 
-const PeriodAssignDialog = ({
+export const PeriodAssignDialog = ({
   onClose,
   onAssign,
   poolRequirements,
@@ -129,5 +129,3 @@ const PeriodAssignDialog = ({
     </div>
   );
 };
-
-export default PeriodAssignDialog;

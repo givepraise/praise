@@ -10,7 +10,7 @@ import { UserAvatar } from '@/components/user/UserAvatar';
 import { SingleUser } from '@/model/users';
 import { classNames } from '@/utils/index';
 import { InlineLabel } from '../InlineLabel';
-import Notice from '../Notice';
+import { Notice } from '../Notice';
 import { UserName } from '../user/UserName';
 import { UserPopover } from '../user/UserPopover';
 
@@ -28,7 +28,10 @@ interface Params {
   className?: string;
 }
 
-const EventLog = ({ eventlog, className = '' }: Params): JSX.Element | null => {
+export const EventLog = ({
+  eventlog,
+  className = '',
+}: Params): JSX.Element | null => {
   const user = useRecoilValue(SingleUser(eventlog.user));
 
   return (
@@ -90,5 +93,3 @@ const EventLog = ({ eventlog, className = '' }: Params): JSX.Element | null => {
     </div>
   );
 };
-
-export default EventLog;

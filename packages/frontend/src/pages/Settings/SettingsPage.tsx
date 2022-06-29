@@ -4,10 +4,10 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import { AllSettings, useSetSetting } from '@/model/settings';
-import NavItem from '@/navigation/NavItem';
-import BreadCrumb from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/BreadCrumb';
 import { SubPageNav } from '@/navigation/SubPageNav';
-import SettingsForm from '../../components/settings/SettingsForm';
+import { NavItem } from '@/navigation/NavItem';
+import { SettingsForm } from '@/components/settings/SettingsForm';
 
 const SettingsPage = (): JSX.Element | null => {
   const settings = useRecoilValue(AllSettings);
@@ -77,4 +77,5 @@ const SettingsPage = (): JSX.Element | null => {
   );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default SettingsPage;

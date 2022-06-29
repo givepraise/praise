@@ -1,5 +1,5 @@
 import { useRecoilValue } from 'recoil';
-import SettingsForm from '@/components/settings/SettingsForm';
+import { SettingsForm } from '@/components/settings/SettingsForm';
 import {
   AllPeriodSettings,
   useSetPeriodSetting,
@@ -10,7 +10,8 @@ interface Params {
   periodId: string;
   disabled: boolean;
 }
-const PeriodSettingsForm = ({
+
+export const PeriodSettingsForm = ({
   periodId,
   disabled,
 }: Params): JSX.Element | null => {
@@ -29,5 +30,3 @@ const PeriodSettingsForm = ({
     </div>
   );
 };
-
-export default PeriodSettingsForm;

@@ -1,12 +1,12 @@
 import { useHistory, useParams } from 'react-router-dom';
-import Praise from '@/components/praise/Praise';
+import { Praise } from '@/components/praise/Praise';
 import {
   PeriodAndReceiverPageParams,
   usePeriodReceiverPraiseQuery,
 } from '@/model/periods';
-import PraiseRow from '@/components/praise/PraiseRow';
+import { PraiseRow } from '@/components/praise/PraiseRow';
 
-const PeriodReceiverTable = (): JSX.Element | null => {
+export const ReceiverSummaryTable = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
   const { location } = useHistory();
   const praiseList = usePeriodReceiverPraiseQuery(
@@ -28,5 +28,3 @@ const PeriodReceiverTable = (): JSX.Element | null => {
     </div>
   );
 };
-
-export default PeriodReceiverTable;

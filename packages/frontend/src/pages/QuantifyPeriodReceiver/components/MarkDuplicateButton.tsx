@@ -6,7 +6,7 @@ interface Props {
   onClick();
 }
 
-const MarkDuplicateButton = ({
+export const MarkDuplicateButton = ({
   disabled = false,
   onClick,
 }: Props): JSX.Element => {
@@ -25,5 +25,3 @@ const MarkDuplicateButton = ({
     </button>
   );
 };
-
-export default MarkDuplicateButton;

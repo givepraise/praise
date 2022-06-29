@@ -14,23 +14,23 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import BreadCrumb from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/BreadCrumb';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   PeriodPageParams,
   SinglePeriod,
   useSinglePeriodQuery,
 } from '@/model/periods';
-import BackLink from '@/navigation/BackLink';
-import PeriodDetailsComponent from '@/pages/Periods/Details/components/Details';
 import { SubPageNav } from '@/navigation/SubPageNav';
 import { InlineLabel } from '@/components/InlineLabel';
-import PeriodNameForm from './components/PeriodNameForm';
+import { BackLink } from '@/navigation/BackLink';
+import { NavItem } from '@/navigation/NavItem';
+import { PeriodDetails } from './components/PeriodDetails';
+import { PeriodNameForm } from './components/PeriodNameForm';
 import { QuantifierMessage } from './components/QuantifierMessage';
-import QuantifierTable from './components/QuantifierTable';
-import ReceiverTable from './components/ReceiverTable';
-import PeriodSettingsForm from './components/PeriodSettingsForm';
-import NavItem from '../../../navigation/NavItem';
+import { QuantifierTable } from './components/QuantifierTable';
+import { ReceiverTable } from './components/ReceiverTable';
+import { PeriodSettingsForm } from './components/PeriodSettingsForm';
 
 const PeriodDetailHead = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -52,12 +52,12 @@ const PeriodDetailHead = (): JSX.Element => {
         />
       </div>
       {isAdmin ? <PeriodNameForm /> : <h2>{period?.name}</h2>}
-      <PeriodDetailsComponent />
+      <PeriodDetails />
     </>
   );
 };
 
-const PeriodDetailPage = (): JSX.Element | null => {
+export const PeriodDetailsPage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
@@ -130,4 +130,5 @@ const PeriodDetailPage = (): JSX.Element | null => {
   );
 };
 
-export default PeriodDetailPage;
+// eslint-disable-next-line import/no-default-export
+export default PeriodDetailsPage;

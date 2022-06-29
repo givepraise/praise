@@ -13,8 +13,8 @@ import {
   useUpdatePeriod,
 } from '@/model/periods';
 import { isResponseOk } from '@/model/api';
-import DayInput from '@/components/form/DayInput';
-import FieldErrorMessage from '@/components/form/FieldErrorMessage';
+import { DayInput } from '@/components/form/DayInput';
+import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 
 const validate = (
   values: Record<string, string>
@@ -33,7 +33,7 @@ const validate = (
   return errors as ValidationErrors;
 };
 
-const PeriodDateForm = (): JSX.Element | null => {
+export const PeriodDateForm = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
   const [apiResponse, setApiResponse] = React.useState<
@@ -105,5 +105,3 @@ const PeriodDateForm = (): JSX.Element | null => {
     />
   );
 };
-
-export default PeriodDateForm;

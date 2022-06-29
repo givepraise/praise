@@ -2,16 +2,16 @@ import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import BreadCrumb from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/BreadCrumb';
 import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   SinglePeriod,
 } from '@/model/periods';
 import { useAllPeriodSettingsQuery } from '@/model/periodsettings';
-import BackLink from '@/navigation/BackLink';
 import { getQuantificationStats } from '@/utils/periods';
-import QuantifyPeriodTable from './components/QuantifyPeriodTable';
+import { BackLink } from '@/navigation/BackLink';
+import { QuantifyPeriodTable } from './components/QuantifyPeriodTable';
 
 const PeriodMessage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -59,4 +59,5 @@ const QuantifyPeriodPage = (): JSX.Element => {
   );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default QuantifyPeriodPage;

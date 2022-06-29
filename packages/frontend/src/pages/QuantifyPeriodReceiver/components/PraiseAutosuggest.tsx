@@ -20,7 +20,7 @@ interface PraiseAutosuggestProps {
   praise: PraiseDto;
 }
 
-const PraiseAutosuggest = ({
+export const PraiseAutosuggest = ({
   onSelect,
   onClose,
   praise,
@@ -140,5 +140,3 @@ const PraiseAutosuggest = ({
   };
   return <DropdownCombobox />;
 };
-
-export default PraiseAutosuggest;

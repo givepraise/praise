@@ -6,7 +6,7 @@ interface Props {
   onClick();
 }
 
-const MarkDismissedButton = ({
+export const MarkDismissedButton = ({
   disabled = false,
   onClick,
 }: Props): JSX.Element => {
@@ -25,5 +25,3 @@ const MarkDismissedButton = ({
     </button>
   );
 };
-
-export default MarkDismissedButton;

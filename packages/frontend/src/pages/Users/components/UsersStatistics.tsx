@@ -12,14 +12,14 @@ import {
 } from '@/model/users';
 
 interface DownloadUserDto extends Omit<UserDto, 'accounts'> {
-  discordName: string | undefined;
-  discordAccountId: string | undefined;
-  telegramName: string | undefined;
-  telegramAccountId: string | undefined;
-  accounts: string[] | undefined;
+  discordName?: string;
+  discordAccountId?: string;
+  telegramName?: string;
+  telegramAccountId?: string;
+  accounts?: string[];
 }
 
-const UsersStatistics = (): JSX.Element => {
+export const UsersStatistics = (): JSX.Element => {
   const allAdminUsers = useRecoilValue(AllAdminUsers);
   const allForwarderUsers = useRecoilValue(AllForwarderUsers);
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
@@ -79,5 +79,3 @@ const UsersStatistics = (): JSX.Element => {
     </>
   );
 };
-
-export default UsersStatistics;

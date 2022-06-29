@@ -1,7 +1,7 @@
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const LoaderSpinner = (): JSX.Element => {
+export const LoaderSpinner = (): JSX.Element => {
   return (
     <div className="w-full text-center">
       <FontAwesomeIcon
@@ -13,5 +13,3 @@ const LoaderSpinner = (): JSX.Element => {
     </div>
   );
 };
-
-export default LoaderSpinner;

@@ -6,7 +6,8 @@ interface FieldErrorMessageProps {
   name: string;
   apiResponse: AxiosResponse<unknown> | AxiosError<unknown> | null;
 }
-const FieldErrorMessage = ({
+
+export const FieldErrorMessage = ({
   name,
   apiResponse,
 }: FieldErrorMessageProps): JSX.Element | null => {
@@ -36,5 +37,3 @@ const FieldErrorMessage = ({
     <span className="text-red-500">{error}</span>
   ) : null;
 };
-
-export default FieldErrorMessage;

@@ -5,11 +5,11 @@ import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import sortBy from 'lodash/sortBy';
 import { PeriodPageParams, SinglePeriod } from '@/model/periods';
-import Notice from '@/components/Notice';
+import { Notice } from '@/components/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
-const QuantifierTable = (): JSX.Element => {
+export const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
 
@@ -128,5 +128,3 @@ const QuantifierTable = (): JSX.Element => {
     </table>
   );
 };
-
-export default QuantifierTable;

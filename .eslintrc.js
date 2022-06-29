@@ -62,7 +62,8 @@ module.exports = {
             "index"
           ]
       }
-    ]
+    ],
+    'import/no-default-export': 'error',
   },
   settings: {
     'import/extensions': ['.ts', '.tsx'],

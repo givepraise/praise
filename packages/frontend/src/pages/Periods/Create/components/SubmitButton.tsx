@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil';
 import { CreatePeriodApiResponse } from '@/model/periods';
 import { isResponseOk } from '@/model/api';
 
-const SubmitButton = (): JSX.Element => {
+export const SubmitButton = (): JSX.Element => {
   const { invalid, submitting, submitSucceeded, dirtySinceLastSubmit } =
     useFormState();
   const apiResponse = useRecoilValue(CreatePeriodApiResponse);
@@ -39,5 +39,3 @@ const SubmitButton = (): JSX.Element => {
     </button>
   );
 };
-
-export default SubmitButton;

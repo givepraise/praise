@@ -15,7 +15,7 @@ interface MultiselectInputProps {
   noSelectedMessage: string;
 }
 
-const MultiselectInput = ({
+export const MultiselectInput = ({
   handleChange,
   selected,
   options,
@@ -92,5 +92,3 @@ const MultiselectInput = ({
     </div>
   );
 };
-
-export default MultiselectInput;

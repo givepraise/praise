@@ -8,10 +8,10 @@ import { SingleSetting, useAllSettingsQuery } from '@/model/settings';
 import { useAllPeriodsQuery } from '@/model/periods';
 import { useAllUsersQuery } from '@/model/users';
 import { ActiveUserRoles } from '@/model/auth';
-import Nav from '../navigation/Nav';
-import AuthenticatedRoutes from '../navigation/AuthenticatedRoutes';
+import { Nav } from '@/navigation/Nav';
+import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
 
-const AuthenticatedLayout = (): JSX.Element | null => {
+export const AuthenticatedLayout = (): JSX.Element | null => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
   const activeUserRoles = useRecoilValue(ActiveUserRoles);
@@ -119,5 +119,3 @@ const AuthenticatedLayout = (): JSX.Element | null => {
     </div>
   );
 };
-
-export default AuthenticatedLayout;

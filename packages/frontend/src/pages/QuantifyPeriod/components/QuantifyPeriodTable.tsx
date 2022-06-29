@@ -24,7 +24,7 @@ const DoneLabel = (): JSX.Element => {
   );
 };
 
-const QuantifyPeriodTable = (): JSX.Element => {
+export const QuantifyPeriodTable = (): JSX.Element => {
   const history = useHistory();
   const { periodId } = useParams<PeriodPageParams>();
   const { location } = useHistory();
@@ -150,5 +150,3 @@ const QuantifyPeriodTable = (): JSX.Element => {
     </table>
   );
 };
-
-export default QuantifyPeriodTable;

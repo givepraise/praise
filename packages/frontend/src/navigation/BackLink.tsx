@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 interface BackLinkProps {
   to: string;
 }
-const BackLink = ({ to }: BackLinkProps): JSX.Element => {
+
+export const BackLink = ({ to }: BackLinkProps): JSX.Element => {
   return (
     <div className="mb-2">
       <Link
@@ -15,5 +16,3 @@ const BackLink = ({ to }: BackLinkProps): JSX.Element => {
     </div>
   );
 };
-
-export default BackLink;

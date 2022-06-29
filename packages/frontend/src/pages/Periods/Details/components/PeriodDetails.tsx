@@ -24,11 +24,11 @@ import {
   useVerifyQuantifierPoolSize,
 } from '@/model/periods';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import PeriodAssignDialog from './AssignDialog';
-import PeriodCloseDialog from './CloseDialog';
-import PeriodDateForm from './PeriodDateForm';
+import { PeriodAssignDialog } from './AssignDialog';
+import { PeriodCloseDialog } from './CloseDialog';
+import { PeriodDateForm } from './PeriodDateForm';
 
-const PeriodDetails = (): JSX.Element | null => {
+export const PeriodDetails = (): JSX.Element | null => {
   const [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = React.useState(false);
 
@@ -205,5 +205,3 @@ const PeriodDetails = (): JSX.Element | null => {
     </div>
   );
 };
-
-export default PeriodDetails;

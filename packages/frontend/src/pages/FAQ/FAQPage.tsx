@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil';
 import { Disclosure } from '@headlessui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SingleSetting } from '@/model/settings';
-import BreadCrumb from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/BreadCrumb';
 
 const FAQPage = (): JSX.Element | null => {
   const siteFAQSetting = useRecoilValue(SingleSetting('PRAISE_FAQ'));
@@ -57,4 +57,5 @@ const FAQPage = (): JSX.Element | null => {
   );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default FAQPage;

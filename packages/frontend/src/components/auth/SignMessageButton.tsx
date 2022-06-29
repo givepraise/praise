@@ -1,5 +1,5 @@
 import { useSignMessage } from 'wagmi';
-import LoaderSpinner from '@/components/LoaderSpinner';
+import { LoaderSpinner } from '@/components/LoaderSpinner';
 
 interface Props {
   text: string;

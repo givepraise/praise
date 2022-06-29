@@ -3,18 +3,18 @@ import { useRecoilValue } from 'recoil';
 import find from 'lodash/find';
 import { PeriodSettingDto } from 'api/src/periodsettings/types';
 import { SettingDto } from 'api/dist/settings/types';
-import NumberInput from '@/components/form/NumberInput';
-import StringInput from '@/components/form/StringInput';
-import TextareaInput from '@/components/form/TextareaInput';
-import BooleanInput from '@/components/form/BooleanInput';
-import ImageFileInput from '@/components/form/ImageFileInput';
-import Notice from '@/components/Notice';
+import { NumberInput } from '@/components/form/NumberInput';
+import { StringInput } from '@/components/form/StringInput';
+import { TextareaInput } from '@/components/form/TextareaInput';
+import { BooleanInput } from '@/components/form/BooleanInput';
+import { ImageFileInput } from '@/components/form/ImageFileInput';
+import { Notice } from '@/components/Notice';
 import {
   SetSettingApiResponse,
   StringSetting,
   Setting,
 } from '@/model/settings';
-import SubmitButton from '../form/SubmitButton';
+import { SubmitButton } from '../form/SubmitButton';
 
 interface SettingsFormProps {
   settings: SettingDto[] | PeriodSettingDto[] | undefined;
@@ -85,7 +85,7 @@ const DisabledFormFields = (
   </>
 );
 
-const SettingsForm = ({
+export const SettingsForm = ({
   settings,
   setSetting,
   disabled = false,
@@ -154,5 +154,3 @@ const SettingsForm = ({
     />
   );
 };
-
-export default SettingsForm;

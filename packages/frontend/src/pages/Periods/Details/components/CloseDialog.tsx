@@ -10,7 +10,8 @@ interface PeriodCloseDialogProps {
   onClose(): void;
   onRemove(): void;
 }
-const PeriodCloseDialog = ({
+
+export const PeriodCloseDialog = ({
   onClose,
   onRemove,
 }: PeriodCloseDialogProps): JSX.Element => {
@@ -53,5 +54,3 @@ const PeriodCloseDialog = ({
     </div>
   );
 };
-
-export default PeriodCloseDialog;

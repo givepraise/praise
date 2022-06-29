@@ -2,14 +2,14 @@ import { PraiseDto } from 'api/dist/praise/types';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
-import Notice from '@/components/Notice';
-import Praise from '@/components/praise/Praise';
+import { Notice } from '@/components/Notice';
+import { Praise } from '@/components/praise/Praise';
 import { ActiveUserId } from '@/model/auth';
 import {
   findPraiseQuantification,
   shortenDuplicatePraiseId,
 } from '@/utils/praise';
-import QuantifySlider from './QuantifySlider';
+import { QuantifySlider } from './QuantifySlider';
 
 interface Props {
   praise: PraiseDto;
@@ -22,7 +22,7 @@ interface Props {
   onDuplicateClick();
 }
 
-const QuantifyPraiseRow = ({
+export const QuantifyPraiseRow = ({
   praise,
   periodId,
   usePseudonyms,
@@ -90,5 +90,3 @@ const QuantifyPraiseRow = ({
     </tr>
   );
 };
-
-export default QuantifyPraiseRow;

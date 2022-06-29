@@ -9,7 +9,7 @@ import { formatIsoDateUTC } from '@/utils/date';
 import { AllPeriods } from '@/model/periods';
 import { InlineLabel } from '@/components/InlineLabel';
 
-const PeriodsTable = (): JSX.Element => {
+export const PeriodsTable = (): JSX.Element => {
   const allPeriods = useRecoilValue(AllPeriods);
   const history = useHistory();
 
@@ -122,5 +122,3 @@ const PeriodsTable = (): JSX.Element => {
     </table>
   );
 };
-
-export default PeriodsTable;

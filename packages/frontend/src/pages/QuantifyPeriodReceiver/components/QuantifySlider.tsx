@@ -40,7 +40,7 @@ interface QuantifySliderProps {
   onChange(number);
 }
 
-const QuantifySlider = ({
+export const QuantifySlider = ({
   allowedScores,
   disabled = false,
   score = 0,
@@ -126,5 +126,3 @@ const QuantifySlider = ({
     </div>
   );
 };
-
-export default QuantifySlider;

@@ -1,8 +1,8 @@
 import { Field } from 'react-final-form';
 import { AxiosResponse, AxiosError } from 'axios';
-import FieldErrorMessage from '@/components/form/FieldErrorMessage';
+import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 
-const BooleanInput = (
+export const BooleanInput = (
   name: string,
   apiResponse: AxiosResponse<unknown> | AxiosError<unknown> | null
 ): JSX.Element => {
@@ -21,5 +21,3 @@ const BooleanInput = (
     </Field>
   );
 };
-
-export default BooleanInput;

@@ -6,7 +6,7 @@ interface SearchInputProps {
   value: string;
 }
 
-const SearchInput = ({
+export const SearchInput = ({
   handleChange,
   value,
 }: SearchInputProps): JSX.Element => {
@@ -34,5 +34,3 @@ const SearchInput = ({
     </div>
   );
 };
-
-export default SearchInput;

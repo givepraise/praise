@@ -11,7 +11,7 @@ import lowerCase from 'lodash/lowerCase';
 import { useAccount } from 'wagmi';
 import { AccountActivated } from '@/model/activate';
 import { requestApiActivate } from '@/utils/auth';
-import SignMessageLayout from '../../layouts/SignMessageLayout';
+import { SignMessageLayout } from '../../layouts/SignMessageLayout';
 
 interface Props {
   accountId: string;
@@ -78,7 +78,7 @@ const ActivateDialog = ({ accountId, platform, token }: Props): JSX.Element => {
   );
 };
 
-export default function ActivatePage(): JSX.Element | null {
+const ActivatePage = (): JSX.Element | null => {
   const { search } = useLocation();
   const { accountId, platform, token } = queryString.parse(search);
   const accountActivated = useRecoilValue(AccountActivated);
@@ -111,4 +111,7 @@ export default function ActivatePage(): JSX.Element | null {
   ) : (
     <ActivateDialog platform={platform} accountId={accountId} token={token} />
   );
-}
+};
+
+// eslint-disable-next-line import/no-default-export
+export default ActivatePage;

@@ -4,11 +4,11 @@ import { PraiseDto } from 'api/dist/praise/types';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { PeriodPageParams } from '@/model/periods';
-import Praise from '@/components/praise/Praise';
-import ScrollableDialog from '@/components/ScrollableDialog';
+import { Praise } from '@/components/praise/Praise';
+import { ScrollableDialog } from '@/components/ScrollableDialog';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
-import QuantifySlider from './QuantifySlider';
-import MarkDuplicateButton from './MarkDuplicateButton';
+import { QuantifySlider } from './QuantifySlider';
+import { MarkDuplicateButton } from './MarkDuplicateButton';
 
 interface DuplicateDialogProps {
   onClose(): void;
@@ -18,7 +18,7 @@ interface DuplicateDialogProps {
   duplicatesCount: number;
 }
 
-const DuplicateDialog = ({
+export const DuplicateDialog = ({
   onClose,
   onConfirm,
   open = false,
@@ -97,5 +97,3 @@ const DuplicateDialog = ({
     </ScrollableDialog>
   );
 };
-
-export default DuplicateDialog;
