@@ -1,10 +1,10 @@
+import { Types } from 'mongoose';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { generateUserAccountNameRealized } from '@useraccount/utils';
 import { NotFoundError } from '@error/errors';
-import { Types } from 'mongoose';
-import { UserDocument } from '../types';
 import { shortenEthAddress } from './core';
+import { UserDocument } from '../types';
 
 /**
  * Generate a display name for a given User,

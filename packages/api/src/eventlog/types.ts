@@ -1,5 +1,5 @@
-import { UserAccountDto } from '../useraccount/types';
 import { Document, Types } from 'mongoose';
+import { UserAccountDto } from '../useraccount/types';
 
 export enum EventLogTypeKey {
   PERMISSION = 'PERMISSION',

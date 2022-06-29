@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import {
   BadRequestError,
   NotFoundError,
@@ -14,7 +15,6 @@ import { UserModel } from '@user/entities';
 import { UserDocument } from '@user/types';
 import { EventLogTypeKey } from '@eventlog/types';
 import { logEvent } from '@eventlog/utils';
-import { ethers } from 'ethers';
 import { JwtService } from './JwtService';
 import {
   AuthRequestInput,

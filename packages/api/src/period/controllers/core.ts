@@ -1,9 +1,11 @@
+import { Types } from 'mongoose';
+import { StatusCodes } from 'http-status-codes';
+import { Request, Response } from 'express';
+import { Parser } from 'json2csv';
+import { parseISO } from 'date-fns';
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { PraiseDtoExtended, PraiseDetailsDto, PraiseDto } from '@praise/types';
-import {
-  praiseListTransformer,
-  praiseTransformer,
-} from '@praise/transformers';
+import { praiseListTransformer, praiseTransformer } from '@praise/transformers';
 import { calculateQuantificationScore } from '@praise/utils/score';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
@@ -21,11 +23,6 @@ import { getQueryInput, getQuerySort } from '@shared/functions';
 import { PraiseModel } from '@praise/entities';
 import { EventLogTypeKey } from '@eventlog/types';
 import { logEvent } from '@eventlog/utils';
-import { Types } from 'mongoose';
-import { StatusCodes } from 'http-status-codes';
-import { Request, Response } from 'express';
-import { Parser } from 'json2csv';
-import { parseISO } from 'date-fns';
 import {
   PeriodDetailsDto,
   PeriodUpdateInput,
@@ -172,7 +169,8 @@ export const update = async (
       const newEndDate = parseISO(endDate);
 
       eventLogMessages.push(
-        `Updated the end date of period "${period.name
+        `Updated the end date of period "${
+          period.name
         }" to ${endDate.toString()} UTC`
       );
 

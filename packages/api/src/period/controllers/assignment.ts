@@ -1,3 +1,6 @@
+import flatten from 'lodash/flatten';
+import { StatusCodes } from 'http-status-codes';
+import { Request } from 'express';
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { UserModel } from '@user/entities';
 import { settingValue } from '@shared/settings';
@@ -6,9 +9,6 @@ import { UserRole } from '@user/types';
 import { PraiseModel } from '@praise/entities';
 import { EventLogTypeKey } from '@eventlog/types';
 import { logEvent } from '@eventlog/utils';
-import flatten from 'lodash/flatten';
-import { StatusCodes } from 'http-status-codes';
-import { Request } from 'express';
 import {
   PeriodDetailsDto,
   PeriodStatusType,

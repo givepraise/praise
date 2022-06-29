@@ -1,3 +1,7 @@
+import { expect } from 'chai';
+import sum from 'lodash/sum';
+import { faker } from '@faker-js/faker';
+import { add } from 'date-fns';
 import {
   calculateQuantificationScore,
   calculateQuantificationsCompositeScore,
@@ -10,15 +14,11 @@ import {
   seedPeriod,
   seedUserAccount,
 } from '@database/seeder/entities';
-import { expect } from 'chai';
 import { PeriodModel } from '@period/entities';
 import { PeriodDetailsReceiver } from '@period/types';
 import { PraiseModel } from '@praise/entities';
 import { settingValue } from '@shared/settings';
-import sum from 'lodash/sum';
 import { getPeriodDateRangeQuery } from '@period/utils/core';
-import { faker } from '@faker-js/faker';
-import { add } from 'date-fns';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 
 describe('calculateQuantificationScore', () => {

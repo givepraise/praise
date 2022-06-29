@@ -1,18 +1,18 @@
 import { Wallet } from 'ethers';
+import { expect } from 'chai';
+import { faker } from '@faker-js/faker';
+import { PeriodModel } from '@period/entities';
 import {
   seedPeriod,
   seedPraise,
   seedUser,
   seedUserAccount,
 } from '@database/seeder/entities';
-import { expect } from 'chai';
-import { PeriodModel } from '@period/entities';
-import { loginUser } from './utils';
-import { faker } from '@faker-js/faker';
 import { PraiseModel } from '@praise/entities';
 import { PeriodSettingsModel } from '@periodsettings/entities';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
+import { loginUser } from './utils';
 
 describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
   beforeEach(async () => {

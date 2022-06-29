@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { PeriodModel } from '@period/entities';
 import { PraiseModel, QuantificationModel } from '@praise/entities';
 import { UserModel } from '@user/entities';
@@ -6,7 +7,6 @@ import { UserAccountDocument } from '@useraccount/types';
 import { PraiseDocument, QuantificationDocument } from '@praise/types';
 import { PeriodDocument } from '@period/types';
 import { insertNewPeriodSettings } from '@periodsettings/utils';
-import { faker } from '@faker-js/faker';
 import { UserDocument } from '@user/types';
 import { EventLogDocument } from '@eventlog/types';
 import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';

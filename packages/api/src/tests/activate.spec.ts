@@ -1,11 +1,11 @@
 import { Wallet } from 'ethers';
+import { expect } from 'chai';
+import { faker } from '@faker-js/faker';
 import {
   seedUser,
   seedUserAccount,
   seedUserAndUserAccount,
 } from '@database/seeder/entities';
-import { expect } from 'chai';
-import { faker } from '@faker-js/faker';
 import { UserAccountModel } from '@useraccount/entities';
 
 describe('GET /api/activate', () => {

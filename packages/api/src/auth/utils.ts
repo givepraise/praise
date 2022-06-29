@@ -1,5 +1,5 @@
-import { UnauthorizedError } from '@error/errors';
 import { Request } from 'express';
+import { UnauthorizedError } from '@error/errors';
 
 /**
  * Extract the JWT access token from an express request

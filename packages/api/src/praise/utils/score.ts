@@ -1,11 +1,11 @@
+import { Types } from 'mongoose';
+import sum from 'lodash/sum';
 import { BadRequestError } from '@error/errors';
 import { settingValue } from '@shared/settings';
 import { PeriodDetailsReceiver } from '@period/types';
-import { Types } from 'mongoose';
-import sum from 'lodash/sum';
+import { getPraisePeriod, isQuantificationCompleted } from './core';
 import { PraiseModel } from '../entities';
 import { Quantification } from '../types';
-import { getPraisePeriod, isQuantificationCompleted } from './core';
 
 /**
  * Digits of precision for rounding calculated scores

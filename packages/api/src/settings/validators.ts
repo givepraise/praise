@@ -1,6 +1,6 @@
-import { SettingDocument } from './types';
-import { PeriodSettingDocument } from '@periodsettings/types';
 import { Validator } from 'jsonschema';
+import { PeriodSettingDocument } from '@periodsettings/types';
+import { SettingDocument } from './types';
 
 const QuestionAnswerJSONSchema = {
   type: 'array',

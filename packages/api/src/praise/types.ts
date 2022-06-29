@@ -1,3 +1,4 @@
+import { Document } from 'mongoose';
 import { QueryInput } from '@shared/types';
 import { UserDocument } from '@user/types';
 import {
@@ -5,7 +6,6 @@ import {
   UserAccountDocument,
   UserAccountDto,
 } from '@useraccount/types';
-import { Document } from 'mongoose';
 
 interface Praise {
   reason: string;

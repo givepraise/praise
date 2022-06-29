@@ -1,3 +1,5 @@
+import { Request } from 'express';
+import { Types } from 'mongoose';
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { PeriodDocument, PeriodDateRange } from '@period/types';
 import { findActivePeriods, getPeriodDateRangeQuery } from '@period/utils/core';
@@ -10,8 +12,6 @@ import {
 } from '@shared/types';
 import { EventLogTypeKey } from '@eventlog/types';
 import { logEvent } from '@eventlog/utils';
-import { Request } from 'express';
-import { Types } from 'mongoose';
 import { UserModel } from './entities';
 import { userListTransformer, userTransformer } from './transformers';
 import { UserDocument, UserDto, UserRole, UserRoleChangeInput } from './types';

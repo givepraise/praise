@@ -1,11 +1,11 @@
-import { PeriodModel } from '@period/entities';
-import { UserModel } from '@user/entities';
-import { UserRole } from '@user/types';
-import { seedUserAndUserAccount, seedPeriod, seedPraise } from './entities';
 import addDays from 'date-fns/addDays';
 import { faker } from '@faker-js/faker';
 import range from 'lodash/range';
 import logger from 'jet-logger';
+import { PeriodModel } from '@period/entities';
+import { UserModel } from '@user/entities';
+import { UserRole } from '@user/types';
+import { seedUserAndUserAccount, seedPeriod, seedPraise } from './entities';
 
 const PERIOD_NUMBER = 3;
 const PERIOD_LENGTH_DAYS = 10;

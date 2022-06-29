@@ -1,11 +1,3 @@
-import { InternalServerError, NotFoundError } from '@error/errors';
-import { Quantifier, QuantifierPoolById, Receiver } from '@praise/types';
-import { UserModel } from '@user/entities';
-import { settingValue } from '@shared/settings';
-import { UserRole } from '@user/types';
-import { UserAccountDocument } from '@useraccount/types';
-import { PraiseModel } from '@praise/entities';
-import { PeriodDocument, Assignments } from '@period/types';
 import { firstFit, PackingOutput } from 'bin-packer';
 import logger from 'jet-logger';
 import flatten from 'lodash/flatten';
@@ -14,6 +6,14 @@ import range from 'lodash/range';
 import sum from 'lodash/sum';
 import zip from 'lodash/zip';
 import greedyPartitioning from 'greedy-number-partitioning';
+import { InternalServerError, NotFoundError } from '@error/errors';
+import { Quantifier, QuantifierPoolById, Receiver } from '@praise/types';
+import { UserModel } from '@user/entities';
+import { settingValue } from '@shared/settings';
+import { UserRole } from '@user/types';
+import { UserAccountDocument } from '@useraccount/types';
+import { PraiseModel } from '@praise/entities';
+import { PeriodDocument, Assignments } from '@period/types';
 import { getPreviousPeriodEndDate } from '../utils/core';
 import { PeriodModel } from '../entities';
 

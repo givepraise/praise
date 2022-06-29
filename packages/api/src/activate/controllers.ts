@@ -1,3 +1,5 @@
+import { ethers } from 'ethers';
+import { Response } from 'express';
 import {
   BadRequestError,
   InternalServerError,
@@ -9,8 +11,6 @@ import { logEvent } from '@eventlog/utils';
 import { TypedRequestBody } from '@shared/types';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
-import { ethers } from 'ethers';
-import { Response } from 'express';
 import { ActivateRequestBody } from './types';
 import { generateActivateMessage } from './utils';
 

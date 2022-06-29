@@ -1,4 +1,7 @@
 import { Wallet } from 'ethers';
+import { expect } from 'chai';
+import { faker } from '@faker-js/faker';
+import { PraiseModel } from '@praise/entities';
 import {
   seedPeriod,
   seedPraise,
@@ -6,12 +9,9 @@ import {
   seedUser,
   seedUserAccount,
 } from '@database/seeder/entities';
-import { expect } from 'chai';
-import { loginUser } from './utils';
-import { PraiseModel } from '@praise/entities';
-import { faker } from '@faker-js/faker';
 import { PeriodModel } from '@period/entities';
 import { PeriodSettingsModel } from '@periodsettings/entities';
+import { loginUser } from './utils';
 
 describe('GET /api/praise/all', () => {
   beforeEach(async () => {

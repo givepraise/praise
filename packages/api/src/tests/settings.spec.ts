@@ -4,10 +4,10 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-import { loginUser } from './utils';
 import { faker } from '@faker-js/faker';
-import { SettingsModel } from '@settings/entities';
 import { URL } from 'url';
+import { SettingsModel } from '@settings/entities';
+import { loginUser } from './utils';
 
 describe('GET /api/settings/all', () => {
   it('200 response with json body containing list of settings', async function () {

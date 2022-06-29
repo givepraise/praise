@@ -1,7 +1,7 @@
+import { Router } from '@awaitjs/express';
 import { activateRouter } from '@activate/routes';
 import { authMiddleware } from '@auth/middleware';
 import { authRouter } from '@auth/routes';
-import { Router } from '@awaitjs/express';
 import { NOT_FOUND } from '@error/constants';
 import { adminPeriodRouter, periodRouter } from '@period/routes';
 import { praiseRouter } from '@praise/routes';

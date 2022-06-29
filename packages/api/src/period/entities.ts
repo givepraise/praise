@@ -1,6 +1,6 @@
-import { PeriodDocument, PeriodStatusType } from '@period/types';
 import { Schema, model } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
+import { PeriodDocument, PeriodStatusType } from '@period/types';
 import { endDateValidators } from './validators';
 
 const periodSchema = new Schema<PeriodDocument>(

@@ -1,3 +1,5 @@
+import { Request } from 'express';
+import { Types } from 'mongoose';
 import { BadRequestError, NotFoundError } from '@error/errors';
 import {
   getPraiseAllInput,
@@ -14,13 +16,9 @@ import {
 } from '@shared/types';
 import { EventLogTypeKey } from '@eventlog/types';
 import { logEvent } from '@eventlog/utils';
-import { Request } from 'express';
-import { Types } from 'mongoose';
+import { PeriodStatusType } from '@period/types';
 import { PraiseModel } from './entities';
-import {
-  praiseListTransformer,
-  praiseTransformer,
-} from './transformers';
+import { praiseListTransformer, praiseTransformer } from './transformers';
 import {
   PraiseAllInput,
   PraiseDetailsDto,
@@ -29,8 +27,7 @@ import {
   QuantificationCreateUpdateInput,
 } from './types';
 import { getPraisePeriod } from './utils/core';
-import { PeriodStatusType } from '@period/types';
-interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput { }
+interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
 /**
  * Fetch paginated list of Praise
@@ -83,9 +80,7 @@ export const single = async (
     'giver receiver forwarder'
   );
   if (!praise) throw new NotFoundError('Praise');
-  const praiseDetailsDto: PraiseDetailsDto = await praiseTransformer(
-    praise
-  );
+  const praiseDetailsDto: PraiseDetailsDto = await praiseTransformer(praise);
 
   res.status(200).json(praiseDetailsDto);
 };
@@ -191,8 +186,9 @@ export const quantify = async (
     quantification.dismissed = false;
     quantification.duplicatePraise = undefined;
 
-    eventLogMessage = `Gave a score of ${quantification.score
-      } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
+    eventLogMessage = `Gave a score of ${
+      quantification.score
+    } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
   }
 
   await praise.save();

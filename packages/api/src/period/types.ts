@@ -1,3 +1,4 @@
+import { Document, Types } from 'mongoose';
 import {
   Quantifier,
   QuantificationDocument,
@@ -7,7 +8,6 @@ import {
 import { Query } from '@shared/types';
 import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
 import { PeriodSettingDto } from '@periodsettings/types';
-import { Document, Types } from 'mongoose';
 
 export enum PeriodStatusType {
   OPEN = 'OPEN',

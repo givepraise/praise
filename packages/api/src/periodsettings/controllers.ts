@@ -1,7 +1,7 @@
+import { Request } from 'express';
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { removeFile, upload } from '@shared/functions';
 import { TypedRequestBody, TypedResponse } from '@shared/types';
-import { Request } from 'express';
 import { SettingSetInput } from '@settings/types';
 import { PeriodStatusType } from '@period/types';
 import { PeriodModel } from '@period/entities';
@@ -99,8 +99,10 @@ export const set = async (
 
   await logEvent(
     EventLogTypeKey.SETTING,
-    `Updated period setting "${setting.label
-    }" from ${originalValue} to ${setting.value.toString()} in period "${period.name
+    `Updated period setting "${
+      setting.label
+    }" from ${originalValue} to ${setting.value.toString()} in period "${
+      period.name
     }"`,
     {
       userId: res.locals.currentUser._id,
