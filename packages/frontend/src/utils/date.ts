@@ -15,13 +15,6 @@ export const parseDate = (
   return parse(date, pattern, new Date());
 };
 
-export const localDateToUtc = (dateLocal: Date): Date => {
-  const timezone = jstz.determine().name();
-  const dateUtc = zonedTimeToUtc(dateLocal, timezone);
-
-  return dateUtc;
-};
-
 export const utcDateToLocal = (dateUtc: Date): Date => {
   const timezone = jstz.determine().name();
   const dateLocal = utcToZonedTime(dateUtc, timezone);

@@ -31,10 +31,6 @@ export const forwardSuccess = async (
   }
 };
 
-export const praiseError = (title: string, description: string): string => {
-  return `**❌ ${title}**\n${description}`;
-};
-
 export const notActivatedError = async (): Promise<string> => {
   const msg = (await settingValue(
     'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR'
@@ -102,31 +98,6 @@ export const praiseRoleError = async (
   }
   return new MessageEmbed().setColor('#ff0000').setDescription(
     'USER DOES NOT HAVE {@role} role (message not set)'
-      .replace('{role}', praiseGiverRole?.name || '...')
-      .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
-      .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
-      .replace('{@user}', `<@!${user?.id || '...'}>`)
-  );
-};
-
-export const forwardRoleError = async (
-  praiseGiverRole: Role,
-  user: User
-): Promise<MessageEmbed> => {
-  const msg = (await settingValue(
-    'FORWARD_FROM_USER_WITHOUT_PRAISE_GIVER_ROLE_ERROR'
-  )) as string;
-  if (msg) {
-    return new MessageEmbed().setColor('#ff0000').setDescription(
-      msg
-        .replace('{role}', praiseGiverRole?.name || '...')
-        .replace('{giver}', `${user?.username}#${user?.discriminator}` || '...')
-        .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
-        .replace('{@giver}', `<@!${user?.id || '...'}>`)
-    );
-  }
-  return new MessageEmbed().setColor('#ff0000').setDescription(
-    'GIVER DOES NOT HAVE {@role} role (message not set)'
       .replace('{role}', praiseGiverRole?.name || '...')
       .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
       .replace('{@role}', `<@&${praiseGiverRole?.id}>`)

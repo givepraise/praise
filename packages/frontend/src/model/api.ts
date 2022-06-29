@@ -77,20 +77,6 @@ export const ApiAuthGet = selectorFamily<AxiosResponse<unknown>, RequestParams>(
 );
 
 /**
- * POST request
- */
-export const ApiPost = selectorFamily<AxiosResponse<unknown>, RequestParams>({
-  key: 'ApiPost',
-  get: (params: RequestParams) => async (): Promise<AxiosResponse<unknown>> => {
-    const { config, url, data } = params;
-    const apiClient = makeApiClient();
-    const response = await apiClient.post(url, data, config);
-
-    return response;
-  },
-});
-
-/**
  * Authenticated POST request
  */
 export const ApiAuthPost = selectorFamily<

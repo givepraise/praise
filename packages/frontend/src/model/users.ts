@@ -107,24 +107,6 @@ export const SingleUser = selectorFamily({
     },
 });
 
-type SingleUserByReceiverIdParams = {
-  receiverId: string;
-};
-export const SingleUserByReceiverId = selectorFamily({
-  key: 'SingleUserByReceiverId',
-  get:
-    (params: SingleUserByReceiverIdParams) =>
-    ({ get }): UserDto | undefined => {
-      const { receiverId } = params;
-      const allUsers = get(AllUsers);
-      if (!allUsers) return undefined;
-      return allUsers.find((user) => {
-        if (!user.accounts) return false;
-        return user.accounts.find((account) => account._id === receiverId);
-      });
-    },
-});
-
 const stringToNumber = (s: string): number => {
   let value = 0;
   for (let i = s.length - 1; i >= 0; i--) {

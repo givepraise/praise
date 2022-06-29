@@ -7,16 +7,6 @@ import { UploadedFile } from 'express-fileupload';
 import { BadRequestError, InternalServerError } from '@error/errors';
 import { unlink } from 'fs/promises';
 
-export const pErr = (err: Error): void => {
-  if (err) {
-    logger.err(err);
-  }
-};
-
-export const getRandomInt = (): number => {
-  return Math.floor(Math.random() * 1_000_000_000_000);
-};
-
 export const getRandomString = (length = 10): string => {
   let result = '';
   const characters =

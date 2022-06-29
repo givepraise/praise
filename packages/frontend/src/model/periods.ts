@@ -674,22 +674,6 @@ type PeriodQuantifierReceiverParams = {
 };
 
 /**
- * Period selector that returns @QuantifierReceiverData for a  receiver
- * assigned to the currently active quantifier.
- */
-export const PeriodQuantifierReceiver = selectorFamily({
-  key: 'PeriodQuantifierReceiver',
-  get:
-    (params: PeriodQuantifierReceiverParams) =>
-    ({ get }): QuantifierReceiverData | undefined => {
-      const { periodId, receiverId } = params;
-      const qrd = get(PeriodQuantifierReceivers(periodId));
-      if (!qrd) return undefined;
-      return qrd.find((item) => item.receiverId === receiverId);
-    },
-});
-
-/**
  * Period selector that returns all Praise for a receiver assigned to the
  * currently active quantifier.
  */

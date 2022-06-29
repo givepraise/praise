@@ -29,23 +29,6 @@ const periodDocumentToDto = (
 };
 
 /**
- * Serialize a list of PeriodDocuments
- *
- * @param {(PeriodDocument[] | undefined)} periodDocuments
- * @returns {PeriodDetailsDto[]}
- */
-export const periodDocumentListTransformer = (
-  periodDocuments: PeriodDocument[] | undefined
-): PeriodDetailsDto[] => {
-  if (periodDocuments && Array.isArray(periodDocuments)) {
-    return periodDocuments.map((periodDocument) =>
-      periodDocumentToDto(periodDocument)
-    );
-  }
-  return [];
-};
-
-/**
  * Serialize a PeriodDocument
  *
  * @param {PeriodDocument} periodDocument
@@ -118,17 +101,4 @@ export const periodDetailsReceiverListTransformer = async (
     return periodDetailsReceiverDto;
   }
   return [];
-};
-
-/**
- * Serialize relevant details about a Praise receiver in a period
- *
- * @param {PeriodDetailsReceiver} periodDetailsReceiver
- * @returns {Promise<PeriodDetailsReceiverDto>}
- */
-export const periodDetailsReceiverTransformer = async (
-  periodDetailsReceiver: PeriodDetailsReceiver
-): Promise<PeriodDetailsReceiverDto> => {
-  const response = await periodDetailsReceiverToDto(periodDetailsReceiver);
-  return response;
 };
