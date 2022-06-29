@@ -18,8 +18,8 @@ import { Request } from 'express';
 import { Types } from 'mongoose';
 import { PraiseModel } from './entities';
 import {
-  praiseDocumentListTransformer,
-  praiseDocumentTransformer,
+  praiseListTransformer,
+  praiseTransformer,
 } from './transformers';
 import {
   PraiseAllInput,
@@ -30,7 +30,7 @@ import {
 } from './types';
 import { getPraisePeriod } from './utils/core';
 import { PeriodStatusType } from '@period/types';
-interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
+interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput { }
 
 /**
  * Fetch paginated list of Praise
@@ -57,7 +57,7 @@ export const all = async (
     throw new BadRequestError('Failed to paginate praise data');
 
   const praiseDetailsDtoList: PraiseDetailsDto[] = await Promise.all(
-    praisePagination.docs.map((p) => praiseDocumentTransformer(p))
+    praisePagination.docs.map((p) => praiseTransformer(p))
   );
 
   const response = {
@@ -83,7 +83,7 @@ export const single = async (
     'giver receiver forwarder'
   );
   if (!praise) throw new NotFoundError('Praise');
-  const praiseDetailsDto: PraiseDetailsDto = await praiseDocumentTransformer(
+  const praiseDetailsDto: PraiseDetailsDto = await praiseTransformer(
     praise
   );
 
@@ -191,9 +191,8 @@ export const quantify = async (
     quantification.dismissed = false;
     quantification.duplicatePraise = undefined;
 
-    eventLogMessage = `Gave a score of ${
-      quantification.score
-    } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
+    eventLogMessage = `Gave a score of ${quantification.score
+      } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
   }
 
   await praise.save();
@@ -207,6 +206,6 @@ export const quantify = async (
     period._id
   );
 
-  const response = await praiseDocumentListTransformer(affectedPraises);
+  const response = await praiseListTransformer(affectedPraises);
   res.status(200).json(response);
 };

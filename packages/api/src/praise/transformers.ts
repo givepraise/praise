@@ -16,7 +16,7 @@ import {
  * @param {Quantification} quantification
  * @returns {Promise<QuantificationDto>}
  */
-const quantificationToDto = async (
+const quantificationTransformer = async (
   quantification: Quantification
 ): Promise<QuantificationDto> => {
   const {
@@ -54,11 +54,11 @@ export const quantificationListTransformer = async (
     if (Array.isArray(quantifications)) {
       const quantificationDto: QuantificationDto[] = [];
       for (const q of quantifications) {
-        quantificationDto.push(await quantificationToDto(q));
+        quantificationDto.push(await quantificationTransformer(q));
       }
       return quantificationDto;
     } else {
-      return [await quantificationToDto(quantifications)];
+      return [await quantificationTransformer(quantifications)];
     }
   }
   return [];
@@ -70,7 +70,7 @@ export const quantificationListTransformer = async (
  * @param {PraiseDocument} praiseDocument
  * @returns {Promise<PraiseDto>}
  */
-const praiseDocumentToDto = async (
+export const praiseTransformer = async (
   praiseDocument: PraiseDocument
 ): Promise<PraiseDto> => {
   const {
@@ -85,6 +85,7 @@ const praiseDocumentToDto = async (
     createdAt,
     updatedAt,
   } = praiseDocument;
+
   return {
     _id,
     reasonRealized,
@@ -103,25 +104,13 @@ const praiseDocumentToDto = async (
 };
 
 /**
- * Serialize a Praise
- *
- * @param {PraiseDocument} praiseDocument
- * @returns {Promise<PraiseDto>}
- */
-export const praiseDocumentTransformer = async (
-  praiseDocument: PraiseDocument
-): Promise<PraiseDto> => {
-  return praiseDocumentToDto(praiseDocument);
-};
-
-/**
  * Serialize a list of Praise
  *
  * @param {PraiseDocument[]} praiseDocuments
  * @returns {Promise<PraiseDto[]>}
  */
-export const praiseDocumentListTransformer = async (
+export const praiseListTransformer = async (
   praiseDocuments: PraiseDocument[]
 ): Promise<PraiseDto[]> => {
-  return Promise.all(praiseDocuments.map((p) => praiseDocumentTransformer(p)));
+  return Promise.all(praiseDocuments.map((p) => praiseTransformer(p)));
 };

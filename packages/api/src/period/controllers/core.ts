@@ -1,8 +1,8 @@
 import { BadRequestError, NotFoundError } from '@error/errors';
 import { PraiseDtoExtended, PraiseDetailsDto, PraiseDto } from '@praise/types';
 import {
-  praiseDocumentListTransformer,
-  praiseDocumentTransformer,
+  praiseListTransformer,
+  praiseTransformer,
 } from '@praise/transformers';
 import { calculateQuantificationScore } from '@praise/utils/score';
 import { UserModel } from '@user/entities';
@@ -252,7 +252,7 @@ export const receiverPraise = async (
   const praiseDetailsDtoList: PraiseDetailsDto[] = [];
   if (praiseList) {
     for (const praise of praiseList) {
-      praiseDetailsDtoList.push(await praiseDocumentTransformer(praise));
+      praiseDetailsDtoList.push(await praiseTransformer(praise));
     }
   }
 
@@ -287,7 +287,7 @@ export const quantifierPraise = async (
 
   await PraiseModel.populate(praiseList, { path: 'receiver giver forwarder' });
 
-  const response = await praiseDocumentListTransformer(praiseList);
+  const response = await praiseListTransformer(praiseList);
   res.status(StatusCodes.OK).json(response);
 };
 
@@ -318,7 +318,7 @@ export const exportPraise = async (
   const docs: PraiseDetailsDto[] = [];
   if (praises) {
     for (const praise of praises) {
-      const pws: PraiseDtoExtended = await praiseDocumentTransformer(praise);
+      const pws: PraiseDtoExtended = await praiseTransformer(praise);
 
       const receiver = await UserModel.findById(pws.receiver.user);
       if (receiver) {
