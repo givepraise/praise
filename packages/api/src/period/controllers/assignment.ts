@@ -263,21 +263,11 @@ const prepareAssignmentsByTargetPraiseCount = async (
   PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number,
   targetBinSize: number
 ): Promise<Assignments> => {
-  logger.info('prepareAssignmentsByTargetPraiseCount');
-
   // Query a list of receivers with their collection of praise
   const receivers: Receiver[] = await queryReceiversWithPraise(period);
 
-  logger.info(
-    `prepareAssignmentsByTargetPraiseCount receivers: ${receivers.length}`
-  );
-
   // Query the list of quantifiers & randomize order
   const quantifierPool = await queryQuantifierPoolRandomized();
-
-  logger.info(
-    `prepareAssignmentsByTargetPraiseCount quantifierPool: ${quantifierPool.length}`
-  );
 
   // Clone the list of recievers for each redundant assignment
   //  (as defined by setting PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER)
@@ -308,12 +298,6 @@ const prepareAssignmentsByTargetPraiseCount = async (
   const assignments = generateAssignments(
     redundantAssignmentBins,
     quantifierPool
-  );
-
-  logger.info(
-    `prepareAssignmentsByTargetPraiseCount assignments: ${JSON.stringify(
-      assignments
-    )}`
   );
 
   await verifyAssignments(
@@ -402,9 +386,12 @@ const prepareAssignmentsByAllQuantifiers = async (
   );
 
   // Verify that all quantifiers were assigned if necessary
-  if (assignments.poolAssignments.length === quantifierPool.length) {
+  logger.info(
+    `verify even assigment assignments: ${assignments.poolAssignments.length} q pool: ${quantifierPool.length}`
+  );
+  if (assignments.remainingAssignmentsCount === 0) {
     logger.info(
-      'All quantifiers were assigned praise, as expected with PRAISE_QUANTIFIERS_ASSIGN_ALL'
+      'All quantifiers that could be assigned, were assigned praise, as expected with PRAISE_QUANTIFIERS_ASSIGN_ALL'
     );
   } else {
     throw new InternalServerError(

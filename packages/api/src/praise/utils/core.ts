@@ -21,7 +21,7 @@ export const getPraisePeriod = async (
     {
       endDate: { $gte: praise.createdAt },
     },
-
+    null,
     // sort periods by ending date ascending
     {
       sort: { endDate: 1 },

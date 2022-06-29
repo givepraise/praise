@@ -186,6 +186,9 @@ export const close = async (
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
+  if (period.status === PeriodStatusType.CLOSED)
+    throw new BadRequestError('Period is already closed');
+
   period.status = PeriodStatusType.CLOSED;
   await period.save();
 
@@ -418,6 +421,5 @@ export const exportPraise = async (
   const json2csv = new Parser({ fields: fields });
   const csv = json2csv.parse(docs);
 
-  res.attachment('data.csv');
-  res.status(200).send(csv);
+  res.status(200).contentType('text/csv').attachment('data.csv').send(csv);
 };

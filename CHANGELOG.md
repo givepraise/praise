@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Additional test coverage for api
 
 ### Fixed
+- Seeder generates periods and praise in the past, not future
 
 ## [0.9.0] - 2022-06-20
 

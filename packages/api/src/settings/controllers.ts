@@ -12,7 +12,8 @@ export const all = async (
   req: Request,
   res: TypedResponse<SettingDto[]>
 ): Promise<void> => {
-  const settings = await SettingsModel.find({ period: { $exists: 0 } });
+  const settings = await SettingsModel.find({});
+
   res.status(200).json(settingListTransformer(settings));
 };
 
@@ -21,7 +22,7 @@ export const single = async (
   res: TypedResponse<SettingDto>
 ): Promise<void> => {
   const setting = await SettingsModel.findOne({
-    _id: req.params.key,
+    _id: req.params.id,
     period: { $exists: 0 },
   });
   if (!setting) throw new NotFoundError('Settings');

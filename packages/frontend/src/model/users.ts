@@ -17,23 +17,18 @@ import {
   isResponseOk,
   useAuthApiQuery,
 } from './api';
-import { ActiveTokenSet, HasRole } from './auth';
+import { ActiveTokenSet } from './auth';
 import { AllPeriods } from './periods';
 
 export const AllUsersQuery = selector({
   key: 'AllUsersQuery',
   get: ({ get }) => {
-    const isAdmin = get(HasRole('ADMIN'));
     const activeTokenSet = get(ActiveTokenSet);
     if (!activeTokenSet) throw Error('Not authenticated');
 
-    let endpoint = '/users';
-    if (isAdmin) {
-      endpoint = '/admin/users';
-    }
     return get(
       ApiAuthGet({
-        url: `${endpoint}/all?sortColumn=ethereumAddress&sortType=desc`,
+        url: 'users/all?sortColumn=ethereumAddress&sortType=desc',
       })
     );
   },
