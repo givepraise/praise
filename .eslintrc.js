@@ -50,6 +50,19 @@ module.exports = {
         property: 'only',
       },
     ],
+    "import/order": ["error",
+      {
+        "groups":
+          [
+            "external",
+            "builtin",
+            "internal",
+            "sibling",
+            "parent",
+            "index"
+          ]
+      }
+    ]
   },
   settings: {
     'import/extensions': ['.ts', '.tsx'],
