@@ -7,7 +7,7 @@ import { generateUserAccountNameRealized } from './utils';
  * @param {UserAccountDocument} userAccountDocument
  * @returns {UserAccountDto}
  */
-const userAccountDocumentToDto = (
+export const userAccountTransformer = (
   userAccountDocument: UserAccountDocument
 ): UserAccountDto => {
   const {
@@ -43,19 +43,7 @@ export const userAccountListTransformer = (
   userAccountDocuments: UserAccountDocument[] | undefined
 ): UserAccountDto[] => {
   if (userAccountDocuments && Array.isArray(userAccountDocuments)) {
-    return userAccountDocuments.map((d) => userAccountDocumentToDto(d));
+    return userAccountDocuments.map((d) => userAccountTransformer(d));
   }
   return [];
-};
-
-/**
- * Serialize a UserAccount
- *
- * @param {UserAccountDocument} userAccountDocument
- * @returns {UserAccountDto}
- */
-export const userAccountTransformer = (
-  userAccountDocument: UserAccountDocument
-): UserAccountDto => {
-  return userAccountDocumentToDto(userAccountDocument);
 };
