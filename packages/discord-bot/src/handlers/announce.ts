@@ -1,18 +1,18 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
 import { UserModel } from 'api/dist/user/entities';
+import { Message, SelectMenuInteraction, MessageActionRow } from 'discord.js';
+import { UserRole } from 'api/dist/user/types';
+import { PeriodModel } from 'api/dist/period/entities';
+import { CommandHandler } from 'src/interfaces/CommandHandler';
 import {
   continueButton,
   cancelButton,
 } from '../utils/buttons/confirmationButtons';
 import { dmTargetMenu } from '../utils/menus/dmTargetmenu';
-import { Message, SelectMenuInteraction, MessageActionRow } from 'discord.js';
-import { UserRole } from 'api/dist/user/types';
 import { selectTargets } from '../utils/dmTargets';
-import { PeriodModel } from 'api/dist/period/entities';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
 import { notActivatedError } from '../utils/praiseEmbeds';
-import { CommandHandler } from 'src/interfaces/CommandHandler';
 
 export const announcementHandler: CommandHandler = async (interaction) => {
   const { user } = interaction;

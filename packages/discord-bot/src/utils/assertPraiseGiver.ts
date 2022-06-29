@@ -1,6 +1,6 @@
 import { CacheType, CommandInteraction, GuildMember } from 'discord.js';
-import { dmError, praiseRoleError } from '../utils/praiseEmbeds';
 import { settingValue } from 'api/dist/shared/settings';
+import { dmError, praiseRoleError } from '../utils/praiseEmbeds';
 
 export const assertPraiseGiver = async (
   praiseGiver: GuildMember,

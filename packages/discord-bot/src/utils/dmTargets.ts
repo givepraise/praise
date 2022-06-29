@@ -7,11 +7,11 @@ import {
   PeriodDocument,
   PeriodDetailsQuantifierDto,
 } from 'api/dist/period/types';
-import { FailedToDmUsersList } from 'src/interfaces/FailedToDmUsersList';
 
 import { CommandInteraction, DiscordAPIError } from 'discord.js';
 import { PraiseModel } from 'api/dist/praise/entities';
 import { Buffer } from 'node:buffer';
+import { FailedToDmUsersList } from 'src/interfaces/FailedToDmUsersList';
 
 const sendDMs = async (
   interaction: CommandInteraction,
