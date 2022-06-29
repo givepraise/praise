@@ -92,7 +92,7 @@ export const set = async (
       setting.value = uploadRespone;
     }
   } else {
-    setting.value = req.body.value; //TODO validate input
+    setting.value = req.body.value;
   }
 
   await setting.save();
