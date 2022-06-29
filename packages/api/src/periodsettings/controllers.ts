@@ -8,7 +8,7 @@ import { PeriodModel } from '@period/entities';
 import { EventLogTypeKey } from '@eventlog/types';
 import { logEvent } from '@eventlog/utils';
 import {
-  periodsettingTransformer,
+  periodSettingTransformer,
   periodsettingListTransformer,
 } from './transformers';
 import { PeriodSettingsModel } from './entities';
@@ -52,7 +52,7 @@ export const single = async (
     period: period._id,
   });
   if (!setting) throw new NotFoundError('Periodsetting');
-  res.status(200).json(periodsettingTransformer(setting));
+  res.status(200).json(periodSettingTransformer(setting));
 };
 
 /**
@@ -99,15 +99,13 @@ export const set = async (
 
   await logEvent(
     EventLogTypeKey.SETTING,
-    `Updated period setting "${
-      setting.label
-    }" from ${originalValue} to ${setting.value.toString()} in period "${
-      period.name
+    `Updated period setting "${setting.label
+    }" from ${originalValue} to ${setting.value.toString()} in period "${period.name
     }"`,
     {
       userId: res.locals.currentUser._id,
     }
   );
 
-  res.status(200).json(periodsettingTransformer(setting));
+  res.status(200).json(periodSettingTransformer(setting));
 };

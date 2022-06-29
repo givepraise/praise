@@ -6,7 +6,7 @@ import { PeriodSettingDocument, PeriodSettingDto } from './types';
  * @param {PeriodSettingDocument} setting
  * @returns {PeriodSettingDto}
  */
-export const periodsettingTransformer = (
+export const periodSettingTransformer = (
   setting: PeriodSettingDocument
 ): PeriodSettingDto => {
   const { _id, key, value, valueRealized, type, label, description, period } =
@@ -25,5 +25,5 @@ export const periodsettingListTransformer = (
 ): PeriodSettingDto[] => {
   if (!settings) return [];
 
-  return settings.map((setting) => periodsettingTransformer(setting));
+  return settings.map((setting) => periodSettingTransformer(setting));
 };
