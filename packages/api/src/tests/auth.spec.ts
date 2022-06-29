@@ -1,6 +1,6 @@
 import { Wallet } from 'ethers';
 import { expect } from 'chai';
-import { seedUser } from '@database/seeder/entities';
+import { seedUser } from '@/database/seeder/entities';
 import { loginUser } from './utils';
 
 describe('GET /api/auth/nonce', () => {

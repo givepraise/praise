@@ -1,9 +1,9 @@
 import { Request } from 'express';
-import { BadRequestError, NotFoundError } from '@error/errors';
-import { removeFile, upload } from '@shared/functions';
-import { TypedRequestBody, TypedResponse } from '@shared/types';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
+import { BadRequestError, NotFoundError } from '@/error/errors';
+import { removeFile, upload } from '@/shared/functions';
+import { TypedRequestBody, TypedResponse } from '@/shared/types';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
 import { SettingsModel } from './entities';
 import { settingListTransformer, settingTransformer } from './transformers';
 import { SettingDto, SettingSetInput } from './types';

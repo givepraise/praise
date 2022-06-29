@@ -1,14 +1,14 @@
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
-import { getQuerySort } from '@shared/functions';
+import { getQuerySort } from '@/shared/functions';
 import {
   EventLogsQueryInputParsedQs,
   PaginatedResponseBody,
   QueryInputParsedQs,
   TypedRequestQuery,
   TypedResponse,
-} from '@shared/types';
-import { BadRequestError } from '@error/errors';
+} from '@/shared/types';
+import { BadRequestError } from '@/error/errors';
 import { EventLogModel, EventLogTypeModel } from './entities';
 import { EventLogDto, EventLogInput, EventLogTypeDto } from './types';
 import {

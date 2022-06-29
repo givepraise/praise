@@ -1,11 +1,11 @@
 import some from 'lodash/some';
-import { NotFoundError } from '@error/errors';
-import { PraiseModel } from '@praise/entities';
-import { calculateReceiverCompositeScore } from '@praise/utils/score';
-import { periodsettingListTransformer } from '@periodsettings/transformers';
-import { PeriodSettingsModel } from '@periodsettings/entities';
-import { settingValue } from '@shared/settings';
-import { isQuantificationCompleted } from '@praise/utils/core';
+import { NotFoundError } from '@/error/errors';
+import { PraiseModel } from '@/praise/entities';
+import { calculateReceiverCompositeScore } from '@/praise/utils/score';
+import { periodsettingListTransformer } from '@/periodsettings/transformers';
+import { PeriodSettingsModel } from '@/periodsettings/entities';
+import { settingValue } from '@/shared/settings';
+import { isQuantificationCompleted } from '@/praise/utils/core';
 import { PeriodModel } from '../entities';
 import {
   periodDetailsReceiverListTransformer,

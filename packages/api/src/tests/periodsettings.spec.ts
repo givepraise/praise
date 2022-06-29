@@ -2,13 +2,13 @@ import { Wallet } from 'ethers';
 import { expect } from 'chai';
 import { faker } from '@faker-js/faker';
 import { addDays } from 'date-fns';
-import { PeriodModel } from '@period/entities';
+import { PeriodModel } from '@/period/entities';
 import {
   seedPeriod,
   seedPeriodSetting,
   seedUser,
-} from '@database/seeder/entities';
-import { PeriodSettingsModel } from '@periodsettings/entities';
+} from '@/database/seeder/entities';
+import { PeriodSettingsModel } from '@/periodsettings/entities';
 import { loginUser } from './utils';
 
 describe('GET /api/periodsettings/:periodId/settings/all', () => {

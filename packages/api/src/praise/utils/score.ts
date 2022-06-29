@@ -1,8 +1,8 @@
 import { Types } from 'mongoose';
 import sum from 'lodash/sum';
-import { BadRequestError } from '@error/errors';
-import { settingValue } from '@shared/settings';
-import { PeriodDetailsReceiver } from '@period/types';
+import { BadRequestError } from '@/error/errors';
+import { settingValue } from '@/shared/settings';
+import { PeriodDetailsReceiver } from '@/period/types';
 import { getPraisePeriod, isQuantificationCompleted } from './core';
 import { PraiseModel } from '../entities';
 import { Quantification } from '../types';

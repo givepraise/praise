@@ -1,6 +1,6 @@
-import { SettingsModel } from '@settings/entities';
-import { SettingDocument, SettingGroup } from '@settings/types';
-import { PeriodDocument } from '@period/types';
+import { SettingsModel } from '@/settings/entities';
+import { SettingDocument, SettingGroup } from '@/settings/types';
+import { PeriodDocument } from '@/period/types';
 import { PeriodSettingsModel } from './entities';
 import { PeriodSetting } from './types';
 

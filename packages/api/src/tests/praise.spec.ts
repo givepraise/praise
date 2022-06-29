@@ -1,16 +1,16 @@
 import { Wallet } from 'ethers';
 import { expect } from 'chai';
 import { faker } from '@faker-js/faker';
-import { PraiseModel } from '@praise/entities';
+import { PraiseModel } from '@/praise/entities';
 import {
   seedPeriod,
   seedPraise,
   seedQuantification,
   seedUser,
   seedUserAccount,
-} from '@database/seeder/entities';
-import { PeriodModel } from '@period/entities';
-import { PeriodSettingsModel } from '@periodsettings/entities';
+} from '@/database/seeder/entities';
+import { PeriodModel } from '@/period/entities';
+import { PeriodSettingsModel } from '@/periodsettings/entities';
 import { loginUser } from './utils';
 
 describe('GET /api/praise/all', () => {

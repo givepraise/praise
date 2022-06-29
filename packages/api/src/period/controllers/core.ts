@@ -3,14 +3,17 @@ import { StatusCodes } from 'http-status-codes';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { parseISO } from 'date-fns';
-import { BadRequestError, NotFoundError } from '@error/errors';
-import { PraiseDtoExtended, PraiseDetailsDto, PraiseDto } from '@praise/types';
-import { praiseListTransformer, praiseTransformer } from '@praise/transformers';
-import { calculateQuantificationScore } from '@praise/utils/score';
+import { BadRequestError, NotFoundError } from '@/error/errors';
+import { PraiseDtoExtended, PraiseDetailsDto, PraiseDto } from '@/praise/types';
+import {
+  praiseListTransformer,
+  praiseTransformer,
+} from '@/praise/transformers';
+import { calculateQuantificationScore } from '@/praise/utils/score';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
-import { insertNewPeriodSettings } from '@periodsettings/utils';
-import { settingValue } from '@shared/settings';
+import { insertNewPeriodSettings } from '@/periodsettings/utils';
+import { settingValue } from '@/shared/settings';
 import {
   TypedRequestBody,
   TypedResponse,
@@ -18,11 +21,11 @@ import {
   PaginatedResponseBody,
   QueryInputParsedQs,
   TypedRequestQuery,
-} from '@shared/types';
-import { getQueryInput, getQuerySort } from '@shared/functions';
-import { PraiseModel } from '@praise/entities';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
+} from '@/shared/types';
+import { getQueryInput, getQuerySort } from '@/shared/functions';
+import { PraiseModel } from '@/praise/entities';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
 import {
   PeriodDetailsDto,
   PeriodUpdateInput,

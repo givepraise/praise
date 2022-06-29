@@ -2,8 +2,8 @@ import { Wallet } from 'ethers';
 import { expect } from 'chai';
 import { faker } from '@faker-js/faker';
 import { addDays } from 'date-fns';
-import { PraiseModel } from '@praise/entities';
-import { PeriodModel } from '@period/entities';
+import { PraiseModel } from '@/praise/entities';
+import { PeriodModel } from '@/period/entities';
 import {
   seedPeriod,
   seedPraise,
@@ -11,8 +11,8 @@ import {
   seedUser,
   seedUserAccount,
   seedUserAndUserAccount,
-} from '@database/seeder/entities';
-import { PeriodSettingsModel } from '@periodsettings/entities';
+} from '@/database/seeder/entities';
+import { PeriodSettingsModel } from '@/periodsettings/entities';
 import { csvToJson, loginUser } from './utils';
 
 describe('GET /api/periods/all', () => {

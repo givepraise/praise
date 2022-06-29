@@ -3,8 +3,8 @@ import { Request } from 'express';
 import mime from 'mime-types';
 import { UploadedFile } from 'express-fileupload';
 import { unlink } from 'fs/promises';
-import { BadRequestError, InternalServerError } from '@error/errors';
-import { PraiseAllInput, PraiseExportInput } from '@praise/types';
+import { BadRequestError, InternalServerError } from '@/error/errors';
+import { PraiseAllInput, PraiseExportInput } from '@/praise/types';
 import { QueryInput } from './types';
 
 export const getRandomString = (length = 10): string => {

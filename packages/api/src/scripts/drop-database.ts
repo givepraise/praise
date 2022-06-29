@@ -1,12 +1,12 @@
-import { PeriodModel } from '@period/entities';
-import { PraiseModel } from '@praise/entities';
+import { PeriodModel } from '@/period/entities';
+import { PraiseModel } from '@/praise/entities';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
-import { SettingsModel } from '@settings/entities';
-import { PeriodSettingsModel } from '@periodsettings/entities';
-import { MigrationModel } from '@database/entities';
+import { SettingsModel } from '@/settings/entities';
+import { PeriodSettingsModel } from '@/periodsettings/entities';
+import { MigrationModel } from '@/database/entities';
 import { connectDatabase } from './core';
-import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';
+import { EventLogModel, EventLogTypeModel } from '@/eventlog/entities';
 
 connectDatabase('localhost').then(async (connection) => {
   try {

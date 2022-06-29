@@ -1,5 +1,5 @@
-import { quantificationListTransformer } from '@praise/transformers';
-import { Quantification, QuantificationDto } from '@praise/types';
+import { quantificationListTransformer } from '@/praise/transformers';
+import { Quantification, QuantificationDto } from '@/praise/types';
 import { userAccountTransformer } from '@useraccount/transformers';
 import {
   PeriodDetailsReceiver,

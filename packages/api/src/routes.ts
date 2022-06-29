@@ -1,18 +1,18 @@
 import { Router } from '@awaitjs/express';
-import { activateRouter } from '@activate/routes';
-import { authMiddleware } from '@auth/middleware';
-import { authRouter } from '@auth/routes';
-import { NOT_FOUND } from '@error/constants';
-import { adminPeriodRouter, periodRouter } from '@period/routes';
-import { praiseRouter } from '@praise/routes';
-import { settingsAdminRouter, settingsRouter } from '@settings/routes';
+import { activateRouter } from '@/activate/routes';
+import { authMiddleware } from '@/auth/middleware';
+import { authRouter } from '@/auth/routes';
+import { NOT_FOUND } from '@/error/constants';
+import { adminPeriodRouter, periodRouter } from '@/period/routes';
+import { praiseRouter } from '@/praise/routes';
+import { settingsAdminRouter, settingsRouter } from '@/settings/routes';
 import { adminUserRouter, userRouter } from '@user/routes';
 import { UserRole } from '@user/types';
 import {
   periodsettingsRouter,
   adminPeriodsettingsRouter,
-} from '@periodsettings/routes';
-import { eventLogRouter } from '@eventlog/routes';
+} from '@/periodsettings/routes';
+import { eventLogRouter } from '@/eventlog/routes';
 
 const baseRouter = Router();
 

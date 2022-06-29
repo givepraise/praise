@@ -1,6 +1,6 @@
 import { Router } from '@awaitjs/express';
-import * as periodCoreController from '@period/controllers/core';
-import * as periodAssignmentController from '@period/controllers/assignment';
+import * as periodCoreController from '@/period/controllers/core';
+import * as periodAssignmentController from '@/period/controllers/assignment';
 
 // Period-routes
 const periodRouter = Router();

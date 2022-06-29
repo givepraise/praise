@@ -1,11 +1,11 @@
 import { Request } from 'express';
 import { Types } from 'mongoose';
-import { BadRequestError, NotFoundError } from '@error/errors';
+import { BadRequestError, NotFoundError } from '@/error/errors';
 import {
   getPraiseAllInput,
   getQueryInput,
   getQuerySort,
-} from '@shared/functions';
+} from '@/shared/functions';
 import {
   PaginatedResponseBody,
   Query,
@@ -13,10 +13,10 @@ import {
   TypedRequestBody,
   TypedRequestQuery,
   TypedResponse,
-} from '@shared/types';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
-import { PeriodStatusType } from '@period/types';
+} from '@/shared/types';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
+import { PeriodStatusType } from '@/period/types';
 import { PraiseModel } from './entities';
 import { praiseListTransformer, praiseTransformer } from './transformers';
 import {

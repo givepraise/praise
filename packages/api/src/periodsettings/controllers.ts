@@ -1,12 +1,12 @@
 import { Request } from 'express';
-import { BadRequestError, NotFoundError } from '@error/errors';
-import { removeFile, upload } from '@shared/functions';
-import { TypedRequestBody, TypedResponse } from '@shared/types';
-import { SettingSetInput } from '@settings/types';
-import { PeriodStatusType } from '@period/types';
-import { PeriodModel } from '@period/entities';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
+import { BadRequestError, NotFoundError } from '@/error/errors';
+import { removeFile, upload } from '@/shared/functions';
+import { TypedRequestBody, TypedResponse } from '@/shared/types';
+import { SettingSetInput } from '@/settings/types';
+import { PeriodStatusType } from '@/period/types';
+import { PeriodModel } from '@/period/entities';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
 import {
   periodSettingTransformer,
   periodsettingListTransformer,

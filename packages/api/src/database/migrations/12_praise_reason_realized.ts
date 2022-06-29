@@ -1,4 +1,4 @@
-import { PraiseModel } from '@praise/entities';
+import { PraiseModel } from '@/praise/entities';
 
 const up = async (): Promise<void> => {
   const praises = await PraiseModel.find({

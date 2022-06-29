@@ -3,7 +3,7 @@ import {
   genericSettingsSchema,
   getGenericSettingValueRealized,
   valueRealizedVirtualName,
-} from '@settings/entities';
+} from '@/settings/entities';
 import { PeriodSettingDocument } from './types';
 
 const periodSettingsSchema = new Schema(

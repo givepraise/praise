@@ -1,6 +1,6 @@
 import { Client, Util } from 'discord.js';
-import { PeriodDateRange, PeriodDocument } from '@period/types';
-import { PeriodModel } from '@period/entities';
+import { PeriodDateRange, PeriodDocument } from '@/period/types';
+import { PeriodModel } from '@/period/entities';
 import { PraiseModel } from '../entities';
 import { PraiseDocument, Quantification } from '../types';
 

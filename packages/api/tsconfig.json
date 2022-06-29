@@ -5,29 +5,60 @@
     "baseUrl": "./",
     "target": "ES2015",
     "module": "commonjs",
-    "strict": true,    
+    "strict": true,
     "esModuleInterop": true,
     "declaration": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "composite": true,
     "paths": {
-      "@activate/*": ["src/activate/*"],
-      "@auth/*": ["src/auth/*"],
-      "@error/*": ["src/error/*"],
-      "@middleware/*": ["src/middleware/*"],
-      "@database/*": ["src/database/*"],
-      "@period/*": ["src/period/*"],
-      "@praise/*": ["src/praise/*"],
-      "@settings/*": ["src/settings/*"],
-      "@periodsettings/*": ["src/periodsettings/*"],
-      "@shared/*": ["src/shared/*"],
-      "@user/*": ["src/user/*"],
-      "@useraccount/*": ["src/useraccount/*"],
-      "@eventlog/*": ["src/eventlog/*"],
-      "@server": ["src/server"]
+      "@/activate/*": [
+        "src/activate/*"
+      ],
+      "@/auth/*": [
+        "src/auth/*"
+      ],
+      "@/error/*": [
+        "src/error/*"
+      ],
+      "@/middleware/*": [
+        "src/middleware/*"
+      ],
+      "@/database/*": [
+        "src/database/*"
+      ],
+      "@/period/*": [
+        "src/period/*"
+      ],
+      "@/praise/*": [
+        "src/praise/*"
+      ],
+      "@/settings/*": [
+        "src/settings/*"
+      ],
+      "@/periodsettings/*": [
+        "src/periodsettings/*"
+      ],
+      "@/shared/*": [
+        "src/shared/*"
+      ],
+      "@user/*": [
+        "src/user/*"
+      ],
+      "@useraccount/*": [
+        "src/useraccount/*"
+      ],
+      "@/eventlog/*": [
+        "src/eventlog/*"
+      ],
+      "@/server": [
+        "src/server"
+      ]
     }
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts"
+  ],
   "references": []
 }

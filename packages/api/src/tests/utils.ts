@@ -1,6 +1,6 @@
 import { Wallet } from 'ethers';
 import { SuperTest, Test } from 'supertest';
-import { AuthResponse } from '@auth/types';
+import { AuthResponse } from '@/auth/types';
 
 export const loginUser = async (
   wallet: Wallet,

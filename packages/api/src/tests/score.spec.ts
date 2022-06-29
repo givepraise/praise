@@ -6,20 +6,20 @@ import {
   calculateQuantificationScore,
   calculateQuantificationsCompositeScore,
   calculateReceiverCompositeScore,
-} from '@praise/utils/score';
+} from '@/praise/utils/score';
 import {
   seedUser,
   seedPraise,
   seedQuantification,
   seedPeriod,
   seedUserAccount,
-} from '@database/seeder/entities';
-import { PeriodModel } from '@period/entities';
-import { PeriodDetailsReceiver } from '@period/types';
-import { PraiseModel } from '@praise/entities';
-import { settingValue } from '@shared/settings';
-import { getPeriodDateRangeQuery } from '@period/utils/core';
-import { PeriodSettingsModel } from '@periodsettings/entities';
+} from '@/database/seeder/entities';
+import { PeriodModel } from '@/period/entities';
+import { PeriodDetailsReceiver } from '@/period/types';
+import { PraiseModel } from '@/praise/entities';
+import { settingValue } from '@/shared/settings';
+import { getPeriodDateRangeQuery } from '@/period/utils/core';
+import { PeriodSettingsModel } from '@/periodsettings/entities';
 
 describe('calculateQuantificationScore', () => {
   beforeEach(async () => {

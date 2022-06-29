@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { QueryInput } from '@shared/types';
+import { QueryInput } from '@/shared/types';
 import { UserDocument } from '@user/types';
 import {
   PraiseImportUserAccountInput,

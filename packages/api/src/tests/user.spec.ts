@@ -11,9 +11,9 @@ import {
   seedUser,
   seedUserAccount,
   seedUserAndUserAccount,
-} from '@database/seeder/entities';
-import { PraiseModel } from '@praise/entities';
-import { PeriodModel } from '@period/entities';
+} from '@/database/seeder/entities';
+import { PraiseModel } from '@/praise/entities';
+import { PeriodModel } from '@/period/entities';
 import { loginUser } from './utils';
 
 describe('GET /api/users/all', () => {

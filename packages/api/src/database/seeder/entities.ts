@@ -1,19 +1,19 @@
 import { faker } from '@faker-js/faker';
-import { PeriodModel } from '@period/entities';
-import { PraiseModel, QuantificationModel } from '@praise/entities';
+import { PeriodModel } from '@/period/entities';
+import { PraiseModel, QuantificationModel } from '@/praise/entities';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { UserAccountDocument } from '@useraccount/types';
-import { PraiseDocument, QuantificationDocument } from '@praise/types';
-import { PeriodDocument } from '@period/types';
-import { insertNewPeriodSettings } from '@periodsettings/utils';
+import { PraiseDocument, QuantificationDocument } from '@/praise/types';
+import { PeriodDocument } from '@/period/types';
+import { insertNewPeriodSettings } from '@/periodsettings/utils';
 import { UserDocument } from '@user/types';
-import { EventLogDocument } from '@eventlog/types';
-import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';
-import { SettingGroup, SettingDocument } from '@settings/types';
-import { SettingsModel } from '@settings/entities';
-import { PeriodSettingsModel } from '@periodsettings/entities';
-import { PeriodSettingDocument } from '@periodsettings/types';
+import { EventLogDocument } from '@/eventlog/types';
+import { EventLogModel, EventLogTypeModel } from '@/eventlog/entities';
+import { SettingGroup, SettingDocument } from '@/settings/types';
+import { SettingsModel } from '@/settings/entities';
+import { PeriodSettingsModel } from '@/periodsettings/entities';
+import { PeriodSettingDocument } from '@/periodsettings/types';
 
 /**
  * Query database for two random useraccounts

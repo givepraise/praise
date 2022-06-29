@@ -3,18 +3,18 @@ import {
   BadRequestError,
   NotFoundError,
   UnauthorizedError,
-} from '@error/errors';
-import { getRandomString } from '@shared/functions';
+} from '@/error/errors';
+import { getRandomString } from '@/shared/functions';
 import {
   Query,
   TypedRequestBody,
   TypedRequestQuery,
   TypedResponse,
-} from '@shared/types';
+} from '@/shared/types';
 import { UserModel } from '@user/entities';
 import { UserDocument } from '@user/types';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
 import { JwtService } from './JwtService';
 import {
   AuthRequestInput,

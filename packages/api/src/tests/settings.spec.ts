@@ -3,8 +3,8 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { faker } from '@faker-js/faker';
 import { URL } from 'url';
-import { seedSetting, seedUser } from '@database/seeder/entities';
-import { SettingsModel } from '@settings/entities';
+import { seedSetting, seedUser } from '@/database/seeder/entities';
+import { SettingsModel } from '@/settings/entities';
 import { loginUser } from './utils';
 
 chai.use(chaiAsPromised);

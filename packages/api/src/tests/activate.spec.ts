@@ -5,7 +5,7 @@ import {
   seedUser,
   seedUserAccount,
   seedUserAndUserAccount,
-} from '@database/seeder/entities';
+} from '@/database/seeder/entities';
 import { UserAccountModel } from '@useraccount/entities';
 
 describe('GET /api/activate', () => {

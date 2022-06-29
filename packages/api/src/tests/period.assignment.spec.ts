@@ -1,15 +1,15 @@
 import { Wallet } from 'ethers';
 import { expect } from 'chai';
 import { faker } from '@faker-js/faker';
-import { PeriodModel } from '@period/entities';
+import { PeriodModel } from '@/period/entities';
 import {
   seedPeriod,
   seedPraise,
   seedUser,
   seedUserAccount,
-} from '@database/seeder/entities';
-import { PraiseModel } from '@praise/entities';
-import { PeriodSettingsModel } from '@periodsettings/entities';
+} from '@/database/seeder/entities';
+import { PraiseModel } from '@/praise/entities';
+import { PeriodSettingsModel } from '@/periodsettings/entities';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { loginUser } from './utils';

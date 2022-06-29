@@ -4,10 +4,10 @@ import {
   QuantificationDocument,
   QuantificationDto,
   Quantification,
-} from '@praise/types';
-import { Query } from '@shared/types';
+} from '@/praise/types';
+import { Query } from '@/shared/types';
 import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
-import { PeriodSettingDto } from '@periodsettings/types';
+import { PeriodSettingDto } from '@/periodsettings/types';
 
 export enum PeriodStatusType {
   OPEN = 'OPEN',

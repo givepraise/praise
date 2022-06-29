@@ -5,10 +5,10 @@ import {
   InternalServerError,
   NotFoundError,
   UnauthorizedError,
-} from '@error/errors';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
-import { TypedRequestBody } from '@shared/types';
+} from '@/error/errors';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
+import { TypedRequestBody } from '@/shared/types';
 import { UserModel } from '@user/entities';
 import { UserAccountModel } from '@useraccount/entities';
 import { ActivateRequestBody } from './types';
