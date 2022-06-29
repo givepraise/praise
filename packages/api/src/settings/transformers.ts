@@ -6,7 +6,7 @@ import { SettingDocument, SettingDto } from './types';
  * @param {SettingDocument} setting
  * @returns {SettingDto}
  */
-const settingDocumentToDto = (setting: SettingDocument): SettingDto => {
+export const settingTransformer = (setting: SettingDocument): SettingDto => {
   const { _id, key, value, valueRealized, type, label, description, group } =
     setting;
 
@@ -32,17 +32,7 @@ export const settingListTransformer = (
   settings: SettingDocument[] | undefined
 ): SettingDto[] => {
   if (settings && Array.isArray(settings)) {
-    return settings.map((setting) => settingDocumentToDto(setting));
+    return settings.map((setting) => settingTransformer(setting));
   }
   return [];
-};
-
-/**
- * Serialize a Setting
- *
- * @param {SettingDocument} setting
- * @returns {SettingDto}
- */
-export const settingTransformer = (setting: SettingDocument): SettingDto => {
-  return settingDocumentToDto(setting);
 };
