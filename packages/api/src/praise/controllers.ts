@@ -28,7 +28,6 @@ import {
 import {
   PraiseAllInput,
   PraiseDetailsDto,
-  Praise,
   PraiseDocument,
   PraiseDto,
   QuantificationCreateUpdateInput,
