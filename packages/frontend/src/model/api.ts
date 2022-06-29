@@ -6,7 +6,7 @@ import {
   SerializableParam,
   useRecoilValue,
 } from 'recoil';
-import { makeApiAuthClient, makeApiClient } from '../utils/api';
+import { makeApiAuthClient } from '../utils/api';
 
 type RequestParams = {
   [key: string]: SerializableParam;
