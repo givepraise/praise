@@ -10,7 +10,6 @@ import {
   DATE_FORMAT_LONG_NAME,
 } from '@/utils/date';
 import { Tooltip } from '@mui/material';
-import ResetQuantificationButton from './ResetQuantificationButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { SinglePeriodByDate } from '@/model/periods';
@@ -20,6 +19,8 @@ import { UserPopover } from '@/components/user/UserPopover';
 import { UserName } from '@/components/user/UserName';
 import { UserAvatarAndName } from '../user/UserAvatarAndName';
 import { SourceName } from './SourceName';
+import { InlineLabelClosable } from '../InlineLabelClosable';
+import { useQuantifyPraise } from '@/model/praise';
 
 interface Props {
   praise: PraiseDto;
@@ -48,6 +49,7 @@ const Praise = ({
 }: Props): JSX.Element | null => {
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
+  const { quantify } = useQuantifyPraise();
 
   if (!praise) return null;
   if (usePseudonyms && !periodId) return null;
@@ -124,17 +126,17 @@ const Praise = ({
               />
             )}
             {dismissed && (
-              <InlineLabel
+              <InlineLabelClosable
                 text="Dismissed"
-                button={<ResetQuantificationButton praise={praise} />}
                 className="bg-red-600"
+                onClose={(): void => void quantify(praise._id, 0, false, null)}
               />
             )}
             {shortDuplicatePraiseId && (
-              <InlineLabel
+              <InlineLabelClosable
                 text={`Duplicate of: #${shortDuplicatePraiseId}`}
                 className="bg-warm-gray-700"
-                button={<ResetQuantificationButton praise={praise} />}
+                onClose={(): void => void quantify(praise._id, 0, false, null)}
               />
             )}
             <span
