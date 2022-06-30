@@ -72,11 +72,9 @@ export const PraiseAutosuggest = ({
           : '';
         if (filteredData) {
           setInputItems(
-            filteredData.filter((praise) => {
-              if (praise && `#${praise._id.slice(-4)}`.includes(search))
-                return true;
-              return false;
-            })
+            filteredData.filter((praise) =>
+              praise?._idLabelRealized.includes(search)
+            )
           );
         }
       },
@@ -122,16 +120,12 @@ export const PraiseAutosuggest = ({
                 key={item._id}
                 {...getItemProps({ item, index })}
               >
-                #{item && item._id.slice(-4)} -{' '}
-                {item &&
-                  (usePseudonyms ? (
-                    <UserPseudonym
-                      userId={item.giver._id}
-                      periodId={periodId}
-                    />
-                  ) : (
-                    item.giver.name
-                  ))}
+                {item._idLabelRealized} -{' '}
+                {usePseudonyms ? (
+                  <UserPseudonym userId={item.giver._id} periodId={periodId} />
+                ) : (
+                  item.giver.name
+                )}
               </li>
             ))}
         </ul>

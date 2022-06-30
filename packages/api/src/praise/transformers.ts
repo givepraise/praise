@@ -88,6 +88,7 @@ export const praiseTransformer = async (
 
   return {
     _id,
+    _idLabelRealized: `#${_id.toString().slice(-4) as string}`,
     reasonRealized,
     sourceId,
     sourceName,

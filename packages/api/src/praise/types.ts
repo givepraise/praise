@@ -36,6 +36,7 @@ export interface QuantificationDocument extends Quantification, Document {}
 
 export interface PraiseDto {
   _id: string;
+  _idLabelRealized: string;
   reasonRealized: string;
   sourceId: string;
   sourceName: string;

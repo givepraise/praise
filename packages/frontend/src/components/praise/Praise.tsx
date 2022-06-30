@@ -121,7 +121,7 @@ export const Praise = ({
           <div className="w-full pb-2">
             {showIdPrefix && (
               <InlineLabel
-                text={`#${praise._id.slice(-4)}`}
+                text={praise._idLabelRealized}
                 className="bg-warm-gray-400"
               />
             )}

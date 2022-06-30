@@ -8,9 +8,6 @@ import { PraiseDto } from 'api/dist/praise/types';
 import { ScrollableDialog } from '@/components/ScrollableDialog';
 import { IconButton } from '@/components/IconButton';
 
-const getPraisesString = (praises: PraiseDto[]): string =>
-  praises.map((p) => `#${p._id.slice(-5)}`).join(', ');
-
 interface DismissDialogProps {
   open: boolean;
   onClose(): void;
@@ -43,7 +40,9 @@ export const DismissDialog = ({
             Dismiss a praise when it contains no praise information or is out of
             scope for the praise system.
           </p>
-          <p className="text-center">{getPraisesString(praises)}</p>
+          <p className="text-center">
+            {praises.map((p) => p._idLabelRealized).join(', ')}
+          </p>
           <div className="flex justify-center">
             <IconButton
               icon={faMinusCircle}
