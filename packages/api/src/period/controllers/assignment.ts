@@ -4,7 +4,7 @@ import { Request } from 'express';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import { UserModel } from '@/user/entities';
 import { settingValue } from '@/shared/settings';
-import { TypedResponse } from '@/shared/types';
+import { TypedRequestBody, TypedResponse } from '@/shared/types';
 import { UserRole } from '@/user/types';
 import { PraiseModel } from '@/praise/entities';
 import { EventLogTypeKey } from '@/eventlog/types';
@@ -15,6 +15,7 @@ import {
   PeriodStatusType,
   VerifyQuantifierPoolSizeResponse,
   PeriodReplaceQuantifierDto,
+  ReplaceQuantifierRequestBody,
 } from '../types';
 import {
   findPeriodDetailsDto,
@@ -139,7 +140,7 @@ export const assignQuantifiers = async (
 };
 
 export const replaceQuantifier = async (
-  req: Request,
+  req: TypedRequestBody<ReplaceQuantifierRequestBody>,
   res: TypedResponse<PeriodReplaceQuantifierDto>
 ): Promise<void> => {
   const { periodId } = req.params;

@@ -235,7 +235,6 @@ export const close = async (
  */
 export const receiverPraise = async (
   req: TypedRequestQuery<PeriodReceiverPraiseInput>,
-  // req: Request,
   res: TypedResponse<PraiseDto[]>
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);
@@ -273,7 +272,6 @@ export const receiverPraise = async (
  */
 export const quantifierPraise = async (
   req: TypedRequestQuery<PeriodQuantifierPraiseInput>,
-  // req: Request,
   res: TypedResponse<PraiseDto[]>
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);

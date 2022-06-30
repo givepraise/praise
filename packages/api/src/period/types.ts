@@ -109,3 +109,8 @@ export interface PeriodReplaceQuantifierDto {
   period: PeriodDetailsDto;
   praises: PraiseDto[];
 }
+
+export interface ReplaceQuantifierRequestBody {
+  currentQuantifierId: string;
+  newQuantifierId: string;
+}
