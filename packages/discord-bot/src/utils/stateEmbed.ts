@@ -1,8 +1,8 @@
 import { MessageEmbed } from 'discord.js';
+import format from 'date-fns/format';
 import { UserState } from '../interfaces/UserState';
 
-const formatDate = (date: Date): string =>
-  `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
+const formatDate = (date: Date): string => format(date, 'yyyy-MM-dd');
 
 export const getStateEmbed = (state: UserState): MessageEmbed => {
   const embed = new MessageEmbed()
