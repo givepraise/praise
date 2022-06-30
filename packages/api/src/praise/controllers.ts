@@ -1,8 +1,4 @@
-import {
-  BadRequestError,
-  InternalServerError,
-  NotFoundError,
-} from '@error/errors';
+import { BadRequestError, NotFoundError } from '@error/errors';
 import {
   getPraiseAllInput,
   getQueryInput,
@@ -16,10 +12,7 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@shared/types';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
 import { Request } from 'express';
-import { Types } from 'mongoose';
 import { PraiseModel } from './entities';
 import {
   praiseDocumentListTransformer,
@@ -28,13 +21,11 @@ import {
 import {
   PraiseAllInput,
   PraiseDetailsDto,
-  PraiseDocument,
   PraiseDto,
   QuantificationCreateUpdateInput,
   QuantifyMultiplePraiseInput,
 } from './types';
-import { praiseWithScore, getPraisePeriod } from './utils/core';
-import { PeriodStatusType } from '@period/types';
+import { praiseWithScore } from './utils/core';
 import { quantifyPraise } from '@praise/utils/quantify';
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
