@@ -106,8 +106,6 @@ export const assignQuantifiers = async (
             $push: {
               quantifications: {
                 quantifier: q._id,
-                score: 0,
-                dismissed: false,
               },
             },
           },
