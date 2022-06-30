@@ -1,5 +1,6 @@
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { classNames } from '../utils';
 
 interface Props {
   disabled?: boolean;
@@ -17,11 +18,10 @@ const IconButton = ({
   return (
     <button
       disabled={disabled}
-      className={
-        disabled
-          ? 'praise-button-disabled space-x-2'
-          : 'praise-button space-x-2'
-      }
+      className={classNames(
+        'space-x-2',
+        disabled ? 'praise-button-disabled' : 'praise-button'
+      )}
       onClick={onClick}
     >
       <FontAwesomeIcon icon={icon} size="1x" />
