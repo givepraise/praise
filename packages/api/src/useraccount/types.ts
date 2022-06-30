@@ -4,7 +4,7 @@ import { UserDocument } from '@/user/types';
 
 export type UserAccountPlatform = 'DISCORD' | 'TELEGRAM';
 
-interface UserAccount {
+export interface UserAccount {
   user?: UserDocument;
   accountId: string;
   name: string;
