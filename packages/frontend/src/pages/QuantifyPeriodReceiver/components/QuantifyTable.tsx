@@ -5,15 +5,15 @@ import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
+import { faCopy, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { useQuantifyPraise } from '@/model/praise';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods';
+import { IconButton } from '@/components/IconButton';
 import { QuantifyBackNextLink } from './BackNextLink';
 import { DismissDialog } from './DismissDialog';
 import { DuplicateDialog } from './DuplicateDialog';
 import { DuplicateSearchDialog } from './DuplicateSearchDialog';
-import { MarkDuplicateButton } from './MarkDuplicateButton';
-import { MarkDismissedButton } from './MarkDismissedButton';
 import { QuantifyPraiseRow } from './QuantifyPraiseRow';
 
 interface Props {
@@ -114,11 +114,15 @@ export const QuantifyTable = ({
   return (
     <div>
       <div className="sticky z-10 w-full p-5 space-x-4 border-t border-l border-r top-14 lg:top-0 rounded-t-xl bg-warm-gray-100 dark:bg-slate-700">
-        <MarkDuplicateButton
+        <IconButton
+          icon={faCopy}
+          text="Mark as duplicates"
           disabled={selectedPraises.length < 2}
           onClick={(): void => setIsDuplicateDialogOpen(true)}
         />
-        <MarkDismissedButton
+        <IconButton
+          icon={faMinusCircle}
+          text="Dismiss"
           disabled={selectedPraises.length < 1}
           onClick={(): void => setIsDismissDialogOpen(true)}
         />
@@ -164,22 +168,20 @@ export const QuantifyTable = ({
         open={isDismissDialogOpen}
         onClose={(): void => setIsDismissDialogOpen(false)}
         praises={selectedPraises}
-        onConfirm={(): void => handleDismiss()}
+        onConfirm={handleDismiss}
       />
       <DuplicateDialog
         open={isDuplicateDialogOpen}
         originalPraise={selectedPraises[0]}
         duplicatesCount={selectedPraises.length}
         onClose={(): void => setIsDuplicateDialogOpen(false)}
-        onConfirm={(originalScore): void => handleDuplicate(originalScore)}
+        onConfirm={handleDuplicate}
       />
       <DuplicateSearchDialog
         open={isDuplicateSearchDialogOpen}
         selectedPraise={duplicateSearchDialogPraise}
         onClose={(): void => setIsDuplicateSearchDialogOpen(false)}
-        onConfirm={(praiseId: string): void =>
-          handleDuplicateSearchPraise(praiseId)
-        }
+        onConfirm={handleDuplicateSearchPraise}
       />
     </div>
   );

@@ -1,7 +1,7 @@
 import { PraiseModel } from '@/praise/entities';
 import { PraiseImportInput } from '@/praise/types';
-import { UserAccountModel } from '@useraccount/entities';
-import { UserAccountDocument } from '@useraccount/types';
+import { UserAccountModel } from '@/useraccount/entities';
+import { UserAccountDocument } from '@/useraccount/types';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
 import 'express-async-errors';

@@ -1,8 +1,12 @@
-import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalculator,
+  faMinusCircle,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
 import { ScrollableDialog } from '@/components/ScrollableDialog';
-import { MarkDismissedButton } from './MarkDismissedButton';
+import { IconButton } from '@/components/IconButton';
 
 const getPraisesString = (praises: PraiseDto[]): string =>
   praises.map((p) => `#${p._id.slice(-5)}`).join(', ');
@@ -41,7 +45,9 @@ export const DismissDialog = ({
           </p>
           <p className="text-center">{getPraisesString(praises)}</p>
           <div className="flex justify-center">
-            <MarkDismissedButton
+            <IconButton
+              icon={faMinusCircle}
+              text="Dismiss"
               onClick={(): void => {
                 onConfirm();
                 onClose();

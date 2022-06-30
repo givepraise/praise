@@ -11,8 +11,8 @@ import {
   TypedRequestQuery,
   TypedResponse,
 } from '@/shared/types';
-import { UserModel } from '@user/entities';
-import { UserDocument } from '@user/types';
+import { UserModel } from '@/user/entities';
+import { UserDocument } from '@/user/types';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
 import { JwtService } from './JwtService';

@@ -1,4 +1,4 @@
-import { userAccountListTransformer } from '@useraccount/transformers';
+import { userAccountListTransformer } from '@/useraccount/transformers';
 import { UserDocument, UserDto, UserRole } from './types';
 import { generateUserName } from './utils/entity';
 

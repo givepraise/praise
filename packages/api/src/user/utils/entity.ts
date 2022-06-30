@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
-import { UserModel } from '@user/entities';
-import { UserAccountModel } from '@useraccount/entities';
-import { generateUserAccountNameRealized } from '@useraccount/utils';
+import { UserModel } from '@/user/entities';
+import { UserAccountModel } from '@/useraccount/entities';
+import { generateUserAccountNameRealized } from '@/useraccount/utils';
 import { NotFoundError } from '@/error/errors';
 import { shortenEthAddress } from './core';
 import { UserDocument } from '../types';

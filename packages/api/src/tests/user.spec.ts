@@ -2,8 +2,8 @@ import { expect } from 'chai';
 import { Wallet } from 'ethers';
 import { faker } from '@faker-js/faker';
 import some from 'lodash/some';
-import { UserModel } from '@user/entities';
-import { UserAccountModel } from '@useraccount/entities';
+import { UserModel } from '@/user/entities';
+import { UserAccountModel } from '@/useraccount/entities';
 import {
   seedPeriod,
   seedPraise,

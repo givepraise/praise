@@ -9,8 +9,8 @@ import {
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
 import { TypedRequestBody } from '@/shared/types';
-import { UserModel } from '@user/entities';
-import { UserAccountModel } from '@useraccount/entities';
+import { UserModel } from '@/user/entities';
+import { UserAccountModel } from '@/useraccount/entities';
 import { ActivateRequestBody } from './types';
 import { generateActivateMessage } from './utils';
 

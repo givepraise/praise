@@ -1,37 +1,32 @@
 import { Router } from '@awaitjs/express';
-import * as periodCoreController from '@/period/controllers/core';
-import * as periodAssignmentController from '@/period/controllers/assignment';
+import * as core from './controllers/core';
+import * as assignment from './controllers/assignment';
 
 // Period-routes
 const periodRouter = Router();
 
-periodRouter.getAsync('/all', periodCoreController.all);
-periodRouter.getAsync('/:periodId', periodCoreController.single);
-periodRouter.getAsync(
-  '/:periodId/receiverPraise',
-  periodCoreController.receiverPraise
-);
-periodRouter.getAsync(
-  '/:periodId/quantifierPraise',
-  periodCoreController.quantifierPraise
-);
+periodRouter.getAsync('/all', core.all);
+periodRouter.getAsync('/:periodId', core.single);
+periodRouter.getAsync('/:periodId/receiverPraise', core.receiverPraise);
+periodRouter.getAsync('/:periodId/quantifierPraise', core.quantifierPraise);
 
 // ADMIN Period-routes
 const adminPeriodRouter = Router();
-adminPeriodRouter.postAsync('/create', periodCoreController.create);
-adminPeriodRouter.patchAsync('/:periodId/update', periodCoreController.update);
-adminPeriodRouter.patchAsync('/:periodId/close', periodCoreController.close);
-adminPeriodRouter.getAsync(
-  '/:periodId/export',
-  periodCoreController.exportPraise
-);
+adminPeriodRouter.postAsync('/create', core.create);
+adminPeriodRouter.patchAsync('/:periodId/update', core.update);
+adminPeriodRouter.patchAsync('/:periodId/close', core.close);
+adminPeriodRouter.getAsync('/:periodId/export', core.exportPraise);
 adminPeriodRouter.getAsync(
   '/:periodId/verifyQuantifierPoolSize',
-  periodAssignmentController.verifyQuantifierPoolSize
+  assignment.verifyQuantifierPoolSize
 );
 adminPeriodRouter.patchAsync(
   '/:periodId/assignQuantifiers',
-  periodAssignmentController.assignQuantifiers
+  assignment.assignQuantifiers
+);
+adminPeriodRouter.patchAsync(
+  '/:periodId/replaceQuantifier',
+  assignment.replaceQuantifier
 );
 
 export { periodRouter, adminPeriodRouter };

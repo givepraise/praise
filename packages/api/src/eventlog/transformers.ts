@@ -1,8 +1,8 @@
 import { PeriodModel } from '@/period/entities';
 import { PeriodStatusType } from '@/period/types';
-import { UserRole } from '@user/types';
-import { UserAccountModel } from '@useraccount/entities';
-import { userAccountTransformer } from '@useraccount/transformers';
+import { UserRole } from '@/user/types';
+import { UserAccountModel } from '@/useraccount/entities';
+import { userAccountTransformer } from '@/useraccount/transformers';
 import { EventLogTypeModel } from './entities';
 import {
   EventLogDocument,

@@ -6,8 +6,8 @@ import { NOT_FOUND } from '@/error/constants';
 import { adminPeriodRouter, periodRouter } from '@/period/routes';
 import { praiseRouter } from '@/praise/routes';
 import { settingsAdminRouter, settingsRouter } from '@/settings/routes';
-import { adminUserRouter, userRouter } from '@user/routes';
-import { UserRole } from '@user/types';
+import { adminUserRouter, userRouter } from '@/user/routes';
+import { UserRole } from '@/user/types';
 import {
   periodsettingsRouter,
   adminPeriodsettingsRouter,

@@ -42,10 +42,10 @@
       "@/shared/*": [
         "src/shared/*"
       ],
-      "@user/*": [
+      "@/user/*": [
         "src/user/*"
       ],
-      "@useraccount/*": [
+      "@/useraccount/*": [
         "src/useraccount/*"
       ],
       "@/eventlog/*": [

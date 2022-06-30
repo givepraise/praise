@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { NextFunction, Request, Response } from 'express';
 import { ForbiddenError, UnauthorizedError } from '@/error/errors';
-import { UserModel } from '@user/entities';
-import { UserRole } from '@user/types';
+import { UserModel } from '@/user/entities';
+import { UserRole } from '@/user/types';
 import { extractAccessTokenFromRequest } from './utils';
 import { JwtService } from './JwtService';
 

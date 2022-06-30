@@ -10,8 +10,8 @@ import {
   praiseTransformer,
 } from '@/praise/transformers';
 import { calculateQuantificationScore } from '@/praise/utils/score';
-import { UserModel } from '@user/entities';
-import { UserAccountModel } from '@useraccount/entities';
+import { UserModel } from '@/user/entities';
+import { UserAccountModel } from '@/useraccount/entities';
 import { insertNewPeriodSettings } from '@/periodsettings/utils';
 import { settingValue } from '@/shared/settings';
 import {

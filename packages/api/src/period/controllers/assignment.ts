@@ -2,19 +2,25 @@ import flatten from 'lodash/flatten';
 import { StatusCodes } from 'http-status-codes';
 import { Request } from 'express';
 import { BadRequestError, NotFoundError } from '@/error/errors';
-import { UserModel } from '@user/entities';
+import { UserModel } from '@/user/entities';
 import { settingValue } from '@/shared/settings';
 import { TypedResponse } from '@/shared/types';
-import { UserRole } from '@user/types';
+import { UserRole } from '@/user/types';
 import { PraiseModel } from '@/praise/entities';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
+import { praiseListTransformer } from '@/praise/transformers';
 import {
   PeriodDetailsDto,
   PeriodStatusType,
   VerifyQuantifierPoolSizeResponse,
+  PeriodReplaceQuantifierDto,
 } from '../types';
-import { findPeriodDetailsDto, isAnyPraiseAssigned } from '../utils/core';
+import {
+  findPeriodDetailsDto,
+  isAnyPraiseAssigned,
+  getPeriodDateRangeQuery,
+} from '../utils/core';
 import { assignQuantifiersDryRun } from '../utils/assignment';
 import { PeriodModel } from '../entities';
 
@@ -29,8 +35,8 @@ export const verifyQuantifierPoolSize = async (
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
 
-  const PRAISE_QUANTIFIERS_ASSIGN_ALL = (await settingValue(
-    'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+  const PRAISE_QUANTIFIERS_ASSIGN_EVENLY = (await settingValue(
+    'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
     period._id
   )) as boolean;
 
@@ -40,7 +46,7 @@ export const verifyQuantifierPoolSize = async (
 
   let response;
 
-  if (PRAISE_QUANTIFIERS_ASSIGN_ALL) {
+  if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
     response = {
       quantifierPoolSize,
       quantifierPoolSizeNeeded: quantifierPoolSize,
@@ -126,4 +132,119 @@ export const assignQuantifiers = async (
 
   const periodDetailsDto = await findPeriodDetailsDto(periodId);
   res.status(StatusCodes.OK).json(periodDetailsDto);
+};
+
+export const replaceQuantifier = async (
+  req: Request,
+  res: TypedResponse<PeriodReplaceQuantifierDto>
+): Promise<void> => {
+  const { periodId } = req.params;
+  const { currentQuantifierId, newQuantifierId } = req.body;
+  const period = await PeriodModel.findById(periodId);
+  if (!period) throw new NotFoundError('Period');
+  if (period.status !== 'QUANTIFY')
+    throw new BadRequestError(
+      'Quantifiers can only be replaced on periods with status QUANTIFY.'
+    );
+
+  if (!currentQuantifierId || !newQuantifierId)
+    throw new BadRequestError(
+      'Both originalQuantifierId and newQuantifierId must be specified'
+    );
+
+  if (currentQuantifierId === newQuantifierId)
+    throw new BadRequestError('Cannot replace a quantifier with themselves');
+
+  const currentQuantifier = await UserModel.findById(currentQuantifierId);
+  if (!currentQuantifier)
+    throw new BadRequestError('Current quantifier does not exist');
+
+  const newQuantifier = await UserModel.findById(newQuantifierId);
+  if (!newQuantifier)
+    throw new BadRequestError('Replacement quantifier does not exist');
+
+  if (!newQuantifier.roles.includes(UserRole.QUANTIFIER))
+    throw new BadRequestError(
+      'Replacement quantifier does not have role QUANTIFIER'
+    );
+
+  const dateRangeQuery = await getPeriodDateRangeQuery(period);
+
+  const praiseAlreadyAssignedToNewQuantifier = await PraiseModel.find({
+    // Praise within time period
+    createdAt: dateRangeQuery,
+
+    // Both original and new quantifiers assigned
+    $and: [
+      { 'quantifications.quantifier': currentQuantifierId },
+      { 'quantifications.quantifier': newQuantifierId },
+    ],
+  });
+
+  if (praiseAlreadyAssignedToNewQuantifier?.length > 0)
+    throw new BadRequestError(
+      "Replacement quantifier is already assigned to some of the original quantifier's praise"
+    );
+
+  const affectedPraiseIds = await PraiseModel.find({
+    // Praise within time period
+    createdAt: dateRangeQuery,
+
+    // Original quantifier
+    'quantifications.quantifier': currentQuantifierId,
+  }).distinct('_id');
+
+  await PraiseModel.updateMany(
+    {
+      // Praise within time period
+      createdAt: dateRangeQuery,
+
+      // Original quantifier
+      'quantifications.quantifier': currentQuantifierId,
+    },
+    {
+      $set: {
+        // Reset score
+        'quantifications.$[elem].score': 0,
+        'quantifications.$[elem].dismissed': false,
+
+        // Assign new quantifier
+        'quantifications.$[elem].quantifier': newQuantifierId,
+      },
+      $unset: {
+        'quantifications.$[elem].duplicatePraise': 1,
+      },
+    },
+    {
+      arrayFilters: [
+        {
+          'elem.quantifier': currentQuantifierId,
+        },
+      ],
+    }
+  );
+
+  await logEvent(
+    EventLogTypeKey.PERIOD,
+    `Reassigned all praise in period "${
+      period.name
+    }" that is currently assigned to user with id "${
+      currentQuantifierId as string
+    }", to user with id "${newQuantifierId as string}"`,
+    {
+      userId: res.locals.currentUser._id,
+    }
+  );
+
+  const updatedPraises = await PraiseModel.find({
+    _id: { $in: affectedPraiseIds },
+  }).populate('giver receiver forwarder');
+
+  const affectedPraises = await praiseListTransformer(updatedPraises);
+  const periodDetailsDto = await findPeriodDetailsDto(periodId);
+
+  res.status(StatusCodes.OK).json({
+    period: periodDetailsDto,
+    praises: affectedPraises,
+  });
 };

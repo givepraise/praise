@@ -1,4 +1,3 @@
-import { Popover } from '@headlessui/react';
 import React from 'react';
 import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { Jazzicon } from '@ukstv/jazzicon-react';
@@ -8,6 +7,7 @@ import { UserDto } from 'api/dist/user/types';
 import { UserAccountDto } from 'api/dist/useraccount/types';
 import { useRecoilValue } from 'recoil';
 import { SingleUser } from '@/model/users';
+import { classNames } from '@/utils/index';
 import { UserAvatar } from './UserAvatar';
 
 interface UserPopoverProps {
@@ -60,9 +60,8 @@ const WrappedUserPopover = ({
   }
 
   return (
-    <Popover className={className}>
-      <Popover.Button
-        className=""
+    <div className={classNames('inline-block', className)}>
+      <div
         onMouseEnter={(): void => {
           closeTimeout && clearTimeout(closeTimeout);
           !open && setOpenTimeout(setTimeout(() => setOpen(true), 500));
@@ -73,10 +72,11 @@ const WrappedUserPopover = ({
         }}
       >
         {children}
-      </Popover.Button>
+      </div>
 
       {open && (
         <div
+          className="absolute z-10"
           onMouseOver={(): void => {
             closeTimeout && clearTimeout(closeTimeout);
           }}
@@ -85,28 +85,26 @@ const WrappedUserPopover = ({
             setTimeout(() => setOpen(false), 300);
           }}
         >
-          <Popover.Panel static className="absolute z-10">
-            <div className="p-5 text-sm border border-solid rounded-lg shadow-m bg-warm-gray-50 dark:bg-slate-900">
-              <div className="mb-5 text-4xl">
-                <UserAvatar user={user} userAccount={userAccount} />
-              </div>
-              {discordUsername && (
-                <div className="flex items-center space-x-2">
-                  <FontAwesomeIcon icon={faDiscord} size="1x" />
-                  <span>{discordUsername}</span>
-                </div>
-              )}
-              {ethereumAddress && (
-                <div className="flex items-center mt-3 space-x-2">
-                  <Jazzicon address={ethereumAddress} className="w-4 h-4" />
-                  <span>{shortenEthAddress(ethereumAddress)}</span>
-                </div>
-              )}
+          <div className="p-5 text-sm text-gray-900 border border-solid rounded-lg shadow-md dark:text-white bg-warm-gray-50 dark:bg-slate-900">
+            <div className="mb-5 text-4xl">
+              <UserAvatar user={user} userAccount={userAccount} />
             </div>
-          </Popover.Panel>
+            {discordUsername && (
+              <div className="flex items-center space-x-2">
+                <FontAwesomeIcon icon={faDiscord} size="1x" />
+                <span>{discordUsername}</span>
+              </div>
+            )}
+            {ethereumAddress && (
+              <div className="flex items-center mt-3 space-x-2">
+                <Jazzicon address={ethereumAddress} className="w-4 h-4" />
+                <span>{shortenEthAddress(ethereumAddress)}</span>
+              </div>
+            )}
+          </div>
         </div>
       )}
-    </Popover>
+    </div>
   );
 };
 

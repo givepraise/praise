@@ -1,4 +1,4 @@
-import { userAccountTransformer } from '@useraccount/transformers';
+import { userAccountTransformer } from '@/useraccount/transformers';
 import {
   PraiseDocument,
   PraiseDto,

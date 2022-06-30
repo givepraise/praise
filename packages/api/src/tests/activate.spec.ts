@@ -6,7 +6,7 @@ import {
   seedUserAccount,
   seedUserAndUserAccount,
 } from '@/database/seeder/entities';
-import { UserAccountModel } from '@useraccount/entities';
+import { UserAccountModel } from '@/useraccount/entities';
 
 describe('GET /api/activate', () => {
   it('200 response with user', async function () {

@@ -8,10 +8,10 @@ import zip from 'lodash/zip';
 import greedyPartitioning from 'greedy-number-partitioning';
 import { InternalServerError, NotFoundError } from '@/error/errors';
 import { Quantifier, QuantifierPoolById, Receiver } from '@/praise/types';
-import { UserModel } from '@user/entities';
+import { UserModel } from '@/user/entities';
 import { settingValue } from '@/shared/settings';
-import { UserRole } from '@user/types';
-import { UserAccountDocument } from '@useraccount/types';
+import { UserRole } from '@/user/types';
+import { UserAccountDocument } from '@/useraccount/types';
 import { PraiseModel } from '@/praise/entities';
 import { PeriodDocument, Assignments } from '@/period/types';
 import { getPreviousPeriodEndDate } from '../utils/core';
@@ -303,7 +303,7 @@ const prepareAssignmentsByTargetPraiseCount = async (
  * @param TOLERANCE
  * @returns
  */
-const prepareAssignmentsByAllQuantifiers = async (
+const prepareAssignmentsEvenly = async (
   period: PeriodDocument,
   PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number
 ): Promise<Assignments> => {
@@ -367,20 +367,6 @@ const prepareAssignmentsByAllQuantifiers = async (
     assignments
   );
 
-  // Verify that all quantifiers were assigned if necessary
-  logger.info(
-    `verify even assigment assignments: ${assignments.poolAssignments.length} q pool: ${quantifierPool.length}`
-  );
-  if (assignments.remainingAssignmentsCount === 0) {
-    logger.info(
-      'All quantifiers that could be assigned, were assigned praise, as expected with PRAISE_QUANTIFIERS_ASSIGN_ALL'
-    );
-  } else {
-    throw new InternalServerError(
-      `Not all quantifiers were assigned praise, missing ${assignments.remainingAssignmentsCount}, despite PRAISE_QUANTIFIERS_ASSIGN_EVENLY`
-    );
-  }
-
   return assignments;
 };
 
@@ -390,8 +376,8 @@ export const assignQuantifiersDryRun = async (
   const period = await PeriodModel.findById(periodId);
   if (!period) throw new NotFoundError('Period');
 
-  const PRAISE_QUANTIFIERS_ASSIGN_ALL = (await settingValue(
-    'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+  const PRAISE_QUANTIFIERS_ASSIGN_EVENLY = (await settingValue(
+    'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
     period._id
   )) as boolean;
 
@@ -400,8 +386,8 @@ export const assignQuantifiersDryRun = async (
     period._id
   )) as number;
 
-  if (PRAISE_QUANTIFIERS_ASSIGN_ALL) {
-    return prepareAssignmentsByAllQuantifiers(
+  if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
+    return prepareAssignmentsEvenly(
       period,
       PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER
     );

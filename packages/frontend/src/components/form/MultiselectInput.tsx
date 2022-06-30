@@ -77,7 +77,7 @@ export const MultiselectInput = ({
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-warm-gray-600">
                       <input
                         type="checkbox"
-                        className="w-4 h-4 mr-4 text-black focus:ring-0"
+                        className="w-4 h-4 mr-4 text-gray-900 focus:ring-0"
                         checked={selected}
                         onChange={(): void => {}}
                       />

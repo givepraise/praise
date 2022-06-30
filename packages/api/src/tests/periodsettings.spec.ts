@@ -94,9 +94,10 @@ describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
     const { accessToken } = await loginUser(wallet, this.client);
 
     const period = await seedPeriod();
-    const periodsetting = await PeriodSettingsModel.findOne({
+    const periodsetting = await seedPeriodSetting({
       period: period._id,
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+      type: 'Boolean',
+      value: 'true',
     });
 
     const response = await this.client
@@ -131,9 +132,10 @@ describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
     const { accessToken } = await loginUser(wallet, this.client);
 
     const period = await seedPeriod();
-    const periodsetting = await PeriodSettingsModel.findOne({
+    const periodsetting = await seedPeriodSetting({
       period: period._id,
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+      type: 'Boolean',
+      value: 'true',
     });
 
     return this.client
@@ -172,9 +174,10 @@ describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
 
   it('401 response if user not authenticated', async function () {
     const period = await seedPeriod();
-    const periodsetting = await PeriodSettingsModel.findOne({
+    const periodsetting = await seedPeriodSetting({
       period: period._id,
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+      type: 'Boolean',
+      value: 'true',
     });
 
     return this.client
@@ -204,9 +207,10 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
     const { accessToken } = await loginUser(wallet, this.client);
 
     const period = await seedPeriod();
-    const periodsetting = await PeriodSettingsModel.findOne({
+    const periodsetting = await seedPeriodSetting({
       period: period._id,
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+      type: 'Boolean',
+      value: 'true',
     });
     const originalValueRealized = periodsetting?.valueRealized;
 
@@ -249,9 +253,10 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
     const { accessToken } = await loginUser(wallet, this.client);
 
     const period = await seedPeriod();
-    const periodsetting = await PeriodSettingsModel.findOne({
+    const periodsetting = await seedPeriodSetting({
       period: period._id,
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+      type: 'Boolean',
+      value: 'true',
     });
     const originalValueRealized = periodsetting?.valueRealized;
 
@@ -281,9 +286,10 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
     const { accessToken } = await loginUser(wallet, this.client);
 
     const period = await seedPeriod();
-    const periodsetting = await PeriodSettingsModel.findOne({
+    const periodsetting = await seedPeriodSetting({
       period: period._id,
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+      type: 'Boolean',
+      value: 'true',
     });
     const originalValueRealized = periodsetting?.valueRealized;
 
@@ -313,9 +319,10 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
     const { accessToken } = await loginUser(wallet, this.client);
 
     const period = await seedPeriod();
-    const periodsetting = await PeriodSettingsModel.findOne({
-      period: period?._id,
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+    const periodsetting = await seedPeriodSetting({
+      period: period._id,
+      type: 'Boolean',
+      value: 'true',
     });
 
     const FORM_DATA = {};
@@ -342,9 +349,10 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
     const { accessToken } = await loginUser(wallet, this.client);
 
     const period = await seedPeriod();
-    const periodsetting = await PeriodSettingsModel.findOne({
-      period: period?._id,
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+    const periodsetting = await seedPeriodSetting({
+      period: period._id,
+      type: 'Boolean',
+      value: 'true',
     });
 
     const FORM_DATA = {};
@@ -364,9 +372,10 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
 
   it('401 response if user not authenticated', async function () {
     const period = await seedPeriod();
-    const periodsetting = await PeriodSettingsModel.findOne({
+    const periodsetting = await seedPeriodSetting({
       period: period._id,
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+      type: 'Boolean',
+      value: 'true',
     });
     const originalValueRealized = periodsetting?.valueRealized;
 
