@@ -166,10 +166,6 @@ const generateAssignments = (
     quantifierPoolById
   ).filter((q: Quantifier): boolean => q.receivers.length > 0);
 
-  // Extend the pool with dummy quantifiers if assigns remain to be done
-  //  and no more quantifiers are available
-  const remainingAssignmentsCount = skippedAssignmentBins.length;
-
   const remainingPraiseCount = sum(
     flatten(
       skippedAssignmentBins.map((bin) =>
@@ -180,7 +176,7 @@ const generateAssignments = (
 
   return {
     poolAssignments,
-    remainingAssignmentsCount,
+    remainingAssignmentsCount: skippedAssignmentBins.length,
     remainingPraiseCount,
   };
 };
