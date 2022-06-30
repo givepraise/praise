@@ -15,13 +15,12 @@ import DuplicateSearchDialog from './DuplicateSearchDialog';
 import QuantifyPraiseRow from './QuantifyPraiseRow';
 import SearchInput from '@/components/form/SearchInput';
 import QuantifyMultipleDialog from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleDialog';
-import { Tooltip } from '@mui/material';
-import IconButton from '@/components/IconButton';
 import {
   faCopy,
   faMinusCircle,
   faScaleUnbalanced,
 } from '@fortawesome/free-solid-svg-icons';
+import IconButtonRound from '@/components/IconButtonRound';
 
 interface Props {
   periodId: string;
@@ -171,68 +170,47 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
 
   return (
     <div>
-      <div className="sticky z-10 w-full p-5 border-t border-l border-r top-14 lg:top-0 rounded-t-xl bg-warm-gray-100 dark:bg-slate-700">
-        <div className="flex">
-          <div className="mr-6 mt-1">
-            <input
-              type="checkbox"
-              onChange={handleToggleSelectAll}
-              checked={selectAllChecked}
-            />
-          </div>
+      <div className="sticky z-10 w-full p-5 border-t border-l border-r top-14 lg:top-0 rounded-t-xl bg-warm-gray-50 dark:bg-slate-600">
+        <div className="flex items-center space-x-4">
+          <input
+            type="checkbox"
+            onChange={handleToggleSelectAll}
+            checked={selectAllChecked}
+          />
 
-          <div className="mr-4">
-            <Tooltip placement="bottom" title="Dismiss" arrow>
-              <div>
-                <IconButton
-                  icon={faMinusCircle}
-                  text="Dismiss"
-                  disabled={selectedPraises.length < 1}
-                  onClick={(): void => setIsDismissDialogOpen(true)}
-                  small={true}
-                />
-              </div>
-            </Tooltip>
-          </div>
+          <IconButtonRound
+            icon={faMinusCircle}
+            tooltip="Dismiss"
+            disabled={selectedPraises.length < 1}
+            onClick={(): void => setIsDismissDialogOpen(true)}
+          />
 
-          <div className="mr-4">
-            <Tooltip placement="bottom" title="Mark as duplicates" arrow>
-              <div>
-                <IconButton
-                  icon={faCopy}
-                  text="Mark as duplicates"
-                  disabled={selectedPraises.length < 2}
-                  onClick={(): void => setIsDuplicateDialogOpen(true)}
-                  small={true}
-                />
-              </div>
-            </Tooltip>
-          </div>
+          <IconButtonRound
+            icon={faCopy}
+            tooltip="Mark as duplicates"
+            disabled={selectedPraises.length < 2}
+            onClick={(): void => setIsDuplicateDialogOpen(true)}
+          />
 
-          <div>
-            <Tooltip placement="bottom" title="Quantify" arrow>
-              <div>
-                <IconButton
-                  icon={faScaleUnbalanced}
-                  text="Quantify"
-                  disabled={selectedPraises.length < 1}
-                  onClick={(): void => setIsQuantifyMultipleDialogOpen(true)}
-                  small={true}
-                />
-              </div>
-            </Tooltip>
-          </div>
+          <IconButtonRound
+            icon={faScaleUnbalanced}
+            tooltip="Quantify"
+            disabled={selectedPraises.length < 1}
+            onClick={(): void => setIsQuantifyMultipleDialogOpen(true)}
+          />
 
-          <div className="w-22 ml-auto h-8">
-            <SearchInput
-              handleChange={(e): void => handleSearchInput(e)}
-              placeholder="Filter"
-            />
+          <div className="flex justify-end grow">
+            <div className="w-22">
+              <SearchInput
+                handleChange={(e): void => handleSearchInput(e)}
+                placeholder="Filter"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-t-none praise-box-wide">
+      <div className="p-0 pb-5 overflow-x-auto rounded-t-none praise-box-wide">
         <table className="w-full table-auto">
           <tbody>
             {Object.keys(weeklyData).map((weekKey, index) => (
@@ -240,7 +218,7 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
                 {index !== 0 && index !== data.length - 1 && (
                   <tr>
                     <td colSpan={5}>
-                      <div className="mb-5 border-2 border-t border-warm-gray-400" />
+                      <hr className="border-t-2 border-warm-gray-400 dark:border-slate-700" />
                     </td>
                   </tr>
                 )}
