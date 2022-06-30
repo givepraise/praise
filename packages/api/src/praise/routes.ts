@@ -12,5 +12,10 @@ praiseRouter.patchAsync(
   authMiddleware(UserRole.QUANTIFIER),
   controller.quantify
 );
+praiseRouter.patchAsync(
+  '/quantify',
+  authMiddleware(UserRole.QUANTIFIER),
+  controller.quantifyMultiple
+);
 
 export { praiseRouter };

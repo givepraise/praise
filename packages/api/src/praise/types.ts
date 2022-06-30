@@ -73,6 +73,11 @@ export interface QuantificationCreateUpdateInput {
   duplicatePraise: string;
 }
 
+export interface QuantifyMultiplePraiseInput {
+  score: number;
+  praiseIds: string[];
+}
+
 export interface Receiver {
   _id: string;
   praiseCount: number;

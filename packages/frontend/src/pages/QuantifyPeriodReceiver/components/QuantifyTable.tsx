@@ -5,16 +5,22 @@ import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { faCopy, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCopy,
+  faMinusCircle,
+  faScaleUnbalanced,
+} from '@fortawesome/free-solid-svg-icons';
+import { useQuantifyMultiplePraise, useQuantifyPraise } from '@/model/praise';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
-import { useQuantifyPraise } from '@/model/praise';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods';
-import { IconButton } from '@/components/IconButton';
-import { QuantifyBackNextLink } from './BackNextLink';
-import { DismissDialog } from './DismissDialog';
+import { SearchInput } from '@/components/form/SearchInput';
+import { QuantifyMultipleDialog } from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleDialog';
+import { IconButtonRound } from '@/components/IconButtonRound';
 import { DuplicateDialog } from './DuplicateDialog';
 import { DuplicateSearchDialog } from './DuplicateSearchDialog';
 import { QuantifyPraiseRow } from './QuantifyPraiseRow';
+import { QuantifyBackNextLink } from './BackNextLink';
+import { DismissDialog } from './DismissDialog';
 
 interface Props {
   periodId: string;
@@ -26,6 +32,10 @@ export const QuantifyTable = ({
   periodId,
   receiverId,
 }: Props): JSX.Element | null => {
+  const [searchValue, setSearchValue] = React.useState<string | undefined>(
+    undefined
+  );
+
   const data = useRecoilValue(
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
   );
@@ -34,20 +44,43 @@ export const QuantifyTable = ({
     'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
   ) as boolean;
   const { quantify } = useQuantifyPraise();
+  const { quantifyMultiple } = useQuantifyMultiplePraise();
 
   const [isDismissDialogOpen, setIsDismissDialogOpen] = React.useState(false);
   const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] =
     React.useState(false);
   const [isDuplicateSearchDialogOpen, setIsDuplicateSearchDialogOpen] =
     React.useState(false);
+  const [isQuantifyMultipleDialogOpen, setIsQuantifyMultipleDialogOpen] =
+    React.useState(false);
   const [duplicateSearchDialogPraise, setDuplicateSearchDialogPraise] =
     React.useState<PraiseDto | undefined>(undefined);
   const [selectedPraises, setSelectedPraises] = React.useState<PraiseDto[]>([]);
+  const [selectAllChecked, setSelectAllChecked] =
+    React.useState<boolean>(false);
 
   const allowedValues = usePeriodSettingValueRealized(
     periodId,
     'PRAISE_QUANTIFY_ALLOWED_VALUES'
   ) as number[];
+
+  const filterBySearchValue = React.useCallback(
+    (data: PraiseDto[] | undefined): PraiseDto[] => {
+      if (!data) return [];
+      if (!searchValue) return data;
+
+      const filteredData = data.filter((praise: PraiseDto) => {
+        const searchString = searchValue.toLowerCase();
+        const reason = praise.reasonRealized.toLowerCase();
+        const giver = praise.giver.name.toLowerCase();
+
+        return reason.includes(searchString) || giver.includes(searchString);
+      });
+
+      return filteredData;
+    },
+    [searchValue]
+  );
 
   if (!data) return null;
 
@@ -78,6 +111,16 @@ export const QuantifyTable = ({
     void quantify(praise._id, score, false, null);
   };
 
+  const handleSetMultipleScore = (
+    score: number,
+    selectedPraises: PraiseDto[]
+  ): void => {
+    const praiseIds = selectedPraises.map((praise) => praise._id);
+
+    void quantifyMultiple(score, praiseIds);
+    setSelectedPraises([]);
+  };
+
   const handleDuplicateSearchPraise = (originalPraiseId: string): void => {
     if (!duplicateSearchDialogPraise) return;
 
@@ -86,6 +129,8 @@ export const QuantifyTable = ({
   };
 
   const handleToggleCheckbox = (praise: PraiseDto): void => {
+    setSelectAllChecked(false);
+
     if (selectedPraises.includes(praise)) {
       const newSelectedPraiseIds = selectedPraises.filter(
         (p) => p._id !== praise._id
@@ -99,8 +144,23 @@ export const QuantifyTable = ({
     }
   };
 
+  const handleToggleSelectAll = (): void => {
+    setSelectAllChecked(!selectAllChecked);
+
+    if (selectAllChecked) {
+      setSelectedPraises([]);
+    } else {
+      setSelectedPraises(filterBySearchValue(data));
+    }
+  };
+
+  const handleSearchInput = (searchValue: string): void => {
+    setSearchValue(searchValue);
+    setSelectedPraises([]);
+  };
+
   const weeklyData = groupBy(
-    sortBy(data, (p) => p.createdAt),
+    sortBy(filterBySearchValue(data), (p) => p.createdAt),
     (praise: PraiseDto) => {
       if (!praise) return 0;
       return getWeek(parseISO(praise.createdAt), { weekStartsOn: 1 });
@@ -113,22 +173,47 @@ export const QuantifyTable = ({
 
   return (
     <div>
-      <div className="sticky z-10 w-full p-5 space-x-4 border-t border-l border-r top-14 lg:top-0 rounded-t-xl bg-warm-gray-100 dark:bg-slate-700">
-        <IconButton
-          icon={faCopy}
-          text="Mark as duplicates"
-          disabled={selectedPraises.length < 2}
-          onClick={(): void => setIsDuplicateDialogOpen(true)}
-        />
-        <IconButton
-          icon={faMinusCircle}
-          text="Dismiss"
-          disabled={selectedPraises.length < 1}
-          onClick={(): void => setIsDismissDialogOpen(true)}
-        />
+      <div className="sticky z-10 w-full p-5 border-t border-l border-r top-14 lg:top-0 rounded-t-xl bg-warm-gray-50 dark:bg-slate-600">
+        <div className="flex items-center space-x-4">
+          <input
+            type="checkbox"
+            onChange={handleToggleSelectAll}
+            checked={selectAllChecked}
+          />
+
+          <IconButtonRound
+            icon={faMinusCircle}
+            tooltip="Dismiss"
+            disabled={selectedPraises.length < 1}
+            onClick={(): void => setIsDismissDialogOpen(true)}
+          />
+
+          <IconButtonRound
+            icon={faCopy}
+            tooltip="Mark as duplicates"
+            disabled={selectedPraises.length < 2}
+            onClick={(): void => setIsDuplicateDialogOpen(true)}
+          />
+
+          <IconButtonRound
+            icon={faScaleUnbalanced}
+            tooltip="Quantify"
+            disabled={selectedPraises.length < 1}
+            onClick={(): void => setIsQuantifyMultipleDialogOpen(true)}
+          />
+
+          <div className="flex justify-end grow">
+            <div className="w-22">
+              <SearchInput
+                handleChange={(e): void => handleSearchInput(e)}
+                placeholder="Filter"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="overflow-x-auto rounded-t-none praise-box-wide">
+      <div className="p-0 pb-5 overflow-x-auto rounded-t-none praise-box-wide">
         <table className="w-full table-auto">
           <tbody>
             {Object.keys(weeklyData).map((weekKey, index) => (
@@ -136,7 +221,7 @@ export const QuantifyTable = ({
                 {index !== 0 && index !== data.length - 1 && (
                   <tr>
                     <td colSpan={5}>
-                      <div className="mb-5 border-2 border-t border-warm-gray-400" />
+                      <hr className="border-t-2 border-warm-gray-400 dark:border-slate-700" />
                     </td>
                   </tr>
                 )}
@@ -182,6 +267,15 @@ export const QuantifyTable = ({
         selectedPraise={duplicateSearchDialogPraise}
         onClose={(): void => setIsDuplicateSearchDialogOpen(false)}
         onConfirm={handleDuplicateSearchPraise}
+      />
+      <QuantifyMultipleDialog
+        open={isQuantifyMultipleDialogOpen}
+        onClose={(): void => setIsQuantifyMultipleDialogOpen(false)}
+        selectedPraises={selectedPraises}
+        allowedValues={allowedValues}
+        onSetScore={(score, selectedPraises): void =>
+          handleSetMultipleScore(score, selectedPraises)
+        }
       />
     </div>
   );

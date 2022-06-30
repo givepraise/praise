@@ -9,6 +9,7 @@ import {
   findPraiseQuantification,
   shortenDuplicatePraiseId,
 } from '@/utils/praise';
+import { classNames } from '@/utils/index';
 import { QuantifySlider } from './QuantifySlider';
 
 interface Props {
@@ -42,11 +43,16 @@ export const QuantifyPraiseRow = ({
   const duplicate = !!quantification.duplicatePraise;
 
   return (
-    <tr className="group">
-      <td className="pr-5">
+    <tr
+      className={classNames(
+        'group',
+        checked ? 'bg-warm-gray-100 dark:bg-slate-500' : ''
+      )}
+    >
+      <td className="pl-5 pr-5">
         <input type="checkbox" checked={checked} onChange={onToggleCheck} />
       </td>
-      <td className="pb-5 pr-5">
+      <td className="py-3 pr-5">
         <Praise
           praise={praise}
           showIdPrefix={true}
@@ -76,10 +82,10 @@ export const QuantifyPraiseRow = ({
           />
         )}
       </td>
-      <td>
+      <td className="pr-5">
         <div className="w-3">
           <button
-            className="hidden text-warm-gray-400 cursor-pointer group-hover:block hover:text-warm-gray-500"
+            className="hidden cursor-pointer text-warm-gray-400 group-hover:block hover:text-warm-gray-500"
             disabled={duplicate}
             onClick={onDuplicateClick}
           >

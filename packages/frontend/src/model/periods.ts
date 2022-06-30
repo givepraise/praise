@@ -688,7 +688,9 @@ export const PeriodQuantifierReceiverPraise = selectorFamily({
       const userId = get(ActiveUserId);
       const listKey = periodQuantifierPraiseListKey(periodId);
       const praiseList = get(AllPraiseList(listKey));
+
       if (!praiseList) return undefined;
+
       return praiseList.filter(
         (praise) =>
           praise &&
