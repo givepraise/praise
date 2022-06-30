@@ -23,6 +23,14 @@ import {
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { CommandHandler } from '../interfaces/CommandHandler';
 
+/**
+ * Execute command /firward
+ *  Creates praises with a given giver, receiver, and reason
+ *
+ * @param  interaction
+ * @param  responseUrl
+ * @returns
+ */
 export const forwardHandler: CommandHandler = async (
   interaction,
   responseUrl

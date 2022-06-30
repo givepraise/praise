@@ -1,6 +1,12 @@
 import { MessageSelectMenu } from 'discord.js';
 import { PeriodDocument } from 'api/dist/period/types';
 
+/**
+ * Generate Discord menu to select a period
+ *
+ * @param {PeriodDocument[]} periods
+ * @returns {MessageSelectMenu}
+ */
 export const periodSelectMenu = (
   periods: PeriodDocument[]
 ): MessageSelectMenu => {

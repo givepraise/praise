@@ -14,6 +14,13 @@ import { selectTargets } from '../utils/dmTargets';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
 import { notActivatedError } from '../utils/praiseEmbeds';
 
+/**
+ * Executes command /announce
+ *  Sends DMs to specified lists of users with a given message
+ *
+ * @param  interaction
+ * @returns
+ */
 export const announcementHandler: CommandHandler = async (interaction) => {
   const { user } = interaction;
   const ua = {

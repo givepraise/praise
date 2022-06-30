@@ -13,6 +13,14 @@ import { PraiseModel } from 'api/dist/praise/entities';
 import { Buffer } from 'node:buffer';
 import { FailedToDmUsersList } from 'src/interfaces/FailedToDmUsersList';
 
+/**
+ * Send a custom direct message to a list of users
+ *
+ * @param {CommandInteraction} interaction
+ * @param {(UserDocument[] | PeriodDetailsQuantifierDto[])} users
+ * @param {string} message
+ * @returns {Promise<void>}
+ */
 const sendDMs = async (
   interaction: CommandInteraction,
   users: UserDocument[] | PeriodDetailsQuantifierDto[],
@@ -142,6 +150,15 @@ const sendDMs = async (
   });
 };
 
+/**
+ * Send DMs to all users with a given role or assignment status
+ *
+ * @param {CommandInteraction} interaction
+ * @param {string} type
+ * @param {(string | undefined)} period
+ * @param {string} message
+ * @returns   {Promise<void>}
+ */
 export const selectTargets = async (
   interaction: CommandInteraction,
   type: string,
@@ -180,6 +197,8 @@ export const selectTargets = async (
           { $unwind: '$quantifications' },
           {
             $addFields: {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               finished: {
                 $or: [
                   { $ne: ['$quantifications.dismissed', false] },

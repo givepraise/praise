@@ -60,7 +60,7 @@ const setupDatabase = async (NODE_ENV = 'development'): Promise<void> => {
  * Prepare and initialize express server
  *
  * @param {string} [NODE_ENV='development']
- * @returns {*}  {Promise<Express>}
+ * @returns   {Promise<Express>}
  */
 const setupApiServer = async (NODE_ENV = 'development'): Promise<Express> => {
   const app = express();

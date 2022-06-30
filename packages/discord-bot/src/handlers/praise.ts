@@ -20,6 +20,15 @@ import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
 
+/**
+ * Execute command /praise
+ *  Creates praises with a given receiver and reason
+ *  with the command executor as the praise.giver
+ *
+ * @param  interaction
+ * @param  responseUrl
+ * @returns
+ */
 export const praiseHandler: CommandHandler = async (
   interaction,
   responseUrl

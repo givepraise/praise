@@ -8,6 +8,12 @@ import { Command } from '../interfaces/Command';
 import { DiscordClient } from '../interfaces/DiscordClient';
 import { help } from '../commands/help';
 
+/**
+ * Register (install) all commands to Discord
+ *
+ * @param {DiscordClient} client
+ * @returns {Promise<boolean>}
+ */
 export const registerCommands = async (
   client: DiscordClient
 ): Promise<boolean> => {

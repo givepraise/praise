@@ -6,6 +6,14 @@ import randomstring from 'randomstring';
 import { CommandHandler } from 'src/interfaces/CommandHandler';
 import { alreadyActivatedError } from '../utils/praiseEmbeds';
 
+/**
+ * Executes command /activate
+ *  Creates a one-time link on the Praise frontend linking to the activate page
+ *  where the user can associate their Discord user with a UserAccount
+ *
+ * @param  interaction
+ * @returns
+ */
 export const activationHandler: CommandHandler = async (interaction) => {
   const { user } = interaction;
 

@@ -1,6 +1,14 @@
 import { Collection, CommandInteraction, MessageEmbed } from 'discord.js';
 import { Command } from 'src/interfaces/Command';
 
+/**
+ * Executes command /help
+ *  Provides documentation on how to use the praise discord bot
+ *
+ * @param {CommandInteraction} interaction
+ * @param {Collection<string, Command>} commands
+ * @returns {Promise<void>}
+ */
 export const helpHandler = async (
   interaction: CommandInteraction,
   commands: Collection<string, Command>
