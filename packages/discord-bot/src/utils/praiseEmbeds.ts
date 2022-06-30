@@ -114,7 +114,7 @@ export const invalidReceiverError = async (): Promise<string> => {
 };
 
 export const missingReasonError = async (): Promise<string> => {
-  const msg = (await settingValue('PRAISE_INVALID_RECEIVERS_ERROR')) as string;
+  const msg = (await settingValue('PRAISE_REASON_MISSING_ERROR')) as string;
   if (msg) {
     return msg;
   }
