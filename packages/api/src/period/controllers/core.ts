@@ -111,7 +111,11 @@ export const create = async (
   res: TypedResponse<PeriodDetailsDto>
 ): Promise<void> => {
   const { name, endDate } = req.body;
-  const period = await PeriodModel.create({ name, endDate });
+
+  if (!name || !endDate)
+    throw new BadRequestError('Period name and endDate are required');
+
+  const period = await PeriodModel.create({ name, endDate: parseISO(endDate) });
   await insertNewPeriodSettings(period);
 
   await logEvent(

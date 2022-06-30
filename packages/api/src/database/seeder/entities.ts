@@ -5,9 +5,9 @@ import { UserModel } from '@/user/entities';
 import { UserAccountModel } from '@/useraccount/entities';
 import { UserAccountDocument } from '@/useraccount/types';
 import { PraiseDocument, QuantificationDocument } from '@/praise/types';
-import { PeriodDocument } from '@/period/types';
+import { PeriodDocument, PeriodStatusType } from '@/period/types';
 import { insertNewPeriodSettings } from '@/periodsettings/utils';
-import { UserDocument } from '@/user/types';
+import { UserDocument, UserRole } from '@/user/types';
 import { EventLogDocument } from '@/eventlog/types';
 import { EventLogModel, EventLogTypeModel } from '@/eventlog/entities';
 import { SettingGroup, SettingDocument } from '@/settings/types';
@@ -58,7 +58,7 @@ export const seedUser = async (
 ): Promise<UserDocument> => {
   const user = await UserModel.create({
     ethereumAddress: faker.finance.ethereumAddress(),
-    roles: ['USER'],
+    roles: [UserRole.USER],
     ...userData,
   });
 
@@ -96,7 +96,7 @@ export const seedPeriod = async (
 ): Promise<PeriodDocument> => {
   const period = await PeriodModel.create({
     name: `Period ${faker.random.alpha()}`,
-    status: 'OPEN',
+    status: PeriodStatusType.OPEN,
     endDate: faker.date.future(),
     ...periodData,
   });
@@ -214,7 +214,7 @@ export const seedSetting = async (
     type: 'Boolean',
     group: SettingGroup.APPLICATION,
     description: faker.lorem.sentence(),
-    value: faker.datatype.boolean(),
+    value: faker.datatype.boolean().toString(),
     createdAt,
     updatedAt: createdAt,
     ...settingData,
@@ -247,7 +247,7 @@ export const seedPeriodSetting = async (
     type: 'Boolean',
     group: SettingGroup.APPLICATION,
     description: faker.lorem.sentence(),
-    value: faker.datatype.boolean(),
+    value: faker.datatype.boolean().toString(),
     createdAt,
     updatedAt: createdAt,
     period: period._id,

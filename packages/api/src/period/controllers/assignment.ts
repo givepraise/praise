@@ -116,7 +116,13 @@ export const assignQuantifiers = async (
     )
   );
 
+  // 2022-06-30
+  // Ignoring this TS error that new quantification object does not meet expected type
+  //  It may be related to running $push within an updateMany within a bulkWrite *for a sub-document type*
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   await PraiseModel.bulkWrite(bulkQueries);
+
   await PeriodModel.updateOne(
     { _id: period._id },
     { $set: { status: PeriodStatusType.QUANTIFY } }
