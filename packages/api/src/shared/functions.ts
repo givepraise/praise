@@ -3,19 +3,16 @@ import { Request } from 'express';
 import mime from 'mime-types';
 import { UploadedFile } from 'express-fileupload';
 import { unlink } from 'fs/promises';
+import { randomBytes } from 'crypto';
 import { BadRequestError, InternalServerError } from '@/error/errors';
 import { PraiseAllInput, PraiseExportInput } from '@/praise/types';
 import { QueryInput } from './types';
 
-export const getRandomString = (length = 10): string => {
-  let result = '';
-  const characters =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
+export const getRandomString = (bytes = 10): string => {
+  const buffer = randomBytes(bytes);
+  const randomString = buffer.toString('hex');
+
+  return randomString;
 };
 
 export const getQuerySort = (input: QueryInput): Object => {
