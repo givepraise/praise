@@ -2,7 +2,7 @@ import { PeriodModel } from 'api/dist/period/entities';
 import { UserModel } from 'api/dist/user/entities';
 import { UserRole, UserDocument } from 'api/dist/user/types';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { getPreviousPeriodEndDate } from 'api/dist/period/utils';
+import { getPreviousPeriodEndDate } from 'api/dist/period/utils/core';
 import {
   PeriodDocument,
   PeriodDetailsQuantifierDto,
