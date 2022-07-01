@@ -1,7 +1,3 @@
-import BreadCrumb from '@/components/BreadCrumb';
-import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
-import { useAllPeriodSettingsQuery } from '@/model/periodsettings';
-import BackLink from '@/navigation/BackLink';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import {
   PeriodDetailsDto,
@@ -10,7 +6,11 @@ import {
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import ReceiverSummaryTable from './components/ReceiverSummaryTable';
+import { useAllPeriodSettingsQuery } from '@/model/periodsettings';
+import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
+import { BreadCrumb } from '@/components/BreadCrumb';
+import { BackLink } from '@/navigation/BackLink';
+import { ReceiverSummaryTable } from './components/ReceiverSummaryTable';
 
 const getReceiver = (
   periodDetails: PeriodDetailsDto,
@@ -39,7 +39,7 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
   );
 };
 
-const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
+const ReceiverSummaryPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodAndReceiverPageParams>();
   useAllPeriodSettingsQuery(periodId);
 
@@ -59,4 +59,5 @@ const QuantSummaryPeriodReceiverPage = (): JSX.Element => {
   );
 };
 
-export default QuantSummaryPeriodReceiverPage;
+// eslint-disable-next-line import/no-default-export
+export default ReceiverSummaryPage;

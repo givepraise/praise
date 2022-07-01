@@ -11,7 +11,7 @@ interface UserNameProps {
   className?: string;
 }
 
-export const WrappedUserName = ({
+const WrappedUserName = ({
   user,
   userAccount,
   usePseudonym = false,

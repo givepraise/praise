@@ -1,4 +1,3 @@
-import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
 import { UserDto, UserRole } from 'api/dist/user/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
@@ -10,6 +9,7 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
+import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
 import {
   ApiAuthGet,
   ApiAuthPatch,
@@ -17,23 +17,18 @@ import {
   isResponseOk,
   useAuthApiQuery,
 } from './api';
-import { ActiveTokenSet, HasRole } from './auth';
+import { ActiveTokenSet } from './auth';
 import { AllPeriods } from './periods';
 
-export const AllUsersQuery = selector({
+const AllUsersQuery = selector({
   key: 'AllUsersQuery',
   get: ({ get }) => {
-    const isAdmin = get(HasRole('ADMIN'));
     const activeTokenSet = get(ActiveTokenSet);
     if (!activeTokenSet) throw Error('Not authenticated');
 
-    let endpoint = '/users';
-    if (isAdmin) {
-      endpoint = '/admin/users';
-    }
     return get(
       ApiAuthGet({
-        url: `${endpoint}/all?sortColumn=ethereumAddress&sortType=desc`,
+        url: 'users/all?sortColumn=ethereumAddress&sortType=desc',
       })
     );
   },
@@ -112,24 +107,6 @@ export const SingleUser = selectorFamily({
     },
 });
 
-type SingleUserByReceiverIdParams = {
-  receiverId: string;
-};
-export const SingleUserByReceiverId = selectorFamily({
-  key: 'SingleUserByReceiverId',
-  get:
-    (params: SingleUserByReceiverIdParams) =>
-    ({ get }): UserDto | undefined => {
-      const { receiverId } = params;
-      const allUsers = get(AllUsers);
-      if (!allUsers) return undefined;
-      return allUsers.find((user) => {
-        if (!user.accounts) return false;
-        return user.accounts.find((account) => account._id === receiverId);
-      });
-    },
-});
-
 const stringToNumber = (s: string): number => {
   let value = 0;
   for (let i = s.length - 1; i >= 0; i--) {
@@ -164,7 +141,7 @@ export const PseudonymForUser = selectorFamily({
     },
 });
 
-export const AddUserRoleApiResponse = atom<
+const AddUserRoleApiResponse = atom<
   AxiosResponse<unknown> | AxiosError<unknown> | null
 >({
   key: 'AddUserRoleApiResponse',

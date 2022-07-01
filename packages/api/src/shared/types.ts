@@ -3,7 +3,6 @@ import * as core from 'express-serve-static-core';
 import { Send } from 'express-serve-static-core';
 
 export type Query = core.Query;
-export type Params = core.ParamsDictionary;
 
 export interface QueryInput {
   sortColumn?: string;
@@ -14,13 +13,7 @@ export interface QueryInput {
 
 export interface QueryInputParsedQs extends QueryInput, Query {}
 
-export interface SearchQueryInput extends QueryInput {
-  search?: string;
-}
-
-export interface SearchQueryInputParsedQs extends SearchQueryInput, Query {}
-
-export interface EventLogsQueryInput extends QueryInput {
+interface EventLogsQueryInput extends QueryInput {
   search?: string;
   type?: string;
 }
@@ -28,11 +21,6 @@ export interface EventLogsQueryInput extends QueryInput {
 export interface EventLogsQueryInputParsedQs
   extends EventLogsQueryInput,
     Query {}
-
-export interface TypedRequest<T extends Query, U> extends Request {
-  body: U;
-  query: T;
-}
 
 export interface TypedRequestQuery<T extends Query> extends Request {
   query: T;

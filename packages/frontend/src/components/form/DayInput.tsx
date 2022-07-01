@@ -1,7 +1,7 @@
-import { DATE_FORMAT, parseDate, formatIsoDateUTC } from '@/utils/date';
-import OutsideClickHandler from '@/components/OutsideClickHandler';
 import { useState } from 'react';
 import { DayPicker, useInput } from 'react-day-picker';
+import { DATE_FORMAT, parseDate, formatIsoDateUTC } from '@/utils/date';
+import { OutsideClickHandler } from '@/components/OutsideClickHandler';
 import 'react-day-picker/dist/style.css';
 import { classNames } from '@/utils/index';
 
@@ -14,7 +14,7 @@ interface Params {
   tzLabel?: string;
 }
 
-const DayInput = ({
+export const DayInput = ({
   name,
   onChange,
   value,
@@ -68,5 +68,3 @@ const DayInput = ({
     </div>
   );
 };
-
-export default DayInput;

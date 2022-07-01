@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { PraiseDocument, QuantificationDocument } from './types';
 
-export const quantificationSchema = new Schema(
+const quantificationSchema = new Schema(
   {
     quantifier: {
       type: Schema.Types.ObjectId,

@@ -1,20 +1,20 @@
+import { ethers } from 'ethers';
 import {
   BadRequestError,
   NotFoundError,
   UnauthorizedError,
-} from '@error/errors';
-import { getRandomString } from '@shared/functions';
+} from '@/error/errors';
+import { getRandomString } from '@/shared/functions';
 import {
   Query,
   TypedRequestBody,
   TypedRequestQuery,
   TypedResponse,
-} from '@shared/types';
-import { UserModel } from '@user/entities';
-import { UserDocument } from '@user/types';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
-import { ethers } from 'ethers';
+} from '@/shared/types';
+import { UserModel } from '@/user/entities';
+import { UserDocument } from '@/user/types';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
 import { JwtService } from './JwtService';
 import {
   AuthRequestInput,
@@ -29,8 +29,11 @@ import { generateLoginMessage } from './utils';
 const jwtService = new JwtService();
 
 /**
- * Description
- * @param
+ * Authenticate a user with a signed message from their ethereum address
+ *
+ * @param  {TypedRequestBody<AuthRequestInput>} req
+ * @param  {TypedResponse<AuthResponse>} res
+ * @returns Promise
  */
 export const auth = async (
   req: TypedRequestBody<AuthRequestInput>,
@@ -79,8 +82,12 @@ export const auth = async (
 interface NonceRequestInputParsedQs extends Query, NonceRequestInput {}
 
 /**
- * Description
- * @param
+ * Generate a nonce (random string) and store in user model
+ *  to prepare the user for signing an authentication message containing that nonce
+ *
+ * @param  {TypedRequestQuery<NonceRequestInputParsedQs>} req
+ * @param  {TypedResponse<NonceResponse>} res
+ * @returns Promise
  */
 export const nonce = async (
   req: TypedRequestQuery<NonceRequestInputParsedQs>,
@@ -106,8 +113,11 @@ export const nonce = async (
 };
 
 /**
- * Description
- * @param
+ * Refresh a short-lived JWT access token after authenticating with a long-lived JWT refresh token
+ *
+ * @param  {TypedRequestBody<RefreshRequestInput>} req
+ * @param  {TypedResponse<AuthResponse>} res
+ * @returns Promise
  */
 export const refresh = async (
   req: TypedRequestBody<RefreshRequestInput>,

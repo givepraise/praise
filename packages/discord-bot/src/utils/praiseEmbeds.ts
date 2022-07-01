@@ -1,6 +1,13 @@
 import { User, MessageEmbed, Role } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
 
+/**
+ * Generate success response message for commands/praise
+ *
+ * @param {string[]} praised
+ * @param {string} reason
+ * @returns {Promise<string>}
+ */
 export const praiseSuccess = async (
   praised: string[],
   reason: string
@@ -15,6 +22,14 @@ export const praiseSuccess = async (
   }
 };
 
+/**
+ * Generate success response message for commands/forward
+ *
+ * @param {User} giver
+ * @param {string[]} receivers
+ * @param {string} reason
+ * @returns   {Promise<string>}
+ */
 export const forwardSuccess = async (
   giver: User,
   receivers: string[],
@@ -31,10 +46,11 @@ export const forwardSuccess = async (
   }
 };
 
-export const praiseError = (title: string, description: string): string => {
-  return `**❌ ${title}**\n${description}`;
-};
-
+/**
+ * Generate response error message PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR
+ *
+ * @returns {Promise<string>}
+ */
 export const notActivatedError = async (): Promise<string> => {
   const msg = (await settingValue(
     'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR'
@@ -46,6 +62,11 @@ export const notActivatedError = async (): Promise<string> => {
   }
 };
 
+/**
+ * Generate response error message PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR
+ *
+ * @returns {Promise<string>}
+ */
 export const alreadyActivatedError = async (): Promise<string> => {
   const msg = (await settingValue(
     'PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR'
@@ -57,6 +78,11 @@ export const alreadyActivatedError = async (): Promise<string> => {
   }
 };
 
+/**
+ * Generate response error message FORWARD_FROM_UNACTIVATED_GIVER_ERROR
+ *
+ * @returns {Promise<string>}
+ */
 export const giverNotActivatedError = async (
   praiseGiver: User
 ): Promise<string> => {
@@ -75,6 +101,11 @@ export const giverNotActivatedError = async (
   }
 };
 
+/**
+ * Generate response error message DM_ERROR
+ *
+ * @returns {Promise<string>}
+ */
 export const dmError = async (): Promise<string> => {
   const msg = (await settingValue('DM_ERROR')) as string;
   if (msg) {
@@ -84,6 +115,11 @@ export const dmError = async (): Promise<string> => {
   }
 };
 
+/**
+ * Generate response error message PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR
+ *
+ * @returns {Promise<string>}
+ */
 export const praiseRoleError = async (
   praiseGiverRole: Role,
   user: User
@@ -109,31 +145,11 @@ export const praiseRoleError = async (
   );
 };
 
-export const forwardRoleError = async (
-  praiseGiverRole: Role,
-  user: User
-): Promise<MessageEmbed> => {
-  const msg = (await settingValue(
-    'FORWARD_FROM_USER_WITHOUT_PRAISE_GIVER_ROLE_ERROR'
-  )) as string;
-  if (msg) {
-    return new MessageEmbed().setColor('#ff0000').setDescription(
-      msg
-        .replace('{role}', praiseGiverRole?.name || '...')
-        .replace('{giver}', `${user?.username}#${user?.discriminator}` || '...')
-        .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
-        .replace('{@giver}', `<@!${user?.id || '...'}>`)
-    );
-  }
-  return new MessageEmbed().setColor('#ff0000').setDescription(
-    'GIVER DOES NOT HAVE {@role} role (message not set)'
-      .replace('{role}', praiseGiverRole?.name || '...')
-      .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
-      .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
-      .replace('{@user}', `<@!${user?.id || '...'}>`)
-  );
-};
-
+/**
+ * Generate response error message PRAISE_INVALID_RECEIVERS_ERROR
+ *
+ * @returns {Promise<string>}
+ */
 export const invalidReceiverError = async (): Promise<string> => {
   const msg = (await settingValue('PRAISE_INVALID_RECEIVERS_ERROR')) as string;
   if (msg) {
@@ -142,14 +158,24 @@ export const invalidReceiverError = async (): Promise<string> => {
   return 'VALID RECEIVERS NOT MENTIONED (message not set)';
 };
 
+/**
+ * Generate response error message PRAISE_INVALID_RECEIVERS_ERROR
+ *
+ * @returns {Promise<string>}
+ */
 export const missingReasonError = async (): Promise<string> => {
-  const msg = (await settingValue('PRAISE_INVALID_RECEIVERS_ERROR')) as string;
+  const msg = (await settingValue('PRAISE_REASON_MISSING_ERROR')) as string;
   if (msg) {
     return msg;
   }
   return 'REASON NOT MENTIONED (message not set)';
 };
 
+/**
+ * Generate response error message PRAISE_UNDEFINED_RECEIVERS_WARNING
+ *
+ * @returns {Promise<string>}
+ */
 export const undefinedReceiverWarning = async (
   receivers: string,
   user: User
@@ -166,6 +192,11 @@ export const undefinedReceiverWarning = async (
   return 'UNDEFINED RECEIVERS MENTIONED, UNABLE TO PRAISE THEM (message not set)';
 };
 
+/**
+ * Generate response error message PRAISE_TO_ROLE_WARNING
+ *
+ * @returns {Promise<string>}
+ */
 export const roleMentionWarning = async (
   receivers: string,
   user: User
@@ -180,6 +211,11 @@ export const roleMentionWarning = async (
   return "ROLES MENTIONED AS PRAISE RECEIVERS, PRAISE CAN'T BE DISHED TO ROLES (message not set)";
 };
 
+/**
+ * Generate response error message PRAISE_SUCCESS_DM
+ *
+ * @returns {Promise<string>}
+ */
 export const praiseSuccessDM = async (
   msgUrl: string
 ): Promise<MessageEmbed> => {
@@ -194,6 +230,11 @@ export const praiseSuccessDM = async (
   );
 };
 
+/**
+ * Generate response error message PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM
+ *
+ * @returns {Promise<string>}
+ */
 export const notActivatedDM = async (msgUrl: string): Promise<MessageEmbed> => {
   const msg = (await settingValue(
     'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM'
@@ -209,6 +250,11 @@ export const notActivatedDM = async (msgUrl: string): Promise<MessageEmbed> => {
   );
 };
 
+/**
+ * Generate response error message SELF_PRAISE_WARNING
+ *
+ * @returns {Promise<string>}
+ */
 export const selfPraiseWarning = async (): Promise<string> => {
   const msg = (await settingValue('SELF_PRAISE_WARNING')) as string;
   if (msg) {

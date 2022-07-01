@@ -1,19 +1,19 @@
 /* eslint-disable react/jsx-key */
-import { UserPseudonym } from '@/components/user/UserPseudonym';
-import {
-  PeriodPageParams,
-  PeriodQuantifierReceivers,
-  QuantifierReceiverData,
-  usePeriodQuantifierPraiseQuery,
-} from '@/model/periods';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
-import { classNames } from '@/utils/index';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
+import { classNames } from '@/utils/index';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import {
+  PeriodPageParams,
+  PeriodQuantifierReceivers,
+  QuantifierReceiverData,
+  usePeriodQuantifierPraiseQuery,
+} from '@/model/periods';
+import { UserPseudonym } from '@/components/user/UserPseudonym';
 
 const DoneLabel = (): JSX.Element => {
   return (
@@ -24,7 +24,7 @@ const DoneLabel = (): JSX.Element => {
   );
 };
 
-const QuantifyPeriodTable = (): JSX.Element => {
+export const QuantifyPeriodTable = (): JSX.Element => {
   const history = useHistory();
   const { periodId } = useParams<PeriodPageParams>();
   const { location } = useHistory();
@@ -150,5 +150,3 @@ const QuantifyPeriodTable = (): JSX.Element => {
     </table>
   );
 };
-
-export default QuantifyPeriodTable;

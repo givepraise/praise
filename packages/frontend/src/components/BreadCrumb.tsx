@@ -5,7 +5,7 @@ interface BreadCrumbProps {
   name: string;
   icon: IconProp;
 }
-const BreadCrumb = ({ name, icon }: BreadCrumbProps): JSX.Element => {
+export const BreadCrumb = ({ name, icon }: BreadCrumbProps): JSX.Element => {
   return (
     <div className="inline-block px-4 py-2 mb-4 text-xs rounded-full bg-warm-gray-50 dark:bg-slate-600">
       <h3>
@@ -19,5 +19,3 @@ const BreadCrumb = ({ name, icon }: BreadCrumbProps): JSX.Element => {
     </div>
   );
 };
-
-export default BreadCrumb;

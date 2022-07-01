@@ -6,7 +6,7 @@ interface Params {
   className?: string;
 }
 
-const Notice = ({
+export const Notice = ({
   children,
   type = 'danger',
   className = '',
@@ -35,5 +35,3 @@ const Notice = ({
     </div>
   );
 };
-
-export default Notice;

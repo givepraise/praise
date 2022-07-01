@@ -8,17 +8,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import { useDisconnect } from 'wagmi';
-import { ActiveTokenSet } from '@/model/auth';
 import { useSetRecoilState } from 'recoil';
 import { toast } from 'react-hot-toast';
 import { useRef } from 'react';
+import { ActiveTokenSet } from '@/model/auth';
 
 interface EthAccountDialogProps {
   open?: boolean;
   onClose(): void;
   address: string;
 }
-const EthAccountDialog = ({
+
+export const EthAccountDialog = ({
   open = false,
   onClose,
   address,
@@ -83,5 +84,3 @@ const EthAccountDialog = ({
     </Dialog>
   );
 };
-
-export default EthAccountDialog;

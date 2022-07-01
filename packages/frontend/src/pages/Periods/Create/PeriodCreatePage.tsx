@@ -1,10 +1,3 @@
-import BreadCrumb from '@/components/BreadCrumb';
-import FieldErrorMessage from '@/components/form/FieldErrorMessage';
-import DayInput from '@/components/form/DayInput';
-import { isResponseOk } from '@/model/api';
-import { CreatePeriodApiResponse, useCreatePeriod } from '@/model/periods';
-import BackLink from '@/navigation/BackLink';
-import { DATE_FORMAT } from '@/utils/date';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { PeriodCreateInput } from 'api/dist/period/types';
 import { isMatch } from 'date-fns';
@@ -13,7 +6,14 @@ import React from 'react';
 import { Field, Form } from 'react-final-form';
 import { useHistory } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import SubmitButton from './components/SubmitButton';
+import { DATE_FORMAT } from '@/utils/date';
+import { CreatePeriodApiResponse, useCreatePeriod } from '@/model/periods';
+import { isResponseOk } from '@/model/api';
+import { DayInput } from '@/components/form/DayInput';
+import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
+import { BreadCrumb } from '@/components/BreadCrumb';
+import { BackLink } from '@/navigation/BackLink';
+import { SubmitButton } from '@/components/form/SubmitButton';
 
 const validate = (
   values: Record<string, string>
@@ -145,4 +145,5 @@ const PeriodsCreatePage = (): JSX.Element => {
   );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default PeriodsCreatePage;

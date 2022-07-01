@@ -1,25 +1,15 @@
-import BreadCrumb from '@/components/BreadCrumb';
+import { FAQItem } from 'api/dist/settings/types';
 import { faCaretUp, faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import { SingleSetting } from '@/model/settings';
 import { useRecoilValue } from 'recoil';
 import { Disclosure } from '@headlessui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-export interface FAQItem {
-  section: string;
-  questions: Question[];
-}
-
-export interface Question {
-  question: string;
-  answer: string;
-}
+import { SingleSetting } from '@/model/settings';
+import { BreadCrumb } from '@/components/BreadCrumb';
 
 const FAQPage = (): JSX.Element | null => {
   const siteFAQSetting = useRecoilValue(SingleSetting('PRAISE_FAQ'));
-  const data = siteFAQSetting?.value ? JSON.parse(siteFAQSetting?.value) : [];
-  const faq: FAQItem[] = data;
+  const faq = siteFAQSetting?.valueRealized as FAQItem[];
 
   if (!faq || !faq.length) return null;
 
@@ -67,4 +57,5 @@ const FAQPage = (): JSX.Element | null => {
   );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default FAQPage;

@@ -1,3 +1,11 @@
+/**
+ * Generate an activation message that will be signed by the frontend user, and validated by the api
+ *
+ * @param  {string} accountId
+ * @param  {string} ethereumAddress
+ * @param  {string} token
+ * @returns string
+ */
 export const generateActivateMessage = (
   accountId: string,
   ethereumAddress: string,

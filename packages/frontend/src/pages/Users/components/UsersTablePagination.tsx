@@ -13,7 +13,7 @@ interface IUsersTablePagination {
   setPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const UsersTablePagination = ({
+export const UsersTablePagination = ({
   lastPage,
   page,
   setPage,
@@ -58,5 +58,3 @@ const UsersTablePagination = ({
     </div>
   );
 };
-
-export default UsersTablePagination;

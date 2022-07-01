@@ -1,15 +1,22 @@
-import { PraiseModel } from '@praise/entities';
-import { PraiseImportInput } from '@praise/types';
-import { UserAccountModel } from '@useraccount/entities';
-import { UserAccountDocument } from '@useraccount/types';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
+import { PraiseModel } from '@/praise/entities';
+import { PraiseImportInput } from '@/praise/types';
+import { UserAccountModel } from '@/useraccount/entities';
+import { UserAccountDocument } from '@/useraccount/types';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
 import 'express-async-errors';
 import fs from 'fs';
 import path from 'path';
 import { connectDatabase } from './core';
-import { realizeDiscordContent, prepareDiscordClient } from '@praise/utils/core';
+import { realizeDiscordContent, prepareDiscordClient } from '@/praise/utils/core';
 
+/**
+ * Import list of Praise from a given JSON file,
+ *  see ./sample_data for examples
+ *
+ * @param {PraiseImportInput[]} praiseData
+ * @param {boolean} sloppyImport
+ */
 const importPraise = async (
   praiseData: PraiseImportInput[],
   sloppyImport: boolean

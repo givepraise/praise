@@ -1,31 +1,33 @@
+import { Request } from 'express';
+import { Types } from 'mongoose';
+import { BadRequestError, NotFoundError } from '@/error/errors';
+import { PeriodDocument, PeriodDateRange } from '@/period/types';
 import {
-  BadRequestError,
-  InternalServerError,
-  NotFoundError,
-} from '@error/errors';
-import { PeriodDocument, PeriodDateRange } from '@period/types';
-import { findActivePeriods, getPeriodDateRangeQuery } from '@period/utils';
-import { countPraiseWithinDateRanges } from '@praise/utils/core';
+  findActivePeriods,
+  getPeriodDateRangeQuery,
+} from '@/period/utils/core';
+import { countPraiseWithinDateRanges } from '@/praise/utils/core';
 import {
   QueryInputParsedQs,
-  SearchQueryInputParsedQs,
   TypedRequestBody,
   TypedRequestQuery,
   TypedResponse,
-} from '@shared/types';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
-import { Request } from 'express';
-import { Types } from 'mongoose';
+} from '@/shared/types';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
 import { UserModel } from './entities';
 import { userListTransformer, userTransformer } from './transformers';
 import { UserDocument, UserDto, UserRole, UserRoleChangeInput } from './types';
+import { findUser } from './utils/entity';
 
 /**
- * Description
- * @param
+ * Fetch all Users with their associated UserAccounts
+ *
+ * @param {TypedRequestQuery<QueryInputParsedQs>} req
+ * @param {TypedResponse<UserDto[]>} res
+ * @returns {Promise<void>}
  */
-const all = async (
+export const all = async (
   req: TypedRequestQuery<QueryInputParsedQs>,
   res: TypedResponse<UserDto[]>
 ): Promise<void> => {
@@ -39,7 +41,6 @@ const all = async (
       },
     },
   ]);
-  if (!users) throw new InternalServerError('No users found');
 
   const usersTransformed = await userListTransformer(
     users,
@@ -49,28 +50,14 @@ const all = async (
   res.status(200).json(usersTransformed);
 };
 
-const findUser = async (id: string): Promise<UserDocument> => {
-  const users: UserDocument[] = await UserModel.aggregate([
-    { $match: { _id: new Types.ObjectId(id) } },
-    {
-      $lookup: {
-        from: 'useraccounts',
-        localField: '_id',
-        foreignField: 'user',
-        as: 'accounts',
-      },
-    },
-  ]);
-  if (!Array.isArray(users) || users.length === 0)
-    throw new NotFoundError('User');
-  return users[0];
-};
-
 /**
- * Description
- * @param
+ * Fetch a User with their associated UserAccounts
+ *
+ * @param {Request} req
+ * @param {TypedResponse<UserDto>} res
+ * @returns {Promise<void>}
  */
-const single = async (
+export const single = async (
   req: Request,
   res: TypedResponse<UserDto>
 ): Promise<void> => {
@@ -86,41 +73,13 @@ const single = async (
 };
 
 /**
- * Description
- * @param
+ * Update a User, adding an additional role
+ *
+ * @param {TypedRequestBody<UserRoleChangeInput>} req
+ * @param {TypedResponse<UserDto>} res
+ * @returns {Promise<void>}
  */
-const search = async (
-  req: TypedRequestQuery<SearchQueryInputParsedQs>,
-  res: TypedResponse<UserDto[]>
-): Promise<void> => {
-  //TODO Support searching more than eth address
-  const users: UserDocument[] = await UserModel.aggregate([
-    { $match: { ethereumAddress: { $regex: req.query.search } } },
-    {
-      $lookup: {
-        from: 'UserAccount',
-        localField: '_id',
-        foreignField: 'user',
-        as: 'accounts',
-      },
-    },
-  ]);
-  if (!Array.isArray(users) || users.length === 0)
-    throw new NotFoundError('User');
-
-  const usersTransformed = await userListTransformer(
-    users,
-    res.locals.currentUser.roles
-  );
-
-  res.status(200).json(usersTransformed);
-};
-
-/**
- * Description
- * @param
- */
-const addRole = async (
+export const addRole = async (
   req: TypedRequestBody<UserRoleChangeInput>,
   res: TypedResponse<UserDto>
 ): Promise<void> => {
@@ -132,12 +91,13 @@ const addRole = async (
   if (!role) throw new BadRequestError('Role is required');
   if (!(role in UserRole)) throw new BadRequestError('Invalid role');
 
-  if (!user.roles.includes(role)) {
-    user.roles.push(role);
-    user.accessToken = undefined;
-    user.nonce = undefined;
-    await user.save();
-  }
+  if (user.roles.includes(role))
+    throw new BadRequestError(`User already has role ${role}`);
+
+  user.roles.push(role);
+  user.accessToken = undefined;
+  user.nonce = undefined;
+  await user.save();
 
   await logEvent(
     EventLogTypeKey.PERMISSION,
@@ -160,10 +120,13 @@ const addRole = async (
 };
 
 /**
- * Description
- * @param
+ * Update a User, removing a role
+ *
+ * @param {TypedRequestBody<UserRoleChangeInput>} req
+ * @param {TypedResponse<UserDto>} res
+ * @returns {Promise<void>}
  */
-const removeRole = async (
+export const removeRole = async (
   req: TypedRequestBody<UserRoleChangeInput>,
   res: TypedResponse<UserDto>
 ): Promise<void> => {
@@ -173,6 +136,8 @@ const removeRole = async (
 
   const { role } = req.body;
   if (!role) throw new BadRequestError('Role is required');
+  if (!(role in UserRole)) throw new BadRequestError('Invalid role');
+
   if (role === UserRole.ADMIN) {
     const allAdmins = await UserModel.find({ roles: { $in: ['ADMIN'] } });
     if (allAdmins.length <= 1) {
@@ -182,14 +147,13 @@ const removeRole = async (
 
   const roleIndex = user.roles.indexOf(role);
 
+  if (roleIndex === -1)
+    throw new BadRequestError(`User does not have the role ${role}`);
+
   // If user is currently assigned to the active quantification round, and role is QUANTIFIER throw error
   const activePeriods: PeriodDocument[] = await findActivePeriods();
 
-  if (
-    roleIndex > -1 &&
-    role === UserRole.QUANTIFIER &&
-    activePeriods.length > 0
-  ) {
+  if (role === UserRole.QUANTIFIER && activePeriods.length > 0) {
     const dateRanges: PeriodDateRange[] = await Promise.all(
       activePeriods.map((period) => getPeriodDateRangeQuery(period))
     );
@@ -202,22 +166,20 @@ const removeRole = async (
       );
   }
 
-  if (roleIndex > -1) {
-    user.roles.splice(roleIndex, 1);
-    user.accessToken = undefined;
-    user.nonce = undefined;
-    await user.save();
+  user.roles.splice(roleIndex, 1);
+  user.accessToken = undefined;
+  user.nonce = undefined;
+  await user.save();
 
-    await logEvent(
-      EventLogTypeKey.PERMISSION,
-      `Removed role "${role}" from user with id "${(
-        user._id as Types.ObjectId
-      ).toString()}`,
-      {
-        userId: res.locals.currentUser._id,
-      }
-    );
-  }
+  await logEvent(
+    EventLogTypeKey.PERMISSION,
+    `Removed role "${role}" from user with id "${(
+      user._id as Types.ObjectId
+    ).toString()}`,
+    {
+      userId: res.locals.currentUser._id,
+    }
+  );
 
   const userWithDetails = await findUser(id);
 
@@ -227,5 +189,3 @@ const removeRole = async (
   );
   res.status(200).json(userTransformed);
 };
-
-export { all, single, search, addRole, removeRole };

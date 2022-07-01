@@ -1,10 +1,10 @@
-import { UserPseudonym } from '@/components/user/UserPseudonym';
-import { PeriodQuantifierReceivers } from '@/model/periods';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { PeriodQuantifierReceivers } from '@/model/periods';
+import { UserPseudonym } from '@/components/user/UserPseudonym';
 
 interface Props {
   periodId: string;
@@ -34,7 +34,7 @@ export const QuantifyBackNextLink = ({
   }
 
   return (
-    <div className="grid grid-cols-2 mt-5">
+    <div className="grid grid-cols-2 px-5 mt-5">
       <div className="text-left">
         {backReceiver && (
           <Link

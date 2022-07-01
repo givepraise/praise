@@ -4,8 +4,8 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { toast } from 'react-hot-toast';
 import { SignMessageButton } from '@/components/auth/SignMessageButton';
-import LoaderSpinner from '@/components/LoaderSpinner';
-import EthAccount from '@/components/account/EthAccount';
+import { LoaderSpinner } from '@/components/LoaderSpinner';
+import { EthAccount } from '@/components/account/EthAccount';
 
 interface Props {
   children: JSX.Element;
@@ -14,7 +14,7 @@ interface Props {
   buttonText?: string;
 }
 
-const SignMessageLayout = ({
+export const SignMessageLayout = ({
   children,
   onSignSuccess,
   message = undefined,
@@ -63,5 +63,3 @@ const SignMessageLayout = ({
     </div>
   );
 };
-
-export default SignMessageLayout;

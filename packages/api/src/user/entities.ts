@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { UserDocument, UserRole } from './types';
 
-export const userSchema = new Schema(
+const userSchema = new Schema(
   {
     ethereumAddress: { type: String, required: true, unique: true },
     roles: {

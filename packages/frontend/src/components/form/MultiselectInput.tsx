@@ -15,16 +15,16 @@ interface MultiselectInputProps {
   noSelectedMessage: string;
 }
 
-const MultiselectInput = ({
+export const MultiselectInput = ({
   handleChange,
   selected,
   options,
   noSelectedMessage,
 }: MultiselectInputProps): JSX.Element => {
   return (
-    <div className="relative border border-warm-gray-400 h-[42px]">
+    <div className="relative border border-warm-gray-400 h-10">
       <Listbox value={selected} onChange={handleChange} multiple>
-        <Listbox.Button className=" pl-2 pr-8 text-left h-[42px] w-full bg-transparent border-none outline-none focus:ring-0 ">
+        <Listbox.Button className=" pl-2 pr-8 text-left h-10 w-full bg-transparent border-none outline-none focus:ring-0 ">
           {(): JSX.Element => (
             <>
               <span className="block truncate">
@@ -77,7 +77,7 @@ const MultiselectInput = ({
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-warm-gray-600">
                       <input
                         type="checkbox"
-                        className="w-4 h-4 mr-4 text-black focus:ring-0"
+                        className="w-4 h-4 mr-4 text-gray-900 focus:ring-0"
                         checked={selected}
                         onChange={(): void => {}}
                       />
@@ -92,5 +92,3 @@ const MultiselectInput = ({
     </div>
   );
 };
-
-export default MultiselectInput;

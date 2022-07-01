@@ -1,8 +1,8 @@
-import { PeriodModel } from '@period/entities';
-import { PeriodStatusType } from '@period/types';
-import { UserRole } from '@user/types';
-import { UserAccountModel } from '@useraccount/entities';
-import { userAccountTransformer } from '@useraccount/transformers';
+import { PeriodModel } from '@/period/entities';
+import { PeriodStatusType } from '@/period/types';
+import { UserRole } from '@/user/types';
+import { UserAccountModel } from '@/useraccount/entities';
+import { userAccountTransformer } from '@/useraccount/transformers';
 import { EventLogTypeModel } from './entities';
 import {
   EventLogDocument,
@@ -11,6 +11,12 @@ import {
   EventLogTypeDto,
 } from './types';
 
+/**
+ * Serialize an EventLogTypeDocument
+ *
+ * @param {EventLogTypeDocument} eventLogType
+ * @returns {EventLogTypeDto}
+ */
 const eventLogTypeTransformer = (
   eventLogType: EventLogTypeDocument
 ): EventLogTypeDto => {
@@ -23,6 +29,12 @@ const eventLogTypeTransformer = (
   } as EventLogTypeDto;
 };
 
+/**
+ * Serialize a list of EventLogTypeDocuments
+ *
+ * @param {EventLogTypeDocument[]} eventLogTypes
+ * @returns {Promise<EventLogTypeDto[]>}
+ */
 export const eventLogTypeListTransformer = async (
   eventLogTypes: EventLogTypeDocument[]
 ): Promise<EventLogTypeDto[]> => {
@@ -33,7 +45,14 @@ export const eventLogTypeListTransformer = async (
   return eventLogTypeDtos;
 };
 
-export const eventLogTransformer = async (
+/**
+ * Serialize an EventLogDocument
+ *
+ * @param {EventLogDocument} eventLog
+ * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
+ * @returns {Promise<EventLogDto>}
+ */
+const eventLogTransformer = async (
   eventLog: EventLogDocument,
   currentUserRoles: UserRole[] = [UserRole.USER]
 ): Promise<EventLogDto> => {
@@ -84,6 +103,13 @@ export const eventLogTransformer = async (
   } as EventLogDto;
 };
 
+/**
+ * Serialize a list of EventLogDocuments
+ *
+ * @param {EventLogDocument[]} eventLogs
+ * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
+ * @returns {Promise<EventLogDto[]>}
+ */
 export const eventLogListTransformer = async (
   eventLogs: EventLogDocument[],
   currentUserRoles: UserRole[] = [UserRole.USER]

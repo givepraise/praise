@@ -3,6 +3,7 @@ import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
 import logger from 'jet-logger';
 import { GuildMember, Message, User, Util } from 'discord.js';
+import { settingValue } from 'api/dist/shared/settings';
 import {
   dmError,
   invalidReceiverError,
@@ -18,8 +19,16 @@ import {
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
-import { settingValue } from 'api/dist/shared/settings';
 
+/**
+ * Execute command /praise
+ *  Creates praises with a given receiver and reason
+ *  with the command executor as the praise.giver
+ *
+ * @param  interaction
+ * @param  responseUrl
+ * @returns
+ */
 export const praiseHandler: CommandHandler = async (
   interaction,
   responseUrl

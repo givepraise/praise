@@ -19,10 +19,10 @@ import {
 import merge from 'lodash/merge';
 import { configureChains, createClient, WagmiConfig, chain } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
-import Routes from './navigation/Routes';
-import ErrorPage from './pages/ErrorPage';
-import LoadScreen from '@/components/LoadScreen';
+import { LoadScreen } from '@/components/LoadScreen';
 import { Theme } from '@/model/theme';
+import { Routes } from '@/navigation/Routes';
+import ErrorPage from './pages/ErrorPage';
 import './styles/globals.css';
 
 const LOAD_DELAY = 500;

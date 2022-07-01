@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { UserAccountDocument } from './types';
 
-export const userAccountSchema = new Schema(
+const userAccountSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,

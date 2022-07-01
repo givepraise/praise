@@ -1,6 +1,6 @@
-import { UnauthorizedError } from '@error/errors';
-import { getRandomString } from '@shared/functions';
 import { sign, verify, JwtPayload } from 'jsonwebtoken';
+import { UnauthorizedError } from '@/error/errors';
+import { getRandomString } from '@/shared/functions';
 import { TokenSet, TokenData } from './types';
 
 interface JwtOptions {

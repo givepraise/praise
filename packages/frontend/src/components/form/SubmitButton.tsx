@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFormState } from 'react-final-form';
 
-const SubmitButton = (): JSX.Element => {
+export const SubmitButton = (): JSX.Element => {
   const {
     invalid,
     submitting,
@@ -40,5 +40,3 @@ const SubmitButton = (): JSX.Element => {
     </button>
   );
 };
-
-export default SubmitButton;

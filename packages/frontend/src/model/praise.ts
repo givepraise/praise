@@ -45,7 +45,7 @@ type SinglePraiseQueryParams = {
 /**
  * Selector query to fetch a single praise from the api.
  */
-export const SinglePraiseQuery = selectorFamily({
+const SinglePraiseQuery = selectorFamily({
   key: 'SinglePraiseQuery',
   get:
     (params: SinglePraiseQueryParams) =>
@@ -112,7 +112,7 @@ export const AllPraiseList = selectorFamily({
  * AllPraiseQuery subscribes to the value. Increase to trigger
  * refresh.
  */
-export const PraiseRequestId = atom({
+const PraiseRequestId = atom({
   key: 'PraiseRequestId',
   default: 0,
 });
@@ -120,20 +120,18 @@ export const PraiseRequestId = atom({
 /**
  * Parameters for @AllPraiseQuery
  */
-export type AllPraiseQueryParameters = {
+type AllPraiseQueryParameters = {
   sortColumn?: string;
   sortType?: string;
   limit?: number;
   page?: number;
   receiver?: string | null;
-  periodStart?: string;
-  periodEnd?: string;
 };
 
 /**
  * Query selector to fetch a list of praise from the api.
  */
-export const AllPraiseQuery = selectorFamily<
+const AllPraiseQuery = selectorFamily<
   AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined,
   AllPraiseQueryParameters
 >({
@@ -158,7 +156,7 @@ export const AllPraiseQuery = selectorFamily<
 /**
  *
  */
-export interface AllPraiseQueryPaginationInterface {
+interface AllPraiseQueryPaginationInterface {
   currentPage: number;
   totalPages: number;
 }
@@ -264,6 +262,7 @@ type useQuantifyPraiseReturn = {
     duplicatePraise: string | null
   ) => Promise<void>;
 };
+
 /**
  * Hook that returns a function to use for closing a period
  */
@@ -296,3 +295,30 @@ export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
   );
   return { quantify };
 };
+
+type useQuantifyMultiplePraiseReturn = {
+  quantifyMultiple: (score: number, praiseIds: string[]) => Promise<void>;
+};
+
+export const useQuantifyMultiplePraise =
+  (): useQuantifyMultiplePraiseReturn => {
+    const apiAuthClient = makeApiAuthClient();
+
+    const quantifyMultiple = useRecoilCallback(
+      ({ set }) =>
+        async (score: number, praiseIds: string[]): Promise<void> => {
+          const response: AxiosResponse<PraiseDto[]> =
+            await apiAuthClient.patch('/praise/quantify', {
+              score,
+              praiseIds,
+            });
+
+          const praises = response.data;
+
+          praises.forEach((praise) => {
+            set(SinglePraise(praise._id), praise);
+          });
+        }
+    );
+    return { quantifyMultiple };
+  };

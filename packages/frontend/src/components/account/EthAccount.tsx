@@ -4,8 +4,8 @@ import { useAccount } from 'wagmi';
 import { faAngleDown, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
-import EthAccountDialog from './EthAccountDialog';
 import { classNames } from '@/utils/index';
+import { EthAccountDialog } from './EthAccountDialog';
 
 interface EthAccountParams {
   className?: string;
@@ -13,11 +13,11 @@ interface EthAccountParams {
   showRightCaret?: boolean;
 }
 
-export default function EthAccount({
+export const EthAccount = ({
   className,
   showDownCaret = true,
   showRightCaret = false,
-}: EthAccountParams): JSX.Element | null {
+}: EthAccountParams): JSX.Element | null => {
   const { data } = useAccount();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
@@ -54,4 +54,4 @@ export default function EthAccount({
       />
     </>
   );
-}
+};

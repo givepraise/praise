@@ -8,7 +8,13 @@ interface DatabaseConfig {
   MONGO_DB: string;
 }
 
-const connectDatabase = async (
+/**
+ * Connect to mongodb database with mongoose and return connected mongoose client
+ *
+ * @param {(DatabaseConfig | {})} [configOverride={}]
+ * @returns {Promise<typeof mongoose>}
+ */
+export const connectDatabase = async (
   configOverride: DatabaseConfig | {} = {}
 ): Promise<typeof mongoose> => {
   const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_HOST, MONGO_PORT, MONGO_DB } =
@@ -39,5 +45,3 @@ const connectDatabase = async (
     throw Error('Could not connect to database');
   }
 };
-
-export { connectDatabase };

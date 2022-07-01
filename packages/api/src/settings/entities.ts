@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { SettingDocument, SettingGroup } from './types';
-import { fieldTypeValidator } from './validators';
+import { isSettingValueAllowedBySettingType } from './validators';
 
 export const genericSettingsSchema = {
   key: { type: String, required: true },
@@ -17,7 +17,7 @@ export const genericSettingsSchema = {
       'Image',
       'QuestionAnswerJSON',
     ],
-    validate: fieldTypeValidator,
+    validate: isSettingValueAllowedBySettingType,
     required: true,
   },
   label: { type: String, required: true },
@@ -30,24 +30,26 @@ export function getGenericSettingValueRealized(
 ): string | boolean | number | number[] | undefined {
   if (!this) return undefined;
 
-  let normalizedValue;
+  let realizedValue;
   if (this.type === 'Integer') {
-    normalizedValue = Number.parseInt(this.value);
+    realizedValue = Number.parseInt(this.value);
   } else if (this.type === 'Float') {
-    normalizedValue = parseFloat(this.value);
+    realizedValue = parseFloat(this.value);
   } else if (this.type === 'Boolean') {
-    normalizedValue = this.value === 'true' ? true : false;
+    realizedValue = this.value === 'true' ? true : false;
   } else if (this.type === 'IntegerList') {
-    normalizedValue = this.value
+    realizedValue = this.value
       .split(',')
       .map((v: string) => Number.parseInt(v.trim()));
   } else if (this.type === 'Image') {
-    normalizedValue = `${process.env.SERVER_URL as string}/${this.value}`;
+    realizedValue = `${process.env.SERVER_URL as string}/${this.value}`;
+  } else if (this.type === 'QuestionAnswerJSON') {
+    realizedValue = this.value ? JSON.parse(this.value) : [];
   } else {
-    normalizedValue = this.value;
+    realizedValue = this.value;
   }
 
-  return normalizedValue;
+  return realizedValue;
 }
 
 export const valueRealizedVirtualName = 'valueRealized';

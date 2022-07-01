@@ -1,13 +1,14 @@
+import { Document, Types } from 'mongoose';
 import {
   Quantifier,
   QuantificationDocument,
   QuantificationDto,
   Quantification,
-} from '@praise/types';
-import { Query } from '@shared/types';
-import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
-import { PeriodSettingDto } from '@periodsettings/types';
-import { Document, Types } from 'mongoose';
+  PraiseDto,
+} from '@/praise/types';
+import { Query } from '@/shared/types';
+import { UserAccountDocument, UserAccountDto } from '@/useraccount/types';
+import { PeriodSettingDto } from '@/periodsettings/types';
 
 export enum PeriodStatusType {
   OPEN = 'OPEN',
@@ -15,7 +16,7 @@ export enum PeriodStatusType {
   CLOSED = 'CLOSED',
 }
 
-export interface Period {
+interface Period {
   name: string;
   status: PeriodStatusType;
   endDate: Date;
@@ -102,4 +103,14 @@ export interface Assignments {
 export interface PeriodDateRange {
   $gt: Date;
   $lte: Date;
+}
+
+export interface PeriodReplaceQuantifierDto {
+  period: PeriodDetailsDto;
+  praises: PraiseDto[];
+}
+
+export interface ReplaceQuantifierRequestBody {
+  currentQuantifierId: string;
+  newQuantifierId: string;
 }

@@ -1,12 +1,3 @@
-import FieldErrorMessage from '@/components/form/FieldErrorMessage';
-import DayInput from '@/components/form/DayInput';
-import { isResponseOk } from '@/model/api';
-import {
-  PeriodPageParams,
-  SinglePeriod,
-  useUpdatePeriod,
-} from '@/model/periods';
-import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { AxiosError, AxiosResponse } from 'axios';
 import { isMatch } from 'date-fns';
 import { ValidationErrors } from 'final-form';
@@ -15,6 +6,15 @@ import { Field, Form } from 'react-final-form';
 import { toast } from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
+import {
+  PeriodPageParams,
+  SinglePeriod,
+  useUpdatePeriod,
+} from '@/model/periods';
+import { isResponseOk } from '@/model/api';
+import { DayInput } from '@/components/form/DayInput';
+import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 
 const validate = (
   values: Record<string, string>
@@ -33,7 +33,7 @@ const validate = (
   return errors as ValidationErrors;
 };
 
-const PeriodDateForm = (): JSX.Element | null => {
+export const PeriodDateForm = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
   const [apiResponse, setApiResponse] = React.useState<
@@ -105,5 +105,3 @@ const PeriodDateForm = (): JSX.Element | null => {
     />
   );
 };
-
-export default PeriodDateForm;

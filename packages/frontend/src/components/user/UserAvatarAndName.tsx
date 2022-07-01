@@ -1,12 +1,12 @@
 import { UserDto } from 'api/dist/user/types';
 import { UserAccountDto } from 'api/dist/useraccount/types';
+import { useRecoilValue } from 'recoil';
+import React from 'react';
+import { SingleUser } from '@/model/users';
+import { classNames } from '@/utils/index';
 import { UserAvatar } from './UserAvatar';
 import { UserName } from './UserName';
-import { SingleUser } from '@/model/users';
-import { useRecoilValue } from 'recoil';
 import { UserPopover } from './UserPopover';
-import React from 'react';
-import { classNames } from '@/utils/index';
 
 interface UserNameProps {
   user?: UserDto;
@@ -18,7 +18,7 @@ interface UserNameProps {
   nameClassName?: string;
 }
 
-export const WrappedUserAvatarAndName = ({
+const WrappedUserAvatarAndName = ({
   user,
   userId,
   userAccount,

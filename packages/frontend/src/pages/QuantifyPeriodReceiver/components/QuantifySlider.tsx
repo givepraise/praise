@@ -40,7 +40,7 @@ interface QuantifySliderProps {
   onChange(number);
 }
 
-const QuantifySlider = ({
+export const QuantifySlider = ({
   allowedScores,
   disabled = false,
   score = 0,
@@ -104,8 +104,6 @@ const QuantifySlider = ({
   const maxMarkValue = (): number =>
     marks.length > 0 ? marks[marks.length - 1].value : 0;
 
-  // if (!praise) return null;
-
   return (
     <div className="inline-block w-40">
       <Slider
@@ -128,5 +126,3 @@ const QuantifySlider = ({
     </div>
   );
 };
-
-export default QuantifySlider;

@@ -1,28 +1,40 @@
+import { ethers } from 'ethers';
+import { Response } from 'express';
 import {
   BadRequestError,
   InternalServerError,
   NotFoundError,
   UnauthorizedError,
-} from '@error/errors';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
-import { TypedRequestBody } from '@shared/types';
-import { UserModel } from '@user/entities';
-import { UserAccountModel } from '@useraccount/entities';
-import { ethers } from 'ethers';
-import { Response } from 'express';
+} from '@/error/errors';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
+import { TypedRequestBody } from '@/shared/types';
+import { UserModel } from '@/user/entities';
+import { UserAccountModel } from '@/useraccount/entities';
 import { ActivateRequestBody } from './types';
 import { generateActivateMessage } from './utils';
 
+/**
+ * Activate a useraccount and associate it with a user.
+ *
+ * @param  {TypedRequestBody<ActivateRequestBody>} req
+ * @param  {Response} res
+ * @returns Promise
+ */
 const activate = async (
   req: TypedRequestBody<ActivateRequestBody>,
   res: Response
 ): Promise<void> => {
   const { ethereumAddress, signature, accountId } = req.body;
 
+  if (!ethereumAddress || !signature || !accountId)
+    throw new BadRequestError(
+      'ethereumAddress, signature, and accountId required'
+    );
+
   // Find previously generated token
   const userAccount = await UserAccountModel.findOne({ accountId })
-    .select('name activateToken')
+    .select('_id user activateToken')
     .exec();
 
   if (!userAccount) throw new NotFoundError('UserAccount');
