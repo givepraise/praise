@@ -8,14 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Admins can replace an actively assigned quantifier with another
 
+### Fixed
+
+## [0.10.0] - 2022-07-01
+
+### Added
+
+- Admins can replace an actively assigned quantifier with another #432 #503
 - Additional test coverage for api
+- Freetext filter of quantification list #422
+- Quantify multiple items at the same time #499
 
 ### Fixed
 
 - Seeder generates periods and praise in the past, not future
 - Remove check that was throwing an error when not all quantifiers were assigned praise and `PRAISE_QUANTIFIERS_ASSIGN_ALL` was enabled #492 #498
+- Codebase cleanup, documentation and refactor #509
 
 ## [0.9.0] - 2022-06-20
 
