@@ -231,11 +231,7 @@ export const replaceQuantifier = async (
 
   await logEvent(
     EventLogTypeKey.PERIOD,
-    `Reassigned all praise in period "${
-      period.name
-    }" that is currently assigned to user with id "${
-      currentQuantifierId as string
-    }", to user with id "${newQuantifierId as string}"`,
+    `Reassigned all praise in period "${period.name}" that is currently assigned to user with id "${currentQuantifierId}", to user with id "${newQuantifierId}"`,
     {
       userId: res.locals.currentUser._id,
     }
