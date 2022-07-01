@@ -6,7 +6,10 @@ interface PraiseRowProps {
   children: JSX.Element;
 }
 
-const PraiseRow = ({ praise, children }: PraiseRowProps): JSX.Element => {
+export const PraiseRow = ({
+  praise,
+  children,
+}: PraiseRowProps): JSX.Element => {
   const history = useHistory();
 
   const handleClick =
@@ -24,5 +27,3 @@ const PraiseRow = ({ praise, children }: PraiseRowProps): JSX.Element => {
     </li>
   );
 };
-
-export default PraiseRow;

@@ -1,5 +1,5 @@
-import { SettingGroup } from '@settings/types';
-import { SettingsModel } from '@settings/entities';
+import { SettingGroup } from '@/settings/types';
+import { SettingsModel } from '@/settings/entities';
 
 const deleteSettings = [
   {

@@ -1,16 +1,16 @@
+import React from 'react';
+import { useRecoilValue } from 'recoil';
+import { UserDto, UserRole } from 'api/dist/user/types';
 import {
   AllAdminUsers,
   AllForwarderUsers,
   AllQuantifierUsers,
   AllUsers,
 } from '@/model/users';
-import React from 'react';
-import { useRecoilValue } from 'recoil';
-import { UserDto, UserRole } from 'api/dist/user/types';
-import UsersTableRow from './UsersTableRow';
-import UsersTablePagination from './UsersTablePagination';
-import SearchInput from '@/components/form/SearchInput';
-import SelectInput from '@/components/form/SelectInput';
+import { SearchInput } from '@/components/form/SearchInput';
+import { SelectInput } from '@/components/form/SelectInput';
+import { UsersTableRow } from './UsersTableRow';
+import { UsersTablePagination } from './UsersTablePagination';
 
 interface roleOptionsProps {
   value: string;
@@ -26,7 +26,7 @@ const roleOptions = [
 
 const USERS_PER_PAGE = 10;
 
-const UsersTable = (): JSX.Element => {
+export const UsersTable = (): JSX.Element => {
   const allAdminUsers = useRecoilValue(AllAdminUsers);
   const allForwarderUsers = useRecoilValue(AllForwarderUsers);
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
@@ -132,5 +132,3 @@ const UsersTable = (): JSX.Element => {
     </>
   );
 };
-
-export default UsersTable;

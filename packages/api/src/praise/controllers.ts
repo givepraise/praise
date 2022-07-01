@@ -1,9 +1,10 @@
-import { BadRequestError, NotFoundError } from '@error/errors';
+import { Request } from 'express';
+import { BadRequestError, NotFoundError } from '@/error/errors';
 import {
   getPraiseAllInput,
   getQueryInput,
   getQuerySort,
-} from '@shared/functions';
+} from '@/shared/functions';
 import {
   PaginatedResponseBody,
   Query,
@@ -11,13 +12,10 @@ import {
   TypedRequestBody,
   TypedRequestQuery,
   TypedResponse,
-} from '@shared/types';
-import { Request } from 'express';
+} from '@/shared/types';
+import { quantifyPraise } from '@/praise/utils/quantify';
 import { PraiseModel } from './entities';
-import {
-  praiseDocumentListTransformer,
-  praiseDocumentTransformer,
-} from './transformers';
+import { praiseListTransformer, praiseTransformer } from './transformers';
 import {
   PraiseAllInput,
   PraiseDetailsDto,
@@ -25,12 +23,15 @@ import {
   QuantificationCreateUpdateInput,
   QuantifyMultiplePraiseInput,
 } from './types';
-import { praiseWithScore } from './utils/core';
-import { quantifyPraise } from '@praise/utils/quantify';
+
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
 /**
- * //TODO add descriptiom
+ * Fetch paginated list of Praise
+ *
+ * @param {TypedRequestQuery<PraiseAllInputParsedQs>} req
+ * @param {TypedResponse<PaginatedResponseBody<PraiseDetailsDto>>} res
+ * @returns {Promise<void>}
  */
 export const all = async (
   req: TypedRequestQuery<PraiseAllInputParsedQs>,
@@ -50,7 +51,7 @@ export const all = async (
     throw new BadRequestError('Failed to paginate praise data');
 
   const praiseDetailsDtoList: PraiseDetailsDto[] = await Promise.all(
-    praisePagination.docs.map((p) => praiseWithScore(p))
+    praisePagination.docs.map((p) => praiseTransformer(p))
   );
 
   const response = {
@@ -62,7 +63,11 @@ export const all = async (
 };
 
 /**
- * //TODO add descriptiom
+ * Fetch a single Praise
+ *
+ * @param {Request} req
+ * @param {TypedResponse<PraiseDetailsDto>} res
+ * @returns {Promise<void>}
  */
 export const single = async (
   req: Request,
@@ -72,15 +77,17 @@ export const single = async (
     'giver receiver forwarder'
   );
   if (!praise) throw new NotFoundError('Praise');
-  const praiseDetailsDto: PraiseDetailsDto = await praiseDocumentTransformer(
-    praise
-  );
+  const praiseDetailsDto: PraiseDetailsDto = await praiseTransformer(praise);
 
   res.status(200).json(praiseDetailsDto);
 };
 
 /**
- * //TODO add descriptiom
+ * Update a Praise.quantification's score, dismissed, duplicatePraise
+ *
+ * @param {TypedRequestBody<QuantificationCreateUpdateInput>} req
+ * @param {TypedResponse<PraiseDto[]>} res
+ * @returns {Promise<void>}
  */
 export const quantify = async (
   req: TypedRequestBody<QuantificationCreateUpdateInput>,
@@ -92,7 +99,7 @@ export const quantify = async (
     currentUser: res.locals.currentUser,
   });
 
-  const response = await praiseDocumentListTransformer(affectedPraises);
+  const response = await praiseListTransformer(affectedPraises);
   res.status(200).json(response);
 };
 
@@ -119,6 +126,6 @@ export const quantifyMultiple = async (
     })
   );
 
-  const response = await praiseDocumentListTransformer(praiseItems.flat());
+  const response = await praiseListTransformer(praiseItems.flat());
   res.status(200).json(response);
 };

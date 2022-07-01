@@ -1,14 +1,15 @@
-import { ActiveTokenSet, DecodedAccessToken } from '@/model/auth';
-import ActivatePage from '@/pages/Activate/ActivatePage';
-import ErrorPage from '@/pages/ErrorPage';
-import LoginPage from '@/pages/Login/LoginPage';
-import AuthenticatedLayout from '../layouts/AuthenticatedLayout';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { useAccount } from 'wagmi';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { ActiveTokenSet, DecodedAccessToken } from '@/model/auth';
+import { AuthenticatedLayout } from '../layouts/AuthenticatedLayout';
 
-const Routes = (): JSX.Element => {
+const ActivatePage = React.lazy(() => import('@/pages/Activate/ActivatePage'));
+const ErrorPage = React.lazy(() => import('@/pages/ErrorPage'));
+const LoginPage = React.lazy(() => import('@/pages/Login/LoginPage'));
+
+export const Routes = (): JSX.Element => {
   const [tokenSet, setTokenSet] = useRecoilState(ActiveTokenSet);
   const decodedToken = useRecoilValue(DecodedAccessToken);
   const { data } = useAccount();
@@ -49,5 +50,3 @@ const Routes = (): JSX.Element => {
     </Switch>
   );
 };
-
-export default Routes;

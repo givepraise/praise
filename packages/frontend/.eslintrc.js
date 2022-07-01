@@ -9,22 +9,22 @@ module.exports = {
     {
       files: ['src/**/*.ts', 'src/**/*.tsx'],
       rules: {
-        'import/no-default-export': 'off',
-        '@typescript-eslint/internal/prefer-ast-types-enum': 'off',
         '@typescript-eslint/restrict-template-expressions': 'off',
       },
     },
   ],
   rules: {
-    'react/jsx-no-target-blank': 'off',
-    'react/no-unescaped-entities': 'off',
-    'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'warn',
     'react/react-in-jsx-scope': 'off',
   },
   settings: {
     react: {
       version: 'detect',
     },
+  },
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true,
+    "commonjs": true,
   },
 };

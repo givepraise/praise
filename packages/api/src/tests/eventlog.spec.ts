@@ -1,16 +1,16 @@
 import { Wallet } from 'ethers';
+import { expect } from 'chai';
+import { faker } from '@faker-js/faker';
+import some from 'lodash/some';
+import { EventLogModel, EventLogTypeModel } from '@/eventlog/entities';
+import { logEvent } from '@/eventlog/utils';
+import { EventLogTypeKey } from '@/eventlog/types';
 import {
   seedEventLog,
   seedUser,
   seedUserAccount,
-} from '@database/seeder/entities';
-import { expect } from 'chai';
+} from '@/database/seeder/entities';
 import { loginUser } from './utils';
-import { EventLogModel, EventLogTypeModel } from '@eventlog/entities';
-import { logEvent } from '@eventlog/utils';
-import { EventLogTypeKey } from '@eventlog/types';
-import { faker } from '@faker-js/faker';
-import some from 'lodash/some';
 
 describe('GET /api/eventlogs/all', () => {
   beforeEach(async () => {

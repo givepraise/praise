@@ -1,5 +1,6 @@
 name: discord-bot
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - 'packages/discord-bot/**'

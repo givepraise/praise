@@ -1,19 +1,26 @@
-import { BadRequestError, NotFoundError } from '@error/errors';
-import { removeFile, upload } from '@shared/functions';
-import { TypedRequestBody, TypedResponse } from '@shared/types';
 import { Request } from 'express';
-import { SettingSetInput } from '@settings/types';
-import { PeriodStatusType } from '@period/types';
-import { PeriodModel } from '@period/entities';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
+import { BadRequestError, NotFoundError } from '@/error/errors';
+import { removeFile, upload } from '@/shared/functions';
+import { TypedRequestBody, TypedResponse } from '@/shared/types';
+import { SettingSetInput } from '@/settings/types';
+import { PeriodStatusType } from '@/period/types';
+import { PeriodModel } from '@/period/entities';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
 import {
-  periodsettingTransformer,
+  periodSettingTransformer,
   periodsettingListTransformer,
 } from './transformers';
 import { PeriodSettingsModel } from './entities';
 import { PeriodSettingDto } from './types';
 
+/**
+ * Fetch all PeriodSettings for a given Period
+ *
+ * @param {Request} req
+ * @param {TypedResponse<PeriodSettingDto[]>} res
+ * @returns {Promise<void>}
+ */
 export const all = async (
   req: Request,
   res: TypedResponse<PeriodSettingDto[]>
@@ -26,6 +33,13 @@ export const all = async (
   res.status(200).json(periodsettingListTransformer(settings));
 };
 
+/**
+ * Fetch single PeriodSetting
+ *
+ * @param {Request} req
+ * @param {TypedResponse<PeriodSettingDto>} res
+ * @returns {Promise<void>}
+ */
 export const single = async (
   req: Request,
   res: TypedResponse<PeriodSettingDto>
@@ -38,9 +52,16 @@ export const single = async (
     period: period._id,
   });
   if (!setting) throw new NotFoundError('Periodsetting');
-  res.status(200).json(periodsettingTransformer(setting));
+  res.status(200).json(periodSettingTransformer(setting));
 };
 
+/**
+ * Update a PeriodSetting's value
+ *
+ * @param {TypedRequestBody<SettingSetInput>} req
+ * @param {TypedResponse<PeriodSettingDto>} res
+ * @returns {Promise<void>}
+ */
 export const set = async (
   req: TypedRequestBody<SettingSetInput>,
   res: TypedResponse<PeriodSettingDto>
@@ -71,7 +92,7 @@ export const set = async (
       setting.value = uploadRespone;
     }
   } else {
-    setting.value = req.body.value; //TODO validate input
+    setting.value = req.body.value;
   }
 
   await setting.save();
@@ -88,5 +109,5 @@ export const set = async (
     }
   );
 
-  res.status(200).json(periodsettingTransformer(setting));
+  res.status(200).json(periodSettingTransformer(setting));
 };

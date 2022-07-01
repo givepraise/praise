@@ -1,4 +1,4 @@
-import { userAccountTransformer } from '@useraccount/transformers';
+import { userAccountTransformer } from '@/useraccount/transformers';
 import {
   PraiseDocument,
   PraiseDto,
@@ -10,7 +10,13 @@ import {
   calculateQuantificationsCompositeScore,
 } from './utils/score';
 
-const quantificationToDto = async (
+/**
+ * Serialize a Praise.quantification
+ *
+ * @param {Quantification} quantification
+ * @returns {Promise<QuantificationDto>}
+ */
+const quantificationTransformer = async (
   quantification: Quantification
 ): Promise<QuantificationDto> => {
   const {
@@ -35,6 +41,12 @@ const quantificationToDto = async (
   };
 };
 
+/**
+ * Serialize a list of Praise.quantification
+ *
+ * @param {(Quantification[] | Quantification | undefined)} quantifications
+ * @returns {Promise<QuantificationDto[]>}
+ */
 export const quantificationListTransformer = async (
   quantifications: Quantification[] | Quantification | undefined
 ): Promise<QuantificationDto[]> => {
@@ -42,17 +54,23 @@ export const quantificationListTransformer = async (
     if (Array.isArray(quantifications)) {
       const quantificationDto: QuantificationDto[] = [];
       for (const q of quantifications) {
-        quantificationDto.push(await quantificationToDto(q));
+        quantificationDto.push(await quantificationTransformer(q));
       }
       return quantificationDto;
     } else {
-      return [await quantificationToDto(quantifications)];
+      return [await quantificationTransformer(quantifications)];
     }
   }
   return [];
 };
 
-const praiseDocumentToDto = async (
+/**
+ * Serialize a Praise
+ *
+ * @param {PraiseDocument} praiseDocument
+ * @returns {Promise<PraiseDto>}
+ */
+export const praiseTransformer = async (
   praiseDocument: PraiseDocument
 ): Promise<PraiseDto> => {
   const {
@@ -67,8 +85,10 @@ const praiseDocumentToDto = async (
     createdAt,
     updatedAt,
   } = praiseDocument;
+
   return {
     _id,
+    _idLabelRealized: `#${_id.toString().slice(-4) as string}`,
     reasonRealized,
     sourceId,
     sourceName,
@@ -84,14 +104,14 @@ const praiseDocumentToDto = async (
   };
 };
 
-export const praiseDocumentTransformer = async (
-  praiseDocument: PraiseDocument
-): Promise<PraiseDto> => {
-  return praiseDocumentToDto(praiseDocument);
-};
-
-export const praiseDocumentListTransformer = async (
+/**
+ * Serialize a list of Praise
+ *
+ * @param {PraiseDocument[]} praiseDocuments
+ * @returns {Promise<PraiseDto[]>}
+ */
+export const praiseListTransformer = async (
   praiseDocuments: PraiseDocument[]
 ): Promise<PraiseDto[]> => {
-  return Promise.all(praiseDocuments.map((p) => praiseDocumentTransformer(p)));
+  return Promise.all(praiseDocuments.map((p) => praiseTransformer(p)));
 };

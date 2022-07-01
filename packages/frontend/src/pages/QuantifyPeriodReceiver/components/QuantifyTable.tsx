@@ -1,26 +1,26 @@
 import { PraiseDto } from 'api/dist/praise/types';
-import { PeriodQuantifierReceiverPraise } from '@/model/periods';
-import { useQuantifyMultiplePraise, useQuantifyPraise } from '@/model/praise';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
 import getWeek from 'date-fns/getWeek';
 import parseISO from 'date-fns/parseISO';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { QuantifyBackNextLink } from './BackNextLink';
-import DismissDialog from './DismissDialog';
-import DuplicateDialog from './DuplicateDialog';
-import DuplicateSearchDialog from './DuplicateSearchDialog';
-import QuantifyPraiseRow from './QuantifyPraiseRow';
-import SearchInput from '@/components/form/SearchInput';
-import QuantifyMultipleDialog from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleDialog';
 import {
   faCopy,
   faMinusCircle,
   faScaleUnbalanced,
 } from '@fortawesome/free-solid-svg-icons';
-import IconButtonRound from '@/components/IconButtonRound';
+import { useQuantifyMultiplePraise, useQuantifyPraise } from '@/model/praise';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { PeriodQuantifierReceiverPraise } from '@/model/periods';
+import { SearchInput } from '@/components/form/SearchInput';
+import { QuantifyMultipleDialog } from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleDialog';
+import { IconButtonRound } from '@/components/IconButtonRound';
+import { DuplicateDialog } from './DuplicateDialog';
+import { DuplicateSearchDialog } from './DuplicateSearchDialog';
+import { QuantifyPraiseRow } from './QuantifyPraiseRow';
+import { QuantifyBackNextLink } from './BackNextLink';
+import { DismissDialog } from './DismissDialog';
 
 interface Props {
   periodId: string;
@@ -28,7 +28,10 @@ interface Props {
   key: string;
 }
 
-const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
+export const QuantifyTable = ({
+  periodId,
+  receiverId,
+}: Props): JSX.Element | null => {
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined
   );
@@ -277,5 +280,3 @@ const QuantifyTable = ({ periodId, receiverId }: Props): JSX.Element | null => {
     </div>
   );
 };
-
-export default QuantifyTable;

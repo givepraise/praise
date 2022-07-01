@@ -1,8 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
 import { UserRole } from 'api/dist/user/types';
-import { makeApiAuthClient } from '@/utils/api';
-import { periodQuantifierPraiseListKey } from '@/utils/periods';
 import {
   PeriodCreateInput,
   PeriodDetailsDto,
@@ -24,6 +22,9 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil';
+import { toast } from 'react-hot-toast';
+import { periodQuantifierPraiseListKey } from '@/utils/periods';
+import { makeApiAuthClient } from '@/utils/api';
 import {
   ApiAuthGet,
   ApiAuthPatch,
@@ -35,7 +36,6 @@ import {
 import { ActiveUserId, ActiveUserRoles } from './auth';
 import { SinglePeriodSetting } from './periodsettings';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
-import { toast } from 'react-hot-toast';
 
 /**
  * Types for `useParams()`
@@ -63,7 +63,7 @@ export const SinglePeriod = atomFamily<PeriodDetailsDto | undefined, string>({
 /**
  * The full list of period Ids
  */
-export const AllPeriodIds = atom<string[] | undefined>({
+const AllPeriodIds = atom<string[] | undefined>({
   key: 'PeriodIdList',
   default: undefined,
 });
@@ -124,7 +124,7 @@ export const SinglePeriodByDate = selectorFamily({
 /**
  * Query selector that fetches all praise periods from the API.
  */
-export const AllPeriodsQuery = selector({
+const AllPeriodsQuery = selector({
   key: 'AllPeriodsQuery',
   get: ({ get }): AxiosResponse<unknown> => {
     const response = get(
@@ -448,7 +448,7 @@ type PeriodReceiverPraiseQueryParams = {
 /**
  * Selector query that fetches all praise received by a user for a period.
  */
-export const PeriodReceiverPraiseQuery = selectorFamily({
+const PeriodReceiverPraiseQuery = selectorFamily({
   key: 'PeriodReceiverPraiseQuery',
   get:
     (params: PeriodReceiverPraiseQueryParams) =>
@@ -531,7 +531,7 @@ type PeriodQuantifierPraiseQueryParams = {
 /**
  * Query that fetches all praise assigned to the currently active quantifier for a period
  */
-export const PeriodQuantifierPraiseQuery = selectorFamily({
+const PeriodQuantifierPraiseQuery = selectorFamily({
   key: 'PeriodQuantifierPraiseQuery',
   get:
     (params: PeriodQuantifierPraiseQueryParams) =>
@@ -674,22 +674,6 @@ type PeriodQuantifierReceiverParams = {
   periodId: string;
   receiverId: string;
 };
-
-/**
- * Period selector that returns @QuantifierReceiverData for a  receiver
- * assigned to the currently active quantifier.
- */
-export const PeriodQuantifierReceiver = selectorFamily({
-  key: 'PeriodQuantifierReceiver',
-  get:
-    (params: PeriodQuantifierReceiverParams) =>
-    ({ get }): QuantifierReceiverData | undefined => {
-      const { periodId, receiverId } = params;
-      const qrd = get(PeriodQuantifierReceivers(periodId));
-      if (!qrd) return undefined;
-      return qrd.find((item) => item.receiverId === receiverId);
-    },
-});
 
 /**
  * Period selector that returns all Praise for a receiver assigned to the

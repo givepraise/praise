@@ -1,8 +1,8 @@
-import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import { Field } from 'react-final-form';
 import { AxiosResponse, AxiosError } from 'axios';
+import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 
-const NumberInput = (
+export const NumberInput = (
   name: string,
   apiResponse: AxiosResponse<unknown> | AxiosError<unknown> | null
 ): JSX.Element => {
@@ -25,5 +25,3 @@ const NumberInput = (
     </Field>
   );
 };
-
-export default NumberInput;

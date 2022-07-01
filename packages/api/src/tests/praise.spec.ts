@@ -1,17 +1,17 @@
 import { Wallet } from 'ethers';
+import { expect } from 'chai';
+import { faker } from '@faker-js/faker';
+import { PraiseModel } from '@/praise/entities';
 import {
   seedPeriod,
   seedPraise,
   seedQuantification,
   seedUser,
   seedUserAccount,
-} from '@database/seeder/entities';
-import { expect } from 'chai';
+} from '@/database/seeder/entities';
+import { PeriodModel } from '@/period/entities';
+import { PeriodSettingsModel } from '@/periodsettings/entities';
 import { loginUser } from './utils';
-import { PraiseModel } from '@praise/entities';
-import { faker } from '@faker-js/faker';
-import { PeriodModel } from '@period/entities';
-import { PeriodSettingsModel } from '@periodsettings/entities';
 
 describe('GET /api/praise/all', () => {
   beforeEach(async () => {
@@ -40,6 +40,7 @@ describe('GET /api/praise/all', () => {
     expect(response.body.docs.length).equals(3);
     expect(response.body.docs[0]).to.have.all.keys(
       '_id',
+      '_idLabelRealized',
       'reasonRealized',
       'sourceId',
       'sourceName',
@@ -82,6 +83,7 @@ describe('GET /api/praise/all', () => {
     expect(response.body.docs.length).equals(3);
     expect(response.body.docs[0]).to.have.all.keys(
       '_id',
+      '_idLabelRealized',
       'reasonRealized',
       'sourceId',
       'sourceName',
@@ -135,6 +137,7 @@ describe('GET /api/praise/:id', () => {
     expect(response.body._id).equals(praise._id.toString());
     expect(response.body).to.have.all.keys(
       '_id',
+      '_idLabelRealized',
       'reasonRealized',
       'sourceId',
       'sourceName',
@@ -177,6 +180,7 @@ describe('GET /api/praise/:id', () => {
     expect(response.body._id).equals(praise._id.toString());
     expect(response.body).to.have.all.keys(
       '_id',
+      '_idLabelRealized',
       'reasonRealized',
       'sourceId',
       'sourceName',
@@ -232,6 +236,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     expect(response.body[0].scoreRealized).to.equal(10);
     expect(response.body[0]).to.have.all.keys(
       '_id',
+      '_idLabelRealized',
       'reasonRealized',
       'sourceId',
       'sourceName',
@@ -280,6 +285,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     expect(response.body[0].quantifications[0].dismissed).to.be.true;
     expect(response.body[0]).to.have.all.keys(
       '_id',
+      '_idLabelRealized',
       'reasonRealized',
       'sourceId',
       'sourceName',
@@ -334,6 +340,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     expect(response.body[0].quantifications[0].scoreRealized).to.equal(1);
     expect(response.body[0]).to.have.all.keys(
       '_id',
+      '_idLabelRealized',
       'reasonRealized',
       'sourceId',
       'sourceName',
@@ -398,6 +405,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     expect(response.body[0].quantifications[0].scoreRealized).to.equal(20);
     expect(response.body[0]).to.have.all.keys(
       '_id',
+      '_idLabelRealized',
       'reasonRealized',
       'sourceId',
       'sourceName',

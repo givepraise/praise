@@ -1,13 +1,24 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { ForbiddenError, UnauthorizedError } from '@error/errors';
-import { UserModel } from '@user/entities';
-import { UserRole } from '@user/types';
 import { NextFunction, Request, Response } from 'express';
+import { ForbiddenError, UnauthorizedError } from '@/error/errors';
+import { UserModel } from '@/user/entities';
+import { UserRole } from '@/user/types';
 import { extractAccessTokenFromRequest } from './utils';
 import { JwtService } from './JwtService';
 
+/**
+ * express middleware to authenticate user,
+ *  makes authRole and currentUser available to all controllers
+ *
+ * @param  {UserRole} role
+ */
 export const authMiddleware = (role: UserRole) => {
+  /**
+   * @param  {Request} req
+   * @param  {Response} res
+   * @param  {NextFunction} next
+   */
   return async (req: Request, res: Response, next: NextFunction) => {
     // Get authorization header
     const accessToken = extractAccessTokenFromRequest(req);

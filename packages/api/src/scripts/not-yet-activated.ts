@@ -1,4 +1,4 @@
-import { UserAccountModel } from '@useraccount/entities';
+import { UserAccountModel } from '@/useraccount/entities';
 import { connectDatabase } from './core';
 import { exit } from 'process';
 

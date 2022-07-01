@@ -1,7 +1,16 @@
 import { CacheType, CommandInteraction, GuildMember } from 'discord.js';
-import { dmError, praiseRoleError } from '../utils/praiseEmbeds';
 import { settingValue } from 'api/dist/shared/settings';
+import { dmError, praiseRoleError } from '../utils/praiseEmbeds';
 
+/**
+ * Check if user has discord role PRAISE_GIVER_ROLE_ID if required,
+ *  if not: reply with an error message
+ *
+ * @param {GuildMember} praiseGiver
+ * @param {CommandInteraction<CacheType>} interaction
+ * @param {boolean} sendReply
+ * @returns {Promise<boolean>}
+ */
 export const assertPraiseGiver = async (
   praiseGiver: GuildMember,
   interaction: CommandInteraction<CacheType>,

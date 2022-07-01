@@ -7,7 +7,7 @@ interface SearchInputProps {
   placeholder?: string;
 }
 
-const SearchInput = ({
+export const SearchInput = ({
   handleChange,
   value,
   placeholder = 'Search',
@@ -36,5 +36,3 @@ const SearchInput = ({
     </div>
   );
 };
-
-export default SearchInput;

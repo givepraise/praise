@@ -16,7 +16,7 @@ interface SelectInputProps {
   icon?: IconProp;
 }
 
-const SelectInput = ({
+export const SelectInput = ({
   selected,
   handleChange,
   options,
@@ -69,5 +69,3 @@ const SelectInput = ({
     </div>
   );
 };
-
-export default SelectInput;

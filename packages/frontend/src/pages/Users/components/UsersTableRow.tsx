@@ -7,7 +7,7 @@ interface IUsersTableRow {
   data: UserDto;
 }
 
-const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element | null => {
+export const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element | null => {
   const history = useHistory();
 
   if (!data.ethereumAddress) return null;
@@ -38,5 +38,3 @@ const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element | null => {
     </div>
   );
 };
-
-export default UsersTableRow;

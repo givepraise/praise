@@ -1,15 +1,15 @@
 /* eslint-disable react/jsx-key */
-import { InlineLabel } from '@/components/InlineLabel';
-import { AllPeriods } from '@/model/periods';
-import { formatIsoDateUTC } from '@/utils/date';
-import { classNames } from '@/utils/index';
 import { PeriodDetailsDto } from 'api/dist/period/types';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
+import { classNames } from '@/utils/index';
+import { formatIsoDateUTC } from '@/utils/date';
+import { AllPeriods } from '@/model/periods';
+import { InlineLabel } from '@/components/InlineLabel';
 
-const PeriodsTable = (): JSX.Element => {
+export const PeriodsTable = (): JSX.Element => {
   const allPeriods = useRecoilValue(AllPeriods);
   const history = useHistory();
 
@@ -122,5 +122,3 @@ const PeriodsTable = (): JSX.Element => {
     </table>
   );
 };
-
-export default PeriodsTable;

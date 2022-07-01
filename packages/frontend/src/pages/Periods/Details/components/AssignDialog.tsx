@@ -1,4 +1,3 @@
-import { PoolRequirements } from '@/model/periods';
 import {
   faCheckSquare,
   faTimes,
@@ -8,6 +7,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
+import { PoolRequirements } from '@/model/periods';
 
 interface PeriodAssignDialogProps {
   onClose(): void;
@@ -94,7 +94,7 @@ const DialogMessage = ({
   );
 };
 
-const PeriodAssignDialog = ({
+export const PeriodAssignDialog = ({
   onClose,
   onAssign,
   poolRequirements,
@@ -129,5 +129,3 @@ const PeriodAssignDialog = ({
     </div>
   );
 };
-
-export default PeriodAssignDialog;

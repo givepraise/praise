@@ -1,7 +1,7 @@
-import { AllActiveUserQuantificationPeriods } from '@/model/periods';
 import { PeriodDetailsDto } from 'api/dist/period/types';
 import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import { AllActiveUserQuantificationPeriods } from '@/model/periods';
 
 interface QuantifierPeriodMessageProps {
   period: PeriodDetailsDto;

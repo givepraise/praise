@@ -1,5 +1,5 @@
-import { PeriodSettingsModel } from '@periodsettings/entities';
-import { SettingGroup } from '@settings/types';
+import { PeriodSettingsModel } from '@/periodsettings/entities';
+import { SettingGroup } from '@/settings/types';
 
 const up = async (): Promise<void> => {
   await PeriodSettingsModel.updateMany(

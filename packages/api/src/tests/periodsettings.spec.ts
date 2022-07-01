@@ -1,15 +1,15 @@
 import { Wallet } from 'ethers';
+import { expect } from 'chai';
+import { faker } from '@faker-js/faker';
+import { addDays } from 'date-fns';
+import { PeriodModel } from '@/period/entities';
 import {
   seedPeriod,
   seedPeriodSetting,
   seedUser,
-} from '@database/seeder/entities';
-import { expect } from 'chai';
-import { PeriodModel } from '@period/entities';
+} from '@/database/seeder/entities';
+import { PeriodSettingsModel } from '@/periodsettings/entities';
 import { loginUser } from './utils';
-import { faker } from '@faker-js/faker';
-import { addDays } from 'date-fns';
-import { PeriodSettingsModel } from '@periodsettings/entities';
 
 describe('GET /api/periodsettings/:periodId/settings/all', () => {
   beforeEach(async () => {

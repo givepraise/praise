@@ -4,8 +4,9 @@ import { UserModel } from 'api/dist/user/entities';
 import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
 import logger from 'jet-logger';
-import { getUserAccount } from '../utils/getUserAccount';
 import { UserRole } from 'api/dist/user/types';
+import { settingValue } from 'api/dist/shared/settings';
+import { getUserAccount } from '../utils/getUserAccount';
 import {
   dmError,
   invalidReceiverError,
@@ -20,9 +21,16 @@ import {
   selfPraiseWarning,
 } from '../utils/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
-import { settingValue } from 'api/dist/shared/settings';
 import { CommandHandler } from '../interfaces/CommandHandler';
 
+/**
+ * Execute command /firward
+ *  Creates praises with a given giver, receiver, and reason
+ *
+ * @param  interaction
+ * @param  responseUrl
+ * @returns
+ */
 export const forwardHandler: CommandHandler = async (
   interaction,
   responseUrl

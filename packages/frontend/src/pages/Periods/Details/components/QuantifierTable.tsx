@@ -1,24 +1,24 @@
 /* eslint-disable react/jsx-key */
-import Notice from '@/components/Notice';
-import {
-  PeriodPageParams,
-  SinglePeriod,
-  useReplaceQuantifier,
-} from '@/model/periods';
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import sortBy from 'lodash/sortBy';
-import { classNames } from '@/utils/index';
-import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Quantifier } from 'api/dist/praise/types';
-import ReplaceQuantifierDialog from './ReplaceQuantifierDialog';
+import {
+  PeriodPageParams,
+  SinglePeriod,
+  useReplaceQuantifier,
+} from '@/model/periods';
+import { Notice } from '@/components/Notice';
+import { classNames } from '@/utils/index';
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { ReplaceQuantifierDialog } from './ReplaceQuantifierDialog';
 
-const QuantifierTable = (): JSX.Element => {
+export const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const period = useRecoilValue(SinglePeriod(periodId));
@@ -186,5 +186,3 @@ const QuantifierTable = (): JSX.Element => {
     </>
   );
 };
-
-export default QuantifierTable;

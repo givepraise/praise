@@ -1,6 +1,6 @@
-import { SettingsModel } from '@settings/entities';
-import { PeriodSettingsModel } from '@periodsettings/entities';
 import { Types } from 'mongoose';
+import { SettingsModel } from '@/settings/entities';
+import { PeriodSettingsModel } from '@/periodsettings/entities';
 
 export const settingValue = async (
   key: string,

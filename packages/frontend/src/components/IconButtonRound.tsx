@@ -80,7 +80,7 @@ interface IconButtonRoundProps {
   onClick();
 }
 
-const IconButtonRound = ({
+export const IconButtonRound = ({
   disabled = false,
   icon,
   tooltip,
@@ -106,5 +106,3 @@ const IconButtonRound = ({
     </Tooltip>
   );
 };
-
-export default IconButtonRound;

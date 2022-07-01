@@ -6,7 +6,7 @@ import {
   EventLogTypeKey,
 } from './types';
 
-export const eventLogSchema = new Schema(
+const eventLogSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
@@ -47,7 +47,7 @@ export const EventLogModel = model<
   Pagination<EventLogDocument>
 >('EventLog', eventLogSchema);
 
-export const eventLogTypeSchema = new Schema(
+const eventLogTypeSchema = new Schema(
   {
     key: {
       type: String,

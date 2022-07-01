@@ -1,19 +1,19 @@
-import BreadCrumb from '@/components/BreadCrumb';
 import {
   faArrowDownWideShort,
   faBook,
 } from '@fortawesome/free-solid-svg-icons';
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import EventLogsList from './components/EventLogsList';
-import LoaderSpinner from '@/components/LoaderSpinner';
-import MultiselectInput from '@/components/form/MultiselectInput';
-import SearchInput from '@/components/form/SearchInput';
-import SelectInput from '@/components/form/SelectInput';
+import { debounce } from '@mui/material';
+import { LoaderSpinner } from '@/components/LoaderSpinner';
+import { MultiselectInput } from '@/components/form/MultiselectInput';
+import { SearchInput } from '@/components/form/SearchInput';
+import { SelectInput } from '@/components/form/SelectInput';
 import {
   AllEventLogsQueryParameters,
   useAllEventLogTypes,
 } from '@/model/eventlogs';
-import { debounce } from '@mui/material';
+import { BreadCrumb } from '@/components/BreadCrumb';
+import { EventLogsList } from './components/EventLogsList';
 
 const sortOptions = [
   { value: 'desc', label: 'Newest' },
@@ -141,4 +141,5 @@ const EventLogsPage = (): JSX.Element => {
   );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default EventLogsPage;

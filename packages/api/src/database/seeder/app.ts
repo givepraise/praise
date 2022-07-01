@@ -1,11 +1,11 @@
-import { PeriodModel } from '@period/entities';
-import { UserModel } from '@user/entities';
-import { UserRole } from '@user/types';
-import { seedUserAndUserAccount, seedPeriod, seedPraise } from './entities';
 import addDays from 'date-fns/addDays';
 import { faker } from '@faker-js/faker';
 import range from 'lodash/range';
 import logger from 'jet-logger';
+import { PeriodModel } from '@/period/entities';
+import { UserModel } from '@/user/entities';
+import { UserRole } from '@/user/types';
+import { seedUserAndUserAccount, seedPeriod, seedPraise } from './entities';
 
 const PERIOD_NUMBER = 3;
 const PERIOD_LENGTH_DAYS = 10;
@@ -31,7 +31,12 @@ const PREDEFINED_USERS = [
   },
 ];
 
-export const seedPredefinedUsers = async (): Promise<void> => {
+/**
+ * Seed users into database from PREDEFINED_USERS list
+ *
+ * @returns Promise
+ */
+const seedPredefinedUsers = async (): Promise<void> => {
   const userCount = await UserModel.count();
 
   if (userCount < PREDEFINED_USERS.length) {
@@ -48,7 +53,13 @@ export const seedPredefinedUsers = async (): Promise<void> => {
   }
 };
 
-export const seedRegularUsers = async (): Promise<void> => {
+/**
+ * Seed fake users into database with only USER role,
+ *  up to count of REGULAR_USERS_NUMBER
+ *
+ * @returns Promise
+ */
+const seedRegularUsers = async (): Promise<void> => {
   try {
     const userCount = await UserModel.count({ roles: ['USER'] });
 
@@ -71,7 +82,13 @@ export const seedRegularUsers = async (): Promise<void> => {
   }
 };
 
-export const seedQuantifierUsers = async (): Promise<void> => {
+/**
+ * Seed fake users into database with USER and QUANTIFIER roles,
+ *  up to count of QUANTIFIER_USERS_NUMBER
+ *
+ * @returns Promise
+ */
+const seedQuantifierUsers = async (): Promise<void> => {
   try {
     const userCount = await UserModel.count({ roles: ['USER', 'QUANTIFIER'] });
 
@@ -95,6 +112,12 @@ export const seedQuantifierUsers = async (): Promise<void> => {
   }
 };
 
+/**
+ * Seed users into database with USER and ADMIN roles,
+ *  as defined in env variable ADMINS
+ *
+ * @returns Promise
+ */
 export const seedAdminUsers = async (): Promise<void> => {
   const admins = process.env.ADMINS as string;
   const ethAddresses = admins
@@ -125,7 +148,13 @@ export const seedAdminUsers = async (): Promise<void> => {
   }
 };
 
-export const seedPeriodsWithPraises = async (): Promise<void> => {
+/**
+ * Seed fake periods and fake praises associated with each period into database
+ * Based on PERIOD_NUMBER, PERIOD_LENGTH_DAYS, PRAISE_PER_PERIOD_NUMBER
+ *
+ * @returns Promise
+ */
+const seedPeriodsWithPraises = async (): Promise<void> => {
   const periodsCount = await PeriodModel.count();
 
   if (periodsCount === 0) {
@@ -163,6 +192,11 @@ export const seedPeriodsWithPraises = async (): Promise<void> => {
   }
 };
 
+/**
+ * Seed database with all fake data necessary for usable development environment
+ *
+ * @returns Promise
+ */
 export const seedData = async (): Promise<void> => {
   logger.info('Seeding database with fake data.');
 

@@ -1,6 +1,3 @@
-import IconButton from '@/components/IconButton';
-import ScrollableDialog from '@/components/ScrollableDialog';
-import QuantifySlider from '@/pages/QuantifyPeriodReceiver/components/QuantifySlider';
 import {
   faCalculator,
   faScaleUnbalanced,
@@ -9,6 +6,9 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
 import { useState } from 'react';
+import { QuantifySlider } from '@/pages/QuantifyPeriodReceiver/components/QuantifySlider';
+import { ScrollableDialog } from '@/components/ScrollableDialog';
+import { IconButton } from '@/components/IconButton';
 
 interface QuantifyMultipleDialogProps {
   open: boolean;
@@ -18,7 +18,7 @@ interface QuantifyMultipleDialogProps {
   onSetScore(newScore: number, selectedPraises: PraiseDto[]);
 }
 
-const QuantifyMultipleDialog = ({
+export const QuantifyMultipleDialog = ({
   open = false,
   onClose,
   selectedPraises,
@@ -65,5 +65,3 @@ const QuantifyMultipleDialog = ({
     </ScrollableDialog>
   );
 };
-
-export default QuantifyMultipleDialog;

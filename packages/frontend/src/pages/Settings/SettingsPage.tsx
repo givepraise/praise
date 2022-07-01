@@ -1,13 +1,13 @@
 import { SettingGroup } from 'api/dist/settings/types';
-import BreadCrumb from '@/components/BreadCrumb';
 import { faCogs } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import SettingsForm from '../../components/settings/SettingsForm';
-import { AllSettings, useSetSetting } from '@/model/settings';
 import { useRecoilValue } from 'recoil';
-import NavItem from '@/navigation/NavItem';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { AllSettings, useSetSetting } from '@/model/settings';
+import { BreadCrumb } from '@/components/BreadCrumb';
 import { SubPageNav } from '@/navigation/SubPageNav';
+import { NavItem } from '@/navigation/NavItem';
+import { SettingsForm } from '@/components/settings/SettingsForm';
 
 const SettingsPage = (): JSX.Element | null => {
   const settings = useRecoilValue(AllSettings);
@@ -77,4 +77,5 @@ const SettingsPage = (): JSX.Element | null => {
   );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default SettingsPage;

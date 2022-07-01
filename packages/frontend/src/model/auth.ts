@@ -7,7 +7,6 @@ import { SingleUser } from './users';
 
 const { persistAtom } = recoilPersist();
 
-export const ROLE_USER = UserRole.USER;
 export const ROLE_ADMIN = UserRole.ADMIN;
 export const ROLE_QUANTIFIER = UserRole.QUANTIFIER;
 

@@ -1,8 +1,8 @@
-import { classNames } from '@/utils/index';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { RadioGroup } from '@headlessui/react';
 import { UserDto } from 'api/dist/user/types';
+import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from './UserAvatarAndName';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
   onSelect(userId: string): void;
 }
 
-const SelectUserRadioGroup = ({
+export const SelectUserRadioGroup = ({
   users = [],
   value = undefined,
   onSelect,
@@ -50,5 +50,3 @@ const SelectUserRadioGroup = ({
     </RadioGroup>
   );
 };
-
-export default SelectUserRadioGroup;

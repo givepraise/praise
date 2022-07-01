@@ -8,7 +8,7 @@ interface NavProps {
   to: string;
 }
 
-const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
+export const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
   return (
     <li className="group">
       <NavLink
@@ -34,5 +34,3 @@ const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
     </li>
   );
 };
-
-export default NavItem;

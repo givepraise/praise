@@ -1,17 +1,17 @@
-import ScrollableDialog from '@/components/ScrollableDialog';
 import {
   faTimes,
   faArrowRightArrowLeft,
   faWarning,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import IconButton from '@/components/IconButton';
 import { useState } from 'react';
-import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
-import SelectUserRadioGroup from '@/components/user/SelectUserRadioGroup';
-import Notice from '@/components/Notice';
 import { useRecoilValue } from 'recoil';
 import differenceBy from 'lodash/differenceBy';
+import { ScrollableDialog } from '@/components/ScrollableDialog';
+import { IconButton } from '@/components/IconButton';
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
+import { SelectUserRadioGroup } from '@/components/user/SelectUserRadioGroup';
+import { Notice } from '@/components/Notice';
 import { AllQuantifierUsers } from '@/model/users';
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
   selectedUserId: string | undefined;
 }
 
-const ReplaceQuantifierDialog = ({
+export const ReplaceQuantifierDialog = ({
   onClose,
   onConfirm,
   open = false,
@@ -110,5 +110,3 @@ const ReplaceQuantifierDialog = ({
     </ScrollableDialog>
   );
 };
-
-export default ReplaceQuantifierDialog;

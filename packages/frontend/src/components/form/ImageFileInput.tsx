@@ -1,6 +1,9 @@
 import { Field } from 'react-final-form';
 
-const ImageFileInput = (name: string, src: string | undefined): JSX.Element => {
+export const ImageFileInput = (
+  name: string,
+  src: string | undefined
+): JSX.Element => {
   return (
     <Field<FileList> name={name} key={name}>
       {({ input: { onChange, onBlur, onFocus } }): JSX.Element => (
@@ -26,5 +29,3 @@ const ImageFileInput = (name: string, src: string | undefined): JSX.Element => {
     </Field>
   );
 };
-
-export default ImageFileInput;

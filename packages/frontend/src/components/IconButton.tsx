@@ -9,7 +9,7 @@ interface Props {
   onClick();
 }
 
-const IconButton = ({
+export const IconButton = ({
   disabled = false,
   icon,
   text,
@@ -29,5 +29,3 @@ const IconButton = ({
     </button>
   );
 };
-
-export default IconButton;

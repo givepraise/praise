@@ -1,4 +1,12 @@
-import BreadCrumb from '@/components/BreadCrumb';
+import {
+  faCalendarAlt,
+  faCheckCircle,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { BreadCrumb } from '@/components/BreadCrumb';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import {
   PeriodAndReceiverPageParams,
@@ -11,17 +19,9 @@ import {
   usePeriodSettingValueRealized,
   useAllPeriodSettingsQuery,
 } from '@/model/periodsettings';
-import BackLink from '@/navigation/BackLink';
 import { getQuantificationReceiverStats } from '@/utils/periods';
-import {
-  faCalendarAlt,
-  faCheckCircle,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import { useHistory, useParams } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
-import QuantifyTable from './components/QuantifyTable';
+import { BackLink } from '@/navigation/BackLink';
+import { QuantifyTable } from './components/QuantifyTable';
 
 const PeriodBreadCrumb = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -106,4 +106,5 @@ const QuantifyPeriodReceiverPage = (): JSX.Element => {
   );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default QuantifyPeriodReceiverPage;

@@ -1,11 +1,3 @@
-import { UserPseudonym } from '@/components/user/UserPseudonym';
-import { ActiveUserId } from '@/model/auth';
-import {
-  PeriodAndReceiverPageParams,
-  PeriodQuantifierReceiverPraise,
-} from '@/model/periods';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
-import { classNames } from '@/utils/index';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
@@ -13,6 +5,14 @@ import { useCombobox } from 'downshift';
 import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import { classNames } from '@/utils/index';
+import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import {
+  PeriodAndReceiverPageParams,
+  PeriodQuantifierReceiverPraise,
+} from '@/model/periods';
+import { ActiveUserId } from '@/model/auth';
+import { UserPseudonym } from '@/components/user/UserPseudonym';
 
 interface PraiseAutosuggestProps {
   onClose(): void;
@@ -20,7 +20,7 @@ interface PraiseAutosuggestProps {
   praise: PraiseDto;
 }
 
-const PraiseAutosuggest = ({
+export const PraiseAutosuggest = ({
   onSelect,
   onClose,
   praise,
@@ -72,11 +72,9 @@ const PraiseAutosuggest = ({
           : '';
         if (filteredData) {
           setInputItems(
-            filteredData.filter((praise) => {
-              if (praise && `#${praise._id.slice(-4)}`.includes(search))
-                return true;
-              return false;
-            })
+            filteredData.filter((praise) =>
+              praise?._idLabelRealized.includes(search)
+            )
           );
         }
       },
@@ -119,19 +117,15 @@ const PraiseAutosuggest = ({
                   highlightedIndex === index ? 'bg-warm-gray-100' : '',
                   'py-2 pl-2 cursor-pointer'
                 )}
-                key={item._id} //TODO fix key
+                key={item._id}
                 {...getItemProps({ item, index })}
               >
-                #{item && item._id.slice(-4)} -{' '}
-                {item &&
-                  (usePseudonyms ? (
-                    <UserPseudonym
-                      userId={item.giver._id}
-                      periodId={periodId}
-                    />
-                  ) : (
-                    item.giver.name
-                  ))}
+                {item._idLabelRealized} -{' '}
+                {usePseudonyms ? (
+                  <UserPseudonym userId={item.giver._id} periodId={periodId} />
+                ) : (
+                  item.giver.name
+                )}
               </li>
             ))}
         </ul>
@@ -140,5 +134,3 @@ const PraiseAutosuggest = ({
   };
   return <DropdownCombobox />;
 };
-
-export default PraiseAutosuggest;

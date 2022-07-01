@@ -1,10 +1,10 @@
-import { ActiveUserId } from '@/model/auth';
-import { PeriodPageParams, SinglePeriod } from '@/model/periods';
-import { getQuantifierData } from '@/utils/periods';
 import { faCalculator } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import { getQuantifierData } from '@/utils/periods';
+import { PeriodPageParams, SinglePeriod } from '@/model/periods';
+import { ActiveUserId } from '@/model/auth';
 
 export const QuantifierMessage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();

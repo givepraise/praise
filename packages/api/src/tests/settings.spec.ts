@@ -1,14 +1,14 @@
 import { Wallet } from 'ethers';
-import { seedSetting, seedUser } from '@database/seeder/entities';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import { faker } from '@faker-js/faker';
+import { URL } from 'url';
+import { seedSetting, seedUser } from '@/database/seeder/entities';
+import { SettingsModel } from '@/settings/entities';
+import { loginUser } from './utils';
+
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-import { loginUser } from './utils';
-import { faker } from '@faker-js/faker';
-import { SettingsModel } from '@settings/entities';
-import { URL } from 'url';
-import logger from 'jet-logger';
 
 describe('GET /api/settings/all', () => {
   it('200 response with json body containing list of settings', async function () {
@@ -95,7 +95,7 @@ describe('GET /api/settings/:id', () => {
 
   it('401 response if user not authenticated', async function () {
     const setting = await SettingsModel.findOne({
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+      key: 'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
     });
 
     return this.client
@@ -205,7 +205,7 @@ describe('PATCH /api/admin/settings/:id/set', () => {
     const { accessToken } = await loginUser(wallet, this.client);
 
     const setting = await SettingsModel.findOne({
-      key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
+      key: 'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
     });
     const originalValueRealized = setting?.valueRealized;
 

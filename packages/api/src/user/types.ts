@@ -1,5 +1,5 @@
-import { UserAccountDocument, UserAccountDto } from '@useraccount/types';
 import { Document } from 'mongoose';
+import { UserAccountDocument, UserAccountDto } from '@/useraccount/types';
 
 export enum UserRole {
   ADMIN = 'ADMIN',
@@ -8,7 +8,7 @@ export enum UserRole {
   FORWARDER = 'FORWARDER',
 }
 
-export interface User {
+interface User {
   ethereumAddress: string;
   roles: UserRole[];
   accounts?: UserAccountDocument[];

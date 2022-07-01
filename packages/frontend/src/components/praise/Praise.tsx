@@ -1,5 +1,9 @@
 import { PraiseDto } from 'api/dist/praise/types';
-import getMarkdownText from '@/components/MarkdownText';
+import { Tooltip } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { useRecoilValue } from 'recoil';
+import { getMarkdownText } from '@/components/MarkdownText';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { InlineLabel } from '@/components/InlineLabel';
@@ -9,17 +13,14 @@ import {
   localizeAndFormatIsoDateRelative,
   DATE_FORMAT_LONG_NAME,
 } from '@/utils/date';
-import { Tooltip } from '@mui/material';
-import ResetQuantificationButton from './ResetQuantificationButton';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { SinglePeriodByDate } from '@/model/periods';
-import { useRecoilValue } from 'recoil';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { UserPopover } from '@/components/user/UserPopover';
 import { UserName } from '@/components/user/UserName';
-import { UserAvatarAndName } from '../user/UserAvatarAndName';
+import { useQuantifyPraise } from '@/model/praise';
 import { SourceName } from './SourceName';
+import { UserAvatarAndName } from '../user/UserAvatarAndName';
+import { InlineLabelClosable } from '../InlineLabelClosable';
 
 interface Props {
   praise: PraiseDto;
@@ -34,7 +35,7 @@ interface Props {
   showScore?: boolean;
 }
 
-const Praise = ({
+export const Praise = ({
   praise,
   showIdPrefix = false,
   showReceiver = true,
@@ -48,6 +49,7 @@ const Praise = ({
 }: Props): JSX.Element | null => {
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
+  const { quantify } = useQuantifyPraise();
 
   if (!praise) return null;
   if (usePseudonyms && !periodId) return null;
@@ -119,22 +121,22 @@ const Praise = ({
           <div className="w-full pb-2">
             {showIdPrefix && (
               <InlineLabel
-                text={`#${praise._id.slice(-4)}`}
+                text={praise._idLabelRealized}
                 className="bg-warm-gray-400"
               />
             )}
             {dismissed && (
-              <InlineLabel
+              <InlineLabelClosable
                 text="Dismissed"
-                button={<ResetQuantificationButton praise={praise} />}
                 className="bg-red-600"
+                onClose={(): void => void quantify(praise._id, 0, false, null)}
               />
             )}
             {shortDuplicatePraiseId && (
-              <InlineLabel
+              <InlineLabelClosable
                 text={`Duplicate of: #${shortDuplicatePraiseId}`}
                 className="bg-warm-gray-700"
-                button={<ResetQuantificationButton praise={praise} />}
+                onClose={(): void => void quantify(praise._id, 0, false, null)}
               />
             )}
             <span
@@ -170,5 +172,3 @@ const Praise = ({
     </div>
   );
 };
-
-export default Praise;

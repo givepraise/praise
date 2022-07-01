@@ -1,12 +1,12 @@
-import { BadRequestError, NotFoundError } from '@error/errors';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
-import { PeriodStatusType } from '@period/types';
-import { PraiseModel } from '@praise/entities';
-import { PraiseDocument } from '@praise/types';
-import { getPraisePeriod } from '@praise/utils/core';
-import { UserDocument } from '@user/types';
 import { Types } from 'mongoose';
+import { BadRequestError, NotFoundError } from '@/error/errors';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
+import { PeriodStatusType } from '@/period/types';
+import { PraiseModel } from '@/praise/entities';
+import { PraiseDocument } from '@/praise/types';
+import { getPraisePeriod } from '@/praise/utils/core';
+import { UserDocument } from '@/user/types';
 
 interface BodyParams {
   score: number;

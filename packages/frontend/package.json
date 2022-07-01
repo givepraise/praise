@@ -4,6 +4,9 @@
   "license": "GPL-3.0-or-later",
   "description": "The Praise dashboard built on React/Recoil/Tailwind CSS.",
   "private": true,
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "dependencies": {
     "@craco/craco": "^6.4.3",
     "@emotion/react": "^11.7.1",
@@ -88,7 +91,6 @@
     "eslint": "^8.18.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-typescript": "^3.1.0",
-    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.30.1",

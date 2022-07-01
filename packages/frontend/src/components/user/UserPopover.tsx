@@ -1,4 +1,3 @@
-import { UserAvatar } from './UserAvatar';
 import React from 'react';
 import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { Jazzicon } from '@ukstv/jazzicon-react';
@@ -9,6 +8,7 @@ import { UserAccountDto } from 'api/dist/useraccount/types';
 import { useRecoilValue } from 'recoil';
 import { SingleUser } from '@/model/users';
 import { classNames } from '@/utils/index';
+import { UserAvatar } from './UserAvatar';
 
 interface UserPopoverProps {
   user?: UserDto;
@@ -18,7 +18,7 @@ interface UserPopoverProps {
   usePseudonym?: boolean;
 }
 
-export const WrappedUserPopover = ({
+const WrappedUserPopover = ({
   user,
   userAccount,
   children,

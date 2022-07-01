@@ -4,12 +4,9 @@ import {
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ScrollableDialog from '@/components/ScrollableDialog';
 import { PraiseDto } from 'api/dist/praise/types';
-import IconButton from '@/components/IconButton';
-
-const getPraisesString = (praises: PraiseDto[]): string =>
-  praises.map((p) => `#${p._id.slice(-5)}`).join(', ');
+import { ScrollableDialog } from '@/components/ScrollableDialog';
+import { IconButton } from '@/components/IconButton';
 
 interface DismissDialogProps {
   open: boolean;
@@ -17,7 +14,8 @@ interface DismissDialogProps {
   onConfirm(): void;
   praises: PraiseDto[] | undefined;
 }
-const PoolDismissDialog = ({
+
+export const DismissDialog = ({
   open = false,
   onClose,
   onConfirm,
@@ -42,7 +40,9 @@ const PoolDismissDialog = ({
             Dismiss a praise when it contains no praise information or is out of
             scope for the praise system.
           </p>
-          <p className="text-center">{getPraisesString(praises)}</p>
+          <p className="text-center">
+            {praises.map((p) => p._idLabelRealized).join(', ')}
+          </p>
           <div className="flex justify-center">
             <IconButton
               icon={faMinusCircle}
@@ -58,5 +58,3 @@ const PoolDismissDialog = ({
     </ScrollableDialog>
   );
 };
-
-export default PoolDismissDialog;
