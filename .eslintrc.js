@@ -30,7 +30,7 @@ module.exports = {
   ignorePatterns: ['dist', 'scripts'],
   rules: {
     'import/no-unresolved': 'error',
-    'prettier/prettier': 'error',
+    'prettier/prettier': ['error', { singleQuote: true }],
     'block-scoped-var': 'error',
     eqeqeq: 'error',
     'no-var': 'error',
