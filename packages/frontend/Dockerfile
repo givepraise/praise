@@ -5,6 +5,7 @@ WORKDIR /usr/src/
 
 # Copy workspace config
 COPY ./package*.json .
+COPY ./.eslintrc.js .
 COPY ./.yarnrc.yml .
 COPY ./yarn.lock .
 COPY ./.yarn ./.yarn
