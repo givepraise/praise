@@ -16,16 +16,16 @@ interface SelectInputProps {
   icon?: IconProp;
 }
 
-const SelectInput = ({
+export const SelectInput = ({
   selected,
   handleChange,
   options,
   icon,
 }: SelectInputProps): JSX.Element => {
   return (
-    <div className="relative h-[42px]">
+    <div className="relative h-10">
       <Listbox value={selected} onChange={handleChange}>
-        <Listbox.Button className="h-[42px] border border-warm-gray-400 w-full py-1.5 pl-3 pr-10 text-left bg-transparent  ">
+        <Listbox.Button className="h-10 border border-warm-gray-400 w-full py-1.5 pl-3 pr-10 text-left bg-transparent  ">
           <span className="block truncate">{selected.label}</span>
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
             <span className="text-warm-gray-800 ">
@@ -69,5 +69,3 @@ const SelectInput = ({
     </div>
   );
 };
-
-export default SelectInput;

@@ -18,7 +18,7 @@ module.exports = {
     },
   ],
   eslint: {
-    enable: false, //TODO enable eslint during build
+    enable: true,
   },
   webpack: {
     configure: {

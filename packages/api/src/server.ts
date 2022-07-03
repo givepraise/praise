@@ -1,19 +1,25 @@
-import { ErrorHandler } from '@error/ErrorHandler';
 import cors from 'cors';
 import express, { json, urlencoded, Express } from 'express';
 import 'express-async-errors';
 import helmet from 'helmet';
 import logger from 'jet-logger';
 import morgan from 'morgan';
-import { seedAdmins } from './pre-start/admins';
-import { seedData } from './pre-start/seed';
-import { baseRouter } from './routes';
-import { connectDatabase } from './database/connection';
-import { setupMigrator } from './database/migration';
 import fileUpload from 'express-fileupload';
+import { ErrorHandler } from '@/error/ErrorHandler';
+import { seedData, seedAdminUsers } from '@/database/seeder/app';
+import { setupMigrator } from './database/migration';
+import { connectDatabase } from './database/connection';
+import { baseRouter } from './routes';
 import { envCheck } from './pre-start/envCheck';
 import { requiredEnvVariables } from './pre-start/env-required';
 
+/**
+ * Connect to database, run necessary migrations, and seed fake data,
+ *  depending on NODE_ENV
+ *
+ * @param {string} [NODE_ENV='development']
+ * @returns {Promise<void>}
+ */
 const setupDatabase = async (NODE_ENV = 'development'): Promise<void> => {
   let db;
 
@@ -50,6 +56,12 @@ const setupDatabase = async (NODE_ENV = 'development'): Promise<void> => {
   }
 };
 
+/**
+ * Prepare and initialize express server
+ *
+ * @param {string} [NODE_ENV='development']
+ * @returns   {Promise<Express>}
+ */
 const setupApiServer = async (NODE_ENV = 'development'): Promise<Express> => {
   const app = express();
 
@@ -77,24 +89,27 @@ const setupApiServer = async (NODE_ENV = 'development'): Promise<Express> => {
   app.use(ErrorHandler);
 
   if (NODE_ENV === 'development') {
-    await seedAdmins();
+    await seedAdminUsers();
     app.use(morgan('dev'));
   } else if (NODE_ENV === 'production') {
-    await seedAdmins();
+    await seedAdminUsers();
     app.use(helmet());
   } else if (NODE_ENV === 'testing') {
-    await seedAdmins();
+    await seedAdminUsers();
     app.use(morgan('dev'));
   }
 
   return app;
 };
 
-const setup = async (): Promise<Express> => {
+/**
+ * Run application
+ *
+ * @returns {Promise<Express>}
+ */
+export const setup = async (): Promise<Express> => {
   await setupDatabase(process.env.NODE_ENV);
   const app = setupApiServer(process.env.NODE_ENV);
 
   return app;
 };
-
-export { setup };

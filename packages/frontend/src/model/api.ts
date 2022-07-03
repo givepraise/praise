@@ -6,7 +6,7 @@ import {
   SerializableParam,
   useRecoilValue,
 } from 'recoil';
-import { makeApiAuthClient, makeApiClient } from '../utils/api';
+import { makeApiAuthClient } from '../utils/api';
 
 type RequestParams = {
   [key: string]: SerializableParam;
@@ -26,8 +26,8 @@ type RequestDataParam = {
   file?: any;
 };
 
-export type PatchRequestParams = RequestParams & RequestDataParam;
-export type PostRequestParams = RequestParams & RequestDataParam;
+type PatchRequestParams = RequestParams & RequestDataParam;
+type PostRequestParams = RequestParams & RequestDataParam;
 
 export const isResponseOk = (
   response: AxiosResponse | AxiosError | null | unknown
@@ -75,20 +75,6 @@ export const ApiAuthGet = selectorFamily<AxiosResponse<unknown>, RequestParams>(
       },
   }
 );
-
-/**
- * POST request
- */
-export const ApiPost = selectorFamily<AxiosResponse<unknown>, RequestParams>({
-  key: 'ApiPost',
-  get: (params: RequestParams) => async (): Promise<AxiosResponse<unknown>> => {
-    const { config, url, data } = params;
-    const apiClient = makeApiClient();
-    const response = await apiClient.post(url, data, config);
-
-    return response;
-  },
-});
 
 /**
  * Authenticated POST request

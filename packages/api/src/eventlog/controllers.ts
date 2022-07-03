@@ -1,23 +1,27 @@
-import { getQuerySort } from '@shared/functions';
+import { StatusCodes } from 'http-status-codes';
+import mongoose from 'mongoose';
+import { getQuerySort } from '@/shared/functions';
 import {
   EventLogsQueryInputParsedQs,
   PaginatedResponseBody,
   QueryInputParsedQs,
   TypedRequestQuery,
   TypedResponse,
-} from '@shared/types';
-import { BadRequestError } from '@error/errors';
-import { StatusCodes } from 'http-status-codes';
+} from '@/shared/types';
+import { BadRequestError } from '@/error/errors';
 import { EventLogModel, EventLogTypeModel } from './entities';
 import { EventLogDto, EventLogInput, EventLogTypeDto } from './types';
 import {
   eventLogListTransformer,
   eventLogTypeListTransformer,
 } from './transformers';
-import mongoose from 'mongoose';
 
 /**
  * Fetch a paginated list of EventLogs
+ *
+ * @param  {TypedRequestQuery<EventLogsQueryInputParsedQs>} req
+ * @param  {TypedResponse<PaginatedResponseBody<EventLogDto>>} res
+ * @returns Promise
  */
 export const all = async (
   req: TypedRequestQuery<EventLogsQueryInputParsedQs>,
@@ -64,7 +68,11 @@ export const all = async (
 };
 
 /**
- * Fetch a list of EventLogsTypes
+ * Fetch a list of all EventLogsTypes
+ *
+ * @param  {TypedRequestQuery<QueryInputParsedQs>} req
+ * @param  {TypedResponse<PaginatedResponseBody<EventLogTypeDto>>} res
+ * @returns Promise
  */
 export const types = async (
   req: TypedRequestQuery<QueryInputParsedQs>,

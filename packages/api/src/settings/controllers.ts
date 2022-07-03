@@ -1,33 +1,55 @@
-import { BadRequestError, NotFoundError } from '@error/errors';
-import { removeFile, upload } from '@shared/functions';
-import { TypedRequestBody, TypedResponse } from '@shared/types';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
 import { Request } from 'express';
+import { BadRequestError, NotFoundError } from '@/error/errors';
+import { removeFile, upload } from '@/shared/functions';
+import { TypedRequestBody, TypedResponse } from '@/shared/types';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
 import { SettingsModel } from './entities';
 import { settingListTransformer, settingTransformer } from './transformers';
 import { SettingDto, SettingSetInput } from './types';
 
+/**
+ * Fetch all settings
+ *
+ * @param {Request} req
+ * @param {TypedResponse<SettingDto[]>} res
+ * @returns {Promise<void>}
+ */
 export const all = async (
   req: Request,
   res: TypedResponse<SettingDto[]>
 ): Promise<void> => {
-  const settings = await SettingsModel.find({ period: { $exists: 0 } });
+  const settings = await SettingsModel.find({});
+
   res.status(200).json(settingListTransformer(settings));
 };
 
+/**
+ * Fetch single Setting
+ *
+ * @param {Request} req
+ * @param {TypedResponse<SettingDto>} res
+ * @returns {Promise<void>}
+ */
 export const single = async (
   req: Request,
   res: TypedResponse<SettingDto>
 ): Promise<void> => {
   const setting = await SettingsModel.findOne({
-    _id: req.params.key,
+    _id: req.params.id,
     period: { $exists: 0 },
   });
   if (!setting) throw new NotFoundError('Settings');
   res.status(200).json(settingTransformer(setting));
 };
 
+/**
+ * Update a Setting's value
+ *
+ * @param {TypedRequestBody<SettingSetInput>} req
+ * @param {TypedResponse<SettingDto>} res
+ * @returns {Promise<void>}
+ */
 export const set = async (
   req: TypedRequestBody<SettingSetInput>,
   res: TypedResponse<SettingDto>
@@ -52,7 +74,7 @@ export const set = async (
       setting.value = uploadRespone;
     }
   } else {
-    setting.value = req.body.value; //TODO validate input
+    setting.value = req.body.value;
   }
 
   await setting.save();

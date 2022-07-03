@@ -1,31 +1,18 @@
-import { PraiseAllInput, PraiseExportInput } from '@praise/types';
 import logger from 'jet-logger';
-import { QueryInput } from './types';
 import { Request } from 'express';
 import mime from 'mime-types';
 import { UploadedFile } from 'express-fileupload';
-import { BadRequestError, InternalServerError } from '@error/errors';
 import { unlink } from 'fs/promises';
+import { randomBytes } from 'crypto';
+import { BadRequestError, InternalServerError } from '@/error/errors';
+import { PraiseAllInput, PraiseExportInput } from '@/praise/types';
+import { QueryInput } from './types';
 
-export const pErr = (err: Error): void => {
-  if (err) {
-    logger.err(err);
-  }
-};
+export const getRandomString = (bytes = 10): string => {
+  const buffer = randomBytes(bytes);
+  const randomString = buffer.toString('hex');
 
-export const getRandomInt = (): number => {
-  return Math.floor(Math.random() * 1_000_000_000_000);
-};
-
-export const getRandomString = (length = 10): string => {
-  let result = '';
-  const characters =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
+  return randomString;
 };
 
 export const getQuerySort = (input: QueryInput): Object => {
@@ -44,18 +31,11 @@ export const getQuerySort = (input: QueryInput): Object => {
 };
 
 export const getPraiseAllInput = (q: PraiseAllInput): Object => {
-  const { receiver, periodStart, periodEnd } = q;
+  const { receiver } = q;
   const query: PraiseExportInput = {};
 
   if (receiver) {
     query.receiver = encodeURIComponent(receiver);
-  }
-
-  if (periodStart && periodEnd) {
-    query.createdAt = {
-      $gt: encodeURIComponent(periodStart),
-      $lte: encodeURIComponent(periodEnd),
-    };
   }
 
   return query;

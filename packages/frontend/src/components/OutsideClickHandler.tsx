@@ -1,12 +1,13 @@
-import { useOutsideAlerter } from '@/utils/index';
 import React, { useEffect, useCallback } from 'react';
+import { useOutsideAlerter } from '@/utils/index';
 
 interface OutsideClickHandlerProps {
   onOutsideClick: (() => void) | undefined;
   active: boolean;
   children?: React.ReactNode;
 }
-const OutsideClickHandler: React.FC<OutsideClickHandlerProps> = ({
+
+export const OutsideClickHandler: React.FC<OutsideClickHandlerProps> = ({
   onOutsideClick,
   active,
   children,
@@ -37,5 +38,3 @@ const OutsideClickHandler: React.FC<OutsideClickHandlerProps> = ({
 
   return <div ref={wrapperRef}> {children}</div>;
 };
-
-export default OutsideClickHandler;

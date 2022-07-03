@@ -1,11 +1,11 @@
-import AdminOnly from '@/components/auth/AdminOnly';
-import BreadCrumb from '@/components/BreadCrumb';
-import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
 import { faCalendarAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PeriodsTable from './components/Table';
+import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
+import { BreadCrumb } from '@/components/BreadCrumb';
+import { AdminOnly } from '@/components/auth/AdminOnly';
+import { PeriodsTable } from './components/Table';
 
 const PeriodsPage = (): JSX.Element => {
   return (
@@ -33,4 +33,5 @@ const PeriodsPage = (): JSX.Element => {
   );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default PeriodsPage;

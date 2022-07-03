@@ -1,19 +1,18 @@
-import { activateRouter } from '@activate/routes';
-import { authMiddleware } from '@auth/middleware';
-import { authRouter } from '@auth/routes';
 import { Router } from '@awaitjs/express';
-import { NOT_FOUND } from '@error/constants';
-import { adminPeriodRouter, periodRouter } from '@period/routes';
-import { praiseRouter } from '@praise/routes';
-import { settingsAdminRouter, settingsRouter } from '@settings/routes';
-import { adminUserRouter, userRouter } from '@user/routes';
-import { UserRole } from '@user/types';
-import { userAccountRouter } from '@useraccount/routes';
+import { activateRouter } from '@/activate/routes';
+import { authMiddleware } from '@/auth/middleware';
+import { authRouter } from '@/auth/routes';
+import { NOT_FOUND } from '@/error/constants';
+import { adminPeriodRouter, periodRouter } from '@/period/routes';
+import { praiseRouter } from '@/praise/routes';
+import { settingsAdminRouter, settingsRouter } from '@/settings/routes';
+import { adminUserRouter, userRouter } from '@/user/routes';
+import { UserRole } from '@/user/types';
 import {
   periodsettingsRouter,
   adminPeriodsettingsRouter,
-} from '@periodsettings/routes';
-import { eventLogRouter } from '@eventlog/routes';
+} from '@/periodsettings/routes';
+import { eventLogRouter } from '@/eventlog/routes';
 
 const baseRouter = Router();
 
@@ -38,9 +37,6 @@ baseRouter.use('/periodsettings', periodsettingsRouter);
 
 baseRouter.useAsync('/praise', authMiddleware(UserRole.USER));
 baseRouter.use('/praise', praiseRouter);
-
-baseRouter.useAsync('/useraccount', authMiddleware(UserRole.USER));
-baseRouter.use('/useraccount', userAccountRouter);
 
 baseRouter.useAsync('/eventlogs', authMiddleware(UserRole.USER));
 baseRouter.use('/eventlogs', eventLogRouter);

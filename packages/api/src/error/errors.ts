@@ -45,7 +45,6 @@ class NotFoundError extends DomainError {
 }
 
 export {
-  DomainError,
   InternalServerError,
   BadRequestError,
   UnauthorizedError,

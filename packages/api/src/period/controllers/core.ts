@@ -1,12 +1,19 @@
-import { BadRequestError, NotFoundError } from '@error/errors';
-import { PraiseDtoExtended, PraiseDetailsDto, PraiseDto } from '@praise/types';
-import { praiseDocumentListTransformer } from '@praise/transformers';
-import { calculateQuantificationScore } from '@praise/utils/score';
-import { praiseWithScore } from '@praise/utils/core';
-import { UserModel } from '@user/entities';
-import { UserAccountModel } from '@useraccount/entities';
-import { insertNewPeriodSettings } from '@periodsettings/utils';
-import { settingValue } from '@shared/settings';
+import { Types } from 'mongoose';
+import { StatusCodes } from 'http-status-codes';
+import { Request, Response } from 'express';
+import { Parser } from 'json2csv';
+import { parseISO } from 'date-fns';
+import { BadRequestError, NotFoundError } from '@/error/errors';
+import { PraiseDtoExtended, PraiseDetailsDto, PraiseDto } from '@/praise/types';
+import {
+  praiseListTransformer,
+  praiseTransformer,
+} from '@/praise/transformers';
+import { calculateQuantificationScore } from '@/praise/utils/score';
+import { UserModel } from '@/user/entities';
+import { UserAccountModel } from '@/useraccount/entities';
+import { insertNewPeriodSettings } from '@/periodsettings/utils';
+import { settingValue } from '@/shared/settings';
 import {
   TypedRequestBody,
   TypedResponse,
@@ -14,16 +21,11 @@ import {
   PaginatedResponseBody,
   QueryInputParsedQs,
   TypedRequestQuery,
-} from '@shared/types';
-import { getQueryInput, getQuerySort } from '@shared/functions';
-import { PraiseModel } from '@praise/entities';
-import { EventLogTypeKey } from '@eventlog/types';
-import { logEvent } from '@eventlog/utils';
-import { Types } from 'mongoose';
-import { StatusCodes } from 'http-status-codes';
-import { Request, Response } from 'express';
-import { Parser } from 'json2csv';
-import { parseISO } from 'date-fns';
+} from '@/shared/types';
+import { getQueryInput, getQuerySort } from '@/shared/functions';
+import { PraiseModel } from '@/praise/entities';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
 import {
   PeriodDetailsDto,
   PeriodUpdateInput,
@@ -36,13 +38,16 @@ import {
   getPeriodDateRangeQuery,
   getPreviousPeriodEndDate,
   isPeriodLatest,
-} from '../utils';
+} from '../utils/core';
 import { PeriodModel } from '../entities';
-import { periodDocumentTransformer } from '../transformers';
+import { periodTransformer } from '../transformers';
 
 /**
- * Description
- * @param
+ * Fetch a paginated list of Periods
+ *
+ * @param {TypedRequestQuery<QueryInputParsedQs>} req
+ * @param {(TypedResponse<PaginatedResponseBody<PeriodDetailsDto | undefined>>)} res
+ * @returns {Promise<void>}
  */
 export const all = async (
   req: TypedRequestQuery<QueryInputParsedQs>,
@@ -64,7 +69,7 @@ export const all = async (
         periodDetailsList.push(periodDetails);
         continue;
       }
-      periodDetailsList.push(periodDocumentTransformer(period));
+      periodDetailsList.push(periodTransformer(period));
     }
     res.status(StatusCodes.OK).json({
       ...response,
@@ -79,8 +84,11 @@ export const all = async (
 };
 
 /**
- * Description
- * @param
+ * Fetch a single Period
+ *
+ * @param {Request} req
+ * @param {TypedResponse<PeriodDetailsDto>} res
+ * @returns {Promise<void>}
  */
 export const single = async (
   req: Request,
@@ -92,15 +100,22 @@ export const single = async (
 };
 
 /**
- * Description
- * @param
+ * Create a Period
+ *
+ * @param {TypedRequestBody<PeriodUpdateInput>} req
+ * @param {TypedResponse<PeriodDetailsDto>} res
+ * @returns {Promise<void>}
  */
 export const create = async (
   req: TypedRequestBody<PeriodUpdateInput>,
   res: TypedResponse<PeriodDetailsDto>
 ): Promise<void> => {
   const { name, endDate } = req.body;
-  const period = await PeriodModel.create({ name, endDate });
+
+  if (!name || !endDate)
+    throw new BadRequestError('Period name and endDate are required');
+
+  const period = await PeriodModel.create({ name, endDate: parseISO(endDate) });
   await insertNewPeriodSettings(period);
 
   await logEvent(
@@ -119,6 +134,13 @@ export const create = async (
 /**
  * Description
  * @param
+ */
+/**
+ * Update a Period's endDate or name
+ *
+ * @param {TypedRequestBody<PeriodUpdateInput>} req
+ * @param {TypedResponse<PeriodDetailsDto>} res
+ * @returns {Promise<void>}
  */
 export const update = async (
   req: TypedRequestBody<PeriodUpdateInput>,
@@ -176,8 +198,11 @@ export const update = async (
 };
 
 /**
- * Description
- * @param
+ * Close a Period (change status from 'QUANTIFY' to 'CLOSED')
+ *
+ * @param {Request} req
+ * @param {TypedResponse<PeriodDetailsDto>} res
+ * @returns {Promise<void>}
  */
 export const close = async (
   req: Request,
@@ -185,6 +210,9 @@ export const close = async (
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
+
+  if (period.status === PeriodStatusType.CLOSED)
+    throw new BadRequestError('Period is already closed');
 
   period.status = PeriodStatusType.CLOSED;
   await period.save();
@@ -199,12 +227,14 @@ export const close = async (
 };
 
 /**
- * Description
- * @param
+ * Fetch all Praise in a period with a given receiver
+ *
+ * @param {TypedRequestQuery<PeriodReceiverPraiseInput>} req
+ * @param {TypedResponse<PraiseDto[]>} res
+ * @returns {Promise<void>}
  */
 export const receiverPraise = async (
   req: TypedRequestQuery<PeriodReceiverPraiseInput>,
-  // req: Request,
   res: TypedResponse<PraiseDto[]>
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);
@@ -226,7 +256,7 @@ export const receiverPraise = async (
   const praiseDetailsDtoList: PraiseDetailsDto[] = [];
   if (praiseList) {
     for (const praise of praiseList) {
-      praiseDetailsDtoList.push(await praiseWithScore(praise));
+      praiseDetailsDtoList.push(await praiseTransformer(praise));
     }
   }
 
@@ -234,12 +264,14 @@ export const receiverPraise = async (
 };
 
 /**
- * Description
- * @param
+ * Fetch all praise in a period assigned to a given quantifier
+ *
+ * @param {TypedRequestQuery<PeriodQuantifierPraiseInput>} req
+ * @param {TypedResponse<PraiseDto[]>} res
+ * @returns {Promise<void>}
  */
 export const quantifierPraise = async (
   req: TypedRequestQuery<PeriodQuantifierPraiseInput>,
-  // req: Request,
   res: TypedResponse<PraiseDto[]>
 ): Promise<void> => {
   const period = await PeriodModel.findById(req.params.periodId);
@@ -258,12 +290,16 @@ export const quantifierPraise = async (
 
   await PraiseModel.populate(praiseList, { path: 'receiver giver forwarder' });
 
-  const response = await praiseDocumentListTransformer(praiseList);
+  const response = await praiseListTransformer(praiseList);
   res.status(StatusCodes.OK).json(response);
 };
 
 /**
- * //TODO add descriptiom
+ * Generate a CSV of Praise and quantification data for a period
+ *
+ * @param {TypedRequestBody<QueryInput>} req
+ * @param {Response} res
+ * @returns {Promise<void>}
  */
 export const exportPraise = async (
   req: TypedRequestBody<QueryInput>,
@@ -285,7 +321,7 @@ export const exportPraise = async (
   const docs: PraiseDetailsDto[] = [];
   if (praises) {
     for (const praise of praises) {
-      const pws: PraiseDtoExtended = await praiseWithScore(praise);
+      const pws: PraiseDtoExtended = await praiseTransformer(praise);
 
       const receiver = await UserModel.findById(pws.receiver.user);
       if (receiver) {
@@ -418,6 +454,5 @@ export const exportPraise = async (
   const json2csv = new Parser({ fields: fields });
   const csv = json2csv.parse(docs);
 
-  res.attachment('data.csv');
-  res.status(200).send(csv);
+  res.status(200).contentType('text/csv').attachment('data.csv').send(csv);
 };

@@ -1,11 +1,12 @@
-import OutsideClickHandler from '@/components/OutsideClickHandler';
+import { OutsideClickHandler } from '@/components/OutsideClickHandler';
 
 interface PoolDeleteDialogProps {
   onClose(): void;
   open: boolean;
   children: JSX.Element;
 }
-const ScrollableDialog = ({
+
+export const ScrollableDialog = ({
   onClose,
   open,
   children,
@@ -26,5 +27,3 @@ const ScrollableDialog = ({
     </div>
   );
 };
-
-export default ScrollableDialog;

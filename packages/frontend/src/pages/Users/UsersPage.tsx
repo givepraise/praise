@@ -1,7 +1,7 @@
-import BreadCrumb from '@/components/BreadCrumb';
 import { faUserFriends } from '@fortawesome/free-solid-svg-icons';
-import UsersStatistics from './components/UsersStatistics';
-import UsersTable from './components/UsersTable';
+import { BreadCrumb } from '@/components/BreadCrumb';
+import { UsersStatistics } from './components/UsersStatistics';
+import { UsersTable } from './components/UsersTable';
 
 const UsersPage = (): JSX.Element => {
   return (
@@ -17,4 +17,5 @@ const UsersPage = (): JSX.Element => {
   );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default UsersPage;

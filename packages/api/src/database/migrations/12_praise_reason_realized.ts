@@ -1,4 +1,4 @@
-import { PraiseModel } from '@praise/entities';
+import { PraiseModel } from '@/praise/entities';
 
 const up = async (): Promise<void> => {
   const praises = await PraiseModel.find({
@@ -7,20 +7,12 @@ const up = async (): Promise<void> => {
 
   if (praises.length === 0) return;
 
-  const updates = await Promise.all(
-    praises.map((s) => {
-      let query = {};
-
-      query = {
-        updateOne: {
-          filter: { _id: s._id },
-          update: { $set: { reasonRealized: s.reason } },
-        },
-      };
-
-      return query;
-    })
-  );
+  const updates = praises.map((s) => ({
+    updateOne: {
+      filter: { _id: s._id },
+      update: { $set: { reasonRealized: s.reason } },
+    },
+  }));
 
   await PraiseModel.bulkWrite(updates);
 };

@@ -2,17 +2,25 @@ import { PeriodModel } from 'api/dist/period/entities';
 import { UserModel } from 'api/dist/user/entities';
 import { UserRole, UserDocument } from 'api/dist/user/types';
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { getPreviousPeriodEndDate } from 'api/dist/period/utils';
+import { getPreviousPeriodEndDate } from 'api/dist/period/utils/core';
 import {
   PeriodDocument,
   PeriodDetailsQuantifierDto,
 } from 'api/dist/period/types';
-import { FailedToDmUsersList } from 'src/interfaces/FailedToDmUsersList';
 
 import { CommandInteraction, DiscordAPIError } from 'discord.js';
 import { PraiseModel } from 'api/dist/praise/entities';
 import { Buffer } from 'node:buffer';
+import { FailedToDmUsersList } from 'src/interfaces/FailedToDmUsersList';
 
+/**
+ * Send a custom direct message to a list of users
+ *
+ * @param {CommandInteraction} interaction
+ * @param {(UserDocument[] | PeriodDetailsQuantifierDto[])} users
+ * @param {string} message
+ * @returns {Promise<void>}
+ */
 const sendDMs = async (
   interaction: CommandInteraction,
   users: UserDocument[] | PeriodDetailsQuantifierDto[],
@@ -83,7 +91,6 @@ const sendDMs = async (
       ? successMsg
       : successMsg + '\n' + failedMsg;
 
-  // TODO - Create a utility function to tabularise this data neatly
   let summary = 'User\t\t\tStatus\t\tReason\n';
   successful.forEach((username: string) => {
     summary += `${
@@ -143,6 +150,15 @@ const sendDMs = async (
   });
 };
 
+/**
+ * Send DMs to all users with a given role or assignment status
+ *
+ * @param {CommandInteraction} interaction
+ * @param {string} type
+ * @param {(string | undefined)} period
+ * @param {string} message
+ * @returns   {Promise<void>}
+ */
 export const selectTargets = async (
   interaction: CommandInteraction,
   type: string,
@@ -181,6 +197,8 @@ export const selectTargets = async (
           { $unwind: '$quantifications' },
           {
             $addFields: {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               finished: {
                 $or: [
                   { $ne: ['$quantifications.dismissed', false] },

@@ -1,8 +1,8 @@
-import { SettingGroup } from '@settings/types';
-import { SettingsModel } from '@settings/entities';
-import { PeriodSettingsModel } from '@periodsettings/entities';
-import { PeriodModel } from '@period/entities';
-import { PeriodDocument } from '@period/types';
+import { SettingGroup } from '@/settings/types';
+import { SettingsModel } from '@/settings/entities';
+import { PeriodSettingsModel } from '@/periodsettings/entities';
+import { PeriodModel } from '@/period/entities';
+import { PeriodDocument } from '@/period/types';
 
 const newSetting = {
   key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',

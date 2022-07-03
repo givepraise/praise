@@ -1,5 +1,5 @@
-import { UserAccountDto } from '../useraccount/types';
 import { Document, Types } from 'mongoose';
+import { UserAccountDto } from '../useraccount/types';
 
 export enum EventLogTypeKey {
   PERMISSION = 'PERMISSION',
@@ -10,7 +10,7 @@ export enum EventLogTypeKey {
   SETTING = 'SETTING',
 }
 
-export interface EventLog {
+interface EventLog {
   user?: Types.ObjectId;
   useraccount?: Types.ObjectId;
   period?: Types.ObjectId;
@@ -32,7 +32,7 @@ export interface EventLogDto {
   updatedAt: string;
 }
 
-export interface EventLogType {
+interface EventLogType {
   key: string;
   label: string;
   description: string;

@@ -30,7 +30,7 @@ module.exports = {
   ignorePatterns: ['dist', 'scripts'],
   rules: {
     'import/no-unresolved': 'error',
-    'prettier/prettier': 'error',
+    'prettier/prettier': ['error', { singleQuote: true }],
     'block-scoped-var': 'error',
     eqeqeq: 'error',
     'no-var': 'error',
@@ -50,6 +50,20 @@ module.exports = {
         property: 'only',
       },
     ],
+    "import/order": ["error",
+      {
+        "groups":
+          [
+            "external",
+            "builtin",
+            "internal",
+            "sibling",
+            "parent",
+            "index"
+          ]
+      }
+    ],
+    'import/no-default-export': 'error',
   },
   settings: {
     'import/extensions': ['.ts', '.tsx'],

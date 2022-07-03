@@ -6,7 +6,7 @@ export enum SettingGroup {
   DISCORD,
 }
 
-export interface Setting {
+interface Setting {
   key: string;
   value: string;
   valueRealized: string | boolean | number | number[];
@@ -18,11 +18,21 @@ export interface Setting {
 
 export interface SettingDocument extends Setting, Document {}
 
+interface Question {
+  question: string;
+  answer: string;
+}
+
+export interface FAQItem {
+  section: string;
+  questions: Question[];
+}
+
 export interface SettingDto {
   _id: string;
   key: string;
   value: string;
-  valueRealized: string | boolean | number | number[];
+  valueRealized: string | boolean | number | number[] | FAQItem[];
   type: string;
   label: string;
   description?: string;

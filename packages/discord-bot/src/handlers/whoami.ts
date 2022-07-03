@@ -7,6 +7,13 @@ import { getStateEmbed } from '../utils/stateEmbed';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { dmError } from '../utils/praiseEmbeds';
 
+/**
+ * Execute command /whoami
+ *  Gives the user information about their account and activation status
+ *
+ * @param {CommandInteraction} interaction
+ * @returns {Promise<void>}
+ */
 export const whoamiHandler = async (
   interaction: CommandInteraction
 ): Promise<void> => {

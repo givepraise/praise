@@ -1,12 +1,13 @@
-import { isApiResponseValidationError } from '@/model/api';
 import { AxiosError, AxiosResponse } from 'axios';
 import { useField } from 'react-final-form';
+import { isApiResponseValidationError } from '@/model/api';
 
 interface FieldErrorMessageProps {
   name: string;
   apiResponse: AxiosResponse<unknown> | AxiosError<unknown> | null;
 }
-const FieldErrorMessage = ({
+
+export const FieldErrorMessage = ({
   name,
   apiResponse,
 }: FieldErrorMessageProps): JSX.Element | null => {
@@ -36,5 +37,3 @@ const FieldErrorMessage = ({
     <span className="text-red-500">{error}</span>
   ) : null;
 };
-
-export default FieldErrorMessage;

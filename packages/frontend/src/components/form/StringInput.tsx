@@ -1,8 +1,8 @@
-import FieldErrorMessage from '@/components/form/FieldErrorMessage';
 import { Field } from 'react-final-form';
 import { AxiosResponse, AxiosError } from 'axios';
+import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 
-const StringInput = (
+export const StringInput = (
   name: string,
   apiResponse: AxiosResponse<unknown> | AxiosError<unknown> | null
 ): JSX.Element => {
@@ -27,5 +27,3 @@ const StringInput = (
     </Field>
   );
 };
-
-export default StringInput;

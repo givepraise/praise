@@ -1,13 +1,13 @@
-import { QueryInput } from '@shared/types';
-import { UserDocument } from '@user/types';
+import { Document } from 'mongoose';
+import { QueryInput } from '@/shared/types';
+import { UserDocument } from '@/user/types';
 import {
   PraiseImportUserAccountInput,
   UserAccountDocument,
   UserAccountDto,
-} from '@useraccount/types';
-import { Document } from 'mongoose';
+} from '@/useraccount/types';
 
-export interface Praise {
+interface Praise {
   reason: string;
   reasonRealized: string;
   sourceId: string;
@@ -36,6 +36,7 @@ export interface QuantificationDocument extends Quantification, Document {}
 
 export interface PraiseDto {
   _id: string;
+  _idLabelRealized: string;
   reasonRealized: string;
   sourceId: string;
   sourceName: string;
@@ -62,17 +63,19 @@ export interface QuantificationDto {
   createdAt: string;
   updatedAt: string;
 }
-
-export type QuantificationDetailsDto = QuantificationDto;
-
 export interface PraiseDetailsDto extends PraiseDto {
-  quantifications: QuantificationDetailsDto[];
+  quantifications: QuantificationDto[];
 }
 
 export interface QuantificationCreateUpdateInput {
   score: number;
   dismissed: boolean;
   duplicatePraise: string;
+}
+
+export interface QuantifyMultiplePraiseInput {
+  score: number;
+  praiseIds: string[];
 }
 
 export interface Receiver {
@@ -94,8 +97,6 @@ export interface QuantifierPoolById {
 
 export interface PraiseAllInput extends QueryInput {
   receiver?: string;
-  periodStart?: string;
-  periodEnd?: string;
 }
 
 export interface PraiseImportInput {

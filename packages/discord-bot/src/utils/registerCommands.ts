@@ -1,13 +1,19 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { Collection } from 'discord.js';
-import { readdir } from 'fs/promises';
 import logger from 'jet-logger';
+import { readdir } from 'fs/promises';
 import { join } from 'path';
 import { Command } from '../interfaces/Command';
 import { DiscordClient } from '../interfaces/DiscordClient';
 import { help } from '../commands/help';
 
+/**
+ * Register (install) all commands to Discord
+ *
+ * @param {DiscordClient} client
+ * @returns {Promise<boolean>}
+ */
 export const registerCommands = async (
   client: DiscordClient
 ): Promise<boolean> => {
@@ -45,7 +51,6 @@ export const registerCommands = async (
     }
 
     const helpCommandBuilder = help(client.commands);
-    // cmdList.map((i) => [`/${i[0]}`, `/${i[0]}`])
     const helpCommand = helpCommandBuilder['help'];
     client.commands.set(helpCommand.data.name, helpCommand);
     commandData.push(helpCommand.data);
