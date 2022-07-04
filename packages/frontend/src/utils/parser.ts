@@ -1,12 +1,36 @@
-export const markdownParser = (text: string): string => {
-  const toHTML = text
-    .replace(/```([^_]*)```/gim, '<pre><code>$1</code></pre>') // multiline code
-    .replace(/`([^_]*)`/gim, '<code>$1</code>') // inline code
-    .replace(/__([^_]*)__/gim, '<u>$1</u>') // underscore text
-    .replace(/\*\*(.*)\*\*/gim, '<b>$1</b>') // bold text
-    .replace(/_([^_]*)_/gim, '<i>$1</i>') // italic text
-    .replace(/\*(.*)\*/gim, '<i>$1</i>') // italic text
-    .replace(/~~([^_]*)~~/gim, '<s>$1</s>') // strikethrough text
-    .replace(/\[([^]+)\](\(([^)]*))\)/gim, '<a href="$3">$1</a>'); // hyperlinks
-  return toHTML.trim(); // using trim method to remove whitespace
+import {
+  toHTML,
+  rules,
+  htmlTag,
+  markdownEngine,
+  parser,
+} from 'discord-markdown';
+
+export const getMarkdownText = (text: string): string => {
+  rules.url.html = (node, output, state): string => {
+    return htmlTag(
+      'a',
+      output(
+        node.content[0].content.length > 50
+          ? [
+              {
+                content: `${node.content[0].content.slice(0, 50)}...`,
+                type: 'text',
+              },
+            ]
+          : node.content,
+        state
+      ),
+      {
+        href: markdownEngine?.sanitizeUrl(node.target) || '',
+      },
+      state
+    );
+  };
+  return toHTML(
+    text,
+    { discordOnly: false },
+    parser,
+    markdownEngine.outputFor(rules, 'html')
+  ).trim(); // using trim method to remove whitespace
 };

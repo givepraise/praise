@@ -3,7 +3,7 @@ import { Tooltip } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { useRecoilValue } from 'recoil';
-import { getMarkdownText } from '@/components/MarkdownText';
+import { getMarkdownText } from '@/utils/parser';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { InlineLabel } from '@/components/InlineLabel';
@@ -145,7 +145,8 @@ export const Praise = ({
               }}
               className={classNames(
                 dismissed ? 'line-through' : '',
-                shortDuplicatePraiseId ? 'text-warm-gray-400' : ''
+                shortDuplicatePraiseId ? 'text-warm-gray-400' : '',
+                'break-words'
               )}
             ></span>
           </div>
