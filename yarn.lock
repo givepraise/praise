@@ -9606,8 +9606,6 @@ __metadata:
     final-form: ^4.20.4
     jstz: ^2.1.1
     jwt-decode: ^3.1.2
-    linkify-html: ^3.0.5
-    linkifyjs: ^3.0.5
     lodash: ^4.17.21
     postcss: ^8.4.14
     prettier: ^2.5.1
@@ -12468,22 +12466,6 @@ __metadata:
   version: 1.2.4
   resolution: "lines-and-columns@npm:1.2.4"
   checksum: 0c37f9f7fa212b38912b7145e1cd16a5f3cd34d782441c3e6ca653485d326f58b3caccda66efce1c5812bde4961bbde3374fae4b0d11bf1226152337f3894aa5
-  languageName: node
-  linkType: hard
-
-"linkify-html@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "linkify-html@npm:3.0.5"
-  peerDependencies:
-    linkifyjs: ^3.0.0
-  checksum: b5c68f7f08b819d77bd4d64f3f6fdfcfd007ae8dcf5e66e6821683aeb78810c3d218d39dba6f11cb13f52b38845dca226a1581e6a7a49f7a03302fae6e31f2b0
-  languageName: node
-  linkType: hard
-
-"linkifyjs@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "linkifyjs@npm:3.0.5"
-  checksum: a926669022f41db6464071d3df2b2de71531d5a83db478e0e0b16617cbabde32c89ff0f46406927d53b31eb8f7501b7bb53410aedf05890c38900a55a1cc5283
   languageName: node
   linkType: hard
 
