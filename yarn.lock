@@ -4005,7 +4005,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*":
+"@types/react@npm:*, @types/react@npm:>=16.0.0":
   version: 18.0.14
   resolution: "@types/react@npm:18.0.14"
   dependencies:
@@ -7781,6 +7781,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"discord-markdown@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "discord-markdown@npm:2.5.1"
+  dependencies:
+    highlight.js: ^11.2.0
+    simple-markdown: ^0.7.3
+  checksum: d565e6274fff0993faaa1fbf6c52b66775af133e1b92c00e3597e0ccb947f1972b950508e696813f7702570b47c48504bf37063b5462cca0dec7adfed0a9c4b9
+  languageName: node
+  linkType: hard
+
 "discord.js@npm:^13.6.0, discord.js@npm:^13.7.0":
   version: 13.8.1
   resolution: "discord.js@npm:13.8.1"
@@ -9582,6 +9592,7 @@ __metadata:
     craco-alias: ^3.0.1
     date-fns: ^2.25.0
     date-fns-tz: ^1.3.3
+    discord-markdown: ^2.5.1
     downshift: ^6.1.7
     env-cmd: ^10.1.0
     eslint: ^8.18.0
@@ -9595,8 +9606,6 @@ __metadata:
     final-form: ^4.20.4
     jstz: ^2.1.1
     jwt-decode: ^3.1.2
-    linkify-html: ^3.0.5
-    linkifyjs: ^3.0.5
     lodash: ^4.17.21
     postcss: ^8.4.14
     prettier: ^2.5.1
@@ -10283,6 +10292,13 @@ __metadata:
   version: 1.0.0
   resolution: "hexoid@npm:1.0.0"
   checksum: 27a148ca76a2358287f40445870116baaff4a0ed0acc99900bf167f0f708ffd82e044ff55e9949c71963852b580fc024146d3ac6d5d76b508b78d927fa48ae2d
+  languageName: node
+  linkType: hard
+
+"highlight.js@npm:^11.2.0":
+  version: 11.5.1
+  resolution: "highlight.js@npm:11.5.1"
+  checksum: bff556101d7691c6275ad19318e368fc971cd0621ef3d86222f5373df7d8191a2fc1ffd47f118138cbcf85e5fe91cfeefaecd6184f49a3ec18090955efc9edef
   languageName: node
   linkType: hard
 
@@ -12450,22 +12466,6 @@ __metadata:
   version: 1.2.4
   resolution: "lines-and-columns@npm:1.2.4"
   checksum: 0c37f9f7fa212b38912b7145e1cd16a5f3cd34d782441c3e6ca653485d326f58b3caccda66efce1c5812bde4961bbde3374fae4b0d11bf1226152337f3894aa5
-  languageName: node
-  linkType: hard
-
-"linkify-html@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "linkify-html@npm:3.0.5"
-  peerDependencies:
-    linkifyjs: ^3.0.0
-  checksum: b5c68f7f08b819d77bd4d64f3f6fdfcfd007ae8dcf5e66e6821683aeb78810c3d218d39dba6f11cb13f52b38845dca226a1581e6a7a49f7a03302fae6e31f2b0
-  languageName: node
-  linkType: hard
-
-"linkifyjs@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "linkifyjs@npm:3.0.5"
-  checksum: a926669022f41db6464071d3df2b2de71531d5a83db478e0e0b16617cbabde32c89ff0f46406927d53b31eb8f7501b7bb53410aedf05890c38900a55a1cc5283
   languageName: node
   linkType: hard
 
@@ -16857,6 +16857,15 @@ __metadata:
   version: 3.0.7
   resolution: "signal-exit@npm:3.0.7"
   checksum: a2f098f247adc367dffc27845853e9959b9e88b01cb301658cfe4194352d8d2bb32e18467c786a7fe15f1d44b233ea35633d076d5e737870b7139949d1ab6318
+  languageName: node
+  linkType: hard
+
+"simple-markdown@npm:^0.7.3":
+  version: 0.7.3
+  resolution: "simple-markdown@npm:0.7.3"
+  dependencies:
+    "@types/react": ">=16.0.0"
+  checksum: 165941899fddfaa7c398410f8ce6941109bc86fbc9abb17f8b6be7a9ac8ae36c0af643a3e0adcba60053a9f1eaecdd4016d46d79eef39b8ae04982d2bd52bbc9
   languageName: node
   linkType: hard
 
