@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
 import { SingleSetting, useAllSettingsQuery } from '@/model/settings';
 import { useAllPeriodsQuery } from '@/model/periods';
-import { useAllUsersQuery } from '@/model/users';
 import { ActiveUserRoles } from '@/model/auth';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
@@ -17,7 +16,6 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
   const activeUserRoles = useRecoilValue(ActiveUserRoles);
   useAllPeriodsQuery();
   useAllSettingsQuery();
-  useAllUsersQuery();
 
   return (
     <div className="h-full cursor-default">
