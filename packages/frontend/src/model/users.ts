@@ -1,42 +1,31 @@
 import { UserDto, UserRole } from 'api/dist/user/types';
 import { AxiosError, AxiosResponse } from 'axios';
-import React from 'react';
-import {
-  atom,
-  selector,
-  selectorFamily,
-  useRecoilCallback,
-  useRecoilState,
-  useRecoilValue,
-} from 'recoil';
+import { atom, selector, selectorFamily, useRecoilState } from 'recoil';
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
-import {
-  ApiAuthGet,
-  ApiAuthPatch,
-  ApiQuery,
-  isResponseOk,
-  useAuthApiQuery,
-} from './api';
-import { ActiveTokenSet } from './auth';
+import { makeApiAuthClient } from '@/utils/api';
+import { isResponseOk } from './api';
 import { AllPeriods } from './periods';
-
-const AllUsersQuery = selector({
-  key: 'AllUsersQuery',
-  get: ({ get }) => {
-    const activeTokenSet = get(ActiveTokenSet);
-    if (!activeTokenSet) throw Error('Not authenticated');
-
-    return get(
-      ApiAuthGet({
-        url: 'users/all?sortColumn=ethereumAddress&sortType=desc',
-      })
-    );
-  },
-});
 
 export const AllUsers = atom<UserDto[] | undefined>({
   key: 'AllUsers',
   default: undefined,
+  effects: [
+    ({ setSelf, trigger }): void => {
+      if (trigger === 'get') {
+        const apiGet = async (): Promise<void> => {
+          const apiClient = makeApiAuthClient();
+          const response = await apiClient.get(
+            'users/all?sortColumn=ethereumAddress&sortType=desc'
+          );
+          if (isResponseOk(response)) {
+            const users = response.data as UserDto[];
+            if (Array.isArray(users) && users.length > 0) setSelf(users);
+          }
+        };
+        void apiGet();
+      }
+    },
+  ],
 });
 
 export const AllAdminUsers = selector({
@@ -70,41 +59,6 @@ export const AllForwarderUsers = selector({
     }
     return undefined;
   },
-});
-
-export const useAllUsersQuery = (): AxiosResponse<unknown> => {
-  const allUsersQueryResponse = useAuthApiQuery(AllUsersQuery);
-  const [allUsers, setAllUsers] = useRecoilState(AllUsers);
-
-  React.useEffect(() => {
-    if (
-      isResponseOk(allUsersQueryResponse) &&
-      typeof allUsers === 'undefined'
-    ) {
-      const users = allUsersQueryResponse.data as UserDto[];
-      if (Array.isArray(users) && users.length > 0) setAllUsers(users);
-    }
-  }, [allUsersQueryResponse, setAllUsers, allUsers]);
-
-  return allUsersQueryResponse;
-};
-
-/**
- * Types for `useParams()`
- */
-export type SingleUserParams = {
-  userId: string | undefined;
-};
-
-export const SingleUser = selectorFamily({
-  key: 'SingleUser',
-  get:
-    (userId: string | undefined) =>
-    ({ get }): UserDto | undefined => {
-      const allUsers = get(AllUsers);
-      if (!allUsers) return undefined;
-      return allUsers.filter((user) => user._id === userId)[0];
-    },
 });
 
 const stringToNumber = (s: string): number => {
@@ -141,11 +95,22 @@ export const PseudonymForUser = selectorFamily({
     },
 });
 
-const AddUserRoleApiResponse = atom<
-  AxiosResponse<unknown> | AxiosError<unknown> | null
->({
-  key: 'AddUserRoleApiResponse',
-  default: null,
+/**
+ * Types for `useParams()`
+ */
+export type SingleUserParams = {
+  userId: string | undefined;
+};
+
+export const SingleUser = selectorFamily({
+  key: 'SingleUser',
+  get:
+    (userId: string | undefined) =>
+    ({ get }): UserDto | undefined => {
+      const allUsers = get(AllUsers);
+      if (!allUsers) return undefined;
+      return allUsers.filter((user) => user._id === userId)[0];
+    },
 });
 
 type useAdminUsersReturns = {
@@ -158,75 +123,46 @@ type useAdminUsersReturns = {
     role: UserRole
   ) => Promise<AxiosResponse<unknown> | AxiosError<unknown>>;
 };
-// Hook that returns functions for administering users
+
 export const useAdminUsers = (): useAdminUsersReturns => {
-  const allUsers: UserDto[] | undefined = useRecoilValue(AllUsers);
+  const [allUsers, setAllUsers] = useRecoilState(AllUsers);
 
-  const addRole = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async (userId: string, role: UserRole) => {
-        const response = await ApiQuery(
-          snapshot.getPromise(
-            ApiAuthPatch({
-              url: `/admin/users/${userId}/addRole`,
-              data: { role },
-            })
-          )
-        );
-
-        // If OK response, add returned user object to local state
-        if (isResponseOk(response)) {
-          const user = response.data as UserDto;
-          if (user) {
-            if (typeof allUsers !== 'undefined') {
-              set(
-                AllUsers,
-                allUsers.map((oldUser) =>
-                  oldUser._id === user._id ? user : oldUser
-                )
-              );
-            } else {
-              set(AllUsers, [user]);
-            }
-          }
-          set(AddUserRoleApiResponse, response);
-        }
-        return response;
+  const patchRole = async (
+    endpoint: 'addRole' | 'removeRole',
+    userId: string,
+    role: UserRole
+  ): Promise<AxiosResponse<unknown> | AxiosError<unknown>> => {
+    const apiClient = makeApiAuthClient();
+    const response = await apiClient.patch(
+      `/admin/users/${userId}/${endpoint}`,
+      {
+        role,
       }
-  );
-
-  const removeRole = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async (userId: string, role: UserRole) => {
-        const response = await ApiQuery(
-          snapshot.getPromise(
-            ApiAuthPatch({
-              url: `/admin/users/${userId}/removeRole`,
-              data: { role },
-            })
-          )
+    );
+    if (isResponseOk(response)) {
+      const user = response.data as UserDto;
+      if (user && typeof allUsers !== 'undefined') {
+        setAllUsers(
+          allUsers.map((oldUser) => (oldUser._id === user._id ? user : oldUser))
         );
-
-        // If OK response, add returned user object to local state
-        if (isResponseOk(response)) {
-          const user = response.data as UserDto;
-          if (user) {
-            if (typeof allUsers !== 'undefined') {
-              set(
-                AllUsers,
-                allUsers.map((oldUser) =>
-                  oldUser._id === user._id ? user : oldUser
-                )
-              );
-            } else {
-              set(AllUsers, [user]);
-            }
-          }
-          set(AddUserRoleApiResponse, response);
-        }
-        return response;
       }
-  );
+    }
+    return response;
+  };
+
+  const addRole = async (
+    userId: string,
+    role: UserRole
+  ): Promise<AxiosResponse<unknown> | AxiosError<unknown>> => {
+    return patchRole('addRole', userId, role);
+  };
+
+  const removeRole = async (
+    userId: string,
+    role: UserRole
+  ): Promise<AxiosResponse<unknown> | AxiosError<unknown>> => {
+    return patchRole('removeRole', userId, role);
+  };
 
   return { addRole, removeRole };
 };
