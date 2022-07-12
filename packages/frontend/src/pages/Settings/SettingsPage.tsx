@@ -1,13 +1,16 @@
-import { SettingGroup } from 'api/dist/settings/types';
+import { SettingDto, SettingGroup } from 'api/dist/settings/types';
 import { faCogs } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { AxiosError, AxiosResponse } from 'axios';
 import { AllSettings, useSetSetting } from '@/model/settings';
 import { BreadCrumb } from '@/components/BreadCrumb';
 import { SubPageNav } from '@/navigation/SubPageNav';
 import { NavItem } from '@/navigation/NavItem';
 import { SettingsForm } from '@/components/settings/SettingsForm';
+import { isResponseOk } from '@/model/api';
 
 const SettingsPage = (): JSX.Element | null => {
   const settings = useRecoilValue(AllSettings);
@@ -25,6 +28,17 @@ const SettingsPage = (): JSX.Element | null => {
   const discordSettings = settings.filter(
     (s) => s.group === SettingGroup.DISCORD
   );
+
+  const onSubmit = async (
+    setting: SettingDto
+  ): Promise<AxiosResponse<SettingDto> | AxiosError<SettingDto>> => {
+    const response = await setSetting(setting);
+    if (isResponseOk(response)) {
+      const setting = response.data as SettingDto;
+      toast.success(`Saved setting "${setting.label}"`);
+    }
+    return response;
+  };
 
   return (
     <div className="praise-page-wide">
@@ -47,7 +61,7 @@ const SettingsPage = (): JSX.Element | null => {
               <React.Suspense fallback={null}>
                 <SettingsForm
                   settings={applicationSettings}
-                  setSetting={setSetting}
+                  parentOnSubmit={onSubmit}
                 />
               </React.Suspense>
             </Route>
@@ -55,7 +69,7 @@ const SettingsPage = (): JSX.Element | null => {
               <React.Suspense fallback={null}>
                 <SettingsForm
                   settings={periodDefaultSettings}
-                  setSetting={setSetting}
+                  parentOnSubmit={onSubmit}
                 />
               </React.Suspense>
             </Route>
@@ -63,7 +77,7 @@ const SettingsPage = (): JSX.Element | null => {
               <React.Suspense fallback={null}>
                 <SettingsForm
                   settings={discordSettings}
-                  setSetting={setSetting}
+                  parentOnSubmit={onSubmit}
                 />
               </React.Suspense>
             </Route>

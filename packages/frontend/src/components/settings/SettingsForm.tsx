@@ -1,24 +1,27 @@
 import { Form } from 'react-final-form';
-import { useRecoilValue } from 'recoil';
 import find from 'lodash/find';
 import { PeriodSettingDto } from 'api/src/periodsettings/types';
 import { SettingDto } from 'api/dist/settings/types';
+import { useState } from 'react';
+import { AxiosError, AxiosResponse } from 'axios';
 import { NumberInput } from '@/components/form/NumberInput';
 import { StringInput } from '@/components/form/StringInput';
 import { TextareaInput } from '@/components/form/TextareaInput';
 import { BooleanInput } from '@/components/form/BooleanInput';
 import { ImageFileInput } from '@/components/form/ImageFileInput';
 import { Notice } from '@/components/Notice';
-import {
-  SetSettingApiResponse,
-  StringSetting,
-  Setting,
-} from '@/model/settings';
 import { SubmitButton } from '../form/SubmitButton';
 
 interface SettingsFormProps {
   settings: SettingDto[] | PeriodSettingDto[] | undefined;
-  setSetting: Function;
+  parentOnSubmit(
+    setting: SettingDto | PeriodSettingDto
+  ): Promise<
+    | AxiosResponse<SettingDto>
+    | AxiosResponse<PeriodSettingDto>
+    | AxiosError<SettingDto>
+    | AxiosError<PeriodSettingDto>
+  >;
   disabled?: boolean;
 }
 
@@ -87,11 +90,12 @@ const DisabledFormFields = (
 
 export const SettingsForm = ({
   settings,
-  setSetting,
+  parentOnSubmit: onSubmitParent,
   disabled = false,
 }: SettingsFormProps): JSX.Element | null => {
-  const apiResponse = useRecoilValue(SetSettingApiResponse);
-
+  const [apiResponse, setApiResponse] = useState<
+    AxiosResponse<unknown> | AxiosError<unknown> | undefined
+  >(undefined);
   if (!Array.isArray(settings) || settings.length === 0) return null;
 
   // Is only called if validate is successful
@@ -101,8 +105,8 @@ export const SettingsForm = ({
       if (Object.prototype.hasOwnProperty.call(values, prop)) {
         const setting = find(
           settings,
-          (s) => (s as Setting).key === prop
-        ) as Setting;
+          (s) => (s as SettingDto).key === prop
+        ) as SettingDto;
 
         if (setting && values[prop].toString() !== setting.value) {
           const item =
@@ -111,9 +115,10 @@ export const SettingsForm = ({
           const updatedSetting = {
             ...setting,
             value: item,
-          } as StringSetting;
+          };
 
-          await setSetting(updatedSetting);
+          const response = await onSubmitParent(updatedSetting);
+          setApiResponse(response);
         }
       }
     }

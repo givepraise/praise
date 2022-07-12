@@ -1,153 +1,84 @@
 import { AxiosError, AxiosResponse } from 'axios';
-import React from 'react';
-import { toast } from 'react-hot-toast';
-import {
-  atom,
-  atomFamily,
-  selector,
-  useRecoilCallback,
-  useRecoilValue,
-} from 'recoil';
+import { atom, selectorFamily, useRecoilState } from 'recoil';
 import { SettingDto } from 'api/dist/settings/types';
-import { makeApiAuthClient } from '@/utils/api';
-import { ApiAuthGet, useAuthApiQuery, isResponseOk } from './api';
+import { makeApiAuthClient, useApiAuthClient } from '@/utils/api';
+import { isResponseOk } from './api';
+import { AccessToken } from './auth';
 
-export interface Setting {
-  _id: string;
-  key: string;
-  type: string;
-  label: string;
-  description: string;
-  value: string;
-  valueRealized: string | boolean | number | number[] | File;
-}
-
-export interface StringSetting extends Setting {
-  value: string;
-}
-
-const AllSettingsRequestId = atom({
-  key: 'AllSettingsRequestId',
-  default: 0,
-});
-
-const AllSettingsQuery = selector({
-  key: 'AllSettingsQuery',
-  get: ({ get }) => {
-    get(AllSettingsRequestId);
-    return get(
-      ApiAuthGet({
-        url: '/settings/all',
-      })
-    );
-  },
-});
-
-export const SingleSetting = atomFamily<SettingDto | undefined, string>({
-  key: 'SingleSetting',
-  default: undefined,
-});
-
-const AllSettingKeys = atom<string[] | undefined>({
-  key: 'SettingIdList',
-  default: undefined,
-});
-
-export const AllSettings = selector({
+export const AllSettings = atom<SettingDto[] | undefined>({
   key: 'AllSettings',
-  get: ({ get }): SettingDto[] | undefined => {
-    const allSettingKeys = get(AllSettingKeys);
-    if (!allSettingKeys) return undefined;
-
-    const allSettings: SettingDto[] = [];
-    for (const settingId of allSettingKeys) {
-      const setting = get(SingleSetting(settingId));
-      if (setting) {
-        allSettings.push(setting);
+  default: undefined,
+  effects: [
+    ({ setSelf, trigger, getPromise }): void => {
+      if (trigger === 'get') {
+        const apiGet = async (): Promise<void> => {
+          const accessToken = await getPromise(AccessToken);
+          if (!accessToken) return;
+          const apiClient = makeApiAuthClient(accessToken);
+          const response = await apiClient.get('/settings/all');
+          if (isResponseOk(response)) {
+            const periodSettings = response.data as SettingDto[];
+            if (Array.isArray(periodSettings) && periodSettings.length > 0)
+              setSelf(periodSettings);
+          }
+        };
+        void apiGet();
       }
-    }
-    return allSettings;
-  },
+    },
+  ],
 });
 
-export const useAllSettingsQuery = (): AxiosResponse<unknown> => {
-  const allSettingsQueryResponse = useAuthApiQuery(AllSettingsQuery);
-  const allSettingsIds = useRecoilValue(AllSettingKeys);
+export const SingleSetting = selectorFamily({
+  key: 'SingleSetting',
+  get:
+    (key: string) =>
+    ({ get }): SettingDto | undefined => {
+      const allSettings = get(AllSettings);
+      if (!allSettings) return;
+      return allSettings.filter((setting) => setting.key === key)[0];
+    },
+});
 
-  const saveAllSettings = useRecoilCallback(
-    ({ set, snapshot }) =>
-      (settings: SettingDto[]) => {
-        const settingKeys: string[] = [];
-        for (const setting of settings) {
-          settingKeys.push(setting.key);
-          const oldsetting = snapshot.getLoadable(
-            SingleSetting(setting.key)
-          ).contents;
-          if (oldsetting) {
-            set(SingleSetting(setting.key), { ...oldsetting, ...setting });
-          } else {
-            set(SingleSetting(setting.key), setting);
-          }
-        }
-        set(AllSettingKeys, settingKeys);
-      }
-  );
-
-  // Only set AllSettings if not previously loaded
-  React.useEffect(() => {
-    if (
-      isResponseOk(allSettingsQueryResponse) &&
-      typeof allSettingsIds === 'undefined'
-    ) {
-      const settings = allSettingsQueryResponse.data;
-
-      if (Array.isArray(settings)) {
-        void saveAllSettings(settings);
-      }
-    }
-  }, [allSettingsQueryResponse, allSettingsIds, saveAllSettings]);
-
-  return allSettingsQueryResponse;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const reqData = (setting: SettingDto): any => {
+  if (setting.type === 'Image') {
+    const data = new FormData();
+    data.append('value', setting.value);
+    return data;
+  } else {
+    return setting;
+  }
 };
 
-export const SetSettingApiResponse = atom<
-  AxiosResponse<unknown> | AxiosError<unknown> | null
->({
-  key: 'SetSettingApiResponse',
-  default: null,
-});
-
-export type useSetSettingReturn = {
-  setSetting: (setting: Setting) => Promise<void>;
+type useSetSettingReturn = {
+  setSetting: (
+    setting: SettingDto
+  ) => Promise<AxiosResponse<SettingDto> | AxiosError<SettingDto>>;
 };
 
 export const useSetSetting = (): useSetSettingReturn => {
-  const setSetting = useRecoilCallback(
-    ({ set }) =>
-      async (setting: Setting) => {
-        const url = `/admin/settings/${setting._id}/set`;
+  const apiAuthClient = useApiAuthClient();
+  const [allSettings, setAllSettings] = useRecoilState(AllSettings);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const reqData = (setting: Setting): any => {
-          if (setting.type === 'Image') {
-            const data = new FormData();
-            data.append('value', setting.value);
-            return data;
-          } else {
-            return setting;
-          }
-        };
-
-        const apiAuthClient = makeApiAuthClient();
-        const response = await apiAuthClient.patch(url, reqData(setting));
-
-        if (response.data) {
-          set(SingleSetting(setting.key), response.data);
-
-          toast.success(`Saved setting "${response.data.label}"`);
-        }
+  const setSetting = async (
+    setting: SettingDto
+  ): Promise<AxiosResponse<SettingDto> | AxiosError<SettingDto>> => {
+    const response = await apiAuthClient.patch(
+      `/admin/settings/${setting._id}/set`,
+      reqData(setting)
+    );
+    if (isResponseOk(response)) {
+      const setting = response.data as SettingDto;
+      if (setting && typeof allSettings !== 'undefined') {
+        setAllSettings(
+          allSettings.map((oldSetting) =>
+            oldSetting._id === setting._id ? setting : oldSetting
+          )
+        );
       }
-  );
+    }
+    return response;
+  };
 
   return { setSetting };
 };

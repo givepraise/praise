@@ -4,7 +4,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { faX, faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
-import { SingleSetting, useAllSettingsQuery } from '@/model/settings';
+import { SingleSetting } from '@/model/settings';
 import { useAllPeriodsQuery } from '@/model/periods';
 import { ActiveUserRoles } from '@/model/auth';
 import { Nav } from '@/navigation/Nav';
@@ -15,7 +15,6 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
   const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
   const activeUserRoles = useRecoilValue(ActiveUserRoles);
   useAllPeriodsQuery();
-  useAllSettingsQuery();
 
   return (
     <div className="h-full cursor-default">

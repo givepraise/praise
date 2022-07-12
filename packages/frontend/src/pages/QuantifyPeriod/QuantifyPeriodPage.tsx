@@ -8,7 +8,6 @@ import {
   PeriodQuantifierReceivers,
   SinglePeriod,
 } from '@/model/periods';
-import { useAllPeriodSettingsQuery } from '@/model/periodsettings';
 import { getQuantificationStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
 import { QuantifyPeriodTable } from './components/QuantifyPeriodTable';
@@ -16,7 +15,6 @@ import { QuantifyPeriodTable } from './components/QuantifyPeriodTable';
 const PeriodMessage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
-  useAllPeriodSettingsQuery(periodId);
   const quantificationStats = getQuantificationStats(
     useRecoilValue(PeriodQuantifierReceivers(periodId))
   );
