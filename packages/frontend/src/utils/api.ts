@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
 import { toast } from 'react-hot-toast';
-import { getRecoil } from 'recoil-nexus';
-import { ActiveTokenSet } from '@/model/auth';
+import { useRecoilValue } from 'recoil';
+import { AccessToken } from '@/model/auth';
 import { requestApiAuthRefresh } from './auth';
 
 /**
@@ -24,7 +24,7 @@ const refreshAuthTokenSet = async (err: AxiosError): Promise<void> => {
  *
  * @param err
  */
-const handleErrors = (err: AxiosError): void => {
+const handleErrors = (err: AxiosError): AxiosError => {
   // Any HTTP Code which is not 2xx will be considered as error
   const statusCode = err?.response?.status;
 
@@ -43,6 +43,7 @@ const handleErrors = (err: AxiosError): void => {
   } else {
     toast.error('Unknown Error');
   }
+  return err;
 };
 
 /**
@@ -80,12 +81,37 @@ export const makeApiClient = (): AxiosInstance => {
  * - On 401 response: attempt refresh of access using refresh token & retry request
  * @returns
  */
-export const makeApiAuthClient = (): AxiosInstance => {
-  const tokenSet = getRecoil(ActiveTokenSet);
+export const makeApiAuthClient = (accessToken: string): AxiosInstance => {
   const apiAuthClient = axios.create({
     baseURL: apiBaseURL,
     headers: {
-      Authorization: `Bearer ${tokenSet?.accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  createAuthRefreshInterceptor(apiAuthClient, refreshAuthTokenSet, {
+    statusCodes: [401],
+  });
+  apiAuthClient.interceptors.response.use(
+    (res) => res,
+    (err) => {
+      return handleErrors(err);
+    }
+  );
+  return apiAuthClient;
+};
+
+/**
+ * Api client for authenticated requests.
+ * - On 401 response: attempt refresh of access using refresh token & retry request
+ * @returns
+ */
+export const useApiAuthClient = (): AxiosInstance => {
+  const accessToken = useRecoilValue(AccessToken);
+  if (!accessToken) throw new Error('AccessToken not found.');
+  const apiAuthClient = axios.create({
+    baseURL: apiBaseURL,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   createAuthRefreshInterceptor(apiAuthClient, refreshAuthTokenSet, {
