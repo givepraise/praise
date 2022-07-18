@@ -16,13 +16,23 @@ export const ActiveTokenSet = atom<TokenSet | undefined>({
   effects_UNSTABLE: [persistAtom],
 });
 
+export const AccessToken = selector<string | undefined>({
+  key: 'AccessToken',
+  get: ({ get }) => {
+    const activeTokenSet = get(ActiveTokenSet);
+    if (!activeTokenSet) return;
+
+    return activeTokenSet.accessToken;
+  },
+});
+
 export const DecodedAccessToken = selector<JwtTokenData | undefined>({
   key: 'DecodedAccessToken',
   get: ({ get }) => {
-    const tokenSet = get(ActiveTokenSet);
-    if (!tokenSet) return;
+    const accessToken = get(AccessToken);
+    if (!accessToken) return;
 
-    return jwtDecode(tokenSet.accessToken);
+    return jwtDecode(accessToken);
   },
 });
 
