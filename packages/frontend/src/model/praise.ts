@@ -11,13 +11,8 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
-import { makeApiAuthClient } from '@/utils/api';
-import {
-  ApiAuthGet,
-  isApiResponseAxiosError,
-  isResponseOk,
-  useAuthApiQuery,
-} from './api';
+import { useApiAuthClient } from '@/utils/api';
+import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from './api';
 
 /**
  * Types for `useParams()`
@@ -182,7 +177,7 @@ export const useAllPraiseQuery = (
   queryParams: AllPraiseQueryParameters,
   listKey: string
 ): AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined => {
-  const allPraiseQueryResponse = useAuthApiQuery(AllPraiseQuery(queryParams));
+  const allPraiseQueryResponse = useRecoilValue(AllPraiseQuery(queryParams));
   const [praisePagination, setPraisePagination] = useRecoilState(
     AllPraiseQueryPagination(listKey)
   );
@@ -267,7 +262,7 @@ type useQuantifyPraiseReturn = {
  * Hook that returns a function to use for closing a period
  */
 export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
-  const apiAuthClient = makeApiAuthClient();
+  const apiAuthClient = useApiAuthClient();
 
   const quantify = useRecoilCallback(
     ({ set }) =>
@@ -302,7 +297,7 @@ type useQuantifyMultiplePraiseReturn = {
 
 export const useQuantifyMultiplePraise =
   (): useQuantifyMultiplePraiseReturn => {
-    const apiAuthClient = makeApiAuthClient();
+    const apiAuthClient = useApiAuthClient();
 
     const quantifyMultiple = useRecoilCallback(
       ({ set }) =>
