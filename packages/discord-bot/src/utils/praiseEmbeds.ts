@@ -262,3 +262,16 @@ export const selfPraiseWarning = async (): Promise<string> => {
   }
   return 'SELF-PRAISE NOT ALLOWED, PRAISE GIVERS UNABLE TO PRAISE THEMSELVES (message not set)';
 };
+
+/**
+ * Generate response info message FIRST_TIME_PRAISER
+ *
+ * @returns {Promise<string>}
+ */
+export const firstTimePraiserInfo = async (): Promise<string> => {
+  const msg = (await settingValue('FIRST_TIME_PRAISER')) as string;
+  if (msg) {
+    return msg;
+  }
+  return 'FIRST TIME PRAISER MESSAGE';
+};

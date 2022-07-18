@@ -15,6 +15,7 @@ import {
   roleMentionWarning,
   undefinedReceiverWarning,
   selfPraiseWarning,
+  firstTimePraiserInfo,
 } from '../utils/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { CommandHandler } from '../interfaces/CommandHandler';
@@ -67,6 +68,9 @@ export const praiseHandler: CommandHandler = async (
   }
 
   const userAccount = await getUserAccount(member as GuildMember);
+  const praiseItems = await PraiseModel.find({
+    giver: userAccount._id,
+  });
 
   if (!userAccount.user) {
     await interaction.editReply(await notActivatedError());
@@ -178,6 +182,10 @@ export const praiseHandler: CommandHandler = async (
 
   if (Receivers.length !== 0 && warnSelfPraise) {
     await msg.reply(await selfPraiseWarning());
+  }
+
+  if (praiseItems.length > 0) {
+    await msg.reply(await firstTimePraiserInfo());
   }
 
   return;
