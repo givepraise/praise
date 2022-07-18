@@ -1,39 +1,33 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import { useField } from 'react-final-form';
-import { isApiResponseValidationError } from '@/model/api';
 
 interface FieldErrorMessageProps {
   name: string;
-  apiResponse: AxiosResponse<unknown> | AxiosError<unknown> | null;
+  apiResponse?: AxiosResponse<unknown> | AxiosError<unknown> | null;
 }
 
 export const FieldErrorMessage = ({
   name,
-  apiResponse,
 }: FieldErrorMessageProps): JSX.Element | null => {
   // Subscribe to error messsages concerning specified field
   const {
-    meta: { active, touched, error },
+    meta: { active, touched, error, submitError, dirtySinceLastSubmit },
   } = useField(name, {
-    subscription: { touched: true, error: true, active: true },
+    subscription: {
+      touched: true,
+      error: true,
+      active: true,
+      submitError: true,
+      dirtySinceLastSubmit: true,
+    },
   });
 
-  // Display api error message for matching field if form has not
-  // been edited since last submit
-  if (touched && isApiResponseValidationError(apiResponse)) {
-    if (
-      apiResponse.response?.data?.errors &&
-      Array.isArray(apiResponse.response.data.errors)
-    )
-      return (
-        <span className="text-red-500">
-          {apiResponse.response.data.errors[name].message}
-        </span>
-      );
-  }
-
-  // Display client validation error
-  return !active && touched && error ? (
-    <span className="text-red-500">{error}</span>
+  return !active &&
+    !dirtySinceLastSubmit &&
+    touched &&
+    (error || submitError) ? (
+    <span className="text-red-500">
+      {submitError ? submitError.message : error}
+    </span>
   ) : null;
 };

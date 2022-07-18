@@ -1,41 +1,85 @@
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheckCircle,
+  faTimesCircle,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useFormState } from 'react-final-form';
-import { useRecoilValue } from 'recoil';
-import { CreatePeriodApiResponse } from '@/model/periods';
-import { isResponseOk } from '@/model/api';
+import React from 'react';
 
 export const SubmitButton = (): JSX.Element => {
-  const { invalid, submitting, submitSucceeded, dirtySinceLastSubmit } =
-    useFormState();
-  const apiResponse = useRecoilValue(CreatePeriodApiResponse);
+  const {
+    hasValidationErrors,
+    submitting,
+    submitSucceeded,
+    submitFailed,
+    dirtySinceLastSubmit,
+    hasSubmitErrors,
+  } = useFormState();
 
   const disabled =
-    invalid || submitting || (submitSucceeded && !dirtySinceLastSubmit);
+    hasValidationErrors ||
+    submitting ||
+    (submitSucceeded && !dirtySinceLastSubmit) ||
+    (submitFailed && !dirtySinceLastSubmit);
 
-  const className = disabled ? 'praise-button-disabled' : 'praise-button';
+  const [buttonText, setButtonText] = React.useState<JSX.Element>(
+    <>Create period</>
+  );
+
+  React.useEffect(() => {
+    if (submitSucceeded) {
+      setTimeout(
+        () =>
+          setButtonText(
+            <>
+              <FontAwesomeIcon
+                icon={faCheckCircle}
+                size="1x"
+                className="inline-block mr-2"
+              />
+              Period created
+            </>
+          ),
+        1000
+      );
+    }
+  }, [submitSucceeded]);
+
+  React.useEffect(() => {
+    if (submitting) {
+      setButtonText(<>Creating…</>);
+    }
+  }, [submitting]);
+
+  React.useEffect(() => {
+    if (hasSubmitErrors) {
+      setButtonText(
+        <>
+          <FontAwesomeIcon
+            icon={faTimesCircle}
+            size="1x"
+            className="inline-block mr-2"
+          />
+          Create error
+        </>
+      );
+    }
+  }, [hasSubmitErrors]);
+
+  React.useEffect(() => {
+    if (dirtySinceLastSubmit) {
+      setButtonText(<>Create period</>);
+    }
+  }, [dirtySinceLastSubmit]);
 
   return (
     <button
       type="submit"
       id="submit-button"
-      className={className}
       disabled={disabled}
+      className={disabled ? 'praise-button-disabled' : 'praise-button'}
     >
-      {apiResponse && isResponseOk(apiResponse) ? (
-        <>
-          <FontAwesomeIcon
-            icon={faCheckCircle}
-            size="1x"
-            className="inline-block mr-2"
-          />
-          Period created
-        </>
-      ) : submitting ? (
-        'Creating…'
-      ) : (
-        'Create period'
-      )}
+      {buttonText}
     </button>
   );
 };
