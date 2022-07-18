@@ -6,7 +6,10 @@ import {
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
+import {
+  PeriodAndReceiverPageParams,
+  DetailedSinglePeriod,
+} from '@/model/periods';
 import { BreadCrumb } from '@/components/BreadCrumb';
 import { BackLink } from '@/navigation/BackLink';
 import { ReceiverSummaryTable } from './components/ReceiverSummaryTable';
@@ -20,7 +23,7 @@ const getReceiver = (
 
 const PeriodReceiverMessage = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
-  const periodDetails = useRecoilValue(SinglePeriod(periodId));
+  const periodDetails = useRecoilValue(DetailedSinglePeriod(periodId));
 
   if (!periodDetails) return null;
   const receiver = getReceiver(periodDetails, receiverId);

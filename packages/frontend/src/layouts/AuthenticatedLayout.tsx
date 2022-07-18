@@ -5,7 +5,6 @@ import { faX, faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
 import { SingleSetting } from '@/model/settings';
-import { useAllPeriodsQuery } from '@/model/periods';
 import { ActiveUserRoles } from '@/model/auth';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
@@ -14,7 +13,6 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
   const activeUserRoles = useRecoilValue(ActiveUserRoles);
-  useAllPeriodsQuery();
 
   return (
     <div className="h-full cursor-default">

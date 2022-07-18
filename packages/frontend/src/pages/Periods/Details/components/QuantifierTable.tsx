@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Quantifier } from 'api/dist/praise/types';
 import {
   PeriodPageParams,
-  SinglePeriod,
+  DetailedSinglePeriod,
   useReplaceQuantifier,
 } from '@/model/periods';
 import { Notice } from '@/components/Notice';
@@ -21,7 +21,7 @@ import { ReplaceQuantifierDialog } from './ReplaceQuantifierDialog';
 export const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const period = useRecoilValue(SinglePeriod(periodId));
+  const period = useRecoilValue(DetailedSinglePeriod(periodId));
 
   const [isReplaceQuantifierDialogOpen, setIsReplaceQuantifierDialogOpen] =
     useState<boolean>(false);

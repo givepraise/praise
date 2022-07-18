@@ -3,13 +3,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { getQuantifierData } from '@/utils/periods';
-import { PeriodPageParams, SinglePeriod } from '@/model/periods';
+import { PeriodPageParams, DetailedSinglePeriod } from '@/model/periods';
 import { ActiveUserId } from '@/model/auth';
 
 export const QuantifierMessage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const history = useHistory();
-  const period = useRecoilValue(SinglePeriod(periodId));
+  const period = useRecoilValue(DetailedSinglePeriod(periodId));
   const userId = useRecoilValue(ActiveUserId);
   const quantifierData = getQuantifierData(period, userId);
 

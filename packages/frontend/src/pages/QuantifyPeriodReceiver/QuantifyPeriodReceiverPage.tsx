@@ -12,7 +12,7 @@ import {
   PeriodAndReceiverPageParams,
   PeriodPageParams,
   PeriodQuantifierReceivers,
-  SinglePeriod,
+  DetailedSinglePeriod,
   usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
 import { usePeriodSettingValueRealized } from '@/model/periodsettings';
@@ -22,7 +22,7 @@ import { QuantifyTable } from './components/QuantifyTable';
 
 const PeriodBreadCrumb = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
-  const period = useRecoilValue(SinglePeriod(periodId));
+  const period = useRecoilValue(DetailedSinglePeriod(periodId));
   if (!period) return null;
   return <BreadCrumb name={`Quantify / ${period.name}`} icon={faCalendarAlt} />;
 };

@@ -6,7 +6,7 @@ import { BreadCrumb } from '@/components/BreadCrumb';
 import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
-  SinglePeriod,
+  DetailedSinglePeriod,
 } from '@/model/periods';
 import { getQuantificationStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
@@ -14,7 +14,7 @@ import { QuantifyPeriodTable } from './components/QuantifyPeriodTable';
 
 const PeriodMessage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
-  const period = useRecoilValue(SinglePeriod(periodId));
+  const period = useRecoilValue(DetailedSinglePeriod(periodId));
   const quantificationStats = getQuantificationStats(
     useRecoilValue(PeriodQuantifierReceivers(periodId))
   );
