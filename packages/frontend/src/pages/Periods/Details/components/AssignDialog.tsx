@@ -7,25 +7,28 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
-import { PoolRequirements } from '@/model/periods';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { PeriodPageParams, PeriodPoolRequirements } from '@/model/periods';
 
 interface PeriodAssignDialogProps {
   onClose(): void;
   onAssign(): void;
-  poolRequirements: PoolRequirements | undefined;
 }
 
 interface DialogMessageProps {
   onClose(): void;
   onAssign(): void;
-  poolRequirements: PoolRequirements;
 }
 
 const DialogMessage = ({
   onClose,
   onAssign,
-  poolRequirements,
-}: DialogMessageProps): JSX.Element => {
+}: DialogMessageProps): JSX.Element | null => {
+  const { periodId } = useParams<PeriodPageParams>();
+  const poolRequirements = useRecoilValue(PeriodPoolRequirements(periodId));
+  if (!poolRequirements) return null;
+
   const quantPoolBigEnough = poolRequirements
     ? poolRequirements.quantifierPoolDeficitSize === 0
     : false;
@@ -97,8 +100,9 @@ const DialogMessage = ({
 export const PeriodAssignDialog = ({
   onClose,
   onAssign,
-  poolRequirements,
 }: PeriodAssignDialogProps): JSX.Element | null => {
+  const { periodId } = useParams<PeriodPageParams>();
+  const poolRequirements = useRecoilValue(PeriodPoolRequirements(periodId));
   if (!poolRequirements) return null;
 
   return (
@@ -118,11 +122,7 @@ export const PeriodAssignDialog = ({
             Assign quantifiers
           </Dialog.Title>
           <React.Suspense fallback={null}>
-            <DialogMessage
-              onAssign={onAssign}
-              onClose={onClose}
-              poolRequirements={poolRequirements}
-            />
+            <DialogMessage onAssign={onAssign} onClose={onClose} />
           </React.Suspense>
         </div>
       </div>
