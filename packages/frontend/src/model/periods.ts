@@ -21,15 +21,9 @@ import {
 import { toast } from 'react-hot-toast';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { periodQuantifierPraiseListKey } from '@/utils/periods';
-import { makeApiAuthClient, useApiAuthClient } from '@/utils/api';
-import {
-  ApiAuthGet,
-  ApiAuthPatch,
-  ApiQuery,
-  isResponseOk,
-  useAuthApiQuery,
-} from './api';
-import { AccessToken, ActiveUserId } from './auth';
+import { useApiAuthClient } from '@/utils/api';
+import { ApiAuthGet, isResponseOk } from './api';
+import { ActiveUserId } from './auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,11 +53,10 @@ export const AllPeriods = atom<PeriodDetailsDto[] | undefined>({
     ({ setSelf, trigger, getPromise }): void => {
       if (trigger === 'get') {
         const apiGet = async (): Promise<void> => {
-          const accessToken = await getPromise(AccessToken);
-          if (!accessToken) return;
-          const apiClient = makeApiAuthClient(accessToken);
-          const response = await apiClient.get(
-            '/periods/all?sortColumn=endDate&sortType=desc'
+          const response = await getPromise(
+            ApiAuthGet({
+              url: '/periods/all?sortColumn=endDate&sortType=desc',
+            })
           );
           if (isResponseOk(response)) {
             const paginatedResponse =
@@ -121,10 +114,11 @@ export const DetailedSinglePeriod = atomFamily<
     ({ setSelf, trigger, getPromise }): void => {
       if (trigger === 'get') {
         const apiGet = async (): Promise<void> => {
-          const accessToken = await getPromise(AccessToken);
-          if (!accessToken) return;
-          const apiClient = makeApiAuthClient(accessToken);
-          const response = await apiClient.get(`/periods/${periodId}`);
+          const response = await getPromise(
+            ApiAuthGet({
+              url: `/periods/${periodId}`,
+            })
+          );
           if (isResponseOk(response)) {
             const period = response.data as PeriodDetailsDto;
             setSelf(period);
@@ -247,34 +241,8 @@ export const useClosePeriod = (): useClosePeriodReturn => {
 };
 
 /**
- * Quantifier pool size requirements returned by @useVerifyQuantifierPoolSize
+ * Quantifier pool size requirements
  */
-// export const PeriodPoolRequirements = atomFamily<
-//   VerifyQuantifierPoolSizeResponse | undefined,
-//   string
-// >({
-//   key: 'SinglePeriodPoolRequirements',
-//   effects: (periodId) => [
-//     ({ setSelf, trigger, getPromise }): void => {
-//       console.log(trigger);
-//       if (trigger === 'get') {
-//         const apiGet = async (): Promise<void> => {
-//           const tokenSet = await getPromise(ActiveTokenSet);
-//           if (!tokenSet) return;
-//           const apiClient = makeApiAuthClient2(tokenSet);
-//           const response = await apiClient.get(
-//             `/admin/periods/${periodId}/verifyQuantifierPoolSize`
-//           );
-//           if (isResponseOk(response)) {
-//             setSelf(response.data);
-//           }
-//         };
-//         void apiGet();
-//       }
-//     },
-//   ],
-// });
-
 export const PeriodPoolRequirements = selectorFamily({
   key: 'SinglePeriodPoolRequirements',
   get:
@@ -292,31 +260,6 @@ export const PeriodPoolRequirements = selectorFamily({
     },
 });
 
-/**
- * Hook that fetches quantifier pool requirements.
- */
-// export const useVerifyQuantifierPoolSize = (periodId: string): void => {
-//   const setPeriodPoolRequirements = useSetRecoilState(
-//     PeriodPoolRequirements(periodId)
-//   );
-//   const userRoles = useRecoilValue(ActiveUserRoles);
-
-//   useEffect(() => {
-//     const fetchData = async (): Promise<void> => {
-//       const apiAuthClient = makeApiAuthClient();
-
-//       const response = await apiAuthClient.get(
-//         `/admin/periods/${periodId}/verifyQuantifierPoolSize`
-//       );
-//       setPeriodPoolRequirements(response.data);
-//     };
-
-//     if (userRoles.includes(UserRole.ADMIN)) {
-//       void fetchData();
-//     }
-//   }, [periodId, setPeriodPoolRequirements, userRoles]);
-// };
-
 type useAssignQuantifiersReturn = {
   assignQuantifiers: () => Promise<
     AxiosResponse<unknown> | AxiosError<unknown> | undefined
@@ -330,6 +273,7 @@ export const useAssignQuantifiers = (
   periodId: string
 ): useAssignQuantifiersReturn => {
   const [period, setPeriod] = useRecoilState(SinglePeriod(periodId));
+  const apiAuthClient = useApiAuthClient();
 
   const saveIndividualPraise = useRecoilCallback(
     ({ set }) =>
@@ -340,35 +284,28 @@ export const useAssignQuantifiers = (
       }
   );
 
-  const assignQuantifiers = useRecoilCallback(
-    ({ snapshot }) =>
-      async (): Promise<
-        AxiosResponse<unknown> | AxiosError<unknown> | undefined
-      > => {
-        if (!period) return undefined;
-        const response = await ApiQuery(
-          snapshot.getPromise(
-            ApiAuthPatch({
-              url: `/admin/periods/${periodId}/assignQuantifiers`,
-              data: {},
-            })
-          )
-        );
-        if (isResponseOk(response)) {
-          const praiseList = response.data as PraiseDto[];
-          if (Array.isArray(praiseList) && praiseList.length > 0) {
-            saveIndividualPraise(praiseList);
-          }
-          const updatedPeriod: PeriodDetailsDto = {
-            ...period,
-            status: 'QUANTIFY' as PeriodStatusType,
-          };
-          setPeriod(updatedPeriod);
-          return response;
-        }
-        throw new Error();
+  const assignQuantifiers = async (): Promise<
+    AxiosResponse<unknown> | AxiosError<unknown> | undefined
+  > => {
+    if (!period) return undefined;
+    const response = await apiAuthClient.patch(
+      `/admin/periods/${periodId}/assignQuantifiers`,
+      {}
+    );
+    if (isResponseOk(response)) {
+      const praiseList = response.data as PraiseDto[];
+      if (Array.isArray(praiseList) && praiseList.length > 0) {
+        saveIndividualPraise(praiseList);
       }
-  );
+      const updatedPeriod: PeriodDetailsDto = {
+        ...period,
+        status: 'QUANTIFY' as PeriodStatusType,
+      };
+      setPeriod(updatedPeriod);
+      return response;
+    }
+    throw new Error();
+  };
   return { assignQuantifiers };
 };
 
@@ -431,7 +368,7 @@ export const usePeriodReceiverPraiseQuery = (
   receiverId: string,
   refreshKey: string | undefined
 ): PraiseDto[] | undefined => {
-  const praiseResponse = useAuthApiQuery(
+  const praiseResponse = useRecoilValue(
     PeriodReceiverPraiseQuery({
       periodId,
       receiverId,
@@ -457,26 +394,23 @@ type useExportPraiseReturn = {
  */
 export const useExportPraise = (): useExportPraiseReturn => {
   const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
+  const apiAuthClient = useApiAuthClient();
 
-  const exportPraise = useRecoilCallback(
-    ({ snapshot }) =>
-      async (period: PeriodDetailsDto): Promise<Blob | undefined> => {
-        if (!period || !allPeriods) return undefined;
-        const response = await ApiQuery(
-          snapshot.getPromise(
-            ApiAuthGet({
-              url: `/admin/periods/${period._id}/export`,
-              config: { responseType: 'blob' },
-            })
-          )
-        );
+  const exportPraise = async (
+    period: PeriodDetailsDto
+  ): Promise<Blob | undefined> => {
+    if (!period || !allPeriods) return undefined;
+    const response = await apiAuthClient.get(
+      `/admin/periods/${period._id}/export`,
+      { responseType: 'blob' }
+    );
 
-        // If OK response, add returned period object to local state
-        if (isResponseOk(response)) {
-          return response.data;
-        }
-      }
-  );
+    // If OK response, add returned period object to local state
+    if (isResponseOk(response)) {
+      return response.data as Blob;
+    }
+  };
+
   return { exportPraise };
 };
 
@@ -515,7 +449,7 @@ export const usePeriodQuantifierPraiseQuery = (
   periodId: string,
   refreshKey: string | undefined
 ): AxiosResponse<unknown> | AxiosError<unknown> | undefined => {
-  const response = useAuthApiQuery(
+  const response = useRecoilValue(
     PeriodQuantifierPraiseQuery({
       periodId,
       refreshKey,

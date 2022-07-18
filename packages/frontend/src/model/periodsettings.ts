@@ -6,9 +6,8 @@ import {
   useRecoilValue,
 } from 'recoil';
 import { PeriodSettingDto } from 'api/dist/periodsettings/types';
-import { makeApiAuthClient, useApiAuthClient } from '@/utils/api';
-import { isResponseOk } from './api';
-import { AccessToken } from './auth';
+import { useApiAuthClient } from '@/utils/api';
+import { isResponseOk, ApiAuthGet } from './api';
 
 export const AllPeriodSettings = atomFamily<
   PeriodSettingDto[] | undefined,
@@ -20,11 +19,10 @@ export const AllPeriodSettings = atomFamily<
     ({ setSelf, trigger, getPromise }): void => {
       if (trigger === 'get' && periodId !== undefined) {
         const apiGet = async (): Promise<void> => {
-          const accessToken = await getPromise(AccessToken);
-          if (!accessToken) return;
-          const apiClient = makeApiAuthClient(accessToken);
-          const response = await apiClient.get(
-            `/periodsettings/${periodId}/settings/all`
+          const response = await getPromise(
+            ApiAuthGet({
+              url: `/periodsettings/${periodId}/settings/all`,
+            })
           );
           if (isResponseOk(response)) {
             const periodSettings = response.data as PeriodSettingDto[];

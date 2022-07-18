@@ -1,7 +1,7 @@
 import { EventLogDto, EventLogTypeDto } from 'api/dist/eventlog/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { useEffect, useState } from 'react';
-import { makeApiAuthClient } from '@/utils/api';
+import { useApiAuthClient } from '@/utils/api';
 
 export type AllEventLogsQueryParameters = {
   sortColumn: string;
@@ -22,12 +22,12 @@ export const useAllEventLogs = (
   const [logs, setLogs] = useState<PaginatedResponseBody<EventLogDto>>({
     docs: [],
   });
+  const apiAuthClient = useApiAuthClient();
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       setLoading(true);
 
-      const apiAuthClient = makeApiAuthClient();
       const response = await apiAuthClient.get('/eventlogs/all', {
         params: queryParameters,
       });
@@ -37,7 +37,7 @@ export const useAllEventLogs = (
     };
 
     void fetchData();
-  }, [setLogs, setLoading, queryParameters]);
+  }, [setLogs, setLoading, queryParameters, apiAuthClient]);
 
   return { data: logs, loading };
 };
@@ -46,6 +46,7 @@ export const useAllEventLogTypes = (): {
   types: PaginatedResponseBody<EventLogTypeDto>;
   loading: boolean;
 } => {
+  const apiAuthClient = useApiAuthClient();
   const [loading, setLoading] = useState<boolean>(false);
   const [types, setTypes] = useState<PaginatedResponseBody<EventLogTypeDto>>({
     docs: [],
@@ -55,7 +56,6 @@ export const useAllEventLogTypes = (): {
     const fetchData = async (): Promise<void> => {
       setLoading(true);
 
-      const apiAuthClient = makeApiAuthClient();
       const response = await apiAuthClient.get('/eventlogs/types');
 
       setTypes(response.data);
@@ -63,7 +63,7 @@ export const useAllEventLogTypes = (): {
     };
 
     void fetchData();
-  }, [setTypes, setLoading]);
+  }, [setTypes, setLoading, apiAuthClient]);
 
   return { types, loading };
 };

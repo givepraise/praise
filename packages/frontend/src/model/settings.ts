@@ -1,9 +1,8 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import { atom, selectorFamily, useRecoilState } from 'recoil';
 import { SettingDto } from 'api/dist/settings/types';
-import { makeApiAuthClient, useApiAuthClient } from '@/utils/api';
-import { isResponseOk } from './api';
-import { AccessToken } from './auth';
+import { useApiAuthClient } from '@/utils/api';
+import { isResponseOk, ApiAuthGet } from './api';
 
 export const AllSettings = atom<SettingDto[] | undefined>({
   key: 'AllSettings',
@@ -12,10 +11,11 @@ export const AllSettings = atom<SettingDto[] | undefined>({
     ({ setSelf, trigger, getPromise }): void => {
       if (trigger === 'get') {
         const apiGet = async (): Promise<void> => {
-          const accessToken = await getPromise(AccessToken);
-          if (!accessToken) return;
-          const apiClient = makeApiAuthClient(accessToken);
-          const response = await apiClient.get('/settings/all');
+          const response = await getPromise(
+            ApiAuthGet({
+              url: '/settings/all',
+            })
+          );
           if (isResponseOk(response)) {
             const periodSettings = response.data as SettingDto[];
             if (Array.isArray(periodSettings) && periodSettings.length > 0)

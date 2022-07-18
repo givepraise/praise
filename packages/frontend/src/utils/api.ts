@@ -101,27 +101,10 @@ export const makeApiAuthClient = (accessToken: string): AxiosInstance => {
 };
 
 /**
- * Api client for authenticated requests.
- * - On 401 response: attempt refresh of access using refresh token & retry request
- * @returns
+ * Hook that returns api client for authenticated requests.
  */
 export const useApiAuthClient = (): AxiosInstance => {
   const accessToken = useRecoilValue(AccessToken);
   if (!accessToken) throw new Error('AccessToken not found.');
-  const apiAuthClient = axios.create({
-    baseURL: apiBaseURL,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  createAuthRefreshInterceptor(apiAuthClient, refreshAuthTokenSet, {
-    statusCodes: [401],
-  });
-  apiAuthClient.interceptors.response.use(
-    (res) => res,
-    (err) => {
-      return handleErrors(err);
-    }
-  );
-  return apiAuthClient;
+  return makeApiAuthClient(accessToken);
 };

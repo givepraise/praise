@@ -2,20 +2,21 @@ import { UserDto, UserRole } from 'api/dist/user/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import { atom, selector, selectorFamily, useRecoilState } from 'recoil';
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
-import { makeApiAuthClient } from '@/utils/api';
-import { isResponseOk } from './api';
+import { useApiAuthClient } from '@/utils/api';
+import { isResponseOk, ApiAuthGet } from './api';
 import { AllPeriods } from './periods';
 
 export const AllUsers = atom<UserDto[] | undefined>({
   key: 'AllUsers',
   default: undefined,
   effects: [
-    ({ setSelf, trigger }): void => {
+    ({ setSelf, trigger, getPromise }): void => {
       if (trigger === 'get') {
         const apiGet = async (): Promise<void> => {
-          const apiClient = makeApiAuthClient();
-          const response = await apiClient.get(
-            'users/all?sortColumn=ethereumAddress&sortType=desc'
+          const response = await getPromise(
+            ApiAuthGet({
+              url: 'users/all?sortColumn=ethereumAddress&sortType=desc',
+            })
           );
           if (isResponseOk(response)) {
             const users = response.data as UserDto[];
@@ -125,6 +126,7 @@ type useAdminUsersReturns = {
 };
 
 export const useAdminUsers = (): useAdminUsersReturns => {
+  const apiAuthClient = useApiAuthClient();
   const [allUsers, setAllUsers] = useRecoilState(AllUsers);
 
   const patchRole = async (
@@ -132,8 +134,7 @@ export const useAdminUsers = (): useAdminUsersReturns => {
     userId: string,
     role: UserRole
   ): Promise<AxiosResponse<unknown> | AxiosError<unknown>> => {
-    const apiClient = makeApiAuthClient();
-    const response = await apiClient.patch(
+    const response = await apiAuthClient.patch(
       `/admin/users/${userId}/${endpoint}`,
       {
         role,
