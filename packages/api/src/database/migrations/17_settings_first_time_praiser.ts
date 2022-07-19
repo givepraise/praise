@@ -5,7 +5,7 @@ const settings = [
   {
     key: 'FIRST_TIME_PRAISER',
     value:
-      '**⚠️  We noticed this is the first time you praise**\n Here is some good info about what makes good Praise.',
+      '**😃 We noticed this is the first time you praise!**\n Find here some info about what makes good Praise: https://givepraise.xyz',
     type: 'Textarea',
     label: 'First Time Praiser Message',
     description: 'Make a great new praise!',

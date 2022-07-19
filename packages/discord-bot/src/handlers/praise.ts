@@ -184,7 +184,7 @@ export const praiseHandler: CommandHandler = async (
     await msg.reply(await selfPraiseWarning());
   }
 
-  if (praiseItems.length > 0) {
+  if (praiseItems.length === 0) {
     await msg.reply(await firstTimePraiserInfo());
   }
 
