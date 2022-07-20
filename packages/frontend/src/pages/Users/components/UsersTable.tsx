@@ -1,21 +1,25 @@
 import React from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useRecoilState } from 'recoil';
 import { UserDto, UserRole } from 'api/dist/user/types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCircleXmark,
+  faMagnifyingGlass,
+} from '@fortawesome/free-solid-svg-icons';
 import {
   AllAdminUsers,
   AllForwarderUsers,
   AllQuantifierUsers,
   AllUsers,
+  UsersTableData,
+  UsersTableSelectedRole,
+  UsersTableFilter,
 } from '@/model/users';
 import { SearchInput } from '@/components/form/SearchInput';
 import { SelectInput } from '@/components/form/SelectInput';
 import { UsersTableRow } from './UsersTableRow';
 import { UsersTablePagination } from './UsersTablePagination';
-
-interface roleOptionsProps {
-  value: string;
-  label: string;
-}
+import { UsersTablePage, UsersTableLastPage } from '../../../model/users';
 
 const roleOptions = [
   { label: 'All users', value: UserRole.USER },
@@ -31,13 +35,14 @@ export const UsersTable = (): JSX.Element => {
   const allForwarderUsers = useRecoilValue(AllForwarderUsers);
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
   const allUsers = useRecoilValue(AllUsers);
-  const [tableData, setTableData] = React.useState<UserDto[]>();
-  const [selectedRole, setSelectedRole] = React.useState<roleOptionsProps>(
-    roleOptions[0]
+
+  const [tableData, setTableData] = useRecoilState(UsersTableData);
+  const [selectedRole, setSelectedRole] = useRecoilState(
+    UsersTableSelectedRole
   );
-  const [filter, setFilter] = React.useState<string>('');
-  const [page, setPage] = React.useState<number>(1);
-  const [lastPage, setLastPage] = React.useState<number>(0);
+  const [filter, setFilter] = useRecoilState(UsersTableFilter);
+  const [page, setPage] = useRecoilState(UsersTablePage);
+  const [lastPage, setLastPage] = useRecoilState(UsersTableLastPage);
 
   const applyFilter = React.useCallback(
     (data: UserDto[] | undefined): UserDto[] => {
@@ -62,7 +67,7 @@ export const UsersTable = (): JSX.Element => {
     if (allUsers) {
       setTableData(allUsers);
     }
-  }, [allUsers]);
+  }, [allUsers, setTableData]);
 
   React.useEffect(() => {
     switch (selectedRole.value) {
@@ -79,18 +84,22 @@ export const UsersTable = (): JSX.Element => {
         setTableData(allQuantifierUsers);
         break;
     }
-    setFilter('');
   }, [
     selectedRole,
     allUsers,
     allAdminUsers,
     allForwarderUsers,
     allQuantifierUsers,
+    setTableData,
+    setFilter,
   ]);
 
   React.useEffect(() => {
     if (tableData) {
-      setPage(1);
+      if (page > lastPage) {
+        setPage(1);
+      }
+
       const filteredData = applyFilter(tableData);
 
       if (filteredData.length % USERS_PER_PAGE === 0) {
@@ -99,7 +108,7 @@ export const UsersTable = (): JSX.Element => {
         setLastPage(Math.trunc(filteredData.length / USERS_PER_PAGE) + 1);
       }
     }
-  }, [tableData, filter, applyFilter]);
+  }, [tableData, filter, applyFilter, setLastPage, page, lastPage, setPage]);
 
   return (
     <>
@@ -110,6 +119,17 @@ export const UsersTable = (): JSX.Element => {
           options={roleOptions}
         />
         <SearchInput handleChange={setFilter} value={filter} />
+        {filter !== '' && (
+          <button onClick={(): void => setFilter('')}>
+            <span className="text-warm-gray-800 dark:text-white">
+              <FontAwesomeIcon
+                icon={faCircleXmark}
+                size="lg"
+                className="mt-1"
+              />
+            </span>
+          </button>
+        )}
       </div>
 
       <div className="flex justify-between px-5 mb-2">
