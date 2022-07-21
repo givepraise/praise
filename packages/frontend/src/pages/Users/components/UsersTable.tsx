@@ -2,10 +2,7 @@ import React from 'react';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { UserDto, UserRole } from 'api/dist/user/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCircleXmark,
-  faMagnifyingGlass,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import {
   AllAdminUsers,
   AllForwarderUsers,
@@ -14,12 +11,13 @@ import {
   UsersTableData,
   UsersTableSelectedRole,
   UsersTableFilter,
+  UsersTablePage,
+  UsersTableLastPage,
 } from '@/model/users';
 import { SearchInput } from '@/components/form/SearchInput';
 import { SelectInput } from '@/components/form/SelectInput';
 import { UsersTableRow } from './UsersTableRow';
 import { UsersTablePagination } from './UsersTablePagination';
-import { UsersTablePage, UsersTableLastPage } from '../../../model/users';
 
 const roleOptions = [
   { label: 'All users', value: UserRole.USER },
