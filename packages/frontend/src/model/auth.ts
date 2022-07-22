@@ -13,7 +13,7 @@ export const ROLE_QUANTIFIER = UserRole.QUANTIFIER;
 export const ActiveTokenSet = atom<TokenSet | undefined>({
   key: 'ActiveTokenSet',
   default: undefined,
-  effects_UNSTABLE: [persistAtom],
+  effects: [persistAtom],
 });
 
 export const AccessToken = selector<string | undefined>({
