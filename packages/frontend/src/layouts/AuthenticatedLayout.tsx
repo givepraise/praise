@@ -8,12 +8,13 @@ import { SingleSetting } from '@/model/settings';
 import { ActiveUserRoles } from '@/model/auth';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
+import { ApiAuthGet } from '@/model/api';
 
 export const AuthenticatedLayout = (): JSX.Element | null => {
+  useRecoilValue(ApiAuthGet({ url: '/settings/all' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
   const activeUserRoles = useRecoilValue(ActiveUserRoles);
-
   return (
     <div className="h-full cursor-default">
       <Transition.Root show={sidebarOpen} as={Fragment}>
