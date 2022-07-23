@@ -25,9 +25,9 @@ type RequestDataParam = {
 type PatchRequestParams = RequestParams & RequestDataParam;
 type PostRequestParams = RequestParams & RequestDataParam;
 
-export const isResponseOk = (
-  response: AxiosResponse | AxiosError | null | unknown
-): response is AxiosResponse => {
+export const isResponseOk = <T>(
+  response: AxiosResponse<T> | AxiosError<T> | null | unknown
+): response is AxiosResponse<T> => {
   const axiosResponse = response as AxiosResponse;
   if (!axiosResponse) return false;
   return axiosResponse.status === 200;
