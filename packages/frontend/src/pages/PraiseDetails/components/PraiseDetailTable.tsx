@@ -9,7 +9,11 @@ import { InlineLabel } from '@/components/InlineLabel';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
-import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
+import {
+  PraisePageParams,
+  useSinglePraiseDetails,
+  SinglePraise,
+} from '@/model/praise';
 import { classNames } from '@/utils/index';
 import { localizeAndFormatIsoDate } from '@/utils/date';
 
@@ -34,7 +38,8 @@ const DuplicatePraiseLabel = ({
 export const PraiseDetailTable = (): JSX.Element => {
   const { praiseId } = useParams<PraisePageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const praise = useSinglePraiseQuery(praiseId);
+  useSinglePraiseDetails(praiseId);
+  const praise = useRecoilValue(SinglePraise(praiseId));
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
 
   const columns = React.useMemo(

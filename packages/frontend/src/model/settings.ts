@@ -1,8 +1,13 @@
 import { AxiosError, AxiosResponse } from 'axios';
-import { atom, selectorFamily, useRecoilState } from 'recoil';
+import { atom, selectorFamily, useRecoilCallback } from 'recoil';
 import { SettingDto } from 'api/dist/settings/types';
 import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from './api';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const instanceOfSetting = (object: any): object is SettingDto => {
+  return '_id' in object;
+};
 
 export const AllSettings = atom<SettingDto[] | undefined>({
   key: 'AllSettings',
@@ -35,50 +40,58 @@ export const SingleSetting = selectorFamily({
     ({ get }): SettingDto | undefined => {
       const allSettings = get(AllSettings);
       if (!allSettings) return;
-      return allSettings.filter((setting) => setting.key === key)[0];
+      return allSettings.find((setting) => setting.key === key);
+    },
+  set:
+    (key: string) =>
+    ({ get, set }, newSetting): void => {
+      const oldSetting = get(SingleSetting(key));
+      const allSettings = get(AllSettings);
+      if (!instanceOfSetting(newSetting) || !oldSetting || !allSettings) return;
+      set(
+        AllSettings,
+        allSettings.map((s) => (s._id === newSetting._id ? newSetting : s))
+      );
     },
 });
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const reqData = (setting: SettingDto): any => {
-  if (setting.type === 'Image') {
-    const data = new FormData();
-    data.append('value', setting.value);
-    return data;
-  } else {
-    return setting;
-  }
-};
 
 type useSetSettingReturn = {
   setSetting: (
     setting: SettingDto
-  ) => Promise<AxiosResponse<SettingDto> | AxiosError<SettingDto>>;
+  ) => Promise<AxiosResponse<SettingDto> | AxiosError | undefined>;
 };
 
 export const useSetSetting = (): useSetSettingReturn => {
   const apiAuthClient = useApiAuthClient();
-  const [allSettings, setAllSettings] = useRecoilState(AllSettings);
 
-  const setSetting = async (
-    setting: SettingDto
-  ): Promise<AxiosResponse<SettingDto> | AxiosError<SettingDto>> => {
-    const response = await apiAuthClient.patch(
-      `/admin/settings/${setting._id}/set`,
-      reqData(setting)
-    );
-    if (isResponseOk(response)) {
-      const setting = response.data as SettingDto;
-      if (setting && typeof allSettings !== 'undefined') {
-        setAllSettings(
-          allSettings.map((oldSetting) =>
-            oldSetting._id === setting._id ? setting : oldSetting
-          )
-        );
-      }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const reqData = (setting: SettingDto): any => {
+    if (setting.type === 'Image') {
+      const data = new FormData();
+      data.append('value', setting.value);
+      return data;
+    } else {
+      return setting;
     }
-    return response;
   };
+
+  const setSetting = useRecoilCallback(
+    ({ set }) =>
+      async (
+        setting: SettingDto
+      ): Promise<AxiosResponse<SettingDto> | AxiosError | undefined> => {
+        if (!instanceOfSetting(setting)) return;
+        const response: AxiosResponse<SettingDto> = await apiAuthClient.patch(
+          `/admin/settings/${setting._id}/set`,
+          reqData(setting)
+        );
+        if (isResponseOk(response)) {
+          const setting = response.data;
+          set(SingleSetting(setting.key), setting);
+        }
+        return response;
+      }
+  );
 
   return { setSetting };
 };

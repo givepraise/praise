@@ -31,10 +31,10 @@ const SettingsPage = (): JSX.Element | null => {
 
   const onSubmit = async (
     setting: SettingDto
-  ): Promise<AxiosResponse<SettingDto> | AxiosError<SettingDto>> => {
+  ): Promise<AxiosResponse<SettingDto> | AxiosError | undefined> => {
     const response = await setSetting(setting);
     if (isResponseOk(response)) {
-      const setting = response.data as SettingDto;
+      const setting = response.data;
       toast.success(`Saved setting "${setting.label}"`);
     }
     return response;

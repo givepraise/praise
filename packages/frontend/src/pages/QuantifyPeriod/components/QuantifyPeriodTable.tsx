@@ -11,7 +11,6 @@ import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   QuantifierReceiverData,
-  usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 
@@ -27,8 +26,6 @@ const DoneLabel = (): JSX.Element => {
 export const QuantifyPeriodTable = (): JSX.Element => {
   const history = useHistory();
   const { periodId } = useParams<PeriodPageParams>();
-  const { location } = useHistory();
-  usePeriodQuantifierPraiseQuery(periodId, location.key);
   const data = useRecoilValue(PeriodQuantifierReceivers(periodId));
   const usePseudonyms = usePeriodSettingValueRealized(
     periodId,

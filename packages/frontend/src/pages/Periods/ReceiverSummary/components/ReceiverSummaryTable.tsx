@@ -1,18 +1,19 @@
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 import { Praise } from '@/components/praise/Praise';
 import {
   PeriodAndReceiverPageParams,
-  usePeriodReceiverPraiseQuery,
+  usePeriodReceiverPraise,
 } from '@/model/periods';
 import { PraiseRow } from '@/components/praise/PraiseRow';
+import { AllPraiseList } from '@/model/praise';
+import { periodReceiverPraiseListKey } from '@/utils/periods';
 
 export const ReceiverSummaryTable = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
-  const { location } = useHistory();
-  const praiseList = usePeriodReceiverPraiseQuery(
-    periodId,
-    receiverId,
-    location?.key
+  usePeriodReceiverPraise(periodId, receiverId);
+  const praiseList = useRecoilValue(
+    AllPraiseList(periodReceiverPraiseListKey(receiverId))
   );
 
   if (!praiseList) return null;

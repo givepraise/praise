@@ -2,12 +2,17 @@ import { AxiosError, AxiosResponse } from 'axios';
 import {
   atomFamily,
   selectorFamily,
-  useRecoilState,
+  useRecoilCallback,
   useRecoilValue,
 } from 'recoil';
 import { PeriodSettingDto } from 'api/dist/periodsettings/types';
 import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from './api';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const instanceOfPeriodSetting = (object: any): object is PeriodSettingDto => {
+  return '_id' in object;
+};
 
 export const AllPeriodSettings = atomFamily<
   PeriodSettingDto[] | undefined,
@@ -42,62 +47,66 @@ type SinglePeriodSettingParams = {
 };
 
 export const SinglePeriodSetting = selectorFamily({
-  key: 'SingleSetting',
+  key: 'SinglePeriodSetting',
   get:
     (params: SinglePeriodSettingParams) =>
     ({ get }): PeriodSettingDto | undefined => {
       const allPeriodSettings = get(AllPeriodSettings(params.periodId));
       if (!allPeriodSettings) return;
-      return allPeriodSettings.filter(
-        (setting) => setting.key === params.key
-      )[0];
+      return allPeriodSettings.find((setting) => setting.key === params.key);
+    },
+  set:
+    (params: SinglePeriodSettingParams) =>
+    ({ get, set }, newSetting): void => {
+      const oldSetting = get(SinglePeriodSetting(params));
+      const allSettings = get(AllPeriodSettings(params.periodId));
+      if (!instanceOfPeriodSetting(newSetting) || !oldSetting || !allSettings)
+        return;
+      set(
+        AllPeriodSettings(params.periodId),
+        allSettings.map((s) => (s._id === newSetting._id ? newSetting : s))
+      );
     },
 });
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const reqData = (setting: PeriodSettingDto): any => {
-  if (setting.type === 'Image') {
-    const data = new FormData();
-    data.append('value', setting.value);
-    return data;
-  } else {
-    return setting;
-  }
-};
 
 export type useSetSettingReturn = {
   setSetting: (
     setting: PeriodSettingDto
-  ) => Promise<AxiosResponse<PeriodSettingDto> | AxiosError<PeriodSettingDto>>;
+  ) => Promise<AxiosResponse<PeriodSettingDto> | AxiosError | undefined>;
 };
 
 export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
   const apiAuthClient = useApiAuthClient();
-  const [allPeriodSettings, setAllPeriodSettings] = useRecoilState(
-    AllPeriodSettings(periodId)
-  );
 
-  const setSetting = async (
-    setting: PeriodSettingDto
-  ): Promise<
-    AxiosResponse<PeriodSettingDto> | AxiosError<PeriodSettingDto>
-  > => {
-    const response = await apiAuthClient.patch(
-      `/admin/periodsettings/${periodId}/settings/${setting._id}/set`,
-      reqData(setting)
-    );
-    if (isResponseOk(response)) {
-      const setting = response.data as PeriodSettingDto;
-      if (setting && typeof allPeriodSettings !== 'undefined') {
-        setAllPeriodSettings(
-          allPeriodSettings.map((oldSetting) =>
-            oldSetting._id === setting._id ? setting : oldSetting
-          )
-        );
-      }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const reqData = (setting: PeriodSettingDto): any => {
+    if (setting.type === 'Image') {
+      const data = new FormData();
+      data.append('value', setting.value);
+      return data;
+    } else {
+      return setting;
     }
-    return response;
   };
+
+  const setSetting = useRecoilCallback(
+    ({ set }) =>
+      async (
+        setting: PeriodSettingDto
+      ): Promise<AxiosResponse<PeriodSettingDto> | AxiosError | undefined> => {
+        if (!instanceOfPeriodSetting(setting)) return;
+        const response: AxiosResponse<PeriodSettingDto> =
+          await apiAuthClient.patch(
+            `/admin/periodsettings/${periodId}/settings/${setting._id}/set`,
+            reqData(setting)
+          );
+        if (isResponseOk(response)) {
+          const setting = response.data;
+          set(SinglePeriodSetting({ periodId, key: setting.key }), setting);
+        }
+        return response;
+      }
+  );
 
   return { setSetting };
 };

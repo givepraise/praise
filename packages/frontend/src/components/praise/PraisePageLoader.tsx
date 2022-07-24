@@ -3,15 +3,14 @@ import { BottomScrollListener } from 'react-bottom-scroll-listener';
 import { useRecoilValue } from 'recoil';
 import { AllPraiseQueryPagination, useAllPraiseQuery } from '@/model/praise';
 import { LoaderSpinner } from '@/components/LoaderSpinner';
-import { PRAISE_LIST_KEY } from '../../pages/Start/components/PraiseTable';
 
 interface Params {
-  listKey?: string;
+  listKey: string;
   receiverId?: string;
 }
 
 export const PraisePageLoader = ({
-  listKey = PRAISE_LIST_KEY,
+  listKey,
   receiverId,
 }: Params): JSX.Element => {
   const praisePagination = useRecoilValue(AllPraiseQueryPagination(listKey));

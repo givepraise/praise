@@ -4,9 +4,10 @@ import { Field, Form } from 'react-final-form';
 import { toast } from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import { ApiErrorResponseData } from 'api/dist/error/types';
 import {
   PeriodPageParams,
-  DetailedSinglePeriod,
+  SinglePeriod,
   useUpdatePeriod,
 } from '@/model/periods';
 import { isApiResponseValidationError, isResponseOk } from '@/model/api';
@@ -35,7 +36,7 @@ const validate = (
 
 export const PeriodNameForm = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
-  const period = useRecoilValue(DetailedSinglePeriod(periodId));
+  const period = useRecoilValue(SinglePeriod(periodId));
   const { updatePeriod } = useUpdatePeriod();
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
@@ -52,11 +53,8 @@ export const PeriodNameForm = (): JSX.Element | null => {
       toast.success('Period name saved');
       return {};
     }
-    if (
-      isApiResponseValidationError(response) &&
-      response.response?.data.errors
-    ) {
-      return response.response?.data.errors;
+    if (response.response && isApiResponseValidationError(response)) {
+      return (response.response.data as ApiErrorResponseData).errors;
     }
     toast.error('Period name save failed');
     return { [FORM_ERROR]: 'Period name save failed' };

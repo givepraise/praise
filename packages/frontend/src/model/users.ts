@@ -10,21 +10,19 @@ export const AllUsers = atom<UserDto[] | undefined>({
   key: 'AllUsers',
   default: undefined,
   effects: [
-    ({ setSelf, trigger, getPromise }): void => {
-      if (trigger === 'get') {
-        const apiGet = async (): Promise<void> => {
-          const response = await getPromise(
-            ApiAuthGet({
-              url: 'users/all?sortColumn=ethereumAddress&sortType=desc',
-            })
-          );
+    ({ setSelf, getPromise }): void => {
+      setSelf(
+        getPromise(
+          ApiAuthGet({
+            url: 'users/all?sortColumn=ethereumAddress&sortType=desc',
+          })
+        ).then((response) => {
           if (isResponseOk(response)) {
             const users = response.data as UserDto[];
-            if (Array.isArray(users) && users.length > 0) setSelf(users);
+            if (Array.isArray(users) && users.length > 0) return users;
           }
-        };
-        void apiGet();
-      }
+        })
+      );
     },
   ],
 });
@@ -33,10 +31,9 @@ export const AllAdminUsers = selector({
   key: 'AllAdminUsers',
   get: ({ get }) => {
     const users = get(AllUsers);
-    if (users) {
+    if (Array.isArray(users) && users.length > 0) {
       return users.filter((user) => user.roles.includes(UserRole.ADMIN));
     }
-    return undefined;
   },
 });
 
@@ -44,10 +41,9 @@ export const AllQuantifierUsers = selector({
   key: 'AllQuantifierUsers',
   get: ({ get }) => {
     const users = get(AllUsers);
-    if (users) {
+    if (Array.isArray(users) && users.length > 0) {
       return users.filter((user) => user.roles.includes(UserRole.QUANTIFIER));
     }
-    return undefined;
   },
 });
 
@@ -55,20 +51,11 @@ export const AllForwarderUsers = selector({
   key: 'AllForwarderUsers',
   get: ({ get }) => {
     const users = get(AllUsers);
-    if (users) {
+    if (Array.isArray(users) && users.length > 0) {
       return users.filter((user) => user.roles.includes(UserRole.FORWARDER));
     }
-    return undefined;
   },
 });
-
-const stringToNumber = (s: string): number => {
-  let value = 0;
-  for (let i = s.length - 1; i >= 0; i--) {
-    value = value * 256 + s.charCodeAt(i);
-  }
-  return value;
-};
 
 type PseudonymForUserParams = {
   periodId: string;
@@ -78,11 +65,19 @@ export const PseudonymForUser = selectorFamily({
   key: 'PseudonymForUser',
   get:
     (params: PseudonymForUserParams) =>
-    ({ get }): string => {
+    ({ get }): string | undefined => {
       const { periodId, userId } = params;
       const allPeriods = get(AllPeriods);
       if (!allPeriods) return 'Loading…';
       const periodIndex = allPeriods.findIndex((p) => p._id === periodId);
+
+      const stringToNumber = (s: string): number => {
+        let value = 0;
+        for (let i = s.length - 1; i >= 0; i--) {
+          value = value * 256 + s.charCodeAt(i);
+        }
+        return value;
+      };
 
       if (userId && periodIndex > -1) {
         const u = stringToNumber(userId);
@@ -91,8 +86,6 @@ export const PseudonymForUser = selectorFamily({
         const a = psudonymAdjectives[(u + p) % psudonymAdjectives.length];
         return `${a} ${n}`;
       }
-
-      return 'Unknown user';
     },
 });
 
@@ -110,7 +103,7 @@ export const SingleUser = selectorFamily({
     ({ get }): UserDto | undefined => {
       const allUsers = get(AllUsers);
       if (!allUsers) return undefined;
-      return allUsers.filter((user) => user._id === userId)[0];
+      return allUsers.find((user) => user._id === userId);
     },
 });
 
@@ -118,11 +111,11 @@ type useAdminUsersReturns = {
   addRole: (
     userId: string,
     role: UserRole
-  ) => Promise<AxiosResponse<unknown> | AxiosError<unknown>>;
+  ) => Promise<AxiosResponse<UserDto> | AxiosError>;
   removeRole: (
     userId: string,
     role: UserRole
-  ) => Promise<AxiosResponse<unknown> | AxiosError<unknown>>;
+  ) => Promise<AxiosResponse<UserDto> | AxiosError>;
 };
 
 export const useAdminUsers = (): useAdminUsersReturns => {
@@ -133,15 +126,15 @@ export const useAdminUsers = (): useAdminUsersReturns => {
     endpoint: 'addRole' | 'removeRole',
     userId: string,
     role: UserRole
-  ): Promise<AxiosResponse<unknown> | AxiosError<unknown>> => {
-    const response = await apiAuthClient.patch(
+  ): Promise<AxiosResponse<UserDto> | AxiosError> => {
+    const response: AxiosResponse<UserDto> = await apiAuthClient.patch(
       `/admin/users/${userId}/${endpoint}`,
       {
         role,
       }
     );
     if (isResponseOk(response)) {
-      const user = response.data as UserDto;
+      const user = response.data;
       if (user && typeof allUsers !== 'undefined') {
         setAllUsers(
           allUsers.map((oldUser) => (oldUser._id === user._id ? user : oldUser))
@@ -154,14 +147,14 @@ export const useAdminUsers = (): useAdminUsersReturns => {
   const addRole = async (
     userId: string,
     role: UserRole
-  ): Promise<AxiosResponse<unknown> | AxiosError<unknown>> => {
+  ): Promise<AxiosResponse<UserDto> | AxiosError> => {
     return patchRole('addRole', userId, role);
   };
 
   const removeRole = async (
     userId: string,
     role: UserRole
-  ): Promise<AxiosResponse<unknown> | AxiosError<unknown>> => {
+  ): Promise<AxiosResponse<UserDto> | AxiosError> => {
     return patchRole('removeRole', userId, role);
   };
 

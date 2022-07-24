@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { UserDto } from 'api/dist/user/types';
 import { LoaderSpinner } from '@/components/LoaderSpinner';
@@ -18,17 +18,16 @@ const getReceiverId = (user: UserDto | undefined): string | undefined => {
     : undefined;
 };
 
-export const MyPraiseTable = (): JSX.Element => {
+export const MyPraiseTable = (): JSX.Element | null => {
   const allPraise = useRecoilValue(AllPraiseList(PRAISE_LIST_KEY));
-  const [receiverId, setReceiverId] = useState<string | undefined>(undefined);
   const userId = useRecoilValue(ActiveUserId);
   const user = useRecoilValue(SingleUser(userId));
+  const receiverId = getReceiverId(user);
 
-  useEffect(() => {
-    if (!user) return;
-    setReceiverId(getReceiverId(user));
-  }, [user]);
+  if (!receiverId) return null;
 
+  if (!Array.isArray(allPraise) || allPraise.length === 0)
+    return <div className="p-5">You have not yet received any praise.</div>;
   return (
     <>
       <ul>

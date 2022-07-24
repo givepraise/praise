@@ -19,8 +19,8 @@ interface SettingsFormProps {
   ): Promise<
     | AxiosResponse<SettingDto>
     | AxiosResponse<PeriodSettingDto>
-    | AxiosError<SettingDto>
-    | AxiosError<PeriodSettingDto>
+    | AxiosError
+    | undefined
   >;
   disabled?: boolean;
 }
@@ -94,7 +94,7 @@ export const SettingsForm = ({
   disabled = false,
 }: SettingsFormProps): JSX.Element | null => {
   const [apiResponse, setApiResponse] = useState<
-    AxiosResponse<unknown> | AxiosError<unknown> | undefined
+    AxiosResponse<unknown> | AxiosError | undefined
   >(undefined);
   if (!Array.isArray(settings) || settings.length === 0) return null;
 

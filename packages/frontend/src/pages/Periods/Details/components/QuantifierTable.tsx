@@ -7,21 +7,25 @@ import sortBy from 'lodash/sortBy';
 import { faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Quantifier } from 'api/dist/praise/types';
+import { toast } from 'react-hot-toast';
 import {
   PeriodPageParams,
-  DetailedSinglePeriod,
+  SinglePeriod,
   useReplaceQuantifier,
+  useDetailedSinglePeriod,
 } from '@/model/periods';
 import { Notice } from '@/components/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { isResponseOk } from '@/model/api';
 import { ReplaceQuantifierDialog } from './ReplaceQuantifierDialog';
 
 export const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const period = useRecoilValue(DetailedSinglePeriod(periodId));
+  useDetailedSinglePeriod(periodId);
+  const period = useRecoilValue(SinglePeriod(periodId));
 
   const [isReplaceQuantifierDialogOpen, setIsReplaceQuantifierDialogOpen] =
     useState<boolean>(false);
@@ -33,8 +37,13 @@ export const QuantifierTable = (): JSX.Element => {
 
   const handleReplaceQuantifier = (newQuantifierUserId: string): void => {
     if (!quantifierToReplace) return;
-
-    void replaceQuantifier(quantifierToReplace?._id, newQuantifierUserId);
+    const response = replaceQuantifier(
+      quantifierToReplace?._id,
+      newQuantifierUserId
+    );
+    if (isResponseOk(response)) {
+      toast.success('Replaced quantifier and reset their scores');
+    }
   };
 
   const columns = React.useMemo(
@@ -73,7 +82,7 @@ export const QuantifierTable = (): JSX.Element => {
           return (
             <div className="w-3">
               <button
-                className="hidden text-warm-gray-400 cursor-pointer group-hover:block hover:text-warm-gray-500"
+                className="hidden cursor-pointer text-warm-gray-400 group-hover:block hover:text-warm-gray-500"
                 onClick={(): void => {
                   setQuantifierToReplace(data.row.original);
                   setIsReplaceQuantifierDialogOpen(true);

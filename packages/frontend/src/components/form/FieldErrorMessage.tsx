@@ -3,7 +3,7 @@ import { useField } from 'react-final-form';
 
 interface FieldErrorMessageProps {
   name: string;
-  apiResponse?: AxiosResponse<unknown> | AxiosError<unknown> | null;
+  apiResponse?: AxiosResponse<unknown> | AxiosError | null;
 }
 
 export const FieldErrorMessage = ({

@@ -16,10 +16,11 @@ import { AllQuantifierUsers } from '@/model/users';
 import {
   AllPeriods,
   PeriodPageParams,
-  DetailedSinglePeriod,
+  SinglePeriod,
   useAssignQuantifiers,
   useClosePeriod,
   useExportPraise,
+  useDetailedSinglePeriod,
 } from '@/model/periods';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { PeriodAssignDialog } from './AssignDialog';
@@ -33,7 +34,8 @@ export const PeriodDetails = (): JSX.Element | null => {
   const allPeriods = useRecoilValue(AllPeriods);
   const allQuantifiers = useRecoilValue(AllQuantifierUsers);
   const { periodId } = useParams<PeriodPageParams>();
-  const period = useRecoilValue(DetailedSinglePeriod(periodId));
+  useDetailedSinglePeriod(periodId); // Fetch additional period details
+  const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
   const history = useHistory();

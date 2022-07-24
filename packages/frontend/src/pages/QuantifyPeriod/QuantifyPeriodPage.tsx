@@ -6,7 +6,8 @@ import { BreadCrumb } from '@/components/BreadCrumb';
 import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
-  DetailedSinglePeriod,
+  SinglePeriod,
+  usePeriodQuantifierPraise,
 } from '@/model/periods';
 import { getQuantificationStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
@@ -14,7 +15,7 @@ import { QuantifyPeriodTable } from './components/QuantifyPeriodTable';
 
 const PeriodMessage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
-  const period = useRecoilValue(DetailedSinglePeriod(periodId));
+  const period = useRecoilValue(SinglePeriod(periodId));
   const quantificationStats = getQuantificationStats(
     useRecoilValue(PeriodQuantifierReceivers(periodId))
   );
@@ -34,8 +35,12 @@ const PeriodMessage = (): JSX.Element => {
   );
 };
 
-const QuantifyPeriodPage = (): JSX.Element => {
+const QuantifyPeriodPage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
+  const period = useRecoilValue(SinglePeriod(periodId));
+  const periodQuantifierPraise = usePeriodQuantifierPraise(periodId);
+
+  if (!period || !periodQuantifierPraise) return null;
 
   return (
     <div className="praise-page">

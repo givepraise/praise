@@ -6,6 +6,7 @@ import React from 'react';
 import { Field, Form } from 'react-final-form';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { ApiErrorResponseData } from 'api/dist/error/types';
 import { DATE_FORMAT } from '@/utils/date';
 import { useCreatePeriod } from '@/model/periods';
 import { isApiResponseValidationError, isResponseOk } from '@/model/api';
@@ -69,11 +70,8 @@ const PeriodsForm = (): JSX.Element => {
       }, 2000);
       return {};
     }
-    if (
-      isApiResponseValidationError(response) &&
-      response.response?.data.errors
-    ) {
-      return response.response?.data.errors;
+    if (isApiResponseValidationError(response) && response.response) {
+      return (response.response.data as ApiErrorResponseData).errors;
     }
     toast.error('Period create failed');
     return { [FORM_ERROR]: 'Period create failed' };

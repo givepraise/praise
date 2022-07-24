@@ -11,11 +11,11 @@ const MyPraise = (): JSX.Element => {
 
       <ActiveNoticesBoard />
 
-      <div className="praise-box p-0">
-        <React.Suspense fallback={null}>
+      <React.Suspense fallback={null}>
+        <div className="p-0 praise-box">
           <MyPraiseTable />
-        </React.Suspense>
-      </div>
+        </div>
+      </React.Suspense>
     </div>
   );
 };

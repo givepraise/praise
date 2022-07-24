@@ -21,7 +21,7 @@ export const PraiseTable = (): JSX.Element => {
         ))}
       </ul>
       <React.Suspense fallback={<LoaderSpinner />}>
-        <PraisePageLoader />
+        <PraisePageLoader listKey={PRAISE_LIST_KEY} />
       </React.Suspense>
     </>
   );

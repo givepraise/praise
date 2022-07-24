@@ -9,7 +9,11 @@ import { Dialog } from '@headlessui/react';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { PeriodPageParams, PeriodPoolRequirements } from '@/model/periods';
+import {
+  PeriodPageParams,
+  PeriodPoolRequirements,
+  PeriodPoolRequirementsQuery,
+} from '@/model/periods';
 
 interface PeriodAssignDialogProps {
   onClose(): void;
@@ -102,7 +106,9 @@ export const PeriodAssignDialog = ({
   onAssign,
 }: PeriodAssignDialogProps): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
-  const poolRequirements = useRecoilValue(PeriodPoolRequirements(periodId));
+  const poolRequirements = useRecoilValue(
+    PeriodPoolRequirementsQuery(periodId)
+  );
   if (!poolRequirements) return null;
 
   return (

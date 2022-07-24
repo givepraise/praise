@@ -5,7 +5,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { SettingsForm } from '@/components/settings/SettingsForm';
 import { AllPeriodSettings, useSetPeriodSetting } from '@/model/periodsettings';
 import { isResponseOk } from '@/model/api';
-import { PeriodPoolRequirements } from '@/model/periods';
+import { PeriodPoolRequirementsQuery } from '@/model/periods';
 
 interface Params {
   periodId: string;
@@ -18,24 +18,26 @@ export const PeriodSettingsForm = ({
 }: Params): JSX.Element | null => {
   const settings = useRecoilValue(AllPeriodSettings(periodId));
   const refreshPoolRequirements = useRecoilRefresher_UNSTABLE(
-    PeriodPoolRequirements(periodId)
+    PeriodPoolRequirementsQuery(periodId)
   );
 
   const { setSetting } = useSetPeriodSetting(periodId);
 
   const onSubmit = async (
     setting: PeriodSettingDto
-  ): Promise<
-    AxiosResponse<PeriodSettingDto> | AxiosError<PeriodSettingDto>
-  > => {
-    const response = await setSetting(setting);
-    if (isResponseOk(response)) {
-      // Reload quantify pool requirements
-      refreshPoolRequirements();
-      const setting = response.data as PeriodSettingDto;
-      toast.success(`Saved setting "${setting.label}"`);
+  ): Promise<AxiosResponse<PeriodSettingDto> | AxiosError | undefined> => {
+    try {
+      const response = await setSetting(setting);
+      if (isResponseOk(response)) {
+        // Reload quantify pool requirements
+        refreshPoolRequirements();
+        const setting = response.data;
+        toast.success(`Saved setting "${setting.label}"`);
+      }
+      return response;
+    } catch (err) {
+      console.error(err);
     }
-    return response;
   };
 
   return (

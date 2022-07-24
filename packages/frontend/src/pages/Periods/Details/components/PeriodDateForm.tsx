@@ -9,7 +9,7 @@ import { useRecoilValue } from 'recoil';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import {
   PeriodPageParams,
-  DetailedSinglePeriod,
+  SinglePeriod,
   useUpdatePeriod,
 } from '@/model/periods';
 import { isResponseOk } from '@/model/api';
@@ -35,9 +35,9 @@ const validate = (
 
 export const PeriodDateForm = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
-  const period = useRecoilValue(DetailedSinglePeriod(periodId));
+  const period = useRecoilValue(SinglePeriod(periodId));
   const [apiResponse, setApiResponse] = React.useState<
-    AxiosResponse<unknown> | AxiosError<unknown> | null
+    AxiosResponse<unknown> | AxiosError | null
   >(null);
   const { updatePeriod } = useUpdatePeriod();
 

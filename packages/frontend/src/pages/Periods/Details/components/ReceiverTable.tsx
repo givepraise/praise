@@ -4,7 +4,11 @@ import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useSortBy, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import sortBy from 'lodash/sortBy';
-import { PeriodPageParams, DetailedSinglePeriod } from '@/model/periods';
+import {
+  PeriodPageParams,
+  SinglePeriod,
+  useDetailedSinglePeriod,
+} from '@/model/periods';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { Notice } from '@/components/Notice';
 import { classNames } from '@/utils/index';
@@ -13,7 +17,8 @@ import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 export const ReceiverTable = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const period = useRecoilValue(DetailedSinglePeriod(periodId));
+  useDetailedSinglePeriod(periodId);
+  const period = useRecoilValue(SinglePeriod(periodId));
 
   const ReceiverTableInner = (): JSX.Element => {
     const history = useHistory();

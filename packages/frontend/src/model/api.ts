@@ -26,7 +26,7 @@ type PatchRequestParams = RequestParams & RequestDataParam;
 type PostRequestParams = RequestParams & RequestDataParam;
 
 export const isResponseOk = <T>(
-  response: AxiosResponse<T> | AxiosError<T> | null | unknown
+  response: AxiosResponse<T> | AxiosError | null | unknown
 ): response is AxiosResponse<T> => {
   const axiosResponse = response as AxiosResponse;
   if (!axiosResponse) return false;
@@ -43,7 +43,7 @@ export const isApiResponseAxiosError = (
 };
 
 export const isApiResponseValidationError = (
-  axiosResponse: unknown
+  axiosResponse: AxiosResponse | AxiosError | null | unknown
 ): axiosResponse is AxiosError<ApiErrorResponseData> => {
   if (
     isApiResponseAxiosError(axiosResponse) &&
