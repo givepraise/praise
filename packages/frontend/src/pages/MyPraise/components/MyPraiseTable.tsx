@@ -37,7 +37,13 @@ export const MyPraiseTable = (): JSX.Element | null => {
           </PraiseRow>
         ))}
       </ul>
-      <React.Suspense fallback={<LoaderSpinner />}>
+      <React.Suspense
+        fallback={
+          <div className="p-20">
+            <LoaderSpinner />
+          </div>
+        }
+      >
         <PraisePageLoader listKey={PRAISE_LIST_KEY} receiverId={receiverId} />
       </React.Suspense>
     </>

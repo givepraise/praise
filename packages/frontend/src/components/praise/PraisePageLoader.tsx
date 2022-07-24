@@ -44,7 +44,7 @@ export const PraisePageLoader = ({
 
   if (loading)
     return (
-      <div className="pb-20">
+      <div className="p-20">
         <LoaderSpinner />
       </div>
     );

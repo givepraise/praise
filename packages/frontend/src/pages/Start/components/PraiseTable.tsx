@@ -20,7 +20,13 @@ export const PraiseTable = (): JSX.Element => {
           </PraiseRow>
         ))}
       </ul>
-      <React.Suspense fallback={<LoaderSpinner />}>
+      <React.Suspense
+        fallback={
+          <div className="p-20">
+            <LoaderSpinner />
+          </div>
+        }
+      >
         <PraisePageLoader listKey={PRAISE_LIST_KEY} />
       </React.Suspense>
     </>
