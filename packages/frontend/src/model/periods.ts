@@ -551,7 +551,6 @@ export const PeriodQuantifierReceivers = selectorFamily({
       const listKey = periodQuantifierPraiseListKey(periodId);
       const praiseList = get(AllPraiseList(listKey));
       const userId = get(ActiveUserId);
-      console.log({ listKey, praiseList, userId });
       if (praiseList) {
         const q: QuantifierReceiverData[] = [];
 

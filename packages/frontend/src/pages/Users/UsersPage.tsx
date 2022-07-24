@@ -8,7 +8,6 @@ import { UsersTable } from './components/UsersTable';
 const UsersPage = (): JSX.Element | null => {
   const allUsers = useRecoilValue(AllUsers);
 
-  console.log(allUsers);
   if (!Array.isArray(allUsers)) return null;
 
   return (
