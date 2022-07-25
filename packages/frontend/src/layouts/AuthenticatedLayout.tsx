@@ -1,5 +1,5 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { faX, faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,6 +9,7 @@ import { ActiveUserRoles } from '@/model/auth';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
 import { ApiAuthGet } from '@/model/api';
+import { LoadScreen } from '@/components/LoadScreen';
 
 export const AuthenticatedLayout = (): JSX.Element | null => {
   useRecoilValue(ApiAuthGet({ url: '/settings/all' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.
@@ -109,7 +110,9 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
           )}
         </div>
         <main className="flex justify-center w-full ">
-          <AuthenticatedRoutes userRoles={activeUserRoles} />
+          <React.Suspense fallback={<LoadScreen />}>
+            <AuthenticatedRoutes userRoles={activeUserRoles} />
+          </React.Suspense>
         </main>
       </div>
     </div>
