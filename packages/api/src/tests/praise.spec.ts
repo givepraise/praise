@@ -703,3 +703,342 @@ describe('PATCH /api/praise/:id/quantify', () => {
       .expect(401);
   });
 });
+
+describe('PATCH /api/praise/quantify', () => {
+  beforeEach(async () => {
+    await PeriodModel.deleteMany({});
+    await PraiseModel.deleteMany({});
+  });
+
+  it('200 response with json body containing list with multiple praise with updated score', async function () {
+    const wallet = Wallet.createRandom();
+    const quantifier = await seedUser({
+      ethereumAddress: wallet.address,
+      roles: ['USER', 'QUANTIFIER'],
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const praiseIds = [];
+
+    for (let i = 0; i < 2; i++) {
+      const praise = await seedPraise({ createdAt: new Date() });
+      praiseIds.push(praise.id);
+
+      await seedQuantification(praise, quantifier, {
+        score: 0,
+        dismissed: false,
+        duplicatePraise: undefined,
+      });
+    }
+
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'QUANTIFY',
+    });
+
+    const FORM_DATA = {
+      score: 10,
+      praiseIds,
+    };
+
+    const response = await this.client
+      .patch('/api/praise/quantify')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .send(FORM_DATA)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body[0]._id).to.equal(praiseIds[0].toString());
+    expect(response.body[1]._id).to.equal(praiseIds[1].toString());
+    expect(response.body[0].scoreRealized).to.equal(10);
+    expect(response.body[1].scoreRealized).to.equal(10);
+    expect(response.body[0]).to.have.all.keys(
+      '_id',
+      '_idLabelRealized',
+      'reasonRealized',
+      'sourceId',
+      'sourceName',
+      'quantifications',
+      'giver',
+      'receiver',
+      'createdAt',
+      'updatedAt',
+      'scoreRealized'
+    );
+  });
+
+  it('200 response with json body containing list with single praise that was dismissed but not anymore after quantification', async function () {
+    const wallet = Wallet.createRandom();
+    const quantifier = await seedUser({
+      ethereumAddress: wallet.address,
+      roles: ['USER', 'QUANTIFIER'],
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const praiseIds = [];
+
+    for (let i = 0; i < 2; i++) {
+      const praise = await seedPraise({ createdAt: new Date() });
+      praiseIds.push(praise.id);
+
+      await seedQuantification(praise, quantifier, {
+        score: 0,
+        dismissed: i === 0 ? true : false,
+        duplicatePraise: undefined,
+      });
+    }
+
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'QUANTIFY',
+    });
+
+    const FORM_DATA = {
+      score: 10,
+      praiseIds,
+    };
+
+    const response = await this.client
+      .patch('/api/praise/quantify')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .send(FORM_DATA)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body[0]._id).to.equal(praiseIds[0].toString());
+    expect(response.body[1]._id).to.equal(praiseIds[1].toString());
+    expect(response.body[0].quantifications[0].dismissed).to.equal(false);
+    expect(response.body[1].quantifications[0].dismissed).to.equal(false);
+    expect(response.body[0].scoreRealized).to.equal(10);
+    expect(response.body[1].scoreRealized).to.equal(10);
+  });
+
+  it('200 response with json body containing list with single praise that was marked as duplicate but not anymore after quantification', async function () {
+    const wallet = Wallet.createRandom();
+    const quantifier = await seedUser({
+      ethereumAddress: wallet.address,
+      roles: ['USER', 'QUANTIFIER'],
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const praiseIds = [];
+
+    const praise = await seedPraise({ createdAt: new Date() });
+    praiseIds.push(praise.id);
+    await seedQuantification(praise, quantifier, {
+      score: 10,
+      dismissed: false,
+      duplicatePraise: undefined,
+    });
+
+    const praise2 = await seedPraise({ createdAt: new Date() });
+    praiseIds.push(praise2.id);
+    await seedQuantification(praise2, quantifier, {
+      score: 0,
+      dismissed: false,
+      duplicatePraise: praise._id.toString(),
+    });
+
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'QUANTIFY',
+    });
+
+    const FORM_DATA = {
+      score: 10,
+      praiseIds,
+    };
+
+    const response = await this.client
+      .patch('/api/praise/quantify')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .send(FORM_DATA)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body[0]._id).to.equal(praiseIds[0].toString());
+    expect(response.body[2]._id).to.equal(praiseIds[1].toString());
+    expect(response.body[0].quantifications[0].duplicatePraise).to.equal(
+      undefined
+    );
+    expect(response.body[2].quantifications[0].duplicatePraise).to.equal(
+      undefined
+    );
+    expect(response.body[0].scoreRealized).to.equal(10);
+    expect(response.body[2].scoreRealized).to.equal(10);
+  });
+
+  it('200 response with json body containing list with single praise that is duplicate and which score also changed when original praise score was changed', async function () {
+    const wallet = Wallet.createRandom();
+    const quantifier = await seedUser({
+      ethereumAddress: wallet.address,
+      roles: ['USER', 'QUANTIFIER'],
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const praiseIds = [];
+
+    const praise = await seedPraise({ createdAt: new Date() });
+    praiseIds.push(praise.id);
+    await seedQuantification(praise, quantifier, {
+      score: 10,
+      dismissed: false,
+      duplicatePraise: undefined,
+    });
+
+    const praise2 = await seedPraise({ createdAt: new Date() });
+    await seedQuantification(praise2, quantifier, {
+      score: 0,
+      dismissed: false,
+      duplicatePraise: praise._id.toString(),
+    });
+
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'QUANTIFY',
+    });
+
+    const FORM_DATA = {
+      score: 144,
+      praiseIds,
+    };
+
+    const response = await this.client
+      .patch('/api/praise/quantify')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .send(FORM_DATA)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body[0]._id).to.equal(praiseIds[0].toString());
+    expect(response.body[1]._id).to.equal(praise2._id.toString());
+    expect(response.body[0].scoreRealized).to.equal(144);
+    expect(response.body[1].scoreRealized).to.equal(14.4);
+  });
+
+  it('404 response if praise does not exist', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+      roles: ['USER', 'QUANTIFIER'],
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const praiseIds = [faker.database.mongodbObjectId()];
+
+    const FORM_DATA = {
+      score: 10,
+      praiseIds,
+    };
+
+    return this.client
+      .patch('/api/praise/quantify')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .send(FORM_DATA)
+      .expect('Content-Type', /json/)
+      .expect(404);
+  });
+
+  it('400 response if praise does not have associated period', async function () {
+    const wallet = Wallet.createRandom();
+    const quantifier = await seedUser({
+      ethereumAddress: wallet.address,
+      roles: ['USER', 'QUANTIFIER'],
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const praise = await seedPraise({ createdAt: new Date() });
+    await seedQuantification(praise, quantifier, {
+      score: 0,
+      dismissed: false,
+      duplicatePraise: undefined,
+    });
+
+    const praiseIds = [praise._id];
+
+    const FORM_DATA = {
+      score: 10,
+      praiseIds,
+    };
+
+    return this.client
+      .patch(`/api/praise/quantify`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .send(FORM_DATA)
+      .expect('Content-Type', /json/)
+      .expect(400);
+  });
+
+  it('400 response if associated period status is not QUANTIFY', async function () {
+    const wallet = Wallet.createRandom();
+    const quantifier = await seedUser({
+      ethereumAddress: wallet.address,
+      roles: ['USER', 'QUANTIFIER'],
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const praise = await seedPraise({ createdAt: new Date() });
+    await seedQuantification(praise, quantifier, {
+      score: 0,
+      dismissed: false,
+      duplicatePraise: undefined,
+    });
+
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'OPEN',
+    });
+
+    const praiseIds = [praise._id];
+
+    const FORM_DATA = {
+      score: 10,
+      praiseIds,
+    };
+
+    return this.client
+      .patch('/api/praise/quantify')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .send(FORM_DATA)
+      .expect('Content-Type', /json/)
+      .expect(400);
+  });
+
+  it('400 response if user is not an assigned quantifier', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+      roles: ['USER', 'QUANTIFIER'],
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const praise = await seedPraise({ createdAt: new Date() });
+
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'QUANTIFY',
+    });
+
+    const praiseIds = [praise._id];
+
+    const FORM_DATA = {
+      score: 10,
+      praiseIds,
+    };
+
+    return this.client
+      .patch('/api/praise/quantify')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .send(FORM_DATA)
+      .expect('Content-Type', /json/)
+      .expect(400);
+  });
+});
