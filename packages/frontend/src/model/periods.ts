@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
-import { UserRole } from 'api/dist/user/types';
+import { UserDto, UserRole } from 'api/dist/user/types';
 import {
   PeriodCreateInput,
   PeriodDetailsDto,
@@ -9,6 +9,7 @@ import {
   PeriodReplaceQuantifierDto,
 } from 'api/dist/period/types';
 import { PraiseDto } from 'api/dist/praise/types';
+import { UserAccountDto } from 'api/dist/useraccount/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React, { useEffect } from 'react';
@@ -602,8 +603,7 @@ export const usePeriodQuantifierPraiseQuery = (
  */
 export interface QuantifierReceiverData {
   periodId: string;
-  receiverId: string;
-  receiverName: string;
+  receiver: UserAccountDto;
   count: number;
   done: number;
 }
@@ -634,7 +634,7 @@ export const PeriodQuantifierReceivers = selectorFamily({
             if (quantification.quantifier !== userId) return;
 
             const qi = q.findIndex(
-              (item) => item.receiverId === praiseItem.receiver._id
+              (item) => item.receiver._id === praiseItem.receiver._id
             );
 
             const done =
@@ -644,10 +644,11 @@ export const PeriodQuantifierReceivers = selectorFamily({
                 ? 1
                 : 0;
 
+            console.log('RECEIVER:', praiseItem.receiver);
+
             const qd: QuantifierReceiverData = {
               periodId,
-              receiverId: praiseItem.receiver._id,
-              receiverName: praiseItem.receiver.name,
+              receiver: praiseItem.receiver,
               count: qi > -1 ? q[qi].count + 1 : 1,
               done: qi > -1 ? q[qi].done + done : done,
             };
