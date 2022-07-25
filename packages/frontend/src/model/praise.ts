@@ -21,7 +21,7 @@ export type PraisePageParams = {
 };
 
 /**
- * Stores individual Praise items linked to one or more @PraiseIdList
+ * Atom that stores individual Praise items linked to one or more @PraiseIdList
  */
 export const SinglePraise = atomFamily<PraiseDto | undefined, string>({
   key: 'SinglePraise',
@@ -30,6 +30,7 @@ export const SinglePraise = atomFamily<PraiseDto | undefined, string>({
 
 /**
  * Selector query to fetch a single praise from the api.
+ * @returns Full response/error returned by server.
  */
 const SinglePraiseDetailsQuery = selectorFamily({
   key: 'SinglePraiseDetailsQuery',
@@ -43,9 +44,9 @@ const SinglePraiseDetailsQuery = selectorFamily({
 });
 
 /**
- * Hook that fetches a single praise from the api
+ * Fetches a single praise from the api
  */
-export const useSinglePraiseDetails = (
+export const useLoadSinglePraiseDetails = (
   praiseId: string
 ): AxiosResponse<PraiseDto> | AxiosError => {
   const response = useRecoilValue(SinglePraiseDetailsQuery(praiseId));
@@ -59,10 +60,7 @@ export const useSinglePraiseDetails = (
 };
 
 /**
- * Stores lists of Praise Ids. The following lists exists:
- * - All praise / start page
- * - My praise
- * - Period Praise for a receiver assigned to a quantifier
+ * Atom that stores lists of Praise Ids.
  */
 export const PraiseIdList = atomFamily<string[] | undefined, string>({
   key: 'PraiseIdList',
@@ -101,7 +99,8 @@ type AllPraiseQueryParameters = {
 };
 
 /**
- * Query selector to fetch a list of praise from the api.
+ * Selector to fetch a list of praise from the api.
+ * @param query Sorting, filtering and pagination.
  */
 const AllPraiseQuery = selectorFamily<
   AxiosResponse<PaginatedResponseBody<PraiseDto>> | AxiosError,
@@ -124,9 +123,6 @@ const AllPraiseQuery = selectorFamily<
     },
 });
 
-/**
- *
- */
 interface AllPraiseQueryPaginationInterface {
   currentPage: number;
   totalPages: number;
@@ -147,9 +143,11 @@ export const AllPraiseQueryPagination = atomFamily<
 });
 
 /**
- * Hook to fetch praise from the api and save
+ * Fetch praise from the api and save.
+ * @param queryParams Sorting, filtering and pagination.
+ * @param listKey The listKey pointing to the list to store the praise ids in.
  */
-export const useAllPraiseQuery = (
+export const useAllPraise = (
   queryParams: AllPraiseQueryParameters,
   listKey: string
 ): AxiosResponse<PaginatedResponseBody<PraiseDto>> | AxiosError => {
@@ -235,7 +233,7 @@ type useQuantifyPraiseReturn = {
 };
 
 /**
- * Hook that returns a function to use for closing a period
+ * Returns a function used to for close a period
  */
 export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
   const apiAuthClient = useApiAuthClient();
@@ -270,6 +268,9 @@ type useQuantifyMultiplePraiseReturn = {
   quantifyMultiple: (score: number, praiseIds: string[]) => Promise<void>;
 };
 
+/**
+ * Returns a function used to quantify multiple praise.
+ */
 export const useQuantifyMultiplePraise =
   (): useQuantifyMultiplePraiseReturn => {
     const apiAuthClient = useApiAuthClient();

@@ -2,9 +2,10 @@ import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
 import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 import { PeriodPageParams } from '@/model/periods';
 import { ScrollableDialog } from '@/components/ScrollableDialog';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { PraiseAutosuggest } from './PraiseAutosuggest';
 
 interface Props {
@@ -22,9 +23,11 @@ export const DuplicateSearchDialog = ({
 }: Props): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
 
-  const duplicatePraisePercentage = usePeriodSettingValueRealized(
-    periodId,
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
+  const duplicatePraisePercentage = useRecoilValue(
+    SinglePeriodSettingValueRealized({
+      periodId,
+      key: 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
+    })
   ) as number;
 
   if (!selectedPraise) return null;

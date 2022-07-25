@@ -11,7 +11,7 @@ import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
 import {
   PraisePageParams,
-  useSinglePraiseDetails,
+  useLoadSinglePraiseDetails,
   SinglePraise,
 } from '@/model/praise';
 import { classNames } from '@/utils/index';
@@ -38,7 +38,7 @@ const DuplicatePraiseLabel = ({
 export const PraiseDetailTable = (): JSX.Element => {
   const { praiseId } = useParams<PraisePageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  useSinglePraiseDetails(praiseId);
+  useLoadSinglePraiseDetails(praiseId);
   const praise = useRecoilValue(SinglePraise(praiseId));
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
 

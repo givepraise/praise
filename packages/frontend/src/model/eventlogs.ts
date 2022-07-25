@@ -13,6 +13,11 @@ export type AllEventLogsQueryParameters = {
   search: string;
 };
 
+/**
+ * Fetch all event logs.
+ * @param query Sorting, filtering and pagination.
+ * @returns Full response/error returned by server.
+ */
 export const AllEventLogsQuery = selectorFamily({
   key: 'AllEventLogsQuery',
   get:
@@ -29,6 +34,11 @@ export const AllEventLogsQuery = selectorFamily({
     },
 });
 
+/**
+ * Fetch all event logs.
+ * @param query Sorting, filtering and pagination.
+ * @returns Paginated event log response if query is successful.
+ */
 export const AllEventLogs = selectorFamily({
   key: 'AllEventLogs',
   get:
@@ -41,6 +51,10 @@ export const AllEventLogs = selectorFamily({
     },
 });
 
+/**
+ * Fetch all event log types.
+ * @returns Full response/error returned by server.
+ */
 export const AllEventLogTypesQuery = selector({
   key: 'AllEventLogTypesQuery',
   get: ({
@@ -54,6 +68,10 @@ export const AllEventLogTypesQuery = selector({
   },
 });
 
+/**
+ * Fetch all event logs.
+ * @returns Paginated event log types response if query is successful.
+ */
 export const AllEventLogTypes = selector({
   key: 'AllEventLogTypes',
   get: ({ get }): EventLogTypeDto[] | undefined => {

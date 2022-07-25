@@ -13,7 +13,7 @@ export const ReceiverSummaryTable = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
   usePeriodReceiverPraise(periodId, receiverId);
   const praiseList = useRecoilValue(
-    AllPraiseList(periodReceiverPraiseListKey(receiverId))
+    AllPraiseList(periodReceiverPraiseListKey(periodId, receiverId))
   );
 
   if (!praiseList) return null;

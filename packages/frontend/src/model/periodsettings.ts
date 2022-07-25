@@ -1,10 +1,5 @@
 import { AxiosError, AxiosResponse } from 'axios';
-import {
-  atomFamily,
-  selectorFamily,
-  useRecoilCallback,
-  useRecoilValue,
-} from 'recoil';
+import { atomFamily, selectorFamily, useRecoilCallback } from 'recoil';
 import { PeriodSettingDto } from 'api/dist/periodsettings/types';
 import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from './api';
@@ -14,6 +9,9 @@ const instanceOfPeriodSetting = (object: any): object is PeriodSettingDto => {
   return '_id' in object;
 };
 
+/**
+ * Atom that fetches all period settings when initialised.
+ */
 export const AllPeriodSettings = atomFamily<
   PeriodSettingDto[] | undefined,
   string
@@ -44,6 +42,9 @@ type SinglePeriodSettingParams = {
   key: string;
 };
 
+/**
+ * Selector to get a single period setting.
+ */
 export const SinglePeriodSetting = selectorFamily({
   key: 'SinglePeriodSetting',
   get:
@@ -67,12 +68,28 @@ export const SinglePeriodSetting = selectorFamily({
     },
 });
 
+/**
+ * Selector to get an individual setting value in its type.
+ */
+export const SinglePeriodSettingValueRealized = selectorFamily({
+  key: 'SinglePeriodSettingValueRealized',
+  get:
+    (params: SinglePeriodSettingParams) =>
+    ({ get }): string | number | number[] | boolean | File | undefined => {
+      const setting = get(SinglePeriodSetting(params));
+      return setting && setting.valueRealized;
+    },
+});
+
 export type useSetSettingReturn = {
   setSetting: (
     setting: PeriodSettingDto
   ) => Promise<AxiosResponse<PeriodSettingDto> | AxiosError | undefined>;
 };
 
+/**
+ * Returns function to set one individual period setting.
+ */
 export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
   const apiAuthClient = useApiAuthClient();
 
@@ -107,14 +124,4 @@ export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
   );
 
   return { setSetting };
-};
-
-export const usePeriodSettingValueRealized = (
-  periodId: string,
-  key: string
-): string | number | number[] | boolean | File | undefined => {
-  const setting = useRecoilValue(SinglePeriodSetting({ periodId, key }));
-  if (!setting) return undefined;
-
-  return setting.valueRealized;
 };

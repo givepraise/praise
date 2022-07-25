@@ -12,7 +12,7 @@ import {
   PeriodPageParams,
   SinglePeriod,
   useReplaceQuantifier,
-  useDetailedSinglePeriod,
+  useLoadSinglePeriodDetails,
 } from '@/model/periods';
 import { Notice } from '@/components/Notice';
 import { classNames } from '@/utils/index';
@@ -24,7 +24,7 @@ import { ReplaceQuantifierDialog } from './ReplaceQuantifierDialog';
 export const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  useDetailedSinglePeriod(periodId);
+  useLoadSinglePeriodDetails(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
 
   const [isReplaceQuantifierDialogOpen, setIsReplaceQuantifierDialogOpen] =

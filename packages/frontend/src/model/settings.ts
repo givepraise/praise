@@ -9,6 +9,9 @@ const instanceOfSetting = (object: any): object is SettingDto => {
   return '_id' in object;
 };
 
+/**
+ * Atom that fetches all global settings when initialised.
+ */
 export const AllSettings = atom<SettingDto[] | undefined>({
   key: 'AllSettings',
   default: undefined,
@@ -31,6 +34,9 @@ export const AllSettings = atom<SettingDto[] | undefined>({
   ],
 });
 
+/**
+ * Selector to get a single setting.
+ */
 export const SingleSetting = selectorFamily({
   key: 'SingleSetting',
   get:
@@ -59,6 +65,9 @@ type useSetSettingReturn = {
   ) => Promise<AxiosResponse<SettingDto> | AxiosError | undefined>;
 };
 
+/**
+ * Returns function to set one individual setting.
+ */
 export const useSetSetting = (): useSetSettingReturn => {
   const apiAuthClient = useApiAuthClient();
 

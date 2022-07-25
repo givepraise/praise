@@ -13,9 +13,8 @@ import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   SinglePeriod,
-  usePeriodQuantifierPraise,
 } from '@/model/periods';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { getQuantificationReceiverStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
 import { QuantifyTable } from './components/QuantifyTable';
@@ -38,10 +37,11 @@ const DoneLabel = (): JSX.Element => {
 
 const PeriodMessage = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
-  usePeriodQuantifierPraise(periodId);
-  const usePseudonyms = usePeriodSettingValueRealized(
-    periodId,
-    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+  const usePseudonyms = useRecoilValue(
+    SinglePeriodSettingValueRealized({
+      periodId,
+      key: 'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS',
+    })
   ) as boolean;
   const quantifierReceiverData = getQuantificationReceiverStats(
     useRecoilValue(PeriodQuantifierReceivers(periodId)),

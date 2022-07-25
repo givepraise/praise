@@ -49,8 +49,9 @@ export type PeriodAndReceiverPageParams = {
 };
 
 /**
- * Atom fetching all periods when initialised. `quantifiers`, `receivers`
- * and `settings` are not returned when listing all periods.
+ * Atom that fetches all periods when initialised. `quantifiers`, `receivers`
+ * and `settings` are not returned but need to be separately loaded using
+ * @DetailedSinglePeriodQuery
  */
 export const AllPeriods = atom<PeriodDetailsDto[] | undefined>({
   key: 'AllPeriods',
@@ -78,7 +79,7 @@ export const AllPeriods = atom<PeriodDetailsDto[] | undefined>({
 });
 
 /**
- * One individual Period
+ * Selector that returns one individual Period.
  */
 export const SinglePeriod = selectorFamily({
   key: 'SinglePeriod',
@@ -108,9 +109,6 @@ export const SinglePeriod = selectorFamily({
     },
 });
 
-/**
- * Selector to get details for a single period from local state (AllPeriods).
- */
 export const SinglePeriodByDate = selectorFamily({
   key: 'SinglePeriodByDate',
   get:
@@ -146,7 +144,7 @@ const DetailedSinglePeriodQuery = selectorFamily({
  * Fetch all details for a period, including quantifiers and receivers.
  * Update period cached in global state.
  */
-export const useDetailedSinglePeriod = (
+export const useLoadSinglePeriodDetails = (
   periodId: string
 ): AxiosResponse<PeriodDetailsDto> | AxiosError => {
   const response = useRecoilValue(DetailedSinglePeriodQuery(periodId));
@@ -167,6 +165,9 @@ type useCreatePeriodReturn = {
   ) => Promise<AxiosResponse<PraiseDetailsDto> | AxiosError>;
 };
 
+/**
+ * Returns function used to create a period.
+ */
 export const useCreatePeriod = (): useCreatePeriodReturn => {
   const apiAuthClient = useApiAuthClient();
 
@@ -197,7 +198,7 @@ type useUpdatePeriodReturn = {
 };
 
 /**
- * Hook that returns a function to use for updating a period.
+ * Returns function used to update a period.
  */
 export const useUpdatePeriod = (): useUpdatePeriodReturn => {
   const apiAuthClient = useApiAuthClient();
@@ -229,7 +230,7 @@ type useClosePeriodReturn = {
 };
 
 /**
- * Hook that returns a function to use for closing a period.
+ * Returns function used to close a period.
  */
 export const useClosePeriod = (): useClosePeriodReturn => {
   const apiAuthClient = useApiAuthClient();
@@ -255,7 +256,9 @@ export const useClosePeriod = (): useClosePeriodReturn => {
 };
 
 /**
- * Quantifier pool size requirements query
+ * Fetches pool size requirements, including pool size needed, deficit
+ * size, etc.
+ * @returns Full response/error returned by server.
  */
 export const PeriodPoolRequirementsQuery = selectorFamily({
   key: 'PeriodPoolRequirementsQuery',
@@ -270,6 +273,11 @@ export const PeriodPoolRequirementsQuery = selectorFamily({
     },
 });
 
+/**
+ * Fetches pool size requirements, including pool size needed, deficit
+ * size, etc.
+ * @returns Pool size requirements if query was successful.
+ */
 export const PeriodPoolRequirements = selectorFamily({
   key: 'PeriodPoolRequirements',
   get:
@@ -289,22 +297,13 @@ type useAssignQuantifiersReturn = {
 };
 
 /**
- * Hook that returns function used to assign quantifiers
+ * Returns function used to assign quantifiers
  */
 export const useAssignQuantifiers = (
   periodId: string
 ): useAssignQuantifiersReturn => {
   const [period, setPeriod] = useRecoilState(SinglePeriod(periodId));
   const apiAuthClient = useApiAuthClient();
-
-  // const saveIndividualPraise = useRecoilCallback(
-  //   ({ set }) =>
-  //     (praiseList: PraiseDto[]): void => {
-  //       praiseList.forEach((praise) => {
-  //         set(SinglePraise(praise._id), praise);
-  //       });
-  //     }
-  // );
 
   const assignQuantifiers = async (): Promise<
     AxiosResponse<PeriodDetailsDto> | AxiosError | undefined
@@ -315,10 +314,6 @@ export const useAssignQuantifiers = (
       {}
     );
     if (isResponseOk(response)) {
-      // const praiseList = response.data as PraiseDto[];
-      // if (Array.isArray(praiseList) && praiseList.length > 0) {
-      //   saveIndividualPraise(praiseList);
-      // }
       const updatedPeriod: PeriodDetailsDto = {
         ...period,
         status: 'QUANTIFY' as PeriodStatusType,
@@ -363,7 +358,7 @@ type PeriodReceiverPraiseQueryParams = {
 };
 
 /**
- * Selector query that fetches all praise received by a user for a period.
+ * Fetches all praise received by a user for a period.
  */
 const PeriodReceiverPraiseQuery = selectorFamily({
   key: 'PeriodReceiverPraiseQuery',
@@ -380,7 +375,9 @@ const PeriodReceiverPraiseQuery = selectorFamily({
 });
 
 /**
- * Hook that fetches all praise received by a user for a period.
+ * Fetches all praise received by a user for a period. Saves praise items
+ * to global state and creates a Praise Id list with the name
+ * `PERIOD_RECEIVER_PRAISE_[periodId]_[receiverId]`.
  */
 export const usePeriodReceiverPraise = (
   periodId: string,
@@ -393,7 +390,7 @@ export const usePeriodReceiverPraise = (
     })
   );
 
-  const listKey = periodReceiverPraiseListKey(receiverId);
+  const listKey = periodReceiverPraiseListKey(periodId, receiverId);
   const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
 
   const saveAllPraiseIdList = useRecoilCallback(
@@ -431,8 +428,9 @@ export const usePeriodReceiverPraise = (
 type useExportPraiseReturn = {
   exportPraise: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
 };
+
 /**
- * Hook that exports all praise in a period as csv data.
+ * Returns function that exports all praise in a period as csv data.
  */
 export const useExportPraise = (): useExportPraiseReturn => {
   const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
@@ -483,7 +481,9 @@ const PeriodQuantifierPraiseQuery = selectorFamily({
 });
 
 /**
- * Hook to fetch and store all praise assigned to the currently active quantifier for a period
+ * Fetches all praise assigned to the currently active quantifier for a period.
+ * Saves praise items to global state and creates a Praise Id list with the name
+ * `PERIOD_RECEIVER_PRAISE_[periodId]_[receiverId]`.
  */
 export const usePeriodQuantifierPraise = (
   periodId: string
@@ -540,7 +540,7 @@ export interface QuantifierReceiverData {
 }
 
 /**
- * Period selector that returns @QuantifierReceiverData for all receivers the currently active
+ * Selector that returns @QuantifierReceiverData for all receivers the currently active
  * quantifer have been assigned to.
  */
 export const PeriodQuantifierReceivers = selectorFamily({
@@ -607,7 +607,7 @@ type PeriodQuantifierReceiverParams = {
 };
 
 /**
- * Period selector that returns all Praise for a receiver assigned to the
+ * Selector that returns all Praise for a receiver assigned to the
  * currently active quantifier.
  */
 export const PeriodQuantifierReceiverPraise = selectorFamily({
@@ -641,7 +641,7 @@ type useReplaceQuantifierReturn = {
 };
 
 /**
- * Hook that returns function used to assign quantifiers
+ * Returns function used to replace quantifiers.
  */
 export const useReplaceQuantifier = (
   periodId: string

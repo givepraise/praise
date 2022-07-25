@@ -7,7 +7,7 @@ import sortBy from 'lodash/sortBy';
 import {
   PeriodPageParams,
   SinglePeriod,
-  useDetailedSinglePeriod,
+  useLoadSinglePeriodDetails,
 } from '@/model/periods';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { Notice } from '@/components/Notice';
@@ -17,7 +17,7 @@ import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 export const ReceiverTable = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  useDetailedSinglePeriod(periodId);
+  useLoadSinglePeriodDetails(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
 
   const ReceiverTableInner = (): JSX.Element => {

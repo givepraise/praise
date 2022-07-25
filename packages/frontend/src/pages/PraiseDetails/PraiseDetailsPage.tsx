@@ -6,7 +6,7 @@ import { BreadCrumb } from '@/components/BreadCrumb';
 import { SinglePeriodByDate } from '@/model/periods';
 import {
   PraisePageParams,
-  useSinglePraiseDetails,
+  useLoadSinglePraiseDetails,
   SinglePraise,
 } from '@/model/praise';
 import { Praise } from '@/components/praise/Praise';
@@ -15,7 +15,7 @@ import { PraiseDetailTable } from './components/PraiseDetailTable';
 
 const PraiseDetailsPage = (): JSX.Element | null => {
   const { praiseId } = useParams<PraisePageParams>();
-  useSinglePraiseDetails(praiseId); // Load additional details for praise
+  useLoadSinglePraiseDetails(praiseId); // Load additional details for praise
   const praise = useRecoilValue(SinglePraise(praiseId));
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const backLinkUrl =
