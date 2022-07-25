@@ -273,5 +273,5 @@ export const firstTimePraiserInfo = async (): Promise<string> => {
   if (msg) {
     return msg;
   }
-  return 'FIRST TIME PRAISER MESSAGE';
+  return 'FIRST TIME PRAISER MESSAGE (message not set)';
 };
