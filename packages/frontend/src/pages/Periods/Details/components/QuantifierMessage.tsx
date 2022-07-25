@@ -12,6 +12,8 @@ export const QuantifierMessage = (): JSX.Element | null => {
     useRecoilValue(PeriodQuantifierReceivers(periodId))
   );
 
+  if (!quantificationStats) return null;
+
   return (
     <div className="mb-5 praise-box-wide">
       <div>
