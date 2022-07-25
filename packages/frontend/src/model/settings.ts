@@ -10,7 +10,7 @@ import {
 } from 'recoil';
 import { SettingDto } from 'api/dist/settings/types';
 import { makeApiAuthClient } from '@/utils/api';
-import { ApiAuthGet, useAuthApiQuery, isResponseOk } from './api';
+import { ApiAuthGet, useAuthApiQuery, isResponseOk, ExternalGet } from './api';
 
 export interface Setting {
   _id: string;
@@ -150,4 +150,29 @@ export const useSetSetting = (): useSetSettingReturn => {
   );
 
   return { setSetting };
+};
+
+export const GithubVersionQuery = selector({
+  key: 'GithubVersionQuery',
+  get: ({ get }) => {
+    const repoOwner = process.env.REACT_APP_GITHUB_REPO_OWNER;
+    const repoName = process.env.REACT_APP_GITHUB_REPO_NAME;
+
+    return get(
+      ExternalGet({
+        url: `https://api.github.com/repos/${repoOwner}/${repoName}/releases/latest`,
+      })
+    );
+  },
+});
+
+interface IGithubResponse {
+  name: string;
+}
+
+export const useGithubVersionQuery = (): string => {
+  const githubVersionResponse = useRecoilValue(GithubVersionQuery);
+  const githubResponse = githubVersionResponse.data as IGithubResponse;
+
+  return githubResponse.name;
 };
