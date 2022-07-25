@@ -4,13 +4,14 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { debounce } from '@mui/material';
+import { useRecoilValue } from 'recoil';
 import { LoaderSpinner } from '@/components/LoaderSpinner';
 import { MultiselectInput } from '@/components/form/MultiselectInput';
 import { SearchInput } from '@/components/form/SearchInput';
 import { SelectInput } from '@/components/form/SelectInput';
 import {
   AllEventLogsQueryParameters,
-  useAllEventLogTypes,
+  AllEventLogTypes,
 } from '@/model/eventlogs';
 import { BreadCrumb } from '@/components/BreadCrumb';
 import { EventLogsList } from './components/EventLogsList';
@@ -50,8 +51,7 @@ const EventLogsPage = (): JSX.Element => {
 
   const [page, setPage] = useState<number>(1);
 
-  const { types } = useAllEventLogTypes();
-  const filterOptions = types.docs;
+  const eventLogtypes = useRecoilValue(AllEventLogTypes);
 
   const [queryParameters, setQueryParameters] = useState(
     defaultQueryParameters
@@ -97,15 +97,17 @@ const EventLogsPage = (): JSX.Element => {
         <div className="flex mb-8">
           {/* Filter */}
           <div className="w-3/12 mt-5 mb-5 ml-5 mr-4">
-            <MultiselectInput
-              handleChange={(e): void => {
-                setSelectedFilters(e);
-                setPage(1);
-              }}
-              selected={selectedFilters}
-              options={filterOptions}
-              noSelectedMessage="All log items"
-            />
+            {eventLogtypes && (
+              <MultiselectInput
+                handleChange={(e): void => {
+                  setSelectedFilters(e);
+                  setPage(1);
+                }}
+                selected={selectedFilters}
+                options={eventLogtypes}
+                noSelectedMessage="All log items"
+              />
+            )}
           </div>
 
           {/* Search */}

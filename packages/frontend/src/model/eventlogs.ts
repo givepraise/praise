@@ -1,7 +1,8 @@
 import { EventLogDto, EventLogTypeDto } from 'api/dist/eventlog/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
-import { useEffect, useState } from 'react';
-import { useApiAuthClient } from '@/utils/api';
+import { selector, selectorFamily } from 'recoil';
+import { AxiosError, AxiosResponse } from 'axios';
+import { ApiAuthGet, isResponseOk } from './api';
 
 export type AllEventLogsQueryParameters = {
   sortColumn: string;
@@ -12,58 +13,53 @@ export type AllEventLogsQueryParameters = {
   search: string;
 };
 
-export const useAllEventLogs = (
-  queryParameters: AllEventLogsQueryParameters
-): {
-  data: PaginatedResponseBody<EventLogDto>;
-  loading: boolean;
-} => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [logs, setLogs] = useState<PaginatedResponseBody<EventLogDto>>({
-    docs: [],
-  });
-  const apiAuthClient = useApiAuthClient();
+export const AllEventLogsQuery = selectorFamily({
+  key: 'AllEventLogsQuery',
+  get:
+    (query: AllEventLogsQueryParameters) =>
+    ({
+      get,
+    }): AxiosResponse<PaginatedResponseBody<EventLogDto>> | AxiosError => {
+      const qs = Object.keys(query)
+        .map((key) => `${key}=${query[key]}`)
+        .join('&');
+      return get(ApiAuthGet({ url: `/eventlogs/all${qs ? `?${qs}` : ''}` })) as
+        | AxiosResponse<PaginatedResponseBody<EventLogDto>>
+        | AxiosError;
+    },
+});
 
-  useEffect(() => {
-    const fetchData = async (): Promise<void> => {
-      setLoading(true);
+export const AllEventLogs = selectorFamily({
+  key: 'AllEventLogs',
+  get:
+    (query: AllEventLogsQueryParameters) =>
+    ({ get }): PaginatedResponseBody<EventLogDto> | undefined => {
+      const response = get(AllEventLogsQuery(query));
+      if (isResponseOk(response)) {
+        return response.data;
+      }
+    },
+});
 
-      const response = await apiAuthClient.get('/eventlogs/all', {
-        params: queryParameters,
-      });
+export const AllEventLogTypesQuery = selector({
+  key: 'AllEventLogTypesQuery',
+  get: ({
+    get,
+  }): AxiosResponse<PaginatedResponseBody<EventLogTypeDto>> | AxiosError => {
+    return get(
+      ApiAuthGet({
+        url: '/eventlogs/types',
+      })
+    ) as AxiosResponse<PaginatedResponseBody<EventLogTypeDto>> | AxiosError;
+  },
+});
 
-      setLogs(response.data);
-      setLoading(false);
-    };
-
-    void fetchData();
-  }, [setLogs, setLoading, queryParameters, apiAuthClient]);
-
-  return { data: logs, loading };
-};
-
-export const useAllEventLogTypes = (): {
-  types: PaginatedResponseBody<EventLogTypeDto>;
-  loading: boolean;
-} => {
-  const apiAuthClient = useApiAuthClient();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [types, setTypes] = useState<PaginatedResponseBody<EventLogTypeDto>>({
-    docs: [],
-  });
-
-  useEffect(() => {
-    const fetchData = async (): Promise<void> => {
-      setLoading(true);
-
-      const response = await apiAuthClient.get('/eventlogs/types');
-
-      setTypes(response.data);
-      setLoading(false);
-    };
-
-    void fetchData();
-  }, [setTypes, setLoading, apiAuthClient]);
-
-  return { types, loading };
-};
+export const AllEventLogTypes = selector({
+  key: 'AllEventLogTypes',
+  get: ({ get }): EventLogTypeDto[] | undefined => {
+    const response = get(AllEventLogTypesQuery);
+    if (isResponseOk(response)) {
+      return response.data.docs;
+    }
+  },
+});
