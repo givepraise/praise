@@ -21,22 +21,20 @@ export const AllPeriodSettings = atomFamily<
   key: 'AllPeriodSettings',
   default: undefined,
   effects: (periodId) => [
-    ({ setSelf, trigger, getPromise }): void => {
-      if (trigger === 'get' && periodId !== undefined) {
-        const apiGet = async (): Promise<void> => {
-          const response = await getPromise(
-            ApiAuthGet({
-              url: `/periodsettings/${periodId}/settings/all`,
-            })
-          );
+    ({ setSelf, getPromise }): void => {
+      setSelf(
+        getPromise(
+          ApiAuthGet({
+            url: `/periodsettings/${periodId}/settings/all`,
+          })
+        ).then((response) => {
           if (isResponseOk(response)) {
             const periodSettings = response.data as PeriodSettingDto[];
             if (Array.isArray(periodSettings) && periodSettings.length > 0)
-              setSelf(periodSettings);
+              return periodSettings;
           }
-        };
-        void apiGet();
-      }
+        })
+      );
     },
   ],
 });

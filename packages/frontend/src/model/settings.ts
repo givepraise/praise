@@ -13,22 +13,20 @@ export const AllSettings = atom<SettingDto[] | undefined>({
   key: 'AllSettings',
   default: undefined,
   effects: [
-    ({ setSelf, trigger, getPromise }): void => {
-      if (trigger === 'get') {
-        const apiGet = async (): Promise<void> => {
-          const response = await getPromise(
-            ApiAuthGet({
-              url: '/settings/all',
-            })
-          );
+    ({ setSelf, getPromise }): void => {
+      setSelf(
+        getPromise(
+          ApiAuthGet({
+            url: '/settings/all',
+          })
+        ).then((response) => {
           if (isResponseOk(response)) {
             const periodSettings = response.data as SettingDto[];
             if (Array.isArray(periodSettings) && periodSettings.length > 0)
-              setSelf(periodSettings);
+              return periodSettings;
           }
-        };
-        void apiGet();
-      }
+        })
+      );
     },
   ],
 });
