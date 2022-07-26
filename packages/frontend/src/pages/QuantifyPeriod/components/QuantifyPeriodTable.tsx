@@ -13,7 +13,6 @@ import {
   QuantifierReceiverData,
   usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
-import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
 const DoneLabel = (): JSX.Element => {
