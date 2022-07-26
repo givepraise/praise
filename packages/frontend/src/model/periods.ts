@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
-import { UserDto, UserRole } from 'api/dist/user/types';
+import { UserRole } from 'api/dist/user/types';
 import {
   PeriodCreateInput,
   PeriodDetailsDto,
@@ -643,8 +643,6 @@ export const PeriodQuantifierReceivers = selectorFamily({
               quantification.duplicatePraise
                 ? 1
                 : 0;
-
-            console.log('RECEIVER:', praiseItem.receiver);
 
             const qd: QuantifierReceiverData = {
               periodId,
