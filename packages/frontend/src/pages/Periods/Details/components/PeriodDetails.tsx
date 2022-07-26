@@ -11,7 +11,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { getPreviousPeriod } from '@/utils/periods';
 import { saveLocalFile } from '@/utils/file';
-import { formatIsoDateUTC } from '@/utils/date';
+import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { AllQuantifierUsers } from '@/model/users';
 import {
   AllPeriods,
@@ -104,9 +104,9 @@ export const PeriodDetails = (): JSX.Element | null => {
   return (
     <div>
       <div>
-        Period start:{' '}
+        <span className="pr-2">Period start:</span>
         {previousPeriod
-          ? formatIsoDateUTC(previousPeriod.endDate)
+          ? formatIsoDateUTC(previousPeriod.endDate, DATE_FORMAT)
           : 'Dawn of time'}
       </div>
       {!isAdmin ? (

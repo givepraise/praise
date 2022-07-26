@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { classNames } from '@/utils/index';
-import { formatIsoDateUTC } from '@/utils/date';
+import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { AllPeriods } from '@/model/periods';
 import { InlineLabel } from '@/components/InlineLabel';
 
@@ -26,7 +26,7 @@ export const PeriodsTable = (): JSX.Element => {
         className: 'text-left',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): string => {
-          return formatIsoDateUTC(data.value);
+          return formatIsoDateUTC(data.value, DATE_FORMAT);
         },
       },
       {

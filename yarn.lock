@@ -3105,32 +3105,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reach/auto-id@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@reach/auto-id@npm:0.16.0"
-  dependencies:
-    "@reach/utils": 0.16.0
-    tslib: ^2.3.0
-  peerDependencies:
-    react: ^16.8.0 || 17.x
-    react-dom: ^16.8.0 || 17.x
-  checksum: 80211f7db1c0e3b107e2c1d3fe8055e7e41d7399b51ff0da5f0c9df43d90b77aa4a31a896545c699f9629b3fbc3c762ee0518de70faf8112098886c6759d3f15
-  languageName: node
-  linkType: hard
-
-"@reach/utils@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@reach/utils@npm:0.16.0"
-  dependencies:
-    tiny-warning: ^1.0.3
-    tslib: ^2.3.0
-  peerDependencies:
-    react: ^16.8.0 || 17.x
-    react-dom: ^16.8.0 || 17.x
-  checksum: 36bc0eb41a71798eb6186b23de265ba709e51dae5bf214fb8505c66bb3f2e6a41bb2401457350436ba89ca9e3a50f93a04fe7c33d15648ce11e568a85622d770
-  languageName: node
-  linkType: hard
-
 "@rollup/plugin-babel@npm:^5.2.0":
   version: 5.3.1
   resolution: "@rollup/plugin-babel@npm:5.3.1"
@@ -9604,7 +9578,6 @@ __metadata:
     react: ^17.0.2
     react-bottom-scroll-listener: ^5.0.0
     react-csv: ^2.2.2
-    react-day-picker: ^8.0.2
     react-dom: ^17.0.2
     react-final-form: ^6.5.7
     react-hot-toast: ^2.2.0
@@ -15546,18 +15519,6 @@ __metadata:
   version: 2.2.2
   resolution: "react-csv@npm:2.2.2"
   checksum: a6ffabd67fc9ba1478b003977923cfa3ccdd9553ac5edcc3824b4a5ea849b87cb2acfcc0781b0cd0a259bf56e6a7dfd35cfc307576aa51819fc5a32b03118fab
-  languageName: node
-  linkType: hard
-
-"react-day-picker@npm:^8.0.2":
-  version: 8.0.7
-  resolution: "react-day-picker@npm:8.0.7"
-  dependencies:
-    "@reach/auto-id": 0.16.0
-  peerDependencies:
-    date-fns: ^2.28.0
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: b925269c1e9ddf3ed0894eb1845ecbdc62669872d9efd2be7959019ff24a9d74006316bd19c4e69c3d614cb99238fd3fa463c657722d88b922092142d98a5e01
   languageName: node
   linkType: hard
 
