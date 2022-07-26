@@ -68,7 +68,7 @@ export const praiseHandler: CommandHandler = async (
   }
 
   const userAccount = await getUserAccount(member as GuildMember);
-  const praiseItems = await PraiseModel.find({
+  const praiseItemsCount = await PraiseModel.countDocuments({
     giver: userAccount._id,
   });
 
@@ -184,7 +184,7 @@ export const praiseHandler: CommandHandler = async (
     await msg.reply(await selfPraiseWarning());
   }
 
-  if (praiseItems.length === 0) {
+  if (praiseItemsCount === 0) {
     await msg.reply(await firstTimePraiserInfo());
   }
 
