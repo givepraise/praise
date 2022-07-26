@@ -65,5 +65,5 @@ export const getQuantificationReceiverStats = (
 ): QuantifierReceiverData | undefined => {
   if (!receiverId || !data || !Array.isArray(data)) return undefined;
 
-  return data.find((qrd) => qrd.receiverId === receiverId);
+  return data.find((qrd) => qrd.receiver._id === receiverId);
 };

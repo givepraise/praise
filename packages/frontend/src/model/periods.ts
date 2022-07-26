@@ -7,6 +7,7 @@ import {
   VerifyQuantifierPoolSizeResponse,
 } from 'api/dist/period/types';
 import { PraiseDetailsDto, PraiseDto } from 'api/dist/praise/types';
+import { UserAccountDto } from 'api/dist/useraccount/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
@@ -27,7 +28,6 @@ import { useApiAuthClient } from '@/utils/api';
 import { ApiAuthGet, isResponseOk } from './api';
 import { ActiveUserId } from './auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfPeriod = (object: any): object is PeriodDetailsDto => {
   return '_id' in object;
@@ -533,8 +533,7 @@ export const usePeriodQuantifierPraise = (
  */
 export interface QuantifierReceiverData {
   periodId: string;
-  receiverId: string;
-  receiverName: string;
+  receiver: UserAccountDto;
   count: number;
   done: number;
 }
@@ -565,7 +564,7 @@ export const PeriodQuantifierReceivers = selectorFamily({
             if (quantification.quantifier !== userId) return;
 
             const qi = q.findIndex(
-              (item) => item.receiverId === praiseItem.receiver._id
+              (item) => item.receiver._id === praiseItem.receiver._id
             );
 
             const done =
@@ -577,8 +576,7 @@ export const PeriodQuantifierReceivers = selectorFamily({
 
             const qd: QuantifierReceiverData = {
               periodId,
-              receiverId: praiseItem.receiver._id,
-              receiverName: praiseItem.receiver.name,
+              receiver: praiseItem.receiver,
               count: qi > -1 ? q[qi].count + 1 : 1,
               done: qi > -1 ? q[qi].done + done : done,
             };
@@ -664,8 +662,13 @@ export const useReplaceQuantifier = (
           );
 
         if (isResponseOk(response)) {
-          set(SinglePeriod(response.data.period._id), response.data.period);
-          response.data.praises.forEach((praise) => {
+          const periodReplaceQuantifierDto =
+            response.data as PeriodReplaceQuantifierDto;
+          set(
+            SinglePeriod(periodReplaceQuantifierDto.period._id),
+            periodReplaceQuantifierDto.period
+          );
+          periodReplaceQuantifierDto.praises.forEach((praise) => {
             set(SinglePraise(praise._id), praise);
           });
         }

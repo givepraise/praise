@@ -32,9 +32,7 @@ export const QuantifyTable = ({
   periodId,
   receiverId,
 }: Props): JSX.Element | null => {
-  const [searchValue, setSearchValue] = React.useState<string | undefined>(
-    undefined
-  );
+  const [searchValue, setSearchValue] = React.useState<string>('');
 
   const data = useRecoilValue(
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
@@ -212,6 +210,8 @@ export const QuantifyTable = ({
               <SearchInput
                 handleChange={(e): void => handleSearchInput(e)}
                 placeholder="Filter"
+                value={searchValue}
+                handleClear={(): void => handleSearchInput('')}
               />
             </div>
           </div>

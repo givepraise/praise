@@ -4,7 +4,7 @@ import { selectorFamily, SerializableParam } from 'recoil';
 import { AccessToken } from './auth';
 import { makeApiAuthClient } from '../utils/api';
 
-type RequestParams = {
+export type RequestParams = {
   [key: string]: SerializableParam;
   url: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

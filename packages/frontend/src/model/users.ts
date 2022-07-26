@@ -6,6 +6,18 @@ import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from './api';
 import { AllPeriods } from './periods';
 
+interface roleOptionsProps {
+  value: string;
+  label: string;
+}
+
+export const roleOptions = [
+  { label: 'All users', value: UserRole.USER },
+  { label: 'Admins', value: UserRole.ADMIN },
+  { label: 'Forwarders', value: UserRole.FORWARDER },
+  { label: 'Quantifiers', value: UserRole.QUANTIFIER },
+];
+
 export const AllUsers = atom<UserDto[] | undefined>({
   key: 'AllUsers',
   default: undefined,
@@ -25,6 +37,31 @@ export const AllUsers = atom<UserDto[] | undefined>({
       );
     },
   ],
+});
+
+export const UsersTableData = atom<UserDto[] | undefined>({
+  key: 'UsersTableData',
+  default: undefined,
+});
+
+export const UsersTableSelectedRole = atom<roleOptionsProps>({
+  key: 'UsersTableSelectedRole',
+  default: roleOptions[0],
+});
+
+export const UsersTableFilter = atom<string>({
+  key: 'UsersTableFilter',
+  default: '',
+});
+
+export const UsersTablePage = atom<number>({
+  key: 'UsersTablePage',
+  default: 1,
+});
+
+export const UsersTableLastPage = atom<number>({
+  key: 'UsersTableLastPage',
+  default: 0,
 });
 
 export const AllAdminUsers = selector({
@@ -134,7 +171,7 @@ export const useAdminUsers = (): useAdminUsersReturns => {
       }
     );
     if (isResponseOk(response)) {
-      const user = response.data;
+      const user = response.data as UserDto;
       if (user && typeof allUsers !== 'undefined') {
         setAllUsers(
           allUsers.map((oldUser) => (oldUser._id === user._id ? user : oldUser))

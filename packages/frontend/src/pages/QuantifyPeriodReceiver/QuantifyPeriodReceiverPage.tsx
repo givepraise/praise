@@ -56,7 +56,7 @@ const PeriodMessage = (): JSX.Element | null => {
         {usePseudonyms ? (
           <UserPseudonym userId={receiverId} periodId={periodId} />
         ) : (
-          quantifierReceiverData.receiverName
+          quantifierReceiverData.receiver.name
         )}
       </h2>
       <div>Number of praise items: {quantifierReceiverData.count}</div>

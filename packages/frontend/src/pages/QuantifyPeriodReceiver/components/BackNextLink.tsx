@@ -26,7 +26,7 @@ export const QuantifyBackNextLink = ({
   let backReceiver, forwardReceiver;
 
   if (!receivers) return null;
-  const i = receivers.findIndex((r) => r.receiverId === receiverId);
+  const i = receivers.findIndex((r) => r.receiver._id === receiverId);
 
   if (i > 0) {
     backReceiver = receivers[i - 1];

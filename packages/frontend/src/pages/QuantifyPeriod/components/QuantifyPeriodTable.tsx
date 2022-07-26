@@ -12,7 +12,7 @@ import {
   PeriodQuantifierReceivers,
   QuantifierReceiverData,
 } from '@/model/periods';
-import { UserPseudonym } from '@/components/user/UserPseudonym';
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
 const DoneLabel = (): JSX.Element => {
   return (
@@ -37,17 +37,17 @@ export const QuantifyPeriodTable = (): JSX.Element => {
     () => [
       {
         Header: 'Receiver',
-        accessor: 'receiverName',
+        accessor: 'receiver.name',
         className: 'pl-5 text-left',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => {
-          return usePseudonyms ? (
-            <UserPseudonym
-              userId={data.row.original.receiverId}
+          return (
+            <UserAvatarAndName
+              userAccount={data.row.original.receiver}
+              usePseudonym={usePseudonyms}
               periodId={data.row.original.periodId}
+              avatarClassName="text-2xl"
             />
-          ) : (
-            data.value
           );
         },
       },
@@ -92,7 +92,7 @@ export const QuantifyPeriodTable = (): JSX.Element => {
 
   const handleClick = (data: QuantifierReceiverData) => () => {
     history.push(
-      `/periods/${data.periodId}/quantify/receiver/${data.receiverId}`
+      `/periods/${data.periodId}/quantify/receiver/${data.receiver._id}`
     );
   };
   return (

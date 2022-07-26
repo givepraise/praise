@@ -50,12 +50,6 @@ services:
     links:
       - api
 
-  watchtower:
-    image: containrrr/watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock      
-    command: --interval 43200
-
 volumes:
   mongodb_data:
   caddy_data:
