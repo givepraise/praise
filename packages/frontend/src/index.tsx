@@ -99,17 +99,32 @@ const customRainbowkitTheme = merge(lightTheme(), {
 interface DelayedLoadingProps {
   children: JSX.Element;
 }
-const DelayedLoading = ({
+/**
+ * Load delay waiting for metamask/eth
+ */
+const AwaitMetamaskInit = ({
   children,
 }: DelayedLoadingProps): JSX.Element | null => {
   const [delay, setDelay] = React.useState<boolean>(true);
-  const theme = useRecoilValue(Theme);
 
   React.useEffect(() => {
     setTimeout(() => {
       setDelay(false);
     }, LOAD_DELAY);
   }, []);
+
+  if (delay) return null;
+  return children;
+};
+
+interface LightDarkThemeProps {
+  children: JSX.Element;
+}
+
+const LightDarkTheme = ({
+  children,
+}: LightDarkThemeProps): JSX.Element | null => {
+  const theme = useRecoilValue(Theme);
 
   React.useEffect(() => {
     const root = document.documentElement;
@@ -122,8 +137,6 @@ const DelayedLoading = ({
     }
   }, [theme]);
 
-  // Possibility to add loader here
-  if (delay) return null;
   return children;
 };
 
@@ -157,13 +170,15 @@ ReactDOM.render(
         <RainbowKitProvider chains={chains} theme={getRainbowTheme()}>
           <Router>
             <main>
-              <DelayedLoading>
-                <React.Suspense fallback={<LoadScreen />}>
-                  <ErrorBoundary>
-                    <Routes />
-                  </ErrorBoundary>
-                </React.Suspense>
-              </DelayedLoading>
+              <AwaitMetamaskInit>
+                <LightDarkTheme>
+                  <React.Suspense fallback={<LoadScreen />}>
+                    <ErrorBoundary>
+                      <Routes />
+                    </ErrorBoundary>
+                  </React.Suspense>
+                </LightDarkTheme>
+              </AwaitMetamaskInit>
               <Toaster
                 position="bottom-right"
                 reverseOrder={false}

@@ -1,19 +1,20 @@
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { PeriodCreateInput } from 'api/dist/period/types';
 import { isMatch } from 'date-fns';
-import { ValidationErrors } from 'final-form';
+import { FORM_ERROR, SubmissionErrors, ValidationErrors } from 'final-form';
 import React from 'react';
 import { Field, Form } from 'react-final-form';
 import { useHistory } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { toast } from 'react-hot-toast';
+import { ApiErrorResponseData } from 'api/dist/error/types';
 import { DATE_FORMAT } from '@/utils/date';
-import { CreatePeriodApiResponse, useCreatePeriod } from '@/model/periods';
-import { isResponseOk } from '@/model/api';
+import { useCreatePeriod } from '@/model/periods';
+import { isApiResponseValidationError, isResponseOk } from '@/model/api';
 import { DayInput } from '@/components/form/DayInput';
 import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 import { BreadCrumb } from '@/components/BreadCrumb';
 import { BackLink } from '@/navigation/BackLink';
-import { SubmitButton } from '@/components/form/SubmitButton';
+import { SubmitButton } from './components/SubmitButton';
 
 const validate = (
   values: Record<string, string>
@@ -46,12 +47,13 @@ const validate = (
 
 const PeriodsForm = (): JSX.Element => {
   const { createPeriod } = useCreatePeriod();
-  const [apiResponse, setApiResponse] = useRecoilState(CreatePeriodApiResponse);
 
   const history = useHistory();
 
   // Is only called if validate is successful
-  const onSubmit = async (values: Record<string, string>): Promise<void> => {
+  const onSubmit = async (
+    values: Record<string, string>
+  ): Promise<SubmissionErrors> => {
     const newPeriod: PeriodCreateInput = {
       name: values.name,
 
@@ -62,11 +64,17 @@ const PeriodsForm = (): JSX.Element => {
 
     const response = await createPeriod(newPeriod);
     if (isResponseOk(response)) {
+      toast.success('Period created');
       setTimeout(() => {
         history.goBack();
-        setApiResponse(null); // Clear API response when navigating away
-      }, 1000);
+      }, 2000);
+      return {};
     }
+    if (isApiResponseValidationError(response) && response.response) {
+      return (response.response.data as ApiErrorResponseData).errors;
+    }
+    toast.error('Period create failed');
+    return { [FORM_ERROR]: 'Period create failed' };
   };
 
   return (
@@ -89,9 +97,7 @@ const PeriodsForm = (): JSX.Element => {
                     placeholder="e.g. May-June"
                     className="block w-72"
                   />
-                  {apiResponse && (
-                    <FieldErrorMessage name="name" apiResponse={apiResponse} />
-                  )}
+                  <FieldErrorMessage name="name" />
                 </div>
               )}
             </Field>
@@ -106,12 +112,7 @@ const PeriodsForm = (): JSX.Element => {
                     className="block w-72"
                     inputClassName="w-full"
                   />
-                  {apiResponse && (
-                    <FieldErrorMessage
-                      name="endDate"
-                      apiResponse={apiResponse}
-                    />
-                  )}
+                  <FieldErrorMessage name="endDate" />
                 </div>
               )}
             </Field>

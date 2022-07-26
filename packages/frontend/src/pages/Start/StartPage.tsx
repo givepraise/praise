@@ -12,9 +12,7 @@ const StartPage = (): JSX.Element => {
       <ActiveNoticesBoard />
 
       <div className="p-0 praise-box">
-        <React.Suspense fallback={null}>
-          <PraiseTable />
-        </React.Suspense>
+        <PraiseTable />
       </div>
     </div>
   );

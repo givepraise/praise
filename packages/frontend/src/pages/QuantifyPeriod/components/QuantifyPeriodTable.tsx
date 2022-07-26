@@ -6,12 +6,11 @@ import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { classNames } from '@/utils/index';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   QuantifierReceiverData,
-  usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
@@ -27,14 +26,13 @@ const DoneLabel = (): JSX.Element => {
 export const QuantifyPeriodTable = (): JSX.Element => {
   const history = useHistory();
   const { periodId } = useParams<PeriodPageParams>();
-  const { location } = useHistory();
-  usePeriodQuantifierPraiseQuery(periodId, location.key);
   const data = useRecoilValue(PeriodQuantifierReceivers(periodId));
-  const usePseudonyms = usePeriodSettingValueRealized(
-    periodId,
-    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+  const usePseudonyms = useRecoilValue(
+    SinglePeriodSettingValueRealized({
+      periodId,
+      key: 'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS',
+    })
   ) as boolean;
-
   const columns = React.useMemo(
     () => [
       {

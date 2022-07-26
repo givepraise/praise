@@ -16,12 +16,11 @@ import { AllQuantifierUsers } from '@/model/users';
 import {
   AllPeriods,
   PeriodPageParams,
-  PeriodPoolRequirements,
   SinglePeriod,
   useAssignQuantifiers,
   useClosePeriod,
   useExportPraise,
-  useVerifyQuantifierPoolSize,
+  useLoadSinglePeriodDetails,
 } from '@/model/periods';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { PeriodAssignDialog } from './AssignDialog';
@@ -35,6 +34,7 @@ export const PeriodDetails = (): JSX.Element | null => {
   const allPeriods = useRecoilValue(AllPeriods);
   const allQuantifiers = useRecoilValue(AllQuantifierUsers);
   const { periodId } = useParams<PeriodPageParams>();
+  useLoadSinglePeriodDetails(periodId); // Fetch additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
@@ -45,9 +45,6 @@ export const PeriodDetails = (): JSX.Element | null => {
 
   const { closePeriod } = useClosePeriod();
   const { assignQuantifiers } = useAssignQuantifiers(periodId);
-
-  const poolRequirements = useRecoilValue(PeriodPoolRequirements(periodId));
-  useVerifyQuantifierPoolSize(periodId);
 
   if (!period || !allPeriods) return null;
 
@@ -197,7 +194,6 @@ export const PeriodDetails = (): JSX.Element | null => {
             <PeriodAssignDialog
               onClose={(): void => setIsAssignDialogOpen(false)}
               onAssign={(): void => handleAssign()}
-              poolRequirements={poolRequirements}
             />
           </div>
         </Dialog>

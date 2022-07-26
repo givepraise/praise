@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
-import { getRecoil } from 'recoil-nexus';
-import { ActiveTokenSet } from '@/model/auth';
+import { useRecoilValue } from 'recoil';
+import { AccessToken } from '@/model/auth';
 import { requestApiAuthRefresh } from './auth';
 import { handleErrors } from './axios';
 
@@ -54,12 +54,11 @@ export const makeApiClient = (): AxiosInstance => {
  * - On 401 response: attempt refresh of access using refresh token & retry request
  * @returns
  */
-export const makeApiAuthClient = (): AxiosInstance => {
-  const tokenSet = getRecoil(ActiveTokenSet);
+export const makeApiAuthClient = (accessToken: string): AxiosInstance => {
   const apiAuthClient = axios.create({
     baseURL: apiBaseURL,
     headers: {
-      Authorization: `Bearer ${tokenSet?.accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   createAuthRefreshInterceptor(apiAuthClient, refreshAuthTokenSet, {
@@ -72,4 +71,13 @@ export const makeApiAuthClient = (): AxiosInstance => {
     }
   );
   return apiAuthClient;
+};
+
+/**
+ * Hook that returns api client for authenticated requests.
+ */
+export const useApiAuthClient = (): AxiosInstance => {
+  const accessToken = useRecoilValue(AccessToken);
+  if (!accessToken) throw new Error('AccessToken not found.');
+  return makeApiAuthClient(accessToken);
 };

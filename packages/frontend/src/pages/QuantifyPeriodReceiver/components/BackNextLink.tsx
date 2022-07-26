@@ -2,7 +2,7 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { PeriodQuantifierReceivers } from '@/model/periods';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 
@@ -15,9 +15,12 @@ export const QuantifyBackNextLink = ({
   receiverId,
 }: Props): JSX.Element | null => {
   const receivers = useRecoilValue(PeriodQuantifierReceivers(periodId));
-  const usePseudonyms = usePeriodSettingValueRealized(
-    periodId,
-    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+
+  const usePseudonyms = useRecoilValue(
+    SinglePeriodSettingValueRealized({
+      periodId,
+      key: 'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS',
+    })
   ) as boolean;
 
   let backReceiver, forwardReceiver;

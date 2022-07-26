@@ -4,7 +4,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { BreadCrumb } from '@/components/BreadCrumb';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
@@ -13,12 +13,8 @@ import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   SinglePeriod,
-  usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
-import {
-  usePeriodSettingValueRealized,
-  useAllPeriodSettingsQuery,
-} from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { getQuantificationReceiverStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
 import { QuantifyTable } from './components/QuantifyTable';
@@ -41,12 +37,11 @@ const DoneLabel = (): JSX.Element => {
 
 const PeriodMessage = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
-  const { location } = useHistory();
-  usePeriodQuantifierPraiseQuery(periodId, location.key);
-  useAllPeriodSettingsQuery(periodId);
-  const usePseudonyms = usePeriodSettingValueRealized(
-    periodId,
-    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+  const usePseudonyms = useRecoilValue(
+    SinglePeriodSettingValueRealized({
+      periodId,
+      key: 'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS',
+    })
   ) as boolean;
   const quantifierReceiverData = getQuantificationReceiverStats(
     useRecoilValue(PeriodQuantifierReceivers(periodId)),

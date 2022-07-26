@@ -4,7 +4,7 @@ import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 
 export const NumberInput = (
   name: string,
-  apiResponse: AxiosResponse<unknown> | AxiosError<unknown> | null
+  apiResponse: AxiosResponse<unknown> | AxiosError | null
 ): JSX.Element => {
   return (
     <Field name={name} key={name}>

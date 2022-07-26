@@ -37,7 +37,7 @@ export const PeriodDateForm = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
   const [apiResponse, setApiResponse] = React.useState<
-    AxiosResponse<unknown> | AxiosError<unknown> | null
+    AxiosResponse<unknown> | AxiosError | null
   >(null);
   const { updatePeriod } = useUpdatePeriod();
 

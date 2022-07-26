@@ -1,11 +1,9 @@
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dispatch, SetStateAction } from 'react';
+import { useRecoilValue } from 'recoil';
 import { EventLog } from '@/components/eventlog/EventLog';
-import {
-  AllEventLogsQueryParameters,
-  useAllEventLogs,
-} from '@/model/eventlogs';
+import { AllEventLogs, AllEventLogsQueryParameters } from '@/model/eventlogs';
 import { classNames } from '@/utils/index';
 
 interface EventLogsTableProps {
@@ -17,7 +15,9 @@ export const EventLogsList = ({
   queryParameters,
   setPage,
 }: EventLogsTableProps): JSX.Element | null => {
-  const { data } = useAllEventLogs(queryParameters);
+  const data = useRecoilValue(AllEventLogs(queryParameters));
+
+  if (!data) return null;
 
   return (
     <div className="w-full">

@@ -11,7 +11,7 @@ import {
   faScaleUnbalanced,
 } from '@fortawesome/free-solid-svg-icons';
 import { useQuantifyMultiplePraise, useQuantifyPraise } from '@/model/praise';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { SearchInput } from '@/components/form/SearchInput';
 import { QuantifyMultipleDialog } from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleDialog';
@@ -37,10 +37,13 @@ export const QuantifyTable = ({
   const data = useRecoilValue(
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
   );
-  const usePseudonyms = usePeriodSettingValueRealized(
-    periodId,
-    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+  const usePseudonyms = useRecoilValue(
+    SinglePeriodSettingValueRealized({
+      periodId,
+      key: 'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS',
+    })
   ) as boolean;
+
   const { quantify } = useQuantifyPraise();
   const { quantifyMultiple } = useQuantifyMultiplePraise();
 
@@ -57,9 +60,11 @@ export const QuantifyTable = ({
   const [selectAllChecked, setSelectAllChecked] =
     React.useState<boolean>(false);
 
-  const allowedValues = usePeriodSettingValueRealized(
-    periodId,
-    'PRAISE_QUANTIFY_ALLOWED_VALUES'
+  const allowedValues = useRecoilValue(
+    SinglePeriodSettingValueRealized({
+      periodId,
+      key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
+    })
   ) as number[];
 
   const filterBySearchValue = React.useCallback(
