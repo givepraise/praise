@@ -6,9 +6,9 @@ import {
   SerializableParam,
   useRecoilValue,
 } from 'recoil';
-import { makeApiAuthClient, makeClient } from '../utils/api';
+import { makeApiAuthClient } from '../utils/api';
 
-type RequestParams = {
+export type RequestParams = {
   [key: string]: SerializableParam;
   url: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,24 +75,6 @@ export const ApiAuthGet = selectorFamily<AxiosResponse<unknown>, RequestParams>(
       },
   }
 );
-
-/**
- * External GET request
- */
-export const ExternalGet = selectorFamily<
-  AxiosResponse<unknown>,
-  RequestParams
->({
-  key: 'ExternalGet',
-  get: (params: RequestParams) => async (): Promise<AxiosResponse<unknown>> => {
-    const { config, url } = params;
-
-    const client = makeClient();
-    const response = await client.get(url, config);
-
-    return response;
-  },
-});
 
 /**
  * Authenticated POST request

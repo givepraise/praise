@@ -4,26 +4,20 @@ import { Dialog, Transition } from '@headlessui/react';
 import { faX, faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
-import {
-  SingleSetting,
-  useAllSettingsQuery,
-  useGithubVersionQuery,
-} from '@/model/settings';
+import { SingleSetting, useAllSettingsQuery } from '@/model/settings';
 import { useAllPeriodsQuery } from '@/model/periods';
 import { useAllUsersQuery } from '@/model/users';
 import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
+import { usePraiseAppVersion } from '../utils/app';
 
 export const AuthenticatedLayout = (): JSX.Element | null => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
   const activeUserRoles = useRecoilValue(ActiveUserRoles);
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-
-  const githubVersion = useGithubVersionQuery().substring(1);
-  const currentVersion = process.env.REACT_APP_VERSION;
-  const isNewVersion = githubVersion !== currentVersion;
+  const appVersion = usePraiseAppVersion();
 
   useAllPeriodsQuery();
   useAllSettingsQuery();
@@ -93,11 +87,19 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
         </Dialog>
       </Transition.Root>
 
-      {isAdmin && isNewVersion && (
-        <div className="flex flex-col flex-1 lg:pl-64 h-16 content-center align-middle justify-center bg-fuchsia-600 bg-opacity-70">
-          <p className="pl-8">
-            There is a new version of the app available. Current Github version
-            is {githubVersion} and your is {currentVersion}.
+      {isAdmin && appVersion.newVersionAvailable && (
+        <div className="flex flex-col flex-1 lg:pl-64 h-12 content-center align-middle justify-center items-center bg-gray-200 bg-opacity-80 sticky top-0">
+          <p>
+            🎉 There is a new version of the Praise out! You are running{' '}
+            {appVersion.current}, latest version is {appVersion.latest}.{' '}
+            <a
+              href="https://github.com/commons-stack/praise/releases"
+              className="font-bold"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Release notes
+            </a>
           </p>
         </div>
       )}

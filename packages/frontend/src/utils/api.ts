@@ -24,7 +24,7 @@ const refreshAuthTokenSet = async (err: AxiosError): Promise<void> => {
  *
  * @param err
  */
-const handleErrors = (err: AxiosError): void => {
+export const handleErrors = (err: AxiosError): void => {
   // Any HTTP Code which is not 2xx will be considered as error
   const statusCode = err?.response?.status;
 
@@ -98,20 +98,4 @@ export const makeApiAuthClient = (): AxiosInstance => {
     }
   );
   return apiAuthClient;
-};
-
-/**
- * Client for external requests.
- * @returns
- */
-export const makeClient = (): AxiosInstance => {
-  const client = axios.create();
-
-  client.interceptors.response.use(
-    (res) => res,
-    (err) => {
-      return handleErrors(err);
-    }
-  );
-  return client;
 };
