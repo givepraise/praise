@@ -42,16 +42,16 @@ export const QuantifyBackNextLink = ({
         {backReceiver && (
           <Link
             replace
-            to={`/periods/${periodId}/quantify/receiver/${backReceiver.receiverId}`}
+            to={`/periods/${periodId}/quantify/receiver/${backReceiver.receiver._id}`}
           >
             <FontAwesomeIcon icon={faArrowLeft} size="1x" className="mr-2" />
             {usePseudonyms ? (
               <UserPseudonym
-                userId={backReceiver.receiverId}
+                userId={backReceiver.receiver._id}
                 periodId={periodId}
               />
             ) : (
-              backReceiver.receiverName
+              backReceiver.receiver.name
             )}
           </Link>
         )}
@@ -60,15 +60,15 @@ export const QuantifyBackNextLink = ({
         {forwardReceiver && (
           <Link
             replace
-            to={`/periods/${periodId}/quantify/receiver/${forwardReceiver.receiverId}`}
+            to={`/periods/${periodId}/quantify/receiver/${forwardReceiver.receiver._id}`}
           >
             {usePseudonyms ? (
               <UserPseudonym
-                userId={forwardReceiver.receiverId}
+                userId={forwardReceiver.receiver._id}
                 periodId={periodId}
               />
             ) : (
-              forwardReceiver.receiverName
+              forwardReceiver.receiver.name
             )}
             <FontAwesomeIcon icon={faArrowRight} size="1x" className="ml-2" />
           </Link>
