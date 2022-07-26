@@ -13,6 +13,7 @@ import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   SinglePeriod,
+  usePeriodQuantifierPraise,
 } from '@/model/periods';
 import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { getQuantificationReceiverStats } from '@/utils/periods';
@@ -76,6 +77,7 @@ const PeriodMessage = (): JSX.Element | null => {
 
 const QuantifyPeriodReceiverPage = (): JSX.Element => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
+  usePeriodQuantifierPraise(periodId);
 
   return (
     <div className="praise-page-wide">
