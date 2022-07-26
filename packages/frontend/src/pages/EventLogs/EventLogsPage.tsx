@@ -116,6 +116,7 @@ const EventLogsPage = (): JSX.Element => {
                 setPage(1);
               }}
               value={searchValue}
+              handleClear={(): void => setSearchValue('')}
             />
           </div>
 

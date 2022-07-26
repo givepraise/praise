@@ -25,7 +25,7 @@ interface roleOptionsProps {
   label: string;
 }
 
-const roleOptions = [
+export const roleOptions = [
   { label: 'All users', value: UserRole.USER },
   { label: 'Admins', value: UserRole.ADMIN },
   { label: 'Forwarders', value: UserRole.FORWARDER },

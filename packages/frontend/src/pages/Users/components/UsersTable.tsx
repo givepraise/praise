@@ -1,8 +1,6 @@
 import React from 'react';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { UserDto, UserRole } from 'api/dist/user/types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import {
   AllAdminUsers,
   AllForwarderUsers,
@@ -13,18 +11,12 @@ import {
   UsersTableFilter,
   UsersTablePage,
   UsersTableLastPage,
+  roleOptions,
 } from '@/model/users';
 import { SearchInput } from '@/components/form/SearchInput';
 import { SelectInput } from '@/components/form/SelectInput';
 import { UsersTableRow } from './UsersTableRow';
 import { UsersTablePagination } from './UsersTablePagination';
-
-const roleOptions = [
-  { label: 'All users', value: UserRole.USER },
-  { label: 'Admins', value: UserRole.ADMIN },
-  { label: 'Forwarders', value: UserRole.FORWARDER },
-  { label: 'Quantifiers', value: UserRole.QUANTIFIER },
-];
 
 const USERS_PER_PAGE = 10;
 
@@ -116,18 +108,11 @@ export const UsersTable = (): JSX.Element => {
           selected={selectedRole}
           options={roleOptions}
         />
-        <SearchInput handleChange={setFilter} value={filter} />
-        {filter !== '' && (
-          <button onClick={(): void => setFilter('')}>
-            <span className="text-warm-gray-800 dark:text-white">
-              <FontAwesomeIcon
-                icon={faCircleXmark}
-                size="lg"
-                className="mt-1"
-              />
-            </span>
-          </button>
-        )}
+        <SearchInput
+          handleChange={setFilter}
+          value={filter}
+          handleClear={(): void => setFilter('')}
+        />
       </div>
 
       <div className="flex justify-between px-5 mb-2">
