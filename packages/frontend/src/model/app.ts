@@ -36,7 +36,7 @@ export const usePraiseAppVersion = (): PraiseAppVersion => {
 
   const response = useRecoilValue(GithubVersionQuery);
   if (isResponseOk(response)) {
-    appVersion.latest = (response.data as GithubResponse).name;
+    appVersion.latest = (response.data as GithubResponse).name.substring(1);
     appVersion.newVersionAvailable = appVersion.latest !== appVersion.current;
   }
 
