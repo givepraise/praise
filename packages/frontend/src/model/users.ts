@@ -171,7 +171,7 @@ export const useAdminUsers = (): useAdminUsersReturns => {
       }
     );
     if (isResponseOk(response)) {
-      const user = response.data as UserDto;
+      const user = response.data;
       if (user && typeof allUsers !== 'undefined') {
         setAllUsers(
           allUsers.map((oldUser) => (oldUser._id === user._id ? user : oldUser))

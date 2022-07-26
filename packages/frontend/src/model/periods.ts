@@ -662,8 +662,7 @@ export const useReplaceQuantifier = (
           );
 
         if (isResponseOk(response)) {
-          const periodReplaceQuantifierDto =
-            response.data as PeriodReplaceQuantifierDto;
+          const periodReplaceQuantifierDto = response.data;
           set(
             SinglePeriod(periodReplaceQuantifierDto.period._id),
             periodReplaceQuantifierDto.period
