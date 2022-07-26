@@ -1,29 +1,15 @@
 import { AxiosResponse } from 'axios';
-import { selector, selectorFamily, useRecoilValue } from 'recoil';
-import { makeClient } from '@/utils/app';
-import { RequestParams } from './api';
+import { selector, useRecoilValue } from 'recoil';
+import { isResponseOk } from './api';
+import { ExternalGet } from './axios';
 
-/**
- * External GET request
- */
-export const ExternalGet = selectorFamily<
-  AxiosResponse<unknown>,
-  RequestParams
->({
-  key: 'ExternalGet',
-  get: (params: RequestParams) => async (): Promise<AxiosResponse<unknown>> => {
-    const { config, url } = params;
-
-    const client = makeClient();
-    const response = await client.get(url, config);
-
-    return response;
-  },
-});
+export interface GithubResponse {
+  name: string;
+}
 
 export const GithubVersionQuery = selector({
   key: 'GithubVersionQuery',
-  get: ({ get }) => {
+  get: ({ get }): AxiosResponse<GithubResponse> => {
     const repoOwner = process.env.REACT_APP_GITHUB_REPO_OWNER;
     const repoName = process.env.REACT_APP_GITHUB_REPO_NAME;
 
@@ -31,17 +17,28 @@ export const GithubVersionQuery = selector({
       ExternalGet({
         url: `https://api.github.com/repos/${repoOwner}/${repoName}/releases/latest`,
       })
-    );
+    ) as AxiosResponse<GithubResponse>;
   },
 });
 
-interface GithubResponse {
-  name: string;
+interface PraiseAppVersion {
+  current: string | undefined;
+  latest: string | undefined;
+  newVersionAvailable: boolean;
 }
 
-export const useGithubVersionQuery = (): string => {
-  const githubVersionResponse = useRecoilValue(GithubVersionQuery);
-  const githubResponse = githubVersionResponse.data as GithubResponse;
+export const usePraiseAppVersion = (): PraiseAppVersion => {
+  const appVersion: PraiseAppVersion = {
+    current: process.env.REACT_APP_VERSION,
+    latest: undefined,
+    newVersionAvailable: false,
+  };
 
-  return githubResponse.name;
+  const response = useRecoilValue(GithubVersionQuery);
+  if (isResponseOk(response)) {
+    appVersion.latest = (response.data as GithubResponse).name;
+    appVersion.newVersionAvailable = appVersion.latest !== appVersion.current;
+  }
+
+  return appVersion;
 };

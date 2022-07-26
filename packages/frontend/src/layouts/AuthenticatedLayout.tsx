@@ -10,7 +10,7 @@ import { useAllUsersQuery } from '@/model/users';
 import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
-import { usePraiseAppVersion } from '../utils/app';
+import { usePraiseAppVersion } from '@/model/app';
 
 export const AuthenticatedLayout = (): JSX.Element | null => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -88,7 +88,7 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
       </Transition.Root>
 
       {isAdmin && appVersion.newVersionAvailable && (
-        <div className="flex flex-col flex-1 lg:pl-64 h-12 content-center align-middle justify-center items-center bg-gray-200 bg-opacity-80 sticky top-0">
+        <div className="sticky top-0 flex flex-col items-center content-center justify-center flex-1 h-12 align-middle bg-gray-200 lg:pl-64 bg-opacity-80">
           <p>
             🎉 There is a new version of the Praise out! You are running{' '}
             {appVersion.current}, latest version is {appVersion.latest}.{' '}
