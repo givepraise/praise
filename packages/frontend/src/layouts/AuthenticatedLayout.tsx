@@ -88,7 +88,7 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
       </Transition.Root>
 
       {isAdmin && appVersion.newVersionAvailable && (
-        <div className="sticky top-0 flex flex-col items-center content-center justify-center flex-1 h-12 align-middle bg-gray-200 lg:pl-64 bg-opacity-80">
+        <div className="sticky top-0 p-3 text-center bg-warm-gray-100 lg:pl-64 bg-opacity-80">
           <p>
             🎉 There is a new version of the Praise out! You are running{' '}
             {appVersion.current}, latest version is {appVersion.latest}.{' '}
