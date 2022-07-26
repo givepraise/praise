@@ -104,6 +104,10 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
         </div>
       )}
 
+      <div className="fixed bottom-0 right-0 invisible p-1 text-xs text-right lg:visible">
+        {appVersion.current}
+      </div>
+
       {/* Static sidebar for desktop */}
       <div className="hidden w-64 lg:flex lg:flex-col lg:fixed lg:inset-y-0">
         {/* Sidebar component, swap this element with another sidebar if you like */}
