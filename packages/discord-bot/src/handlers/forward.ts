@@ -1,5 +1,5 @@
 import { PraiseModel } from 'api/dist/praise/entities';
-import { Message, GuildMember, Util } from 'discord.js';
+import { GuildMember, Util } from 'discord.js';
 import { UserModel } from 'api/dist/user/entities';
 import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
@@ -181,7 +181,7 @@ export const forwardHandler: CommandHandler = async (
     ? await interaction.editReply(await selfPraiseWarning())
     : await interaction.editReply(await invalidReceiverError());
 
-  let warningMsg =
+  const warningMsg =
     (receiverData.undefinedReceivers
       ? (await undefinedReceiverWarning(
           receiverData.undefinedReceivers.join(', '),

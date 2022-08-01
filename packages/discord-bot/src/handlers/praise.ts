@@ -2,7 +2,7 @@ import { PraiseModel } from 'api/dist/praise/entities';
 import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
 import logger from 'jet-logger';
-import { GuildMember, Message, User, Util } from 'discord.js';
+import { GuildMember, User, Util } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
 import {
   dmError,
@@ -155,7 +155,7 @@ export const praiseHandler: CommandHandler = async (
     ? await interaction.editReply(await selfPraiseWarning())
     : await interaction.editReply(await invalidReceiverError());
 
-  let warningMsg =
+  const warningMsg =
     (receiverData.undefinedReceivers
       ? (await undefinedReceiverWarning(
           receiverData.undefinedReceivers
