@@ -183,7 +183,10 @@ export const praiseHandler: CommandHandler = async (
   }
 
   if (praiseItemsCount === 0) {
-    await msg.reply(await firstTimePraiserInfo());
+    await interaction.followUp({
+      content: await firstTimePraiserInfo(),
+      ephemeral: true,
+    });
   }
 
   return;
