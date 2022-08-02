@@ -4,7 +4,11 @@ import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useSortBy, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import sortBy from 'lodash/sortBy';
-import { PeriodPageParams, SinglePeriod } from '@/model/periods';
+import {
+  PeriodPageParams,
+  SinglePeriod,
+  useLoadSinglePeriodDetails,
+} from '@/model/periods';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { Notice } from '@/components/Notice';
 import { classNames } from '@/utils/index';
@@ -13,6 +17,7 @@ import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 export const ReceiverTable = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
+  useLoadSinglePeriodDetails(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
 
   const ReceiverTableInner = (): JSX.Element => {
@@ -145,12 +150,13 @@ export const ReceiverTable = (): JSX.Element | null => {
       </div>
     );
 
-  if (period?.receivers?.length === 0)
+  if (
+    !period.receivers ||
+    (Array.isArray(period.receivers) && period.receivers.length) === 0
+  )
     return (
-      <div className="flex items-center w-full h-full">
-        <Notice type="danger">
-          <span>No receivers found in this period.</span>
-        </Notice>
+      <div className="flex items-center justify-center w-full h-full">
+        No receivers found in this period.
       </div>
     );
 

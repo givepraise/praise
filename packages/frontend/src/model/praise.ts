@@ -1,23 +1,17 @@
-import { PraiseDetailsDto, PraiseDto } from 'api/dist/praise/types';
+import { PraiseDto } from 'api/dist/praise/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 import {
-  atom,
   atomFamily,
   selectorFamily,
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
+  useSetRecoilState,
 } from 'recoil';
-import { makeApiAuthClient } from '@/utils/api';
-import {
-  ApiAuthGet,
-  isApiResponseAxiosError,
-  isResponseOk,
-  useAuthApiQuery,
-} from './api';
+import { useApiAuthClient } from '@/utils/api';
+import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from './api';
 
 /**
  * Types for `useParams()`
@@ -27,7 +21,7 @@ export type PraisePageParams = {
 };
 
 /**
- * Stores individual Praise items linked to one or more @PraiseIdList
+ * Atom that stores individual Praise items linked to one or more @PraiseIdList
  */
 export const SinglePraise = atomFamily<PraiseDto | undefined, string>({
   key: 'SinglePraise',
@@ -35,52 +29,38 @@ export const SinglePraise = atomFamily<PraiseDto | undefined, string>({
 });
 
 /**
- * Params for @SinglePraiseQuery
- */
-type SinglePraiseQueryParams = {
-  praiseId: string;
-  refreshKey: string | undefined;
-};
-
-/**
  * Selector query to fetch a single praise from the api.
+ * @returns Full response/error returned by server.
  */
-const SinglePraiseQuery = selectorFamily({
-  key: 'SinglePraiseQuery',
+const SinglePraiseDetailsQuery = selectorFamily({
+  key: 'SinglePraiseDetailsQuery',
   get:
-    (params: SinglePraiseQueryParams) =>
-    ({ get }): AxiosResponse<unknown> => {
-      const { praiseId, refreshKey } = params;
-      return get(ApiAuthGet({ url: `/praise/${praiseId}`, refreshKey }));
+    (praiseId: string) =>
+    ({ get }): AxiosResponse<PraiseDto> | AxiosError => {
+      return get(ApiAuthGet({ url: `/praise/${praiseId}` })) as
+        | AxiosResponse<PraiseDto>
+        | AxiosError;
     },
 });
 
 /**
- * Hook that fetches a single praise from the api
+ * Fetches a single praise from the api
  */
-export const useSinglePraiseQuery = (
+export const useLoadSinglePraiseDetails = (
   praiseId: string
-): PraiseDetailsDto | undefined => {
-  const { location } = useHistory();
-  const praiseResponse = useRecoilValue(
-    SinglePraiseQuery({ praiseId, refreshKey: location.key })
-  );
-  const [praise, setPraise] = React.useState<PraiseDetailsDto | undefined>(
-    undefined
-  );
+): AxiosResponse<PraiseDto> | AxiosError => {
+  const response = useRecoilValue(SinglePraiseDetailsQuery(praiseId));
+  const setPraise = useSetRecoilState(SinglePraise(praiseId));
   React.useEffect(() => {
-    if (!praise && isResponseOk(praiseResponse)) {
-      setPraise(praiseResponse.data);
+    if (isResponseOk(response)) {
+      setPraise(response.data);
     }
-  }, [praise, praiseResponse]);
-  return praise;
+  }, [setPraise, response]);
+  return response;
 };
 
 /**
- * Stores lists of Praise Ids. The following lists exists:
- * - All praise / start page
- * - My praise
- * - Period Praise for a receiver assigned to a quantifier
+ * Atom that stores lists of Praise Ids.
  */
 export const PraiseIdList = atomFamily<string[] | undefined, string>({
   key: 'PraiseIdList',
@@ -108,16 +88,6 @@ export const AllPraiseList = selectorFamily({
 });
 
 /**
- * The request Id is used to force refresh of AllPraiseQuery
- * AllPraiseQuery subscribes to the value. Increase to trigger
- * refresh.
- */
-const PraiseRequestId = atom({
-  key: 'PraiseRequestId',
-  default: 0,
-});
-
-/**
  * Parameters for @AllPraiseQuery
  */
 type AllPraiseQueryParameters = {
@@ -129,33 +99,30 @@ type AllPraiseQueryParameters = {
 };
 
 /**
- * Query selector to fetch a list of praise from the api.
+ * Selector to fetch a list of praise from the api.
+ * @param query Sorting, filtering and pagination.
  */
 const AllPraiseQuery = selectorFamily<
-  AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined,
+  AxiosResponse<PaginatedResponseBody<PraiseDto>> | AxiosError,
   AllPraiseQueryParameters
 >({
   key: 'AllPraiseQuery',
   get:
     (query: AllPraiseQueryParameters) =>
-    ({ get }): AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined => {
+    ({ get }): AxiosResponse<PaginatedResponseBody<PraiseDto>> | AxiosError => {
       if (!query) throw new Error('Invalid query');
-      get(PraiseRequestId);
       const qs = Object.keys(query)
         .map((key) => `${key}=${query[key]}`)
         .join('&');
       const response = get(
         ApiAuthGet({ url: `/praise/all${qs ? `?${qs}` : ''}` })
       );
-      if (isResponseOk(response)) {
-        return response;
-      }
+      return response as
+        | AxiosResponse<PaginatedResponseBody<PraiseDto>>
+        | AxiosError;
     },
 });
 
-/**
- *
- */
 interface AllPraiseQueryPaginationInterface {
   currentPage: number;
   totalPages: number;
@@ -176,13 +143,15 @@ export const AllPraiseQueryPagination = atomFamily<
 });
 
 /**
- * Hook to fetch praise from the api and save
+ * Fetch praise from the api and save.
+ * @param queryParams Sorting, filtering and pagination.
+ * @param listKey The listKey pointing to the list to store the praise ids in.
  */
-export const useAllPraiseQuery = (
+export const useAllPraise = (
   queryParams: AllPraiseQueryParameters,
   listKey: string
-): AxiosResponse<PaginatedResponseBody<PraiseDto>> | undefined => {
-  const allPraiseQueryResponse = useAuthApiQuery(AllPraiseQuery(queryParams));
+): AxiosResponse<PaginatedResponseBody<PraiseDto>> | AxiosError => {
+  const allPraiseQueryResponse = useRecoilValue(AllPraiseQuery(queryParams));
   const [praisePagination, setPraisePagination] = useRecoilState(
     AllPraiseQueryPagination(listKey)
   );
@@ -264,10 +233,10 @@ type useQuantifyPraiseReturn = {
 };
 
 /**
- * Hook that returns a function to use for closing a period
+ * Returns a function used to for close a period
  */
 export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
-  const apiAuthClient = makeApiAuthClient();
+  const apiAuthClient = useApiAuthClient();
 
   const quantify = useRecoilCallback(
     ({ set }) =>
@@ -285,12 +254,11 @@ export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
             duplicatePraise,
           }
         );
-
-        const praises = response.data;
-
-        praises.forEach((praise) => {
-          set(SinglePraise(praise._id), praise);
-        });
+        if (isResponseOk(response)) {
+          response.data.forEach((praise) => {
+            set(SinglePraise(praise._id), praise);
+          });
+        }
       }
   );
   return { quantify };
@@ -300,9 +268,12 @@ type useQuantifyMultiplePraiseReturn = {
   quantifyMultiple: (score: number, praiseIds: string[]) => Promise<void>;
 };
 
+/**
+ * Returns a function used to quantify multiple praise.
+ */
 export const useQuantifyMultiplePraise =
   (): useQuantifyMultiplePraiseReturn => {
-    const apiAuthClient = makeApiAuthClient();
+    const apiAuthClient = useApiAuthClient();
 
     const quantifyMultiple = useRecoilCallback(
       ({ set }) =>
@@ -312,12 +283,11 @@ export const useQuantifyMultiplePraise =
               score,
               praiseIds,
             });
-
-          const praises = response.data;
-
-          praises.forEach((praise) => {
-            set(SinglePraise(praise._id), praise);
-          });
+          if (isResponseOk(response)) {
+            response.data.forEach((praise) => {
+              set(SinglePraise(praise._id), praise);
+            });
+          }
         }
     );
     return { quantifyMultiple };

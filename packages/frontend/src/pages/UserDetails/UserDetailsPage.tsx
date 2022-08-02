@@ -6,7 +6,7 @@ import { UserDto, UserRole } from 'api/dist/user/types';
 import { toast } from 'react-hot-toast';
 import { BreadCrumb } from '@/components/BreadCrumb';
 import { SingleUser, SingleUserParams, useAdminUsers } from '@/model/users';
-import { formatIsoDateUTC } from '@/utils/date';
+import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { classNames } from '@/utils/index';
 import { BackLink } from '@/navigation/BackLink';
 
@@ -42,9 +42,9 @@ const UserDetailsPage = (): JSX.Element | null => {
           {user.ethereumAddress && shortenEthAddress(user.ethereumAddress)}
         </span>
         <div>
-          Created: {formatIsoDateUTC(user.createdAt)}
+          Created: {formatIsoDateUTC(user.createdAt, DATE_FORMAT)}
           <br />
-          Last updated: {formatIsoDateUTC(user.updatedAt)}
+          Last updated: {formatIsoDateUTC(user.updatedAt, DATE_FORMAT)}
         </div>
       </div>
       <div className="flex flex-col gap-2 mb-5 praise-box">
@@ -55,9 +55,9 @@ const UserDetailsPage = (): JSX.Element | null => {
             <div>
               Discord User ID: {account.user}
               <br />
-              Created: {formatIsoDateUTC(account.createdAt)}
+              Created: {formatIsoDateUTC(account.createdAt, DATE_FORMAT)}
               <br />
-              Last updated: {formatIsoDateUTC(account.updatedAt)}
+              Last updated: {formatIsoDateUTC(account.updatedAt, DATE_FORMAT)}
             </div>
           </>
         ))}

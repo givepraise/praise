@@ -37,7 +37,7 @@ export const PeriodDateForm = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
   const [apiResponse, setApiResponse] = React.useState<
-    AxiosResponse<unknown> | AxiosError<unknown> | null
+    AxiosResponse<unknown> | AxiosError | null
   >(null);
   const { updatePeriod } = useUpdatePeriod();
 
@@ -86,8 +86,7 @@ export const PeriodDateForm = (): JSX.Element | null => {
                         input.onChange(e);
                         void handleSubmit(e);
                       }}
-                      inputClassName="relative py-0 px-1 pl-1 my-0 text-sm bg-transparent border border-transparent dark:border-transparent hover:border-warm-gray-300 w-24 dark:hover:border-slate-800 dark:bg-transparent"
-                      tzLabel="UTC"
+                      inputClassName="relative py-0 px-1 my-0 text-sm bg-transparent border border-transparent dark:border-transparent hover:border-warm-gray-300 w-[118px] dark:hover:border-slate-800 dark:bg-transparent"
                     />
                   </div>
                   <div>

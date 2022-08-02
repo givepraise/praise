@@ -62,18 +62,18 @@ export const all = async (
 
   const periodList = response?.docs;
   if (periodList && Array.isArray(periodList) && periodList.length > 0) {
-    const periodDetailsList: PeriodDetailsDto[] = [];
+    const periodDetailsDto: PeriodDetailsDto[] = [];
     for (const period of periodList) {
       if (period?.status === PeriodStatusType.QUANTIFY) {
         const periodDetails = await findPeriodDetailsDto(period._id);
-        periodDetailsList.push(periodDetails);
+        periodDetailsDto.push(periodDetails);
         continue;
       }
-      periodDetailsList.push(periodTransformer(period));
+      periodDetailsDto.push(periodTransformer(period));
     }
     res.status(StatusCodes.OK).json({
       ...response,
-      docs: periodDetailsList,
+      docs: periodDetailsDto,
     });
   } else {
     res.status(StatusCodes.OK).json({

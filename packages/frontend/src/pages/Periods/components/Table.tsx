@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { classNames } from '@/utils/index';
-import { formatIsoDateUTC } from '@/utils/date';
+import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { AllPeriods } from '@/model/periods';
 import { InlineLabel } from '@/components/InlineLabel';
 
@@ -26,7 +26,7 @@ export const PeriodsTable = (): JSX.Element => {
         className: 'text-left',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): string => {
-          return formatIsoDateUTC(data.value);
+          return formatIsoDateUTC(data.value, DATE_FORMAT);
         },
       },
       {
@@ -65,7 +65,11 @@ export const PeriodsTable = (): JSX.Element => {
     tableInstance;
 
   if (!Array.isArray(allPeriods) || allPeriods.length === 0)
-    return <div>Create your first period to get started quantifying.</div>;
+    return (
+      <div className="px-5">
+        Create your first period to get started quantifying.
+      </div>
+    );
 
   const handleClick = (periodId: string) => (): void => {
     history.push(`/periods/${periodId}/receivers`);
@@ -77,39 +81,53 @@ export const PeriodsTable = (): JSX.Element => {
       {...getTableProps()}
     >
       <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr className="px-5">
-            {headerGroup.headers.map((column) => {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const className = (column as any).className as string;
-              return (
-                <th className={classNames(className, 'pb-2')}>
-                  {column.render('Header')}
-                </th>
-              );
-            })}
-          </tr>
-        ))}
+        {headerGroups.map((headerGroup) => {
+          const { key, ...restHeaderGroupProps } =
+            headerGroup.getHeaderGroupProps();
+          return (
+            <tr className="px-5" key={key} {...restHeaderGroupProps}>
+              {headerGroup.headers.map((column) => {
+                const { key, ...restColumn } = column.getHeaderProps();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const className = (column as any).className as string;
+                return (
+                  <th
+                    className={classNames(className, 'pb-2')}
+                    key={key}
+                    {...restColumn}
+                  >
+                    {column.render('Header')}
+                  </th>
+                );
+              })}
+            </tr>
+          );
+        })}
       </thead>
       <tbody {...getTableBodyProps()}>
         {rows.map((row) => {
           prepareRow(row);
+          const { key, ...restRowProps } = row.getRowProps();
           return (
             <tr
               className={classNames(
                 row.values.status === 'CLOSED' ? 'text-warm-gray-400' : '',
                 'px-5 cursor-pointer hover:bg-warm-gray-100 dark:hover:bg-slate-500'
               )}
-              {...row.getRowProps()}
               onClick={handleClick((row.original as PeriodDetailsDto)._id)}
+              key={key}
+              {...restRowProps}
             >
               {row.cells.map((cell) => {
+                const { key, ...restCellProps } = cell.getCellProps();
+
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const className = (cell.column as any).className as string;
                 return (
                   <td
-                    {...cell.getCellProps()}
                     className={classNames(className, 'py-3')}
+                    key={key}
+                    {...restCellProps}
                   >
                     {cell.render('Cell')}
                   </td>

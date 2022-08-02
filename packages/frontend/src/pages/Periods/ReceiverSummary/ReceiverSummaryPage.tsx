@@ -6,7 +6,6 @@ import {
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { useAllPeriodSettingsQuery } from '@/model/periodsettings';
 import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
 import { BreadCrumb } from '@/components/BreadCrumb';
 import { BackLink } from '@/navigation/BackLink';
@@ -41,7 +40,6 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
 
 const ReceiverSummaryPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodAndReceiverPageParams>();
-  useAllPeriodSettingsQuery(periodId);
 
   return (
     <div className="praise-page">

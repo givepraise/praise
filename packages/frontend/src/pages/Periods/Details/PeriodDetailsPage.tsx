@@ -18,8 +18,9 @@ import { BreadCrumb } from '@/components/BreadCrumb';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   PeriodPageParams,
+  useLoadSinglePeriodDetails,
   SinglePeriod,
-  useSinglePeriodQuery,
+  usePeriodQuantifierPraise,
 } from '@/model/periods';
 import { SubPageNav } from '@/navigation/SubPageNav';
 import { InlineLabel } from '@/components/InlineLabel';
@@ -59,12 +60,13 @@ const PeriodDetailHead = (): JSX.Element => {
 
 export const PeriodDetailsPage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
+  const detailsResponse = useLoadSinglePeriodDetails(periodId); // Load additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
+  const periodQuantifierPraise = usePeriodQuantifierPraise(periodId);
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { path, url } = useRouteMatch();
-  useSinglePeriodQuery(periodId);
 
-  if (!period || !period.receivers) return null;
+  if (!detailsResponse || !period || !periodQuantifierPraise) return null;
 
   return (
     <div className="praise-page-wide">

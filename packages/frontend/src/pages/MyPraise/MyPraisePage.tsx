@@ -11,10 +11,8 @@ const MyPraise = (): JSX.Element => {
 
       <ActiveNoticesBoard />
 
-      <div className="praise-box p-0">
-        <React.Suspense fallback={null}>
-          <MyPraiseTable />
-        </React.Suspense>
+      <div className="p-0 praise-box">
+        <MyPraiseTable />
       </div>
     </div>
   );

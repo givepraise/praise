@@ -1,4 +1,3 @@
-import { Suspense } from 'react';
 import { ActiveUserQuantificationsMessage } from './ActiveUserQuantificationsMessage';
 
 const ActiveNoticesBoardInner = (): JSX.Element | null => {
@@ -16,9 +15,5 @@ const ActiveNoticesBoardInner = (): JSX.Element | null => {
 };
 
 export const ActiveNoticesBoard = (): JSX.Element | null => {
-  return (
-    <Suspense fallback={null}>
-      <ActiveNoticesBoardInner />
-    </Suspense>
-  );
+  return <ActiveNoticesBoardInner />;
 };

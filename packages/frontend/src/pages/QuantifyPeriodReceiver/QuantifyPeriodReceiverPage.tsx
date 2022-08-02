@@ -4,7 +4,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { BreadCrumb } from '@/components/BreadCrumb';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
@@ -13,12 +13,9 @@ import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   SinglePeriod,
-  usePeriodQuantifierPraiseQuery,
+  usePeriodQuantifierPraise,
 } from '@/model/periods';
-import {
-  usePeriodSettingValueRealized,
-  useAllPeriodSettingsQuery,
-} from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { getQuantificationReceiverStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
 import { QuantifyTable } from './components/QuantifyTable';
@@ -41,12 +38,11 @@ const DoneLabel = (): JSX.Element => {
 
 const PeriodMessage = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
-  const { location } = useHistory();
-  usePeriodQuantifierPraiseQuery(periodId, location.key);
-  useAllPeriodSettingsQuery(periodId);
-  const usePseudonyms = usePeriodSettingValueRealized(
-    periodId,
-    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+  const usePseudonyms = useRecoilValue(
+    SinglePeriodSettingValueRealized({
+      periodId,
+      key: 'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS',
+    })
   ) as boolean;
   const quantifierReceiverData = getQuantificationReceiverStats(
     useRecoilValue(PeriodQuantifierReceivers(periodId)),
@@ -61,7 +57,7 @@ const PeriodMessage = (): JSX.Element | null => {
         {usePseudonyms ? (
           <UserPseudonym userId={receiverId} periodId={periodId} />
         ) : (
-          quantifierReceiverData.receiverName
+          quantifierReceiverData.receiver.name
         )}
       </h2>
       <div>Number of praise items: {quantifierReceiverData.count}</div>
@@ -81,6 +77,7 @@ const PeriodMessage = (): JSX.Element | null => {
 
 const QuantifyPeriodReceiverPage = (): JSX.Element => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
+  usePeriodQuantifierPraise(periodId);
 
   return (
     <div className="praise-page-wide">

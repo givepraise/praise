@@ -23,7 +23,7 @@ const WrappedUserPopover = ({
   userAccount,
   children,
   className,
-  usePseudonym,
+  usePseudonym = false,
 }: UserPopoverProps): JSX.Element | null => {
   const [open, setOpen] = React.useState(false);
   const [openTimeout, setOpenTimeout] = React.useState<NodeJS.Timeout | null>(

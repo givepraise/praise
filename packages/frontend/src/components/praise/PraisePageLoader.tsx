@@ -1,17 +1,16 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { BottomScrollListener } from 'react-bottom-scroll-listener';
 import { useRecoilValue } from 'recoil';
-import { AllPraiseQueryPagination, useAllPraiseQuery } from '@/model/praise';
+import { AllPraiseQueryPagination, useAllPraise } from '@/model/praise';
 import { LoaderSpinner } from '@/components/LoaderSpinner';
-import { PRAISE_LIST_KEY } from '../../pages/Start/components/PraiseTable';
 
 interface Params {
-  listKey?: string;
+  listKey: string;
   receiverId?: string;
 }
 
 export const PraisePageLoader = ({
-  listKey = PRAISE_LIST_KEY,
+  listKey,
   receiverId,
 }: Params): JSX.Element => {
   const praisePagination = useRecoilValue(AllPraiseQueryPagination(listKey));
@@ -19,7 +18,7 @@ export const PraisePageLoader = ({
     praisePagination.currentPage + 1
   );
   const receiverIdQuery = receiverId ? { receiver: receiverId } : {};
-  const queryResponse = useAllPraiseQuery(
+  const queryResponse = useAllPraise(
     {
       page: nextPageNumber,
       limit: 20,
@@ -45,7 +44,7 @@ export const PraisePageLoader = ({
 
   if (loading)
     return (
-      <div className="pb-20">
+      <div className="p-20">
         <LoaderSpinner />
       </div>
     );

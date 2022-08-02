@@ -4,14 +4,19 @@ import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { BreadCrumb } from '@/components/BreadCrumb';
 import { SinglePeriodByDate } from '@/model/periods';
-import { PraisePageParams, useSinglePraiseQuery } from '@/model/praise';
+import {
+  PraisePageParams,
+  useLoadSinglePraiseDetails,
+  SinglePraise,
+} from '@/model/praise';
 import { Praise } from '@/components/praise/Praise';
 import { BackLink } from '@/navigation/BackLink';
 import { PraiseDetailTable } from './components/PraiseDetailTable';
 
 const PraiseDetailsPage = (): JSX.Element | null => {
   const { praiseId } = useParams<PraisePageParams>();
-  const praise = useSinglePraiseQuery(praiseId);
+  useLoadSinglePraiseDetails(praiseId); // Load additional details for praise
+  const praise = useRecoilValue(SinglePraise(praiseId));
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const backLinkUrl =
     period?._id && praise?.receiver._id

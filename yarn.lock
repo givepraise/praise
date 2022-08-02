@@ -3105,32 +3105,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reach/auto-id@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@reach/auto-id@npm:0.16.0"
-  dependencies:
-    "@reach/utils": 0.16.0
-    tslib: ^2.3.0
-  peerDependencies:
-    react: ^16.8.0 || 17.x
-    react-dom: ^16.8.0 || 17.x
-  checksum: 80211f7db1c0e3b107e2c1d3fe8055e7e41d7399b51ff0da5f0c9df43d90b77aa4a31a896545c699f9629b3fbc3c762ee0518de70faf8112098886c6759d3f15
-  languageName: node
-  linkType: hard
-
-"@reach/utils@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@reach/utils@npm:0.16.0"
-  dependencies:
-    tiny-warning: ^1.0.3
-    tslib: ^2.3.0
-  peerDependencies:
-    react: ^16.8.0 || 17.x
-    react-dom: ^16.8.0 || 17.x
-  checksum: 36bc0eb41a71798eb6186b23de265ba709e51dae5bf214fb8505c66bb3f2e6a41bb2401457350436ba89ca9e3a50f93a04fe7c33d15648ce11e568a85622d770
-  languageName: node
-  linkType: hard
-
 "@rollup/plugin-babel@npm:^5.2.0":
   version: 5.3.1
   resolution: "@rollup/plugin-babel@npm:5.3.1"
@@ -9604,16 +9578,15 @@ __metadata:
     react: ^17.0.2
     react-bottom-scroll-listener: ^5.0.0
     react-csv: ^2.2.2
-    react-day-picker: ^8.0.2
     react-dom: ^17.0.2
     react-final-form: ^6.5.7
     react-hot-toast: ^2.2.0
     react-router-dom: ^5.2.1
     react-scripts: 5.0.1
     react-table: ^7.7.0
-    recoil: ^0.5.2
-    recoil-nexus: ^0.3.15
-    recoil-persist: ^4.0.0
+    recoil: ^0.7.4
+    recoil-nexus: ^0.4.0
+    recoil-persist: ^4.2.0
     source-map-explorer: ^2.5.2
     tailwindcss: ^3.0.24
     typescript: ^4.5.5
@@ -15549,18 +15522,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-day-picker@npm:^8.0.2":
-  version: 8.0.7
-  resolution: "react-day-picker@npm:8.0.7"
-  dependencies:
-    "@reach/auto-id": 0.16.0
-  peerDependencies:
-    date-fns: ^2.28.0
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: b925269c1e9ddf3ed0894eb1845ecbdc62669872d9efd2be7959019ff24a9d74006316bd19c4e69c3d614cb99238fd3fa463c657722d88b922092142d98a5e01
-  languageName: node
-  linkType: hard
-
 "react-dev-utils@npm:^12.0.1":
   version: 12.0.1
   resolution: "react-dev-utils@npm:12.0.1"
@@ -15919,20 +15880,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"recoil-nexus@npm:^0.3.15":
-  version: 0.3.18
-  resolution: "recoil-nexus@npm:0.3.18"
+"recoil-nexus@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "recoil-nexus@npm:0.4.0"
   peerDependencies:
     "@types/react": ">=16.8.0"
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
     recoil: ">=0.2.0"
     typescript: ">=4.1.0"
-  checksum: aedb501208f91e7db1c19accc25dc7c4277c8232860023fa2975760d7040a8b2a1088efaf44f18fa41d96183f36f8c9a7e39b0368d036b73d577b03fb860429b
+  checksum: 9671dbe93b42019f6a3efb0c7b6409e0c12d23339077e3a940edee9ae928f38b5546f6a71555dbba7513c6db0d8a7d8bf47c9f41fd8b341045ff93c248b54151
   languageName: node
   linkType: hard
 
-"recoil-persist@npm:^4.0.0":
+"recoil-persist@npm:^4.2.0":
   version: 4.2.0
   resolution: "recoil-persist@npm:4.2.0"
   peerDependencies:
@@ -15941,9 +15902,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"recoil@npm:^0.5.2":
-  version: 0.5.2
-  resolution: "recoil@npm:0.5.2"
+"recoil@npm:^0.7.4":
+  version: 0.7.4
+  resolution: "recoil@npm:0.7.4"
   dependencies:
     hamt_plus: 1.0.2
   peerDependencies:
@@ -15953,7 +15914,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 1daf09f969c2ffc0ac628dc4ac1306aef4e162506b0ed1700cc4aa1e68e921fad450d047843d49ba39510f24b87224e9d4ac74b1c6f111e1abeb5ba9cd2a3f78
+  checksum: 797b97ee74b2fbbb8e4dda8a951b13569d45a3440cfc05e870056255ff22c73aa816de70d66168a5b9ebe16c14d262777947dd752c8cb9559ef8ae3fbb586472
   languageName: node
   linkType: hard
 
