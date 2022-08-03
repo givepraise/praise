@@ -1,13 +1,15 @@
+import { ActivateRequestBody } from 'api/dist/activate/types';
 import {
   AuthRequestInput,
   AuthResponse,
   NonceResponse,
   TokenSet,
 } from 'api/dist/auth/types';
-import { ActivateRequestBody } from 'api/dist/activate/types';
 import { getRecoil, setRecoil } from 'recoil-nexus';
-import { ActiveTokenSet } from '@/model/auth';
+
 import { AccountActivated } from '@/model/activate';
+import { ActiveTokenSet } from '@/model/auth';
+
 import { makeApiClient } from './api';
 
 export const requestApiAuth = async (

@@ -3,8 +3,10 @@ import {
   faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useFormState } from 'react-final-form';
 import React from 'react';
+import { useFormState } from 'react-final-form';
+
+import { PraiseButton } from '@/components/ui/PraiseButton';
 
 export const SubmitButton = (): JSX.Element => {
   const {
@@ -73,13 +75,12 @@ export const SubmitButton = (): JSX.Element => {
   }, [dirtySinceLastSubmit]);
 
   return (
-    <button
+    <PraiseButton
       type="submit"
       id="submit-button"
-      disabled={disabled}
-      className={disabled ? 'praise-button-disabled' : 'praise-button'}
+      variant={disabled ? 'disabled' : ''}
     >
       {buttonText}
-    </button>
+    </PraiseButton>
   );
 };

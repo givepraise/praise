@@ -1,12 +1,13 @@
 import {
   PeriodCreateInput,
   PeriodDetailsDto,
+  PeriodReplaceQuantifierDto,
   PeriodStatusType,
   PeriodUpdateInput,
-  PeriodReplaceQuantifierDto,
   VerifyQuantifierPoolSizeResponse,
 } from 'api/dist/period/types';
 import { PraiseDetailsDto, PraiseDto } from 'api/dist/praise/types';
+import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { UserAccountDto } from 'api/dist/useraccount/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
@@ -19,15 +20,17 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil';
-import { PaginatedResponseBody } from 'api/dist/shared/types';
+
+import { useApiAuthClient } from '@/utils/api';
 import {
   periodQuantifierPraiseListKey,
   periodReceiverPraiseListKey,
 } from '@/utils/periods';
-import { useApiAuthClient } from '@/utils/api';
+
 import { ApiAuthGet, isResponseOk } from './api';
 import { ActiveUserId } from './auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfPeriod = (object: any): object is PeriodDetailsDto => {
   return '_id' in object;

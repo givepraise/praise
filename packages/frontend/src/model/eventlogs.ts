@@ -1,7 +1,8 @@
 import { EventLogDto, EventLogTypeDto } from 'api/dist/eventlog/types';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
-import { selector, selectorFamily } from 'recoil';
 import { AxiosError, AxiosResponse } from 'axios';
+import { selector, selectorFamily } from 'recoil';
+
 import { ApiAuthGet, isResponseOk } from './api';
 
 export type AllEventLogsQueryParameters = {

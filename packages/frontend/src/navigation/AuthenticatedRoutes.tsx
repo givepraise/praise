@@ -1,6 +1,7 @@
+import difference from 'lodash/difference';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import difference from 'lodash/difference';
+
 import { ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth';
 
 const StartPage = React.lazy(() => import('@/pages/Start/StartPage'));

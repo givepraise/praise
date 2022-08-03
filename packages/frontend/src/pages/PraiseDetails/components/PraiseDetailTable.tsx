@@ -5,17 +5,18 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
-import { InlineLabel } from '@/components/InlineLabel';
+
+import { InlineLabel } from '@/components/ui/InlineLabel';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
 import {
   PraisePageParams,
-  useLoadSinglePraiseDetails,
   SinglePraise,
+  useLoadSinglePraiseDetails,
 } from '@/model/praise';
-import { classNames } from '@/utils/index';
 import { localizeAndFormatIsoDate } from '@/utils/date';
+import { classNames } from '@/utils/index';
 
 interface DuplicatePraiseLabelProps {
   praiseId: string;

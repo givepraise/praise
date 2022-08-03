@@ -1,6 +1,7 @@
 import { UserDto } from 'api/dist/user/types';
 import { UserAccountDto } from 'api/dist/useraccount/types';
 import React from 'react';
+
 import { UserPseudonym } from './UserPseudonym';
 
 interface UserNameProps {

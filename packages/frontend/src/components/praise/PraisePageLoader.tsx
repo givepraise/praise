@@ -1,8 +1,9 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { BottomScrollListener } from 'react-bottom-scroll-listener';
 import { useRecoilValue } from 'recoil';
+
+import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 import { AllPraiseQueryPagination, useAllPraise } from '@/model/praise';
-import { LoaderSpinner } from '@/components/LoaderSpinner';
 
 interface Params {
   listKey: string;

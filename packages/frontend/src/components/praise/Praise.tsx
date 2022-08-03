@@ -1,26 +1,31 @@
-import { PraiseDto } from 'api/dist/praise/types';
-import { Tooltip } from '@mui/material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Tooltip } from '@mui/material';
+import { PraiseDto } from 'api/dist/praise/types';
 import { useRecoilValue } from 'recoil';
+
 import { getMarkdownText } from '@/components/MarkdownText';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { InlineLabel } from '@/components/InlineLabel';
-import { classNames } from '@/utils/index';
+import { UserName } from '@/components/user/UserName';
+import { UserPopover } from '@/components/user/UserPopover';
+import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { SinglePeriodByDate } from '@/model/periods';
+import { useQuantifyPraise } from '@/model/praise';
 import {
+  DATE_FORMAT_LONG_NAME,
   localizeAndFormatIsoDate,
   localizeAndFormatIsoDateRelative,
-  DATE_FORMAT_LONG_NAME,
 } from '@/utils/date';
-import { SinglePeriodByDate } from '@/model/periods';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import { UserPopover } from '@/components/user/UserPopover';
-import { UserName } from '@/components/user/UserName';
-import { useQuantifyPraise } from '@/model/praise';
-import { SourceName } from './SourceName';
+import { classNames } from '@/utils/index';
+
+import { InlineLabel } from '../ui/InlineLabel';
+// eslint-disable-next-line import/order
+import { InlineLabelClosable } from '../ui/InlineLabelClosable';
+// eslint-disable-next-line import/order
 import { UserAvatarAndName } from '../user/UserAvatarAndName';
-import { InlineLabelClosable } from '../InlineLabelClosable';
+// eslint-disable-next-line import/order
+import { SourceName } from './SourceName';
 
 interface Props {
   praise: PraiseDto;

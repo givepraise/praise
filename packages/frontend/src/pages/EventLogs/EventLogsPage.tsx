@@ -2,18 +2,21 @@ import {
   faArrowDownWideShort,
   faBook,
 } from '@fortawesome/free-solid-svg-icons';
-import { Suspense, useEffect, useMemo, useState } from 'react';
 import { debounce } from '@mui/material';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { LoaderSpinner } from '@/components/LoaderSpinner';
+
 import { MultiselectInput } from '@/components/form/MultiselectInput';
 import { SearchInput } from '@/components/form/SearchInput';
 import { SelectInput } from '@/components/form/SelectInput';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
+import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
+import { PraisePage } from '@/components/ui/PraisePage';
 import {
-  AllEventLogsQueryParameters,
   AllEventLogTypes,
+  AllEventLogsQueryParameters,
 } from '@/model/eventlogs';
-import { BreadCrumb } from '@/components/BreadCrumb';
+
 import { EventLogsList } from './components/EventLogsList';
 
 const sortOptions = [
@@ -85,7 +88,7 @@ const EventLogsPage = (): JSX.Element => {
   }, [selectedFilters, selectedSort, searchValue, page, setLocalParameters]);
 
   return (
-    <div className="praise-page">
+    <PraisePage>
       <BreadCrumb name="Transparency Log" icon={faBook} />
 
       <div className="mb-5 praise-box">
@@ -140,7 +143,7 @@ const EventLogsPage = (): JSX.Element => {
           <EventLogsList queryParameters={queryParameters} setPage={setPage} />
         </Suspense>
       </div>
-    </div>
+    </PraisePage>
   );
 };
 

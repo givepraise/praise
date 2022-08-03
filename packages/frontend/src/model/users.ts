@@ -1,9 +1,11 @@
 import { UserDto, UserRole } from 'api/dist/user/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import { atom, selector, selectorFamily, useRecoilState } from 'recoil';
-import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
+
 import { useApiAuthClient } from '@/utils/api';
-import { isResponseOk, ApiAuthGet } from './api';
+import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
+
+import { ApiAuthGet, isResponseOk } from './api';
 import { AllPeriods } from './periods';
 
 interface roleOptionsProps {

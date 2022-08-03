@@ -1,14 +1,16 @@
 import { faCalculator } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { PeriodStatusType } from 'api/dist/period/types';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { PeriodStatusType } from 'api/dist/period/types';
-import { getQuantificationStats } from '@/utils/periods';
+
+import { PraiseButton } from '@/components/ui/PraiseButton';
 import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   SinglePeriod,
 } from '@/model/periods';
+import { getQuantificationStats } from '@/utils/periods';
 
 export const QuantifierMessage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -34,15 +36,15 @@ export const QuantifierMessage = (): JSX.Element | null => {
               {quantificationStats.count - quantificationStats.done}
             </div>
           ) : null}
-          <button
-            className="block mt-5 praise-button"
+          <PraiseButton
+            classes="block mt-5"
             onClick={(): void => {
               history.push(`/periods/${periodId}/quantify`);
             }}
           >
             <FontAwesomeIcon icon={faCalculator} size="1x" className="mr-2" />
             Quantify
-          </button>
+          </PraiseButton>
         </div>
       </div>
     </div>

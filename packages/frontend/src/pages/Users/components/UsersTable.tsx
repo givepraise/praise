@@ -1,22 +1,24 @@
-import React from 'react';
-import { useRecoilValue, useRecoilState } from 'recoil';
 import { UserDto, UserRole } from 'api/dist/user/types';
+import React from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
+
+import { SearchInput } from '@/components/form/SearchInput';
+import { SelectInput } from '@/components/form/SelectInput';
 import {
   AllAdminUsers,
   AllForwarderUsers,
   AllQuantifierUsers,
   AllUsers,
   UsersTableData,
-  UsersTableSelectedRole,
   UsersTableFilter,
-  UsersTablePage,
   UsersTableLastPage,
+  UsersTablePage,
+  UsersTableSelectedRole,
   roleOptions,
 } from '@/model/users';
-import { SearchInput } from '@/components/form/SearchInput';
-import { SelectInput } from '@/components/form/SelectInput';
-import { UsersTableRow } from './UsersTableRow';
+
 import { UsersTablePagination } from './UsersTablePagination';
+import { UsersTableRow } from './UsersTableRow';
 
 const USERS_PER_PAGE = 10;
 

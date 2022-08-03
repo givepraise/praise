@@ -5,8 +5,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
-import { ScrollableDialog } from '@/components/ScrollableDialog';
-import { IconButton } from '@/components/IconButton';
+
+import { PraiseButton } from '@/components/ui/PraiseButton';
+import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
 
 interface DismissDialogProps {
   open: boolean;
@@ -27,9 +28,9 @@ export const DismissDialog = ({
     <ScrollableDialog open={open} onClose={onClose}>
       <div className="w-full h-full">
         <div className="flex justify-end p-6">
-          <button className="praise-button-round" onClick={onClose}>
+          <PraiseButton variant={'round'} onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} size="1x" />
-          </button>
+          </PraiseButton>
         </div>
         <div className="px-20 space-y-6">
           <div className="flex justify-center">
@@ -44,14 +45,16 @@ export const DismissDialog = ({
             {praises.map((p) => p._idLabelRealized).join(', ')}
           </p>
           <div className="flex justify-center">
-            <IconButton
-              icon={faMinusCircle}
-              text="Dismiss"
+            <PraiseButton
+              classes="space-x-2"
               onClick={(): void => {
                 onConfirm();
                 onClose();
               }}
-            />
+            >
+              <FontAwesomeIcon icon={faMinusCircle} size="1x" />
+              <span>Dismiss</span>
+            </PraiseButton>
           </div>
         </div>
       </div>

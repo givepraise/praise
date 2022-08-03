@@ -1,5 +1,6 @@
+import { AxiosError, AxiosResponse } from 'axios';
 import { Field } from 'react-final-form';
-import { AxiosResponse, AxiosError } from 'axios';
+
 import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 
 export const StringInput = (

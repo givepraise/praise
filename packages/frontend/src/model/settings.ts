@@ -1,8 +1,10 @@
+import { SettingDto } from 'api/dist/settings/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import { atom, selectorFamily, useRecoilCallback } from 'recoil';
-import { SettingDto } from 'api/dist/settings/types';
+
 import { useApiAuthClient } from '@/utils/api';
-import { isResponseOk, ApiAuthGet } from './api';
+
+import { ApiAuthGet, isResponseOk } from './api';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfSetting = (object: any): object is SettingDto => {

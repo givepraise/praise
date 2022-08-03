@@ -1,29 +1,31 @@
-import flatten from 'lodash/flatten';
-import { StatusCodes } from 'http-status-codes';
 import { Request } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import flatten from 'lodash/flatten';
+
 import { BadRequestError, NotFoundError } from '@/error/errors';
-import { UserModel } from '@/user/entities';
-import { settingValue } from '@/shared/settings';
-import { TypedRequestBody, TypedResponse } from '@/shared/types';
-import { UserRole } from '@/user/types';
-import { PraiseModel } from '@/praise/entities';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
+import { PraiseModel } from '@/praise/entities';
 import { praiseListTransformer } from '@/praise/transformers';
+import { settingValue } from '@/shared/settings';
+import { TypedRequestBody, TypedResponse } from '@/shared/types';
+import { UserModel } from '@/user/entities';
+import { UserRole } from '@/user/types';
+
+import { PeriodModel } from '../entities';
 import {
   PeriodDetailsDto,
-  PeriodStatusType,
-  VerifyQuantifierPoolSizeResponse,
   PeriodReplaceQuantifierDto,
+  PeriodStatusType,
   ReplaceQuantifierRequestBody,
+  VerifyQuantifierPoolSizeResponse,
 } from '../types';
+import { assignQuantifiersDryRun } from '../utils/assignment';
 import {
   findPeriodDetailsDto,
-  isAnyPraiseAssigned,
   getPeriodDateRangeQuery,
+  isAnyPraiseAssigned,
 } from '../utils/core';
-import { assignQuantifiersDryRun } from '../utils/assignment';
-import { PeriodModel } from '../entities';
 
 /**
  * Description

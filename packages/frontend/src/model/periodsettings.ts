@@ -1,8 +1,10 @@
+import { PeriodSettingDto } from 'api/dist/periodsettings/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import { atomFamily, selectorFamily, useRecoilCallback } from 'recoil';
-import { PeriodSettingDto } from 'api/dist/periodsettings/types';
+
 import { useApiAuthClient } from '@/utils/api';
-import { isResponseOk, ApiAuthGet } from './api';
+
+import { ApiAuthGet, isResponseOk } from './api';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfPeriodSetting = (object: any): object is PeriodSettingDto => {

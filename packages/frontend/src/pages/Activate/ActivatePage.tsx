@@ -1,16 +1,18 @@
-import { generateActivateMessage } from 'api/dist/activate/utils';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { generateActivateMessage } from 'api/dist/activate/utils';
+import lowerCase from 'lodash/lowerCase';
+import upperFirst from 'lodash/upperFirst';
 import queryString from 'query-string';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import upperFirst from 'lodash/upperFirst';
-import lowerCase from 'lodash/lowerCase';
 import { useAccount } from 'wagmi';
+
 import { AccountActivated } from '@/model/activate';
 import { requestApiActivate } from '@/utils/auth';
+
 import { SignMessageLayout } from '../../layouts/SignMessageLayout';
 
 interface Props {

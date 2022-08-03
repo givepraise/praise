@@ -1,3 +1,8 @@
+import {
+  faCopy,
+  faMinusCircle,
+  faScaleUnbalanced,
+} from '@fortawesome/free-solid-svg-icons';
 import { PraiseDto } from 'api/dist/praise/types';
 import getWeek from 'date-fns/getWeek';
 import parseISO from 'date-fns/parseISO';
@@ -5,22 +10,19 @@ import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import {
-  faCopy,
-  faMinusCircle,
-  faScaleUnbalanced,
-} from '@fortawesome/free-solid-svg-icons';
-import { useQuantifyMultiplePraise, useQuantifyPraise } from '@/model/praise';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
-import { PeriodQuantifierReceiverPraise } from '@/model/periods';
+
 import { SearchInput } from '@/components/form/SearchInput';
+import { IconButtonRound } from '@/components/ui/IconButtonRound';
+import { PeriodQuantifierReceiverPraise } from '@/model/periods';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+import { useQuantifyMultiplePraise, useQuantifyPraise } from '@/model/praise';
 import { QuantifyMultipleDialog } from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleDialog';
-import { IconButtonRound } from '@/components/IconButtonRound';
+
+import { QuantifyBackNextLink } from './BackNextLink';
+import { DismissDialog } from './DismissDialog';
 import { DuplicateDialog } from './DuplicateDialog';
 import { DuplicateSearchDialog } from './DuplicateSearchDialog';
 import { QuantifyPraiseRow } from './QuantifyPraiseRow';
-import { QuantifyBackNextLink } from './BackNextLink';
-import { DismissDialog } from './DismissDialog';
 
 interface Props {
   periodId: string;

@@ -1,11 +1,12 @@
-import { useRecoilRefresher_UNSTABLE, useRecoilValue } from 'recoil';
 import { PeriodSettingDto } from 'api/dist/periodsettings/types';
-import { toast } from 'react-hot-toast';
 import { AxiosError, AxiosResponse } from 'axios';
+import { toast } from 'react-hot-toast';
+import { useRecoilRefresher_UNSTABLE, useRecoilValue } from 'recoil';
+
 import { SettingsForm } from '@/components/settings/SettingsForm';
-import { AllPeriodSettings, useSetPeriodSetting } from '@/model/periodsettings';
 import { isResponseOk } from '@/model/api';
 import { PeriodPoolRequirementsQuery } from '@/model/periods';
+import { AllPeriodSettings, useSetPeriodSetting } from '@/model/periodsettings';
 
 interface Params {
   periodId: string;

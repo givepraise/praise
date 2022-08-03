@@ -1,18 +1,19 @@
 /* eslint-disable react/jsx-key */
+import sortBy from 'lodash/sortBy';
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useSortBy, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
-import sortBy from 'lodash/sortBy';
+
+import { Notice } from '@/components/ui/Notice';
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
+import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   PeriodPageParams,
   SinglePeriod,
   useLoadSinglePeriodDetails,
 } from '@/model/periods';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import { Notice } from '@/components/Notice';
 import { classNames } from '@/utils/index';
-import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
 export const ReceiverTable = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();

@@ -1,37 +1,41 @@
-import { Types } from 'mongoose';
-import { StatusCodes } from 'http-status-codes';
-import { Request, Response } from 'express';
-import { Parser } from 'json2csv';
 import { parseISO } from 'date-fns';
+import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { Parser } from 'json2csv';
+import { Types } from 'mongoose';
+
 import { BadRequestError, NotFoundError } from '@/error/errors';
-import { PraiseDtoExtended, PraiseDetailsDto, PraiseDto } from '@/praise/types';
+import { EventLogTypeKey } from '@/eventlog/types';
+import { logEvent } from '@/eventlog/utils';
+import { insertNewPeriodSettings } from '@/periodsettings/utils';
+import { PraiseModel } from '@/praise/entities';
 import {
   praiseListTransformer,
   praiseTransformer,
 } from '@/praise/transformers';
+import { PraiseDetailsDto, PraiseDto, PraiseDtoExtended } from '@/praise/types';
 import { calculateQuantificationScore } from '@/praise/utils/score';
-import { UserModel } from '@/user/entities';
-import { UserAccountModel } from '@/useraccount/entities';
-import { insertNewPeriodSettings } from '@/periodsettings/utils';
+import { getQueryInput, getQuerySort } from '@/shared/functions';
 import { settingValue } from '@/shared/settings';
 import {
-  TypedRequestBody,
-  TypedResponse,
-  QueryInput,
   PaginatedResponseBody,
+  QueryInput,
   QueryInputParsedQs,
+  TypedRequestBody,
   TypedRequestQuery,
+  TypedResponse,
 } from '@/shared/types';
-import { getQueryInput, getQuerySort } from '@/shared/functions';
-import { PraiseModel } from '@/praise/entities';
-import { EventLogTypeKey } from '@/eventlog/types';
-import { logEvent } from '@/eventlog/utils';
+import { UserModel } from '@/user/entities';
+import { UserAccountModel } from '@/useraccount/entities';
+
+import { PeriodModel } from '../entities';
+import { periodTransformer } from '../transformers';
 import {
   PeriodDetailsDto,
-  PeriodUpdateInput,
   PeriodQuantifierPraiseInput,
-  PeriodStatusType,
   PeriodReceiverPraiseInput,
+  PeriodStatusType,
+  PeriodUpdateInput,
 } from '../types';
 import {
   findPeriodDetailsDto,
@@ -39,8 +43,6 @@ import {
   getPreviousPeriodEndDate,
   isPeriodLatest,
 } from '../utils/core';
-import { PeriodModel } from '../entities';
-import { periodTransformer } from '../transformers';
 
 /**
  * Fetch a paginated list of Periods

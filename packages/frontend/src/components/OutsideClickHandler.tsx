@@ -1,4 +1,5 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
+
 import { useOutsideAlerter } from '@/utils/index';
 
 interface OutsideClickHandlerProps {

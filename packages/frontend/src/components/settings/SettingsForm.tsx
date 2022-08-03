@@ -1,16 +1,18 @@
-import { Form } from 'react-final-form';
-import find from 'lodash/find';
-import { PeriodSettingDto } from 'api/src/periodsettings/types';
 import { SettingDto } from 'api/dist/settings/types';
-import { useState } from 'react';
+import { PeriodSettingDto } from 'api/src/periodsettings/types';
 import { AxiosError, AxiosResponse } from 'axios';
+import find from 'lodash/find';
+import { useState } from 'react';
+import { Form } from 'react-final-form';
+
+import { BooleanInput } from '@/components/form/BooleanInput';
+import { ImageFileInput } from '@/components/form/ImageFileInput';
 import { NumberInput } from '@/components/form/NumberInput';
 import { StringInput } from '@/components/form/StringInput';
 import { TextareaInput } from '@/components/form/TextareaInput';
-import { BooleanInput } from '@/components/form/BooleanInput';
-import { ImageFileInput } from '@/components/form/ImageFileInput';
-import { Notice } from '@/components/Notice';
+
 import { SubmitButton } from '../form/SubmitButton';
+import { Notice } from '../ui/Notice';
 
 interface SettingsFormProps {
   settings: SettingDto[] | PeriodSettingDto[] | undefined;

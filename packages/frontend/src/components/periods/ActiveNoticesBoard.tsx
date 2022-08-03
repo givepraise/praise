@@ -1,3 +1,5 @@
+import { PraiseBox } from '../ui/PraiseBox';
+// eslint-disable-next-line import/order
 import { ActiveUserQuantificationsMessage } from './ActiveUserQuantificationsMessage';
 
 const ActiveNoticesBoardInner = (): JSX.Element | null => {
@@ -7,10 +9,10 @@ const ActiveNoticesBoardInner = (): JSX.Element | null => {
   if (!activeUserQuantificationMessageRender) return null;
 
   return (
-    <div className="mb-5 praise-box">
+    <PraiseBox classes="mb-5">
       {activeUserQuantificationMessageRender &&
         activeUserQuantificationMessageRender}
-    </div>
+    </PraiseBox>
   );
 };
 

@@ -1,13 +1,15 @@
-import React from 'react';
-import { shortenEthAddress } from 'api/dist/user/utils/core';
-import { Jazzicon } from '@ukstv/jazzicon-react';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Jazzicon } from '@ukstv/jazzicon-react';
 import { UserDto } from 'api/dist/user/types';
+import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { UserAccountDto } from 'api/dist/useraccount/types';
+import React from 'react';
 import { useRecoilValue } from 'recoil';
+
 import { SingleUser } from '@/model/users';
 import { classNames } from '@/utils/index';
+
 import { UserAvatar } from './UserAvatar';
 
 interface UserPopoverProps {

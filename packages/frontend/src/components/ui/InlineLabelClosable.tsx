@@ -1,5 +1,6 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import { InlineLabel } from './InlineLabel';
 
 interface Props {

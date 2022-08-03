@@ -1,5 +1,6 @@
 import { Tooltip } from '@mui/material';
-import { classNames } from '../utils';
+
+import { classNames } from '../../utils/';
 
 interface InlineLabelProps {
   text: string;

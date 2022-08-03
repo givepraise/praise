@@ -6,9 +6,10 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
 import { useState } from 'react';
+
+import { PraiseButton } from '@/components/ui/PraiseButton';
+import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
 import { QuantifySlider } from '@/pages/QuantifyPeriodReceiver/components/QuantifySlider';
-import { ScrollableDialog } from '@/components/ScrollableDialog';
-import { IconButton } from '@/components/IconButton';
 
 interface QuantifyMultipleDialogProps {
   open: boolean;
@@ -31,9 +32,9 @@ export const QuantifyMultipleDialog = ({
     <ScrollableDialog open={open} onClose={onClose}>
       <div className="w-full h-full">
         <div className="flex justify-end p-6">
-          <button className="praise-button-round" onClick={onClose}>
+          <PraiseButton variant={'round'} onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} size="1x" />
-          </button>
+          </PraiseButton>
         </div>
         <div className="px-20 space-y-6">
           <div className="flex justify-center">
@@ -51,14 +52,16 @@ export const QuantifyMultipleDialog = ({
           </div>
 
           <div className="flex justify-center">
-            <IconButton
-              icon={faScaleUnbalanced}
-              text="Quantify"
+            <PraiseButton
+              classes="space-x-2"
               onClick={(): void => {
                 onSetScore(score, selectedPraises);
                 onClose();
               }}
-            />
+            >
+              <FontAwesomeIcon icon={faScaleUnbalanced} size="1x" />
+              <span>Quantify</span>
+            </PraiseButton>
           </div>
         </div>
       </div>

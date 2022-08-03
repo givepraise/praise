@@ -1,16 +1,18 @@
-import { SettingDto, SettingGroup } from 'api/dist/settings/types';
 import { faCogs } from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
-import { useRecoilValue } from 'recoil';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
+import { SettingDto, SettingGroup } from 'api/dist/settings/types';
 import { AxiosError, AxiosResponse } from 'axios';
-import { AllSettings, useSetSetting } from '@/model/settings';
-import { BreadCrumb } from '@/components/BreadCrumb';
-import { SubPageNav } from '@/navigation/SubPageNav';
-import { NavItem } from '@/navigation/NavItem';
+import React from 'react';
+import { toast } from 'react-hot-toast';
+import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+
 import { SettingsForm } from '@/components/settings/SettingsForm';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
+import { PraisePage } from '@/components/ui/PraisePage';
 import { isResponseOk } from '@/model/api';
+import { AllSettings, useSetSetting } from '@/model/settings';
+import { NavItem } from '@/navigation/NavItem';
+import { SubPageNav } from '@/navigation/SubPageNav';
 
 const SettingsPage = (): JSX.Element | null => {
   const settings = useRecoilValue(AllSettings);
@@ -41,7 +43,7 @@ const SettingsPage = (): JSX.Element | null => {
   };
 
   return (
-    <div className="praise-page-wide">
+    <PraisePage variant={'wide'}>
       <BreadCrumb name="Settings" icon={faCogs} />
 
       <div className="flex flex-col space-y-5 xl:space-x-5 xl:flex-row xl:space-y-0">
@@ -87,7 +89,7 @@ const SettingsPage = (): JSX.Element | null => {
           </Switch>
         </div>
       </div>
-    </div>
+    </PraisePage>
   );
 };
 

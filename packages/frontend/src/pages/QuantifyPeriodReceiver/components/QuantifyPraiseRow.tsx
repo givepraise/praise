@@ -1,15 +1,17 @@
-import { PraiseDto } from 'api/dist/praise/types';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { PraiseDto } from 'api/dist/praise/types';
 import { useRecoilValue } from 'recoil';
-import { Notice } from '@/components/Notice';
+
 import { Praise } from '@/components/praise/Praise';
+import { Notice } from '@/components/ui/Notice';
 import { ActiveUserId } from '@/model/auth';
+import { classNames } from '@/utils/index';
 import {
   findPraiseQuantification,
   shortenDuplicatePraiseId,
 } from '@/utils/praise';
-import { classNames } from '@/utils/index';
+
 import { QuantifySlider } from './QuantifySlider';
 
 interface Props {

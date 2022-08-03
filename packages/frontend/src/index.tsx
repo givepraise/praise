@@ -1,3 +1,15 @@
+import {
+  Chain,
+  RainbowKitProvider,
+  Theme as RainbowTheme,
+  connectorsForWallets,
+  darkTheme,
+  lightTheme,
+  wallet,
+} from '@rainbow-me/rainbowkit';
+// eslint-disable-next-line import/no-unresolved
+import '@rainbow-me/rainbowkit/styles.css';
+import merge from 'lodash/merge';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Toaster } from 'react-hot-toast';
@@ -5,23 +17,13 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { RecoilRoot, useRecoilValue } from 'recoil';
 import RecoilNexus from 'recoil-nexus';
 import { useErrorBoundary } from 'use-error-boundary';
-// eslint-disable-next-line import/no-unresolved
-import '@rainbow-me/rainbowkit/styles.css';
-import {
-  Chain,
-  connectorsForWallets,
-  wallet,
-  RainbowKitProvider,
-  lightTheme,
-  Theme as RainbowTheme,
-  darkTheme,
-} from '@rainbow-me/rainbowkit';
-import merge from 'lodash/merge';
-import { configureChains, createClient, WagmiConfig, chain } from 'wagmi';
+import { WagmiConfig, chain, configureChains, createClient } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
-import { LoadScreen } from '@/components/LoadScreen';
+
+import { LoadScreen } from '@/components/ui/LoadScreen';
 import { Theme } from '@/model/theme';
 import { Routes } from '@/navigation/Routes';
+
 import ErrorPage from './pages/ErrorPage';
 import './styles/globals.css';
 

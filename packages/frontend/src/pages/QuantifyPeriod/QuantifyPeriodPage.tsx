@@ -2,15 +2,18 @@ import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { BreadCrumb } from '@/components/BreadCrumb';
+
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
+import { PraisePage } from '@/components/ui/PraisePage';
 import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   SinglePeriod,
   usePeriodQuantifierPraise,
 } from '@/model/periods';
-import { getQuantificationStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
+import { getQuantificationStats } from '@/utils/periods';
+
 import { QuantifyPeriodTable } from './components/QuantifyPeriodTable';
 
 const PeriodMessage = (): JSX.Element => {
@@ -43,7 +46,7 @@ const QuantifyPeriodPage = (): JSX.Element | null => {
   if (!period || !periodQuantifierPraise) return null;
 
   return (
-    <div className="praise-page">
+    <PraisePage>
       <BreadCrumb name="Quantify" icon={faCalendarAlt} />
       <BackLink to={`/periods/${periodId}`} />
 
@@ -58,7 +61,7 @@ const QuantifyPeriodPage = (): JSX.Element | null => {
           <QuantifyPeriodTable />
         </div>
       </React.Suspense>
-    </div>
+    </PraisePage>
   );
 };
 

@@ -1,16 +1,17 @@
 /* This example requires Tailwind CSS v2.0+ */
-import React, { Fragment, useState } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { faX, faBars } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dialog, Transition } from '@headlessui/react';
+import React, { Fragment, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { SingleSetting } from '@/model/settings';
-import { Nav } from '@/navigation/Nav';
-import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
+
+import { LoadScreen } from '@/components/ui/LoadScreen';
 import { ApiAuthGet } from '@/model/api';
-import { LoadScreen } from '@/components/LoadScreen';
-import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth';
 import { usePraiseAppVersion } from '@/model/app';
+import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth';
+import { SingleSetting } from '@/model/settings';
+import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
+import { Nav } from '@/navigation/Nav';
 
 export const AuthenticatedLayout = (): JSX.Element | null => {
   useRecoilValue(ApiAuthGet({ url: '/settings/all' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.

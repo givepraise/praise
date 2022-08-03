@@ -2,15 +2,18 @@ import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { BreadCrumb } from '@/components/BreadCrumb';
+
+import { Praise } from '@/components/praise/Praise';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
+import { PraisePage } from '@/components/ui/PraisePage';
 import { SinglePeriodByDate } from '@/model/periods';
 import {
   PraisePageParams,
-  useLoadSinglePraiseDetails,
   SinglePraise,
+  useLoadSinglePraiseDetails,
 } from '@/model/praise';
-import { Praise } from '@/components/praise/Praise';
 import { BackLink } from '@/navigation/BackLink';
+
 import { PraiseDetailTable } from './components/PraiseDetailTable';
 
 const PraiseDetailsPage = (): JSX.Element | null => {
@@ -26,7 +29,7 @@ const PraiseDetailsPage = (): JSX.Element | null => {
   if (!praise) return null;
 
   return (
-    <div className="praise-page">
+    <PraisePage>
       <BreadCrumb name={'Praise details'} icon={faCalendarAlt} />
       <BackLink to={backLinkUrl} />
 
@@ -41,7 +44,7 @@ const PraiseDetailsPage = (): JSX.Element | null => {
           <PraiseDetailTable />
         </React.Suspense>
       </div>
-    </div>
+    </PraisePage>
   );
 };
 

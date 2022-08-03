@@ -5,14 +5,15 @@ import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
-import { classNames } from '@/utils/index';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   QuantifierReceiverData,
 } from '@/model/periods';
-import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+import { classNames } from '@/utils/index';
 
 const DoneLabel = (): JSX.Element => {
   return (

@@ -1,11 +1,12 @@
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount } from 'wagmi';
 import { toast } from 'react-hot-toast';
-import { SignMessageButton } from '@/components/auth/SignMessageButton';
-import { LoaderSpinner } from '@/components/LoaderSpinner';
+import { useAccount } from 'wagmi';
+
 import { EthAccount } from '@/components/account/EthAccount';
+import { SignMessageButton } from '@/components/auth/SignMessageButton';
+import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 
 interface Props {
   children: JSX.Element;

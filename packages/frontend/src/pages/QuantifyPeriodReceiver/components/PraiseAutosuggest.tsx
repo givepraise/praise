@@ -5,14 +5,15 @@ import { useCombobox } from 'downshift';
 import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { classNames } from '@/utils/index';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+
+import { UserPseudonym } from '@/components/user/UserPseudonym';
+import { ActiveUserId } from '@/model/auth';
 import {
   PeriodAndReceiverPageParams,
   PeriodQuantifierReceiverPraise,
 } from '@/model/periods';
-import { ActiveUserId } from '@/model/auth';
-import { UserPseudonym } from '@/components/user/UserPseudonym';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+import { classNames } from '@/utils/index';
 
 interface PraiseAutosuggestProps {
   onClose(): void;

@@ -4,10 +4,11 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
-import { classNames } from '@/utils/index';
-import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
+
+import { InlineLabel } from '@/components/ui/InlineLabel';
 import { AllPeriods } from '@/model/periods';
-import { InlineLabel } from '@/components/InlineLabel';
+import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
+import { classNames } from '@/utils/index';
 
 export const PeriodsTable = (): JSX.Element => {
   const allPeriods = useRecoilValue(AllPeriods);

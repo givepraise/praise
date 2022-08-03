@@ -1,14 +1,16 @@
-import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { faUserGroup } from '@fortawesome/free-solid-svg-icons';
-import { useRecoilValue } from 'recoil';
-import { useParams } from 'react-router-dom';
 import { UserDto, UserRole } from 'api/dist/user/types';
+import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { toast } from 'react-hot-toast';
-import { BreadCrumb } from '@/components/BreadCrumb';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
+import { PraisePage } from '@/components/ui/PraisePage';
 import { SingleUser, SingleUserParams, useAdminUsers } from '@/model/users';
+import { BackLink } from '@/navigation/BackLink';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { classNames } from '@/utils/index';
-import { BackLink } from '@/navigation/BackLink';
 
 const roles = [UserRole.ADMIN, UserRole.FORWARDER, UserRole.QUANTIFIER];
 
@@ -33,7 +35,7 @@ const UserDetailsPage = (): JSX.Element | null => {
   if (!user) return null;
 
   return (
-    <div className="praise-page">
+    <PraisePage>
       <BreadCrumb name="User details" icon={faUserGroup} />
       <BackLink to="/users" />
       <div className="flex flex-col gap-2 mb-5 praise-box">
@@ -88,7 +90,7 @@ const UserDetailsPage = (): JSX.Element | null => {
           ))}
         </div>
       </div>
-    </div>
+    </PraisePage>
   );
 };
 

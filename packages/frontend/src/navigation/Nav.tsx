@@ -1,21 +1,23 @@
 import {
+  faBook,
+  faCalendarAlt,
   faCog,
+  faMoon,
   faPrayingHands,
   faQuestionCircle,
-  faUserFriends,
-  faBook,
-  faMoon,
   faSun,
-  faCalendarAlt,
+  faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
 import { Link } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { SingleSetting } from '@/model/settings';
+
 import { EthAccount } from '@/components/account/EthAccount';
 import { AdminOnly } from '@/components/auth/AdminOnly';
+import { SingleSetting } from '@/model/settings';
 import { Theme } from '@/model/theme';
+
 import { NavItem } from './NavItem';
 
 export const Nav = (): JSX.Element => {

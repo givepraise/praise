@@ -1,24 +1,26 @@
 /* eslint-disable react/jsx-key */
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { TableOptions, useTable } from 'react-table';
-import { useRecoilValue } from 'recoil';
-import sortBy from 'lodash/sortBy';
 import { faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Quantifier } from 'api/dist/praise/types';
+import sortBy from 'lodash/sortBy';
+import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { useParams } from 'react-router-dom';
+import { TableOptions, useTable } from 'react-table';
+import { useRecoilValue } from 'recoil';
+
+import { Notice } from '@/components/ui/Notice';
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
+import { isResponseOk } from '@/model/api';
+import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   PeriodPageParams,
   SinglePeriod,
-  useReplaceQuantifier,
   useLoadSinglePeriodDetails,
+  useReplaceQuantifier,
 } from '@/model/periods';
-import { Notice } from '@/components/Notice';
 import { classNames } from '@/utils/index';
-import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import { isResponseOk } from '@/model/api';
+
 import { ReplaceQuantifierDialog } from './ReplaceQuantifierDialog';
 
 export const QuantifierTable = (): JSX.Element => {

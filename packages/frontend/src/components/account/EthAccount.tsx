@@ -1,10 +1,12 @@
-import { shortenEthAddress } from 'api/dist/user/utils/core';
-import { Jazzicon } from '@ukstv/jazzicon-react';
-import { useAccount } from 'wagmi';
 import { faAngleDown, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Jazzicon } from '@ukstv/jazzicon-react';
+import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { useState } from 'react';
+import { useAccount } from 'wagmi';
+
 import { classNames } from '@/utils/index';
+
 import { EthAccountDialog } from './EthAccountDialog';
 
 interface EthAccountParams {

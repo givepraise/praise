@@ -2,9 +2,10 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
-import { PeriodQuantifierReceivers } from '@/model/periods';
+
 import { UserPseudonym } from '@/components/user/UserPseudonym';
+import { PeriodQuantifierReceivers } from '@/model/periods';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 
 interface Props {
   periodId: string;

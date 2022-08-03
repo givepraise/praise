@@ -1,8 +1,10 @@
 import { ApiErrorResponseData } from 'api/dist/error/types';
 import { AxiosError, AxiosResponse } from 'axios';
-import { selectorFamily, SerializableParam } from 'recoil';
-import { AccessToken } from './auth';
+import { SerializableParam, selectorFamily } from 'recoil';
+
 import { makeApiAuthClient } from '../utils/api';
+// eslint-disable-next-line import/order
+import { AccessToken } from './auth';
 
 export type RequestParams = {
   [key: string]: SerializableParam;

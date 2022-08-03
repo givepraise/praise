@@ -6,9 +6,12 @@ import {
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
+import { PraisePage } from '@/components/ui/PraisePage';
 import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
-import { BreadCrumb } from '@/components/BreadCrumb';
 import { BackLink } from '@/navigation/BackLink';
+
 import { ReceiverSummaryTable } from './components/ReceiverSummaryTable';
 
 const getReceiver = (
@@ -42,7 +45,7 @@ const ReceiverSummaryPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodAndReceiverPageParams>();
 
   return (
-    <div className="praise-page">
+    <PraisePage>
       <BreadCrumb name={'Receiver summary for period'} icon={faCalendarAlt} />
       <BackLink to={`/periods/${periodId}`} />
 
@@ -53,7 +56,7 @@ const ReceiverSummaryPage = (): JSX.Element => {
       <React.Suspense fallback={null}>
         <ReceiverSummaryTable />
       </React.Suspense>
-    </div>
+    </PraisePage>
   );
 };
 

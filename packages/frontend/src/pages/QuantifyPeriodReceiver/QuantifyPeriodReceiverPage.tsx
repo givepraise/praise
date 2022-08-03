@@ -6,7 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { BreadCrumb } from '@/components/BreadCrumb';
+
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
+import { PraisePage } from '@/components/ui/PraisePage';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import {
   PeriodAndReceiverPageParams,
@@ -16,8 +18,9 @@ import {
   usePeriodQuantifierPraise,
 } from '@/model/periods';
 import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
-import { getQuantificationReceiverStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
+import { getQuantificationReceiverStats } from '@/utils/periods';
+
 import { QuantifyTable } from './components/QuantifyTable';
 
 const PeriodBreadCrumb = (): JSX.Element | null => {
@@ -80,7 +83,7 @@ const QuantifyPeriodReceiverPage = (): JSX.Element => {
   usePeriodQuantifierPraise(periodId);
 
   return (
-    <div className="praise-page-wide">
+    <PraisePage variant={'wide'}>
       <React.Suspense fallback={null}>
         <PeriodBreadCrumb />
       </React.Suspense>
@@ -99,7 +102,7 @@ const QuantifyPeriodReceiverPage = (): JSX.Element => {
           receiverId={receiverId}
         />
       </React.Suspense>
-    </div>
+    </PraisePage>
   );
 };
 

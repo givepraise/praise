@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   faAngleLeft,
   faAngleRight,
@@ -6,6 +5,7 @@ import {
   faAnglesRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
 
 interface IUsersTablePagination {
   lastPage: number;

@@ -1,11 +1,13 @@
-import { FAQItem } from 'api/dist/settings/types';
 import { faCaretUp, faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Disclosure } from '@headlessui/react';
+import { FAQItem } from 'api/dist/settings/types';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { Disclosure } from '@headlessui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
+import { PraisePage } from '@/components/ui/PraisePage';
 import { SingleSetting } from '@/model/settings';
-import { BreadCrumb } from '@/components/BreadCrumb';
 
 const FAQPage = (): JSX.Element | null => {
   const siteFAQSetting = useRecoilValue(SingleSetting('PRAISE_FAQ'));
@@ -14,7 +16,7 @@ const FAQPage = (): JSX.Element | null => {
   if (!faq || !faq.length) return null;
 
   return (
-    <div className="praise-page">
+    <PraisePage>
       <BreadCrumb name="FAQ" icon={faQuestionCircle} />
 
       <div className="w-full praise-box">
@@ -53,7 +55,7 @@ const FAQPage = (): JSX.Element | null => {
           })}
         </React.Suspense>
       </div>
-    </div>
+    </PraisePage>
   );
 };
 

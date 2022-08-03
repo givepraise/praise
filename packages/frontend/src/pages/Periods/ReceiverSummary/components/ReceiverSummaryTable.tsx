@@ -1,11 +1,12 @@
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+
 import { Praise } from '@/components/praise/Praise';
+import { PraiseRow } from '@/components/praise/PraiseRow';
 import {
   PeriodAndReceiverPageParams,
   usePeriodReceiverPraise,
 } from '@/model/periods';
-import { PraiseRow } from '@/components/praise/PraiseRow';
 import { AllPraiseList } from '@/model/praise';
 import { periodReceiverPraiseListKey } from '@/utils/periods';
 

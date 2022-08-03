@@ -1,19 +1,22 @@
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { ApiErrorResponseData } from 'api/dist/error/types';
 import { PeriodCreateInput } from 'api/dist/period/types';
 import { isMatch } from 'date-fns';
 import { FORM_ERROR, SubmissionErrors, ValidationErrors } from 'final-form';
 import React from 'react';
 import { Field, Form } from 'react-final-form';
-import { useHistory } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { ApiErrorResponseData } from 'api/dist/error/types';
-import { DATE_FORMAT } from '@/utils/date';
-import { useCreatePeriod } from '@/model/periods';
-import { isApiResponseValidationError, isResponseOk } from '@/model/api';
+import { useHistory } from 'react-router-dom';
+
 import { DayInput } from '@/components/form/DayInput';
 import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
-import { BreadCrumb } from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
+import { PraisePage } from '@/components/ui/PraisePage';
+import { isApiResponseValidationError, isResponseOk } from '@/model/api';
+import { useCreatePeriod } from '@/model/periods';
 import { BackLink } from '@/navigation/BackLink';
+import { DATE_FORMAT } from '@/utils/date';
+
 import { SubmitButton } from './components/SubmitButton';
 
 const validate = (
@@ -128,7 +131,7 @@ const PeriodsForm = (): JSX.Element => {
 
 const PeriodsCreatePage = (): JSX.Element => {
   return (
-    <div className="praise-page">
+    <PraisePage>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 
@@ -142,7 +145,7 @@ const PeriodsCreatePage = (): JSX.Element => {
           <PeriodsForm />
         </React.Suspense>
       </div>
-    </div>
+    </PraisePage>
   );
 };
 

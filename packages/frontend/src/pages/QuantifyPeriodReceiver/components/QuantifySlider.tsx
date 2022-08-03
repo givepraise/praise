@@ -1,5 +1,5 @@
 import { Slider, Tooltip } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface ValueLabelComponentProps {
   children: JSX.Element;

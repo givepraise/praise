@@ -5,14 +5,16 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
-import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { PeriodPageParams } from '@/model/periods';
+
 import { Praise } from '@/components/praise/Praise';
-import { ScrollableDialog } from '@/components/ScrollableDialog';
+import { PraiseButton } from '@/components/ui/PraiseButton';
+import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
+import { PeriodPageParams } from '@/model/periods';
 import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
-import { IconButton } from '@/components/IconButton';
+
 import { QuantifySlider } from './QuantifySlider';
 
 interface DuplicateDialogProps {
@@ -59,9 +61,9 @@ export const DuplicateDialog = ({
     <ScrollableDialog open={open} onClose={onClose}>
       <div className="w-full h-full">
         <div className="flex justify-end p-6">
-          <button className="praise-button-round" onClick={onClose}>
+          <PraiseButton variant={'round'} onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} size="1x" />
-          </button>
+          </PraiseButton>
         </div>
         <div className="px-20 space-y-6">
           <div className="flex justify-center">
@@ -94,14 +96,16 @@ export const DuplicateDialog = ({
             />
           </div>
           <div className="flex justify-center">
-            <IconButton
-              icon={faCopy}
-              text="Mark as duplicates"
+            <PraiseButton
+              classes="space-x-2"
               onClick={(): void => {
                 onConfirm(score);
                 onClose();
               }}
-            />
+            >
+              <FontAwesomeIcon icon={faCopy} size="1x" />
+              <span>Mark as duplicates</span>
+            </PraiseButton>
           </div>
         </div>
       </div>
