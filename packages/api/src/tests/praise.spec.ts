@@ -967,7 +967,7 @@ describe('PATCH /api/praise/quantify', () => {
     };
 
     return this.client
-      .patch(`/api/praise/quantify`)
+      .patch('/api/praise/quantify')
       .set('Authorization', `Bearer ${accessToken}`)
       .set('Accept', 'application/json')
       .send(FORM_DATA)
