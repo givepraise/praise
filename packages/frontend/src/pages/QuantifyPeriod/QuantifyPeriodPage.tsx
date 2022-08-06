@@ -2,7 +2,7 @@ import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { BreadCrumb } from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
@@ -11,6 +11,8 @@ import {
 } from '@/model/periods';
 import { getQuantificationStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
+import { PraiseBox } from '@/components/ui/PraiseBox';
+import { PraisePage } from '@/components/ui/PraisePage';
 import { QuantifyPeriodTable } from './components/QuantifyPeriodTable';
 
 const PeriodMessage = (): JSX.Element => {
@@ -43,22 +45,22 @@ const QuantifyPeriodPage = (): JSX.Element | null => {
   if (!period || !periodQuantifierPraise) return null;
 
   return (
-    <div className="praise-page">
+    <PraisePage>
       <BreadCrumb name="Quantify" icon={faCalendarAlt} />
       <BackLink to={`/periods/${periodId}`} />
 
       <React.Suspense fallback={null}>
-        <div className="mb-5 praise-box">
+        <PraiseBox classes="mb-5">
           <PeriodMessage />
-        </div>
+        </PraiseBox>
       </React.Suspense>
 
       <React.Suspense fallback={null}>
-        <div className="px-0 praise-box">
+        <PraiseBox classes="px-0">
           <QuantifyPeriodTable />
-        </div>
+        </PraiseBox>
       </React.Suspense>
-    </div>
+    </PraisePage>
   );
 };
 

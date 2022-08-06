@@ -1,20 +1,22 @@
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import { BreadCrumb } from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
+import { PraiseBox } from '@/components/ui/PraiseBox';
+import { PraisePage } from '@/components/ui/PraisePage';
 import { PraiseTable } from './components/PraiseTable';
 
 const StartPage = (): JSX.Element => {
   return (
-    <div className="praise-page">
+    <PraisePage>
       <BreadCrumb name="Praise" icon={faPrayingHands} />
 
       <ActiveNoticesBoard />
 
-      <div className="p-0 praise-box">
+      <PraiseBox classes="p-0">
         <PraiseTable />
-      </div>
-    </div>
+      </PraiseBox>
+    </PraisePage>
   );
 };
 

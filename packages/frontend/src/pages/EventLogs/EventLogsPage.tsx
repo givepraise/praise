@@ -5,7 +5,7 @@ import {
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { debounce } from '@mui/material';
 import { useRecoilValue } from 'recoil';
-import { LoaderSpinner } from '@/components/LoaderSpinner';
+import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 import { MultiselectInput } from '@/components/form/MultiselectInput';
 import { SearchInput } from '@/components/form/SearchInput';
 import { SelectInput } from '@/components/form/SelectInput';
@@ -13,7 +13,9 @@ import {
   AllEventLogsQueryParameters,
   AllEventLogTypes,
 } from '@/model/eventlogs';
-import { BreadCrumb } from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
+import { PraisePage } from '@/components/ui/PraisePage';
+import { PraiseBox } from '@/components/ui/PraiseBox';
 import { EventLogsList } from './components/EventLogsList';
 
 const sortOptions = [
@@ -85,15 +87,15 @@ const EventLogsPage = (): JSX.Element => {
   }, [selectedFilters, selectedSort, searchValue, page, setLocalParameters]);
 
   return (
-    <div className="praise-page">
+    <PraisePage>
       <BreadCrumb name="Transparency Log" icon={faBook} />
 
-      <div className="mb-5 praise-box">
+      <PraiseBox classes="mb-5">
         <h2 className="mb-2">Transparency Log</h2>
         <p>A log of all user actions that change the database state.</p>
-      </div>
+      </PraiseBox>
 
-      <div className="p-0 praise-box">
+      <PraiseBox classes="p-0 ">
         <div className="flex mb-8">
           {/* Filter */}
           <div className="w-3/12 mt-5 mb-5 ml-5 mr-4">
@@ -139,8 +141,8 @@ const EventLogsPage = (): JSX.Element => {
         <Suspense fallback={<LoaderSpinner />}>
           <EventLogsList queryParameters={queryParameters} setPage={setPage} />
         </Suspense>
-      </div>
-    </div>
+      </PraiseBox>
+    </PraisePage>
   );
 };
 

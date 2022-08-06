@@ -1,5 +1,6 @@
 import React from 'react';
 import { useFormState } from 'react-final-form';
+import { PraiseButton } from '../ui/PraiseButton';
 
 export const SubmitButton = (): JSX.Element => {
   const {
@@ -16,7 +17,7 @@ export const SubmitButton = (): JSX.Element => {
     submitting ||
     (submitSucceeded && !dirtySinceLastSubmit);
 
-  const className = disabled ? 'praise-button-disabled' : 'praise-button';
+  const variant = disabled ? 'disabled' : '';
 
   const [buttonText, setButtonText] = React.useState<string>('Save settings');
 
@@ -30,13 +31,8 @@ export const SubmitButton = (): JSX.Element => {
   }, [submitSucceeded, submitting]);
 
   return (
-    <button
-      type="submit"
-      id="submit-button"
-      className={className}
-      disabled={disabled}
-    >
+    <PraiseButton id="submit-button" type="submit" variant={variant}>
       {buttonText}
-    </button>
+    </PraiseButton>
   );
 };

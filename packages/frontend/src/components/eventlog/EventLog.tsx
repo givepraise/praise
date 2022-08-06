@@ -9,8 +9,8 @@ import {
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { SingleUser } from '@/model/users';
 import { classNames } from '@/utils/index';
-import { InlineLabel } from '../InlineLabel';
-import { Notice } from '../Notice';
+import { InlineLabel } from '../ui/InlineLabel';
+import { Notice } from '../ui/Notice';
 import { UserName } from '../user/UserName';
 import { UserPopover } from '../user/UserPopover';
 

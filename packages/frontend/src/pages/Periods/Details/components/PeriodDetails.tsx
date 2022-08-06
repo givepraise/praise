@@ -9,10 +9,9 @@ import React from 'react';
 import { toast } from 'react-hot-toast';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { getPreviousPeriod } from '@/utils/periods';
-import { saveLocalFile } from '@/utils/file';
-import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
-import { AllQuantifierUsers } from '@/model/users';
+
+import { PraiseButton } from '@/components/ui/PraiseButton';
+import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   AllPeriods,
   PeriodPageParams,
@@ -22,7 +21,11 @@ import {
   useExportPraise,
   useLoadSinglePeriodDetails,
 } from '@/model/periods';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { AllQuantifierUsers } from '@/model/users';
+import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
+import { saveLocalFile } from '@/utils/file';
+import { getPreviousPeriod } from '@/utils/periods';
+
 import { PeriodAssignDialog } from './AssignDialog';
 import { PeriodCloseDialog } from './CloseDialog';
 import { PeriodDateForm } from './PeriodDateForm';
@@ -122,8 +125,7 @@ export const PeriodDetails = (): JSX.Element | null => {
                 period?.receivers.length > 0 &&
                 allQuantifiers &&
                 allQuantifiers.length > 0 ? (
-                  <button
-                    className="praise-button"
+                  <PraiseButton
                     onClick={(): void => {
                       setIsAssignDialogOpen(true);
                     }}
@@ -134,20 +136,20 @@ export const PeriodDetails = (): JSX.Element | null => {
                       className="mr-2"
                     />
                     Assign quantifiers
-                  </button>
+                  </PraiseButton>
                 ) : null}
                 {period.status === 'QUANTIFY' ? (
-                  <button className="praise-button" onClick={handleExport}>
+                  <PraiseButton onClick={handleExport}>
                     <FontAwesomeIcon
                       icon={faDownload}
                       size="1x"
                       className="mr-2"
                     />
                     Export
-                  </button>
+                  </PraiseButton>
                 ) : null}
-                <button
-                  className="praise-button-outline"
+                <PraiseButton
+                  variant={'outline'}
                   onClick={(): void => setIsCloseDialogOpen(true)}
                 >
                   <FontAwesomeIcon
@@ -156,14 +158,14 @@ export const PeriodDetails = (): JSX.Element | null => {
                     className="mr-2"
                   />
                   Close period
-                </button>
+                </PraiseButton>
               </div>
             ) : null}
             {period.status === 'CLOSED' ? (
-              <button className="praise-button" onClick={handleExport}>
+              <PraiseButton onClick={handleExport}>
                 <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
                 Export
-              </button>
+              </PraiseButton>
             ) : null}
           </div>
         </>

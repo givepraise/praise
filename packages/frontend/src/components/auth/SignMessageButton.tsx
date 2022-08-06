@@ -1,5 +1,6 @@
 import { useSignMessage } from 'wagmi';
-import { LoaderSpinner } from '@/components/LoaderSpinner';
+import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
+import { PraiseButton } from '../ui/PraiseButton';
 
 interface Props {
   text: string;
@@ -27,9 +28,7 @@ const SignMessageButton = ({
   return isLoading || isSuccess ? (
     <LoaderSpinner />
   ) : (
-    <button className="praise-button" onClick={(): void => signMessage()}>
-      {text}
-    </button>
+    <PraiseButton onClick={(): void => signMessage()}>{text}</PraiseButton>
   );
 };
 

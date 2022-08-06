@@ -1,37 +1,41 @@
-import { PeriodStatusType } from 'api/dist/period/types';
 import {
   faBalanceScaleLeft,
-  faHeartbeat,
   faCalendarAlt,
   faCog,
+  faHeartbeat,
 } from '@fortawesome/free-solid-svg-icons';
+import { PeriodStatusType } from 'api/dist/period/types';
 import React, { Suspense } from 'react';
 import {
+  Redirect,
+  Route,
+  Switch,
   useParams,
   useRouteMatch,
-  Switch,
-  Route,
-  Redirect,
 } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { BreadCrumb } from '@/components/BreadCrumb';
+
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
+import { InlineLabel } from '@/components/ui/InlineLabel';
+import { PraiseBox } from '@/components/ui/PraiseBox';
+import { PraisePage } from '@/components/ui/PraisePage';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   PeriodPageParams,
-  useLoadSinglePeriodDetails,
   SinglePeriod,
+  useLoadSinglePeriodDetails,
   usePeriodQuantifierPraise,
 } from '@/model/periods';
-import { SubPageNav } from '@/navigation/SubPageNav';
-import { InlineLabel } from '@/components/InlineLabel';
 import { BackLink } from '@/navigation/BackLink';
 import { NavItem } from '@/navigation/NavItem';
+import { SubPageNav } from '@/navigation/SubPageNav';
+
 import { PeriodDetails } from './components/PeriodDetails';
 import { PeriodNameForm } from './components/PeriodNameForm';
+import { PeriodSettingsForm } from './components/PeriodSettingsForm';
 import { QuantifierMessage } from './components/QuantifierMessage';
 import { QuantifierTable } from './components/QuantifierTable';
 import { ReceiverTable } from './components/ReceiverTable';
-import { PeriodSettingsForm } from './components/PeriodSettingsForm';
 
 const PeriodDetailHead = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -69,14 +73,14 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
   if (!detailsResponse || !period || !periodQuantifierPraise) return null;
 
   return (
-    <div className="praise-page-wide">
+    <PraisePage variant={'wide'}>
       <BreadCrumb name="Periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 
       <React.Suspense fallback={null}>
-        <div className="mb-5 praise-box-wide">
+        <PraiseBox variant={'wide'} classes="mb-5">
           <PeriodDetailHead />
-        </div>
+        </PraiseBox>
       </React.Suspense>
 
       <React.Suspense fallback={null}>
@@ -106,7 +110,7 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
           </SubPageNav>
         </div>
 
-        <div className="px-0 praise-box">
+        <PraiseBox classes="px-0">
           <Suspense fallback={null}>
             <Switch>
               <Route path={`${path}/receivers`}>
@@ -126,9 +130,9 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
               </Route>
             </Switch>
           </Suspense>
-        </div>
+        </PraiseBox>
       </div>
-    </div>
+    </PraisePage>
   );
 };
 

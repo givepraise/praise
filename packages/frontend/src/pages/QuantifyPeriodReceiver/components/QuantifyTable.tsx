@@ -15,7 +15,8 @@ import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods';
 import { SearchInput } from '@/components/form/SearchInput';
 import { QuantifyMultipleDialog } from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleDialog';
-import { IconButtonRound } from '@/components/IconButtonRound';
+import { IconButtonRound } from '@/components/ui/IconButtonRound';
+import { PraiseBox } from '@/components/ui/PraiseBox';
 import { DuplicateDialog } from './DuplicateDialog';
 import { DuplicateSearchDialog } from './DuplicateSearchDialog';
 import { QuantifyPraiseRow } from './QuantifyPraiseRow';
@@ -218,7 +219,10 @@ export const QuantifyTable = ({
         </div>
       </div>
 
-      <div className="p-0 pb-5 overflow-x-auto rounded-t-none praise-box-wide">
+      <PraiseBox
+        classes="p-0 pb-5 overflow-x-auto rounded-t-none"
+        variant={'wide'}
+      >
         <table className="w-full table-auto">
           <tbody>
             {Object.keys(weeklyData).map((weekKey, index) => (
@@ -252,7 +256,7 @@ export const QuantifyTable = ({
           </tbody>
         </table>
         <QuantifyBackNextLink periodId={periodId} receiverId={receiverId} />
-      </div>
+      </PraiseBox>
 
       <DismissDialog
         open={isDismissDialogOpen}

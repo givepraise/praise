@@ -1,7 +1,9 @@
 import { faUserFriends } from '@fortawesome/free-solid-svg-icons';
 import { useRecoilValue } from 'recoil';
-import { BreadCrumb } from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { AllUsers } from '@/model/users';
+import { PraiseBox } from '@/components/ui/PraiseBox';
+import { PraisePage } from '@/components/ui/PraisePage';
 import { UsersStatistics } from './components/UsersStatistics';
 import { UsersTable } from './components/UsersTable';
 
@@ -11,15 +13,15 @@ const UsersPage = (): JSX.Element | null => {
   if (!Array.isArray(allUsers)) return null;
 
   return (
-    <div className="praise-page">
+    <PraisePage>
       <BreadCrumb name="Users" icon={faUserFriends} />
-      <div className="mb-5 praise-box">
+      <PraiseBox classes="mb-5">
         <UsersStatistics />
-      </div>
-      <div className="px-0 praise-box">
+      </PraiseBox>
+      <PraiseBox classes="px-0">
         <UsersTable />
-      </div>
-    </div>
+      </PraiseBox>
+    </PraisePage>
   );
 };
 

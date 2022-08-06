@@ -12,6 +12,8 @@ import { useSetRecoilState } from 'recoil';
 import { toast } from 'react-hot-toast';
 import { useRef } from 'react';
 import { ActiveTokenSet } from '@/model/auth';
+import { PraiseButton } from '../ui/PraiseButton';
+import { PraiseBox } from '../ui/PraiseBox';
 
 interface EthAccountDialogProps {
   open?: boolean;
@@ -48,11 +50,11 @@ export const EthAccountDialog = ({
       initialFocus={contentRef}
     >
       <div className="flex items-center justify-center min-h-screen bg-black/30">
-        <div className="p-10 praise-box-defaults" ref={contentRef}>
+        <PraiseBox classes="p-10" variant={'defaults'} ref={contentRef}>
           <div className="flex justify-end">
-            <button className="praise-button-round" onClick={onClose}>
+            <PraiseButton variant={'round'} onClick={onClose}>
               <FontAwesomeIcon icon={faTimes} size="1x" />
-            </button>
+            </PraiseButton>
           </div>
           <div>
             <div className="flex justify-center mb-8">
@@ -62,24 +64,24 @@ export const EthAccountDialog = ({
               {shortenEthAddress(address)}
             </Dialog.Title>
             <div className="flex justify-center space-x-4">
-              <button
-                className="mt-4 praise-button"
+              <PraiseButton
+                classes="mt-4"
                 onClick={(): void => void handleCopyAddress()}
               >
                 <FontAwesomeIcon className="mr-2" icon={faCopy} size="1x" />
                 Copy address
-              </button>
-              <button className="mt-4 praise-button" onClick={handleDisconnect}>
+              </PraiseButton>
+              <PraiseButton classes="mt-4" onClick={handleDisconnect}>
                 <FontAwesomeIcon
                   className="mr-2"
                   icon={faArrowRightFromBracket}
                   size="1x"
                 />
                 Disconnect
-              </button>
+              </PraiseButton>
             </div>
           </div>
-        </div>
+        </PraiseBox>
       </div>
     </Dialog>
   );

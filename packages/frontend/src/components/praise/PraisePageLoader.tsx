@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { BottomScrollListener } from 'react-bottom-scroll-listener';
 import { useRecoilValue } from 'recoil';
 import { AllPraiseQueryPagination, useAllPraise } from '@/model/praise';
-import { LoaderSpinner } from '@/components/LoaderSpinner';
+import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 
 interface Params {
   listKey: string;

@@ -2,7 +2,7 @@ import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { BreadCrumb } from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { SinglePeriodByDate } from '@/model/periods';
 import {
   PraisePageParams,
@@ -11,6 +11,8 @@ import {
 } from '@/model/praise';
 import { Praise } from '@/components/praise/Praise';
 import { BackLink } from '@/navigation/BackLink';
+import { PraiseBox } from '@/components/ui/PraiseBox';
+import { PraisePage } from '@/components/ui/PraisePage';
 import { PraiseDetailTable } from './components/PraiseDetailTable';
 
 const PraiseDetailsPage = (): JSX.Element | null => {
@@ -26,22 +28,22 @@ const PraiseDetailsPage = (): JSX.Element | null => {
   if (!praise) return null;
 
   return (
-    <div className="praise-page">
+    <PraisePage>
       <BreadCrumb name={'Praise details'} icon={faCalendarAlt} />
       <BackLink to={backLinkUrl} />
 
       <React.Suspense fallback={null}>
-        <div className="mb-5 praise-box">
+        <PraiseBox classes="mb-5">
           <Praise praise={praise} />
-        </div>
+        </PraiseBox>
       </React.Suspense>
 
-      <div className="praise-box">
+      <PraiseBox>
         <React.Suspense fallback={null}>
           <PraiseDetailTable />
         </React.Suspense>
-      </div>
-    </div>
+      </PraiseBox>
+    </PraisePage>
   );
 };
 

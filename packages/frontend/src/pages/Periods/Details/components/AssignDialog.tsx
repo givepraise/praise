@@ -14,6 +14,7 @@ import {
   PeriodPoolRequirements,
   PeriodPoolRequirementsQuery,
 } from '@/model/periods';
+import { PraiseButton } from '@/components/ui/PraiseButton';
 
 interface PeriodAssignDialogProps {
   onClose(): void;
@@ -77,24 +78,24 @@ const DialogMessage = ({
       </div>
       <div className="flex justify-center">
         {quantPoolBigEnough ? (
-          <button
-            className="mt-4 praise-button"
+          <PraiseButton
+            classes="mt-4"
             onClick={(): void => {
               onAssign();
               onClose();
             }}
           >
             Assign
-          </button>
+          </PraiseButton>
         ) : (
-          <button
-            className="mt-4 praise-button"
+          <PraiseButton
+            classes="mt-4"
             onClick={(): void => {
               onClose();
             }}
           >
             Close
-          </button>
+          </PraiseButton>
         )}
       </div>
     </>
@@ -116,9 +117,9 @@ export const PeriodAssignDialog = ({
       <Dialog.Overlay className="fixed inset-0 bg-black/30" />
       <div className="relative max-w-xl pb-16 mx-auto bg-white rounded dark:bg-slate-600 dark:text-white">
         <div className="flex justify-end p-6">
-          <button className="praise-button-round" onClick={onClose}>
+          <PraiseButton variant={'round'} onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} size="1x" />
-          </button>
+          </PraiseButton>
         </div>
         <div className="px-20">
           <div className="flex justify-center mb-7">
