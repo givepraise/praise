@@ -2,7 +2,7 @@ import { PraiseModel } from 'api/dist/praise/entities';
 import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
 import logger from 'jet-logger';
-import { GuildMember, Message, User, Util } from 'discord.js';
+import { GuildMember, User, Util } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
 import {
   dmError,
@@ -148,44 +148,45 @@ export const praiseHandler: CommandHandler = async (
     }
   }
 
-  const msg = (
-    Receivers.length !== 0
-      ? await interaction.editReply(
-          await praiseSuccess(
-            praised.map((id) => `<@!${id}>`),
-            reason
-          )
+  Receivers.length !== 0
+    ? await interaction.editReply(
+        await praiseSuccess(
+          praised.map((id) => `<@!${id}>`),
+          reason
         )
-      : warnSelfPraise
-      ? await interaction.editReply(await selfPraiseWarning())
-      : await interaction.editReply(await invalidReceiverError())
-  ) as Message;
-
-  if (receiverData.undefinedReceivers) {
-    await msg.reply(
-      await undefinedReceiverWarning(
-        receiverData.undefinedReceivers
-          .map((id) => id.replace(/[<>]/, ''))
-          .join(', '),
-        member.user as User
       )
-    );
-  }
-  if (receiverData.roleMentions) {
-    await msg.reply(
-      await roleMentionWarning(
-        receiverData.roleMentions.join(', '),
-        member.user as User
-      )
-    );
-  }
+    : warnSelfPraise
+    ? await interaction.editReply(await selfPraiseWarning())
+    : await interaction.editReply(await invalidReceiverError());
 
-  if (Receivers.length !== 0 && warnSelfPraise) {
-    await msg.reply(await selfPraiseWarning());
+  const warningMsg =
+    (receiverData.undefinedReceivers
+      ? (await undefinedReceiverWarning(
+          receiverData.undefinedReceivers
+            .map((id) => id.replace(/[<>]/, ''))
+            .join(', '),
+          member.user as User
+        )) + '\n'
+      : '') +
+    (receiverData.roleMentions
+      ? (await roleMentionWarning(
+          receiverData.roleMentions.join(', '),
+          member.user as User
+        )) + '\n'
+      : '') +
+    (Receivers.length !== 0 && warnSelfPraise
+      ? (await selfPraiseWarning()) + '\n'
+      : '');
+
+  if (warningMsg && warningMsg.length !== 0) {
+    await interaction.followUp({ content: warningMsg, ephemeral: true });
   }
 
   if (praiseItemsCount === 0) {
-    await msg.reply(await firstTimePraiserInfo());
+    await interaction.followUp({
+      content: await firstTimePraiserInfo(),
+      ephemeral: true,
+    });
   }
 
   return;
