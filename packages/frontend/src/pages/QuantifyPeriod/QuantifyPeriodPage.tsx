@@ -7,8 +7,8 @@ import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   SinglePeriod,
+  usePeriodQuantifierPraise,
 } from '@/model/periods';
-import { useAllPeriodSettingsQuery } from '@/model/periodsettings';
 import { getQuantificationStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
 import { QuantifyPeriodTable } from './components/QuantifyPeriodTable';
@@ -16,7 +16,6 @@ import { QuantifyPeriodTable } from './components/QuantifyPeriodTable';
 const PeriodMessage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
-  useAllPeriodSettingsQuery(periodId);
   const quantificationStats = getQuantificationStats(
     useRecoilValue(PeriodQuantifierReceivers(periodId))
   );
@@ -36,8 +35,12 @@ const PeriodMessage = (): JSX.Element => {
   );
 };
 
-const QuantifyPeriodPage = (): JSX.Element => {
+const QuantifyPeriodPage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
+  const period = useRecoilValue(SinglePeriod(periodId));
+  const periodQuantifierPraise = usePeriodQuantifierPraise(periodId);
+
+  if (!period || !periodQuantifierPraise) return null;
 
   return (
     <div className="praise-page">

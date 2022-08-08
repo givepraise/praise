@@ -6,7 +6,7 @@ import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { classNames } from '@/utils/index';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import {
   PeriodAndReceiverPageParams,
   PeriodQuantifierReceiverPraise,
@@ -33,9 +33,11 @@ export const PraiseAutosuggest = ({
     PeriodQuantifierReceiverPraise({ periodId, receiverId })
   );
 
-  const usePseudonyms = usePeriodSettingValueRealized(
-    periodId,
-    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+  const usePseudonyms = useRecoilValue(
+    SinglePeriodSettingValueRealized({
+      periodId,
+      key: 'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS',
+    })
   ) as boolean;
 
   useEffect(() => {

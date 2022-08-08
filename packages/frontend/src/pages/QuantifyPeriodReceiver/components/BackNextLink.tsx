@@ -2,7 +2,7 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { PeriodQuantifierReceivers } from '@/model/periods';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 
@@ -15,15 +15,18 @@ export const QuantifyBackNextLink = ({
   receiverId,
 }: Props): JSX.Element | null => {
   const receivers = useRecoilValue(PeriodQuantifierReceivers(periodId));
-  const usePseudonyms = usePeriodSettingValueRealized(
-    periodId,
-    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+
+  const usePseudonyms = useRecoilValue(
+    SinglePeriodSettingValueRealized({
+      periodId,
+      key: 'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS',
+    })
   ) as boolean;
 
   let backReceiver, forwardReceiver;
 
   if (!receivers) return null;
-  const i = receivers.findIndex((r) => r.receiverId === receiverId);
+  const i = receivers.findIndex((r) => r.receiver._id === receiverId);
 
   if (i > 0) {
     backReceiver = receivers[i - 1];
@@ -39,16 +42,16 @@ export const QuantifyBackNextLink = ({
         {backReceiver && (
           <Link
             replace
-            to={`/periods/${periodId}/quantify/receiver/${backReceiver.receiverId}`}
+            to={`/periods/${periodId}/quantify/receiver/${backReceiver.receiver._id}`}
           >
             <FontAwesomeIcon icon={faArrowLeft} size="1x" className="mr-2" />
             {usePseudonyms ? (
               <UserPseudonym
-                userId={backReceiver.receiverId}
+                userId={backReceiver.receiver._id}
                 periodId={periodId}
               />
             ) : (
-              backReceiver.receiverName
+              backReceiver.receiver.name
             )}
           </Link>
         )}
@@ -57,15 +60,15 @@ export const QuantifyBackNextLink = ({
         {forwardReceiver && (
           <Link
             replace
-            to={`/periods/${periodId}/quantify/receiver/${forwardReceiver.receiverId}`}
+            to={`/periods/${periodId}/quantify/receiver/${forwardReceiver.receiver._id}`}
           >
             {usePseudonyms ? (
               <UserPseudonym
-                userId={forwardReceiver.receiverId}
+                userId={forwardReceiver.receiver._id}
                 periodId={periodId}
               />
             ) : (
-              forwardReceiver.receiverName
+              forwardReceiver.receiver.name
             )}
             <FontAwesomeIcon icon={faArrowRight} size="1x" className="ml-2" />
           </Link>

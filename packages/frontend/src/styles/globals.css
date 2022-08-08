@@ -11,7 +11,7 @@
     @apply dark:border-slate-700;
   }
   #root {
-    @apply min-h-screen text-sm text-warm-gray-800 dark:bg-slate-800 dark:text-white bg-warm-gray-300;
+    @apply min-h-screen text-sm text-warm-gray-800 dark:bg-slate-800 dark:text-white bg-warm-gray-200;
   }
 
   h2 {

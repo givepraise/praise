@@ -1,16 +1,16 @@
-import { AxiosError, AxiosResponse } from 'axios';
-import { ValidationErrors } from 'final-form';
+import { FORM_ERROR, SubmissionErrors, ValidationErrors } from 'final-form';
 import { default as React } from 'react';
 import { Field, Form } from 'react-final-form';
 import { toast } from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import { ApiErrorResponseData } from 'api/dist/error/types';
 import {
   PeriodPageParams,
   SinglePeriod,
   useUpdatePeriod,
 } from '@/model/periods';
-import { isResponseOk } from '@/model/api';
+import { isApiResponseValidationError, isResponseOk } from '@/model/api';
 import { OutsideClickHandler } from '@/components/OutsideClickHandler';
 import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 
@@ -37,24 +37,27 @@ const validate = (
 export const PeriodNameForm = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
-  const [apiResponse, setApiResponse] = React.useState<
-    AxiosResponse<unknown> | AxiosError<unknown> | null
-  >(null);
   const { updatePeriod } = useUpdatePeriod();
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   // Is only called if validate is successful
-  const onSubmit = async (values: Record<string, string>): Promise<void> => {
+  const onSubmit = async (
+    values: Record<string, string>
+  ): Promise<SubmissionErrors> => {
     if (!period || period.name === values.name) return; // Only save if name has changed
     const periodUpdates = { _id: period._id, name: values.name };
+
     const response = await updatePeriod(periodUpdates);
-    if (response) {
-      if (isResponseOk(response)) {
-        toast.success('Period name saved');
-      }
-      setApiResponse(response);
+    if (isResponseOk(response)) {
+      toast.success('Period name saved');
+      return {};
     }
+    if (response.response && isApiResponseValidationError(response)) {
+      return (response.response.data as ApiErrorResponseData).errors;
+    }
+    toast.error('Period name save failed');
+    return { [FORM_ERROR]: 'Period name save failed' };
   };
 
   if (!period) return null;
@@ -98,7 +101,7 @@ export const PeriodNameForm = (): JSX.Element | null => {
                       }}
                     />
                   </OutsideClickHandler>
-                  <FieldErrorMessage name="name" apiResponse={apiResponse} />
+                  <FieldErrorMessage name="name" />
                 </div>
               )}
             </Field>

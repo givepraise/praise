@@ -7,10 +7,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 import { PeriodPageParams } from '@/model/periods';
 import { Praise } from '@/components/praise/Praise';
 import { ScrollableDialog } from '@/components/ScrollableDialog';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { IconButton } from '@/components/IconButton';
 import { QuantifySlider } from './QuantifySlider';
 
@@ -38,14 +39,18 @@ export const DuplicateDialog = ({
     setScore(originalPraise.scoreRealized);
   }, [originalPraise?.scoreRealized]);
 
-  const allowedValues = usePeriodSettingValueRealized(
-    periodId,
-    'PRAISE_QUANTIFY_ALLOWED_VALUES'
+  const allowedValues = useRecoilValue(
+    SinglePeriodSettingValueRealized({
+      periodId,
+      key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
+    })
   ) as number[];
 
-  const duplicatePraisePercentage = usePeriodSettingValueRealized(
-    periodId,
-    'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'
+  const duplicatePraisePercentage = useRecoilValue(
+    SinglePeriodSettingValueRealized({
+      periodId,
+      key: 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
+    })
   ) as number;
 
   if (!originalPraise || duplicatesCount < 2) return null;

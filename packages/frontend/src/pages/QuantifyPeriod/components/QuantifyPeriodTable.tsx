@@ -6,14 +6,13 @@ import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { classNames } from '@/utils/index';
-import { usePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   QuantifierReceiverData,
-  usePeriodQuantifierPraiseQuery,
 } from '@/model/periods';
-import { UserPseudonym } from '@/components/user/UserPseudonym';
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
 const DoneLabel = (): JSX.Element => {
   return (
@@ -27,29 +26,28 @@ const DoneLabel = (): JSX.Element => {
 export const QuantifyPeriodTable = (): JSX.Element => {
   const history = useHistory();
   const { periodId } = useParams<PeriodPageParams>();
-  const { location } = useHistory();
-  usePeriodQuantifierPraiseQuery(periodId, location.key);
   const data = useRecoilValue(PeriodQuantifierReceivers(periodId));
-  const usePseudonyms = usePeriodSettingValueRealized(
-    periodId,
-    'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS'
+  const usePseudonyms = useRecoilValue(
+    SinglePeriodSettingValueRealized({
+      periodId,
+      key: 'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS',
+    })
   ) as boolean;
-
   const columns = React.useMemo(
     () => [
       {
         Header: 'Receiver',
-        accessor: 'receiverName',
+        accessor: 'receiver.name',
         className: 'pl-5 text-left',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => {
-          return usePseudonyms ? (
-            <UserPseudonym
-              userId={data.row.original.receiverId}
+          return (
+            <UserAvatarAndName
+              userAccount={data.row.original.receiver}
+              usePseudonym={usePseudonyms}
               periodId={data.row.original.periodId}
+              avatarClassName="text-2xl"
             />
-          ) : (
-            data.value
           );
         },
       },
@@ -94,7 +92,7 @@ export const QuantifyPeriodTable = (): JSX.Element => {
 
   const handleClick = (data: QuantifierReceiverData) => () => {
     history.push(
-      `/periods/${data.periodId}/quantify/receiver/${data.receiverId}`
+      `/periods/${data.periodId}/quantify/receiver/${data.receiver._id}`
     );
   };
   return (

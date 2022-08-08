@@ -1,23 +1,24 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { faX, faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
-import { SingleSetting, useAllSettingsQuery } from '@/model/settings';
-import { useAllPeriodsQuery } from '@/model/periods';
-import { useAllUsersQuery } from '@/model/users';
-import { ActiveUserRoles } from '@/model/auth';
+import { SingleSetting } from '@/model/settings';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
+import { ApiAuthGet } from '@/model/api';
+import { LoadScreen } from '@/components/LoadScreen';
+import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth';
+import { usePraiseAppVersion } from '@/model/app';
 
 export const AuthenticatedLayout = (): JSX.Element | null => {
+  useRecoilValue(ApiAuthGet({ url: '/settings/all' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
   const activeUserRoles = useRecoilValue(ActiveUserRoles);
-  useAllPeriodsQuery();
-  useAllSettingsQuery();
-  useAllUsersQuery();
+  const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
+  const appVersion = usePraiseAppVersion();
 
   return (
     <div className="h-full cursor-default">
@@ -83,6 +84,27 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
         </Dialog>
       </Transition.Root>
 
+      {isAdmin && appVersion.newVersionAvailable && (
+        <div className="sticky top-0 p-3 text-center bg-opacity-50 bg-warm-gray-100 lg:pl-64">
+          <p>
+            🎉 There is a new version of the Praise out! You are running{' '}
+            {appVersion.current}, latest version is {appVersion.latest}.{' '}
+            <a
+              href="https://github.com/commons-stack/praise/releases"
+              className="font-bold"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Release notes
+            </a>
+          </p>
+        </div>
+      )}
+
+      <div className="fixed bottom-0 right-0 invisible p-1 text-xs text-right lg:visible">
+        {appVersion.current}
+      </div>
+
       {/* Static sidebar for desktop */}
       <div className="hidden w-64 lg:flex lg:flex-col lg:fixed lg:inset-y-0">
         {/* Sidebar component, swap this element with another sidebar if you like */}
@@ -113,7 +135,9 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
           )}
         </div>
         <main className="flex justify-center w-full ">
-          <AuthenticatedRoutes userRoles={activeUserRoles} />
+          <React.Suspense fallback={<LoadScreen />}>
+            <AuthenticatedRoutes userRoles={activeUserRoles} />
+          </React.Suspense>
         </main>
       </div>
     </div>

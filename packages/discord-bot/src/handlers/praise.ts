@@ -2,7 +2,7 @@ import { PraiseModel } from 'api/dist/praise/entities';
 import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
 import logger from 'jet-logger';
-import { GuildMember, Message, User, Util } from 'discord.js';
+import { GuildMember, User, Util } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
 import {
   dmError,
@@ -15,6 +15,7 @@ import {
   roleMentionWarning,
   undefinedReceiverWarning,
   selfPraiseWarning,
+  firstTimePraiserInfo,
 } from '../utils/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { CommandHandler } from '../interfaces/CommandHandler';
@@ -67,6 +68,9 @@ export const praiseHandler: CommandHandler = async (
   }
 
   const userAccount = await getUserAccount(member as GuildMember);
+  const praiseItemsCount = await PraiseModel.countDocuments({
+    giver: userAccount._id,
+  });
 
   if (!userAccount.user) {
     await interaction.editReply(await notActivatedError());
@@ -144,40 +148,45 @@ export const praiseHandler: CommandHandler = async (
     }
   }
 
-  const msg = (
-    Receivers.length !== 0
-      ? await interaction.editReply(
-          await praiseSuccess(
-            praised.map((id) => `<@!${id}>`),
-            reason
-          )
+  Receivers.length !== 0
+    ? await interaction.editReply(
+        await praiseSuccess(
+          praised.map((id) => `<@!${id}>`),
+          reason
         )
-      : warnSelfPraise
-      ? await interaction.editReply(await selfPraiseWarning())
-      : await interaction.editReply(await invalidReceiverError())
-  ) as Message;
-
-  if (receiverData.undefinedReceivers) {
-    await msg.reply(
-      await undefinedReceiverWarning(
-        receiverData.undefinedReceivers
-          .map((id) => id.replace(/[<>]/, ''))
-          .join(', '),
-        member.user as User
       )
-    );
-  }
-  if (receiverData.roleMentions) {
-    await msg.reply(
-      await roleMentionWarning(
-        receiverData.roleMentions.join(', '),
-        member.user as User
-      )
-    );
+    : warnSelfPraise
+    ? await interaction.editReply(await selfPraiseWarning())
+    : await interaction.editReply(await invalidReceiverError());
+
+  const warningMsg =
+    (receiverData.undefinedReceivers
+      ? (await undefinedReceiverWarning(
+          receiverData.undefinedReceivers
+            .map((id) => id.replace(/[<>]/, ''))
+            .join(', '),
+          member.user as User
+        )) + '\n'
+      : '') +
+    (receiverData.roleMentions
+      ? (await roleMentionWarning(
+          receiverData.roleMentions.join(', '),
+          member.user as User
+        )) + '\n'
+      : '') +
+    (Receivers.length !== 0 && warnSelfPraise
+      ? (await selfPraiseWarning()) + '\n'
+      : '');
+
+  if (warningMsg && warningMsg.length !== 0) {
+    await interaction.followUp({ content: warningMsg, ephemeral: true });
   }
 
-  if (Receivers.length !== 0 && warnSelfPraise) {
-    await msg.reply(await selfPraiseWarning());
+  if (praiseItemsCount === 0) {
+    await interaction.followUp({
+      content: await firstTimePraiserInfo(),
+      ephemeral: true,
+    });
   }
 
   return;

@@ -35,7 +35,11 @@ const WrappedUserAvatarAndName = ({
   const mergedUser = user ? user : userFromGlobalState;
 
   return (
-    <UserPopover userAccount={userAccount} user={mergedUser}>
+    <UserPopover
+      usePseudonym={usePseudonym}
+      userAccount={userAccount}
+      user={mergedUser}
+    >
       <div className="flex whitespace-nowrap">
         <div className={classNames('flex items-center pr-2', avatarClassName)}>
           <UserAvatar

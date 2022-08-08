@@ -1,152 +1,127 @@
-import { AxiosResponse } from 'axios';
-import React from 'react';
-import { toast } from 'react-hot-toast';
-import {
-  atomFamily,
-  selectorFamily,
-  useRecoilCallback,
-  useRecoilValue,
-} from 'recoil';
-import find from 'lodash/find';
-import { PeriodSettingDto } from 'api/src/periodsettings/types';
-import { makeApiAuthClient } from '@/utils/api';
-import { ApiAuthGet, useAuthApiQuery, isResponseOk } from './api';
-import { Setting, useSetSettingReturn } from './settings';
+import { AxiosError, AxiosResponse } from 'axios';
+import { atomFamily, selectorFamily, useRecoilCallback } from 'recoil';
+import { PeriodSettingDto } from 'api/dist/periodsettings/types';
+import { useApiAuthClient } from '@/utils/api';
+import { isResponseOk, ApiAuthGet } from './api';
 
-const AllPeriodSettingIds = atomFamily<string[] | undefined, string>({
-  key: 'PeriodSettingIdList',
-  default: undefined,
-});
-
-export const SinglePeriodSetting = atomFamily<
-  PeriodSettingDto | undefined,
-  string
->({
-  key: 'SinglePeriodSetting',
-  default: undefined,
-});
-
-export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
-  const setSetting = useRecoilCallback(
-    ({ set }) =>
-      async (setting: Setting) => {
-        const url = `/admin/periodsettings/${periodId}/settings/${setting._id}/set`;
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const reqData = (setting: Setting): any => {
-          if (setting.type === 'Image') {
-            const data = new FormData();
-            data.append('value', setting.value);
-            return data;
-          } else {
-            return setting;
-          }
-        };
-
-        const apiAuthClient = makeApiAuthClient();
-        const response = await apiAuthClient.patch(url, reqData(setting));
-
-        if (response.data) {
-          set(SinglePeriodSetting(setting._id), response.data);
-
-          toast.success(`Saved setting "${response.data.label}"`);
-        }
-      }
-  );
-
-  return { setSetting };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const instanceOfPeriodSetting = (object: any): object is PeriodSettingDto => {
+  return '_id' in object;
 };
 
-const AllPeriodSettingsQuery = selectorFamily({
-  key: 'AllPeriodSettingsQuery',
-  get:
-    (periodId: string) =>
-    ({ get }): AxiosResponse<unknown> => {
-      return get(
-        ApiAuthGet({
-          url: `/periodsettings/${periodId}/settings/all`,
+/**
+ * Atom that fetches all period settings when initialised.
+ */
+export const AllPeriodSettings = atomFamily<
+  PeriodSettingDto[] | undefined,
+  string
+>({
+  key: 'AllPeriodSettings',
+  default: undefined,
+  effects: (periodId) => [
+    ({ setSelf, getPromise }): void => {
+      setSelf(
+        getPromise(
+          ApiAuthGet({
+            url: `/periodsettings/${periodId}/settings/all`,
+          })
+        ).then((response) => {
+          if (isResponseOk(response)) {
+            const periodSettings = response.data as PeriodSettingDto[];
+            if (Array.isArray(periodSettings) && periodSettings.length > 0)
+              return periodSettings;
+          }
         })
+      );
+    },
+  ],
+});
+
+type SinglePeriodSettingParams = {
+  periodId: string;
+  key: string;
+};
+
+/**
+ * Selector to get a single period setting.
+ */
+export const SinglePeriodSetting = selectorFamily({
+  key: 'SinglePeriodSetting',
+  get:
+    (params: SinglePeriodSettingParams) =>
+    ({ get }): PeriodSettingDto | undefined => {
+      const allPeriodSettings = get(AllPeriodSettings(params.periodId));
+      if (!allPeriodSettings) return;
+      return allPeriodSettings.find((setting) => setting.key === params.key);
+    },
+  set:
+    (params: SinglePeriodSettingParams) =>
+    ({ get, set }, newSetting): void => {
+      const oldSetting = get(SinglePeriodSetting(params));
+      const allSettings = get(AllPeriodSettings(params.periodId));
+      if (!instanceOfPeriodSetting(newSetting) || !oldSetting || !allSettings)
+        return;
+      set(
+        AllPeriodSettings(params.periodId),
+        allSettings.map((s) => (s._id === newSetting._id ? newSetting : s))
       );
     },
 });
 
-export const AllPeriodSettings = selectorFamily({
-  key: 'AllPeriodSettings',
+/**
+ * Selector to get an individual setting value in its type.
+ */
+export const SinglePeriodSettingValueRealized = selectorFamily({
+  key: 'SinglePeriodSettingValueRealized',
   get:
-    (periodId: string) =>
-    ({ get }): PeriodSettingDto[] | undefined => {
-      const allPeriodSettingIds = get(AllPeriodSettingIds(periodId));
-      if (!allPeriodSettingIds) return undefined;
-
-      const allPeriodSettings: PeriodSettingDto[] = [];
-      for (const settingId of allPeriodSettingIds) {
-        const setting = get(SinglePeriodSetting(settingId));
-        if (setting) {
-          allPeriodSettings.push(setting);
-        }
-      }
-      return allPeriodSettings;
+    (params: SinglePeriodSettingParams) =>
+    ({ get }): string | number | number[] | boolean | File | undefined => {
+      const setting = get(SinglePeriodSetting(params));
+      return setting && setting.valueRealized;
     },
 });
 
-export const useAllPeriodSettingsQuery = (
-  periodId: string
-): AxiosResponse<unknown> => {
-  const allPeriodSettingsQueryResponse = useAuthApiQuery(
-    AllPeriodSettingsQuery(periodId)
-  );
-  const allPeriodSettingsIds = useRecoilValue(AllPeriodSettingIds(periodId));
-
-  const saveAllPeriodSettings = useRecoilCallback(
-    ({ set, snapshot }) =>
-      (settings: PeriodSettingDto[]) => {
-        const settingIds: string[] = [];
-        for (const setting of settings) {
-          settingIds.push(setting._id);
-          const oldsetting = snapshot.getLoadable(
-            SinglePeriodSetting(setting._id)
-          ).contents;
-          if (oldsetting) {
-            set(SinglePeriodSetting(setting._id), {
-              ...oldsetting,
-              ...setting,
-            });
-          } else {
-            set(SinglePeriodSetting(setting._id), setting);
-          }
-        }
-        set(AllPeriodSettingIds(periodId), settingIds);
-      }
-  );
-
-  // Only set AllSettings if not previously loaded
-  React.useEffect(() => {
-    if (
-      isResponseOk(allPeriodSettingsQueryResponse) &&
-      typeof allPeriodSettingsIds === 'undefined'
-    ) {
-      const settings = allPeriodSettingsQueryResponse.data;
-
-      if (Array.isArray(settings)) {
-        void saveAllPeriodSettings(settings);
-      }
-    }
-  }, [
-    allPeriodSettingsQueryResponse,
-    allPeriodSettingsIds,
-    saveAllPeriodSettings,
-  ]);
-
-  return allPeriodSettingsQueryResponse;
+export type useSetSettingReturn = {
+  setSetting: (
+    setting: PeriodSettingDto
+  ) => Promise<AxiosResponse<PeriodSettingDto> | AxiosError | undefined>;
 };
 
-export const usePeriodSettingValueRealized = (
-  periodId: string,
-  key: string
-): string | number | number[] | boolean | File | undefined => {
-  const settings = useRecoilValue(AllPeriodSettings(periodId));
-  const setting = find(settings, { key });
-  if (!setting) return undefined;
+/**
+ * Returns function to set one individual period setting.
+ */
+export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
+  const apiAuthClient = useApiAuthClient();
 
-  return setting.valueRealized;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const reqData = (setting: PeriodSettingDto): any => {
+    if (setting.type === 'Image') {
+      const data = new FormData();
+      data.append('value', setting.value);
+      return data;
+    } else {
+      return setting;
+    }
+  };
+
+  const setSetting = useRecoilCallback(
+    ({ set }) =>
+      async (
+        setting: PeriodSettingDto
+      ): Promise<AxiosResponse<PeriodSettingDto> | AxiosError | undefined> => {
+        if (!instanceOfPeriodSetting(setting)) return;
+        const response: AxiosResponse<PeriodSettingDto> =
+          await apiAuthClient.patch(
+            `/admin/periodsettings/${periodId}/settings/${setting._id}/set`,
+            reqData(setting)
+          );
+        if (isResponseOk(response)) {
+          const setting = response.data;
+          set(SinglePeriodSetting({ periodId, key: setting.key }), setting);
+        }
+        return response;
+      }
+  );
+
+  return { setSetting };
 };

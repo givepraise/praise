@@ -31,6 +31,11 @@ export const getQuantifierData = (
 export const periodQuantifierPraiseListKey = (periodId: string): string =>
   `PERIOD_QUANTIFIER_PRAISE_${periodId}`;
 
+export const periodReceiverPraiseListKey = (
+  periodId: string,
+  receiverId: string
+): string => `PERIOD_RECEIVER_PRAISE_${periodId}_${receiverId}`;
+
 interface QuantificationStats {
   done: number;
   count: number;
@@ -60,5 +65,5 @@ export const getQuantificationReceiverStats = (
 ): QuantifierReceiverData | undefined => {
   if (!receiverId || !data || !Array.isArray(data)) return undefined;
 
-  return data.find((qrd) => qrd.receiverId === receiverId);
+  return data.find((qrd) => qrd.receiver._id === receiverId);
 };

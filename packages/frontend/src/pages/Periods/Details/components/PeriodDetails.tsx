@@ -11,17 +11,16 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { getPreviousPeriod } from '@/utils/periods';
 import { saveLocalFile } from '@/utils/file';
-import { formatIsoDateUTC } from '@/utils/date';
+import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { AllQuantifierUsers } from '@/model/users';
 import {
   AllPeriods,
   PeriodPageParams,
-  PeriodPoolRequirements,
   SinglePeriod,
   useAssignQuantifiers,
   useClosePeriod,
   useExportPraise,
-  useVerifyQuantifierPoolSize,
+  useLoadSinglePeriodDetails,
 } from '@/model/periods';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { PeriodAssignDialog } from './AssignDialog';
@@ -35,6 +34,7 @@ export const PeriodDetails = (): JSX.Element | null => {
   const allPeriods = useRecoilValue(AllPeriods);
   const allQuantifiers = useRecoilValue(AllQuantifierUsers);
   const { periodId } = useParams<PeriodPageParams>();
+  useLoadSinglePeriodDetails(periodId); // Fetch additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
@@ -45,9 +45,6 @@ export const PeriodDetails = (): JSX.Element | null => {
 
   const { closePeriod } = useClosePeriod();
   const { assignQuantifiers } = useAssignQuantifiers(periodId);
-
-  const poolRequirements = useRecoilValue(PeriodPoolRequirements(periodId));
-  useVerifyQuantifierPoolSize(periodId);
 
   if (!period || !allPeriods) return null;
 
@@ -107,9 +104,9 @@ export const PeriodDetails = (): JSX.Element | null => {
   return (
     <div>
       <div>
-        Period start:{' '}
+        <span className="pr-2">Period start:</span>
         {previousPeriod
-          ? formatIsoDateUTC(previousPeriod.endDate)
+          ? formatIsoDateUTC(previousPeriod.endDate, DATE_FORMAT)
           : 'Dawn of time'}
       </div>
       {!isAdmin ? (
@@ -197,7 +194,6 @@ export const PeriodDetails = (): JSX.Element | null => {
             <PeriodAssignDialog
               onClose={(): void => setIsAssignDialogOpen(false)}
               onAssign={(): void => handleAssign()}
-              poolRequirements={poolRequirements}
             />
           </div>
         </Dialog>

@@ -12,46 +12,6 @@ const PERIOD_LENGTH_DAYS = 10;
 const PRAISE_PER_PERIOD_NUMBER = 100;
 const QUANTIFIER_USERS_NUMBER = 10;
 const REGULAR_USERS_NUMBER = 10;
-const PREDEFINED_USERS = [
-  {
-    ethereumAddress: '0xa32aECda752cF4EF89956e83d60C04835d4FA867', // Kristofer
-    roles: ['ADMIN', 'USER'],
-  },
-  {
-    ethereumAddress: '0x826976d7C600d45FB8287CA1d7c76FC8eb732030', // Mitch
-    roles: ['ADMIN', 'USER'],
-  },
-  {
-    ethereumAddress: '0xc617C1B5c78E76aaA33e6d1964b24A4f923077f7', // Nebs
-    roles: ['ADMIN', 'USER'],
-  },
-  {
-    ethereumAddress: '0x44FEa69505B8B3dA031Cf0cc2420f6114ED78E4f',
-    roles: ['USER', 'QUANTIFIER'],
-  },
-];
-
-/**
- * Seed users into database from PREDEFINED_USERS list
- *
- * @returns Promise
- */
-const seedPredefinedUsers = async (): Promise<void> => {
-  const userCount = await UserModel.count();
-
-  if (userCount < PREDEFINED_USERS.length) {
-    for (let i = 0; i < PREDEFINED_USERS.length; i++) {
-      try {
-        await seedUserAndUserAccount({
-          ethereumAddress: PREDEFINED_USERS[i].ethereumAddress,
-          roles: PREDEFINED_USERS[i].roles,
-        });
-      } catch (e) {
-        console.log('ERROR:', e);
-      }
-    }
-  }
-};
 
 /**
  * Seed fake users into database with only USER role,
@@ -200,7 +160,6 @@ const seedPeriodsWithPraises = async (): Promise<void> => {
 export const seedData = async (): Promise<void> => {
   logger.info('Seeding database with fake data.');
 
-  await seedPredefinedUsers();
   await seedRegularUsers();
   await seedQuantifierUsers();
 

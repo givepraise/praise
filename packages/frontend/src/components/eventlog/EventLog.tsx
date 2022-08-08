@@ -40,7 +40,7 @@ export const EventLog = ({
         <UserPopover
           user={user}
           userAccount={eventlog.useraccount}
-          className="inline-block"
+          className="w-8"
         >
           <UserAvatar userAccount={eventlog.useraccount} user={user} />
         </UserPopover>

@@ -1,9 +1,9 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
-import { toast } from 'react-hot-toast';
-import { getRecoil } from 'recoil-nexus';
-import { ActiveTokenSet } from '@/model/auth';
+import { useRecoilValue } from 'recoil';
+import { AccessToken } from '@/model/auth';
 import { requestApiAuthRefresh } from './auth';
+import { handleErrors } from './axios';
 
 /**
  * Attempt to refresh auth token and retry request
@@ -17,32 +17,6 @@ const refreshAuthTokenSet = async (err: AxiosError): Promise<void> => {
   err.response.config.headers[
     'Authorization'
   ] = `Bearer ${tokenSet.accessToken}`;
-};
-
-/**
- * Handle error responses (excluding initial 401 response)
- *
- * @param err
- */
-const handleErrors = (err: AxiosError): void => {
-  // Any HTTP Code which is not 2xx will be considered as error
-  const statusCode = err?.response?.status;
-
-  if (err?.request && !err?.response) {
-    toast.error('Server did not respond');
-  } else if (statusCode === 404) {
-    window.location.href = '/404';
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-  } else if ([403, 400].includes(statusCode) && err?.response?.data?.message) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    toast.error(err.response.data.message);
-  } else if (statusCode === 401) {
-    window.location.href = '/';
-  } else {
-    toast.error('Unknown Error');
-  }
 };
 
 /**
@@ -80,12 +54,11 @@ export const makeApiClient = (): AxiosInstance => {
  * - On 401 response: attempt refresh of access using refresh token & retry request
  * @returns
  */
-export const makeApiAuthClient = (): AxiosInstance => {
-  const tokenSet = getRecoil(ActiveTokenSet);
+export const makeApiAuthClient = (accessToken: string): AxiosInstance => {
   const apiAuthClient = axios.create({
     baseURL: apiBaseURL,
     headers: {
-      Authorization: `Bearer ${tokenSet?.accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   createAuthRefreshInterceptor(apiAuthClient, refreshAuthTokenSet, {
@@ -98,4 +71,13 @@ export const makeApiAuthClient = (): AxiosInstance => {
     }
   );
   return apiAuthClient;
+};
+
+/**
+ * Hook that returns api client for authenticated requests.
+ */
+export const useApiAuthClient = (): AxiosInstance => {
+  const accessToken = useRecoilValue(AccessToken);
+  if (!accessToken) throw new Error('AccessToken not found.');
+  return makeApiAuthClient(accessToken);
 };

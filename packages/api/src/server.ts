@@ -65,6 +65,8 @@ const setupDatabase = async (NODE_ENV = 'development'): Promise<void> => {
 const setupApiServer = async (NODE_ENV = 'development'): Promise<Express> => {
   const app = express();
 
+  //app.use((req, res, next) => setTimeout(next, 1000)); // Delay response during testing
+
   app.use(
     fileUpload({
       createParentPath: true,
