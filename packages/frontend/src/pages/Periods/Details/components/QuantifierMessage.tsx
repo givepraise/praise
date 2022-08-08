@@ -4,14 +4,14 @@ import { PeriodStatusType } from 'api/dist/period/types';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
-import { PraiseButton } from '@/components/ui/PraiseButton';
+import { Button } from '@/components/ui/Button';
 import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   SinglePeriod,
 } from '@/model/periods';
 import { getQuantificationStats } from '@/utils/periods';
-import { PraiseBox } from '@/components/ui/PraiseBox';
+import { Box } from '@/components/ui/Box';
 
 export const QuantifierMessage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -25,7 +25,7 @@ export const QuantifierMessage = (): JSX.Element | null => {
     return null;
 
   return (
-    <PraiseBox variant={'wide'} classes="mb-5">
+    <Box variant={'wide'} classes="mb-5">
       <div>
         <div>
           <strong>You are a quantifier for this period!</strong>
@@ -37,7 +37,7 @@ export const QuantifierMessage = (): JSX.Element | null => {
               {quantificationStats.count - quantificationStats.done}
             </div>
           ) : null}
-          <PraiseButton
+          <Button
             classes="block mt-5"
             onClick={(): void => {
               history.push(`/periods/${periodId}/quantify`);
@@ -45,9 +45,9 @@ export const QuantifierMessage = (): JSX.Element | null => {
           >
             <FontAwesomeIcon icon={faCalculator} size="1x" className="mr-2" />
             Quantify
-          </PraiseButton>
+          </Button>
         </div>
       </div>
-    </PraiseBox>
+    </Box>
   );
 };

@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSetRecoilState } from 'recoil';
 import { useHistory } from 'react-router-dom';
 import { ActiveTokenSet } from '@/model/auth';
-import { PraiseButton } from '@/components/ui/PraiseButton';
+import { Button } from '@/components/ui/Button';
 
 interface NotFoundProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,9 +30,9 @@ const ErrorPage = ({ error }: NotFoundProps): JSX.Element => {
         ) : error.message ? (
           <div className="mt-3">{error.message}</div>
         ) : null}
-        <PraiseButton classes="mt-5" onClick={logout}>
+        <Button classes="mt-5" onClick={logout}>
           Login
-        </PraiseButton>
+        </Button>
       </div>
     </div>
   );

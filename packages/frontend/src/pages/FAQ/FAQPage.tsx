@@ -6,8 +6,8 @@ import { Disclosure } from '@headlessui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SingleSetting } from '@/model/settings';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
-import { PraiseBox } from '@/components/ui/PraiseBox';
-import { PraisePage } from '@/components/ui/PraisePage';
+import { Box } from '@/components/ui/Box';
+import { Page } from '@/components/ui/Page';
 
 const FAQPage = (): JSX.Element | null => {
   const siteFAQSetting = useRecoilValue(SingleSetting('PRAISE_FAQ'));
@@ -16,10 +16,10 @@ const FAQPage = (): JSX.Element | null => {
   if (!faq || !faq.length) return null;
 
   return (
-    <PraisePage>
+    <Page>
       <BreadCrumb name="FAQ" icon={faQuestionCircle} />
 
-      <PraiseBox classes="w-full">
+      <Box classes="w-full">
         <h2 className="mb-4">FAQ</h2>
         <React.Suspense fallback={null}>
           {faq.map((data, index) => {
@@ -54,8 +54,8 @@ const FAQPage = (): JSX.Element | null => {
             );
           })}
         </React.Suspense>
-      </PraiseBox>
-    </PraisePage>
+      </Box>
+    </Page>
   );
 };
 

@@ -7,9 +7,9 @@ import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { AdminOnly } from '@/components/auth/AdminOnly';
 import { AllPeriods } from '@/model/periods';
-import { PraisePage } from '@/components/ui/PraisePage';
-import { PraiseButton } from '@/components/ui/PraiseButton';
-import { PraiseBox } from '@/components/ui/PraiseBox';
+import { Page } from '@/components/ui/Page';
+import { Button } from '@/components/ui/Button';
+import { Box } from '@/components/ui/Box';
 import { PeriodsTable } from './components/Table';
 
 const PeriodsPage = (): JSX.Element | null => {
@@ -18,27 +18,27 @@ const PeriodsPage = (): JSX.Element | null => {
   if (!allPeriods) return null;
 
   return (
-    <PraisePage>
+    <Page>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
 
       <ActiveNoticesBoard />
 
-      <PraiseBox classes="px-0">
+      <Box classes="px-0">
         <AdminOnly>
           <div className="px-5 mb-2 text-right">
             <Link to="/periods/createupdate">
-              <PraiseButton id="create-period-button">
+              <Button id="create-period-button">
                 <FontAwesomeIcon icon={faPlus} size="1x" className="mr-2" />
                 Create period
-              </PraiseButton>
+              </Button>
             </Link>
           </div>
         </AdminOnly>
         <React.Suspense fallback={null}>
           <PeriodsTable />
         </React.Suspense>
-      </PraiseBox>
-    </PraisePage>
+      </Box>
+    </Page>
   );
 };
 

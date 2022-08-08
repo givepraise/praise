@@ -1,5 +1,5 @@
 import { ActiveUserQuantificationsMessage } from './ActiveUserQuantificationsMessage';
-import { PraiseBox } from '../ui/PraiseBox';
+import { Box } from '../ui/Box';
 
 const ActiveNoticesBoardInner = (): JSX.Element | null => {
   const activeUserQuantificationMessageRender =
@@ -8,10 +8,10 @@ const ActiveNoticesBoardInner = (): JSX.Element | null => {
   if (!activeUserQuantificationMessageRender) return null;
 
   return (
-    <PraiseBox classes="mb-5">
+    <Box classes="mb-5">
       {activeUserQuantificationMessageRender &&
         activeUserQuantificationMessageRender}
-    </PraiseBox>
+    </Box>
   );
 };
 

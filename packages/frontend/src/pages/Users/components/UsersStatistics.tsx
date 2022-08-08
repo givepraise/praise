@@ -11,6 +11,7 @@ import {
   AllQuantifierUsers,
   AllUsers,
 } from '@/model/users';
+import { Button } from '@/components/ui/Button';
 
 interface DownloadUserDto extends Omit<UserDto, 'accounts'> {
   discordName?: string;
@@ -63,7 +64,7 @@ export const UsersStatistics = (): JSX.Element => {
       <div>Quantifiers: {allQuantifierUsers?.length}</div>
       <div className="flex w-full mt-5">
         {allUsers && (
-          <div className="praise-button">
+          <Button>
             <CSVLink
               className="no-underline"
               data={downloadData}
@@ -74,7 +75,7 @@ export const UsersStatistics = (): JSX.Element => {
               <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
               Export
             </CSVLink>
-          </div>
+          </Button>
         )}
       </div>
     </>

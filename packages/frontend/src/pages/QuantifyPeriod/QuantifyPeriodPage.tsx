@@ -11,8 +11,8 @@ import {
 } from '@/model/periods';
 import { getQuantificationStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
-import { PraiseBox } from '@/components/ui/PraiseBox';
-import { PraisePage } from '@/components/ui/PraisePage';
+import { Box } from '@/components/ui/Box';
+import { Page } from '@/components/ui/Page';
 import { QuantifyPeriodTable } from './components/QuantifyPeriodTable';
 
 const PeriodMessage = (): JSX.Element => {
@@ -45,22 +45,22 @@ const QuantifyPeriodPage = (): JSX.Element | null => {
   if (!period || !periodQuantifierPraise) return null;
 
   return (
-    <PraisePage>
+    <Page>
       <BreadCrumb name="Quantify" icon={faCalendarAlt} />
       <BackLink to={`/periods/${periodId}`} />
 
       <React.Suspense fallback={null}>
-        <PraiseBox classes="mb-5">
+        <Box classes="mb-5">
           <PeriodMessage />
-        </PraiseBox>
+        </Box>
       </React.Suspense>
 
       <React.Suspense fallback={null}>
-        <PraiseBox classes="px-0">
+        <Box classes="px-0">
           <QuantifyPeriodTable />
-        </PraiseBox>
+        </Box>
       </React.Suspense>
-    </PraisePage>
+    </Page>
   );
 };
 

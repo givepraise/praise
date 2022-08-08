@@ -4,7 +4,7 @@ import { PraiseDto } from 'api/dist/praise/types';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
-import { PraiseButton } from '@/components/ui/PraiseButton';
+import { Button } from '@/components/ui/Button';
 import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
 import { PeriodPageParams } from '@/model/periods';
 import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
@@ -39,9 +39,9 @@ export const DuplicateSearchDialog = ({
     <ScrollableDialog open={open} onClose={onClose}>
       <div className="w-full h-full">
         <div className="flex justify-end p-6">
-          <PraiseButton variant={'round'} onClick={onClose}>
+          <Button variant={'round'} onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} size="1x" />
-          </PraiseButton>
+          </Button>
         </div>
         <div className="px-20 space-y-6">
           <div className="flex justify-center">

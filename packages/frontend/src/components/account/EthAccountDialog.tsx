@@ -12,8 +12,8 @@ import { useSetRecoilState } from 'recoil';
 import { toast } from 'react-hot-toast';
 import { useRef } from 'react';
 import { ActiveTokenSet } from '@/model/auth';
-import { PraiseButton } from '../ui/PraiseButton';
-import { PraiseBox } from '../ui/PraiseBox';
+import { Button } from '../ui/Button';
+import { Box } from '../ui/Box';
 
 interface EthAccountDialogProps {
   open?: boolean;
@@ -50,11 +50,11 @@ export const EthAccountDialog = ({
       initialFocus={contentRef}
     >
       <div className="flex items-center justify-center min-h-screen bg-black/30">
-        <PraiseBox classes="p-10" variant={'defaults'} ref={contentRef}>
+        <Box classes="p-10" variant={'defaults'} ref={contentRef}>
           <div className="flex justify-end">
-            <PraiseButton variant={'round'} onClick={onClose}>
+            <Button variant={'round'} onClick={onClose}>
               <FontAwesomeIcon icon={faTimes} size="1x" />
-            </PraiseButton>
+            </Button>
           </div>
           <div>
             <div className="flex justify-center mb-8">
@@ -64,24 +64,24 @@ export const EthAccountDialog = ({
               {shortenEthAddress(address)}
             </Dialog.Title>
             <div className="flex justify-center space-x-4">
-              <PraiseButton
+              <Button
                 classes="mt-4"
                 onClick={(): void => void handleCopyAddress()}
               >
                 <FontAwesomeIcon className="mr-2" icon={faCopy} size="1x" />
                 Copy address
-              </PraiseButton>
-              <PraiseButton classes="mt-4" onClick={handleDisconnect}>
+              </Button>
+              <Button classes="mt-4" onClick={handleDisconnect}>
                 <FontAwesomeIcon
                   className="mr-2"
                   icon={faArrowRightFromBracket}
                   size="1x"
                 />
                 Disconnect
-              </PraiseButton>
+              </Button>
             </div>
           </div>
-        </PraiseBox>
+        </Box>
       </div>
     </Dialog>
   );

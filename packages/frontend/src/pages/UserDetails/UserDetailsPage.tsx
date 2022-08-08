@@ -9,8 +9,8 @@ import { SingleUser, SingleUserParams, useAdminUsers } from '@/model/users';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { classNames } from '@/utils/index';
 import { BackLink } from '@/navigation/BackLink';
-import { PraiseBox } from '@/components/ui/PraiseBox';
-import { PraisePage } from '@/components/ui/PraisePage';
+import { Box } from '@/components/ui/Box';
+import { Page } from '@/components/ui/Page';
 
 const roles = [UserRole.ADMIN, UserRole.FORWARDER, UserRole.QUANTIFIER];
 
@@ -35,10 +35,10 @@ const UserDetailsPage = (): JSX.Element | null => {
   if (!user) return null;
 
   return (
-    <PraisePage>
+    <Page>
       <BreadCrumb name="User details" icon={faUserGroup} />
       <BackLink to="/users" />
-      <PraiseBox classes="flex flex-col gap-2 mb-5">
+      <Box classes="flex flex-col gap-2 mb-5">
         <span>User identity</span>
         <span className="text-xl font-bold">
           {user.ethereumAddress && shortenEthAddress(user.ethereumAddress)}
@@ -48,8 +48,8 @@ const UserDetailsPage = (): JSX.Element | null => {
           <br />
           Last updated: {formatIsoDateUTC(user.updatedAt, DATE_FORMAT)}
         </div>
-      </PraiseBox>
-      <PraiseBox classes="flex flex-col gap-2 mb-5">
+      </Box>
+      <Box classes="flex flex-col gap-2 mb-5">
         <span>Linked Discord identity</span>
         {user?.accounts?.map((account) => (
           <>
@@ -63,8 +63,8 @@ const UserDetailsPage = (): JSX.Element | null => {
             </div>
           </>
         ))}
-      </PraiseBox>
-      <PraiseBox>
+      </Box>
+      <Box>
         <span className="text-xl font-bold">Roles</span>
         <div className="flex flex-wrap gap-4 pt-5">
           {roles.map((role) => (
@@ -89,8 +89,8 @@ const UserDetailsPage = (): JSX.Element | null => {
             </div>
           ))}
         </div>
-      </PraiseBox>
-    </PraisePage>
+      </Box>
+    </Page>
   );
 };
 

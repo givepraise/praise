@@ -5,18 +5,18 @@ import { useRecoilValue } from 'recoil';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { SinglePeriodByDate } from '@/model/periods';
 import {
-  PraisePageParams,
+  PageParams,
   useLoadSinglePraiseDetails,
   SinglePraise,
 } from '@/model/praise';
 import { Praise } from '@/components/praise/Praise';
 import { BackLink } from '@/navigation/BackLink';
-import { PraiseBox } from '@/components/ui/PraiseBox';
-import { PraisePage } from '@/components/ui/PraisePage';
+import { Box } from '@/components/ui/Box';
+import { Page } from '@/components/ui/Page';
 import { PraiseDetailTable } from './components/PraiseDetailTable';
 
 const PraiseDetailsPage = (): JSX.Element | null => {
-  const { praiseId } = useParams<PraisePageParams>();
+  const { praiseId } = useParams<PageParams>();
   useLoadSinglePraiseDetails(praiseId); // Load additional details for praise
   const praise = useRecoilValue(SinglePraise(praiseId));
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
@@ -28,22 +28,22 @@ const PraiseDetailsPage = (): JSX.Element | null => {
   if (!praise) return null;
 
   return (
-    <PraisePage>
+    <Page>
       <BreadCrumb name={'Praise details'} icon={faCalendarAlt} />
       <BackLink to={backLinkUrl} />
 
       <React.Suspense fallback={null}>
-        <PraiseBox classes="mb-5">
+        <Box classes="mb-5">
           <Praise praise={praise} />
-        </PraiseBox>
+        </Box>
       </React.Suspense>
 
-      <PraiseBox>
+      <Box>
         <React.Suspense fallback={null}>
           <PraiseDetailTable />
         </React.Suspense>
-      </PraiseBox>
-    </PraisePage>
+      </Box>
+    </Page>
   );
 };
 

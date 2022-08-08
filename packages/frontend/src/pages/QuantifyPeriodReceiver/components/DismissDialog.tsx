@@ -6,7 +6,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
 
-import { PraiseButton } from '@/components/ui/PraiseButton';
+import { Button } from '@/components/ui/Button';
 import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
 
 interface DismissDialogProps {
@@ -28,9 +28,9 @@ export const DismissDialog = ({
     <ScrollableDialog open={open} onClose={onClose}>
       <div className="w-full h-full">
         <div className="flex justify-end p-6">
-          <PraiseButton variant={'round'} onClick={onClose}>
+          <Button variant={'round'} onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} size="1x" />
-          </PraiseButton>
+          </Button>
         </div>
         <div className="px-20 space-y-6">
           <div className="flex justify-center">
@@ -45,7 +45,7 @@ export const DismissDialog = ({
             {praises.map((p) => p._idLabelRealized).join(', ')}
           </p>
           <div className="flex justify-center">
-            <PraiseButton
+            <Button
               classes="space-x-2"
               onClick={(): void => {
                 onConfirm();
@@ -54,7 +54,7 @@ export const DismissDialog = ({
             >
               <FontAwesomeIcon icon={faMinusCircle} size="1x" />
               <span>Dismiss</span>
-            </PraiseButton>
+            </Button>
           </div>
         </div>
       </div>

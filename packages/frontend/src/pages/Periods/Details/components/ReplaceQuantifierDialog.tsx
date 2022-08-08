@@ -12,7 +12,7 @@ import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { SelectUserRadioGroup } from '@/components/user/SelectUserRadioGroup';
 import { Notice } from '@/components/ui/Notice';
 import { AllQuantifierUsers } from '@/model/users';
-import { PraiseButton } from '@/components/ui/PraiseButton';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
   onClose(): void;
@@ -49,9 +49,9 @@ export const ReplaceQuantifierDialog = ({
     <ScrollableDialog open={open} onClose={resetAndClose}>
       <div className="w-full h-full">
         <div className="flex justify-end p-6">
-          <PraiseButton variant={'round'} onClick={resetAndClose}>
+          <Button variant={'round'} onClick={resetAndClose}>
             <FontAwesomeIcon icon={faTimes} size="1x" />
-          </PraiseButton>
+          </Button>
         </div>
         <div className="px-20 space-y-6">
           <div className="flex justify-center">
@@ -91,8 +91,8 @@ export const ReplaceQuantifierDialog = ({
                 />
               </div>
               <div className="flex justify-center">
-                <PraiseButton
-                  variant={replacementUserId === undefined ? 'disabled' : ''}
+                <Button
+                  disabled={replacementUserId === undefined}
                   classes="space-x-2"
                   onClick={(): void => {
                     if (!replacementUserId) return;
@@ -103,7 +103,7 @@ export const ReplaceQuantifierDialog = ({
                 >
                   <FontAwesomeIcon icon={faArrowRightArrowLeft} size="1x" />
                   <span>Replace</span>
-                </PraiseButton>
+                </Button>
               </div>
             </>
           )}

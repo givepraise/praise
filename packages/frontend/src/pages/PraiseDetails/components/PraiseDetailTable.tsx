@@ -10,7 +10,7 @@ import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { SinglePeriodByDate } from '@/model/periods';
 import {
-  PraisePageParams,
+  PageParams,
   useLoadSinglePraiseDetails,
   SinglePraise,
 } from '@/model/praise';
@@ -36,7 +36,7 @@ const DuplicatePraiseLabel = ({
 };
 
 export const PraiseDetailTable = (): JSX.Element => {
-  const { praiseId } = useParams<PraisePageParams>();
+  const { praiseId } = useParams<PageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   useLoadSinglePraiseDetails(praiseId);
   const praise = useRecoilValue(SinglePraise(praiseId));

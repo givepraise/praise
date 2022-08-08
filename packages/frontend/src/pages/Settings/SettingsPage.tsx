@@ -11,8 +11,8 @@ import { SubPageNav } from '@/navigation/SubPageNav';
 import { NavItem } from '@/navigation/NavItem';
 import { SettingsForm } from '@/components/settings/SettingsForm';
 import { isResponseOk } from '@/model/api';
-import { PraiseBox } from '@/components/ui/PraiseBox';
-import { PraisePage } from '@/components/ui/PraisePage';
+import { Box } from '@/components/ui/Box';
+import { Page } from '@/components/ui/Page';
 
 const SettingsPage = (): JSX.Element | null => {
   const settings = useRecoilValue(AllSettings);
@@ -43,7 +43,7 @@ const SettingsPage = (): JSX.Element | null => {
   };
 
   return (
-    <PraisePage variant={'wide'}>
+    <Page variant={'wide'}>
       <BreadCrumb name="Settings" icon={faCogs} />
 
       <div className="flex flex-col space-y-5 xl:space-x-5 xl:flex-row xl:space-y-0">
@@ -57,7 +57,7 @@ const SettingsPage = (): JSX.Element | null => {
           </SubPageNav>
         </div>
 
-        <PraiseBox>
+        <Box>
           <Switch>
             <Route path={`${path}/application`}>
               <React.Suspense fallback={null}>
@@ -87,9 +87,9 @@ const SettingsPage = (): JSX.Element | null => {
               <Redirect to={`${url}/application`} />
             </Route>
           </Switch>
-        </PraiseBox>
+        </Box>
       </div>
-    </PraisePage>
+    </Page>
   );
 };
 

@@ -16,7 +16,7 @@ import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from './api';
 /**
  * Types for `useParams()`
  */
-export type PraisePageParams = {
+export type PageParams = {
   praiseId: string;
 };
 

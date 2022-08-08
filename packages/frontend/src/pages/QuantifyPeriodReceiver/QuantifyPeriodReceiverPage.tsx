@@ -18,8 +18,8 @@ import {
 import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { getQuantificationReceiverStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
-import { PraiseBox } from '@/components/ui/PraiseBox';
-import { PraisePage } from '@/components/ui/PraisePage';
+import { Box } from '@/components/ui/Box';
+import { Page } from '@/components/ui/Page';
 import { QuantifyTable } from './components/QuantifyTable';
 
 const PeriodBreadCrumb = (): JSX.Element | null => {
@@ -82,16 +82,16 @@ const QuantifyPeriodReceiverPage = (): JSX.Element => {
   usePeriodQuantifierPraise(periodId);
 
   return (
-    <PraisePage variant={'wide'}>
+    <Page variant={'wide'}>
       <React.Suspense fallback={null}>
         <PeriodBreadCrumb />
       </React.Suspense>
       <BackLink to={`/periods/${periodId}/quantify`} />
 
       <React.Suspense fallback={null}>
-        <PraiseBox classes="mb-5" variant={'wide'}>
+        <Box classes="mb-5" variant={'wide'}>
           <PeriodMessage />
-        </PraiseBox>
+        </Box>
       </React.Suspense>
 
       <React.Suspense fallback={null}>
@@ -101,7 +101,7 @@ const QuantifyPeriodReceiverPage = (): JSX.Element => {
           receiverId={receiverId}
         />
       </React.Suspense>
-    </PraisePage>
+    </Page>
   );
 };
 

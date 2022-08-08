@@ -10,18 +10,6 @@
   @apply praise-defaults md:w-[750px] xl:w-[1000px];
 }
 
-.praise-box-defaults {
-  @apply border shadow-md rounded-xl bg-warm-gray-50 dark:bg-slate-600;
-}
-
-.praise-box {
-  @apply praise-box-defaults w-full md:w-[710px] p-5;
-}
-
-.praise-box-wide {
-  @apply praise-box-defaults w-full md:w-[710px] xl:w-[960px] p-5;
-}
-
 
 /* MUI Slider styles */
 .local-MuiSlider-colorPrimary {

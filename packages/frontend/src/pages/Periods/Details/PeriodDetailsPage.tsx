@@ -17,8 +17,8 @@ import { useRecoilValue } from 'recoil';
 
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { InlineLabel } from '@/components/ui/InlineLabel';
-import { PraiseBox } from '@/components/ui/PraiseBox';
-import { PraisePage } from '@/components/ui/PraisePage';
+import { Box } from '@/components/ui/Box';
+import { Page } from '@/components/ui/Page';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   PeriodPageParams,
@@ -73,14 +73,14 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
   if (!detailsResponse || !period || !periodQuantifierPraise) return null;
 
   return (
-    <PraisePage variant={'wide'}>
+    <Page variant={'wide'}>
       <BreadCrumb name="Periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 
       <React.Suspense fallback={null}>
-        <PraiseBox variant={'wide'} classes="mb-5">
+        <Box variant={'wide'} classes="mb-5">
           <PeriodDetailHead />
-        </PraiseBox>
+        </Box>
       </React.Suspense>
 
       <React.Suspense fallback={null}>
@@ -110,7 +110,7 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
           </SubPageNav>
         </div>
 
-        <PraiseBox classes="px-0">
+        <Box classes="px-0">
           <Suspense fallback={null}>
             <Switch>
               <Route path={`${path}/receivers`}>
@@ -130,9 +130,9 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
               </Route>
             </Switch>
           </Suspense>
-        </PraiseBox>
+        </Box>
       </div>
-    </PraisePage>
+    </Page>
   );
 };
 

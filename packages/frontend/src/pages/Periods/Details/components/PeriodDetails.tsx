@@ -10,7 +10,7 @@ import { toast } from 'react-hot-toast';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
-import { PraiseButton } from '@/components/ui/PraiseButton';
+import { Button } from '@/components/ui/Button';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   AllPeriods,
@@ -125,7 +125,7 @@ export const PeriodDetails = (): JSX.Element | null => {
                 period?.receivers.length > 0 &&
                 allQuantifiers &&
                 allQuantifiers.length > 0 ? (
-                  <PraiseButton
+                  <Button
                     onClick={(): void => {
                       setIsAssignDialogOpen(true);
                     }}
@@ -136,19 +136,19 @@ export const PeriodDetails = (): JSX.Element | null => {
                       className="mr-2"
                     />
                     Assign quantifiers
-                  </PraiseButton>
+                  </Button>
                 ) : null}
                 {period.status === 'QUANTIFY' ? (
-                  <PraiseButton onClick={handleExport}>
+                  <Button onClick={handleExport}>
                     <FontAwesomeIcon
                       icon={faDownload}
                       size="1x"
                       className="mr-2"
                     />
                     Export
-                  </PraiseButton>
+                  </Button>
                 ) : null}
-                <PraiseButton
+                <Button
                   variant={'outline'}
                   onClick={(): void => setIsCloseDialogOpen(true)}
                 >
@@ -158,14 +158,14 @@ export const PeriodDetails = (): JSX.Element | null => {
                     className="mr-2"
                   />
                   Close period
-                </PraiseButton>
+                </Button>
               </div>
             ) : null}
             {period.status === 'CLOSED' ? (
-              <PraiseButton onClick={handleExport}>
+              <Button onClick={handleExport}>
                 <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
                 Export
-              </PraiseButton>
+              </Button>
             ) : null}
           </div>
         </>

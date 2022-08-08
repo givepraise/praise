@@ -9,8 +9,8 @@ import { useRecoilValue } from 'recoil';
 import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { BackLink } from '@/navigation/BackLink';
-import { PraiseBox } from '@/components/ui/PraiseBox';
-import { PraisePage } from '@/components/ui/PraisePage';
+import { Box } from '@/components/ui/Box';
+import { Page } from '@/components/ui/Page';
 import { ReceiverSummaryTable } from './components/ReceiverSummaryTable';
 
 const getReceiver = (
@@ -29,14 +29,14 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
   if (!receiver || !receiver.userAccount) return null;
 
   return (
-    <PraiseBox classes="mb-5">
+    <Box classes="mb-5">
       <h2>{receiver.userAccount.name}</h2>
       <div className="mt-5">
         Period: {periodDetails.name}
         <br />
         Total Score: {receiver.scoreRealized}
       </div>
-    </PraiseBox>
+    </Box>
   );
 };
 
@@ -44,7 +44,7 @@ const ReceiverSummaryPage = (): JSX.Element => {
   const { periodId } = useParams<PeriodAndReceiverPageParams>();
 
   return (
-    <PraisePage>
+    <Page>
       <BreadCrumb name={'Receiver summary for period'} icon={faCalendarAlt} />
       <BackLink to={`/periods/${periodId}`} />
 
@@ -55,7 +55,7 @@ const ReceiverSummaryPage = (): JSX.Element => {
       <React.Suspense fallback={null}>
         <ReceiverSummaryTable />
       </React.Suspense>
-    </PraisePage>
+    </Page>
   );
 };
 
