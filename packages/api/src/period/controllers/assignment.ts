@@ -130,7 +130,7 @@ export const assignQuantifiers = async (
     } catch (e) {
       await logEvent(
         EventLogTypeKey.PERIOD,
-        `Faioed to assign random quantifiers to all praise in period "${period.name}", retrying...`,
+        `Failed to assign random quantifiers to all praise in period "${period.name}", retrying...`,
         {
           userId: res.locals.currentUser._id,
         }
