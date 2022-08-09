@@ -6,7 +6,7 @@ interface ButtonProps {
   id?: string;
   type?: 'button' | 'submit' | 'reset';
   variant?: ButtonVariant;
-  classes?: string;
+  className?: string;
   disabled?: boolean;
   children?:
     | JSX.Element
@@ -21,7 +21,7 @@ export const Button = ({
   id,
   type,
   variant = '',
-  classes,
+  className,
   disabled = false,
   children,
   onClick,
@@ -55,7 +55,7 @@ export const Button = ({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={classNames(variantClass, classes)}
+      className={classNames(variantClass, className)}
     >
       {children}
     </button>

@@ -30,7 +30,7 @@ const ErrorPage = ({ error }: NotFoundProps): JSX.Element => {
         ) : error.message ? (
           <div className="mt-3">{error.message}</div>
         ) : null}
-        <Button classes="mt-5" onClick={logout}>
+        <Button className="mt-5" onClick={logout}>
           Login
         </Button>
       </div>

@@ -12,7 +12,7 @@ const MyPraise = (): JSX.Element => {
 
       <ActiveNoticesBoard />
 
-      <Box classes="p-0">
+      <Box className="p-0">
         <MyPraiseTable />
       </Box>
     </Page>

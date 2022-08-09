@@ -32,6 +32,6 @@ export const useOutsideAlerter = (ref: any): useOutsideAlerterReturn => {
   return { timestamp, reset };
 };
 
-export const classNames = (...classes: (string | undefined)[]): string => {
-  return classes.filter(Boolean).join(' ');
+export const classNames = (...className: (string | undefined)[]): string => {
+  return className.filter(Boolean).join(' ');
 };

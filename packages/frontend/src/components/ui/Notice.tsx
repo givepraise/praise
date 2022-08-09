@@ -11,16 +11,16 @@ export const Notice = ({
   type = 'danger',
   className = '',
 }: Params): JSX.Element => {
-  let typeClasses = '';
+  let typeclassName = '';
 
   if (type === 'danger') {
-    typeClasses = 'bg-red-200';
+    typeclassName = 'bg-red-200';
   } else if (type === 'success') {
-    typeClasses = 'bg-green-300';
+    typeclassName = 'bg-green-300';
   } else if (type === 'warning') {
-    typeClasses = 'bg-orange-300';
+    typeclassName = 'bg-orange-300';
   } else if (type === 'info') {
-    typeClasses = 'bg-warm-gray-300 dark:bg-slate-700';
+    typeclassName = 'bg-warm-gray-300 dark:bg-slate-700';
   }
 
   return (
@@ -28,7 +28,7 @@ export const Notice = ({
       className={classNames(
         'w-full p-4 text-center text-white rounded-sm',
         className,
-        typeClasses
+        typeclassName
       )}
     >
       {children}

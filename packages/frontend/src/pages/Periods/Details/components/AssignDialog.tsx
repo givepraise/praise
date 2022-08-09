@@ -79,7 +79,7 @@ const DialogMessage = ({
       <div className="flex justify-center">
         {quantPoolBigEnough ? (
           <Button
-            classes="mt-4"
+            className="mt-4"
             onClick={(): void => {
               onAssign();
               onClose();
@@ -89,7 +89,7 @@ const DialogMessage = ({
           </Button>
         ) : (
           <Button
-            classes="mt-4"
+            className="mt-4"
             onClick={(): void => {
               onClose();
             }}

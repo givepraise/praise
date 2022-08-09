@@ -19,7 +19,7 @@ export const ReceiverSummaryTable = (): JSX.Element | null => {
 
   if (!praiseList) return null;
   return (
-    <Box classes="p-0">
+    <Box className="p-0">
       <ul>
         {praiseList?.map((praise) => (
           <PraiseRow praise={praise} key={praise?._id}>

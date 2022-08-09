@@ -50,7 +50,7 @@ export const EthAccountDialog = ({
       initialFocus={contentRef}
     >
       <div className="flex items-center justify-center min-h-screen bg-black/30">
-        <Box classes="p-10" variant={'defaults'} ref={contentRef}>
+        <Box className="p-10" variant={'regular'} ref={contentRef}>
           <div className="flex justify-end">
             <Button variant={'round'} onClick={onClose}>
               <FontAwesomeIcon icon={faTimes} size="1x" />
@@ -65,13 +65,13 @@ export const EthAccountDialog = ({
             </Dialog.Title>
             <div className="flex justify-center space-x-4">
               <Button
-                classes="mt-4"
+                className="mt-4"
                 onClick={(): void => void handleCopyAddress()}
               >
                 <FontAwesomeIcon className="mr-2" icon={faCopy} size="1x" />
                 Copy address
               </Button>
-              <Button classes="mt-4" onClick={handleDisconnect}>
+              <Button className="mt-4" onClick={handleDisconnect}>
                 <FontAwesomeIcon
                   className="mr-2"
                   icon={faArrowRightFromBracket}

@@ -52,7 +52,7 @@ export const QuantifyMultipleDialog = ({
 
           <div className="flex justify-center">
             <Button
-              classes="space-x-2"
+              className="space-x-2"
               onClick={(): void => {
                 onSetScore(score, selectedPraises);
                 onClose();

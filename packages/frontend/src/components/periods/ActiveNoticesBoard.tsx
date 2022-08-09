@@ -8,7 +8,7 @@ const ActiveNoticesBoardInner = (): JSX.Element | null => {
   if (!activeUserQuantificationMessageRender) return null;
 
   return (
-    <Box classes="mb-5">
+    <Box className="mb-5">
       {activeUserQuantificationMessageRender &&
         activeUserQuantificationMessageRender}
     </Box>

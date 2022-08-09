@@ -15,10 +15,10 @@ const UsersPage = (): JSX.Element | null => {
   return (
     <Page>
       <BreadCrumb name="Users" icon={faUserFriends} />
-      <Box classes="mb-5">
+      <Box className="mb-5">
         <UsersStatistics />
       </Box>
-      <Box classes="px-0">
+      <Box className="px-0">
         <UsersTable />
       </Box>
     </Page>

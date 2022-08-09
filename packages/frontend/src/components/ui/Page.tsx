@@ -4,7 +4,7 @@ type PageVariant = '' | 'wide';
 
 interface PageProps {
   variant?: PageVariant;
-  classes?: string;
+  className?: string;
   ref?: React.MutableRefObject<null>;
   children?:
     | JSX.Element
@@ -16,7 +16,7 @@ interface PageProps {
 
 export const Page = ({
   variant,
-  classes,
+  className,
   ref,
   children,
 }: PageProps): JSX.Element => {
@@ -27,7 +27,7 @@ export const Page = ({
   const variantClass = variant === '' || !variant ? regularClass : wideClass;
 
   return (
-    <div className={classNames(variantClass, classes)} ref={ref}>
+    <div className={classNames(variantClass, className)} ref={ref}>
       {children}
     </div>
   );

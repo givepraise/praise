@@ -50,13 +50,13 @@ const QuantifyPeriodPage = (): JSX.Element | null => {
       <BackLink to={`/periods/${periodId}`} />
 
       <React.Suspense fallback={null}>
-        <Box classes="mb-5">
+        <Box className="mb-5">
           <PeriodMessage />
         </Box>
       </React.Suspense>
 
       <React.Suspense fallback={null}>
-        <Box classes="px-0">
+        <Box className="px-0">
           <QuantifyPeriodTable />
         </Box>
       </React.Suspense>

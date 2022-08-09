@@ -23,7 +23,7 @@ const PeriodsPage = (): JSX.Element | null => {
 
       <ActiveNoticesBoard />
 
-      <Box classes="px-0">
+      <Box className="px-0">
         <AdminOnly>
           <div className="px-5 mb-2 text-right">
             <Link to="/periods/createupdate">

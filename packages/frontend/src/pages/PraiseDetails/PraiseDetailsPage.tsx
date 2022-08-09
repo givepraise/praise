@@ -33,7 +33,7 @@ const PraiseDetailsPage = (): JSX.Element | null => {
       <BackLink to={backLinkUrl} />
 
       <React.Suspense fallback={null}>
-        <Box classes="mb-5">
+        <Box className="mb-5">
           <Praise praise={praise} />
         </Box>
       </React.Suspense>

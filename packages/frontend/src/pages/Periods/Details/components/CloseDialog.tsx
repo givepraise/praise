@@ -36,7 +36,7 @@ export const PeriodCloseDialog = ({
           </Dialog.Description>
           <div className="flex justify-center">
             <Button
-              classes="mt-4 bg-red-600"
+              className="mt-4 bg-red-600"
               onClick={(): void => {
                 onRemove();
                 onClose();

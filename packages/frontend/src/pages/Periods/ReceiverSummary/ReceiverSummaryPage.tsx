@@ -29,7 +29,7 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
   if (!receiver || !receiver.userAccount) return null;
 
   return (
-    <Box classes="mb-5">
+    <Box className="mb-5">
       <h2>{receiver.userAccount.name}</h2>
       <div className="mt-5">
         Period: {periodDetails.name}

@@ -46,7 +46,7 @@ export const DismissDialog = ({
           </p>
           <div className="flex justify-center">
             <Button
-              classes="space-x-2"
+              className="space-x-2"
               onClick={(): void => {
                 onConfirm();
                 onClose();

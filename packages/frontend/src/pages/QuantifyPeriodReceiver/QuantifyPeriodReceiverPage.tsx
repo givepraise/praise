@@ -89,7 +89,7 @@ const QuantifyPeriodReceiverPage = (): JSX.Element => {
       <BackLink to={`/periods/${periodId}/quantify`} />
 
       <React.Suspense fallback={null}>
-        <Box classes="mb-5" variant={'wide'}>
+        <Box className="mb-5" variant={'wide'}>
           <PeriodMessage />
         </Box>
       </React.Suspense>

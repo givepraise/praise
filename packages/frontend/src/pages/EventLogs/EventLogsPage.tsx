@@ -90,12 +90,12 @@ const EventLogsPage = (): JSX.Element => {
     <Page>
       <BreadCrumb name="Transparency Log" icon={faBook} />
 
-      <Box classes="mb-5">
+      <Box className="mb-5">
         <h2 className="mb-2">Transparency Log</h2>
         <p>A log of all user actions that change the database state.</p>
       </Box>
 
-      <Box classes="p-0 ">
+      <Box className="p-0 ">
         <div className="flex mb-8">
           {/* Filter */}
           <div className="w-3/12 mt-5 mb-5 ml-5 mr-4">

@@ -1,10 +1,10 @@
 import { classNames } from '../../utils/';
 
-type BoxVariant = '' | 'defaults' | 'wide';
+type BoxVariant = '' | 'regular' | 'wide';
 
 interface BoxProps {
   variant?: BoxVariant;
-  classes?: string;
+  className?: string;
   ref?: React.MutableRefObject<null>;
   children?:
     | JSX.Element
@@ -16,33 +16,33 @@ interface BoxProps {
 
 export const Box = ({
   variant,
-  classes,
+  className,
   ref,
   children,
 }: BoxProps): JSX.Element => {
-  const defaultClass =
+  const baseClass =
     'border shadow-md rounded-xl bg-warm-gray-50 dark:bg-slate-600';
-  const regularClass = `w-full md:w-[710px] p-5 ${defaultClass}`;
-  const wideClass = `w-full md:w-[710px] xl:w-[960px] p-5 ${defaultClass}`;
+  const defaultClass = `w-full md:w-[710px] p-5 ${baseClass}`;
+  const wideClass = `w-full md:w-[710px] xl:w-[960px] p-5 ${baseClass}`;
 
-  let variantClass = regularClass;
+  let variantClass = defaultClass;
   switch (variant) {
     case '':
-      variantClass = regularClass;
+      variantClass = baseClass;
       break;
-    case 'defaults':
+    case 'regular':
       variantClass = defaultClass;
       break;
     case 'wide':
       variantClass = wideClass;
       break;
     default:
-      variantClass = regularClass;
+      variantClass = defaultClass;
       break;
   }
 
   return (
-    <div className={classNames(variantClass, classes)} ref={ref}>
+    <div className={classNames(variantClass, className)} ref={ref}>
       {children}
     </div>
   );

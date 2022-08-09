@@ -38,7 +38,7 @@ const UserDetailsPage = (): JSX.Element | null => {
     <Page>
       <BreadCrumb name="User details" icon={faUserGroup} />
       <BackLink to="/users" />
-      <Box classes="flex flex-col gap-2 mb-5">
+      <Box className="flex flex-col gap-2 mb-5">
         <span>User identity</span>
         <span className="text-xl font-bold">
           {user.ethereumAddress && shortenEthAddress(user.ethereumAddress)}
@@ -49,7 +49,7 @@ const UserDetailsPage = (): JSX.Element | null => {
           Last updated: {formatIsoDateUTC(user.updatedAt, DATE_FORMAT)}
         </div>
       </Box>
-      <Box classes="flex flex-col gap-2 mb-5">
+      <Box className="flex flex-col gap-2 mb-5">
         <span>Linked Discord identity</span>
         {user?.accounts?.map((account) => (
           <>

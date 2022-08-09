@@ -97,7 +97,7 @@ export const DuplicateDialog = ({
           </div>
           <div className="flex justify-center">
             <Button
-              classes="space-x-2"
+              className="space-x-2"
               onClick={(): void => {
                 onConfirm(score);
                 onClose();

@@ -78,7 +78,7 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
       <BackLink to="/periods" />
 
       <React.Suspense fallback={null}>
-        <Box variant={'wide'} classes="mb-5">
+        <Box variant={'wide'} className="mb-5">
           <PeriodDetailHead />
         </Box>
       </React.Suspense>
@@ -110,7 +110,7 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
           </SubPageNav>
         </div>
 
-        <Box classes="px-0">
+        <Box className="px-0">
           <Suspense fallback={null}>
             <Switch>
               <Route path={`${path}/receivers`}>

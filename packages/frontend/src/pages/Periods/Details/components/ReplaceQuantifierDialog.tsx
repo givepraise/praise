@@ -93,7 +93,7 @@ export const ReplaceQuantifierDialog = ({
               <div className="flex justify-center">
                 <Button
                   disabled={replacementUserId === undefined}
-                  classes="space-x-2"
+                  className="space-x-2"
                   onClick={(): void => {
                     if (!replacementUserId) return;
 

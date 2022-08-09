@@ -19,7 +19,7 @@ const FAQPage = (): JSX.Element | null => {
     <Page>
       <BreadCrumb name="FAQ" icon={faQuestionCircle} />
 
-      <Box classes="w-full">
+      <Box className="w-full">
         <h2 className="mb-4">FAQ</h2>
         <React.Suspense fallback={null}>
           {faq.map((data, index) => {

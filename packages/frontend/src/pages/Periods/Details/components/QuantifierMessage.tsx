@@ -25,7 +25,7 @@ export const QuantifierMessage = (): JSX.Element | null => {
     return null;
 
   return (
-    <Box variant={'wide'} classes="mb-5">
+    <Box variant={'wide'} className="mb-5">
       <div>
         <div>
           <strong>You are a quantifier for this period!</strong>
@@ -38,7 +38,7 @@ export const QuantifierMessage = (): JSX.Element | null => {
             </div>
           ) : null}
           <Button
-            classes="block mt-5"
+            className="block mt-5"
             onClick={(): void => {
               history.push(`/periods/${periodId}/quantify`);
             }}
