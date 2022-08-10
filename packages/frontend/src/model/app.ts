@@ -1,7 +1,11 @@
 import { AxiosResponse } from 'axios';
-import { selector, useRecoilValue } from 'recoil';
+import { atomFamily, selector, useRecoilValue } from 'recoil';
+import { recoilPersist } from 'recoil-persist';
+import { stickyMessageKeys } from '@/utils/app';
 import { isResponseOk } from './api';
 import { ExternalGet } from './axios';
+
+const { persistAtom } = recoilPersist();
 
 export interface GithubResponse {
   name: string;
@@ -38,7 +42,17 @@ export const usePraiseAppVersion = (): PraiseAppVersion => {
   if (isResponseOk(response)) {
     appVersion.latest = response.data.name.substring(1);
     appVersion.newVersionAvailable = appVersion.latest !== appVersion.current;
+
+    if (appVersion.newVersionAvailable) {
+      localStorage.removeItem(stickyMessageKeys.app_version);
+    }
   }
 
   return appVersion;
 };
+
+export const IsHeaderBannerClosed = atomFamily<boolean, string>({
+  key: 'IsHeaderBannerClosed',
+  default: false,
+  effects: [persistAtom],
+});
