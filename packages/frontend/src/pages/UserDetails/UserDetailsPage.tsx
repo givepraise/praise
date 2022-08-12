@@ -4,11 +4,13 @@ import { useRecoilValue } from 'recoil';
 import { useParams } from 'react-router-dom';
 import { UserDto, UserRole } from 'api/dist/user/types';
 import { toast } from 'react-hot-toast';
-import { BreadCrumb } from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { SingleUser, SingleUserParams, useAdminUsers } from '@/model/users';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { classNames } from '@/utils/index';
 import { BackLink } from '@/navigation/BackLink';
+import { Box } from '@/components/ui/Box';
+import { Page } from '@/components/ui/Page';
 
 const roles = [UserRole.ADMIN, UserRole.FORWARDER, UserRole.QUANTIFIER];
 
@@ -33,10 +35,10 @@ const UserDetailsPage = (): JSX.Element | null => {
   if (!user) return null;
 
   return (
-    <div className="praise-page">
+    <Page>
       <BreadCrumb name="User details" icon={faUserGroup} />
       <BackLink to="/users" />
-      <div className="flex flex-col gap-2 mb-5 praise-box">
+      <Box className="flex flex-col gap-2 mb-5">
         <span>User identity</span>
         <span className="text-xl font-bold">
           {user.ethereumAddress && shortenEthAddress(user.ethereumAddress)}
@@ -46,8 +48,8 @@ const UserDetailsPage = (): JSX.Element | null => {
           <br />
           Last updated: {formatIsoDateUTC(user.updatedAt, DATE_FORMAT)}
         </div>
-      </div>
-      <div className="flex flex-col gap-2 mb-5 praise-box">
+      </Box>
+      <Box className="flex flex-col gap-2 mb-5">
         <span>Linked Discord identity</span>
         {user?.accounts?.map((account) => (
           <>
@@ -61,8 +63,8 @@ const UserDetailsPage = (): JSX.Element | null => {
             </div>
           </>
         ))}
-      </div>
-      <div className="praise-box">
+      </Box>
+      <Box>
         <span className="text-xl font-bold">Roles</span>
         <div className="flex flex-wrap gap-4 pt-5">
           {roles.map((role) => (
@@ -87,8 +89,8 @@ const UserDetailsPage = (): JSX.Element | null => {
             </div>
           ))}
         </div>
-      </div>
-    </div>
+      </Box>
+    </Page>
   );
 };
 

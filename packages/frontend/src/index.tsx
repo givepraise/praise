@@ -19,7 +19,7 @@ import {
 import merge from 'lodash/merge';
 import { configureChains, createClient, WagmiConfig, chain } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
-import { LoadScreen } from '@/components/LoadScreen';
+import { LoadScreen } from '@/components/ui/LoadScreen';
 import { Theme } from '@/model/theme';
 import { Routes } from '@/navigation/Routes';
 import ErrorPage from './pages/ErrorPage';

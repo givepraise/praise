@@ -2,19 +2,21 @@ import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { BreadCrumb } from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { SinglePeriodByDate } from '@/model/periods';
 import {
-  PraisePageParams,
+  PageParams,
   useLoadSinglePraiseDetails,
   SinglePraise,
 } from '@/model/praise';
 import { Praise } from '@/components/praise/Praise';
 import { BackLink } from '@/navigation/BackLink';
+import { Box } from '@/components/ui/Box';
+import { Page } from '@/components/ui/Page';
 import { PraiseDetailTable } from './components/PraiseDetailTable';
 
 const PraiseDetailsPage = (): JSX.Element | null => {
-  const { praiseId } = useParams<PraisePageParams>();
+  const { praiseId } = useParams<PageParams>();
   useLoadSinglePraiseDetails(praiseId); // Load additional details for praise
   const praise = useRecoilValue(SinglePraise(praiseId));
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
@@ -26,22 +28,22 @@ const PraiseDetailsPage = (): JSX.Element | null => {
   if (!praise) return null;
 
   return (
-    <div className="praise-page">
+    <Page>
       <BreadCrumb name={'Praise details'} icon={faCalendarAlt} />
       <BackLink to={backLinkUrl} />
 
       <React.Suspense fallback={null}>
-        <div className="mb-5 praise-box">
+        <Box className="mb-5">
           <Praise praise={praise} />
-        </div>
+        </Box>
       </React.Suspense>
 
-      <div className="praise-box">
+      <Box>
         <React.Suspense fallback={null}>
           <PraiseDetailTable />
         </React.Suspense>
-      </div>
-    </div>
+      </Box>
+    </Page>
   );
 };
 

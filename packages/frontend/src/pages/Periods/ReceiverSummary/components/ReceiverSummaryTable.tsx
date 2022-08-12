@@ -8,6 +8,7 @@ import {
 import { PraiseRow } from '@/components/praise/PraiseRow';
 import { AllPraiseList } from '@/model/praise';
 import { periodReceiverPraiseListKey } from '@/utils/periods';
+import { Box } from '@/components/ui/Box';
 
 export const ReceiverSummaryTable = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
@@ -18,7 +19,7 @@ export const ReceiverSummaryTable = (): JSX.Element | null => {
 
   if (!praiseList) return null;
   return (
-    <div className="p-0 praise-box">
+    <Box className="p-0">
       <ul>
         {praiseList?.map((praise) => (
           <PraiseRow praise={praise} key={praise?._id}>
@@ -26,6 +27,6 @@ export const ReceiverSummaryTable = (): JSX.Element | null => {
           </PraiseRow>
         ))}
       </ul>
-    </div>
+    </Box>
   );
 };

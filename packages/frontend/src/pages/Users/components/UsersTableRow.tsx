@@ -1,6 +1,6 @@
 import { useHistory } from 'react-router-dom';
 import { UserDto, UserRole } from 'api/dist/user/types';
-import { InlineLabel } from '@/components/InlineLabel';
+import { InlineLabel } from '@/components/ui/InlineLabel';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
 interface IUsersTableRow {

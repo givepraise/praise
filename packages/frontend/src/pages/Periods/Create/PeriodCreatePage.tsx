@@ -12,8 +12,10 @@ import { useCreatePeriod } from '@/model/periods';
 import { isApiResponseValidationError, isResponseOk } from '@/model/api';
 import { DayInput } from '@/components/form/DayInput';
 import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
-import { BreadCrumb } from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { BackLink } from '@/navigation/BackLink';
+import { Box } from '@/components/ui/Box';
+import { Page } from '@/components/ui/Page';
 import { SubmitButton } from './components/SubmitButton';
 
 const validate = (
@@ -128,11 +130,11 @@ const PeriodsForm = (): JSX.Element => {
 
 const PeriodsCreatePage = (): JSX.Element => {
   return (
-    <div className="praise-page">
+    <Page>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
       <BackLink to="/periods" />
 
-      <div className="praise-box">
+      <Box>
         <h2 className="mb-2">Create period</h2>
         <div className="mb-2">
           A new period begins where the last one ended, and finishes at
@@ -141,8 +143,8 @@ const PeriodsCreatePage = (): JSX.Element => {
         <React.Suspense fallback={null}>
           <PeriodsForm />
         </React.Suspense>
-      </div>
-    </div>
+      </Box>
+    </Page>
   );
 };
 

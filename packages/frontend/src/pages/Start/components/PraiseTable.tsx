@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { LoaderSpinner } from '@/components/LoaderSpinner';
+import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 import { AllPraiseList } from '@/model/praise';
 import { PraisePageLoader } from '@/components/praise/PraisePageLoader';
 import { Praise } from '@/components/praise/Praise';

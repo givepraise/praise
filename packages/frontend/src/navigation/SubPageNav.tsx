@@ -1,3 +1,4 @@
+import { Box } from '@/components/ui/Box';
 interface SubPageNavProps {
   children: JSX.Element;
 }
@@ -5,9 +6,12 @@ interface SubPageNavProps {
 export const SubPageNav = ({ children }: SubPageNavProps): JSX.Element => {
   return (
     <div>
-      <div className="w-full md:w-[710px] xl:w-[230px] break-words praise-box-defaults">
+      <Box
+        variant="basic"
+        className="w-full md:w-[710px] xl:w-[230px] break-words"
+      >
         {children}
-      </div>
+      </Box>
     </div>
   );
 };

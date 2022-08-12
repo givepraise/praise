@@ -7,7 +7,7 @@ import { useRecoilValue } from 'recoil';
 import { classNames } from '@/utils/index';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { AllPeriods } from '@/model/periods';
-import { InlineLabel } from '@/components/InlineLabel';
+import { InlineLabel } from '@/components/ui/InlineLabel';
 
 export const PeriodsTable = (): JSX.Element => {
   const allPeriods = useRecoilValue(AllPeriods);

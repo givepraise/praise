@@ -14,7 +14,7 @@ import {
   useReplaceQuantifier,
   useLoadSinglePeriodDetails,
 } from '@/model/periods';
-import { Notice } from '@/components/Notice';
+import { Notice } from '@/components/ui/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';

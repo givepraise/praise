@@ -7,12 +7,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import differenceBy from 'lodash/differenceBy';
-import { ScrollableDialog } from '@/components/ScrollableDialog';
-import { IconButton } from '@/components/IconButton';
+import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { SelectUserRadioGroup } from '@/components/user/SelectUserRadioGroup';
-import { Notice } from '@/components/Notice';
+import { Notice } from '@/components/ui/Notice';
 import { AllQuantifierUsers } from '@/model/users';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
   onClose(): void;
@@ -49,9 +49,9 @@ export const ReplaceQuantifierDialog = ({
     <ScrollableDialog open={open} onClose={resetAndClose}>
       <div className="w-full h-full">
         <div className="flex justify-end p-6">
-          <button className="praise-button-round" onClick={resetAndClose}>
+          <Button variant={'round'} onClick={resetAndClose}>
             <FontAwesomeIcon icon={faTimes} size="1x" />
-          </button>
+          </Button>
         </div>
         <div className="px-20 space-y-6">
           <div className="flex justify-center">
@@ -91,17 +91,19 @@ export const ReplaceQuantifierDialog = ({
                 />
               </div>
               <div className="flex justify-center">
-                <IconButton
-                  icon={faArrowRightArrowLeft}
+                <Button
                   disabled={replacementUserId === undefined}
-                  text="Replace"
+                  className="space-x-2"
                   onClick={(): void => {
                     if (!replacementUserId) return;
 
                     onConfirm(replacementUserId);
                     resetAndClose();
                   }}
-                />
+                >
+                  <FontAwesomeIcon icon={faArrowRightArrowLeft} size="1x" />
+                  <span>Replace</span>
+                </Button>
               </div>
             </>
           )}

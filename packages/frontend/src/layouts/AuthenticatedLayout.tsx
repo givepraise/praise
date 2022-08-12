@@ -8,7 +8,7 @@ import { SingleSetting } from '@/model/settings';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
 import { ApiAuthGet } from '@/model/api';
-import { LoadScreen } from '@/components/LoadScreen';
+import { LoadScreen } from '@/components/ui/LoadScreen';
 import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth';
 import { IsHeaderBannerClosed, usePraiseAppVersion } from '@/model/app';
 import { StickyMessage } from '@/components/ui/StickyMessage';
@@ -127,7 +127,7 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
         <div className="sticky top-0 z-10 flex items-center justify-start w-full px-1 py-1 border-b shadow-sm h-14 lg:hidden bg-warm-gray-50 dark:bg-slate-900">
           <button
             type="button"
-            className="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-warm-gray-500 hover:text-warm-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+            className="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-warm-gray-500 hover:text-warm-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-themecolor-3"
             onClick={(): void => setSidebarOpen(true)}
           >
             <span className="sr-only">Open sidebar</span>
@@ -137,7 +137,6 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
               aria-hidden="true"
             />
           </button>
-
           {siteNameSetting && (
             <div className="flex justify-center flex-grow">
               <h1 className="font-lg">{siteNameSetting.value}</h1>
