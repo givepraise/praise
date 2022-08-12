@@ -21,6 +21,7 @@ import {
   selfPraiseWarning,
 } from '../utils/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
+import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
 
 /**
@@ -56,6 +57,8 @@ export const forwardHandler: CommandHandler = async (
     );
     return;
   }
+
+  if ((await assertPraiseAllowedInChannel(interaction)) === false) return;
 
   const praiseGiver = interaction.options.getMember('giver') as GuildMember;
   if (!praiseGiver) {
