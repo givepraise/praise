@@ -10,7 +10,7 @@ import {
   useLoadSinglePeriodDetails,
 } from '@/model/periods';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import { Notice } from '@/components/Notice';
+import { Notice } from '@/components/ui/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 

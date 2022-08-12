@@ -8,7 +8,7 @@ import { SingleSetting } from '@/model/settings';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
 import { ApiAuthGet } from '@/model/api';
-import { LoadScreen } from '@/components/LoadScreen';
+import { LoadScreen } from '@/components/ui/LoadScreen';
 import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth';
 import { usePraiseAppVersion } from '@/model/app';
 

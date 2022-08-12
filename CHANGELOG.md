@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Refactored some of the UI componentsb #537 #482
+
 ## [0.10.0] - 2022-07-01
 
 ### Added

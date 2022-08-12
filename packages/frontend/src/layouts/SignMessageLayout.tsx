@@ -4,7 +4,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { toast } from 'react-hot-toast';
 import { SignMessageButton } from '@/components/auth/SignMessageButton';
-import { LoaderSpinner } from '@/components/LoaderSpinner';
+import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 import { EthAccount } from '@/components/account/EthAccount';
 
 interface Props {

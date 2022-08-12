@@ -5,6 +5,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useFormState } from 'react-final-form';
 import React from 'react';
+import { Button } from '@/components/ui/Button';
 
 export const SubmitButton = (): JSX.Element => {
   const {
@@ -73,13 +74,8 @@ export const SubmitButton = (): JSX.Element => {
   }, [dirtySinceLastSubmit]);
 
   return (
-    <button
-      type="submit"
-      id="submit-button"
-      disabled={disabled}
-      className={disabled ? 'praise-button-disabled' : 'praise-button'}
-    >
+    <Button type="submit" id="submit-button" disabled={disabled}>
       {buttonText}
-    </button>
+    </Button>
   );
 };

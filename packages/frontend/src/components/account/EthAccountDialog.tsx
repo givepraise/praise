@@ -12,6 +12,8 @@ import { useSetRecoilState } from 'recoil';
 import { toast } from 'react-hot-toast';
 import { useRef } from 'react';
 import { ActiveTokenSet } from '@/model/auth';
+import { Button } from '../ui/Button';
+import { Box } from '../ui/Box';
 
 interface EthAccountDialogProps {
   open?: boolean;
@@ -48,11 +50,11 @@ export const EthAccountDialog = ({
       initialFocus={contentRef}
     >
       <div className="flex items-center justify-center min-h-screen bg-black/30">
-        <div className="p-10 praise-box-defaults" ref={contentRef}>
+        <Box className="p-10" variant="basic" ref={contentRef}>
           <div className="flex justify-end">
-            <button className="praise-button-round" onClick={onClose}>
+            <Button variant={'round'} onClick={onClose}>
               <FontAwesomeIcon icon={faTimes} size="1x" />
-            </button>
+            </Button>
           </div>
           <div>
             <div className="flex justify-center mb-8">
@@ -62,24 +64,24 @@ export const EthAccountDialog = ({
               {shortenEthAddress(address)}
             </Dialog.Title>
             <div className="flex justify-center space-x-4">
-              <button
-                className="mt-4 praise-button"
+              <Button
+                className="mt-4"
                 onClick={(): void => void handleCopyAddress()}
               >
                 <FontAwesomeIcon className="mr-2" icon={faCopy} size="1x" />
                 Copy address
-              </button>
-              <button className="mt-4 praise-button" onClick={handleDisconnect}>
+              </Button>
+              <Button className="mt-4" onClick={handleDisconnect}>
                 <FontAwesomeIcon
                   className="mr-2"
                   icon={faArrowRightFromBracket}
                   size="1x"
                 />
                 Disconnect
-              </button>
+              </Button>
             </div>
           </div>
-        </div>
+        </Box>
       </div>
     </Dialog>
   );

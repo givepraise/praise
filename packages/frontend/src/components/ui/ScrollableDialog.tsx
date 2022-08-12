@@ -1,4 +1,5 @@
 import { OutsideClickHandler } from '@/components/OutsideClickHandler';
+import { Box } from './Box';
 
 interface PoolDeleteDialogProps {
   onClose(): void;
@@ -18,9 +19,9 @@ export const ScrollableDialog = ({
       <div className="fixed w-full h-screen">
         <div className="flex items-center justify-center w-full h-full bg-warm-gray-800 bg-opacity-30">
           <OutsideClickHandler onOutsideClick={onClose} active={open}>
-            <div className="z-30 max-w-xl praise-box-defaults">
+            <Box variant="basic" className="z-30 max-w-xl">
               <div className="pb-16">{children}</div>
-            </div>
+            </Box>
           </OutsideClickHandler>
         </div>
       </div>

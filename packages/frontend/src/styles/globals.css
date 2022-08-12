@@ -48,22 +48,6 @@
     [type='checkbox'] {
       @apply text-gray-900 border border-warm-gray-900 focus:border-warm-gray-900 focus:border-2 focus:ring-0;
     }
-
-    .praise-button {
-      @apply px-4 py-2 font-bold text-white rounded-md bg-themecolor-3 hover:bg-themecolor-4;
-    }
-
-    .praise-button-outline {
-      @apply px-4 py-2 font-bold border-2 rounded-md text-themecolor-3 border-themecolor-3 hover:bg-themecolor-4 hover:text-white hover:border-themecolor-4;
-    }
-    
-    .praise-button-disabled {
-      @apply cursor-default praise-button bg-themecolor-3/50 text-white/50 hover:bg-themecolor-3/50;
-    }
-    
-    .praise-button-round {
-      @apply flex items-center justify-center rounded-full hover:bg-warm-gray-300 w-7 h-7 dark:text-white dark:hover:bg-slate-800;
-    }
     
   }
 

@@ -2,7 +2,7 @@ import { PraiseDto } from 'api/dist/praise/types';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
-import { Notice } from '@/components/Notice';
+import { Notice } from '@/components/ui/Notice';
 import { Praise } from '@/components/praise/Praise';
 import { ActiveUserId } from '@/model/auth';
 import {

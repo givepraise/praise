@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { BreadCrumb } from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import {
   PeriodAndReceiverPageParams,
@@ -18,6 +18,8 @@ import {
 import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { getQuantificationReceiverStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
+import { Box } from '@/components/ui/Box';
+import { Page } from '@/components/ui/Page';
 import { QuantifyTable } from './components/QuantifyTable';
 
 const PeriodBreadCrumb = (): JSX.Element | null => {
@@ -80,16 +82,16 @@ const QuantifyPeriodReceiverPage = (): JSX.Element => {
   usePeriodQuantifierPraise(periodId);
 
   return (
-    <div className="praise-page-wide">
+    <Page variant={'wide'}>
       <React.Suspense fallback={null}>
         <PeriodBreadCrumb />
       </React.Suspense>
       <BackLink to={`/periods/${periodId}/quantify`} />
 
       <React.Suspense fallback={null}>
-        <div className="mb-5 praise-box-wide">
+        <Box className="mb-5" variant={'wide'}>
           <PeriodMessage />
-        </div>
+        </Box>
       </React.Suspense>
 
       <React.Suspense fallback={null}>
@@ -99,7 +101,7 @@ const QuantifyPeriodReceiverPage = (): JSX.Element => {
           receiverId={receiverId}
         />
       </React.Suspense>
-    </div>
+    </Page>
   );
 };
 
