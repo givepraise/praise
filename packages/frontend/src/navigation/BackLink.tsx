@@ -6,10 +6,10 @@ interface BackLinkProps {
 
 export const BackLink = ({ to }: BackLinkProps): JSX.Element => {
   return (
-    <div className="mb-2">
+    <div className="hidden mb-2 md:block">
       <Link
         to={to}
-        className="mb-2 text-sm cursor-pointer no-underline hover:underline"
+        className="mb-2 text-sm no-underline cursor-pointer hover:underline"
       >
         ← Back
       </Link>

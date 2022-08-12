@@ -21,7 +21,7 @@ export const Box = ({
   children,
 }: BoxProps): JSX.Element => {
   const baseClass =
-    'border shadow-md rounded-xl bg-warm-gray-50 dark:bg-slate-600';
+    'border shadow-none md:shadow-md rounded-none md:rounded-xl bg-warm-gray-50 dark:bg-slate-600';
   const defaultClass = `w-full md:w-[710px] p-5 ${baseClass}`;
   const wideClass = `w-full md:w-[710px] xl:w-[960px] p-5 ${baseClass}`;
 
