@@ -50,7 +50,7 @@ export const EthAccountDialog = ({
       initialFocus={contentRef}
     >
       <div className="flex items-center justify-center min-h-screen bg-black/30">
-        <Box className="p-10" variant={'regular'} ref={contentRef}>
+        <Box className="p-10" variant="basic" ref={contentRef}>
           <div className="flex justify-end">
             <Button variant={'round'} onClick={onClose}>
               <FontAwesomeIcon icon={faTimes} size="1x" />

@@ -7,7 +7,7 @@ export const SubPageNav = ({ children }: SubPageNavProps): JSX.Element => {
   return (
     <div>
       <Box
-        variant={'regular'}
+        variant="basic"
         className="w-full md:w-[710px] xl:w-[230px] break-words"
       >
         {children}

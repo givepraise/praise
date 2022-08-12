@@ -1,6 +1,6 @@
 import { classNames } from '../../utils/';
 
-type BoxVariant = '' | 'regular' | 'wide';
+type BoxVariant = 'basic' | 'wide';
 
 interface BoxProps {
   variant?: BoxVariant;
@@ -27,11 +27,8 @@ export const Box = ({
 
   let variantClass = defaultClass;
   switch (variant) {
-    case '':
+    case 'basic':
       variantClass = baseClass;
-      break;
-    case 'regular':
-      variantClass = defaultClass;
       break;
     case 'wide':
       variantClass = wideClass;
