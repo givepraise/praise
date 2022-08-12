@@ -11,6 +11,7 @@ import { ApiAuthGet } from '@/model/api';
 import { LoadScreen } from '@/components/ui/LoadScreen';
 import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth';
 import { usePraiseAppVersion } from '@/model/app';
+import { HeaderBanner } from '@/components/ui/HeaderBanner';
 
 export const AuthenticatedLayout = (): JSX.Element | null => {
   useRecoilValue(ApiAuthGet({ url: '/settings/all' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.
@@ -85,7 +86,7 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
       </Transition.Root>
 
       {isAdmin && appVersion.newVersionAvailable && (
-        <div className="sticky top-0 p-3 text-center bg-opacity-50 bg-warm-gray-100 lg:pl-64">
+        <HeaderBanner bannerKey={`NEW VERSION ${appVersion.latest}`}>
           <p>
             🎉 There is a new version of the Praise out! You are running{' '}
             {appVersion.current}, latest version is {appVersion.latest}.{' '}
@@ -98,7 +99,7 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
               Release notes
             </a>
           </p>
-        </div>
+        </HeaderBanner>
       )}
 
       <div className="fixed bottom-0 right-0 invisible p-1 text-xs text-right lg:visible">
