@@ -1,27 +1,29 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { useRecoilState } from 'recoil';
+import { IsHeaderBannerClosed } from '@/model/app';
 
-interface StickyMessageProps {
-  onClose: () => void;
+interface HeaderBannerProps {
+  bannerKey: string;
   children: JSX.Element | JSX.Element[] | string;
 }
 
-export const StickyMessage = ({
-  onClose,
+export const HeaderBanner = ({
+  bannerKey,
   children,
-}: StickyMessageProps): JSX.Element => {
-  const [isVisible, setIsVisible] = useState<boolean>(true);
+}: HeaderBannerProps): JSX.Element => {
+  const [isBannerClosed, setIsBannerClosed] = useRecoilState(
+    IsHeaderBannerClosed(bannerKey)
+  );
 
   const handleClose = (): void => {
-    onClose();
-    setIsVisible(false);
+    setIsBannerClosed(true);
   };
 
   return (
     <>
-      {isVisible && (
-        <div className="flex items-center justify-center sticky top-0 p-3 text-center bg-opacity-50 bg-warm-gray-100 lg:pl-64">
+      {!isBannerClosed && (
+        <div className="sticky top-0 flex items-center justify-center p-3 text-center bg-opacity-50 bg-warm-gray-100 lg:pl-64">
           <div className="ml-auto">{children}</div>
           <div className="ml-auto">
             <button className="praise-button-round" onClick={handleClose}>

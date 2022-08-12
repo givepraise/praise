@@ -3,16 +3,15 @@ import React, { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { faX, faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { SingleSetting } from '@/model/settings';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
 import { ApiAuthGet } from '@/model/api';
 import { LoadScreen } from '@/components/ui/LoadScreen';
 import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth';
-import { IsHeaderBannerClosed, usePraiseAppVersion } from '@/model/app';
-import { StickyMessage } from '@/components/ui/StickyMessage';
-import { stickyMessageKeys } from '@/utils/app';
+import { usePraiseAppVersion } from '@/model/app';
+import { HeaderBanner } from '@/components/ui/HeaderBanner';
 
 export const AuthenticatedLayout = (): JSX.Element | null => {
   useRecoilValue(ApiAuthGet({ url: '/settings/all' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.
@@ -21,14 +20,6 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
   const activeUserRoles = useRecoilValue(ActiveUserRoles);
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const appVersion = usePraiseAppVersion();
-
-  const [isBannerClosed, setIsBannerClosed] = useRecoilState(
-    IsHeaderBannerClosed(stickyMessageKeys.app_version)
-  );
-
-  const handleStickyMessageClose = (): void => {
-    setIsBannerClosed(true);
-  };
 
   return (
     <div className="h-full cursor-default">
@@ -94,8 +85,8 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
         </Dialog>
       </Transition.Root>
 
-      {isAdmin && appVersion.newVersionAvailable && !isBannerClosed && (
-        <StickyMessage onClose={handleStickyMessageClose}>
+      {isAdmin && appVersion.newVersionAvailable && (
+        <HeaderBanner bannerKey={`NEW VERSION ${appVersion.latest}`}>
           <p>
             🎉 There is a new version of the Praise out! You are running{' '}
             {appVersion.current}, latest version is {appVersion.latest}.{' '}
@@ -108,7 +99,7 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
               Release notes
             </a>
           </p>
-        </StickyMessage>
+        </HeaderBanner>
       )}
 
       <div className="fixed bottom-0 right-0 invisible p-1 text-xs text-right lg:visible">

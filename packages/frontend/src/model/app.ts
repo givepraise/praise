@@ -1,7 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { atomFamily, selector, useRecoilValue } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
-import { stickyMessageKeys } from '@/utils/app';
 import { isResponseOk } from './api';
 import { ExternalGet } from './axios';
 
@@ -42,10 +41,6 @@ export const usePraiseAppVersion = (): PraiseAppVersion => {
   if (isResponseOk(response)) {
     appVersion.latest = response.data.name.substring(1);
     appVersion.newVersionAvailable = appVersion.latest !== appVersion.current;
-
-    if (appVersion.newVersionAvailable) {
-      localStorage.removeItem(stickyMessageKeys.app_version);
-    }
   }
 
   return appVersion;
