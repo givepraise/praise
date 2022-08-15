@@ -70,19 +70,18 @@ export const Nav = (): JSX.Element => {
             <NavItem icon={faQuestionCircle} description="FAQ" to="/faq" />
           </ul>
         </div>
+
         <div className="flex h-12 m-4 mt-auto">
           <div
-            className="flex items-center justify-center gap-4 border-2 border-r border-transparent rounded-l-lg cursor-pointer bg-themecolor-3/20 dark:bg-transparent dark:text-white text-themecolor-3 grow dark:border-slate-700"
+            className="items-center justify-center hidden border-2 rounded-lg cursor-pointer dark:flex dark:text-white text-themecolor-3 grow dark:border-slate-700"
             onClick={(): void => handleTheme('Light')}
           >
             <FontAwesomeIcon icon={faSun} size="lg" />
-            Light
           </div>
           <div
-            className="flex items-center justify-center gap-4 border-2 border-l rounded-r-lg cursor-pointer dark:bg-slate-700 grow border-themecolor-3/20 dark:border-slate-700"
+            className="flex items-center justify-center border-2 rounded-lg cursor-pointer dark:hidden dark:text-white text-themecolor-3 grow dark:border-slate-700"
             onClick={(): void => handleTheme('Dark')}
           >
-            Dark
             <FontAwesomeIcon icon={faMoon} size="lg" />
           </div>
         </div>
