@@ -1,4 +1,5 @@
-import { Document, Types } from 'mongoose';
+import { Document, Model, Types } from 'mongoose';
+import { PaginationModel, PaginationOptions } from 'mongoose-paginate-ts';
 import {
   Quantifier,
   QuantificationDocument,
@@ -27,6 +28,14 @@ interface Period {
 export interface PeriodDocument extends Period, Document {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   $__: any;
+}
+
+export interface PaginatedPeriodModel extends Model<PeriodDocument> {
+  getLatest: () => Promise<PeriodDocument>;
+  paginate(
+    options?: PaginationOptions | undefined,
+    onError?: Function | undefined
+  ): Promise<PaginationModel<PeriodDocument> | undefined>;
 }
 
 export interface PeriodDetailsReceiver {
