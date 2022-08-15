@@ -2,21 +2,15 @@ import { faCalendarAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
 import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { AdminOnly } from '@/components/auth/AdminOnly';
-import { AllPeriods } from '@/model/periods';
 import { Page } from '@/components/ui/Page';
 import { Button } from '@/components/ui/Button';
 import { Box } from '@/components/ui/Box';
 import { PeriodsTable } from './components/Table';
 
 const PeriodsPage = (): JSX.Element | null => {
-  const allPeriods = useRecoilValue(AllPeriods);
-
-  if (!allPeriods) return null;
-
   return (
     <Page>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />

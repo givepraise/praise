@@ -1,9 +1,13 @@
 import { Schema, model } from 'mongoose';
-import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-import { PeriodDocument, PeriodStatusType } from '@/period/types';
+import { mongoosePagination } from 'mongoose-paginate-ts';
+import {
+  PaginatedPeriodModel,
+  PeriodDocument,
+  PeriodStatusType,
+} from '@/period/types';
 import { endDateValidators } from './validators';
 
-const periodSchema = new Schema<PeriodDocument>(
+const PeriodSchema = new Schema<PeriodDocument>(
   {
     name: { type: String, required: true, minlength: 3, maxlength: 64 },
     status: {
@@ -22,11 +26,13 @@ const periodSchema = new Schema<PeriodDocument>(
   }
 );
 
-periodSchema.plugin(mongoosePagination);
+PeriodSchema.statics.getLatest = function (): PeriodDocument {
+  return this.findOne({}).sort({ endDate: -1 });
+};
 
-const PeriodModel = model<PeriodDocument, Pagination<PeriodDocument>>(
+PeriodSchema.plugin(mongoosePagination);
+
+export const PeriodModel = model<PeriodDocument, PaginatedPeriodModel>(
   'Period',
-  periodSchema
+  PeriodSchema
 );
-
-export { PeriodModel };
