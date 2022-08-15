@@ -456,3 +456,27 @@ export const exportPraise = async (
 
   res.status(200).contentType('text/csv').attachment('data.csv').send(csv);
 };
+
+/**
+ * Generate a CSV of praise distribution
+ *
+ * @param {TypedRequestBody<QueryInput>} req
+ * @param {Response} res
+ * @returns {Promise<void>}
+ */
+export const exportSummary = async (
+  req: TypedRequestBody<QueryInput>,
+  res: Response
+): Promise<void> => {
+  const period = await PeriodModel.findOne({ _id: req.params.periodId });
+  if (!period) throw new NotFoundError('Period');
+
+  /**
+   * TODO: get summary score for each receiver
+   */
+
+  const json2csv = new Parser({ fields: [] });
+  const csv = json2csv.parse([]);
+
+  res.status(200).contentType('text/csv').attachment('data.csv').send(csv);
+};

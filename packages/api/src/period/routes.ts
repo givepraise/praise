@@ -16,6 +16,7 @@ adminPeriodRouter.postAsync('/create', core.create);
 adminPeriodRouter.patchAsync('/:periodId/update', core.update);
 adminPeriodRouter.patchAsync('/:periodId/close', core.close);
 adminPeriodRouter.getAsync('/:periodId/export', core.exportPraise);
+adminPeriodRouter.getAsync('/:periodId/exportSummary', core.exportSummary);
 adminPeriodRouter.getAsync(
   '/:periodId/verifyQuantifierPoolSize',
   assignment.verifyQuantifierPoolSize

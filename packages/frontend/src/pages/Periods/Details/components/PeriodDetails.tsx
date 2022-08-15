@@ -41,6 +41,7 @@ export const PeriodDetails = (): JSX.Element | null => {
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
+
   const history = useHistory();
 
   const assignDialogRef = React.useRef(null);
@@ -102,6 +103,34 @@ export const PeriodDetails = (): JSX.Element | null => {
     );
   };
 
+  const handleDistribution = (): void => {
+    console.log('distributing...');
+
+    const toastId = 'distributeToast';
+    void toast.promise(
+      exportPraise(period),
+      {
+        loading: 'Distributing …',
+        success: (distributionData: Blob | undefined) => {
+          if (distributionData) {
+            saveLocalFile(distributionData, 'period-distribution.csv');
+            setTimeout(() => toast.remove(toastId), 2000);
+            return 'Distribution done';
+          }
+          return 'Empty distribution returned';
+        },
+        error: 'Distribution failed',
+      },
+      {
+        id: toastId,
+        position: 'top-center',
+        loading: {
+          duration: Infinity,
+        },
+      }
+    );
+  };
+
   if (!period) return <div>Period not found.</div>;
 
   return (
@@ -139,14 +168,25 @@ export const PeriodDetails = (): JSX.Element | null => {
                   </Button>
                 ) : null}
                 {period.status === 'QUANTIFY' ? (
-                  <Button onClick={handleExport}>
-                    <FontAwesomeIcon
-                      icon={faDownload}
-                      size="1x"
-                      className="mr-2"
-                    />
-                    Export
-                  </Button>
+                  <>
+                    <Button onClick={handleExport}>
+                      <FontAwesomeIcon
+                        icon={faDownload}
+                        size="1x"
+                        className="mr-2"
+                      />
+                      Export
+                    </Button>
+
+                    <Button onClick={handleDistribution}>
+                      <FontAwesomeIcon
+                        icon={faDownload}
+                        size="1x"
+                        className="mr-2"
+                      />
+                      Distribute
+                    </Button>
+                  </>
                 ) : null}
                 <Button
                   variant={'outline'}
@@ -161,6 +201,7 @@ export const PeriodDetails = (): JSX.Element | null => {
                 </Button>
               </div>
             ) : null}
+
             {period.status === 'CLOSED' ? (
               <Button onClick={handleExport}>
                 <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
