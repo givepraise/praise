@@ -13,10 +13,11 @@ const settings = [
   },
   {
     key: 'PRAISE_ALLOWED_CHANNEL_IDS',
-    value: '0, 0',
+    value: '',
     type: 'StringList',
     label: 'Channels where praise is allowed',
-    description: 'List of channel IDs in which discord users can use praise',
+    description:
+      'Comma separated list of channel IDs in which praising is allowed',
     group: SettingGroup.DISCORD,
   },
 ];
