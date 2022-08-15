@@ -33,7 +33,11 @@ const FormFields = (
     <div className="mb-2 space-y-4">
       {settings.map((setting) => {
         let field;
-        if (setting.type === 'String' || setting.type === 'IntegerList')
+        if (
+          setting.type === 'String' ||
+          setting.type === 'IntegerList' ||
+          setting.type === 'StringList'
+        )
           field = StringInput(setting.key, apiResponse);
         else if (setting.type === 'Float' || setting.type === 'Integer')
           field = NumberInput(setting.key, apiResponse);

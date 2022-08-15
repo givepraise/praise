@@ -9,7 +9,7 @@ export enum SettingGroup {
 interface Setting {
   key: string;
   value: string;
-  valueRealized: string | boolean | number | number[];
+  valueRealized: string | boolean | number | number[] | string[];
   type: string;
   label: string;
   description?: string;
@@ -32,7 +32,7 @@ export interface SettingDto {
   _id: string;
   key: string;
   value: string;
-  valueRealized: string | boolean | number | number[] | FAQItem[];
+  valueRealized: string | boolean | number | number[] | string[] | FAQItem[];
   type: string;
   label: string;
   description?: string;
