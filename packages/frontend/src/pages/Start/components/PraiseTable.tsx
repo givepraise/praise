@@ -11,6 +11,9 @@ export const PRAISE_LIST_KEY = 'ALL_PRAISE';
 export const PraiseTable = (): JSX.Element => {
   const allPraise = useRecoilValue(AllPraiseList(PRAISE_LIST_KEY));
 
+  if (!Array.isArray(allPraise) || allPraise.length === 0)
+    return <div className="p-5">No praise have been dished yet.</div>;
+
   return (
     <>
       <ul>
