@@ -3,9 +3,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PraiseDto } from 'api/dist/praise/types';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+
+import { Button } from '@/components/ui/Button';
+import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
 import { PeriodPageParams } from '@/model/periods';
-import { ScrollableDialog } from '@/components/ScrollableDialog';
 import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+
 import { PraiseAutosuggest } from './PraiseAutosuggest';
 
 interface Props {
@@ -36,9 +39,9 @@ export const DuplicateSearchDialog = ({
     <ScrollableDialog open={open} onClose={onClose}>
       <div className="w-full h-full">
         <div className="flex justify-end p-6">
-          <button className="praise-button-round" onClick={onClose}>
+          <Button variant={'round'} onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} size="1x" />
-          </button>
+          </Button>
         </div>
         <div className="px-20 space-y-6">
           <div className="flex justify-center">

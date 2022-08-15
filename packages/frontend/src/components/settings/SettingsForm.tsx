@@ -9,7 +9,7 @@ import { StringInput } from '@/components/form/StringInput';
 import { TextareaInput } from '@/components/form/TextareaInput';
 import { BooleanInput } from '@/components/form/BooleanInput';
 import { ImageFileInput } from '@/components/form/ImageFileInput';
-import { Notice } from '@/components/Notice';
+import { Notice } from '@/components/ui/Notice';
 import { SubmitButton } from '../form/SubmitButton';
 
 interface SettingsFormProps {

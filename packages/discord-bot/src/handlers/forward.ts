@@ -1,5 +1,5 @@
 import { PraiseModel } from 'api/dist/praise/entities';
-import { Message, GuildMember, Util } from 'discord.js';
+import { GuildMember, Util } from 'discord.js';
 import { UserModel } from 'api/dist/user/entities';
 import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
@@ -172,39 +172,37 @@ export const forwardHandler: CommandHandler = async (
     }
   }
 
-  const msg = (
-    Receivers.length !== 0
-      ? await interaction.editReply(
-          await forwardSuccess(
-            praiseGiver.user,
-            praised.map((id) => `<@!${id}>`),
-            reason
-          )
+  Receivers.length !== 0
+    ? await interaction.editReply(
+        await forwardSuccess(
+          praiseGiver.user,
+          praised.map((id) => `<@!${id}>`),
+          reason
         )
-      : warnSelfPraise
-      ? await interaction.editReply(await selfPraiseWarning())
-      : await interaction.editReply(await invalidReceiverError())
-  ) as Message;
-
-  if (receiverData.undefinedReceivers) {
-    await msg.reply(
-      await undefinedReceiverWarning(
-        receiverData.undefinedReceivers.join(', '),
-        praiseGiver.user
       )
-    );
-  }
-  if (receiverData.roleMentions) {
-    await msg.reply(
-      await roleMentionWarning(
-        receiverData.roleMentions.join(', '),
-        praiseGiver.user
-      )
-    );
-  }
-  if (Receivers.length !== 0 && warnSelfPraise) {
-    await msg.reply(await selfPraiseWarning());
-  }
+    : warnSelfPraise
+    ? await interaction.editReply(await selfPraiseWarning())
+    : await interaction.editReply(await invalidReceiverError());
 
+  const warningMsg =
+    (receiverData.undefinedReceivers
+      ? (await undefinedReceiverWarning(
+          receiverData.undefinedReceivers.join(', '),
+          praiseGiver.user
+        )) + '\n'
+      : '') +
+    (receiverData.roleMentions
+      ? (await roleMentionWarning(
+          receiverData.roleMentions.join(', '),
+          praiseGiver.user
+        )) + '\n'
+      : '') +
+    (Receivers.length !== 0 && warnSelfPraise
+      ? (await selfPraiseWarning()) + '\n'
+      : '');
+
+  if (warningMsg && warningMsg.length !== 0) {
+    await interaction.followUp({ content: warningMsg, ephemeral: true });
+  }
   return;
 };

@@ -6,11 +6,13 @@ import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { AxiosError, AxiosResponse } from 'axios';
 import { AllSettings, useSetSetting } from '@/model/settings';
-import { BreadCrumb } from '@/components/BreadCrumb';
+import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { SubPageNav } from '@/navigation/SubPageNav';
 import { NavItem } from '@/navigation/NavItem';
 import { SettingsForm } from '@/components/settings/SettingsForm';
 import { isResponseOk } from '@/model/api';
+import { Box } from '@/components/ui/Box';
+import { Page } from '@/components/ui/Page';
 
 const SettingsPage = (): JSX.Element | null => {
   const settings = useRecoilValue(AllSettings);
@@ -41,7 +43,7 @@ const SettingsPage = (): JSX.Element | null => {
   };
 
   return (
-    <div className="praise-page-wide">
+    <Page variant={'wide'}>
       <BreadCrumb name="Settings" icon={faCogs} />
 
       <div className="flex flex-col space-y-5 xl:space-x-5 xl:flex-row xl:space-y-0">
@@ -55,7 +57,7 @@ const SettingsPage = (): JSX.Element | null => {
           </SubPageNav>
         </div>
 
-        <div className="praise-box">
+        <Box>
           <Switch>
             <Route path={`${path}/application`}>
               <React.Suspense fallback={null}>
@@ -85,9 +87,9 @@ const SettingsPage = (): JSX.Element | null => {
               <Redirect to={`${url}/application`} />
             </Route>
           </Switch>
-        </div>
+        </Box>
       </div>
-    </div>
+    </Page>
   );
 };
 

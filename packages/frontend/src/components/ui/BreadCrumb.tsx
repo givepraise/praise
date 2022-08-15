@@ -7,7 +7,7 @@ interface BreadCrumbProps {
 }
 export const BreadCrumb = ({ name, icon }: BreadCrumbProps): JSX.Element => {
   return (
-    <div className="inline-block px-4 py-2 mb-4 text-xs rounded-full bg-warm-gray-50 dark:bg-slate-600">
+    <div className="inline-block px-4 py-2 mb-4 text-xs md:px-0">
       <h3>
         <FontAwesomeIcon
           icon={icon}

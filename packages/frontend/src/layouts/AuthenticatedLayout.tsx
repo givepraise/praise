@@ -8,9 +8,10 @@ import { SingleSetting } from '@/model/settings';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
 import { ApiAuthGet } from '@/model/api';
-import { LoadScreen } from '@/components/LoadScreen';
+import { LoadScreen } from '@/components/ui/LoadScreen';
 import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth';
 import { usePraiseAppVersion } from '@/model/app';
+import { HeaderBanner } from '@/components/ui/HeaderBanner';
 
 export const AuthenticatedLayout = (): JSX.Element | null => {
   useRecoilValue(ApiAuthGet({ url: '/settings/all' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.
@@ -85,7 +86,7 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
       </Transition.Root>
 
       {isAdmin && appVersion.newVersionAvailable && (
-        <div className="sticky top-0 p-3 text-center bg-opacity-50 bg-warm-gray-100 lg:pl-64">
+        <HeaderBanner bannerKey={`NEW VERSION ${appVersion.latest}`}>
           <p>
             🎉 There is a new version of the Praise out! You are running{' '}
             {appVersion.current}, latest version is {appVersion.latest}.{' '}
@@ -98,7 +99,7 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
               Release notes
             </a>
           </p>
-        </div>
+        </HeaderBanner>
       )}
 
       <div className="fixed bottom-0 right-0 invisible p-1 text-xs text-right lg:visible">
@@ -114,10 +115,10 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
       </div>
 
       <div className="flex flex-col flex-1 lg:pl-64">
-        <div className="sticky top-0 z-10 flex items-center justify-start w-full px-1 py-1 border-b shadow-sm h-14 lg:hidden bg-warm-gray-50 dark:bg-slate-900">
+        <div className="sticky top-0 z-10 flex justify-between w-full px-1 py-1 border-b shadow-sm h-14 lg:hidden bg-warm-gray-50 dark:bg-slate-900">
           <button
             type="button"
-            className="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-warm-gray-500 hover:text-warm-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+            className="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-warm-gray-500 hover:text-warm-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-themecolor-3"
             onClick={(): void => setSidebarOpen(true)}
           >
             <span className="sr-only">Open sidebar</span>
@@ -127,12 +128,12 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
               aria-hidden="true"
             />
           </button>
-
           {siteNameSetting && (
-            <div className="flex justify-center flex-grow">
+            <div className="self-center">
               <h1 className="font-lg">{siteNameSetting.value}</h1>
             </div>
           )}
+          <div></div>
         </div>
         <main className="flex justify-center w-full ">
           <React.Suspense fallback={<LoadScreen />}>

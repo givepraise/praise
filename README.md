@@ -6,11 +6,11 @@
 
 ### 🔗 Full documentation available at [givepraise.xyz](https://givepraise.xyz)
 
-As decentralized organizations grow it becomes more difficult to involve the whole community in determining what contributions to value. Praise invites communities to build a culture of giving and gratitude, involving contributors at every step of the process.
+As decentralized organizations grow it is challenging to involve the whole community in determining what contributions to value. Praise invites communities to build a culture of giving and gratitude, reward contributions to the community and involve the community every step of the way.
 
-Praise allows communities to acknowledge the full spectrum of value created - ranging from small to large contributions over a number of platforms. Even contributions made outside of any tech platform can be praised.
+By using Praise, communities acknowledge the full spectrum of value created - ranging from small to large contributions. Even contributions made outside of any platform can be praised. Praise allows for bottom up value systems to emerge by listening to what the community values.
 
-The praise process has been tried and tested over a number of months in communities such as the TEC - the Token Engineering Commons, Commons Stack and Giveth. The tools developed along the way have now been turned into the open source project Praise.
+Praise has been tried and tested in communities such as the Token Engineering Commons, Commons Stack and Giveth.
 
 Praise is similar to a team allocation in other token economies, but done via a unique distributed signal aggregation approach intended to achieve many goals:
 
@@ -48,9 +48,9 @@ yarn
 
 ### 3. Create Discord Bot
 
-Create and setup the Discord bot. Be sure to take not of ENV variables during setup as these will be needed during the next step.
+Create and setup the Discord bot. Be sure to take not of ENV variables during setup as these will be needed during the next step. You need to have administrative access to a Discord server in order to create a bot. Creating a server is free, we recommend setting up a personal server to use for testing purposes. 
 
-[Create the Praise Discord bot](https://givepraise.xyz/docs/setup/create-discord-bot)
+[Create the Praise Discord bot](https://givepraise.xyz/docs/server-setup/create-discord-bot)
 
 ### 4. Configure environment
 
@@ -59,6 +59,8 @@ Run the Praise setup script to configure the runtime environment:
 ```
 sh setup.sh
 ```
+
+- Choose `development` on the first question.
 
 ### 5. Start MongoDB
 

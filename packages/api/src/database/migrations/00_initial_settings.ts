@@ -86,7 +86,7 @@ const settings = [
   {
     key: 'PRAISE_TO_ROLE_WARNING',
     value:
-      "**⚠️  Roles as Praise receivers**\nCouldn't praise roles - {@receivers}.\n {@user}, use the `/group-praise` for distribution of praise to all the members that have certain discord roles.",
+      "**⚠️  Roles as Praise receivers**\nCouldn't praise roles - {@receivers}.\n Praise does not support group/role based praising.",
     type: 'Textarea',
   },
   {
