@@ -1,11 +1,14 @@
 import { quantificationListTransformer } from '@/praise/transformers';
 import { Quantification, QuantificationDto } from '@/praise/types';
+import { UserModel } from '@/user/entities';
 import { userAccountTransformer } from '@/useraccount/transformers';
 import {
   PeriodDetailsReceiver,
   PeriodDetailsReceiverDto,
   PeriodDocument,
   PeriodDetailsDto,
+  PeriodReceiverDto,
+  PeriodReceiver,
 } from './types';
 
 /**
@@ -87,6 +90,54 @@ export const periodDetailsReceiverListTransformer = async (
       periodDetailsReceiverDto.push(await periodDetailsReceiverToDto(pdr));
     }
     return periodDetailsReceiverDto;
+  }
+  return [];
+};
+
+/**
+ * Serialize relevant details about a Praise receiver in a period
+ *
+ * @param {PeriodDetailsReceiver} periodReceiver
+ * @returns {Promise<PeriodDetailsReceiverDto>}
+ */
+const periodReceiverToDto = async (
+  periodReceiver: PeriodDetailsReceiver
+): Promise<PeriodReceiverDto> => {
+  const { _id, praiseCount, quantifications, scoreRealized, userAccounts } =
+    periodReceiver;
+
+  const receiver = await UserModel.findById(userAccounts[0].user);
+
+  return {
+    _id: _id.toString(),
+    praiseCount,
+    quantifications: await listOfQuantificationListsTransformer(
+      quantifications
+    ),
+    ethereumAddress: receiver?.ethereumAddress,
+    scoreRealized,
+    userAccount:
+      Array.isArray(userAccounts) && userAccounts.length > 0
+        ? userAccountTransformer(userAccounts[0])
+        : undefined,
+  };
+};
+
+/**
+ * Serialize relevant details about a list of Praise receivers in a period (with ETH address)
+ *
+ * @param {(PeriodReceiver[] | undefined)} periodReceiverList
+ * @returns {Promise<PeriodReceiverDto[]>}
+ */
+export const periodReceiverListTransformer = async (
+  periodReceiverList: PeriodDetailsReceiver[] | undefined
+): Promise<PeriodReceiverDto[]> => {
+  if (periodReceiverList && Array.isArray(periodReceiverList)) {
+    const periodReceiverDto: PeriodReceiverDto[] = [];
+    for (const pdr of periodReceiverList) {
+      periodReceiverDto.push(await periodReceiverToDto(pdr));
+    }
+    return periodReceiverDto;
   }
   return [];
 };

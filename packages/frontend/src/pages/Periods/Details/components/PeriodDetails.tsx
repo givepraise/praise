@@ -19,6 +19,7 @@ import {
   useAssignQuantifiers,
   useClosePeriod,
   useExportPraise,
+  useExportSummaryPraise,
   useLoadSinglePeriodDetails,
 } from '@/model/periods';
 import { AllQuantifierUsers } from '@/model/users';
@@ -41,6 +42,7 @@ export const PeriodDetails = (): JSX.Element | null => {
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
+  const { exportSummaryPraise } = useExportSummaryPraise();
 
   const history = useHistory();
 
@@ -108,7 +110,7 @@ export const PeriodDetails = (): JSX.Element | null => {
 
     const toastId = 'distributeToast';
     void toast.promise(
-      exportPraise(period),
+      exportSummaryPraise(period),
       {
         loading: 'Distributing …',
         success: (distributionData: Blob | undefined) => {

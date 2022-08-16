@@ -9,6 +9,7 @@ import { isQuantificationCompleted } from '@/praise/utils/core';
 import { PeriodModel } from '../entities';
 import {
   periodDetailsReceiverListTransformer,
+  periodReceiverListTransformer,
   periodTransformer,
 } from '../transformers';
 import {
@@ -19,6 +20,8 @@ import {
   PeriodDetailsReceiver,
   PeriodDateRange,
   PeriodStatusType,
+  PeriodReceiver,
+  PeriodReceiverDto,
 } from '../types';
 
 /**
@@ -49,7 +52,7 @@ export const getPreviousPeriodEndDate = async (
  * @param {PeriodDetailsReceiver[]} receivers
  * @returns {Promise<PeriodDetailsReceiver[]>}
  */
-const receiversWithScores = async (
+export const receiversWithScores = async (
   receivers: PeriodDetailsReceiver[]
 ): Promise<PeriodDetailsReceiver[]> => {
   const receiversWithQuantificationScores = await Promise.all(
@@ -178,6 +181,52 @@ export const findPeriodDetailsDto = async (
     settings: periodsettingListTransformer(periodsettings),
   };
   return response;
+};
+
+export const findPeriodReceivers = async (
+  id: string
+): Promise<PeriodReceiverDto[]> => {
+  const period = await PeriodModel.findById(id);
+  if (!period) throw new NotFoundError('Period');
+
+  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+
+  const receivers = await PraiseModel.aggregate([
+    {
+      $match: {
+        createdAt: {
+          $gt: previousPeriodEndDate,
+          $lte: period.endDate,
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: 'useraccounts',
+        localField: 'receiver',
+        foreignField: '_id',
+        as: 'userAccounts',
+      },
+    },
+    {
+      $group: {
+        _id: '$receiver',
+        praiseCount: { $count: {} },
+        quantifications: {
+          $push: '$quantifications',
+        },
+        userAccounts: { $first: '$userAccounts' },
+      },
+    },
+    {
+      $sort: {
+        _id: 1,
+      },
+    },
+  ]);
+
+  const receiversWithScore = await receiversWithScores(receivers);
+  return await periodReceiverListTransformer(receiversWithScore);
 };
 
 /**

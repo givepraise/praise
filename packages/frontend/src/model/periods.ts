@@ -28,6 +28,7 @@ import { useApiAuthClient } from '@/utils/api';
 import { ApiAuthGet, isResponseOk } from './api';
 import { ActiveUserId } from './auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfPeriod = (object: any): object is PeriodDetailsDto => {
   return '_id' in object;
@@ -452,6 +453,67 @@ export const useExportPraise = (): useExportPraiseReturn => {
   };
 
   return { exportPraise };
+};
+
+type useExportSummaryPraiseReturn = {
+  exportSummaryPraise: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
+};
+
+/**
+ * Returns function that exports all praise in a period as csv data.
+ */
+export const useExportSummaryPraise = (): useExportSummaryPraiseReturn => {
+  const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
+  const apiAuthClient = useApiAuthClient();
+
+  const exportSummaryPraise = async (
+    period: PeriodDetailsDto
+  ): Promise<Blob | undefined> => {
+    if (!period || !allPeriods) return undefined;
+    const response = await apiAuthClient.get(
+      `/admin/periods/${period._id}/exportSummary`
+    );
+
+    // If OK response, add returned period object to local state
+    if (isResponseOk(response)) {
+      const context = {
+        totalPraiseScore: 2000,
+        csWalletAddress: 'Test ETH address',
+        csSupportPercentage: 2,
+        budget: 1000,
+        token: 'TEC',
+      };
+
+      const map = {
+        item: {
+          address: 'ethereumAddress',
+          amount: 'scoreRealized',
+          token: 'context.token',
+        },
+        operate: [
+          {
+            run: function (val, context) {
+              return (val / context.totalPraiseScore) * context.budget;
+            },
+            on: 'amount',
+          },
+        ],
+        each: function (item, index, collection, context) {
+          item.token = context.token;
+          return item;
+        },
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const transform = require('node-json-transform').transform;
+      const result = transform(response.data, map, context);
+      console.log('TRANSFORM RESULT:', result);
+
+      return response.data as Blob;
+    }
+  };
+
+  return { exportSummaryPraise };
 };
 
 /**

@@ -32,12 +32,15 @@ import {
   PeriodQuantifierPraiseInput,
   PeriodStatusType,
   PeriodReceiverPraiseInput,
+  PeriodReceiverDto,
 } from '../types';
 import {
   findPeriodDetailsDto,
   getPeriodDateRangeQuery,
   getPreviousPeriodEndDate,
   isPeriodLatest,
+  receiversWithScores,
+  findPeriodReceivers,
 } from '../utils/core';
 import { PeriodModel } from '../entities';
 import { periodTransformer } from '../transformers';
@@ -458,7 +461,7 @@ export const exportPraise = async (
 };
 
 /**
- * Generate a CSV of praise distribution
+ * Return period receivers
  *
  * @param {TypedRequestBody<QueryInput>} req
  * @param {Response} res
@@ -468,15 +471,7 @@ export const exportSummary = async (
   req: TypedRequestBody<QueryInput>,
   res: Response
 ): Promise<void> => {
-  const period = await PeriodModel.findOne({ _id: req.params.periodId });
-  if (!period) throw new NotFoundError('Period');
-
-  /**
-   * TODO: get summary score for each receiver
-   */
-
-  const json2csv = new Parser({ fields: [] });
-  const csv = json2csv.parse([]);
-
-  res.status(200).contentType('text/csv').attachment('data.csv').send(csv);
+  const periodReceiversDto = await findPeriodReceivers(req.params.periodId);
+  console.log('HERE');
+  res.status(StatusCodes.OK).json(periodReceiversDto);
 };
