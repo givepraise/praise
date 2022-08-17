@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { Treemap, TreemapPoint } from 'react-vis';
 import {
@@ -23,14 +23,22 @@ export const TopGiversByNumber = (): JSX.Element => {
     return <ErrorPlaceholder height={600} />;
   }
 
-  const length = period.givers.length;
+  console.log(hoveredLeaf);
+  const sortGiversByCount = [...period.givers].sort(
+    (a, b) => b.praiseCount - a.praiseCount
+  );
   const data = {
     title: 'analytics',
-    children: period.givers.map((receiver, index) => {
+    children: period.givers.map((giver) => {
       return {
-        title: receiver.userAccount?.nameRealized || '',
-        size: receiver.praiseCount,
-        opacity: ((length - index) / length) * 1.0,
+        title: giver.userAccount?.nameRealized || '',
+        size: giver.praiseCount,
+        opacity:
+          hoveredLeaf &&
+          hoveredLeaf.data.title === giver.userAccount?.nameRealized
+            ? (giver.praiseCount / sortGiversByCount[0].praiseCount) * 1.0
+            : (giver.praiseCount / sortGiversByCount[0].praiseCount) * 1.0 +
+              0.1,
       };
     }),
   };
@@ -46,7 +54,7 @@ export const TopGiversByNumber = (): JSX.Element => {
         padding={3}
         hideRootNode={true}
         animation
-        onLeafMouseOver={(data): void => setHoveredLeaf(data)}
+        onLeafMouseOver={(leaf): void => setHoveredLeaf(leaf)}
         onLeafMouseOut={(): void => setHoveredLeaf(null)}
         color="#E1007F"
       />

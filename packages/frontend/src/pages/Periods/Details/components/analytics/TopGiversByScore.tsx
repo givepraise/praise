@@ -23,14 +23,22 @@ export const TopGiversByScore = (): JSX.Element => {
     return <ErrorPlaceholder height={600} />;
   }
 
-  const length = period.givers.length;
+  const sortGiversByScore = [...period.givers].sort(
+    (a, b) => b.scoreRealized - a.scoreRealized
+  );
+
   const data = {
     title: 'analytics',
-    children: period.givers.map((receiver, index) => {
+    children: period.givers.map((giver) => {
       return {
-        title: receiver.userAccount?.nameRealized || '',
-        size: receiver.scoreRealized,
-        opacity: ((length - index) / length) * 1.0,
+        title: giver.userAccount?.nameRealized || '',
+        size: giver.scoreRealized,
+        opacity:
+          hoveredLeaf &&
+          hoveredLeaf.data.title === giver.userAccount?.nameRealized
+            ? (giver.praiseCount / sortGiversByScore[0].praiseCount) * 1.0
+            : (giver.praiseCount / sortGiversByScore[0].praiseCount) * 1.0 +
+              0.1,
       };
     }),
   };
@@ -39,7 +47,6 @@ export const TopGiversByScore = (): JSX.Element => {
     <div>
       {hoveredLeaf && <TreemapHint treemapPoint={hoveredLeaf} />}
       <Treemap
-        title={'My New Treemap'}
         width={710}
         height={600}
         data={data}

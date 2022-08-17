@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { Treemap, TreemapPoint } from 'react-vis';
 import {
@@ -14,6 +14,7 @@ export const TopReceiversByScore = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   useLoadSinglePeriodDetails(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
+  const history = useHistory();
 
   const [hoveredLeaf, setHoveredLeaf] = React.useState<TreemapPoint | null>(
     null
@@ -23,14 +24,24 @@ export const TopReceiversByScore = (): JSX.Element => {
     return <ErrorPlaceholder height={600} />;
   }
 
-  const length = period.receivers.length;
+  const sortReceiversByScore = [...period.receivers].sort(
+    (a, b) => b.scoreRealized - a.scoreRealized
+  );
+
   const data = {
     title: 'analytics',
-    children: period.receivers.map((receiver, index) => {
+    children: period.receivers.map((receiver) => {
       return {
+        _id: receiver._id,
         title: receiver.userAccount?.nameRealized || '',
         size: receiver.scoreRealized,
-        opacity: ((length - index) / length) * 1.0,
+        opacity:
+          hoveredLeaf &&
+          hoveredLeaf.data.title === receiver.userAccount?.nameRealized
+            ? (receiver.praiseCount / sortReceiversByScore[0].praiseCount) * 1.0
+            : (receiver.praiseCount / sortReceiversByScore[0].praiseCount) *
+                1.0 +
+              0.1,
       };
     }),
   };
@@ -39,7 +50,6 @@ export const TopReceiversByScore = (): JSX.Element => {
     <div>
       {hoveredLeaf && <TreemapHint treemapPoint={hoveredLeaf} />}
       <Treemap
-        title={'My New Treemap'}
         width={710}
         height={600}
         data={data}
@@ -49,6 +59,9 @@ export const TopReceiversByScore = (): JSX.Element => {
         animation
         onLeafMouseOver={(data): void => setHoveredLeaf(data)}
         onLeafMouseOut={(): void => setHoveredLeaf(null)}
+        onLeafClick={(leaf): void => {
+          history.push(`/periods/${periodId}/receiver/${leaf.data._id}`);
+        }}
         color="#E1007F"
       />
     </div>
