@@ -1,11 +1,14 @@
+import 'react-vis/dist/style.css';
+
 import React, { Suspense } from 'react';
 
 import { LoadPlaceholder } from '@/components/analytics/LoadPlaceholder';
 import { Top10Praise } from './analytics/Top10Praise';
-import { TopReceiversByScore } from './analytics/TopReceiversByScore';
 
-import 'react-vis/dist/style.css';
 import { TopReceiversByNumber } from './analytics/TopReceiversByNumber';
+import { TopReceiversByScore } from './analytics/TopReceiversByScore';
+import { TopGiversByScore } from './analytics/TopGiversByScore';
+import { TopGiversByNumber } from './analytics/TopGiversByNumber';
 
 const Analytics = (): JSX.Element => {
   return (
@@ -24,6 +27,16 @@ const Analytics = (): JSX.Element => {
       <span className="text-xl font-bold">Top receivers (by number)</span>
       <Suspense fallback={<LoadPlaceholder height={600} />}>
         <TopReceiversByNumber />
+      </Suspense>
+
+      <span className="text-xl font-bold">Top givers (by score)</span>
+      <Suspense fallback={<LoadPlaceholder height={600} />}>
+        <TopGiversByScore />
+      </Suspense>
+
+      <span className="text-xl font-bold">Top givers (by number)</span>
+      <Suspense fallback={<LoadPlaceholder height={600} />}>
+        <TopGiversByNumber />
       </Suspense>
     </div>
   );

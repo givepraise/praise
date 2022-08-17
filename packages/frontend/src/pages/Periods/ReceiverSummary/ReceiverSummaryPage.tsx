@@ -1,7 +1,7 @@
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import {
   PeriodDetailsDto,
-  PeriodDetailsReceiverDto,
+  PeriodDetailsGiverReceiverDto,
 } from 'api/dist/period/types';
 import React from 'react';
 import { useParams } from 'react-router-dom';
@@ -16,7 +16,7 @@ import { ReceiverSummaryTable } from './components/ReceiverSummaryTable';
 const getReceiver = (
   periodDetails: PeriodDetailsDto,
   receiverId: string
-): PeriodDetailsReceiverDto | undefined => {
+): PeriodDetailsGiverReceiverDto | undefined => {
   return periodDetails.receivers?.find((r) => r._id === receiverId);
 };
 
