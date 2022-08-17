@@ -26,22 +26,31 @@ const Analytics = (): JSX.Element => {
         <Top10Praise />
       </Suspense>
 
-      <h2>Top receivers (by score)</h2>
+      <h2>Receivers by score</h2>
+      <span>Box sizes are determined by the total praise score received.</span>
       <Suspense fallback={<LoadPlaceholder height={600} />}>
         <TopReceiversByScore />
       </Suspense>
 
-      <h2>Top receivers (by number)</h2>
+      <h2>Receivers by number</h2>
+      <span>
+        Box sizes are determined by the total number of praise received.
+      </span>
       <Suspense fallback={<LoadPlaceholder height={600} />}>
         <TopReceiversByNumber />
       </Suspense>
 
-      <h2>Top givers (by score)</h2>
+      <h2>Givers by score</h2>
+      <span>
+        Box sizes are determined by the total praise score rendered by the given
+        praise.
+      </span>
       <Suspense fallback={<LoadPlaceholder height={600} />}>
         <TopGiversByScore />
       </Suspense>
 
-      <h2>Top givers (by number)</h2>
+      <h2>Top givers by number</h2>
+      <span>Box sizes are determined by the total number of praise given.</span>
       <Suspense fallback={<LoadPlaceholder height={600} />}>
         <TopGiversByNumber />
       </Suspense>
