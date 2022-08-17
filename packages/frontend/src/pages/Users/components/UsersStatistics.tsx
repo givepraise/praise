@@ -55,9 +55,7 @@ export const UsersStatistics = (): JSX.Element => {
 
   return (
     <>
-      <div className="mb-4">
-        <span className="text-xl font-bold">User statistics</span>
-      </div>
+      <h2>User statistics</h2>
       <div>Activated users: {allUsers?.length}</div>
       <div>Admins: {allAdminUsers?.length}</div>
       <div>Forwarders: {allForwarderUsers?.length}</div>

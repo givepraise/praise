@@ -40,9 +40,9 @@ const UserDetailsPage = (): JSX.Element | null => {
       <BackLink to="/users" />
       <Box className="flex flex-col gap-2 mb-5">
         <span>User identity</span>
-        <span className="text-xl font-bold">
+        <h2>
           {user.ethereumAddress && shortenEthAddress(user.ethereumAddress)}
-        </span>
+        </h2>
         <div>
           Created: {formatIsoDateUTC(user.createdAt, DATE_FORMAT)}
           <br />
@@ -53,7 +53,7 @@ const UserDetailsPage = (): JSX.Element | null => {
         <span>Linked Discord identity</span>
         {user?.accounts?.map((account) => (
           <>
-            <span className="text-xl font-bold">{account.name}</span>
+            <h2>{account.name}</h2>
             <div>
               Discord User ID: {account.user}
               <br />
@@ -65,7 +65,7 @@ const UserDetailsPage = (): JSX.Element | null => {
         ))}
       </Box>
       <Box>
-        <span className="text-xl font-bold">Roles</span>
+        <h2>Roles</h2>
         <div className="flex flex-wrap gap-4 pt-5">
           {roles.map((role) => (
             <div
