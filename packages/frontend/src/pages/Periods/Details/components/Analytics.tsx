@@ -10,6 +10,7 @@ import { TopReceiversByScore } from './analytics/TopReceiversByScore';
 import { TopGiversByScore } from './analytics/TopGiversByScore';
 import { TopGiversByNumber } from './analytics/TopGiversByNumber';
 import { PeriodStats } from './analytics/PeriodStats';
+import { ScoreDistribution } from './analytics/ScoreDistribution';
 
 const Analytics = (): JSX.Element => {
   return (
@@ -43,6 +44,17 @@ const Analytics = (): JSX.Element => {
       <h2>Top givers (by number)</h2>
       <Suspense fallback={<LoadPlaceholder height={600} />}>
         <TopGiversByNumber />
+      </Suspense>
+
+      <h2>Quantification score distribution</h2>
+      <span>
+        Since praise gets valued on a scale, we can take a look at how often
+        each value of the scale gets assigned by quantifiers. Note: This metric
+        disregards scores of praise marked as a duplicate, since the score of
+        the original is already being taken into account.
+      </span>
+      <Suspense fallback={<LoadPlaceholder height={80} />}>
+        <ScoreDistribution />
       </Suspense>
     </div>
   );

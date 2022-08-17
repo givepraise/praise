@@ -24,7 +24,6 @@ export const MyPraiseTable = (): JSX.Element | null => {
   const user = useRecoilValue(SingleUser(userId));
   const receiverId = getReceiverId(user);
 
-  console.log(receiverId);
   if (!receiverId)
     return (
       <div className="p-5">
