@@ -5,6 +5,7 @@ import { Top10Praise } from './analytics/Top10Praise';
 import { TopReceiversByScore } from './analytics/TopReceiversByScore';
 
 import 'react-vis/dist/style.css';
+import { TopReceiversByNumber } from './analytics/TopReceiversByNumber';
 
 const Analytics = (): JSX.Element => {
   return (
@@ -18,6 +19,11 @@ const Analytics = (): JSX.Element => {
       <span className="text-xl font-bold">Top receivers (by score)</span>
       <Suspense fallback={<LoadPlaceholder height={600} />}>
         <TopReceiversByScore />
+      </Suspense>
+
+      <span className="text-xl font-bold">Top receivers (by number)</span>
+      <Suspense fallback={<LoadPlaceholder height={600} />}>
+        <TopReceiversByNumber />
       </Suspense>
     </div>
   );
