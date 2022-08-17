@@ -41,12 +41,10 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
 };
 
 const ReceiverSummaryPage = (): JSX.Element => {
-  const { periodId } = useParams<PeriodAndReceiverPageParams>();
-
   return (
     <Page>
       <BreadCrumb name={'Receiver summary for period'} icon={faCalendarAlt} />
-      <BackLink to={`/periods/${periodId}`} />
+      <BackLink />
 
       <React.Suspense fallback={null}>
         <PeriodReceiverMessage />

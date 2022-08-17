@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { Treemap, TreemapPoint } from 'react-vis';
 import {
@@ -23,7 +23,6 @@ export const TopGiversByNumber = (): JSX.Element => {
     return <ErrorPlaceholder height={600} />;
   }
 
-  console.log(hoveredLeaf);
   const sortGiversByCount = [...period.givers].sort(
     (a, b) => b.praiseCount - a.praiseCount
   );

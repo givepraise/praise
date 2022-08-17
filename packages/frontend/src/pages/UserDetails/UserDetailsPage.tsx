@@ -37,7 +37,7 @@ const UserDetailsPage = (): JSX.Element | null => {
   return (
     <Page>
       <BreadCrumb name="User details" icon={faUserGroup} />
-      <BackLink to="/users" />
+      <BackLink />
       <Box className="flex flex-col gap-2 mb-5">
         <span>User identity</span>
         <h2>

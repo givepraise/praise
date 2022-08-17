@@ -47,7 +47,7 @@ const QuantifyPeriodPage = (): JSX.Element | null => {
   return (
     <Page>
       <BreadCrumb name="Quantify" icon={faCalendarAlt} />
-      <BackLink to={`/periods/${periodId}`} />
+      <BackLink />
 
       <React.Suspense fallback={null}>
         <Box className="mb-5">

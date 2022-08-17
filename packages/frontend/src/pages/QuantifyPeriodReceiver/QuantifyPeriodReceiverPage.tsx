@@ -86,7 +86,7 @@ const QuantifyPeriodReceiverPage = (): JSX.Element => {
       <React.Suspense fallback={null}>
         <PeriodBreadCrumb />
       </React.Suspense>
-      <BackLink to={`/periods/${periodId}/quantify`} />
+      <BackLink />
 
       <React.Suspense fallback={null}>
         <Box className="mb-5" variant={'wide'}>

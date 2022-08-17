@@ -82,7 +82,7 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
   return (
     <Page variant={'wide'}>
       <BreadCrumb name="Periods" icon={faCalendarAlt} />
-      <BackLink to="/periods" />
+      <BackLink />
 
       <React.Suspense fallback={null}>
         <Box variant={'wide'} className="mb-5">

@@ -132,7 +132,7 @@ const PeriodsCreatePage = (): JSX.Element => {
   return (
     <Page>
       <BreadCrumb name="Quantification periods" icon={faCalendarAlt} />
-      <BackLink to="/periods" />
+      <BackLink />
 
       <Box>
         <h2 className="mb-2">Create period</h2>
