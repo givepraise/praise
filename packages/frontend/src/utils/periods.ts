@@ -2,9 +2,12 @@ import {
   PeriodDetailsQuantifierDto,
   PeriodDetailsDto,
   PeriodStatusType,
+  PeriodReceiverDto,
 } from 'api/dist/period/types';
 import { compareDesc } from 'date-fns';
-import { QuantifierReceiverData } from '@/model/periods';
+import { transform } from 'node-json-transform';
+import { QuantifierReceiverData, SummarizedPeriodData } from '@/model/periods';
+import transformer from '@/utils/transformer.json';
 
 export const getPreviousPeriod = (
   allPeriods: PeriodDetailsDto[],
@@ -66,4 +69,63 @@ export const getQuantificationReceiverStats = (
   if (!receiverId || !data || !Array.isArray(data)) return undefined;
 
   return data.find((qrd) => qrd.receiver._id === receiverId);
+};
+
+export const getSummarizedReceiverData = (
+  data: PeriodReceiverDto[]
+): SummarizedPeriodData[] => {
+  const totalPraiseScore = data
+    .map((item) => item.scoreRealized)
+    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+    .reduce((prev, next) => prev + next);
+
+  const context = {
+    totalPraiseScore: totalPraiseScore,
+    csWalletAddress: process.env.REACT_APP_CS_WALLET_ADDRESS,
+    csSupportPercentage: process.env.REACT_APP_CS_SUPPORT_PERCENTAGE,
+    budget: process.env.REACT_APP_BUDGET,
+    token: process.env.REACT_APP_TOKEN,
+  };
+
+  const map = {
+    item: transformer.map.item,
+    operate: [
+      {
+        // eslint-disable-next-line @typescript-eslint/no-implied-eval
+        run: new Function(
+          transformer.map.operate.run.arguments,
+          transformer.map.operate.run.body
+        ),
+        on: transformer.map.operate.on,
+      },
+    ],
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+    each: new Function(
+      transformer.map.each.arguments,
+      transformer.map.each.body
+    ),
+  };
+
+  // const map = {
+  //   item: {
+  //     address: 'ethereumAddress',
+  //     amount: 'scoreRealized',
+  //     token: 'context.token',
+  //   },
+  //   operate: [
+  //     {
+  //       run: function (val, context) {
+  //         return (val / context.totalPraiseScore) * context.budget;
+  //       },
+  //       on: 'amount',
+  //     },
+  //   ],
+  //   each: function (item, index, collection, context) {
+  //     item.token = context.token;
+  //     return item;
+  //   },
+  // };
+
+  const result = transform(data, map, context);
+  return result;
 };

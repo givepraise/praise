@@ -10,6 +10,7 @@ import { toast } from 'react-hot-toast';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
+import { PeriodReceiverDto } from 'api/dist/period/types';
 import { Button } from '@/components/ui/Button';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
@@ -25,7 +26,7 @@ import {
 import { AllQuantifierUsers } from '@/model/users';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { saveLocalFile } from '@/utils/file';
-import { getPreviousPeriod } from '@/utils/periods';
+import { getPreviousPeriod, getSummarizedReceiverData } from '@/utils/periods';
 
 import { PeriodAssignDialog } from './AssignDialog';
 import { PeriodCloseDialog } from './CloseDialog';
@@ -113,10 +114,17 @@ export const PeriodDetails = (): JSX.Element | null => {
       exportSummaryPraise(period),
       {
         loading: 'Distributing …',
-        success: (distributionData: Blob | undefined) => {
-          if (distributionData) {
-            saveLocalFile(distributionData, 'period-distribution.csv');
+        success: (data: PeriodReceiverDto[] | undefined) => {
+          if (data) {
+            const summarizedData = getSummarizedReceiverData(data);
+            console.log('SUM ADATA: ', summarizedData);
+            const blob = new Blob([JSON.stringify(summarizedData)], {
+              type: 'application/txt',
+            });
+
+            saveLocalFile(blob, 'period-distribution.csv');
             setTimeout(() => toast.remove(toastId), 2000);
+
             return 'Distribution done';
           }
           return 'Empty distribution returned';

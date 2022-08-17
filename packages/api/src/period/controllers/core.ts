@@ -472,6 +472,5 @@ export const exportSummary = async (
   res: Response
 ): Promise<void> => {
   const periodReceiversDto = await findPeriodReceivers(req.params.periodId);
-  console.log('HERE');
   res.status(StatusCodes.OK).json(periodReceiversDto);
 };

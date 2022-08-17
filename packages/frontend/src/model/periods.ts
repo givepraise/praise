@@ -5,6 +5,7 @@ import {
   PeriodUpdateInput,
   PeriodReplaceQuantifierDto,
   VerifyQuantifierPoolSizeResponse,
+  PeriodReceiverDto,
 } from 'api/dist/period/types';
 import { PraiseDetailsDto, PraiseDto } from 'api/dist/praise/types';
 import { UserAccountDto } from 'api/dist/useraccount/types';
@@ -20,6 +21,7 @@ import {
   useSetRecoilState,
 } from 'recoil';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
+
 import {
   periodQuantifierPraiseListKey,
   periodReceiverPraiseListKey,
@@ -455,61 +457,37 @@ export const useExportPraise = (): useExportPraiseReturn => {
   return { exportPraise };
 };
 
+export interface SummarizedPeriodData {
+  address: string;
+  amount: number;
+  token: string;
+}
+
 type useExportSummaryPraiseReturn = {
-  exportSummaryPraise: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
+  exportSummaryPraise: (
+    period: PeriodDetailsDto
+  ) => Promise<PeriodReceiverDto[] | undefined>;
 };
 
 /**
  * Returns function that exports all praise in a period as csv data.
  */
 export const useExportSummaryPraise = (): useExportSummaryPraiseReturn => {
-  const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
   const apiAuthClient = useApiAuthClient();
 
   const exportSummaryPraise = async (
     period: PeriodDetailsDto
-  ): Promise<Blob | undefined> => {
-    if (!period || !allPeriods) return undefined;
+  ): Promise<PeriodReceiverDto[] | undefined> => {
+    if (!period) return undefined;
+
     const response = await apiAuthClient.get(
       `/admin/periods/${period._id}/exportSummary`
     );
 
     // If OK response, add returned period object to local state
     if (isResponseOk(response)) {
-      const context = {
-        totalPraiseScore: 2000,
-        csWalletAddress: 'Test ETH address',
-        csSupportPercentage: 2,
-        budget: 1000,
-        token: 'TEC',
-      };
-
-      const map = {
-        item: {
-          address: 'ethereumAddress',
-          amount: 'scoreRealized',
-          token: 'context.token',
-        },
-        operate: [
-          {
-            run: function (val, context) {
-              return (val / context.totalPraiseScore) * context.budget;
-            },
-            on: 'amount',
-          },
-        ],
-        each: function (item, index, collection, context) {
-          item.token = context.token;
-          return item;
-        },
-      };
-
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const transform = require('node-json-transform').transform;
-      const result = transform(response.data, map, context);
-      console.log('TRANSFORM RESULT:', result);
-
-      return response.data as Blob;
+      const data = <Array<PeriodReceiverDto>>response.data;
+      return data;
     }
   };
 
