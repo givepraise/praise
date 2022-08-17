@@ -14,7 +14,7 @@ import { Notice } from '@/components/ui/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
-export const ReceiverTable = (): JSX.Element | null => {
+const ReceiverTable = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   useLoadSinglePeriodDetails(periodId);
@@ -164,3 +164,6 @@ export const ReceiverTable = (): JSX.Element | null => {
 
   return null;
 };
+
+// eslint-disable-next-line import/no-default-export
+export default ReceiverTable;

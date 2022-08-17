@@ -21,7 +21,7 @@ import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { isResponseOk } from '@/model/api';
 import { ReplaceQuantifierDialog } from './ReplaceQuantifierDialog';
 
-export const QuantifierTable = (): JSX.Element => {
+const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   useLoadSinglePeriodDetails(periodId);
@@ -195,3 +195,6 @@ export const QuantifierTable = (): JSX.Element => {
     </>
   );
 };
+
+// eslint-disable-next-line import/no-default-export
+export default QuantifierTable;
