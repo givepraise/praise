@@ -12,6 +12,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
   atom,
+  atomFamily,
   selector,
   selectorFamily,
   useRecoilCallback,
@@ -71,6 +72,31 @@ export const AllPeriods = atom<PeriodDetailsDto[] | undefined>({
             if (Array.isArray(periods) && periods.length > 0) {
               return periods;
             }
+          }
+        })
+      );
+    },
+  ],
+});
+
+export const AllPeriodPraise = atomFamily<
+  PraiseDetailsDto[] | undefined,
+  string
+>({
+  key: 'AllPeriodPraise',
+  default: undefined,
+  effects: (periodId) => [
+    ({ setSelf, getPromise }): void => {
+      setSelf(
+        getPromise(
+          ApiAuthGet({
+            url: `/periods/${periodId}/praise`,
+          })
+        ).then((response) => {
+          if (isResponseOk(response)) {
+            const praiseDetails = response.data as PraiseDetailsDto[];
+            if (Array.isArray(praiseDetails) && praiseDetails.length > 0)
+              return praiseDetails;
           }
         })
       );
