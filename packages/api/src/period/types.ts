@@ -38,7 +38,7 @@ export interface PaginatedPeriodModel extends Model<PeriodDocument> {
   ): Promise<PaginationModel<PeriodDocument> | undefined>;
 }
 
-export interface PeriodDetailsReceiver {
+export interface PeriodDetailsGiverReceiver {
   _id: Types.ObjectId;
   praiseCount: number;
   quantifications?: Array<Array<QuantificationDocument>>;
@@ -46,7 +46,7 @@ export interface PeriodDetailsReceiver {
   userAccounts: UserAccountDocument[];
 }
 
-export interface PeriodDetailsReceiverDto {
+export interface PeriodDetailsGiverReceiverDto {
   _id: string;
   praiseCount: number;
   quantifications?: Array<Array<QuantificationDto>>;
@@ -74,7 +74,8 @@ export interface PeriodDetailsDto {
   createdAt: string;
   updatedAt: string;
   quantifiers?: PeriodDetailsQuantifierDto[];
-  receivers?: PeriodDetailsReceiverDto[];
+  givers?: PeriodDetailsGiverReceiverDto[];
+  receivers?: PeriodDetailsGiverReceiverDto[];
   settings?: PeriodSettingDto[];
 }
 
