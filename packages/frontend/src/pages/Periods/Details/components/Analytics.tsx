@@ -9,32 +9,38 @@ import { TopReceiversByNumber } from './analytics/TopReceiversByNumber';
 import { TopReceiversByScore } from './analytics/TopReceiversByScore';
 import { TopGiversByScore } from './analytics/TopGiversByScore';
 import { TopGiversByNumber } from './analytics/TopGiversByNumber';
+import { PeriodStats } from './analytics/PeriodStats';
 
 const Analytics = (): JSX.Element => {
   return (
     <div className="flex flex-col gap-2 px-5">
-      <span className="text-xl font-bold">Top 10 praise</span>
+      <h2>Period metrics</h2>
+      <Suspense fallback={<LoadPlaceholder height={80} />}>
+        <PeriodStats />
+      </Suspense>
+
+      <h2>Top 10 praise</h2>
       <span>The ten most highly scored praise this period.</span>
       <Suspense fallback={<LoadPlaceholder height={800} />}>
         <Top10Praise />
       </Suspense>
 
-      <span className="text-xl font-bold">Top receivers (by score)</span>
+      <h2>Top receivers (by score)</h2>
       <Suspense fallback={<LoadPlaceholder height={600} />}>
         <TopReceiversByScore />
       </Suspense>
 
-      <span className="text-xl font-bold">Top receivers (by number)</span>
+      <h2>Top receivers (by number)</h2>
       <Suspense fallback={<LoadPlaceholder height={600} />}>
         <TopReceiversByNumber />
       </Suspense>
 
-      <span className="text-xl font-bold">Top givers (by score)</span>
+      <h2>Top givers (by score)</h2>
       <Suspense fallback={<LoadPlaceholder height={600} />}>
         <TopGiversByScore />
       </Suspense>
 
-      <span className="text-xl font-bold">Top givers (by number)</span>
+      <h2>Top givers (by number)</h2>
       <Suspense fallback={<LoadPlaceholder height={600} />}>
         <TopGiversByNumber />
       </Suspense>

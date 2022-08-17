@@ -25,3 +25,25 @@ export const PeriodTop10Praise = selectorFamily({
       return praise.slice(0, 10);
     },
 });
+
+interface PeriodStats {
+  totalPraise: number;
+  totalPraiseScoreRealized: number;
+}
+export const PeriodStatsSelector = selectorFamily({
+  key: 'Top10Praise',
+  get:
+    (periodId: string | undefined) =>
+    ({ get }): PeriodStats | undefined => {
+      if (!periodId) return undefined;
+      const praise = get(AllPeriodPraise(periodId));
+      if (!praise) return undefined;
+      return {
+        totalPraise: praise.length,
+        totalPraiseScoreRealized: praise.reduce(
+          (acc, curr) => acc + curr.scoreRealized,
+          0
+        ),
+      };
+    },
+});
