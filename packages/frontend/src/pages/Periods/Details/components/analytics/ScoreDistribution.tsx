@@ -24,7 +24,11 @@ export const ScoreDistribution = (): JSX.Element => {
 
   const data: VerticalBarSeriesPoint[] = [];
   scoreDistribution?.forEach((value, key) => {
-    data.push({ x: key, y: value });
+    data.push({
+      x: key,
+      y: value,
+      color: hoveredNode?.x === key ? '#FF0A95' : '#E1007F',
+    });
   });
 
   return (
@@ -33,7 +37,6 @@ export const ScoreDistribution = (): JSX.Element => {
         height={300}
         width={670}
         onMouseLeave={(): void => setHoveredNode(null)}
-        color="#E1007F"
       >
         <VerticalGridLines />
         <HorizontalGridLines />
@@ -42,7 +45,8 @@ export const ScoreDistribution = (): JSX.Element => {
         <VerticalBarSeries
           data={data}
           barWidth={1}
-          onNearestXY={(dataPoint): void => {
+          colorType="literal"
+          onNearestX={(dataPoint): void => {
             setHoveredNode(dataPoint);
           }}
         />
@@ -52,7 +56,9 @@ export const ScoreDistribution = (): JSX.Element => {
             align={{ vertical: 'top', horizontal: 'left' }}
           >
             <div className="p-3 text-xs text-gray-900 border border-solid rounded-lg shadow-md dark:text-white bg-warm-gray-50 dark:bg-slate-900 overflow-clip text-ellipsis">
-              {hoveredNode.y}
+              Score: {hoveredNode.x}
+              <br />
+              Count: {hoveredNode.y}
             </div>
           </Hint>
         )}
