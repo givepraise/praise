@@ -16,6 +16,7 @@ export const genericSettingsSchema = {
       'IntegerList',
       'Image',
       'QuestionAnswerJSON',
+      'Object',
     ],
     validate: isSettingValueAllowedBySettingType,
     required: true,

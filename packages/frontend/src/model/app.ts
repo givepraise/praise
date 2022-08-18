@@ -51,3 +51,14 @@ export const IsHeaderBannerClosed = atomFamily<boolean, string>({
   default: false,
   effects: [persistAtom],
 });
+
+export const AragonTransformerQuery = selector({
+  key: 'AragonTransformerQuery',
+  get: ({ get }) => {
+    return get(
+      ExternalGet({
+        url: 'https://github.com/commons-stack/praise-exports/blob/2fcd222cd2903b432df951b4e10341ba0462e593/aragon.json',
+      })
+    );
+  },
+});

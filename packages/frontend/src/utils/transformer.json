@@ -17,5 +17,9 @@
       "arguments": "item, index, collection, context",
       "body": "item.token = context.token; return item;"
     }
+  },
+  "context": {
+    "budget": "number",
+    "token": "string"
   }
 }

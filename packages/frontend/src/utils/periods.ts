@@ -6,6 +6,7 @@ import {
 } from 'api/dist/period/types';
 import { compareDesc } from 'date-fns';
 import { transform } from 'node-json-transform';
+import { SettingDto } from 'api/dist/settings/types';
 import { QuantifierReceiverData, SummarizedPeriodData } from '@/model/periods';
 import transformer from '@/utils/transformer.json';
 
@@ -72,19 +73,28 @@ export const getQuantificationReceiverStats = (
 };
 
 export const getSummarizedReceiverData = (
-  data: PeriodReceiverDto[]
+  data: PeriodReceiverDto[],
+  customExportContext: SettingDto | undefined,
+  csSupportPercentage: SettingDto | undefined
 ): SummarizedPeriodData[] => {
+  if (!customExportContext || !csSupportPercentage) return [];
+
+  const exportContext = JSON.parse(
+    customExportContext.value
+  ) as typeof transformer.context;
+
   const totalPraiseScore = data
     .map((item) => item.scoreRealized)
     // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
     .reduce((prev, next) => prev + next);
 
   const context = {
-    totalPraiseScore: totalPraiseScore,
-    csWalletAddress: process.env.REACT_APP_CS_WALLET_ADDRESS,
-    csSupportPercentage: process.env.REACT_APP_CS_SUPPORT_PERCENTAGE,
-    budget: process.env.REACT_APP_BUDGET,
-    token: process.env.REACT_APP_TOKEN,
+    ...exportContext,
+    ...{
+      totalPraiseScore: totalPraiseScore,
+      csWalletAddress: 'Test ETH address',
+      csSupportPercentage: csSupportPercentage.valueRealized,
+    },
   };
 
   const map = {
@@ -105,26 +115,6 @@ export const getSummarizedReceiverData = (
       transformer.map.each.body
     ),
   };
-
-  // const map = {
-  //   item: {
-  //     address: 'ethereumAddress',
-  //     amount: 'scoreRealized',
-  //     token: 'context.token',
-  //   },
-  //   operate: [
-  //     {
-  //       run: function (val, context) {
-  //         return (val / context.totalPraiseScore) * context.budget;
-  //       },
-  //       on: 'amount',
-  //     },
-  //   ],
-  //   each: function (item, index, collection, context) {
-  //     item.token = context.token;
-  //     return item;
-  //   },
-  // };
 
   const result = transform(data, map, context);
   return result;

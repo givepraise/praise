@@ -28,6 +28,8 @@ import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { saveLocalFile } from '@/utils/file';
 import { getPreviousPeriod, getSummarizedReceiverData } from '@/utils/periods';
 
+import { AragonTransformerQuery } from '@/model/app';
+import { SingleSetting } from '@/model/settings';
 import { PeriodAssignDialog } from './AssignDialog';
 import { PeriodCloseDialog } from './CloseDialog';
 import { PeriodDateForm } from './PeriodDateForm';
@@ -52,6 +54,16 @@ export const PeriodDetails = (): JSX.Element | null => {
 
   const { closePeriod } = useClosePeriod();
   const { assignQuantifiers } = useAssignQuantifiers(periodId);
+  // const mapTransformer = useRecoilValue(AragonTransformerQuery);
+  // console.log('MAP TRANSFORMER:', mapTransformer);
+
+  const csSupportPercentage = useRecoilValue(
+    SingleSetting('CS_SUPPORT_PERCENTAGE')
+  );
+
+  const customExportContextSettings = useRecoilValue(
+    SingleSetting('CUSTOM_EXPORT_CONTEXT')
+  );
 
   if (!period || !allPeriods) return null;
 
@@ -116,7 +128,11 @@ export const PeriodDetails = (): JSX.Element | null => {
         loading: 'Distributing …',
         success: (data: PeriodReceiverDto[] | undefined) => {
           if (data) {
-            const summarizedData = getSummarizedReceiverData(data);
+            const summarizedData = getSummarizedReceiverData(
+              data,
+              customExportContextSettings,
+              csSupportPercentage
+            );
             console.log('SUM ADATA: ', summarizedData);
             const blob = new Blob([JSON.stringify(summarizedData)], {
               type: 'application/txt',

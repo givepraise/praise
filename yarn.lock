@@ -9597,6 +9597,7 @@ __metadata:
     recoil: ^0.7.4
     recoil-nexus: ^0.4.0
     recoil-persist: ^4.2.0
+    safe-eval: ^0.4.1
     source-map-explorer: ^2.5.2
     tailwindcss: ^3.0.24
     typescript: ^4.5.5
@@ -16423,6 +16424,13 @@ __metadata:
   version: 5.2.1
   resolution: "safe-buffer@npm:5.2.1"
   checksum: b99c4b41fdd67a6aaf280fcd05e9ffb0813654894223afb78a31f14a19ad220bba8aba1cb14eddce1fcfb037155fe6de4e861784eb434f7d11ed58d1e70dd491
+  languageName: node
+  linkType: hard
+
+"safe-eval@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "safe-eval@npm:0.4.1"
+  checksum: f964a8e3a06e0cfa24899ac2adf65c4d095fd7d5261a6c9acc898b6f6c1213ba0498edc68cd3448f9436593cbd7f6f9a1d090b40bb07d565ea414d6c110a843d
   languageName: node
   linkType: hard
 
