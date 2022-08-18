@@ -1,0 +1,36 @@
+import 'chart.js/auto';
+
+import React from 'react';
+import { Chart } from 'react-chartjs-2';
+import { Chart as ChartJS, ChartData, ChartOptions } from 'chart.js';
+import {
+  TreemapController,
+  TreemapElement,
+  TreemapDataPoint,
+} from 'chartjs-chart-treemap';
+
+ChartJS.register(TreemapController, TreemapElement);
+
+interface GiverReceiverLeafData {
+  _id: string;
+  name: string;
+  size: number;
+  opacity: number;
+}
+
+export interface GiverReceiverDataPoint extends TreemapDataPoint {
+  _data: GiverReceiverLeafData;
+}
+
+export interface TreemapProps {
+  data: ChartData<'treemap', TreemapDataPoint[], unknown>;
+  options: ChartOptions<'treemap'>;
+}
+
+export const Treemap = ({ data, options }: TreemapProps): JSX.Element => {
+  return (
+    <div>
+      <Chart type="treemap" data={data} options={options} />
+    </div>
+  );
+};

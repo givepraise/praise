@@ -1,24 +1,23 @@
+import 'chart.js/auto';
+
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { Treemap, TreemapPoint } from 'react-vis';
+import { ChartData, ChartOptions } from 'chart.js';
+import { TreemapDataPoint } from 'chartjs-chart-treemap';
 import {
   PeriodPageParams,
   SinglePeriod,
   useLoadSinglePeriodDetails,
 } from '@/model/periods';
-import { TreemapHint } from '@/components/analytics/TreemapHint';
 import { ErrorPlaceholder } from '@/components/analytics/ErrorPlaceholder';
+import { GiverReceiverDataPoint, Treemap } from './Treemap';
 
 export const TopReceiversByScore = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   useLoadSinglePeriodDetails(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
   const history = useHistory();
-
-  const [hoveredLeaf, setHoveredLeaf] = React.useState<TreemapPoint | null>(
-    null
-  );
 
   if (!period || !period.receivers) {
     return <ErrorPlaceholder height={600} />;
@@ -28,42 +27,76 @@ export const TopReceiversByScore = (): JSX.Element => {
     (a, b) => b.scoreRealized - a.scoreRealized
   );
 
-  const data = {
-    title: 'analytics',
-    children: period.receivers.map((receiver) => {
-      return {
-        _id: receiver._id,
-        title: receiver.userAccount?.nameRealized || '',
-        size: receiver.scoreRealized,
-        opacity:
-          hoveredLeaf &&
-          hoveredLeaf.data.title === receiver.userAccount?.nameRealized
-            ? (receiver.praiseCount / sortReceiversByScore[0].praiseCount) * 1.0
-            : (receiver.praiseCount / sortReceiversByScore[0].praiseCount) *
-                1.0 +
-              0.1,
-      };
-    }),
+  const leafs = period.receivers.map((receiver) => {
+    return {
+      _id: receiver._id,
+      name: receiver.userAccount?.nameRealized || '',
+      size: receiver.scoreRealized,
+      opacity:
+        (receiver.scoreRealized / sortReceiversByScore[0].scoreRealized) * 1.0 +
+        0.1,
+    };
+  });
+
+  const data: ChartData<'treemap', TreemapDataPoint[], unknown> = {
+    datasets: [
+      {
+        label: 'Score',
+        tree: leafs,
+        data: [],
+        backgroundColor: (ctx): string => {
+          if (ctx.type !== 'data') {
+            return 'transparent';
+          }
+          return `rgb(225, 0, 127, ${
+            (ctx.raw as GiverReceiverDataPoint)._data.opacity
+          })`;
+        },
+
+        key: 'size',
+        labels: {
+          display: true,
+          formatter(ctx): string {
+            return (ctx.raw as GiverReceiverDataPoint)._data.name;
+          },
+          color: 'white',
+          font: {
+            size: 12,
+          },
+          position: 'middle',
+        },
+        borderWidth: 0,
+        spacing: 2,
+      },
+    ],
+  };
+
+  const options: ChartOptions<'treemap'> = {
+    onClick: (event, elements): void => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const id = (elements[0].element as any).$context.raw._data._id;
+      if (id) {
+        history.push(`/periods/${periodId}/receiver/${id}`);
+      }
+    },
+
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          title: function (): string {
+            return '';
+          },
+        },
+      },
+    },
   };
 
   return (
     <div>
-      {hoveredLeaf && <TreemapHint treemapPoint={hoveredLeaf} />}
-      <Treemap
-        width={710}
-        height={600}
-        data={data}
-        mode="binary"
-        padding={3}
-        hideRootNode={true}
-        animation
-        onLeafMouseOver={(data): void => setHoveredLeaf(data)}
-        onLeafMouseOut={(): void => setHoveredLeaf(null)}
-        onLeafClick={(leaf): void => {
-          history.push(`/periods/${periodId}/receiver/${leaf.data._id}`);
-        }}
-        color="#E1007F"
-      />
+      <Treemap data={data} options={options} />
     </div>
   );
 };
