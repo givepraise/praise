@@ -539,7 +539,6 @@ export const usePeriodQuantifierPraise = (
         for (const praise of praiseList) {
           praiseIdList.push(praise._id);
         }
-        console.log(listKey);
         set(PraiseIdList(listKey), praiseIdList);
       }
   );
