@@ -1,5 +1,3 @@
-import 'react-vis/dist/style.css';
-
 import React, { Suspense } from 'react';
 
 import { LoadPlaceholder } from '@/components/analytics/LoadPlaceholder';
