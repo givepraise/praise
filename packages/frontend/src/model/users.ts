@@ -144,6 +144,19 @@ export const SingleUser = selectorFamily({
     },
 });
 
+export const ManyUsers = selectorFamily({
+  key: 'ManyUsers',
+  get:
+    (userIds: string[] | undefined) =>
+    ({ get }): (UserDto | undefined)[] | undefined => {
+      const allUsers = get(AllUsers);
+      if (!allUsers || !userIds) return undefined;
+      return userIds.map((userId) =>
+        allUsers.find((user) => user._id === userId)
+      );
+    },
+});
+
 type useAdminUsersReturns = {
   addRole: (
     userId: string,
