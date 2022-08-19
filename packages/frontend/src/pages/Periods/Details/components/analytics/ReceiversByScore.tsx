@@ -1,6 +1,3 @@
-import 'chart.js/auto';
-
-import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { ChartData, ChartOptions } from 'chart.js';

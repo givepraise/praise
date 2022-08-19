@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   faAngleLeft,
   faAngleRight,
@@ -7,7 +6,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { RecoilState, useRecoilState } from 'recoil';
-
 interface PaginationProps {
   lastPage: number;
   state: RecoilState<number>;

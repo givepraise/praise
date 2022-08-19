@@ -1,4 +1,3 @@
-import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { atom, useRecoilValue } from 'recoil';
 import { ChartData, ChartOptions } from 'chart.js';
