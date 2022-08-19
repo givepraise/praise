@@ -4,67 +4,98 @@ import React, { Suspense } from 'react';
 
 import { LoadPlaceholder } from '@/components/analytics/LoadPlaceholder';
 import { Top10Praise } from './analytics/Top10Praise';
-
-import { TopReceiversByNumber } from './analytics/TopReceiversByNumber';
-import { TopReceiversByScore } from './analytics/TopReceiversByScore';
-import { TopGiversByScore } from './analytics/TopGiversByScore';
-import { TopGiversByNumber } from './analytics/TopGiversByNumber';
+import { ReceiversByScore } from './analytics/ReceiversByScore';
 import { PeriodStats } from './analytics/PeriodStats';
+import { QuantifierScoringDistribution } from './analytics/QuantifierScoringDistribution';
+import { QuantificationSpread } from './analytics/QuantificationSpread';
+import { ReceiversByNumber } from './analytics/ReceiversByNumber';
+import { GiversByScore } from './analytics/GiversByScore';
+import { GiversByNumber } from './analytics/GiversByNumber';
+import { QuantifiersByScore } from './analytics/QuantifiersByScore';
 import { ScoreDistribution } from './analytics/ScoreDistribution';
 
 const Analytics = (): JSX.Element => {
   return (
     <div className="flex flex-col gap-2 px-5">
       <h2>Period metrics</h2>
-      <Suspense fallback={<LoadPlaceholder height={80} />}>
+      <Suspense fallback={<LoadPlaceholder height={100} />}>
         <PeriodStats />
       </Suspense>
-
       <h2>Top 10 praise</h2>
-      <span>The ten most highly scored praise this period.</span>
-      <Suspense fallback={<LoadPlaceholder height={800} />}>
+      <p>
+        Which were the ten most significant contributions this period (according
+        to the praise score)?
+      </p>
+      <Suspense fallback={<LoadPlaceholder height={1400} />}>
         <Top10Praise />
       </Suspense>
-
       <h2>Receivers by score</h2>
-      <span>Box sizes are determined by the total praise score received.</span>
-      <Suspense fallback={<LoadPlaceholder height={600} />}>
-        <TopReceiversByScore />
+      <p>Which users received the highest total praise score?</p>
+      <Suspense fallback={<LoadPlaceholder height={375} />}>
+        <ReceiversByScore />
       </Suspense>
-
       <h2>Receivers by number</h2>
-      <span>
-        Box sizes are determined by the total number of praise received.
-      </span>
-      <Suspense fallback={<LoadPlaceholder height={600} />}>
-        <TopReceiversByNumber />
+      <p>Which users received the most praise?</p>
+      <Suspense fallback={<LoadPlaceholder height={375} />}>
+        <ReceiversByNumber />
       </Suspense>
-
       <h2>Givers by score</h2>
-      <span>
-        Box sizes are determined by the total praise score rendered by the given
-        praise.
-      </span>
-      <Suspense fallback={<LoadPlaceholder height={600} />}>
-        <TopGiversByScore />
+      <p>
+        Which givers praised contributions that led to the highest praise
+        scores?
+      </p>
+      <Suspense fallback={<LoadPlaceholder height={375} />}>
+        <GiversByScore />
       </Suspense>
-
       <h2>Top givers by number</h2>
-      <span>Box sizes are determined by the total number of praise given.</span>
-      <Suspense fallback={<LoadPlaceholder height={600} />}>
-        <TopGiversByNumber />
+      <p>Which users gave the most praise?</p>
+      <Suspense fallback={<LoadPlaceholder height={375} />}>
+        <GiversByNumber />
       </Suspense>
-
       <h2>Quantification score distribution</h2>
-      <span>
-        Since praise gets valued on a scale, we can take a look at how often
-        each value of the scale gets assigned by quantifiers. Note: This metric
-        disregards scores of praise marked as a duplicate, since the score of
-        the original is already being taken into account.
-      </span>
-      <Suspense fallback={<LoadPlaceholder height={80} />}>
+      <p>How often does each score of the scale get used by quantifiers?</p>
+      <Suspense fallback={<LoadPlaceholder height={375} />}>
         <ScoreDistribution />
       </Suspense>
+      <p className="text-xs">
+        <b>*</b> This metric disregards scores of praise marked as a duplicate,
+        since the score of the original is already being taken into account.
+      </p>
+      <h2>Quantifiers by score</h2>
+      <p>
+        Which quantifier gave the highest quantification scores? If all
+        quantifiers where assigned the equal amount of praise and all
+        quantifiers on average gave similar quantification scores the boxes
+        would all be the same size.
+      </p>
+      <Suspense fallback={<LoadPlaceholder height={375} />}>
+        <QuantifiersByScore />
+      </Suspense>
+      <p className="text-xs">
+        <b>*</b> The visualisation does not take into account that some
+        quantifiers get assigned less praise than others.
+      </p>
+      <h2>Quantifier scoring distribution</h2>
+      <p>
+        On average, does the quantifiers score praise similarly? Are some
+        quantifiers more generous than others?
+      </p>
+      <Suspense fallback={<LoadPlaceholder height={375} />}>
+        <QuantifierScoringDistribution />
+      </Suspense>
+      <h2>Quantification spread</h2>
+      <p>
+        When does the quantifiers agree or disagree? High quantification spread
+        means disagreement between quantifiers as to the importance of a
+        contribution.
+      </p>
+      <Suspense fallback={<LoadPlaceholder height={375} />}>
+        <QuantificationSpread />
+      </Suspense>
+      <p className="text-xs">
+        <b>*</b>The spread is measured by the difference between the highest and
+        lowest score given to a praise.
+      </p>
     </div>
   );
 };

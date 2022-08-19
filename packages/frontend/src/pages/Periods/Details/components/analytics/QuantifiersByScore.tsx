@@ -5,43 +5,42 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { ChartData, ChartOptions } from 'chart.js';
 import { TreemapDataPoint } from 'chartjs-chart-treemap';
-import {
-  PeriodPageParams,
-  SinglePeriod,
-  useLoadSinglePeriodDetails,
-} from '@/model/periods';
+import { PeriodPageParams, SinglePeriod } from '@/model/periods';
 import { ErrorPlaceholder } from '@/components/analytics/ErrorPlaceholder';
-import { GiverReceiverDataPoint, Treemap } from './Treemap';
+import { PeriodQuantifierStats } from '@/model/periodAnalytics';
+import { ManyUsers } from '@/model/users';
+import { UserDataPoint, Treemap } from './Treemap';
 
-export const TopReceiversByScore = (): JSX.Element => {
+export const QuantifiersByScore = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
-  useLoadSinglePeriodDetails(periodId);
-  const period = useRecoilValue(SinglePeriod(periodId));
   const history = useHistory();
+  const period = useRecoilValue(SinglePeriod(periodId));
+  const allQuantifierStats = useRecoilValue(PeriodQuantifierStats(periodId));
+  const quantifierUsers = useRecoilValue(
+    ManyUsers(allQuantifierStats && allQuantifierStats.map((q) => q._id))
+  );
 
-  if (!period || !period.receivers) {
+  if (!period || !period.receivers || !allQuantifierStats) {
     return <ErrorPlaceholder height={600} />;
   }
 
-  const sortReceiversByScore = [...period.receivers].sort(
-    (a, b) => b.scoreRealized - a.scoreRealized
+  const sortStatsScore = [...allQuantifierStats].sort(
+    (a, b) => b.totalScore - a.totalScore
   );
 
-  const leafs = period.receivers.map((receiver) => {
+  const leafs = allQuantifierStats.map((q) => {
     return {
-      _id: receiver._id,
-      name: receiver.userAccount?.nameRealized || '',
-      size: receiver.scoreRealized,
-      opacity:
-        (receiver.scoreRealized / sortReceiversByScore[0].scoreRealized) * 1.0 +
-        0.1,
+      _id: q._id,
+      name: quantifierUsers?.find((u) => u?._id === q._id)?.nameRealized || '',
+      size: q.totalScore,
+      opacity: (q.totalScore / sortStatsScore[0].totalScore) * 1.0 + 0.1,
     };
   });
 
   const data: ChartData<'treemap', TreemapDataPoint[], unknown> = {
     datasets: [
       {
-        label: 'Score',
+        label: 'Total quantification score',
         tree: leafs,
         data: [],
         backgroundColor: (ctx): string => {
@@ -49,15 +48,14 @@ export const TopReceiversByScore = (): JSX.Element => {
             return 'transparent';
           }
           return `rgb(225, 0, 127, ${
-            (ctx.raw as GiverReceiverDataPoint)._data.opacity
+            (ctx.raw as UserDataPoint)._data.opacity
           })`;
         },
-
         key: 'size',
         labels: {
           display: true,
           formatter(ctx): string {
-            return (ctx.raw as GiverReceiverDataPoint)._data.name;
+            return (ctx.raw as UserDataPoint)._data.name;
           },
           color: 'white',
           font: {
@@ -76,7 +74,7 @@ export const TopReceiversByScore = (): JSX.Element => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const id = (elements[0].element as any).$context.raw._data._id;
       if (id) {
-        history.push(`/periods/${periodId}/receiver/${id}`);
+        history.push(`/periods/${periodId}/quantifier/${id}`);
       }
     },
 

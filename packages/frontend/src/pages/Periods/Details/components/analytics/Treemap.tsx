@@ -11,15 +11,15 @@ import {
 
 ChartJS.register(TreemapController, TreemapElement);
 
-interface GiverReceiverLeafData {
+interface UserLeafData {
   _id: string;
   name: string;
   size: number;
   opacity: number;
 }
 
-export interface GiverReceiverDataPoint extends TreemapDataPoint {
-  _data: GiverReceiverLeafData;
+export interface UserDataPoint extends TreemapDataPoint {
+  _data: UserLeafData;
 }
 
 export interface TreemapProps {
