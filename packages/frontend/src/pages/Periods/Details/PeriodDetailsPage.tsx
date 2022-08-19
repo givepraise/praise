@@ -20,7 +20,7 @@ import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { InlineLabel } from '@/components/ui/InlineLabel';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { ActiveUserId, HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   PeriodPageParams,
   SinglePeriod,
@@ -73,7 +73,11 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const detailsResponse = useLoadSinglePeriodDetails(periodId); // Load additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
-  const periodQuantifierPraise = usePeriodQuantifierPraise(periodId);
+  const activeUserId = useRecoilValue(ActiveUserId);
+  const periodQuantifierPraise = usePeriodQuantifierPraise(
+    periodId,
+    activeUserId || ''
+  );
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { path, url } = useRouteMatch();
 

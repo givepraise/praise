@@ -12,13 +12,17 @@ import {
 } from '@/model/periods';
 import { getQuantificationStats } from '@/utils/periods';
 import { Box } from '@/components/ui/Box';
+import { ActiveUserId } from '@/model/auth';
 
 export const QuantifierMessage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
   const history = useHistory();
+  const activeUserId = useRecoilValue(ActiveUserId);
   const quantificationStats = getQuantificationStats(
-    useRecoilValue(PeriodQuantifierReceivers(periodId))
+    useRecoilValue(
+      PeriodQuantifierReceivers({ periodId, quantifierId: activeUserId || '' })
+    )
   );
 
   if (period?.status !== PeriodStatusType.QUANTIFY || !quantificationStats)
