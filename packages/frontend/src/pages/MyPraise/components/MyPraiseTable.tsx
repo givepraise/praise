@@ -41,21 +41,6 @@ export const MyPraiseTable = (): JSX.Element | null => {
       </div>
     );
 
-  if (!Array.isArray(allPraise) || allPraise.length === 0)
-    return (
-      <div className="p-5">
-        You have not yet received any praise. <br />
-        <br />
-        <a
-          href="https://givepraise.xyz/docs/using-praise"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Learn more about how to use Praise
-        </a>
-      </div>
-    );
-
   return (
     <>
       <ul>

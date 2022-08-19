@@ -13,20 +13,6 @@ export const PraiseTable = (): JSX.Element => {
 
   return (
     <>
-      {(!Array.isArray(allPraise) || allPraise.length === 0) && (
-        <div className="p-5">
-          No praise have been dished yet.
-          <br />
-          <br />
-          <a
-            href="https://givepraise.xyz/docs/using-praise"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Learn more about how to use Praise
-          </a>
-        </div>
-      )}
       <ul>
         {allPraise?.map((praise, index) => (
           <PraiseRow praise={praise} key={index}>
