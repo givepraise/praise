@@ -6,6 +6,7 @@ import { QuantificationDto } from 'api/dist/praise/types';
 import { PeriodPageParams } from '@/model/periods';
 import { AllPeriodQuantificationsGroupedByQuantifier } from '@/model/periodAnalytics';
 import { ManyUsers } from '@/model/users';
+import { ErrorPlaceholder } from '@/components/analytics/ErrorPlaceholder';
 import { BoxPlot } from './Boxplot';
 
 export const QuantifierScoringDistribution = (): JSX.Element | null => {
@@ -20,7 +21,9 @@ export const QuantifierScoringDistribution = (): JSX.Element | null => {
   const userNames =
     quantifierUsers && quantifierUsers.map((user) => user?.nameRealized);
 
-  if (!quantifierQuants || !userNames) return null;
+  if (!quantifierQuants || !userNames) {
+    return <ErrorPlaceholder height={375} />;
+  }
 
   const options: ChartOptions<'boxplot'> = {
     onClick: (event, elements): void => {

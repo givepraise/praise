@@ -12,7 +12,7 @@ export const Top10Praise = (): JSX.Element => {
   const top10Praise = useRecoilValue(PeriodTop10Praise(periodId));
 
   if (!top10Praise) {
-    return <ErrorPlaceholder height={800} />;
+    return <ErrorPlaceholder height={1400} />;
   }
 
   return (

@@ -13,7 +13,7 @@ export const ScoreDistribution = (): JSX.Element => {
   );
 
   if (!scoreDistribution) {
-    return <ErrorPlaceholder height={600} />;
+    return <ErrorPlaceholder height={375} />;
   }
 
   const sortedScoreDistribution = [...scoreDistribution.entries()].sort(

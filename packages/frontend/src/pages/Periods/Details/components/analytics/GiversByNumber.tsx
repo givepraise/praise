@@ -17,7 +17,7 @@ export const GiversByNumber = (): JSX.Element => {
   const history = useHistory();
 
   if (!period || !period.givers) {
-    return <ErrorPlaceholder height={600} />;
+    return <ErrorPlaceholder height={375} />;
   }
 
   const sortGiversByNumber = [...period.givers].sort(

@@ -17,7 +17,7 @@ export const ReceiversByScore = (): JSX.Element => {
   const history = useHistory();
 
   if (!period || !period.receivers) {
-    return <ErrorPlaceholder height={600} />;
+    return <ErrorPlaceholder height={375} />;
   }
 
   const sortReceiversByScore = [...period.receivers].sort(

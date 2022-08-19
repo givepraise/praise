@@ -18,7 +18,7 @@ export const QuantifiersByScore = (): JSX.Element => {
   );
 
   if (!period || !period.receivers || !allQuantifierStats) {
-    return <ErrorPlaceholder height={600} />;
+    return <ErrorPlaceholder height={375} />;
   }
 
   const sortStatsScore = [...allQuantifierStats].sort(

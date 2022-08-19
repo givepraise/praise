@@ -9,7 +9,7 @@ export const PeriodStats = (): JSX.Element => {
   const periodStats = useRecoilValue(PeriodStatsSelector(periodId));
 
   if (!periodStats) {
-    return <ErrorPlaceholder height={80} />;
+    return <ErrorPlaceholder height={100} />;
   }
 
   return (
