@@ -4,7 +4,8 @@ import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 
 export const TextareaInput = (
   name: string,
-  apiResponse: AxiosResponse<unknown> | AxiosError | null
+  apiResponse: AxiosResponse<unknown> | AxiosError | null,
+  disabled?: boolean
 ): JSX.Element => {
   return (
     <Field name={name} key={name}>
@@ -17,6 +18,7 @@ export const TextareaInput = (
             autoComplete="off"
             className="block w-full resize-y"
             rows={4}
+            disabled={disabled || false}
           />
           {apiResponse && (
             <FieldErrorMessage name="name" apiResponse={apiResponse} />
