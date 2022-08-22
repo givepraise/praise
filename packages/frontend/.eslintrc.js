@@ -9,6 +9,7 @@ module.exports = {
     {
       files: ['src/**/*.ts', 'src/**/*.tsx'],
       rules: {
+        'import/no-default-export': 'off',
         '@typescript-eslint/restrict-template-expressions': 'off',
       },
     },

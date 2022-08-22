@@ -28,8 +28,10 @@ export const getQuantifierData = (
   return undefined;
 };
 
-export const periodQuantifierPraiseListKey = (periodId: string): string =>
-  `PERIOD_QUANTIFIER_PRAISE_${periodId}`;
+export const periodQuantifierPraiseListKey = (
+  periodId: string,
+  quantiferId: string
+): string => `PERIOD_QUANTIFIER_PRAISE_${periodId}_${quantiferId}`;
 
 export const periodReceiverPraiseListKey = (
   periodId: string,

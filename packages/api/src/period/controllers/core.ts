@@ -239,6 +239,39 @@ export const close = async (
 };
 
 /**
+ * Fetch all Praise in a period
+ *
+ * @param {Request} req
+ * @param {TypedResponse<PraiseDto[]>} res
+ * @returns {Promise<void>}
+ */
+export const praise = async (
+  req: Request,
+  res: TypedResponse<PraiseDto[]>
+): Promise<void> => {
+  const period = await PeriodModel.findById(req.params.periodId);
+  if (!period) throw new NotFoundError('Period');
+
+  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+
+  const praiseList = await PraiseModel.find()
+    .where({
+      createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+    })
+    .sort({ createdAt: -1 })
+    .populate('receiver giver forwarder');
+
+  const praiseDetailsDtoList: PraiseDetailsDto[] = [];
+  if (praiseList) {
+    for (const praise of praiseList) {
+      praiseDetailsDtoList.push(await praiseTransformer(praise));
+    }
+  }
+
+  res.status(StatusCodes.OK).json(praiseDetailsDtoList);
+};
+
+/**
  * Fetch all Praise in a period with a given receiver
  *
  * @param {TypedRequestQuery<PeriodReceiverPraiseInput>} req

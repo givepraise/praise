@@ -12,7 +12,7 @@ interface Params {
   disabled: boolean;
 }
 
-export const PeriodSettingsForm = ({
+const PeriodSettingsForm = ({
   periodId,
   disabled,
 }: Params): JSX.Element | null => {
@@ -50,3 +50,6 @@ export const PeriodSettingsForm = ({
     </div>
   );
 };
+
+// eslint-disable-next-line import/no-default-export
+export default PeriodSettingsForm;

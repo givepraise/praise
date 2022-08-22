@@ -12,6 +12,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
   atom,
+  atomFamily,
   selector,
   selectorFamily,
   useRecoilCallback,
@@ -49,6 +50,14 @@ export type PeriodAndReceiverPageParams = {
 };
 
 /**
+ * Types for `useParams()`
+ */
+export type PeriodAndQuantifierPageParams = {
+  periodId: string;
+  quantifierId: string;
+};
+
+/**
  * Atom that fetches all periods when initialised. `quantifiers`, `receivers`
  * and `settings` are not returned but need to be separately loaded using
  * @DetailedSinglePeriodQuery
@@ -71,6 +80,31 @@ export const AllPeriods = atom<PeriodDetailsDto[] | undefined>({
             if (Array.isArray(periods) && periods.length > 0) {
               return periods;
             }
+          }
+        })
+      );
+    },
+  ],
+});
+
+export const AllPeriodPraise = atomFamily<
+  PraiseDetailsDto[] | undefined,
+  string
+>({
+  key: 'AllPeriodPraise',
+  default: undefined,
+  effects: (periodId) => [
+    ({ setSelf, getPromise }): void => {
+      setSelf(
+        getPromise(
+          ApiAuthGet({
+            url: `/periods/${periodId}/praise`,
+          })
+        ).then((response) => {
+          if (isResponseOk(response)) {
+            const praiseDetails = response.data as PraiseDetailsDto[];
+            if (Array.isArray(praiseDetails) && praiseDetails.length > 0)
+              return praiseDetails;
           }
         })
       );
@@ -459,6 +493,7 @@ export const useExportPraise = (): useExportPraiseReturn => {
  */
 type PeriodQuantifierPraiseQueryParams = {
   periodId: string;
+  quantifierId: string;
 };
 
 /**
@@ -469,8 +504,7 @@ const PeriodQuantifierPraiseQuery = selectorFamily({
   get:
     (params: PeriodQuantifierPraiseQueryParams) =>
     ({ get }): AxiosResponse<PraiseDto[]> | AxiosError | undefined => {
-      const { periodId } = params;
-      const quantifierId = get(ActiveUserId);
+      const { periodId, quantifierId } = params;
       if (!periodId || !quantifierId) return undefined;
       return get(
         ApiAuthGet({
@@ -483,17 +517,19 @@ const PeriodQuantifierPraiseQuery = selectorFamily({
 /**
  * Fetches all praise assigned to the currently active quantifier for a period.
  * Saves praise items to global state and creates a Praise Id list with the name
- * `PERIOD_RECEIVER_PRAISE_[periodId]_[receiverId]`.
+ * `PERIOD_QUANTIFIER_PRAISE_[periodId]_[quantifierId]`.
  */
 export const usePeriodQuantifierPraise = (
-  periodId: string
+  periodId: string,
+  quantifierId: string
 ): AxiosResponse<PraiseDto[]> | AxiosError | undefined => {
   const response = useRecoilValue(
     PeriodQuantifierPraiseQuery({
       periodId,
+      quantifierId,
     })
   );
-  const listKey = periodQuantifierPraiseListKey(periodId);
+  const listKey = periodQuantifierPraiseListKey(periodId, quantifierId);
   const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
 
   const saveAllPraiseIdList = useRecoilCallback(
@@ -529,6 +565,14 @@ export const usePeriodQuantifierPraise = (
 };
 
 /**
+ * Params for @PeriodQuantifierReceivers
+ */
+type PeriodQuantifierReceiversParams = {
+  periodId: string;
+  quantifierId: string;
+};
+
+/**
  * Return format for @PeriodQuantifierReceivers
  */
 export interface QuantifierReceiverData {
@@ -545,11 +589,10 @@ export interface QuantifierReceiverData {
 export const PeriodQuantifierReceivers = selectorFamily({
   key: 'PeriodQuantifierReceivers',
   get:
-    (periodId: string) =>
+    ({ periodId, quantifierId }: PeriodQuantifierReceiversParams) =>
     ({ get }): QuantifierReceiverData[] | undefined => {
-      const listKey = periodQuantifierPraiseListKey(periodId);
+      const listKey = periodQuantifierPraiseListKey(periodId, quantifierId);
       const praiseList = get(AllPraiseList(listKey));
-      const userId = get(ActiveUserId);
       if (praiseList) {
         const q: QuantifierReceiverData[] = [];
 
@@ -561,7 +604,7 @@ export const PeriodQuantifierReceivers = selectorFamily({
           )
             return;
           praiseItem.quantifications.forEach((quantification) => {
-            if (quantification.quantifier !== userId) return;
+            if (quantification.quantifier !== quantifierId) return;
 
             const qi = q.findIndex(
               (item) => item.receiver._id === praiseItem.receiver._id
@@ -597,9 +640,9 @@ export const PeriodQuantifierReceivers = selectorFamily({
 });
 
 /**
- * Params for @PeriodQuantifierReceiver
+ * Params for @PeriodQuantifierReceiverPraise
  */
-type PeriodQuantifierReceiverParams = {
+type PeriodQuantifierReceiverPraiseParams = {
   periodId: string;
   receiverId: string;
 };
@@ -611,11 +654,11 @@ type PeriodQuantifierReceiverParams = {
 export const PeriodQuantifierReceiverPraise = selectorFamily({
   key: 'PeriodQuantifierReceiverPraise',
   get:
-    (params: PeriodQuantifierReceiverParams) =>
+    (params: PeriodQuantifierReceiverPraiseParams) =>
     ({ get }): PraiseDto[] | undefined => {
       const { periodId, receiverId } = params;
       const userId = get(ActiveUserId);
-      const listKey = periodQuantifierPraiseListKey(periodId);
+      const listKey = periodQuantifierPraiseListKey(periodId, userId || '');
       const praiseList = get(AllPraiseList(listKey));
 
       if (!praiseList) return undefined;

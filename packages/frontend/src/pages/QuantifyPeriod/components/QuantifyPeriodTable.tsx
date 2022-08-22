@@ -13,6 +13,7 @@ import {
   QuantifierReceiverData,
 } from '@/model/periods';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
+import { ActiveUserId } from '@/model/auth';
 
 const DoneLabel = (): JSX.Element => {
   return (
@@ -26,7 +27,10 @@ const DoneLabel = (): JSX.Element => {
 export const QuantifyPeriodTable = (): JSX.Element => {
   const history = useHistory();
   const { periodId } = useParams<PeriodPageParams>();
-  const data = useRecoilValue(PeriodQuantifierReceivers(periodId));
+  const activeUserId = useRecoilValue(ActiveUserId);
+  const data = useRecoilValue(
+    PeriodQuantifierReceivers({ periodId, quantifierId: activeUserId || '' })
+  );
   const usePseudonyms = useRecoilValue(
     SinglePeriodSettingValueRealized({
       periodId,

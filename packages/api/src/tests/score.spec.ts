@@ -5,7 +5,7 @@ import { add } from 'date-fns';
 import {
   calculateQuantificationScore,
   calculateQuantificationsCompositeScore,
-  calculateReceiverCompositeScore,
+  calculateGiverReceiverCompositeScore,
 } from '@/praise/utils/score';
 import {
   seedUser,
@@ -15,7 +15,7 @@ import {
   seedUserAccount,
 } from '@/database/seeder/entities';
 import { PeriodModel } from '@/period/entities';
-import { PeriodDetailsReceiver } from '@/period/types';
+import { PeriodDetailsGiverReceiver } from '@/period/types';
 import { PraiseModel } from '@/praise/entities';
 import { settingValue } from '@/shared/settings';
 import { getPeriodDateRangeQuery } from '@/period/utils/core';
@@ -570,7 +570,7 @@ describe('calculateReceiverCompositeScore', () => {
     });
 
     const dateRangeQuery = await getPeriodDateRangeQuery(period);
-    const periodDetailsReceivers: PeriodDetailsReceiver[] =
+    const periodDetailsReceivers: PeriodDetailsGiverReceiver[] =
       await PraiseModel.aggregate([
         {
           $match: {
@@ -597,7 +597,7 @@ describe('calculateReceiverCompositeScore', () => {
         },
       ]);
 
-    const score = await calculateReceiverCompositeScore(
+    const score = await calculateGiverReceiverCompositeScore(
       periodDetailsReceivers[0]
     );
 

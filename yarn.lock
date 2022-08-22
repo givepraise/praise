@@ -3203,6 +3203,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sgratzl/boxplots@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "@sgratzl/boxplots@npm:1.3.0"
+  checksum: 38d204c4a0ba9e6fdbdec5db5851950dda3dc379e4ca026cc6cbcd983f89f7a462c6691cd2d04635da5a1b007de6431d1e8ea1b34f2c921fb2ba81e4278913f4
+  languageName: node
+  linkType: hard
+
+"@sgratzl/chartjs-chart-boxplot@npm:^3.9.0":
+  version: 3.9.0
+  resolution: "@sgratzl/chartjs-chart-boxplot@npm:3.9.0"
+  dependencies:
+    "@sgratzl/boxplots": ^1.3.0
+  peerDependencies:
+    chart.js: ^3.9.1
+  dependenciesMeta:
+    chart.js@3.9.1:
+      unplugged: true
+  checksum: f393160710a063f990ebe26d12c45ae2a70d91a5a2cefb4185476dd785854eb6928277b79ab4b14dd2ee987c5f236d9d8ee93568b93d2a783b6150023af6cb34
+  languageName: node
+  linkType: hard
+
 "@sinclair/typebox@npm:^0.23.3":
   version: 0.23.5
   resolution: "@sinclair/typebox@npm:0.23.5"
@@ -6349,6 +6370,22 @@ __metadata:
   version: 0.7.0
   resolution: "chardet@npm:0.7.0"
   checksum: 6fd5da1f5d18ff5712c1e0aed41da200d7c51c28f11b36ee3c7b483f3696dabc08927fc6b227735eb8f0e1215c9a8abd8154637f3eff8cada5959df7f58b024d
+  languageName: node
+  linkType: hard
+
+"chart.js@npm:^3.9.1":
+  version: 3.9.1
+  resolution: "chart.js@npm:3.9.1"
+  checksum: 9ab0c0ac01215af0b3f020f2e313030fd6e347b48ed17d5484ee9c4e8ead45e78ae71bea16c397621c386b409ce0b14bf17f9f6c2492cd15b56c0f433efdfff6
+  languageName: node
+  linkType: hard
+
+"chartjs-chart-treemap@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "chartjs-chart-treemap@npm:2.0.2"
+  peerDependencies:
+    chart.js: ^3.0.0
+  checksum: 6de73baeb94eba9d07445356f96555577b9a26487ff82af4bb74031a8f5137245cbe9558cdcb39e6bac9c4c601826abb41f2491e45042678a3cac359333a1e5f
   languageName: node
   linkType: hard
 
@@ -9550,6 +9587,7 @@ __metadata:
     "@headlessui/react": ^1.4.1
     "@mui/material": ^5.3.0
     "@rainbow-me/rainbowkit": ^0.2.0
+    "@sgratzl/chartjs-chart-boxplot": ^3.9.0
     "@tailwindcss/forms": latest
     "@types/react": ^17.0.19
     "@types/react-csv": ^1.1.2
@@ -9563,6 +9601,8 @@ __metadata:
     autoprefixer: ^10.4.7
     axios: ^0.22.0
     axios-auth-refresh: ^3.2.2
+    chart.js: ^3.9.1
+    chartjs-chart-treemap: ^2.0.2
     craco-alias: ^3.0.1
     date-fns: ^2.25.0
     date-fns-tz: ^1.3.3
@@ -9586,6 +9626,7 @@ __metadata:
     query-string: ^7.1.0
     react: ^17.0.2
     react-bottom-scroll-listener: ^5.0.0
+    react-chartjs-2: ^4.3.1
     react-csv: ^2.2.2
     react-dom: ^17.0.2
     react-final-form: ^6.5.7
@@ -15512,6 +15553,16 @@ __metadata:
     react: ^16.0.0 || ^17.0.0
     react-dom: ^16.0.0 || ^17.0.0
   checksum: 0a735bc8e12b88c8b713b9bbcdd15bd1c28a5f6f2b290c7216f4043c09d2b3ae453a9fe3ee2abefb758595faf6850f26cd721973d608fa39f1996326edaa5611
+  languageName: node
+  linkType: hard
+
+"react-chartjs-2@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "react-chartjs-2@npm:4.3.1"
+  peerDependencies:
+    chart.js: ^3.5.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 574d12cc43b9b4a0f1e04cc692982e16ef7083c03da2a8a9fc2180fe9bcadc793008f81d8f4eec5465925eff84c95d7c523cb74376858b363ae75a83bb3c2a5d
   languageName: node
   linkType: hard
 

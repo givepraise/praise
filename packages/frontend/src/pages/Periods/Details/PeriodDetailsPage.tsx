@@ -1,6 +1,7 @@
 import {
   faBalanceScaleLeft,
   faCalendarAlt,
+  faChartBar,
   faCog,
   faHeartbeat,
 } from '@fortawesome/free-solid-svg-icons';
@@ -19,7 +20,7 @@ import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { InlineLabel } from '@/components/ui/InlineLabel';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { ActiveUserId, HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
   PeriodPageParams,
   SinglePeriod,
@@ -32,10 +33,16 @@ import { SubPageNav } from '@/navigation/SubPageNav';
 
 import { PeriodDetails } from './components/PeriodDetails';
 import { PeriodNameForm } from './components/PeriodNameForm';
-import { PeriodSettingsForm } from './components/PeriodSettingsForm';
 import { QuantifierMessage } from './components/QuantifierMessage';
-import { QuantifierTable } from './components/QuantifierTable';
-import { ReceiverTable } from './components/ReceiverTable';
+
+const ReceiverTable = React.lazy(() => import('./components/ReceiverTable'));
+const QuantifierTable = React.lazy(
+  () => import('./components/QuantifierTable')
+);
+const PeriodSettingsForm = React.lazy(
+  () => import('./components/PeriodSettingsForm')
+);
+const Analytics = React.lazy(() => import('./components/Analytics'));
 
 const PeriodDetailHead = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -66,7 +73,11 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const detailsResponse = useLoadSinglePeriodDetails(periodId); // Load additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
-  const periodQuantifierPraise = usePeriodQuantifierPraise(periodId);
+  const activeUserId = useRecoilValue(ActiveUserId);
+  const periodQuantifierPraise = usePeriodQuantifierPraise(
+    periodId,
+    activeUserId || ''
+  );
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { path, url } = useRouteMatch();
 
@@ -75,7 +86,7 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
   return (
     <Page variant={'wide'}>
       <BreadCrumb name="Periods" icon={faCalendarAlt} />
-      <BackLink to="/periods" />
+      <BackLink />
 
       <React.Suspense fallback={null}>
         <Box variant={'wide'} className="mb-5">
@@ -106,6 +117,11 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
                 description="Settings"
                 icon={faCog}
               />
+              <NavItem
+                to={`${url}/analytics`}
+                description="Analytics"
+                icon={faChartBar}
+              />
             </ul>
           </SubPageNav>
         </div>
@@ -113,17 +129,30 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
         <Box className="px-0">
           <Suspense fallback={null}>
             <Switch>
+              <Route path={`${path}/analytics`}>
+                <Suspense fallback={null}>
+                  <Analytics />
+                </Suspense>
+              </Route>
               <Route path={`${path}/receivers`}>
-                <ReceiverTable />
+                <Suspense fallback={null}>
+                  <ReceiverTable />
+                </Suspense>
               </Route>
               <Route path={`${path}/quantifiers`}>
-                <QuantifierTable />
+                <Suspense fallback={null}>
+                  <QuantifierTable />
+                </Suspense>
               </Route>
               <Route path={`${path}/settings`}>
-                <PeriodSettingsForm
-                  periodId={periodId}
-                  disabled={period.status !== PeriodStatusType.OPEN || !isAdmin}
-                />
+                <Suspense fallback={null}>
+                  <PeriodSettingsForm
+                    periodId={periodId}
+                    disabled={
+                      period.status !== PeriodStatusType.OPEN || !isAdmin
+                    }
+                  />
+                </Suspense>
               </Route>
               <Route path={`${path}`}>
                 <Redirect to={`${url}/receivers`} />

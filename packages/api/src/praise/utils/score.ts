@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import sum from 'lodash/sum';
 import { BadRequestError } from '@/error/errors';
 import { settingValue } from '@/shared/settings';
-import { PeriodDetailsReceiver } from '@/period/types';
+import { PeriodDetailsGiverReceiver } from '@/period/types';
 import { getPraisePeriod, isQuantificationCompleted } from './core';
 import { PraiseModel } from '../entities';
 import { Quantification } from '../types';
@@ -123,21 +123,19 @@ export const calculateQuantificationsCompositeScore = async (
 };
 
 /**
- * Calculates a single "composite" score for a receiver of praise in a period
+ * Calculates a single "composite" score for a giver/receiver of praise in a period
  *
- * @param {PeriodDetailsReceiver} receiver
+ * @param {PeriodDetailsGiverReceiver} gr
  * @returns {Promise<number>}
  */
-export const calculateReceiverCompositeScore = async (
-  receiver: PeriodDetailsReceiver
+export const calculateGiverReceiverCompositeScore = async (
+  gr: PeriodDetailsGiverReceiver
 ): Promise<number> => {
-  if (!receiver.quantifications) return 0;
-  if (receiver.quantifications.length === 0) return 0;
+  if (!gr.quantifications) return 0;
+  if (gr.quantifications.length === 0) return 0;
 
   const compositeScores = await Promise.all(
-    receiver.quantifications.map((q) =>
-      calculateQuantificationsCompositeScore(q)
-    )
+    gr.quantifications.map((q) => calculateQuantificationsCompositeScore(q))
   );
 
   const score = +sum(compositeScores).toFixed(DIGITS_PRECISION);

@@ -15,7 +15,7 @@
   }
 
   h2 {
-    @apply text-xl font-semibold mb-1.5;
+    @apply text-xl font-semibold;
   }
 
   a {
