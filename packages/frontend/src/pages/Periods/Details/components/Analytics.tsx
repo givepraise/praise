@@ -1,6 +1,10 @@
 import React, { Suspense } from 'react';
 
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { PeriodStatusType } from 'api/dist/period/types';
 import { LoadPlaceholder } from '@/components/analytics/LoadPlaceholder';
+import { PeriodPageParams, SinglePeriod } from '@/model/periods';
 import { Top10Praise } from './analytics/Top10Praise';
 import { ReceiversByScore } from './analytics/ReceiversByScore';
 import { PeriodStats } from './analytics/PeriodStats';
@@ -13,6 +17,15 @@ import { QuantifiersByScore } from './analytics/QuantifiersByScore';
 import { ScoreDistribution } from './analytics/ScoreDistribution';
 
 const Analytics = (): JSX.Element => {
+  const { periodId } = useParams<PeriodPageParams>();
+  const period = useRecoilValue(SinglePeriod(periodId));
+  if (!period || period.status !== PeriodStatusType.CLOSED) {
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        Analytics are available after quantification when the period is closed.
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col gap-2 px-5">
       <h2>Period metrics</h2>
