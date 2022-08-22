@@ -1,8 +1,0 @@
-/* MUI Slider styles */
-.local-MuiSlider-colorPrimary {
-  @apply !text-warm-gray-800;
-}
-
-.local-MuiSlider-disabled {
-  @apply text-warm-gray-400;
-}
