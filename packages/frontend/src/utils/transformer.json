@@ -6,13 +6,15 @@
       "amount": "scoreRealized",
       "token": "context.token"
     },
-    "operate": {
-      "run": {
-        "arguments": "val, context",
-        "body": "return (val / context.totalPraiseScore) * context.budget;"
-      },
-      "on": "amount"
-    },
+    "operate": [
+      {
+        "run": {
+          "arguments": "val, context",
+          "body": "return (val / context.totalPraiseScore) * context.budget;"
+        },
+        "on": "amount"
+      }
+    ],
     "each": {
       "arguments": "item, index, collection, context",
       "body": "item.token = context.token; return item;"

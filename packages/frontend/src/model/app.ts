@@ -10,6 +10,14 @@ export interface GithubResponse {
   name: string;
 }
 
+interface GithubFileResponseData {
+  content: string;
+}
+
+export interface GithubFileResponse {
+  data: GithubFileResponseData;
+}
+
 export const GithubVersionQuery = selector({
   key: 'GithubVersionQuery',
   get: ({ get }): AxiosResponse<GithubResponse> => {
@@ -54,11 +62,14 @@ export const IsHeaderBannerClosed = atomFamily<boolean, string>({
 
 export const AragonTransformerQuery = selector({
   key: 'AragonTransformerQuery',
-  get: ({ get }) => {
+  get: ({ get }): AxiosResponse<GithubFileResponseData> => {
+    const repoOwner = process.env.REACT_APP_GITHUB_REPO_OWNER;
+    const repoName = process.env.REACT_APP_GITHUB_EXPORTS_REPO_NAME;
+
     return get(
       ExternalGet({
-        url: 'https://github.com/commons-stack/praise-exports/blob/2fcd222cd2903b432df951b4e10341ba0462e593/aragon.json',
+        url: `https://api.github.com/repos/${repoOwner}/${repoName}/contents/aragon.json`,
       })
-    );
+    ) as AxiosResponse<GithubFileResponseData>;
   },
 });

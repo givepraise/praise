@@ -5,10 +5,12 @@ import {
   PeriodReceiverDto,
 } from 'api/dist/period/types';
 import { compareDesc } from 'date-fns';
-import { transform } from 'node-json-transform';
+// import { transform } from 'node-json-transform';
 import { SettingDto } from 'api/dist/settings/types';
+import safeEval from 'safe-eval';
 import { QuantifierReceiverData, SummarizedPeriodData } from '@/model/periods';
 import transformer from '@/utils/transformer.json';
+import { transform } from './jsonTransformer';
 
 export const getPreviousPeriod = (
   allPeriods: PeriodDetailsDto[],
@@ -72,12 +74,25 @@ export const getQuantificationReceiverStats = (
   return data.find((qrd) => qrd.receiver._id === receiverId);
 };
 
+interface MapTransformer {
+  name: string;
+  map: {
+    item: any;
+    operate: any;
+    each: any;
+  };
+  context: object;
+}
+
 export const getSummarizedReceiverData = (
   data: PeriodReceiverDto[],
   customExportContext: SettingDto | undefined,
-  csSupportPercentage: SettingDto | undefined
+  csSupportPercentage: SettingDto | undefined,
+  mapTransformer: string
 ): SummarizedPeriodData[] => {
   if (!customExportContext || !csSupportPercentage) return [];
+
+  // const transformer = JSON.parse(mapTransformer) as MapTransformer;
 
   const exportContext = JSON.parse(
     customExportContext.value
@@ -99,16 +114,13 @@ export const getSummarizedReceiverData = (
 
   const map = {
     item: transformer.map.item,
-    operate: [
-      {
+    operate: transformer.map.operate.map((operateItem) => {
+      return {
         // eslint-disable-next-line @typescript-eslint/no-implied-eval
-        run: new Function(
-          transformer.map.operate.run.arguments,
-          transformer.map.operate.run.body
-        ),
-        on: transformer.map.operate.on,
-      },
-    ],
+        run: new Function(operateItem.run.arguments, operateItem.run.body),
+        on: operateItem.on,
+      };
+    }),
     // eslint-disable-next-line @typescript-eslint/no-implied-eval
     each: new Function(
       transformer.map.each.arguments,

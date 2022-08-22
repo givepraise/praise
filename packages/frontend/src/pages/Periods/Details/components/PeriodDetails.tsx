@@ -11,6 +11,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 import { PeriodReceiverDto } from 'api/dist/period/types';
+import { Base64 } from 'js-base64';
 import { Button } from '@/components/ui/Button';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
@@ -54,7 +55,9 @@ export const PeriodDetails = (): JSX.Element | null => {
 
   const { closePeriod } = useClosePeriod();
   const { assignQuantifiers } = useAssignQuantifiers(periodId);
-  // const mapTransformer = useRecoilValue(AragonTransformerQuery);
+  const mapTransformerResponse = useRecoilValue(AragonTransformerQuery);
+  const mapTransformer = Base64.decode(mapTransformerResponse.data.content);
+
   // console.log('MAP TRANSFORMER:', mapTransformer);
 
   const csSupportPercentage = useRecoilValue(
@@ -131,7 +134,8 @@ export const PeriodDetails = (): JSX.Element | null => {
             const summarizedData = getSummarizedReceiverData(
               data,
               customExportContextSettings,
-              csSupportPercentage
+              csSupportPercentage,
+              mapTransformer
             );
             console.log('SUM ADATA: ', summarizedData);
             const blob = new Blob([JSON.stringify(summarizedData)], {
