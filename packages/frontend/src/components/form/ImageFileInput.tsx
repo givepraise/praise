@@ -2,7 +2,8 @@ import { Field } from 'react-final-form';
 
 export const ImageFileInput = (
   name: string,
-  src: string | undefined
+  src: string | undefined,
+  disabled?: boolean
 ): JSX.Element => {
   return (
     <Field<FileList> name={name} key={name}>
@@ -15,6 +16,7 @@ export const ImageFileInput = (
             type="file"
             className="block w-full"
             onChange={({ target }): void => onChange(target.files)}
+            disabled={disabled || false}
           />
 
           <div className="mt-2">

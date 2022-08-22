@@ -83,7 +83,7 @@ export const DuplicateDialog = ({
           )}
           <Praise
             praise={originalPraise}
-            className="p-5 rounded-md bg-warm-gray-100"
+            className="p-5 rounded-md bg-warm-gray-100 dark:bg-slate-500"
             showScore={false}
             bigGiverAvatar={false}
             showReceiver={false}

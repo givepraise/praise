@@ -219,7 +219,10 @@ export const QuantifyTable = ({
         </div>
       </div>
 
-      <Box className="p-0 pb-5 overflow-x-auto rounded-t-none" variant={'wide'}>
+      <Box
+        className="p-0 pb-5 overflow-x-auto !rounded-t-none"
+        variant={'wide'}
+      >
         <table className="w-full table-auto">
           <tbody>
             {Object.keys(weeklyData).map((weekKey, index) => (
