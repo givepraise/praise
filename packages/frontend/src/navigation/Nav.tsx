@@ -73,13 +73,13 @@ export const Nav = (): JSX.Element => {
 
         <div className="flex h-12 m-4 mt-auto">
           <div
-            className="items-center justify-center hidden border-2 rounded-lg cursor-pointer dark:flex dark:text-white text-themecolor-3 grow dark:border-slate-700"
+            className="items-center justify-center hidden h-12 border-2 rounded-lg cursor-pointer dark:flex dark:text-white text-themecolor-3 grow dark:border-slate-700"
             onClick={(): void => handleTheme('Light')}
           >
             <FontAwesomeIcon icon={faSun} size="lg" />
           </div>
           <div
-            className="flex items-center justify-center border-2 rounded-lg cursor-pointer dark:hidden dark:text-white text-themecolor-3 grow dark:border-slate-700"
+            className="flex items-center justify-center h-12 border-2 rounded-lg cursor-pointer dark:hidden dark:text-white text-themecolor-3 grow dark:border-slate-700"
             onClick={(): void => handleTheme('Dark')}
           >
             <FontAwesomeIcon icon={faMoon} size="lg" />
