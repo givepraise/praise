@@ -7,8 +7,6 @@ import {
   PeriodDetailsGiverReceiverDto,
   PeriodDocument,
   PeriodDetailsDto,
-  PeriodReceiverDto,
-  PeriodReceiver,
 } from './types';
 
 /**
@@ -103,25 +101,22 @@ export const periodDetailsGiverReceiverListTransformer = async (
  * @returns {Promise<PeriodDetailsReceiverDto>}
  */
 const periodReceiverToDto = async (
-  periodReceiver: PeriodDetailsReceiver
-): Promise<PeriodReceiverDto> => {
-  const { _id, praiseCount, quantifications, scoreRealized, userAccounts } =
-    periodReceiver;
+  periodReceiver: PeriodDetailsGiverReceiverDto
+): Promise<PeriodDetailsGiverReceiverDto> => {
+  const { _id, praiseCount, scoreRealized, userAccount } = periodReceiver;
+  let ethereumAddress = undefined;
 
-  const receiver = await UserModel.findById(userAccounts[0].user);
+  if (userAccount) {
+    const receiver = await UserModel.findById(userAccount.user);
+    ethereumAddress = receiver?.ethereumAddress;
+  }
 
   return {
     _id: _id.toString(),
     praiseCount,
-    quantifications: await listOfQuantificationListsTransformer(
-      quantifications
-    ),
-    ethereumAddress: receiver?.ethereumAddress,
+    ethereumAddress,
     scoreRealized,
-    userAccount:
-      Array.isArray(userAccounts) && userAccounts.length > 0
-        ? userAccountTransformer(userAccounts[0])
-        : undefined,
+    userAccount,
   };
 };
 
@@ -132,10 +127,10 @@ const periodReceiverToDto = async (
  * @returns {Promise<PeriodReceiverDto[]>}
  */
 export const periodReceiverListTransformer = async (
-  periodReceiverList: PeriodDetailsReceiver[] | undefined
-): Promise<PeriodReceiverDto[]> => {
+  periodReceiverList: PeriodDetailsGiverReceiverDto[] | undefined
+): Promise<PeriodDetailsGiverReceiverDto[]> => {
   if (periodReceiverList && Array.isArray(periodReceiverList)) {
-    const periodReceiverDto: PeriodReceiverDto[] = [];
+    const periodReceiverDto: PeriodDetailsGiverReceiverDto[] = [];
     for (const pdr of periodReceiverList) {
       periodReceiverDto.push(await periodReceiverToDto(pdr));
     }

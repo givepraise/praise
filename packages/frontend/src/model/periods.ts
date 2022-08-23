@@ -5,7 +5,6 @@ import {
   PeriodUpdateInput,
   PeriodReplaceQuantifierDto,
   VerifyQuantifierPoolSizeResponse,
-  PeriodReceiverDto,
 } from 'api/dist/period/types';
 import { PraiseDetailsDto, PraiseDto } from 'api/dist/praise/types';
 import { UserAccountDto } from 'api/dist/useraccount/types';
@@ -498,9 +497,7 @@ export interface SummarizedPeriodData {
 }
 
 type useExportSummaryPraiseReturn = {
-  exportSummaryPraise: (
-    period: PeriodDetailsDto
-  ) => Promise<PeriodReceiverDto[] | undefined>;
+  exportSummaryPraise: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
 };
 
 /**
@@ -511,17 +508,17 @@ export const useExportSummaryPraise = (): useExportSummaryPraiseReturn => {
 
   const exportSummaryPraise = async (
     period: PeriodDetailsDto
-  ): Promise<PeriodReceiverDto[] | undefined> => {
+  ): Promise<Blob | undefined> => {
     if (!period) return undefined;
 
     const response = await apiAuthClient.get(
-      `/admin/periods/${period._id}/exportSummary`
+      `/admin/periods/${period._id}/exportSummary`,
+      { responseType: 'blob' }
     );
 
     // If OK response, add returned period object to local state
     if (isResponseOk(response)) {
-      const data = <Array<PeriodReceiverDto>>response.data;
-      return data;
+      return response.data as Blob;
     }
   };
 

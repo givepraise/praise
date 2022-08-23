@@ -5155,6 +5155,7 @@ __metadata:
     morgan: ^1.10.0
     nodemon: ^2.0.18
     nyc: ^15.1.0
+    safe-eval: ^0.4.1
     supertest: ^6.2.2
     ts-node: ^10.4.0
     tsconfig-paths: ^3.14.1

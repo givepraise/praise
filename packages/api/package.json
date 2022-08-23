@@ -53,6 +53,7 @@
     "mongoose": "^6.1.2",
     "mongoose-paginate-ts": "^1.2.0",
     "morgan": "^1.10.0",
+    "safe-eval": "^0.4.1",
     "umzug": "^3.0.0"
   },
   "devDependencies": {

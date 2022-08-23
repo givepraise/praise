@@ -10,8 +10,6 @@ import { toast } from 'react-hot-toast';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
-import { PeriodReceiverDto } from 'api/dist/period/types';
-import { Base64 } from 'js-base64';
 import { Button } from '@/components/ui/Button';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import {
@@ -27,10 +25,8 @@ import {
 import { AllQuantifierUsers } from '@/model/users';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { saveLocalFile } from '@/utils/file';
-import { getPreviousPeriod, getSummarizedReceiverData } from '@/utils/periods';
+import { getPreviousPeriod } from '@/utils/periods';
 
-import { AragonTransformerQuery } from '@/model/app';
-import { SingleSetting } from '@/model/settings';
 import { PeriodAssignDialog } from './AssignDialog';
 import { PeriodCloseDialog } from './CloseDialog';
 import { PeriodDateForm } from './PeriodDateForm';
@@ -55,18 +51,6 @@ export const PeriodDetails = (): JSX.Element | null => {
 
   const { closePeriod } = useClosePeriod();
   const { assignQuantifiers } = useAssignQuantifiers(periodId);
-  const mapTransformerResponse = useRecoilValue(AragonTransformerQuery);
-  const mapTransformer = Base64.decode(mapTransformerResponse.data.content);
-
-  // console.log('MAP TRANSFORMER:', mapTransformer);
-
-  const csSupportPercentage = useRecoilValue(
-    SingleSetting('CS_SUPPORT_PERCENTAGE')
-  );
-
-  const customExportContextSettings = useRecoilValue(
-    SingleSetting('CUSTOM_EXPORT_CONTEXT')
-  );
 
   if (!period || !allPeriods) return null;
 
@@ -129,25 +113,13 @@ export const PeriodDetails = (): JSX.Element | null => {
       exportSummaryPraise(period),
       {
         loading: 'Distributing …',
-        success: (data: PeriodReceiverDto[] | undefined) => {
+        success: (data: Blob | undefined) => {
           if (data) {
-            const summarizedData = getSummarizedReceiverData(
-              data,
-              customExportContextSettings,
-              csSupportPercentage,
-              mapTransformer
-            );
-            console.log('SUM ADATA: ', summarizedData);
-            const blob = new Blob([JSON.stringify(summarizedData)], {
-              type: 'application/txt',
-            });
-
-            saveLocalFile(blob, 'period-distribution.csv');
+            saveLocalFile(data, 'summary-export.csv');
             setTimeout(() => toast.remove(toastId), 2000);
-
-            return 'Distribution done';
+            return 'Export done';
           }
-          return 'Empty distribution returned';
+          return 'Empty export returned';
         },
         error: 'Distribution failed',
       },

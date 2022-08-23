@@ -50,14 +50,6 @@ export interface PeriodDetailsGiverReceiverDto {
   _id: string;
   praiseCount: number;
   quantifications?: Array<Array<QuantificationDto>>;
-  scoreRealized: number;
-  userAccount?: UserAccountDto;
-}
-
-export interface PeriodReceiverDto {
-  _id: string;
-  praiseCount: number;
-  quantifications?: Array<Array<QuantificationDto>>;
   ethereumAddress?: string;
   scoreRealized: number;
   userAccount?: UserAccountDto;
@@ -132,4 +124,10 @@ export interface PeriodReplaceQuantifierDto {
 export interface ReplaceQuantifierRequestBody {
   currentQuantifierId: string;
   newQuantifierId: string;
+}
+
+export interface SummarizedPeriodData {
+  address: string;
+  amount: number;
+  token: string;
 }

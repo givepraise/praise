@@ -3,12 +3,29 @@ import { SettingsModel } from '../../settings/entities';
 
 const settings = [
   {
+    key: 'CUSTOM_EXPORT_MAP',
+    value:
+      'https://github.com/commons-stack/praise-exports/blob/main/aragon.json',
+    type: 'String',
+    label: 'Custom export map',
+    description: 'Custom export map',
+    group: SettingGroup.APPLICATION,
+  },
+  {
     key: 'CUSTOM_EXPORT_CONTEXT',
     value: '{}',
     type: 'Object',
     label: 'Custom export context',
     description: 'Custom export context',
-    group: SettingGroup.PERIOD_DEFAULT,
+    group: SettingGroup.APPLICATION,
+  },
+  {
+    key: 'CUSTOM_EXPORT_CSV_FORMAT',
+    value: 'csv',
+    type: 'String',
+    label: 'Custom export csv format',
+    description: 'Custom export csv format',
+    group: SettingGroup.APPLICATION,
   },
   {
     key: 'CS_SUPPORT_PERCENTAGE',

@@ -6,6 +6,9 @@ import { periodsettingListTransformer } from '@/periodsettings/transformers';
 import { PeriodSettingsModel } from '@/periodsettings/entities';
 import { settingValue } from '@/shared/settings';
 import { isQuantificationCompleted } from '@/praise/utils/core';
+import { SettingDto } from '@/settings/types';
+import transformer from './transformer.json';
+import { transform } from './jsonTransformer';
 import { PeriodModel } from '../entities';
 import {
   periodDetailsGiverReceiverListTransformer,
@@ -19,6 +22,8 @@ import {
   PeriodDetailsGiverReceiver,
   PeriodDateRange,
   PeriodStatusType,
+  SummarizedPeriodData,
+  PeriodDetailsGiverReceiverDto,
 } from '../types';
 
 /**
@@ -294,4 +299,51 @@ export const isPeriodLatest = async (
   if (latestPeriods[0]._id.toString() === period._id.toString()) return true;
 
   return false;
+};
+
+export const getSummarizedReceiverData = (
+  data: PeriodDetailsGiverReceiverDto[] | undefined,
+  customExportContext: string,
+  csSupportPercentage: number
+): SummarizedPeriodData[] => {
+  if (!data) return [];
+
+  // const transformer = JSON.parse(mapTransformer) as MapTransformer;
+
+  const exportContext = JSON.parse(
+    customExportContext
+  ) as typeof transformer.context;
+
+  const totalPraiseScore = data
+    .map((item) => item.scoreRealized)
+    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+    .reduce((prev, next) => prev + next);
+
+  const context = {
+    ...exportContext,
+    ...{
+      totalPraiseScore: totalPraiseScore,
+      csWalletAddress: 'Test ETH address',
+      csSupportPercentage: csSupportPercentage,
+    },
+  };
+
+  const map = {
+    item: transformer.map.item,
+    operate: transformer.map.operate.map((operateItem) => {
+      return {
+        // eslint-disable-next-line @typescript-eslint/no-implied-eval
+        run: new Function(operateItem.run.arguments, operateItem.run.body),
+        on: operateItem.on,
+      };
+    }),
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+    each: new Function(
+      transformer.map.each.arguments,
+      transformer.map.each.body
+    ),
+  };
+
+  const result = transform(data, map, context);
+  return result;
 };

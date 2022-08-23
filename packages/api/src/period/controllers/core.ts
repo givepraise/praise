@@ -32,18 +32,19 @@ import {
   PeriodQuantifierPraiseInput,
   PeriodStatusType,
   PeriodReceiverPraiseInput,
-  PeriodReceiverDto,
 } from '../types';
 import {
   findPeriodDetailsDto,
   getPeriodDateRangeQuery,
   getPreviousPeriodEndDate,
+  getSummarizedReceiverData,
   isPeriodLatest,
-  receiversWithScores,
-  findPeriodReceivers,
 } from '../utils/core';
 import { PeriodModel } from '../entities';
-import { periodTransformer } from '../transformers';
+import {
+  periodReceiverListTransformer,
+  periodTransformer,
+} from '../transformers';
 
 /**
  * Fetch a paginated list of Periods
@@ -516,6 +517,49 @@ export const exportSummary = async (
   req: TypedRequestBody<QueryInput>,
   res: Response
 ): Promise<void> => {
-  const periodReceiversDto = await findPeriodReceivers(req.params.periodId);
-  res.status(StatusCodes.OK).json(periodReceiversDto);
+  /**
+   * TODO: use this url in variable to load transformer
+   */
+  const customExportMapSetting = (await settingValue(
+    'CUSTOM_EXPORT_MAP'
+  )) as string;
+
+  const customExportContextSetting = (await settingValue(
+    'CUSTOM_EXPORT_CONTEXT'
+  )) as string;
+
+  const csSupportPercentageSetting = (await settingValue(
+    'CS_SUPPORT_PERCENTAGE'
+  )) as number;
+
+  const periodDetailsDto = await findPeriodDetailsDto(req.params.periodId);
+  const receivers = await periodReceiverListTransformer(
+    periodDetailsDto.receivers
+  );
+
+  const fields = [
+    {
+      label: 'ADDRESS',
+      value: 'address',
+    },
+    {
+      label: 'AMOUNT',
+      value: 'amount',
+    },
+    {
+      label: 'TOKEN',
+      value: 'tokenName',
+    },
+  ];
+
+  const summarizedReceiverData = getSummarizedReceiverData(
+    receivers,
+    customExportContextSetting,
+    csSupportPercentageSetting
+  );
+
+  const json2csv = new Parser({ fields: fields });
+  const csv = json2csv.parse(summarizedReceiverData);
+
+  res.status(200).contentType('text/csv').attachment('data.csv').send(csv);
 };
