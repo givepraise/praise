@@ -13,9 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Refactored some of the UI componentsb #537 #482
+- Refactored some of the UI components to bet #537 #482
 - Allow header banner messages to be closed #528 #541
 - Re-introduces the enforcement of validation rules when creating periods. New periods must be created at least 7 days after the previous/latest period. #518 #550
+- **Frontend:** Upgraded Caddy, the web servers that serves the frontend to v2.5.2. The upgrade amongst others resolves a minor security vulnerability.
 
 ## [0.10.0] - 2022-07-01
 
