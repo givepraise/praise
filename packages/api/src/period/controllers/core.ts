@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import { StatusCodes } from 'http-status-codes';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
-import { parseISO } from 'date-fns';
+import { add, compareAsc, parseISO } from 'date-fns';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import { PraiseDtoExtended, PraiseDetailsDto, PraiseDto } from '@/praise/types';
 import {
@@ -113,12 +113,24 @@ export const create = async (
   req: TypedRequestBody<PeriodUpdateInput>,
   res: TypedResponse<PeriodDetailsDto>
 ): Promise<void> => {
-  const { name, endDate } = req.body;
+  const { name, endDate: endDateInput } = req.body;
 
-  if (!name || !endDate)
+  if (!name || !endDateInput)
     throw new BadRequestError('Period name and endDate are required');
 
-  const period = await PeriodModel.create({ name, endDate: parseISO(endDate) });
+  const endDate = parseISO(endDateInput);
+
+  const latestPeriod = await PeriodModel.getLatest();
+  if (latestPeriod) {
+    const earliestDate = add(latestPeriod.endDate, { days: 7 });
+    if (compareAsc(earliestDate, endDate) === 1) {
+      throw new BadRequestError(
+        'End date must be at least 7 days after the latest end date'
+      );
+    }
+  }
+
+  const period = await PeriodModel.create({ name, endDate });
   await insertNewPeriodSettings(period);
 
   await logEvent(
@@ -170,7 +182,7 @@ export const update = async (
   if (endDate) {
     const latest = await isPeriodLatest(period);
     if (!latest)
-      throw new BadRequestError('Date change only allowed on last period.');
+      throw new BadRequestError('Date change only allowed on latest period.');
 
     if (period.status !== PeriodStatusType.OPEN)
       throw new BadRequestError('Date change only allowed on open periods.');
@@ -227,6 +239,39 @@ export const close = async (
   const periodDetailsDto = await findPeriodDetailsDto(period._id);
 
   res.status(StatusCodes.OK).json(periodDetailsDto);
+};
+
+/**
+ * Fetch all Praise in a period
+ *
+ * @param {Request} req
+ * @param {TypedResponse<PraiseDto[]>} res
+ * @returns {Promise<void>}
+ */
+export const praise = async (
+  req: Request,
+  res: TypedResponse<PraiseDto[]>
+): Promise<void> => {
+  const period = await PeriodModel.findById(req.params.periodId);
+  if (!period) throw new NotFoundError('Period');
+
+  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+
+  const praiseList = await PraiseModel.find()
+    .where({
+      createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+    })
+    .sort({ createdAt: -1 })
+    .populate('receiver giver forwarder');
+
+  const praiseDetailsDtoList: PraiseDetailsDto[] = [];
+  if (praiseList) {
+    for (const praise of praiseList) {
+      praiseDetailsDtoList.push(await praiseTransformer(praise));
+    }
+  }
+
+  res.status(StatusCodes.OK).json(praiseDetailsDtoList);
 };
 
 /**

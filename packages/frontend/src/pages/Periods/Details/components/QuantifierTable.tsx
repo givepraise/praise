@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-key */
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import sortBy from 'lodash/sortBy';
@@ -21,8 +21,9 @@ import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { isResponseOk } from '@/model/api';
 import { ReplaceQuantifierDialog } from './ReplaceQuantifierDialog';
 
-export const QuantifierTable = (): JSX.Element => {
+const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
+  const history = useHistory();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   useLoadSinglePeriodDetails(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
@@ -136,6 +137,11 @@ export const QuantifierTable = (): JSX.Element => {
       </div>
     );
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleClick = (data: any) => (): void => {
+    history.push(`/periods/${periodId}/quantifier/${data._id}`);
+  };
+
   return (
     <>
       <table
@@ -165,7 +171,11 @@ export const QuantifierTable = (): JSX.Element => {
           {rows.map((row) => {
             prepareRow(row);
             return (
-              <tr id="" {...row.getRowProps()} className="group">
+              <tr
+                className="cursor-pointer hover:bg-warm-gray-100 dark:hover:bg-slate-500"
+                {...row.getRowProps()}
+                onClickCapture={handleClick(row.original)}
+              >
                 {row.cells.map((cell) => {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const className = (cell.column as any).className as string;
@@ -195,3 +205,6 @@ export const QuantifierTable = (): JSX.Element => {
     </>
   );
 };
+
+// eslint-disable-next-line import/no-default-export
+export default QuantifierTable;

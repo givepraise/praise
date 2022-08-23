@@ -13,13 +13,17 @@ import { getQuantificationStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
+import { ActiveUserId } from '@/model/auth';
 import { QuantifyPeriodTable } from './components/QuantifyPeriodTable';
 
 const PeriodMessage = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
+  const activeUserId = useRecoilValue(ActiveUserId);
   const quantificationStats = getQuantificationStats(
-    useRecoilValue(PeriodQuantifierReceivers(periodId))
+    useRecoilValue(
+      PeriodQuantifierReceivers({ periodId, quantifierId: activeUserId || '' })
+    )
   );
 
   return (
@@ -40,14 +44,18 @@ const PeriodMessage = (): JSX.Element => {
 const QuantifyPeriodPage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
-  const periodQuantifierPraise = usePeriodQuantifierPraise(periodId);
+  const activeUserId = useRecoilValue(ActiveUserId);
+  const periodQuantifierPraise = usePeriodQuantifierPraise(
+    periodId,
+    activeUserId || ''
+  );
 
   if (!period || !periodQuantifierPraise) return null;
 
   return (
     <Page>
       <BreadCrumb name="Quantify" icon={faCalendarAlt} />
-      <BackLink to={`/periods/${periodId}`} />
+      <BackLink />
 
       <React.Suspense fallback={null}>
         <Box className="mb-5">

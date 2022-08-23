@@ -9,10 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- New setting! Restrict praising to certain channels. #264 #452
+
 ### Fixed
 
 - Refactored some of the UI componentsb #537 #482
 - Allow header banner messages to be closed #528 #541
+- Re-introduces the enforcement of validation rules when creating periods. New periods must be created at least 7 days after the previous/latest period. #518 #550
 
 ## [0.10.0] - 2022-07-01
 

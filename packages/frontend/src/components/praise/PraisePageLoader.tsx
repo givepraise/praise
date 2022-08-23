@@ -1,7 +1,11 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { BottomScrollListener } from 'react-bottom-scroll-listener';
 import { useRecoilValue } from 'recoil';
-import { AllPraiseQueryPagination, useAllPraise } from '@/model/praise';
+import {
+  AllPraiseList,
+  AllPraiseQueryPagination,
+  useAllPraise,
+} from '@/model/praise';
 import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 
 interface Params {
@@ -13,6 +17,7 @@ export const PraisePageLoader = ({
   listKey,
   receiverId,
 }: Params): JSX.Element => {
+  const allPraise = useRecoilValue(AllPraiseList(listKey));
   const praisePagination = useRecoilValue(AllPraiseQueryPagination(listKey));
   const [nextPageNumber, setNextPageNumber] = useState<number>(
     praisePagination.currentPage + 1
@@ -49,6 +54,23 @@ export const PraisePageLoader = ({
       </div>
     );
 
+  if (!Array.isArray(allPraise) || allPraise.length === 0)
+    return (
+      <div className="p-5">
+        {receiverId
+          ? 'You have not yet received any praise.'
+          : 'No praise have been dished yet.'}
+        <br />
+        <br />
+        <a
+          href="https://givepraise.xyz/docs/using-praise"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Learn more about how to use Praise
+        </a>
+      </div>
+    );
   /* This will trigger handleOnDocumentBottom when the body of the page hits the bottom */
   return <BottomScrollListener onBottom={handleContainerOnBottom} />;
 };

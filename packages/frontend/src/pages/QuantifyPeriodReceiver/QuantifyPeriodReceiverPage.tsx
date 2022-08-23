@@ -20,6 +20,7 @@ import { getQuantificationReceiverStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
+import { ActiveUserId } from '@/model/auth';
 import { QuantifyTable } from './components/QuantifyTable';
 
 const PeriodBreadCrumb = (): JSX.Element | null => {
@@ -46,8 +47,11 @@ const PeriodMessage = (): JSX.Element | null => {
       key: 'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS',
     })
   ) as boolean;
+  const activeUserId = useRecoilValue(ActiveUserId);
   const quantifierReceiverData = getQuantificationReceiverStats(
-    useRecoilValue(PeriodQuantifierReceivers(periodId)),
+    useRecoilValue(
+      PeriodQuantifierReceivers({ periodId, quantifierId: activeUserId || '' })
+    ),
     receiverId
   );
 
@@ -79,14 +83,15 @@ const PeriodMessage = (): JSX.Element | null => {
 
 const QuantifyPeriodReceiverPage = (): JSX.Element => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
-  usePeriodQuantifierPraise(periodId);
+  const activeUserId = useRecoilValue(ActiveUserId);
+  usePeriodQuantifierPraise(periodId, activeUserId || '');
 
   return (
     <Page variant={'wide'}>
       <React.Suspense fallback={null}>
         <PeriodBreadCrumb />
       </React.Suspense>
-      <BackLink to={`/periods/${periodId}/quantify`} />
+      <BackLink />
 
       <React.Suspense fallback={null}>
         <Box className="mb-5" variant={'wide'}>

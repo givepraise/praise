@@ -5,6 +5,7 @@ import { useRecoilValue } from 'recoil';
 import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { PeriodQuantifierReceivers } from '@/model/periods';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
+import { ActiveUserId } from '@/model/auth';
 
 interface Props {
   periodId: string;
@@ -14,7 +15,10 @@ export const QuantifyBackNextLink = ({
   periodId,
   receiverId,
 }: Props): JSX.Element | null => {
-  const receivers = useRecoilValue(PeriodQuantifierReceivers(periodId));
+  const activeUserId = useRecoilValue(ActiveUserId);
+  const receivers = useRecoilValue(
+    PeriodQuantifierReceivers({ periodId, quantifierId: activeUserId || '' })
+  );
 
   const usePseudonyms = useRecoilValue(
     SinglePeriodSettingValueRealized({

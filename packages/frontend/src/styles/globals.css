@@ -15,39 +15,37 @@
   }
 
   h2 {
-    @apply text-xl font-semibold mb-1.5;
+    @apply text-xl font-semibold;
   }
 
   a {
     @apply underline;
   }
 
-  input, textarea {
-    @apply text-sm dark:border-slate-400 dark:bg-slate-500 dark:placeholder-white; 
+  input,
+  textarea {
+    @apply text-sm dark:border-slate-400 dark:bg-slate-500 dark:placeholder-white dark:disabled:text-slate-400 dark:disabled:border-slate-400 disabled:text-warm-gray-400 disabled:border-warm-gray-400;
   }
-
 
   [type='text']:focus,
-    [type='email']:focus,
-    [type='url']:focus,
-    [type='password']:focus,
-    [type='number']:focus,
-    [type='date']:focus,
-    [type='datetime-local']:focus,
-    [type='month']:focus,
-    [type='search']:focus,
-    [type='tel']:focus,
-    [type='time']:focus,
-    [type='week']:focus,
-    [multiple]:focus,
-    textarea:focus,
-    select:focus {
-      @apply  border-warm-gray-900 dark:border-slate-300 dark:focus:ring-slate-300 focus:ring-warm-gray-900;
-    }
-    
-    [type='checkbox'] {
-      @apply text-gray-900 border border-warm-gray-900 focus:border-warm-gray-900 focus:border-2 focus:ring-0;
-    }
-    
+  [type='email']:focus,
+  [type='url']:focus,
+  [type='password']:focus,
+  [type='number']:focus,
+  [type='date']:focus,
+  [type='datetime-local']:focus,
+  [type='month']:focus,
+  [type='search']:focus,
+  [type='tel']:focus,
+  [type='time']:focus,
+  [type='week']:focus,
+  [multiple]:focus,
+  textarea:focus,
+  select:focus {
+    @apply border-warm-gray-900 dark:border-slate-300 dark:focus:ring-slate-300 focus:ring-warm-gray-900;
   }
 
+  [type='checkbox'] {
+    @apply text-gray-900 border border-warm-gray-900 focus:border-warm-gray-900 focus:border-2 focus:ring-0;
+  }
+}

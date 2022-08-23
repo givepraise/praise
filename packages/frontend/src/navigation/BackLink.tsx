@@ -1,18 +1,17 @@
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
-interface BackLinkProps {
-  to: string;
-}
-
-export const BackLink = ({ to }: BackLinkProps): JSX.Element => {
+export const BackLink = (): JSX.Element => {
+  const history = useHistory();
   return (
     <div className="hidden mb-2 md:block">
-      <Link
-        to={to}
+      <div
         className="mb-2 text-sm no-underline cursor-pointer hover:underline"
+        onClick={(): void => {
+          history.goBack();
+        }}
       >
         ← Back
-      </Link>
+      </div>
     </div>
   );
 };

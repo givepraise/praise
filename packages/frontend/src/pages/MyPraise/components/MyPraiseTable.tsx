@@ -24,10 +24,23 @@ export const MyPraiseTable = (): JSX.Element | null => {
   const user = useRecoilValue(SingleUser(userId));
   const receiverId = getReceiverId(user);
 
-  if (!receiverId) return null;
+  if (!receiverId)
+    return (
+      <div className="p-5">
+        No user account is linked to current Ethereum address. Activate your
+        account to see received praise.
+        <br />
+        <br />
+        <a
+          href="https://givepraise.xyz/docs/using-praise"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Learn more about how to use Praise
+        </a>
+      </div>
+    );
 
-  if (!Array.isArray(allPraise) || allPraise.length === 0)
-    return <div className="p-5">You have not yet received any praise.</div>;
   return (
     <>
       <ul>

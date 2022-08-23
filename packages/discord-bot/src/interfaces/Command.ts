@@ -22,5 +22,7 @@ export interface Command {
 }
 
 export interface HelpCommandBuilder {
-  (commands: Collection<string, Command>): { help: Command };
+  (commands: Collection<string, Command>): {
+    help: Command;
+  };
 }

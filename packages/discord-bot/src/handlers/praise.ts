@@ -18,6 +18,7 @@ import {
   firstTimePraiserInfo,
 } from '../utils/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
+import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
 
@@ -44,6 +45,7 @@ export const praiseHandler: CommandHandler = async (
 
   if (!(await assertPraiseGiver(member as GuildMember, interaction, true)))
     return;
+  if (!(await assertPraiseAllowedInChannel(interaction))) return;
 
   const receivers = interaction.options.getString('receivers');
   const receiverData = {

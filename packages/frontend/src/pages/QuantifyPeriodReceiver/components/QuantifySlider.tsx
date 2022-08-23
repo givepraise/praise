@@ -1,5 +1,31 @@
 import { Slider, Tooltip } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import React, { useState, useEffect } from 'react';
+import { useRecoilValue } from 'recoil';
+import { Theme } from '@/model/theme';
+
+// Define two themes for @mui slider: light & dark theme
+const lightTheme = createTheme({
+  palette: {
+    mode: 'light',
+    ...{
+      primary: {
+        main: '#334155',
+      },
+    },
+  },
+});
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    ...{
+      primary: {
+        main: '#ffffff',
+      },
+    },
+  },
+});
 
 interface ValueLabelComponentProps {
   children: JSX.Element;
@@ -46,6 +72,9 @@ export const QuantifySlider = ({
   score = 0,
   onChange,
 }: QuantifySliderProps): JSX.Element => {
+  // Get theme style data for @mui slider
+  const theme = useRecoilValue(Theme);
+
   // Mark that is *visually* selected in the UI
   const [selectedMark, setSelectedMark] = useState<Mark>(defaultMark);
   const [marks, setMarks] = useState<Mark[]>([]);
@@ -106,23 +135,21 @@ export const QuantifySlider = ({
 
   return (
     <div className="inline-block w-40">
-      <Slider
-        classes={{
-          colorPrimary: 'local-MuiSlider-colorPrimary',
-          disabled: 'local-MuiSlider-disabled',
-        }}
-        valueLabelDisplay="on"
-        step={null}
-        components={{ ValueLabel: ValueLabelComponent }}
-        marks={marks}
-        valueLabelFormat={valueLabelFormat}
-        value={selectedMark.value}
-        disabled={disabled}
-        onChange={handleOnChange}
-        onChangeCommitted={handleOnChangeCommitted}
-        min={0}
-        max={maxMarkValue()}
-      />
+      <ThemeProvider theme={theme === 'Dark' ? darkTheme : lightTheme}>
+        <Slider
+          valueLabelDisplay="on"
+          step={null}
+          components={{ ValueLabel: ValueLabelComponent }}
+          marks={marks}
+          valueLabelFormat={valueLabelFormat}
+          value={selectedMark.value}
+          disabled={disabled}
+          onChange={handleOnChange}
+          onChangeCommitted={handleOnChangeCommitted}
+          min={0}
+          max={maxMarkValue()}
+        />
+      </ThemeProvider>
     </div>
   );
 };

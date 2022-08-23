@@ -94,5 +94,15 @@ export function isSettingValueAllowedBySettingType(
     return typeof value === 'object';
   }
 
+  if (this.type === 'StringList') {
+    const valueArray = this.value.split(',').map((item) => item.trim());
+    valueArray.forEach((element) => {
+      if (typeof element !== 'string') {
+        return false;
+      }
+    });
+    return true;
+  }
+
   return typeof this.value === this.type;
 }

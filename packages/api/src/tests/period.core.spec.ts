@@ -1,7 +1,7 @@
 import { Wallet } from 'ethers';
 import { expect } from 'chai';
 import { faker } from '@faker-js/faker';
-import { addDays } from 'date-fns';
+import { add, addDays } from 'date-fns';
 import { PraiseModel } from '@/praise/entities';
 import { PeriodModel } from '@/period/entities';
 import {
@@ -483,6 +483,72 @@ describe('POST /api/admin/periods/create', () => {
       .set('Accept', 'application/json')
       .send(FORM_DATA)
       .expect(401);
+  });
+
+  it('400 response if creating period less than 7 days after previous', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+      roles: ['USER', 'ADMIN'],
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const FORM_DATA = {
+      name: faker.animal.type(),
+      endDate: '2022-08-01T00:00:00.000Z',
+    };
+
+    await this.client
+      .post('/api/admin/periods/create')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .send(FORM_DATA);
+
+    const FORM_DATA2 = {
+      name: faker.animal.type(),
+      endDate: '2022-08-04T00:00:00.000Z',
+    };
+
+    return this.client
+      .post('/api/admin/periods/create')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .send(FORM_DATA2)
+      .expect('Content-Type', /json/)
+      .expect(400);
+  });
+
+  it('200 response if creating period more than 7 days after previous', async function () {
+    const wallet = Wallet.createRandom();
+    await seedUser({
+      ethereumAddress: wallet.address,
+      roles: ['USER', 'ADMIN'],
+    });
+    const { accessToken } = await loginUser(wallet, this.client);
+
+    const FORM_DATA = {
+      name: faker.animal.type(),
+      endDate: '2022-08-01T00:00:00.000Z',
+    };
+
+    await this.client
+      .post('/api/admin/periods/create')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .send(FORM_DATA);
+
+    const FORM_DATA2 = {
+      name: faker.animal.type(),
+      endDate: '2022-08-09T00:00:00.000Z',
+    };
+
+    return this.client
+      .post('/api/admin/periods/create')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Accept', 'application/json')
+      .send(FORM_DATA2)
+      .expect('Content-Type', /json/)
+      .expect(200);
   });
 });
 

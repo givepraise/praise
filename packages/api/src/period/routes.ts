@@ -7,6 +7,7 @@ const periodRouter = Router();
 
 periodRouter.getAsync('/all', core.all);
 periodRouter.getAsync('/:periodId', core.single);
+periodRouter.getAsync('/:periodId/praise', core.praise);
 periodRouter.getAsync('/:periodId/receiverPraise', core.receiverPraise);
 periodRouter.getAsync('/:periodId/quantifierPraise', core.quantifierPraise);
 

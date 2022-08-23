@@ -27,26 +27,35 @@ interface SettingsFormProps {
 
 const FormFields = (
   settings: SettingDto[] | PeriodSettingDto[],
-  apiResponse
+  apiResponse,
+  disabled?: boolean
 ): JSX.Element => {
   return (
     <div className="mb-2 space-y-4">
       {settings.map((setting) => {
         let field;
-        if (setting.type === 'String' || setting.type === 'IntegerList')
-          field = StringInput(setting.key, apiResponse);
+        if (
+          setting.type === 'String' ||
+          setting.type === 'IntegerList' ||
+          setting.type === 'StringList'
+        )
+          field = StringInput(setting.key, apiResponse, disabled);
         else if (setting.type === 'Float' || setting.type === 'Integer')
-          field = NumberInput(setting.key, apiResponse);
+          field = NumberInput(setting.key, apiResponse, disabled);
         else if (
           setting.type === 'Textarea' ||
           setting.type === 'QuestionAnswerJSON' ||
           setting.type === 'Object'
         )
-          field = TextareaInput(setting.key, apiResponse);
+          field = TextareaInput(setting.key, apiResponse, disabled);
         else if (setting.type === 'Boolean')
-          field = BooleanInput(setting.key, apiResponse);
+          field = BooleanInput(setting.key, apiResponse, disabled);
         else if (setting.type === 'Image')
-          field = ImageFileInput(setting.key, setting.valueRealized as string);
+          field = ImageFileInput(
+            setting.key,
+            setting.valueRealized as string,
+            disabled
+          );
 
         if (!field) return null;
 
@@ -65,29 +74,6 @@ const FormFields = (
     </div>
   );
 };
-
-const DisabledFormFields = (
-  settings: SettingDto[] | PeriodSettingDto[]
-): JSX.Element => (
-  <>
-    <Notice type="info" className="mb-8">
-      <span>Settings locked for this period</span>
-    </Notice>
-    <div className="mb-2 space-y-4">
-      {settings.map((setting: SettingDto | PeriodSettingDto) => (
-        <div key={setting.key}>
-          <label className="block font-bold">{setting.label}</label>
-          {setting.description && (
-            <div className="mb-2 text-sm text-warm-gray-400">
-              {setting.description}
-            </div>
-          )}
-          <div className="p-2 bg-warm-gray-200">{setting.value}</div>
-        </div>
-      ))}
-    </div>
-  </>
-);
 
 export const SettingsForm = ({
   settings,
@@ -143,19 +129,29 @@ export const SettingsForm = ({
         },
       }}
       render={({ handleSubmit }): JSX.Element => {
-        if (disabled) {
-          return DisabledFormFields(settings);
-        } else {
-          return (
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            <form onSubmit={handleSubmit} className="leading-loose">
-              {FormFields(settings, apiResponse)}
+        return (
+          <>
+            {disabled && (
+              <Notice type="info" className="mb-8">
+                <span>
+                  The settings cannot be changed once a period is in
+                  quantification.
+                </span>
+              </Notice>
+            )}
+            <form
+              onSubmit={(): void => {
+                void handleSubmit();
+              }}
+              className="leading-loose"
+            >
+              {FormFields(settings, apiResponse, disabled)}
               <div className="mt-4">
                 <SubmitButton />
               </div>
             </form>
-          );
-        }
+          </>
+        );
       }}
     />
   );

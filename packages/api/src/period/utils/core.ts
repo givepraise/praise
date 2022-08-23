@@ -1,15 +1,14 @@
 import some from 'lodash/some';
 import { NotFoundError } from '@/error/errors';
 import { PraiseModel } from '@/praise/entities';
-import { calculateReceiverCompositeScore } from '@/praise/utils/score';
+import { calculateGiverReceiverCompositeScore } from '@/praise/utils/score';
 import { periodsettingListTransformer } from '@/periodsettings/transformers';
 import { PeriodSettingsModel } from '@/periodsettings/entities';
 import { settingValue } from '@/shared/settings';
 import { isQuantificationCompleted } from '@/praise/utils/core';
 import { PeriodModel } from '../entities';
 import {
-  periodDetailsReceiverListTransformer,
-  periodReceiverListTransformer,
+  periodDetailsGiverReceiverListTransformer,
   periodTransformer,
 } from '../transformers';
 import {
@@ -17,11 +16,9 @@ import {
   PeriodDetailsDto,
   PeriodDetailsQuantifierDto,
   PeriodDetailsQuantifier,
-  PeriodDetailsReceiver,
+  PeriodDetailsGiverReceiver,
   PeriodDateRange,
   PeriodStatusType,
-  PeriodReceiver,
-  PeriodReceiverDto,
 } from '../types';
 
 /**
@@ -47,17 +44,17 @@ export const getPreviousPeriodEndDate = async (
 };
 
 /**
- * Fetch a list of receivers detailed
+ * Fetch a list of givers/receivers detailed
  *
- * @param {PeriodDetailsReceiver[]} receivers
- * @returns {Promise<PeriodDetailsReceiver[]>}
+ * @param {PeriodDetailsGiverReceiver[]} receivers
+ * @returns {Promise<PeriodDetailsGiverReceiver[]>}
  */
-export const receiversWithScores = async (
-  receivers: PeriodDetailsReceiver[]
-): Promise<PeriodDetailsReceiver[]> => {
-  const receiversWithQuantificationScores = await Promise.all(
+const giversReceiversWithScores = async (
+  receivers: PeriodDetailsGiverReceiver[]
+): Promise<PeriodDetailsGiverReceiver[]> => {
+  const withQuantificationScores = await Promise.all(
     receivers.map(async (r) => {
-      const scoreRealized = await calculateReceiverCompositeScore(r);
+      const scoreRealized = await calculateGiverReceiverCompositeScore(r);
 
       return {
         ...r,
@@ -67,7 +64,7 @@ export const receiversWithScores = async (
     })
   );
 
-  return receiversWithQuantificationScores;
+  return withQuantificationScores;
 };
 
 /**
@@ -108,9 +105,10 @@ export const findPeriodDetailsDto = async (
 
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
-  const [quantifiers, receivers]: [
+  const [quantifiers, receivers, givers]: [
     PeriodDetailsQuantifier[],
-    PeriodDetailsReceiver[]
+    PeriodDetailsGiverReceiver[],
+    PeriodDetailsGiverReceiver[]
   ] = await Promise.all([
     PraiseModel.aggregate([
       {
@@ -165,68 +163,59 @@ export const findPeriodDetailsDto = async (
         },
       },
     ]),
+    PraiseModel.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gt: previousPeriodEndDate,
+            $lte: period.endDate,
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'useraccounts',
+          localField: 'giver',
+          foreignField: '_id',
+          as: 'userAccounts',
+        },
+      },
+      {
+        $group: {
+          _id: '$giver',
+          praiseCount: { $count: {} },
+          quantifications: {
+            $push: '$quantifications',
+          },
+          userAccounts: { $first: '$userAccounts' },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]),
   ]);
 
   const quantifiersWithCountsData = quantifiersWithCounts(quantifiers);
-  const receiversWithScoresData = await receiversWithScores(receivers);
+  const receiversWithScoresData = await giversReceiversWithScores(receivers);
+  const giversWithScoresData = await giversReceiversWithScores(givers);
 
   const periodsettings = await PeriodSettingsModel.find({ period: period._id });
 
-  const response = {
+  const periodDetailsDto = {
     ...periodTransformer(period),
-    receivers: await periodDetailsReceiverListTransformer(
+    receivers: await periodDetailsGiverReceiverListTransformer(
       receiversWithScoresData
+    ),
+    givers: await periodDetailsGiverReceiverListTransformer(
+      giversWithScoresData
     ),
     quantifiers: [...quantifiersWithCountsData],
     settings: periodsettingListTransformer(periodsettings),
   };
-  return response;
-};
-
-export const findPeriodReceivers = async (
-  id: string
-): Promise<PeriodReceiverDto[]> => {
-  const period = await PeriodModel.findById(id);
-  if (!period) throw new NotFoundError('Period');
-
-  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
-
-  const receivers = await PraiseModel.aggregate([
-    {
-      $match: {
-        createdAt: {
-          $gt: previousPeriodEndDate,
-          $lte: period.endDate,
-        },
-      },
-    },
-    {
-      $lookup: {
-        from: 'useraccounts',
-        localField: 'receiver',
-        foreignField: '_id',
-        as: 'userAccounts',
-      },
-    },
-    {
-      $group: {
-        _id: '$receiver',
-        praiseCount: { $count: {} },
-        quantifications: {
-          $push: '$quantifications',
-        },
-        userAccounts: { $first: '$userAccounts' },
-      },
-    },
-    {
-      $sort: {
-        _id: 1,
-      },
-    },
-  ]);
-
-  const receiversWithScore = await receiversWithScores(receivers);
-  return await periodReceiverListTransformer(receiversWithScore);
+  return periodDetailsDto;
 };
 
 /**

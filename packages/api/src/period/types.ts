@@ -1,4 +1,5 @@
-import { Document, Types } from 'mongoose';
+import { Document, Model, Types } from 'mongoose';
+import { PaginationModel, PaginationOptions } from 'mongoose-paginate-ts';
 import {
   Quantifier,
   QuantificationDocument,
@@ -29,7 +30,15 @@ export interface PeriodDocument extends Period, Document {
   $__: any;
 }
 
-export interface PeriodDetailsReceiver {
+export interface PaginatedPeriodModel extends Model<PeriodDocument> {
+  getLatest: () => Promise<PeriodDocument>;
+  paginate(
+    options?: PaginationOptions | undefined,
+    onError?: Function | undefined
+  ): Promise<PaginationModel<PeriodDocument> | undefined>;
+}
+
+export interface PeriodDetailsGiverReceiver {
   _id: Types.ObjectId;
   praiseCount: number;
   quantifications?: Array<Array<QuantificationDocument>>;
@@ -37,16 +46,7 @@ export interface PeriodDetailsReceiver {
   userAccounts: UserAccountDocument[];
 }
 
-export interface PeriodReceiver {
-  _id: Types.ObjectId;
-  praiseCount: number;
-  quantifications?: Array<Array<QuantificationDocument>>;
-  ethereumAddress?: string;
-  scoreRealized: number;
-  userAccounts: UserAccountDocument[];
-}
-
-export interface PeriodDetailsReceiverDto {
+export interface PeriodDetailsGiverReceiverDto {
   _id: string;
   praiseCount: number;
   quantifications?: Array<Array<QuantificationDto>>;
@@ -83,7 +83,8 @@ export interface PeriodDetailsDto {
   createdAt: string;
   updatedAt: string;
   quantifiers?: PeriodDetailsQuantifierDto[];
-  receivers?: PeriodDetailsReceiverDto[];
+  givers?: PeriodDetailsGiverReceiverDto[];
+  receivers?: PeriodDetailsGiverReceiverDto[];
   settings?: PeriodSettingDto[];
 }
 

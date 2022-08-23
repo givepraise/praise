@@ -3,8 +3,8 @@ import { Quantification, QuantificationDto } from '@/praise/types';
 import { UserModel } from '@/user/entities';
 import { userAccountTransformer } from '@/useraccount/transformers';
 import {
-  PeriodDetailsReceiver,
-  PeriodDetailsReceiverDto,
+  PeriodDetailsGiverReceiver,
+  PeriodDetailsGiverReceiverDto,
   PeriodDocument,
   PeriodDetailsDto,
   PeriodReceiverDto,
@@ -51,16 +51,15 @@ const listOfQuantificationListsTransformer = async (
 };
 
 /**
- * Serialize relevant details about a Praise receiver in a period
+ * Serialize relevant details about a Praise giver/receiver in a period
  *
- * @param {PeriodDetailsReceiver} periodDetailsReceiver
- * @returns {Promise<PeriodDetailsReceiverDto>}
+ * @param {PeriodDetailsGiverReceiver} gr
+ * @returns {Promise<PeriodDetailsGiverReceiverDto>}
  */
-const periodDetailsReceiverToDto = async (
-  periodDetailsReceiver: PeriodDetailsReceiver
-): Promise<PeriodDetailsReceiverDto> => {
-  const { _id, praiseCount, quantifications, scoreRealized, userAccounts } =
-    periodDetailsReceiver;
+const periodDetailsGiverReceiverToDto = async (
+  gr: PeriodDetailsGiverReceiver
+): Promise<PeriodDetailsGiverReceiverDto> => {
+  const { _id, praiseCount, quantifications, scoreRealized, userAccounts } = gr;
   return {
     _id: _id.toString(),
     praiseCount,
@@ -76,20 +75,23 @@ const periodDetailsReceiverToDto = async (
 };
 
 /**
- * Serialize relevant details about a list of Praise receivers in a period
+ * Serialize relevant details about a list of Praise givers/receivers in a period
  *
- * @param {(PeriodDetailsReceiver[] | undefined)} periodDetailsReceiverList
- * @returns {Promise<PeriodDetailsReceiverDto[]>}
+ * @param {(PeriodDetailsGiverReceiver[] | undefined)} periodDetailsGiverReceiverList
+ * @returns {Promise<PeriodDetailsGiverReceiverDto[]>}
  */
-export const periodDetailsReceiverListTransformer = async (
-  periodDetailsReceiverList: PeriodDetailsReceiver[] | undefined
-): Promise<PeriodDetailsReceiverDto[]> => {
-  if (periodDetailsReceiverList && Array.isArray(periodDetailsReceiverList)) {
-    const periodDetailsReceiverDto: PeriodDetailsReceiverDto[] = [];
-    for (const pdr of periodDetailsReceiverList) {
-      periodDetailsReceiverDto.push(await periodDetailsReceiverToDto(pdr));
+export const periodDetailsGiverReceiverListTransformer = async (
+  periodDetailsGiverReceiverList: PeriodDetailsGiverReceiver[] | undefined
+): Promise<PeriodDetailsGiverReceiverDto[]> => {
+  if (
+    periodDetailsGiverReceiverList &&
+    Array.isArray(periodDetailsGiverReceiverList)
+  ) {
+    const grDto: PeriodDetailsGiverReceiverDto[] = [];
+    for (const pdr of periodDetailsGiverReceiverList) {
+      grDto.push(await periodDetailsGiverReceiverToDto(pdr));
     }
-    return periodDetailsReceiverDto;
+    return grDto;
   }
   return [];
 };
