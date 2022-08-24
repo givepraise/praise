@@ -15,12 +15,14 @@ jobs:
       packages: write
 
     steps:    
+      - uses: actions/checkout@v2
+        name: Check out code
+
       - uses: martinbeentjes/npm-get-version-action@main
         name: get-npm-version
         id: package-version
-    
-      - uses: actions/checkout@v2
-        name: Check out code
+        with:
+          path: packages/frontend
 
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build and push Docker image
