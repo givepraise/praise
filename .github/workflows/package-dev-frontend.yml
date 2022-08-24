@@ -14,20 +14,12 @@ jobs:
       contents: read
       packages: write
 
-    steps:    
+    steps:
       - uses: actions/checkout@v2
         name: Check out code
 
-      - uses: martinbeentjes/npm-get-version-action@main
-        name: get-npm-version
-        id: package-version
-        with:
-          path: packages/frontend
-
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build and push Docker image
-        env:
-          REACT_APP_VERSION: ${{ steps.package-version.outputs.current-version}}
         with:
           image: $IMAGE_NAME
           tags: latest
