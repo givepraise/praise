@@ -88,7 +88,7 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
       {isAdmin && appVersion.newVersionAvailable && (
         <HeaderBanner bannerKey={`NEW VERSION ${appVersion.latest}`}>
           <p>
-            🎉 There is a new version of the Praise out! You are running{' '}
+            🎉 There is a new version of Praise out! You are running{' '}
             {appVersion.current}, latest version is {appVersion.latest}.{' '}
             <a
               href="https://github.com/commons-stack/praise/releases"
