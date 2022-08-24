@@ -113,17 +113,10 @@ const DataTransform = (data: any, map: any) => {
             data = _.map(
               data,
               _.bind((item) => {
-                let fn;
-                if ('string' === typeof method.run) {
-                  fn = safeEval(method.run);
-                } else {
-                  fn = method.run;
-                }
-
                 this.setValue(
                   item,
                   method.on,
-                  fn(this.getValue(item, method.on), context)
+                  safeEval(method.run, { ...context, item })
                 );
                 return item;
               }, this)
@@ -134,10 +127,18 @@ const DataTransform = (data: any, map: any) => {
       return data;
     },
 
-    each: (data: any, context: any) => {
+    each: (data: any, context: object) => {
       if (map.each) {
-        _.each(data, (value, index, collection) => {
-          return map.each(value, index, collection, context);
+        _.each(data, (item, index, collection) => {
+          return {
+            ...(item as object),
+            ...safeEval(map.each, {
+              item,
+              index,
+              collection,
+              context,
+            }),
+          };
         });
       }
       return data;

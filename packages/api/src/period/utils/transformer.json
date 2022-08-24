@@ -3,22 +3,16 @@
   "map": {
     "item": {
       "address": "ethereumAddress",
-      "amount": "scoreRealized",
-      "tokenName": "context.tokenName"
+      "amount": "",
+      "tokenName": ""
     },
     "operate": [
       {
-        "run": {
-          "arguments": "val, context",
-          "body": "return (val / context.totalPraiseScore) * context.budget;"
-        },
+        "run": "(item.amount / totalPraiseScore) * budget",
         "on": "amount"
       }
     ],
-    "each": {
-      "arguments": "item, index, collection, context",
-      "body": "item.tokenName = context.tokenName; return item;"
-    }
+    "each": "(function each(item, context) { item.tokenName = context.token; return item; })(item, context)"
   },
   "context": {
     "budget": "number",

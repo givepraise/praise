@@ -302,7 +302,7 @@ export const isPeriodLatest = async (
 };
 
 export const getSummarizedReceiverData = (
-  data: PeriodDetailsGiverReceiverDto[] | undefined,
+  data: PeriodDetailsGiverReceiverDto[],
   customExportContext: string,
   csSupportPercentage: number
 ): SummarizedPeriodData[] => {
@@ -332,16 +332,11 @@ export const getSummarizedReceiverData = (
     item: transformer.map.item,
     operate: transformer.map.operate.map((operateItem) => {
       return {
-        // eslint-disable-next-line @typescript-eslint/no-implied-eval
-        run: new Function(operateItem.run.arguments, operateItem.run.body),
+        run: operateItem.run,
         on: operateItem.on,
       };
     }),
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval
-    each: new Function(
-      transformer.map.each.arguments,
-      transformer.map.each.body
-    ),
+    each: transformer.map.each,
   };
 
   const result = transform(data, map, context);
