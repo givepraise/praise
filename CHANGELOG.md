@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.11.1] - 2022-08-24
+
+Hotfix resolving an issue with building Docker images for production.
+
 ## [0.11.0] - 2022-08-24
 
 ### Added
