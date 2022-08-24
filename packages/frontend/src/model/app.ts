@@ -32,7 +32,7 @@ interface PraiseAppVersion {
 
 export const usePraiseAppVersion = (): PraiseAppVersion => {
   const appVersion: PraiseAppVersion = {
-    current: process.env.REACT_APP_VERSION,
+    current: 'v0.11.1', //TODO: get this from package.json
     latest: undefined,
     newVersionAvailable: false,
   };

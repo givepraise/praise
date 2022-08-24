@@ -31,7 +31,6 @@ const gnosisChain: Chain = {
   id: 100,
   name: 'Gnosis Chain',
   network: 'Gnosis Chain',
-  iconUrl: `${process.env.REACT_APP_SERVER_URL}/uploads/gnosischain_logo.png`,
   nativeCurrency: {
     decimals: 18,
     name: 'xDAI',
