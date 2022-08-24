@@ -59,17 +59,3 @@ export const IsHeaderBannerClosed = atomFamily<boolean, string>({
   default: false,
   effects: [persistAtom],
 });
-
-export const AragonTransformerQuery = selector({
-  key: 'AragonTransformerQuery',
-  get: ({ get }): AxiosResponse<GithubFileResponseData> => {
-    const repoOwner = process.env.REACT_APP_GITHUB_REPO_OWNER;
-    const repoName = process.env.REACT_APP_GITHUB_EXPORTS_REPO_NAME;
-
-    return get(
-      ExternalGet({
-        url: `https://api.github.com/repos/${repoOwner}/${repoName}/contents/aragon.json`,
-      })
-    ) as AxiosResponse<GithubFileResponseData>;
-  },
-});
