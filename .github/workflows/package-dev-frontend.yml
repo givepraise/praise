@@ -18,8 +18,6 @@ jobs:
       - uses: martinbeentjes/npm-get-version-action@main
         name: get-npm-version
         id: package-version
-        with:
-          path: packages/frontend
     
       - uses: actions/checkout@v2
         name: Check out code
