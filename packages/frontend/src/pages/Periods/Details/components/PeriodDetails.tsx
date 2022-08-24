@@ -27,6 +27,7 @@ import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { saveLocalFile } from '@/utils/file';
 import { getPreviousPeriod } from '@/utils/periods';
 
+import { ISelectedItem, SelectInput } from '@/components/form/SelectInput';
 import { PeriodAssignDialog } from './AssignDialog';
 import { PeriodCloseDialog } from './CloseDialog';
 import { PeriodDateForm } from './PeriodDateForm';
@@ -55,6 +56,19 @@ export const PeriodDetails = (): JSX.Element | null => {
   if (!period || !allPeriods) return null;
 
   const previousPeriod = getPreviousPeriod(allPeriods, period);
+
+  const exportOptions = [
+    { value: '', label: 'Export', disabled: true },
+    { value: 'export-full', label: 'Export (full)' },
+    {
+      value: 'export-summary',
+      label: 'Export (summary)',
+    },
+    {
+      value: 'aragon',
+      label: 'Aragon Token Distribution',
+    },
+  ];
 
   const handleClosePeriod = (): void => {
     void closePeriod(periodId);
@@ -106,8 +120,6 @@ export const PeriodDetails = (): JSX.Element | null => {
   };
 
   const handleDistribution = (): void => {
-    console.log('distributing...');
-
     const toastId = 'distributeToast';
     void toast.promise(
       exportSummaryPraise(period),
@@ -131,6 +143,16 @@ export const PeriodDetails = (): JSX.Element | null => {
         },
       }
     );
+  };
+
+  const handleSelectExportChange = (option: ISelectedItem): void => {
+    if (option.value === 'export-full') {
+      handleExport();
+    } else if (option.value === 'export-summary') {
+      handleExport();
+    } else if (option.value === 'aragon') {
+      handleDistribution();
+    }
   };
 
   if (!period) return <div>Period not found.</div>;
@@ -170,25 +192,13 @@ export const PeriodDetails = (): JSX.Element | null => {
                   </Button>
                 ) : null}
                 {period.status === 'QUANTIFY' ? (
-                  <>
-                    <Button onClick={handleExport}>
-                      <FontAwesomeIcon
-                        icon={faDownload}
-                        size="1x"
-                        className="mr-2"
-                      />
-                      Export
-                    </Button>
-
-                    <Button onClick={handleDistribution}>
-                      <FontAwesomeIcon
-                        icon={faDownload}
-                        size="1x"
-                        className="mr-2"
-                      />
-                      Distribute
-                    </Button>
-                  </>
+                  <div className="w-3/12">
+                    <SelectInput
+                      handleChange={handleSelectExportChange}
+                      options={exportOptions}
+                      selected={exportOptions[0]}
+                    />
+                  </div>
                 ) : null}
                 <Button
                   variant={'outline'}
@@ -205,10 +215,13 @@ export const PeriodDetails = (): JSX.Element | null => {
             ) : null}
 
             {period.status === 'CLOSED' ? (
-              <Button onClick={handleExport}>
-                <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
-                Export
-              </Button>
+              <div className="w-3/12">
+                <SelectInput
+                  handleChange={handleSelectExportChange}
+                  options={exportOptions}
+                  selected={exportOptions[0]}
+                />
+              </div>
             ) : null}
           </div>
         </>

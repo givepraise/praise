@@ -17,6 +17,7 @@ export const genericSettingsSchema = {
       'StringList',
       'Image',
       'QuestionAnswerJSON',
+      'Radio',
       'Object',
     ],
     validate: isSettingValueAllowedBySettingType,

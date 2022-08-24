@@ -9,7 +9,7 @@ const settings = [
     type: 'String',
     label: 'Custom export map',
     description: 'Custom export map',
-    group: SettingGroup.APPLICATION,
+    group: SettingGroup.CUSTOM_EXPORT,
   },
   {
     key: 'CUSTOM_EXPORT_CONTEXT',
@@ -17,15 +17,15 @@ const settings = [
     type: 'Object',
     label: 'Custom export context',
     description: 'Custom export context',
-    group: SettingGroup.APPLICATION,
+    group: SettingGroup.CUSTOM_EXPORT,
   },
   {
     key: 'CUSTOM_EXPORT_CSV_FORMAT',
     value: 'csv',
-    type: 'String',
+    type: 'Radio',
     label: 'Custom export csv format',
     description: 'Custom export csv format',
-    group: SettingGroup.APPLICATION,
+    group: SettingGroup.CUSTOM_EXPORT,
   },
   {
     key: 'CS_SUPPORT_PERCENTAGE',
@@ -33,7 +33,7 @@ const settings = [
     type: 'Integer',
     label: 'CS support percentage',
     description: 'Commons Stack support percentage',
-    group: SettingGroup.APPLICATION,
+    group: SettingGroup.CUSTOM_EXPORT,
   },
 ];
 

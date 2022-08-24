@@ -490,12 +490,6 @@ export const useExportPraise = (): useExportPraiseReturn => {
   return { exportPraise };
 };
 
-export interface SummarizedPeriodData {
-  address: string;
-  amount: number;
-  token: string;
-}
-
 type useExportSummaryPraiseReturn = {
   exportSummaryPraise: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
 };

@@ -64,7 +64,8 @@ export function isSettingValueAllowedBySettingType(
   if (
     this.type === 'String' ||
     this.type === 'Textarea' ||
-    this.type === 'Image'
+    this.type === 'Image' ||
+    this.type === 'Radio'
   ) {
     return typeof this.value === 'string';
   }

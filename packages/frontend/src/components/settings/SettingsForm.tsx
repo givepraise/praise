@@ -11,6 +11,7 @@ import { BooleanInput } from '@/components/form/BooleanInput';
 import { ImageFileInput } from '@/components/form/ImageFileInput';
 import { Notice } from '@/components/ui/Notice';
 import { SubmitButton } from '../form/SubmitButton';
+import { RadioInput } from '../form/RadioInput';
 
 interface SettingsFormProps {
   settings: SettingDto[] | PeriodSettingDto[] | undefined;
@@ -54,6 +55,14 @@ const FormFields = (
           field = ImageFileInput(
             setting.key,
             setting.valueRealized as string,
+            disabled
+          );
+        else if (setting.type === 'Radio')
+          field = RadioInput(
+            setting.key,
+            apiResponse,
+            setting.valueRealized as string,
+            ['csv', 'json'],
             disabled
           );
 
