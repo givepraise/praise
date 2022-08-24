@@ -13,8 +13,8 @@ export interface GithubResponse {
 export const GithubVersionQuery = selector({
   key: 'GithubVersionQuery',
   get: ({ get }): AxiosResponse<GithubResponse> => {
-    const repoOwner = process.env.REACT_APP_GITHUB_REPO_OWNER;
-    const repoName = process.env.REACT_APP_GITHUB_REPO_NAME;
+    const repoOwner = 'commons-stack';
+    const repoName = 'praise';
 
     return get(
       ExternalGet({
