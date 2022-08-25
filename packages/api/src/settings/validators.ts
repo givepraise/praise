@@ -90,7 +90,7 @@ export function isSettingValueAllowedBySettingType(
     return valid;
   }
 
-  if (this.type === 'Object') {
+  if (this.type === 'JSON') {
     const value = JSON.parse(this.value);
     return typeof value === 'object';
   }

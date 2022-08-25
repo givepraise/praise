@@ -1,8 +1,4 @@
-import {
-  faDownload,
-  faTimesCircle,
-  faUsers,
-} from '@fortawesome/free-solid-svg-icons';
+import { faTimesCircle, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import React from 'react';

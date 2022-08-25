@@ -14,7 +14,7 @@ const settings = [
   {
     key: 'CUSTOM_EXPORT_CONTEXT',
     value: '{}',
-    type: 'Object',
+    type: 'JSON',
     label: 'Custom export context',
     description: 'Custom export context',
     group: SettingGroup.CUSTOM_EXPORT,
@@ -25,6 +25,7 @@ const settings = [
     type: 'Radio',
     label: 'Custom export csv format',
     description: 'Custom export csv format',
+    options: '["csv", "json"]',
     group: SettingGroup.CUSTOM_EXPORT,
   },
   {

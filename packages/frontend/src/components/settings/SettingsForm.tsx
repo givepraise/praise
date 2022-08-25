@@ -46,7 +46,7 @@ const FormFields = (
         else if (
           setting.type === 'Textarea' ||
           setting.type === 'QuestionAnswerJSON' ||
-          setting.type === 'Object'
+          setting.type === 'JSON'
         )
           field = TextareaInput(setting.key, apiResponse, disabled);
         else if (setting.type === 'Boolean')
@@ -62,7 +62,7 @@ const FormFields = (
             setting.key,
             apiResponse,
             setting.valueRealized as string,
-            ['csv', 'json'],
+            JSON.parse(setting.options),
             disabled
           );
 

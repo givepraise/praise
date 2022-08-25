@@ -22,7 +22,6 @@ import {
   PeriodDetailsGiverReceiver,
   PeriodDateRange,
   PeriodStatusType,
-  SummarizedPeriodData,
   PeriodDetailsGiverReceiverDto,
 } from '../types';
 
@@ -305,11 +304,8 @@ export const getSummarizedReceiverData = (
   data: PeriodDetailsGiverReceiverDto[],
   customExportContext: string,
   csSupportPercentage: number
-): SummarizedPeriodData[] => {
-  if (!data) return [];
-
-  // const transformer = JSON.parse(mapTransformer) as MapTransformer;
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): any => {
   const exportContext = JSON.parse(
     customExportContext
   ) as typeof transformer.context;

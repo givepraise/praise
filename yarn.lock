@@ -9619,7 +9619,6 @@ __metadata:
     eslint-plugin-react-hooks: ^4.6.0
     ethers: ^5.6.8
     final-form: ^4.20.4
-    js-base64: ^3.7.2
     jstz: ^2.1.1
     jwt-decode: ^3.1.2
     lodash: ^4.17.21
@@ -9640,7 +9639,6 @@ __metadata:
     recoil: ^0.7.4
     recoil-nexus: ^0.4.0
     recoil-persist: ^4.2.0
-    safe-eval: ^0.4.1
     source-map-explorer: ^2.5.2
     tailwindcss: ^3.0.24
     typescript: ^4.5.5
@@ -12020,13 +12018,6 @@ __metadata:
   dependencies:
     colors: 1.3.0
   checksum: eb5267c4c3e2331cc17de8030a91b4c818957180fe5934b90b575a311645b0d84f090f615c8b682c3c5b689a2e9ee8bbbc09b0f90f0a3e91d3833e22e4121a39
-  languageName: node
-  linkType: hard
-
-"js-base64@npm:^3.7.2":
-  version: 3.7.2
-  resolution: "js-base64@npm:3.7.2"
-  checksum: 573f28e9a27c3df60096d4d3f551bcb4fcb6d49161cf83396e9bad9b76f94736a70bb70b8808fe834dff2a388f76604ba09d6e153bbf181646e407720139fa5b
   languageName: node
   linkType: hard
 

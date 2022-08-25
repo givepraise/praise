@@ -125,9 +125,3 @@ export interface ReplaceQuantifierRequestBody {
   currentQuantifierId: string;
   newQuantifierId: string;
 }
-
-export interface SummarizedPeriodData {
-  address: string;
-  amount: number;
-  token: string;
-}

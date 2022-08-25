@@ -3,7 +3,7 @@
   "map": {
     "item": {
       "address": "ethereumAddress",
-      "amount": "",
+      "amount": "scoreRealized",
       "tokenName": ""
     },
     "operate": [

@@ -7,8 +7,17 @@ import { SettingDocument, SettingDto } from './types';
  * @returns {SettingDto}
  */
 export const settingTransformer = (setting: SettingDocument): SettingDto => {
-  const { _id, key, value, valueRealized, type, label, description, group } =
-    setting;
+  const {
+    _id,
+    key,
+    value,
+    valueRealized,
+    type,
+    label,
+    description,
+    group,
+    options,
+  } = setting;
 
   return {
     _id,
@@ -19,6 +28,7 @@ export const settingTransformer = (setting: SettingDocument): SettingDto => {
     label,
     description,
     group,
+    options,
   };
 };
 
