@@ -21,8 +21,8 @@ export interface GithubFileResponse {
 export const GithubVersionQuery = selector({
   key: 'GithubVersionQuery',
   get: ({ get }): AxiosResponse<GithubResponse> => {
-    const repoOwner = process.env.REACT_APP_GITHUB_REPO_OWNER;
-    const repoName = process.env.REACT_APP_GITHUB_REPO_NAME;
+    const repoOwner = 'commons-stack';
+    const repoName = 'praise';
 
     return get(
       ExternalGet({
@@ -40,7 +40,7 @@ interface PraiseAppVersion {
 
 export const usePraiseAppVersion = (): PraiseAppVersion => {
   const appVersion: PraiseAppVersion = {
-    current: process.env.REACT_APP_VERSION,
+    current: '0.11.2', //TODO: get this from package.json
     latest: undefined,
     newVersionAvailable: false,
   };

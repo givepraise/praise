@@ -9,13 +9,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- New setting! Restrict praising to certain channels. #264 #452
+### Fixed
+
+## [0.11.1] - 2022-08-24
+
+Hotfix resolving an issue with building Docker images for production.
+
+## [0.11.0] - 2022-08-24
+
+### Added
+
+- **Frontend:** Period analytics - graph and stats about the current quantification period. Stats include top scored praise, top givers and receivers by number and score, quantifiers by score, quantifier scoring distribution and quantification spread. #351 #551
+- **Discord Bot:** New setting that allows restricting praise to certain Discord channels. #264 #452
+- **Discord Bot:** Message to first time praisers. The default message contains a greeting and a link to the documentation: https://givepraise.xyz/docs/writing-excellent-praise. #516
+- **Frontend:** Notify Administrators when there is a new version of Praise out. Adds a notification bar at the top of the screen when a new version is out. #493 #522
+- **Devops:** Upgraded server scripts. Now includes scripts for resetting the installation, doing backups, upgrading, etc. https://givepraise.xyz/docs/server-setup/server-scripts #531
 
 ### Fixed
 
-- Refactored some of the UI componentsb #537 #482
-- Allow header banner messages to be closed #528 #541
-- Re-introduces the enforcement of validation rules when creating periods. New periods must be created at least 7 days after the previous/latest period. #518 #550
+- **Frontend:** The User page should remember state when navigating to the User detail page and back #494 #519
+- **API:** Added tests for quantifying multiple praise. #515
+- **API:** Remove statically-defined users from application seeder #500 #520
+- **Discord Bot:** Some praise bot messages that currently are public should be ephemeral #496 #521
+- **Frontend:** Recoil upgrade and overall refactor of frontend #523
+- **Frontend:** Improve UI of table in QuantifyPeriodPage #505 #527
+- **Frontend:** Refactor: Replace day picker with builtin #483 #529
+- **API:** Make several attempts to assign praise to quantifiers if first one fails. #497 #533
+- **Frontend:** Refactor UI components to reduce code duplication. #482 #536
+- **Frontend:** Make UI look better on small screens. #480 #546
+- **Frontend:** Allow header banner messages to be closed #528 #541
+- **API:** Re-introduces the enforcement of validation rules when creating periods. New periods must be created at least 7 days after the previous/latest period. #518 #550
+- **Frontend:** Upgraded Caddy, the web server that serves the frontend to v2.5.2. The upgrade amongst others resolves a minor security vulnerability.
 
 ## [0.10.0] - 2022-07-01
 
