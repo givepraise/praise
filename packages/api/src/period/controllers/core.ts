@@ -552,14 +552,18 @@ export const exportSummary = async (
     },
   ];
 
-  const summarizedReceiverData = getSummarizedReceiverData(
-    receivers,
-    customExportContextSetting,
-    csSupportPercentageSetting
-  );
+  try {
+    const summarizedReceiverData = getSummarizedReceiverData(
+      receivers,
+      customExportContextSetting,
+      csSupportPercentageSetting
+    );
 
-  const json2csv = new Parser({ fields: fields });
-  const csv = json2csv.parse(summarizedReceiverData);
+    const json2csv = new Parser({ fields: fields });
+    const csv = json2csv.parse(summarizedReceiverData);
 
-  res.status(200).contentType('text/csv').attachment('data.csv').send(csv);
+    res.status(200).contentType('text/csv').attachment('data.csv').send(csv);
+  } catch (e) {
+    throw new BadRequestError((e as Error).message);
+  }
 };
