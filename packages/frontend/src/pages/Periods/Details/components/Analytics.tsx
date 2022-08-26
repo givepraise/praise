@@ -15,6 +15,7 @@ import { GiversByScore } from './analytics/GiversByScore';
 import { GiversByNumber } from './analytics/GiversByNumber';
 import { QuantifiersByScore } from './analytics/QuantifiersByScore';
 import { ScoreDistribution } from './analytics/ScoreDistribution';
+import { PraiseDistribution } from './analytics/PraiseDistribution';
 
 const Analytics = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -107,6 +108,11 @@ const Analytics = (): JSX.Element => {
         <b>*</b>The spread is measured by the difference between the highest and
         lowest score given to a praise.
       </p>
+      <h2>Praise flow for period</h2>
+      <p>See how givers spread praise to receivers.</p>
+      <Suspense fallback={<LoadPlaceholder height={375} />}>
+        <PraiseDistribution />
+      </Suspense>
     </div>
   );
 };
