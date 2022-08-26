@@ -27,10 +27,13 @@ import { ISelectedItem, SelectInput } from '@/components/form/SelectInput';
 import { PeriodAssignDialog } from './AssignDialog';
 import { PeriodCloseDialog } from './CloseDialog';
 import { PeriodDateForm } from './PeriodDateForm';
+import { PeriodCustomExportDialog } from './CustomExportDialog';
 
 export const PeriodDetails = (): JSX.Element | null => {
   const [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = React.useState(false);
+  const [isCustomExportDialogOpen, setIsCustomExportDialogOpen] =
+    React.useState(false);
 
   const allPeriods = useRecoilValue(AllPeriods);
   const allQuantifiers = useRecoilValue(AllQuantifierUsers);
@@ -45,6 +48,7 @@ export const PeriodDetails = (): JSX.Element | null => {
 
   const assignDialogRef = React.useRef(null);
   const closeDialogRef = React.useRef(null);
+  const customExportDialogRef = React.useRef(null);
 
   const { closePeriod } = useClosePeriod();
   const { assignQuantifiers } = useAssignQuantifiers(periodId);
@@ -115,10 +119,13 @@ export const PeriodDetails = (): JSX.Element | null => {
     );
   };
 
-  const handleDistribution = (): void => {
+  const handleDistribution = (
+    exportContext: string,
+    supportPercentage: boolean
+  ): void => {
     const toastId = 'distributeToast';
     void toast.promise(
-      exportSummaryPraise(period),
+      exportSummaryPraise(period, exportContext, supportPercentage),
       {
         loading: 'Distributing …',
         success: (data: Blob | undefined) => {
@@ -147,7 +154,8 @@ export const PeriodDetails = (): JSX.Element | null => {
     } else if (option.value === 'export-summary') {
       handleExport();
     } else if (option.value === 'aragon') {
-      handleDistribution();
+      setIsCustomExportDialogOpen(true);
+      // handleDistribution();
     }
   };
 
@@ -252,6 +260,23 @@ export const PeriodDetails = (): JSX.Element | null => {
           </div>
         </Dialog>
       ) : null}
+
+      <Dialog
+        open={isCustomExportDialogOpen}
+        onClose={(): void => setIsCustomExportDialogOpen(false)}
+        className="fixed inset-0 z-10 overflow-y-auto"
+        initialFocus={customExportDialogRef}
+      >
+        <div ref={customExportDialogRef}>
+          <PeriodCustomExportDialog
+            title="Aragon token distribution"
+            onClose={(): void => setIsCustomExportDialogOpen(false)}
+            onExport={(exportContext, supportPercentage): void =>
+              handleDistribution(exportContext, supportPercentage)
+            }
+          />
+        </div>
+      </Dialog>
     </div>
   );
 };

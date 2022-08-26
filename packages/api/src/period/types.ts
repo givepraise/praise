@@ -125,3 +125,21 @@ export interface ReplaceQuantifierRequestBody {
   currentQuantifierId: string;
   newQuantifierId: string;
 }
+
+export interface TransformerOperateItem {
+  run: string;
+  on: string;
+}
+
+export interface TransformerMap {
+  name: string;
+  map: {
+    item: Object;
+    operate: TransformerOperateItem[];
+    each: string;
+  };
+  context: {
+    budget: number;
+    tokean: string;
+  };
+}

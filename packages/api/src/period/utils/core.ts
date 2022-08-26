@@ -1,4 +1,5 @@
 import some from 'lodash/some';
+import axios from 'axios';
 import { NotFoundError } from '@/error/errors';
 import { PraiseModel } from '@/praise/entities';
 import { calculateGiverReceiverCompositeScore } from '@/praise/utils/score';
@@ -6,8 +7,6 @@ import { periodsettingListTransformer } from '@/periodsettings/transformers';
 import { PeriodSettingsModel } from '@/periodsettings/entities';
 import { settingValue } from '@/shared/settings';
 import { isQuantificationCompleted } from '@/praise/utils/core';
-import { SettingDto } from '@/settings/types';
-import transformer from './transformer.json';
 import { transform } from './jsonTransformer';
 import { PeriodModel } from '../entities';
 import {
@@ -23,6 +22,8 @@ import {
   PeriodDateRange,
   PeriodStatusType,
   PeriodDetailsGiverReceiverDto,
+  TransformerOperateItem,
+  TransformerMap,
 } from '../types';
 
 /**
@@ -300,12 +301,24 @@ export const isPeriodLatest = async (
   return false;
 };
 
-export const getSummarizedReceiverData = (
+const getExportTransformer = async (
+  fileName: string
+): Promise<TransformerMap> => {
+  const baseUrl =
+    'https://api.github.com/repos/commons-stack/praise-exports/contents/';
+  const response = await axios.get(`${baseUrl}${fileName}`);
+  const buff = Buffer.from(response.data.content, 'base64');
+  return JSON.parse(buff.toString('utf-8')) as TransformerMap;
+};
+
+export const getSummarizedReceiverData = async (
   data: PeriodDetailsGiverReceiverDto[],
   customExportContext: string,
-  csSupportPercentage: number
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): any => {
+  csSupportPercentage: number,
+  customExportMapFile: string
+): Promise<Object[]> => {
+  const transformer = await getExportTransformer(customExportMapFile);
+
   const exportContext = JSON.parse(
     customExportContext
   ) as typeof transformer.context;
@@ -326,12 +339,14 @@ export const getSummarizedReceiverData = (
 
   const map = {
     item: transformer.map.item,
-    operate: transformer.map.operate.map((operateItem) => {
-      return {
-        run: operateItem.run,
-        on: operateItem.on,
-      };
-    }),
+    operate: transformer.map.operate.map(
+      (operateItem: TransformerOperateItem) => {
+        return {
+          run: operateItem.run,
+          on: operateItem.on,
+        };
+      }
+    ),
     each: transformer.map.each,
   };
 

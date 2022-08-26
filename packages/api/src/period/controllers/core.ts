@@ -517,25 +517,22 @@ export const exportSummary = async (
   req: TypedRequestBody<QueryInput>,
   res: Response
 ): Promise<void> => {
-  /**
-   * TODO: use this url in variable to load transformer
-   */
   const customExportMapSetting = (await settingValue(
     'CUSTOM_EXPORT_MAP'
   )) as string;
-
-  const customExportContextSetting = (await settingValue(
-    'CUSTOM_EXPORT_CONTEXT'
-  )) as string;
-
-  const csSupportPercentageSetting = (await settingValue(
-    'CS_SUPPORT_PERCENTAGE'
-  )) as number;
 
   const periodDetailsDto = await findPeriodDetailsDto(req.params.periodId);
   const receivers = await periodReceiverListTransformer(
     periodDetailsDto.receivers
   );
+
+  const customExportContext = req.query.context
+    ? (req.query.context as string)
+    : ((await settingValue('CUSTOM_EXPORT_CONTEXT')) as string);
+
+  const supportPercentage = req.query.supportPercentage
+    ? ((await settingValue('CS_SUPPORT_PERCENTAGE')) as number)
+    : 0;
 
   const fields = [
     {
@@ -552,10 +549,11 @@ export const exportSummary = async (
     },
   ];
 
-  const summarizedReceiverData = getSummarizedReceiverData(
+  const summarizedReceiverData = await getSummarizedReceiverData(
     receivers,
-    customExportContextSetting,
-    csSupportPercentageSetting
+    customExportContext,
+    supportPercentage,
+    customExportMapSetting
   );
 
   const json2csv = new Parser({ fields: fields });

@@ -491,7 +491,11 @@ export const useExportPraise = (): useExportPraiseReturn => {
 };
 
 type useExportSummaryPraiseReturn = {
-  exportSummaryPraise: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
+  exportSummaryPraise: (
+    period: PeriodDetailsDto,
+    exportContext: string,
+    supportPercentage: boolean
+  ) => Promise<Blob | undefined>;
 };
 
 /**
@@ -501,12 +505,14 @@ export const useExportSummaryPraise = (): useExportSummaryPraiseReturn => {
   const apiAuthClient = useApiAuthClient();
 
   const exportSummaryPraise = async (
-    period: PeriodDetailsDto
+    period: PeriodDetailsDto,
+    exportContext: string,
+    supportPercentage: boolean
   ): Promise<Blob | undefined> => {
     if (!period) return undefined;
 
     const response = await apiAuthClient.get(
-      `/admin/periods/${period._id}/exportSummary`,
+      `/admin/periods/${period._id}/exportSummary?context=${exportContext}&supportPercentage=${supportPercentage}`,
       { responseType: 'blob' }
     );
 
