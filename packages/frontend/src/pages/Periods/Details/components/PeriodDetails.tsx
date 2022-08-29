@@ -113,7 +113,7 @@ export const PeriodDetails = (): JSX.Element | null => {
         id: toastId,
         position: 'top-center',
         loading: {
-          duration: Infinity,
+          duration: 1000,
         },
       }
     );
@@ -134,6 +134,7 @@ export const PeriodDetails = (): JSX.Element | null => {
             setTimeout(() => toast.remove(toastId), 2000);
             return 'Export done';
           }
+
           return 'Empty export returned';
         },
         error: 'Distribution failed',
@@ -142,7 +143,7 @@ export const PeriodDetails = (): JSX.Element | null => {
         id: toastId,
         position: 'top-center',
         loading: {
-          duration: Infinity,
+          duration: 1000,
         },
       }
     );
@@ -155,7 +156,6 @@ export const PeriodDetails = (): JSX.Element | null => {
       handleExport();
     } else if (option.value === 'aragon') {
       setIsCustomExportDialogOpen(true);
-      // handleDistribution();
     }
   };
 

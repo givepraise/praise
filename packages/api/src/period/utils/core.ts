@@ -301,12 +301,8 @@ export const isPeriodLatest = async (
   return false;
 };
 
-const getExportTransformer = async (
-  fileName: string
-): Promise<TransformerMap> => {
-  const baseUrl =
-    'https://api.github.com/repos/commons-stack/praise-exports/contents/';
-  const response = await axios.get(`${baseUrl}${fileName}`);
+const getExportTransformer = async (url: string): Promise<TransformerMap> => {
+  const response = await axios.get(url);
   const buff = Buffer.from(response.data.content, 'base64');
   return JSON.parse(buff.toString('utf-8')) as TransformerMap;
 };
@@ -315,9 +311,9 @@ export const getSummarizedReceiverData = async (
   data: PeriodDetailsGiverReceiverDto[],
   customExportContext: string,
   csSupportPercentage: number,
-  customExportMapFile: string
+  customExportMap: string
 ): Promise<Object[]> => {
-  const transformer = await getExportTransformer(customExportMapFile);
+  const transformer = await getExportTransformer(customExportMap);
 
   const exportContext = JSON.parse(
     customExportContext
