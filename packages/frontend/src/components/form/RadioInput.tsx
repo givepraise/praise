@@ -3,13 +3,21 @@ import { AxiosResponse, AxiosError } from 'axios';
 import { useState } from 'react';
 import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 
-export const RadioInput = (
-  name: string,
-  apiResponse: AxiosResponse<unknown> | AxiosError | null,
-  dbValue: string,
-  values: string[],
-  disabled?: boolean
-): JSX.Element => {
+interface RadioInputParams {
+  name: string;
+  apiResponse: AxiosResponse<unknown> | AxiosError | null;
+  dbValue: string;
+  values: string[];
+  disabled?: boolean;
+}
+
+export const RadioInput = ({
+  name,
+  apiResponse,
+  dbValue,
+  values,
+  disabled,
+}: RadioInputParams): JSX.Element => {
   const [currentValue, setCurrentValue] = useState<string>(dbValue);
 
   return (

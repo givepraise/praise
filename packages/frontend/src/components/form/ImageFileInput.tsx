@@ -1,10 +1,16 @@
 import { Field } from 'react-final-form';
 
-export const ImageFileInput = (
-  name: string,
-  src: string | undefined,
-  disabled?: boolean
-): JSX.Element => {
+interface ImageFileInputParams {
+  name: string;
+  src: string | undefined;
+  disabled?: boolean;
+}
+
+export const ImageFileInput = ({
+  name,
+  src,
+  disabled,
+}: ImageFileInputParams): JSX.Element => {
   return (
     <Field<FileList> name={name} key={name}>
       {({ input: { onChange, onBlur, onFocus } }): JSX.Element => (
