@@ -29,5 +29,8 @@
     }
   },
   "include": ["src/**/*.ts", "test/**/*.ts"],
-  "references": []
+  "references": [],
+  "ts-node": {
+    "files": true
+  }
 }
