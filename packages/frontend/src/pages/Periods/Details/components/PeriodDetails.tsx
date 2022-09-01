@@ -24,6 +24,7 @@ import { saveLocalFile } from '@/utils/file';
 import { getPreviousPeriod } from '@/utils/periods';
 
 import { ISelectedItem, SelectInput } from '@/components/form/SelectInput';
+import { SingleSetting } from '@/model/settings';
 import { PeriodAssignDialog } from './AssignDialog';
 import { PeriodCloseDialog } from './CloseDialog';
 import { PeriodDateForm } from './PeriodDateForm';
@@ -43,6 +44,9 @@ export const PeriodDetails = (): JSX.Element | null => {
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
   const { exportSummaryPraise } = useExportSummaryPraise();
+  const customExportFormat = useRecoilValue(
+    SingleSetting('CUSTOM_EXPORT_CSV_FORMAT')
+  );
 
   const history = useHistory();
 
@@ -130,7 +134,10 @@ export const PeriodDetails = (): JSX.Element | null => {
         loading: 'Distributing …',
         success: (data: Blob | undefined) => {
           if (data) {
-            saveLocalFile(data, 'summary-export.csv');
+            saveLocalFile(
+              data,
+              `summary-export.${customExportFormat?.valueRealized}`
+            );
             setTimeout(() => toast.remove(toastId), 2000);
             return 'Export done';
           }

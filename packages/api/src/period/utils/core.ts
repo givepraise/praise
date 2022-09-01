@@ -301,20 +301,20 @@ export const isPeriodLatest = async (
   return false;
 };
 
-const getExportTransformer = async (url: string): Promise<TransformerMap> => {
+export const getExportTransformer = async (
+  url: string
+): Promise<TransformerMap> => {
   const response = await axios.get(url);
   const buff = Buffer.from(response.data.content, 'base64');
   return JSON.parse(buff.toString('utf-8')) as TransformerMap;
 };
 
-export const getSummarizedReceiverData = async (
+export const getSummarizedReceiverData = (
   data: PeriodDetailsGiverReceiverDto[],
   customExportContext: string,
   csSupportPercentage: number,
-  customExportMap: string
-): Promise<Object[]> => {
-  const transformer = await getExportTransformer(customExportMap);
-
+  transformer: TransformerMap
+): Object[] => {
   const exportContext = JSON.parse(
     customExportContext
   ) as typeof transformer.context;

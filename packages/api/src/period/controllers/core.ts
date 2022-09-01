@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { add, compareAsc, parseISO } from 'date-fns';
+import e from 'cors';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import { PraiseDtoExtended, PraiseDetailsDto, PraiseDto } from '@/praise/types';
 import {
@@ -35,6 +36,7 @@ import {
 } from '../types';
 import {
   findPeriodDetailsDto,
+  getExportTransformer,
   getPeriodDateRangeQuery,
   getPreviousPeriodEndDate,
   getSummarizedReceiverData,
@@ -521,6 +523,10 @@ export const exportSummary = async (
     'CUSTOM_EXPORT_MAP'
   )) as string;
 
+  const exportFormat = (await settingValue(
+    'CUSTOM_EXPORT_CSV_FORMAT'
+  )) as string;
+
   const periodDetailsDto = await findPeriodDetailsDto(req.params.periodId);
   const receivers = await periodReceiverListTransformer(
     periodDetailsDto.receivers
@@ -534,32 +540,28 @@ export const exportSummary = async (
     ? ((await settingValue('CS_SUPPORT_PERCENTAGE')) as number)
     : 0;
 
-  const fields = [
-    {
-      label: 'ADDRESS',
-      value: 'address',
-    },
-    {
-      label: 'AMOUNT',
-      value: 'amount',
-    },
-    {
-      label: 'TOKEN',
-      value: 'tokenName',
-    },
-  ];
-
   try {
-    const summarizedReceiverData = await getSummarizedReceiverData(
+    const transformer = await getExportTransformer(customExportMapSetting);
+
+    const summarizedReceiverData = getSummarizedReceiverData(
       receivers,
       customExportContext,
       supportPercentage,
-      customExportMapSetting
+      transformer
     );
-    const json2csv = new Parser({ fields: fields });
-    const csv = json2csv.parse(summarizedReceiverData);
 
-    res.status(200).contentType('text/csv').attachment('data.csv').send(csv);
+    let data = null;
+    if (exportFormat === 'csv') {
+      const fields = Object.keys(transformer.map.item).map((item) => {
+        return { label: item.toUpperCase(), value: item };
+      });
+      const json2csv = new Parser({ fields: fields });
+      data = json2csv.parse(summarizedReceiverData);
+    } else {
+      data = summarizedReceiverData;
+    }
+
+    res.status(200).contentType('text/csv').attachment('data.csv').send(data);
   } catch (e) {
     throw new BadRequestError((e as Error).message);
   }
