@@ -3,12 +3,11 @@ import { useRecoilValue } from 'recoil';
 import { ChartData, ChartOptions } from 'chart.js';
 import { TreemapDataPoint } from 'chartjs-chart-treemap';
 import { PeriodPageParams, SinglePeriod } from '@/model/periods';
-import { ErrorPlaceholder } from '@/components/analytics/ErrorPlaceholder';
 import { PeriodQuantifierStats } from '@/model/periodAnalytics';
 import { ManyUsers } from '@/model/users';
 import { UserDataPoint, Treemap } from './Treemap';
 
-export const QuantifiersByScore = (): JSX.Element => {
+export const QuantifiersByScore = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const history = useHistory();
   const period = useRecoilValue(SinglePeriod(periodId));
@@ -17,9 +16,7 @@ export const QuantifiersByScore = (): JSX.Element => {
     ManyUsers(allQuantifierStats && allQuantifierStats.map((q) => q._id))
   );
 
-  if (!period || !period.receivers || !allQuantifierStats) {
-    return <ErrorPlaceholder height={375} />;
-  }
+  if (!period || !period.receivers || !allQuantifierStats) return null;
 
   const sortStatsScore = [...allQuantifierStats].sort(
     (a, b) => b.totalScore - a.totalScore

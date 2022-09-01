@@ -5,7 +5,6 @@ import { BoxPlotDataPoint } from '@sgratzl/chartjs-chart-boxplot';
 import { QuantificationDto } from 'api/dist/praise/types';
 import { PeriodPageParams } from '@/model/periods';
 import { PeriodPraiseOutliers } from '@/model/periodAnalytics';
-import { ErrorPlaceholder } from '@/components/analytics/ErrorPlaceholder';
 import { BoxPlot } from './Boxplot';
 import { Pagination } from './Pagination';
 
@@ -22,9 +21,7 @@ export const QuantificationSpread = (): JSX.Element | null => {
   const history = useHistory();
   const page = useRecoilValue(QuantificationSpreadPagination);
 
-  if (!praiseDetailsStats) {
-    return <ErrorPlaceholder height={375} />;
-  }
+  if (!praiseDetailsStats) return null;
 
   const sortedPraiseDetailsStats = [...praiseDetailsStats].sort(
     (a, b) => b.scoreSpread - a.scoreSpread
