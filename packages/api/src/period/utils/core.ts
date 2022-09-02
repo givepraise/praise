@@ -1,5 +1,5 @@
 import some from 'lodash/some';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { NotFoundError } from '@/error/errors';
 import { PraiseModel } from '@/praise/entities';
 import { calculateGiverReceiverCompositeScore } from '@/praise/utils/score';
@@ -304,9 +304,19 @@ export const isPeriodLatest = async (
 export const getExportTransformer = async (
   url: string
 ): Promise<TransformerMap> => {
-  const response = await axios.get(url);
-  const buff = Buffer.from(response.data.content, 'base64');
-  return JSON.parse(buff.toString('utf-8')) as TransformerMap;
+  let response: AxiosResponse | undefined = undefined;
+  try {
+    response = await axios.get(url);
+  } catch (error) {
+    throw new Error('Could not fetch transformer');
+  }
+
+  // TODO add schema validation
+  if (response) {
+    const buff = Buffer.from(response.data.content, 'base64');
+    return JSON.parse(buff.toString('utf-8')) as TransformerMap;
+  }
+  throw new Error('Unknown error');
 };
 
 export const getSummarizedReceiverData = (
