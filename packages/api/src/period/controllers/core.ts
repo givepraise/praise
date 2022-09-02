@@ -3,7 +3,6 @@ import { StatusCodes } from 'http-status-codes';
 import { Request, Response } from 'express';
 import { Parser } from 'json2csv';
 import { add, compareAsc, parseISO } from 'date-fns';
-import e from 'cors';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import { PraiseDtoExtended, PraiseDetailsDto, PraiseDto } from '@/praise/types';
 import {
@@ -23,7 +22,11 @@ import {
   QueryInputParsedQs,
   TypedRequestQuery,
 } from '@/shared/types';
-import { getQueryInput, getQuerySort } from '@/shared/functions';
+import {
+  getQueryInput,
+  getQuerySort,
+  objectsHaveSameKeys,
+} from '@/shared/functions';
 import { PraiseModel } from '@/praise/entities';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
@@ -541,7 +544,12 @@ export const exportSummary = async (
     : 0;
 
   try {
+    const parsedContext = JSON.parse(customExportContext);
     const transformer = await getExportTransformer(customExportMapSetting);
+
+    if (!objectsHaveSameKeys(parsedContext, transformer.context)) {
+      throw new BadRequestError('Distribution parameters are not valid.');
+    }
 
     const summarizedReceiverData = getSummarizedReceiverData(
       receivers,
