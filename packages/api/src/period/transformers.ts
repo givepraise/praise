@@ -97,22 +97,22 @@ export const periodDetailsGiverReceiverListTransformer = async (
 /**
  * Serialize relevant details about a Praise receiver in a period
  *
- * @param {PeriodDetailsReceiver} periodReceiver
+ * @param {PeriodDetailsReceiver} giverReceiver
  * @returns {Promise<PeriodDetailsReceiverDto>}
  */
-const periodReceiverToDto = async (
-  periodReceiver: PeriodDetailsGiverReceiverDto
+const populateGRWithEthereumAddress = async (
+  giverReceiver: PeriodDetailsGiverReceiverDto
 ): Promise<PeriodDetailsGiverReceiverDto> => {
-  const { _id, praiseCount, scoreRealized, userAccount } = periodReceiver;
+  const { _id, praiseCount, scoreRealized, userAccount } = giverReceiver;
   let ethereumAddress = undefined;
 
   if (userAccount) {
-    const receiver = await UserModel.findById(userAccount.user);
-    ethereumAddress = receiver?.ethereumAddress;
+    const user = await UserModel.findById(userAccount.user);
+    ethereumAddress = user?.ethereumAddress;
   }
 
   return {
-    _id: _id.toString(),
+    _id,
     praiseCount,
     ethereumAddress,
     scoreRealized,
@@ -123,18 +123,18 @@ const periodReceiverToDto = async (
 /**
  * Serialize relevant details about a list of Praise receivers in a period (with ETH address)
  *
- * @param {(PeriodReceiver[] | undefined)} periodReceiverList
+ * @param {(PeriodReceiver[] | undefined)} giverReceiverList
  * @returns {Promise<PeriodReceiverDto[]>}
  */
-export const periodReceiverListTransformer = async (
-  periodReceiverList: PeriodDetailsGiverReceiverDto[] | undefined
+export const populateGRListWithEthereumAddresses = async (
+  giverReceiverList: PeriodDetailsGiverReceiverDto[] | undefined
 ): Promise<PeriodDetailsGiverReceiverDto[]> => {
-  if (periodReceiverList && Array.isArray(periodReceiverList)) {
-    const periodReceiverDto: PeriodDetailsGiverReceiverDto[] = [];
-    for (const pdr of periodReceiverList) {
-      periodReceiverDto.push(await periodReceiverToDto(pdr));
+  if (giverReceiverList && Array.isArray(giverReceiverList)) {
+    const grList: PeriodDetailsGiverReceiverDto[] = [];
+    for (const gr of giverReceiverList) {
+      grList.push(await populateGRWithEthereumAddress(gr));
     }
-    return periodReceiverDto;
+    return grList;
   }
   return [];
 };

@@ -47,7 +47,7 @@ import {
 } from '../utils/core';
 import { PeriodModel } from '../entities';
 import {
-  periodReceiverListTransformer,
+  populateGRListWithEthereumAddresses,
   periodTransformer,
 } from '../transformers';
 
@@ -530,11 +530,6 @@ export const exportSummary = async (
     'CUSTOM_EXPORT_CSV_FORMAT'
   )) as string;
 
-  const periodDetailsDto = await findPeriodDetailsDto(req.params.periodId);
-  const receivers = await periodReceiverListTransformer(
-    periodDetailsDto.receivers
-  );
-
   const customExportContext = req.query.context
     ? (req.query.context as string)
     : ((await settingValue('CUSTOM_EXPORT_CONTEXT')) as string);
@@ -542,6 +537,11 @@ export const exportSummary = async (
   const supportPercentage = req.query.supportPercentage
     ? ((await settingValue('CS_SUPPORT_PERCENTAGE')) as number)
     : 0;
+
+  const periodDetailsDto = await findPeriodDetailsDto(req.params.periodId);
+  const receivers = await populateGRListWithEthereumAddresses(
+    periodDetailsDto.receivers
+  );
 
   try {
     const parsedContext = JSON.parse(customExportContext);
