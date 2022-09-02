@@ -482,9 +482,10 @@ export const useExportPraise = (): useExportPraiseReturn => {
     );
 
     // If OK response, add returned period object to local state
-    if (isResponseOk(response)) {
-      return response.data as Blob;
+    if (!isResponseOk(response)) {
+      throw new Error();
     }
+    return response.data as Blob;
   };
 
   return { exportPraise };
@@ -517,9 +518,10 @@ export const useExportSummaryPraise = (): useExportSummaryPraiseReturn => {
     );
 
     // If OK response, add returned period object to local state
-    if (isResponseOk(response)) {
-      return response.data as Blob;
+    if (!isResponseOk(response)) {
+      throw new Error();
     }
+    return response.data as Blob;
   };
 
   return { exportSummaryPraise };
