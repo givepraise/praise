@@ -1,32 +1,22 @@
 import { Types } from 'mongoose';
 import { StatusCodes } from 'http-status-codes';
-import { Request, Response } from 'express';
-import { Parser } from 'json2csv';
+import { Request } from 'express';
 import { add, compareAsc, parseISO } from 'date-fns';
 import { BadRequestError, NotFoundError } from '@/error/errors';
-import { PraiseDtoExtended, PraiseDetailsDto, PraiseDto } from '@/praise/types';
+import { PraiseDetailsDto, PraiseDto } from '@/praise/types';
 import {
   praiseListTransformer,
   praiseTransformer,
 } from '@/praise/transformers';
-import { calculateQuantificationScore } from '@/praise/utils/score';
-import { UserModel } from '@/user/entities';
-import { UserAccountModel } from '@/useraccount/entities';
 import { insertNewPeriodSettings } from '@/periodsettings/utils';
-import { settingValue } from '@/shared/settings';
 import {
   TypedRequestBody,
   TypedResponse,
-  QueryInput,
   PaginatedResponseBody,
   QueryInputParsedQs,
   TypedRequestQuery,
 } from '@/shared/types';
-import {
-  getQueryInput,
-  getQuerySort,
-  objectsHaveSameKeys,
-} from '@/shared/functions';
+import { getQueryInput, getQuerySort } from '@/shared/functions';
 import { PraiseModel } from '@/praise/entities';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
@@ -39,17 +29,12 @@ import {
 } from '../types';
 import {
   findPeriodDetailsDto,
-  getExportTransformer,
   getPeriodDateRangeQuery,
   getPreviousPeriodEndDate,
-  getSummarizedReceiverData,
   isPeriodLatest,
 } from '../utils/core';
 import { PeriodModel } from '../entities';
-import {
-  populateGRListWithEthereumAddresses,
-  periodTransformer,
-} from '../transformers';
+import { periodTransformer } from '../transformers';
 
 /**
  * Fetch a paginated list of Periods
@@ -346,231 +331,4 @@ export const quantifierPraise = async (
 
   const response = await praiseListTransformer(praiseList);
   res.status(StatusCodes.OK).json(response);
-};
-
-/**
- * Generate a CSV of Praise and quantification data for a period
- *
- * @param {TypedRequestBody<QueryInput>} req
- * @param {Response} res
- * @returns {Promise<void>}
- */
-export const exportPraise = async (
-  req: TypedRequestBody<QueryInput>,
-  res: Response
-): Promise<void> => {
-  const period = await PeriodModel.findOne({ _id: req.params.periodId });
-  if (!period) throw new NotFoundError('Period');
-  const periodDateRangeQuery = await getPeriodDateRangeQuery(period);
-
-  const praises = await PraiseModel.find({
-    createdAt: periodDateRangeQuery,
-  }).populate('giver receiver forwarder');
-
-  const quantificationsColumnsCount = (await settingValue(
-    'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
-    period._id
-  )) as number;
-
-  const docs: PraiseDetailsDto[] = [];
-  if (praises) {
-    for (const praise of praises) {
-      const pws: PraiseDtoExtended = await praiseTransformer(praise);
-
-      const receiver = await UserModel.findById(pws.receiver.user);
-      if (receiver) {
-        pws.receiverUserDocument = receiver;
-      }
-
-      if (pws.giver && pws.giver.user) {
-        const giver = await UserModel.findById(pws.giver.user);
-        if (giver) {
-          pws.giverUserDocument = giver;
-        }
-      }
-
-      pws.quantifications = await Promise.all(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        pws.quantifications.map(async (q: any) => {
-          const quantifier = await UserModel.findById(q.quantifier._id);
-          const account = await UserAccountModel.findOne({
-            user: q.quantifier._id,
-          });
-
-          q.quantifier = quantifier;
-          q.account = account;
-
-          q.scoreRealized = await calculateQuantificationScore(q);
-
-          return q;
-        })
-      );
-
-      docs.push(pws);
-    }
-  }
-
-  const fields = [
-    {
-      label: 'ID',
-      value: '_id',
-    },
-    {
-      label: 'DATE',
-      value: 'createdAt',
-    },
-    {
-      label: 'TO USER ACCOUNT',
-      value: 'receiver.name',
-    },
-    {
-      label: 'TO USER ACCOUNT ID',
-      value: 'receiver._id',
-    },
-    {
-      label: 'TO ETH ADDRESS',
-      value: 'receiverUserDocument.ethereumAddress',
-    },
-    {
-      label: 'FROM USER ACCOUNT',
-      value: 'giver.name',
-    },
-    {
-      label: 'FROM USER ACCOUNT ID',
-      value: 'giver._id',
-    },
-    {
-      label: 'FROM ETH ADDRESS',
-      value: 'giverUserDocument.ethereumAddress',
-    },
-    {
-      label: 'REASON',
-      value: 'reasonRealized',
-    },
-    {
-      label: 'SOURCE ID',
-      value: 'sourceId',
-    },
-    {
-      label: 'SOURCE NAME',
-      value: 'sourceName',
-    },
-  ];
-
-  for (let index = 0; index < quantificationsColumnsCount; index++) {
-    const quantObj = {
-      label: `SCORE ${index + 1}`,
-      value: `quantifications[${index}].score`,
-    };
-
-    fields.push(quantObj);
-  }
-
-  for (let index = 0; index < quantificationsColumnsCount; index++) {
-    const quantObj = {
-      label: `DUPLICATE ID ${index + 1}`,
-      value: `quantifications[${index}].duplicatePraise`,
-    };
-
-    fields.push(quantObj);
-  }
-
-  for (let index = 0; index < quantificationsColumnsCount; index++) {
-    const quantObj = {
-      label: `DISMISSED ${index + 1}`,
-      value: `quantifications[${index}].dismissed`,
-    };
-
-    fields.push(quantObj);
-  }
-
-  for (let index = 0; index < quantificationsColumnsCount; index++) {
-    const quantUserUsernameObj = {
-      label: `QUANTIFIER ${index + 1} USERNAME`,
-      value: `quantifications[${index}].account.name`,
-    };
-
-    fields.push(quantUserUsernameObj);
-
-    const quantUserEthAddressObj = {
-      label: `QUANTIFIER ${index + 1} ETH ADDRESS`,
-      value: `quantifications[${index}].quantifier.ethereumAddress`,
-    };
-
-    fields.push(quantUserEthAddressObj);
-  }
-
-  fields.push({
-    label: 'AVG SCORE',
-    value: 'scoreRealized',
-  });
-
-  const json2csv = new Parser({ fields: fields });
-  const csv = json2csv.parse(docs);
-
-  res.status(200).contentType('text/csv').attachment('data.csv').send(csv);
-};
-
-/**
- * Return period receivers
- *
- * @param {TypedRequestBody<QueryInput>} req
- * @param {Response} res
- * @returns {Promise<void>}
- */
-export const exportSummary = async (
-  req: TypedRequestBody<QueryInput>,
-  res: Response
-): Promise<void> => {
-  const customExportMapSetting = (await settingValue(
-    'CUSTOM_EXPORT_MAP'
-  )) as string;
-
-  const exportFormat = (await settingValue(
-    'CUSTOM_EXPORT_CSV_FORMAT'
-  )) as string;
-
-  const customExportContext = req.query.context
-    ? (req.query.context as string)
-    : ((await settingValue('CUSTOM_EXPORT_CONTEXT')) as string);
-
-  const supportPercentage = req.query.supportPercentage
-    ? ((await settingValue('CS_SUPPORT_PERCENTAGE')) as number)
-    : 0;
-
-  const periodDetailsDto = await findPeriodDetailsDto(req.params.periodId);
-  const receivers = await populateGRListWithEthereumAddresses(
-    periodDetailsDto.receivers
-  );
-
-  try {
-    const parsedContext = JSON.parse(customExportContext);
-    const transformer = await getExportTransformer(customExportMapSetting);
-
-    if (!objectsHaveSameKeys(parsedContext, transformer.context)) {
-      throw new BadRequestError('Distribution parameters are not valid.');
-    }
-
-    const summarizedReceiverData = getSummarizedReceiverData(
-      receivers,
-      customExportContext,
-      supportPercentage,
-      transformer
-    );
-
-    let data = null;
-    if (exportFormat === 'csv') {
-      const fields = Object.keys(transformer.map.item).map((item) => {
-        return { label: item.toUpperCase(), value: item };
-      });
-      const json2csv = new Parser({ fields: fields });
-      data = json2csv.parse(summarizedReceiverData);
-    } else {
-      data = summarizedReceiverData;
-    }
-
-    res.status(200).contentType('text/csv').attachment('data.csv').send(data);
-  } catch (e) {
-    throw new BadRequestError((e as Error).message);
-  }
 };

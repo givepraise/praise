@@ -492,28 +492,22 @@ export const useExportPraise = (): useExportPraiseReturn => {
 };
 
 type useExportSummaryPraiseReturn = {
-  exportSummaryPraise: (
-    period: PeriodDetailsDto,
-    exportContext: string,
-    supportPercentage: boolean
-  ) => Promise<Blob | undefined>;
+  exportSummaryPraise: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
 };
 
 /**
  * Returns function that exports all praise in a period as csv data.
  */
 export const useExportSummaryPraise = (): useExportSummaryPraiseReturn => {
+  const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
   const apiAuthClient = useApiAuthClient();
 
   const exportSummaryPraise = async (
-    period: PeriodDetailsDto,
-    exportContext: string,
-    supportPercentage: boolean
+    period: PeriodDetailsDto
   ): Promise<Blob | undefined> => {
-    if (!period) return undefined;
-
+    if (!period || !allPeriods) return undefined;
     const response = await apiAuthClient.get(
-      `/admin/periods/${period._id}/exportSummary?context=${exportContext}&supportPercentage=${supportPercentage}`,
+      `/admin/periods/${period._id}/exportSummary`,
       { responseType: 'blob' }
     );
 
@@ -525,6 +519,42 @@ export const useExportSummaryPraise = (): useExportSummaryPraiseReturn => {
   };
 
   return { exportSummaryPraise };
+};
+
+type useCustomExportReturn = {
+  customExport: (
+    period: PeriodDetailsDto,
+    exportContext: string,
+    supportPercentage: boolean
+  ) => Promise<Blob | undefined>;
+};
+
+/**
+ * Returns function that exports all praise in a period as csv data.
+ */
+export const useCustomExport = (): useCustomExportReturn => {
+  const apiAuthClient = useApiAuthClient();
+
+  const customExport = async (
+    period: PeriodDetailsDto,
+    exportContext: string,
+    supportPercentage: boolean
+  ): Promise<Blob | undefined> => {
+    if (!period) return undefined;
+
+    const response = await apiAuthClient.get(
+      `/admin/periods/${period._id}/customExport?context=${exportContext}&supportPercentage=${supportPercentage}`,
+      { responseType: 'blob' }
+    );
+
+    // If OK response, add returned period object to local state
+    if (!isResponseOk(response)) {
+      throw new Error();
+    }
+    return response.data as Blob;
+  };
+
+  return { customExport };
 };
 
 /**

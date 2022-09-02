@@ -14,6 +14,7 @@ import {
   SinglePeriod,
   useAssignQuantifiers,
   useClosePeriod,
+  useCustomExport,
   useExportPraise,
   useExportSummaryPraise,
   useLoadSinglePeriodDetails,
@@ -44,6 +45,7 @@ export const PeriodDetails = (): JSX.Element | null => {
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { exportPraise } = useExportPraise();
   const { exportSummaryPraise } = useExportSummaryPraise();
+  const { customExport } = useCustomExport();
   const customExportFormat = useRecoilValue(
     SingleSetting('CUSTOM_EXPORT_CSV_FORMAT')
   );
@@ -123,20 +125,46 @@ export const PeriodDetails = (): JSX.Element | null => {
     );
   };
 
+  const handleExportSummary = (): void => {
+    const toastId = 'exportSummaryToast';
+    void toast.promise(
+      exportSummaryPraise(period),
+      {
+        loading: 'Exporting …',
+        success: (exportData: Blob | undefined) => {
+          if (exportData) {
+            saveLocalFile(exportData, 'export-summary.csv');
+            setTimeout(() => toast.remove(toastId), 2000);
+            return 'Export done';
+          }
+          return 'Empty export returned';
+        },
+        error: 'Export failed',
+      },
+      {
+        id: toastId,
+        position: 'top-center',
+        loading: {
+          duration: 1000,
+        },
+      }
+    );
+  };
+
   const handleDistribution = (
     exportContext: string,
     supportPercentage: boolean
   ): void => {
     const toastId = 'distributeToast';
     void toast.promise(
-      exportSummaryPraise(period, exportContext, supportPercentage),
+      customExport(period, exportContext, supportPercentage),
       {
         loading: 'Distributing …',
         success: (data: Blob | undefined) => {
           if (data) {
             saveLocalFile(
               data,
-              `summary-export.${customExportFormat?.valueRealized}`
+              `custom-export.${customExportFormat?.valueRealized}`
             );
             setTimeout(() => toast.remove(toastId), 2000);
             return 'Export done';
@@ -160,7 +188,7 @@ export const PeriodDetails = (): JSX.Element | null => {
     if (option.value === 'export-full') {
       handleExport();
     } else if (option.value === 'export-summary') {
-      handleExport();
+      handleExportSummary();
     } else if (option.value === 'aragon') {
       setIsCustomExportDialogOpen(true);
     }
