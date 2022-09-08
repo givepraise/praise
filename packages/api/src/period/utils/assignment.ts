@@ -5,6 +5,7 @@ import intersection from 'lodash/intersection';
 import range from 'lodash/range';
 import sum from 'lodash/sum';
 import zip from 'lodash/zip';
+import every from 'lodash/every';
 import greedyPartitioning from 'greedy-number-partitioning';
 import { InternalServerError, NotFoundError } from '@/error/errors';
 import { Quantifier, QuantifierPoolById, Receiver } from '@/praise/types';
@@ -331,6 +332,20 @@ const prepareAssignmentsEvenly = async (
       'Unable to assign redudant quantifications without more members in quantifier pool'
     );
 
+  // Check that the number of redundant assignments is greater than to the number of receivers
+  //    otherwise a quantifier could be assigned the same praise multiple times
+  if (PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER > receivers.length)
+    throw new Error(
+      'Quantifiers per Receiver is too large for the number of receivers, unable to prevent duplicate assignments'
+    );
+
+  // Run "Greedy number partitioning" algorithm:
+    greedyPartitioning<Receiver>(
+      receivers, // Items to place in bins
+      quantifierPool.length, // Available bins
+      (r: Receiver) => r.praiseCount // Bin space taken by each item
+    );
+
   const redundantReceiversShuffled: Receiver[][] = zip(
     ...range(PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER).map((i) => {
       // Create a "rotated" copy of array for each redundant quantification
@@ -338,7 +353,12 @@ const prepareAssignmentsEvenly = async (
       //  ensure each rotation does not overlap
       const receiversShuffledClone = [...receivers];
 
-      range(i).forEach(() => {
+  const redundantAssignmentBins: Receiver[][] = zip(
+    ...range(PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER).map((rotations) => {
+      const receiversShuffledClone = [...receiversDistributedByPraiseCount];
+
+      // "Rotate" array back-to-front (i.e. [a,b,c,d] -> [d,a,b,c])
+      range(rotations).forEach(() => {
         const lastElem = receiversShuffledClone.pop();
         if (!lastElem)
           throw Error(
@@ -350,24 +370,15 @@ const prepareAssignmentsEvenly = async (
 
       return receiversShuffledClone;
     })
-  ) as Receiver[][];
+  )
+    .map((binOfBins) =>
+      binOfBins.map((bins) => (bins === undefined ? ([] as Receiver[]) : bins))
+    )
+    .map((binOfBins) => flatten(binOfBins));
 
-  // Run "Greedy number partitioning" algorithm on list of receivers
-  //    with a fixed 'bin' size of: quantifierPool.length
-  //    where each item takes up bin space based on its praiseCount
-  const redundantAssignmentBins: Receiver[][][] = greedyPartitioning<
-    Receiver[]
-  >(
-    redundantReceiversShuffled,
-    quantifierPool.length,
-    (receivers: Receiver[]) => sum(receivers.map((r) => r.praiseCount))
-  );
-
-  const redundantAssignmentBinsFlattened: Receiver[][] =
-    redundantAssignmentBins.map((binOfBins) => flatten(binOfBins));
-
+  // Randomly assign each quantifier to an array of unique receivers
   const assignments = generateAssignments(
-    redundantAssignmentBinsFlattened,
+    redundantAssignmentBins,
     quantifierPool
   );
 
