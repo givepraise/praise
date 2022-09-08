@@ -221,6 +221,20 @@ const verifyAssignments = async (
       `Not all redundant praise assignments accounted for: ${accountedPraiseCount} / ${expectedAccountedPraiseCount} expected in period`
     );
   }
+
+  const verifiedUniqueAssignments = assignments.poolAssignments.map(
+    (quantifier) =>
+      quantifier.receivers.length ===
+      new Set(quantifier.receivers.map((r) => r._id.toString())).size
+  );
+
+  if (every(verifiedUniqueAssignments)) {
+    logger.info('All redundant praise are assigned to unique quantifiers');
+  } else {
+    throw new InternalServerError(
+      'Some redundant praise are assigned to the same quantifier multiple times'
+    );
+  }
 };
 
 /**
