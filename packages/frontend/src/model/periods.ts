@@ -26,7 +26,7 @@ import {
   periodReceiverPraiseListKey,
 } from '@/utils/periods';
 import { useApiAuthClient } from '@/utils/api';
-import { ApiAuthGet, isResponseOk } from './api';
+import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from './api';
 import { ActiveUserId } from './auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -353,6 +353,10 @@ export const useAssignQuantifiers = (
         status: 'QUANTIFY' as PeriodStatusType,
       };
       setPeriod(updatedPeriod);
+      return response as AxiosResponse<PeriodDetailsDto>;
+    }
+    if (isApiResponseAxiosError(response)) {
+      throw response;
     }
     return response as AxiosResponse | AxiosError;
   };

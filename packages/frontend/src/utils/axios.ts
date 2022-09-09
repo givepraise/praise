@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
  *
  * @param err
  */
-export const handleErrors = (err: AxiosError): void => {
+export const handleErrors = (err: AxiosError): AxiosError => {
   // Any HTTP Code which is not 2xx will be considered as error
   const statusCode = err?.response?.status;
 
@@ -25,6 +25,7 @@ export const handleErrors = (err: AxiosError): void => {
   } else {
     toast.error('Unknown Error');
   }
+  return err;
 };
 
 /**
