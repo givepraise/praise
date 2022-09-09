@@ -19,6 +19,7 @@ const WrappedUserAvatar = ({
   usePseudonym = false,
 }: UserAvatarProps): JSX.Element => {
   const [imageLoadError, setImageLoadError] = React.useState<boolean>(false);
+  const [imageLoaded, setImageLoaded] = React.useState<boolean>(false);
   if (imageLoadError || usePseudonym)
     return <FontAwesomeIcon icon={faUserCircle} size="1x" />;
 
@@ -41,12 +42,17 @@ const WrappedUserAvatar = ({
   }
 
   return url ? (
-    <img
-      src={url}
-      onError={(): void => setImageLoadError(true)}
-      alt="avatar"
-      className="object-contain h-[1em] rounded-full"
-    />
+    <>
+      {!imageLoaded && <FontAwesomeIcon icon={faUserCircle} size="1x" />}
+      <img
+        src={url}
+        onError={(): void => setImageLoadError(true)}
+        onLoad={(): void => setImageLoaded(true)}
+        alt="avatar"
+        className="object-contain h-[1em] rounded-full"
+        style={!imageLoaded ? { display: 'none' } : {}}
+      />
+    </>
   ) : (
     <FontAwesomeIcon icon={faUserCircle} size="1x" />
   );
