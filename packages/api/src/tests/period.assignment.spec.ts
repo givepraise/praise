@@ -2,6 +2,7 @@ import { Wallet } from 'ethers';
 import { expect } from 'chai';
 import { faker } from '@faker-js/faker';
 import some from 'lodash/some';
+import sum from 'lodash/sum';
 import {
   seedPeriod,
   seedPraise,
@@ -14,6 +15,7 @@ import { PraiseModel } from '@/praise/entities';
 import { PeriodSettingsModel } from '@/periodsettings/entities';
 import { UserModel } from '@/user/entities';
 import { UserAccountModel } from '@/useraccount/entities';
+import { PeriodDetailsQuantifierDto } from '@/period/types';
 import { loginUser } from './utils';
 
 describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
@@ -244,6 +246,9 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
     await seedUser({
       roles: ['USER', 'QUANTIFIER'],
     });
+    await seedUser({
+      roles: ['USER', 'QUANTIFIER'],
+    });
 
     const response = await this.client
       .patch(
@@ -275,10 +280,14 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
     );
     expect(response.body.receivers[2].praiseCount).to.equal(3);
 
-    expect(response.body.quantifiers).to.have.length(3);
-    expect(response.body.quantifiers[0].praiseCount).to.equal(12);
-    expect(response.body.quantifiers[1].praiseCount).to.equal(12);
-    expect(response.body.quantifiers[2].praiseCount).to.equal(12);
+    expect(response.body.quantifiers).to.have.length(5);
+    expect(
+      sum(
+        response.body.quantifiers.map(
+          (q: PeriodDetailsQuantifierDto) => q.praiseCount
+        )
+      )
+    ).to.equal(12 * 3);
 
     expect(response.body.quantifiers[0].finishedCount).to.equal(0);
     expect(response.body.quantifiers[1].finishedCount).to.equal(0);

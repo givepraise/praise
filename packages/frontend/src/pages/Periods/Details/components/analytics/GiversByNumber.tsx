@@ -7,18 +7,15 @@ import {
   SinglePeriod,
   useLoadSinglePeriodDetails,
 } from '@/model/periods';
-import { ErrorPlaceholder } from '@/components/analytics/ErrorPlaceholder';
 import { UserDataPoint, Treemap } from './Treemap';
 
-export const GiversByNumber = (): JSX.Element => {
+export const GiversByNumber = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   useLoadSinglePeriodDetails(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
   const history = useHistory();
 
-  if (!period || !period.givers) {
-    return <ErrorPlaceholder height={375} />;
-  }
+  if (!period || !period.givers) return null;
 
   const sortGiversByNumber = [...period.givers].sort(
     (a, b) => b.praiseCount - a.praiseCount
