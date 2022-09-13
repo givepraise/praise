@@ -8,20 +8,16 @@ import { AppError } from 'api/dist/error/types';
  *
  * @param err
  */
-export const handleErrors = (err: AxiosError): void => {
-  if (!err.response || !err.response.status) {
-    toast.error('An unknown error occurred.');
-    return;
-  }
-  if (err.request && !err.response) {
-    // The request was made but no response was received
+export const handleErrors = (err: AxiosError): AxiosError => {
+  // Any HTTP Code which is not 2xx will be considered as error
+  const statusCode = err?.response?.status;
+
+  if (err?.request && !err?.response) {
     toast.error('Server did not respond');
-    return;
   } else if (err.response.status === 404) {
     // Resource not found
     // Redirect to 404 page
     window.location.href = '/404';
-    return;
   } else if ([403, 400].includes(err.response.status)) {
     // Forbidden or bad request
     const isJsonBlob = (data): data is Blob =>
@@ -37,14 +33,13 @@ export const handleErrors = (err: AxiosError): void => {
     } else {
       toast.error('Something went wrong');
     }
-    return;
   } else if (err.response.status === 401) {
     // Unauthorized
     window.location.href = '/';
-    return;
+  } else {
+    toast.error('Unknown Error');
   }
-
-  toast.error('An unknown error occurred.');
+  return err;
 };
 
 /**

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { Form } from 'react-final-form';
 import find from 'lodash/find';
 import { PeriodSettingDto } from 'api/src/periodsettings/types';
@@ -161,12 +162,7 @@ export const SettingsForm = ({
                 </span>
               </Notice>
             )}
-            <form
-              onSubmit={(): void => {
-                void handleSubmit();
-              }}
-              className="leading-loose"
-            >
+            <form onSubmit={handleSubmit} className="leading-loose">
               {FormFields(settings, apiResponse, disabled)}
               <div className="mt-4">
                 <SubmitButton />
