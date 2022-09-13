@@ -6,9 +6,15 @@ interface NavProps {
   icon?: IconProp;
   description: string;
   to: string;
+  replace?: boolean;
 }
 
-export const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
+export const NavItem = ({
+  icon,
+  description,
+  to,
+  replace = false,
+}: NavProps): JSX.Element => {
   return (
     <li className="group">
       <NavLink
@@ -21,6 +27,7 @@ export const NavItem = ({ icon, description, to }: NavProps): JSX.Element => {
           }`
         }
         id={to.substring(1) + '-nav-button'}
+        replace={replace}
       >
         {icon && (
           <div className="inline-block w-8 text-center">
