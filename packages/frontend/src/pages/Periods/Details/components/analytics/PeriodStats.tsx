@@ -2,15 +2,12 @@ import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { PeriodPageParams } from '@/model/periods';
 import { PeriodStatsSelector } from '@/model/periodAnalytics';
-import { ErrorPlaceholder } from '@/components/analytics/ErrorPlaceholder';
 
-export const PeriodStats = (): JSX.Element => {
+export const PeriodStats = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const periodStats = useRecoilValue(PeriodStatsSelector(periodId));
 
-  if (!periodStats) {
-    return <ErrorPlaceholder height={100} />;
-  }
+  if (!periodStats) return null;
 
   return (
     <div>

@@ -58,22 +58,29 @@ export const PeriodDetails = (): JSX.Element | null => {
   };
 
   const handleAssign = (): void => {
+    const toastId = 'assignToast';
     const promise = assignQuantifiers();
     void toast.promise(
       promise,
       {
         loading: 'Assigning quantifiers …',
-        success: 'Quantifiers assigned',
-        error: 'Assign failed',
+        success: () => {
+          setTimeout(() => history.go(0), 2000);
+          return 'Quantifiers assigned';
+        },
+        error: () => {
+          setTimeout(() => toast.remove(toastId), 2000);
+          return 'Assign failed';
+        },
       },
       {
+        id: toastId,
         position: 'top-center',
         loading: {
           duration: Infinity,
         },
       }
     );
-    promise.finally(() => setTimeout(() => history.go(0), 1000));
   };
 
   const handleExport = (): void => {

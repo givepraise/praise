@@ -2,7 +2,7 @@
 import { PeriodDetailsDto } from 'api/dist/period/types';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { TableOptions, useTable } from 'react-table';
+import { TableOptions, useSortBy, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { classNames } from '@/utils/index';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
@@ -57,9 +57,17 @@ export const PeriodsTable = (): JSX.Element => {
 
   const options = {
     columns,
-    data: allPeriods ? allPeriods : [],
+    data: allPeriods,
+    initialState: {
+      sortBy: [
+        {
+          id: 'endDate',
+          desc: true,
+        },
+      ],
+    },
   } as TableOptions<{}>;
-  const tableInstance = useTable(options);
+  const tableInstance = useTable(options, useSortBy);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
