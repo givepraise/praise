@@ -83,8 +83,9 @@ const QuantifierTable = (): JSX.Element => {
           return (
             <div className="w-3">
               <button
-                className="hidden cursor-pointer text-warm-gray-400 group-hover:block hover:text-warm-gray-500"
-                onClick={(): void => {
+                className="hidden cursor-pointer text-warm-gray-400 group-hover:block hover:text-warm-gray-500 dark:hover:text-warm-gray-300"
+                onClick={(event): void => {
+                  event.stopPropagation();
                   setQuantifierToReplace(data.row.original);
                   setIsReplaceQuantifierDialogOpen(true);
                 }}
@@ -172,9 +173,9 @@ const QuantifierTable = (): JSX.Element => {
             prepareRow(row);
             return (
               <tr
-                className="cursor-pointer hover:bg-warm-gray-100 dark:hover:bg-slate-500"
+                className="cursor-pointer group hover:bg-warm-gray-100 dark:hover:bg-slate-500"
                 {...row.getRowProps()}
-                onClickCapture={handleClick(row.original)}
+                onClick={handleClick(row.original)}
               >
                 {row.cells.map((cell) => {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
