@@ -18,8 +18,9 @@ export const getExportTransformer = async (
 
   // TODO add schema validation
   if (response) {
-    const buff = Buffer.from(response.data.content, 'base64');
-    return JSON.parse(buff.toString('utf-8')) as TransformerMap;
+    return response.data as TransformerMap;
+    // const buff = Buffer.from(response.data, 'base64');
+    // return JSON.parse(buff.toString('utf-8')) as TransformerMap;
   }
   throw new Error('Unknown error');
 };

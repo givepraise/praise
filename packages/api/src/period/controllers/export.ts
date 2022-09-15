@@ -254,6 +254,8 @@ export const customExport = async (
     const parsedContext = JSON.parse(customExportContext);
     const transformer = await getExportTransformer(customExportMapSetting);
 
+    console.log('TRANSFORMER:', transformer);
+
     if (!objectsHaveSameKeys(parsedContext, transformer.context)) {
       throw new BadRequestError('Distribution parameters are not valid.');
     }

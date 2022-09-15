@@ -42,7 +42,6 @@
     "jstz": "^2.1.1",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
-    "node-json-transform": "^1.1.2",
     "postcss": "^8.4.14",
     "prettier": "^2.5.1",
     "query-string": "^7.1.0",
