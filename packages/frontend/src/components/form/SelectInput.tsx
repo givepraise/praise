@@ -40,7 +40,7 @@ export const SelectInput = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto bg-white border border-warm-gray-400 max-h-60 dark:bg-slate-600">
+          <Listbox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto bg-white border border-warm-gray-400 max-h-60 dark:bg-slate-600">
             {options.map((s, sIdx) => {
               return (
                 !s.disabled && (
