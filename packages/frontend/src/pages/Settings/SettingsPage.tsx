@@ -53,12 +53,25 @@ const SettingsPage = (): JSX.Element | null => {
         <div>
           <SubPageNav>
             <ul>
-              <NavItem to={`${url}/application`} description="Application" />
-              <NavItem to={`${url}/period`} description="Period Defaults" />
-              <NavItem to={`${url}/discord`} description="Discord Bot" />
+              <NavItem
+                to={`${url}/application`}
+                description="Application"
+                replace
+              />
+              <NavItem
+                to={`${url}/period`}
+                description="Period Defaults"
+                replace
+              />
+              <NavItem
+                to={`${url}/discord`}
+                description="Discord Bot"
+                replace
+              />
               <NavItem
                 to={`${url}/custom-export`}
                 description="Custom Export"
+                replace
               />
             </ul>
           </SubPageNav>
