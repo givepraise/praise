@@ -44,8 +44,8 @@ export const getSummarizedReceiverData = (
     ...exportContext,
     ...{
       totalPraiseScore: totalPraiseScore,
-      csWalletAddress: 'Test ETH address',
-      csSupportPercentage: csSupportPercentage,
+      csWalletAddress: 'Test ETH address', // TODO reomove
+      csSupportPercentage: csSupportPercentage, // TODO remove
     },
   };
 

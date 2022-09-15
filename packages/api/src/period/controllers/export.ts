@@ -250,6 +250,8 @@ export const customExport = async (
     periodDetailsDto.receivers
   );
 
+  // Summarise total scor
+
   try {
     const parsedContext = JSON.parse(customExportContext);
     const transformer = await getExportTransformer(customExportMapSetting);
@@ -259,6 +261,17 @@ export const customExport = async (
     if (!objectsHaveSameKeys(parsedContext, transformer.context)) {
       throw new BadRequestError('Distribution parameters are not valid.');
     }
+
+    // Add total number of praise items to context - totalPraiseItems
+
+    // Add total score to context - totalPraiseScore
+    //     .map((item) => item.scoreRealized)
+    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+    //    .reduce((prev, next) => prev + next);
+
+    // Add a new "receiver" with cs ethereum address to context
+    // Set cs praise score based on support percentage
+    // Ethereum address can be hard coded
 
     const summarizedReceiverData = getSummarizedReceiverData(
       receivers,
