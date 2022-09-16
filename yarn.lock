@@ -6380,12 +6380,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chartjs-chart-sankey@npm:^0.9.0":
-  version: 0.9.0
-  resolution: "chartjs-chart-sankey@npm:0.9.0"
+"chartjs-chart-sankey@npm:^0.9.1":
+  version: 0.9.1
+  resolution: "chartjs-chart-sankey@npm:0.9.1"
   peerDependencies:
     chart.js: ^3.3.0
-  checksum: ce290589e729da4fdc8b388bb29e88ba43130db0e1dd4998448fbebb9104fe00d714ea2b4f0fee39cc65d3fde74209bff30f5d4c7573515c53f81561ad3d16f2
+  checksum: 81f5ba36f7b7042bcfe6cc80545c898d6c97fb6405f7d2ed5fa5631f3014c12d887c80d367210e80af9e302275b2ef4d5ef4d34ff1980c6f78c5e55cd3395666
   languageName: node
   linkType: hard
 
@@ -9611,7 +9611,7 @@ __metadata:
     axios: ^0.22.0
     axios-auth-refresh: ^3.2.2
     chart.js: ^3.9.1
-    chartjs-chart-sankey: ^0.9.0
+    chartjs-chart-sankey: ^0.9.1
     chartjs-chart-treemap: ^2.0.2
     craco-alias: ^3.0.1
     date-fns: ^2.25.0
