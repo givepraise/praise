@@ -1,21 +1,14 @@
+import { TransformerMap } from 'api/dist/period/types';
 import { AxiosResponse } from 'axios';
-import { atomFamily, selector, useRecoilValue } from 'recoil';
+import { atom, atomFamily, selector, useRecoilValue } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
-import { isResponseOk } from './api';
+import { ApiAuthGet, isResponseOk } from './api';
 import { ExternalGet } from './axios';
 
 const { persistAtom } = recoilPersist();
 
 export interface GithubResponse {
   name: string;
-}
-
-interface GithubFileResponseData {
-  content: string;
-}
-
-export interface GithubFileResponse {
-  data: GithubFileResponseData;
 }
 
 export const GithubVersionQuery = selector({
@@ -58,4 +51,25 @@ export const IsHeaderBannerClosed = atomFamily<boolean, string>({
   key: 'IsHeaderBannerClosed',
   default: false,
   effects: [persistAtom],
+});
+
+export const CustomExportTransformer = atom<TransformerMap | undefined>({
+  key: 'CustomExportTransformer',
+  default: undefined,
+  effects: [
+    ({ setSelf, getPromise }): void => {
+      setSelf(
+        getPromise(
+          ApiAuthGet({
+            url: 'admin/settings/customTransformer',
+          })
+        ).then((response) => {
+          if (isResponseOk(response)) {
+            const transformer = response.data as TransformerMap;
+            return transformer;
+          }
+        })
+      );
+    },
+  ],
 });

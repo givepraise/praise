@@ -9633,7 +9633,6 @@ __metadata:
     jstz: ^2.1.1
     jwt-decode: ^3.1.2
     lodash: ^4.17.21
-    node-json-transform: ^1.1.2
     postcss: ^8.4.14
     prettier: ^2.5.1
     query-string: ^7.1.0
@@ -13478,15 +13477,6 @@ __metadata:
   version: 0.4.0
   resolution: "node-int64@npm:0.4.0"
   checksum: d0b30b1ee6d961851c60d5eaa745d30b5c95d94bc0e74b81e5292f7c42a49e3af87f1eb9e89f59456f80645d679202537de751b7d72e9e40ceea40c5e449057e
-  languageName: node
-  linkType: hard
-
-"node-json-transform@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "node-json-transform@npm:1.1.2"
-  dependencies:
-    lodash: ^4.17.15
-  checksum: 9c5618b5b3b2a748962842320521411b85f371c76a81fc44568527ce53567e72f771d21dec490d03a7d3fd64e048d0695d4ce0829e9336406963226b443b9991
   languageName: node
   linkType: hard
 

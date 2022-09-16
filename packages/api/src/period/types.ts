@@ -140,6 +140,6 @@ export interface TransformerMap {
   };
   context: {
     budget: number;
-    tokean: string;
+    token: string;
   };
 }

@@ -26,6 +26,7 @@ import { getPreviousPeriod } from '@/utils/periods';
 
 import { ISelectedItem, SelectInput } from '@/components/form/SelectInput';
 import { SingleSetting } from '@/model/settings';
+import { CustomExportTransformer } from '@/model/app';
 import { PeriodAssignDialog } from './AssignDialog';
 import { PeriodCloseDialog } from './CloseDialog';
 import { PeriodDateForm } from './PeriodDateForm';
@@ -50,6 +51,8 @@ export const PeriodDetails = (): JSX.Element | null => {
     SingleSetting('CUSTOM_EXPORT_CSV_FORMAT')
   );
 
+  const customExportTransformer = useRecoilValue(CustomExportTransformer);
+
   const history = useHistory();
 
   const assignDialogRef = React.useRef(null);
@@ -71,8 +74,10 @@ export const PeriodDetails = (): JSX.Element | null => {
       label: 'Export (summary)',
     },
     {
-      value: 'aragon',
-      label: 'Aragon Token Distribution',
+      value: 'custom-export',
+      label: customExportTransformer
+        ? customExportTransformer.name
+        : 'Custom export transformer',
     },
   ];
 
@@ -196,7 +201,7 @@ export const PeriodDetails = (): JSX.Element | null => {
       handleExport();
     } else if (option.value === 'export-summary') {
       handleExportSummary();
-    } else if (option.value === 'aragon') {
+    } else if (option.value === 'custom-export') {
       setIsCustomExportDialogOpen(true);
     }
   };

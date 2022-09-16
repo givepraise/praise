@@ -10,13 +10,14 @@ import { settingValue } from '@/shared/settings';
 import { TypedRequestBody, QueryInput } from '@/shared/types';
 import { objectsHaveSameKeys } from '@/shared/functions';
 import { PraiseModel } from '@/praise/entities';
-import { findPeriodDetailsDto, getPeriodDateRangeQuery } from '../utils/core';
+import {
+  countPeriodPraiseItems,
+  findPeriodDetailsDto,
+  getPeriodDateRangeQuery,
+} from '../utils/core';
 import { PeriodModel } from '../entities';
 import { populateGRListWithEthereumAddresses } from '../transformers';
-import {
-  getExportTransformer,
-  getSummarizedReceiverData,
-} from '../utils/export';
+import { getExportTransformer, runTransformer } from '../utils/export';
 
 /**
  * Generate a CSV of Praise and quantification data for a period
@@ -199,7 +200,7 @@ export const exportSummary = async (
 
   const fields = [
     {
-      label: 'NAME',
+      label: 'USER',
       value: 'userAccount.nameRealized',
     },
     {
@@ -245,38 +246,42 @@ export const customExport = async (
     ? ((await settingValue('CS_SUPPORT_PERCENTAGE')) as number)
     : 0;
 
-  const periodDetailsDto = await findPeriodDetailsDto(req.params.periodId);
-  const receivers = await populateGRListWithEthereumAddresses(
-    periodDetailsDto.receivers
-  );
-
-  // Summarise total scor
-
   try {
+    const periodDetailsDto = await findPeriodDetailsDto(req.params.periodId);
+    const praiseItemsCount = await countPeriodPraiseItems(req.params.periodId);
+
+    const receivers = await populateGRListWithEthereumAddresses(
+      periodDetailsDto.receivers
+    );
+
     const parsedContext = JSON.parse(customExportContext);
     const transformer = await getExportTransformer(customExportMapSetting);
-
-    console.log('TRANSFORMER:', transformer);
 
     if (!objectsHaveSameKeys(parsedContext, transformer.context)) {
       throw new BadRequestError('Distribution parameters are not valid.');
     }
 
-    // Add total number of praise items to context - totalPraiseItems
+    const totalPraiseScore = receivers
+      .map((item) => item.scoreRealized)
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      .reduce((prev, next) => prev + next);
 
-    // Add total score to context - totalPraiseScore
-    //     .map((item) => item.scoreRealized)
-    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-    //    .reduce((prev, next) => prev + next);
+    if (supportPercentage > 0) {
+      receivers.push({
+        _id: 'common-stack',
+        scoreRealized: (supportPercentage * totalPraiseScore) / 100,
+        praiseCount: 0,
+        ethereumAddress: '0xc2...',
+      });
+    }
 
-    // Add a new "receiver" with cs ethereum address to context
-    // Set cs praise score based on support percentage
-    // Ethereum address can be hard coded
-
-    const summarizedReceiverData = getSummarizedReceiverData(
+    const summarizedReceiverData = runTransformer(
       receivers,
       customExportContext,
-      supportPercentage,
+      {
+        totalPraiseScore,
+        praiseItemsCount,
+      },
       transformer
     );
 

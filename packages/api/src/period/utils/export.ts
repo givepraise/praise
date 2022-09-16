@@ -19,34 +19,28 @@ export const getExportTransformer = async (
   // TODO add schema validation
   if (response) {
     return response.data as TransformerMap;
-    // const buff = Buffer.from(response.data, 'base64');
-    // return JSON.parse(buff.toString('utf-8')) as TransformerMap;
   }
   throw new Error('Unknown error');
 };
 
-export const getSummarizedReceiverData = (
+interface LocalExportContext {
+  totalPraiseScore: number;
+  praiseItemsCount: number;
+}
+
+export const runTransformer = (
   data: PeriodDetailsGiverReceiverDto[],
   customExportContext: string,
-  csSupportPercentage: number,
+  localExportContext: LocalExportContext,
   transformer: TransformerMap
 ): Object[] => {
   const exportContext = JSON.parse(
     customExportContext
   ) as typeof transformer.context;
 
-  const totalPraiseScore = data
-    .map((item) => item.scoreRealized)
-    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-    .reduce((prev, next) => prev + next);
-
   const context = {
     ...exportContext,
-    ...{
-      totalPraiseScore: totalPraiseScore,
-      csWalletAddress: 'Test ETH address', // TODO reomove
-      csSupportPercentage: csSupportPercentage, // TODO remove
-    },
+    ...localExportContext,
   };
 
   const map = {
