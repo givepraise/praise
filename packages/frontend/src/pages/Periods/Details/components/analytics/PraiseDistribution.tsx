@@ -52,8 +52,8 @@ export const PraiseDistribution = (): JSX.Element => {
     { from: 'User1', to: 'User6', flow: 5.03 },
     { from: 'User1', to: 'User3', flow: 52.5 },
     { from: 'User1', to: 'User16', flow: 1.7 },
-    { from: 'User1', to: 'User1', flow: 1.33 },
-    { from: 'User1', to: 'User1', flow: 4.33 },
+    // { from: 'User1', to: 'User1', flow: 1.33 },
+    // { from: 'User1', to: 'User1', flow: 4.33 },
     { from: 'User1', to: 'User6', flow: 15.67 },
     { from: 'User1', to: 'User14', flow: 6.17 },
     { from: 'User1', to: 'User9', flow: 6 },
@@ -61,11 +61,15 @@ export const PraiseDistribution = (): JSX.Element => {
     { from: 'User5', to: 'User12', flow: 1.33 },
     { from: 'User6', to: 'User10', flow: 2.13 },
     { from: 'User7', to: 'User17', flow: 19.67 },
-    { from: 'User9', to: 'User4', flow: 3.33 }
+    { from: 'User9', to: 'User4', flow: 3.33 },
   ];
 
   // Prepare data for chart
-  const chartData = prizes?.map((prize) => {
+  const chartDataFiltered = prizes?.filter(
+    (prize) => prize.giver.nameRealized !== prize.receiver.nameRealized
+  );
+
+  const chartData = chartDataFiltered?.map((prize) => {
     return {
       from: prize.giver.nameRealized,
       to: prize.receiver.nameRealized,
@@ -79,7 +83,7 @@ export const PraiseDistribution = (): JSX.Element => {
     datasets: [
       {
         label: 'My sankey',
-        data: chartDataTest2,
+        data: chartData,
         // colorFrom: (c) => getColor(c.dataset.data[c.dataIndex].from),
         colorFrom: () => '#E94998',
         // colorTo: (c) => getColor(c.dataset.data[c.dataIndex].to),
