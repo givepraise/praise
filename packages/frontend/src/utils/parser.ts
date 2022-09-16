@@ -27,10 +27,18 @@ export const getMarkdownText = (text: string): string => {
       state
     );
   };
-  return toHTML(
+
+  let html = toHTML(
     text,
     { discordOnly: false },
     parser,
     markdownEngine.outputFor(rules, 'html')
   ).trim(); // using trim method to remove whitespace
+
+  // check if exetrnal image exists in string if it add class to reduce size of image
+  if (html.match(/<img/)) {
+    html = html.replace(/d-emoji/gi, 'w-5 inline-block');
+  }
+
+  return html;
 };
