@@ -3,13 +3,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import { useRecoilValue } from 'recoil';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { SingleSetting } from '@/model/settings';
 
 interface PeriodCloseDialogProps {
   title: string;
   onClose(): void;
-  onExport(exportContext, supportPercentage): void;
+  onExport(exportContext): void;
 }
 
 export const PeriodCustomExportDialog = ({
@@ -32,14 +33,26 @@ export const PeriodCustomExportDialog = ({
     customExportContextSettings?.valueRealized
   );
 
-  const [supportPercentage, setSetSupportPercentage] = React.useState(true);
-
   const handleExportContextChange = (event): void => {
     setExportContext(event.target.value);
   };
 
-  const handleSupportPercentageChange = (event): void => {
-    setSetSupportPercentage(event.target.checked);
+  const getSupportPercentageText = (): JSX.Element => {
+    return csSupportPercentage && csSupportPercentage.valueRealized > 0 ? (
+      <p className="mt-4">
+        We support Commons Stack in the continued development of Praise and will
+        add <b>{csSupportPercentage?.valueRealized}%</b> to the token
+        distribution.
+      </p>
+    ) : (
+      <p>
+        Consider supporting the development of Praise by donating a small amount
+        of the distribution to the Praise dev team.{' '}
+        <Link to={'/settings/custom-export'}>
+          Settings: Custom token export
+        </Link>
+      </p>
+    );
   };
 
   return (
@@ -71,33 +84,21 @@ export const PeriodCustomExportDialog = ({
               onChange={handleExportContextChange}
             />
           </div>
-          {!csSupportPercentage ||
+          {getSupportPercentageText()}
+          {/* {!csSupportPercentage ||
             (csSupportPercentage.valueRealized > 0 && (
-              <div className="mt-4">
-                <input
-                  type="checkbox"
-                  name="csSupportPercentage"
-                  defaultChecked={true}
-                  onChange={handleSupportPercentageChange}
-                />
-
-                <label
-                  className="ml-2 cursor-pointer"
-                  htmlFor="csSupportPercentage"
-                >
-                  We support Commons Stack in the continued development of
-                  Praise and will add{' '}
-                  <b>{csSupportPercentage?.valueRealized}%</b> to the token
-                  distribution.
-                </label>
-              </div>
-            ))}
+              <p className="mt-4">
+                We support Commons Stack in the continued development of Praise
+                and will add <b>{csSupportPercentage?.valueRealized}%</b> to the
+                token distribution.
+              </p>
+            ))} */}
 
           <div className="flex justify-center">
             <Button
               className="mt-4 bg-black hover:bg-warm-gray-800"
               onClick={(): void => {
-                onExport(exportContext, supportPercentage);
+                onExport(exportContext);
                 onClose();
               }}
             >

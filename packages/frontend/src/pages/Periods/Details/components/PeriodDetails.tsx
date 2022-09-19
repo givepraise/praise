@@ -163,13 +163,10 @@ export const PeriodDetails = (): JSX.Element | null => {
     );
   };
 
-  const handleDistribution = (
-    exportContext: string,
-    supportPercentage: boolean
-  ): void => {
+  const handleDistribution = (exportContext: string): void => {
     const toastId = 'distributeToast';
     void toast.promise(
-      customExport(period, exportContext, supportPercentage),
+      customExport(period, exportContext),
       {
         loading: 'Distributing …',
         success: (data: Blob | undefined) => {
@@ -318,8 +315,8 @@ export const PeriodDetails = (): JSX.Element | null => {
           <PeriodCustomExportDialog
             title="Aragon token distribution"
             onClose={(): void => setIsCustomExportDialogOpen(false)}
-            onExport={(exportContext, supportPercentage): void =>
-              handleDistribution(exportContext, supportPercentage)
+            onExport={(exportContext): void =>
+              handleDistribution(exportContext)
             }
           />
         </div>

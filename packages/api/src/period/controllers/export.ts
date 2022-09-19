@@ -242,9 +242,9 @@ export const customExport = async (
     ? (req.query.context as string)
     : ((await settingValue('CUSTOM_EXPORT_CONTEXT')) as string);
 
-  const supportPercentage = req.query.supportPercentage
-    ? ((await settingValue('CS_SUPPORT_PERCENTAGE')) as number)
-    : 0;
+  const supportPercentage = (await settingValue(
+    'CS_SUPPORT_PERCENTAGE'
+  )) as number;
 
   try {
     const periodDetailsDto = await findPeriodDetailsDto(req.params.periodId);

@@ -528,8 +528,7 @@ export const useExportSummaryPraise = (): useExportSummaryPraiseReturn => {
 type useCustomExportReturn = {
   customExport: (
     period: PeriodDetailsDto,
-    exportContext: string,
-    supportPercentage: boolean
+    exportContext: string
   ) => Promise<Blob | undefined>;
 };
 
@@ -541,13 +540,12 @@ export const useCustomExport = (): useCustomExportReturn => {
 
   const customExport = async (
     period: PeriodDetailsDto,
-    exportContext: string,
-    supportPercentage: boolean
+    exportContext: string
   ): Promise<Blob | undefined> => {
     if (!period) return undefined;
 
     const response = await apiAuthClient.get(
-      `/admin/periods/${period._id}/customExport?context=${exportContext}&supportPercentage=${supportPercentage}`,
+      `/admin/periods/${period._id}/customExport?context=${exportContext}`,
       { responseType: 'blob' }
     );
 
