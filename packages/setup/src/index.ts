@@ -1,41 +1,17 @@
 import inquirer from 'inquirer';
-import * as fs from 'fs/promises';
 import * as dotenv from 'dotenv';
+import * as fs from 'fs/promises';
 import { exit } from 'process';
 import os from 'os';
 
 /**
- * Load ENV, templates first, then override with actual ENV values
+ * Load ENV, template first, then override with actual ENV values
  * if there are any.
  */
 
 // Top level
-dotenv.config({ path: '/usr/praise/.env.template', override: true });
-dotenv.config({ path: '/usr/praise/.env', override: true });
-
-// API
-dotenv.config({
-  path: '/usr/praise/packages/api/.env.template',
-  override: true,
-});
-dotenv.config({ path: '/usr/praise/packages/api/.env', override: true });
-
-// Discord Bot
-dotenv.config({
-  path: '/usr/praise/packages/discord-bot/.env.template',
-  override: true,
-});
-dotenv.config({
-  path: '/usr/praise/packages/discord-bot/.env',
-  override: true,
-});
-
-// Frontend
-dotenv.config({
-  path: '/usr/praise/packages/frontend/.env.template',
-  override: true,
-});
-dotenv.config({ path: '/usr/praise/packages/frontend/.env', override: true });
+dotenv.config({ path: '/usr/praise/.env.template', override: false });
+dotenv.config({ path: '/usr/praise/.env', override: false });
 
 /**
  * Welcome message
@@ -67,45 +43,9 @@ const questions = [
   },
   {
     type: 'string',
-    name: 'MONGO_INITDB_ROOT_USERNAME',
-    message: 'MongoDB Root Username',
-    default: process.env.MONGO_INITDB_ROOT_USERNAME,
-  },
-  {
-    type: 'password',
-    name: 'MONGO_INITDB_ROOT_PASSWORD',
-    message: 'MongoDB Root Password',
-    default: process.env.MONGO_INITDB_ROOT_PASSWORD,
-  },
-  {
-    type: 'string',
-    name: 'MONGO_USERNAME',
-    message: 'MongoDB Praise Username',
-    default: process.env.MONGO_USERNAME,
-  },
-  {
-    type: 'password',
-    name: 'MONGO_PASSWORD',
-    message: 'MongoDB Praise Password',
-    default: process.env.MONGO_PASSWORD,
-  },
-  {
-    type: 'string',
     name: 'HOST',
     message: 'Server hostname',
     default: process.env.HOST,
-  },
-  {
-    type: 'string',
-    name: 'API_PORT',
-    message: 'API port number',
-    default: process.env.API_PORT,
-  },
-  {
-    type: 'string',
-    name: 'PORT',
-    message: 'Frontend port number (Only used for development)',
-    default: process.env.PORT,
   },
   {
     type: 'string',
@@ -165,20 +105,30 @@ const run = async (): Promise<void> => {
   const rootEnv = {
     NODE_ENV: answers.NODE_ENV,
     HOST: answers.HOST,
-    API_PORT: answers.API_PORT,
+    API_PORT: process.env.API_PORT,
     SERVER_URL:
       answers.NODE_ENV === 'production'
         ? `https://${answers.HOST as string}`
-        : `http://${answers.HOST as string}:${answers.API_PORT as string}`,
+        : `http://${answers.HOST as string}:${process.env.API_PORT as string}`,
     FRONTEND_URL:
       answers.NODE_ENV === 'production'
         ? `https://${answers.HOST as string}`
-        : `http://${answers.HOST as string}:${answers.PORT as string}`,
+        : `http://${answers.HOST as string}:${process.env.PORT as string}`,
     MONGO_HOST: answers.NODE_ENV === 'production' ? 'mongodb' : 'localhost',
-    MONGO_INITDB_ROOT_USERNAME: answers.MONGO_INITDB_ROOT_USERNAME,
-    MONGO_INITDB_ROOT_PASSWORD: answers.MONGO_INITDB_ROOT_PASSWORD,
-    MONGO_USERNAME: answers.MONGO_USERNAME,
-    MONGO_PASSWORD: answers.MONGO_PASSWORD,
+    MONGO_INITDB_ROOT_USERNAME: process.env.MONGO_INITDB_ROOT_USERNAME,
+    MONGO_INITDB_ROOT_PASSWORD: process.env.MONGO_INITDB_ROOT_PASSWORD,
+    MONGO_USERNAME: process.env.MONGO_USERNAME,
+    MONGO_PASSWORD: process.env.MONGO_PASSWORD,
+    ADMINS: answers.ADMINS,
+    JWT_SECRET: process.env.JWT_SECRET || randomString(),
+    DISCORD_TOKEN: answers.DISCORD_TOKEN,
+    DISCORD_CLIENT_ID: answers.DISCORD_CLIENT_ID,
+    DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,
+    REACT_APP_SERVER_URL:
+      answers.NODE_ENV === 'production'
+        ? `https://${answers.HOST as string}`
+        : `http://${answers.HOST as string}:${process.env.API_PORT as string}`,
+    PORT: process.env.PORT,
   };
   await setupAndWriteEnv(
     '/usr/praise/.env.template',
@@ -186,44 +136,8 @@ const run = async (): Promise<void> => {
     rootEnv
   );
 
-  const apiEnv = {
-    ADMINS: answers.ADMINS,
-    JWT_SECRET: process.env.JWT_SECRET || randomString(),
-    DISCORD_TOKEN: answers.DISCORD_TOKEN,
-    DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,
-  };
-  await setupAndWriteEnv(
-    '/usr/praise/packages/api/.env.template',
-    '/usr/praise/packages/api/.env',
-    apiEnv
-  );
-
-  const discordBotEnv = {
-    DISCORD_TOKEN: answers.DISCORD_TOKEN,
-    DISCORD_CLIENT_ID: answers.DISCORD_CLIENT_ID,
-    DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,
-  };
-  await setupAndWriteEnv(
-    '/usr/praise/packages/discord-bot/.env.template',
-    '/usr/praise/packages/discord-bot/.env',
-    discordBotEnv
-  );
-
-  const frontendEnv = {
-    REACT_APP_SERVER_URL:
-      answers.NODE_ENV === 'production'
-        ? `https://${answers.HOST as string}`
-        : `http://${answers.HOST as string}:${answers.API_PORT as string}`,
-    PORT: answers.PORT,
-  };
-  await setupAndWriteEnv(
-    '/usr/praise/packages/frontend/.env.template',
-    '/usr/praise/packages/frontend/.env',
-    frontendEnv
-  );
-
   console.log('\n');
-  console.log('🙏 ENV files have been created.');
+  console.log('🙏 ENV file has been created.');
 
   exit();
 };
