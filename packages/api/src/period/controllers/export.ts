@@ -18,15 +18,17 @@ import {
 import { PeriodModel } from '../entities';
 import { populateGRListWithEthereumAddresses } from '../transformers';
 import { getExportTransformer, runTransformer } from '../utils/export';
+import { ExportCustomInput } from '../types';
 
+// TODO document this
 /**
- * Generate a CSV of Praise and quantification data for a period
+ * …
  *
  * @param {TypedRequestBody<QueryInput>} req
  * @param {Response} res
  * @returns {Promise<void>}
  */
-export const exportPraise = async (
+export const full = async (
   req: TypedRequestBody<QueryInput>,
   res: Response
 ): Promise<void> => {
@@ -182,14 +184,15 @@ export const exportPraise = async (
   res.status(200).contentType('text/csv').attachment('data.csv').send(csv);
 };
 
+// TODO document this
 /**
- * Return period receivers
+ * …
  *
  * @param {TypedRequestBody<QueryInput>} req
  * @param {Response} res
  * @returns {Promise<void>}
  */
-export const exportSummary = async (
+export const summary = async (
   req: TypedRequestBody<QueryInput>,
   res: Response
 ): Promise<void> => {
@@ -219,23 +222,24 @@ export const exportSummary = async (
   res.status(200).contentType('text/csv').attachment('data.csv').send(csv);
 };
 
+// TODO document this
 /**
- * Return period receivers
+ * …
  *
- * @param {TypedRequestBody<QueryInput>} req
+ * @param {TypedRequestBody<ExportCustomInput>} req
  * @param {Response} res
  * @returns {Promise<void>}
  */
-export const customExport = async (
-  req: TypedRequestBody<QueryInput>,
+export const custom = async (
+  req: TypedRequestBody<ExportCustomInput>,
   res: Response
 ): Promise<void> => {
   const customExportMapSetting = (await settingValue(
     'CUSTOM_EXPORT_MAP'
   )) as string;
 
-  const exportFormat = (await settingValue(
-    'CUSTOM_EXPORT_CSV_FORMAT'
+  const cusomtExportFormat = (await settingValue(
+    'CUSTOM_EXPORT_FORMAT'
   )) as string;
 
   const customExportContext = req.query.context
@@ -286,7 +290,7 @@ export const customExport = async (
     );
 
     let data = null;
-    if (exportFormat === 'csv') {
+    if (cusomtExportFormat === 'csv') {
       const fields = Object.keys(transformer.map.item).map((item) => {
         return { label: item.toUpperCase(), value: item };
       });

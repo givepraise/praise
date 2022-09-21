@@ -17,15 +17,12 @@ const adminPeriodRouter = Router();
 adminPeriodRouter.postAsync('/create', core.create);
 adminPeriodRouter.patchAsync('/:periodId/update', core.update);
 adminPeriodRouter.patchAsync('/:periodId/close', core.close);
-adminPeriodRouter.getAsync('/:periodId/export', exportController.exportPraise);
+adminPeriodRouter.getAsync('/:periodId/exportFull', exportController.full);
 adminPeriodRouter.getAsync(
   '/:periodId/exportSummary',
-  exportController.exportSummary
+  exportController.summary
 );
-adminPeriodRouter.getAsync(
-  '/:periodId/customExport',
-  exportController.customExport
-);
+adminPeriodRouter.getAsync('/:periodId/exportCustom', exportController.custom);
 adminPeriodRouter.getAsync(
   '/:periodId/verifyQuantifierPoolSize',
   assignment.verifyQuantifierPoolSize
