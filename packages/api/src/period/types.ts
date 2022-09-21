@@ -145,7 +145,7 @@ export interface TransformerMap {
 }
 
 export interface ExportCustomQueryInput {
-  context: string;
+  context?: string;
 }
 
 export interface ExportCustomQueryInputParsedQs

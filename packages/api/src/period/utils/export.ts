@@ -6,7 +6,7 @@ import {
   TransformerMap,
 } from '../types';
 
-export const getExportTransformer = async (
+export const getCustomExportTransformer = async (
   url: string
 ): Promise<TransformerMap> => {
   let response: AxiosResponse | undefined = undefined;
@@ -28,7 +28,7 @@ interface LocalExportContext {
   praiseItemsCount: number;
 }
 
-export const runTransformer = (
+export const runCustomExportTransformer = (
   data: PeriodDetailsGiverReceiverDto[],
   customExportContext: string,
   localExportContext: LocalExportContext,

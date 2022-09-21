@@ -17,7 +17,10 @@ import {
 } from '../utils/core';
 import { PeriodModel } from '../entities';
 import { populateGRListWithEthereumAddresses } from '../transformers';
-import { getExportTransformer, runTransformer } from '../utils/export';
+import {
+  getCustomExportTransformer,
+  runCustomExportTransformer,
+} from '../utils/export';
 import { ExportCustomQueryInputParsedQs } from '../types';
 
 // TODO document this
@@ -253,7 +256,9 @@ export const custom = async (
     );
 
     const parsedContext = JSON.parse(customExportContext);
-    const transformer = await getExportTransformer(customExportMapSetting);
+    const transformer = await getCustomExportTransformer(
+      customExportMapSetting
+    );
 
     if (!objectsHaveSameKeys(parsedContext, transformer.context)) {
       throw new BadRequestError('Distribution parameters are not valid.');
@@ -273,7 +278,7 @@ export const custom = async (
       });
     }
 
-    const summarizedReceiverData = runTransformer(
+    const summarizedReceiverData = runCustomExportTransformer(
       receivers,
       customExportContext,
       {
