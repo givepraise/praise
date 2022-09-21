@@ -71,7 +71,7 @@ export const PeriodDetails = (): JSX.Element | null => {
       label: 'Export (summary)',
     },
     {
-      value: 'custom-export',
+      value: 'export-custom',
       label: customExportTransformer
         ? customExportTransformer.name
         : 'Custom export transformer',
@@ -108,15 +108,15 @@ export const PeriodDetails = (): JSX.Element | null => {
     );
   };
 
-  const handleExport = (): void => {
-    const toastId = 'exportToast';
+  const handleExportFull = (): void => {
+    const toastId = 'exportToastFull';
     void toast.promise(
       exportPraiseFull(period),
       {
         loading: 'Exporting …',
         success: (exportData: Blob | undefined) => {
           if (exportData) {
-            saveLocalFile(exportData, 'quantification-export.csv');
+            saveLocalFile(exportData, 'praise-period-export-full.csv');
             setTimeout(() => toast.remove(toastId), 2000);
             return 'Export done';
           }
@@ -135,14 +135,14 @@ export const PeriodDetails = (): JSX.Element | null => {
   };
 
   const handleExportSummary = (): void => {
-    const toastId = 'exportSummaryToast';
+    const toastId = 'exportToastSummary';
     void toast.promise(
       exportPraiseSummary(period),
       {
         loading: 'Exporting …',
         success: (exportData: Blob | undefined) => {
           if (exportData) {
-            saveLocalFile(exportData, 'export-summary.csv');
+            saveLocalFile(exportData, 'praise-period-export-summary.csv');
             setTimeout(() => toast.remove(toastId), 2000);
             return 'Export done';
           }
@@ -160,8 +160,8 @@ export const PeriodDetails = (): JSX.Element | null => {
     );
   };
 
-  const handleDistribution = (exportContext: string): void => {
-    const toastId = 'distributeToast';
+  const handleExportCustom = (exportContext: string): void => {
+    const toastId = 'exportToastCustom';
     void toast.promise(
       exportPraiseCustom(period, exportContext),
       {
@@ -170,7 +170,7 @@ export const PeriodDetails = (): JSX.Element | null => {
           if (data) {
             saveLocalFile(
               data,
-              `custom-export.${customExportFormat?.valueRealized}`
+              `praise-period-export-custom.${customExportFormat?.valueRealized}`
             );
             setTimeout(() => toast.remove(toastId), 2000);
             return 'Export done';
@@ -178,7 +178,7 @@ export const PeriodDetails = (): JSX.Element | null => {
 
           return 'Empty export returned';
         },
-        error: 'Distribution failed',
+        error: 'Export failed',
       },
       {
         id: toastId,
@@ -192,10 +192,10 @@ export const PeriodDetails = (): JSX.Element | null => {
 
   const handleSelectExportChange = (option: SelectInputOption): void => {
     if (option.value === 'export-full') {
-      handleExport();
+      handleExportFull();
     } else if (option.value === 'export-summary') {
       handleExportSummary();
-    } else if (option.value === 'custom-export') {
+    } else if (option.value === 'export-custom') {
       setIsCustomExportDialogOpen(true);
     }
   };
@@ -313,7 +313,7 @@ export const PeriodDetails = (): JSX.Element | null => {
             title="Aragon token distribution"
             onClose={(): void => setIsCustomExportDialogOpen(false)}
             onExport={(exportContext): void =>
-              handleDistribution(exportContext)
+              handleExportCustom(exportContext)
             }
           />
         </div>

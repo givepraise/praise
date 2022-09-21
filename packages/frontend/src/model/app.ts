@@ -61,7 +61,7 @@ export const CustomExportTransformer = atom<TransformerMap | undefined>({
       setSelf(
         getPromise(
           ApiAuthGet({
-            url: 'admin/settings/customTransformer',
+            url: 'admin/settings/customExportTransformer',
           })
         ).then((response) => {
           if (isResponseOk(response)) {
