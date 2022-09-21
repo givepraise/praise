@@ -20,7 +20,7 @@ const settings = [
     group: SettingGroup.CUSTOM_EXPORT,
   },
   {
-    key: 'CUSTOM_EXPORT_CSV_FORMAT',
+    key: 'CUSTOM_EXPORT_FORMAT',
     value: 'csv',
     type: 'Radio',
     label: 'Custom export csv format',
