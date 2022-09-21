@@ -37,24 +37,6 @@ export const PeriodCustomExportDialog = ({
     setExportContext(event.target.value);
   };
 
-  const getSupportPercentageText = (): JSX.Element => {
-    return csSupportPercentage && csSupportPercentage.valueRealized > 0 ? (
-      <p className="mt-4">
-        We support Commons Stack in the continued development of Praise and will
-        add <b>{csSupportPercentage?.valueRealized}%</b> to the token
-        distribution.
-      </p>
-    ) : (
-      <p>
-        Consider supporting the development of Praise by donating a small amount
-        of the distribution to the Praise dev team.{' '}
-        <Link to={'/settings/custom-export'}>
-          Settings: Custom token export
-        </Link>
-      </p>
-    );
-  };
-
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Dialog.Overlay className="fixed inset-0 bg-black/30" />
@@ -84,15 +66,24 @@ export const PeriodCustomExportDialog = ({
               onChange={handleExportContextChange}
             />
           </div>
-          {getSupportPercentageText()}
-          {/* {!csSupportPercentage ||
-            (csSupportPercentage.valueRealized > 0 && (
-              <p className="mt-4">
-                We support Commons Stack in the continued development of Praise
-                and will add <b>{csSupportPercentage?.valueRealized}%</b> to the
-                token distribution.
-              </p>
-            ))} */}
+          {csSupportPercentage && csSupportPercentage.valueRealized > 0 ? (
+            <p className="my-4">
+              Thank you for supporting the continued development of Praise!{' '}
+              <b>{csSupportPercentage?.valueRealized}%</b> will be added to the
+              token distribution.{' '}
+              <Link to={'/settings/custom-export'}>
+                Settings: Custom token export
+              </Link>
+            </p>
+          ) : (
+            <p>
+              Consider supporting the development of Praise by donating a small
+              amount of the distribution to the Praise dev team.{' '}
+              <Link to={'/settings/custom-export'}>
+                Settings: Custom token export
+              </Link>
+            </p>
+          )}
 
           <div className="flex justify-center">
             <Button
