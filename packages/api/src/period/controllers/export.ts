@@ -235,7 +235,7 @@ export const custom = async (
     'CUSTOM_EXPORT_MAP'
   )) as string;
 
-  const cusomtExportFormat = (await settingValue(
+  const customExportFormat = (await settingValue(
     'CUSTOM_EXPORT_FORMAT'
   )) as string;
 
@@ -289,17 +289,21 @@ export const custom = async (
     );
 
     let data = null;
-    if (cusomtExportFormat === 'csv') {
+    if (customExportFormat === 'csv') {
       const fields = Object.keys(transformer.map.item).map((item) => {
         return { label: item.toUpperCase(), value: item };
       });
       const json2csv = new Parser({ fields: fields });
       data = json2csv.parse(summarizedReceiverData);
+      res.status(200).contentType('text/csv').attachment('data.csv').send(data);
     } else {
       data = summarizedReceiverData;
+      res
+        .status(200)
+        .contentType('application/json')
+        .attachment('data.json')
+        .send(data);
     }
-
-    res.status(200).contentType('text/csv').attachment('data.csv').send(data);
   } catch (e) {
     throw new BadRequestError((e as Error).message);
   }
