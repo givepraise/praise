@@ -25,14 +25,14 @@ export const PraiseDistribution = (): JSX.Element => {
     };
   });
 
+  console.log(chartData);
+
   const data: ChartData<'sankey', unknown> = {
     datasets: [
       {
         label: 'My sankey',
         data: chartData,
-        // colorFrom: (c) => getColor(c.dataset.data[c.dataIndex].from),
         colorFrom: () => '#E94998',
-        // colorTo: (c) => getColor(c.dataset.data[c.dataIndex].to),
         colorTo: () => '#FFFFFF',
         colorMode: 'gradient',
         size: 'max', // or 'min' if flow overlap is preferred
