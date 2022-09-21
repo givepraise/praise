@@ -4,16 +4,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Listbox, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 
-export interface ISelectedItem {
+export interface SelectInputOption {
   value: string;
   label: string;
   disabled?: boolean;
 }
 
 interface SelectInputProps {
-  selected: ISelectedItem;
+  selected: SelectInputOption;
   handleChange: (element) => void;
-  options: ISelectedItem[];
+  options: SelectInputOption[];
   icon?: IconProp;
 }
 
