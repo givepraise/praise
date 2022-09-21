@@ -143,3 +143,11 @@ export interface TransformerMap {
     token: string;
   };
 }
+
+export interface ExportCustomQueryInput {
+  context: string;
+}
+
+export interface ExportCustomQueryInputParsedQs
+  extends ExportCustomQueryInput,
+    Query {}

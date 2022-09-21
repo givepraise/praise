@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { Parser } from 'json2csv';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import { PraiseDtoExtended, PraiseDetailsDto } from '@/praise/types';
@@ -7,7 +7,7 @@ import { calculateQuantificationScore } from '@/praise/utils/score';
 import { UserModel } from '@/user/entities';
 import { UserAccountModel } from '@/useraccount/entities';
 import { settingValue } from '@/shared/settings';
-import { TypedRequestBody, QueryInput } from '@/shared/types';
+import { TypedRequestQuery } from '@/shared/types';
 import { objectsHaveSameKeys } from '@/shared/functions';
 import { PraiseModel } from '@/praise/entities';
 import {
@@ -18,20 +18,17 @@ import {
 import { PeriodModel } from '../entities';
 import { populateGRListWithEthereumAddresses } from '../transformers';
 import { getExportTransformer, runTransformer } from '../utils/export';
-import { ExportCustomInput } from '../types';
+import { ExportCustomQueryInputParsedQs } from '../types';
 
 // TODO document this
 /**
  * …
  *
- * @param {TypedRequestBody<QueryInput>} req
+ * @param {Request} req
  * @param {Response} res
  * @returns {Promise<void>}
  */
-export const full = async (
-  req: TypedRequestBody<QueryInput>,
-  res: Response
-): Promise<void> => {
+export const full = async (req: Request, res: Response): Promise<void> => {
   const period = await PeriodModel.findOne({ _id: req.params.periodId });
   if (!period) throw new NotFoundError('Period');
   const periodDateRangeQuery = await getPeriodDateRangeQuery(period);
@@ -188,14 +185,11 @@ export const full = async (
 /**
  * …
  *
- * @param {TypedRequestBody<QueryInput>} req
+ * @param {Request} req
  * @param {Response} res
  * @returns {Promise<void>}
  */
-export const summary = async (
-  req: TypedRequestBody<QueryInput>,
-  res: Response
-): Promise<void> => {
+export const summary = async (req: Request, res: Response): Promise<void> => {
   const periodDetailsDto = await findPeriodDetailsDto(req.params.periodId);
   const receivers = await populateGRListWithEthereumAddresses(
     periodDetailsDto.receivers
@@ -226,12 +220,12 @@ export const summary = async (
 /**
  * …
  *
- * @param {TypedRequestBody<ExportCustomInput>} req
+ * @param {TypedRequestQuery<ExportCustomQueryInputParsedQs>} req
  * @param {Response} res
  * @returns {Promise<void>}
  */
 export const custom = async (
-  req: TypedRequestBody<ExportCustomInput>,
+  req: TypedRequestQuery<ExportCustomQueryInputParsedQs>,
   res: Response
 ): Promise<void> => {
   const customExportMapSetting = (await settingValue(
@@ -243,7 +237,7 @@ export const custom = async (
   )) as string;
 
   const customExportContext = req.query.context
-    ? (req.query.context as string)
+    ? req.query.context
     : ((await settingValue('CUSTOM_EXPORT_CONTEXT')) as string);
 
   const supportPercentage = (await settingValue(
