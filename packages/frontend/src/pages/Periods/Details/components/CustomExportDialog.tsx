@@ -71,17 +71,13 @@ export const PeriodCustomExportDialog = ({
               Thank you for supporting the continued development of Praise!{' '}
               <b>{csSupportPercentage?.valueRealized}%</b> will be added to the
               token distribution.{' '}
-              <Link to={'/settings/custom-export'}>
-                Settings: Custom token export
-              </Link>
+              <Link to={'/settings/custom-export'}>Change settings</Link>
             </p>
           ) : (
-            <p>
-              Consider supporting the development of Praise by donating a small
-              amount of the distribution to the Praise dev team.{' '}
-              <Link to={'/settings/custom-export'}>
-                Settings: Custom token export
-              </Link>
+            <p className="my-4">
+              Support the development of Praise, consider donating a percentage
+              of the distribution to the development team.{' '}
+              <Link to={'/settings/custom-export'}>Change settings</Link>
             </p>
           )}
 

@@ -5,26 +5,29 @@ const settings = [
   {
     key: 'CUSTOM_EXPORT_MAP',
     value:
-      'https://github.com/commons-stack/praise-exports/blob/main/aragon.json',
+      'https://raw.githubusercontent.com/commons-stack/praise-exports/main/aragon-fixed-budget.json',
     type: 'String',
-    label: 'Custom export map',
-    description: 'Custom export map',
+    label: 'Transformation map',
+    description:
+      'The transformation map describes the transform to be performed. See documentation for details on how to create a transformation map.',
     group: SettingGroup.CUSTOM_EXPORT,
   },
   {
     key: 'CUSTOM_EXPORT_CONTEXT',
-    value: '{}',
+    value:
+      '{ "filterEmptyEthereumAddresses": true, "budget": 100, "token": "TOKEN_NAME" } ',
     type: 'JSON',
-    label: 'Custom export context',
-    description: 'Custom export context',
+    label: 'Export context',
+    description:
+      'Default values for the export context used by the transformation map.',
     group: SettingGroup.CUSTOM_EXPORT,
   },
   {
     key: 'CUSTOM_EXPORT_FORMAT',
     value: 'csv',
     type: 'Radio',
-    label: 'Custom export csv format',
-    description: 'Custom export csv format',
+    label: 'Export format',
+    description: '',
     options: '["csv", "json"]',
     group: SettingGroup.CUSTOM_EXPORT,
   },
@@ -32,8 +35,9 @@ const settings = [
     key: 'CS_SUPPORT_PERCENTAGE',
     value: 2,
     type: 'Integer',
-    label: 'CS support percentage',
-    description: 'Commons Stack support percentage',
+    label: 'Praise development support percentage',
+    description:
+      'Support the development of Praise, consider donating a percentage of the distribution to the development team.',
     group: SettingGroup.CUSTOM_EXPORT,
   },
 ];
