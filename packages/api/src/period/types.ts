@@ -126,16 +126,16 @@ export interface ReplaceQuantifierRequestBody {
   newQuantifierId: string;
 }
 
-export interface TransformerOperateItem {
+export interface ExportTransformerOperateItem {
   run: string;
   on: string;
 }
 
-export interface TransformerMap {
+export interface ExportTransformerMap {
   name: string;
   map: {
     item: Object;
-    operate: TransformerOperateItem[];
+    operate: ExportTransformerOperateItem[];
     each: string;
   };
   context: {};

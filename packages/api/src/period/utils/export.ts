@@ -2,13 +2,13 @@ import axios, { AxiosResponse } from 'axios';
 import { transform } from './jsonTransformer';
 import {
   PeriodDetailsGiverReceiverDto,
-  TransformerOperateItem,
-  TransformerMap,
+  ExportTransformerOperateItem,
+  ExportTransformerMap,
 } from '../types';
 
 export const getCustomExportTransformer = async (
   url: string
-): Promise<TransformerMap> => {
+): Promise<ExportTransformerMap> => {
   let response: AxiosResponse | undefined = undefined;
   try {
     response = await axios.get(url);
@@ -18,7 +18,7 @@ export const getCustomExportTransformer = async (
 
   // TODO add schema validation
   if (response) {
-    return response.data as TransformerMap;
+    return response.data as ExportTransformerMap;
   }
   throw new Error('Unknown error');
 };
@@ -27,12 +27,12 @@ export const runCustomExportTransformer = (
   data: PeriodDetailsGiverReceiverDto[],
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
   context: any,
-  transformer: TransformerMap
+  transformer: ExportTransformerMap
 ): Object[] => {
   const map = {
     item: transformer.map.item,
     operate: transformer.map.operate.map(
-      (operateItem: TransformerOperateItem) => {
+      (operateItem: ExportTransformerOperateItem) => {
         return {
           run: operateItem.run,
           on: operateItem.on,

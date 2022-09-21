@@ -6,7 +6,7 @@ import { TypedRequestBody, TypedResponse } from '@/shared/types';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
 import { settingValue } from '@/shared/settings';
-import { TransformerMap } from '@/period/types';
+import { ExportTransformerMap } from '@/period/types';
 import { getCustomExportTransformer } from '@/period/utils/export';
 import { SettingsModel } from './entities';
 import { settingListTransformer, settingTransformer } from './transformers';
@@ -96,7 +96,7 @@ export const set = async (
 
 export const customExportTransformer = async (
   req: Request,
-  res: TypedResponse<TransformerMap>
+  res: TypedResponse<ExportTransformerMap>
 ): Promise<void> => {
   const customExportMapSetting = (await settingValue(
     'CUSTOM_EXPORT_MAP'
