@@ -139,6 +139,7 @@ export interface ExportTransformerMap {
     each: string;
   };
   context: {};
+  filterColumn: string;
 }
 
 export interface ExportCustomQueryInput {

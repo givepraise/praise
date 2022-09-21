@@ -14,8 +14,7 @@ const settings = [
   },
   {
     key: 'CUSTOM_EXPORT_CONTEXT',
-    value:
-      '{ "filterEmptyEthereumAddresses": true, "budget": 100, "token": "TOKEN_NAME" } ',
+    value: '{ "budget": 100, "token": "TOKEN_NAME" } ',
     type: 'JSON',
     label: 'Export context',
     description:
