@@ -310,7 +310,7 @@ export const PeriodDetails = (): JSX.Element | null => {
       >
         <div ref={customExportDialogRef}>
           <PeriodCustomExportDialog
-            title="Aragon token distribution"
+            title={customExportTransformer?.name || 'Custom export'}
             onClose={(): void => setIsCustomExportDialogOpen(false)}
             onExport={(exportContext): void =>
               handleExportCustom(exportContext)
