@@ -250,7 +250,7 @@ export const custom = async (
   try {
     const periodDetailsDto = await findPeriodDetailsDto(req.params.periodId);
 
-    const receivers = await populateGRListWithEthereumAddresses(
+    let receivers = await populateGRListWithEthereumAddresses(
       periodDetailsDto.receivers
     );
 
@@ -280,6 +280,10 @@ export const custom = async (
         praiseCount: 0,
         ethereumAddress: '0xfa4EE6B523fC1E8B53015D7D81331d568CDb5906', // Intentionally hard coded
       });
+    }
+
+    if (context.filterEmptyEthereumAddresses) {
+      receivers = receivers.filter((receiver) => receiver.ethereumAddress);
     }
 
     const summarizedReceiverData = runCustomExportTransformer(

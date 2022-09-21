@@ -486,7 +486,7 @@ export const useExportPraise = (): useExportPraiseReturn => {
   ): Promise<Blob | undefined> => {
     if (!period || !allPeriods) return undefined;
     const response = await apiAuthClient.get(
-      `/admin/periods/${period._id}/export`,
+      `/admin/periods/${period._id}/exportFull`,
       { responseType: 'blob' }
     );
 
@@ -520,7 +520,7 @@ export const useExportPraise = (): useExportPraiseReturn => {
     if (!period) return undefined;
 
     const response = await apiAuthClient.get(
-      `/admin/periods/${period._id}/customExport?context=${exportContext}`,
+      `/admin/periods/${period._id}/exportCustom?context=${exportContext}`,
       { responseType: 'blob' }
     );
 
