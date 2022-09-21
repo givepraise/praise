@@ -256,6 +256,7 @@ export const custom = async (
     );
 
     const parsedContext = JSON.parse(customExportContext);
+
     const transformer = await getCustomExportTransformer(
       customExportMapSetting
     );
@@ -274,7 +275,7 @@ export const custom = async (
         _id: 'common-stack',
         scoreRealized: (supportPercentage * totalPraiseScore) / 100,
         praiseCount: 0,
-        ethereumAddress: '0xc2...',
+        ethereumAddress: '0xfa4EE6B523fC1E8B53015D7D81331d568CDb5906', // Intentionally hard coded
       });
     }
 
