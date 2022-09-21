@@ -312,5 +312,5 @@ export const countPeriodPraiseItems = async (
   if (!period) throw new NotFoundError('Period');
 
   const dateRange = await getPeriodDateRangeQuery(period);
-  return await countPraiseWithinDateRanges([dateRange]);
+  return countPraiseWithinDateRanges([dateRange]);
 };
