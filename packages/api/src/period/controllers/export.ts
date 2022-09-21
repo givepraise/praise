@@ -249,26 +249,29 @@ export const custom = async (
 
   try {
     const periodDetailsDto = await findPeriodDetailsDto(req.params.periodId);
-    const praiseItemsCount = await countPeriodPraiseItems(req.params.periodId);
 
     const receivers = await populateGRListWithEthereumAddresses(
       periodDetailsDto.receivers
     );
 
-    const parsedContext = JSON.parse(customExportContext);
-
     const transformer = await getCustomExportTransformer(
       customExportMapSetting
     );
 
-    if (!objectsHaveSameKeys(parsedContext, transformer.context)) {
+    const context = JSON.parse(customExportContext);
+
+    if (!objectsHaveSameKeys(context, transformer.context)) {
       throw new BadRequestError('Distribution parameters are not valid.');
     }
 
+    const praiseItemsCount = await countPeriodPraiseItems(req.params.periodId);
     const totalPraiseScore = receivers
       .map((item) => item.scoreRealized)
       // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
       .reduce((prev, next) => prev + next);
+
+    context.totalPraiseScore = totalPraiseScore;
+    context.praiseItemsCount = praiseItemsCount;
 
     if (supportPercentage > 0) {
       receivers.push({
@@ -281,11 +284,7 @@ export const custom = async (
 
     const summarizedReceiverData = runCustomExportTransformer(
       receivers,
-      customExportContext,
-      {
-        totalPraiseScore,
-        praiseItemsCount,
-      },
+      context,
       transformer
     );
 

@@ -23,26 +23,12 @@ export const getCustomExportTransformer = async (
   throw new Error('Unknown error');
 };
 
-interface LocalExportContext {
-  totalPraiseScore: number;
-  praiseItemsCount: number;
-}
-
 export const runCustomExportTransformer = (
   data: PeriodDetailsGiverReceiverDto[],
-  customExportContext: string,
-  localExportContext: LocalExportContext,
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+  context: any,
   transformer: TransformerMap
 ): Object[] => {
-  const exportContext = JSON.parse(
-    customExportContext
-  ) as typeof transformer.context;
-
-  const context = {
-    ...exportContext,
-    ...localExportContext,
-  };
-
   const map = {
     item: transformer.map.item,
     operate: transformer.map.operate.map(

@@ -138,10 +138,7 @@ export interface TransformerMap {
     operate: TransformerOperateItem[];
     each: string;
   };
-  context: {
-    budget: number;
-    token: string;
-  };
+  context: {};
 }
 
 export interface ExportCustomQueryInput {
