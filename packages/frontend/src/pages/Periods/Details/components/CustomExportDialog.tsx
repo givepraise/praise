@@ -60,21 +60,21 @@ export const PeriodCustomExportDialog = ({
               id="exportContext"
               name="distributionParameters"
               autoComplete="off"
-              className="block w-full mt-2 resize-y"
+              className="block w-full h-32 mt-2 resize-y"
               rows={4}
               defaultValue={context}
               onChange={handleExportContextChange}
             />
           </div>
           {csSupportPercentage && csSupportPercentage.valueRealized > 0 ? (
-            <p className="my-4">
+            <p className="mb-7">
               Thank you for supporting the continued development of Praise!{' '}
               <b>{csSupportPercentage?.valueRealized}%</b> will be added to the
               token distribution.{' '}
               <Link to={'/settings/custom-export'}>Change settings</Link>
             </p>
           ) : (
-            <p className="my-4">
+            <p className="mb-7">
               Support the development of Praise, consider donating a percentage
               of the distribution to the development team.{' '}
               <Link to={'/settings/custom-export'}>Change settings</Link>
@@ -83,7 +83,6 @@ export const PeriodCustomExportDialog = ({
 
           <div className="flex justify-center">
             <Button
-              className="mt-4 bg-black hover:bg-warm-gray-800"
               onClick={(): void => {
                 onExport(exportContext);
                 onClose();
