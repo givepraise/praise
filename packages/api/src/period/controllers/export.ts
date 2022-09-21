@@ -250,7 +250,7 @@ export const custom = async (
   try {
     const periodDetailsDto = await findPeriodDetailsDto(req.params.periodId);
 
-    let receivers = await populateGRListWithEthereumAddresses(
+    const receivers = await populateGRListWithEthereumAddresses(
       periodDetailsDto.receivers
     );
 
@@ -282,15 +282,18 @@ export const custom = async (
       });
     }
 
-    if (context.filterEmptyEthereumAddresses) {
-      receivers = receivers.filter((receiver) => receiver.ethereumAddress);
-    }
-
-    const summarizedReceiverData = runCustomExportTransformer(
+    let summarizedReceiverData = runCustomExportTransformer(
       receivers,
       context,
       transformer
     );
+
+    if (transformer.filterColumn) {
+      summarizedReceiverData = summarizedReceiverData.filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (item) => (item as any)[transformer.filterColumn]
+      );
+    }
 
     let data = null;
     if (customExportFormat === 'csv') {
