@@ -97,8 +97,8 @@ export const periodDetailsGiverReceiverListTransformer = async (
 /**
  * Serialize relevant details about a Praise receiver in a period
  *
- * @param {PeriodDetailsReceiver} giverReceiver
- * @returns {Promise<PeriodDetailsReceiverDto>}
+ * @param {PeriodDetailsGiverReceiverDto} giverReceiver
+ * @returns {Promise<PeriodDetailsGiverReceiverDto>}
  */
 const populateGRWithEthereumAddress = async (
   giverReceiver: PeriodDetailsGiverReceiverDto
@@ -123,17 +123,16 @@ const populateGRWithEthereumAddress = async (
 /**
  * Serialize relevant details about a list of Praise receivers in a period (with ETH address)
  *
- * @param {(PeriodReceiver[] | undefined)} giverReceiverList
- * @returns {Promise<PeriodReceiverDto[]>}
+ * @param {(PeriodDetailsGiverReceiverDto[] | undefined)} giverReceiverList
+ * @returns {Promise<PeriodDetailsGiverReceiverDto[]>}
  */
 export const populateGRListWithEthereumAddresses = async (
   giverReceiverList: PeriodDetailsGiverReceiverDto[] | undefined
 ): Promise<PeriodDetailsGiverReceiverDto[]> => {
   if (giverReceiverList && Array.isArray(giverReceiverList)) {
-    const grList: PeriodDetailsGiverReceiverDto[] = [];
-    for (const gr of giverReceiverList) {
-      grList.push(await populateGRWithEthereumAddress(gr));
-    }
+    const grList = await Promise.all(
+      giverReceiverList.map((gr) => populateGRWithEthereumAddress(gr))
+    );
     return grList;
   }
   return [];
