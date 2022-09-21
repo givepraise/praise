@@ -466,7 +466,12 @@ export const usePeriodReceiverPraise = (
 };
 
 type useExportPraiseReturn = {
-  exportPraise: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
+  exportPraiseFull: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
+  exportPraiseSummary: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
+  exportPraiseCustom: (
+    period: PeriodDetailsDto,
+    exportContext: string
+  ) => Promise<Blob | undefined>;
 };
 
 /**
@@ -476,7 +481,7 @@ export const useExportPraise = (): useExportPraiseReturn => {
   const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
   const apiAuthClient = useApiAuthClient();
 
-  const exportPraise = async (
+  const exportPraiseFull = async (
     period: PeriodDetailsDto
   ): Promise<Blob | undefined> => {
     if (!period || !allPeriods) return undefined;
@@ -492,21 +497,7 @@ export const useExportPraise = (): useExportPraiseReturn => {
     return response.data as Blob;
   };
 
-  return { exportPraise };
-};
-
-type useExportSummaryPraiseReturn = {
-  exportSummaryPraise: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
-};
-
-/**
- * Returns function that exports all praise in a period as csv data.
- */
-export const useExportSummaryPraise = (): useExportSummaryPraiseReturn => {
-  const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
-  const apiAuthClient = useApiAuthClient();
-
-  const exportSummaryPraise = async (
+  const exportPraiseSummary = async (
     period: PeriodDetailsDto
   ): Promise<Blob | undefined> => {
     if (!period || !allPeriods) return undefined;
@@ -522,23 +513,7 @@ export const useExportSummaryPraise = (): useExportSummaryPraiseReturn => {
     return response.data as Blob;
   };
 
-  return { exportSummaryPraise };
-};
-
-type useCustomExportReturn = {
-  customExport: (
-    period: PeriodDetailsDto,
-    exportContext: string
-  ) => Promise<Blob | undefined>;
-};
-
-/**
- * Returns function that exports all praise in a period as csv data.
- */
-export const useCustomExport = (): useCustomExportReturn => {
-  const apiAuthClient = useApiAuthClient();
-
-  const customExport = async (
+  const exportPraiseCustom = async (
     period: PeriodDetailsDto,
     exportContext: string
   ): Promise<Blob | undefined> => {
@@ -556,7 +531,7 @@ export const useCustomExport = (): useCustomExportReturn => {
     return response.data as Blob;
   };
 
-  return { customExport };
+  return { exportPraiseFull, exportPraiseSummary, exportPraiseCustom };
 };
 
 /**

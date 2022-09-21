@@ -14,9 +14,7 @@ import {
   SinglePeriod,
   useAssignQuantifiers,
   useClosePeriod,
-  useCustomExport,
   useExportPraise,
-  useExportSummaryPraise,
   useLoadSinglePeriodDetails,
 } from '@/model/periods';
 import { AllQuantifierUsers } from '@/model/users';
@@ -24,7 +22,7 @@ import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { saveLocalFile } from '@/utils/file';
 import { getPreviousPeriod } from '@/utils/periods';
 
-import { ISelectedItem, SelectInput } from '@/components/form/SelectInput';
+import { SelectInputOption, SelectInput } from '@/components/form/SelectInput';
 import { SingleSetting } from '@/model/settings';
 import { CustomExportTransformer } from '@/model/app';
 import { PeriodAssignDialog } from './AssignDialog';
@@ -44,11 +42,10 @@ export const PeriodDetails = (): JSX.Element | null => {
   useLoadSinglePeriodDetails(periodId); // Fetch additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const { exportPraise } = useExportPraise();
-  const { exportSummaryPraise } = useExportSummaryPraise();
-  const { customExport } = useCustomExport();
+  const { exportPraiseFull, exportPraiseSummary, exportPraiseCustom } =
+    useExportPraise();
   const customExportFormat = useRecoilValue(
-    SingleSetting('CUSTOM_EXPORT_CSV_FORMAT')
+    SingleSetting('CUSTOM_EXPORT_FORMAT')
   );
 
   const customExportTransformer = useRecoilValue(CustomExportTransformer);
@@ -114,7 +111,7 @@ export const PeriodDetails = (): JSX.Element | null => {
   const handleExport = (): void => {
     const toastId = 'exportToast';
     void toast.promise(
-      exportPraise(period),
+      exportPraiseFull(period),
       {
         loading: 'Exporting …',
         success: (exportData: Blob | undefined) => {
@@ -140,7 +137,7 @@ export const PeriodDetails = (): JSX.Element | null => {
   const handleExportSummary = (): void => {
     const toastId = 'exportSummaryToast';
     void toast.promise(
-      exportSummaryPraise(period),
+      exportPraiseSummary(period),
       {
         loading: 'Exporting …',
         success: (exportData: Blob | undefined) => {
@@ -166,7 +163,7 @@ export const PeriodDetails = (): JSX.Element | null => {
   const handleDistribution = (exportContext: string): void => {
     const toastId = 'distributeToast';
     void toast.promise(
-      customExport(period, exportContext),
+      exportPraiseCustom(period, exportContext),
       {
         loading: 'Distributing …',
         success: (data: Blob | undefined) => {
@@ -193,7 +190,7 @@ export const PeriodDetails = (): JSX.Element | null => {
     );
   };
 
-  const handleSelectExportChange = (option: ISelectedItem): void => {
+  const handleSelectExportChange = (option: SelectInputOption): void => {
     if (option.value === 'export-full') {
       handleExport();
     } else if (option.value === 'export-summary') {
