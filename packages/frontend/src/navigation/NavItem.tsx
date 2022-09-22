@@ -7,6 +7,7 @@ interface NavProps {
   description: string;
   to: string;
   replace?: boolean;
+  external?: boolean;
 }
 
 export const NavItem = ({
@@ -14,11 +15,15 @@ export const NavItem = ({
   description,
   to,
   replace = false,
+  external = false,
 }: NavProps): JSX.Element => {
+  const url = !external ? to : { pathname: to };
+  const target = !external ? '' : '_blank';
+
   return (
     <li className="group">
       <NavLink
-        to={to}
+        to={url}
         className={(isActive): string =>
           `relative group-first:rounded-t-lg group-last:rounded-b-lg px-5 py-2 cursor-pointer no-underline flex items-center ${
             isActive
@@ -28,6 +33,7 @@ export const NavItem = ({
         }
         id={to.substring(1) + '-nav-button'}
         replace={replace}
+        target={target}
       >
         {icon && (
           <div className="inline-block w-8 text-center">

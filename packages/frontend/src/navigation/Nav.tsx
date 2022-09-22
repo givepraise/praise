@@ -7,6 +7,9 @@ import {
   faMoon,
   faSun,
   faCalendarAlt,
+  faBullhorn,
+  faFire,
+  faFileLines,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
@@ -68,6 +71,27 @@ export const Nav = (): JSX.Element => {
             </AdminOnly>
             <NavItem icon={faBook} description="Logs" to="/eventlogs" />
             <NavItem icon={faQuestionCircle} description="FAQ" to="/faq" />
+            <NavItem
+              icon={faBullhorn}
+              description="Give us feedback"
+              to="https://praise.sleekplan.app/"
+              replace={false}
+              external={true}
+            />
+            <NavItem
+              icon={faFire}
+              description="Latest changes"
+              to="https://github.com/commons-stack/praise/releases"
+              replace={false}
+              external={true}
+            />
+            <NavItem
+              icon={faFileLines}
+              description="Docs"
+              to="https://givepraise.xyz/docs/"
+              replace={false}
+              external={true}
+            />
           </ul>
         </div>
 
