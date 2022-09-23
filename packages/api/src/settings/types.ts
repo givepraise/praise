@@ -4,6 +4,7 @@ export enum SettingGroup {
   APPLICATION,
   PERIOD_DEFAULT,
   DISCORD,
+  CUSTOM_EXPORT,
 }
 
 interface Setting {
@@ -14,6 +15,7 @@ interface Setting {
   label: string;
   description?: string;
   group: SettingGroup;
+  options?: string;
 }
 
 export interface SettingDocument extends Setting, Document {}
@@ -37,6 +39,7 @@ export interface SettingDto {
   label: string;
   description?: string;
   group: SettingGroup;
+  options?: string;
 }
 
 export interface SettingSetInput {
