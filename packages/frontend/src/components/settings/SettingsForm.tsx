@@ -12,6 +12,7 @@ import { BooleanInput } from '@/components/form/BooleanInput';
 import { ImageFileInput } from '@/components/form/ImageFileInput';
 import { Notice } from '@/components/ui/Notice';
 import { SubmitButton } from '../form/SubmitButton';
+import { RadioInput } from '../form/RadioInput';
 
 interface SettingsFormProps {
   settings: SettingDto[] | PeriodSettingDto[] | undefined;
@@ -34,31 +35,6 @@ const FormFields = (
   return (
     <div className="mb-2 space-y-4">
       {settings.map((setting) => {
-        let field;
-        if (
-          setting.type === 'String' ||
-          setting.type === 'IntegerList' ||
-          setting.type === 'StringList'
-        )
-          field = StringInput(setting.key, apiResponse, disabled);
-        else if (setting.type === 'Float' || setting.type === 'Integer')
-          field = NumberInput(setting.key, apiResponse, disabled);
-        else if (
-          setting.type === 'Textarea' ||
-          setting.type === 'QuestionAnswerJSON'
-        )
-          field = TextareaInput(setting.key, apiResponse, disabled);
-        else if (setting.type === 'Boolean')
-          field = BooleanInput(setting.key, apiResponse, disabled);
-        else if (setting.type === 'Image')
-          field = ImageFileInput(
-            setting.key,
-            setting.valueRealized as string,
-            disabled
-          );
-
-        if (!field) return null;
-
         return (
           <div key={setting.key}>
             <label className="block font-bold">{setting.label}</label>
@@ -67,7 +43,54 @@ const FormFields = (
                 {setting.description}
               </div>
             )}
-            {field}
+            {(setting.type === 'String' ||
+              setting.type === 'IntegerList' ||
+              setting.type === 'StringList') && (
+              <StringInput
+                name={setting.key}
+                apiResponse={apiResponse}
+                disabled={disabled}
+              />
+            )}
+            {(setting.type === 'Float' || setting.type === 'Integer') && (
+              <NumberInput
+                name={setting.key}
+                apiResponse={apiResponse}
+                disabled={disabled}
+              />
+            )}
+            {(setting.type === 'Textarea' ||
+              setting.type === 'QuestionAnswerJSON' ||
+              setting.type === 'JSON') && (
+              <TextareaInput
+                name={setting.key}
+                apiResponse={apiResponse}
+                disabled={disabled}
+              />
+            )}
+            {setting.type === 'Boolean' && (
+              <BooleanInput
+                name={setting.key}
+                apiResponse={apiResponse}
+                disabled={disabled}
+              />
+            )}
+            {setting.type === 'Image' && (
+              <ImageFileInput
+                name={setting.key}
+                src={setting.valueRealized as string}
+                disabled={disabled}
+              />
+            )}
+            {setting.type === 'Radio' && (
+              <RadioInput
+                name={setting.key}
+                apiResponse={apiResponse}
+                dbValue={setting.valueRealized as string}
+                values={JSON.parse(setting.options)}
+                disabled={disabled}
+              />
+            )}
           </div>
         );
       })}

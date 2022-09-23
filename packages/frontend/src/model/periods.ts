@@ -21,6 +21,7 @@ import {
   useSetRecoilState,
 } from 'recoil';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
+
 import {
   periodQuantifierPraiseListKey,
   periodReceiverPraiseListKey,
@@ -29,6 +30,7 @@ import { useApiAuthClient } from '@/utils/api';
 import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from './api';
 import { ActiveUserId } from './auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfPeriod = (object: any): object is PeriodDetailsDto => {
   return '_id' in object;
@@ -464,7 +466,12 @@ export const usePeriodReceiverPraise = (
 };
 
 type useExportPraiseReturn = {
-  exportPraise: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
+  exportPraiseFull: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
+  exportPraiseSummary: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
+  exportPraiseCustom: (
+    period: PeriodDetailsDto,
+    exportContext: string
+  ) => Promise<Blob | undefined>;
 };
 
 /**
@@ -474,22 +481,57 @@ export const useExportPraise = (): useExportPraiseReturn => {
   const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
   const apiAuthClient = useApiAuthClient();
 
-  const exportPraise = async (
+  const exportPraiseFull = async (
     period: PeriodDetailsDto
   ): Promise<Blob | undefined> => {
     if (!period || !allPeriods) return undefined;
     const response = await apiAuthClient.get(
-      `/admin/periods/${period._id}/export`,
+      `/admin/periods/${period._id}/exportFull`,
       { responseType: 'blob' }
     );
 
     // If OK response, add returned period object to local state
-    if (isResponseOk(response)) {
-      return response.data as Blob;
+    if (!isResponseOk(response)) {
+      throw new Error();
     }
+    return response.data as Blob;
   };
 
-  return { exportPraise };
+  const exportPraiseSummary = async (
+    period: PeriodDetailsDto
+  ): Promise<Blob | undefined> => {
+    if (!period || !allPeriods) return undefined;
+    const response = await apiAuthClient.get(
+      `/admin/periods/${period._id}/exportSummary`,
+      { responseType: 'blob' }
+    );
+
+    // If OK response, add returned period object to local state
+    if (!isResponseOk(response)) {
+      throw new Error();
+    }
+    return response.data as Blob;
+  };
+
+  const exportPraiseCustom = async (
+    period: PeriodDetailsDto,
+    exportContext: string
+  ): Promise<Blob | undefined> => {
+    if (!period) return undefined;
+
+    const response = await apiAuthClient.get(
+      `/admin/periods/${period._id}/exportCustom?context=${exportContext}`,
+      { responseType: 'blob' }
+    );
+
+    // If OK response, add returned period object to local state
+    if (!isResponseOk(response)) {
+      throw new Error();
+    }
+    return response.data as Blob;
+  };
+
+  return { exportPraiseFull, exportPraiseSummary, exportPraiseCustom };
 };
 
 /**
