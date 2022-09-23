@@ -8,6 +8,7 @@ export interface PeriodSetting {
   label: string;
   description?: string;
   period: string;
+  options?: string;
 }
 
 export interface PeriodSettingDocument extends PeriodSetting, Document {}
@@ -21,4 +22,5 @@ export interface PeriodSettingDto {
   label: string;
   description?: string;
   period: string;
+  options?: string;
 }

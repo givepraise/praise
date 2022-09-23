@@ -17,6 +17,8 @@ export const genericSettingsSchema = {
       'StringList',
       'Image',
       'QuestionAnswerJSON',
+      'Radio',
+      'JSON',
     ],
     validate: isSettingValueAllowedBySettingType,
     required: true,
@@ -24,6 +26,7 @@ export const genericSettingsSchema = {
   label: { type: String, required: true },
   description: { type: String },
   group: { type: Number, enum: SettingGroup, required: true },
+  options: { type: String },
 };
 
 export function getGenericSettingValueRealized(
