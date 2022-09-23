@@ -84,3 +84,9 @@ export const removeFile = async (filename: string): Promise<void> => {
     logger.warn(`Could not find a file to remove: ${filename}`);
   }
 };
+
+export const objectsHaveSameKeys = (a: any, b: any): boolean => {
+  const aKeys = Object.keys(a).sort();
+  const bKeys = Object.keys(b).sort();
+  return JSON.stringify(aKeys) === JSON.stringify(bKeys);
+};

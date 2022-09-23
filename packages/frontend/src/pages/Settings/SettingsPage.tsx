@@ -30,6 +30,9 @@ const SettingsPage = (): JSX.Element | null => {
   const discordSettings = settings.filter(
     (s) => s.group === SettingGroup.DISCORD
   );
+  const customExportSettings = settings.filter(
+    (s) => s.group === SettingGroup.CUSTOM_EXPORT
+  );
 
   const onSubmit = async (
     setting: SettingDto
@@ -50,9 +53,26 @@ const SettingsPage = (): JSX.Element | null => {
         <div>
           <SubPageNav>
             <ul>
-              <NavItem to={`${url}/application`} description="Application" />
-              <NavItem to={`${url}/period`} description="Period Defaults" />
-              <NavItem to={`${url}/discord`} description="Discord Bot" />
+              <NavItem
+                to={`${url}/application`}
+                description="Application"
+                replace
+              />
+              <NavItem
+                to={`${url}/period`}
+                description="Period Defaults"
+                replace
+              />
+              <NavItem
+                to={`${url}/discord`}
+                description="Discord Bot"
+                replace
+              />
+              <NavItem
+                to={`${url}/custom-export`}
+                description="Custom Export"
+                replace
+              />
             </ul>
           </SubPageNav>
         </div>
@@ -79,6 +99,14 @@ const SettingsPage = (): JSX.Element | null => {
               <React.Suspense fallback={null}>
                 <SettingsForm
                   settings={discordSettings}
+                  parentOnSubmit={onSubmit}
+                />
+              </React.Suspense>
+            </Route>
+            <Route path={`${path}/custom-export`}>
+              <React.Suspense fallback={null}>
+                <SettingsForm
+                  settings={customExportSettings}
                   parentOnSubmit={onSubmit}
                 />
               </React.Suspense>

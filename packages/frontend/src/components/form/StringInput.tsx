@@ -2,11 +2,17 @@ import { Field } from 'react-final-form';
 import { AxiosResponse, AxiosError } from 'axios';
 import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 
-export const StringInput = (
-  name: string,
-  apiResponse: AxiosResponse<unknown> | AxiosError | null,
-  disabled?: boolean
-): JSX.Element => {
+interface StringInputParams {
+  name: string;
+  apiResponse: AxiosResponse<unknown> | AxiosError | null;
+  disabled?: boolean;
+}
+
+export const StringInput = ({
+  name,
+  apiResponse,
+  disabled,
+}: StringInputParams): JSX.Element => {
   return (
     <Field name={name} key={name}>
       {({ input }): JSX.Element => {

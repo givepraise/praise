@@ -1,9 +1,13 @@
 import { Request } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import { removeFile, upload } from '@/shared/functions';
 import { TypedRequestBody, TypedResponse } from '@/shared/types';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
+import { settingValue } from '@/shared/settings';
+import { ExportTransformerMap } from '@/period/types';
+import { getCustomExportTransformer } from '@/period/utils/export';
 import { SettingsModel } from './entities';
 import { settingListTransformer, settingTransformer } from './transformers';
 import { SettingDto, SettingSetInput } from './types';
@@ -88,4 +92,16 @@ export const set = async (
   );
 
   res.status(200).json(settingTransformer(setting));
+};
+
+export const customExportTransformer = async (
+  req: Request,
+  res: TypedResponse<ExportTransformerMap>
+): Promise<void> => {
+  const customExportMapSetting = (await settingValue(
+    'CUSTOM_EXPORT_MAP'
+  )) as string;
+
+  const transformer = await getCustomExportTransformer(customExportMapSetting);
+  res.status(StatusCodes.OK).json(transformer);
 };

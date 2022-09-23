@@ -19,7 +19,7 @@ export const SearchInput = ({
   handleClear,
 }: SearchInputProps): JSX.Element => {
   return (
-    <div className="relative flex items-center border border-warm-gray-400 h-10">
+    <div className="relative flex items-center h-10 overflow-hidden border border-warm-gray-400">
       <div className="absolute inset-y-0 left-0 flex items-center pl-3">
         <span className="text-warm-gray-800 dark:text-white">
           <FontAwesomeIcon
@@ -30,7 +30,7 @@ export const SearchInput = ({
         </span>
       </div>
       <input
-        className="block pl-8 bg-transparent border-none outline-none focus:ring-0"
+        className="block w-full pl-8 pr-8 bg-transparent border-none outline-none focus:ring-0"
         name="search"
         type="text"
         placeholder={placeholder}
@@ -40,7 +40,7 @@ export const SearchInput = ({
         }
       />
       {value !== '' && handleClear && (
-        <div className="absolute inset-y-0 right-6 flex items-center pl-3">
+        <div className="absolute inset-y-0 flex items-center pl-3 right-6">
           <button onClick={handleClear}>
             <span className="text-warm-gray-800 dark:text-white">
               <FontAwesomeIcon
