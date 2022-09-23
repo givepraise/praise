@@ -5,7 +5,10 @@ import { calculateGiverReceiverCompositeScore } from '@/praise/utils/score';
 import { periodsettingListTransformer } from '@/periodsettings/transformers';
 import { PeriodSettingsModel } from '@/periodsettings/entities';
 import { settingValue } from '@/shared/settings';
-import { isQuantificationCompleted } from '@/praise/utils/core';
+import {
+  countPraiseWithinDateRanges,
+  isQuantificationCompleted,
+} from '@/praise/utils/core';
 import { PeriodModel } from '../entities';
 import {
   periodDetailsGiverReceiverListTransformer,
@@ -294,4 +297,20 @@ export const isPeriodLatest = async (
   if (latestPeriods[0]._id.toString() === period._id.toString()) return true;
 
   return false;
+};
+
+/**
+ * Count number of praise items for the period
+ *
+ * @param periodId
+ * @returns {Promise<number>}
+ */
+export const countPeriodPraiseItems = async (
+  periodId: string
+): Promise<number> => {
+  const period = await PeriodModel.findById(periodId);
+  if (!period) throw new NotFoundError('Period');
+
+  const dateRange = await getPeriodDateRangeQuery(period);
+  return countPraiseWithinDateRanges([dateRange]);
 };

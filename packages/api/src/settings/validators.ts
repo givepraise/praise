@@ -64,7 +64,8 @@ export function isSettingValueAllowedBySettingType(
   if (
     this.type === 'String' ||
     this.type === 'Textarea' ||
-    this.type === 'Image'
+    this.type === 'Image' ||
+    this.type === 'Radio'
   ) {
     return typeof this.value === 'string';
   }
@@ -87,6 +88,11 @@ export function isSettingValueAllowedBySettingType(
     });
 
     return valid;
+  }
+
+  if (this.type === 'JSON') {
+    const value = JSON.parse(this.value);
+    return typeof value === 'object';
   }
 
   if (this.type === 'StringList') {
