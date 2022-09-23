@@ -178,7 +178,10 @@ export const PeriodDetails = (): JSX.Element | null => {
 
           return 'Empty export returned';
         },
-        error: 'Export failed',
+        error: (err) => {
+          toast.error(err.message);
+          return 'Export failed';
+        },
       },
       {
         id: toastId,
