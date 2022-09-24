@@ -4,7 +4,7 @@ import { isSettingValueAllowedBySettingType } from './validators';
 
 export const genericSettingsSchema = {
   key: { type: String, required: true },
-  value: { type: String, required: true },
+  value: { type: String, required: false },
   type: {
     type: String,
     enum: [
@@ -16,7 +16,6 @@ export const genericSettingsSchema = {
       'IntegerList',
       'StringList',
       'Image',
-      'QuestionAnswerJSON',
       'Radio',
       'JSON',
     ],
@@ -32,7 +31,7 @@ export const genericSettingsSchema = {
 export function getGenericSettingValueRealized(
   this: SettingDocument
 ): string | boolean | number | number[] | undefined {
-  if (!this) return undefined;
+  if (!this || !this.value) return undefined;
 
   let realizedValue;
   if (this.type === 'Integer') {
@@ -49,7 +48,7 @@ export function getGenericSettingValueRealized(
     realizedValue = this.value.split(',').map((v: string) => v.trim());
   } else if (this.type === 'Image') {
     realizedValue = `${process.env.SERVER_URL as string}/${this.value}`;
-  } else if (this.type === 'QuestionAnswerJSON') {
+  } else if (this.type === 'JSON') {
     realizedValue = this.value ? JSON.parse(this.value) : [];
   } else {
     realizedValue = this.value;

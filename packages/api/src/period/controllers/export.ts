@@ -1,5 +1,6 @@
 import { Response, Request } from 'express';
 import { Parser } from 'json2csv';
+import { isEmpty } from 'lodash';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import { PraiseDtoExtended, PraiseDetailsDto } from '@/praise/types';
 import { praiseTransformer } from '@/praise/transformers';
@@ -7,7 +8,6 @@ import { calculateQuantificationScore } from '@/praise/utils/score';
 import { UserModel } from '@/user/entities';
 import { UserAccountModel } from '@/useraccount/entities';
 import { settingValue } from '@/shared/settings';
-import { TypedRequestQuery } from '@/shared/types';
 import { objectsHaveSameKeys } from '@/shared/functions';
 import { PraiseModel } from '@/praise/entities';
 import {
@@ -21,7 +21,6 @@ import {
   getCustomExportTransformer,
   runCustomExportTransformer,
 } from '../utils/export';
-import { ExportCustomQueryInputParsedQs } from '../types';
 
 // TODO document this
 /**
@@ -227,10 +226,7 @@ export const summary = async (req: Request, res: Response): Promise<void> => {
  * @param {Response} res
  * @returns {Promise<void>}
  */
-export const custom = async (
-  req: TypedRequestQuery<ExportCustomQueryInputParsedQs>,
-  res: Response
-): Promise<void> => {
+export const custom = async (req: Request, res: Response): Promise<void> => {
   const customExportMapSetting = (await settingValue(
     'CUSTOM_EXPORT_MAP'
   )) as string;
@@ -239,9 +235,9 @@ export const custom = async (
     'CUSTOM_EXPORT_FORMAT'
   )) as string;
 
-  const customExportContext = req.query.context
-    ? req.query.context
-    : ((await settingValue('CUSTOM_EXPORT_CONTEXT')) as string);
+  const context = isEmpty(req.query)
+    ? ((await settingValue('CUSTOM_EXPORT_CONTEXT')) as object)
+    : req.query;
 
   const supportPercentage = (await settingValue(
     'CS_SUPPORT_PERCENTAGE'
@@ -258,8 +254,6 @@ export const custom = async (
       customExportMapSetting
     );
 
-    const context = JSON.parse(customExportContext);
-
     if (!objectsHaveSameKeys(context, transformer.context)) {
       throw new BadRequestError('Distribution parameters are not valid.');
     }
@@ -270,8 +264,10 @@ export const custom = async (
       // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
       .reduce((prev, next) => prev + next);
 
-    context.totalPraiseScore = totalPraiseScore;
-    context.praiseItemsCount = praiseItemsCount;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (context as any).totalPraiseScore = totalPraiseScore;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (context as any).praiseItemsCount = praiseItemsCount;
 
     if (supportPercentage > 0) {
       receivers.push({

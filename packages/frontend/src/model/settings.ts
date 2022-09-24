@@ -73,7 +73,7 @@ export const useSetSetting = (): useSetSettingReturn => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const reqData = (setting: SettingDto): any => {
-    if (setting.type === 'Image') {
+    if (setting.type === 'Image' && setting.value) {
       const data = new FormData();
       data.append('value', setting.value);
       return data;
