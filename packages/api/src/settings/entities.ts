@@ -16,7 +16,6 @@ export const genericSettingsSchema = {
       'IntegerList',
       'StringList',
       'Image',
-      'QuestionAnswerJSON',
       'Radio',
       'JSON',
     ],
@@ -49,8 +48,6 @@ export function getGenericSettingValueRealized(
     realizedValue = this.value.split(',').map((v: string) => v.trim());
   } else if (this.type === 'Image') {
     realizedValue = `${process.env.SERVER_URL as string}/${this.value}`;
-  } else if (this.type === 'QuestionAnswerJSON') {
-    realizedValue = this.value ? JSON.parse(this.value) : [];
   } else if (this.type === 'JSON') {
     realizedValue = this.value ? JSON.parse(this.value) : [];
   } else {

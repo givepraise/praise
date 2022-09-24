@@ -58,9 +58,7 @@ const FormFields = (
                 disabled={disabled}
               />
             )}
-            {(setting.type === 'Textarea' ||
-              setting.type === 'QuestionAnswerJSON' ||
-              setting.type === 'JSON') && (
+            {(setting.type === 'Textarea' || setting.type === 'JSON') && (
               <TextareaInput
                 name={setting.key}
                 apiResponse={apiResponse}

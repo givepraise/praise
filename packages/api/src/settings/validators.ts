@@ -2,27 +2,6 @@ import { Validator } from 'jsonschema';
 import { PeriodSettingDocument } from '@/periodsettings/types';
 import { SettingDocument } from './types';
 
-const QuestionAnswerJSONSchema = {
-  type: 'array',
-  items: {
-    type: 'object',
-    properties: {
-      section: {
-        type: 'string',
-        required: true,
-      },
-      questions: {
-        type: 'array',
-        required: true,
-        properties: {
-          question: { type: 'string', required: true },
-          answer: { type: 'string', required: true },
-        },
-      },
-    },
-  },
-};
-
 /**
  * Check if a given string can be parsed into a number
  *
@@ -50,19 +29,6 @@ export function isSettingValueAllowedBySettingType(
 
   if (this.type === 'Float' || this.type === 'Integer') {
     return isNumeric(this.value);
-  }
-
-  if (this.type === 'QuestionAnswerJSON') {
-    const v = new Validator();
-
-    const faq = JSON.parse(this.value);
-    if (!faq) {
-      return false;
-    }
-
-    const validation = v.validate(faq, QuestionAnswerJSONSchema);
-
-    return validation.errors.length === 0;
   }
 
   if (
