@@ -44,6 +44,10 @@ function isNumeric(num: any): Boolean {
 export function isSettingValueAllowedBySettingType(
   this: SettingDocument | PeriodSettingDocument
 ): Boolean {
+  if (!this.value) {
+    return true;
+  }
+
   if (this.type === 'Float' || this.type === 'Integer') {
     return isNumeric(this.value);
   }

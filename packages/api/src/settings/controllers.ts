@@ -71,8 +71,8 @@ export const set = async (
   if (!setting) throw new NotFoundError('Settings');
 
   const originalValue = setting.value;
-  if (req.files) {
-    await removeFile(setting.value);
+  if (setting.type === 'Image') {
+    setting.value && (await removeFile(setting.value));
     const uploadRespone = await upload(req, 'value');
     if (uploadRespone) {
       setting.value = uploadRespone;
@@ -85,7 +85,9 @@ export const set = async (
 
   await logEvent(
     EventLogTypeKey.SETTING,
-    `Updated global setting "${setting.label}" from "${originalValue}" to "${setting.value}"`,
+    `Updated global setting "${setting.label}" from "${
+      originalValue || ''
+    }" to "${setting.value || ''}"`,
     {
       userId: res.locals.currentUser._id,
     }

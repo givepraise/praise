@@ -5,7 +5,9 @@ import { PeriodSettingsModel } from '@/periodsettings/entities';
 export const settingValue = async (
   key: string,
   periodId: Types.ObjectId | undefined = undefined
-): Promise<string | boolean | number | number[] | string[] | object> => {
+): Promise<
+  string | boolean | number | number[] | string[] | object | undefined
+> => {
   let setting;
   if (!periodId) {
     setting = await SettingsModel.findOne({
@@ -28,8 +30,5 @@ export const settingValue = async (
     }
   }
 
-  if (setting.type === 'JSON') {
-    return JSON.parse(setting.value);
-  }
   return setting.valueRealized;
 };
