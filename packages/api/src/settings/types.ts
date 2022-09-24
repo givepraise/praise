@@ -35,3 +35,8 @@ export interface SettingDto {
 export interface SettingSetInput {
   value: string;
 }
+
+export interface ExportContext {
+  totalPraiseScore: number;
+  praiseItemsCount: number;
+}

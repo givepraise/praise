@@ -10,6 +10,7 @@ import { UserAccountModel } from '@/useraccount/entities';
 import { settingValue } from '@/shared/settings';
 import { objectsHaveSameKeys } from '@/shared/functions';
 import { PraiseModel } from '@/praise/entities';
+import { ExportContext } from '@/settings/types';
 import {
   countPeriodPraiseItems,
   findPeriodDetailsDto,
@@ -236,7 +237,7 @@ export const custom = async (req: Request, res: Response): Promise<void> => {
   )) as string;
 
   const context = isEmpty(req.query)
-    ? ((await settingValue('CUSTOM_EXPORT_CONTEXT')) as object)
+    ? ((await settingValue('CUSTOM_EXPORT_CONTEXT')) as ExportContext)
     : req.query;
 
   const supportPercentage = (await settingValue(
@@ -261,13 +262,10 @@ export const custom = async (req: Request, res: Response): Promise<void> => {
     const praiseItemsCount = await countPeriodPraiseItems(req.params.periodId);
     const totalPraiseScore = receivers
       .map((item) => item.scoreRealized)
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
       .reduce((prev, next) => prev + next);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (context as any).totalPraiseScore = totalPraiseScore;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (context as any).praiseItemsCount = praiseItemsCount;
+    context.totalPraiseScore = totalPraiseScore;
+    context.praiseItemsCount = praiseItemsCount;
 
     if (supportPercentage > 0) {
       receivers.push({

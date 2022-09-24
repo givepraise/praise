@@ -1,7 +1,7 @@
 import { Wallet } from 'ethers';
 import { expect } from 'chai';
 import { faker } from '@faker-js/faker';
-import { add, addDays } from 'date-fns';
+import { addDays } from 'date-fns';
 import { PraiseModel } from '@/praise/entities';
 import { PeriodModel } from '@/period/entities';
 import {
