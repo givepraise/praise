@@ -1,4 +1,3 @@
-import { Validator } from 'jsonschema';
 import { PeriodSettingDocument } from '@/periodsettings/types';
 import { SettingDocument } from './types';
 
