@@ -1,7 +1,6 @@
 import {
   faCog,
   faPrayingHands,
-  faQuestionCircle,
   faUserFriends,
   faBook,
   faMoon,
@@ -71,7 +70,6 @@ export const Nav = (): JSX.Element => {
               <NavItem icon={faUserFriends} description="Users" to="/users" />
             </AdminOnly>
             <NavItem icon={faBook} description="Logs" to="/eventlogs" />
-            <NavItem icon={faQuestionCircle} description="FAQ" to="/faq" />
           </ul>
         </div>
 

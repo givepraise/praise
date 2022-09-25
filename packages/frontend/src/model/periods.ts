@@ -519,16 +519,22 @@ export const useExportPraise = (): useExportPraiseReturn => {
   ): Promise<Blob | undefined> => {
     if (!period) return undefined;
 
-    const response = await apiAuthClient.get(
-      `/admin/periods/${period._id}/exportCustom?context=${exportContext}`,
-      { responseType: 'blob' }
-    );
+    try {
+      const context = JSON.parse(exportContext);
 
-    // If OK response, add returned period object to local state
-    if (!isResponseOk(response)) {
-      throw new Error();
+      const response = await apiAuthClient.get(
+        `/admin/periods/${period._id}/exportCustom`,
+        { responseType: 'blob', params: context }
+      );
+
+      // If OK response, add returned period object to local state
+      if (!isResponseOk(response)) {
+        throw new Error();
+      }
+      return response.data as Blob;
+    } catch (error) {
+      throw new Error('Invalid export context');
     }
-    return response.data as Blob;
   };
 
   return { exportPraiseFull, exportPraiseSummary, exportPraiseCustom };

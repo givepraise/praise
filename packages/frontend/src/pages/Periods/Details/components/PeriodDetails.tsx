@@ -70,13 +70,13 @@ export const PeriodDetails = (): JSX.Element | null => {
       value: 'export-summary',
       label: 'Export (summary)',
     },
-    {
-      value: 'export-custom',
-      label: customExportTransformer
-        ? customExportTransformer.name
-        : 'Custom export transformer',
-    },
   ];
+
+  customExportTransformer &&
+    exportOptions.push({
+      value: 'export-custom',
+      label: customExportTransformer.name,
+    });
 
   const handleClosePeriod = (): void => {
     void closePeriod(periodId);
@@ -178,7 +178,10 @@ export const PeriodDetails = (): JSX.Element | null => {
 
           return 'Empty export returned';
         },
-        error: 'Export failed',
+        error: (err) => {
+          toast.error(err.message);
+          return 'Export failed';
+        },
       },
       {
         id: toastId,

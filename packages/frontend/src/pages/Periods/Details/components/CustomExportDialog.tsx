@@ -66,7 +66,8 @@ export const PeriodCustomExportDialog = ({
               onChange={handleExportContextChange}
             />
           </div>
-          {csSupportPercentage && csSupportPercentage.valueRealized > 0 ? (
+          {csSupportPercentage?.valueRealized &&
+          csSupportPercentage.valueRealized > 0 ? (
             <p className="mb-7">
               Thank you for supporting the continued development of Praise!{' '}
               <b>{csSupportPercentage?.valueRealized}%</b> will be added to the
