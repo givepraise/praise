@@ -64,9 +64,9 @@ export type PeriodAndQuantifierPageParams = {
  * and `settings` are not returned but need to be separately loaded using
  * @DetailedSinglePeriodQuery
  */
-export const AllPeriods = atom<PeriodDetailsDto[] | undefined>({
+export const AllPeriods = atom<PeriodDetailsDto[]>({
   key: 'AllPeriods',
-  default: undefined,
+  default: [],
   effects: [
     ({ setSelf, getPromise }): void => {
       setSelf(
@@ -83,6 +83,7 @@ export const AllPeriods = atom<PeriodDetailsDto[] | undefined>({
               return periods;
             }
           }
+          return [];
         })
       );
     },
