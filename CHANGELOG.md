@@ -11,6 +11,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.12.0] - 2022-09-26
+
+### Added
+
+- **API:** Custom praise exports using transformation maps that can perform calculations on Praise data #549 #532
+- **Frontend:** New items on the main navigation #596 #430
+  - Give us feedback
+  - Latest changes
+  - Docs
+
+### Fixed
+
+- **API:** Fix/evenly assign quantifiers prevent overlap #573 #535
+- **Frontend:** Custom emojis get the wrong size when displayed in Praise dashboard #592
+- **API:** Settings are now allowed to have empty values #597
+- **Frontend:** Update Search Input in dark mode #594
+- **Frontend:** Add a `replace` option to NavItem to better handle subpage navigation and backlink clicks #579
+- **Frontend:** Fix quantifier dark mode and correct onclick behaviour #588
+- **Frontend:** Better darkmode looks for analytics #570
+- **Frontend:** Show placeholder while loading avatar image #574
+
+### Removed
+
+- **Frontend:** Removed the FAQ page #586
+
 ## [0.11.1] - 2022-08-24
 
 Hotfix resolving an issue with building Docker images for production.

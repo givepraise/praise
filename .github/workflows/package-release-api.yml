@@ -1,4 +1,4 @@
-name: Release - Create and publish api Docker image
+name: Api/Release - Create and publish Docker image
 
 on:
   release:
