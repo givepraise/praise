@@ -1,4 +1,4 @@
-name: Api - build, lint, test
+name: Api
 on:
   workflow_dispatch:
   pull_request:

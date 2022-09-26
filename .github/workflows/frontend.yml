@@ -1,4 +1,4 @@
-name: Frontend - build, lint
+name: Frontend
 on:
   workflow_dispatch:
   pull_request:

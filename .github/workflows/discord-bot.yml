@@ -1,4 +1,4 @@
-name: Discord-Bot - build, lint
+name: Discord-Bot
 on:
   workflow_dispatch:
   pull_request:
