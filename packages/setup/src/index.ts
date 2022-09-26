@@ -5,11 +5,19 @@ import { unlinkSync, existsSync } from 'fs';
 import { exit } from 'process';
 import os from 'os';
 
+interface Answers {
+  NODE_ENV: string;
+  HOST: string;
+  ADMINS: string;
+  DISCORD_TOKEN: string;
+  DISCORD_CLIENT_ID: string;
+  DISCORD_GUILD_ID: string;
+}
+
 /**
- * Load ENV, template first, then override with actual ENV values
+ * Load ENV, templates first, then override with actual ENV values
  * if there are any.
  */
-
 const rootEnvPath = '/usr/praise/.env';
 const rootEnvTemplatePath = '/usr/praise/.env.template';
 
@@ -117,13 +125,23 @@ const questions = [
   },
 ];
 
+const getReactServerUrl = (answers: Answers): string => {
+  if (process.env.REACT_APP_SERVER_URL) {
+    return process.env.REACT_APP_SERVER_URL;
+  }
+
+  return answers.NODE_ENV === 'production'
+    ? `https://${answers.HOST}`
+    : `http://${answers.HOST}:${process.env.API_PORT as string}`;
+};
+
 const setupAndWriteEnv = async (
-  envTemplate: string,
+  templateFileName: string,
   outFileName: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   newValues: any
 ): Promise<void> => {
-  const envVars = (await fs.readFile(envTemplate, 'utf8')).split(os.EOL);
+  const envVars = (await fs.readFile(templateFileName, 'utf8')).split(os.EOL);
 
   for (const key in newValues) {
     const value = newValues[key] as string;
@@ -170,11 +188,7 @@ const run = async (): Promise<void> => {
     DISCORD_TOKEN: answers.DISCORD_TOKEN,
     DISCORD_CLIENT_ID: answers.DISCORD_CLIENT_ID,
     DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,
-    REACT_APP_SERVER_URL: process.env.REACT_APP_SERVER_URL
-      ? process.env.REACT_APP_SERVER_URL
-      : answers.NODE_ENV === 'production'
-      ? `https://${answers.HOST as string}`
-      : `http://${answers.HOST as string}:${process.env.API_PORT as string}`,
+    REACT_APP_SERVER_URL: getReactServerUrl(answers),
     PORT: process.env.PORT,
     JET_LOGGER_MODE: process.env.JET_LOGGER_MODE,
     JET_LOGGER_FILEPATH: process.env.JET_LOGGER_FILEPATH,
