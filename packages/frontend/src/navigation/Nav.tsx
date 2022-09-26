@@ -6,6 +6,9 @@ import {
   faMoon,
   faSun,
   faCalendarAlt,
+  faBullhorn,
+  faFire,
+  faFileLines,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
@@ -69,18 +72,49 @@ export const Nav = (): JSX.Element => {
           </ul>
         </div>
 
-        <div className="flex h-12 m-4 mt-auto">
+        <div className="flex flex-col justify-end mt-auto h-60">
+          <ul>
+            <NavItem
+              icon={faBullhorn}
+              description="Give us feedback"
+              to="https://praise.sleekplan.app/"
+              iconClassName="text-themecolor-3"
+            />
+            <NavItem
+              icon={faFire}
+              description="Latest changes"
+              to="https://github.com/commons-stack/praise/releases"
+              iconClassName="text-themecolor-3"
+            />
+            <NavItem
+              icon={faFileLines}
+              description="Docs"
+              to="https://givepraise.xyz/docs/"
+              iconClassName="text-themecolor-3"
+            />
+          </ul>
           <div
-            className="items-center justify-center hidden h-12 border-2 rounded-lg cursor-pointer dark:flex dark:text-white text-themecolor-3 grow dark:border-slate-700"
+            className="hidden px-2 py-3 m-3 border-2 rounded-lg cursor-pointer dark:flex border-slate-700"
             onClick={(): void => handleTheme('Light')}
           >
-            <FontAwesomeIcon icon={faSun} size="lg" />
+            <div className="inline-block w-8 px-1 text-center text-themecolor-3">
+              <FontAwesomeIcon icon={faSun} size="lg" />
+            </div>
+            <div className="flex-auto inline-block whitespace-nowrap">
+              Light mode
+            </div>
           </div>
+
           <div
-            className="flex items-center justify-center h-12 border-2 rounded-lg cursor-pointer dark:hidden dark:text-white text-themecolor-3 grow dark:border-slate-700"
+            className="flex px-2 py-3 m-3 border-2 rounded-lg cursor-pointer dark:hidden "
             onClick={(): void => handleTheme('Dark')}
           >
-            <FontAwesomeIcon icon={faMoon} size="lg" />
+            <div className="inline-block w-8 pl-1 text-center text-themecolor-3">
+              <FontAwesomeIcon icon={faMoon} size="lg" />
+            </div>
+            <div className="flex-auto inline-block whitespace-nowrap">
+              Dark mode
+            </div>
           </div>
         </div>
 

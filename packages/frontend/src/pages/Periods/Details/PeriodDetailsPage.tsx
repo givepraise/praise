@@ -107,6 +107,7 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
                 description="Receivers"
                 icon={faHeartbeat}
                 replace
+                rounded
               />
               <NavItem
                 to={`${url}/quantifiers`}
@@ -125,6 +126,7 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
                 description="Analytics"
                 icon={faChartBar}
                 replace
+                rounded
               />
             </ul>
           </SubPageNav>
