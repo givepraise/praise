@@ -2,8 +2,8 @@ import { Chart } from 'react-chartjs-2';
 import { Chart as ChartJS, ChartData, ChartOptions } from 'chart.js';
 import {
   TreemapController,
-  TreemapElement,
   TreemapDataPoint,
+  TreemapElement,
 } from 'chartjs-chart-treemap';
 
 ChartJS.register(TreemapController, TreemapElement);

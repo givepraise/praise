@@ -1,4 +1,4 @@
-name: Development - Create and publish discord-bot Docker image
+name: Discord-Bot/Development - Create and publish Docker image
 
 on:
   push:

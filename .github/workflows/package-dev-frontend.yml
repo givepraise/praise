@@ -1,4 +1,4 @@
-name: Development - Create and publish frontend Docker image
+name: Frontend/Development - Create and publish Docker image
 
 on:
   push:

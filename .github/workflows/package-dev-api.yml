@@ -1,4 +1,4 @@
-name: Development - Create and publish api Docker image
+name: Api/Development - Create and publish Docker image
 
 on:
   push:
