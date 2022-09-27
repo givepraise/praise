@@ -66,11 +66,6 @@ export const set = async (
   req: TypedRequestBody<SettingSetInput>,
   res: TypedResponse<PeriodSettingDto>
 ): Promise<void> => {
-  const { value } = req.body;
-
-  if (typeof value === 'undefined' && !req.files)
-    throw new BadRequestError('Value is required field');
-
   const period = await PeriodModel.findById(req.params.periodId);
   if (!period) throw new NotFoundError('Period');
   if (period.status !== PeriodStatusType.OPEN)
@@ -85,13 +80,16 @@ export const set = async (
   if (!setting) throw new NotFoundError('PeriodSettings');
 
   const originalValue = setting.value;
-  if (req.files) {
-    await removeFile(setting.value);
-    const uploadRespone = await upload(req, 'value');
-    if (uploadRespone) {
-      setting.value = uploadRespone;
+  if (setting.type === 'Image') {
+    setting.value && (await removeFile(setting.value));
+    const uploadResponse = await upload(req, 'value');
+    if (uploadResponse) {
+      setting.value = uploadResponse;
     }
   } else {
+    if (typeof req.body.value === 'undefined') {
+      throw new BadRequestError('Value is required field');
+    }
     setting.value = req.body.value;
   }
 
