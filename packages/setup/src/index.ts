@@ -168,11 +168,15 @@ const run = async (): Promise<void> => {
     API_PORT: answers.API_PORT,
     SERVER_URL:
       answers.NODE_ENV === 'production'
-        ? `https://${answers.HOST as string}`
+        ? answers.HOST === 'localhost'
+          ? `http://${answers.HOST as string}`
+          : `https://${answers.HOST as string}`
         : `http://${answers.HOST as string}:${answers.API_PORT as string}`,
     FRONTEND_URL:
-      answers.NODE_ENV === 'production'
-        ? `https://${answers.HOST as string}`
+      answers.NODE_ENV === 'production' || answers.HOST === 'localhost'
+        ? answers.HOST === 'localhost'
+          ? `http://${answers.HOST as string}`
+          : `https://${answers.HOST as string}`
         : `http://${answers.HOST as string}:${answers.PORT as string}`,
     MONGO_HOST: answers.NODE_ENV === 'production' ? 'mongodb' : 'localhost',
     MONGO_INITDB_ROOT_USERNAME: answers.MONGO_INITDB_ROOT_USERNAME,

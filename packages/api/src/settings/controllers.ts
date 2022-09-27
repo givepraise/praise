@@ -58,11 +58,6 @@ export const set = async (
   req: TypedRequestBody<SettingSetInput>,
   res: TypedResponse<SettingDto>
 ): Promise<void> => {
-  const { value } = req.body;
-
-  if (typeof value === 'undefined' && !req.files)
-    throw new BadRequestError('Value is required field');
-
   const { id } = req.params;
   const setting = await SettingsModel.findOne({
     _id: id,
@@ -73,11 +68,14 @@ export const set = async (
   const originalValue = setting.value;
   if (setting.type === 'Image') {
     setting.value && (await removeFile(setting.value));
-    const uploadRespone = await upload(req, 'value');
-    if (uploadRespone) {
-      setting.value = uploadRespone;
+    const uploadResponse = await upload(req, 'value');
+    if (uploadResponse) {
+      setting.value = uploadResponse;
     }
   } else {
+    if (typeof req.body.value === 'undefined') {
+      throw new BadRequestError('Value is required field');
+    }
     setting.value = req.body.value;
   }
 
