@@ -21,6 +21,8 @@ services:
     restart: always
     ports:
       - $API_PORT:$API_PORT
+    volumes:
+      - './packages/api/uploads/:/usr/src/uploads/'      
     links:
       - mongodb
 
