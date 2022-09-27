@@ -11,8 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Better handling of uploaded logo images. Image uploads are now stored outside of the Docker container. This means that the logo image will persist across container restarts and upgrades. #604
-- Better support for serving Praise over http on localhost. No manual edits of `.env` needed, all settings are managed by `setup.sh`. #604
+- Better handling of uploaded logo images. Image uploads are now stored outside of the Docker container. This means that the logo image will persist across container restarts and upgrades. #564 #604
+- Better support for serving Praise over http on localhost. No manual edits of `.env` needed, all settings are managed by `setup.sh`. #577 #604
 
 ## [0.12.0] - 2022-09-26
 
