@@ -27,6 +27,10 @@ const NavLogo = (): JSX.Element => {
   const [imageLoadError, setImageLoadError] = React.useState<boolean>(false);
   const [imageLoaded, setImageLoaded] = React.useState<boolean>(false);
 
+  React.useEffect(() => {
+    setImageLoadError(false);
+  }, [logoSetting]);
+
   return (
     <>
       {!imageLoaded && !imageLoadError && (
