@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   faCog,
   faPrayingHands,
@@ -20,9 +21,40 @@ import { AdminOnly } from '@/components/auth/AdminOnly';
 import { Theme } from '@/model/theme';
 import { NavItem } from './NavItem';
 
+const NavLogo = (): JSX.Element => {
+  const logoSetting = useRecoilValue(SingleSetting('LOGO'));
+
+  const [imageLoadError, setImageLoadError] = React.useState<boolean>(false);
+  const [imageLoaded, setImageLoaded] = React.useState<boolean>(false);
+
+  return (
+    <>
+      {!imageLoaded && !imageLoadError && (
+        <div className="inline-block object-cover object-center w-32 h-32 border rounded-full" />
+      )}
+      {(imageLoadError || !logoSetting?.valueRealized) && (
+        <FontAwesomeIcon
+          icon={faPrayingHands}
+          size="1x"
+          className="inline-block object-cover object-center w-28 h-28 text-themecolor-3"
+        />
+      )}
+      {logoSetting?.valueRealized && (
+        <img
+          src={logoSetting.valueRealized as string}
+          onError={(): void => setImageLoadError(true)}
+          onLoad={(): void => setImageLoaded(true)}
+          alt="avatar"
+          className="inline-block object-cover object-center w-32 h-32 border rounded-full"
+          style={!imageLoaded ? { display: 'none' } : {}}
+        />
+      )}
+    </>
+  );
+};
+
 export const Nav = (): JSX.Element => {
   const setTheme = useSetRecoilState(Theme);
-  const logoSetting = useRecoilValue(SingleSetting('LOGO'));
 
   const handleTheme = (theme: string): void => {
     if (theme === 'Dark') {
@@ -40,16 +72,7 @@ export const Nav = (): JSX.Element => {
         <div className="w-full">
           <ul className="relative h-full p-0 m-0 list-none">
             <li className="relative flex justify-center w-full p-5">
-              <Link to="/">
-                {logoSetting && (
-                  <img
-                    src={logoSetting.valueRealized as string}
-                    className={
-                      'inline-block w-32 h-32 object-center object-cover rounded-full border'
-                    }
-                  />
-                )}
-              </Link>
+              <NavLogo />
             </li>
 
             <NavItem
