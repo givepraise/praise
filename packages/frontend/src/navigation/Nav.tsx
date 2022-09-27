@@ -13,7 +13,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
-import { Link } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { SingleSetting } from '@/model/settings';
 import { EthAccount } from '@/components/account/EthAccount';
@@ -33,7 +32,7 @@ const NavLogo = (): JSX.Element => {
 
   return (
     <>
-      {!imageLoaded && !imageLoadError && (
+      {!imageLoaded && !imageLoadError && logoSetting?.valueRealized && (
         <div className="inline-block object-cover object-center w-32 h-32 border rounded-full" />
       )}
       {(imageLoadError || !logoSetting?.valueRealized) && (
