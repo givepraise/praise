@@ -7,6 +7,7 @@ import { PraiseModel } from '@/praise/entities';
 import { PraiseDocument } from '@/praise/types';
 import { getPraisePeriod } from '@/praise/utils/core';
 import { UserDocument } from '@/user/types';
+import { settingValue } from '@/shared/settings';
 
 interface BodyParams {
   score: number;
@@ -40,6 +41,19 @@ export const quantifyPraise = async ({
     throw new BadRequestError(
       'Period associated with praise does have status QUANTIFY'
     );
+
+  const allowedScore = (await settingValue(
+    'PRAISE_QUANTIFY_ALLOWED_VALUES',
+    period._id
+  )) as number[];
+
+  if (!allowedScore.includes(score)) {
+    throw new BadRequestError(
+      `Score ${score} is not allowed. Allowed scores are: ${allowedScore.join(
+        ', '
+      )}`
+    );
+  }
 
   const quantification = praise.quantifications.find((q) =>
     q.quantifier.equals(currentUser._id)
