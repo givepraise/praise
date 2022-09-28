@@ -134,24 +134,23 @@ export const randomString = (length = 32): string => {
   return result;
 };
 
-const getServerUrl = (answers: Answers): string => {
+const baseServerUrl = (answers: Answers): string =>
+  answers.HOST === 'localhost'
+    ? `http://${answers.HOST}`
+    : `https://${answers.HOST}`;
+
+const serverUrl = (answers: Answers): string => {
   if (answers.NODE_ENV === 'development') {
     return `http://${answers.HOST}:${process.env.API_PORT as string}`;
   }
-
-  return answers.HOST === 'localhost'
-    ? `http://${answers.HOST}`
-    : `https://${answers.HOST}`;
+  return baseServerUrl(answers);
 };
 
-const getFrontendUrl = (answers: Answers): string => {
+const frontendUrl = (answers: Answers): string => {
   if (answers.NODE_ENV === 'development') {
     return `http://${answers.HOST}:${process.env.PORT as string}`;
   }
-
-  return answers.HOST === 'localhost'
-    ? `http://${answers.HOST}`
-    : `https://${answers.HOST}`;
+  return baseServerUrl(answers);
 };
 
 const deleteOldEnvFiles = (): void => {
@@ -185,30 +184,29 @@ const run = async (): Promise<void> => {
 
   const rootEnv = {
     NODE_ENV: answers.NODE_ENV,
-    HOST: answers.HOST,
-    API_PORT: process.env.API_PORT,
-    SERVER_URL: process.env.SERVER_URL || getServerUrl(answers),
-    FRONTEND_URL: process.env.FRONTEND_URL || getFrontendUrl(answers),
     MONGO_HOST: answers.NODE_ENV === 'production' ? 'mongodb' : 'localhost',
     MONGO_INITDB_ROOT_USERNAME: process.env.MONGO_INITDB_ROOT_USERNAME,
     MONGO_INITDB_ROOT_PASSWORD:
       process.env.MONGO_INITDB_ROOT_PASSWORD || randomString(),
     MONGO_USERNAME: process.env.MONGO_USERNAME,
     MONGO_PASSWORD: process.env.MONGO_PASSWORD || randomString(),
+    HOST: answers.HOST,
+    API_URL: serverUrl(answers),
+    API_PORT: process.env.API_PORT,
     ADMINS: answers.ADMINS,
-    DISCORD_TOKEN: answers.DISCORD_TOKEN,
-    DISCORD_CLIENT_ID: answers.DISCORD_CLIENT_ID,
-    DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,
-    REACT_APP_SERVER_URL:
-      process.env.REACT_APP_SERVER_URL || getServerUrl(answers),
-    PORT: process.env.PORT,
+    JWT_SECRET: process.env.JWT_SECRET || randomString(),
+    JWT_ACCESS_EXP: process.env.JWT_ACCESS_EXP,
+    JWT_REFRESH_EXP: process.env.JWT_REFRESH_EXP,
+    FRONTEND_URL: frontendUrl(answers),
+    REACT_APP_SERVER_URL: serverUrl(answers),
+    FRONTEND_PORT: process.env.FRONTEND_PORT,
     JET_LOGGER_MODE: process.env.JET_LOGGER_MODE,
     JET_LOGGER_FILEPATH: process.env.JET_LOGGER_FILEPATH,
     JET_LOGGER_TIMESTAMP: process.env.JET_LOGGER_TIMESTAMP,
     JET_LOGGER_FORMAT: process.env.JET_LOGGER_FORMAT,
-    JWT_SECRET: process.env.JWT_SECRET || randomString(),
-    JWT_ACCESS_EXP: process.env.JWT_ACCESS_EXP,
-    JWT_REFRESH_EXP: process.env.JWT_REFRESH_EXP,
+    DISCORD_TOKEN: answers.DISCORD_TOKEN,
+    DISCORD_CLIENT_ID: answers.DISCORD_CLIENT_ID,
+    DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,
   };
 
   setupAndWriteEnv(rootEnvTemplatePath, rootEnvPath, rootEnv);

@@ -356,7 +356,7 @@ describe('setting.valueRealized conversions', () => {
       .expect(200);
 
     expect(typeof response.body.valueRealized[0]).to.equal('string');
-    expect(response.body.valueRealized).to.include(process.env.SERVER_URL);
+    expect(response.body.valueRealized).to.include(process.env.API_URL);
     expect(response.body.valueRealized).to.include(setting.value);
     expect(() => new URL(response.body.valueRealized)).to.not.throw();
   });
