@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Setup script now uses a prebuilt Docker image to speed up setup process. #575 #606
+
 ## [0.12.1] - 2022-09-27
 
 A minor release to fix some bugs related to image uploading.

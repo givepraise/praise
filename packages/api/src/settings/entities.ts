@@ -47,7 +47,7 @@ export function getGenericSettingValueRealized(
   } else if (this.type === 'StringList') {
     realizedValue = this.value.split(',').map((v: string) => v.trim());
   } else if (this.type === 'Image') {
-    realizedValue = `${process.env.SERVER_URL as string}/uploads/${this.value}`;
+    realizedValue = `${process.env.API_URL as string}/uploads/${this.value}`;
   } else if (this.type === 'JSON') {
     realizedValue = this.value ? JSON.parse(this.value) : [];
   } else {
