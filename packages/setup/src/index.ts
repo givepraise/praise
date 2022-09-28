@@ -1,7 +1,6 @@
 import inquirer from 'inquirer';
 import * as dotenv from 'dotenv';
-import * as fs from 'fs/promises';
-import { unlinkSync, existsSync } from 'fs';
+import { unlinkSync, existsSync, readFileSync, writeFileSync } from 'fs';
 import { exit } from 'process';
 import os from 'os';
 
@@ -25,45 +24,27 @@ const frontendEnvPath = '/usr/praise/packages/frontend/.env';
 const frontendTemplateEnvPath = '/usr/praise/packages/frontend/.env.template';
 
 const apiEnvPath = '/usr/praise/packages/api/.env';
-const apiTemplateEnvPath = '/usr/praise/packages/discord-bot/.env.template';
+const apiTemplateEnvPath = '/usr/praise/packages/api/.env.template';
 
-const discordBotEnvPath = '/usr/praise/packages/api/.env';
+const discordBotEnvPath = '/usr/praise/packages/discord-bot/.env';
 const discordBotTemplateEnvPath =
-  '/usr/praise/packages/dicord-bot/.env.template';
+  '/usr/praise/packages/discord-bot/.env.template';
 
 // Top level
 dotenv.config({ path: rootEnvTemplatePath, override: true });
 dotenv.config({ path: rootEnvPath, override: true });
 
 // Discord Bot
-if (existsSync(discordBotTemplateEnvPath)) {
-  dotenv.config({ path: discordBotTemplateEnvPath, override: true });
-  unlinkSync(discordBotTemplateEnvPath);
-}
-if (existsSync(discordBotEnvPath)) {
-  dotenv.config({ path: discordBotEnvPath, override: true });
-  unlinkSync(discordBotEnvPath);
-}
+dotenv.config({ path: discordBotTemplateEnvPath, override: true });
+dotenv.config({ path: discordBotEnvPath, override: true });
 
 // API
-if (existsSync(apiTemplateEnvPath)) {
-  dotenv.config({ path: apiTemplateEnvPath, override: true });
-  unlinkSync(apiTemplateEnvPath);
-}
-if (existsSync(apiEnvPath)) {
-  dotenv.config({ path: apiEnvPath, override: true });
-  unlinkSync(apiEnvPath);
-}
+dotenv.config({ path: apiTemplateEnvPath, override: true });
+dotenv.config({ path: apiEnvPath, override: true });
 
 // Frontend
-if (existsSync(frontendTemplateEnvPath)) {
-  dotenv.config({ path: frontendTemplateEnvPath, override: true });
-  unlinkSync(frontendEnvPath);
-}
-if (existsSync(frontendEnvPath)) {
-  dotenv.config({ path: frontendEnvPath, override: true });
-  unlinkSync(frontendEnvPath);
-}
+dotenv.config({ path: frontendTemplateEnvPath, override: true });
+dotenv.config({ path: frontendEnvPath, override: true });
 
 /**
  * Welcome message
@@ -125,23 +106,13 @@ const questions = [
   },
 ];
 
-const getReactServerUrl = (answers: Answers): string => {
-  if (process.env.REACT_APP_SERVER_URL) {
-    return process.env.REACT_APP_SERVER_URL;
-  }
-
-  return answers.NODE_ENV === 'production'
-    ? `https://${answers.HOST}`
-    : `http://${answers.HOST}:${process.env.API_PORT as string}`;
-};
-
-const setupAndWriteEnv = async (
+const setupAndWriteEnv = (
   templateFileName: string,
   outFileName: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   newValues: any
-): Promise<void> => {
-  const envVars = (await fs.readFile(templateFileName, 'utf8')).split(os.EOL);
+): void => {
+  const envVars = readFileSync(templateFileName, 'utf8').split(os.EOL);
 
   for (const key in newValues) {
     const value = newValues[key] as string;
@@ -149,7 +120,7 @@ const setupAndWriteEnv = async (
     envVars.splice(idx, 1, `${key}=${value}`);
   }
 
-  await fs.writeFile(outFileName, envVars.join(os.EOL));
+  writeFileSync(outFileName, envVars.join(os.EOL));
 };
 
 export const randomString = (length = 32): string => {
@@ -163,6 +134,42 @@ export const randomString = (length = 32): string => {
   return result;
 };
 
+const getServerUrl = (answers: Answers): string => {
+  if (answers.NODE_ENV === 'development') {
+    return `http://${answers.HOST}:${process.env.API_PORT as string}`;
+  }
+
+  return answers.HOST === 'localhost'
+    ? `http://${answers.HOST as string}`
+    : `https://${answers.HOST}`;
+};
+
+const deleteOldEnvFiles = (): void => {
+  // Discord Bot
+  if (existsSync(discordBotTemplateEnvPath)) {
+    unlinkSync(discordBotTemplateEnvPath);
+  }
+  if (existsSync(discordBotEnvPath)) {
+    unlinkSync(discordBotEnvPath);
+  }
+
+  // API
+  if (existsSync(apiTemplateEnvPath)) {
+    unlinkSync(apiTemplateEnvPath);
+  }
+  if (existsSync(apiEnvPath)) {
+    unlinkSync(apiEnvPath);
+  }
+
+  // Frontend
+  if (existsSync(frontendTemplateEnvPath)) {
+    unlinkSync(frontendEnvPath);
+  }
+  if (existsSync(frontendEnvPath)) {
+    unlinkSync(frontendEnvPath);
+  }
+};
+
 const run = async (): Promise<void> => {
   const answers = await inquirer.prompt(questions);
 
@@ -170,10 +177,7 @@ const run = async (): Promise<void> => {
     NODE_ENV: answers.NODE_ENV,
     HOST: answers.HOST,
     API_PORT: process.env.API_PORT,
-    SERVER_URL:
-      answers.NODE_ENV === 'production'
-        ? `https://${answers.HOST as string}`
-        : `http://${answers.HOST as string}:${process.env.API_PORT as string}`,
+    SERVER_URL: process.env.SERVER_URL || getServerUrl(answers),
     FRONTEND_URL:
       answers.NODE_ENV === 'production'
         ? `https://${answers.HOST as string}`
@@ -188,7 +192,8 @@ const run = async (): Promise<void> => {
     DISCORD_TOKEN: answers.DISCORD_TOKEN,
     DISCORD_CLIENT_ID: answers.DISCORD_CLIENT_ID,
     DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,
-    REACT_APP_SERVER_URL: getReactServerUrl(answers),
+    REACT_APP_SERVER_URL:
+      process.env.REACT_APP_SERVER_URL || getServerUrl(answers),
     PORT: process.env.PORT,
     JET_LOGGER_MODE: process.env.JET_LOGGER_MODE,
     JET_LOGGER_FILEPATH: process.env.JET_LOGGER_FILEPATH,
@@ -199,7 +204,8 @@ const run = async (): Promise<void> => {
     JWT_REFRESH_EXP: process.env.JWT_REFRESH_EXP,
   };
 
-  await setupAndWriteEnv(rootEnvTemplatePath, rootEnvPath, rootEnv);
+  setupAndWriteEnv(rootEnvTemplatePath, rootEnvPath, rootEnv);
+  deleteOldEnvFiles();
 
   console.log('\n');
   console.log('🙏 ENV file has been created.');
@@ -207,4 +213,5 @@ const run = async (): Promise<void> => {
   exit();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run();
