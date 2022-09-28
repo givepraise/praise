@@ -1,4 +1,4 @@
-{$SERVER_URL} {
+{$API_URL} {
   handle /api* {
 		reverse_proxy api:{$API_PORT}
 	}
