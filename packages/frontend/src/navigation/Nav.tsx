@@ -14,6 +14,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { Link } from 'react-router-dom';
 import { SingleSetting } from '@/model/settings';
 import { EthAccount } from '@/components/account/EthAccount';
 import { AdminOnly } from '@/components/auth/AdminOnly';
@@ -31,7 +32,7 @@ const NavLogo = (): JSX.Element => {
   }, [logoSetting]);
 
   return (
-    <>
+    <Link to={'/'}>
       {!imageLoaded && !imageLoadError && logoSetting?.valueRealized && (
         <div className="inline-block object-cover object-center w-32 h-32 border rounded-full" />
       )}
@@ -52,7 +53,7 @@ const NavLogo = (): JSX.Element => {
           style={!imageLoaded ? { display: 'none' } : {}}
         />
       )}
-    </>
+    </Link>
   );
 };
 
