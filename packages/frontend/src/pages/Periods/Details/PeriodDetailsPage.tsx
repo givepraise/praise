@@ -36,6 +36,7 @@ import { PeriodNameForm } from './components/PeriodNameForm';
 import { QuantifierMessage } from './components/QuantifierMessage';
 
 const ReceiverTable = React.lazy(() => import('./components/ReceiverTable'));
+const GiverTable = React.lazy(() => import('./components/GiverTable'));
 const QuantifierTable = React.lazy(
   () => import('./components/QuantifierTable')
 );
@@ -110,6 +111,13 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
                 rounded
               />
               <NavItem
+                to={`${url}/givers`}
+                description="Givers"
+                icon={faHeartbeat}
+                replace
+                rounded
+              />
+              <NavItem
                 to={`${url}/quantifiers`}
                 description="Quantifiers"
                 icon={faBalanceScaleLeft}
@@ -143,6 +151,11 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
               <Route path={`${path}/receivers`}>
                 <Suspense fallback={null}>
                   <ReceiverTable />
+                </Suspense>
+              </Route>
+              <Route path={`${path}/givers`}>
+                <Suspense fallback={null}>
+                  <GiverTable />
                 </Suspense>
               </Route>
               <Route path={`${path}/quantifiers`}>

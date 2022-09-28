@@ -172,7 +172,7 @@ const deleteOldEnvFiles = (): void => {
 
   // Frontend
   if (existsSync(frontendTemplateEnvPath)) {
-    unlinkSync(frontendEnvPath);
+    unlinkSync(frontendTemplateEnvPath);
   }
   if (existsSync(frontendEnvPath)) {
     unlinkSync(frontendEnvPath);
