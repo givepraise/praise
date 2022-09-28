@@ -70,7 +70,7 @@ export const GiversByScore = (): JSX.Element | null => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const id = (elements[0].element as any).$context.raw._data._id;
       if (id) {
-        history.push(`/periods/${periodId}/receiver/${id}`);
+        history.push(`/periods/${periodId}/giver/${id}`);
       }
     },
 

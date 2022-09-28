@@ -23,6 +23,7 @@ import {
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 
 import {
+  periodGiverPraiseListKey,
   periodQuantifierPraiseListKey,
   periodReceiverPraiseListKey,
 } from '@/utils/periods';
@@ -49,6 +50,14 @@ export type PeriodPageParams = {
 export type PeriodAndReceiverPageParams = {
   periodId: string;
   receiverId: string;
+};
+
+/**
+ * Types for `useParams()`
+ */
+export type PeriodAndGiverPageParams = {
+  periodId: string;
+  giverId: string;
 };
 
 /**
@@ -432,6 +441,82 @@ export const usePeriodReceiverPraise = (
   );
 
   const listKey = periodReceiverPraiseListKey(periodId, receiverId);
+  const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
+
+  const saveAllPraiseIdList = useRecoilCallback(
+    ({ set }) =>
+      (praiseList: PraiseDto[]) => {
+        const praiseIdList: string[] = [];
+        for (const praise of praiseList) {
+          praiseIdList.push(praise._id);
+        }
+        set(PraiseIdList(listKey), praiseIdList);
+      }
+  );
+
+  const saveIndividualPraise = useRecoilCallback(
+    ({ set }) =>
+      (praiseList: PraiseDto[]) => {
+        for (const praise of praiseList) {
+          set(SinglePraise(praise._id), praise);
+        }
+      }
+  );
+
+  React.useEffect(() => {
+    if (typeof allPraiseIdList === 'undefined' && isResponseOk(response)) {
+      const praiseList: PraiseDto[] = response.data;
+      if (Array.isArray(praiseList) && praiseList.length > 0) {
+        saveAllPraiseIdList(praiseList);
+        saveIndividualPraise(praiseList);
+      }
+    }
+  }, [allPraiseIdList, response, saveAllPraiseIdList, saveIndividualPraise]);
+  return response;
+};
+
+/**
+ * Params for @PeriodGiverPraiseQuery
+ */
+type PeriodGiverPraiseQueryParams = {
+  periodId: string;
+  giverId: string;
+};
+
+/**
+ * Fetches all praise given by a user for a period.
+ */
+const PeriodGiverPraiseQuery = selectorFamily({
+  key: 'PeriodGiverPraiseQuery',
+  get:
+    (params: PeriodGiverPraiseQueryParams) =>
+    ({ get }): AxiosResponse<PraiseDto[]> | AxiosError => {
+      const { periodId, giverId } = params;
+      return get(
+        ApiAuthGet({
+          url: `/periods/${periodId}/giverPraise?giverId=${giverId}`,
+        })
+      ) as AxiosResponse<PraiseDto[]> | AxiosError;
+    },
+});
+
+/**
+ * Fetches all praise given by a user for a period. Saves praise items
+ * to global state and creates a Praise Id list with the name
+ * `PERIOD_GIVER_PRAISE_[periodId]_[giverId]`.
+ */
+export const usePeriodGiverPraise = (
+  periodId: string,
+  giverId: string
+): AxiosResponse<PraiseDto[]> | AxiosError => {
+  const response = useRecoilValue(
+    PeriodGiverPraiseQuery({
+      periodId,
+      giverId,
+    })
+  );
+
+  const listKey = periodGiverPraiseListKey(periodId, giverId);
   const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
 
   const saveAllPraiseIdList = useRecoilCallback(

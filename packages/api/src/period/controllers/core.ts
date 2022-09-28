@@ -26,6 +26,7 @@ import {
   PeriodQuantifierPraiseInput,
   PeriodStatusType,
   PeriodReceiverPraiseInput,
+  PeriodGiverPraiseInput,
 } from '../types';
 import {
   findPeriodDetailsDto,
@@ -331,4 +332,41 @@ export const quantifierPraise = async (
 
   const response = await praiseListTransformer(praiseList);
   res.status(StatusCodes.OK).json(response);
+};
+
+/**
+ * Fetch all Praise in a period with a given giver
+ *
+ * @param {TypedRequestQuery<PeriodGiverPraiseInput>} req
+ * @param {TypedResponse<PraiseDto[]>} res
+ * @returns {Promise<void>}
+ */
+export const giverPraise = async (
+  req: TypedRequestQuery<PeriodGiverPraiseInput>,
+  res: TypedResponse<PraiseDto[]>
+): Promise<void> => {
+  const period = await PeriodModel.findById(req.params.periodId);
+  if (!period) throw new NotFoundError('Period');
+
+  const { giverId } = req.query;
+  if (!giverId) throw new BadRequestError('Giver Id is a required field');
+
+  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
+
+  const praiseList = await PraiseModel.find()
+    .where({
+      createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+      giver: new Types.ObjectId(giverId),
+    })
+    .sort({ createdAt: -1 })
+    .populate('receiver giver forwarder');
+
+  const praiseDetailsDtoList: PraiseDetailsDto[] = [];
+  if (praiseList) {
+    for (const praise of praiseList) {
+      praiseDetailsDtoList.push(await praiseTransformer(praise));
+    }
+  }
+
+  res.status(StatusCodes.OK).json(praiseDetailsDtoList);
 };
