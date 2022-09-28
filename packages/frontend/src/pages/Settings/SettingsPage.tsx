@@ -57,6 +57,7 @@ const SettingsPage = (): JSX.Element | null => {
                 to={`${url}/application`}
                 description="Application"
                 replace
+                rounded
               />
               <NavItem
                 to={`${url}/period`}
@@ -72,6 +73,7 @@ const SettingsPage = (): JSX.Element | null => {
                 to={`${url}/custom-export`}
                 description="Custom Export"
                 replace
+                rounded
               />
             </ul>
           </SubPageNav>

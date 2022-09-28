@@ -40,8 +40,6 @@ const EventLogsPage = React.lazy(
   () => import('@/pages/EventLogs/EventLogsPage')
 );
 
-const FAQPage = React.lazy(() => import('@/pages/FAQ/FAQPage'));
-
 interface AuthRouteProps {
   children: JSX.Element;
   userRoles: string[];
@@ -168,10 +166,6 @@ export const AuthenticatedRoutes = ({
 
       <Route exact path="/">
         <StartPage />
-      </Route>
-
-      <Route exact path="/faq">
-        <FAQPage />
       </Route>
 
       <Route path="/*">

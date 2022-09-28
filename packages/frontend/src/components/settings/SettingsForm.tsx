@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Form } from 'react-final-form';
-import find from 'lodash/find';
 import { PeriodSettingDto } from 'api/src/periodsettings/types';
 import { SettingDto } from 'api/dist/settings/types';
 import { useState } from 'react';
@@ -59,9 +58,7 @@ const FormFields = (
                 disabled={disabled}
               />
             )}
-            {(setting.type === 'Textarea' ||
-              setting.type === 'QuestionAnswerJSON' ||
-              setting.type === 'JSON') && (
+            {(setting.type === 'Textarea' || setting.type === 'JSON') && (
               <TextareaInput
                 name={setting.key}
                 apiResponse={apiResponse}
@@ -111,25 +108,12 @@ export const SettingsForm = ({
   // Is only called if validate is successful
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: Record<string, any>): Promise<void> => {
-    for (const prop in values) {
-      if (Object.prototype.hasOwnProperty.call(values, prop)) {
-        const setting = find(
-          settings,
-          (s) => (s as SettingDto).key === prop
-        ) as SettingDto;
-
-        if (setting && values[prop].toString() !== setting.value) {
-          const item =
-            setting.type === 'Image' ? values[prop][0] : values[prop];
-
-          const updatedSetting = {
-            ...setting,
-            value: item,
-          };
-
-          const response = await onSubmitParent(updatedSetting);
-          setApiResponse(response);
-        }
+    for (const setting of settings) {
+      const value = values[setting.key];
+      if (value !== setting.value) {
+        const updatedSetting = { ...setting, value: value || '' };
+        const apiResponse = await onSubmitParent(updatedSetting);
+        setApiResponse(apiResponse);
       }
     }
   };

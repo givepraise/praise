@@ -1,12 +1,15 @@
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavLink } from 'react-router-dom';
+import { classNames } from '../utils';
 
 interface NavProps {
   icon?: IconProp;
   description: string;
   to: string;
   replace?: boolean;
+  iconClassName?: string;
+  rounded?: boolean;
 }
 
 export const NavItem = ({
@@ -14,24 +17,36 @@ export const NavItem = ({
   description,
   to,
   replace = false,
+  iconClassName,
+  rounded = false,
 }: NavProps): JSX.Element => {
+  const url = to.startsWith('http') ? { pathname: to } : to;
+  const target = to.startsWith('http') ? '_blank' : '';
+
   return (
     <li className="group">
       <NavLink
-        to={to}
+        to={url}
         className={(isActive): string =>
-          `relative group-first:rounded-t-lg group-last:rounded-b-lg px-5 py-2 cursor-pointer no-underline flex items-center ${
+          `relative px-5 py-2 cursor-pointer no-underline flex items-center ${
             isActive
               ? ' bg-warm-gray-100 dark:bg-slate-700'
               : ' hover:bg-warm-gray-100 dark:hover:bg-slate-700'
+          } ${
+            rounded ? 'group-first:rounded-t-lg group-last:rounded-b-lg' : ''
           }`
         }
         id={to.substring(1) + '-nav-button'}
         replace={replace}
+        target={target}
       >
         {icon && (
           <div className="inline-block w-8 text-center">
-            <FontAwesomeIcon icon={icon} size="1x" className="inline-block" />
+            <FontAwesomeIcon
+              icon={icon}
+              size="1x"
+              className={classNames('inline-block', iconClassName)}
+            />
           </div>
         )}
         <div className="flex-auto inline-block my-1 whitespace-nowrap">

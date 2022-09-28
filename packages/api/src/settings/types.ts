@@ -9,8 +9,8 @@ export enum SettingGroup {
 
 interface Setting {
   key: string;
-  value: string;
-  valueRealized: string | boolean | number | number[] | string[];
+  value?: string;
+  valueRealized?: string | boolean | number | number[] | string[];
   type: string;
   label: string;
   description?: string;
@@ -20,21 +20,11 @@ interface Setting {
 
 export interface SettingDocument extends Setting, Document {}
 
-interface Question {
-  question: string;
-  answer: string;
-}
-
-export interface FAQItem {
-  section: string;
-  questions: Question[];
-}
-
 export interface SettingDto {
   _id: string;
   key: string;
-  value: string;
-  valueRealized: string | boolean | number | number[] | string[] | FAQItem[];
+  value?: string;
+  valueRealized?: string | boolean | number | number[] | string[] | object;
   type: string;
   label: string;
   description?: string;
@@ -44,4 +34,9 @@ export interface SettingDto {
 
 export interface SettingSetInput {
   value: string;
+}
+
+export interface ExportContext {
+  totalPraiseScore: number;
+  praiseItemsCount: number;
 }

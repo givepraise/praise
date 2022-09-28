@@ -8,6 +8,9 @@ import { BadRequestError, InternalServerError } from '@/error/errors';
 import { PraiseAllInput, PraiseExportInput } from '@/praise/types';
 import { QueryInput } from './types';
 
+const uploadDirectory =
+  process.env.NODE_ENV === 'production' ? '/usr/src/uploads/' : 'uploads/';
+
 export const getRandomString = (bytes = 10): string => {
   const buffer = randomBytes(bytes);
   const randomString = buffer.toString('hex');
@@ -65,12 +68,11 @@ export const upload = async (req: Request, key: string): Promise<string> => {
     const fileExtension: string = mime.extension(logo.mimetype) as string;
 
     const filename = `${getRandomString()}.${fileExtension}`;
-    const dirname = 'uploads/';
-    const path = `${dirname}${filename}`;
+    const path = `${uploadDirectory}${filename}`;
 
     await logo.mv(path);
 
-    return path;
+    return filename;
   } catch (e) {
     console.log('ERROR:', e);
     throw new InternalServerError('File upload failed.');
@@ -79,13 +81,13 @@ export const upload = async (req: Request, key: string): Promise<string> => {
 
 export const removeFile = async (filename: string): Promise<void> => {
   try {
-    await unlink(filename);
+    await unlink(`${uploadDirectory}${filename}`);
   } catch (e) {
     logger.warn(`Could not find a file to remove: ${filename}`);
   }
 };
 
-export const objectsHaveSameKeys = (a: any, b: any): boolean => {
+export const objectsHaveSameKeys = (a: object, b: object): boolean => {
   const aKeys = Object.keys(a).sort();
   const bKeys = Object.keys(b).sort();
   return JSON.stringify(aKeys) === JSON.stringify(bKeys);

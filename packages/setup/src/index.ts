@@ -140,7 +140,17 @@ const getServerUrl = (answers: Answers): string => {
   }
 
   return answers.HOST === 'localhost'
-    ? `http://${answers.HOST as string}`
+    ? `http://${answers.HOST}`
+    : `https://${answers.HOST}`;
+};
+
+const getFrontendUrl = (answers: Answers): string => {
+  if (answers.NODE_ENV === 'development') {
+    return `http://${answers.HOST}:${process.env.PORT as string}`;
+  }
+
+  return answers.HOST === 'localhost'
+    ? `http://${answers.HOST}`
     : `https://${answers.HOST}`;
 };
 
@@ -178,10 +188,7 @@ const run = async (): Promise<void> => {
     HOST: answers.HOST,
     API_PORT: process.env.API_PORT,
     SERVER_URL: process.env.SERVER_URL || getServerUrl(answers),
-    FRONTEND_URL:
-      answers.NODE_ENV === 'production'
-        ? `https://${answers.HOST as string}`
-        : `http://${answers.HOST as string}:${process.env.PORT as string}`,
+    FRONTEND_URL: process.env.FRONTEND_URL || getFrontendUrl(answers),
     MONGO_HOST: answers.NODE_ENV === 'production' ? 'mongodb' : 'localhost',
     MONGO_INITDB_ROOT_USERNAME: process.env.MONGO_INITDB_ROOT_USERNAME,
     MONGO_INITDB_ROOT_PASSWORD:

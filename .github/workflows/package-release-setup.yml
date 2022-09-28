@@ -1,4 +1,4 @@
-name: Release - Create and publish setup Docker image
+name: Setup/Release - Create and publish Docker image
 
 on:
   release:

@@ -1,4 +1,4 @@
-name: Release - Create and publish discord-bot Docker image
+name: Discord-Bot/Release - Create and publish Docker image
 
 on:
   release:

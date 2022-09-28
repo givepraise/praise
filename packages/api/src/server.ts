@@ -82,7 +82,11 @@ const setupApiServer = async (NODE_ENV = 'development'): Promise<Express> => {
   app.use(urlencoded({ extended: true }));
 
   // Serve static files
-  app.use('/uploads', express.static('uploads'));
+  if (process.env.NODE_ENV === 'production') {
+    app.use('/uploads', express.static('/usr/src/uploads'));
+  } else {
+    app.use('/uploads', express.static('uploads'));
+  }
 
   // API routes
   app.use('/api', baseRouter);

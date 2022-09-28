@@ -1,4 +1,4 @@
-name: frontend
+name: Frontend
 on:
   workflow_dispatch:
   pull_request:

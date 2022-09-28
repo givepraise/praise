@@ -1,6 +1,7 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import { atom, selectorFamily, useRecoilCallback } from 'recoil';
-import { SettingDto } from 'api/dist/settings/types';
+import { SettingDto, SettingSetInput } from 'api/dist/settings/types';
+import { isEmpty } from 'lodash';
 import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from './api';
 
@@ -71,14 +72,20 @@ type useSetSettingReturn = {
 export const useSetSetting = (): useSetSettingReturn => {
   const apiAuthClient = useApiAuthClient();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const reqData = (setting: SettingDto): any => {
+  const reqData = (setting: SettingDto): SettingSetInput | FormData => {
     if (setting.type === 'Image') {
-      const data = new FormData();
-      data.append('value', setting.value);
-      return data;
+      if (
+        setting.value &&
+        !isEmpty(setting.value) &&
+        setting.value.length > 0
+      ) {
+        const formData = new FormData();
+        formData.append('value', setting.value[0]);
+        return formData;
+      }
+      throw new Error('No file chosen.');
     } else {
-      return setting;
+      return { value: setting.value || '' };
     }
   };
 
