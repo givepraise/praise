@@ -1,0 +1,33 @@
+name: Release - Create and publish setup Docker image
+
+on:
+  release:
+    types: [published]
+
+env:
+  IMAGE_NAME: praise/setup
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v2
+        name: Check out code
+
+      - id: docker-tag
+        uses: yuya-takeyama/docker-tag-from-github-ref-action@v1
+
+      - uses: mr-smithers-excellent/docker-build-push@v5
+        name: Build and push Docker image
+        with:
+          image: $IMAGE_NAME
+          tags: latest,${{ steps.docker-tag.outputs.tag }}
+          addTimestamp: true
+          registry: ghcr.io
+          dockerfile: packages/setup/Dockerfile
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
