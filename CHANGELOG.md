@@ -23,6 +23,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **API:** Quantify endpoint now disallows any scores that are not in the configured range #608 #610
 - **Frontend:** Praise logo in dashboard is now linked again, taking user to start page #609 #611
 
+### Upgrade Instructions
+
+Beacause of changes to the `.env` file structure, you need to run the setup script after pulling
+changes from GitHub.
+
+1. `git pull`
+2. `bash setup.sh`
+3. `bash upgrade.sh`
+
 ## [0.12.1] - 2022-09-27
 
 A minor release to fix some bugs related to image uploading.
