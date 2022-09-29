@@ -25,7 +25,7 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   useLoadSinglePeriodDetails(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
-  const pluraltype = `${type}s`;
+  const pluralType = `${type}s`;
 
   const TableInner = (): JSX.Element => {
     const history = useHistory();
@@ -58,8 +58,8 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
       ],
       []
     );
-    const data = period?.[pluraltype]
-      ? sortBy(period[pluraltype], [
+    const data = period?.[pluralType]
+      ? sortBy(period[pluralType], [
           // First, sort by user score
           (user): number => {
             if (!user?.scoreRealized) return 0;
@@ -158,16 +158,16 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
     );
 
   if (
-    !period[pluraltype] ||
-    (Array.isArray(period[pluraltype]) && period[pluraltype].length) === 0
+    !period[pluralType] ||
+    (Array.isArray(period[pluralType]) && period[pluralType].length) === 0
   )
     return (
       <div className="flex items-center justify-center w-full h-full">
-        No {pluraltype} found in this period.
+        No {pluralType} found in this period.
       </div>
     );
 
-  if (period[pluraltype]) return <TableInner />;
+  if (period[pluralType]) return <TableInner />;
 
   return null;
 };
