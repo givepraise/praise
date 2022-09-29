@@ -14,19 +14,26 @@ import { Notice } from '@/components/ui/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
-const ReceiverTable = (): JSX.Element | null => {
+type GiverReceiverType = 'giver' | 'receiver';
+
+interface Params {
+  type: GiverReceiverType;
+}
+
+export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   useLoadSinglePeriodDetails(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
+  const pluraltype = `${type}s`;
 
-  const ReceiverTableInner = (): JSX.Element => {
+  const TableInner = (): JSX.Element => {
     const history = useHistory();
 
     const columns = React.useMemo(
       () => [
         {
-          Header: 'Receiver',
+          Header: `${type.charAt(0).toUpperCase()}${type.slice(1)}`,
           accessor: '_id',
           className: 'text-left pl-5',
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,16 +58,16 @@ const ReceiverTable = (): JSX.Element | null => {
       ],
       []
     );
-    const data = period?.receivers
-      ? sortBy(period.receivers, [
-          // First, sort by reciever score
-          (receiver): number => {
-            if (!receiver?.scoreRealized) return 0;
-            return receiver.scoreRealized;
+    const data = period?.[pluraltype]
+      ? sortBy(period[pluraltype], [
+          // First, sort by user score
+          (user): number => {
+            if (!user?.scoreRealized) return 0;
+            return user.scoreRealized;
           },
 
-          // Then by receiver _id
-          (receiver): string => receiver._id.toString(),
+          // Then by user _id
+          (user): string => user._id.toString(),
         ])
       : [];
 
@@ -83,7 +90,7 @@ const ReceiverTable = (): JSX.Element | null => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleClick = (data: any) => (): void => {
-      history.push(`/periods/${periodId}/receiver/${data._id}`);
+      history.push(`/periods/${periodId}/${type}/${data._id}`);
     };
 
     return (
@@ -151,19 +158,16 @@ const ReceiverTable = (): JSX.Element | null => {
     );
 
   if (
-    !period.receivers ||
-    (Array.isArray(period.receivers) && period.receivers.length) === 0
+    !period[pluraltype] ||
+    (Array.isArray(period[pluraltype]) && period[pluraltype].length) === 0
   )
     return (
       <div className="flex items-center justify-center w-full h-full">
-        No receivers found in this period.
+        No {pluraltype} found in this period.
       </div>
     );
 
-  if (period.receivers) return <ReceiverTableInner />;
+  if (period[pluraltype]) return <TableInner />;
 
   return null;
 };
-
-// eslint-disable-next-line import/no-default-export
-export default ReceiverTable;

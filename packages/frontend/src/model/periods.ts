@@ -399,6 +399,43 @@ export const AllActiveUserQuantificationPeriods = selector({
   },
 });
 
+const useSaveGiverReceiverPraiseItems = (
+  response: AxiosResponse<PraiseDto[]> | AxiosError,
+  listKey: string
+): void => {
+  const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
+
+  const saveAllPraiseIdList = useRecoilCallback(
+    ({ set }) =>
+      (praiseList: PraiseDto[]) => {
+        const praiseIdList: string[] = [];
+        for (const praise of praiseList) {
+          praiseIdList.push(praise._id);
+        }
+        set(PraiseIdList(listKey), praiseIdList);
+      }
+  );
+
+  const saveIndividualPraise = useRecoilCallback(
+    ({ set }) =>
+      (praiseList: PraiseDto[]) => {
+        for (const praise of praiseList) {
+          set(SinglePraise(praise._id), praise);
+        }
+      }
+  );
+
+  React.useEffect(() => {
+    if (typeof allPraiseIdList === 'undefined' && isResponseOk(response)) {
+      const praiseList: PraiseDto[] = response.data;
+      if (Array.isArray(praiseList) && praiseList.length > 0) {
+        saveAllPraiseIdList(praiseList);
+        saveIndividualPraise(praiseList);
+      }
+    }
+  }, [allPraiseIdList, response, saveAllPraiseIdList, saveIndividualPraise]);
+};
+
 /**
  * Params for @PeriodReceiverPraiseQuery
  */
@@ -418,7 +455,7 @@ const PeriodReceiverPraiseQuery = selectorFamily({
       const { periodId, receiverId } = params;
       return get(
         ApiAuthGet({
-          url: `/periods/${periodId}/receiverPraise?receiverId=${receiverId}`,
+          url: `/periods/${periodId}/receiverPraise?id=${receiverId}`,
         })
       ) as AxiosResponse<PraiseDto[]> | AxiosError;
     },
@@ -441,37 +478,8 @@ export const usePeriodReceiverPraise = (
   );
 
   const listKey = periodReceiverPraiseListKey(periodId, receiverId);
-  const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
+  useSaveGiverReceiverPraiseItems(response, listKey);
 
-  const saveAllPraiseIdList = useRecoilCallback(
-    ({ set }) =>
-      (praiseList: PraiseDto[]) => {
-        const praiseIdList: string[] = [];
-        for (const praise of praiseList) {
-          praiseIdList.push(praise._id);
-        }
-        set(PraiseIdList(listKey), praiseIdList);
-      }
-  );
-
-  const saveIndividualPraise = useRecoilCallback(
-    ({ set }) =>
-      (praiseList: PraiseDto[]) => {
-        for (const praise of praiseList) {
-          set(SinglePraise(praise._id), praise);
-        }
-      }
-  );
-
-  React.useEffect(() => {
-    if (typeof allPraiseIdList === 'undefined' && isResponseOk(response)) {
-      const praiseList: PraiseDto[] = response.data;
-      if (Array.isArray(praiseList) && praiseList.length > 0) {
-        saveAllPraiseIdList(praiseList);
-        saveIndividualPraise(praiseList);
-      }
-    }
-  }, [allPraiseIdList, response, saveAllPraiseIdList, saveIndividualPraise]);
   return response;
 };
 
@@ -494,7 +502,7 @@ const PeriodGiverPraiseQuery = selectorFamily({
       const { periodId, giverId } = params;
       return get(
         ApiAuthGet({
-          url: `/periods/${periodId}/giverPraise?giverId=${giverId}`,
+          url: `/periods/${periodId}/giverPraise?id=${giverId}`,
         })
       ) as AxiosResponse<PraiseDto[]> | AxiosError;
     },
@@ -517,37 +525,8 @@ export const usePeriodGiverPraise = (
   );
 
   const listKey = periodGiverPraiseListKey(periodId, giverId);
-  const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
+  useSaveGiverReceiverPraiseItems(response, listKey);
 
-  const saveAllPraiseIdList = useRecoilCallback(
-    ({ set }) =>
-      (praiseList: PraiseDto[]) => {
-        const praiseIdList: string[] = [];
-        for (const praise of praiseList) {
-          praiseIdList.push(praise._id);
-        }
-        set(PraiseIdList(listKey), praiseIdList);
-      }
-  );
-
-  const saveIndividualPraise = useRecoilCallback(
-    ({ set }) =>
-      (praiseList: PraiseDto[]) => {
-        for (const praise of praiseList) {
-          set(SinglePraise(praise._id), praise);
-        }
-      }
-  );
-
-  React.useEffect(() => {
-    if (typeof allPraiseIdList === 'undefined' && isResponseOk(response)) {
-      const praiseList: PraiseDto[] = response.data;
-      if (Array.isArray(praiseList) && praiseList.length > 0) {
-        saveAllPraiseIdList(praiseList);
-        saveIndividualPraise(praiseList);
-      }
-    }
-  }, [allPraiseIdList, response, saveAllPraiseIdList, saveIndividualPraise]);
   return response;
 };
 

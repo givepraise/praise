@@ -35,9 +35,8 @@ import { SubPageNav } from '@/navigation/SubPageNav';
 import { PeriodDetails } from './components/PeriodDetails';
 import { PeriodNameForm } from './components/PeriodNameForm';
 import { QuantifierMessage } from './components/QuantifierMessage';
+import { GiverReceiverTable } from './components/GiverReceiverTable';
 
-const ReceiverTable = React.lazy(() => import('./components/ReceiverTable'));
-const GiverTable = React.lazy(() => import('./components/GiverTable'));
 const QuantifierTable = React.lazy(
   () => import('./components/QuantifierTable')
 );
@@ -151,12 +150,12 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
               </Route>
               <Route path={`${path}/receivers`}>
                 <Suspense fallback={null}>
-                  <ReceiverTable />
+                  <GiverReceiverTable type="receiver" />
                 </Suspense>
               </Route>
               <Route path={`${path}/givers`}>
                 <Suspense fallback={null}>
-                  <GiverTable />
+                  <GiverReceiverTable type="giver" />
                 </Suspense>
               </Route>
               <Route path={`${path}/quantifiers`}>

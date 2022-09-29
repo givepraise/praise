@@ -1,14 +1,12 @@
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { Praise } from '@/components/praise/Praise';
 import {
   PeriodAndReceiverPageParams,
   usePeriodReceiverPraise,
 } from '@/model/periods';
-import { PraiseRow } from '@/components/praise/PraiseRow';
 import { AllPraiseList } from '@/model/praise';
 import { periodReceiverPraiseListKey } from '@/utils/periods';
-import { Box } from '@/components/ui/Box';
+import { GiverReceiverSummaryPraiseItems } from '../../components/GiverReceiverSummaryPraiseItems';
 
 export const ReceiverSummaryTable = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
@@ -18,15 +16,5 @@ export const ReceiverSummaryTable = (): JSX.Element | null => {
   );
 
   if (!praiseList) return null;
-  return (
-    <Box className="p-0">
-      <ul>
-        {praiseList?.map((praise) => (
-          <PraiseRow praise={praise} key={praise?._id}>
-            <Praise praise={praise} className="p-5" />
-          </PraiseRow>
-        ))}
-      </ul>
-    </Box>
-  );
+  return <GiverReceiverSummaryPraiseItems praiseList={praiseList} />;
 };

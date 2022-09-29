@@ -17,7 +17,6 @@ const getGiver = (
   periodDetails: PeriodDetailsDto,
   giverId: string
 ): PeriodDetailsGiverReceiverDto | undefined => {
-  console.log('PERIOD DETAILS:', periodDetails);
   return periodDetails.givers?.find((r) => r._id === giverId);
 };
 
@@ -28,8 +27,6 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
   if (!periodDetails) return null;
   const giver = getGiver(periodDetails, giverId);
   if (!giver || !giver.userAccount) return null;
-
-  console.log('GIVER:', giver);
 
   return (
     <Box className="mb-5">

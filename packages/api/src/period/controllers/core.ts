@@ -267,28 +267,27 @@ export const praise = async (
 };
 
 /**
- * Fetch all Praise in a period with a given receiver
+ * Returns praise list items for giver or receiver
  *
- * @param {TypedRequestQuery<PeriodReceiverPraiseInput>} req
- * @param {TypedResponse<PraiseDto[]>} res
- * @returns {Promise<void>}
+ * @param {string} id
+ * @param {string} key
+ * @param {string} periodId
+ * @returns {Promise<PraiseDetailsDto>}
  */
-export const receiverPraise = async (
-  req: TypedRequestQuery<PeriodReceiverPraiseInput>,
-  res: TypedResponse<PraiseDto[]>
-): Promise<void> => {
-  const period = await PeriodModel.findById(req.params.periodId);
+const getGiverReceiverPraiseItems = async (
+  id: string,
+  key: string,
+  periodId: string
+): Promise<PraiseDetailsDto[]> => {
+  const period = await PeriodModel.findById(periodId);
   if (!period) throw new NotFoundError('Period');
-
-  const { receiverId } = req.query;
-  if (!receiverId) throw new BadRequestError('Receiver Id is a required field');
 
   const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
 
   const praiseList = await PraiseModel.find()
     .where({
       createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
-      receiver: new Types.ObjectId(receiverId),
+      [key]: new Types.ObjectId(id),
     })
     .sort({ createdAt: -1 })
     .populate('receiver giver forwarder');
@@ -299,6 +298,52 @@ export const receiverPraise = async (
       praiseDetailsDtoList.push(await praiseTransformer(praise));
     }
   }
+
+  return praiseDetailsDtoList;
+};
+
+/**
+ * Fetch all Praise in a period with a given receiver
+ *
+ * @param {TypedRequestQuery<PeriodReceiverPraiseInput>} req
+ * @param {TypedResponse<PraiseDto[]>} res
+ * @returns {Promise<void>}
+ */
+export const receiverPraise = async (
+  req: TypedRequestQuery<PeriodReceiverPraiseInput>,
+  res: TypedResponse<PraiseDto[]>
+): Promise<void> => {
+  const id = req.query.id as string;
+  if (!id) throw new BadRequestError('Id is a required field');
+
+  const praiseDetailsDtoList = await getGiverReceiverPraiseItems(
+    id,
+    'receiver',
+    req.params.periodId
+  );
+
+  res.status(StatusCodes.OK).json(praiseDetailsDtoList);
+};
+
+/**
+ * Fetch all Praise in a period with a given giver
+ *
+ * @param {TypedRequestQuery<PeriodGiverPraiseInput>} req
+ * @param {TypedResponse<PraiseDto[]>} res
+ * @returns {Promise<void>}
+ */
+export const giverPraise = async (
+  req: TypedRequestQuery<PeriodGiverPraiseInput>,
+  res: TypedResponse<PraiseDto[]>
+): Promise<void> => {
+  const id = req.query.id as string;
+  if (!id) throw new BadRequestError('Id is a required field');
+
+  const praiseDetailsDtoList = await getGiverReceiverPraiseItems(
+    id,
+    'giver',
+    req.params.periodId
+  );
 
   res.status(StatusCodes.OK).json(praiseDetailsDtoList);
 };
@@ -332,41 +377,4 @@ export const quantifierPraise = async (
 
   const response = await praiseListTransformer(praiseList);
   res.status(StatusCodes.OK).json(response);
-};
-
-/**
- * Fetch all Praise in a period with a given giver
- *
- * @param {TypedRequestQuery<PeriodGiverPraiseInput>} req
- * @param {TypedResponse<PraiseDto[]>} res
- * @returns {Promise<void>}
- */
-export const giverPraise = async (
-  req: TypedRequestQuery<PeriodGiverPraiseInput>,
-  res: TypedResponse<PraiseDto[]>
-): Promise<void> => {
-  const period = await PeriodModel.findById(req.params.periodId);
-  if (!period) throw new NotFoundError('Period');
-
-  const { giverId } = req.query;
-  if (!giverId) throw new BadRequestError('Giver Id is a required field');
-
-  const previousPeriodEndDate = await getPreviousPeriodEndDate(period);
-
-  const praiseList = await PraiseModel.find()
-    .where({
-      createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
-      giver: new Types.ObjectId(giverId),
-    })
-    .sort({ createdAt: -1 })
-    .populate('receiver giver forwarder');
-
-  const praiseDetailsDtoList: PraiseDetailsDto[] = [];
-  if (praiseList) {
-    for (const praise of praiseList) {
-      praiseDetailsDtoList.push(await praiseTransformer(praise));
-    }
-  }
-
-  res.status(StatusCodes.OK).json(praiseDetailsDtoList);
 };
