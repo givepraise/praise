@@ -31,12 +31,18 @@ const FormFields = (
   apiResponse,
   disabled?: boolean
 ): JSX.Element => {
+
+  console.log(settings);
+
   return (
     <div className="mb-2 space-y-4">
       {settings.map((setting) => {
         return (
           <div key={setting.key}>
-            <label className="block font-bold">{setting.label}</label>
+            <label className="block font-bold">
+              {setting.label}
+              {setting.defaultValue && <span>Has Default Value</span>}
+            </label>
             {setting.description && (
               <div className="mb-2 text-sm text-warm-gray-400">
                 {setting.description}
