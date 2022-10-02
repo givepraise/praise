@@ -16,6 +16,7 @@ interface Setting {
   description?: string;
   group: SettingGroup;
   options?: string;
+  defaultValue?: string;
 }
 
 export interface SettingDocument extends Setting, Document {}
