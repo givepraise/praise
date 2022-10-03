@@ -20,7 +20,7 @@ const getGiver = (
   return periodDetails.givers?.find((r) => r._id === giverId);
 };
 
-const PeriodReceiverMessage = (): JSX.Element | null => {
+const PeriodGiverMessage = (): JSX.Element | null => {
   const { periodId, giverId } = useParams<PeriodAndGiverPageParams>();
   const periodDetails = useRecoilValue(SinglePeriod(periodId));
 
@@ -47,7 +47,7 @@ const GiverSummaryPage = (): JSX.Element => {
       <BackLink />
 
       <React.Suspense fallback={null}>
-        <PeriodReceiverMessage />
+        <PeriodGiverMessage />
       </React.Suspense>
 
       <React.Suspense fallback={null}>

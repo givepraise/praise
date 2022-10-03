@@ -3,8 +3,8 @@ import {
   faCalendarAlt,
   faChartBar,
   faCog,
-  faHandsHoldingCircle,
-  faHeartbeat,
+  faHandHoldingHeart,
+  faHandsPraying,
 } from '@fortawesome/free-solid-svg-icons';
 import { PeriodStatusType } from 'api/dist/period/types';
 import React, { Suspense } from 'react';
@@ -106,14 +106,14 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
               <NavItem
                 to={`${url}/receivers`}
                 description="Receivers"
-                icon={faHeartbeat}
+                icon={faHandsPraying}
                 replace
                 rounded
               />
               <NavItem
                 to={`${url}/givers`}
                 description="Givers"
-                icon={faHandsHoldingCircle}
+                icon={faHandHoldingHeart}
                 replace
                 rounded
               />
