@@ -21,6 +21,9 @@ const PeriodDetailsPage = React.lazy(
 const PeriodReceiverSummaryPage = React.lazy(
   () => import('@/pages/Periods/ReceiverSummary/ReceiverSummaryPage')
 );
+const PeriodGiverSummaryPage = React.lazy(
+  () => import('@/pages/Periods/GiverSummary/GiverSummaryPage')
+);
 const PeriodQuantifierSummaryPage = React.lazy(
   () => import('@/pages/Periods/QuantifierSummary/QuantifierSummaryPage')
 );
@@ -122,6 +125,10 @@ export const AuthenticatedRoutes = ({
 
       <Route path="/periods/:periodId/receiver/:receiverId">
         <PeriodReceiverSummaryPage />
+      </Route>
+
+      <Route path="/periods/:periodId/giver/:giverId">
+        <PeriodGiverSummaryPage />
       </Route>
 
       <Route path="/periods/:periodId/quantifier/:quantifierId">
