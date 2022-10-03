@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Devops:**: `database-restore.sh` did not work under certain circumstances. Script have now been upgraded.
+
 ## [0.12.2] - 2022-09-28
 
 ### Added
