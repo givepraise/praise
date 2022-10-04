@@ -79,11 +79,6 @@ export const Nav = (): JSX.Element => {
               <NavLogo />
             </li>
 
-            <NavItem
-              icon={faPrayingHands}
-              description="My praise"
-              to="/mypraise"
-            />
             <NavItem icon={faCalendarAlt} description="Periods" to="/periods" />
             <AdminOnly>
               <NavItem
