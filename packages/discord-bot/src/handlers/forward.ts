@@ -1,5 +1,5 @@
 import { PraiseModel } from 'api/dist/praise/entities';
-import { GuildMember, Util } from 'discord.js';
+import { GuildMember, cleanContent } from 'discord.js';
 import { UserModel } from 'api/dist/user/entities';
 import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
@@ -133,11 +133,7 @@ export const forwardHandler: CommandHandler = async (
     }
     const praiseObj = await PraiseModel.create({
       reason: reason,
-      /**
-       * ! Util.cleanContent might get deprecated in the coming versions of discord.js
-       * * We would have to make our own implementation (ref: https://github.com/discordjs/discord.js/blob/988a51b7641f8b33cc9387664605ddc02134859d/src/util/Util.js#L557-L584)
-       */
-      reasonRealized: Util.cleanContent(reason, channel),
+      reasonRealized: cleanContent(reason, channel),
       giver: giverAccount._id,
       forwarder: forwarderAccount._id,
       sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,

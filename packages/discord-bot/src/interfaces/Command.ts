@@ -3,7 +3,7 @@ import {
   SlashCommandSubcommandsOnlyBuilder,
   SlashCommandOptionsOnlyBuilder,
 } from '@discordjs/builders';
-import { Collection, CommandInteraction } from 'discord.js';
+import { Collection, ChatInputCommandInteraction } from 'discord.js';
 
 interface HelpText {
   name: string;
@@ -17,7 +17,7 @@ export interface Command {
     | SlashCommandSubcommandsOnlyBuilder
     | SlashCommandOptionsOnlyBuilder
     | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
-  execute: (interaction: CommandInteraction) => Promise<void>;
+  execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
   help?: HelpText;
 }
 

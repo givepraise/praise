@@ -1,4 +1,4 @@
-import { Client } from 'discord.js';
+import { Client, GatewayIntentBits } from 'discord.js';
 import logger from 'jet-logger';
 import mongoose, { ConnectOptions } from 'mongoose';
 import { envCheck } from 'api/src/pre-start/envCheck';
@@ -14,7 +14,7 @@ const token = process.env.DISCORD_TOKEN;
 
 // Create a new client instance
 const discordClient = new Client({
-  intents: ['GUILDS', 'GUILD_MEMBERS'],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 }) as DiscordClient;
 
 // Set bot commands
@@ -34,18 +34,31 @@ discordClient.once('ready', () => {
   logger.info('Discord client is ready!');
 });
 
-discordClient.on('interactionCreate', async (interaction) => {
-  if (!interaction.isCommand()) return;
+discordClient.on('interactionCreate', async (interaction): Promise<void> => {
+  if (!interaction.isChatInputCommand()) return;
   const command = discordClient.commands.get(interaction.commandName);
   if (!command) return;
   try {
     await command.execute(interaction);
   } catch (error) {
     logger.err(error);
-    return interaction.reply({
+    interaction.reply({
       content: 'There was an error while executing this command!',
       ephemeral: true,
     });
+    return;
+  }
+});
+
+// Mount interactionCreate hook for autocompleting help command
+discordClient.on('interactionCreate', async (interaction): Promise<void> => {
+  if (!interaction.isAutocomplete()) return;
+  if (interaction.commandName == 'help') {
+    const focusedValue = interaction.options.getFocused();
+    const filtered = discordClient.commands
+      .filter((k, v) => v.startsWith(focusedValue))
+      .map((command, choice) => ({ name: choice, value: choice }));
+    await interaction.respond(filtered);
   }
 });
 

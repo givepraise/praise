@@ -1,10 +1,10 @@
-import { CommandInteraction, TextBasedChannel } from 'discord.js';
+import { ChannelType, CommandInteraction, TextBasedChannel } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
 
 const getChannelId = (channel: TextBasedChannel): string => {
-  return channel.type === 'GUILD_PUBLIC_THREAD' ||
-    channel.type === 'GUILD_PRIVATE_THREAD' ||
-    channel.type === 'GUILD_NEWS_THREAD'
+  return channel.type === ChannelType.PublicThread ||
+    channel.type === ChannelType.PrivateThread ||
+    channel.type === ChannelType.GuildAnnouncement
     ? channel?.parent?.id || channel.id
     : channel.id;
 };

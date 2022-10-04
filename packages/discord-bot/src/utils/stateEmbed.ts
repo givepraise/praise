@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import { Embed, EmbedBuilder } from 'discord.js';
 import format from 'date-fns/format';
 import { UserState } from '../interfaces/UserState';
 
@@ -10,8 +10,8 @@ const formatDate = (date: Date): string => format(date, 'yyyy-MM-dd');
  * @param {UserState} state
  * @returns {MessageEmbed}
  */
-export const getStateEmbed = (state: UserState): MessageEmbed => {
-  const embed = new MessageEmbed()
+export const getStateEmbed = (state: UserState): EmbedBuilder => {
+  const embed = new EmbedBuilder()
     .setTitle(state.username)
     .setDescription(
       state.hasPraiseGiverRole && state.activated
@@ -26,27 +26,29 @@ export const getStateEmbed = (state: UserState): MessageEmbed => {
     );
   }
   if (state.activated) {
-    embed.addField(
-      'User Roles',
-      state.praiseRoles?.join(' | ') || 'No Roles assigned to user.'
-    );
-    embed.addField(
-      'Ethereum Address',
-      state.address || 'No ethereum address found for user.'
-    );
-    embed.addField(
-      'Activations',
-      state.activations
-        ?.map(
-          (account) =>
-            `> ${account.platform}\n> Account: ${
-              account.user
-            }\n> Date of Activation: ${formatDate(
-              account.activationDate
-            )}\n> Last Active: ${formatDate(account.latestUsageDate)}`
-        )
-        .join('\n\n') || 'No activated useraccounts associated with this User.'
-    );
+    embed.addFields({
+      name: 'User Roles',
+      value: state.praiseRoles?.join(' | ') || 'No Roles assigned to user.',
+    });
+    embed.addFields({
+      name: 'Ethereum Address',
+      value: state.address || 'No ethereum address found for user.',
+    });
+    embed.addFields({
+      name: 'Activations',
+      value:
+        state.activations
+          ?.map(
+            (account) =>
+              `> ${account.platform}\n> Account: ${
+                account.user
+              }\n> Date of Activation: ${formatDate(
+                account.activationDate
+              )}\n> Last Active: ${formatDate(account.latestUsageDate)}`
+          )
+          .join('\n\n') ||
+        'No activated useraccounts associated with this User.',
+    });
   }
 
   return embed;

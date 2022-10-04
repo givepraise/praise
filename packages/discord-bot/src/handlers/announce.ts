@@ -1,7 +1,13 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
 import { UserModel } from 'api/dist/user/entities';
-import { Message, SelectMenuInteraction, MessageActionRow } from 'discord.js';
+import {
+  Message,
+  SelectMenuInteraction,
+  ActionRowBuilder,
+  ButtonBuilder,
+  SelectMenuBuilder,
+} from 'discord.js';
 import { UserRole } from 'api/dist/user/types';
 import { PeriodModel } from 'api/dist/period/entities';
 import { CommandHandler } from 'src/interfaces/CommandHandler';
@@ -45,7 +51,9 @@ export const announcementHandler: CommandHandler = async (interaction) => {
 
     const userSelectionMsg = (await interaction.editReply({
       content: 'Which users do you want to send the message to?',
-      components: [new MessageActionRow().addComponents([dmTargetMenu])],
+      components: [
+        new ActionRowBuilder<SelectMenuBuilder>().addComponents([dmTargetMenu]),
+      ],
     })) as Message;
 
     const collector = userSelectionMsg.createMessageComponentCollector({
@@ -76,7 +84,7 @@ export const announcementHandler: CommandHandler = async (interaction) => {
             await interaction.editReply({
               content: 'Which period are you referring to?',
               components: [
-                new MessageActionRow().addComponents([
+                new ActionRowBuilder<SelectMenuBuilder>().addComponents([
                   periodSelectMenu(openPeriods),
                 ]),
               ],
@@ -89,7 +97,7 @@ export const announcementHandler: CommandHandler = async (interaction) => {
               message || ''
             }\n---`,
             components: [
-              new MessageActionRow().addComponents([
+              new ActionRowBuilder<ButtonBuilder>().addComponents([
                 continueButton,
                 cancelButton,
               ]),
@@ -105,7 +113,7 @@ export const announcementHandler: CommandHandler = async (interaction) => {
               message || ''
             }\n---`,
             components: [
-              new MessageActionRow().addComponents([
+              new ActionRowBuilder<ButtonBuilder>().addComponents([
                 continueButton,
                 cancelButton,
               ]),

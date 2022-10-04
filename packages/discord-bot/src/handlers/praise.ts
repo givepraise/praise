@@ -2,7 +2,7 @@ import { PraiseModel } from 'api/dist/praise/entities';
 import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
 import logger from 'jet-logger';
-import { GuildMember, User, Util } from 'discord.js';
+import { GuildMember, User, cleanContent } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
 import {
   dmError,
@@ -63,7 +63,7 @@ export const praiseHandler: CommandHandler = async (
     return;
   }
 
-  const reason = interaction.options.getString('reason');
+  const reason = interaction.options.getString('reason', true);
   if (!reason || reason.length === 0) {
     await interaction.editReply(await missingReasonError());
     return;
@@ -80,7 +80,7 @@ export const praiseHandler: CommandHandler = async (
   }
 
   const praised: string[] = [];
-  const receiverIds = [
+  const receiverIds: string[] = [
     ...new Set(
       receiverData.validReceiverIds.map((id: string) => id.replace(/\D/g, ''))
     ),
@@ -114,11 +114,7 @@ export const praiseHandler: CommandHandler = async (
     }
     const praiseObj = await PraiseModel.create({
       reason: reason,
-      /**
-       * ! Util.cleanContent might get deprecated in the coming versions of discord.js
-       * * We would have to make our own implementation (ref: https://github.com/discordjs/discord.js/blob/988a51b7641f8b33cc9387664605ddc02134859d/src/util/Util.js#L557-L584)
-       */
-      reasonRealized: Util.cleanContent(reason, channel),
+      reasonRealized: cleanContent(reason, channel),
       giver: userAccount._id,
       sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
       sourceName: `DISCORD:${encodeURIComponent(
