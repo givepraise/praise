@@ -2,7 +2,6 @@ import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { UserAccount } from 'api/src/useraccount/types';
 import { UserModel } from 'api/dist/user/entities';
 import {
-  Message,
   SelectMenuInteraction,
   ActionRowBuilder,
   ButtonBuilder,
@@ -49,12 +48,12 @@ export const announcementHandler: CommandHandler = async (interaction) => {
   if (currentUser?.roles.includes(UserRole.ADMIN)) {
     const message = interaction.options.getString('message');
 
-    const userSelectionMsg = (await interaction.editReply({
+    const userSelectionMsg = await interaction.editReply({
       content: 'Which users do you want to send the message to?',
       components: [
         new ActionRowBuilder<SelectMenuBuilder>().addComponents([dmTargetMenu]),
       ],
-    })) as Message;
+    });
 
     const collector = userSelectionMsg.createMessageComponentCollector({
       filter: (click) => click.user.id === interaction.user.id,

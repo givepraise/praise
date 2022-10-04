@@ -42,7 +42,7 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
     await command.execute(interaction);
   } catch (error) {
     logger.err(error);
-    interaction.reply({
+    await interaction.reply({
       content: 'There was an error while executing this command!',
       ephemeral: true,
     });
@@ -53,7 +53,7 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
 // Mount interactionCreate hook for autocompleting help command
 discordClient.on('interactionCreate', async (interaction): Promise<void> => {
   if (!interaction.isAutocomplete()) return;
-  if (interaction.commandName == 'help') {
+  if (interaction.commandName === 'help') {
     const focusedValue = interaction.options.getFocused();
     const filtered = discordClient.commands
       .filter((k, v) => v.startsWith(focusedValue))

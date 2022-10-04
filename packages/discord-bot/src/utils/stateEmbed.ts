@@ -1,4 +1,4 @@
-import { Embed, EmbedBuilder } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import format from 'date-fns/format';
 import { UserState } from '../interfaces/UserState';
 
@@ -8,7 +8,7 @@ const formatDate = (date: Date): string => format(date, 'yyyy-MM-dd');
  * Generate message outlining user's current activation status
  *
  * @param {UserState} state
- * @returns {MessageEmbed}
+ * @returns {EmbedBuilder}
  */
 export const getStateEmbed = (state: UserState): EmbedBuilder => {
   const embed = new EmbedBuilder()
