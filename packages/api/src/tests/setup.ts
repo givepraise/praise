@@ -1,6 +1,6 @@
-import logger from 'jet-logger';
 import { Express } from 'express';
 import request, { SuperTest, Test } from 'supertest';
+import { logger } from '@/shared/logger';
 import { setup } from '../server';
 
 interface TestContext extends Mocha.Context {

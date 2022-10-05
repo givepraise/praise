@@ -1,7 +1,7 @@
 import { Client } from 'discord.js';
-import logger from 'jet-logger';
 import mongoose, { ConnectOptions } from 'mongoose';
 import { envCheck } from 'api/src/pre-start/envCheck';
+import { logger } from 'api/src/shared/logger';
 import { DiscordClient } from './interfaces/DiscordClient';
 import { registerCommands } from './utils/registerCommands';
 import { requiredEnvVariables } from './pre-start/env-required';

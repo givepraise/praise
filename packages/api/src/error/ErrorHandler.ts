@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import logger from 'jet-logger';
 import { Error } from 'mongoose';
+import { logger } from '@/shared/logger';
 import { errorCodes } from './constants';
 import { AppError } from './types';
 import { isAppError, isValidationError } from './utils';
@@ -26,7 +26,7 @@ export const ErrorHandler = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ): void => {
-  logger.err(err);
+  logger.error(err);
 
   if (isValidationError(err)) {
     handleValidationError(err, res);

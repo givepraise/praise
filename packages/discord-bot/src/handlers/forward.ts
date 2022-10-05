@@ -3,9 +3,9 @@ import { GuildMember, Util } from 'discord.js';
 import { UserModel } from 'api/dist/user/entities';
 import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
-import logger from 'jet-logger';
 import { UserRole } from 'api/dist/user/types';
 import { settingValue } from 'api/dist/shared/settings';
+import { logger } from 'api/src/shared/logger';
 import { getUserAccount } from '../utils/getUserAccount';
 import {
   dmError,
@@ -166,7 +166,7 @@ export const forwardHandler: CommandHandler = async (
       }
       praised.push(receiverAccount.accountId);
     } else {
-      logger.err(
+      logger.error(
         `Praise not registered for [${giverAccount.accountId}] -> [${receiverAccount.accountId}] for [${reason}]`
       );
     }

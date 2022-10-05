@@ -2,7 +2,7 @@ import {
   SlashCommandBuilder,
   SlashCommandSubcommandBuilder,
 } from '@discordjs/builders';
-import logger from 'jet-logger';
+import { logger } from 'api/src/shared/logger';
 import { announcementHandler } from '../handlers/announce';
 import { Command } from '../interfaces/Command';
 
@@ -39,7 +39,7 @@ export const praiseAdmin: Command = {
         }
       }
     } catch (err) {
-      logger.err(err);
+      logger.error(err);
     }
   },
 

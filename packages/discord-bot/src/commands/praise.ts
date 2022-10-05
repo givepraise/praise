@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import logger from 'jet-logger';
+import { logger } from 'api/src/shared/logger';
 import { praiseHandler } from '../handlers/praise';
 import { Command } from '../interfaces/Command';
 import { getMsgLink } from '../utils/format';
@@ -39,7 +39,7 @@ export const praise: Command = {
         )
       );
     } catch (err) {
-      logger.err(err);
+      logger.error(err);
     }
   },
 
