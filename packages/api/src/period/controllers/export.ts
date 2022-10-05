@@ -268,12 +268,14 @@ export const custom = async (req: Request, res: Response): Promise<void> => {
     context.praiseItemsCount = praiseItemsCount;
 
     if (supportPercentage > 0) {
+      const supportAmount = (totalPraiseScore * supportPercentage) / 100;
       receivers.push({
         _id: 'common-stack',
-        scoreRealized: (supportPercentage * totalPraiseScore) / 100,
+        scoreRealized: supportAmount,
         praiseCount: 0,
         ethereumAddress: '0xfa4EE6B523fC1E8B53015D7D81331d568CDb5906', // Intentionally hard coded
       });
+      context.totalPraiseScore += supportAmount;
     }
 
     let summarizedReceiverData = runCustomExportTransformer(
