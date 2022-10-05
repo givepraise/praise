@@ -1,7 +1,8 @@
+import { ExportTransformerMap } from 'api/dist/period/types';
 import { AxiosResponse } from 'axios';
-import { atomFamily, selector, useRecoilValue } from 'recoil';
+import { atom, atomFamily, selector, useRecoilValue } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
-import { isResponseOk } from './api';
+import { ApiAuthGet, isResponseOk } from './api';
 import { ExternalGet } from './axios';
 
 const { persistAtom } = recoilPersist();
@@ -32,7 +33,7 @@ interface PraiseAppVersion {
 
 export const usePraiseAppVersion = (): PraiseAppVersion => {
   const appVersion: PraiseAppVersion = {
-    current: '0.11.2', //TODO: get this from package.json
+    current: '0.12.2', //TODO: get this from package.json
     latest: undefined,
     newVersionAvailable: false,
   };
@@ -50,4 +51,25 @@ export const IsHeaderBannerClosed = atomFamily<boolean, string>({
   key: 'IsHeaderBannerClosed',
   default: false,
   effects: [persistAtom],
+});
+
+export const CustomExportTransformer = atom<ExportTransformerMap | undefined>({
+  key: 'CustomExportTransformer',
+  default: undefined,
+  effects: [
+    ({ setSelf, getPromise }): void => {
+      setSelf(
+        getPromise(
+          ApiAuthGet({
+            url: 'admin/settings/customExportTransformer',
+          })
+        ).then((response) => {
+          if (isResponseOk(response)) {
+            const transformer = response.data as ExportTransformerMap;
+            return transformer;
+          }
+        })
+      );
+    },
+  ],
 });

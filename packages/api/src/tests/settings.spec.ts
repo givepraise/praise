@@ -356,39 +356,9 @@ describe('setting.valueRealized conversions', () => {
       .expect(200);
 
     expect(typeof response.body.valueRealized[0]).to.equal('string');
-    expect(response.body.valueRealized).to.include(process.env.SERVER_URL);
+    expect(response.body.valueRealized).to.include(process.env.API_URL);
     expect(response.body.valueRealized).to.include(setting.value);
     expect(() => new URL(response.body.valueRealized)).to.not.throw();
-  });
-
-  it('setting.type "QuestionAnswerJSON"', async function () {
-    const wallet = Wallet.createRandom();
-    await seedUser({
-      ethereumAddress: wallet.address,
-    });
-    const { accessToken } = await loginUser(wallet, this.client);
-
-    const setting = await seedSetting({
-      type: 'QuestionAnswerJSON',
-      value:
-        '[{"section": "section A", "questions": [{"question": "this is a question", "answer": "this is the answer"}]}]',
-    });
-
-    const response = await this.client
-      .get(`/api/settings/${setting?._id.toString() as string}`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
-      .expect(200);
-
-    expect(Array.isArray(response.body.valueRealized)).be.true;
-    expect(response.body.valueRealized[0].section).to.equal('section A');
-    expect(response.body.valueRealized[0].questions[0].question).to.equal(
-      'this is a question'
-    );
-    expect(response.body.valueRealized[0].questions[0].answer).to.equal(
-      'this is the answer'
-    );
   });
 });
 
@@ -416,24 +386,6 @@ describe('setting type and value validations', () => {
       seedSetting({
         type: 'IntegerList',
         value: '1,X,3',
-      })
-    ).to.be.rejected;
-  });
-
-  it('setting.type "QuestionAnswerJSON" throws error if not JSON', () => {
-    void expect(
-      seedSetting({
-        type: 'QuestionAnswerJSON',
-        value: '1',
-      })
-    ).to.be.rejected;
-  });
-
-  it('setting.type "QuestionAnswerJSON" if not properly formatted', () => {
-    void expect(
-      seedSetting({
-        type: 'QuestionAnswerJSON',
-        value: '{"key": "value"}',
       })
     ).to.be.rejected;
   });

@@ -21,7 +21,9 @@ import {
   useSetRecoilState,
 } from 'recoil';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
+
 import {
+  periodGiverPraiseListKey,
   periodQuantifierPraiseListKey,
   periodReceiverPraiseListKey,
 } from '@/utils/periods';
@@ -29,6 +31,7 @@ import { useApiAuthClient } from '@/utils/api';
 import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from './api';
 import { ActiveUserId } from './auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfPeriod = (object: any): object is PeriodDetailsDto => {
   return '_id' in object;
@@ -52,6 +55,14 @@ export type PeriodAndReceiverPageParams = {
 /**
  * Types for `useParams()`
  */
+export type PeriodAndGiverPageParams = {
+  periodId: string;
+  giverId: string;
+};
+
+/**
+ * Types for `useParams()`
+ */
 export type PeriodAndQuantifierPageParams = {
   periodId: string;
   quantifierId: string;
@@ -62,9 +73,9 @@ export type PeriodAndQuantifierPageParams = {
  * and `settings` are not returned but need to be separately loaded using
  * @DetailedSinglePeriodQuery
  */
-export const AllPeriods = atom<PeriodDetailsDto[] | undefined>({
+export const AllPeriods = atom<PeriodDetailsDto[]>({
   key: 'AllPeriods',
-  default: undefined,
+  default: [],
   effects: [
     ({ setSelf, getPromise }): void => {
       setSelf(
@@ -81,6 +92,7 @@ export const AllPeriods = atom<PeriodDetailsDto[] | undefined>({
               return periods;
             }
           }
+          return [];
         })
       );
     },
@@ -387,48 +399,10 @@ export const AllActiveUserQuantificationPeriods = selector({
   },
 });
 
-/**
- * Params for @PeriodReceiverPraiseQuery
- */
-type PeriodReceiverPraiseQueryParams = {
-  periodId: string;
-  receiverId: string;
-};
-
-/**
- * Fetches all praise received by a user for a period.
- */
-const PeriodReceiverPraiseQuery = selectorFamily({
-  key: 'PeriodReceiverPraiseQuery',
-  get:
-    (params: PeriodReceiverPraiseQueryParams) =>
-    ({ get }): AxiosResponse<PraiseDto[]> | AxiosError => {
-      const { periodId, receiverId } = params;
-      return get(
-        ApiAuthGet({
-          url: `/periods/${periodId}/receiverPraise?receiverId=${receiverId}`,
-        })
-      ) as AxiosResponse<PraiseDto[]> | AxiosError;
-    },
-});
-
-/**
- * Fetches all praise received by a user for a period. Saves praise items
- * to global state and creates a Praise Id list with the name
- * `PERIOD_RECEIVER_PRAISE_[periodId]_[receiverId]`.
- */
-export const usePeriodReceiverPraise = (
-  periodId: string,
-  receiverId: string
-): AxiosResponse<PraiseDto[]> | AxiosError => {
-  const response = useRecoilValue(
-    PeriodReceiverPraiseQuery({
-      periodId,
-      receiverId,
-    })
-  );
-
-  const listKey = periodReceiverPraiseListKey(periodId, receiverId);
+const useSaveGiverReceiverPraiseItems = (
+  response: AxiosResponse<PraiseDto[]> | AxiosError,
+  listKey: string
+): void => {
   const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
 
   const saveAllPraiseIdList = useRecoilCallback(
@@ -460,11 +434,109 @@ export const usePeriodReceiverPraise = (
       }
     }
   }, [allPraiseIdList, response, saveAllPraiseIdList, saveIndividualPraise]);
+};
+
+/**
+ * Params for @PeriodReceiverPraiseQuery
+ */
+type PeriodReceiverPraiseQueryParams = {
+  periodId: string;
+  receiverId: string;
+};
+
+/**
+ * Fetches all praise received by a user for a period.
+ */
+const PeriodReceiverPraiseQuery = selectorFamily({
+  key: 'PeriodReceiverPraiseQuery',
+  get:
+    (params: PeriodReceiverPraiseQueryParams) =>
+    ({ get }): AxiosResponse<PraiseDto[]> | AxiosError => {
+      const { periodId, receiverId } = params;
+      return get(
+        ApiAuthGet({
+          url: `/periods/${periodId}/receiverPraise?id=${receiverId}`,
+        })
+      ) as AxiosResponse<PraiseDto[]> | AxiosError;
+    },
+});
+
+/**
+ * Fetches all praise received by a user for a period. Saves praise items
+ * to global state and creates a Praise Id list with the name
+ * `PERIOD_RECEIVER_PRAISE_[periodId]_[receiverId]`.
+ */
+export const usePeriodReceiverPraise = (
+  periodId: string,
+  receiverId: string
+): AxiosResponse<PraiseDto[]> | AxiosError => {
+  const response = useRecoilValue(
+    PeriodReceiverPraiseQuery({
+      periodId,
+      receiverId,
+    })
+  );
+
+  const listKey = periodReceiverPraiseListKey(periodId, receiverId);
+  useSaveGiverReceiverPraiseItems(response, listKey);
+
+  return response;
+};
+
+/**
+ * Params for @PeriodGiverPraiseQuery
+ */
+type PeriodGiverPraiseQueryParams = {
+  periodId: string;
+  giverId: string;
+};
+
+/**
+ * Fetches all praise given by a user for a period.
+ */
+const PeriodGiverPraiseQuery = selectorFamily({
+  key: 'PeriodGiverPraiseQuery',
+  get:
+    (params: PeriodGiverPraiseQueryParams) =>
+    ({ get }): AxiosResponse<PraiseDto[]> | AxiosError => {
+      const { periodId, giverId } = params;
+      return get(
+        ApiAuthGet({
+          url: `/periods/${periodId}/giverPraise?id=${giverId}`,
+        })
+      ) as AxiosResponse<PraiseDto[]> | AxiosError;
+    },
+});
+
+/**
+ * Fetches all praise given by a user for a period. Saves praise items
+ * to global state and creates a Praise Id list with the name
+ * `PERIOD_GIVER_PRAISE_[periodId]_[giverId]`.
+ */
+export const usePeriodGiverPraise = (
+  periodId: string,
+  giverId: string
+): AxiosResponse<PraiseDto[]> | AxiosError => {
+  const response = useRecoilValue(
+    PeriodGiverPraiseQuery({
+      periodId,
+      giverId,
+    })
+  );
+
+  const listKey = periodGiverPraiseListKey(periodId, giverId);
+  useSaveGiverReceiverPraiseItems(response, listKey);
+
   return response;
 };
 
 type useExportPraiseReturn = {
-  exportPraise: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
+  exportPraiseFull: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
+  exportPraiseSummary: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
+  exportPraiseCustom: (
+    period: PeriodDetailsDto,
+    exportContext: string
+  ) => Promise<Blob | undefined>;
 };
 
 /**
@@ -474,22 +546,63 @@ export const useExportPraise = (): useExportPraiseReturn => {
   const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
   const apiAuthClient = useApiAuthClient();
 
-  const exportPraise = async (
+  const exportPraiseFull = async (
     period: PeriodDetailsDto
   ): Promise<Blob | undefined> => {
     if (!period || !allPeriods) return undefined;
     const response = await apiAuthClient.get(
-      `/admin/periods/${period._id}/export`,
+      `/admin/periods/${period._id}/exportFull`,
       { responseType: 'blob' }
     );
 
     // If OK response, add returned period object to local state
-    if (isResponseOk(response)) {
+    if (!isResponseOk(response)) {
+      throw new Error();
+    }
+    return response.data as Blob;
+  };
+
+  const exportPraiseSummary = async (
+    period: PeriodDetailsDto
+  ): Promise<Blob | undefined> => {
+    if (!period || !allPeriods) return undefined;
+    const response = await apiAuthClient.get(
+      `/admin/periods/${period._id}/exportSummary`,
+      { responseType: 'blob' }
+    );
+
+    // If OK response, add returned period object to local state
+    if (!isResponseOk(response)) {
+      throw new Error();
+    }
+    return response.data as Blob;
+  };
+
+  const exportPraiseCustom = async (
+    period: PeriodDetailsDto,
+    exportContext: string
+  ): Promise<Blob | undefined> => {
+    if (!period) return undefined;
+
+    try {
+      const context = JSON.parse(exportContext);
+
+      const response = await apiAuthClient.get(
+        `/admin/periods/${period._id}/exportCustom`,
+        { responseType: 'blob', params: context }
+      );
+
+      // If OK response, add returned period object to local state
+      if (!isResponseOk(response)) {
+        throw new Error();
+      }
       return response.data as Blob;
+    } catch (error) {
+      throw new Error('Invalid export context');
     }
   };
 
-  return { exportPraise };
+  return { exportPraiseFull, exportPraiseSummary, exportPraiseCustom };
 };
 
 /**

@@ -17,13 +17,14 @@ services:
     image: api
     env_file:
       - .env
-      - ./packages/api/.env
-    build: 
+    build:
       context: ./
       dockerfile: ./packages/api/Dockerfile
     restart: always
     ports:
       - $API_PORT:$API_PORT
+    volumes:
+      - './packages/api/uploads/:/usr/src/uploads/'      
     links:
       - mongodb
 
@@ -32,8 +33,7 @@ services:
     image: discord-bot
     env_file:
       - .env
-      - ./packages/discord-bot/.env
-    build: 
+    build:
       context: ./
       dockerfile: ./packages/discord-bot/Dockerfile
     restart: always
@@ -45,8 +45,7 @@ services:
     image: frontend
     env_file:
       - .env
-      - ./packages/frontend/.env
-    build: 
+    build:
       context: ./
       dockerfile: ./packages/frontend/Dockerfile
     restart: unless-stopped

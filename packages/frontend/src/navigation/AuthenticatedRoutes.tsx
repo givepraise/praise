@@ -21,6 +21,9 @@ const PeriodDetailsPage = React.lazy(
 const PeriodReceiverSummaryPage = React.lazy(
   () => import('@/pages/Periods/ReceiverSummary/ReceiverSummaryPage')
 );
+const PeriodGiverSummaryPage = React.lazy(
+  () => import('@/pages/Periods/GiverSummary/GiverSummaryPage')
+);
 const PeriodQuantifierSummaryPage = React.lazy(
   () => import('@/pages/Periods/QuantifierSummary/QuantifierSummaryPage')
 );
@@ -39,8 +42,6 @@ const QuantifyPage = React.lazy(
 const EventLogsPage = React.lazy(
   () => import('@/pages/EventLogs/EventLogsPage')
 );
-
-const FAQPage = React.lazy(() => import('@/pages/FAQ/FAQPage'));
 
 interface AuthRouteProps {
   children: JSX.Element;
@@ -126,6 +127,10 @@ export const AuthenticatedRoutes = ({
         <PeriodReceiverSummaryPage />
       </Route>
 
+      <Route path="/periods/:periodId/giver/:giverId">
+        <PeriodGiverSummaryPage />
+      </Route>
+
       <Route path="/periods/:periodId/quantifier/:quantifierId">
         <PeriodQuantifierSummaryPage />
       </Route>
@@ -168,10 +173,6 @@ export const AuthenticatedRoutes = ({
 
       <Route exact path="/">
         <StartPage />
-      </Route>
-
-      <Route exact path="/faq">
-        <FAQPage />
       </Route>
 
       <Route path="/*">

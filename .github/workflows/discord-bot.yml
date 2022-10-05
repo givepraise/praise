@@ -1,4 +1,4 @@
-name: discord-bot
+name: Discord-Bot
 on:
   workflow_dispatch:
   pull_request:

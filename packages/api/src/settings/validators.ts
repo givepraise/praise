@@ -1,27 +1,5 @@
-import { Validator } from 'jsonschema';
 import { PeriodSettingDocument } from '@/periodsettings/types';
 import { SettingDocument } from './types';
-
-const QuestionAnswerJSONSchema = {
-  type: 'array',
-  items: {
-    type: 'object',
-    properties: {
-      section: {
-        type: 'string',
-        required: true,
-      },
-      questions: {
-        type: 'array',
-        required: true,
-        properties: {
-          question: { type: 'string', required: true },
-          answer: { type: 'string', required: true },
-        },
-      },
-    },
-  },
-};
 
 /**
  * Check if a given string can be parsed into a number
@@ -44,27 +22,19 @@ function isNumeric(num: any): Boolean {
 export function isSettingValueAllowedBySettingType(
   this: SettingDocument | PeriodSettingDocument
 ): Boolean {
-  if (this.type === 'Float' || this.type === 'Integer') {
-    return isNumeric(this.value);
+  if (!this.value) {
+    return true;
   }
 
-  if (this.type === 'QuestionAnswerJSON') {
-    const v = new Validator();
-
-    const faq = JSON.parse(this.value);
-    if (!faq) {
-      return false;
-    }
-
-    const validation = v.validate(faq, QuestionAnswerJSONSchema);
-
-    return validation.errors.length === 0;
+  if (this.type === 'Float' || this.type === 'Integer') {
+    return isNumeric(this.value);
   }
 
   if (
     this.type === 'String' ||
     this.type === 'Textarea' ||
-    this.type === 'Image'
+    this.type === 'Image' ||
+    this.type === 'Radio'
   ) {
     return typeof this.value === 'string';
   }
@@ -87,6 +57,11 @@ export function isSettingValueAllowedBySettingType(
     });
 
     return valid;
+  }
+
+  if (this.type === 'JSON') {
+    const value = JSON.parse(this.value);
+    return typeof value === 'object';
   }
 
   if (this.type === 'StringList') {

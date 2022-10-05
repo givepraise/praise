@@ -3,7 +3,8 @@ import {
   faCalendarAlt,
   faChartBar,
   faCog,
-  faHeartbeat,
+  faHandHoldingHeart,
+  faHandsPraying,
 } from '@fortawesome/free-solid-svg-icons';
 import { PeriodStatusType } from 'api/dist/period/types';
 import React, { Suspense } from 'react';
@@ -34,8 +35,8 @@ import { SubPageNav } from '@/navigation/SubPageNav';
 import { PeriodDetails } from './components/PeriodDetails';
 import { PeriodNameForm } from './components/PeriodNameForm';
 import { QuantifierMessage } from './components/QuantifierMessage';
+import { GiverReceiverTable } from './components/GiverReceiverTable';
 
-const ReceiverTable = React.lazy(() => import('./components/ReceiverTable'));
 const QuantifierTable = React.lazy(
   () => import('./components/QuantifierTable')
 );
@@ -105,22 +106,35 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
               <NavItem
                 to={`${url}/receivers`}
                 description="Receivers"
-                icon={faHeartbeat}
+                icon={faHandsPraying}
+                replace
+                rounded
+              />
+              <NavItem
+                to={`${url}/givers`}
+                description="Givers"
+                icon={faHandHoldingHeart}
+                replace
+                rounded
               />
               <NavItem
                 to={`${url}/quantifiers`}
                 description="Quantifiers"
                 icon={faBalanceScaleLeft}
+                replace
               />
               <NavItem
                 to={`${url}/settings`}
                 description="Settings"
                 icon={faCog}
+                replace
               />
               <NavItem
                 to={`${url}/analytics`}
                 description="Analytics"
                 icon={faChartBar}
+                replace
+                rounded
               />
             </ul>
           </SubPageNav>
@@ -136,7 +150,12 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
               </Route>
               <Route path={`${path}/receivers`}>
                 <Suspense fallback={null}>
-                  <ReceiverTable />
+                  <GiverReceiverTable type="receiver" />
+                </Suspense>
+              </Route>
+              <Route path={`${path}/givers`}>
+                <Suspense fallback={null}>
+                  <GiverReceiverTable type="giver" />
                 </Suspense>
               </Route>
               <Route path={`${path}/quantifiers`}>

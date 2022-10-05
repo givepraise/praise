@@ -11,6 +11,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Devops:**: `database-restore.sh` did not work under certain circumstances. Script have now been upgraded.
+
+## [0.12.2] - 2022-09-28
+
+### Added
+
+- **Devops:** Setup script now uses a prebuilt Docker image to speed up setup process. #575 #606
+- **Devops:** Merged project `.env` files into a single root file to simplify for automated setup #591
+
+### Fixed
+
+- **API:** Quantify endpoint now disallows any scores that are not in the configured range #608 #610
+- **Frontend:** Praise logo in dashboard is now linked again, taking user to start page #609 #611
+
+### Upgrade Instructions
+
+Beacause of changes to the `.env` file structure, you need to run the setup script after pulling
+changes from GitHub.
+
+1. `git pull`
+2. `bash setup.sh`
+3. `bash upgrade.sh`
+
+## [0.12.1] - 2022-09-27
+
+A minor release to fix some bugs related to image uploading.
+
+### Fixed
+
+- Better handling of uploaded logo images. Image uploads are now stored outside of the Docker container. This means that the logo image will persist across container restarts and upgrades. #564 #604
+- Better support for serving Praise over http on localhost. No manual edits of `.env` needed, all settings are managed by `setup.sh`. #577 #604
+
+## [0.12.0] - 2022-09-26
+
+### Added
+
+- **API:** Custom praise exports using transformation maps that can perform calculations on Praise data #549 #532
+- **Frontend:** New items on the main navigation #596 #430
+  - Give us feedback
+  - Latest changes
+  - Docs
+
+### Fixed
+
+- **API:** Fix/evenly assign quantifiers prevent overlap #573 #535
+- **Frontend:** Custom emojis get the wrong size when displayed in Praise dashboard #592
+- **API:** Settings are now allowed to have empty values #597
+- **Frontend:** Update Search Input in dark mode #594
+- **Frontend:** Add a `replace` option to NavItem to better handle subpage navigation and backlink clicks #579
+- **Frontend:** Fix quantifier dark mode and correct onclick behaviour #588
+- **Frontend:** Better darkmode looks for analytics #570
+- **Frontend:** Show placeholder while loading avatar image #574
+
+### Removed
+
+- **Frontend:** Removed the FAQ page #586
+
 ## [0.11.1] - 2022-08-24
 
 Hotfix resolving an issue with building Docker images for production.

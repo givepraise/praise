@@ -1,7 +1,7 @@
 import { Wallet } from 'ethers';
 import { expect } from 'chai';
 import { faker } from '@faker-js/faker';
-import { add, addDays } from 'date-fns';
+import { addDays } from 'date-fns';
 import { PraiseModel } from '@/praise/entities';
 import { PeriodModel } from '@/period/entities';
 import {
@@ -718,7 +718,7 @@ describe('PATCH /api/admin/periods/:periodId/close', () => {
   });
 });
 
-describe('GET /api/admin/periods/:periodId/export', () => {
+describe('GET /api/admin/periods/:periodId/exportFull', () => {
   beforeEach(async () => {
     await PeriodModel.deleteMany({});
     await PraiseModel.deleteMany({});
@@ -789,7 +789,7 @@ describe('GET /api/admin/periods/:periodId/export', () => {
     });
 
     const response = await this.client
-      .get(`/api/admin/periods/${period._id.toString() as string}/export`)
+      .get(`/api/admin/periods/${period._id.toString() as string}/exportFull`)
       .responseType('blob')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect('Content-Type', 'text/csv; charset=utf-8')
@@ -878,7 +878,7 @@ describe('GET /api/admin/periods/:periodId/export', () => {
     await seedPraise();
 
     return this.client
-      .get(`/api/admin/periods/${period._id.toString() as string}/export`)
+      .get(`/api/admin/periods/${period._id.toString() as string}/exportFull`)
       .responseType('blob')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(403);
@@ -892,7 +892,7 @@ describe('GET /api/admin/periods/:periodId/export', () => {
     await seedPraise();
 
     return this.client
-      .get(`/api/admin/periods/${period._id.toString() as string}/export`)
+      .get(`/api/admin/periods/${period._id.toString() as string}/exportFull`)
       .responseType('blob')
       .expect(401);
   });

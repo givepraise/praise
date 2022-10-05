@@ -34,7 +34,7 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
       <div className="mt-5">
         Period: {periodDetails.name}
         <br />
-        Total Score: {receiver.scoreRealized}
+        Total score, praise received: {receiver.scoreRealized}
       </div>
     </Box>
   );

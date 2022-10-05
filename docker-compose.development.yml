@@ -17,10 +17,11 @@ services:
     image: ghcr.io/commons-stack/praise-dev/api:latest
     env_file:
       - .env
-      - ./packages/api/.env
     restart: always
     ports:
       - $API_PORT:$API_PORT
+    volumes:
+      - './packages/api/uploads/:/usr/src/uploads/'      
     links:
       - mongodb
 
@@ -29,7 +30,6 @@ services:
     image: ghcr.io/commons-stack/praise-dev/discord-bot:latest
     env_file:
       - .env
-      - ./packages/discord-bot/.env
     restart: always
     links:
       - mongodb
@@ -39,7 +39,6 @@ services:
     image: ghcr.io/commons-stack/praise-dev/frontend:latest
     env_file:
       - .env
-      - ./packages/frontend/.env
     restart: unless-stopped
     ports:
       - 80:80

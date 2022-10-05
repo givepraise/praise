@@ -50,6 +50,7 @@ export interface PeriodDetailsGiverReceiverDto {
   _id: string;
   praiseCount: number;
   quantifications?: Array<Array<QuantificationDto>>;
+  ethereumAddress?: string;
   scoreRealized: number;
   userAccount?: UserAccountDto;
 }
@@ -104,6 +105,10 @@ export interface PeriodQuantifierPraiseInput extends Query {
   quantifierId?: string;
 }
 
+export interface PeriodGiverPraiseInput extends Query {
+  giverId?: string;
+}
+
 export interface Assignments {
   poolAssignments: Quantifier[];
   remainingAssignmentsCount: number;
@@ -124,3 +129,27 @@ export interface ReplaceQuantifierRequestBody {
   currentQuantifierId: string;
   newQuantifierId: string;
 }
+
+export interface ExportTransformerOperateItem {
+  run: string;
+  on: string;
+}
+
+export interface ExportTransformerMap {
+  name: string;
+  map: {
+    item: Object;
+    operate: ExportTransformerOperateItem[];
+    each: string;
+  };
+  context: {};
+  filterColumn: string;
+}
+
+export interface ExportCustomQueryInput {
+  context?: string;
+}
+
+export interface ExportCustomQueryInputParsedQs
+  extends ExportCustomQueryInput,
+    Query {}

@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.11.2",
+  "version": "0.12.2",
   "license": "GPL-3.0-or-later",
   "description": "The Praise dashboard built on React/Recoil/Tailwind CSS.",
   "private": true,
@@ -68,7 +68,7 @@
     "build": "craco build",
     "analyze": "yarn run build && source-map-explorer --gzip 'build/static/js/*.js'",
     "load-env": "env-cmd --silent --no-override -f ../../.env env-cmd --silent --no-override",
-    "start": "TAILWIND_MODE=watch yarn run load-env craco start",
+    "start": "PORT=$(grep FRONTEND_PORT ../../.env | cut -d '=' -f2) TAILWIND_MODE=watch yarn run load-env craco start",
     "lint": "eslint . --ext .ts --ext .tsx",
     "test": "jest",
     "test:watch": "jest --watch"

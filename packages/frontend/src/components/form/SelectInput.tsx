@@ -4,15 +4,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Listbox, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 
-interface ISelectedItem {
+export interface SelectInputOption {
   value: string;
   label: string;
+  disabled?: boolean;
 }
 
 interface SelectInputProps {
-  selected: ISelectedItem;
+  selected: SelectInputOption;
   handleChange: (element) => void;
-  options: ISelectedItem[];
+  options: SelectInputOption[];
   icon?: IconProp;
 }
 
@@ -39,30 +40,35 @@ export const SelectInput = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto bg-white border border-warm-gray-400 max-h-60 dark:bg-slate-600">
-            {options.map((s, sIdx) => (
-              <Listbox.Option
-                key={sIdx}
-                className={({ active }): string =>
-                  `relative cursor-default select-none py-2 pl-4 pr-4  ${
-                    active
-                      ? 'bg-warm-gray-100 dark:bg-slate-700 text-warm-gray-900 dark:text-white'
-                      : 'text-warm-gray-600 dark:text-white'
-                  }`
-                }
-                value={s}
-              >
-                {({ selected }): JSX.Element => (
-                  <span
-                    className={`block truncate ${
-                      selected ? 'font-medium' : 'font-normal'
-                    }`}
+          <Listbox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto bg-white border border-warm-gray-400 max-h-60 dark:bg-slate-600">
+            {options.map((s, sIdx) => {
+              return (
+                !s.disabled && (
+                  <Listbox.Option
+                    key={sIdx}
+                    className={({ active }): string =>
+                      `relative cursor-default select-none py-2 pl-4 pr-4  ${
+                        active
+                          ? 'bg-warm-gray-100 dark:bg-slate-700 text-warm-gray-900 dark:text-white'
+                          : 'text-warm-gray-600 dark:text-white'
+                      }`
+                    }
+                    value={s}
+                    disabled={s.disabled}
                   >
-                    {s.label}
-                  </span>
-                )}
-              </Listbox.Option>
-            ))}
+                    {({ selected }): JSX.Element => (
+                      <span
+                        className={`block truncate ${
+                          selected ? 'font-medium' : 'font-normal'
+                        }`}
+                      >
+                        {s.label}
+                      </span>
+                    )}
+                  </Listbox.Option>
+                )
+              );
+            })}
           </Listbox.Options>
         </Transition>
       </Listbox>

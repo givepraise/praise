@@ -38,6 +38,11 @@ export const periodReceiverPraiseListKey = (
   receiverId: string
 ): string => `PERIOD_RECEIVER_PRAISE_${periodId}_${receiverId}`;
 
+export const periodGiverPraiseListKey = (
+  periodId: string,
+  giverId: string
+): string => `PERIOD_GIVER_PRAISE_${periodId}_${giverId}`;
+
 interface QuantificationStats {
   done: number;
   count: number;

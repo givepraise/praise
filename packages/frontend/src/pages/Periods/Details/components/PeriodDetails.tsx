@@ -1,8 +1,4 @@
-import {
-  faDownload,
-  faTimesCircle,
-  faUsers,
-} from '@fortawesome/free-solid-svg-icons';
+import { faTimesCircle, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
@@ -26,13 +22,19 @@ import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { saveLocalFile } from '@/utils/file';
 import { getPreviousPeriod } from '@/utils/periods';
 
+import { SelectInputOption, SelectInput } from '@/components/form/SelectInput';
+import { SingleSetting } from '@/model/settings';
+import { CustomExportTransformer } from '@/model/app';
 import { PeriodAssignDialog } from './AssignDialog';
 import { PeriodCloseDialog } from './CloseDialog';
 import { PeriodDateForm } from './PeriodDateForm';
+import { PeriodCustomExportDialog } from './CustomExportDialog';
 
 export const PeriodDetails = (): JSX.Element | null => {
   const [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = React.useState(false);
+  const [isCustomExportDialogOpen, setIsCustomExportDialogOpen] =
+    React.useState(false);
 
   const allPeriods = useRecoilValue(AllPeriods);
   const allQuantifiers = useRecoilValue(AllQuantifierUsers);
@@ -40,11 +42,19 @@ export const PeriodDetails = (): JSX.Element | null => {
   useLoadSinglePeriodDetails(periodId); // Fetch additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const { exportPraise } = useExportPraise();
+  const { exportPraiseFull, exportPraiseSummary, exportPraiseCustom } =
+    useExportPraise();
+  const customExportFormat = useRecoilValue(
+    SingleSetting('CUSTOM_EXPORT_FORMAT')
+  );
+
+  const customExportTransformer = useRecoilValue(CustomExportTransformer);
+
   const history = useHistory();
 
   const assignDialogRef = React.useRef(null);
   const closeDialogRef = React.useRef(null);
+  const customExportDialogRef = React.useRef(null);
 
   const { closePeriod } = useClosePeriod();
   const { assignQuantifiers } = useAssignQuantifiers(periodId);
@@ -52,6 +62,21 @@ export const PeriodDetails = (): JSX.Element | null => {
   if (!period || !allPeriods) return null;
 
   const previousPeriod = getPreviousPeriod(allPeriods, period);
+
+  const exportOptions = [
+    { value: '', label: 'Export', disabled: true },
+    { value: 'export-full', label: 'Export (full)' },
+    {
+      value: 'export-summary',
+      label: 'Export (summary)',
+    },
+  ];
+
+  customExportTransformer &&
+    exportOptions.push({
+      value: 'export-custom',
+      label: customExportTransformer.name,
+    });
 
   const handleClosePeriod = (): void => {
     void closePeriod(periodId);
@@ -83,15 +108,15 @@ export const PeriodDetails = (): JSX.Element | null => {
     );
   };
 
-  const handleExport = (): void => {
-    const toastId = 'exportToast';
+  const handleExportFull = (): void => {
+    const toastId = 'exportToastFull';
     void toast.promise(
-      exportPraise(period),
+      exportPraiseFull(period),
       {
         loading: 'Exporting …',
         success: (exportData: Blob | undefined) => {
           if (exportData) {
-            saveLocalFile(exportData, 'quantification-export.csv');
+            saveLocalFile(exportData, 'praise-period-export-full.csv');
             setTimeout(() => toast.remove(toastId), 2000);
             return 'Export done';
           }
@@ -103,10 +128,79 @@ export const PeriodDetails = (): JSX.Element | null => {
         id: toastId,
         position: 'top-center',
         loading: {
-          duration: Infinity,
+          duration: 1000,
         },
       }
     );
+  };
+
+  const handleExportSummary = (): void => {
+    const toastId = 'exportToastSummary';
+    void toast.promise(
+      exportPraiseSummary(period),
+      {
+        loading: 'Exporting …',
+        success: (exportData: Blob | undefined) => {
+          if (exportData) {
+            saveLocalFile(exportData, 'praise-period-export-summary.csv');
+            setTimeout(() => toast.remove(toastId), 2000);
+            return 'Export done';
+          }
+          return 'Empty export returned';
+        },
+        error: 'Export failed',
+      },
+      {
+        id: toastId,
+        position: 'top-center',
+        loading: {
+          duration: 1000,
+        },
+      }
+    );
+  };
+
+  const handleExportCustom = (exportContext: string): void => {
+    const toastId = 'exportToastCustom';
+    void toast.promise(
+      exportPraiseCustom(period, exportContext),
+      {
+        loading: 'Distributing …',
+        success: (data: Blob | undefined) => {
+          if (data) {
+            saveLocalFile(
+              data,
+              `praise-period-export-custom.${customExportFormat?.valueRealized}`
+            );
+            setTimeout(() => toast.remove(toastId), 2000);
+            return 'Export done';
+          }
+
+          return 'Empty export returned';
+        },
+        error: (err) => {
+          toast.error(err.message);
+          return 'Export failed';
+        },
+      },
+      {
+        id: toastId,
+        position: 'top-center',
+        loading: {
+          duration: 1000,
+        },
+      }
+    );
+  };
+
+  const handleSelectExportChange = (option: SelectInputOption): void => {
+    if (option.value === 'export-full') {
+      handleExportFull();
+    } else if (option.value === 'export-summary') {
+      handleExportSummary();
+    } else if (option.value === 'export-custom') {
+      setIsCustomExportDialogOpen(true);
+    }
   };
 
   if (!period) return <div>Period not found.</div>;
@@ -146,14 +240,13 @@ export const PeriodDetails = (): JSX.Element | null => {
                   </Button>
                 ) : null}
                 {period.status === 'QUANTIFY' ? (
-                  <Button onClick={handleExport}>
-                    <FontAwesomeIcon
-                      icon={faDownload}
-                      size="1x"
-                      className="mr-2"
+                  <div className="w-3/12">
+                    <SelectInput
+                      handleChange={handleSelectExportChange}
+                      options={exportOptions}
+                      selected={exportOptions[0]}
                     />
-                    Export
-                  </Button>
+                  </div>
                 ) : null}
                 <Button
                   variant={'outline'}
@@ -168,11 +261,15 @@ export const PeriodDetails = (): JSX.Element | null => {
                 </Button>
               </div>
             ) : null}
+
             {period.status === 'CLOSED' ? (
-              <Button onClick={handleExport}>
-                <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
-                Export
-              </Button>
+              <div className="w-3/12">
+                <SelectInput
+                  handleChange={handleSelectExportChange}
+                  options={exportOptions}
+                  selected={exportOptions[0]}
+                />
+              </div>
             ) : null}
           </div>
         </>
@@ -207,6 +304,23 @@ export const PeriodDetails = (): JSX.Element | null => {
           </div>
         </Dialog>
       ) : null}
+
+      <Dialog
+        open={isCustomExportDialogOpen}
+        onClose={(): void => setIsCustomExportDialogOpen(false)}
+        className="fixed inset-0 z-10 overflow-y-auto"
+        initialFocus={customExportDialogRef}
+      >
+        <div ref={customExportDialogRef}>
+          <PeriodCustomExportDialog
+            title={customExportTransformer?.name || 'Custom export'}
+            onClose={(): void => setIsCustomExportDialogOpen(false)}
+            onExport={(exportContext): void =>
+              handleExportCustom(exportContext)
+            }
+          />
+        </div>
+      </Dialog>
     </div>
   );
 };

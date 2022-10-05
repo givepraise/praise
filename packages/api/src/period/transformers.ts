@@ -1,5 +1,6 @@
 import { quantificationListTransformer } from '@/praise/transformers';
 import { Quantification, QuantificationDto } from '@/praise/types';
+import { UserModel } from '@/user/entities';
 import { userAccountTransformer } from '@/useraccount/transformers';
 import {
   PeriodDetailsGiverReceiver,
@@ -89,6 +90,50 @@ export const periodDetailsGiverReceiverListTransformer = async (
       grDto.push(await periodDetailsGiverReceiverToDto(pdr));
     }
     return grDto;
+  }
+  return [];
+};
+
+/**
+ * Serialize relevant details about a Praise receiver in a period
+ *
+ * @param {PeriodDetailsGiverReceiverDto} giverReceiver
+ * @returns {Promise<PeriodDetailsGiverReceiverDto>}
+ */
+const populateGRWithEthereumAddress = async (
+  giverReceiver: PeriodDetailsGiverReceiverDto
+): Promise<PeriodDetailsGiverReceiverDto> => {
+  const { _id, praiseCount, scoreRealized, userAccount } = giverReceiver;
+  let ethereumAddress = undefined;
+
+  if (userAccount) {
+    const user = await UserModel.findById(userAccount.user);
+    ethereumAddress = user?.ethereumAddress;
+  }
+
+  return {
+    _id,
+    praiseCount,
+    ethereumAddress,
+    scoreRealized,
+    userAccount,
+  };
+};
+
+/**
+ * Serialize relevant details about a list of Praise receivers in a period (with ETH address)
+ *
+ * @param {(PeriodDetailsGiverReceiverDto[] | undefined)} giverReceiverList
+ * @returns {Promise<PeriodDetailsGiverReceiverDto[]>}
+ */
+export const populateGRListWithEthereumAddresses = async (
+  giverReceiverList: PeriodDetailsGiverReceiverDto[] | undefined
+): Promise<PeriodDetailsGiverReceiverDto[]> => {
+  if (giverReceiverList && Array.isArray(giverReceiverList)) {
+    const grList = await Promise.all(
+      giverReceiverList.map((gr) => populateGRWithEthereumAddress(gr))
+    );
+    return grList;
   }
   return [];
 };

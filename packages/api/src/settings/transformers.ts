@@ -7,9 +7,12 @@ import { SettingDocument, SettingDto } from './types';
  * @returns {SettingDto}
  */
 export const settingTransformer = (setting: SettingDocument): SettingDto => {
-  const { _id, key, value, valueRealized, type, label, description, group } =
-    setting;
-
+  const { _id, key, type, label, description, group, options } = setting;
+  let { value, valueRealized } = setting;
+  if (type === 'JSON' && value) {
+    value = JSON.stringify(JSON.parse(value), null, 2);
+    valueRealized = JSON.stringify(JSON.parse(value), null, 2);
+  }
   return {
     _id,
     key,
@@ -19,6 +22,7 @@ export const settingTransformer = (setting: SettingDocument): SettingDto => {
     label,
     description,
     group,
+    options,
   };
 };
 
