@@ -1,5 +1,4 @@
-import { PraiseModel } from 'api/dist/praise/entities';
-import { GuildMember, cleanContent } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { UserModel } from 'api/dist/user/entities';
 import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
@@ -19,10 +18,11 @@ import {
   forwardSuccess,
   giverNotActivatedError,
   selfPraiseWarning,
-} from '../utils/praiseEmbeds';
+} from '../utils/embeds/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
+import { createPraise } from '../utils/createPraise';
 
 /**
  * Execute command /firward
@@ -70,8 +70,8 @@ export const forwardHandler: CommandHandler = async (
 
   const receivers = interaction.options.getString('receivers');
   const receiverData = {
-    validReceiverIds: receivers?.match(/<@!([0-9]+)>/g),
-    undefinedReceivers: receivers?.match(/@([a-z0-9]+)/gi),
+    validReceiverIds: receivers?.match(/<@!?([0-9]+)>/g),
+    undefinedReceivers: receivers?.match(/[^<]@([a-z0-9]+)/gi),
     roleMentions: receivers?.match(/<@&([0-9]+)>/g),
   };
 
@@ -117,8 +117,6 @@ export const forwardHandler: CommandHandler = async (
     (u) => u
   );
 
-  const guildChannel = await guild.channels.fetch(channel?.id || '');
-
   for (const receiver of Receivers) {
     const receiverAccount = await getUserAccount(receiver);
 
@@ -131,17 +129,13 @@ export const forwardHandler: CommandHandler = async (
         );
       }
     }
-    const praiseObj = await PraiseModel.create({
-      reason: reason,
-      reasonRealized: cleanContent(reason, channel),
-      giver: giverAccount._id,
-      forwarder: forwarderAccount._id,
-      sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
-      sourceName: `DISCORD:${encodeURIComponent(
-        guild.name
-      )}:${encodeURIComponent(guildChannel?.name || '')}`,
-      receiver: receiverAccount._id,
-    });
+    const praiseObj = await createPraise(
+      interaction,
+      giverAccount,
+      receiverAccount,
+      reason,
+      forwarderAccount
+    );
 
     await logEvent(
       EventLogTypeKey.PRAISE,

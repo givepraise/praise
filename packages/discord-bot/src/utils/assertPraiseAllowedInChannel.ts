@@ -4,7 +4,7 @@ import { settingValue } from 'api/dist/shared/settings';
 const getChannelId = (channel: TextBasedChannel): string => {
   return channel.type === ChannelType.PublicThread ||
     channel.type === ChannelType.PrivateThread ||
-    channel.type === ChannelType.GuildAnnouncement
+    channel.type === ChannelType.AnnouncementThread
     ? channel?.parent?.id || channel.id
     : channel.id;
 };

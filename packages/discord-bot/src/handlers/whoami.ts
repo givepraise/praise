@@ -3,9 +3,9 @@ import { UserAccountModel } from 'api/dist/useraccount/entities';
 import { CommandInteraction, GuildMember } from 'discord.js';
 import { UserState } from '../interfaces/UserState';
 import { getUserAccount } from '../utils/getUserAccount';
-import { getStateEmbed } from '../utils/stateEmbed';
+import { getStateEmbed } from '../utils/embeds/stateEmbed';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
-import { dmError } from '../utils/praiseEmbeds';
+import { dmError } from '../utils/embeds/praiseEmbeds';
 
 /**
  * Execute command /whoami

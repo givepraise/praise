@@ -2,7 +2,7 @@ import { PraiseModel } from 'api/dist/praise/entities';
 import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
 import logger from 'jet-logger';
-import { GuildMember, User, cleanContent } from 'discord.js';
+import { GuildMember, User } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
 import {
   dmError,
@@ -16,11 +16,12 @@ import {
   undefinedReceiverWarning,
   selfPraiseWarning,
   firstTimePraiserInfo,
-} from '../utils/praiseEmbeds';
+} from '../utils/embeds/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
+import { createPraise } from '../utils/createPraise';
 
 /**
  * Execute command /praise
@@ -53,6 +54,7 @@ export const praiseHandler: CommandHandler = async (
     undefinedReceivers: receivers?.match(/[^<]@([a-z0-9]+)/gi),
     roleMentions: receivers?.match(/<@&([0-9]+)>/g),
   };
+
   if (
     !receivers ||
     receivers.length === 0 ||
@@ -69,12 +71,12 @@ export const praiseHandler: CommandHandler = async (
     return;
   }
 
-  const userAccount = await getUserAccount(member as GuildMember);
+  const giverAccount = await getUserAccount(member as GuildMember);
   const praiseItemsCount = await PraiseModel.countDocuments({
-    giver: userAccount._id,
+    giver: giverAccount._id,
   });
 
-  if (!userAccount.user) {
+  if (!giverAccount.user) {
     await interaction.editReply(await notActivatedError());
     return;
   }
@@ -91,15 +93,14 @@ export const praiseHandler: CommandHandler = async (
   )) as boolean;
 
   let warnSelfPraise = false;
-  if (!selfPraiseAllowed && receiverIds.includes(userAccount.accountId)) {
+  if (!selfPraiseAllowed && receiverIds.includes(giverAccount.accountId)) {
     warnSelfPraise = true;
-    receiverIds.splice(receiverIds.indexOf(userAccount.accountId), 1);
+    receiverIds.splice(receiverIds.indexOf(giverAccount.accountId), 1);
   }
   const Receivers = (await guild.members.fetch({ user: receiverIds })).map(
     (u) => u
   );
 
-  const guildChannel = await guild.channels.fetch(channel?.id || '');
   for (const receiver of Receivers) {
     const receiverAccount = await getUserAccount(receiver);
 
@@ -112,22 +113,20 @@ export const praiseHandler: CommandHandler = async (
         );
       }
     }
-    const praiseObj = await PraiseModel.create({
-      reason: reason,
-      reasonRealized: cleanContent(reason, channel),
-      giver: userAccount._id,
-      sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
-      sourceName: `DISCORD:${encodeURIComponent(
-        guild.name
-      )}:${encodeURIComponent(guildChannel?.name || '')}`,
-      receiver: receiverAccount._id,
-    });
+
+    const praiseObj = await createPraise(
+      interaction,
+      giverAccount,
+      receiverAccount,
+      reason
+    );
+
     if (praiseObj) {
       await logEvent(
         EventLogTypeKey.PRAISE,
         'Created a new praise from discord',
         {
-          userAccountId: userAccount._id,
+          userAccountId: giverAccount._id,
         }
       );
 
@@ -141,7 +140,7 @@ export const praiseHandler: CommandHandler = async (
       praised.push(receiverAccount.accountId);
     } else {
       logger.err(
-        `Praise not registered for [${userAccount.accountId}] -> [${receiverAccount.accountId}] for [${reason}]`
+        `Praise not registered for [${giverAccount.accountId}] -> [${receiverAccount.accountId}] for [${reason}]`
       );
     }
   }

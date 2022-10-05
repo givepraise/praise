@@ -4,7 +4,7 @@ import { EventLogTypeKey } from 'api/src/eventlog/types';
 import { logEvent } from 'api/src/eventlog/utils';
 import randomstring from 'randomstring';
 import { CommandHandler } from 'src/interfaces/CommandHandler';
-import { alreadyActivatedError } from '../utils/praiseEmbeds';
+import { alreadyActivatedError } from '../utils/embeds/praiseEmbeds';
 
 /**
  * Executes command /activate

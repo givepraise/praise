@@ -17,7 +17,7 @@ import {
 import { dmTargetMenu } from '../utils/menus/dmTargetmenu';
 import { selectTargets } from '../utils/dmTargets';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
-import { notActivatedError } from '../utils/praiseEmbeds';
+import { notActivatedError } from '../utils/embeds/praiseEmbeds';
 
 /**
  * Executes command /announce
