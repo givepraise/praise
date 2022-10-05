@@ -98,13 +98,11 @@ const setupApiServer = async (NODE_ENV = 'development'): Promise<Express> => {
 
   if (NODE_ENV === 'development') {
     await seedAdminUsers();
-    // app.use(morgan('dev'));
   } else if (NODE_ENV === 'production') {
     await seedAdminUsers();
     app.use(helmet());
   } else if (NODE_ENV === 'testing') {
     await seedAdminUsers();
-    // app.use(morgan('dev'));
   }
 
   return app;
