@@ -1,6 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
 import format from 'date-fns/format';
-import { UserState } from '../interfaces/UserState';
+import { UserState } from '../../interfaces/UserState';
 
 const formatDate = (date: Date): string => format(date, 'yyyy-MM-dd');
 
