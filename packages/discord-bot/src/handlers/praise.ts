@@ -1,9 +1,10 @@
 import { PraiseModel } from 'api/dist/praise/entities';
-import { EventLogTypeKey } from 'api/src/eventlog/types';
-import { logEvent } from 'api/src/eventlog/utils';
+import { EventLogTypeKey } from 'api/dist/eventlog/types';
+import { logEvent } from 'api/dist/eventlog/utils';
 import logger from 'jet-logger';
 import { GuildMember, User } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
+import { getReceiverData } from '../utils/getReceiverData';
 import {
   dmError,
   invalidReceiverError,
@@ -49,15 +50,15 @@ export const praiseHandler: CommandHandler = async (
   if (!(await assertPraiseAllowedInChannel(interaction))) return;
 
   const receivers = interaction.options.getString('receivers');
-  const receiverData = {
-    validReceiverIds: receivers?.match(/<@!?([0-9]+)>/g),
-    undefinedReceivers: receivers?.match(/[^<]@([a-z0-9]+)/gi),
-    roleMentions: receivers?.match(/<@&([0-9]+)>/g),
-  };
+
+  if (!receivers || receivers.length === 0) {
+    await interaction.editReply(await invalidReceiverError());
+    return;
+  }
+
+  const receiverData = getReceiverData(receivers);
 
   if (
-    !receivers ||
-    receivers.length === 0 ||
     !receiverData.validReceiverIds ||
     receiverData.validReceiverIds?.length === 0
   ) {
@@ -145,16 +146,18 @@ export const praiseHandler: CommandHandler = async (
     }
   }
 
-  Receivers.length !== 0
-    ? await interaction.editReply(
-        await praiseSuccess(
-          praised.map((id) => `<@!${id}>`),
-          reason
-        )
+  if (Receivers.length !== 0) {
+    await interaction.editReply(
+      await praiseSuccess(
+        praised.map((id) => `<@!${id}>`),
+        reason
       )
-    : warnSelfPraise
-    ? await interaction.editReply(await selfPraiseWarning())
-    : await interaction.editReply(await invalidReceiverError());
+    );
+  } else if (warnSelfPraise) {
+    await interaction.editReply(await selfPraiseWarning());
+  } else {
+    await interaction.editReply(await invalidReceiverError());
+  }
 
   const warningMsg =
     (receiverData.undefinedReceivers
@@ -185,6 +188,4 @@ export const praiseHandler: CommandHandler = async (
       ephemeral: true,
     });
   }
-
-  return;
 };

@@ -1,7 +1,7 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount } from 'api/src/useraccount/types';
-import { EventLogTypeKey } from 'api/src/eventlog/types';
-import { logEvent } from 'api/src/eventlog/utils';
+import { UserAccount } from 'api/dist/useraccount/types';
+import { EventLogTypeKey } from 'api/dist/eventlog/types';
+import { logEvent } from 'api/dist/eventlog/utils';
 import randomstring from 'randomstring';
 import { CommandHandler } from 'src/interfaces/CommandHandler';
 import { alreadyActivatedError } from '../utils/embeds/praiseEmbeds';

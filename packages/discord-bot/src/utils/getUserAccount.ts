@@ -1,5 +1,5 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount, UserAccountDocument } from 'api/src/useraccount/types';
+import { UserAccount, UserAccountDocument } from 'api/dist/useraccount/types';
 import { GuildMember } from 'discord.js';
 
 /**

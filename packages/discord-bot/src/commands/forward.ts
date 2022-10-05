@@ -50,7 +50,6 @@ export const forward: Command = {
   },
   help: {
     name: 'forward',
-    text: 'Command to forward praise from a giver to receivers in the discord server. You need to have an activated account on the Praise System along with FORWARDER role permissions to use this command.\n\
-  **Usage**: `/forward giver: <@userA> receivers: <@user1 @user2 ...> reason: for something`\n',
+    text: 'Command to forward praise from a giver to receivers in the discord server. You need to have an activated account on the Praise System along with FORWARDER role permissions to use this command.\n**Usage**: `/forward giver: <@userA> receivers: <@user1 @user2 ...> reason: for something`\n',
   },
 };

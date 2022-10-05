@@ -15,7 +15,7 @@ export const praiseSuccess = async (
   const msg = (await settingValue('PRAISE_SUCCESS_MESSAGE')) as string;
   if (msg) {
     return msg
-      ?.replace('{@receivers}', `${praised.join(', ')}`)
+      .replace('{@receivers}', `${praised.join(', ')}`)
       .replace('{reason}', reason);
   } else {
     return 'PRAISE SUCCESSFUL (message not set)';
@@ -201,7 +201,7 @@ export const roleMentionWarning = async (
   receivers: string,
   user: User
 ): Promise<string> => {
-  const msg = (await settingValue('PRAISE_TO_ROLE_WARNING')) as String;
+  const msg = (await settingValue('PRAISE_TO_ROLE_WARNING')) as string;
   if (msg) {
     return msg
       .replace('{@receivers}', receivers)

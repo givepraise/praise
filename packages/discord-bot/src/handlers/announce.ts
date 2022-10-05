@@ -1,5 +1,5 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount } from 'api/src/useraccount/types';
+import { UserAccount } from 'api/dist/useraccount/types';
 import { UserModel } from 'api/dist/user/entities';
 import {
   SelectMenuInteraction,
@@ -160,6 +160,5 @@ export const announcementHandler: CommandHandler = async (interaction) => {
       content:
         'You do not have the needed permissions to use this command. If you would like to perform admin actions, you would need to be granted an `ADMIN` role on the Praise Dashboard.',
     });
-    return;
   }
 };

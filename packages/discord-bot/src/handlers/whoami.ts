@@ -59,5 +59,4 @@ export const whoamiHandler = async (
   await interaction.editReply({
     embeds: [getStateEmbed(state)],
   });
-  return;
 };

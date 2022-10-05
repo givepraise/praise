@@ -11,15 +11,22 @@ const formatDate = (date: Date): string => format(date, 'yyyy-MM-dd');
  * @returns {EmbedBuilder}
  */
 export const getStateEmbed = (state: UserState): EmbedBuilder => {
+  let userStateDescription: string;
+  if (state.activated && state.hasPraiseGiverRole) {
+    userStateDescription = 'Your account is activated and has praise powers.';
+  } else if (state.hasPraiseGiverRole) {
+    userStateDescription =
+      "You have praise powers, however your account isn't activated(use `/activate` command).";
+  } else if (state.activated) {
+    userStateDescription =
+      "Your account is activated, however you don't have praise powers.";
+  } else {
+    userStateDescription =
+      "You don't have praise powers, and your account isn't activated(use `/activate` command).";
+  }
   const embed = new EmbedBuilder()
     .setTitle(state.username)
-    .setDescription(
-      state.hasPraiseGiverRole && state.activated
-        ? 'Your account is activated and has praise powers.'
-        : state.hasPraiseGiverRole
-        ? "You have praise powers, however your account isn't activated(use `/activate` command)."
-        : "Your account is activated, however you don't have praise powers."
-    );
+    .setDescription(userStateDescription);
   if (state.avatar) {
     embed.setThumbnail(
       `https://cdn.discordapp.com/avatars/${state.id}/${state.avatar}`

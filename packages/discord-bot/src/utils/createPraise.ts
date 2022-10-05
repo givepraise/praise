@@ -35,5 +35,5 @@ export const createPraise = async (
     )}`,
     receiver: receiverAccount._id,
   };
-  return await PraiseModel.create(praiseData);
+  return PraiseModel.create(praiseData);
 };
