@@ -296,7 +296,10 @@ export const custom = async (req: Request, res: Response): Promise<void> => {
       const fields = Object.keys(transformer.map.item).map((item) => {
         return { label: item.toUpperCase(), value: item };
       });
-      const json2csv = new Parser({ fields: fields });
+      const json2csv = new Parser({
+        fields: fields,
+        header: transformer.includeCsvHeaderRow ?? true,
+      });
       data = json2csv.parse(summarizedReceiverData);
       res.status(200).contentType('text/csv').attachment('data.csv').send(data);
     } else {

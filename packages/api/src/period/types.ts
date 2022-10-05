@@ -144,6 +144,7 @@ export interface ExportTransformerMap {
   };
   context: {};
   filterColumn: string;
+  includeCsvHeaderRow?: boolean;
 }
 
 export interface ExportCustomQueryInput {
