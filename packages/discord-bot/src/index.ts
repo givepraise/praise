@@ -26,7 +26,7 @@ void (async (): Promise<void> => {
   if (registerSuccess) {
     logger.info('All bot commands registered in Guild.');
   } else {
-    logger.err('Failed to register bot commands');
+    logger.error('Failed to register bot commands');
   }
 })();
 
@@ -41,7 +41,7 @@ discordClient.on('interactionCreate', async (interaction) => {
   try {
     await command.execute(interaction);
   } catch (error) {
-    logger.err(error);
+    logger.error(error);
     return interaction.reply({
       content: 'There was an error while executing this command!',
       ephemeral: true,
@@ -65,7 +65,7 @@ void (async (): Promise<void> => {
     } as ConnectOptions);
     logger.info('Connected to database.');
   } catch (error) {
-    logger.err('Could not connect to database.');
+    logger.error('Could not connect to database.');
   }
   // Login to Discord with your client's token
   await discordClient.login(token);

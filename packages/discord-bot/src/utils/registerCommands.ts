@@ -1,7 +1,7 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { Collection } from 'discord.js';
-import logger from 'jet-logger';
+import { logger } from 'api/src/shared/logger';
 import { readdir } from 'fs/promises';
 import { join } from 'path';
 import { Command } from '../interfaces/Command';
@@ -18,10 +18,10 @@ export const registerCommands = async (
   client: DiscordClient
 ): Promise<boolean> => {
   if (!client.id) {
-    logger.err('DISCORD_CLIENT_ID env variable not set.');
+    logger.error('DISCORD_CLIENT_ID env variable not set.');
   }
   if (!client.guildId) {
-    logger.err('DISCORD_GUILD_ID env variable not set.');
+    logger.error('DISCORD_GUILD_ID env variable not set.');
   }
 
   try {
@@ -61,7 +61,7 @@ export const registerCommands = async (
 
     return true;
   } catch (error) {
-    logger.err(error);
+    logger.error(error);
     return false;
   }
 };
