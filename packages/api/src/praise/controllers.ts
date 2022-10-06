@@ -54,8 +54,6 @@ export const all = async (
     praisePagination.docs.map((p) => praiseTransformer(p))
   );
 
-  throw new Error('This is a test error');
-
   const response = {
     ...praisePagination,
     docs: praiseDetailsDtoList,
