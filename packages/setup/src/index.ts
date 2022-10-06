@@ -134,10 +134,15 @@ export const randomString = (length = 32): string => {
   return result;
 };
 
-const baseServerUrl = (answers: Answers): string =>
-  answers.HOST === 'localhost'
+const baseServerUrl = (answers: Answers): string => {
+  if (!answers.HOST) {
+    return 'http://localhost';
+  }
+
+  return answers.HOST === 'localhost'
     ? `http://${answers.HOST}`
     : `https://${answers.HOST}`;
+};
 
 const serverUrl = (answers: Answers): string => {
   if (answers.NODE_ENV === 'development') {
