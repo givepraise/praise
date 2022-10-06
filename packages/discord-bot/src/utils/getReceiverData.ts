@@ -6,8 +6,8 @@ interface ReceiverData {
 
 export const getReceiverData = (receivers: string): ReceiverData => {
   return {
-    validReceiverIds: receivers?.match(/<@!?([0-9]+)>/g),
-    undefinedReceivers: receivers?.match(/[^<]@([a-z0-9]+)/gi),
-    roleMentions: receivers?.match(/<@&([0-9]+)>/g),
+    validReceiverIds: receivers?.match(/<@!?(\d+)>/g),
+    undefinedReceivers: receivers?.match(/[^<]@(\w+)/gi),
+    roleMentions: receivers?.match(/<@&(\d+)>/g),
   };
 };
