@@ -2,7 +2,6 @@ import cors from 'cors';
 import express, { json, urlencoded, Express } from 'express';
 import 'express-async-errors';
 import helmet from 'helmet';
-import morgan from 'morgan';
 import fileUpload from 'express-fileupload';
 import { ErrorHandler } from '@/error/ErrorHandler';
 import { seedData, seedAdminUsers } from '@/database/seeder/app';

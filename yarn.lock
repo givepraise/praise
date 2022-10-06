@@ -5162,7 +5162,6 @@ __metadata:
     greedy-number-partitioning: "https://github.com/mattyg/greedy-number-partitioning.git"
     helmet: ^4.6.0
     http-status-codes: ^2.1.4
-    jet-logger: ^1.1.5
     json2csv: ^5.0.6
     jsonschema: ^1.4.1
     jsonwebtoken: ^8.5.1
