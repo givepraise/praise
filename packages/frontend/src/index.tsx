@@ -1,3 +1,4 @@
+import './utils/polyfills';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Toaster } from 'react-hot-toast';
