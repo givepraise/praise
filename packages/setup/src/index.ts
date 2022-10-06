@@ -1,5 +1,6 @@
 import inquirer from 'inquirer';
 import * as dotenv from 'dotenv';
+import { logger } from 'api/src/shared/logger';
 import { unlinkSync, existsSync, readFileSync, writeFileSync } from 'fs';
 import { exit } from 'process';
 import os from 'os';
@@ -134,20 +135,16 @@ export const randomString = (length = 32): string => {
   return result;
 };
 
-const baseServerUrl = (answers: Answers): string => {
-  if (!answers.HOST) {
-    return 'http://localhost';
-  }
-
-  return answers.HOST === 'localhost'
+const baseServerUrl = (answers: Answers): string =>
+  answers.HOST === 'localhost'
     ? `http://${answers.HOST}`
     : `https://${answers.HOST}`;
-};
 
 const serverUrl = (answers: Answers): string => {
   if (answers.NODE_ENV === 'development') {
     return `http://${answers.HOST}:${process.env.API_PORT as string}`;
   }
+
   return baseServerUrl(answers);
 };
 
