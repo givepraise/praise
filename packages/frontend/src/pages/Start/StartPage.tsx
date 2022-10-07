@@ -26,11 +26,13 @@ const StartPage = (): JSX.Element => {
       <BreadCrumb name="Praise" icon={faPrayingHands} />
       <ActiveNoticesBoard />
 
-      <div className="mb-6">
+      <div className="mb-5">
         <Button
           variant={'outline'}
-          className={`rounded-r-none ${
-            view === pageViews.myPraiseView ? 'opacity-50' : ''
+          className={`rounded-r-none  ${
+            view === pageViews.myPraiseView
+              ? 'bg-opacity-50 text-opacity-50 hover:border-themecolor-4'
+              : 'hover:bg-themecolor-3 hover:border-themecolor-3'
           }`}
           onClick={(): void => setView(pageViews.praiseView)}
         >
@@ -39,8 +41,10 @@ const StartPage = (): JSX.Element => {
         </Button>
         <Button
           variant={'outline'}
-          className={`rounded-l-none ${
-            view === pageViews.praiseView ? 'opacity-50' : ''
+          className={`rounded-l-none  ${
+            view === pageViews.praiseView
+              ? 'bg-opacity-50  text-opacity-50 hover:border-themecolor-4 '
+              : 'hover:bg-themecolor-3 hover:border-themecolor-3'
           }`}
           onClick={(): void => setView(pageViews.myPraiseView)}
         >
