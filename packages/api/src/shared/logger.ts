@@ -1,4 +1,4 @@
-import winston from 'winston';
+import winston, { LogEntry } from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
 const levels = {
@@ -13,7 +13,6 @@ const level = (): string => {
   const env = process.env.NODE_ENV || 'development';
   const isProduction = env === 'production';
   const loggerLevel = process.env.LOGGER_LEVEL || 'warn';
-
   return isProduction ? loggerLevel : 'debug';
 };
 
@@ -29,15 +28,20 @@ winston.addColors(colors);
 
 const format = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
-  winston.format.colorize({ all: true }),
   winston.format.printf(
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    (info) => `${info.timestamp} ${info.level}: ${info.message}`
+    (info: LogEntry) =>
+      `${info.timestamp as string} ${info.level}: ${info.message}`
   )
 );
 
+const consoleOptions = {
+  format: winston.format.combine(
+    winston.format.colorize({ all: true }),
+    format
+  ),
+};
+
 const dailyRotateTransport: DailyRotateFile = new DailyRotateFile({
-  level: 'error',
   filename: 'log-%DATE%.log',
   dirname: 'logs',
   datePattern: 'YYYY-MM-DD',
@@ -46,7 +50,10 @@ const dailyRotateTransport: DailyRotateFile = new DailyRotateFile({
   maxFiles: '7d',
 });
 
-const transports = [new winston.transports.Console(), dailyRotateTransport];
+const transports = [
+  new winston.transports.Console(consoleOptions),
+  dailyRotateTransport,
+];
 
 export const logger = winston.createLogger({
   level: level(),
