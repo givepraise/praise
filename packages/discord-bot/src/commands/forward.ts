@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import logger from 'jet-logger';
+import { logger } from 'api/dist/shared/logger';
 import { forwardHandler } from '../handlers/forward';
 import { Command } from '../interfaces/Command';
 import { getMsgLink } from '../utils/format';
@@ -45,7 +45,7 @@ export const forward: Command = {
         )
       );
     } catch (err) {
-      logger.err(err);
+      logger.error(err);
     }
   },
   help: {

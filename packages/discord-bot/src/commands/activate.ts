@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import logger from 'jet-logger';
+import { logger } from 'api/dist/shared/logger';
 import { activationHandler } from '../handlers/activate';
 import { Command } from '../interfaces/Command';
 
@@ -16,7 +16,7 @@ export const activate: Command = {
         return;
       await activationHandler(interaction);
     } catch (err) {
-      logger.err(err);
+      logger.error(err);
     }
   },
 

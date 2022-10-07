@@ -1,7 +1,7 @@
 import { PraiseModel } from 'api/dist/praise/entities';
 import { EventLogTypeKey } from 'api/dist/eventlog/types';
 import { logEvent } from 'api/dist/eventlog/utils';
-import logger from 'jet-logger';
+import { logger } from 'api/dist/shared/logger';
 import { GuildMember, User } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
 import { getReceiverData } from '../utils/getReceiverData';
@@ -140,7 +140,7 @@ export const praiseHandler: CommandHandler = async (
       }
       praised.push(receiverAccount.accountId);
     } else {
-      logger.err(
+      logger.error(
         `Praise not registered for [${giverAccount.accountId}] -> [${receiverAccount.accountId}] for [${reason}]`
       );
     }

@@ -1,5 +1,4 @@
 import { firstFit, PackingOutput } from 'bin-packer';
-import logger from 'jet-logger';
 import flatten from 'lodash/flatten';
 import intersection from 'lodash/intersection';
 import range from 'lodash/range';
@@ -15,6 +14,7 @@ import { UserRole } from '@/user/types';
 import { UserAccountDocument } from '@/useraccount/types';
 import { PraiseModel } from '@/praise/entities';
 import { PeriodDocument, Assignments } from '@/period/types';
+import { logger } from '@/shared/logger';
 import { getPreviousPeriodEndDate } from '../utils/core';
 import { PeriodModel } from '../entities';
 

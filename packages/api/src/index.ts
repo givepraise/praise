@@ -1,6 +1,6 @@
 import 'express-async-errors';
-import logger from 'jet-logger';
 import { setup } from './server';
+import { logger } from './shared/logger';
 
 void (async (): Promise<void> => {
   const app = await setup();

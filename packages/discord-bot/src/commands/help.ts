@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import logger from 'jet-logger';
+import { logger } from 'api/dist/shared/logger';
 import { helpHandler } from '../handlers/help';
 import { HelpCommandBuilder, Command } from '../interfaces/Command';
 
@@ -28,7 +28,7 @@ export const help: HelpCommandBuilder = (commands) => {
           if (msg === undefined) return;
           await helpHandler(interaction, commands);
         } catch (err) {
-          logger.err(err);
+          logger.error(err);
         }
       },
     } as Command,
