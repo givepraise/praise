@@ -1,4 +1,4 @@
-import { User, MessageEmbed, Role } from 'discord.js';
+import { User, EmbedBuilder, Role } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
 
 /**
@@ -15,7 +15,7 @@ export const praiseSuccess = async (
   const msg = (await settingValue('PRAISE_SUCCESS_MESSAGE')) as string;
   if (msg) {
     return msg
-      ?.replace('{@receivers}', `${praised.join(', ')}`)
+      .replace('{@receivers}', `${praised.join(', ')}`)
       .replace('{reason}', reason);
   } else {
     return 'PRAISE SUCCESSFUL (message not set)';
@@ -123,12 +123,12 @@ export const dmError = async (): Promise<string> => {
 export const praiseRoleError = async (
   praiseGiverRole: Role,
   user: User
-): Promise<MessageEmbed> => {
+): Promise<EmbedBuilder> => {
   const msg = (await settingValue(
     'PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR'
   )) as string;
   if (msg) {
-    return new MessageEmbed().setColor('#ff0000').setDescription(
+    return new EmbedBuilder().setColor('#ff0000').setDescription(
       msg
         .replace('{role}', praiseGiverRole?.name || '...')
         .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
@@ -136,7 +136,7 @@ export const praiseRoleError = async (
         .replace('{@user}', `<@!${user?.id || '...'}>`)
     );
   }
-  return new MessageEmbed().setColor('#ff0000').setDescription(
+  return new EmbedBuilder().setColor('#ff0000').setDescription(
     'USER DOES NOT HAVE {@role} role (message not set)'
       .replace('{role}', praiseGiverRole?.name || '...')
       .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
@@ -201,7 +201,7 @@ export const roleMentionWarning = async (
   receivers: string,
   user: User
 ): Promise<string> => {
-  const msg = (await settingValue('PRAISE_TO_ROLE_WARNING')) as String;
+  const msg = (await settingValue('PRAISE_TO_ROLE_WARNING')) as string;
   if (msg) {
     return msg
       .replace('{@receivers}', receivers)
@@ -218,14 +218,14 @@ export const roleMentionWarning = async (
  */
 export const praiseSuccessDM = async (
   msgUrl: string
-): Promise<MessageEmbed> => {
+): Promise<EmbedBuilder> => {
   const msg = (await settingValue('PRAISE_SUCCESS_DM')) as string;
   if (msg) {
-    return new MessageEmbed()
+    return new EmbedBuilder()
       .setColor('#696969')
       .setDescription(msg.replace('{praiseURL}', msgUrl));
   }
-  return new MessageEmbed().setDescription(
+  return new EmbedBuilder().setDescription(
     `[YOU HAVE BEEN PRAISED!!!](${msgUrl}) (message not set)`
   );
 };
@@ -235,17 +235,17 @@ export const praiseSuccessDM = async (
  *
  * @returns {Promise<string>}
  */
-export const notActivatedDM = async (msgUrl: string): Promise<MessageEmbed> => {
+export const notActivatedDM = async (msgUrl: string): Promise<EmbedBuilder> => {
   const msg = (await settingValue(
     'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM'
   )) as string;
   if (msg) {
-    return new MessageEmbed()
+    return new EmbedBuilder()
       .setColor('#ff0000')
       .setTitle('**⚠️  Praise Account Not Activated**')
       .setDescription(msg.replace('{praiseURL}', msgUrl));
   }
-  return new MessageEmbed().setDescription(
+  return new EmbedBuilder().setDescription(
     `**[YOU HAVE BEEN PRAISED](${msgUrl})\nPRAISE ACCOUNT NOT ACTIVATED. USE \`/activate\` TO ACTIVATE YOUR ACCOUNT. (message not set)`
   );
 };

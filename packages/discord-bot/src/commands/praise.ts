@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from 'api/src/shared/logger';
+import { logger } from 'api/dist/shared/logger';
 import { praiseHandler } from '../handlers/praise';
 import { Command } from '../interfaces/Command';
 import { getMsgLink } from '../utils/format';
@@ -45,7 +45,6 @@ export const praise: Command = {
 
   help: {
     name: 'praise',
-    text: 'Command to praise users in the discord server. You need to have an activated account on the Praise System to use this command.\n\
-  **Usage**: `/praise receivers: <@user1 @user2 ...> reason: for something`\n',
+    text: 'Command to praise users in the discord server. You need to have an activated account on the Praise System to use this command.\n**Usage**: `/praise receivers: <@user1 @user2 ...> reason: for something`\n',
   },
 };

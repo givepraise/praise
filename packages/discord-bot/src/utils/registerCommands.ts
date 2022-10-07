@@ -1,7 +1,7 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { Collection } from 'discord.js';
-import { logger } from 'api/src/shared/logger';
+import { logger } from 'api/dist/shared/logger';
 import { readdir } from 'fs/promises';
 import { join } from 'path';
 import { Command } from '../interfaces/Command';

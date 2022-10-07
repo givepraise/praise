@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from 'api/src/shared/logger';
+import { logger } from 'api/dist/shared/logger';
 import { activationHandler } from '../handlers/activate';
 import { Command } from '../interfaces/Command';
 
@@ -22,7 +22,6 @@ export const activate: Command = {
 
   help: {
     name: 'activate',
-    text: 'Command to activate praise for discord account. You need to open the link returned by the command and sign a message with your eth wallet to link and activate your discord account with your eth wallet address.\n\
-    **Usage**: `/activate`\n',
+    text: 'Command to activate praise for discord account. You need to open the link returned by the command and sign a message with your eth wallet to link and activate your discord account with your eth wallet address.\n**Usage**: `/activate`\n',
   },
 };

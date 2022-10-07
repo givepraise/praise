@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from 'api/src/shared/logger';
+import { logger } from 'api/dist/shared/logger';
 import { whoamiHandler } from '../handlers/whoami';
 import { Command } from '../interfaces/Command';
 

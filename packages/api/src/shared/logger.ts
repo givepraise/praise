@@ -11,8 +11,10 @@ const levels = {
 
 const level = (): string => {
   const env = process.env.NODE_ENV || 'development';
-  const isDevelopment = env === 'development';
-  return isDevelopment ? 'debug' : 'warn';
+  const isProduction = env === 'production';
+  const loggerLevel = process.env.LOGGER_LEVEL || 'warn';
+
+  return isProduction ? loggerLevel : 'debug';
 };
 
 const colors = {

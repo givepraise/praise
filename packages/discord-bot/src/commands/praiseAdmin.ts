@@ -2,7 +2,7 @@ import {
   SlashCommandBuilder,
   SlashCommandSubcommandBuilder,
 } from '@discordjs/builders';
-import { logger } from 'api/src/shared/logger';
+import { logger } from 'api/dist/shared/logger';
 import { announcementHandler } from '../handlers/announce';
 import { Command } from '../interfaces/Command';
 
@@ -45,13 +45,11 @@ export const praiseAdmin: Command = {
 
   help: {
     name: 'admin',
-    text: 'Command to perform admin actions in the Praise system and the PraiseBot\n\
-  **Usage**: `/admin <announce|...>`\n',
+    text: 'Command to perform admin actions in the Praise system and the PraiseBot\n**Usage**: `/admin <announce|...>`\n',
     subCommands: [
       {
         name: 'announce',
-        text: 'Command to publish announcements that are distributed as direct messages to Praise users.\n\
-        Usage: `/admin announce message: <you have been selected for quantification...>`',
+        text: 'Command to publish announcements that are distributed as direct messages to Praise users.\nUsage: `/admin announce message: <you have been selected for quantification...>`',
       },
     ],
   },
