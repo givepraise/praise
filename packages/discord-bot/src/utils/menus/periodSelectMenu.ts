@@ -1,4 +1,4 @@
-import { MessageSelectMenu } from 'discord.js';
+import { SelectMenuBuilder } from 'discord.js';
 import { PeriodDocument } from 'api/dist/period/types';
 
 /**
@@ -9,8 +9,8 @@ import { PeriodDocument } from 'api/dist/period/types';
  */
 export const periodSelectMenu = (
   periods: PeriodDocument[]
-): MessageSelectMenu => {
-  const periodMenu = new MessageSelectMenu()
+): SelectMenuBuilder => {
+  const periodMenu = new SelectMenuBuilder()
     .setCustomId('period-menu')
     .setPlaceholder('Select period');
 

@@ -1,6 +1,6 @@
 import { CacheType, CommandInteraction, GuildMember } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
-import { dmError, praiseRoleError } from '../utils/praiseEmbeds';
+import { dmError, praiseRoleError } from './embeds/praiseEmbeds';
 
 /**
  * Check if user has discord role PRAISE_GIVER_ROLE_ID if required,

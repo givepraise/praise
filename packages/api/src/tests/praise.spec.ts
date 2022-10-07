@@ -221,7 +221,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     });
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
     };
 
     const response = await this.client
@@ -233,7 +233,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
       .expect(200);
 
     expect(response.body[0]._id).to.equal(praise?._id.toString());
-    expect(response.body[0].scoreRealized).to.equal(10);
+    expect(response.body[0].scoreRealized).to.equal(13);
     expect(response.body[0]).to.have.all.keys(
       '_id',
       '_idLabelRealized',
@@ -270,6 +270,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
 
     const FORM_DATA = {
       dismissed: true,
+      score: 1,
     };
 
     const response = await this.client
@@ -308,7 +309,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
 
     const praise = await seedPraise({ createdAt: new Date() });
     await seedQuantification(praise, quantifier, {
-      score: 10,
+      score: 13,
       dismissed: false,
       duplicatePraise: undefined,
     });
@@ -326,6 +327,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
 
     const FORM_DATA = {
       duplicatePraise: praise._id.toString(),
+      score: 1,
     };
 
     const response = await this.client
@@ -337,7 +339,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
       .expect(200);
 
     expect(response.body[0]._id).to.equal(praise2?._id.toString());
-    expect(response.body[0].quantifications[0].scoreRealized).to.equal(1);
+    expect(response.body[0].quantifications[0].scoreRealized).to.equal(1.3);
     expect(response.body[0]).to.have.all.keys(
       '_id',
       '_idLabelRealized',
@@ -364,7 +366,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     // Original Praise
     const praise = await seedPraise({ createdAt: new Date() });
     await seedQuantification(praise, quantifier, {
-      score: 10,
+      score: 13,
       dismissed: false,
       duplicatePraise: undefined,
     });
@@ -390,7 +392,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     );
 
     const FORM_DATA = {
-      score: 20,
+      score: 13,
     };
 
     const response = await this.client
@@ -402,7 +404,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
       .expect(200);
 
     expect(response.body[0]._id).to.equal(praise?._id.toString());
-    expect(response.body[0].quantifications[0].scoreRealized).to.equal(20);
+    expect(response.body[0].quantifications[0].scoreRealized).to.equal(13);
     expect(response.body[0]).to.have.all.keys(
       '_id',
       '_idLabelRealized',
@@ -417,7 +419,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
       'scoreRealized'
     );
     expect(response.body[1]._id).to.equal(praise2?._id.toString());
-    expect(response.body[1].quantifications[0].scoreRealized).to.equal(2);
+    expect(response.body[1].quantifications[0].scoreRealized).to.equal(1.3);
   });
 
   it('404 response if praise does not exist', async function () {
@@ -429,7 +431,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     const { accessToken } = await loginUser(wallet, this.client);
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
     };
 
     return this.client
@@ -457,7 +459,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     });
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
     };
 
     return this.client
@@ -490,7 +492,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     });
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
     };
 
     return this.client
@@ -518,7 +520,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     });
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
     };
 
     return this.client
@@ -661,7 +663,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     });
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
     };
 
     return this.client
@@ -692,7 +694,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     });
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
     };
 
     return this.client
@@ -737,7 +739,7 @@ describe('PATCH /api/praise/quantify', () => {
     });
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
       praiseIds,
     };
 
@@ -751,8 +753,8 @@ describe('PATCH /api/praise/quantify', () => {
 
     expect(response.body[0]._id).to.equal(praiseIds[0].toString());
     expect(response.body[1]._id).to.equal(praiseIds[1].toString());
-    expect(response.body[0].scoreRealized).to.equal(10);
-    expect(response.body[1].scoreRealized).to.equal(10);
+    expect(response.body[0].scoreRealized).to.equal(13);
+    expect(response.body[1].scoreRealized).to.equal(13);
     expect(response.body[0]).to.have.all.keys(
       '_id',
       '_idLabelRealized',
@@ -795,7 +797,7 @@ describe('PATCH /api/praise/quantify', () => {
     });
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
       praiseIds,
     };
 
@@ -811,8 +813,8 @@ describe('PATCH /api/praise/quantify', () => {
     expect(response.body[1]._id).to.equal(praiseIds[1].toString());
     expect(response.body[0].quantifications[0].dismissed).to.equal(false);
     expect(response.body[1].quantifications[0].dismissed).to.equal(false);
-    expect(response.body[0].scoreRealized).to.equal(10);
-    expect(response.body[1].scoreRealized).to.equal(10);
+    expect(response.body[0].scoreRealized).to.equal(13);
+    expect(response.body[1].scoreRealized).to.equal(13);
   });
 
   it('200 response with json body containing list with single praise that was marked as duplicate but not anymore after quantification', async function () {
@@ -828,7 +830,7 @@ describe('PATCH /api/praise/quantify', () => {
     const praise = await seedPraise({ createdAt: new Date() });
     praiseIds.push(praise.id);
     await seedQuantification(praise, quantifier, {
-      score: 10,
+      score: 13,
       dismissed: false,
       duplicatePraise: undefined,
     });
@@ -847,7 +849,7 @@ describe('PATCH /api/praise/quantify', () => {
     });
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
       praiseIds,
     };
 
@@ -867,8 +869,8 @@ describe('PATCH /api/praise/quantify', () => {
     expect(response.body[2].quantifications[0].duplicatePraise).to.equal(
       undefined
     );
-    expect(response.body[0].scoreRealized).to.equal(10);
-    expect(response.body[2].scoreRealized).to.equal(10);
+    expect(response.body[0].scoreRealized).to.equal(13);
+    expect(response.body[2].scoreRealized).to.equal(13);
   });
 
   it('200 response with json body containing list with single praise that is duplicate and which score also changed when original praise score was changed', async function () {
@@ -884,7 +886,7 @@ describe('PATCH /api/praise/quantify', () => {
     const praise = await seedPraise({ createdAt: new Date() });
     praiseIds.push(praise.id);
     await seedQuantification(praise, quantifier, {
-      score: 10,
+      score: 13,
       dismissed: false,
       duplicatePraise: undefined,
     });
@@ -931,7 +933,7 @@ describe('PATCH /api/praise/quantify', () => {
     const praiseIds = [faker.database.mongodbObjectId()];
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
       praiseIds,
     };
 
@@ -962,7 +964,7 @@ describe('PATCH /api/praise/quantify', () => {
     const praiseIds = [praise._id];
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
       praiseIds,
     };
 
@@ -998,7 +1000,7 @@ describe('PATCH /api/praise/quantify', () => {
     const praiseIds = [praise._id];
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
       praiseIds,
     };
 
@@ -1029,7 +1031,7 @@ describe('PATCH /api/praise/quantify', () => {
     const praiseIds = [praise._id];
 
     const FORM_DATA = {
-      score: 10,
+      score: 13,
       praiseIds,
     };
 

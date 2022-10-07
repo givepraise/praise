@@ -2,8 +2,6 @@ import cors from 'cors';
 import express, { json, urlencoded, Express } from 'express';
 import 'express-async-errors';
 import helmet from 'helmet';
-import logger from 'jet-logger';
-import morgan from 'morgan';
 import fileUpload from 'express-fileupload';
 import { ErrorHandler } from '@/error/ErrorHandler';
 import { seedData, seedAdminUsers } from '@/database/seeder/app';
@@ -12,6 +10,8 @@ import { connectDatabase } from './database/connection';
 import { baseRouter } from './routes';
 import { envCheck } from './pre-start/envCheck';
 import { requiredEnvVariables } from './pre-start/env-required';
+import { logger } from './shared/logger';
+import { morganMiddleware } from './shared/morganMiddleware';
 
 /**
  * Connect to database, run necessary migrations, and seed fake data,
@@ -66,6 +66,7 @@ const setupApiServer = async (NODE_ENV = 'development'): Promise<Express> => {
   const app = express();
 
   //app.use((req, res, next) => setTimeout(next, 1000)); // Delay response during testing
+  app.use(morganMiddleware);
 
   app.use(
     fileUpload({
@@ -96,13 +97,11 @@ const setupApiServer = async (NODE_ENV = 'development'): Promise<Express> => {
 
   if (NODE_ENV === 'development') {
     await seedAdminUsers();
-    app.use(morgan('dev'));
   } else if (NODE_ENV === 'production') {
     await seedAdminUsers();
     app.use(helmet());
   } else if (NODE_ENV === 'testing') {
     await seedAdminUsers();
-    app.use(morgan('dev'));
   }
 
   return app;

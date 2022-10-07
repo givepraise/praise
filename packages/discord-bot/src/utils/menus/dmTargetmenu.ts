@@ -1,9 +1,9 @@
-import { MessageSelectMenu } from 'discord.js';
+import { SelectMenuBuilder } from 'discord.js';
 
 /**
  * Generate Discord menu to select a user role or assignment status
  */
-export const dmTargetMenu = new MessageSelectMenu()
+export const dmTargetMenu = new SelectMenuBuilder()
   .setCustomId('dm-menu')
   .setPlaceholder('Select user group')
   .addOptions([

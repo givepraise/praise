@@ -1,4 +1,3 @@
-import logger from 'jet-logger';
 import { Request } from 'express';
 import mime from 'mime-types';
 import { UploadedFile } from 'express-fileupload';
@@ -7,6 +6,7 @@ import { randomBytes } from 'crypto';
 import { BadRequestError, InternalServerError } from '@/error/errors';
 import { PraiseAllInput, PraiseExportInput } from '@/praise/types';
 import { QueryInput } from './types';
+import { logger } from './logger';
 
 const uploadDirectory =
   process.env.NODE_ENV === 'production' ? '/usr/src/uploads/' : 'uploads/';
