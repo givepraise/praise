@@ -4,9 +4,6 @@ import { helpHandler } from '../handlers/help';
 import { HelpCommandBuilder, Command } from '../interfaces/Command';
 
 export const help: HelpCommandBuilder = (commands) => {
-  const commandNames: [name: string, value: string][] = Array.from(
-    commands
-  ).map((i) => [i[0], i[0]]);
   return {
     help: {
       data: new SlashCommandBuilder()
@@ -14,9 +11,9 @@ export const help: HelpCommandBuilder = (commands) => {
         .setDescription('Shows help text for praise')
         .addStringOption((option) =>
           option
-            .addChoices(commandNames)
             .setName('command')
             .setDescription('The command you want to look up')
+            .setAutocomplete(true)
             .setRequired(false)
         ),
 

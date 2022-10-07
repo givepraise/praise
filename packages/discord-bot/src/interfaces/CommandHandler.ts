@@ -1,6 +1,6 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 
 export type CommandHandler = (
-  interaction: CommandInteraction,
+  interaction: ChatInputCommandInteraction,
   responseUrl?: string
 ) => Promise<void>;
