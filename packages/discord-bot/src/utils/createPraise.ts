@@ -22,7 +22,7 @@ export const createPraise = async (
       channel.type === ChannelType.AnnouncementThread ||
       channel.type === ChannelType.PrivateThread) &&
     channel.parent
-      ? `${channel.parent.name}/${channel.name}`
+      ? `${channel.parent.name} / ${channel.name}`
       : channel.name;
   const praiseData = {
     reason: reason,
