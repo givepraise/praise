@@ -119,7 +119,7 @@ describe('GET /api/period/:periodId', () => {
   });
 });
 
-describe('GET /api/period/:periodId/receiverPraise', () => {
+describe('GET /api/period/:id/receiverPraise', () => {
   beforeEach(async () => {
     await PeriodModel.deleteMany({});
     await PraiseModel.deleteMany({});
@@ -155,9 +155,9 @@ describe('GET /api/period/:periodId/receiverPraise', () => {
 
     const response = await this.client
       .get(
-        `/api/periods/${
-          period._id.toString() as string
-        }/receiverPraise?receiverId=${userAccount._id.toString() as string}`
+        `/api/periods/${period._id.toString() as string}/receiverPraise?id=${
+          userAccount._id.toString() as string
+        }`
       )
       .set('Authorization', `Bearer ${accessToken}`)
       .set('Accept', 'application/json')
@@ -228,9 +228,9 @@ describe('GET /api/period/:periodId/receiverPraise', () => {
 
     return this.client
       .get(
-        `/api/periods/${
-          period._id.toString() as string
-        }/receiverPraise?receiverId=${userAccount._id.toString() as string}`
+        `/api/periods/${period._id.toString() as string}/receiverPraise?id=${
+          userAccount._id.toString() as string
+        }`
       )
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)

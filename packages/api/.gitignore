@@ -7,3 +7,4 @@ uploads/*
 !*uploads/praise_logo.png
 !*uploads/gnosischain_logo.png
 .nyc_output
+logs/*

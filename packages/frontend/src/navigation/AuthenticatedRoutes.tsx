@@ -5,7 +5,6 @@ import { ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth';
 
 const StartPage = React.lazy(() => import('@/pages/Start/StartPage'));
 const SettingsPage = React.lazy(() => import('@/pages/Settings/SettingsPage'));
-const MyPraisePage = React.lazy(() => import('@/pages/MyPraise/MyPraisePage'));
 const UserDetailsPage = React.lazy(
   () => import('@/pages/UserDetails/UserDetailsPage')
 );
@@ -20,6 +19,9 @@ const PeriodDetailsPage = React.lazy(
 );
 const PeriodReceiverSummaryPage = React.lazy(
   () => import('@/pages/Periods/ReceiverSummary/ReceiverSummaryPage')
+);
+const PeriodGiverSummaryPage = React.lazy(
+  () => import('@/pages/Periods/GiverSummary/GiverSummaryPage')
 );
 const PeriodQuantifierSummaryPage = React.lazy(
   () => import('@/pages/Periods/QuantifierSummary/QuantifierSummaryPage')
@@ -87,10 +89,6 @@ export const AuthenticatedRoutes = ({
 }: Props): JSX.Element | null => {
   return (
     <Switch>
-      <Route path="/mypraise">
-        <MyPraisePage />
-      </Route>
-
       <AuthRoute
         userRoles={userRoles}
         roles={[ROLE_ADMIN]}
@@ -122,6 +120,10 @@ export const AuthenticatedRoutes = ({
 
       <Route path="/periods/:periodId/receiver/:receiverId">
         <PeriodReceiverSummaryPage />
+      </Route>
+
+      <Route path="/periods/:periodId/giver/:giverId">
+        <PeriodGiverSummaryPage />
       </Route>
 
       <Route path="/periods/:periodId/quantifier/:quantifierId">

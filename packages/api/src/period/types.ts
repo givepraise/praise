@@ -105,6 +105,10 @@ export interface PeriodQuantifierPraiseInput extends Query {
   quantifierId?: string;
 }
 
+export interface PeriodGiverPraiseInput extends Query {
+  giverId?: string;
+}
+
 export interface Assignments {
   poolAssignments: Quantifier[];
   remainingAssignmentsCount: number;

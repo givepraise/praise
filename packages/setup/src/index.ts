@@ -1,5 +1,6 @@
 import inquirer from 'inquirer';
 import * as dotenv from 'dotenv';
+import { logger } from 'api/src/shared/logger';
 import { unlinkSync, existsSync, readFileSync, writeFileSync } from 'fs';
 import { exit } from 'process';
 import os from 'os';
@@ -143,6 +144,7 @@ const serverUrl = (answers: Answers): string => {
   if (answers.NODE_ENV === 'development') {
     return `http://${answers.HOST}:${process.env.API_PORT as string}`;
   }
+
   return baseServerUrl(answers);
 };
 
@@ -172,7 +174,7 @@ const deleteOldEnvFiles = (): void => {
 
   // Frontend
   if (existsSync(frontendTemplateEnvPath)) {
-    unlinkSync(frontendEnvPath);
+    unlinkSync(frontendTemplateEnvPath);
   }
   if (existsSync(frontendEnvPath)) {
     unlinkSync(frontendEnvPath);
@@ -200,10 +202,7 @@ const run = async (): Promise<void> => {
     FRONTEND_URL: frontendUrl(answers),
     REACT_APP_SERVER_URL: serverUrl(answers),
     FRONTEND_PORT: process.env.FRONTEND_PORT,
-    JET_LOGGER_MODE: process.env.JET_LOGGER_MODE,
-    JET_LOGGER_FILEPATH: process.env.JET_LOGGER_FILEPATH,
-    JET_LOGGER_TIMESTAMP: process.env.JET_LOGGER_TIMESTAMP,
-    JET_LOGGER_FORMAT: process.env.JET_LOGGER_FORMAT,
+    LOGGER_LEVEL: process.env.LOGGER_LEVEL,
     DISCORD_TOKEN: answers.DISCORD_TOKEN,
     DISCORD_CLIENT_ID: answers.DISCORD_CLIENT_ID,
     DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,

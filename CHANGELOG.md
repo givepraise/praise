@@ -9,7 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+- **Discord-bot**: Updated the bot to use the new `discord.js` version 14 #619
+- **Discord-bot**: Minor refactors to make code easier to read #619
+
 ### Fixed
+
+- **Devops:**: `database-restore.sh` did not work under certain circumstances. Script have now been upgraded.
+- **Discord-bot**: Praising does not work in threads #524 #619
 
 ## [0.12.2] - 2022-09-28
 

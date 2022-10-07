@@ -1,11 +1,11 @@
-import { PraiseModel } from 'api/dist/praise/entities';
-import { GuildMember, Util } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { UserModel } from 'api/dist/user/entities';
-import { EventLogTypeKey } from 'api/src/eventlog/types';
-import { logEvent } from 'api/src/eventlog/utils';
-import logger from 'jet-logger';
+import { EventLogTypeKey } from 'api/dist/eventlog/types';
+import { logEvent } from 'api/dist/eventlog/utils';
 import { UserRole } from 'api/dist/user/types';
 import { settingValue } from 'api/dist/shared/settings';
+import { logger } from 'api/dist/shared/logger';
+import { getReceiverData } from '../utils/getReceiverData';
 import { getUserAccount } from '../utils/getUserAccount';
 import {
   dmError,
@@ -19,10 +19,11 @@ import {
   forwardSuccess,
   giverNotActivatedError,
   selfPraiseWarning,
-} from '../utils/praiseEmbeds';
+} from '../utils/embeds/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
+import { createPraise } from '../utils/createPraise';
 
 /**
  * Execute command /firward
@@ -69,15 +70,14 @@ export const forwardHandler: CommandHandler = async (
   if (!(await assertPraiseGiver(praiseGiver, interaction, true))) return;
 
   const receivers = interaction.options.getString('receivers');
-  const receiverData = {
-    validReceiverIds: receivers?.match(/<@!([0-9]+)>/g),
-    undefinedReceivers: receivers?.match(/@([a-z0-9]+)/gi),
-    roleMentions: receivers?.match(/<@&([0-9]+)>/g),
-  };
 
+  if (!receivers || receivers.length === 0) {
+    await interaction.editReply(await invalidReceiverError());
+    return;
+  }
+
+  const receiverData = getReceiverData(receivers);
   if (
-    !receivers ||
-    receivers.length === 0 ||
     !receiverData.validReceiverIds ||
     receiverData.validReceiverIds?.length === 0
   ) {
@@ -117,8 +117,6 @@ export const forwardHandler: CommandHandler = async (
     (u) => u
   );
 
-  const guildChannel = await guild.channels.fetch(channel?.id || '');
-
   for (const receiver of Receivers) {
     const receiverAccount = await getUserAccount(receiver);
 
@@ -131,21 +129,13 @@ export const forwardHandler: CommandHandler = async (
         );
       }
     }
-    const praiseObj = await PraiseModel.create({
-      reason: reason,
-      /**
-       * ! Util.cleanContent might get deprecated in the coming versions of discord.js
-       * * We would have to make our own implementation (ref: https://github.com/discordjs/discord.js/blob/988a51b7641f8b33cc9387664605ddc02134859d/src/util/Util.js#L557-L584)
-       */
-      reasonRealized: Util.cleanContent(reason, channel),
-      giver: giverAccount._id,
-      forwarder: forwarderAccount._id,
-      sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
-      sourceName: `DISCORD:${encodeURIComponent(
-        guild.name
-      )}:${encodeURIComponent(guildChannel?.name || '')}`,
-      receiver: receiverAccount._id,
-    });
+    const praiseObj = await createPraise(
+      interaction,
+      giverAccount,
+      receiverAccount,
+      reason,
+      forwarderAccount
+    );
 
     await logEvent(
       EventLogTypeKey.PRAISE,
@@ -166,23 +156,25 @@ export const forwardHandler: CommandHandler = async (
       }
       praised.push(receiverAccount.accountId);
     } else {
-      logger.err(
+      logger.error(
         `Praise not registered for [${giverAccount.accountId}] -> [${receiverAccount.accountId}] for [${reason}]`
       );
     }
   }
 
-  Receivers.length !== 0
-    ? await interaction.editReply(
-        await forwardSuccess(
-          praiseGiver.user,
-          praised.map((id) => `<@!${id}>`),
-          reason
-        )
+  if (Receivers.length !== 0) {
+    await interaction.editReply(
+      await forwardSuccess(
+        praiseGiver.user,
+        praised.map((id) => `<@!${id}>`),
+        reason
       )
-    : warnSelfPraise
-    ? await interaction.editReply(await selfPraiseWarning())
-    : await interaction.editReply(await invalidReceiverError());
+    );
+  } else if (warnSelfPraise) {
+    await interaction.editReply(await selfPraiseWarning());
+  } else {
+    await interaction.editReply(await invalidReceiverError());
+  }
 
   const warningMsg =
     (receiverData.undefinedReceivers
@@ -204,5 +196,4 @@ export const forwardHandler: CommandHandler = async (
   if (warningMsg && warningMsg.length !== 0) {
     await interaction.followUp({ content: warningMsg, ephemeral: true });
   }
-  return;
 };
