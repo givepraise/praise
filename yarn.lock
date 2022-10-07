@@ -6753,13 +6753,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colors@npm:1.3.0":
-  version: 1.3.0
-  resolution: "colors@npm:1.3.0"
-  checksum: b631fa963dc786031e549cf0f88cfebdffdbd071976aa7ed913b144b00bbe223b97b6b893b6d76173a30f896c7e38bc45dc9f95f5445b638f58752e0c2a13d41
-  languageName: node
-  linkType: hard
-
 "colors@npm:~1.2.1":
   version: 1.2.5
   resolution: "colors@npm:1.2.5"
@@ -7848,7 +7841,6 @@ __metadata:
     discord.js: ^14.5.0
     env-cmd: ^10.1.0
     eslint: ^8.18.0
-    jet-logger: ^1.1.5
     mongoose: ^6.2.0
     nodemon: ^2.0.18
     randomstring: ^1.2.2
@@ -12132,15 +12124,6 @@ __metadata:
   bin:
     jest: bin/jest.js
   checksum: 96f1d69042b3c6dfc695f2a4e4b0db38af6fb78582ad1a02beaa57cfcd77cbd31567d7d865c1c85709b7c3e176eefa3b2035ffecd646005f15d8ef528eccf205
-  languageName: node
-  linkType: hard
-
-"jet-logger@npm:^1.1.5":
-  version: 1.1.5
-  resolution: "jet-logger@npm:1.1.5"
-  dependencies:
-    colors: 1.3.0
-  checksum: eb5267c4c3e2331cc17de8030a91b4c818957180fe5934b90b575a311645b0d84f090f615c8b682c3c5b689a2e9ee8bbbc09b0f90f0a3e91d3833e22e4121a39
   languageName: node
   linkType: hard
 
