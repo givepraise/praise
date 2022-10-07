@@ -5,7 +5,6 @@ import { ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth';
 
 const StartPage = React.lazy(() => import('@/pages/Start/StartPage'));
 const SettingsPage = React.lazy(() => import('@/pages/Settings/SettingsPage'));
-const MyPraisePage = React.lazy(() => import('@/pages/MyPraise/MyPraisePage'));
 const UserDetailsPage = React.lazy(
   () => import('@/pages/UserDetails/UserDetailsPage')
 );
@@ -90,10 +89,6 @@ export const AuthenticatedRoutes = ({
 }: Props): JSX.Element | null => {
   return (
     <Switch>
-      <Route path="/mypraise">
-        <MyPraisePage />
-      </Route>
-
       <AuthRoute
         userRoles={userRoles}
         roles={[ROLE_ADMIN]}
