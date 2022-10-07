@@ -6,56 +6,56 @@ import {
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
+import { PeriodAndGiverPageParams, SinglePeriod } from '@/model/periods';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
-import { ReceiverSummaryTable } from './components/ReceiverSummaryTable';
+import { GiverSummaryTable } from './components/GiverSummaryTable';
 
-const getReceiver = (
+const getGiver = (
   periodDetails: PeriodDetailsDto,
-  receiverId: string
+  giverId: string
 ): PeriodDetailsGiverReceiverDto | undefined => {
-  return periodDetails.receivers?.find((r) => r._id === receiverId);
+  return periodDetails.givers?.find((r) => r._id === giverId);
 };
 
-const PeriodReceiverMessage = (): JSX.Element | null => {
-  const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
+const PeriodGiverMessage = (): JSX.Element | null => {
+  const { periodId, giverId } = useParams<PeriodAndGiverPageParams>();
   const periodDetails = useRecoilValue(SinglePeriod(periodId));
 
   if (!periodDetails) return null;
-  const receiver = getReceiver(periodDetails, receiverId);
-  if (!receiver || !receiver.userAccount) return null;
+  const giver = getGiver(periodDetails, giverId);
+  if (!giver || !giver.userAccount) return null;
 
   return (
     <Box className="mb-5">
-      <h2>{receiver.userAccount.name}</h2>
+      <h2>{giver.userAccount.name}</h2>
       <div className="mt-5">
         Period: {periodDetails.name}
         <br />
-        Total score, praise received: {receiver.scoreRealized}
+        Total score, praise given: {giver.scoreRealized}
       </div>
     </Box>
   );
 };
 
-const ReceiverSummaryPage = (): JSX.Element => {
+const GiverSummaryPage = (): JSX.Element => {
   return (
     <Page>
-      <BreadCrumb name={'Receiver summary for period'} icon={faCalendarAlt} />
+      <BreadCrumb name={'Giver summary for period'} icon={faCalendarAlt} />
       <BackLink />
 
       <React.Suspense fallback={null}>
-        <PeriodReceiverMessage />
+        <PeriodGiverMessage />
       </React.Suspense>
 
       <React.Suspense fallback={null}>
-        <ReceiverSummaryTable />
+        <GiverSummaryTable />
       </React.Suspense>
     </Page>
   );
 };
 
 // eslint-disable-next-line import/no-default-export
-export default ReceiverSummaryPage;
+export default GiverSummaryPage;
