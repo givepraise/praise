@@ -47,9 +47,9 @@ export const countPraiseWithinDateRanges = async (
   dateRanges: PeriodDateRange[],
   match: object = {}
 ): Promise<number> => {
-  const withinDateRangeQueries: { $createdAt: PeriodDateRange }[] =
+  const withinDateRangeQueries: { createdAt: PeriodDateRange }[] =
     dateRanges.map((q) => ({
-      $createdAt: q,
+      createdAt: q,
     }));
 
   const assignedPraiseCount: number = await PraiseModel.count({
