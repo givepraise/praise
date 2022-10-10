@@ -31,6 +31,7 @@ export interface SettingDto {
   description?: string;
   group: SettingGroup;
   options?: string;
+  defaultValue?: string;
 }
 
 export interface SettingSetInput {

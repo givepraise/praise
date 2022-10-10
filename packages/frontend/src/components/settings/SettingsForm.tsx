@@ -4,6 +4,8 @@ import { PeriodSettingDto } from 'api/src/periodsettings/types';
 import { SettingDto } from 'api/dist/settings/types';
 import { useState } from 'react';
 import { AxiosError, AxiosResponse } from 'axios';
+import { faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NumberInput } from '@/components/form/NumberInput';
 import { StringInput } from '@/components/form/StringInput';
 import { TextareaInput } from '@/components/form/TextareaInput';
@@ -29,11 +31,9 @@ interface SettingsFormProps {
 const FormFields = (
   settings: SettingDto[] | PeriodSettingDto[],
   apiResponse,
+  setValue: (key: string, value: string) => void,
   disabled?: boolean
 ): JSX.Element => {
-
-  console.log(settings);
-
   return (
     <div className="mb-2 space-y-4">
       {settings.map((setting) => {
@@ -41,7 +41,22 @@ const FormFields = (
           <div key={setting.key}>
             <label className="block font-bold">
               {setting.label}
-              {setting.defaultValue && <span>Has Default Value</span>}
+              {setting.defaultValue && (
+                <button
+                  onClick={() => setValue(setting.key, setting.defaultValue)}
+                  className="text-warm-gray-400"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="Restore default value"
+                  type="button"
+                >
+                  <FontAwesomeIcon
+                    icon={faArrowRightArrowLeft}
+                    size="1x"
+                    className="ml-2"
+                  />
+                </button>
+              )}
             </label>
             {setting.description && (
               <div className="mb-2 text-sm text-warm-gray-400">
@@ -140,8 +155,17 @@ export const SettingsForm = ({
         setDate: (args, state, utils): void => {
           utils.changeValue(state, 'endDate', () => args);
         },
+        setValue: ([field, value], state, { changeValue }) => {
+          console.log('changing value');
+          changeValue(state, field, () => value);
+        },
       }}
-      render={({ handleSubmit }): JSX.Element => {
+      render={({
+        handleSubmit,
+        form: {
+          mutators: { setValue },
+        },
+      }): JSX.Element => {
         return (
           <>
             {disabled && (
@@ -153,7 +177,7 @@ export const SettingsForm = ({
               </Notice>
             )}
             <form onSubmit={handleSubmit} className="leading-loose">
-              {FormFields(settings, apiResponse, disabled)}
+              {FormFields(settings, apiResponse, setValue, disabled)}
               <div className="mt-4">
                 <SubmitButton />
               </div>
