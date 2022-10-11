@@ -3,7 +3,7 @@ import { SettingDto } from 'api/dist/settings/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import { SettingsForm } from '@/components/settings/SettingsForm';
 import { Box } from '@/components/ui/Box';
-import { SettingsSection } from './SettingsSection';
+import { SettingsSubgroup } from './SettingsSubgroup';
 
 interface Params {
   settings: SettingDto[] | undefined;
@@ -23,18 +23,18 @@ export const DiscordBotSettings = ({
 }: Params): JSX.Element | null => {
   if (!settings) return null;
 
-  const botBehaviourSettings = settings.filter((s) => s.section === 1);
+  const botBehaviourSettings = settings.filter((s) => s.subgroup === 1);
 
   const authenticationMessagesSettings = settings.filter(
-    (s) => s.section === 2
+    (s) => s.subgroup === 2
   );
 
-  const praiseMessagesSettings = settings.filter((s) => s.section === 3);
+  const praiseMessagesSettings = settings.filter((s) => s.subgroup === 3);
 
   return (
     <>
       <Box className="mb-6">
-        <SettingsSection
+        <SettingsSubgroup
           header="Bot Behaviour"
           description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
         >
@@ -42,10 +42,10 @@ export const DiscordBotSettings = ({
             settings={botBehaviourSettings}
             parentOnSubmit={parentOnSubmit}
           />
-        </SettingsSection>
+        </SettingsSubgroup>
       </Box>
       <Box className="mb-6">
-        <SettingsSection
+        <SettingsSubgroup
           header="Authentication Messages"
           description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
         >
@@ -53,10 +53,10 @@ export const DiscordBotSettings = ({
             settings={authenticationMessagesSettings}
             parentOnSubmit={parentOnSubmit}
           />
-        </SettingsSection>
+        </SettingsSubgroup>
       </Box>
       <Box>
-        <SettingsSection
+        <SettingsSubgroup
           header="Praise Messages"
           description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
         >
@@ -64,7 +64,7 @@ export const DiscordBotSettings = ({
             settings={praiseMessagesSettings}
             parentOnSubmit={parentOnSubmit}
           />
-        </SettingsSection>
+        </SettingsSubgroup>
       </Box>
     </>
   );

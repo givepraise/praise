@@ -16,7 +16,7 @@ interface Setting {
   description?: string;
   group: SettingGroup;
   options?: string;
-  section: number;
+  subgroup: number;
 }
 
 export interface SettingDocument extends Setting, Document {}
@@ -31,7 +31,7 @@ export interface SettingDto {
   description?: string;
   group: SettingGroup;
   options?: string;
-  section: number;
+  subgroup: number;
 }
 
 export interface SettingSetInput {

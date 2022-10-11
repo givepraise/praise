@@ -4,16 +4,16 @@ interface Props {
   description?: string;
 }
 
-export const SettingsSection = ({
+export const SettingsSubgroup = ({
   header,
   description,
   children,
 }: Props): JSX.Element => {
   return (
     <div>
-      <div className="mb-8">
-        <div className="mb-2 text-xl">{header}</div>
-        <div className="text-sm">{description}</div>
+      <div className="mb-5">
+        <h2 className="mb-2">{header}</h2>
+        <div>{description}</div>
       </div>
       {children}
     </div>

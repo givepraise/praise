@@ -3,7 +3,7 @@ import { SettingDto } from 'api/dist/settings/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import { SettingsForm } from '@/components/settings/SettingsForm';
 import { Box } from '@/components/ui/Box';
-import { SettingsSection } from './SettingsSection';
+import { SettingsSubgroup } from './SettingsSubgroup';
 
 interface Params {
   settings: SettingDto[] | undefined;
@@ -26,12 +26,12 @@ export const ApplicationSettings = ({
   return (
     <>
       <Box className="mb-6">
-        <SettingsSection
+        <SettingsSubgroup
           header="Application Settings"
           description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
         >
           <SettingsForm settings={settings} parentOnSubmit={parentOnSubmit} />
-        </SettingsSection>
+        </SettingsSubgroup>
       </Box>
     </>
   );

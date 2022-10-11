@@ -36,7 +36,8 @@ describe('GET /api/settings/all', () => {
       'group',
       'description',
       'value',
-      'valueRealized'
+      'valueRealized',
+      'subgroup'
     );
   });
 
