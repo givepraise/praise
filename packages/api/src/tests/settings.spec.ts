@@ -36,7 +36,8 @@ describe('GET /api/settings/all', () => {
       'group',
       'description',
       'value',
-      'valueRealized'
+      'valueRealized',
+      'defaultValue'
     );
   });
 
@@ -75,7 +76,8 @@ describe('GET /api/settings/:id', () => {
       'group',
       'description',
       'value',
-      'valueRealized'
+      'valueRealized',
+      'defaultValue'
     );
   });
 
