@@ -155,8 +155,7 @@ export const SettingsForm = ({
         setDate: (args, state, utils): void => {
           utils.changeValue(state, 'endDate', () => args);
         },
-        setValue: ([field, value], state, { changeValue }) => {
-          console.log('changing value');
+        setValue: ([field, value], state, { changeValue }): void => {
           changeValue(state, field, () => value);
         },
       }}
