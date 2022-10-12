@@ -43,7 +43,9 @@ const FormFields = (
               {setting.label}
               {setting.defaultValue && (
                 <button
-                  onClick={() => setValue(setting.key, setting.defaultValue)}
+                  onClick={(): void =>
+                    setValue(setting.key, setting.defaultValue)
+                  }
                   className="text-warm-gray-400"
                   data-bs-toggle="tooltip"
                   data-bs-placement="right"
