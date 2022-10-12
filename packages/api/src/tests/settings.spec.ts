@@ -144,7 +144,8 @@ describe('PATCH /api/admin/settings/:id/set', () => {
       'type',
       'label',
       'description',
-      'group'
+      'group',
+      'defaultValue'
     );
   });
 
