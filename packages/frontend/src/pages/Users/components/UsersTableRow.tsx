@@ -10,7 +10,7 @@ interface IUsersTableRow {
 export const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element | null => {
   const history = useHistory();
 
-  if (!data.ethereumAddress) return null;
+  if (!data.identityEthAddress) return null;
 
   return (
     <div

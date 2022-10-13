@@ -1,23 +1,23 @@
 import { QueryInput } from '@/shared/types';
 
 export interface AuthRequestInput {
-  ethereumAddress: string;
+  identityEthAddress: string;
   signature: string;
 }
 
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
-  ethereumAddress: string;
+  identityEthAddress: string;
   tokenType: string;
 }
 
 export interface NonceRequestInput extends QueryInput {
-  ethereumAddress?: string;
+  identityEthAddress?: string;
 }
 
 export interface NonceResponse {
-  ethereumAddress: string;
+  identityEthAddress: string;
   nonce: string;
 }
 
@@ -32,7 +32,7 @@ export interface TokenSet {
 
 export interface TokenData {
   userId: string;
-  ethereumAddress: string;
+  identityEthAddress: string;
   roles: string[];
   isRefresh?: boolean;
 }

@@ -4,7 +4,7 @@ import { utcToZonedTime, format } from 'date-fns-tz';
 import jstz from 'jstz';
 
 export const DATE_FORMAT = 'yyyy-MM-dd';
-const DATE_FORMAT_TZ = 'yyyy-MM-dd z';
+export const DATE_FORMAT_TZ = 'yyyy-MM-dd z';
 export const DATE_FORMAT_LONG = 'yyyy-MM-dd HH:mm:ss';
 export const DATE_FORMAT_LONG_NAME = 'EEEE, MMMM dd yyyy, HH:mm';
 

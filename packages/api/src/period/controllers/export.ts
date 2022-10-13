@@ -102,7 +102,7 @@ export const full = async (req: Request, res: Response): Promise<void> => {
     },
     {
       label: 'TO ETH ADDRESS',
-      value: 'receiverUserDocument.ethereumAddress',
+      value: 'receiverUserDocument.identityEthAddress',
     },
     {
       label: 'FROM USER ACCOUNT',
@@ -114,7 +114,7 @@ export const full = async (req: Request, res: Response): Promise<void> => {
     },
     {
       label: 'FROM ETH ADDRESS',
-      value: 'giverUserDocument.ethereumAddress',
+      value: 'giverUserDocument.identityEthAddress',
     },
     {
       label: 'REASON',
@@ -273,7 +273,7 @@ export const custom = async (req: Request, res: Response): Promise<void> => {
         _id: 'common-stack',
         scoreRealized: supportAmount,
         praiseCount: 0,
-        ethereumAddress: '0xfa4EE6B523fC1E8B53015D7D81331d568CDb5906', // Intentionally hard coded
+        identityEthAddress: '0xfa4EE6B523fC1E8B53015D7D81331d568CDb5906', // Intentionally hard coded
       });
       context.totalPraiseScore += supportAmount;
     }

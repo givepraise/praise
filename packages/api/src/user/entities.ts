@@ -4,7 +4,9 @@ import { UserDocument, UserRole } from './types';
 
 const userSchema = new Schema(
   {
-    ethereumAddress: { type: String, required: true, unique: true },
+    identityEthAddress: { type: String, required: true },
+    payoutEthAddress: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true },
     roles: {
       type: [
         {

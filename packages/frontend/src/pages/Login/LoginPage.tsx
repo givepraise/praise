@@ -29,7 +29,7 @@ const LoginPage = (): JSX.Element => {
       if (!data?.address) throw new Error();
 
       // Verify signature with server
-      await requestApiAuth({ ethereumAddress: data.address, signature });
+      await requestApiAuth({ identityEthAddress: data.address, signature });
     } catch (err) {
       toast.error('Login failed');
     }

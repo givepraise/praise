@@ -19,7 +19,7 @@ describe('GET /api/periodsettings/:periodId/settings/all', () => {
 
   it('200 response with json body contains list of settings', async function () {
     const wallet = Wallet.createRandom();
-    await seedUser({ ethereumAddress: wallet.address });
+    await seedUser({ identityEthAddress: wallet.address });
 
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -89,7 +89,7 @@ describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
   it('200 response with json body containing a periodsetting', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -127,7 +127,7 @@ describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
   it('404 response if period does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -154,7 +154,7 @@ describe('GET /api/periodsettings/:periodId/settings/:settingId', () => {
   it('404 response if periodsetting does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -201,7 +201,7 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
   it('200 response with json body containing updated period', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -247,7 +247,7 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
   it('404 response if period does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -280,7 +280,7 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
   it('404 response if periodsetting does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -313,7 +313,7 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
   it('400 response if missing value', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -343,7 +343,7 @@ describe('PATCH /api/admin/periodsettings/:periodId/settings/:settingId/set', ()
   it('403 response if user is not ADMIN', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -404,7 +404,7 @@ describe('periodsetting.valueRealized conversions', () => {
   it('periodsetting.type "Integer" converted to integer number', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -433,7 +433,7 @@ describe('periodsetting.valueRealized conversions', () => {
   it('periodsetting.type "Float" converted to float number', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -462,7 +462,7 @@ describe('periodsetting.valueRealized conversions', () => {
   it('periodsetting.type "Boolean" converted to boolean', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -491,7 +491,7 @@ describe('periodsetting.valueRealized conversions', () => {
   it('periodsetting.type "IntegerList" converted to number[] of integers', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -521,7 +521,7 @@ describe('periodsetting.valueRealized conversions', () => {
   it('periodsetting.type "Image" converted to string uri', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 

@@ -16,12 +16,12 @@ export const userTransformer = async (
   const { _id, roles, createdAt, updatedAt } = userDocument;
 
   /* Only return eth address to admin or quantifier */
-  let ethereumAddress;
+  let identityEthAddress;
   if (
     currentUserRoles.includes(UserRole.ADMIN) ||
     currentUserRoles.includes(UserRole.QUANTIFIER)
   ) {
-    ethereumAddress = userDocument.ethereumAddress;
+    identityEthAddress = userDocument.identityEthAddress;
   }
 
   let accounts;
@@ -35,7 +35,7 @@ export const userTransformer = async (
   return {
     _id,
     roles,
-    ethereumAddress,
+    identityEthAddress,
     accounts,
     nameRealized,
     createdAt: createdAt.toISOString(),

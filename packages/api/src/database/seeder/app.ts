@@ -5,6 +5,7 @@ import { PeriodModel } from '@/period/entities';
 import { UserModel } from '@/user/entities';
 import { UserRole } from '@/user/types';
 import { logger } from '@/shared/logger';
+import { generateUserName } from '@/user/utils/entity';
 import { seedUserAndUserAccount, seedPeriod, seedPraise } from './entities';
 
 const PERIOD_NUMBER = 3;
@@ -88,7 +89,7 @@ export const seedAdminUsers = async (): Promise<void> => {
     });
 
   for (const e of ethAddresses) {
-    const user = await UserModel.findOne({ ethereumAddress: e });
+    const user = await UserModel.findOne({ identityEthAddress: e });
 
     if (user) {
       if (!user.roles.includes(UserRole.ADMIN)) {
@@ -101,7 +102,9 @@ export const seedAdminUsers = async (): Promise<void> => {
       }
     } else {
       await UserModel.create({
-        ethereumAddress: e,
+        identityEthAddress: e,
+        payoutEthAddress: e,
+        username: faker.internet.userName(),
         roles: [UserRole.ADMIN, UserRole.USER],
       });
     }

@@ -14,7 +14,7 @@ describe('GET /api/activate', () => {
     const accountId = faker.datatype.uuid();
     const activateToken = faker.datatype.uuid();
 
-    const user = await seedUser({ ethereumAddress: wallet.address });
+    const user = await seedUser({ identityEthAddress: wallet.address });
     const userAccount = await seedUserAccount({ accountId, activateToken });
 
     const message =
@@ -26,7 +26,7 @@ describe('GET /api/activate', () => {
     const signature = await wallet.signMessage(message);
 
     const FORM_DATA = {
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       signature,
       accountId,
     };
@@ -56,7 +56,7 @@ describe('GET /api/activate', () => {
     const activateToken = faker.datatype.uuid();
 
     await seedUserAndUserAccount(
-      { ethereumAddress: wallet.address },
+      { identityEthAddress: wallet.address },
       { accountId, activateToken }
     );
 
@@ -69,7 +69,7 @@ describe('GET /api/activate', () => {
     await wallet.signMessage(message);
 
     const FORM_DATA = {
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       accountId,
     };
 
@@ -81,13 +81,13 @@ describe('GET /api/activate', () => {
     expect(response.status).to.equal(400);
   });
 
-  it('400 response when missing ethereumAddress', async function () {
+  it('400 response when missing identityEthAddress', async function () {
     const wallet = Wallet.createRandom();
     const accountId = faker.datatype.uuid();
     const activateToken = faker.datatype.uuid();
 
     await seedUserAndUserAccount(
-      { ethereumAddress: wallet.address },
+      { identityEthAddress: wallet.address },
       { accountId, activateToken }
     );
 
@@ -117,7 +117,7 @@ describe('GET /api/activate', () => {
     const accountId = faker.datatype.uuid();
     const activateToken = faker.datatype.uuid();
 
-    await seedUser({ ethereumAddress: wallet.address });
+    await seedUser({ identityEthAddress: wallet.address });
     await seedUserAccount({
       accountId,
       activateToken: undefined,
@@ -132,7 +132,7 @@ describe('GET /api/activate', () => {
     const signature = await wallet.signMessage(message);
 
     const FORM_DATA = {
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       signature,
       accountId,
     };
@@ -144,13 +144,13 @@ describe('GET /api/activate', () => {
       .expect(500);
   });
 
-  it('401 response if signer address is not user ethereumAddress', async function () {
+  it('401 response if signer address is not user identityEthAddress', async function () {
     const wallet = Wallet.createRandom();
     const wallet2 = Wallet.createRandom();
     const accountId = faker.datatype.uuid();
     const activateToken = faker.datatype.uuid();
 
-    await seedUser({ ethereumAddress: wallet.address });
+    await seedUser({ identityEthAddress: wallet.address });
     await seedUserAccount({ accountId, activateToken });
 
     const message =
@@ -162,7 +162,7 @@ describe('GET /api/activate', () => {
     const signature = await wallet2.signMessage(message);
 
     const FORM_DATA = {
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       signature,
       accountId,
     };
@@ -180,7 +180,7 @@ describe('GET /api/activate', () => {
     const activateToken = faker.datatype.uuid();
 
     await seedUserAndUserAccount(
-      { ethereumAddress: wallet.address },
+      { identityEthAddress: wallet.address },
       { accountId, activateToken }
     );
 
@@ -193,7 +193,7 @@ describe('GET /api/activate', () => {
     const signature = await wallet.signMessage(message);
 
     const FORM_DATA = {
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       signature,
     };
 
@@ -205,14 +205,14 @@ describe('GET /api/activate', () => {
     expect(response.status).to.equal(400);
   });
 
-  it('400 response when ethereumAddress not matching', async function () {
+  it('400 response when identityEthAddress not matching', async function () {
     const wallet = Wallet.createRandom();
     const wallet2 = Wallet.createRandom();
     const accountId = faker.datatype.uuid();
     const activateToken = faker.datatype.uuid();
 
     await seedUserAndUserAccount(
-      { ethereumAddress: wallet.address },
+      { identityEthAddress: wallet.address },
       { accountId, activateToken }
     );
 
@@ -225,7 +225,7 @@ describe('GET /api/activate', () => {
     const signature = await wallet2.signMessage(message);
 
     const FORM_DATA = {
-      ethereumAddress: wallet2.address,
+      identityEthAddress: wallet2.address,
       signature,
       accountId,
     };
@@ -244,7 +244,7 @@ describe('GET /api/activate', () => {
     const activateToken = faker.datatype.uuid();
 
     await seedUserAndUserAccount(
-      { ethereumAddress: wallet.address },
+      { identityEthAddress: wallet.address },
       { accountId, activateToken }
     );
 
@@ -257,7 +257,7 @@ describe('GET /api/activate', () => {
     const signature = await wallet.signMessage(message);
 
     const FORM_DATA = {
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       signature,
       accountId,
     };

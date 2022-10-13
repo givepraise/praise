@@ -20,7 +20,7 @@ describe('GET /api/eventlogs/all', () => {
   it('200 response with json body', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -37,7 +37,7 @@ describe('GET /api/eventlogs/all', () => {
   it('200 response with search parameter contains matching search results', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -62,7 +62,7 @@ describe('GET /api/eventlogs/all', () => {
   it('200 response with search parameter does not contain non-matching search results', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -91,7 +91,7 @@ describe('GET /api/eventlogs/all', () => {
   it('200 response with type parameter contains matching type results', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -121,7 +121,7 @@ describe('GET /api/eventlogs/all', () => {
   it('200 response with type array parameter contains matching multiple type results', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -157,7 +157,7 @@ describe('GET /api/eventlogs/all', () => {
   it('200 response with type parameter does not contain non-matching type results', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -191,7 +191,7 @@ describe('GET /api/eventlogs/all', () => {
   it('400 response if missing limit parameter', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -206,7 +206,7 @@ describe('GET /api/eventlogs/all', () => {
   it('400 response if missing page parameter', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -230,7 +230,7 @@ describe('GET /api/eventlogs/all', () => {
 
   it('response body contains paginated list of eventlogs', async function () {
     const wallet = Wallet.createRandom();
-    await seedUser({ ethereumAddress: wallet.address });
+    await seedUser({ identityEthAddress: wallet.address });
 
     // note: loginUser creates 1 UserEventLog
     const { accessToken } = await loginUser(wallet, this.client);
@@ -261,7 +261,7 @@ describe('GET /api/eventlogs/types', () => {
   it('200 response with json body', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -294,7 +294,7 @@ describe('logEvent', () => {
     }).orFail();
 
     const wallet = Wallet.createRandom();
-    const user = await seedUser({ ethereumAddress: wallet.address });
+    const user = await seedUser({ identityEthAddress: wallet.address });
     const description = 'This is a description of an event';
 
     await logEvent(eventTypeKey, description, { userId: user._id });
@@ -317,7 +317,7 @@ describe('logEvent', () => {
     }).orFail();
 
     const wallet = Wallet.createRandom();
-    const user = await seedUser({ ethereumAddress: wallet.address });
+    const user = await seedUser({ identityEthAddress: wallet.address });
     const useraccount = await seedUserAccount({ user: user._id });
     const description = 'This is a description of an event';
 

@@ -39,12 +39,12 @@ export const auth = async (
   req: TypedRequestBody<AuthRequestInput>,
   res: TypedResponse<AuthResponse>
 ): Promise<void> => {
-  const { ethereumAddress, signature } = req.body;
-  if (!ethereumAddress) throw new NotFoundError('ethereumAddress');
+  const { identityEthAddress, signature } = req.body;
+  if (!identityEthAddress) throw new NotFoundError('identityEthAddress');
   if (!signature) throw new NotFoundError('signature');
 
   // Find previously generated nonce
-  const user = (await UserModel.findOne({ ethereumAddress })
+  const user = (await UserModel.findOne({ identityEthAddress })
     .select('nonce roles')
     .exec()) as UserDocument;
   if (!user || !user._id) throw new NotFoundError('User');
@@ -53,14 +53,14 @@ export const auth = async (
 
   // Generate expected message, nonce included.
   // Recover signer from generated message + signature
-  const generatedMsg = generateLoginMessage(ethereumAddress, user.nonce);
+  const generatedMsg = generateLoginMessage(identityEthAddress, user.nonce);
   const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
-  if (signerAddress !== ethereumAddress)
+  if (signerAddress !== identityEthAddress)
     throw new UnauthorizedError('Verification failed.');
 
   const { accessToken, refreshToken }: TokenSet = jwtService.getJwt({
     userId: user._id,
-    ethereumAddress,
+    identityEthAddress,
     roles: user.roles,
   });
   user.accessToken = accessToken;
@@ -74,7 +74,7 @@ export const auth = async (
   res.status(200).json({
     accessToken,
     refreshToken,
-    ethereumAddress,
+    identityEthAddress,
     tokenType: 'Bearer',
   });
 };
@@ -93,21 +93,21 @@ export const nonce = async (
   req: TypedRequestQuery<NonceRequestInputParsedQs>,
   res: TypedResponse<NonceResponse>
 ): Promise<void> => {
-  const { ethereumAddress } = req.query;
-  if (!ethereumAddress) throw new NotFoundError('ethereumAddress');
+  const { identityEthAddress } = req.query;
+  if (!identityEthAddress) throw new NotFoundError('identityEthAddress');
 
   // Generate random nonce used for auth request
   const nonce = getRandomString();
 
   // Update existing user or create new
   await UserModel.findOneAndUpdate(
-    { ethereumAddress },
+    { identityEthAddress },
     { nonce },
     { upsert: true, new: true }
   );
 
   res.status(200).json({
-    ethereumAddress,
+    identityEthAddress,
     nonce,
   });
 };
@@ -127,7 +127,7 @@ export const refresh = async (
   const { refreshToken } = req.body;
 
   const user = await UserModel.findOne({ refreshToken });
-  if (!user || !user._id || !user.ethereumAddress)
+  if (!user || !user._id || !user.identityEthAddress)
     throw new UnauthorizedError('Invalid refresh token');
 
   // confirm refreshToken provided is valid
@@ -142,7 +142,7 @@ export const refresh = async (
   res.status(200).json({
     accessToken: jwt.accessToken,
     refreshToken: jwt.refreshToken,
-    ethereumAddress: user.ethereumAddress,
+    identityEthAddress: user.identityEthAddress,
     tokenType: 'Bearer',
   });
 };

@@ -38,7 +38,7 @@ export const UsersTable = (): JSX.Element => {
     (data: UserDto[] | undefined): UserDto[] => {
       if (!data) return [];
       const filteredData = data.filter((user: UserDto) => {
-        const userAddress = user.ethereumAddress?.toLowerCase();
+        const userAddress = user.identityEthAddress?.toLowerCase();
         const filterData = filter.toLocaleLowerCase();
 
         return (

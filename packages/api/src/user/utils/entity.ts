@@ -17,7 +17,7 @@ import { UserDocument } from '../types';
 export const generateUserName = async (user: UserDocument): Promise<string> => {
   const accounts = await UserAccountModel.find({ user: user._id });
   if (!accounts || accounts.length === 0)
-    return shortenEthAddress(user.ethereumAddress);
+    return shortenEthAddress(user.identityEthAddress);
 
   const discordAccount = accounts.find((a) => a.platform === 'DISCORD');
   if (discordAccount) return generateUserAccountNameRealized(discordAccount);

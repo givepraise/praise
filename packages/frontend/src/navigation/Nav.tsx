@@ -10,6 +10,7 @@ import {
   faBullhorn,
   faFire,
   faFileLines,
+  faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
@@ -79,6 +80,7 @@ export const Nav = (): JSX.Element => {
               <NavLogo />
             </li>
 
+            <NavItem icon={faUser} description="Profile" to="/profile" />
             <NavItem icon={faCalendarAlt} description="Periods" to="/periods" />
             <AdminOnly>
               <NavItem

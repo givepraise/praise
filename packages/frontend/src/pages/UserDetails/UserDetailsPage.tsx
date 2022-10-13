@@ -41,7 +41,8 @@ const UserDetailsPage = (): JSX.Element | null => {
       <Box className="flex flex-col gap-2 mb-5">
         <span>User identity</span>
         <h2>
-          {user.ethereumAddress && shortenEthAddress(user.ethereumAddress)}
+          {user.identityEthAddress &&
+            shortenEthAddress(user.identityEthAddress)}
         </h2>
         <div>
           Created: {formatIsoDateUTC(user.createdAt, DATE_FORMAT)}

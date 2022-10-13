@@ -23,7 +23,7 @@ describe('GET /api/periods/all', () => {
   it('200 response with json body', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -49,7 +49,7 @@ describe('GET /api/periods/all', () => {
 
   it('response body contains paginated list of periods', async function () {
     const wallet = Wallet.createRandom();
-    await seedUser({ ethereumAddress: wallet.address });
+    await seedUser({ identityEthAddress: wallet.address });
 
     // note: loginUser creates 1 UserEventLog
     const { accessToken } = await loginUser(wallet, this.client);
@@ -92,7 +92,7 @@ describe('GET /api/period/:periodId', () => {
   it('200 response with json body containing a period', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -128,7 +128,7 @@ describe('GET /api/period/:id/receiverPraise', () => {
   it("200 response with json body containing a list of receiver's praise in a period", async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -171,7 +171,7 @@ describe('GET /api/period/:id/receiverPraise', () => {
   it('400 response if missing receiverId', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -204,7 +204,7 @@ describe('GET /api/period/:id/receiverPraise', () => {
   it('401 response if user not authenticated', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
 
     const period = await seedPeriod();
@@ -247,7 +247,7 @@ describe('GET /api/period/:periodId/quantifierPraise', () => {
   it("200 response with json body containing a list of quantifiers's praise in a period", async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -309,7 +309,7 @@ describe('GET /api/period/:periodId/quantifierPraise', () => {
   it('400 response if missing quantifier Id', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -342,7 +342,7 @@ describe('GET /api/period/:periodId/quantifierPraise', () => {
   it('401 response if user not authenticated', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
 
     const period = await seedPeriod();
@@ -384,7 +384,7 @@ describe('POST /api/admin/periods/create', () => {
   it('200 response with json body containing a new period', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -412,7 +412,7 @@ describe('POST /api/admin/periods/create', () => {
   it('400 response if missing name', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -433,7 +433,7 @@ describe('POST /api/admin/periods/create', () => {
   it('400 response if missing endDate', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -454,7 +454,7 @@ describe('POST /api/admin/periods/create', () => {
   it('403 response if user is not ADMIN', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -488,7 +488,7 @@ describe('POST /api/admin/periods/create', () => {
   it('400 response if creating period less than 7 days after previous', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -521,7 +521,7 @@ describe('POST /api/admin/periods/create', () => {
   it('200 response if creating period more than 7 days after previous', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -560,7 +560,7 @@ describe('PATCH /api/admin/periods/:periodId/update', () => {
   it('200 response with json body containing updated period', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -588,7 +588,7 @@ describe('PATCH /api/admin/periods/:periodId/update', () => {
   it('400 response if missing name and endDate', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -609,7 +609,7 @@ describe('PATCH /api/admin/periods/:periodId/update', () => {
   it('403 response if user is not ADMIN', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -654,7 +654,7 @@ describe('PATCH /api/admin/periods/:periodId/close', () => {
   it('200 response with json body containing closed period', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -675,7 +675,7 @@ describe('PATCH /api/admin/periods/:periodId/close', () => {
   it('400 response if period is already CLOSED', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -693,7 +693,7 @@ describe('PATCH /api/admin/periods/:periodId/close', () => {
   it('403 response if user is not ADMIN', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -728,7 +728,7 @@ describe('GET /api/admin/periods/:periodId/exportFull', () => {
   it('200 response with csv file body', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -824,7 +824,7 @@ describe('GET /api/admin/periods/:periodId/exportFull', () => {
       receiverUserAccount.name
     );
     expect(responseJson[0]['TO ETH ADDRESS']).to.equal(
-      receiverUser.ethereumAddress
+      receiverUser.identityEthAddress
     );
 
     expect(responseJson[0]['FROM USER ACCOUNT ID']).to.equal(
@@ -835,7 +835,7 @@ describe('GET /api/admin/periods/:periodId/exportFull', () => {
       giverUserAccount.name
     );
     expect(responseJson[0]['FROM ETH ADDRESS']).to.equal(
-      giverUser.ethereumAddress
+      giverUser.identityEthAddress
     );
 
     expect(responseJson[0]['REASON']).to.equal(praise.reasonRealized);
@@ -860,14 +860,14 @@ describe('GET /api/admin/periods/:periodId/exportFull', () => {
       quantifier1UserAccount.name
     );
     expect(responseJson[0]['QUANTIFIER 1 ETH ADDRESS']).to.equal(
-      quantifier1User.ethereumAddress
+      quantifier1User.identityEthAddress
     );
   });
 
   it('403 response if user is not ADMIN', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 

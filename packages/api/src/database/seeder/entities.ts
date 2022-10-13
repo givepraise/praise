@@ -57,7 +57,9 @@ export const seedUser = async (
   userData: Object = {}
 ): Promise<UserDocument> => {
   const user = await UserModel.create({
-    ethereumAddress: faker.finance.ethereumAddress(),
+    identityEthAddress: faker.finance.ethereumAddress(),
+    payoutEthAddress: faker.finance.ethereumAddress(),
+    username: faker.internet.userName(),
     roles: [UserRole.USER],
     ...userData,
   });

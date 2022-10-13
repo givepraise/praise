@@ -9,7 +9,9 @@ export enum UserRole {
 }
 
 interface User {
-  ethereumAddress: string;
+  identityEthAddress: string;
+  payoutEthAddress: string;
+  username: string;
   roles: UserRole[];
   accounts?: UserAccountDocument[];
   nonce?: string;
@@ -23,7 +25,9 @@ export interface UserDocument extends User, Document {}
 
 export interface UserDto {
   _id: string;
-  ethereumAddress?: string;
+  identityEthAddress?: string;
+  payoutEthAddress?: string;
+  username?: string;
   roles: string[];
   accounts?: UserAccountDto[];
   nonce?: string;

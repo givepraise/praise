@@ -39,19 +39,19 @@ const WrappedUserPopover = ({
   if (usePseudonym) return children;
 
   let discordUsername: string | undefined;
-  let ethereumAddress: string | undefined;
+  let identityEthAddress: string | undefined;
 
   if (user) {
     discordUsername = user.accounts?.find(
       (account) => account.platform === 'DISCORD'
     )?.name;
-    ethereumAddress = user.ethereumAddress;
+    identityEthAddress = user.identityEthAddress;
   } else {
     if (userAccountUser) {
       discordUsername = userAccountUser.accounts?.find(
         (account) => account.platform === 'DISCORD'
       )?.name;
-      ethereumAddress = userAccountUser.ethereumAddress;
+      identityEthAddress = userAccountUser.identityEthAddress;
     } else {
       if (userAccount && userAccount.platform === 'DISCORD') {
         discordUsername = userAccount.name;
@@ -95,10 +95,10 @@ const WrappedUserPopover = ({
                 <span>{discordUsername}</span>
               </div>
             )}
-            {ethereumAddress && (
+            {identityEthAddress && (
               <div className="flex items-center mt-3 space-x-2">
-                <Jazzicon address={ethereumAddress} className="w-4 h-4" />
-                <span>{shortenEthAddress(ethereumAddress)}</span>
+                <Jazzicon address={identityEthAddress} className="w-4 h-4" />
+                <span>{shortenEthAddress(identityEthAddress)}</span>
               </div>
             )}
           </div>

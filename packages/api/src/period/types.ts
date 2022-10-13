@@ -50,7 +50,7 @@ export interface PeriodDetailsGiverReceiverDto {
   _id: string;
   praiseCount: number;
   quantifications?: Array<Array<QuantificationDto>>;
-  ethereumAddress?: string;
+  identityEthAddress?: string;
   scoreRealized: number;
   userAccount?: UserAccountDto;
 }
