@@ -109,8 +109,15 @@ export const SettingsForm = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: Record<string, any>): Promise<void> => {
     for (const setting of settings) {
+      console.log(setting);
       const value = values[setting.key];
-      if (value !== setting.value) {
+      console.log('setting key', value);
+      console.log('value', value);
+      console.log('setting value', Boolean(setting.value));
+      if (
+        (setting.type === 'Boolean' && value !== Boolean(setting.value)) ||
+        (setting.type !== 'Boolean' && value !== setting.value)
+      ) {
         const updatedSetting = { ...setting, value: value || '' };
         const apiResponse = await onSubmitParent(updatedSetting);
         setApiResponse(apiResponse);
