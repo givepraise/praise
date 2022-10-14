@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **API:** Transformer option to include/exclude header row in csv exports #614 #622
+
 ### Changed
 
 - **Discord-bot**: Updated the bot to use the new `discord.js` version 14 #619
@@ -17,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Devops:**: `database-restore.sh` did not work under certain circumstances. Script have now been upgraded.
+- **API:** Bug causing period praise counting to return the total number of praises instead of the number of praise for the period. #622
 - **Discord-bot**: Praising does not work in threads #524 #619
 
 ## [0.12.2] - 2022-09-28

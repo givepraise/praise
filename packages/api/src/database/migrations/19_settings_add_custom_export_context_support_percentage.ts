@@ -5,7 +5,7 @@ const settings = [
   {
     key: 'CUSTOM_EXPORT_MAP',
     value:
-      'https://raw.githubusercontent.com/commons-stack/praise-exports/main/aragon-fixed-budget.json',
+      'https://raw.githubusercontent.com/commons-stack/praise-export-transformers/main/aragon-fixed-budget/transformer.json',
     type: 'String',
     label: 'Transformation map',
     description:
