@@ -5,7 +5,6 @@ import { PeriodModel } from '@/period/entities';
 import { UserModel } from '@/user/entities';
 import { UserRole } from '@/user/types';
 import { logger } from '@/shared/logger';
-import { generateUserName } from '@/user/utils/entity';
 import { seedUserAndUserAccount, seedPeriod, seedPraise } from './entities';
 
 const PERIOD_NUMBER = 3;

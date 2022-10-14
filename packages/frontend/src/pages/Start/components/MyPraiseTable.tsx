@@ -57,7 +57,10 @@ export const MyPraiseTable = (): JSX.Element | null => {
           </div>
         }
       >
-        <PraisePageLoader listKey={PRAISE_LIST_KEY} receiverId={receiverId} />
+        <PraisePageLoader
+          listKey={PRAISE_LIST_KEY}
+          queryParams={{ receiver: receiverId }}
+        />
       </React.Suspense>
     </>
   );

@@ -9,19 +9,21 @@ import { generateUserName } from './utils/entity';
  * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
  * @returns {Promise<UserDto>}
  */
-export const userTransformer = async (
+export const userTransformer = (
   userDocument: UserDocument,
   currentUserRoles: UserRole[] = [UserRole.USER]
-): Promise<UserDto> => {
-  const { _id, roles, createdAt, updatedAt } = userDocument;
+): UserDto => {
+  const { _id, roles, username, createdAt, updatedAt } = userDocument;
 
   /* Only return eth address to admin or quantifier */
   let identityEthAddress;
+  let payoutEthAddress;
   if (
     currentUserRoles.includes(UserRole.ADMIN) ||
     currentUserRoles.includes(UserRole.QUANTIFIER)
   ) {
     identityEthAddress = userDocument.identityEthAddress;
+    payoutEthAddress = userDocument.payoutEthAddress;
   }
 
   let accounts;
@@ -30,12 +32,14 @@ export const userTransformer = async (
   }
 
   // Generate user name
-  const nameRealized = await generateUserName(userDocument);
+  // const nameRealized = await generateUserName(userDocument);
+  const nameRealized = username;
 
   return {
     _id,
     roles,
     identityEthAddress,
+    payoutEthAddress,
     accounts,
     nameRealized,
     createdAt: createdAt.toISOString(),

@@ -90,12 +90,13 @@ export const AllPraiseList = selectorFamily({
 /**
  * Parameters for @AllPraiseQuery
  */
-type AllPraiseQueryParameters = {
+export type AllPraiseQueryParameters = {
   sortColumn?: string;
   sortType?: string;
   limit?: number;
   page?: number;
   receiver?: string | null;
+  giver?: string | null;
 };
 
 /**

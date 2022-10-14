@@ -25,9 +25,9 @@ export interface UserDocument extends User, Document {}
 
 export interface UserDto {
   _id: string;
-  identityEthAddress?: string;
-  payoutEthAddress?: string;
-  username?: string;
+  identityEthAddress: string;
+  payoutEthAddress: string;
+  username: string;
   roles: string[];
   accounts?: UserAccountDto[];
   nonce?: string;
