@@ -58,7 +58,7 @@ const settings = [
   {
     key: 'PRAISE_TO_ROLE_WARNING',
     defaultValue:
-      "**⚠️  Roles as Praise receivers**\nCouldn't praise roles - {@receivers}.\n{@user}, use the `/group-praise` for distribution of praise to all the members that have certain discord roles.",
+      "**⚠️  Roles as Praise receivers**\nCouldn't praise roles - {@receivers}.\n Praise does not support group/role based praising.",
   },
   {
     key: 'PRAISE_SUCCESS_DM',
@@ -106,7 +106,7 @@ const settings = [
   {
     key: 'CUSTOM_EXPORT_MAP',
     defaultValue:
-      'https://raw.githubusercontent.com/commons-stack/praise-exports/main/aragon-fixed-budget.json',
+      'https://raw.githubusercontent.com/commons-stack/praise-export-transformers/main/aragon-fixed-budget/transformer.json',
   },
   {
     key: 'CUSTOM_EXPORT_CONTEXT',
