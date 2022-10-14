@@ -11,15 +11,11 @@ const settings = [
   },
   {
     key: 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
-    defaultValue: '0,1',
+    defaultValue: '0.1',
   },
   {
     key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
     defaultValue: '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
-  },
-  {
-    key: 'PRAISE_GIVER_ROLE_ID',
-    defaultValue: '0',
   },
   {
     key: 'PRAISE_SUCCESS_MESSAGE',
