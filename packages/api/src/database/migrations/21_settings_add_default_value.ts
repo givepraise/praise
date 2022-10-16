@@ -11,7 +11,7 @@ const settings = [
   },
   {
     key: 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
-    defaultValue: '0.1',
+    defaultValue: 0.1,
   },
   {
     key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',

@@ -39,14 +39,14 @@ const FormFields = (
       {settings.map((setting) => {
         return (
           <div key={setting.key}>
-            <label className="block font-bold">
+            <label className="block font-bold group">
               {setting.label}
               {setting.defaultValue && (
                 <button
                   onClick={(): void =>
                     setValue(setting.key, setting.defaultValue)
                   }
-                  className="text-warm-gray-400"
+                  className="hidden cursor-pointer text-warm-gray-400 group-hover:inline-block"
                   data-bs-toggle="tooltip"
                   data-bs-placement="right"
                   title="Restore default value"
@@ -55,7 +55,7 @@ const FormFields = (
                   <FontAwesomeIcon
                     icon={faArrowRightArrowLeft}
                     size="1x"
-                    className="ml-2"
+                    className="ml-2 hover:text-black dark:hover:text-white"
                   />
                 </button>
               )}
