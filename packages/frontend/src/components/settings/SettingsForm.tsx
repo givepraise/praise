@@ -133,7 +133,10 @@ export const SettingsForm = ({
   const onSubmit = async (values: Record<string, any>): Promise<void> => {
     for (const setting of settings) {
       const value = values[setting.key];
-      if (value !== setting.value) {
+      if (
+        (setting.type === 'Boolean' && value !== Boolean(setting.value)) ||
+        (setting.type !== 'Boolean' && value !== setting.value)
+      ) {
         const updatedSetting = { ...setting, value: value || '' };
         const apiResponse = await onSubmitParent(updatedSetting);
         setApiResponse(apiResponse);
