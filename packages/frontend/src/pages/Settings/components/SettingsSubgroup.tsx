@@ -13,7 +13,11 @@ export const SettingsSubgroup = ({
     <div>
       <div className="mb-5">
         <h2 className="mb-2">{header}</h2>
-        <div>{description}</div>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: description || '',
+          }}
+        />
       </div>
       {children}
     </div>
