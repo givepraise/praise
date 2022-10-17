@@ -5,6 +5,7 @@ import { isSettingValueAllowedBySettingType } from './validators';
 export const genericSettingsSchema = {
   key: { type: String, required: true },
   value: { type: String, required: false },
+  defaultValue: { type: String, required: false },
   type: {
     type: String,
     enum: [
@@ -26,6 +27,7 @@ export const genericSettingsSchema = {
   description: { type: String },
   group: { type: Number, enum: SettingGroup, required: true },
   options: { type: String },
+  subgroup: { type: Number },
 };
 
 export function getGenericSettingValueRealized(

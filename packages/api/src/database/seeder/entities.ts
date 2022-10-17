@@ -217,6 +217,7 @@ export const seedSetting = async (
     value: faker.datatype.boolean().toString(),
     createdAt,
     updatedAt: createdAt,
+    defaultValue: faker.lorem.sentence(),
     ...settingData,
   });
 
