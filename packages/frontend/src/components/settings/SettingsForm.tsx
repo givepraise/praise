@@ -55,7 +55,7 @@ const FormFields = (
                   <FontAwesomeIcon
                     icon={faArrowRightArrowLeft}
                     size="1x"
-                    className="ml-2 hover:text-black dark:hover:text-white"
+                    className="ml-2 hover:text-warm-gray-500 dark:hover:text-warm-gray-300"
                   />
                 </button>
               )}
