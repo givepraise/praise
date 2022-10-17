@@ -53,7 +53,7 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
           </p>
           <p className="mb-2">
             <FontAwesomeIcon icon={faEthereum} className="mr-4" size="1x" />
-            Payout address: {shortenEthAddress(user.payoutEthAddress)}
+            Payout address: {shortenEthAddress(user.rewardsEthAddress)}
           </p>
         </div>
 

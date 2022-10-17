@@ -12,6 +12,7 @@ interface Praise {
   reasonRealized: string;
   sourceId: string;
   sourceName: string;
+  scoreRealized: number;
   quantifications: QuantificationDocument[];
   giver: UserAccountDocument;
   receiver: UserAccountDocument;

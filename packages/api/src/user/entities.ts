@@ -5,7 +5,7 @@ import { UserDocument, UserRole } from './types';
 const userSchema = new Schema(
   {
     identityEthAddress: { type: String, required: true },
-    payoutEthAddress: { type: String, required: true, unique: true },
+    rewardsEthAddress: { type: String, required: true, unique: true },
     username: { type: String, required: true, unique: true },
     roles: {
       type: [

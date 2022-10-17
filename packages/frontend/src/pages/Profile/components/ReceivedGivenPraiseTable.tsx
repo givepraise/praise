@@ -13,7 +13,7 @@ import { SelectInput } from '@/components/form/SelectInput';
 
 const sortOptions = [
   { value: 'createdAt', label: 'Latest' },
-  { value: 'score', label: 'Top' },
+  { value: 'scoreRealized', label: 'Top' },
 ];
 
 interface sortOptionsProps {
@@ -54,10 +54,6 @@ export const ReceivedGivenPraiseTable = ({
   const queryParams = {
     page,
     sortColumn: selectedSort.value,
-    sortType:
-      selectedSort.value === 'score'
-        ? 'asc'
-        : 'desc' /** TODO: add option on api to sort by the score */,
     receiver: userAccountType === 1 ? userAccountId : undefined,
     giver: userAccountType === 2 ? userAccountId : undefined,
   };

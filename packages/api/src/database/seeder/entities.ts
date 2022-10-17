@@ -14,6 +14,7 @@ import { SettingGroup, SettingDocument } from '@/settings/types';
 import { SettingsModel } from '@/settings/entities';
 import { PeriodSettingsModel } from '@/periodsettings/entities';
 import { PeriodSettingDocument } from '@/periodsettings/types';
+import { calculateQuantificationsCompositeScore } from '@/praise/utils/score';
 
 /**
  * Query database for two random useraccounts
@@ -58,7 +59,7 @@ export const seedUser = async (
 ): Promise<UserDocument> => {
   const user = await UserModel.create({
     identityEthAddress: faker.finance.ethereumAddress(),
-    payoutEthAddress: faker.finance.ethereumAddress(),
+    rewardsEthAddress: faker.finance.ethereumAddress(),
     username: faker.internet.userName(),
     roles: [UserRole.USER],
     ...userData,
@@ -166,6 +167,9 @@ export const seedQuantification = async (
   });
 
   praise.quantifications = [...praise.quantifications, quantification];
+  praise.scoreRealized = await calculateQuantificationsCompositeScore(
+    praise.quantifications
+  );
   await praise.save();
 
   return quantification;

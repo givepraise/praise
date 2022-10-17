@@ -17,13 +17,13 @@ export const userTransformer = (
 
   /* Only return eth address to admin or quantifier */
   let identityEthAddress;
-  let payoutEthAddress;
+  let rewardsEthAddress;
   if (
     currentUserRoles.includes(UserRole.ADMIN) ||
     currentUserRoles.includes(UserRole.QUANTIFIER)
   ) {
     identityEthAddress = userDocument.identityEthAddress;
-    payoutEthAddress = userDocument.payoutEthAddress;
+    rewardsEthAddress = userDocument.rewardsEthAddress;
   }
 
   let accounts;
@@ -39,7 +39,7 @@ export const userTransformer = (
     _id,
     roles,
     identityEthAddress,
-    payoutEthAddress,
+    rewardsEthAddress,
     accounts,
     nameRealized,
     createdAt: createdAt.toISOString(),
