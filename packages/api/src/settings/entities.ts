@@ -5,6 +5,7 @@ import { isSettingValueAllowedBySettingType } from './validators';
 export const genericSettingsSchema = {
   key: { type: String, required: true },
   value: { type: String, required: false },
+  defaultValue: { type: String, required: false },
   type: {
     type: String,
     enum: [

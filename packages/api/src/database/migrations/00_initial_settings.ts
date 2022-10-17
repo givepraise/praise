@@ -39,7 +39,6 @@ const settings = [
   },
   {
     key: 'PRAISE_GIVER_ROLE_ID',
-    value: '0',
     type: 'String',
   },
   {
