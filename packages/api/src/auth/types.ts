@@ -34,7 +34,7 @@ export interface TokenData {
   userId: string;
   ethereumAddress: string;
   roles: string[];
-  isRefresh?: boolean;
+  type: 'access-token' | 'refresh-token' | 'api-key';
 }
 
 export interface JwtTokenData extends TokenData {

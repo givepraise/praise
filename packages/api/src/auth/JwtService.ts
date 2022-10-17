@@ -56,13 +56,20 @@ export class JwtService {
    * @param data
    */
   public getJwt(data: TokenData): TokenSet {
-    const accessToken = this._signOrFail(data, {
-      expiresIn: this.accessExpiresIn,
-    });
+    const accessToken = this._signOrFail(
+      {
+        ...data,
+        type: 'access-token',
+      },
+      {
+        expiresIn: this.accessExpiresIn,
+      }
+    );
+
     const refreshToken = this._signOrFail(
       {
         ...data,
-        isRefresh: true,
+        type: 'refresh-token',
       },
       {
         expiresIn: this.refreshExpiresIn,
@@ -96,7 +103,7 @@ export class JwtService {
     const accessToken = sign(
       {
         ...decoded,
-        isRefresh: false,
+        type: 'access-token',
       } as TokenData,
       this.secret,
       {
@@ -109,9 +116,16 @@ export class JwtService {
     const expiresIn = Math.ceil(
       refreshTokenExpirationTimestamp - currentTimestamp
     );
-    const refreshToken = sign(decoded as TokenData, this.secret, {
-      expiresIn,
-    });
+    const refreshToken = sign(
+      {
+        ...decoded,
+        type: 'refresh-token',
+      } as TokenData,
+      this.secret,
+      {
+        expiresIn,
+      }
+    );
 
     return {
       accessToken,

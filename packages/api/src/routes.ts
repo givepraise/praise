@@ -13,6 +13,7 @@ import {
   adminPeriodsettingsRouter,
 } from '@/periodsettings/routes';
 import { eventLogRouter } from '@/eventlog/routes';
+import { ApiKeyAccess } from './api-key/types';
 
 const baseRouter = Router();
 
@@ -23,36 +24,66 @@ baseRouter.use('/activate', activateRouter);
 
 /* USER authentication */
 
-baseRouter.useAsync('/settings', authMiddleware(UserRole.USER));
+baseRouter.useAsync(
+  '/settings',
+  authMiddleware(UserRole.USER, ApiKeyAccess.LIMITED)
+);
 baseRouter.use('/settings', settingsRouter);
 
-baseRouter.useAsync('/users', authMiddleware(UserRole.USER));
+baseRouter.useAsync(
+  '/users',
+  authMiddleware(UserRole.USER, ApiKeyAccess.LIMITED)
+);
 baseRouter.use('/users', userRouter);
 
-baseRouter.useAsync('/periods', authMiddleware(UserRole.USER));
+baseRouter.useAsync(
+  '/periods',
+  authMiddleware(UserRole.USER, ApiKeyAccess.LIMITED)
+);
 baseRouter.use('/periods', periodRouter);
 
-baseRouter.useAsync('/periodsettings', authMiddleware(UserRole.USER));
+baseRouter.useAsync(
+  '/periodsettings',
+  authMiddleware(UserRole.USER, ApiKeyAccess.LIMITED)
+);
 baseRouter.use('/periodsettings', periodsettingsRouter);
 
-baseRouter.useAsync('/praise', authMiddleware(UserRole.USER));
+baseRouter.useAsync(
+  '/praise',
+  authMiddleware(UserRole.USER, ApiKeyAccess.LIMITED)
+);
 baseRouter.use('/praise', praiseRouter);
 
-baseRouter.useAsync('/eventlogs', authMiddleware(UserRole.USER));
+baseRouter.useAsync(
+  '/eventlogs',
+  authMiddleware(UserRole.USER, ApiKeyAccess.LIMITED)
+);
 baseRouter.use('/eventlogs', eventLogRouter);
 
 /* ADMIN authentication */
 
-baseRouter.useAsync('/admin/users', authMiddleware(UserRole.ADMIN));
+baseRouter.useAsync(
+  '/admin/users',
+  authMiddleware(UserRole.ADMIN, ApiKeyAccess.FULL)
+);
 baseRouter.use('/admin/users', adminUserRouter);
 
-baseRouter.useAsync('/admin/periods', authMiddleware(UserRole.ADMIN));
+baseRouter.useAsync(
+  '/admin/periods',
+  authMiddleware(UserRole.ADMIN, ApiKeyAccess.FULL)
+);
 baseRouter.use('/admin/periods', adminPeriodRouter);
 
-baseRouter.useAsync('/admin/periodsettings', authMiddleware(UserRole.ADMIN));
+baseRouter.useAsync(
+  '/admin/periodsettings',
+  authMiddleware(UserRole.ADMIN, ApiKeyAccess.FULL)
+);
 baseRouter.use('/admin/periodsettings', adminPeriodsettingsRouter);
 
-baseRouter.useAsync('/admin/settings', authMiddleware(UserRole.ADMIN));
+baseRouter.useAsync(
+  '/admin/settings',
+  authMiddleware(UserRole.ADMIN, ApiKeyAccess.FULL)
+);
 baseRouter.use('/admin/settings', settingsAdminRouter);
 
 /* NOT FOUND */

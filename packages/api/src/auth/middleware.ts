@@ -4,16 +4,20 @@ import { NextFunction, Request, Response } from 'express';
 import { ForbiddenError, UnauthorizedError } from '@/error/errors';
 import { UserModel } from '@/user/entities';
 import { UserRole } from '@/user/types';
+import { ApiKeyAccess } from 'src/api-key/types';
+import { ApiKeyModel } from 'src/api-key/entities';
 import { extractAccessTokenFromRequest } from './utils';
 import { JwtService } from './JwtService';
 
 /**
  * express middleware to authenticate user,
- *  makes authRole and currentUser available to all controllers
+ *  - makes authRole and currentUser available to all controllers
+ *  - makes access and apikey available to all controllers
  *
  * @param  {UserRole} role
+ * @param  {ApiKeyAccess} access
  */
-export const authMiddleware = (role: UserRole) => {
+export const authMiddleware = (role: UserRole, access: ApiKeyAccess) => {
   /**
    * @param  {Request} req
    * @param  {Response} res
@@ -23,30 +27,50 @@ export const authMiddleware = (role: UserRole) => {
     // Get authorization header
     const accessToken = extractAccessTokenFromRequest(req);
 
-    // Find User with matching token
-    const user = await UserModel.findOne({
-      accessToken,
-    });
-
-    // No user = Forbidden
-    if (!user)
-      throw new UnauthorizedError('User is not authorized to access resource.');
+    let decoded;
+    let user;
+    let apiKey;
 
     // Access token invalid or expired = Forbidden
     const jwtService = new JwtService();
     try {
-      jwtService.verifyOrFail(accessToken);
+      decoded = jwtService.verifyOrFail(accessToken);
     } catch (err) {
       throw new UnauthorizedError('User is not authorized to access resource.');
     }
 
+    // Check token type
+    if (decoded.type === 'api-key') {
+      if (req.method.toLowerCase() !== 'get')
+        throw new UnauthorizedError(
+          'ApiKey is not authorized to access resource.'
+        );
+      apiKey = await ApiKeyModel.findOne({ apiKey });
+    }
+    if (decoded.type === 'access-token') {
+      user = await UserModel.findOne({ accessToken });
+    }
+
+    // No user or apiKey = Forbidden
+    if (
+      (decoded.type === 'access-token' && !user) ||
+      (decoded.type === 'api-key' && !apiKey)
+    ) {
+      throw new UnauthorizedError('User is not authorized to access resource.');
+    }
+
     // Wrong permissions = Forbidden
-    if (!user.roles.includes(role))
+    if (
+      (decoded.type === 'access-token' && !user?.roles.includes(role)) ||
+      (decoded.type === 'api-key' && !apiKey?.access.includes(access))
+    ) {
       throw new ForbiddenError('User is not authorized to access resource.');
+    }
 
     // Save auth role and current user for usage in controllers
-    res.locals.authRole = role;
     res.locals.currentUser = user;
+    // Save API key and api key access for usage in controllers
+    res.locals.apikey = apiKey;
 
     next();
   };
