@@ -9,14 +9,15 @@ export enum SettingGroup {
 
 interface Setting {
   key: string;
+  label: string;
+  description?: string;
+  defaultValue?: string;
   value?: string;
   valueRealized?: string | boolean | number | number[] | string[];
   type: string;
-  label: string;
-  description?: string;
-  group: SettingGroup;
   options?: string;
-  defaultValue?: string;
+  group: SettingGroup;
+  subgroup: number;
 }
 
 export interface SettingDocument extends Setting, Document {}
@@ -24,14 +25,15 @@ export interface SettingDocument extends Setting, Document {}
 export interface SettingDto {
   _id: string;
   key: string;
+  label: string;
+  description?: string;
+  defaultValue?: string;
   value?: string;
   valueRealized?: string | boolean | number | number[] | string[] | object;
   type: string;
-  label: string;
-  description?: string;
-  group: SettingGroup;
   options?: string;
-  defaultValue?: string;
+  group: SettingGroup;
+  subgroup: number;
 }
 
 export interface SettingSetInput {

@@ -33,11 +33,12 @@ describe('GET /api/settings/all', () => {
       'key',
       'label',
       'type',
-      'group',
       'description',
+      'defaultValue',
       'value',
       'valueRealized',
-      'defaultValue'
+      'group',
+      'subgroup'
     );
   });
 

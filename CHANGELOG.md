@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Discord-bot**: Updated the bot to use the new `discord.js` version 14 #619
 - **Discord-bot**: Minor refactors to make code easier to read #619
+- **Frontend:** The settings pages have been reorganised slightly and given section descriptions with links to documentation. #586 #631
 
 ### Fixed
 
