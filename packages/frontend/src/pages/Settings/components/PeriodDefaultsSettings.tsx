@@ -28,7 +28,7 @@ export const PeriodDefaultsSettings = ({
       <Box className="mb-6">
         <SettingsSubgroup
           header="Period Defaults"
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+          description="The period defaults are used as template when creating new periods. Changing these settings will not affect existing periods. Read more about quantifiers in the documentation: <a href='https://givepraise.xyz/docs/configuring/period-defaults' target='_blank'>Docs – Period Defaults</a>"
         >
           <SettingsForm settings={settings} parentOnSubmit={parentOnSubmit} />
         </SettingsSubgroup>

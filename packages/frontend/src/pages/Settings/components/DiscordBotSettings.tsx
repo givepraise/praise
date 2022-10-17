@@ -36,7 +36,7 @@ export const DiscordBotSettings = ({
       <Box className="mb-6">
         <SettingsSubgroup
           header="Bot Behaviour"
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+          description="Control how the Discord Bot interacts with community members. For more details on these settings, please refer to the documentation: <a href='https://givepraise.xyz/docs/configuring/discord-bot'>Docs – Discord Bot</a>"
         >
           <SettingsForm
             settings={botBehaviourSettings}
@@ -47,7 +47,7 @@ export const DiscordBotSettings = ({
       <Box className="mb-6">
         <SettingsSubgroup
           header="Authentication Messages"
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+          description="Adapt the default Praise messages to match your community's style. For more details on these settings, please refer to the documentation: <a href='https://givepraise.xyz/docs/configuring/discord-bot'>Docs – Discord Bot</a>"
         >
           <SettingsForm
             settings={authenticationMessagesSettings}
@@ -58,7 +58,7 @@ export const DiscordBotSettings = ({
       <Box>
         <SettingsSubgroup
           header="Praise Messages"
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+          description="Adapt the default Praise messages to match your community's style. For more details on these settings, please refer to the documentation: <a href='https://givepraise.xyz/docs/configuring/discord-bot'>Docs – Discord Bot</a>"
         >
           <SettingsForm
             settings={praiseMessagesSettings}
