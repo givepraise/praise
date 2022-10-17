@@ -14,15 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Discord-bot**: Updated the bot to use the new `discord.js` version 14 #619
-- **Discord-bot**: Minor refactors to make code easier to read #619
+- **Discord-bot:** Updated the bot to use the new `discord.js` version 14 #619
+- **Discord-bot:** Minor refactors to make code easier to read #619
 - **Frontend:** The settings pages have been reorganised slightly and given section descriptions with links to documentation. #586 #631
 
 ### Fixed
 
-- **Devops:**: `database-restore.sh` did not work under certain circumstances. Script have now been upgraded.
+- **Devops:** `database-restore.sh` did not work under certain circumstances. Script have now been upgraded.
 - **API:** Bug causing period praise counting to return the total number of praises instead of the number of praise for the period. #622
-- **Discord-bot**: Praising does not work in threads #524 #619
+- **Discord-bot:** Praising does not work in threads #524 #619
+- **Frontend:** Fixed a bug causing checkbox settings to be saved even if the user did not change the value. #629 #632
 
 ## [0.12.2] - 2022-09-28
 
