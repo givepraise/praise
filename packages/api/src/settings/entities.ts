@@ -26,6 +26,7 @@ export const genericSettingsSchema = {
   description: { type: String },
   group: { type: Number, enum: SettingGroup, required: true },
   options: { type: String },
+  subgroup: { type: Number },
 };
 
 export function getGenericSettingValueRealized(

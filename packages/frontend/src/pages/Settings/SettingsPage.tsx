@@ -9,10 +9,12 @@ import { AllSettings, useSetSetting } from '@/model/settings';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { SubPageNav } from '@/navigation/SubPageNav';
 import { NavItem } from '@/navigation/NavItem';
-import { SettingsForm } from '@/components/settings/SettingsForm';
 import { isResponseOk } from '@/model/api';
-import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
+import { DiscordBotSettings } from './components/DiscordBotSettings';
+import { CustomExportSettings } from './components/CustomExportSettings';
+import { PeriodDefaultsSettings } from './components/PeriodDefaultsSettings';
+import { ApplicationSettings } from './components/ApplicationSettings';
 
 const SettingsPage = (): JSX.Element | null => {
   const settings = useRecoilValue(AllSettings);
@@ -78,12 +80,11 @@ const SettingsPage = (): JSX.Element | null => {
             </ul>
           </SubPageNav>
         </div>
-
-        <Box>
+        <div>
           <Switch>
             <Route path={`${path}/application`}>
               <React.Suspense fallback={null}>
-                <SettingsForm
+                <ApplicationSettings
                   settings={applicationSettings}
                   parentOnSubmit={onSubmit}
                 />
@@ -91,7 +92,7 @@ const SettingsPage = (): JSX.Element | null => {
             </Route>
             <Route path={`${path}/period`}>
               <React.Suspense fallback={null}>
-                <SettingsForm
+                <PeriodDefaultsSettings
                   settings={periodDefaultSettings}
                   parentOnSubmit={onSubmit}
                 />
@@ -99,7 +100,7 @@ const SettingsPage = (): JSX.Element | null => {
             </Route>
             <Route path={`${path}/discord`}>
               <React.Suspense fallback={null}>
-                <SettingsForm
+                <DiscordBotSettings
                   settings={discordSettings}
                   parentOnSubmit={onSubmit}
                 />
@@ -107,7 +108,7 @@ const SettingsPage = (): JSX.Element | null => {
             </Route>
             <Route path={`${path}/custom-export`}>
               <React.Suspense fallback={null}>
-                <SettingsForm
+                <CustomExportSettings
                   settings={customExportSettings}
                   parentOnSubmit={onSubmit}
                 />
@@ -117,7 +118,7 @@ const SettingsPage = (): JSX.Element | null => {
               <Redirect to={`${url}/application`} />
             </Route>
           </Switch>
-        </Box>
+        </div>
       </div>
     </Page>
   );
