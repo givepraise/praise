@@ -28,7 +28,7 @@ export const CustomExportSettings = ({
       <Box className="mb-6">
         <SettingsSubgroup
           header="Custom Export Settings"
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+          description="Custom exports allow you to export Praise period data in a custom format for analytics, token distributions etc. The export system uses externally loaded transformers to produce csv or json files. The transformer is loaded from a URL and the data is passed to it as a JSON object. For more information about the transformer format, see the documentation: <a href='https://givepraise.xyz/docs/configuring/custom-export' target='_blank'>Docs – Custom export</a>"
         >
           <SettingsForm settings={settings} parentOnSubmit={parentOnSubmit} />
         </SettingsSubgroup>

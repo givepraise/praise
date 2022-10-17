@@ -33,10 +33,11 @@ describe('GET /api/settings/all', () => {
       'key',
       'label',
       'type',
-      'group',
       'description',
+      'defaultValue',
       'value',
       'valueRealized',
+      'group',
       'subgroup'
     );
   });
@@ -76,7 +77,8 @@ describe('GET /api/settings/:id', () => {
       'group',
       'description',
       'value',
-      'valueRealized'
+      'valueRealized',
+      'defaultValue'
     );
   });
 
@@ -143,7 +145,8 @@ describe('PATCH /api/admin/settings/:id/set', () => {
       'type',
       'label',
       'description',
-      'group'
+      'group',
+      'defaultValue'
     );
   });
 

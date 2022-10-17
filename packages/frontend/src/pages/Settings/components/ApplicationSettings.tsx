@@ -26,10 +26,7 @@ export const ApplicationSettings = ({
   return (
     <>
       <Box className="mb-6">
-        <SettingsSubgroup
-          header="Application Settings"
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-        >
+        <SettingsSubgroup header="Application Settings">
           <SettingsForm settings={settings} parentOnSubmit={parentOnSubmit} />
         </SettingsSubgroup>
       </Box>
