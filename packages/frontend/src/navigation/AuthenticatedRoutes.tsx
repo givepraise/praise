@@ -2,7 +2,6 @@ import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import difference from 'lodash/difference';
 import { ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth';
-import { ProfilePage } from '@/pages/Profile/ProfilePage';
 
 const StartPage = React.lazy(() => import('@/pages/Start/StartPage'));
 const SettingsPage = React.lazy(() => import('@/pages/Settings/SettingsPage'));
@@ -172,7 +171,7 @@ export const AuthenticatedRoutes = ({
       </Route>
 
       <Route exact path="/profile">
-        <ProfilePage />
+        <UserDetailsPage />
       </Route>
 
       <Route path="/*">

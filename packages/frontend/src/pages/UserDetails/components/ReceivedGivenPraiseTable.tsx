@@ -6,8 +6,6 @@ import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 import { AllPraiseList } from '@/model/praise';
 import { Praise } from '@/components/praise/Praise';
 import { PraiseRow } from '@/components/praise/PraiseRow';
-import { ActiveUserId } from '@/model/auth';
-import { SingleUser } from '@/model/users';
 import { PraisePageLoader } from '@/components/praise/PraisePageLoader';
 import { SelectInput } from '@/components/form/SelectInput';
 
@@ -32,17 +30,17 @@ export type userAccountTypeNumber = 1 | 2;
 
 interface Props {
   userAccountType: userAccountTypeNumber;
+  user: UserDto;
 }
 
 export const ReceivedGivenPraiseTable = ({
   userAccountType,
+  user,
 }: Props): JSX.Element | null => {
   const PRAISE_LIST_KEY =
     userAccountType === 1 ? 'RECEIVED_PRAISE' : 'GIVEN_PRAISE';
 
   const allPraise = useRecoilValue(AllPraiseList(PRAISE_LIST_KEY));
-  const userId = useRecoilValue(ActiveUserId);
-  const user = useRecoilValue(SingleUser(userId));
   const userAccountId = getUseAccountId(user);
 
   const [selectedSort, setSelectedSort] = useState<sortOptionsProps>(

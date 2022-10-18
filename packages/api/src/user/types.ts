@@ -40,3 +40,8 @@ export interface UserDto {
 export interface UserRoleChangeInput {
   role: UserRole;
 }
+
+export interface UpdateUserProfileInput {
+  username: string;
+  rewardsEthAddress: string;
+}

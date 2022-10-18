@@ -1,6 +1,12 @@
 import { UserDto, UserRole } from 'api/dist/user/types';
 import { AxiosError, AxiosResponse } from 'axios';
-import { atom, selector, selectorFamily, useRecoilState } from 'recoil';
+import {
+  atom,
+  selector,
+  selectorFamily,
+  useRecoilCallback,
+  useRecoilState,
+} from 'recoil';
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
 import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from './api';
@@ -209,4 +215,34 @@ export const useAdminUsers = (): useAdminUsersReturns => {
   };
 
   return { addRole, removeRole };
+};
+
+type useUserProfileReturn = {
+  update: (username: string, rewardsEthAddress: string) => Promise<UserDto>;
+};
+
+export const useUserProfile = (): useUserProfileReturn => {
+  const apiAuthClient = useApiAuthClient();
+
+  const update = async (
+    username: string,
+    rewardsEthAddress: string
+  ): Promise<UserDto> => {
+    const response: AxiosResponse<UserDto> = await apiAuthClient.patch(
+      '/admin/users/updateProfile',
+      {
+        username,
+        rewardsEthAddress,
+      }
+    );
+
+    if (isResponseOk(response)) {
+      const user = response.data;
+      return user;
+    }
+
+    return response;
+  };
+
+  return { update };
 };

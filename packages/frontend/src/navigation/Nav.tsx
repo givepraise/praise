@@ -20,6 +20,7 @@ import { SingleSetting } from '@/model/settings';
 import { EthAccount } from '@/components/account/EthAccount';
 import { AdminOnly } from '@/components/auth/AdminOnly';
 import { Theme } from '@/model/theme';
+import { ActiveUserId } from '@/model/auth';
 import { NavItem } from './NavItem';
 
 const NavLogo = (): JSX.Element => {
@@ -59,6 +60,7 @@ const NavLogo = (): JSX.Element => {
 };
 
 export const Nav = (): JSX.Element => {
+  const userId = useRecoilValue(ActiveUserId);
   const setTheme = useSetRecoilState(Theme);
 
   const handleTheme = (theme: string): void => {
@@ -80,7 +82,11 @@ export const Nav = (): JSX.Element => {
               <NavLogo />
             </li>
 
-            <NavItem icon={faUser} description="Profile" to="/profile" />
+            <NavItem
+              icon={faUser}
+              description="Profile"
+              to={`/users/${userId}`}
+            />
             <NavItem icon={faCalendarAlt} description="Periods" to="/periods" />
             <AdminOnly>
               <NavItem
@@ -144,7 +150,7 @@ export const Nav = (): JSX.Element => {
 
         <div className="w-full border-t">
           <Menu as="div" className="flex flex-col justify-center">
-            <Menu.Button className="flex items-center justify-between w-full selection:hover:text-warm-gray-500 focus:outline-none">
+            <Menu.Button className="flex items-center justify-between w-full selection:hover:text-red focus:outline-none">
               <EthAccount
                 showDownCaret={false}
                 showRightCaret={true}

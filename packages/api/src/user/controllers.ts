@@ -17,7 +17,13 @@ import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
 import { UserModel } from './entities';
 import { userListTransformer, userTransformer } from './transformers';
-import { UserDocument, UserDto, UserRole, UserRoleChangeInput } from './types';
+import {
+  UpdateUserProfileInput,
+  UserDocument,
+  UserDto,
+  UserRole,
+  UserRoleChangeInput,
+} from './types';
 import { findUser } from './utils/entity';
 
 /**
@@ -64,10 +70,7 @@ export const single = async (
   const { id } = req.params;
   const user = await findUser(id);
 
-  const userTransformed = await userTransformer(
-    user,
-    res.locals.currentUser.roles
-  );
+  const userTransformed = userTransformer(user, res.locals.currentUser.roles);
 
   res.status(200).json(userTransformed);
 };
@@ -111,7 +114,7 @@ export const addRole = async (
 
   const userWithDetails = await findUser(id);
 
-  const userTransformed = await userTransformer(
+  const userTransformed = userTransformer(
     userWithDetails,
     res.locals.currentUser.roles
   );
@@ -183,9 +186,49 @@ export const removeRole = async (
 
   const userWithDetails = await findUser(id);
 
-  const userTransformed = await userTransformer(
+  const userTransformed = userTransformer(
     userWithDetails,
     res.locals.currentUser.roles
   );
+  res.status(200).json(userTransformed);
+};
+
+/**
+ * Update a User Profile
+ *
+ * @param {TypedRequestBody<UpdateUserProfileInput>} req
+ * @param {TypedResponse<UserDto>} res
+ * @returns {Promise<void>}
+ */
+export const updateProfile = async (
+  req: TypedRequestBody<UpdateUserProfileInput>,
+  res: TypedResponse<UserDto>
+): Promise<void> => {
+  const user = res.locals.currentUser;
+  if (!user) throw new NotFoundError('User');
+
+  const { username, rewardsEthAddress } = req.body;
+
+  user.username = username;
+  user.rewardsEthAddress = rewardsEthAddress;
+  await user.save();
+
+  await logEvent(
+    EventLogTypeKey.PERMISSION,
+    `Updated user profile for the user with id "${(
+      user._id as Types.ObjectId
+    ).toString()}"`,
+    {
+      userId: res.locals.currentUser._id,
+    }
+  );
+
+  const userWithDetails = await findUser(user._id);
+
+  const userTransformed = userTransformer(
+    userWithDetails,
+    res.locals.currentUser.roles
+  );
+
   res.status(200).json(userTransformed);
 };
