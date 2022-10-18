@@ -182,7 +182,7 @@ export const praiseHandler: CommandHandler = async (
     await interaction.followUp({ content: warningMsg, ephemeral: true });
   }
 
-  if (praiseItemsCount === 0) {
+  if (receivers.length && receivers.length !== 0 && praiseItemsCount === 0) {
     await interaction.followUp({
       content: await firstTimePraiserInfo(),
       ephemeral: true,
