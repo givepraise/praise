@@ -37,15 +37,21 @@ export const ReceivedGivenPraiseTable = ({
   userAccountType,
   user,
 }: Props): JSX.Element | null => {
-  const PRAISE_LIST_KEY =
-    userAccountType === 1 ? 'RECEIVED_PRAISE' : 'GIVEN_PRAISE';
-
-  const allPraise = useRecoilValue(AllPraiseList(PRAISE_LIST_KEY));
-  const userAccountId = getUseAccountId(user);
-
   const [selectedSort, setSelectedSort] = useState<sortOptionsProps>(
     sortOptions[0]
   );
+
+  const PRAISE_LIST_KEY =
+    userAccountType === 1
+      ? selectedSort.value === 'createdAt'
+        ? 'RECEIVED_PRAISE_LATEST'
+        : 'RECEIVED_PRAISE_TOP'
+      : selectedSort.value === 'createdAt'
+      ? 'GIVEN_PRAISE_LATEST'
+      : 'GIVEN_PRAISE_TOP';
+
+  const allPraise = useRecoilValue(AllPraiseList(PRAISE_LIST_KEY));
+  const userAccountId = getUseAccountId(user);
 
   const [page, setPage] = useState<number>(1);
 
