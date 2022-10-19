@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
-import _, { isString } from 'lodash';
+import { isString } from 'lodash';
 import { getQuerySort } from '@/shared/functions';
 import {
   EventLogsQueryInputParsedQs,

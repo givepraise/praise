@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import { StatusCodes } from 'http-status-codes';
-import e, { Request } from 'express';
+import { Request } from 'express';
 import { add, compareAsc, parseISO } from 'date-fns';
 import { isString } from 'lodash';
 import { BadRequestError, NotFoundError } from '@/error/errors';
