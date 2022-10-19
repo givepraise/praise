@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
+import _, { isString } from 'lodash';
 import { getQuerySort } from '@/shared/functions';
 import {
   EventLogsQueryInputParsedQs,
@@ -31,15 +32,15 @@ export const all = async (
     throw new BadRequestError('limit and page are required');
 
   const query: EventLogInput = {};
-  if (req.query.type) {
+  if (isString(req.query.type)) {
     const typesArray = req.query.type.split(',');
     const types = await EventLogTypeModel.find({ key: { $in: typesArray } });
     query.type = types.map((item) => new mongoose.Types.ObjectId(item.id));
   }
 
-  if (req.query.search && req.query.search !== '') {
+  if (isString(req.query.search) && req.query.search.length > 0) {
     query.description = {
-      $regex: `${req.query.search.toString()}`,
+      $regex: `${req.query.search}`,
       $options: 'i',
     };
   }

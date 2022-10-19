@@ -23,6 +23,7 @@ import {
   QuantificationCreateUpdateInput,
   QuantifyMultiplePraiseInput,
 } from './types';
+import { isArray } from 'lodash';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
@@ -113,6 +114,10 @@ export const quantifyMultiple = async (
   res: TypedResponse<PraiseDto[]>
 ): Promise<void> => {
   const { praiseIds } = req.body;
+
+  if (!isArray(praiseIds)) {
+    throw new BadRequestError('praiseIds must be an array');
+  }
 
   const praiseItems = await Promise.all(
     praiseIds.map(async (id) => {
