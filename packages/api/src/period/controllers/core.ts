@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import { StatusCodes } from 'http-status-codes';
 import e, { Request } from 'express';
 import { add, compareAsc, parseISO } from 'date-fns';
+import { isString } from 'lodash';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import { PraiseDetailsDto, PraiseDto } from '@/praise/types';
 import {
@@ -36,7 +37,6 @@ import {
 } from '../utils/core';
 import { PeriodModel } from '../entities';
 import { periodTransformer } from '../transformers';
-import { isString } from 'lodash';
 
 /**
  * Fetch a paginated list of Periods
