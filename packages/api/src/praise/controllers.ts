@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import { isArray } from 'lodash';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import {
   getPraiseAllInput,
@@ -23,7 +24,6 @@ import {
   QuantificationCreateUpdateInput,
   QuantifyMultiplePraiseInput,
 } from './types';
-import { isArray } from 'lodash';
 
 interface PraiseAllInputParsedQs extends Query, QueryInput, PraiseAllInput {}
 
