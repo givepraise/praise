@@ -1,20 +1,23 @@
-import { UserDto, UserRole } from 'api/dist/user/types';
+import { UpdateUserProfileInput, UserDto, UserRole } from 'api/dist/user/types';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCalendarAlt,
-  faHandHoldingHeart,
+  faChartPie,
   faScaleBalanced,
-  faPrayingHands,
   faUserLock,
 } from '@fortawesome/free-solid-svg-icons';
 import { shortenEthAddress } from 'api/dist/user/utils/core';
-import { faDiscord, faEthereum } from '@fortawesome/free-brands-svg-icons';
+import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { Dialog } from '@headlessui/react';
+import toast from 'react-hot-toast';
+import { ApiErrorResponseData } from 'api/dist/error/types';
 import { Box } from '@/components/ui/Box';
-import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
+import { formatIsoDateUTC, DATE_FORMAT_NAME } from '@/utils/date';
 import { classNames } from '@/utils/index';
 import { Button } from '@/components/ui/Button';
+import { useUserProfile } from '@/model/users';
+import { isApiResponseValidationError, isResponseOk } from '@/model/api';
 import { EditProfileDialog } from './EditProfileDialog';
 
 interface Params {
@@ -37,10 +40,22 @@ export const UserInfo = ({
   const avatars = user.accounts?.map((a) => a.avatarId).filter((e) => e) || [];
   const account = user.accounts?.[0];
 
+  const { update } = useUserProfile();
+
   if (!account) return null;
 
-  const handleSaveUserProfile = (values) => {
-    console.log('saved!', values);
+  const handleSaveUserProfile = async (
+    values: UpdateUserProfileInput
+  ): Promise<void> => {
+    const { username, rewardsEthAddress } = values;
+    const response = await update(username, rewardsEthAddress);
+
+    if (isResponseOk(response)) {
+      toast.success('User profile saved');
+      setIsDialogOpen(false);
+    } else {
+      toast.error('Profile update failed');
+    }
   };
 
   return (
@@ -71,14 +86,14 @@ export const UserInfo = ({
             {account.name}
           </p>
           <p className="mb-2">
-            <FontAwesomeIcon icon={faEthereum} className="mr-4" size="1x" />
+            <FontAwesomeIcon icon={faChartPie} className="mr-4" size="1x" />
             Identity address: {shortenEthAddress(user.identityEthAddress)}
           </p>
           <p className="mb-2">
-            <FontAwesomeIcon icon={faEthereum} className="mr-4" size="1x" />
+            <FontAwesomeIcon icon={faChartPie} className="mr-4" size="1x" />
             Payout address: {shortenEthAddress(user.rewardsEthAddress)}
           </p>
-          {isProfilePage && (
+          {!isProfilePage && (
             <p className="mb-2">
               <FontAwesomeIcon icon={faUserLock} className="mr-4" size="1x" />
               User roles: {user.roles.map((r) => `${r}, `)}
@@ -89,11 +104,12 @@ export const UserInfo = ({
         <div className="absolute bottom-0 right-0">
           <p className="mb-3">
             <FontAwesomeIcon icon={faCalendarAlt} className="mr-2" size="1x" />
-            Joined {formatIsoDateUTC(account.createdAt, DATE_FORMAT)}
+            Joined {formatIsoDateUTC(account.createdAt, DATE_FORMAT_NAME)}
           </p>
           <p className="mb-2">
             <FontAwesomeIcon icon={faCalendarAlt} className="mr-2" size="1x" />
-            Latest activity {formatIsoDateUTC(account.updatedAt, DATE_FORMAT)}
+            Latest activity{' '}
+            {formatIsoDateUTC(account.updatedAt, DATE_FORMAT_NAME)}
           </p>
           <p className="mb-2">
             <FontAwesomeIcon
@@ -142,7 +158,7 @@ export const UserInfo = ({
         <div ref={dialogRef}>
           <EditProfileDialog
             onClose={(): void => setIsDialogOpen(false)}
-            onSave={(values): void => handleSaveUserProfile(values)}
+            onSave={(values): void => void handleSaveUserProfile(values)}
             user={user}
           />
         </div>

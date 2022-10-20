@@ -3,6 +3,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { useAccount } from 'wagmi';
 import React, { useEffect } from 'react';
 import { ActiveTokenSet, DecodedAccessToken } from '@/model/auth';
+import { ProfilePage } from '@/pages/Profile/ProfilePage';
 import { AuthenticatedLayout } from '../layouts/AuthenticatedLayout';
 
 const ActivatePage = React.lazy(() => import('@/pages/Activate/ActivatePage'));
@@ -38,6 +39,9 @@ export const Routes = (): JSX.Element => {
       </Route>
       <Route exact path="/activate">
         <ActivatePage />
+      </Route>
+      <Route exact path="/:username">
+        <ProfilePage />
       </Route>
       <Route path="/*">
         <Redirect

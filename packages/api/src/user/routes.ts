@@ -10,6 +10,6 @@ userRouter.getAsync('/:id', single);
 const adminUserRouter = Router();
 adminUserRouter.patchAsync('/:id/addRole', addRole);
 adminUserRouter.patchAsync('/:id/removeRole', removeRole);
-adminUserRouter.patchAsync('/:id/updateProfile', updateProfile);
+adminUserRouter.patchAsync('/updateProfile', updateProfile);
 
 export { userRouter, adminUserRouter };

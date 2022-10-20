@@ -1,4 +1,5 @@
 import {
+  faCheck,
   faCheckCircle,
   faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
@@ -7,7 +8,7 @@ import { useFormState } from 'react-final-form';
 import React from 'react';
 import { Button } from '@/components/ui/Button';
 
-export const SubmitButton = (): JSX.Element => {
+export const UpdateProfileSubmitButton = (): JSX.Element => {
   const {
     hasValidationErrors,
     submitting,
@@ -23,9 +24,7 @@ export const SubmitButton = (): JSX.Element => {
     (submitSucceeded && !dirtySinceLastSubmit) ||
     (submitFailed && !dirtySinceLastSubmit);
 
-  const [buttonText, setButtonText] = React.useState<JSX.Element>(
-    <>Update profile</>
-  );
+  const [buttonText, setButtonText] = React.useState<JSX.Element>(<>Save</>);
 
   React.useEffect(() => {
     if (submitSucceeded) {
@@ -74,8 +73,11 @@ export const SubmitButton = (): JSX.Element => {
   }, [dirtySinceLastSubmit]);
 
   return (
-    <Button type="submit" id="submit-button" disabled={disabled}>
-      {buttonText}
-    </Button>
+    <div className="text-center">
+      <Button type="submit" id="submit-button" disabled={disabled}>
+        <FontAwesomeIcon className="mr-2" icon={faCheck} size="1x" />
+        {buttonText}
+      </Button>
+    </div>
   );
 };

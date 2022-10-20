@@ -4,13 +4,18 @@ import {
   atom,
   selector,
   selectorFamily,
-  useRecoilCallback,
   useRecoilState,
+  useRecoilCallback,
 } from 'recoil';
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
 import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from './api';
 import { AllPeriods } from './periods';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const instanceOfUser = (object: any): object is UserDto => {
+  return '_id' in object;
+};
 
 interface roleOptionsProps {
   value: string;
@@ -139,14 +144,51 @@ export type SingleUserParams = {
   userId: string | undefined;
 };
 
+/**
+ * Types for `useParams()`
+ */
+export type PublicProfileParams = {
+  username: string;
+};
+
+/**
+ * Selector that returns one individual Period.
+ */
 export const SingleUser = selectorFamily({
   key: 'SingleUser',
   get:
     (userId: string | undefined) =>
     ({ get }): UserDto | undefined => {
       const allUsers = get(AllUsers);
-      if (!allUsers) return undefined;
-      return allUsers.find((user) => user._id === userId);
+      if (!allUsers || !userId) return undefined;
+      return allUsers.filter((user) => user._id === userId)[0];
+    },
+  set:
+    (userId: string | undefined) =>
+    ({ get, set }, user): void => {
+      const allUsers = get(AllUsers);
+      if (!userId || !user || !instanceOfUser(user) || !allUsers) return;
+      if (allUsers.find((p) => p._id === user._id)) {
+        // Update exisiting user
+        set(
+          AllUsers,
+          allUsers.map((p) => (p._id === user._id ? user : p))
+        );
+        return;
+      }
+      // Add new user
+      set(AllUsers, [...allUsers, user]);
+    },
+});
+
+export const SingleUserByUsername = selectorFamily({
+  key: 'SingleUserByUsername',
+  get:
+    (username: string | undefined) =>
+    ({ get }): UserDto | undefined => {
+      const allUsers = get(AllUsers);
+      if (!allUsers || !username) return undefined;
+      return allUsers.filter((user) => user.username === username)[0];
     },
 });
 
@@ -218,31 +260,37 @@ export const useAdminUsers = (): useAdminUsersReturns => {
 };
 
 type useUserProfileReturn = {
-  update: (username: string, rewardsEthAddress: string) => Promise<UserDto>;
+  update: (
+    username: string,
+    rewardsEthAddress: string
+  ) => Promise<AxiosResponse<UserDto>>;
 };
 
 export const useUserProfile = (): useUserProfileReturn => {
   const apiAuthClient = useApiAuthClient();
 
-  const update = async (
-    username: string,
-    rewardsEthAddress: string
-  ): Promise<UserDto> => {
-    const response: AxiosResponse<UserDto> = await apiAuthClient.patch(
-      '/admin/users/updateProfile',
-      {
-        username,
-        rewardsEthAddress,
+  const update = useRecoilCallback(
+    ({ set }) =>
+      async (
+        username: string,
+        rewardsEthAddress: string
+      ): Promise<AxiosResponse<UserDto>> => {
+        const response: AxiosResponse<UserDto> = await apiAuthClient.patch(
+          '/admin/users/updateProfile',
+          {
+            username,
+            rewardsEthAddress,
+          }
+        );
+
+        if (isResponseOk(response)) {
+          const user = response.data;
+          set(SingleUser(user._id), user);
+        }
+
+        return response;
       }
-    );
-
-    if (isResponseOk(response)) {
-      const user = response.data;
-      return user;
-    }
-
-    return response;
-  };
+  );
 
   return { update };
 };
