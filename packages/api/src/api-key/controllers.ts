@@ -1,17 +1,17 @@
 import { Request, Response } from 'express';
-import { Types } from 'mongoose';
+// import { Types } from 'mongoose';
 import { v4 } from 'uuid';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import {
-  TypedRequestBody,
-  TypedRequestQuery,
+  // TypedRequestBody,
+  // TypedRequestQuery,
   TypedResponse,
 } from '@/shared/types';
-import { EventLogTypeKey } from '@/eventlog/types';
-import { logEvent } from '@/eventlog/utils';
+// import { EventLogTypeKey } from '@/eventlog/types';
+// import { logEvent } from '@/eventlog/utils';
 import { ApiKeyModel } from './entities';
 // import { userListTransformer, userTransformer } from './transformers';
-import { ApiKeyDocument, ApiKeyDto, ApiKeyAccess } from './types';
+import { ApiKeyDto, ApiKeyAccess } from './types';
 
 /**
  * Fetch all API keys
