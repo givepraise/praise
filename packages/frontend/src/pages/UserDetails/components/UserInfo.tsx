@@ -1,4 +1,8 @@
-import { UpdateUserProfileInput, UserDto, UserRole } from 'api/dist/user/types';
+import {
+  UpdateUserProfileInput,
+  UserDetailsDto,
+  UserRole,
+} from 'api/dist/user/types';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -21,7 +25,7 @@ import { isApiResponseValidationError, isResponseOk } from '@/model/api';
 import { EditProfileDialog } from './EditProfileDialog';
 
 interface Params {
-  user: UserDto;
+  user: UserDetailsDto;
   isProfilePage: boolean;
 }
 
@@ -117,7 +121,16 @@ export const UserInfo = ({
               className="mr-2"
               size="1x"
             />
-            Total praise score:
+            Received praise total score:{' '}
+            {user.praiseStatistics?.receivedTotalScore}
+          </p>
+          <p className="mb-2">
+            <FontAwesomeIcon
+              icon={faScaleBalanced}
+              className="mr-2"
+              size="1x"
+            />
+            Given praise total score: {user.praiseStatistics?.givenTotalScore}
           </p>
         </div>
       </div>

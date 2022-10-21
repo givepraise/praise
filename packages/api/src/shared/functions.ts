@@ -30,7 +30,6 @@ export const getQuerySort = (input: QueryInput): Object => {
     sort[sortColumn] = sortType === 'desc' ? -1 : 1;
   }
 
-  console.log('SORT: ', sort);
   return sort;
 };
 

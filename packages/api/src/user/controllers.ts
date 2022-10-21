@@ -16,13 +16,18 @@ import {
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
 import { UserModel } from './entities';
-import { userListTransformer, userTransformer } from './transformers';
+import {
+  userDetailTransformer,
+  userListTransformer,
+  userTransformer,
+} from './transformers';
 import {
   UpdateUserProfileInput,
   UserDocument,
   UserDto,
   UserRole,
   UserRoleChangeInput,
+  UserDetailsDto,
 } from './types';
 import { findUser } from './utils/entity';
 
@@ -65,12 +70,15 @@ export const all = async (
  */
 export const single = async (
   req: Request,
-  res: TypedResponse<UserDto>
+  res: TypedResponse<UserDetailsDto>
 ): Promise<void> => {
   const { id } = req.params;
   const user = await findUser(id);
 
-  const userTransformed = userTransformer(user, res.locals.currentUser.roles);
+  const userTransformed = await userDetailTransformer(
+    user,
+    res.locals.currentUser.roles
+  );
 
   res.status(200).json(userTransformed);
 };
@@ -197,12 +205,12 @@ export const removeRole = async (
  * Update a User Profile
  *
  * @param {TypedRequestBody<UpdateUserProfileInput>} req
- * @param {TypedResponse<UserDto>} res
+ * @param {TypedResponse<UserDetailsDto>} res
  * @returns {Promise<void>}
  */
 export const updateProfile = async (
   req: TypedRequestBody<UpdateUserProfileInput>,
-  res: TypedResponse<UserDto>
+  res: TypedResponse<UserDetailsDto>
 ): Promise<void> => {
   const user = res.locals.currentUser;
   if (!user) throw new NotFoundError('User');
@@ -225,7 +233,7 @@ export const updateProfile = async (
 
   const userWithDetails = await findUser(user._id);
 
-  const userTransformed = userTransformer(
+  const userTransformed = await userDetailTransformer(
     userWithDetails,
     res.locals.currentUser.roles
   );

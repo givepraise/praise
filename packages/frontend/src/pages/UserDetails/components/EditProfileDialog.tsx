@@ -129,17 +129,6 @@ export const EditProfileDialog = ({
                   </div>
 
                   <UpdateProfileSubmitButton />
-
-                  {/* <div className="text-center">
-                    <Button className="mt-4 bg-red-600" type="submit">
-                      <FontAwesomeIcon
-                        className="mr-2"
-                        icon={faCheck}
-                        size="1x"
-                      />
-                      Save
-                    </Button>
-                  </div> */}
                 </form>
               )}
             />

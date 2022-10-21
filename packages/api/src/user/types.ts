@@ -37,6 +37,15 @@ export interface UserDto {
   updatedAt: string;
 }
 
+interface PraiseStatistics {
+  receivedTotalScore: number;
+  givenTotalScore: number;
+}
+
+export interface UserDetailsDto extends UserDto {
+  praiseStatistics: PraiseStatistics;
+}
+
 export interface UserRoleChangeInput {
   role: UserRole;
 }

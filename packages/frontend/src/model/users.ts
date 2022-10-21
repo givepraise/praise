@@ -1,4 +1,4 @@
-import { UserDto, UserRole } from 'api/dist/user/types';
+import { UserDetailsDto, UserDto, UserRole } from 'api/dist/user/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import {
   atom,
@@ -6,7 +6,10 @@ import {
   selectorFamily,
   useRecoilState,
   useRecoilCallback,
+  useRecoilValue,
+  useSetRecoilState,
 } from 'recoil';
+import React from 'react';
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
 import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from './api';
@@ -141,7 +144,7 @@ export const PseudonymForUser = selectorFamily({
  * Types for `useParams()`
  */
 export type SingleUserParams = {
-  userId: string | undefined;
+  userId: string;
 };
 
 /**
@@ -158,10 +161,12 @@ export const SingleUser = selectorFamily({
   key: 'SingleUser',
   get:
     (userId: string | undefined) =>
-    ({ get }): UserDto | undefined => {
+    ({ get }): UserDetailsDto | undefined => {
       const allUsers = get(AllUsers);
       if (!allUsers || !userId) return undefined;
-      return allUsers.filter((user) => user._id === userId)[0];
+      return allUsers.filter(
+        (user) => user._id === userId
+      )[0] as UserDetailsDto;
     },
   set:
     (userId: string | undefined) =>
@@ -274,14 +279,12 @@ export const useUserProfile = (): useUserProfileReturn => {
       async (
         username: string,
         rewardsEthAddress: string
-      ): Promise<AxiosResponse<UserDto>> => {
-        const response: AxiosResponse<UserDto> = await apiAuthClient.patch(
-          '/admin/users/updateProfile',
-          {
+      ): Promise<AxiosResponse<UserDetailsDto>> => {
+        const response: AxiosResponse<UserDetailsDto> =
+          await apiAuthClient.patch('/admin/users/updateProfile', {
             username,
             rewardsEthAddress,
-          }
-        );
+          });
 
         if (isResponseOk(response)) {
           const user = response.data;
@@ -293,4 +296,39 @@ export const useUserProfile = (): useUserProfileReturn => {
   );
 
   return { update };
+};
+
+/**
+ * Query that fetches the all details for a user, including praise stats
+ */
+const DetailedSingleUserQuery = selectorFamily({
+  key: 'DetailedSingleUserQuery',
+  get:
+    (userId: string) =>
+    ({ get }): AxiosResponse<UserDetailsDto> | AxiosError => {
+      return get(
+        ApiAuthGet({
+          url: `/users/${userId}`,
+        })
+      ) as AxiosResponse<UserDetailsDto> | AxiosError;
+    },
+});
+
+/**
+ * Fetch all details for a user, including praise stats.
+ * Update user cached in global state.
+ */
+export const useLoadSingleUserDetails = (
+  userId: string
+): AxiosResponse<UserDetailsDto> | AxiosError => {
+  const response = useRecoilValue(DetailedSingleUserQuery(userId));
+  const setUser = useSetRecoilState(SingleUser(userId));
+
+  React.useEffect(() => {
+    if (isResponseOk(response)) {
+      setUser(response.data);
+    }
+  }, [response, setUser]);
+
+  return response;
 };

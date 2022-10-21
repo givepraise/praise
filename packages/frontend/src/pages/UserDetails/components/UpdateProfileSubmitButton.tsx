@@ -27,25 +27,6 @@ export const UpdateProfileSubmitButton = (): JSX.Element => {
   const [buttonText, setButtonText] = React.useState<JSX.Element>(<>Save</>);
 
   React.useEffect(() => {
-    if (submitSucceeded) {
-      setTimeout(
-        () =>
-          setButtonText(
-            <>
-              <FontAwesomeIcon
-                icon={faCheckCircle}
-                size="1x"
-                className="inline-block mr-2"
-              />
-              Profile updated
-            </>
-          ),
-        1000
-      );
-    }
-  }, [submitSucceeded]);
-
-  React.useEffect(() => {
     if (submitting) {
       setButtonText(<>Updating</>);
     }

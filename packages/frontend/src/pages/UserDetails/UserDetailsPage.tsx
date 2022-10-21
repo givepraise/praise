@@ -7,7 +7,11 @@ import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { Page } from '@/components/ui/Page';
 import { Box } from '@/components/ui/Box';
 import { Button } from '@/components/ui/Button';
-import { SingleUser, SingleUserParams } from '@/model/users';
+import {
+  SingleUser,
+  SingleUserParams,
+  useLoadSingleUserDetails,
+} from '@/model/users';
 import { ActiveUserId } from '@/model/auth';
 import { UserInfo } from './components/UserInfo';
 import {
@@ -21,7 +25,9 @@ const UserDetailsPage = (): JSX.Element | null => {
 
   const isProfilePage = userId === activeUserId;
 
+  const detailsResponse = useLoadSingleUserDetails(userId);
   const user = useRecoilValue(SingleUser(userId));
+  console.log('USER:', user);
 
   const pageViews = {
     receivedPraiseView: 1,
@@ -30,7 +36,7 @@ const UserDetailsPage = (): JSX.Element | null => {
 
   const [view, setView] = useState<number>(pageViews.receivedPraiseView);
 
-  if (!user) return null;
+  if (!user || !detailsResponse) return null;
 
   return (
     <Page>

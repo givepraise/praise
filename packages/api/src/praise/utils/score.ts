@@ -3,9 +3,10 @@ import sum from 'lodash/sum';
 import { BadRequestError } from '@/error/errors';
 import { settingValue } from '@/shared/settings';
 import { PeriodDetailsGiverReceiver } from '@/period/types';
+import { UserAccountDto } from '@/useraccount/types';
 import { getPraisePeriod, isQuantificationCompleted } from './core';
 import { PraiseModel } from '../entities';
-import { Quantification } from '../types';
+import { PraiseDocument, PraiseDto, Quantification } from '../types';
 
 /**
  * Digits of precision for rounding calculated scores
@@ -141,4 +142,22 @@ export const calculateGiverReceiverCompositeScore = async (
   const score = +sum(compositeScores).toFixed(DIGITS_PRECISION);
 
   return score;
+};
+
+/**
+ * Calculates a single "total" score for a user in all periods
+ *
+ * @param {PraiseDocument[]} praiseItems
+ * @returns {Promise<number>}
+ */
+export const calculateUserTotalScore = async (
+  praiseItems: PraiseDocument[]
+): Promise<number> => {
+  const quantifications = praiseItems.map((p) => p.quantifications).flat();
+
+  const scores = await Promise.all(
+    quantifications.map(async (q) => await calculateQuantificationScore(q))
+  );
+
+  return +sum(scores).toFixed(DIGITS_PRECISION);
 };
