@@ -56,8 +56,10 @@
     "morgan": "^1.10.0",
     "safe-eval": "^0.4.1",
     "umzug": "^3.0.0",
-    "uuid": "^9.0.0"
-  },
+    "uuid": "^9.0.0",
+    "winston": "^3.8.2",
+    "winston-daily-rotate-file": "^4.7.1"
+   },
   "devDependencies": {
     "@types/chai": "^4.3.0",
     "@types/chai-as-promised": "^7.1.5",

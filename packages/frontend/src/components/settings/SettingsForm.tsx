@@ -4,6 +4,8 @@ import { PeriodSettingDto } from 'api/src/periodsettings/types';
 import { SettingDto } from 'api/dist/settings/types';
 import { useState } from 'react';
 import { AxiosError, AxiosResponse } from 'axios';
+import { faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NumberInput } from '@/components/form/NumberInput';
 import { StringInput } from '@/components/form/StringInput';
 import { TextareaInput } from '@/components/form/TextareaInput';
@@ -29,6 +31,7 @@ interface SettingsFormProps {
 const FormFields = (
   settings: SettingDto[] | PeriodSettingDto[],
   apiResponse,
+  setValue: (key: string, value: string) => void,
   disabled?: boolean
 ): JSX.Element => {
   return (
@@ -36,7 +39,27 @@ const FormFields = (
       {settings.map((setting) => {
         return (
           <div key={setting.key}>
-            <label className="block font-bold">{setting.label}</label>
+            <label className="block font-bold group">
+              {setting.label}
+              {setting.defaultValue && (
+                <button
+                  onClick={(): void =>
+                    setValue(setting.key, setting.defaultValue)
+                  }
+                  className="hidden cursor-pointer text-warm-gray-400 group-hover:inline-block"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="Restore default value"
+                  type="button"
+                >
+                  <FontAwesomeIcon
+                    icon={faArrowRightArrowLeft}
+                    size="1x"
+                    className="ml-2 hover:text-warm-gray-500 dark:hover:text-warm-gray-300"
+                  />
+                </button>
+              )}
+            </label>
             {setting.description && (
               <div className="mb-2 text-sm text-warm-gray-400">
                 {setting.description}
@@ -110,7 +133,10 @@ export const SettingsForm = ({
   const onSubmit = async (values: Record<string, any>): Promise<void> => {
     for (const setting of settings) {
       const value = values[setting.key];
-      if (value !== setting.value) {
+      if (
+        (setting.type === 'Boolean' && value !== Boolean(setting.value)) ||
+        (setting.type !== 'Boolean' && value !== setting.value)
+      ) {
         const updatedSetting = { ...setting, value: value || '' };
         const apiResponse = await onSubmitParent(updatedSetting);
         setApiResponse(apiResponse);
@@ -134,8 +160,16 @@ export const SettingsForm = ({
         setDate: (args, state, utils): void => {
           utils.changeValue(state, 'endDate', () => args);
         },
+        setValue: ([field, value], state, { changeValue }): void => {
+          changeValue(state, field, () => value);
+        },
       }}
-      render={({ handleSubmit }): JSX.Element => {
+      render={({
+        handleSubmit,
+        form: {
+          mutators: { setValue },
+        },
+      }): JSX.Element => {
         return (
           <>
             {disabled && (
@@ -147,7 +181,7 @@ export const SettingsForm = ({
               </Notice>
             )}
             <form onSubmit={handleSubmit} className="leading-loose">
-              {FormFields(settings, apiResponse, disabled)}
+              {FormFields(settings, apiResponse, setValue, disabled)}
               <div className="mt-4">
                 <SubmitButton />
               </div>

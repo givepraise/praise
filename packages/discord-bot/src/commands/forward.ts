@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import logger from 'jet-logger';
+import { logger } from 'api/dist/shared/logger';
 import { forwardHandler } from '../handlers/forward';
 import { Command } from '../interfaces/Command';
 import { getMsgLink } from '../utils/format';
@@ -45,12 +45,11 @@ export const forward: Command = {
         )
       );
     } catch (err) {
-      logger.err(err);
+      logger.error(err);
     }
   },
   help: {
     name: 'forward',
-    text: 'Command to forward praise from a giver to receivers in the discord server. You need to have an activated account on the Praise System along with FORWARDER role permissions to use this command.\n\
-  **Usage**: `/forward giver: <@userA> receivers: <@user1 @user2 ...> reason: for something`\n',
+    text: 'Command to forward praise from a giver to receivers in the discord server. You need to have an activated account on the Praise System along with FORWARDER role permissions to use this command.\n**Usage**: `/forward giver: <@userA> receivers: <@user1 @user2 ...> reason: for something`\n',
   },
 };

@@ -84,18 +84,21 @@ const sendDMs = async (
     failed.unknownErrorUsers.length;
   const failedMsg = `Announcement could not be delivered to ${failedCount} users.`;
   const successMsg = `Announcement successfully delivered to ${successful.length} recipients.`;
-  const content =
-    successful.length === 0
-      ? failedMsg
-      : failedCount === 0
-      ? successMsg
-      : successMsg + '\n' + failedMsg;
+  let content;
+
+  if (successful.length !== 0 && failedCount !== 0) {
+    content = successMsg + '\n' + failedMsg;
+  } else if (failedCount !== 0) {
+    content = failedMsg;
+  } else {
+    content = successMsg;
+  }
 
   let summary = 'User\t\t\tStatus\t\tReason\n';
   successful.forEach((username: string) => {
     summary += `${
       username.length <= 24
-        ? username + new String(' ').repeat(24 - username.length)
+        ? username + String(' ').repeat(24 - username.length)
         : username.slice(0, 21) + '   '
     }Delivered\t-\n${
       username.length > 24 ? username.slice(21, username.length) + '\n' : ''
@@ -104,7 +107,7 @@ const sendDMs = async (
   failed.invalidUsers.forEach((username: string) => {
     summary += `${
       username.length <= 24
-        ? username + new String(' ').repeat(24 - username.length)
+        ? username + String(' ').repeat(24 - username.length)
         : username.slice(0, 21) + '   '
     }Not Delivered\tInvalid User\n${
       username.length > 24 ? username.slice(21, username.length) + '\n' : ''
@@ -113,7 +116,7 @@ const sendDMs = async (
   failed.notFoundUsers.forEach((username: string) => {
     summary += `${
       username.length <= 24
-        ? username + new String(' ').repeat(24 - username.length)
+        ? username + String(' ').repeat(24 - username.length)
         : username.slice(0, 21) + '   '
     }Not Delivered\tUser Not Found In Discord\n${
       username.length > 24 ? username.slice(21, username.length) + '\n' : ''
@@ -122,7 +125,7 @@ const sendDMs = async (
   failed.closedDmUsers.forEach((username: string) => {
     summary += `${
       username.length <= 24
-        ? username + new String(' ').repeat(24 - username.length)
+        ? username + String(' ').repeat(24 - username.length)
         : username.slice(0, 21) + '   '
     }Not Delivered\tDMs closed\n${
       username.length > 24 ? username.slice(21, username.length) + '\n' : ''
@@ -131,7 +134,7 @@ const sendDMs = async (
   failed.unknownErrorUsers.forEach((username: string) => {
     summary += `${
       username.length <= 24
-        ? username + new String(' ').repeat(24 - username.length)
+        ? username + String(' ').repeat(24 - username.length)
         : username.slice(0, 21) + '   '
     }Not Delivered\tUnknown Error\n${
       username.length > 24 ? username.slice(21, username.length) + '\n' : ''
@@ -230,5 +233,4 @@ export const selectTargets = async (
       return;
     }
   }
-  return;
 };

@@ -1,7 +1,12 @@
 import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount } from 'api/src/useraccount/types';
+import { UserAccount } from 'api/dist/useraccount/types';
 import { UserModel } from 'api/dist/user/entities';
-import { Message, SelectMenuInteraction, MessageActionRow } from 'discord.js';
+import {
+  SelectMenuInteraction,
+  ActionRowBuilder,
+  ButtonBuilder,
+  SelectMenuBuilder,
+} from 'discord.js';
 import { UserRole } from 'api/dist/user/types';
 import { PeriodModel } from 'api/dist/period/entities';
 import { CommandHandler } from 'src/interfaces/CommandHandler';
@@ -12,7 +17,7 @@ import {
 import { dmTargetMenu } from '../utils/menus/dmTargetmenu';
 import { selectTargets } from '../utils/dmTargets';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
-import { notActivatedError } from '../utils/praiseEmbeds';
+import { notActivatedError } from '../utils/embeds/praiseEmbeds';
 
 /**
  * Executes command /announce
@@ -43,10 +48,12 @@ export const announcementHandler: CommandHandler = async (interaction) => {
   if (currentUser?.roles.includes(UserRole.ADMIN)) {
     const message = interaction.options.getString('message');
 
-    const userSelectionMsg = (await interaction.editReply({
+    const userSelectionMsg = await interaction.editReply({
       content: 'Which users do you want to send the message to?',
-      components: [new MessageActionRow().addComponents([dmTargetMenu])],
-    })) as Message;
+      components: [
+        new ActionRowBuilder<SelectMenuBuilder>().addComponents([dmTargetMenu]),
+      ],
+    });
 
     const collector = userSelectionMsg.createMessageComponentCollector({
       filter: (click) => click.user.id === interaction.user.id,
@@ -76,7 +83,7 @@ export const announcementHandler: CommandHandler = async (interaction) => {
             await interaction.editReply({
               content: 'Which period are you referring to?',
               components: [
-                new MessageActionRow().addComponents([
+                new ActionRowBuilder<SelectMenuBuilder>().addComponents([
                   periodSelectMenu(openPeriods),
                 ]),
               ],
@@ -89,7 +96,7 @@ export const announcementHandler: CommandHandler = async (interaction) => {
               message || ''
             }\n---`,
             components: [
-              new MessageActionRow().addComponents([
+              new ActionRowBuilder<ButtonBuilder>().addComponents([
                 continueButton,
                 cancelButton,
               ]),
@@ -105,7 +112,7 @@ export const announcementHandler: CommandHandler = async (interaction) => {
               message || ''
             }\n---`,
             components: [
-              new MessageActionRow().addComponents([
+              new ActionRowBuilder<ButtonBuilder>().addComponents([
                 continueButton,
                 cancelButton,
               ]),
@@ -153,6 +160,5 @@ export const announcementHandler: CommandHandler = async (interaction) => {
       content:
         'You do not have the needed permissions to use this command. If you would like to perform admin actions, you would need to be granted an `ADMIN` role on the Praise Dashboard.',
     });
-    return;
   }
 };

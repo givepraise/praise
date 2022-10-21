@@ -9,9 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **API:** Transformer option to include/exclude header row in csv exports #614 #622
+- **Frontend:** Most settings have now been given default values. To reset a setting to its default value, click the "Reset to default" button that appears next to the setting header. #580 #613
+
+### Changed
+
+- **Discord-bot:** Updated the bot to use the new `discord.js` version 14 #619
+- **Discord-bot:** Minor refactors to make code easier to read #619
+- **Frontend:** The settings pages have been reorganised slightly and given section descriptions with links to documentation. #586 #631
+- **Devops:** Upgraded Node version to 16.17.1 to fix security vulnerabilities #640
+
 ### Fixed
 
-- **Devops:**: `database-restore.sh` did not work under certain circumstances. Script have now been upgraded.
+- **Devops:** `database-restore.sh` did not work under certain circumstances. Script have now been upgraded.
+- **API:** Bug causing period praise counting to return the total number of praises instead of the number of praise for the period. #622
+- **Discord-bot:** Praising does not work in threads #524 #619
+- **Frontend:** Fixed a bug causing checkbox settings to be saved even if the user did not change the value. #629 #632
 
 ## [0.12.2] - 2022-09-28
 

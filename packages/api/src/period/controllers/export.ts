@@ -268,12 +268,14 @@ export const custom = async (req: Request, res: Response): Promise<void> => {
     context.praiseItemsCount = praiseItemsCount;
 
     if (supportPercentage > 0) {
+      const supportAmount = (totalPraiseScore * supportPercentage) / 100;
       receivers.push({
         _id: 'common-stack',
-        scoreRealized: (supportPercentage * totalPraiseScore) / 100,
+        scoreRealized: supportAmount,
         praiseCount: 0,
         ethereumAddress: '0xfa4EE6B523fC1E8B53015D7D81331d568CDb5906', // Intentionally hard coded
       });
+      context.totalPraiseScore += supportAmount;
     }
 
     let summarizedReceiverData = runCustomExportTransformer(
@@ -294,7 +296,10 @@ export const custom = async (req: Request, res: Response): Promise<void> => {
       const fields = Object.keys(transformer.map.item).map((item) => {
         return { label: item.toUpperCase(), value: item };
       });
-      const json2csv = new Parser({ fields: fields });
+      const json2csv = new Parser({
+        fields: fields,
+        header: transformer.includeCsvHeaderRow ?? true,
+      });
       data = json2csv.parse(summarizedReceiverData);
       res.status(200).contentType('text/csv').attachment('data.csv').send(data);
     } else {
