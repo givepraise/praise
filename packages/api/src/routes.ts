@@ -14,6 +14,7 @@ import {
 } from '@/periodsettings/routes';
 import { eventLogRouter } from '@/eventlog/routes';
 import { ApiKeyAccess } from './api-key/types';
+import { adminApikeyRouter } from './api-key/routes';
 
 const baseRouter = Router();
 
@@ -61,6 +62,12 @@ baseRouter.useAsync(
 baseRouter.use('/eventlogs', eventLogRouter);
 
 /* ADMIN authentication */
+
+baseRouter.useAsync(
+  '/api-key',
+  authMiddleware(UserRole.ADMIN, ApiKeyAccess.FULL)
+);
+baseRouter.use('/api-key', adminApikeyRouter);
 
 baseRouter.useAsync(
   '/admin/users',

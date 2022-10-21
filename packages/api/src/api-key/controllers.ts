@@ -1,8 +1,8 @@
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { Types } from 'mongoose';
+import { v4 } from 'uuid';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import {
-  QueryInputParsedQs,
   TypedRequestBody,
   TypedRequestQuery,
   TypedResponse,
@@ -12,28 +12,36 @@ import { logEvent } from '@/eventlog/utils';
 import { ApiKeyModel } from './entities';
 // import { userListTransformer, userTransformer } from './transformers';
 import { ApiKeyDocument, ApiKeyDto, ApiKeyAccess } from './types';
-import { findUser } from './utils/entity';
 
 /**
- * Fetch all Users with their associated UserAccounts
+ * Fetch all API keys
  *
- * @param {TypedRequestQuery<QueryInputParsedQs>} req
- * @param {TypedResponse<PaginatedResponseBody<ApiKeyDto[]>>} res
+ * @param {Request} req
+ * @param {TypedResponse<ApiKeyDto[]>} res
  * @returns {Promise<void>}
  */
 export const all = async (
-  req: TypedRequestQuery<QueryInputParsedQs>,
+  req: Request,
   res: TypedResponse<ApiKeyDto[]>
 ): Promise<void> => {
-  const apiKeys = await ApiKeyModel.paginate({
-    ...req.query,
-  });
+  const apiKeys = await ApiKeyModel.find({});
+  const apiKeysDto: ApiKeyDto[] = [];
+  for (const apikey of apiKeys) {
+    apiKeysDto.push({
+      _id: apikey._id,
+      access: apikey.access,
+      apikey: apikey.apikey,
+      name: apikey.name,
+      createdAt: apikey.createdAt.toISOString(),
+      updatedAt: apikey.updatedAt.toISOString(),
+    });
+  }
 
-  res.status(200).json(apiKeys);
+  res.status(200).json(apiKeysDto);
 };
 
 /**
- * Fetch a User with their associated UserAccounts
+ * Fetch an API key
  *
  * @param {Request} req
  * @param {TypedResponse<UserDto>} res
@@ -52,8 +60,8 @@ export const single = async (
     access: apikey.access,
     apikey: apikey.apikey,
     name: apikey.name,
-    createdAt: String(apikey.createdAt),
-    updatedAt: String(apikey.updatedAt),
+    createdAt: apikey.createdAt.toISOString(),
+    updatedAt: apikey.updatedAt.toISOString(),
   };
 
   res.status(200).json(result);
@@ -61,10 +69,37 @@ export const single = async (
 
 /**
  *  Create new API key
+ *
+ * @param {Request} req
+ * @param {TypedResponse} res
+ * @returns {Promise<void>}
  */
-export const addApiKey = async () => {};
+export const addApiKey = async (req: Request, res: Response): Promise<void> => {
+  const { name, access } = req.body;
+  if (!(access in ApiKeyAccess))
+    throw new BadRequestError('Invalid access type');
+  const newApiKey = new ApiKeyModel({
+    name,
+    access: [access],
+    apikey: v4(),
+  });
+  await newApiKey.save();
+
+  res.status(201).json();
+};
 
 /**
  * Delete an API key
+ *
+ * @param {Request} req
+ * @param {Response} res
+ * @returns {Promise<void>}
  */
-export const removeApiKey = async () => {};
+export const removeApiKey = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  await ApiKeyModel.deleteOne({ _id: req.query.id });
+
+  res.status(200).json();
+};

@@ -4140,6 +4140,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/uuid@npm:^8.3.4":
+  version: 8.3.4
+  resolution: "@types/uuid@npm:8.3.4"
+  checksum: 6f11f3ff70f30210edaa8071422d405e9c1d4e53abbe50fdce365150d3c698fe7bbff65c1e71ae080cbfb8fded860dbb5e174da96fdbbdfcaa3fb3daa474d20f
+  languageName: node
+  linkType: hard
+
 "@types/webidl-conversions@npm:*":
   version: 6.1.1
   resolution: "@types/webidl-conversions@npm:6.1.1"
@@ -5126,6 +5133,7 @@ __metadata:
     "@types/morgan": ^1.9.3
     "@types/node": ^17.0.0
     "@types/supertest": ^2.0.12
+    "@types/uuid": ^8.3.4
     "@types/yargs": ^17.0.10
     axios: ^0.27.2
     bin-packer: ^1.6.1
@@ -5163,6 +5171,7 @@ __metadata:
     tscpaths: ^0.0.9
     typescript: ^4.5.4
     umzug: ^3.0.0
+    uuid: ^9.0.0
     yargs: ^17.3.1
   languageName: unknown
   linkType: soft
@@ -18530,6 +18539,15 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 5575a8a75c13120e2f10e6ddc801b2c7ed7d8f3c8ac22c7ed0c7b2ba6383ec0abda88c905085d630e251719e0777045ae3236f04c812184b7c765f63a70e58df
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "uuid@npm:9.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 8dd2c83c43ddc7e1c71e36b60aea40030a6505139af6bee0f382ebcd1a56f6cd3028f7f06ffb07f8cf6ced320b76aea275284b224b002b289f89fe89c389b028
   languageName: node
   linkType: hard
 
