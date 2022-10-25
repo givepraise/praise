@@ -3879,13 +3879,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-json-transform@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@types/node-json-transform@npm:1.0.0"
-  checksum: 1371a554206a91c449af9dc36c2c748a53b8860ae480cc3a0de5f98be902f196baea5f9e95ca64851da3e58a4fdd384d8066005927c324bc6db8c708d1f9c99c
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:*":
   version: 18.0.0
   resolution: "@types/node@npm:18.0.0"
@@ -5124,7 +5117,6 @@ __metadata:
     "@types/mocha": ^9.1.0
     "@types/morgan": ^1.9.3
     "@types/node": ^17.0.0
-    "@types/node-json-transform": ^1.0.0
     "@types/supertest": ^2.0.12
     "@types/yargs": ^17.0.10
     axios: ^0.27.2
@@ -5153,11 +5145,11 @@ __metadata:
     mongoose: ^6.6.5
     mongoose-paginate-ts: ^1.2.7
     morgan: ^1.10.0
-    node-json-transform: ^1.1.2
     nodemon: ^2.0.20
     nyc: ^15.1.0
     safe-eval: ^0.4.1
     ses: ^0.16.0
+    ses-node-json-transform: ^0.0.1
     supertest: ^6.2.2
     ts-node: ^10.4.0
     tsconfig-paths: ^3.14.1
@@ -13277,15 +13269,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-json-transform@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "node-json-transform@npm:1.1.2"
-  dependencies:
-    lodash: ^4.17.15
-  checksum: 9c5618b5b3b2a748962842320521411b85f371c76a81fc44568527ce53567e72f771d21dec490d03a7d3fd64e048d0695d4ce0829e9336406963226b443b9991
-  languageName: node
-  linkType: hard
-
 "node-preload@npm:^0.2.1":
   version: 0.2.1
   resolution: "node-preload@npm:0.2.1"
@@ -16518,6 +16501,16 @@ __metadata:
     parseurl: ~1.3.3
     send: 0.18.0
   checksum: af57fc13be40d90a12562e98c0b7855cf6e8bd4c107fe9a45c212bf023058d54a1871b1c89511c3958f70626fff47faeb795f5d83f8cf88514dbaeb2b724464d
+  languageName: node
+  linkType: hard
+
+"ses-node-json-transform@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "ses-node-json-transform@npm:0.0.1"
+  dependencies:
+    lodash: ^4.17.15
+    ses: ^0.16.0
+  checksum: a31d6262b180a590880ea90084216105c9ae3c3829d0761cf53cd9ceb84fd7a37b49dcaaaa9e6ec9a1a7483e803ffef843dbedd500458ad545b9f8a164911984
   languageName: node
   linkType: hard
 

@@ -32,7 +32,6 @@
     "@faker-js/faker": "^7.2.0",
     "@types/express-fileupload": "^1.2.2",
     "@types/mime-types": "^2.1.1",
-    "@types/node-json-transform": "^1.0.0",
     "axios": "^0.27.2",
     "bin-packer": "^1.6.1",
     "cors": "^2.8.5",
@@ -54,9 +53,9 @@
     "mongoose": "^6.6.5",
     "mongoose-paginate-ts": "^1.2.7",
     "morgan": "^1.10.0",
-    "node-json-transform": "^1.1.2",
     "safe-eval": "^0.4.1",
     "ses": "^0.16.0",
+    "ses-node-json-transform": "^0.0.1",
     "umzug": "^3.0.0",
     "winston": "^3.8.2",
     "winston-daily-rotate-file": "^4.7.1"
