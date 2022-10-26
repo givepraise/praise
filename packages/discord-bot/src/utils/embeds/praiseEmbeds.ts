@@ -218,7 +218,7 @@ export const roleMentionWarning = async (
  */
 export const praiseSuccessDM = async (
   msgUrl: string,
-  isActivated: boolean = true
+  isActivated = true
 ): Promise<EmbedBuilder> => {
   const msg = (await settingValue('PRAISE_SUCCESS_DM')) as string;
   const embed = new EmbedBuilder().setColor('#696969');
