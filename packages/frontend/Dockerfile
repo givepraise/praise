@@ -1,4 +1,4 @@
-FROM node:16.13.2-alpine as builder
+FROM node:16.17.1-alpine
 
 # Create app directory
 WORKDIR /usr/src/
