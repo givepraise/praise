@@ -1,16 +1,8 @@
 import { Request, Response } from 'express';
-// import { Types } from 'mongoose';
 import { v4 } from 'uuid';
 import { BadRequestError, NotFoundError } from '@/error/errors';
-import {
-  // TypedRequestBody,
-  // TypedRequestQuery,
-  TypedResponse,
-} from '@/shared/types';
-// import { EventLogTypeKey } from '@/eventlog/types';
-// import { logEvent } from '@/eventlog/utils';
+import { TypedResponse } from '@/shared/types';
 import { ApiKeyModel } from './entities';
-// import { userListTransformer, userTransformer } from './transformers';
 import { ApiKeyDto, ApiKeyAccess } from './types';
 
 /**
