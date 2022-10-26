@@ -230,11 +230,15 @@ export const praiseSuccessDM = async (
     );
   }
   if (!isActivated) {
+    const notActivatedMsg = (await settingValue(
+      'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM'
+    )) as string;
     embed.addFields([
       {
         name: '\u200b',
-        value:
-          'In order to claim your praise, link your discord account to your ethereum wallet using the `/activate` command',
+        value: notActivatedMsg
+          ? notActivatedMsg
+          : 'In order to claim your praise, link your discord account to your ethereum wallet using the `/activate` command',
       },
     ]);
   }
