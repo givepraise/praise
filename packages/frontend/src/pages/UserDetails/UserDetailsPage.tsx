@@ -27,7 +27,6 @@ const UserDetailsPage = (): JSX.Element | null => {
 
   const detailsResponse = useLoadSingleUserDetails(userId);
   const user = useRecoilValue(SingleUser(userId));
-  console.log('USER:', user);
 
   const pageViews = {
     receivedPraiseView: 1,

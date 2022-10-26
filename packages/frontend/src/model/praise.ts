@@ -3,6 +3,7 @@ import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
+  atom,
   atomFamily,
   selectorFamily,
   useRecoilCallback,
@@ -26,6 +27,14 @@ export type PageParams = {
 export const SinglePraise = atomFamily<PraiseDto | undefined, string>({
   key: 'SinglePraise',
   default: undefined,
+});
+
+/**
+ * Atom that stores total praise number for the current query
+ */
+export const TotalPraiseNumber = atom<number | undefined>({
+  key: 'TotalPraiseNumber',
+  default: 0,
 });
 
 /**
@@ -184,6 +193,13 @@ export const useAllPraise = (
       }
   );
 
+  const saveTotalPraiseCount = useRecoilCallback(
+    ({ set }) =>
+      (praiseCount: number | undefined) => {
+        set(TotalPraiseNumber, praiseCount);
+      }
+  );
+
   React.useEffect(() => {
     if (
       !allPraiseQueryResponse ||
@@ -192,6 +208,9 @@ export const useAllPraise = (
       return;
 
     const paginatedResponse = allPraiseQueryResponse.data;
+
+    if (isResponseOk(allPraiseQueryResponse))
+      saveTotalPraiseCount(allPraiseQueryResponse.data.totalDocs);
 
     if (
       !paginatedResponse.page ||
@@ -219,6 +238,7 @@ export const useAllPraise = (
     saveIndividualPraise,
     saveAllPraiseIdList,
     setPraisePagination,
+    saveTotalPraiseCount,
   ]);
 
   return allPraiseQueryResponse;

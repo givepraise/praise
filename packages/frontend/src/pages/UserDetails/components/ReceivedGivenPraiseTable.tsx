@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { UserDto } from 'api/dist/user/types';
-import { faArrowDownWideShort } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowDownWideShort,
+  faHandHoldingHeart,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
-import { AllPraiseList } from '@/model/praise';
+import { AllPraiseList, TotalPraiseNumber } from '@/model/praise';
 import { Praise } from '@/components/praise/Praise';
 import { PraiseRow } from '@/components/praise/PraiseRow';
 import { PraisePageLoader } from '@/components/praise/PraisePageLoader';
@@ -52,6 +56,7 @@ export const ReceivedGivenPraiseTable = ({
 
   const allPraise = useRecoilValue(AllPraiseList(PRAISE_LIST_KEY));
   const userAccountId = getUseAccountId(user);
+  const praiseCount = useRecoilValue(TotalPraiseNumber);
 
   const [page, setPage] = useState<number>(1);
 
@@ -81,17 +86,29 @@ export const ReceivedGivenPraiseTable = ({
 
   return (
     <>
-      {/* Sort */}
-      <div className="flex ml-5 bg-warm-gray-50">
-        <SelectInput
-          handleChange={(e): void => {
-            setSelectedSort(e);
-            setPage(1);
-          }}
-          selected={selectedSort}
-          options={sortOptions}
-          icon={faArrowDownWideShort}
-        />
+      <div className="flex w-full">
+        <div className="mt-2 ml-8">
+          <FontAwesomeIcon
+            icon={faHandHoldingHeart}
+            className="mr-2"
+            size="1x"
+          />
+          Number of praise {userAccountType === 1 ? 'received' : 'given'}:{' '}
+          <strong>{praiseCount}</strong>
+        </div>
+
+        {/* Sort */}
+        <div className="w-24 ml-auto mr-5 bg-warm-gray-50">
+          <SelectInput
+            handleChange={(e): void => {
+              setSelectedSort(e);
+              setPage(1);
+            }}
+            selected={selectedSort}
+            options={sortOptions}
+            icon={faArrowDownWideShort}
+          />
+        </div>
       </div>
 
       <ul>

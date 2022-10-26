@@ -12,8 +12,8 @@ const up = async (): Promise<void> => {
         filter: { _id: s._id },
         update: {
           $set: {
-            rewardsEthAddress: 's.ethereumAddress',
-            identityEthAddress: 's.ethereumAddress',
+            rewardsEthAddress: s.ethereumAddress,
+            identityEthAddress: s.ethereumAddress,
           },
           $unset: { ethereumAddress: 1 },
         },
