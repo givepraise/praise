@@ -122,7 +122,12 @@ export const praiseHandler: CommandHandler = async (
 
       try {
         await receiver.send({
-          embeds: [await praiseSuccessDM(responseUrl, !receiverAccount.user)],
+          embeds: [
+            await praiseSuccessDM(
+              responseUrl,
+              receiverAccount.user ? true : false
+            ),
+          ],
         });
       } catch (err) {
         logger.warn(
