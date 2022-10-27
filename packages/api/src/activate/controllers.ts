@@ -61,7 +61,6 @@ const activate = async (
   // Find existing user or create new
   const user = await UserModel.findOneAndUpdate(
     { identityEthAddress },
-    { identityEthAddress },
     { upsert: true, new: true }
   );
   if (!user) throw new NotFoundError('User');

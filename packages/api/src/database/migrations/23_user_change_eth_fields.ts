@@ -1,5 +1,6 @@
 import { PraiseModel } from '@/praise/entities';
 import { UserModel } from '@/user/entities';
+import { generateUserName } from '@/user/utils/entity';
 
 const up = async (): Promise<void> => {
   const users = await UserModel.find();
@@ -7,13 +8,16 @@ const up = async (): Promise<void> => {
   if (users.length === 0) return;
 
   const updates = await Promise.all(
-    users.map((s) => ({
+    users.map((u) => ({
       updateOne: {
-        filter: { _id: s._id },
+        filter: { _id: u._id },
         update: {
           $set: {
-            rewardsEthAddress: s.ethereumAddress,
-            identityEthAddress: s.ethereumAddress,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            rewardsEthAddress: (u as any).ethereumAddress,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            identityEthAddress: (u as any).ethereumAddress,
+            username: generateUserName(u),
           },
           $unset: { ethereumAddress: 1 },
         },
@@ -29,9 +33,10 @@ const down = async (): Promise<void> => {
     {
       rewardsEthAddress: { $exists: true },
       identityEthAddress: { $exists: true },
+      username: { $exists: true },
     },
     {
-      $unset: { rewardsEthAddress: 1, identityEthAddress: 1 },
+      $unset: { rewardsEthAddress: 1, identityEthAddress: 1, username: 1 },
     }
   );
 };

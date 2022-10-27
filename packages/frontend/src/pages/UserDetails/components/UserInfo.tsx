@@ -14,14 +14,13 @@ import {
 import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { Dialog } from '@headlessui/react';
-import toast from 'react-hot-toast';
-import { ApiErrorResponseData } from 'api/dist/error/types';
+import { toast } from 'react-hot-toast';
 import { Box } from '@/components/ui/Box';
 import { formatIsoDateUTC, DATE_FORMAT_NAME } from '@/utils/date';
 import { classNames } from '@/utils/index';
 import { Button } from '@/components/ui/Button';
 import { useUserProfile } from '@/model/users';
-import { isApiResponseValidationError, isResponseOk } from '@/model/api';
+import { isResponseOk } from '@/model/api';
 import { EditProfileDialog } from './EditProfileDialog';
 
 interface Params {
@@ -75,16 +74,18 @@ export const UserInfo = ({
             style={!imageLoaded ? { display: 'none' } : {}}
           />
         </div>
-        <div>
-          <Button onClick={(): void => setIsDialogOpen(true)} className="">
-            Edit profile
-          </Button>
-        </div>
+        {isProfilePage && (
+          <div>
+            <Button onClick={(): void => setIsDialogOpen(true)} className="">
+              Edit profile
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="relative flex justify-between">
         <div className="">
-          <h2 className="mb-1">{user.nameRealized}</h2>
+          <h2 className="mb-1">{user.username}</h2>
           <p className="mb-2">
             <FontAwesomeIcon icon={faDiscord} className="mr-2" size="1x" />
             {account.name}

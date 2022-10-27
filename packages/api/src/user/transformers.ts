@@ -1,13 +1,8 @@
 import { Types } from 'mongoose';
-import { sum } from 'lodash';
 import { userAccountListTransformer } from '@/useraccount/transformers';
 import { PraiseModel } from '@/praise/entities';
-import {
-  calculateQuantificationsCompositeScore,
-  calculateUserTotalScore,
-} from '@/praise/utils/score';
+import { calculateUserTotalScore } from '@/praise/utils/score';
 import { UserDetailsDto, UserDocument, UserDto, UserRole } from './types';
-import { generateUserName } from './utils/entity';
 
 /**
  * Serialize a User
@@ -38,17 +33,13 @@ export const userTransformer = (
     accounts = userAccountListTransformer(userDocument.accounts);
   }
 
-  // Generate user name
-  // const nameRealized = await generateUserName(userDocument);
-  const nameRealized = username;
-
   return {
     _id,
     roles,
     identityEthAddress,
     rewardsEthAddress,
     accounts,
-    nameRealized,
+    username,
     createdAt: createdAt.toISOString(),
     updatedAt: updatedAt.toISOString(),
   } as UserDto;

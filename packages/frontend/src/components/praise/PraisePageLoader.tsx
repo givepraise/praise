@@ -67,9 +67,9 @@ export const PraisePageLoader = ({
     return (
       <div className="p-5">
         {queryParams?.receiver
-          ? 'You have not yet received any praise.'
+          ? 'The user has not yet received any praise.'
           : queryParams?.giver
-          ? 'You have not yet gave any praise'
+          ? 'The user has not yet given any praise'
           : 'No praise have been dished yet.'}
         <br />
         <br />

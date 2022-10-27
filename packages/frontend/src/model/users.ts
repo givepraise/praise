@@ -17,7 +17,7 @@ import { AllPeriods } from './periods';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfUser = (object: any): object is UserDto => {
-  return '_id' in object;
+  return 'identityEthAddress' in object;
 };
 
 interface roleOptionsProps {

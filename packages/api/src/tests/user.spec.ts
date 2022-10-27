@@ -48,7 +48,7 @@ describe('GET /api/users/all', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
+      'username',
       'createdAt',
       'updatedAt'
     );
@@ -91,7 +91,7 @@ describe('GET /api/users/:id', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
+      'username',
       'createdAt',
       'updatedAt'
     );
@@ -128,7 +128,7 @@ describe('GET /api/users/:id', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
+      'username',
       'createdAt',
       'updatedAt'
     );
@@ -156,7 +156,7 @@ describe('GET /api/users/:id', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
+      'username',
       'identityEthAddress',
       'createdAt',
       'updatedAt'
@@ -185,7 +185,7 @@ describe('GET /api/users/:id', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
+      'username',
       'createdAt',
       'updatedAt'
     );
@@ -251,7 +251,7 @@ describe('PATCH /api/admin/users/:id/addRole', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
+      'username',
       'identityEthAddress',
       'createdAt',
       'updatedAt'
@@ -449,7 +449,7 @@ describe('PATCH /api/admin/users/:id/removeRole', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
+      'username',
       'identityEthAddress',
       'createdAt',
       'updatedAt'

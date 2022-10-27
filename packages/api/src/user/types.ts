@@ -32,7 +32,6 @@ export interface UserDto {
   accounts?: UserAccountDto[];
   nonce?: string;
   accessToken?: string;
-  nameRealized: string;
   createdAt: string;
   updatedAt: string;
 }

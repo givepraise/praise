@@ -1,10 +1,31 @@
 import { Types } from 'mongoose';
 import { UserModel } from '@/user/entities';
 import { UserAccountModel } from '@/useraccount/entities';
-import { generateUserAccountNameRealized } from '@/useraccount/utils';
 import { NotFoundError } from '@/error/errors';
+import { UserAccountDocument } from '@/useraccount/types';
 import { shortenEthAddress } from './core';
 import { UserDocument } from '../types';
+
+/**
+ * Generate username from user account name
+ * If username is already taken than create one with discriminator
+ *
+ * @param userAccount
+ * @returns {Promise<string>}
+ */
+const generateUserNameFromAccount = async (
+  userAccount: UserAccountDocument
+): Promise<string> => {
+  const shortUsername = userAccount.name.split('#')[0];
+  const userWithSaneExistingUsername = await UserModel.find({
+    username: shortUsername,
+  });
+
+  if (userAccount.platform === 'DISCORD' && !userWithSaneExistingUsername)
+    return userAccount.name.split('#')[0];
+
+  return userAccount.name;
+};
 
 /**
  * Generate a display name for a given User,
@@ -20,9 +41,9 @@ export const generateUserName = async (user: UserDocument): Promise<string> => {
     return shortenEthAddress(user.identityEthAddress);
 
   const discordAccount = accounts.find((a) => a.platform === 'DISCORD');
-  if (discordAccount) return generateUserAccountNameRealized(discordAccount);
+  if (discordAccount) return generateUserNameFromAccount(discordAccount);
 
-  return generateUserAccountNameRealized(accounts[0]);
+  return generateUserNameFromAccount(accounts[0]);
 };
 
 /**

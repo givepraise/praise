@@ -76,7 +76,7 @@ export const EditProfileDialog = ({
               onSubmit={onSave}
               validate={validate}
               initialValues={{
-                username: user.nameRealized,
+                username: user.username,
                 rewardsEthAddress: user.rewardsEthAddress,
               }}
               render={({ handleSubmit }): JSX.Element => (

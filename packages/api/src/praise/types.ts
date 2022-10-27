@@ -98,6 +98,7 @@ export interface QuantifierPoolById {
 
 export interface PraiseAllInput extends QueryInput {
   receiver?: string;
+  giver?: string;
 }
 
 export interface PraiseImportInput {
@@ -112,6 +113,7 @@ export interface PraiseImportInput {
 
 export interface PraiseExportInput {
   receiver?: string;
+  giver?: string;
   createdAt?: {
     $gt: string;
     $lte: string;

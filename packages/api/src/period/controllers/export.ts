@@ -201,7 +201,7 @@ export const summary = async (req: Request, res: Response): Promise<void> => {
   const fields = [
     {
       label: 'USER',
-      value: 'userAccount.nameRealized',
+      value: 'username',
     },
     {
       label: 'PRAISE COUNT',

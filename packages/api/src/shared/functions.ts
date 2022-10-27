@@ -34,11 +34,15 @@ export const getQuerySort = (input: QueryInput): Object => {
 };
 
 export const getPraiseAllInput = (q: PraiseAllInput): Object => {
-  const { receiver } = q;
+  const { receiver, giver } = q;
   const query: PraiseExportInput = {};
 
   if (receiver) {
     query.receiver = encodeURIComponent(receiver);
+  }
+
+  if (giver) {
+    query.giver = encodeURIComponent(giver);
   }
 
   return query;

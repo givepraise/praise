@@ -42,7 +42,7 @@ export const UsersTable = (): JSX.Element => {
         const filterData = filter.toLocaleLowerCase();
 
         return (
-          user.nameRealized.toLowerCase().includes(filterData) ||
+          user.username.toLowerCase().includes(filterData) ||
           userAddress?.includes(filterData)
         );
       });

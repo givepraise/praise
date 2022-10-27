@@ -27,7 +27,7 @@ const WrappedUserName = ({
     if (usePseudonym && periodId) {
       name = <UserPseudonym userId={user._id} periodId={periodId} />;
     } else {
-      name = user.nameRealized;
+      name = user.username;
     }
   } else {
     if (userAccount) {

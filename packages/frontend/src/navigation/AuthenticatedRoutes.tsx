@@ -166,12 +166,12 @@ export const AuthenticatedRoutes = ({
         <SettingsPage />
       </AuthRoute>
 
-      <Route exact path="/">
-        <StartPage />
+      <Route path="/profile">
+        <UserDetailsPage />
       </Route>
 
-      <Route exact path="/profile">
-        <UserDetailsPage />
+      <Route exact path="/">
+        <StartPage />
       </Route>
 
       <Route path="/*">

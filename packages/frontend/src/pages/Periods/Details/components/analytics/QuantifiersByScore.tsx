@@ -25,7 +25,7 @@ export const QuantifiersByScore = (): JSX.Element | null => {
   const leafs = allQuantifierStats.map((q) => {
     return {
       _id: q._id,
-      name: quantifierUsers?.find((u) => u?._id === q._id)?.nameRealized || '',
+      name: quantifierUsers?.find((u) => u?._id === q._id)?.username || '',
       size: q.totalScore,
       opacity: (q.totalScore / sortStatsScore[0].totalScore) * 1.0 + 0.1,
     };

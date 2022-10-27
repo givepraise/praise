@@ -45,7 +45,7 @@ export const ReceivedGivenPraiseTable = ({
     sortOptions[0]
   );
 
-  const PRAISE_LIST_KEY =
+  let PRAISE_LIST_KEY =
     userAccountType === 1
       ? selectedSort.value === 'createdAt'
         ? 'RECEIVED_PRAISE_LATEST'
@@ -53,6 +53,8 @@ export const ReceivedGivenPraiseTable = ({
       : selectedSort.value === 'createdAt'
       ? 'GIVEN_PRAISE_LATEST'
       : 'GIVEN_PRAISE_TOP';
+
+  PRAISE_LIST_KEY = `${PRAISE_LIST_KEY}_${user.username}`;
 
   const allPraise = useRecoilValue(AllPraiseList(PRAISE_LIST_KEY));
   const userAccountId = getUseAccountId(user);
