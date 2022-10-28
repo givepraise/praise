@@ -9,6 +9,7 @@ import {
   faCalendarAlt,
   faChartPie,
   faScaleBalanced,
+  faUserCircle,
   faUserLock,
 } from '@fortawesome/free-solid-svg-icons';
 import { shortenEthAddress } from 'api/dist/user/utils/core';
@@ -64,16 +65,19 @@ export const UserInfo = ({
   return (
     <Box>
       <div className="flex justify-between mb-8">
-        <div>
-          <img
-            src={avatars[0] as string}
-            onError={(): void => setImageLoadError(true)}
-            onLoad={(): void => setImageLoaded(true)}
-            alt="avatar"
-            className="inline-block object-cover object-center w-32 h-32 border rounded-full"
-            style={!imageLoaded ? { display: 'none' } : {}}
-          />
-        </div>
+        {!imageLoadError && imageLoaded ? (
+          <div>
+            <img
+              src={avatars[0] as string}
+              onError={(): void => setImageLoadError(true)}
+              onLoad={(): void => setImageLoaded(true)}
+              alt="avatar"
+              className="inline-block object-cover object-center w-32 h-32 border rounded-full"
+            />
+          </div>
+        ) : (
+          <FontAwesomeIcon icon={faUserCircle} size="5x" />
+        )}
         {isProfilePage && (
           <div>
             <Button onClick={(): void => setIsDialogOpen(true)} className="">
@@ -101,7 +105,7 @@ export const UserInfo = ({
           {!isProfilePage && (
             <p className="mb-2">
               <FontAwesomeIcon icon={faUserLock} className="mr-4" size="1x" />
-              User roles: {user.roles.map((r) => `${r}, `)}
+              User roles: {user.roles.map((r) => `${r} `)}
             </p>
           )}
         </div>

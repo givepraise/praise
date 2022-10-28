@@ -3,10 +3,9 @@ import sum from 'lodash/sum';
 import { BadRequestError } from '@/error/errors';
 import { settingValue } from '@/shared/settings';
 import { PeriodDetailsGiverReceiver } from '@/period/types';
-import { UserAccountDto } from '@/useraccount/types';
 import { getPraisePeriod, isQuantificationCompleted } from './core';
 import { PraiseModel } from '../entities';
-import { PraiseDocument, PraiseDto, Quantification } from '../types';
+import { PraiseDocument, Quantification } from '../types';
 
 /**
  * Digits of precision for rounding calculated scores

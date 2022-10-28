@@ -40,8 +40,6 @@ export const all = async (
   const query = getPraiseAllInput(req.query);
   const queryInput = getQueryInput(req.query);
 
-  console.log('QUERY INPUT:', query);
-
   const praisePagination = await PraiseModel.paginate({
     query,
     ...queryInput,

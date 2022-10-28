@@ -8,7 +8,7 @@ const up = async (): Promise<void> => {
   if (users.length === 0) return;
 
   const updates = await Promise.all(
-    users.map((u) => ({
+    users.map(async (u) => ({
       updateOne: {
         filter: { _id: u._id },
         update: {
@@ -17,7 +17,7 @@ const up = async (): Promise<void> => {
             rewardsEthAddress: (u as any).ethereumAddress,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             identityEthAddress: (u as any).ethereumAddress,
-            username: generateUserName(u),
+            username: await generateUserName(u),
           },
           $unset: { ethereumAddress: 1 },
         },
@@ -25,6 +25,7 @@ const up = async (): Promise<void> => {
     }))
   );
 
+  console.log('HERE');
   await UserModel.bulkWrite(updates);
 };
 

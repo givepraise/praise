@@ -1,8 +1,4 @@
-import {
-  faCheck,
-  faCheckCircle,
-  faTimesCircle,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useFormState } from 'react-final-form';
 import React from 'react';

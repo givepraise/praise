@@ -67,7 +67,7 @@ const periodDetailsGiverReceiverToDto = async (
     scoreRealized,
     userAccount:
       Array.isArray(userAccounts) && userAccounts.length > 0
-        ? await userAccountTransformer(userAccounts[0])
+        ? userAccountTransformer(userAccounts[0])
         : undefined,
   };
 };
