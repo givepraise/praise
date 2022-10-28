@@ -67,18 +67,31 @@ configure_praise () {
 
 ## Setup Praise
 setup_praise () {
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++"
+    echo "++++++++++ Installing Prerequisites ++++++++++++"
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++"
     install_prerequisites
+    echo "++++++++++ Prerequisites Installed ++++++++++"
     sudo echo "y" | sudo ufw reset
+    echo "++++++++++++++++++++++++++++++++++++++++++++"
+    echo "++++++++++ Configuring Firewall ++++++++++++"
+    echo "++++++++++++++++++++++++++++++++++++++++++++"
     configure_firewall
+    echo "++++++++++ Firewall Configuration Complete ++++++++++"
     git clone https://github.com/CommonsBuild/praise.git
+    echo "++++++++++++++++++++++++++++++++++++++++"
+    echo "++++++++++ Configuring PRAISE ++++++++++"
+    echo "++++++++++++++++++++++++++++++++++++++++"
     configure_praise
+    echo "++++++++++ PRAISE Configured ++++++++++"
     ## Start the server
+    echo "+++++++++++++++++++++++++++++++++++++"
+    echo "++++++++++ STARTING PRAISE ++++++++++"
+    echo "+++++++++++++++++++++++++++++++++++++"
     docker compose -f $WORKING_DIR/praise/docker-compose.production.yml up -d
+    echo "+++++++++++ PRAISE IS UP ++++++++++++"
 }
 
 setup_praise
 
-echo "######################################"
-echo "########### PRAISE IS UP #############"
-echo "######################################"
 echo "Please point your Praise URL $HOSTNAME to $PUBLIC_IP"
