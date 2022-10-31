@@ -7,6 +7,8 @@ const up = async (): Promise<void> => {
 
   if (users.length === 0) return;
 
+  await UserModel.collection.dropIndex('ethereumAddress');
+
   const updates = await Promise.all(
     users.map(async (u) => ({
       updateOne: {
@@ -25,7 +27,6 @@ const up = async (): Promise<void> => {
     }))
   );
 
-  console.log('HERE');
   await UserModel.bulkWrite(updates);
 };
 

@@ -355,6 +355,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
     );
   });
 
+  // eslint-disable-next-line no-restricted-properties
   it('200 response with json body containing list of updated praises', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
@@ -362,6 +363,11 @@ describe('PATCH /api/praise/:id/quantify', () => {
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
+
+    const period = await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'QUANTIFY',
+    });
 
     // Original Praise
     const praise = await seedPraise({ createdAt: new Date() });
@@ -379,10 +385,6 @@ describe('PATCH /api/praise/:id/quantify', () => {
       duplicatePraise: praise._id,
     });
 
-    const period = await seedPeriod({
-      endDate: faker.date.future(),
-      status: 'QUANTIFY',
-    });
     await PeriodSettingsModel.updateOne(
       {
         period: period._id,
@@ -479,16 +481,16 @@ describe('PATCH /api/praise/:id/quantify', () => {
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'OPEN',
+    });
+
     const praise = await seedPraise({ createdAt: new Date() });
     await seedQuantification(praise, quantifier, {
       score: 0,
       dismissed: false,
       duplicatePraise: undefined,
-    });
-
-    await seedPeriod({
-      endDate: faker.date.future(),
-      status: 'OPEN',
     });
 
     const FORM_DATA = {
@@ -512,12 +514,12 @@ describe('PATCH /api/praise/:id/quantify', () => {
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
-    const praise = await seedPraise({ createdAt: new Date() });
-
     await seedPeriod({
       endDate: faker.date.future(),
       status: 'QUANTIFY',
     });
+
+    const praise = await seedPraise({ createdAt: new Date() });
 
     const FORM_DATA = {
       score: 13,
@@ -604,6 +606,11 @@ describe('PATCH /api/praise/:id/quantify', () => {
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'QUANTIFY',
+    });
+
     const praise = await seedPraise({ createdAt: new Date() });
     await seedQuantification(praise, quantifier, {
       score: 0,
@@ -623,11 +630,6 @@ describe('PATCH /api/praise/:id/quantify', () => {
       score: 0,
       dismissed: false,
       duplicatePraise: praise2._id,
-    });
-
-    await seedPeriod({
-      endDate: faker.date.future(),
-      status: 'QUANTIFY',
     });
 
     const FORM_DATA = {
@@ -825,6 +827,11 @@ describe('PATCH /api/praise/quantify', () => {
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'QUANTIFY',
+    });
+
     const praiseIds = [];
 
     const praise = await seedPraise({ createdAt: new Date() });
@@ -841,11 +848,6 @@ describe('PATCH /api/praise/quantify', () => {
       score: 0,
       dismissed: false,
       duplicatePraise: praise._id.toString(),
-    });
-
-    await seedPeriod({
-      endDate: faker.date.future(),
-      status: 'QUANTIFY',
     });
 
     const FORM_DATA = {
@@ -881,12 +883,17 @@ describe('PATCH /api/praise/quantify', () => {
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'QUANTIFY',
+    });
+
     const praiseIds = [];
 
     const praise = await seedPraise({ createdAt: new Date() });
     praiseIds.push(praise.id);
     await seedQuantification(praise, quantifier, {
-      score: 13,
+      score: 144,
       dismissed: false,
       duplicatePraise: undefined,
     });
@@ -896,11 +903,6 @@ describe('PATCH /api/praise/quantify', () => {
       score: 0,
       dismissed: false,
       duplicatePraise: praise._id.toString(),
-    });
-
-    await seedPeriod({
-      endDate: faker.date.future(),
-      status: 'QUANTIFY',
     });
 
     const FORM_DATA = {
@@ -985,16 +987,16 @@ describe('PATCH /api/praise/quantify', () => {
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'OPEN',
+    });
+
     const praise = await seedPraise({ createdAt: new Date() });
     await seedQuantification(praise, quantifier, {
       score: 0,
       dismissed: false,
       duplicatePraise: undefined,
-    });
-
-    await seedPeriod({
-      endDate: faker.date.future(),
-      status: 'OPEN',
     });
 
     const praiseIds = [praise._id];

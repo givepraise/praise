@@ -92,6 +92,7 @@ describe('GET /api/users/:id', () => {
       'roles',
       'accounts',
       'username',
+      'praiseStatistics',
       'createdAt',
       'updatedAt'
     );
@@ -129,6 +130,7 @@ describe('GET /api/users/:id', () => {
       'roles',
       'accounts',
       'username',
+      'praiseStatistics',
       'createdAt',
       'updatedAt'
     );
@@ -158,6 +160,8 @@ describe('GET /api/users/:id', () => {
       'accounts',
       'username',
       'identityEthAddress',
+      'rewardsEthAddress',
+      'praiseStatistics',
       'createdAt',
       'updatedAt'
     );
@@ -253,6 +257,7 @@ describe('PATCH /api/admin/users/:id/addRole', () => {
       'accounts',
       'username',
       'identityEthAddress',
+      'rewardsEthAddress',
       'createdAt',
       'updatedAt'
     );
@@ -451,6 +456,7 @@ describe('PATCH /api/admin/users/:id/removeRole', () => {
       'accounts',
       'username',
       'identityEthAddress',
+      'rewardsEthAddress',
       'createdAt',
       'updatedAt'
     );

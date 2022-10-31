@@ -167,7 +167,7 @@ export const full = async (req: Request, res: Response): Promise<void> => {
 
     const quantUserEthAddressObj = {
       label: `QUANTIFIER ${index + 1} ETH ADDRESS`,
-      value: `quantifications[${index}].quantifier.ethereumAddress`,
+      value: `quantifications[${index}].quantifier.identityEthAddress`,
     };
 
     fields.push(quantUserEthAddressObj);
