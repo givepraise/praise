@@ -40,15 +40,15 @@ const setupDatabase = async (NODE_ENV = 'development'): Promise<void> => {
   }
 
   // Checks database migrations and run them if they are not already applied
-  logger.info('Checking for pending migrations…');
-  const umzug = setupMigrator(db.connection);
-  const migrations = await umzug.pending();
-  logger.info(`Found ${migrations.length} pending migrations`);
-  await umzug.up();
+  // logger.info('Checking for pending migrations…');
+  // const umzug = setupMigrator(db.connection);
+  // const migrations = await umzug.pending();
+  // logger.info(`Found ${migrations.length} pending migrations`);
+  // await umzug.up();
 
-  if (migrations.length > 0) {
-    logger.info('Migrations complete.');
-  }
+  // if (migrations.length > 0) {
+  //   logger.info('Migrations complete.');
+  // }
 
   // Seed database with fake data in 'development' environment
   if (NODE_ENV === 'development') {
