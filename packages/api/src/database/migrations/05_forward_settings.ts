@@ -19,7 +19,7 @@ const settings = [
   {
     key: 'FORWARD_FROM_USER_WITHOUT_PRAISE_GIVER_ROLE_ERROR',
     value:
-      '**❌ praiseGiver does not have `{role}` role**\nPraise can only be dished by or forwarded from members with the {@role} role. Contact the praiseGiver {@giver}, so that they can attend an onboarding-call, or ask a steward or guide for an Intro to Praise.',
+      '**❌ praiseGiver does not have `{role}` role**\nPraise can only be dished by or forwarded from members with the {@role} role.',
     type: 'Textarea',
     label: 'Forwarding from Un-activated Giver',
     description: 'Discord /forward command error response',

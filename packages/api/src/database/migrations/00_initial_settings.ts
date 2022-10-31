@@ -49,7 +49,7 @@ const settings = [
   {
     key: 'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR',
     value:
-      '**❌ Account Not Activated**\nYour account is not activated in the praise system. Unactivated accounts can not praise users. Use the `/activate` command to activate your praise account and to link your eth address.',
+      '**❌ Account Not Activated**\nActivate your Praise account to gain praise powers. Activating links your eth address to your Discord account. Type `/activate` to continue.',
     type: 'Textarea',
   },
   {
@@ -61,13 +61,13 @@ const settings = [
   {
     key: 'PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR',
     value:
-      '**❌ User does not have `{role}` role**\nThe praise command can only be used by members with the {@role} role. Attend an onboarding-call, or ask a steward or guide for an Intro to Praise.',
+      '**❌ User does not have `{role}` role**\nThe praise command can only be used by members with the {@role} role.',
     type: 'Textarea',
   },
   {
     key: 'PRAISE_INVALID_RECEIVERS_ERROR',
     value:
-      '**❌ Receivers Not Mentioned**\nThis command requires atleast one valid receiver to be mentioned, in order for praise to get dished.',
+      '**❌ Receivers Not Mentioned**\nThis command requires at least one valid receiver to be mentioned.',
     type: 'Textarea',
   },
   {
@@ -91,13 +91,13 @@ const settings = [
   {
     key: 'PRAISE_SUCCESS_DM',
     value:
-      '**👏 Congratulations! You have been Praised! 👏**\n[View your praise]({praiseURL})\n**Thank you** for supporting the community!',
+      '**👏 Congratulations! You have been Praised! 👏**\n[View your praise]({praiseURL})',
     type: 'Textarea',
   },
   {
     key: 'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM',
     value:
-      "**You were just [praised](praiseURL)**\nIt looks like you haven't activated your account... To activate your account, use the `/activate` command in the server.",
+      '**ℹ️ Praise account not activated**\nActivate your account to be eligible for Praise rewards. Activating links your eth address to your Discord account. Type `/activate` to continue.',
     type: 'Textarea',
   },
   {
