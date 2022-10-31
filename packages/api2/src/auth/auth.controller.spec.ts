@@ -1,15 +1,15 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User, UserSchema } from './schemas/users.schema';
+import { User, UserSchema } from '../users/schemas/users.schema';
 
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserAccountsModule } from '../useraccounts/useraccounts.module';
-import { UsersModule } from './users.module';
-import { UsersService } from './users.service';
+import { UsersService } from '../users/users.service';
 import { praiseDatabaseUri } from '../shared/database.shared';
 
-describe('UsersService', () => {
-  let service: UsersService;
+describe('AuthController', () => {
+  let controller: AuthController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,19 +21,15 @@ describe('UsersService', () => {
           inject: [ConfigService],
         }),
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-        UsersModule,
-        UserAccountsModule,
       ],
-      providers: [UsersService],
+      controllers: [AuthController],
+      providers: [AuthService, UsersService],
     }).compile();
-    service = module.get<UsersService>(UsersService);
+
+    controller = module.get<AuthController>(AuthController);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
-  it('should return a list of user objects', async () => {
-    expect(await service.findAll()).toBeInstanceOf(Array);
+    expect(controller).toBeDefined();
   });
 });
