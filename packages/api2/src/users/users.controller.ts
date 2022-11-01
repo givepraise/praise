@@ -31,7 +31,7 @@ export class UsersController {
   @Get(':id')
   @ApiParam({ name: 'id', type: String })
   async findOne(@Param('id', ObjectIdPipe) id: Types.ObjectId): Promise<User> {
-    return this.usersService.findOne(id);
+    return this.usersService.findOneById(id);
   }
 
   @Patch(':id/addRole')

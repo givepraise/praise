@@ -1,6 +1,7 @@
 import { Exclude, Transform } from 'class-transformer';
-import { Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+
+import { Types } from 'mongoose';
 import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
 import { UserRole } from '../interfaces/userRole.interface';
 
@@ -40,15 +41,15 @@ export class User {
   accounts: UserAccount[];
 
   @Exclude()
-  @Prop({ select: false })
+  @Prop()
   nonce: string;
 
   @Exclude()
-  @Prop({ select: false })
+  @Prop()
   accessToken: string;
 
   @Exclude()
-  @Prop({ select: false })
+  @Prop()
   refreshToken: string;
 
   @Prop()

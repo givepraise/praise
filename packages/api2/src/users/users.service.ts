@@ -8,6 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UserRole } from './interfaces/userRole.interface';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -21,8 +22,17 @@ export class UsersService {
     return users.map((user) => new User(user));
   }
 
-  async findOne(_id: Types.ObjectId): Promise<User> {
+  async findOneById(_id: Types.ObjectId): Promise<User> {
     const user = await this.userModel.findById(_id).populate('accounts').lean();
+    if (!user) throw new NotFoundException('User not found.');
+    return new User(user);
+  }
+
+  async findOneByEth(ethereumAddress: string): Promise<User> {
+    const user = await this.userModel
+      .findOne({ ethereumAddress })
+      .populate('accounts')
+      .lean();
     if (!user) throw new NotFoundException('User not found.');
     return new User(user);
   }
@@ -51,7 +61,7 @@ export class UsersService {
     //   }
     // );
 
-    return this.findOne(_id);
+    return this.findOneById(_id);
   }
 
   async removeRole(
@@ -110,7 +120,7 @@ export class UsersService {
     //     }
     //   );
 
-    return this.findOne(_id);
+    return this.findOneById(_id);
   }
 
   async revokeAccess(_id: Types.ObjectId): Promise<User> {
@@ -121,6 +131,19 @@ export class UsersService {
     userDocument.set('nonce', undefined);
     await userDocument.save();
 
-    return this.findOne(_id);
+    return this.findOneById(_id);
+  }
+
+  async updateUser(_id: Types.ObjectId, user: UpdateUserDto): Promise<User> {
+    const userDocument = await this.userModel.findById(_id);
+    if (!userDocument) throw new NotFoundException('User not found.');
+
+    for (const [k, v] of Object.entries(user)) {
+      userDocument.set(k, v);
+      console.log(`${JSON.stringify(k)}: ${JSON.stringify(v)}`);
+    }
+    await userDocument.save();
+
+    return this.findOneById(_id);
   }
 }
