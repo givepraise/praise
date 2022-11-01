@@ -1,8 +1,8 @@
 import { Types } from 'mongoose';
-import { UserModel } from '@/user/entities';
-import { UserAccountModel } from '@/useraccount/entities';
 import { NotFoundError } from '@/error/errors';
 import { UserAccountDocument } from '@/useraccount/types';
+import { UserAccountModel } from '@/useraccount/entities';
+import { UserModel } from '@/user/entities';
 import { shortenEthAddress } from './core';
 import { UserDocument } from '../types';
 
@@ -13,7 +13,7 @@ import { UserDocument } from '../types';
  * @param userAccount
  * @returns {Promise<string>}
  */
-const generateUserNameFromAccount = async (
+export const generateUserNameFromAccount = async (
   userAccount: UserAccountDocument
 ): Promise<string> => {
   const shortUsername = userAccount.name.split('#')[0];

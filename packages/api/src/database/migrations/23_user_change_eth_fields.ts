@@ -1,24 +1,44 @@
 import { PraiseModel } from '@/praise/entities';
 import { UserModel } from '@/user/entities';
-import { generateUserName } from '@/user/utils/entity';
+import { shortenEthAddress } from '@/user/utils/core';
+import { generateUserNameFromAccount } from '@/user/utils/entity';
+import { UserAccountModel } from '@/useraccount/entities';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const generateUserName = async (user: any): Promise<string> => {
+  const accounts = await UserAccountModel.find({ user: user._id });
+  if (!accounts || accounts.length === 0) {
+    return shortenEthAddress(user.ethereumAddress);
+  }
+
+  const discordAccount = accounts.find((a) => a.platform === 'DISCORD');
+  if (discordAccount) return generateUserNameFromAccount(discordAccount);
+
+  return generateUserNameFromAccount(accounts[0]);
+};
 
 const up = async (): Promise<void> => {
-  const users = await UserModel.find();
+  const users = await UserModel.find().lean();
 
   if (users.length === 0) return;
 
-  await UserModel.collection.dropIndex('ethereumAddress');
+  const indexes = await UserModel.collection.indexes();
+  const indexExists = indexes.some(
+    (index) => index.name === 'ethereumAddress_1'
+  );
+  if (indexExists) {
+    await UserModel.collection.dropIndex('ethereumAddress_1');
+  }
 
   const updates = await Promise.all(
-    users.map(async (u) => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    users.map(async (u: any) => ({
       updateOne: {
         filter: { _id: u._id },
         update: {
           $set: {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            rewardsEthAddress: (u as any).ethereumAddress,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            identityEthAddress: (u as any).ethereumAddress,
+            rewardsEthAddress: u.ethereumAddress,
+            identityEthAddress: u.ethereumAddress,
             username: await generateUserName(u),
           },
           $unset: { ethereumAddress: 1 },
