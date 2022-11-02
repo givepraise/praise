@@ -5,7 +5,9 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccountsModule } from './useraccounts/useraccounts.module';
 import { UsersModule } from './users/users.module';
-import { praiseDatabaseUri } from './shared/database.shared';
+import { praiseDatabaseUri } from './_shared/database.shared';
+import { SharedModule } from './_shared/shared.module';
+import { EventLogModule } from './event-log/event-log.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { praiseDatabaseUri } from './shared/database.shared';
     UsersModule,
     UserAccountsModule,
     AuthModule,
+    SharedModule,
+    EventLogModule,
   ],
 })
 export class AppModule {}
