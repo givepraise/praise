@@ -16,11 +16,7 @@ import {
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
 import { UserModel } from './entities';
-import {
-  userDetailTransformer,
-  userListTransformer,
-  userTransformer,
-} from './transformers';
+import { userDetailTransformer, userListTransformer } from './transformers';
 import {
   UpdateUserProfileInput,
   UserDocument,
@@ -122,7 +118,7 @@ export const addRole = async (
 
   const userWithDetails = await findUser(id);
 
-  const userTransformed = userTransformer(
+  const userTransformed = await userDetailTransformer(
     userWithDetails,
     res.locals.currentUser.roles
   );
@@ -194,7 +190,7 @@ export const removeRole = async (
 
   const userWithDetails = await findUser(id);
 
-  const userTransformed = userTransformer(
+  const userTransformed = await userDetailTransformer(
     userWithDetails,
     res.locals.currentUser.roles
   );

@@ -88,8 +88,8 @@ export const ReceivedGivenPraiseTable = ({
 
   return (
     <>
-      <div className="flex w-full">
-        <div className="mt-2 ml-8">
+      <div className="w-full sm:flex">
+        <div className="mt-2 ml-4 sm:ml-8">
           <FontAwesomeIcon
             icon={faHandHoldingHeart}
             className="mr-2"
@@ -100,7 +100,7 @@ export const ReceivedGivenPraiseTable = ({
         </div>
 
         {/* Sort */}
-        <div className="w-24 ml-auto mr-5 bg-warm-gray-50">
+        <div className="mt-4 ml-4 mr-5 sm:w-24 sm:mt-0 sm:ml-auto bg-warm-gray-50">
           <SelectInput
             handleChange={(e): void => {
               setSelectedSort(e);

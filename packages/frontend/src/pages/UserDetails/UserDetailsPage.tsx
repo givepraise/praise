@@ -1,4 +1,8 @@
-import { faMedal, faUser } from '@fortawesome/free-solid-svg-icons';
+import {
+  faUser,
+  faPrayingHands,
+  faHandHoldingHeart,
+} from '@fortawesome/free-solid-svg-icons';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
@@ -12,7 +16,7 @@ import {
   SingleUserParams,
   useLoadSingleUserDetails,
 } from '@/model/users';
-import { ActiveUserId } from '@/model/auth';
+import { BackLink } from '@/navigation/BackLink';
 import { UserInfo } from './components/UserInfo';
 import {
   userAccountTypeNumber,
@@ -21,9 +25,6 @@ import {
 
 const UserDetailsPage = (): JSX.Element | null => {
   const { userId } = useParams<SingleUserParams>();
-  const activeUserId = useRecoilValue(ActiveUserId);
-
-  const isProfilePage = userId === activeUserId;
 
   const detailsResponse = useLoadSingleUserDetails(userId);
   const user = useRecoilValue(SingleUser(userId));
@@ -40,10 +41,11 @@ const UserDetailsPage = (): JSX.Element | null => {
   return (
     <Page>
       <BreadCrumb name="Profile" icon={faUser} />
+      <BackLink />
 
-      <UserInfo user={user} isProfilePage={isProfilePage} />
+      <UserInfo user={user} />
 
-      <div className="flex mt-5 mb-5">
+      <div className="flex mt-5 mb-5 ml-4 sm:ml-0">
         <Button
           variant={'outline'}
           className={`rounded-r-none  ${
@@ -53,7 +55,7 @@ const UserDetailsPage = (): JSX.Element | null => {
           }`}
           onClick={(): void => setView(pageViews.receivedPraiseView)}
         >
-          <FontAwesomeIcon icon={faUser} size="1x" className="mr-2" />
+          <FontAwesomeIcon icon={faPrayingHands} size="1x" className="mr-2" />
           Received praise
         </Button>
         <Button
@@ -65,7 +67,11 @@ const UserDetailsPage = (): JSX.Element | null => {
           }`}
           onClick={(): void => setView(pageViews.givenPraiseView)}
         >
-          <FontAwesomeIcon icon={faMedal} size="1x" className="mr-2" />
+          <FontAwesomeIcon
+            icon={faHandHoldingHeart}
+            size="1x"
+            className="mr-2"
+          />
           Given praise
         </Button>
       </div>
