@@ -5137,7 +5137,6 @@ __metadata:
     helmet: ^4.6.0
     http-status-codes: ^2.1.4
     json2csv: ^5.0.6
-    jsonschema: ^1.4.1
     jsonwebtoken: ^8.5.1
     lodash: ^4.17.21
     mime-types: ^2.1.34
@@ -5147,9 +5146,8 @@ __metadata:
     morgan: ^1.10.0
     nodemon: ^2.0.20
     nyc: ^15.1.0
-    safe-eval: ^0.4.1
-    ses: ^0.16.0
-    ses-node-json-transform: ^0.0.1
+    ses: ^0.17.0
+    ses-node-json-transform: ^0.1.0
     supertest: ^6.2.2
     ts-node: ^10.4.0
     tsconfig-paths: ^3.14.1
@@ -12068,13 +12066,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonschema@npm:^1.4.1":
-  version: 1.4.1
-  resolution: "jsonschema@npm:1.4.1"
-  checksum: 1ef02a6cd9bc32241ec86bbf1300bdbc3b5f2d8df6eb795517cf7d1cd9909e7beba1e54fdf73990fd66be98a182bda9add9607296b0cb00b1348212988e424b2
-  languageName: node
-  linkType: hard
-
 "jsonwebtoken@npm:^8.5.1":
   version: 8.5.1
   resolution: "jsonwebtoken@npm:8.5.1"
@@ -16207,13 +16198,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"safe-eval@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "safe-eval@npm:0.4.1"
-  checksum: f964a8e3a06e0cfa24899ac2adf65c4d095fd7d5261a6c9acc898b6f6c1213ba0498edc68cd3448f9436593cbd7f6f9a1d090b40bb07d565ea414d6c110a843d
-  languageName: node
-  linkType: hard
-
 "safe-event-emitter@npm:^1.0.1":
   version: 1.0.1
   resolution: "safe-event-emitter@npm:1.0.1"
@@ -16504,13 +16488,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ses-node-json-transform@npm:^0.0.1":
-  version: 0.0.1
-  resolution: "ses-node-json-transform@npm:0.0.1"
+"ses-node-json-transform@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "ses-node-json-transform@npm:0.1.0"
   dependencies:
     lodash: ^4.17.15
     ses: ^0.16.0
-  checksum: a31d6262b180a590880ea90084216105c9ae3c3829d0761cf53cd9ceb84fd7a37b49dcaaaa9e6ec9a1a7483e803ffef843dbedd500458ad545b9f8a164911984
+  checksum: 0bf80896a63edf16a2c8e75125fae58c4e75e111634d6b6bb3b11d9a2c8bd17c0dd4264999f22e3103166c25ae2b1c7a37489296c46bbbb3eb6e7775a7fd986e
   languageName: node
   linkType: hard
 
@@ -16518,6 +16502,13 @@ __metadata:
   version: 0.16.0
   resolution: "ses@npm:0.16.0"
   checksum: b2f5e5ba6c805aa0707193662a7c0dc77d9492880200a9e1e2effa558a745b6bd7e172778bae472327aed3748e5409156ca9e9e3684143ac8de8549b19d2fe73
+  languageName: node
+  linkType: hard
+
+"ses@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "ses@npm:0.17.0"
+  checksum: c4c668de819b5366da7a9797d4ab0ec9c3efe4904ea64453cad5a48b659c77b817d589584019f5f7ca42802f640dcc706241543c1df00282473320a77397b641
   languageName: node
   linkType: hard
 
