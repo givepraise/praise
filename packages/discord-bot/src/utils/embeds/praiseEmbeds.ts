@@ -217,37 +217,33 @@ export const roleMentionWarning = async (
  * @returns {Promise<string>}
  */
 export const praiseSuccessDM = async (
-  msgUrl: string
+  msgUrl: string,
+  isActivated = true
 ): Promise<EmbedBuilder> => {
   const msg = (await settingValue('PRAISE_SUCCESS_DM')) as string;
+  const embed = new EmbedBuilder().setColor('#696969');
   if (msg) {
-    return new EmbedBuilder()
-      .setColor('#696969')
-      .setDescription(msg.replace('{praiseURL}', msgUrl));
+    embed.setDescription(msg.replace('{praiseURL}', msgUrl));
+  } else {
+    embed.setDescription(
+      `[YOU HAVE BEEN PRAISED!!!](${msgUrl}) (message not set)`
+    );
   }
-  return new EmbedBuilder().setDescription(
-    `[YOU HAVE BEEN PRAISED!!!](${msgUrl}) (message not set)`
-  );
-};
+  if (!isActivated) {
+    const notActivatedMsg = (await settingValue(
+      'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM'
+    )) as string;
+    embed.addFields([
+      {
+        name: '\u200b',
+        value: notActivatedMsg
+          ? notActivatedMsg
+          : 'In order to claim your praise, link your discord account to your ethereum wallet using the `/activate` command',
+      },
+    ]);
+  }
 
-/**
- * Generate response error message PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM
- *
- * @returns {Promise<string>}
- */
-export const notActivatedDM = async (msgUrl: string): Promise<EmbedBuilder> => {
-  const msg = (await settingValue(
-    'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM'
-  )) as string;
-  if (msg) {
-    return new EmbedBuilder()
-      .setColor('#ff0000')
-      .setTitle('**⚠️  Praise Account Not Activated**')
-      .setDescription(msg.replace('{praiseURL}', msgUrl));
-  }
-  return new EmbedBuilder().setDescription(
-    `**[YOU HAVE BEEN PRAISED](${msgUrl})\nPRAISE ACCOUNT NOT ACTIVATED. USE \`/activate\` TO ACTIVATE YOUR ACCOUNT. (message not set)`
-  );
+  return embed;
 };
 
 /**

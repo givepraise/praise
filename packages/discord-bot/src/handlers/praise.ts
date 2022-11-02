@@ -9,7 +9,6 @@ import {
   dmError,
   invalidReceiverError,
   missingReasonError,
-  notActivatedDM,
   notActivatedError,
   praiseSuccess,
   praiseSuccessDM,
@@ -105,16 +104,6 @@ export const praiseHandler: CommandHandler = async (
   for (const receiver of Receivers) {
     const receiverAccount = await getUserAccount(receiver);
 
-    if (!receiverAccount.user) {
-      try {
-        await receiver.send({ embeds: [await notActivatedDM(responseUrl)] });
-      } catch (err) {
-        logger.warn(
-          `Can't DM user - ${receiverAccount.name} [${receiverAccount.accountId}]`
-        );
-      }
-    }
-
     const praiseObj = await createPraise(
       interaction,
       giverAccount,
@@ -132,7 +121,14 @@ export const praiseHandler: CommandHandler = async (
       );
 
       try {
-        await receiver.send({ embeds: [await praiseSuccessDM(responseUrl)] });
+        await receiver.send({
+          embeds: [
+            await praiseSuccessDM(
+              responseUrl,
+              receiverAccount.user ? true : false
+            ),
+          ],
+        });
       } catch (err) {
         logger.warn(
           `Can't DM user - ${receiverAccount.name} [${receiverAccount.accountId}]`
@@ -182,7 +178,7 @@ export const praiseHandler: CommandHandler = async (
     await interaction.followUp({ content: warningMsg, ephemeral: true });
   }
 
-  if (praiseItemsCount === 0) {
+  if (receivers.length && receivers.length !== 0 && praiseItemsCount === 0) {
     await interaction.followUp({
       content: await firstTimePraiserInfo(),
       ephemeral: true,
