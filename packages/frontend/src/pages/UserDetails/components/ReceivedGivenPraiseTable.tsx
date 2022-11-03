@@ -116,7 +116,11 @@ export const ReceivedGivenPraiseTable = ({
       <ul>
         {allPraise?.map((praise, index) => (
           <PraiseRow praise={praise} key={index}>
-            <Praise praise={praise} className="p-3" showReceiver={false} />
+            <Praise
+              praise={praise}
+              className="p-3"
+              showReceiver={userAccountType !== 1}
+            />
           </PraiseRow>
         ))}
       </ul>

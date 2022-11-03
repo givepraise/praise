@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { UserDto } from 'api/dist/user/types';
 import { UserAccountDto } from 'api/dist/useraccount/types';
 import { useRecoilValue } from 'recoil';
+import { useHistory } from 'react-router-dom';
 import { SingleUser } from '@/model/users';
 import { classNames } from '@/utils/index';
 import { UserAvatar } from './UserAvatar';
@@ -25,6 +26,7 @@ const WrappedUserPopover = ({
   className,
   usePseudonym = false,
 }: UserPopoverProps): JSX.Element | null => {
+  const history = useHistory();
   const [open, setOpen] = React.useState(false);
   const [openTimeout, setOpenTimeout] = React.useState<NodeJS.Timeout | null>(
     null
@@ -59,6 +61,12 @@ const WrappedUserPopover = ({
     }
   }
 
+  const handleClick = (userAccount: UserAccountDto | undefined): void => {
+    if (userAccount && userAccount.user) {
+      history.push(`/users/${userAccount.user}`);
+    }
+  };
+
   return (
     <div className={classNames('inline-block', className)}>
       <div
@@ -76,7 +84,8 @@ const WrappedUserPopover = ({
 
       {open && (
         <div
-          className="absolute z-10"
+          className="absolute z-10 cursor-pointer"
+          onClickCapture={(): void => handleClick(userAccount)}
           onMouseOver={(): void => {
             closeTimeout && clearTimeout(closeTimeout);
           }}

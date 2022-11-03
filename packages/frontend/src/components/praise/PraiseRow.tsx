@@ -16,14 +16,16 @@ export const PraiseRow = ({
     (data: PraiseDto) => (event: React.MouseEvent<HTMLTableRowElement>) => {
       const element = event.target as HTMLElement;
 
-      if (element.tagName !== 'A') {
-        history.push(`/praise/${data._id}`);
-      }
+      console.log('ELEMENT:', element.tagName);
+
+      // if (element.tagName !== 'A') {
+      //   history.push(`/praise/${data._id}`);
+      // }
     };
 
   return (
-    <li className="cursor-pointer md:p-5 first:rounded-t-lg hover:bg-warm-gray-100 dark:hover:bg-slate-500">
-      <div onClickCapture={handleClick(praise)}>{children}</div>
+    <li className="md:p-5 first:rounded-t-lg hover:bg-warm-gray-100 dark:hover:bg-slate-500">
+      <div>{children}</div>
     </li>
   );
 };

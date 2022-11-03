@@ -19,7 +19,7 @@ export const generateUserNameFromAccount = async (
   const shortUsername = userAccount.name.split('#')[0];
   const userWithSaneExistingUsername = await UserModel.find({
     username: shortUsername,
-  });
+  }).lean();
 
   if (userAccount.platform === 'DISCORD' && !userWithSaneExistingUsername)
     return userAccount.name.split('#')[0];
