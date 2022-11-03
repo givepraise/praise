@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **API:** Increases the number of quantifier assignment attempts from 3 to 5. Note that under some circumstances the algorithm cannot assign quantifiers and uphold the rules defined in the settings. The solution is then to change the assignment parameterd, for example by adding an additional quantifier. #644
 - **Frontend:** Moved settings checkbox to be inline with description instead of under it. #635
 - **API:** CSV header fields are now lower case to avoid issues with some distribution services #639
+- **Frontend:**: Period page should list number of praise in the period #651
 
 ### Fixed
 

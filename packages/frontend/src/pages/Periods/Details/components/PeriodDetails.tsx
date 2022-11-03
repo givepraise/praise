@@ -25,6 +25,7 @@ import { getPreviousPeriod } from '@/utils/periods';
 import { SelectInputOption, SelectInput } from '@/components/form/SelectInput';
 import { SingleSetting } from '@/model/settings';
 import { CustomExportTransformer } from '@/model/app';
+import { PeriodStatsSelector } from '@/model/periodAnalytics';
 import { PeriodAssignDialog } from './AssignDialog';
 import { PeriodCloseDialog } from './CloseDialog';
 import { PeriodDateForm } from './PeriodDateForm';
@@ -47,6 +48,7 @@ export const PeriodDetails = (): JSX.Element | null => {
   const customExportFormat = useRecoilValue(
     SingleSetting('CUSTOM_EXPORT_FORMAT')
   );
+  const periodStats = useRecoilValue(PeriodStatsSelector(periodId));
 
   const customExportTransformer = useRecoilValue(CustomExportTransformer);
 
@@ -214,10 +216,14 @@ export const PeriodDetails = (): JSX.Element | null => {
           : 'Dawn of time'}
       </div>
       {!isAdmin ? (
-        <div>Period end: {formatIsoDateUTC(period.endDate)}</div>
+        <>
+          <div>Period end: {formatIsoDateUTC(period.endDate)}</div>
+          <div>Number of praise: {periodStats?.totalPraise}</div>
+        </>
       ) : (
         <>
           <PeriodDateForm />
+          <div>Number of praise: {periodStats?.totalPraise}</div>
           <div className="mt-5">
             {period.status === 'OPEN' || period.status === 'QUANTIFY' ? (
               <div className="flex justify-between gap-4">
