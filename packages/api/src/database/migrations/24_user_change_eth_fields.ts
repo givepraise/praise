@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { PraiseModel } from '@/praise/entities';
 import { UserModel } from '@/user/entities';
 import { shortenEthAddress } from '@/user/utils/core';
@@ -34,7 +35,7 @@ const up = async (): Promise<void> => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     users.map(async (u: any) => ({
       updateOne: {
-        filter: { _id: u._id },
+        filter: { _id: new Types.ObjectId(u._id) },
         update: {
           $set: {
             rewardsEthAddress: u.ethereumAddress,
