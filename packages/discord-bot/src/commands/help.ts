@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from 'api/dist/shared/logger';
 import { helpHandler } from '../handlers/help';
 import { HelpCommandBuilder, Command } from '../interfaces/Command';
+import { handleErrors } from '../utils/handleErrors';
 
 export const help: HelpCommandBuilder = (commands) => {
   return {
@@ -28,7 +28,7 @@ export const help: HelpCommandBuilder = (commands) => {
           if (msg === undefined) return;
           await helpHandler(interaction, commands);
         } catch (err) {
-          logger.error(err);
+          await handleErrors(interaction, err as Error);
         }
       },
     } as Command,

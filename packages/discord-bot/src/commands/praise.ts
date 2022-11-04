@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from 'api/dist/shared/logger';
+import { handleErrors } from '../utils/handleErrors';
 import { praiseHandler } from '../handlers/praise';
 import { Command } from '../interfaces/Command';
 import { getMsgLink } from '../utils/format';
@@ -39,7 +39,7 @@ export const praise: Command = {
         )
       );
     } catch (err) {
-      logger.error(err);
+      await handleErrors(interaction, err as Error);
     }
   },
 

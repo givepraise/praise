@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from 'api/dist/shared/logger';
+import { handleErrors } from '../utils/handleErrors';
 import { whoamiHandler } from '../handlers/whoami';
 import { Command } from '../interfaces/Command';
 
@@ -14,7 +14,7 @@ export const whoami: Command = {
       await interaction.deferReply({ ephemeral: true });
       await whoamiHandler(interaction);
     } catch (err) {
-      logger.error(err);
+      await handleErrors(interaction, err as Error);
     }
   },
 };

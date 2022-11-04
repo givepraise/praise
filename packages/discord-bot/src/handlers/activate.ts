@@ -23,10 +23,7 @@ export const activationHandler: CommandHandler = async (interaction) => {
   });
 
   if (userAccount?.user) {
-    await interaction.reply({
-      content: await alreadyActivatedError(),
-      ephemeral: true,
-    });
+    await interaction.editReply({ content: await alreadyActivatedError() });
     return;
   }
 
@@ -45,10 +42,7 @@ export const activationHandler: CommandHandler = async (interaction) => {
   );
 
   if (!userAccount) {
-    await interaction.reply({
-      content: 'Unable to create user account.',
-      ephemeral: true,
-    });
+    await interaction.editReply({ content: 'Unable to create user account.' });
     return;
   }
 
@@ -79,8 +73,7 @@ export const activationHandler: CommandHandler = async (interaction) => {
     ua.activateToken || 'undefined'
   );
 
-  await interaction.reply({
+  await interaction.editReply({
     content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${activationURL})`,
-    ephemeral: true,
   });
 };

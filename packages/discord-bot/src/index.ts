@@ -40,8 +40,9 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
   if (!command) return;
   try {
     await command.execute(interaction);
-  } catch (error) {
-    logger.error(error);
+  } catch (err) {
+    const error = err as Error;
+    logger.error(error.message);
     await interaction.reply({
       content: 'There was an error while executing this command!',
       ephemeral: true,

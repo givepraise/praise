@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from 'api/dist/shared/logger';
+import { handleErrors } from '../utils/handleErrors';
 import { activationHandler } from '../handlers/activate';
 import { Command } from '../interfaces/Command';
 
@@ -14,9 +14,10 @@ export const activate: Command = {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'activate')
         return;
+      await interaction.deferReply({ ephemeral: true });
       await activationHandler(interaction);
     } catch (err) {
-      logger.error(err);
+      await handleErrors(interaction, err as Error);
     }
   },
 
