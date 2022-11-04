@@ -4,6 +4,7 @@ import { UserDto } from 'api/dist/user/types';
 import {
   faArrowDownWideShort,
   faHandHoldingHeart,
+  faPrayingHands,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
@@ -91,7 +92,7 @@ export const ReceivedGivenPraiseTable = ({
       <div className="w-full sm:flex">
         <div className="mt-2 ml-4 sm:ml-8">
           <FontAwesomeIcon
-            icon={faHandHoldingHeart}
+            icon={userAccountType === 1 ? faPrayingHands : faHandHoldingHeart}
             className="mr-2"
             size="1x"
           />
