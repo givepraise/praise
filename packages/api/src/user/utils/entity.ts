@@ -3,7 +3,6 @@ import { NotFoundError } from '@/error/errors';
 import { UserAccountDocument } from '@/useraccount/types';
 import { UserAccountModel } from '@/useraccount/entities';
 import { UserModel } from '@/user/entities';
-import { shortenEthAddress } from './core';
 import { UserDocument } from '../types';
 
 /**
@@ -15,16 +14,18 @@ import { UserDocument } from '../types';
  */
 export const generateUserNameFromAccount = async (
   userAccount: UserAccountDocument
-): Promise<string> => {
-  const shortUsername = userAccount.name.split('#')[0];
-  const userWithSaneExistingUsername = await UserModel.find({
-    username: shortUsername,
-  }).lean();
+): Promise<string | null> => {
+  let username;
+  if (userAccount.platform === 'DISCORD' && userAccount.name.indexOf('#') > 0) {
+    username = userAccount.name.split('#')[0];
+  } else {
+    username = userAccount.name;
+  }
 
-  if (userAccount.platform === 'DISCORD' && !userWithSaneExistingUsername)
-    return userAccount.name.split('#')[0];
-
-  return userAccount.name;
+  const exists = await UserModel.find({ username }).lean();
+  if (exists.length === 0) return username;
+  if (userAccount.platform === 'DISCORD') return userAccount.name;
+  return null;
 };
 
 /**
@@ -36,14 +37,22 @@ export const generateUserNameFromAccount = async (
  * @returns {Promise<string>}
  */
 export const generateUserName = async (user: UserDocument): Promise<string> => {
-  const accounts = await UserAccountModel.find({ user: user._id });
-  if (!accounts || accounts.length === 0)
-    return shortenEthAddress(user.identityEthAddress);
+  const accounts = await UserAccountModel.find({
+    user: new Types.ObjectId(user._id),
+  });
 
-  const discordAccount = accounts.find((a) => a.platform === 'DISCORD');
-  if (discordAccount) return generateUserNameFromAccount(discordAccount);
+  if (accounts && accounts.length > 0) {
+    const discordAccount = accounts.find((a) => a.platform === 'DISCORD');
+    if (discordAccount) {
+      const username = await generateUserNameFromAccount(discordAccount);
+      if (username) return username;
+    } else {
+      const username = await generateUserNameFromAccount(accounts[0]);
+      if (username) return username;
+    }
+  }
 
-  return generateUserNameFromAccount(accounts[0]);
+  return user.identityEthAddress;
 };
 
 /**

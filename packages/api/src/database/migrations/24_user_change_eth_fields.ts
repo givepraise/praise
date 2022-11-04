@@ -1,21 +1,28 @@
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { PraiseModel } from '@/praise/entities';
 import { UserModel } from '@/user/entities';
-import { shortenEthAddress } from '@/user/utils/core';
 import { generateUserNameFromAccount } from '@/user/utils/entity';
 import { UserAccountModel } from '@/useraccount/entities';
+import { UserDocument } from '@/user/types';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const generateUserName = async (user: any): Promise<string> => {
-  const accounts = await UserAccountModel.find({ user: user._id });
-  if (!accounts || accounts.length === 0) {
-    return shortenEthAddress(user.ethereumAddress);
+export const generateUserName = async (user: UserDocument): Promise<string> => {
+  const accounts = await UserAccountModel.find({
+    user: new Types.ObjectId(user._id),
+  });
+
+  if (accounts && accounts.length > 0) {
+    const discordAccount = accounts.find((a) => a.platform === 'DISCORD');
+    if (discordAccount) {
+      const username = await generateUserNameFromAccount(discordAccount);
+      if (username) return username;
+    } else {
+      const username = await generateUserNameFromAccount(accounts[0]);
+      if (username) return username;
+    }
   }
 
-  const discordAccount = accounts.find((a) => a.platform === 'DISCORD');
-  if (discordAccount) return generateUserNameFromAccount(discordAccount);
-
-  return generateUserNameFromAccount(accounts[0]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (user as any).ethereumAddress;
 };
 
 const up = async (): Promise<void> => {
@@ -48,7 +55,7 @@ const up = async (): Promise<void> => {
     }))
   );
 
-  await UserModel.bulkWrite(updates);
+  await mongoose.connection.db.collection('users').bulkWrite(updates);
 };
 
 const down = async (): Promise<void> => {
