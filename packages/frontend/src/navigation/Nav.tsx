@@ -80,6 +80,8 @@ export const Nav = (): JSX.Element => {
             </li>
 
             <NavItem icon={faCalendarAlt} description="Periods" to="/periods" />
+            <NavItem icon={faUserFriends} description="Users" to="/users" />
+            <NavItem icon={faBook} description="Logs" to="/eventlogs" />
             <AdminOnly>
               <NavItem
                 icon={faCog}
@@ -87,10 +89,6 @@ export const Nav = (): JSX.Element => {
                 to="/settings/application"
               />
             </AdminOnly>
-            <AdminOnly>
-              <NavItem icon={faUserFriends} description="Users" to="/users" />
-            </AdminOnly>
-            <NavItem icon={faBook} description="Logs" to="/eventlogs" />
           </ul>
         </div>
 
