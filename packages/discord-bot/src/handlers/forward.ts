@@ -11,7 +11,6 @@ import {
   dmError,
   invalidReceiverError,
   missingReasonError,
-  notActivatedDM,
   notActivatedError,
   praiseSuccessDM,
   roleMentionWarning,
@@ -120,15 +119,6 @@ export const forwardHandler: CommandHandler = async (
   for (const receiver of Receivers) {
     const receiverAccount = await getUserAccount(receiver);
 
-    if (!receiverAccount.user) {
-      try {
-        await receiver.send({ embeds: [await notActivatedDM(responseUrl)] });
-      } catch (err) {
-        logger.warn(
-          `Can't DM user - ${receiverAccount.name} [${receiverAccount.accountId}]`
-        );
-      }
-    }
     const praiseObj = await createPraise(
       interaction,
       giverAccount,
@@ -148,7 +138,9 @@ export const forwardHandler: CommandHandler = async (
 
     if (praiseObj) {
       try {
-        await receiver.send({ embeds: [await praiseSuccessDM(responseUrl)] });
+        await receiver.send({
+          embeds: [await praiseSuccessDM(responseUrl, !receiverAccount.user)],
+        });
       } catch (err) {
         logger.warn(
           `Can't DM user - ${receiverAccount.name} [${receiverAccount.accountId}]`

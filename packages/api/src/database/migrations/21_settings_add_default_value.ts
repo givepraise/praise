@@ -24,7 +24,7 @@ const settings = [
   {
     key: 'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR',
     defaultValue:
-      '**❌ Account Not Activated**\nYour account is not activated in the praise system. Unactivated accounts can not praise users. Use the `/activate` command to activate your praise account and to link your eth address.',
+      '**❌ Account Not Activated**\nActivate your Praise account to gain praise powers. Activating links your eth address to your Discord account. Type `/activate` to continue.',
   },
   {
     key: 'DM_ERROR',
@@ -34,12 +34,12 @@ const settings = [
   {
     key: 'PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR',
     defaultValue:
-      '**❌ User does not have `{role}` role**\nThe praise command can only be used by members with the {@role} role. Attend an onboarding-call, or ask a steward or guide for an Intro to Praise.',
+      '**❌ User does not have `{role}` role**\nThe praise command can only be used by members with the {@role} role.',
   },
   {
     key: 'PRAISE_INVALID_RECEIVERS_ERROR',
     defaultValue:
-      '**❌ Receivers Not Mentioned**\nThis command requires at least one valid receiver to be mentioned, in order for praise to get dished.',
+      '**❌ Receivers Not Mentioned**\nThis command requires at least one valid receiver to be mentioned.',
   },
   {
     key: 'PRAISE_REASON_MISSING_ERROR',
@@ -59,12 +59,12 @@ const settings = [
   {
     key: 'PRAISE_SUCCESS_DM',
     defaultValue:
-      '**👏 Congratulations! You have been Praised! 👏**\n[View your praise in the TEC]({praiseURL})\n**Thank you** for supporting the Token Engineering Commons!',
+      '**👏 Congratulations! You have been Praised! 👏**\n[View your praise]({praiseURL})',
   },
   {
     key: 'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM',
     defaultValue:
-      "**You were just [praised in the TEC](praiseURL)**\nIt looks like you haven't activated your account...\nTo activate your account, use the `/activate` command in the server.",
+      '**ℹ️ Praise account not activated**\nActivate your account to be eligible for Praise rewards. Activating links your eth address to your Discord account. Type `/activate` to continue.',
   },
   {
     key: 'FORWARD_SUCCESS_MESSAGE',
@@ -78,7 +78,7 @@ const settings = [
   {
     key: 'FORWARD_FROM_USER_WITHOUT_PRAISE_GIVER_ROLE_ERROR',
     defaultValue:
-      '**❌ praiseGiver does not have `{role}` role**\nPraise can only be dished by or forwarded from members with the {@role} role. Contact the praiseGiver {@giver}, so that they can attend an onboarding-call, or ask a steward or guide for an Intro to Praise.',
+      '**❌ praiseGiver does not have `{role}` role**\nPraise can only be dished by or forwarded from members with the {@role} role.',
   },
   {
     key: 'PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR',

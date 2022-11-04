@@ -10,8 +10,6 @@ interface IUsersTableRow {
 export const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element | null => {
   const history = useHistory();
 
-  if (!data.identityEthAddress) return null;
-
   return (
     <div
       className="flex items-center w-full px-5 py-3 cursor-pointer hover:bg-warm-gray-100 dark:hover:bg-slate-500"

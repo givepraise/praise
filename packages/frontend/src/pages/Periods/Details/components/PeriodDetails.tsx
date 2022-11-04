@@ -14,27 +14,20 @@ import {
   SinglePeriod,
   useAssignQuantifiers,
   useClosePeriod,
-  useExportPraise,
   useLoadSinglePeriodDetails,
 } from '@/model/periods';
 import { AllQuantifierUsers } from '@/model/users';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
-import { saveLocalFile } from '@/utils/file';
 import { getPreviousPeriod } from '@/utils/periods';
 
-import { SelectInputOption, SelectInput } from '@/components/form/SelectInput';
-import { SingleSetting } from '@/model/settings';
-import { CustomExportTransformer } from '@/model/app';
 import { PeriodAssignDialog } from './AssignDialog';
 import { PeriodCloseDialog } from './CloseDialog';
 import { PeriodDateForm } from './PeriodDateForm';
-import { PeriodCustomExportDialog } from './CustomExportDialog';
+import { ExportDropdown } from './ExportDropdown';
 
 export const PeriodDetails = (): JSX.Element | null => {
   const [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = React.useState(false);
-  const [isCustomExportDialogOpen, setIsCustomExportDialogOpen] =
-    React.useState(false);
 
   const allPeriods = useRecoilValue(AllPeriods);
   const allQuantifiers = useRecoilValue(AllQuantifierUsers);
@@ -42,19 +35,11 @@ export const PeriodDetails = (): JSX.Element | null => {
   useLoadSinglePeriodDetails(periodId); // Fetch additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const { exportPraiseFull, exportPraiseSummary, exportPraiseCustom } =
-    useExportPraise();
-  const customExportFormat = useRecoilValue(
-    SingleSetting('CUSTOM_EXPORT_FORMAT')
-  );
-
-  const customExportTransformer = useRecoilValue(CustomExportTransformer);
 
   const history = useHistory();
 
   const assignDialogRef = React.useRef(null);
   const closeDialogRef = React.useRef(null);
-  const customExportDialogRef = React.useRef(null);
 
   const { closePeriod } = useClosePeriod();
   const { assignQuantifiers } = useAssignQuantifiers(periodId);
@@ -62,21 +47,6 @@ export const PeriodDetails = (): JSX.Element | null => {
   if (!period || !allPeriods) return null;
 
   const previousPeriod = getPreviousPeriod(allPeriods, period);
-
-  const exportOptions = [
-    { value: '', label: 'Export', disabled: true },
-    { value: 'export-full', label: 'Export (full)' },
-    {
-      value: 'export-summary',
-      label: 'Export (summary)',
-    },
-  ];
-
-  customExportTransformer &&
-    exportOptions.push({
-      value: 'export-custom',
-      label: customExportTransformer.name,
-    });
 
   const handleClosePeriod = (): void => {
     void closePeriod(periodId);
@@ -106,101 +76,6 @@ export const PeriodDetails = (): JSX.Element | null => {
         },
       }
     );
-  };
-
-  const handleExportFull = (): void => {
-    const toastId = 'exportToastFull';
-    void toast.promise(
-      exportPraiseFull(period),
-      {
-        loading: 'Exporting …',
-        success: (exportData: Blob | undefined) => {
-          if (exportData) {
-            saveLocalFile(exportData, 'praise-period-export-full.csv');
-            setTimeout(() => toast.remove(toastId), 2000);
-            return 'Export done';
-          }
-          return 'Empty export returned';
-        },
-        error: 'Export failed',
-      },
-      {
-        id: toastId,
-        position: 'top-center',
-        loading: {
-          duration: 1000,
-        },
-      }
-    );
-  };
-
-  const handleExportSummary = (): void => {
-    const toastId = 'exportToastSummary';
-    void toast.promise(
-      exportPraiseSummary(period),
-      {
-        loading: 'Exporting …',
-        success: (exportData: Blob | undefined) => {
-          if (exportData) {
-            saveLocalFile(exportData, 'praise-period-export-summary.csv');
-            setTimeout(() => toast.remove(toastId), 2000);
-            return 'Export done';
-          }
-          return 'Empty export returned';
-        },
-        error: 'Export failed',
-      },
-      {
-        id: toastId,
-        position: 'top-center',
-        loading: {
-          duration: 1000,
-        },
-      }
-    );
-  };
-
-  const handleExportCustom = (exportContext: string): void => {
-    const toastId = 'exportToastCustom';
-    void toast.promise(
-      exportPraiseCustom(period, exportContext),
-      {
-        loading: 'Distributing …',
-        success: (data: Blob | undefined) => {
-          if (data) {
-            saveLocalFile(
-              data,
-              `praise-period-export-custom.${customExportFormat?.valueRealized}`
-            );
-            setTimeout(() => toast.remove(toastId), 2000);
-            return 'Export done';
-          }
-
-          return 'Empty export returned';
-        },
-        error: (err) => {
-          toast.error(err.message);
-          return 'Export failed';
-        },
-      },
-      {
-        id: toastId,
-        position: 'top-center',
-        loading: {
-          duration: 1000,
-        },
-      }
-    );
-  };
-
-  const handleSelectExportChange = (option: SelectInputOption): void => {
-    if (option.value === 'export-full') {
-      handleExportFull();
-    } else if (option.value === 'export-summary') {
-      handleExportSummary();
-    } else if (option.value === 'export-custom') {
-      setIsCustomExportDialogOpen(true);
-    }
   };
 
   if (!period) return <div>Period not found.</div>;
@@ -239,13 +114,9 @@ export const PeriodDetails = (): JSX.Element | null => {
                     Assign quantifiers
                   </Button>
                 ) : null}
-                {period.status === 'QUANTIFY' ? (
+                {period.status === 'QUANTIFY' && isAdmin ? (
                   <div className="w-3/12">
-                    <SelectInput
-                      handleChange={handleSelectExportChange}
-                      options={exportOptions}
-                      selected={exportOptions[0]}
-                    />
+                    <ExportDropdown />
                   </div>
                 ) : null}
                 <Button
@@ -262,15 +133,7 @@ export const PeriodDetails = (): JSX.Element | null => {
               </div>
             ) : null}
 
-            {period.status === 'CLOSED' ? (
-              <div className="w-3/12">
-                <SelectInput
-                  handleChange={handleSelectExportChange}
-                  options={exportOptions}
-                  selected={exportOptions[0]}
-                />
-              </div>
-            ) : null}
+            {period.status === 'CLOSED' && isAdmin ? <ExportDropdown /> : null}
           </div>
         </>
       )}
@@ -304,23 +167,6 @@ export const PeriodDetails = (): JSX.Element | null => {
           </div>
         </Dialog>
       ) : null}
-
-      <Dialog
-        open={isCustomExportDialogOpen}
-        onClose={(): void => setIsCustomExportDialogOpen(false)}
-        className="fixed inset-0 z-10 overflow-y-auto"
-        initialFocus={customExportDialogRef}
-      >
-        <div ref={customExportDialogRef}>
-          <PeriodCustomExportDialog
-            title={customExportTransformer?.name || 'Custom export'}
-            onClose={(): void => setIsCustomExportDialogOpen(false)}
-            onExport={(exportContext): void =>
-              handleExportCustom(exportContext)
-            }
-          />
-        </div>
-      </Dialog>
     </div>
   );
 };

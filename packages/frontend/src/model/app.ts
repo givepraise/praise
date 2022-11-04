@@ -1,4 +1,4 @@
-import { ExportTransformerMap } from 'api/dist/period/types';
+import { ExportTransformer } from 'api/dist/period/types';
 import { AxiosResponse } from 'axios';
 import { atom, atomFamily, selector, useRecoilValue } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
@@ -53,7 +53,7 @@ export const IsHeaderBannerClosed = atomFamily<boolean, string>({
   effects: [persistAtom],
 });
 
-export const CustomExportTransformer = atom<ExportTransformerMap | undefined>({
+export const CustomExportTransformer = atom<ExportTransformer | undefined>({
   key: 'CustomExportTransformer',
   default: undefined,
   effects: [
@@ -65,7 +65,7 @@ export const CustomExportTransformer = atom<ExportTransformerMap | undefined>({
           })
         ).then((response) => {
           if (isResponseOk(response)) {
-            const transformer = response.data as ExportTransformerMap;
+            const transformer = response.data as ExportTransformer;
             return transformer;
           }
         })

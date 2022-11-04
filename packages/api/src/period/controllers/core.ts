@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import { StatusCodes } from 'http-status-codes';
 import { Request } from 'express';
 import { add, compareAsc, parseISO } from 'date-fns';
+import { isString } from 'lodash';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import { PraiseDetailsDto, PraiseDto } from '@/praise/types';
 import {
@@ -171,7 +172,7 @@ export const update = async (
     period.name = name;
   }
 
-  if (endDate) {
+  if (isString(endDate)) {
     const latest = await isPeriodLatest(period);
     if (!latest)
       throw new BadRequestError('Date change only allowed on latest period.');
@@ -183,9 +184,7 @@ export const update = async (
       const newEndDate = parseISO(endDate);
 
       eventLogMessages.push(
-        `Updated the end date of period "${
-          period.name
-        }" to ${endDate.toString()} UTC`
+        `Updated the end date of period "${period.name}" to ${endDate} UTC`
       );
 
       period.endDate = newEndDate;
