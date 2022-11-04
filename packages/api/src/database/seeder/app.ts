@@ -36,6 +36,8 @@ const seedRegularUsers = async (): Promise<void> => {
       }
 
       logger.info('Regular users seeding completed.');
+    } else {
+      logger.info('Regular users seeding skipped.');
     }
   } catch (e) {
     console.log('ERROR:', e);
@@ -66,6 +68,8 @@ const seedQuantifierUsers = async (): Promise<void> => {
       }
 
       logger.info('Quantifiers seeding completed.');
+    } else {
+      logger.info('Quantifiers seeding skipped.');
     }
   } catch (e) {
     console.log('ERROR:', e);
@@ -91,6 +95,7 @@ export const seedAdminUsers = async (): Promise<void> => {
     const user = await UserModel.findOne({ identityEthAddress: e });
 
     if (user) {
+      console.info(`Setting admin role for user ${e}`);
       if (!user.roles.includes(UserRole.ADMIN)) {
         user.roles.push(UserRole.ADMIN);
         await user.save();
@@ -100,6 +105,7 @@ export const seedAdminUsers = async (): Promise<void> => {
         await user.save();
       }
     } else {
+      console.info(`Creating admin user ${e}`);
       await UserModel.create({
         identityEthAddress: e,
         rewardsEthAddress: e,
@@ -151,6 +157,8 @@ const seedPeriodsWithPraises = async (): Promise<void> => {
     } catch (e) {
       console.log('ERROR:', e);
     }
+  } else {
+    logger.info('Periods seeding skipped.');
   }
 };
 
