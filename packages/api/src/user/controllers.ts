@@ -49,10 +49,7 @@ export const all = async (
     },
   ]);
 
-  const usersTransformed = await userListTransformer(
-    users,
-    res.locals.currentUser.roles
-  );
+  const usersTransformed = await userListTransformer(users);
 
   res.status(200).json(usersTransformed);
 };
@@ -71,10 +68,7 @@ export const single = async (
   const { id } = req.params;
   const user = await findUser(id);
 
-  const userTransformed = await userDetailTransformer(
-    user,
-    res.locals.currentUser.roles
-  );
+  const userTransformed = await userDetailTransformer(user);
 
   res.status(200).json(userTransformed);
 };
@@ -118,10 +112,7 @@ export const addRole = async (
 
   const userWithDetails = await findUser(id);
 
-  const userTransformed = await userDetailTransformer(
-    userWithDetails,
-    res.locals.currentUser.roles
-  );
+  const userTransformed = await userDetailTransformer(userWithDetails);
 
   res.status(200).json(userTransformed);
 };
@@ -190,10 +181,7 @@ export const removeRole = async (
 
   const userWithDetails = await findUser(id);
 
-  const userTransformed = await userDetailTransformer(
-    userWithDetails,
-    res.locals.currentUser.roles
-  );
+  const userTransformed = await userDetailTransformer(userWithDetails);
   res.status(200).json(userTransformed);
 };
 
@@ -229,10 +217,7 @@ export const updateProfile = async (
 
   const userWithDetails = await findUser(user._id);
 
-  const userTransformed = await userDetailTransformer(
-    userWithDetails,
-    res.locals.currentUser.roles
-  );
+  const userTransformed = await userDetailTransformer(userWithDetails);
 
   res.status(200).json(userTransformed);
 };

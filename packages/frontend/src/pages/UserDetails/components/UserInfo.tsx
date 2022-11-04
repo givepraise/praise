@@ -79,6 +79,7 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
     }
   };
 
+  console.log('user', user);
   return (
     <Box>
       <div className="flex justify-between mb-8">

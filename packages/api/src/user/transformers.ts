@@ -11,22 +11,16 @@ import { UserDetailsDto, UserDocument, UserDto, UserRole } from './types';
  * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
  * @returns {Promise<UserDto>}
  */
-export const userTransformer = (
-  userDocument: UserDocument,
-  currentUserRoles: UserRole[] = [UserRole.USER]
-): UserDto => {
-  const { _id, roles, username, createdAt, updatedAt } = userDocument;
-
-  /* Only return eth address to admin or quantifier */
-  let identityEthAddress;
-  let rewardsEthAddress;
-  if (
-    currentUserRoles.includes(UserRole.ADMIN) ||
-    currentUserRoles.includes(UserRole.QUANTIFIER)
-  ) {
-    identityEthAddress = userDocument.identityEthAddress;
-    rewardsEthAddress = userDocument.rewardsEthAddress;
-  }
+export const userTransformer = (userDocument: UserDocument): UserDto => {
+  const {
+    _id,
+    roles,
+    username,
+    createdAt,
+    updatedAt,
+    identityEthAddress,
+    rewardsEthAddress,
+  } = userDocument;
 
   let accounts;
   if (userDocument.accounts) {
@@ -53,13 +47,9 @@ export const userTransformer = (
  * @returns {Promise<UserDto>}
  */
 export const userDetailTransformer = async (
-  userDocument: UserDocument,
-  currentUserRoles: UserRole[] = [UserRole.USER]
+  userDocument: UserDocument
 ): Promise<UserDetailsDto> => {
-  const user = userTransformer(
-    userDocument,
-    currentUserRoles
-  ) as UserDetailsDto;
+  const user = userTransformer(userDocument) as UserDetailsDto;
   const account = user.accounts?.[0];
 
   if (!account) return user;
@@ -88,10 +78,7 @@ export const userDetailTransformer = async (
  * @returns {Promise<UserDto[]>}
  */
 export const userListTransformer = (
-  userDocuments: UserDocument[],
-  currentUserRoles: UserRole[] = [UserRole.USER]
+  userDocuments: UserDocument[]
 ): Promise<UserDto[]> => {
-  return Promise.all(
-    userDocuments.map((d) => userTransformer(d, currentUserRoles))
-  );
+  return Promise.all(userDocuments.map((d) => userTransformer(d)));
 };
