@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { Types } from 'mongoose';
+import { MongooseError, Types } from 'mongoose';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import { PeriodDocument, PeriodDateRange } from '@/period/types';
 import {
@@ -15,6 +15,7 @@ import {
 } from '@/shared/types';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
+import { PraiseModel } from '@/praise/entities';
 import { UserModel } from './entities';
 import { userDetailTransformer, userListTransformer } from './transformers';
 import {
@@ -25,7 +26,7 @@ import {
   UserRoleChangeInput,
   UserDetailsDto,
 } from './types';
-import { findUser } from './utils/entity';
+import { findUser, getUserStats } from './utils/entity';
 
 /**
  * Fetch all Users with their associated UserAccounts
@@ -67,8 +68,9 @@ export const single = async (
 ): Promise<void> => {
   const { id } = req.params;
   const user = await findUser(id);
+  const userStats = await getUserStats(user);
 
-  const userTransformed = await userDetailTransformer(user);
+  const userTransformed = userDetailTransformer(user, userStats);
 
   res.status(200).json(userTransformed);
 };
@@ -111,8 +113,9 @@ export const addRole = async (
   );
 
   const userWithDetails = await findUser(id);
+  const userStats = await getUserStats(user);
 
-  const userTransformed = await userDetailTransformer(userWithDetails);
+  const userTransformed = userDetailTransformer(userWithDetails, userStats);
 
   res.status(200).json(userTransformed);
 };
@@ -180,8 +183,9 @@ export const removeRole = async (
   );
 
   const userWithDetails = await findUser(id);
+  const userStats = await getUserStats(user);
 
-  const userTransformed = await userDetailTransformer(userWithDetails);
+  const userTransformed = userDetailTransformer(userWithDetails, userStats);
   res.status(200).json(userTransformed);
 };
 
@@ -201,6 +205,11 @@ export const updateProfile = async (
 
   const { username, rewardsEthAddress } = req.body;
 
+  const exists = await UserModel.find({ username }).lean();
+  if (exists) {
+    throw new BadRequestError('Username already exist.');
+  }
+
   user.username = username;
   user.rewardsEthAddress = rewardsEthAddress;
   await user.save();
@@ -216,8 +225,9 @@ export const updateProfile = async (
   );
 
   const userWithDetails = await findUser(user._id);
+  const userStats = await getUserStats(user);
 
-  const userTransformed = await userDetailTransformer(userWithDetails);
+  const userTransformed = userDetailTransformer(userWithDetails, userStats);
 
   res.status(200).json(userTransformed);
 };

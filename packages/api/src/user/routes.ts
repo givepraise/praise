@@ -5,11 +5,11 @@ import { addRole, all, removeRole, single, updateProfile } from './controllers';
 const userRouter = Router();
 userRouter.getAsync('/all', all);
 userRouter.getAsync('/:id', single);
+userRouter.patchAsync('/updateProfile', updateProfile);
 
 // User admin only routes
 const adminUserRouter = Router();
 adminUserRouter.patchAsync('/:id/addRole', addRole);
 adminUserRouter.patchAsync('/:id/removeRole', removeRole);
-adminUserRouter.patchAsync('/updateProfile', updateProfile);
 
 export { userRouter, adminUserRouter };

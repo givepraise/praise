@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { UserDto } from 'api/dist/user/types';
+import { UserDetailsDto } from 'api/dist/user/types';
 import {
   faArrowDownWideShort,
   faHandHoldingHeart,
@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
-import { AllPraiseList, TotalPraiseNumber } from '@/model/praise';
+import { AllPraiseList } from '@/model/praise';
 import { Praise } from '@/components/praise/Praise';
 import { PraiseRow } from '@/components/praise/PraiseRow';
 import { PraisePageLoader } from '@/components/praise/PraisePageLoader';
@@ -24,7 +24,9 @@ interface sortOptionsProps {
   label: string;
 }
 
-const getUseAccountId = (user: UserDto | undefined): string | undefined => {
+const getUseAccountId = (
+  user: UserDetailsDto | undefined
+): string | undefined => {
   const accounts = user?.accounts;
   return Array.isArray(accounts) && accounts.length > 0
     ? accounts[0]._id
@@ -35,7 +37,7 @@ export type userAccountTypeNumber = 1 | 2;
 
 interface Props {
   userAccountType: userAccountTypeNumber;
-  user: UserDto;
+  user: UserDetailsDto;
 }
 
 export const ReceivedGivenPraiseTable = ({
@@ -59,7 +61,6 @@ export const ReceivedGivenPraiseTable = ({
 
   const allPraise = useRecoilValue(AllPraiseList(PRAISE_LIST_KEY));
   const userAccountId = getUseAccountId(user);
-  const praiseCount = useRecoilValue(TotalPraiseNumber);
 
   const [page, setPage] = useState<number>(1);
 
@@ -69,23 +70,6 @@ export const ReceivedGivenPraiseTable = ({
     receiver: userAccountType === 1 ? userAccountId : undefined,
     giver: userAccountType === 2 ? userAccountId : undefined,
   };
-
-  if (!userAccountId)
-    return (
-      <div className="p-5">
-        No user account is linked to current Ethereum address. Activate your
-        account to see {userAccountType === 1 ? 'received' : 'given'} praise.
-        <br />
-        <br />
-        <a
-          href="https://givepraise.xyz/docs/using-praise"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Learn more about how to use Praise
-        </a>
-      </div>
-    );
 
   return (
     <>
@@ -97,7 +81,11 @@ export const ReceivedGivenPraiseTable = ({
             size="1x"
           />
           Number of praise {userAccountType === 1 ? 'received' : 'given'}:{' '}
-          <strong>{praiseCount}</strong>
+          <strong>
+            {userAccountType === 1
+              ? user.received_total_count
+              : user.given_total_count}
+          </strong>
         </div>
 
         {/* Sort */}

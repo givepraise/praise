@@ -3,7 +3,9 @@ import { NotFoundError } from '@/error/errors';
 import { UserAccountDocument } from '@/useraccount/types';
 import { UserAccountModel } from '@/useraccount/entities';
 import { UserModel } from '@/user/entities';
-import { UserDocument } from '../types';
+import { PraiseModel } from '@/praise/entities';
+import { calculatePraiseItemsTotalScore } from '@/praise/utils/score';
+import { UserDocument, UserStats } from '../types';
 
 /**
  * Generate username from user account name
@@ -73,7 +75,31 @@ export const findUser = async (id: string): Promise<UserDocument> => {
       },
     },
   ]);
+
   if (!Array.isArray(users) || users.length === 0)
     throw new NotFoundError('User');
+
   return users[0];
+};
+
+export const getUserStats = async (
+  user: UserDocument
+): Promise<UserStats | null> => {
+  if (!user.accounts || user.accounts.length === 0) return null;
+  const accountIds = user.accounts?.map((a) => new Types.ObjectId(a._id));
+
+  const receivedPraiseItems = await PraiseModel.find({
+    receiver: { $in: accountIds },
+  });
+
+  const givenPraiseItems = await PraiseModel.find({
+    giver: { $in: accountIds },
+  });
+
+  return {
+    received_total_score: calculatePraiseItemsTotalScore(receivedPraiseItems),
+    received_total_count: receivedPraiseItems.length,
+    given_total_score: calculatePraiseItemsTotalScore(givenPraiseItems),
+    given_total_count: givenPraiseItems.length,
+  };
 };

@@ -1,8 +1,5 @@
-import { Types } from 'mongoose';
 import { userAccountListTransformer } from '@/useraccount/transformers';
-import { PraiseModel } from '@/praise/entities';
-import { calculateUserTotalScore } from '@/praise/utils/score';
-import { UserDetailsDto, UserDocument, UserDto, UserRole } from './types';
+import { UserDetailsDto, UserDocument, UserDto, UserStats } from './types';
 
 /**
  * Serialize a User
@@ -40,34 +37,24 @@ export const userTransformer = (userDocument: UserDocument): UserDto => {
 };
 
 /**
- * Serialize a User
+ * Serialize a User with Stats
  *
  * @param {UserDocument} userDocument
  * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
  * @returns {Promise<UserDto>}
  */
-export const userDetailTransformer = async (
-  userDocument: UserDocument
-): Promise<UserDetailsDto> => {
+export const userDetailTransformer = (
+  userDocument: UserDocument,
+  userStats: UserStats | null
+): UserDetailsDto => {
   const user = userTransformer(userDocument) as UserDetailsDto;
-  const account = user.accounts?.[0];
 
-  if (!account) return user;
+  if (!userStats) return user;
 
-  const receivedPraiseItems = await PraiseModel.find({
-    receiver: new Types.ObjectId(account._id),
-  });
-
-  const givenPraiseItems = await PraiseModel.find({
-    giver: new Types.ObjectId(account._id),
-  });
-
-  user.praiseStatistics = {
-    receivedTotalScore: await calculateUserTotalScore(receivedPraiseItems),
-    givenTotalScore: await calculateUserTotalScore(givenPraiseItems),
+  return {
+    ...user,
+    ...userStats,
   };
-
-  return user;
 };
 
 /**

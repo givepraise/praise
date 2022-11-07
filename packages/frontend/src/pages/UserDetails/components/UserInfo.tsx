@@ -19,7 +19,7 @@ import { toast } from 'react-hot-toast';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import { useRecoilValue } from 'recoil';
 import { Box } from '@/components/ui/Box';
-import { formatIsoDateUTC, DATE_FORMAT_NAME } from '@/utils/date';
+import { formatIsoDateUTC, DATE_FORMAT_LONG_NAME } from '@/utils/date';
 import { classNames } from '@/utils/index';
 import { Button } from '@/components/ui/Button';
 import { useAdminUsers, useUserProfile } from '@/model/users';
@@ -48,7 +48,7 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
   const roles = [UserRole.ADMIN, UserRole.FORWARDER, UserRole.QUANTIFIER];
 
   const avatars = user.accounts?.map((a) => a.avatarId).filter((e) => e) || [];
-  const account = user.accounts?.[0];
+  const discordAccount = user.accounts?.find((a) => a.platform === 'DISCORD');
 
   const { update } = useUserProfile();
 
@@ -60,10 +60,11 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
 
     if (isResponseOk(response)) {
       toast.success('User profile saved');
-      setIsDialogOpen(false);
     } else {
       toast.error('Profile update failed');
     }
+
+    setIsDialogOpen(false);
   };
 
   const handleRole = async (role: UserRole, user: UserDto): Promise<void> => {
@@ -79,7 +80,6 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
     }
   };
 
-  console.log('user', user);
   return (
     <Box>
       <div className="flex justify-between mb-8">
@@ -107,11 +107,17 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
 
       <div className="relative sm:flex sm:justify-between">
         <div className="">
-          <h2 className="mb-1">{user.username}</h2>
-          <div className="mb-2">
-            <FontAwesomeIcon icon={faDiscord} className="mr-2" size="1x" />
-            {account ? account.name : user.username}
-          </div>
+          <h2 className="mb-1">
+            {user.username.length < 24
+              ? user.username
+              : shortenEthAddress(user.username)}
+          </h2>
+          {discordAccount && (
+            <div className="mb-2">
+              <FontAwesomeIcon icon={faDiscord} className="mr-2" size="1x" />
+              {discordAccount.name}
+            </div>
+          )}
           <div className="flex mb-2">
             <span>
               <Jazzicon
@@ -136,8 +142,12 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
           </div>
           {!isAdmin && (
             <div className="mb-2">
-              <FontAwesomeIcon icon={faUserLock} className="mr-4" size="1x" />
-              User roles: {user.roles.map((r) => `${r} `)}
+              <FontAwesomeIcon icon={faUserLock} className="mr-2" size="1x" />
+              User roles:{' '}
+              {user.roles.map(
+                (r, index, array) =>
+                  `${r}${array.length > index + 1 ? ', ' : ''}`
+              )}
             </div>
           )}
         </div>
@@ -145,12 +155,12 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
         <div className="sm:absolute sm:bottom-0 sm:right-0">
           <p className="mb-2">
             <FontAwesomeIcon icon={faCalendarAlt} className="mr-2" size="1x" />
-            Joined: {formatIsoDateUTC(user.createdAt, DATE_FORMAT_NAME)}
+            Joined: {formatIsoDateUTC(user.createdAt, DATE_FORMAT_LONG_NAME)}
           </p>
           <p className="mb-2">
             <FontAwesomeIcon icon={faCalendarAlt} className="mr-2 " size="1x" />
             Latest activity:{' '}
-            {formatIsoDateUTC(user.updatedAt, DATE_FORMAT_NAME)}
+            {formatIsoDateUTC(user.updatedAt, DATE_FORMAT_LONG_NAME)}
           </p>
           <p className="mb-2">
             <FontAwesomeIcon
@@ -160,7 +170,7 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
             />
             <span>
               Received praise total score:{' '}
-              {user.praiseStatistics?.receivedTotalScore}
+              {user.received_total_score ? user.received_total_score : '-'}
             </span>
           </p>
           <p className="mb-2">
@@ -169,7 +179,8 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
               className="mr-2"
               size="xs"
             />
-            Given praise total score: {user.praiseStatistics?.givenTotalScore}
+            Given praise total score:{' '}
+            {user.given_total_score ? user.given_total_score : '-'}
           </p>
         </div>
       </div>

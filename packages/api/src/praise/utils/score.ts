@@ -149,14 +149,12 @@ export const calculateGiverReceiverCompositeScore = async (
  * @param {PraiseDocument[]} praiseItems
  * @returns {Promise<number>}
  */
-export const calculateUserTotalScore = async (
+export const calculatePraiseItemsTotalScore = (
   praiseItems: PraiseDocument[]
-): Promise<number> => {
-  const quantifications = praiseItems.map((p) => p.quantifications).flat();
+): number => {
+  const sum = praiseItems.reduce((accumulator, item) => {
+    return accumulator + item.scoreRealized;
+  }, 0);
 
-  const scores = await Promise.all(
-    quantifications.map(async (q) => await calculateQuantificationScore(q))
-  );
-
-  return +sum(scores).toFixed(DIGITS_PRECISION);
+  return +sum.toFixed(DIGITS_PRECISION);
 };

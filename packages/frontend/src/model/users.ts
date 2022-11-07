@@ -281,7 +281,7 @@ export const useUserProfile = (): useUserProfileReturn => {
         rewardsEthAddress: string
       ): Promise<AxiosResponse<UserDetailsDto>> => {
         const response: AxiosResponse<UserDetailsDto> =
-          await apiAuthClient.patch('/admin/users/updateProfile', {
+          await apiAuthClient.patch('/users/updateProfile', {
             username,
             rewardsEthAddress,
           });
