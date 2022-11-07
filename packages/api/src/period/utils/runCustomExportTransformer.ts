@@ -2,7 +2,9 @@ import 'ses';
 import { transform } from 'ses-node-json-transform';
 import { ExportTransformer, PeriodDetailsGiverReceiverDto } from '../types';
 
-lockdown({ domainTaming: 'unsafe' });
+if (process.env.NODE_ENV !== 'testing') {
+  lockdown({ domainTaming: 'unsafe' });
+}
 
 export const runCustomExportTransformer = (
   data: PeriodDetailsGiverReceiverDto[],
