@@ -18,10 +18,8 @@ import {
 } from '../utils/core';
 import { PeriodModel } from '../entities';
 import { populateGRListWithEthereumAddresses } from '../transformers';
-import {
-  getCustomExportTransformer,
-  runCustomExportTransformer,
-} from '../utils/export';
+import { getCustomExportTransformer } from '../utils/getCustomExportTransformer';
+import { runCustomExportTransformer } from '../utils/runCustomExportTransformer';
 
 // TODO document this
 /**

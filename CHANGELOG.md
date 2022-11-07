@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Discord-bot:** Praising does not work in threads #524 #619
 - **Frontend:** Fixed a bug causing checkbox settings to be saved even if the user did not change the value. #629 #632
 - **API:** Image upload should only accept jpg and png files #653 #636
+- **Frontend:** Prevent custom export settings from loading when user is not admin #656 #628
 
 ## [0.12.2] - 2022-09-28
 
