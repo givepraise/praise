@@ -1,7 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 
 export type EventLogDocument = EventLog & Document;
+export type EventLogModel = EventLogDocument & Pagination<EventLogDocument>;
 
 @Schema({ timestamps: true })
 export class EventLog {
@@ -40,11 +42,6 @@ export class EventLog {
   description: string;
 }
 
-// eventLogSchema.plugin(mongoosePagination);
-
 export const EventLogSchema = SchemaFactory.createForClass(EventLog);
 
-// export const EventLogModel = model<
-//   EventLogDocument,
-//   Pagination<EventLogDocument>
-// >('EventLog', eventLogSchema);
+EventLogSchema.plugin(mongoosePagination);

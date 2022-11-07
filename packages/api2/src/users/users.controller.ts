@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
-import { ObjectIdPipe } from '../objectId.pipe';
+import { ObjectIdPipe } from '../_shared/objectId.pipe';
 import { User } from './schemas/users.schema';
 import { ApiParam } from '@nestjs/swagger';
 
