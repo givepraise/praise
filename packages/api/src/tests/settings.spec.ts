@@ -75,6 +75,7 @@ describe('GET /api/settings/:id', () => {
       'label',
       'type',
       'group',
+      'subgroup',
       'description',
       'value',
       'valueRealized',
@@ -146,6 +147,7 @@ describe('PATCH /api/admin/settings/:id/set', () => {
       'label',
       'description',
       'group',
+      'subgroup',
       'defaultValue'
     );
   });
