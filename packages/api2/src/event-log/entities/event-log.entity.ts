@@ -3,7 +3,7 @@ import { Document, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 
 export type EventLogDocument = EventLog & Document;
-export type EventLogModel = EventLogDocument & Pagination<EventLogDocument>;
+export type EventLogModel = Pagination<EventLogDocument>;
 
 @Schema({ timestamps: true })
 export class EventLog {

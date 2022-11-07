@@ -1,17 +1,18 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Req, Res } from '@nestjs/common';
 import { EventLogService } from './event-log.service';
+import { Request, Response } from 'express';
 
 @Controller('event-log')
 export class EventLogController {
   constructor(private readonly eventLogService: EventLogService) {}
 
-  @Get()
-  findAll() {
-    return this.eventLogService.findAll();
+  @Get('all')
+  findAll(@Req() req: Request, @Res() res: Response) {
+    return this.eventLogService.findAll(req, res);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.eventLogService.findOne(+id);
+  @Get('type')
+  types(@Req() req: Request, @Res() res: Response) {
+    return this.eventLogService.types(req, res);
   }
 }

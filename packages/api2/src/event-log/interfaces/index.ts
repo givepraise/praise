@@ -6,3 +6,8 @@ export enum EventLogTypeKey {
   QUANTIFICATION = 'QUANTIFICATION',
   SETTING = 'SETTING',
 }
+
+export interface EventLogInput {
+  type?: Types.ObjectId[];
+  description?: Object;
+}
