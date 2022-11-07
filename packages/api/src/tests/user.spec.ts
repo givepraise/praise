@@ -26,6 +26,7 @@ describe('GET /api/users/all', () => {
     const wallet = Wallet.createRandom();
     await seedUser({
       identityEthAddress: wallet.address,
+      rewardsEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
