@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Document, Model, Types } from 'mongoose';
 import { PaginationModel, PaginationOptions } from 'mongoose-paginate-ts';
+import { TransformerMap } from 'ses-node-json-transform';
 import {
   Quantifier,
   QuantificationDocument,
@@ -10,7 +12,6 @@ import {
 import { Query } from '@/shared/types';
 import { UserAccountDocument, UserAccountDto } from '@/useraccount/types';
 import { PeriodSettingDto } from '@/periodsettings/types';
-
 export enum PeriodStatusType {
   OPEN = 'OPEN',
   QUANTIFY = 'QUANTIFY',
@@ -130,18 +131,9 @@ export interface ReplaceQuantifierRequestBody {
   newQuantifierId: string;
 }
 
-export interface ExportTransformerOperateItem {
-  run: string;
-  on: string;
-}
-
-export interface ExportTransformerMap {
+export interface ExportTransformer {
   name: string;
-  map: {
-    item: Object;
-    operate: ExportTransformerOperateItem[];
-    each: string;
-  };
+  map: TransformerMap;
   context: {};
   filterColumn: string;
   includeCsvHeaderRow?: boolean;

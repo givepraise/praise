@@ -18,7 +18,7 @@ const newSetting = {
   type: 'Boolean',
   label: 'Assign praise evenly among quantifiers',
   description:
-    'Assign praise roughly evenly among all quantifiers (or as many as possible). If enabled, the setting "Quantifiers Per Praise" will be ignored',
+    'Assign praise roughly evenly among all quantifiers (or as many as possible). If enabled, the setting "Praise per Quantifier" will be ignored',
   group: SettingGroup.PERIOD_DEFAULT,
 };
 

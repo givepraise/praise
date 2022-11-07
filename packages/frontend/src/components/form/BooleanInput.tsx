@@ -17,12 +17,17 @@ export const BooleanInput = ({
     <Field name={name} key={name} type="checkbox">
       {({ input }): JSX.Element => {
         return (
-          <div>
-            <input id={name} {...input} disabled={disabled || false} />
+          <>
+            <input
+              id={name}
+              {...input}
+              disabled={disabled || false}
+              className="mb-2 ml-5"
+            />
             {apiResponse && (
               <FieldErrorMessage name="name" apiResponse={apiResponse} />
             )}
-          </div>
+          </>
         );
       }}
     </Field>

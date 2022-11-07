@@ -6,8 +6,8 @@ import { TypedRequestBody, TypedResponse } from '@/shared/types';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
 import { settingValue } from '@/shared/settings';
-import { ExportTransformerMap } from '@/period/types';
-import { getCustomExportTransformer } from '@/period/utils/export';
+import { ExportTransformer } from '@/period/types';
+import { getCustomExportTransformer } from '@/period/utils/getCustomExportTransformer';
 import { SettingsModel } from './entities';
 import { settingListTransformer, settingTransformer } from './transformers';
 import { SettingDto, SettingSetInput } from './types';
@@ -67,9 +67,9 @@ export const set = async (
 
   const originalValue = setting.value;
   if (setting.type === 'Image') {
-    setting.value && (await removeFile(setting.value));
     const uploadResponse = await upload(req, 'value');
     if (uploadResponse) {
+      setting.value && (await removeFile(setting.value));
       setting.value = uploadResponse;
     }
   } else {
@@ -96,7 +96,7 @@ export const set = async (
 
 export const customExportTransformer = async (
   req: Request,
-  res: TypedResponse<ExportTransformerMap>
+  res: TypedResponse<ExportTransformer>
 ): Promise<void> => {
   const customExportMapSetting = (await settingValue(
     'CUSTOM_EXPORT_MAP'

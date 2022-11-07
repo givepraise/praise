@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Discord-bot:** Minor refactors to make code easier to read #619
 - **Frontend:** The settings pages have been reorganised slightly and given section descriptions with links to documentation. #586 #631
 - **Devops:** Upgraded Node version to 16.17.1 to fix security vulnerabilities #640
+- **API:** Increases the number of quantifier assignment attempts from 3 to 5. Note that under some circumstances the algorithm cannot assign quantifiers and uphold the rules defined in the settings. The solution is then to change the assignment parameterd, for example by adding an additional quantifier. #644
+- **Frontend:** Moved settings checkbox to be inline with description instead of under it. #635
+- **API:** CSV header fields are now lower case to avoid issues with some distribution services #639
+- **Frontend:**: Period page should list number of praise in the period #651
 
 ### Fixed
 
@@ -25,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **API:** Bug causing period praise counting to return the total number of praises instead of the number of praise for the period. #622
 - **Discord-bot:** Praising does not work in threads #524 #619
 - **Frontend:** Fixed a bug causing checkbox settings to be saved even if the user did not change the value. #629 #632
+- **API:** Image upload should only accept jpg and png files #653 #636
+- **Frontend:** Prevent custom export settings from loading when user is not admin #656 #628
 
 ## [0.12.2] - 2022-09-28
 

@@ -37,6 +37,11 @@ const FormFields = (
   return (
     <div className="mb-2 space-y-4">
       {settings.map((setting) => {
+        const SettingDescription = (): JSX.Element => (
+          <div className="mb-2 text-sm text-warm-gray-400">
+            {setting.description}
+          </div>
+        );
         return (
           <div key={setting.key}>
             <label className="block font-bold group">
@@ -60,56 +65,73 @@ const FormFields = (
                 </button>
               )}
             </label>
-            {setting.description && (
-              <div className="mb-2 text-sm text-warm-gray-400">
-                {setting.description}
-              </div>
-            )}
             {(setting.type === 'String' ||
               setting.type === 'IntegerList' ||
               setting.type === 'StringList') && (
-              <StringInput
-                name={setting.key}
-                apiResponse={apiResponse}
-                disabled={disabled}
-              />
+              <>
+                <SettingDescription />
+                <StringInput
+                  name={setting.key}
+                  apiResponse={apiResponse}
+                  disabled={disabled}
+                />
+              </>
             )}
             {(setting.type === 'Float' || setting.type === 'Integer') && (
-              <NumberInput
-                name={setting.key}
-                apiResponse={apiResponse}
-                disabled={disabled}
-              />
+              <>
+                <SettingDescription />
+                <NumberInput
+                  name={setting.key}
+                  apiResponse={apiResponse}
+                  disabled={disabled}
+                />
+              </>
             )}
             {(setting.type === 'Textarea' || setting.type === 'JSON') && (
-              <TextareaInput
-                name={setting.key}
-                apiResponse={apiResponse}
-                disabled={disabled}
-              />
+              <>
+                <SettingDescription />
+                <TextareaInput
+                  name={setting.key}
+                  apiResponse={apiResponse}
+                  disabled={disabled}
+                />
+              </>
             )}
             {setting.type === 'Boolean' && (
-              <BooleanInput
-                name={setting.key}
-                apiResponse={apiResponse}
-                disabled={disabled}
-              />
+              <div className="flex items-center">
+                <div className="grow">
+                  <SettingDescription />
+                </div>
+                <div className="flex-none">
+                  <BooleanInput
+                    name={setting.key}
+                    apiResponse={apiResponse}
+                    disabled={disabled}
+                  />
+                </div>
+              </div>
             )}
             {setting.type === 'Image' && (
-              <ImageFileInput
-                name={setting.key}
-                src={setting.valueRealized as string}
-                disabled={disabled}
-              />
+              <>
+                <SettingDescription />
+                <ImageFileInput
+                  name={setting.key}
+                  src={setting.valueRealized as string}
+                  disabled={disabled}
+                />
+              </>
             )}
             {setting.type === 'Radio' && (
-              <RadioInput
-                name={setting.key}
-                apiResponse={apiResponse}
-                dbValue={setting.valueRealized as string}
-                values={JSON.parse(setting.options)}
-                disabled={disabled}
-              />
+              <>
+                <SettingDescription />
+                <RadioInput
+                  name={setting.key}
+                  apiResponse={apiResponse}
+                  dbValue={setting.valueRealized as string}
+                  values={JSON.parse(setting.options)}
+                  disabled={disabled}
+                />
+              </>
             )}
           </div>
         );
@@ -132,11 +154,11 @@ export const SettingsForm = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: Record<string, any>): Promise<void> => {
     for (const setting of settings) {
-      const value = values[setting.key];
-      if (
-        (setting.type === 'Boolean' && value !== Boolean(setting.value)) ||
-        (setting.type !== 'Boolean' && value !== setting.value)
-      ) {
+      const value =
+        typeof values[setting.key] === 'boolean'
+          ? values[setting.key].toString()
+          : values[setting.key];
+      if (value !== setting.value) {
         const updatedSetting = { ...setting, value: value || '' };
         const apiResponse = await onSubmitParent(updatedSetting);
         setApiResponse(apiResponse);
@@ -147,8 +169,11 @@ export const SettingsForm = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const initialValues = {} as any;
   for (const setting of settings) {
-    initialValues[setting.key] =
-      setting.type === 'Boolean' ? setting.value === 'true' : setting.value;
+    if (setting.type === 'Boolean') {
+      initialValues[setting.key] = setting.valueRealized;
+    } else {
+      initialValues[setting.key] = setting.value || '';
+    }
   }
 
   return (
