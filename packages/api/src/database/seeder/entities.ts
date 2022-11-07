@@ -214,11 +214,13 @@ export const seedSetting = async (
 ): Promise<SettingDocument> => {
   const createdAt = faker.date.recent();
 
+  const randomNumberOneToFive = Math.floor(Math.random() * 5) + 1;
   const setting = await SettingsModel.create({
     key: faker.random.alphaNumeric(25),
     label: faker.word.noun(),
     type: 'Boolean',
     group: SettingGroup.APPLICATION,
+    subgroup: randomNumberOneToFive,
     description: faker.lorem.sentence(),
     value: faker.datatype.boolean().toString(),
     createdAt,
