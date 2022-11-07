@@ -100,7 +100,7 @@ export const full = async (req: Request, res: Response): Promise<void> => {
     },
     {
       label: 'to eth address',
-      value: 'receiverUserDocument.ethereumAddress',
+      value: 'receiverUserDocument.identityEthAddress',
     },
     {
       label: 'from user account',
@@ -112,7 +112,7 @@ export const full = async (req: Request, res: Response): Promise<void> => {
     },
     {
       label: 'from eth address',
-      value: 'giverUserDocument.ethereumAddress',
+      value: 'giverUserDocument.identityEthAddress',
     },
     {
       label: 'reason',
@@ -165,7 +165,7 @@ export const full = async (req: Request, res: Response): Promise<void> => {
 
     const quantUserEthAddressObj = {
       label: `quantifier ${index + 1} eth address`,
-      value: `quantifications[${index}].quantifier.ethereumAddress`,
+      value: `quantifications[${index}].quantifier.identityEthAddress`,
     };
 
     fields.push(quantUserEthAddressObj);
