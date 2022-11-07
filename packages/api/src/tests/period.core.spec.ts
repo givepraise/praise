@@ -797,69 +797,69 @@ describe('GET /api/admin/periods/:periodId/exportFull', () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const responseJson: any[] = csvToJson(new String(response.body) as string);
-    expect(responseJson[0]['ID']).to.equal(
+    expect(responseJson[0]['id']).to.equal(
       praise._id.toString(),
       'Praise ids in row 1 do not match'
     );
-    expect(responseJson[1]['ID']).to.equal(
+    expect(responseJson[1]['id']).to.equal(
       praise2._id.toString(),
       'Praise ids in row 2 do not match'
     );
-    expect(responseJson[2]['ID']).to.equal(
+    expect(responseJson[2]['id']).to.equal(
       praise3._id.toString(),
       'Praise ids in row 3 do not match'
     );
-    expect(responseJson[3]['ID']).to.equal(
+    expect(responseJson[3]['id']).to.equal(
       praise4._id.toString(),
       'Praise ids in row 4 do not match'
     );
 
-    expect(responseJson[0]['DATE']).to.equal(praise.createdAt.toISOString());
+    expect(responseJson[0]['date']).to.equal(praise.createdAt.toISOString());
 
-    expect(responseJson[0]['TO USER ACCOUNT ID']).to.equal(
+    expect(responseJson[0]['to user account id']).to.equal(
       receiverUserAccount._id.toString(),
       'Receiver user account ids do not match'
     );
-    expect(responseJson[0]['TO USER ACCOUNT']).to.equal(
+    expect(responseJson[0]['to user account']).to.equal(
       receiverUserAccount.name
     );
-    expect(responseJson[0]['TO ETH ADDRESS']).to.equal(
+    expect(responseJson[0]['to eth address']).to.equal(
       receiverUser.identityEthAddress
     );
 
-    expect(responseJson[0]['FROM USER ACCOUNT ID']).to.equal(
+    expect(responseJson[0]['from user account id']).to.equal(
       giverUserAccount._id.toString(),
       'Giver user account ids do not match'
     );
-    expect(responseJson[0]['FROM USER ACCOUNT']).to.equal(
+    expect(responseJson[0]['from user account']).to.equal(
       giverUserAccount.name
     );
-    expect(responseJson[0]['FROM ETH ADDRESS']).to.equal(
+    expect(responseJson[0]['from eth address']).to.equal(
       giverUser.identityEthAddress
     );
 
-    expect(responseJson[0]['REASON']).to.equal(praise.reasonRealized);
+    expect(responseJson[0]['reason']).to.equal(praise.reasonRealized);
 
-    expect(responseJson[0]['SOURCE ID']).to.equal(praise.sourceId);
-    expect(responseJson[0]['SOURCE NAME']).to.equal(praise.sourceName);
+    expect(responseJson[0]['source id']).to.equal(praise.sourceId);
+    expect(responseJson[0]['source name']).to.equal(praise.sourceName);
 
-    expect(responseJson[0]['SCORE 1']).to.equal('10');
-    expect(responseJson[0]['SCORE 2']).to.equal('30');
-    expect(responseJson[0]['SCORE 3']).to.equal('50');
-    expect(responseJson[0]['AVG SCORE']).to.equal('30');
+    expect(responseJson[0]['score 1']).to.equal('10');
+    expect(responseJson[0]['score 2']).to.equal('30');
+    expect(responseJson[0]['score 3']).to.equal('50');
+    expect(responseJson[0]['avg score']).to.equal('30');
 
-    expect(responseJson[0]['DUPLICATE ID 1']).to.equal('');
-    expect(responseJson[0]['DUPLICATE ID 2']).to.equal('');
-    expect(responseJson[0]['DUPLICATE ID 3']).to.equal('');
+    expect(responseJson[0]['duplicate id 1']).to.equal('');
+    expect(responseJson[0]['duplicate id 2']).to.equal('');
+    expect(responseJson[0]['duplicate id 3']).to.equal('');
 
-    expect(responseJson[0]['DISMISSED 1']).to.equal('false');
-    expect(responseJson[0]['DISMISSED 2']).to.equal('false');
-    expect(responseJson[0]['DISMISSED 3']).to.equal('false');
+    expect(responseJson[0]['dismissed 1']).to.equal('false');
+    expect(responseJson[0]['dismissed 2']).to.equal('false');
+    expect(responseJson[0]['dismissed 3']).to.equal('false');
 
-    expect(responseJson[0]['QUANTIFIER 1 USERNAME']).to.equal(
+    expect(responseJson[0]['quantifier 1 username']).to.equal(
       quantifier1UserAccount.name
     );
-    expect(responseJson[0]['QUANTIFIER 1 ETH ADDRESS']).to.equal(
+    expect(responseJson[0]['quantifier 1 eth address']).to.equal(
       quantifier1User.identityEthAddress
     );
   });
