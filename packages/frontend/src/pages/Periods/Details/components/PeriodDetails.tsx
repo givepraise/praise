@@ -19,7 +19,7 @@ import {
 import { AllQuantifierUsers } from '@/model/users';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { getPreviousPeriod } from '@/utils/periods';
-
+import { PeriodStatsSelector } from '@/model/periodAnalytics';
 import { PeriodAssignDialog } from './AssignDialog';
 import { PeriodCloseDialog } from './CloseDialog';
 import { PeriodDateForm } from './PeriodDateForm';
@@ -35,6 +35,7 @@ export const PeriodDetails = (): JSX.Element | null => {
   useLoadSinglePeriodDetails(periodId); // Fetch additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
+  const periodStats = useRecoilValue(PeriodStatsSelector(periodId));
 
   const history = useHistory();
 
@@ -89,10 +90,14 @@ export const PeriodDetails = (): JSX.Element | null => {
           : 'Dawn of time'}
       </div>
       {!isAdmin ? (
-        <div>Period end: {formatIsoDateUTC(period.endDate)}</div>
+        <>
+          <div>Period end: {formatIsoDateUTC(period.endDate)}</div>
+          <div>Number of praise: {periodStats?.totalPraise}</div>
+        </>
       ) : (
         <>
           <PeriodDateForm />
+          <div>Number of praise: {periodStats?.totalPraise}</div>
           <div className="mt-5">
             {period.status === 'OPEN' || period.status === 'QUANTIFY' ? (
               <div className="flex justify-between gap-4">

@@ -81,9 +81,9 @@ export const set = async (
 
   const originalValue = setting.value;
   if (setting.type === 'Image') {
-    setting.value && (await removeFile(setting.value));
     const uploadResponse = await upload(req, 'value');
     if (uploadResponse) {
+      setting.value && (await removeFile(setting.value));
       setting.value = uploadResponse;
     }
   } else {

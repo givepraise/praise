@@ -83,54 +83,54 @@ export const full = async (req: Request, res: Response): Promise<void> => {
 
   const fields = [
     {
-      label: 'ID',
+      label: 'id',
       value: '_id',
     },
     {
-      label: 'DATE',
+      label: 'date',
       value: 'createdAt',
     },
     {
-      label: 'TO USER ACCOUNT',
+      label: 'to user account',
       value: 'receiver.name',
     },
     {
-      label: 'TO USER ACCOUNT ID',
+      label: 'to user account id',
       value: 'receiver._id',
     },
     {
-      label: 'TO ETH ADDRESS',
-      value: 'receiverUserDocument.identityEthAddress',
+      label: 'to eth address',
+      value: 'receiverUserDocument.ethereumAddress',
     },
     {
-      label: 'FROM USER ACCOUNT',
+      label: 'from user account',
       value: 'giver.name',
     },
     {
-      label: 'FROM USER ACCOUNT ID',
+      label: 'from user account id',
       value: 'giver._id',
     },
     {
-      label: 'FROM ETH ADDRESS',
-      value: 'giverUserDocument.identityEthAddress',
+      label: 'from eth address',
+      value: 'giverUserDocument.ethereumAddress',
     },
     {
-      label: 'REASON',
+      label: 'reason',
       value: 'reasonRealized',
     },
     {
-      label: 'SOURCE ID',
+      label: 'source id',
       value: 'sourceId',
     },
     {
-      label: 'SOURCE NAME',
+      label: 'source name',
       value: 'sourceName',
     },
   ];
 
   for (let index = 0; index < quantificationsColumnsCount; index++) {
     const quantObj = {
-      label: `SCORE ${index + 1}`,
+      label: `score ${index + 1}`,
       value: `quantifications[${index}].score`,
     };
 
@@ -139,7 +139,7 @@ export const full = async (req: Request, res: Response): Promise<void> => {
 
   for (let index = 0; index < quantificationsColumnsCount; index++) {
     const quantObj = {
-      label: `DUPLICATE ID ${index + 1}`,
+      label: `duplicate id ${index + 1}`,
       value: `quantifications[${index}].duplicatePraise`,
     };
 
@@ -148,7 +148,7 @@ export const full = async (req: Request, res: Response): Promise<void> => {
 
   for (let index = 0; index < quantificationsColumnsCount; index++) {
     const quantObj = {
-      label: `DISMISSED ${index + 1}`,
+      label: `dismissed ${index + 1}`,
       value: `quantifications[${index}].dismissed`,
     };
 
@@ -157,22 +157,22 @@ export const full = async (req: Request, res: Response): Promise<void> => {
 
   for (let index = 0; index < quantificationsColumnsCount; index++) {
     const quantUserUsernameObj = {
-      label: `QUANTIFIER ${index + 1} USERNAME`,
+      label: `quantifier ${index + 1} username`,
       value: `quantifications[${index}].account.name`,
     };
 
     fields.push(quantUserUsernameObj);
 
     const quantUserEthAddressObj = {
-      label: `QUANTIFIER ${index + 1} ETH ADDRESS`,
-      value: `quantifications[${index}].quantifier.identityEthAddress`,
+      label: `quantifier ${index + 1} eth address`,
+      value: `quantifications[${index}].quantifier.ethereumAddress`,
     };
 
     fields.push(quantUserEthAddressObj);
   }
 
   fields.push({
-    label: 'AVG SCORE',
+    label: 'avg score',
     value: 'scoreRealized',
   });
 
@@ -198,15 +198,15 @@ export const summary = async (req: Request, res: Response): Promise<void> => {
 
   const fields = [
     {
-      label: 'USER',
+      label: 'user',
       value: 'username',
     },
     {
-      label: 'PRAISE COUNT',
+      label: 'praise_count',
       value: 'praiseCount',
     },
     {
-      label: 'SCORE',
+      label: 'score',
       value: 'scoreRealized',
     },
   ];
@@ -292,7 +292,7 @@ export const custom = async (req: Request, res: Response): Promise<void> => {
     let data = null;
     if (customExportFormat === 'csv') {
       const fields = Object.keys(transformer.map.item).map((item) => {
-        return { label: item.toUpperCase(), value: item };
+        return { label: item.toLowerCase(), value: item };
       });
       const json2csv = new Parser({
         fields: fields,
