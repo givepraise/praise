@@ -124,7 +124,7 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
               />
             </span>
             <span className="ml-2">
-              Payout address: {shortenEthAddress(user.rewardsEthAddress)}
+              Rewards address: {shortenEthAddress(user.rewardsEthAddress)}
             </span>
           </div>
           {!isAdmin && (

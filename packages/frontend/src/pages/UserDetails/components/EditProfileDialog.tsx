@@ -111,8 +111,8 @@ export const EditProfileDialog = ({
                             Rewards Address
                           </label>
                           <p className="mb-2 leading-6 text-warm-gray-500">
-                            Change to receive rewards payouts to a different eth
-                            address than the identity address
+                            Change to receive rewards to a different eth address
+                            than the identity address
                           </p>
                           <input
                             type="text"
