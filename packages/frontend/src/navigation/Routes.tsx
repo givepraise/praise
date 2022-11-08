@@ -16,12 +16,12 @@ export const Routes = (): JSX.Element => {
 
   // Clear ActiveTokenSet if ethereum address changes
   useEffect(() => {
-    if (tokenSet && decodedToken?.ethereumAddress !== data?.address) {
+    if (tokenSet && decodedToken?.identityEthAddress !== data?.address) {
       setTokenSet(undefined);
     }
-  }, [tokenSet, data?.address, decodedToken?.ethereumAddress, setTokenSet]);
+  }, [tokenSet, data?.address, decodedToken?.identityEthAddress, setTokenSet]);
 
-  return tokenSet && decodedToken?.ethereumAddress === data?.address ? (
+  return tokenSet && decodedToken?.identityEthAddress === data?.address ? (
     <Switch>
       <Route exact path="/activate">
         <ActivatePage />
@@ -29,7 +29,6 @@ export const Routes = (): JSX.Element => {
       <Route exact path="/404">
         <ErrorPage error={{ message: 'Not found' }} />
       </Route>
-
       <AuthenticatedLayout />
     </Switch>
   ) : (

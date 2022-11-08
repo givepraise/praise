@@ -10,7 +10,7 @@ const newSetting = {
   type: 'Boolean',
   label: 'Assign praise to all quantifiers',
   description:
-    'Evenly assign praise among all quantifiers. If enabled, the setting "Quantifiers Per Praise" will be ignored',
+    'Evenly assign praise among all quantifiers. If enabled, the setting "Praise per Quantifer" will be ignored',
   group: SettingGroup.PERIOD_DEFAULT,
 };
 

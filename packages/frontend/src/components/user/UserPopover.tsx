@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { UserDto } from 'api/dist/user/types';
 import { UserAccountDto } from 'api/dist/useraccount/types';
 import { useRecoilValue } from 'recoil';
+import { useHistory } from 'react-router-dom';
 import { SingleUser } from '@/model/users';
 import { classNames } from '@/utils/index';
 import { UserAvatar } from './UserAvatar';
@@ -25,6 +26,7 @@ const WrappedUserPopover = ({
   className,
   usePseudonym = false,
 }: UserPopoverProps): JSX.Element | null => {
+  const history = useHistory();
   const [open, setOpen] = React.useState(false);
   const [openTimeout, setOpenTimeout] = React.useState<NodeJS.Timeout | null>(
     null
@@ -39,25 +41,35 @@ const WrappedUserPopover = ({
   if (usePseudonym) return children;
 
   let discordUsername: string | undefined;
-  let ethereumAddress: string | undefined;
+  let identityEthAddress: string | undefined;
 
   if (user) {
     discordUsername = user.accounts?.find(
       (account) => account.platform === 'DISCORD'
     )?.name;
-    ethereumAddress = user.ethereumAddress;
+    identityEthAddress = user.identityEthAddress;
   } else {
     if (userAccountUser) {
       discordUsername = userAccountUser.accounts?.find(
         (account) => account.platform === 'DISCORD'
       )?.name;
-      ethereumAddress = userAccountUser.ethereumAddress;
+      identityEthAddress = userAccountUser.identityEthAddress;
     } else {
       if (userAccount && userAccount.platform === 'DISCORD') {
         discordUsername = userAccount.name;
       }
     }
   }
+
+  const handleClick =
+    (userAccount: UserAccountDto | undefined) =>
+    (event: React.MouseEvent<HTMLTableRowElement>) => {
+      event.stopPropagation();
+
+      if (userAccount && userAccount.user) {
+        history.push(`/users/${userAccount.user}`);
+      }
+    };
 
   return (
     <div className={classNames('inline-block', className)}>
@@ -76,7 +88,8 @@ const WrappedUserPopover = ({
 
       {open && (
         <div
-          className="absolute z-10"
+          className="absolute z-10 cursor-pointer"
+          onClickCapture={handleClick(userAccount)}
           onMouseOver={(): void => {
             closeTimeout && clearTimeout(closeTimeout);
           }}
@@ -95,10 +108,10 @@ const WrappedUserPopover = ({
                 <span>{discordUsername}</span>
               </div>
             )}
-            {ethereumAddress && (
+            {identityEthAddress && (
               <div className="flex items-center mt-3 space-x-2">
-                <Jazzicon address={ethereumAddress} className="w-4 h-4" />
-                <span>{shortenEthAddress(ethereumAddress)}</span>
+                <Jazzicon address={identityEthAddress} className="w-4 h-4" />
+                <span>{shortenEthAddress(identityEthAddress)}</span>
               </div>
             )}
           </div>

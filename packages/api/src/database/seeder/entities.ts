@@ -14,6 +14,7 @@ import { SettingGroup, SettingDocument } from '@/settings/types';
 import { SettingsModel } from '@/settings/entities';
 import { PeriodSettingsModel } from '@/periodsettings/entities';
 import { PeriodSettingDocument } from '@/periodsettings/types';
+import { calculateQuantificationsCompositeScore } from '@/praise/utils/score';
 
 /**
  * Query database for two random useraccounts
@@ -57,7 +58,9 @@ export const seedUser = async (
   userData: Object = {}
 ): Promise<UserDocument> => {
   const user = await UserModel.create({
-    ethereumAddress: faker.finance.ethereumAddress(),
+    identityEthAddress: faker.finance.ethereumAddress(),
+    rewardsEthAddress: faker.finance.ethereumAddress(),
+    username: faker.internet.userName(),
     roles: [UserRole.USER],
     ...userData,
   });
@@ -164,6 +167,9 @@ export const seedQuantification = async (
   });
 
   praise.quantifications = [...praise.quantifications, quantification];
+  praise.scoreRealized = await calculateQuantificationsCompositeScore(
+    praise.quantifications
+  );
   await praise.save();
 
   return quantification;
@@ -208,11 +214,16 @@ export const seedSetting = async (
 ): Promise<SettingDocument> => {
   const createdAt = faker.date.recent();
 
+  const randomNumberOneToFive = faker.datatype.number({
+    min: 1,
+    max: 5,
+  });
   const setting = await SettingsModel.create({
     key: faker.random.alphaNumeric(25),
     label: faker.word.noun(),
     type: 'Boolean',
     group: SettingGroup.APPLICATION,
+    subgroup: randomNumberOneToFive,
     description: faker.lorem.sentence(),
     value: faker.datatype.boolean().toString(),
     createdAt,

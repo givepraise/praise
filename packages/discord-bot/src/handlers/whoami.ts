@@ -40,7 +40,7 @@ export const whoamiHandler = async (
 
   const User = await UserModel.findOne({ _id: ua.user });
   state.praiseRoles = User?.roles || [];
-  state.address = User?.ethereumAddress || '';
+  state.address = User?.identityEthAddress || '';
   state.avatar = ua.avatarId;
 
   const activatedAccounts = await UserAccountModel.find({ user: ua.user });

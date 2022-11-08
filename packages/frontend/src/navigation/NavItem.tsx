@@ -10,6 +10,7 @@ interface NavProps {
   replace?: boolean;
   iconClassName?: string;
   rounded?: boolean;
+  exact?: boolean;
 }
 
 export const NavItem = ({
@@ -19,6 +20,7 @@ export const NavItem = ({
   replace = false,
   iconClassName,
   rounded = false,
+  exact = false,
 }: NavProps): JSX.Element => {
   const url = to.startsWith('http') ? { pathname: to } : to;
   const target = to.startsWith('http') ? '_blank' : '';
@@ -39,6 +41,7 @@ export const NavItem = ({
         id={to.substring(1) + '-nav-button'}
         replace={replace}
         target={target}
+        exact={exact}
       >
         {icon && (
           <div className="inline-block w-8 text-center">

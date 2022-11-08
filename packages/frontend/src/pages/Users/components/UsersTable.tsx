@@ -38,11 +38,11 @@ export const UsersTable = (): JSX.Element => {
     (data: UserDto[] | undefined): UserDto[] => {
       if (!data) return [];
       const filteredData = data.filter((user: UserDto) => {
-        const userAddress = user.ethereumAddress?.toLowerCase();
+        const userAddress = user.identityEthAddress?.toLowerCase();
         const filterData = filter.toLocaleLowerCase();
 
         return (
-          user.nameRealized.toLowerCase().includes(filterData) ||
+          user.username.toLowerCase().includes(filterData) ||
           userAddress?.includes(filterData)
         );
       });

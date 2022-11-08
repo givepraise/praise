@@ -1,10 +1,17 @@
+import { Pagination, mongoosePagination } from 'mongoose-paginate-ts';
 import { Schema, model } from 'mongoose';
-import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { UserDocument, UserRole } from './types';
 
 const userSchema = new Schema(
   {
-    ethereumAddress: { type: String, required: true, unique: true },
+    identityEthAddress: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+    rewardsEthAddress: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
     roles: {
       type: [
         {

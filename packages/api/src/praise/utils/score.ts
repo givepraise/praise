@@ -5,7 +5,7 @@ import { settingValue } from '@/shared/settings';
 import { PeriodDetailsGiverReceiver } from '@/period/types';
 import { getPraisePeriod, isQuantificationCompleted } from './core';
 import { PraiseModel } from '../entities';
-import { Quantification } from '../types';
+import { PraiseDocument, Quantification } from '../types';
 
 /**
  * Digits of precision for rounding calculated scores
@@ -141,4 +141,20 @@ export const calculateGiverReceiverCompositeScore = async (
   const score = +sum(compositeScores).toFixed(DIGITS_PRECISION);
 
   return score;
+};
+
+/**
+ * Calculates a single "total" score for a user in all periods
+ *
+ * @param {PraiseDocument[]} praiseItems
+ * @returns {Promise<number>}
+ */
+export const calculatePraiseItemsTotalScore = (
+  praiseItems: PraiseDocument[]
+): number => {
+  const sum = praiseItems.reduce((accumulator, item) => {
+    return accumulator + item.scoreRealized;
+  }, 0);
+
+  return +sum.toFixed(DIGITS_PRECISION);
 };

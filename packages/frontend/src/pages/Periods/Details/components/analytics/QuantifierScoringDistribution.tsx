@@ -18,7 +18,7 @@ export const QuantifierScoringDistribution = (): JSX.Element | null => {
     ManyUsers(quantifierQuants && [...quantifierQuants.keys()])
   );
   const userNames =
-    quantifierUsers && quantifierUsers.map((user) => user?.nameRealized);
+    quantifierUsers && quantifierUsers.map((user) => user?.username);
 
   if (!quantifierQuants || !userNames) return null;
 

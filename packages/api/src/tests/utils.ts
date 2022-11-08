@@ -7,7 +7,7 @@ export const loginUser = async (
   client: SuperTest<Test>
 ): Promise<AuthResponse> => {
   const response = await client.get(
-    `/api/auth/nonce?ethereumAddress=${wallet.address}`
+    `/api/auth/nonce?identityEthAddress=${wallet.address}`
   );
 
   const message =
@@ -18,7 +18,7 @@ export const loginUser = async (
   const signature = await wallet.signMessage(message);
 
   const login_data = {
-    ethereumAddress: wallet.address,
+    identityEthAddress: wallet.address,
     signature: signature,
   };
 
@@ -27,10 +27,10 @@ export const loginUser = async (
     .set('Accept', 'application/json')
     .send(login_data);
 
-  const { accessToken, refreshToken, ethereumAddress, tokenType } =
+  const { accessToken, refreshToken, identityEthAddress, tokenType } =
     response2.body;
 
-  return { accessToken, refreshToken, ethereumAddress, tokenType };
+  return { accessToken, refreshToken, identityEthAddress, tokenType };
 };
 
 export const csvToJson = (csvString: string, delimiter = ','): object[] => {
