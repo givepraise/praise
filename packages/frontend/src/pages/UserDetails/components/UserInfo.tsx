@@ -18,7 +18,7 @@ import { toast } from 'react-hot-toast';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import { useRecoilValue } from 'recoil';
 import { Box } from '@/components/ui/Box';
-import { formatIsoDateUTC, DATE_FORMAT_LONG_NAME } from '@/utils/date';
+import { formatIsoDateUTC, DATE_FORMAT } from '@/utils/date';
 import { classNames } from '@/utils/index';
 import { Button } from '@/components/ui/Button';
 import { useAdminUsers, useUserProfile } from '@/model/users';
@@ -142,12 +142,11 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
         <div className="sm:absolute sm:bottom-0 sm:right-0">
           <p className="mb-2">
             <FontAwesomeIcon icon={faCalendarAlt} className="mr-2" size="1x" />
-            Joined: {formatIsoDateUTC(user.createdAt, DATE_FORMAT_LONG_NAME)}
+            Joined: {formatIsoDateUTC(user.createdAt, DATE_FORMAT)}
           </p>
           <p className="mb-2">
             <FontAwesomeIcon icon={faCalendarAlt} className="mr-2 " size="1x" />
-            Latest activity:{' '}
-            {formatIsoDateUTC(user.updatedAt, DATE_FORMAT_LONG_NAME)}
+            Latest activity: {formatIsoDateUTC(user.updatedAt, DATE_FORMAT)}
           </p>
           <p className="mb-2">
             <FontAwesomeIcon
