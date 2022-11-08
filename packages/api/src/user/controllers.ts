@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { MongooseError, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import { PeriodDocument, PeriodDateRange } from '@/period/types';
 import {
@@ -15,7 +15,6 @@ import {
 } from '@/shared/types';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
-import { PraiseModel } from '@/praise/entities';
 import { UserModel } from './entities';
 import { userDetailTransformer, userListTransformer } from './transformers';
 import {

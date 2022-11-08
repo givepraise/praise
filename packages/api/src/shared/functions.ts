@@ -3,7 +3,7 @@ import mime from 'mime-types';
 import { UploadedFile } from 'express-fileupload';
 import { unlink } from 'fs/promises';
 import { randomBytes } from 'crypto';
-import { BadRequestError, InternalServerError } from '@/error/errors';
+import { BadRequestError } from '@/error/errors';
 import { PraiseAllInput, PraiseExportInput } from '@/praise/types';
 import { QueryInput } from './types';
 import { logger } from './logger';
