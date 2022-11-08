@@ -214,7 +214,10 @@ export const seedSetting = async (
 ): Promise<SettingDocument> => {
   const createdAt = faker.date.recent();
 
-  const randomNumberOneToFive = Math.floor(Math.random() * 5) + 1;
+  const randomNumberOneToFive = faker.datatype.number({
+    min: 1,
+    max: 5,
+  });
   const setting = await SettingsModel.create({
     key: faker.random.alphaNumeric(25),
     label: faker.word.noun(),
