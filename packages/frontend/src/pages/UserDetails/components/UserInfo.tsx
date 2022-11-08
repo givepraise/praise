@@ -9,7 +9,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCalendarAlt,
   faScaleBalanced,
-  faUserCircle,
   faUserLock,
 } from '@fortawesome/free-solid-svg-icons';
 import { shortenEthAddress } from 'api/dist/user/utils/core';
@@ -25,6 +24,7 @@ import { Button } from '@/components/ui/Button';
 import { useAdminUsers, useUserProfile } from '@/model/users';
 import { isResponseOk } from '@/model/api';
 import { ActiveUserId, HasRole, ROLE_ADMIN } from '@/model/auth';
+import { UserAvatar } from '@/components/user/UserAvatar';
 import { EditProfileDialog } from './EditProfileDialog';
 
 interface Params {
@@ -34,8 +34,6 @@ interface Params {
 export const UserInfo = ({ user }: Params): JSX.Element | null => {
   const dialogRef = React.useRef(null);
 
-  const [imageLoadError, setImageLoadError] = React.useState<boolean>(false);
-  const [imageLoaded, setImageLoaded] = React.useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
 
   const { addRole, removeRole } = useAdminUsers();
@@ -47,7 +45,6 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
 
   const roles = [UserRole.ADMIN, UserRole.FORWARDER, UserRole.QUANTIFIER];
 
-  const avatars = user.accounts?.map((a) => a.avatarId).filter((e) => e) || [];
   const discordAccount = user.accounts?.find((a) => a.platform === 'DISCORD');
 
   const { update } = useUserProfile();
@@ -83,19 +80,9 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
   return (
     <Box>
       <div className="flex justify-between mb-8">
-        {!imageLoadError && imageLoaded ? (
-          <div>
-            <img
-              src={avatars[0] as string}
-              onError={(): void => setImageLoadError(true)}
-              onLoad={(): void => setImageLoaded(true)}
-              alt="avatar"
-              className="inline-block object-cover object-center w-32 h-32 border rounded-full"
-            />
-          </div>
-        ) : (
-          <FontAwesomeIcon icon={faUserCircle} size="5x" />
-        )}
+        <div className="m-3 text-8xl">
+          <UserAvatar user={user} />
+        </div>
         {isProfilePage && (
           <div>
             <Button onClick={(): void => setIsDialogOpen(true)} className="">
@@ -107,7 +94,7 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
 
       <div className="relative sm:flex sm:justify-between">
         <div className="">
-          <h2 className="mb-1">
+          <h2 className="mb-5 ">
             {user.username.length < 24
               ? user.username
               : shortenEthAddress(user.username)}
