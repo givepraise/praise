@@ -1,10 +1,11 @@
 import { Router } from '@awaitjs/express';
-import { addRole, all, removeRole, single } from './controllers';
+import { addRole, all, removeRole, single, updateProfile } from './controllers';
 
 // User routes
 const userRouter = Router();
 userRouter.getAsync('/all', all);
 userRouter.getAsync('/:id', single);
+userRouter.patchAsync('/updateProfile', updateProfile);
 
 // User admin only routes
 const adminUserRouter = Router();

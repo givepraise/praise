@@ -49,7 +49,7 @@ const ActivateDialog = ({ accountId, platform, token }: Props): JSX.Element => {
 
       // 3. Verify signature with server
       await requestApiActivate({
-        ethereumAddress: data.address,
+        identityEthAddress: data.address,
         message,
         signature,
         accountId,

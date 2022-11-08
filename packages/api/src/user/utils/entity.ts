@@ -1,10 +1,34 @@
 import { Types } from 'mongoose';
-import { UserModel } from '@/user/entities';
-import { UserAccountModel } from '@/useraccount/entities';
-import { generateUserAccountNameRealized } from '@/useraccount/utils';
 import { NotFoundError } from '@/error/errors';
-import { shortenEthAddress } from './core';
-import { UserDocument } from '../types';
+import { UserAccountDocument } from '@/useraccount/types';
+import { UserAccountModel } from '@/useraccount/entities';
+import { UserModel } from '@/user/entities';
+import { PraiseModel } from '@/praise/entities';
+import { calculatePraiseItemsTotalScore } from '@/praise/utils/score';
+import { UserDocument, UserStats } from '../types';
+
+/**
+ * Generate username from user account name
+ * If username is already taken than create one with discriminator
+ *
+ * @param userAccount
+ * @returns {Promise<string>}
+ */
+export const generateUserNameFromAccount = async (
+  userAccount: UserAccountDocument
+): Promise<string | null> => {
+  let username;
+  if (userAccount.platform === 'DISCORD' && userAccount.name.indexOf('#') > 0) {
+    username = userAccount.name.split('#')[0];
+  } else {
+    username = userAccount.name;
+  }
+
+  const exists = await UserModel.find({ username }).lean();
+  if (exists.length === 0) return username;
+  if (userAccount.platform === 'DISCORD') return userAccount.name;
+  return null;
+};
 
 /**
  * Generate a display name for a given User,
@@ -15,14 +39,22 @@ import { UserDocument } from '../types';
  * @returns {Promise<string>}
  */
 export const generateUserName = async (user: UserDocument): Promise<string> => {
-  const accounts = await UserAccountModel.find({ user: user._id });
-  if (!accounts || accounts.length === 0)
-    return shortenEthAddress(user.ethereumAddress);
+  const accounts = await UserAccountModel.find({
+    user: new Types.ObjectId(user._id),
+  });
 
-  const discordAccount = accounts.find((a) => a.platform === 'DISCORD');
-  if (discordAccount) return generateUserAccountNameRealized(discordAccount);
+  if (accounts && accounts.length > 0) {
+    const discordAccount = accounts.find((a) => a.platform === 'DISCORD');
+    if (discordAccount) {
+      const username = await generateUserNameFromAccount(discordAccount);
+      if (username) return username;
+    } else {
+      const username = await generateUserNameFromAccount(accounts[0]);
+      if (username) return username;
+    }
+  }
 
-  return generateUserAccountNameRealized(accounts[0]);
+  return user.identityEthAddress;
 };
 
 /**
@@ -43,7 +75,31 @@ export const findUser = async (id: string): Promise<UserDocument> => {
       },
     },
   ]);
+
   if (!Array.isArray(users) || users.length === 0)
     throw new NotFoundError('User');
+
   return users[0];
+};
+
+export const getUserStats = async (
+  user: UserDocument
+): Promise<UserStats | null> => {
+  if (!user.accounts || user.accounts.length === 0) return null;
+  const accountIds = user.accounts?.map((a) => new Types.ObjectId(a._id));
+
+  const receivedPraiseItems = await PraiseModel.find({
+    receiver: { $in: accountIds },
+  });
+
+  const givenPraiseItems = await PraiseModel.find({
+    giver: { $in: accountIds },
+  });
+
+  return {
+    receivedTotalScore: calculatePraiseItemsTotalScore(receivedPraiseItems),
+    receivedTotalCount: receivedPraiseItems.length,
+    givenTotalScore: calculatePraiseItemsTotalScore(givenPraiseItems),
+    givenTotalCount: givenPraiseItems.length,
+  };
 };

@@ -8,16 +8,16 @@ describe('GET /api/auth/nonce', () => {
     const ETHEREUM_ADDRESS = '0x1234';
 
     return this.client
-      .get(`/api/auth/nonce?ethereumAddress=${ETHEREUM_ADDRESS}`)
+      .get(`/api/auth/nonce?identityEthAddress=${ETHEREUM_ADDRESS}`)
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200);
   });
-  it('404 response when missing ethereumAddress', function () {
+  it('404 response when missing identityEthAddress', function () {
     const ETHEREUM_ADDRESS = '';
 
     return this.client
-      .get(`/api/auth/nonce?ethereumAddress=${ETHEREUM_ADDRESS}`)
+      .get(`/api/auth/nonce?identityEthAddress=${ETHEREUM_ADDRESS}`)
       .expect(404);
   });
 });
@@ -25,10 +25,10 @@ describe('GET /api/auth/nonce', () => {
 describe('POST /auth', () => {
   it('200 response with accessToken & refreshToken', async function () {
     const wallet = Wallet.createRandom();
-    await seedUser({ ethereumAddress: wallet.address });
+    await seedUser({ identityEthAddress: wallet.address });
 
     const response = await this.client.get(
-      `/api/auth/nonce?ethereumAddress=${wallet.address}`
+      `/api/auth/nonce?identityEthAddress=${wallet.address}`
     );
 
     const message =
@@ -39,7 +39,7 @@ describe('POST /auth', () => {
     const signature = await wallet.signMessage(message);
 
     const FORM_DATA = {
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       signature: signature,
     };
 
@@ -53,14 +53,14 @@ describe('POST /auth', () => {
     expect(response2.body).to.have.property('refreshToken');
   });
 
-  it('404 response when ethereumAddress not recognized', async function () {
+  it('404 response when identityEthAddress not recognized', async function () {
     const wallet = Wallet.createRandom();
-    await seedUser({ ethereumAddress: wallet.address });
+    await seedUser({ identityEthAddress: wallet.address });
 
     const walletUnrecognized = Wallet.createRandom();
 
     const response = await this.client.get(
-      `/api/auth/nonce?ethereumAddress=${wallet.address}`
+      `/api/auth/nonce?identityEthAddress=${wallet.address}`
     );
 
     const message =
@@ -71,7 +71,7 @@ describe('POST /auth', () => {
     const signature = await wallet.signMessage(message);
 
     const FORM_DATA = {
-      ethereumAddress: walletUnrecognized.address,
+      identityEthAddress: walletUnrecognized.address,
       signature: signature,
     };
 
@@ -85,12 +85,12 @@ describe('POST /auth', () => {
 
   it('401 response when signature mismatch', async function () {
     const wallet = Wallet.createRandom();
-    await seedUser({ ethereumAddress: wallet.address });
+    await seedUser({ identityEthAddress: wallet.address });
 
     const walletUnrecognized = Wallet.createRandom();
 
     const response = await this.client.get(
-      `/api/auth/nonce?ethereumAddress=${wallet.address}`
+      `/api/auth/nonce?identityEthAddress=${wallet.address}`
     );
 
     const message =
@@ -101,7 +101,7 @@ describe('POST /auth', () => {
     const signature = await walletUnrecognized.signMessage(message);
 
     const FORM_DATA = {
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       signature: signature,
     };
 
@@ -115,10 +115,12 @@ describe('POST /auth', () => {
 
   it('401 response when nonce invalid', async function () {
     const wallet = Wallet.createRandom();
-    await seedUser({ ethereumAddress: wallet.address });
+    await seedUser({ identityEthAddress: wallet.address });
     const NONCE = 'bad12345';
 
-    await this.client.get(`/api/auth/nonce?ethereumAddress=${wallet.address}`);
+    await this.client.get(
+      `/api/auth/nonce?identityEthAddress=${wallet.address}`
+    );
 
     const message =
       'SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n' +
@@ -128,7 +130,7 @@ describe('POST /auth', () => {
     const signature = await wallet.signMessage(message);
 
     const FORM_DATA = {
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       signature: signature,
     };
 
@@ -142,10 +144,10 @@ describe('POST /auth', () => {
 
   it('401 response when message badly formatted', async function () {
     const wallet = Wallet.createRandom();
-    await seedUser({ ethereumAddress: wallet.address });
+    await seedUser({ identityEthAddress: wallet.address });
 
     const response = await this.client.get(
-      `/api/auth/nonce?ethereumAddress=${wallet.address}`
+      `/api/auth/nonce?identityEthAddress=${wallet.address}`
     );
 
     const message =
@@ -156,7 +158,7 @@ describe('POST /auth', () => {
     const signature = await wallet.signMessage(message);
 
     const FORM_DATA = {
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       signature: signature,
     };
 
@@ -172,7 +174,7 @@ describe('POST /auth', () => {
 describe('POST /auth/refresh', () => {
   it('200 response with new accessToken & same refreshToken', async function () {
     const wallet = Wallet.createRandom();
-    await seedUser({ ethereumAddress: wallet.address });
+    await seedUser({ identityEthAddress: wallet.address });
     const { refreshToken, accessToken } = await loginUser(wallet, this.client);
 
     const FORM_DATA = {
@@ -201,7 +203,7 @@ describe('POST /auth/refresh', () => {
     const BAD_REFRESH_TOKEN = 'ABCD12345';
 
     const wallet = Wallet.createRandom();
-    await seedUser({ ethereumAddress: wallet.address });
+    await seedUser({ identityEthAddress: wallet.address });
     await loginUser(wallet, this.client);
 
     const FORM_DATA = {
@@ -218,7 +220,7 @@ describe('POST /auth/refresh', () => {
 
   it('401 response when missing refreshToken', async function () {
     const wallet = Wallet.createRandom();
-    await seedUser({ ethereumAddress: wallet.address });
+    await seedUser({ identityEthAddress: wallet.address });
     await loginUser(wallet, this.client);
 
     const response3 = await this.client

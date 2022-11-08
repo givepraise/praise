@@ -5,10 +5,7 @@ import {
   Quantification,
   QuantificationDto,
 } from './types';
-import {
-  calculateQuantificationScore,
-  calculateQuantificationsCompositeScore,
-} from './utils/score';
+import { calculateQuantificationScore } from './utils/score';
 
 /**
  * Serialize a Praise.quantification
@@ -78,6 +75,7 @@ export const praiseTransformer = async (
     reasonRealized,
     sourceId,
     sourceName,
+    scoreRealized,
     quantifications,
     giver,
     receiver,
@@ -98,9 +96,7 @@ export const praiseTransformer = async (
     forwarder: forwarder ? userAccountTransformer(forwarder) : undefined,
     createdAt: createdAt.toISOString(),
     updatedAt: updatedAt.toISOString(),
-    scoreRealized: await calculateQuantificationsCompositeScore(
-      praiseDocument.quantifications
-    ),
+    scoreRealized,
   };
 };
 

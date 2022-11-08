@@ -4,35 +4,46 @@ import { useRecoilValue } from 'recoil';
 import {
   AllPraiseList,
   AllPraiseQueryPagination,
+  AllPraiseQueryParameters,
   useAllPraise,
 } from '@/model/praise';
 import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 
 interface Params {
   listKey: string;
-  receiverId?: string;
+  queryParams?: AllPraiseQueryParameters;
+  onPageChange?: (page) => void;
 }
 
 export const PraisePageLoader = ({
   listKey,
-  receiverId,
+  queryParams,
+  onPageChange,
 }: Params): JSX.Element => {
   const allPraise = useRecoilValue(AllPraiseList(listKey));
   const praisePagination = useRecoilValue(AllPraiseQueryPagination(listKey));
   const [nextPageNumber, setNextPageNumber] = useState<number>(
     praisePagination.currentPage + 1
   );
-  const receiverIdQuery = receiverId ? { receiver: receiverId } : {};
+  const receiverQuery = queryParams?.receiver
+    ? { receiver: queryParams.receiver }
+    : {};
+  const giverQuery = queryParams?.giver ? { giver: queryParams.giver } : {};
+
   const queryResponse = useAllPraise(
     {
-      page: nextPageNumber,
-      limit: 20,
-      sortColumn: 'createdAt',
-      sortType: 'desc',
-      ...receiverIdQuery,
+      page: queryParams?.page ? queryParams.page : nextPageNumber,
+      limit: queryParams?.limit ? queryParams?.limit : 20,
+      sortColumn: queryParams?.sortColumn
+        ? queryParams.sortColumn
+        : 'createdAt',
+      sortType: queryParams?.sortType ? queryParams.sortType : 'desc',
+      ...receiverQuery,
+      ...giverQuery,
     },
     listKey
   );
+
   const [loading, setLoading] = React.useState(false);
 
   useEffect(() => {
@@ -45,7 +56,11 @@ export const PraisePageLoader = ({
 
     setLoading(true);
     setNextPageNumber(praisePagination.currentPage + 1);
-  }, [praisePagination, loading, setNextPageNumber]);
+
+    if (onPageChange) {
+      onPageChange(praisePagination.currentPage + 1);
+    }
+  }, [praisePagination, loading, setNextPageNumber, onPageChange]);
 
   if (loading)
     return (
@@ -57,8 +72,10 @@ export const PraisePageLoader = ({
   if (!Array.isArray(allPraise) || allPraise.length === 0)
     return (
       <div className="p-5">
-        {receiverId
-          ? 'You have not yet received any praise.'
+        {queryParams?.receiver
+          ? 'The user has not yet received any praise.'
+          : queryParams?.giver
+          ? 'The user has not yet given any praise'
           : 'No praise have been dished yet.'}
         <br />
         <br />

@@ -3,6 +3,8 @@ import { Tooltip } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { useRecoilValue } from 'recoil';
+import { useHistory } from 'react-router-dom';
+import { UserAccountDto } from 'api/dist/useraccount/types';
 import { getMarkdownText } from '@/utils/parser';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
@@ -50,6 +52,17 @@ export const Praise = ({
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { quantify } = useQuantifyPraise();
+  const history = useHistory();
+
+  const handleUserClick =
+    (userAccount: UserAccountDto | undefined) =>
+    (event: React.MouseEvent<HTMLTableRowElement>) => {
+      event.stopPropagation();
+
+      if (userAccount && userAccount.user) {
+        history.push(`/users/${userAccount.user}`);
+      }
+    };
 
   if (!praise) return null;
   if (usePseudonyms && !periodId) return null;
@@ -58,7 +71,10 @@ export const Praise = ({
     <div className="w-full">
       <div className={classNames(className, 'flex')}>
         {bigGiverAvatar && (
-          <div className="flex items-start pt-[2px] text-3xl mr-3">
+          <div
+            className="flex items-start pt-[2px] text-3xl mr-3 cursor-pointer"
+            onClickCapture={handleUserClick(praise.giver)}
+          >
             <UserPopover
               userAccount={praise.giver}
               className="w-8"
@@ -78,31 +94,41 @@ export const Praise = ({
               userAccount={praise.giver}
               usePseudonym={usePseudonyms}
             >
-              {bigGiverAvatar ? (
-                <UserName
-                  userAccount={praise.giver}
-                  usePseudonym={usePseudonyms}
-                  periodId={periodId}
-                  className="font-bold"
-                />
-              ) : (
-                <UserAvatarAndName
-                  userAccount={praise.giver}
-                  usePseudonym={usePseudonyms}
-                  periodId={periodId}
-                  nameClassName="font-bold"
-                />
-              )}
+              <div
+                className="cursor-pointer"
+                onClickCapture={handleUserClick(praise.giver)}
+              >
+                {bigGiverAvatar ? (
+                  <UserName
+                    userAccount={praise.giver}
+                    usePseudonym={usePseudonyms}
+                    periodId={periodId}
+                    className="font-bold"
+                  />
+                ) : (
+                  <UserAvatarAndName
+                    userAccount={praise.giver}
+                    usePseudonym={usePseudonyms}
+                    periodId={periodId}
+                    nameClassName="font-bold"
+                  />
+                )}
+              </div>
             </UserPopover>
             {showReceiver && (
               <>
                 <div className="flex items-center px-2">→</div>
-                <UserAvatarAndName
-                  userAccount={praise.receiver}
-                  usePseudonym={usePseudonyms}
-                  periodId={periodId}
-                  nameClassName="font-bold"
-                />
+                <div
+                  className="cursor-pointer"
+                  onClickCapture={handleUserClick(praise.receiver)}
+                >
+                  <UserAvatarAndName
+                    userAccount={praise.receiver}
+                    usePseudonym={usePseudonyms}
+                    periodId={periodId}
+                    nameClassName="font-bold"
+                  />
+                </div>
               </>
             )}
             <Tooltip
@@ -118,7 +144,7 @@ export const Praise = ({
               </div>
             </Tooltip>
           </div>
-          <div className="w-full pb-2">
+          <div className="w-full pb-2 cursor-pointer">
             {showIdPrefix && (
               <InlineLabel
                 text={praise._idLabelRealized}

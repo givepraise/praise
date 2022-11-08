@@ -26,7 +26,7 @@ const StartPage = (): JSX.Element => {
       <BreadCrumb name="Praise" icon={faPrayingHands} />
       <ActiveNoticesBoard />
 
-      <div className="mb-5">
+      <div className="flex mt-5 mb-5 ml-4 md:ml-0">
         <Button
           variant={'outline'}
           className={`rounded-r-none  ${

@@ -100,7 +100,7 @@ export const full = async (req: Request, res: Response): Promise<void> => {
     },
     {
       label: 'to eth address',
-      value: 'receiverUserDocument.ethereumAddress',
+      value: 'receiverUserDocument.identityEthAddress',
     },
     {
       label: 'from user account',
@@ -112,7 +112,7 @@ export const full = async (req: Request, res: Response): Promise<void> => {
     },
     {
       label: 'from eth address',
-      value: 'giverUserDocument.ethereumAddress',
+      value: 'giverUserDocument.identityEthAddress',
     },
     {
       label: 'reason',
@@ -165,7 +165,7 @@ export const full = async (req: Request, res: Response): Promise<void> => {
 
     const quantUserEthAddressObj = {
       label: `quantifier ${index + 1} eth address`,
-      value: `quantifications[${index}].quantifier.ethereumAddress`,
+      value: `quantifications[${index}].quantifier.identityEthAddress`,
     };
 
     fields.push(quantUserEthAddressObj);
@@ -199,7 +199,7 @@ export const summary = async (req: Request, res: Response): Promise<void> => {
   const fields = [
     {
       label: 'user',
-      value: 'userAccount.nameRealized',
+      value: 'username',
     },
     {
       label: 'praise_count',
@@ -271,7 +271,7 @@ export const custom = async (req: Request, res: Response): Promise<void> => {
         _id: 'common-stack',
         scoreRealized: supportAmount,
         praiseCount: 0,
-        ethereumAddress: '0xfa4ee6b523fc1e8b53015d7d81331d568cdb5906', // Intentionally hard coded
+        identityEthAddress: '0xfa4EE6B523fC1E8B53015D7D81331d568CDb5906', // Intentionally hard coded
       });
       context.totalPraiseScore += supportAmount;
     }

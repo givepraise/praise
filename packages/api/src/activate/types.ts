@@ -1,5 +1,5 @@
 export interface ActivateRequestBody {
-  ethereumAddress: string;
+  identityEthAddress: string;
   accountId: string;
   message: string;
   signature: string;

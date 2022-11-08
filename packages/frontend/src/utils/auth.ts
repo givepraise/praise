@@ -55,12 +55,12 @@ export const requestApiAuthRefresh = async (): Promise<
 };
 
 export const requestNonce = async (
-  ethereumAddress: string
+  identityEthAddress: string
 ): Promise<string> => {
   const apiClient = makeApiClient();
 
   const response = await apiClient.get('/auth/nonce', {
-    params: { ethereumAddress },
+    params: { identityEthAddress },
   });
 
   const { nonce } = response.data as NonceResponse;
@@ -71,10 +71,10 @@ export const requestNonce = async (
 export const requestApiActivate = async (
   params: ActivateRequestBody
 ): Promise<boolean> => {
-  const { ethereumAddress, accountId, message, signature } = params;
+  const { identityEthAddress, accountId, message, signature } = params;
   const apiClient = makeApiClient();
   const response = await apiClient.post('/activate', {
-    ethereumAddress,
+    identityEthAddress,
     accountId,
     message,
     signature,

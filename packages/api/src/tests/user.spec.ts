@@ -25,7 +25,8 @@ describe('GET /api/users/all', () => {
   it('200 response with json body containing list of users with useraccounts', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
+      rewardsEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -48,9 +49,11 @@ describe('GET /api/users/all', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
+      'username',
       'createdAt',
-      'updatedAt'
+      'updatedAt',
+      'identityEthAddress',
+      'rewardsEthAddress'
     );
   });
 
@@ -72,7 +75,7 @@ describe('GET /api/users/:id', () => {
   it('200 response with json body containing the user with useraccount', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -91,16 +94,22 @@ describe('GET /api/users/:id', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
+      'username',
       'createdAt',
-      'updatedAt'
+      'updatedAt',
+      'givenTotalCount',
+      'givenTotalScore',
+      'identityEthAddress',
+      'receivedTotalCount',
+      'receivedTotalScore',
+      'rewardsEthAddress'
     );
   });
 
   it('200 response containing user with multiple useraccounts', async function () {
     const wallet = Wallet.createRandom();
     await seedUserAndUserAccount({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -128,16 +137,22 @@ describe('GET /api/users/:id', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
+      'username',
       'createdAt',
-      'updatedAt'
+      'updatedAt',
+      'givenTotalCount',
+      'givenTotalScore',
+      'identityEthAddress',
+      'receivedTotalCount',
+      'receivedTotalScore',
+      'rewardsEthAddress'
     );
   });
 
-  it('200 response containing user with ethereumAddress is requesting user is ADMIN', async function () {
+  it('200 response containing user with identityEthAddress is requesting user is ADMIN', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -156,17 +171,22 @@ describe('GET /api/users/:id', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
-      'ethereumAddress',
+      'username',
       'createdAt',
-      'updatedAt'
+      'updatedAt',
+      'givenTotalCount',
+      'givenTotalScore',
+      'identityEthAddress',
+      'receivedTotalCount',
+      'receivedTotalScore',
+      'rewardsEthAddress'
     );
   });
 
   it('200 response containing user without useraccount, if user does not have any', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -185,16 +205,18 @@ describe('GET /api/users/:id', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
+      'username',
       'createdAt',
-      'updatedAt'
+      'updatedAt',
+      'identityEthAddress',
+      'rewardsEthAddress'
     );
   });
 
   it('404 response if user does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -227,7 +249,7 @@ describe('PATCH /api/admin/users/:id/addRole', () => {
   it('200 response with json body containing the updated user', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -251,8 +273,9 @@ describe('PATCH /api/admin/users/:id/addRole', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
-      'ethereumAddress',
+      'username',
+      'identityEthAddress',
+      'rewardsEthAddress',
       'createdAt',
       'updatedAt'
     );
@@ -261,7 +284,7 @@ describe('PATCH /api/admin/users/:id/addRole', () => {
   it('200 response logs out updated user', async function () {
     const wallet = Wallet.createRandom();
     const user = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -290,7 +313,7 @@ describe('PATCH /api/admin/users/:id/addRole', () => {
   it('404 response if user does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -311,7 +334,7 @@ describe('PATCH /api/admin/users/:id/addRole', () => {
   it('400 response if role does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -334,7 +357,7 @@ describe('PATCH /api/admin/users/:id/addRole', () => {
   it('400 response if missing role parameter', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -355,7 +378,7 @@ describe('PATCH /api/admin/users/:id/addRole', () => {
   it('400 response if user already has new role', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -378,7 +401,7 @@ describe('PATCH /api/admin/users/:id/addRole', () => {
   it('403 response if user is not ADMIN', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -425,7 +448,7 @@ describe('PATCH /api/admin/users/:id/removeRole', () => {
   it('200 response with json body containing the updated user', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -449,8 +472,9 @@ describe('PATCH /api/admin/users/:id/removeRole', () => {
       '_id',
       'roles',
       'accounts',
-      'nameRealized',
-      'ethereumAddress',
+      'username',
+      'identityEthAddress',
+      'rewardsEthAddress',
       'createdAt',
       'updatedAt'
     );
@@ -459,7 +483,7 @@ describe('PATCH /api/admin/users/:id/removeRole', () => {
   it('200 response logs out updated user', async function () {
     const wallet = Wallet.createRandom();
     const user = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -488,7 +512,7 @@ describe('PATCH /api/admin/users/:id/removeRole', () => {
   it('404 response if user does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -509,7 +533,7 @@ describe('PATCH /api/admin/users/:id/removeRole', () => {
   it('400 response if role does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -532,7 +556,7 @@ describe('PATCH /api/admin/users/:id/removeRole', () => {
   it('400 response if missing role parameter', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -553,7 +577,7 @@ describe('PATCH /api/admin/users/:id/removeRole', () => {
   it('400 response if user does not have role', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -576,7 +600,7 @@ describe('PATCH /api/admin/users/:id/removeRole', () => {
   it('400 response if removing ADMIN role from only ADMIN', async function () {
     const wallet = Wallet.createRandom();
     const user = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -597,7 +621,7 @@ describe('PATCH /api/admin/users/:id/removeRole', () => {
   it('400 response if removing QUANTIFIER role from actively assigned quantifier', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -631,7 +655,7 @@ describe('PATCH /api/admin/users/:id/removeRole', () => {
   it('403 response if user is not ADMIN', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);

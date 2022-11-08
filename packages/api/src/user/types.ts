@@ -9,7 +9,9 @@ export enum UserRole {
 }
 
 interface User {
-  ethereumAddress: string;
+  identityEthAddress: string;
+  rewardsEthAddress: string;
+  username: string;
   roles: UserRole[];
   accounts?: UserAccountDocument[];
   nonce?: string;
@@ -23,16 +25,36 @@ export interface UserDocument extends User, Document {}
 
 export interface UserDto {
   _id: string;
-  ethereumAddress?: string;
+  identityEthAddress: string;
+  rewardsEthAddress: string;
+  username: string;
   roles: string[];
   accounts?: UserAccountDto[];
   nonce?: string;
   accessToken?: string;
-  nameRealized: string;
   createdAt: string;
   updatedAt: string;
 }
 
+export interface UserStats {
+  receivedTotalScore: number;
+  receivedTotalCount: number;
+  givenTotalScore: number;
+  givenTotalCount: number;
+}
+
+export interface UserDetailsDto extends UserDto {
+  receivedTotalScore?: number;
+  receivedTotalCount?: number;
+  givenTotalScore?: number;
+  givenTotalCount?: number;
+}
+
 export interface UserRoleChangeInput {
   role: UserRole;
+}
+
+export interface UpdateUserProfileInput {
+  username: string;
+  rewardsEthAddress: string;
 }

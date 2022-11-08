@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { PraiseDocument, QuantificationDocument } from './types';
+import { calculateQuantificationsCompositeScore } from './utils/score';
 
 const quantificationSchema = new Schema(
   {
@@ -34,6 +35,7 @@ const praiseSchema = new Schema(
     reasonRealized: { type: String, required: true },
     sourceId: { type: String, required: true },
     sourceName: { type: String, required: true },
+    scoreRealized: { type: Number, default: 0, required: true },
     quantifications: [quantificationSchema],
     giver: { type: Schema.Types.ObjectId, ref: 'UserAccount', required: true },
     receiver: {
@@ -52,6 +54,13 @@ const praiseSchema = new Schema(
     timestamps: true,
   }
 );
+
+praiseSchema.pre<PraiseDocument>('save', async function (next) {
+  this.scoreRealized = await calculateQuantificationsCompositeScore(
+    this.quantifications
+  );
+  next();
+});
 
 praiseSchema.plugin(mongoosePagination);
 

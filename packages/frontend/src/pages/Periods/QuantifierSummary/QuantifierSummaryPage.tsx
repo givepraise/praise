@@ -30,7 +30,7 @@ const QuantifierSummaryMessage = (): JSX.Element | null => {
   );
   return (
     <Box className="mb-5">
-      <h2>{quantifier?.nameRealized}</h2>
+      <h2>{quantifier?.username}</h2>
       <div className="mt-5">
         Period: {periodDetails.name}
         <br />

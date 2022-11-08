@@ -30,7 +30,7 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
   it('200 response with json body containing assignments with PRAISE_QUANTIFIERS_ASSIGN_EVENLY=false', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -160,7 +160,7 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
   it('200 response with json body containing assignments with PRAISE_QUANTIFIERS_ASSIGN_EVENLY=true', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -297,7 +297,7 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
   it('404 response if periodId does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -314,7 +314,7 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
   it('400 response if period is not OPEN', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -335,7 +335,7 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
   it('400 response if praise has already been assigned for the period', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -365,7 +365,7 @@ describe('PATCH /api/admin/periods/:periodId/assignQuantifiers', () => {
   it('403 response if user is not ADMIN', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -407,7 +407,7 @@ describe('PATCH /api/admin/periods/:periodId/replaceQuantifier', () => {
   it('200 response with json body containing period and affected praises', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -501,7 +501,7 @@ describe('PATCH /api/admin/periods/:periodId/replaceQuantifier', () => {
   it('404 response if periodId does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -532,7 +532,7 @@ describe('PATCH /api/admin/periods/:periodId/replaceQuantifier', () => {
   it('400 response if period is not QUANTIFY', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -566,7 +566,7 @@ describe('PATCH /api/admin/periods/:periodId/replaceQuantifier', () => {
   it('400 response if missing currentQuantifierId', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -596,7 +596,7 @@ describe('PATCH /api/admin/periods/:periodId/replaceQuantifier', () => {
   it('400 response if missing newQuantifierId', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -626,7 +626,7 @@ describe('PATCH /api/admin/periods/:periodId/replaceQuantifier', () => {
   it('400 response currentQuantifierId is same as newQuantifierId', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -657,7 +657,7 @@ describe('PATCH /api/admin/periods/:periodId/replaceQuantifier', () => {
   it('400 response if original user does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -688,7 +688,7 @@ describe('PATCH /api/admin/periods/:periodId/replaceQuantifier', () => {
   it('400 response if replacement user does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -719,7 +719,7 @@ describe('PATCH /api/admin/periods/:periodId/replaceQuantifier', () => {
   it('400 response if replacement user is not a QUANTIFIER', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -753,7 +753,7 @@ describe('PATCH /api/admin/periods/:periodId/replaceQuantifier', () => {
   it('400 response if replacement user is already assigned to some of the same praise as original', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -807,7 +807,7 @@ describe('PATCH /api/admin/periods/:periodId/replaceQuantifier', () => {
   it('403 response if user is not ADMIN', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -841,7 +841,7 @@ describe('PATCH /api/admin/periods/:periodId/replaceQuantifier', () => {
   it('401 response if user is not authenticated', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'ADMIN'],
     });
 

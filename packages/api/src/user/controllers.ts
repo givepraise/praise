@@ -16,9 +16,16 @@ import {
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
 import { UserModel } from './entities';
-import { userListTransformer, userTransformer } from './transformers';
-import { UserDocument, UserDto, UserRole, UserRoleChangeInput } from './types';
-import { findUser } from './utils/entity';
+import { userDetailTransformer, userListTransformer } from './transformers';
+import {
+  UpdateUserProfileInput,
+  UserDocument,
+  UserDto,
+  UserRole,
+  UserRoleChangeInput,
+  UserDetailsDto,
+} from './types';
+import { findUser, getUserStats } from './utils/entity';
 
 /**
  * Fetch all Users with their associated UserAccounts
@@ -42,10 +49,7 @@ export const all = async (
     },
   ]);
 
-  const usersTransformed = await userListTransformer(
-    users,
-    res.locals.currentUser.roles
-  );
+  const usersTransformed = await userListTransformer(users);
 
   res.status(200).json(usersTransformed);
 };
@@ -59,15 +63,13 @@ export const all = async (
  */
 export const single = async (
   req: Request,
-  res: TypedResponse<UserDto>
+  res: TypedResponse<UserDetailsDto>
 ): Promise<void> => {
   const { id } = req.params;
   const user = await findUser(id);
+  const userStats = await getUserStats(user);
 
-  const userTransformed = await userTransformer(
-    user,
-    res.locals.currentUser.roles
-  );
+  const userTransformed = userDetailTransformer(user, userStats);
 
   res.status(200).json(userTransformed);
 };
@@ -110,11 +112,9 @@ export const addRole = async (
   );
 
   const userWithDetails = await findUser(id);
+  const userStats = await getUserStats(user);
 
-  const userTransformed = await userTransformer(
-    userWithDetails,
-    res.locals.currentUser.roles
-  );
+  const userTransformed = userDetailTransformer(userWithDetails, userStats);
 
   res.status(200).json(userTransformed);
 };
@@ -182,10 +182,54 @@ export const removeRole = async (
   );
 
   const userWithDetails = await findUser(id);
+  const userStats = await getUserStats(user);
 
-  const userTransformed = await userTransformer(
-    userWithDetails,
-    res.locals.currentUser.roles
+  const userTransformed = userDetailTransformer(userWithDetails, userStats);
+  res.status(200).json(userTransformed);
+};
+
+/**
+ * Update a User Profile
+ *
+ * @param {TypedRequestBody<UpdateUserProfileInput>} req
+ * @param {TypedResponse<UserDetailsDto>} res
+ * @returns {Promise<void>}
+ */
+export const updateProfile = async (
+  req: TypedRequestBody<UpdateUserProfileInput>,
+  res: TypedResponse<UserDetailsDto>
+): Promise<void> => {
+  const user = res.locals.currentUser;
+  if (!user) throw new NotFoundError('User');
+
+  const { username, rewardsEthAddress } = req.body;
+
+  // Check for duplicate username on username change
+  if (username !== user.username) {
+    const exists = await UserModel.count({ username });
+    if (exists > 0) {
+      throw new BadRequestError('Username already exist.');
+    }
+  }
+
+  user.username = username;
+  user.rewardsEthAddress = rewardsEthAddress;
+  await user.save();
+
+  await logEvent(
+    EventLogTypeKey.PERMISSION,
+    `Updated user profile for the user with id "${(
+      user._id as Types.ObjectId
+    ).toString()}"`,
+    {
+      userId: res.locals.currentUser._id,
+    }
   );
+
+  const userWithDetails = await findUser(user._id);
+  const userStats = await getUserStats(user);
+
+  const userTransformed = userDetailTransformer(userWithDetails, userStats);
+
   res.status(200).json(userTransformed);
 };
