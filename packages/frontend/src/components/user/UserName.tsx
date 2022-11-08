@@ -1,4 +1,5 @@
 import { UserDto } from 'api/dist/user/types';
+import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { UserAccountDto } from 'api/dist/useraccount/types';
 import React from 'react';
 import { UserPseudonym } from './UserPseudonym';
@@ -27,7 +28,10 @@ const WrappedUserName = ({
     if (usePseudonym && periodId) {
       name = <UserPseudonym userId={user._id} periodId={periodId} />;
     } else {
-      name = user.username;
+      name =
+        user.username.length === 42 && user.username.startsWith('0x')
+          ? shortenEthAddress(user.username)
+          : user.username;
     }
   } else {
     if (userAccount) {
