@@ -208,11 +208,7 @@ describe('GET /api/users/:id', () => {
       'username',
       'createdAt',
       'updatedAt',
-      'given_total_count',
-      'given_total_score',
       'identityEthAddress',
-      'received_total_count',
-      'received_total_score',
       'rewardsEthAddress'
     );
   });
