@@ -61,11 +61,15 @@ const WrappedUserPopover = ({
     }
   }
 
-  const handleClick = (userAccount: UserAccountDto | undefined): void => {
-    if (userAccount && userAccount.user) {
-      history.push(`/users/${userAccount.user}`);
-    }
-  };
+  const handleClick =
+    (userAccount: UserAccountDto | undefined) =>
+    (event: React.MouseEvent<HTMLTableRowElement>) => {
+      event.stopPropagation();
+
+      if (userAccount && userAccount.user) {
+        history.push(`/users/${userAccount.user}`);
+      }
+    };
 
   return (
     <div className={classNames('inline-block', className)}>
@@ -85,7 +89,7 @@ const WrappedUserPopover = ({
       {open && (
         <div
           className="absolute z-10 cursor-pointer"
-          onClickCapture={(): void => handleClick(userAccount)}
+          onClickCapture={handleClick(userAccount)}
           onMouseOver={(): void => {
             closeTimeout && clearTimeout(closeTimeout);
           }}

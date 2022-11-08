@@ -54,20 +54,15 @@ export const Praise = ({
   const { quantify } = useQuantifyPraise();
   const history = useHistory();
 
-  const handlePraiseClick =
-    (data: PraiseDto) => (event: React.MouseEvent<HTMLTableRowElement>) => {
-      const element = event.target as HTMLElement;
+  const handleUserClick =
+    (userAccount: UserAccountDto | undefined) =>
+    (event: React.MouseEvent<HTMLTableRowElement>) => {
+      event.stopPropagation();
 
-      if (element.tagName !== 'A') {
-        history.push(`/praise/${data._id}`);
+      if (userAccount && userAccount.user) {
+        history.push(`/users/${userAccount.user}`);
       }
     };
-
-  const handleUserClick = (userAccount: UserAccountDto | undefined): void => {
-    if (userAccount && userAccount.user) {
-      history.push(`/users/${userAccount.user}`);
-    }
-  };
 
   if (!praise) return null;
   if (usePseudonyms && !periodId) return null;
@@ -78,7 +73,7 @@ export const Praise = ({
         {bigGiverAvatar && (
           <div
             className="flex items-start pt-[2px] text-3xl mr-3 cursor-pointer"
-            onClickCapture={(): void => handleUserClick(praise.giver)}
+            onClickCapture={handleUserClick(praise.giver)}
           >
             <UserPopover
               userAccount={praise.giver}
@@ -101,7 +96,7 @@ export const Praise = ({
             >
               <div
                 className="cursor-pointer"
-                onClickCapture={(): void => handleUserClick(praise.giver)}
+                onClickCapture={handleUserClick(praise.giver)}
               >
                 {bigGiverAvatar ? (
                   <UserName
@@ -125,7 +120,7 @@ export const Praise = ({
                 <div className="flex items-center px-2">→</div>
                 <div
                   className="cursor-pointer"
-                  onClickCapture={(): void => handleUserClick(praise.receiver)}
+                  onClickCapture={handleUserClick(praise.receiver)}
                 >
                   <UserAvatarAndName
                     userAccount={praise.receiver}
@@ -149,10 +144,7 @@ export const Praise = ({
               </div>
             </Tooltip>
           </div>
-          <div
-            className="w-full pb-2 cursor-pointer"
-            onClickCapture={handlePraiseClick(praise)}
-          >
+          <div className="w-full pb-2 cursor-pointer">
             {showIdPrefix && (
               <InlineLabel
                 text={praise._idLabelRealized}

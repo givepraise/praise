@@ -97,9 +97,9 @@ export const getUserStats = async (
   });
 
   return {
-    received_total_score: calculatePraiseItemsTotalScore(receivedPraiseItems),
-    received_total_count: receivedPraiseItems.length,
-    given_total_score: calculatePraiseItemsTotalScore(givenPraiseItems),
-    given_total_count: givenPraiseItems.length,
+    receivedTotalScore: calculatePraiseItemsTotalScore(receivedPraiseItems),
+    receivedTotalCount: receivedPraiseItems.length,
+    givenTotalScore: calculatePraiseItemsTotalScore(givenPraiseItems),
+    givenTotalCount: givenPraiseItems.length,
   };
 };

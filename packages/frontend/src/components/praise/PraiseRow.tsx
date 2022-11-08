@@ -24,7 +24,7 @@ export const PraiseRow = ({
 
   return (
     <li className="cursor-pointer md:p-5 first:rounded-t-lg hover:bg-warm-gray-100 dark:hover:bg-slate-500">
-      <div onClickCapture={handleClick(praise)}>{children}</div>
+      <div onClick={handleClick(praise)}>{children}</div>
     </li>
   );
 };

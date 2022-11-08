@@ -97,11 +97,11 @@ describe('GET /api/users/:id', () => {
       'username',
       'createdAt',
       'updatedAt',
-      'given_total_count',
-      'given_total_score',
+      'givenTotalCount',
+      'givenTotalScore',
       'identityEthAddress',
-      'received_total_count',
-      'received_total_score',
+      'receivedTotalCount',
+      'receivedTotalScore',
       'rewardsEthAddress'
     );
   });
@@ -140,11 +140,11 @@ describe('GET /api/users/:id', () => {
       'username',
       'createdAt',
       'updatedAt',
-      'given_total_count',
-      'given_total_score',
+      'givenTotalCount',
+      'givenTotalScore',
       'identityEthAddress',
-      'received_total_count',
-      'received_total_score',
+      'receivedTotalCount',
+      'receivedTotalScore',
       'rewardsEthAddress'
     );
   });
@@ -174,11 +174,11 @@ describe('GET /api/users/:id', () => {
       'username',
       'createdAt',
       'updatedAt',
-      'given_total_count',
-      'given_total_score',
+      'givenTotalCount',
+      'givenTotalScore',
       'identityEthAddress',
-      'received_total_count',
-      'received_total_score',
+      'receivedTotalCount',
+      'receivedTotalScore',
       'rewardsEthAddress'
     );
   });

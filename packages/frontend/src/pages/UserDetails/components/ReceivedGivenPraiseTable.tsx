@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { UserDetailsDto } from 'api/dist/user/types';
 import {
@@ -71,20 +71,14 @@ export const ReceivedGivenPraiseTable = ({
     giver: userAccountType === 2 ? userAccountId : undefined,
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [userAccountType]);
+
   if (!userAccountId)
     return (
       <div className="p-5">
-        No user account is linked to current Ethereum address. Activate your
-        account to see {userAccountType === 1 ? 'received' : 'given'} praise.
-        <br />
-        <br />
-        <a
-          href="https://givepraise.xyz/docs/using-praise"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Learn more about how to use Praise
-        </a>
+        No praise {userAccountType === 1 ? 'received' : 'given'}.
       </div>
     );
 
@@ -100,8 +94,8 @@ export const ReceivedGivenPraiseTable = ({
           Number of praise {userAccountType === 1 ? 'received' : 'given'}:{' '}
           <strong>
             {userAccountType === 1
-              ? user.received_total_count
-              : user.given_total_count}
+              ? user.receivedTotalCount
+              : user.givenTotalCount}
           </strong>
         </div>
 
@@ -118,7 +112,6 @@ export const ReceivedGivenPraiseTable = ({
           />
         </div>
       </div>
-
       <ul>
         {allPraise?.map((praise, index) => (
           <PraiseRow praise={praise} key={index}>
@@ -137,7 +130,11 @@ export const ReceivedGivenPraiseTable = ({
           </div>
         }
       >
-        <PraisePageLoader listKey={PRAISE_LIST_KEY} queryParams={queryParams} />
+        <PraisePageLoader
+          listKey={PRAISE_LIST_KEY}
+          queryParams={queryParams}
+          onPageChange={(page): void => setPage(page)}
+        />
       </React.Suspense>
     </>
   );

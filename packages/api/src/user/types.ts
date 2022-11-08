@@ -37,17 +37,17 @@ export interface UserDto {
 }
 
 export interface UserStats {
-  received_total_score: number;
-  received_total_count: number;
-  given_total_score: number;
-  given_total_count: number;
+  receivedTotalScore: number;
+  receivedTotalCount: number;
+  givenTotalScore: number;
+  givenTotalCount: number;
 }
 
 export interface UserDetailsDto extends UserDto {
-  received_total_score?: number;
-  received_total_count?: number;
-  given_total_score?: number;
-  given_total_count?: number;
+  receivedTotalScore?: number;
+  receivedTotalCount?: number;
+  givenTotalScore?: number;
+  givenTotalCount?: number;
 }
 
 export interface UserRoleChangeInput {

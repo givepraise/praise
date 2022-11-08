@@ -12,11 +12,13 @@ import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 interface Params {
   listKey: string;
   queryParams?: AllPraiseQueryParameters;
+  onPageChange?: (page) => void;
 }
 
 export const PraisePageLoader = ({
   listKey,
   queryParams,
+  onPageChange,
 }: Params): JSX.Element => {
   const allPraise = useRecoilValue(AllPraiseList(listKey));
   const praisePagination = useRecoilValue(AllPraiseQueryPagination(listKey));
@@ -54,7 +56,11 @@ export const PraisePageLoader = ({
 
     setLoading(true);
     setNextPageNumber(praisePagination.currentPage + 1);
-  }, [praisePagination, loading, setNextPageNumber]);
+
+    if (onPageChange) {
+      onPageChange(praisePagination.currentPage + 1);
+    }
+  }, [praisePagination, loading, setNextPageNumber, onPageChange]);
 
   if (loading)
     return (

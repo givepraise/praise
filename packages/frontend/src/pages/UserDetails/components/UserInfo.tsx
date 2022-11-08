@@ -170,7 +170,7 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
             />
             <span>
               Received praise total score:{' '}
-              {user.received_total_score ? user.received_total_score : '-'}
+              {user.receivedTotalScore ? user.receivedTotalScore : '-'}
             </span>
           </p>
           <p className="mb-2">
@@ -180,7 +180,7 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
               size="xs"
             />
             Given praise total score:{' '}
-            {user.given_total_score ? user.given_total_score : '-'}
+            {user.givenTotalScore ? user.givenTotalScore : '-'}
           </p>
         </div>
       </div>
