@@ -45,7 +45,7 @@ const UserDetailsPage = (): JSX.Element | null => {
 
       <UserInfo user={user} />
 
-      <div className="flex mt-5 mb-5 ml-4 sm:ml-0">
+      <div className="flex mt-5 mb-5 ml-4 md:ml-0">
         <Button
           variant={'outline'}
           className={`rounded-r-none  ${
