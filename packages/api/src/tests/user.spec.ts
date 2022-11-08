@@ -26,6 +26,7 @@ describe('GET /api/users/all', () => {
     const wallet = Wallet.createRandom();
     await seedUser({
       identityEthAddress: wallet.address,
+      rewardsEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -50,7 +51,9 @@ describe('GET /api/users/all', () => {
       'accounts',
       'username',
       'createdAt',
-      'updatedAt'
+      'updatedAt',
+      'identityEthAddress',
+      'rewardsEthAddress'
     );
   });
 
@@ -92,9 +95,14 @@ describe('GET /api/users/:id', () => {
       'roles',
       'accounts',
       'username',
-      'praiseStatistics',
       'createdAt',
-      'updatedAt'
+      'updatedAt',
+      'given_total_count',
+      'given_total_score',
+      'identityEthAddress',
+      'received_total_count',
+      'received_total_score',
+      'rewardsEthAddress'
     );
   });
 
@@ -130,9 +138,14 @@ describe('GET /api/users/:id', () => {
       'roles',
       'accounts',
       'username',
-      'praiseStatistics',
       'createdAt',
-      'updatedAt'
+      'updatedAt',
+      'given_total_count',
+      'given_total_score',
+      'identityEthAddress',
+      'received_total_count',
+      'received_total_score',
+      'rewardsEthAddress'
     );
   });
 
@@ -159,11 +172,14 @@ describe('GET /api/users/:id', () => {
       'roles',
       'accounts',
       'username',
-      'identityEthAddress',
-      'rewardsEthAddress',
-      'praiseStatistics',
       'createdAt',
-      'updatedAt'
+      'updatedAt',
+      'given_total_count',
+      'given_total_score',
+      'identityEthAddress',
+      'received_total_count',
+      'received_total_score',
+      'rewardsEthAddress'
     );
   });
 
@@ -191,7 +207,13 @@ describe('GET /api/users/:id', () => {
       'accounts',
       'username',
       'createdAt',
-      'updatedAt'
+      'updatedAt',
+      'given_total_count',
+      'given_total_score',
+      'identityEthAddress',
+      'received_total_count',
+      'received_total_score',
+      'rewardsEthAddress'
     );
   });
 
