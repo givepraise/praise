@@ -205,9 +205,12 @@ export const updateProfile = async (
 
   const { username, rewardsEthAddress } = req.body;
 
-  const exists = await UserModel.find({ username }).lean();
-  if (exists) {
-    throw new BadRequestError('Username already exist.');
+  // Check for duplicate username on username change
+  if (username !== user.username) {
+    const exists = await UserModel.count({ username });
+    if (exists > 0) {
+      throw new BadRequestError('Username already exist.');
+    }
   }
 
   user.username = username;
