@@ -33,7 +33,7 @@ export const PraisePageLoader = ({
   const queryResponse = useAllPraise(
     {
       page: queryParams?.page ? queryParams.page : nextPageNumber,
-      limit: queryParams?.limit ? queryParams?.limit : 5,
+      limit: queryParams?.limit ? queryParams?.limit : 20,
       sortColumn: queryParams?.sortColumn
         ? queryParams.sortColumn
         : 'createdAt',
