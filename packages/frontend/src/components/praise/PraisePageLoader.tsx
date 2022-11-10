@@ -33,7 +33,7 @@ export const PraisePageLoader = ({
   const queryResponse = useAllPraise(
     {
       page: queryParams?.page ? queryParams.page : nextPageNumber,
-      limit: queryParams?.limit ? queryParams?.limit : 20,
+      limit: queryParams?.limit ? queryParams?.limit : 5,
       sortColumn: queryParams?.sortColumn
         ? queryParams.sortColumn
         : 'createdAt',
@@ -55,10 +55,11 @@ export const PraisePageLoader = ({
       return;
 
     setLoading(true);
-    setNextPageNumber(praisePagination.currentPage + 1);
+    const nextPageNumber = praisePagination.currentPage + 1;
+    setNextPageNumber(nextPageNumber);
 
     if (onPageChange) {
-      onPageChange(praisePagination.currentPage + 1);
+      onPageChange(nextPageNumber);
     }
   }, [praisePagination, loading, setNextPageNumber, onPageChange]);
 
