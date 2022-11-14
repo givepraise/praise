@@ -125,27 +125,6 @@ const AllPraiseQuery = selectorFamily<
     },
 });
 
-export const AllPraiseTest = atom<PraiseDto[] | undefined>({
-  key: 'AllPraiseTest',
-  default: undefined,
-  effects: [
-    ({ setSelf, getPromise }): void => {
-      setSelf(
-        getPromise(
-          ApiAuthGet({
-            url: 'users/all?sortColumn=identityEthAddress&sortType=desc',
-          })
-        ).then((response) => {
-          if (isResponseOk(response)) {
-            const users = response.data as PraiseDto[];
-            if (Array.isArray(users) && users.length > 0) return users;
-          }
-        })
-      );
-    },
-  ],
-});
-
 export interface AllPraiseQueryPaginationInterface {
   currentPage: number;
   totalPages: number;
