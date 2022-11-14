@@ -8,11 +8,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
-import { AllPraiseList } from '@/model/praise';
+import { AllPraiseList, AllPraiseQueryPagination } from '@/model/praise';
 import { Praise } from '@/components/praise/Praise';
 import { PraiseRow } from '@/components/praise/PraiseRow';
 import { PraisePageLoader } from '@/components/praise/PraisePageLoader';
 import { SelectInput } from '@/components/form/SelectInput';
+import { PraiseBackNextLink } from '../../../components/praise/PraiseBackNextLink';
 
 const sortOptions = [
   { value: 'createdAt', label: 'Latest' },
@@ -44,6 +45,8 @@ export const ReceivedGivenPraiseTable = ({
   userAccountType,
   user,
 }: Props): JSX.Element | null => {
+  const divRef = React.useRef<null | HTMLDivElement>(null);
+
   const [selectedSort, setSelectedSort] = useState<sortOptionsProps>(
     sortOptions[0]
   );
@@ -58,6 +61,9 @@ export const ReceivedGivenPraiseTable = ({
       : 'GIVEN_PRAISE_TOP';
 
   PRAISE_LIST_KEY = `${PRAISE_LIST_KEY}_${user.username}`;
+  const praisePagination = useRecoilValue(
+    AllPraiseQueryPagination(PRAISE_LIST_KEY)
+  );
 
   const allPraise = useRecoilValue(AllPraiseList(PRAISE_LIST_KEY));
   const userAccountId = getUseAccountId(user);
@@ -75,6 +81,12 @@ export const ReceivedGivenPraiseTable = ({
     setPage(1);
   }, [userAccountType]);
 
+  useEffect(() => {
+    if (divRef && divRef.current) {
+      divRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [page]);
+
   if (!userAccountId)
     return (
       <div className="p-5">
@@ -84,7 +96,7 @@ export const ReceivedGivenPraiseTable = ({
 
   return (
     <>
-      <div className="w-full sm:flex">
+      <div className="w-full sm:flex" ref={divRef}>
         <div className="mt-2 ml-4 sm:ml-8">
           <FontAwesomeIcon
             icon={userAccountType === 1 ? faPrayingHands : faHandHoldingHeart}
@@ -130,12 +142,15 @@ export const ReceivedGivenPraiseTable = ({
           </div>
         }
       >
-        <PraisePageLoader
-          listKey={PRAISE_LIST_KEY}
-          queryParams={queryParams}
-          onPageChange={(page): void => setPage(page)}
-        />
+        <PraisePageLoader listKey={PRAISE_LIST_KEY} queryParams={queryParams} />
       </React.Suspense>
+
+      {allPraise && (
+        <PraiseBackNextLink
+          praisePagination={praisePagination}
+          onClick={(page): void => setPage(page)}
+        />
+      )}
     </>
   );
 };

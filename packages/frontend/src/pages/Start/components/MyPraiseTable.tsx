@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { UserDto } from 'api/dist/user/types';
 import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
-import { AllPraiseList } from '@/model/praise';
+import { AllPraiseList, AllPraiseQueryPagination } from '@/model/praise';
 import { Praise } from '@/components/praise/Praise';
 import { PraiseRow } from '@/components/praise/PraiseRow';
 import { ActiveUserId } from '@/model/auth';
 import { SingleUser } from '@/model/users';
 import { PraisePageLoader } from '@/components/praise/PraisePageLoader';
+import { PraiseBackNextLink } from '@/components/praise/PraiseBackNextLink';
 
 const PRAISE_LIST_KEY = 'MY_PRAISE';
 
@@ -23,6 +24,20 @@ export const MyPraiseTable = (): JSX.Element | null => {
   const userId = useRecoilValue(ActiveUserId);
   const user = useRecoilValue(SingleUser(userId));
   const receiverId = getReceiverId(user);
+
+  const [page, setPage] = useState<number>(1);
+  const praisePagination = useRecoilValue(
+    AllPraiseQueryPagination(PRAISE_LIST_KEY)
+  );
+
+  const divRef = React.useRef<null | HTMLDivElement>(null);
+
+  const handlePageChange = (page: number): void => {
+    setPage(page);
+    if (divRef && divRef.current) {
+      divRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   if (!receiverId)
     return (
@@ -42,7 +57,7 @@ export const MyPraiseTable = (): JSX.Element | null => {
     );
 
   return (
-    <>
+    <div ref={divRef}>
       <ul>
         {allPraise?.map((praise, index) => (
           <PraiseRow praise={praise} key={index}>
@@ -59,9 +74,18 @@ export const MyPraiseTable = (): JSX.Element | null => {
       >
         <PraisePageLoader
           listKey={PRAISE_LIST_KEY}
-          queryParams={{ receiver: receiverId }}
+          queryParams={{ receiver: receiverId, page }}
         />
       </React.Suspense>
-    </>
+
+      {allPraise && (
+        <div className="mb-5">
+          <PraiseBackNextLink
+            praisePagination={praisePagination}
+            onClick={(page): void => handlePageChange(page)}
+          />
+        </div>
+      )}
+    </div>
   );
 };
