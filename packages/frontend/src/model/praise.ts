@@ -3,7 +3,6 @@ import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
-  atom,
   atomFamily,
   selectorFamily,
   useRecoilCallback,
