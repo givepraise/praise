@@ -11,12 +11,21 @@ import '@rainbow-me/rainbowkit/styles.css';
 import {
   Chain,
   connectorsForWallets,
-  wallet,
   RainbowKitProvider,
   lightTheme,
   Theme as RainbowTheme,
   darkTheme,
 } from '@rainbow-me/rainbowkit';
+import {
+  injectedWallet,
+  rainbowWallet,
+  metaMaskWallet,
+  coinbaseWallet,
+  walletConnectWallet,
+  trustWallet,
+  ledgerWallet,
+  imTokenWallet,
+} from '@rainbow-me/rainbowkit/wallets';
 import merge from 'lodash/merge';
 import { configureChains, createClient, WagmiConfig, chain } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
@@ -68,14 +77,14 @@ const connectors = connectorsForWallets([
   {
     groupName: 'Recommended',
     wallets: [
-      wallet.metaMask({ chains }),
-      wallet.ledger({ chains }),
-      wallet.coinbase({ appName: 'Praise', chains }),
-      wallet.trust({ chains }),
-      wallet.imToken({ chains }),
-      wallet.walletConnect({ chains }),
-      wallet.rainbow({ chains }),
-      ...(needsInjectedWalletFallback ? [wallet.injected({ chains })] : []),
+      metaMaskWallet({ chains }),
+      ledgerWallet({ chains }),
+      coinbaseWallet({ appName: 'Praise', chains }),
+      trustWallet({ chains }),
+      imTokenWallet({ chains }),
+      walletConnectWallet({ chains }),
+      rainbowWallet({ chains }),
+      ...(needsInjectedWalletFallback ? [injectedWallet({ chains })] : []),
     ],
   },
 ]);
