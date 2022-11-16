@@ -81,12 +81,6 @@ export const ReceivedGivenPraiseTable = ({
     setPage(1);
   }, [userAccountType]);
 
-  // useEffect(() => {
-  //   if (divRef && divRef.current) {
-  //     divRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  //   }
-  // }, [page]);
-
   const handlePageChange = (page: number): void => {
     setPage(page);
     if (divRef && divRef.current) {
