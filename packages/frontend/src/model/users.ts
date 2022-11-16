@@ -8,6 +8,7 @@ import {
   useRecoilCallback,
   useRecoilValue,
   useSetRecoilState,
+  useRecoilRefresher_UNSTABLE,
 } from 'recoil';
 import React from 'react';
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
@@ -17,6 +18,13 @@ import { AllPeriods } from './periods';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfUser = (object: any): object is UserDto => {
+  return 'identityEthAddress' in object;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const instanceOfUserDetails = (
+  object: any
+): object is UserDetailsDto => {
   return 'identityEthAddress' in object;
 };
 
@@ -179,8 +187,10 @@ export const SingleUser = selectorFamily({
           AllUsers,
           allUsers.map((p) => (p._id === user._id ? user : p))
         );
+
         return;
       }
+
       // Add new user
       set(AllUsers, [...allUsers, user]);
     },
@@ -323,12 +333,19 @@ export const useLoadSingleUserDetails = (
 ): AxiosResponse<UserDetailsDto> | AxiosError => {
   const response = useRecoilValue(DetailedSingleUserQuery(userId));
   const setUser = useSetRecoilState(SingleUser(userId));
+  const refresh = useRecoilRefresher_UNSTABLE(DetailedSingleUserQuery(userId));
 
   React.useEffect(() => {
+    if (!refresh) return;
+    refresh();
+  }, [refresh]);
+
+  React.useEffect(() => {
+    if (!refresh || !response) return;
     if (isResponseOk(response)) {
       setUser(response.data);
     }
-  }, [response, setUser]);
+  }, [response, refresh, setUser]);
 
   return response;
 };

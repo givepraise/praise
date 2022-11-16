@@ -81,11 +81,18 @@ export const ReceivedGivenPraiseTable = ({
     setPage(1);
   }, [userAccountType]);
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (divRef && divRef.current) {
+  //     divRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  //   }
+  // }, [page]);
+
+  const handlePageChange = (page: number): void => {
+    setPage(page);
     if (divRef && divRef.current) {
       divRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, [page]);
+  };
 
   if (!userAccountId)
     return (
@@ -148,7 +155,9 @@ export const ReceivedGivenPraiseTable = ({
       {allPraise && (
         <PraiseBackNextLink
           praisePagination={praisePagination}
-          onClick={(page): void => setPage(page)}
+          onClick={(page): void => {
+            handlePageChange(page);
+          }}
         />
       )}
     </>
