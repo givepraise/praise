@@ -21,13 +21,6 @@ const instanceOfUser = (object: any): object is UserDto => {
   return 'identityEthAddress' in object;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const instanceOfUserDetails = (
-  object: any
-): object is UserDetailsDto => {
-  return 'identityEthAddress' in object;
-};
-
 interface roleOptionsProps {
   value: string;
   label: string;
