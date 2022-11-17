@@ -124,9 +124,11 @@ const AllPraiseQuery = selectorFamily<
     },
 });
 
-interface AllPraiseQueryPaginationInterface {
+export interface AllPraiseQueryPaginationInterface {
   currentPage: number;
   totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
 }
 
 /**
@@ -140,6 +142,8 @@ export const AllPraiseQueryPagination = atomFamily<
   default: {
     currentPage: 0,
     totalPages: 0,
+    hasNextPage: false,
+    hasPrevPage: false,
   },
 });
 
@@ -153,25 +157,20 @@ export const useAllPraise = (
   listKey: string
 ): AxiosResponse<PaginatedResponseBody<PraiseDto>> | AxiosError => {
   const allPraiseQueryResponse = useRecoilValue(AllPraiseQuery(queryParams));
+
   const [praisePagination, setPraisePagination] = useRecoilState(
     AllPraiseQueryPagination(listKey)
   );
   const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
 
   const saveAllPraiseIdList = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async (praiseList: PraiseDto[]) => {
-        const allPraiseIdList = await snapshot.getPromise(
-          PraiseIdList(listKey)
-        );
+    ({ set }) =>
+      (praiseList: PraiseDto[]) => {
         const praiseIdList: string[] = [];
         for (const praise of praiseList) {
           praiseIdList.push(praise._id);
         }
-        set(
-          PraiseIdList(listKey),
-          allPraiseIdList ? allPraiseIdList.concat(praiseIdList) : praiseIdList
-        );
+        set(PraiseIdList(listKey), praiseIdList);
       }
   );
 
@@ -197,7 +196,7 @@ export const useAllPraise = (
       !paginatedResponse.page ||
       !paginatedResponse.totalPages ||
       !isResponseOk(allPraiseQueryResponse) ||
-      paginatedResponse.page <= praisePagination.currentPage
+      paginatedResponse.page === praisePagination.currentPage
     )
       return;
 
@@ -207,9 +206,10 @@ export const useAllPraise = (
       void saveAllPraiseIdList(praiseList);
       saveIndividualPraise(praiseList);
       setPraisePagination({
-        ...praisePagination,
         currentPage: paginatedResponse.page,
         totalPages: paginatedResponse.totalPages,
+        hasNextPage: paginatedResponse.hasNextPage as boolean,
+        hasPrevPage: paginatedResponse.hasPrevPage as boolean,
       });
     }
   }, [

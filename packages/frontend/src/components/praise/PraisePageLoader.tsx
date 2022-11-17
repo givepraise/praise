@@ -1,5 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { BottomScrollListener } from 'react-bottom-scroll-listener';
+import React, { useState, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 import {
   AllPraiseList,
@@ -12,28 +11,29 @@ import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 interface Params {
   listKey: string;
   queryParams?: AllPraiseQueryParameters;
-  onPageChange?: (page) => void;
 }
 
 export const PraisePageLoader = ({
   listKey,
   queryParams,
-  onPageChange,
 }: Params): JSX.Element => {
   const allPraise = useRecoilValue(AllPraiseList(listKey));
   const praisePagination = useRecoilValue(AllPraiseQueryPagination(listKey));
+
   const [nextPageNumber, setNextPageNumber] = useState<number>(
     praisePagination.currentPage + 1
   );
+
   const receiverQuery = queryParams?.receiver
     ? { receiver: queryParams.receiver }
     : {};
+
   const giverQuery = queryParams?.giver ? { giver: queryParams.giver } : {};
 
   const queryResponse = useAllPraise(
     {
       page: queryParams?.page ? queryParams.page : nextPageNumber,
-      limit: queryParams?.limit ? queryParams?.limit : 20,
+      limit: queryParams?.limit ? queryParams?.limit : 30,
       sortColumn: queryParams?.sortColumn
         ? queryParams.sortColumn
         : 'createdAt',
@@ -50,17 +50,13 @@ export const PraisePageLoader = ({
     setLoading(false);
   }, [queryResponse]);
 
-  const handleContainerOnBottom = useCallback(() => {
-    if (loading || praisePagination.currentPage === praisePagination.totalPages)
-      return;
-
+  useEffect(() => {
     setLoading(true);
-    setNextPageNumber(praisePagination.currentPage + 1);
-
-    if (onPageChange) {
-      onPageChange(praisePagination.currentPage + 1);
+    if (queryParams && queryParams.page) {
+      setNextPageNumber(queryParams.page);
     }
-  }, [praisePagination, loading, setNextPageNumber, onPageChange]);
+    setLoading(false);
+  }, [queryParams?.page, queryParams]);
 
   if (loading)
     return (
@@ -88,6 +84,6 @@ export const PraisePageLoader = ({
         </a>
       </div>
     );
-  /* This will trigger handleOnDocumentBottom when the body of the page hits the bottom */
-  return <BottomScrollListener onBottom={handleContainerOnBottom} />;
+
+  return <></>;
 };
