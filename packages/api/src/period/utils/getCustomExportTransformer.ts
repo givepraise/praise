@@ -9,7 +9,7 @@ export const getCustomExportTransformer = async (
   try {
     response = await axios.get(url);
   } catch (error) {
-    throw new Error('Could not fetch transformer');
+    throw new Error('Could not fetch custom export transformer.');
   }
 
   // TODO add schema validation
@@ -33,7 +33,7 @@ export const getCustomExportTransformer = async (
       };
       return transformer;
     } catch (error) {
-      throw new Error('Could not parse transformer');
+      throw new Error('Could not parse custom export transformer.');
     }
   }
 

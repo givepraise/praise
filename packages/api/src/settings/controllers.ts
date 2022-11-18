@@ -102,6 +102,16 @@ export const customExportTransformer = async (
     'CUSTOM_EXPORT_MAP'
   )) as string;
 
-  const transformer = await getCustomExportTransformer(customExportMapSetting);
-  res.status(StatusCodes.OK).json(transformer);
+  if (!customExportMapSetting) {
+    throw new BadRequestError('No custom export map specified');
+  }
+
+  try {
+    const transformer = await getCustomExportTransformer(
+      customExportMapSetting
+    );
+    res.status(StatusCodes.OK).json(transformer);
+  } catch (error) {
+    throw new BadRequestError((error as Error).message);
+  }
 };
