@@ -1,9 +1,16 @@
 import { ExportTransformer } from 'api/dist/period/types';
 import { AxiosResponse } from 'axios';
-import { atom, atomFamily, selector, useRecoilValue } from 'recoil';
+import {
+  atom,
+  atomFamily,
+  DefaultValue,
+  selector,
+  useRecoilValue,
+} from 'recoil';
 import { recoilPersist } from 'recoil-persist';
 import { ApiAuthGet, isResponseOk } from './api';
 import { ExternalGet } from './axios';
+import { SingleSetting } from './settings';
 
 const { persistAtom } = recoilPersist();
 
@@ -59,15 +66,18 @@ export const CustomExportTransformer = atom<ExportTransformer | undefined>({
   effects: [
     ({ setSelf, getPromise }): void => {
       setSelf(
-        getPromise(
-          ApiAuthGet({
-            url: 'admin/settings/customExportTransformer',
-          })
-        ).then((response) => {
-          if (isResponseOk(response)) {
-            const transformer = response.data as ExportTransformer;
-            return transformer;
-          }
+        getPromise(SingleSetting('CUSTOM_EXPORT_MAP')).then((map) => {
+          if (map && !map.value) return new DefaultValue();
+          return getPromise(
+            ApiAuthGet({
+              url: 'admin/settings/customExportTransformer',
+            })
+          ).then((response) => {
+            if (isResponseOk(response)) {
+              const transformer = response.data as ExportTransformer;
+              return transformer;
+            }
+          });
         })
       );
     },
