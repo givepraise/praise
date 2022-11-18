@@ -52,6 +52,7 @@ export interface PeriodDetailsGiverReceiverDto {
   praiseCount: number;
   quantifications?: Array<Array<QuantificationDto>>;
   identityEthAddress?: string;
+  rewardsEthAddress?: string;
   scoreRealized: number;
   userAccount?: UserAccountDto;
 }
