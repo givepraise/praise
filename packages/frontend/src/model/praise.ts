@@ -32,7 +32,7 @@ interface sortOptionsProps {
 }
 
 export const PraiseTableSelectedSortOption = atom<sortOptionsProps>({
-  key: 'UsersTableSelectedRole',
+  key: 'PraiseTableSelectedSortOption',
   default: praiseSortOptions[0],
 });
 
