@@ -3,6 +3,7 @@ import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
+  atom,
   atomFamily,
   selectorFamily,
   useRecoilCallback,
@@ -19,6 +20,21 @@ import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from './api';
 export type PageParams = {
   praiseId: string;
 };
+
+export const praiseSortOptions = [
+  { value: 'createdAt', label: 'Latest' },
+  { value: 'scoreRealized', label: 'Top' },
+];
+
+interface sortOptionsProps {
+  value: string;
+  label: string;
+}
+
+export const PraiseTableSelectedSortOption = atom<sortOptionsProps>({
+  key: 'PraiseTableSelectedSortOption',
+  default: praiseSortOptions[0],
+});
 
 /**
  * Atom that stores individual Praise items linked to one or more @PraiseIdList
@@ -124,7 +140,7 @@ const AllPraiseQuery = selectorFamily<
     },
 });
 
-interface AllPraiseQueryPaginationInterface {
+export interface AllPraiseQueryPaginationInterface {
   currentPage: number;
   totalPages: number;
 }
@@ -153,6 +169,7 @@ export const useAllPraise = (
   listKey: string
 ): AxiosResponse<PaginatedResponseBody<PraiseDto>> | AxiosError => {
   const allPraiseQueryResponse = useRecoilValue(AllPraiseQuery(queryParams));
+
   const [praisePagination, setPraisePagination] = useRecoilState(
     AllPraiseQueryPagination(listKey)
   );
@@ -168,6 +185,7 @@ export const useAllPraise = (
         for (const praise of praiseList) {
           praiseIdList.push(praise._id);
         }
+
         set(
           PraiseIdList(listKey),
           allPraiseIdList ? allPraiseIdList.concat(praiseIdList) : praiseIdList
@@ -197,7 +215,7 @@ export const useAllPraise = (
       !paginatedResponse.page ||
       !paginatedResponse.totalPages ||
       !isResponseOk(allPraiseQueryResponse) ||
-      paginatedResponse.page <= praisePagination.currentPage
+      paginatedResponse.page === praisePagination.currentPage
     )
       return;
 
@@ -207,7 +225,6 @@ export const useAllPraise = (
       void saveAllPraiseIdList(praiseList);
       saveIndividualPraise(praiseList);
       setPraisePagination({
-        ...praisePagination,
         currentPage: paginatedResponse.page,
         totalPages: paginatedResponse.totalPages,
       });

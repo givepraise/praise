@@ -9776,7 +9776,6 @@ __metadata:
     prettier: ^2.5.1
     query-string: ^7.1.0
     react: ^17.0.2
-    react-bottom-scroll-listener: ^5.0.0
     react-chartjs-2: ^4.3.1
     react-csv: ^2.2.2
     react-dom: ^17.0.2
@@ -15517,18 +15516,6 @@ __metadata:
     regenerator-runtime: ^0.13.9
     whatwg-fetch: ^3.6.2
   checksum: 1bb031080af15397d6eb9c69a0c2e93799991f7197a086e4409ba719398f1256b542a3d6c9a34673d516c684eef3e8226c99b335982593851f58f65f6e43571b
-  languageName: node
-  linkType: hard
-
-"react-bottom-scroll-listener@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "react-bottom-scroll-listener@npm:5.0.0"
-  dependencies:
-    lodash.debounce: ^4.0.8
-  peerDependencies:
-    react: ^16.0.0 || ^17.0.0
-    react-dom: ^16.0.0 || ^17.0.0
-  checksum: 0a735bc8e12b88c8b713b9bbcdd15bd1c28a5f6f2b290c7216f4043c09d2b3ae453a9fe3ee2abefb758595faf6850f26cd721973d608fa39f1996326edaa5611
   languageName: node
   linkType: hard
 
