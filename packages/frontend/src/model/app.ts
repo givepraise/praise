@@ -40,7 +40,7 @@ interface PraiseAppVersion {
 
 export const usePraiseAppVersion = (): PraiseAppVersion => {
   const appVersion: PraiseAppVersion = {
-    current: '0.12.2', //TODO: get this from package.json
+    current: '0.13.0', //TODO: get this from package.json
     latest: undefined,
     newVersionAvailable: false,
   };

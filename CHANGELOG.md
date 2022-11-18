@@ -9,18 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+## [0.13.0] - 2022-11-18
+
+### Added
+
 - **API:** Transformer option to include/exclude header row in csv exports #614 #622
 - **Frontend:** Most settings have now been given default values. To reset a setting to its default value, click the "Reset to default" button that appears next to the setting header. #580 #613
+- **Frontend:** User pages! The user pages include things like: all praise sent and received, score summaries and various other user stats. #633
+- **Frontend:** User profiles allowing the user to change their display name and rewards ethereum address. #633
+- **Frontend:** Period page now lists number of praise in the period #651
 
 ### Changed
 
+- **API:** Export transformers was using `safeEval` which has a [critical sandbox escape issue](https://security.snyk.io/vuln/SNYK-JS-SAFEEVAL-608076). The code using `safeEval` has been removed and replaced with a hardened transformer using [SES](https://github.com/endojs/endo).[ses-node-json-transform](https://www.npmjs.com/package/ses-node-json-transform). #622
 - **Discord-bot:** Updated the bot to use the new `discord.js` version 14 #619
 - **Discord-bot:** Minor refactors to make code easier to read #619
 - **Frontend:** The settings pages have been reorganised slightly and given section descriptions with links to documentation. #586 #631
 - **API:** Increases the number of quantifier assignment attempts from 3 to 5. Note that under some circumstances the algorithm cannot assign quantifiers and uphold the rules defined in the settings. The solution is then to change the assignment parameterd, for example by adding an additional quantifier. #644
 - **Frontend:** Moved settings checkbox to be inline with description instead of under it. #635
 - **API:** CSV header fields are now lower case to avoid issues with some distribution services #639
-- **Frontend:** Period page should list number of praise in the period #651
+- **Frontend:** Upgraded RainbowKit and Wagmi versions to improve login experience. Login should now be more reliable. Tested with MetaMask in browser, mobile MetaMask and Ledger. #674
+- **Frontend:** The Users page is now accessible to all users. #655
+- **Devops:** Upgraded Node version to 16.17.1 to fix security vulnerabilities #667
+- **Devops:** Upgraded Node version to 16.18.1 to fix security vulnerabilities #640
 
 ### Fixed
 
@@ -28,10 +43,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **API:** Bug causing period praise counting to return the total number of praises instead of the number of praise for the period. #622
 - **Discord-bot:** Praising does not work in threads #524 #619
 - **Frontend:** Fixed a bug causing checkbox settings to be saved even if the user did not change the value. #629 #632
-- **Devops:** Upgraded Node version to 16.17.1 to fix security vulnerabilities #640
 - **API:** Image upload should only accept jpg and png files #653 #636
 - **Frontend:** Prevent custom export settings from loading when user is not admin #656 #628
-- **Devops:** Upgraded Node version to 16.17.1 to fix security vulnerabilities #667
+- **API:** Add check when reassigning quantifiers: Replacement quantifier cannot be assigned to quantify their own received praise. #681
+- **Devops:** GitHub actions upgraded #659
+- **API:** Upgraded various dependencies - mongoose, mongoose-paginate-ts, mocha, nodemon - to fix security vulnerabilities #654
 
 ## [0.12.2] - 2022-09-28
 
