@@ -10,6 +10,7 @@ import { PraiseModel } from '@/praise/entities';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
 import { praiseListTransformer } from '@/praise/transformers';
+import { UserAccountModel } from '@/useraccount/entities';
 import {
   PeriodDetailsDto,
   PeriodStatusType,
@@ -217,7 +218,23 @@ export const replaceQuantifier = async (
 
     // Original quantifier
     'quantifications.quantifier': currentQuantifierId,
-  }).distinct('_id');
+  }).lean();
+
+  const newQuantifierAccounts = await UserAccountModel.find({
+    user: newQuantifierId,
+  }).lean();
+
+  if (newQuantifierAccounts) {
+    affectedPraiseIds.find((p) => {
+      for (const ua of newQuantifierAccounts) {
+        if (ua._id.equals(p.receiver)) {
+          throw new BadRequestError(
+            'Replacement quantifier cannot be assigned to quantify their own received praise.'
+          );
+        }
+      }
+    });
+  }
 
   await PraiseModel.updateMany(
     {
