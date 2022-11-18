@@ -7,6 +7,9 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
 import { useParams } from 'react-router-dom';
+import { UpdateUserProfileInput } from 'api/dist/user/types';
+import { toast } from 'react-hot-toast';
+import { Dialog } from '@headlessui/react';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { Page } from '@/components/ui/Page';
 import { Box } from '@/components/ui/Box';
@@ -15,19 +18,26 @@ import {
   SingleUser,
   SingleUserParams,
   useLoadSingleUserDetails,
+  useUserProfile,
 } from '@/model/users';
 import { BackLink } from '@/navigation/BackLink';
+import { isResponseOk } from '@/model/api';
 import { UserInfo } from './components/UserInfo';
 import {
   userAccountTypeNumber,
   ReceivedGivenPraiseTable,
 } from './components/ReceivedGivenPraiseTable';
+import { EditProfileDialog } from './components/EditProfileDialog';
 
 const UserDetailsPage = (): JSX.Element | null => {
+  const dialogRef = React.useRef(null);
   const { userId } = useParams<SingleUserParams>();
+  const { update } = useUserProfile();
 
-  const detailsResponse = useLoadSingleUserDetails(userId);
+  useLoadSingleUserDetails(userId);
   const user = useRecoilValue(SingleUser(userId));
+
+  const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
 
   const pageViews = {
     receivedPraiseView: 1,
@@ -36,14 +46,32 @@ const UserDetailsPage = (): JSX.Element | null => {
 
   const [view, setView] = useState<number>(pageViews.receivedPraiseView);
 
-  if (!user || !detailsResponse) return null;
+  if (!user) return null;
+
+  const handleSaveUserProfile = async (
+    values: UpdateUserProfileInput
+  ): Promise<void> => {
+    const { username, rewardsEthAddress } = values;
+    const response = await update(username, rewardsEthAddress);
+
+    if (isResponseOk(response)) {
+      toast.success('User profile saved');
+    } else {
+      toast.error('Profile update failed');
+    }
+
+    setIsDialogOpen(false);
+  };
 
   return (
     <Page>
       <BreadCrumb name="Profile" icon={faUser} />
       <BackLink />
 
-      <UserInfo user={user} />
+      <UserInfo
+        user={user}
+        isDialogOpen={(value): void => setIsDialogOpen(value)}
+      />
 
       <div className="flex mt-5 mb-5 ml-4 md:ml-0">
         <Button
@@ -84,6 +112,21 @@ const UserDetailsPage = (): JSX.Element | null => {
           />
         </React.Suspense>
       </Box>
+
+      <Dialog
+        open={isDialogOpen}
+        onClose={(): void => setIsDialogOpen(false)}
+        className="fixed inset-0 z-10 overflow-y-auto"
+        initialFocus={dialogRef}
+      >
+        <div ref={dialogRef}>
+          <EditProfileDialog
+            onClose={(): void => setIsDialogOpen(false)}
+            onSave={(values): void => void handleSaveUserProfile(values)}
+            user={user}
+          />
+        </div>
+      </Dialog>
     </Page>
   );
 };

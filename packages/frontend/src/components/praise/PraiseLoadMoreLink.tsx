@@ -18,7 +18,7 @@ export const PraiseLoadMoreLink = ({
           onClick={onClick}
           className="cursor-pointer hover:text-warm-gray-500 dark:hover:text-warm-gray-300"
         >
-          Load More
+          Load more
           <FontAwesomeIcon icon={faAngleDown} size="1x" className="ml-2 " />
         </a>
       )}
