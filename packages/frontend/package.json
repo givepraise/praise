@@ -18,7 +18,7 @@
     "@fortawesome/react-fontawesome": "^0.1.17",
     "@headlessui/react": "^1.4.1",
     "@mui/material": "^5.3.0",
-    "@rainbow-me/rainbowkit": "^0.2.0",
+    "@rainbow-me/rainbowkit": "^0.7.4",
     "@sgratzl/chartjs-chart-boxplot": "^3.9.0",
     "@tailwindcss/forms": "latest",
     "@types/react-csv": "^1.1.2",
@@ -61,7 +61,7 @@
     "tailwindcss": "^3.0.24",
     "use-error-boundary": "^2.0.6",
     "util": "^0.12.4",
-    "wagmi": "^0.4.3"
+    "wagmi": "^0.7.5"
   },
   "scripts": {
     "build": "craco build",
