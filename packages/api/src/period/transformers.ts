@@ -104,17 +104,19 @@ const populateGRWithEthereumAddress = async (
   giverReceiver: PeriodDetailsGiverReceiverDto
 ): Promise<PeriodDetailsGiverReceiverDto> => {
   const { _id, praiseCount, scoreRealized, userAccount } = giverReceiver;
-  let identityEthAddress = undefined;
+  let identityEthAddress, rewardsEthAddress;
 
   if (userAccount) {
     const user = await UserModel.findById(userAccount.user);
     identityEthAddress = user?.identityEthAddress;
+    rewardsEthAddress = user?.rewardsEthAddress;
   }
 
   return {
     _id,
     praiseCount,
     identityEthAddress,
+    rewardsEthAddress,
     scoreRealized,
     userAccount,
   };
