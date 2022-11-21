@@ -3,14 +3,14 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { User, UserDocument } from '../users/schemas/users.schema';
+import { User, UserDocument } from '@/users/schemas/users.schema';
 
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import { NonceResponse } from './schemas/nonce-response.schema';
-import { UsersService } from '../users/users.service';
-import { randomString } from '../shared/random.shared';
+import { UsersService } from '@/users/users.service';
+import { randomString } from '@/shared/random.shared';
 import { generateLoginMessage } from './auth.utils';
 import { ethers } from 'ethers';
 import { JwtPayload } from './dto/jwt-payload.dto';
