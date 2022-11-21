@@ -8,7 +8,7 @@ import { User, UserDocument } from '@/users/schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
-import { NonceResponse } from './schemas/nonce-response.schema';
+import { NonceResponseDto } from './dto/nonce-response.dto';
 import { UsersService } from '@/users/users.service';
 import { randomString } from '@/shared/random.shared';
 import { generateLoginMessage } from './auth.utils';
@@ -30,7 +30,7 @@ export class AuthService {
    * @param identityEthAddress
    * @returns NonceResponse
    */
-  async nonce(identityEthAddress: string): Promise<NonceResponse> {
+  async nonce(identityEthAddress: string): Promise<NonceResponseDto> {
     // Generate random nonce used for auth request
     const nonce = randomString();
 

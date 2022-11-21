@@ -1,4 +1,4 @@
-export interface NonceResponse {
+export interface NonceResponseDto {
   identityEthAddress: string;
   nonce: string;
 }
