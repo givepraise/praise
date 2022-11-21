@@ -40,7 +40,7 @@ export const AllUsers = atom<UserDto[] | undefined>({
       setSelf(
         getPromise(
           ApiAuthGet({
-            url: 'users/all?sortColumn=identityEthAddress&sortType=desc',
+            url: 'users?sortColumn=identityEthAddress&sortType=desc',
           })
         ).then((response) => {
           if (isResponseOk(response)) {

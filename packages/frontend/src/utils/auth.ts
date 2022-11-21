@@ -59,8 +59,8 @@ export const requestNonce = async (
 ): Promise<string> => {
   const apiClient = makeApiClient();
 
-  const response = await apiClient.get('/auth/nonce', {
-    params: { identityEthAddress },
+  const response = await apiClient.post('/auth/nonce', {
+    identityEthAddress,
   });
 
   const { nonce } = response.data as NonceResponse;
