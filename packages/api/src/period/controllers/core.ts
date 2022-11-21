@@ -3,6 +3,22 @@ import { StatusCodes } from 'http-status-codes';
 import { Request } from 'express';
 import { add, compareAsc, parseISO } from 'date-fns';
 import { isString } from 'lodash';
+import {
+  PeriodDetailsDto,
+  PeriodUpdateInput,
+  PeriodQuantifierPraiseInput,
+  PeriodStatusType,
+  PeriodReceiverPraiseInput,
+  PeriodGiverPraiseInput,
+} from '../types';
+import {
+  findPeriodDetailsDto,
+  getPeriodDateRangeQuery,
+  getPreviousPeriodEndDate,
+  isPeriodLatest,
+} from '../utils/core';
+import { PeriodModel } from '../entities';
+import { periodTransformer } from '../transformers';
 import { BadRequestError, NotFoundError } from '@/error/errors';
 import { PraiseDetailsDto, PraiseDto } from '@/praise/types';
 import {
@@ -21,22 +37,6 @@ import { getQueryInput, getQuerySort } from '@/shared/functions';
 import { PraiseModel } from '@/praise/entities';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
-import {
-  PeriodDetailsDto,
-  PeriodUpdateInput,
-  PeriodQuantifierPraiseInput,
-  PeriodStatusType,
-  PeriodReceiverPraiseInput,
-  PeriodGiverPraiseInput,
-} from '../types';
-import {
-  findPeriodDetailsDto,
-  getPeriodDateRangeQuery,
-  getPreviousPeriodEndDate,
-  isPeriodLatest,
-} from '../utils/core';
-import { PeriodModel } from '../entities';
-import { periodTransformer } from '../transformers';
 
 /**
  * Fetch a paginated list of Periods
