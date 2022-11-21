@@ -50,7 +50,10 @@ export const ExportDropdown = (): JSX.Element | null => {
   customExportTransformer &&
     exportOptions.push({
       value: 'export-custom',
-      label: customExportTransformer.name,
+      label:
+        customExportTransformer.name.length > 30
+          ? customExportTransformer.name.substring(0, 30) + '...'
+          : customExportTransformer.name,
     });
 
   const handleExportFull = (): void => {
