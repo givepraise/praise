@@ -199,7 +199,15 @@ export const summary = async (req: Request, res: Response): Promise<void> => {
   const fields = [
     {
       label: 'user',
-      value: 'username',
+      value: 'userAccount.nameRealized',
+    },
+    {
+      label: 'identity_eth_address',
+      value: 'identityEthAddress',
+    },
+    {
+      label: 'rewards_eth_address',
+      value: 'rewardsEthAddress',
     },
     {
       label: 'praise_count',
@@ -272,6 +280,7 @@ export const custom = async (req: Request, res: Response): Promise<void> => {
         scoreRealized: supportAmount,
         praiseCount: 0,
         identityEthAddress: '0xfa4EE6B523fC1E8B53015D7D81331d568CDb5906', // Intentionally hard coded
+        rewardsEthAddress: '0xfa4EE6B523fC1E8B53015D7D81331d568CDb5906', // Intentionally hard coded
       });
       context.totalPraiseScore += supportAmount;
     }

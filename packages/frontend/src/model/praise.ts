@@ -3,6 +3,7 @@ import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
+  atom,
   atomFamily,
   selectorFamily,
   useRecoilCallback,
@@ -19,6 +20,21 @@ import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from './api';
 export type PageParams = {
   praiseId: string;
 };
+
+export const praiseSortOptions = [
+  { value: 'createdAt', label: 'Latest' },
+  { value: 'scoreRealized', label: 'Top' },
+];
+
+interface sortOptionsProps {
+  value: string;
+  label: string;
+}
+
+export const PraiseTableSelectedSortOption = atom<sortOptionsProps>({
+  key: 'PraiseTableSelectedSortOption',
+  default: praiseSortOptions[0],
+});
 
 /**
  * Atom that stores individual Praise items linked to one or more @PraiseIdList
@@ -127,8 +143,6 @@ const AllPraiseQuery = selectorFamily<
 export interface AllPraiseQueryPaginationInterface {
   currentPage: number;
   totalPages: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
 }
 
 /**
@@ -142,8 +156,6 @@ export const AllPraiseQueryPagination = atomFamily<
   default: {
     currentPage: 0,
     totalPages: 0,
-    hasNextPage: false,
-    hasPrevPage: false,
   },
 });
 
@@ -164,13 +176,20 @@ export const useAllPraise = (
   const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
 
   const saveAllPraiseIdList = useRecoilCallback(
-    ({ set }) =>
-      (praiseList: PraiseDto[]) => {
+    ({ snapshot, set }) =>
+      async (praiseList: PraiseDto[]) => {
+        const allPraiseIdList = await snapshot.getPromise(
+          PraiseIdList(listKey)
+        );
         const praiseIdList: string[] = [];
         for (const praise of praiseList) {
           praiseIdList.push(praise._id);
         }
-        set(PraiseIdList(listKey), praiseIdList);
+
+        set(
+          PraiseIdList(listKey),
+          allPraiseIdList ? allPraiseIdList.concat(praiseIdList) : praiseIdList
+        );
       }
   );
 
@@ -208,8 +227,6 @@ export const useAllPraise = (
       setPraisePagination({
         currentPage: paginatedResponse.page,
         totalPages: paginatedResponse.totalPages,
-        hasNextPage: paginatedResponse.hasNextPage as boolean,
-        hasPrevPage: paginatedResponse.hasPrevPage as boolean,
       });
     }
   }, [

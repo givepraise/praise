@@ -7,15 +7,18 @@ import {
   useAllPraise,
 } from '@/model/praise';
 import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
+import { PraiseLoadMoreLink } from './PraiseLoadMoreLink';
 
 interface Params {
   listKey: string;
   queryParams?: AllPraiseQueryParameters;
+  onLoadMoreClick?: (page) => void;
 }
 
 export const PraisePageLoader = ({
   listKey,
   queryParams,
+  onLoadMoreClick,
 }: Params): JSX.Element => {
   const allPraise = useRecoilValue(AllPraiseList(listKey));
   const praisePagination = useRecoilValue(AllPraiseQueryPagination(listKey));
@@ -58,6 +61,14 @@ export const PraisePageLoader = ({
     setLoading(false);
   }, [queryParams?.page, queryParams]);
 
+  const handleLoadMoreClick = (): void => {
+    setNextPageNumber(praisePagination.currentPage + 1);
+
+    if (onLoadMoreClick) {
+      onLoadMoreClick(praisePagination.currentPage + 1);
+    }
+  };
+
   if (loading)
     return (
       <div className="p-20">
@@ -85,5 +96,10 @@ export const PraisePageLoader = ({
       </div>
     );
 
-  return <></>;
+  return (
+    <PraiseLoadMoreLink
+      praisePagination={praisePagination}
+      onClick={handleLoadMoreClick}
+    />
+  );
 };

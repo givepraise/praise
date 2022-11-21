@@ -96,15 +96,23 @@ export const nonce = async (
   const { identityEthAddress } = req.query;
   if (!identityEthAddress) throw new NotFoundError('identityEthAddress');
 
+  // Find user by eth address
+  let user = await UserModel.findOne({ identityEthAddress });
+
+  // If user doesn't exist, create one
+  if (!user) {
+    user = new UserModel({
+      identityEthAddress,
+      rewardsEthAddress: identityEthAddress,
+      username: identityEthAddress,
+    });
+  }
+
   // Generate random nonce used for auth request
   const nonce = getRandomString();
+  user.nonce = nonce;
 
-  // Update existing user or create new
-  await UserModel.findOneAndUpdate(
-    { identityEthAddress },
-    { nonce },
-    { upsert: true, new: true }
-  );
+  await user.save();
 
   res.status(200).json({
     identityEthAddress,
