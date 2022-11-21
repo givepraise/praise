@@ -23,8 +23,14 @@ export class User {
   @Transform(({ value }) => value.toString())
   _id: Types.ObjectId;
 
+  @Prop({ required: true, unique: true, index: true })
+  identityEthAddress: string;
+
+  @Prop({ required: true })
+  rewardsEthAddress: string;
+
   @Prop({ required: true, unique: true })
-  ethereumAddress: string;
+  username: string;
 
   @Prop({
     type: [

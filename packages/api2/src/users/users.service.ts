@@ -28,9 +28,9 @@ export class UsersService {
     return new User(user);
   }
 
-  async findOneByEth(ethereumAddress: string): Promise<User> {
+  async findOneByEth(identityEthAddress: string): Promise<User> {
     const user = await this.userModel
-      .findOne({ ethereumAddress })
+      .findOne({ identityEthAddress })
       .populate('accounts')
       .lean();
     if (!user) throw new NotFoundException('User not found.');

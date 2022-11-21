@@ -6,7 +6,7 @@ export class LoginDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  ethereumAddress: string;
+  identityEthAddress: string;
 
   @ApiProperty()
   @IsNotEmpty()

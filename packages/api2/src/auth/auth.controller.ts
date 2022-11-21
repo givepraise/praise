@@ -10,22 +10,22 @@ export class AuthController {
 
   @Get('nonce')
   async nonce(
-    @Query('ethereumAddress') ethereumAddress: string,
+    @Query('identityEthAddress') identityEthAddress: string,
   ): Promise<NonceResponse> {
-    return this.authService.nonce(ethereumAddress);
+    return this.authService.nonce(identityEthAddress);
   }
 
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
-    const { ethereumAddress, signature } = loginDto;
+    const { identityEthAddress, signature } = loginDto;
     const accessToken = await this.authService.login(
-      ethereumAddress,
+      identityEthAddress,
       signature,
     );
 
     return {
       accessToken,
-      ethereumAddress,
+      identityEthAddress,
       tokenType: 'Bearer',
     };
   }

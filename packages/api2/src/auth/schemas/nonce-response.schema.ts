@@ -1,4 +1,4 @@
 export interface NonceResponse {
-  ethereumAddress: string;
+  identityEthAddress: string;
   nonce: string;
 }
