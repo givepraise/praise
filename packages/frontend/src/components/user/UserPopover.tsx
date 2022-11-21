@@ -66,6 +66,11 @@ const WrappedUserPopover = ({
     (event: React.MouseEvent<HTMLTableRowElement>) => {
       event.stopPropagation();
 
+      if (user) {
+        history.push(`/users/${user._id}`);
+        return;
+      }
+
       if (userAccount && userAccount.user) {
         history.push(`/users/${userAccount.user}`);
       }
