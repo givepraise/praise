@@ -94,7 +94,7 @@ export const ReceivedGivenPraiseTable = ({
         </div>
 
         {/* Sort */}
-        <div className="mt-4 ml-4 mr-5 sm:w-24 sm:mt-0 sm:ml-auto bg-warm-gray-50">
+        <div className="mt-4 ml-4 mr-5 sm:w-24 sm:mt-0 sm:ml-auto">
           <SelectInput
             handleChange={(e): void => {
               setSelectedSort(e);

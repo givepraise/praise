@@ -1,24 +1,20 @@
 ![Praise Banner](/media/banner.png)
 
-### 🎉 Praise is live! The Token Engineering Commons is the first community to use Praise. To see Praise in action, please join the [TEC Discord](https://discord.tecommons.org) or login to the [Praise Dashboard](https://praise.tecommons.org) using any Ethereum address.
+### Recognize and reward community contributions, foster a culture of giving and gratitude. 
 
-### ℹ️ Praise is under active development, codebase should be considered beta stage.
+Some of the communities using Praise:
+- [Token Engineering Commons](https://praise.tecommons.org)
+- [Commons Stack](https://praise.commonsstack.org)
+- [Giveth](https://praise.giveth.io)
+- [Gnosis](https://praisegnosisdao.com)
 
 ### 🔗 Full documentation available at [givepraise.xyz](https://givepraise.xyz)
 
-As decentralized organizations grow it is challenging to involve the whole community in determining what contributions to value. Praise invites communities to build a culture of giving and gratitude, reward contributions to the community and involve the community every step of the way.
+As decentralized organizations grow in size, it becomes difficult to involve the community in determining what contributions to value. Praise encourages communities to cultivate a culture of giving and gratitude by recognizing and rewarding contributions.
 
-By using Praise, communities acknowledge the full spectrum of value created - ranging from small to large contributions. Even contributions made outside of any platform can be praised. Praise allows for bottom up value systems to emerge by listening to what the community values.
+By listening to what the community values and involving members every step of the way, praise allows bottom-up value systems to emerge. This bottom-up approach to value creation is essential for ensuring that the community remains invested and engaged.
 
-Praise has been tried and tested in communities such as the Token Engineering Commons, Commons Stack and Giveth.
-
-Praise is similar to a team allocation in other token economies, but done via a unique distributed signal aggregation approach intended to achieve many goals:
-
-- Acknowledge and reward full spectrum contributions
-- A clear and transparent process with full community involvement
-- Create a culture of giving and gratitude
-- Instigate decentralized updates about work being done
-- Focus on transparency and data analysis
+Praise is used to recognize the full range of value created, from minor to major contributions. Contributions made outside of any platform can also be recognized. This promotes a more positive and productive community as a whole.
 
 ## Run Praise on a server
 
