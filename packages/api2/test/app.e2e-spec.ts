@@ -19,6 +19,6 @@ describe('AppController (e2e)', () => {
   });
 
   it('/users (GET)', () => {
-    return request(server).post('/api/auth/nonce').expect(200);
+    return request(server).post('/api/auth/nonce').expect(404);
   });
 });

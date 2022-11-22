@@ -16,8 +16,6 @@ module.exports = {
     '!<rootDir>/src/main.ts',
   ],
   coverageProvider: 'v8',
-  resetModules: true,
   setupFilesAfterEnv: ['jest-extended'],
   verbose: true,
 };
- 
