@@ -3,14 +3,14 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { User, UserDocument } from '../users/schemas/users.schema';
+import { User, UserDocument } from '@/users/schemas/users.schema';
 
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
-import { NonceResponse } from './schemas/nonce-response.schema';
-import { UsersService } from '../users/users.service';
-import { randomString } from '../shared/random.shared';
+import { NonceResponseDto } from './dto/nonce-response.dto';
+import { UsersService } from '@/users/users.service';
+import { randomString } from '@/shared/random.shared';
 import { generateLoginMessage } from './auth.utils';
 import { ethers } from 'ethers';
 import { JwtPayload } from './dto/jwt-payload.dto';
@@ -27,32 +27,32 @@ export class AuthService {
   /**
    * Generates a nonce for the user and returns it.
    *
-   * @param ethereumAddress
+   * @param identityEthAddress
    * @returns NonceResponse
    */
-  async nonce(ethereumAddress: string): Promise<NonceResponse> {
+  async nonce(identityEthAddress: string): Promise<NonceResponseDto> {
     // Generate random nonce used for auth request
     const nonce = randomString();
 
     // Update existing user or create new
     await this.userModel.findOneAndUpdate(
-      { ethereumAddress },
+      { identityEthAddress },
       { nonce },
       { upsert: true, new: true },
     );
 
-    return { ethereumAddress, nonce };
+    return { identityEthAddress, nonce };
   }
 
   /**
    * Verifies a user's signature of a login message and returns a JWT token.
    *
-   *  @param ethereumAddress
+   *  @param identityEthAddress
    *  @param signature
    *  @returns string
    */
-  async login(ethereumAddress: string, signature: string): Promise<string> {
-    const user = await this.usersService.findOneByEth(ethereumAddress);
+  async login(identityEthAddress: string, signature: string): Promise<string> {
+    const user = await this.usersService.findOneByEth(identityEthAddress);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -64,9 +64,9 @@ export class AuthService {
 
     // Generate expected message, nonce included.
     // Recover signer from generated message + signature
-    const generatedMsg = generateLoginMessage(ethereumAddress, user.nonce);
+    const generatedMsg = generateLoginMessage(identityEthAddress, user.nonce);
     const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
-    if (signerAddress !== ethereumAddress)
+    if (signerAddress !== identityEthAddress)
       throw new BadRequestException('Signature verification failed');
 
     // await logEvent(EventLogTypeKey.AUTHENTICATION, 'Logged in', {
@@ -76,7 +76,7 @@ export class AuthService {
     // Sign payload to create accesstoken
     const payload = {
       userId: user._id.toString(),
-      ethereumAddress,
+      identityEthAddress,
       roles: user.roles,
     } as JwtPayload;
 

@@ -1,7 +1,7 @@
-import { UserRole } from '../../users/interfaces/userRole.interface';
+import { UserRole } from '@/users/interfaces/userRole.interface';
 
 export interface JwtPayload {
   userId: string;
-  ethereumAddress: string;
+  identityEthAddress: string;
   roles: UserRole[];
 }
