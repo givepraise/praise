@@ -135,7 +135,7 @@ export class UsersService {
     return this.findOneById(_id);
   }
 
-  async updateUser(_id: Types.ObjectId, user: UpdateUserDto): Promise<User> {
+  async update(_id: Types.ObjectId, user: UpdateUserDto): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
     if (!userDocument) throw new NotFoundException('User not found.');
 

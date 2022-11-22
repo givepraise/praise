@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccountsModule } from './useraccounts/useraccounts.module';
 import { UsersModule } from './users/users.module';
+import { UtilsProvider } from './utils/utils.provider';
 import { praiseDatabaseUri } from './shared/database.shared';
 
 @Module({
@@ -12,5 +13,6 @@ import { praiseDatabaseUri } from './shared/database.shared';
     UserAccountsModule,
     AuthModule,
   ],
+  providers: [UtilsProvider],
 })
 export class AppModule {}

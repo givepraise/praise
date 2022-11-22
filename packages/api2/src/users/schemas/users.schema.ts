@@ -48,15 +48,15 @@ export class User {
 
   @Exclude()
   @Prop()
-  nonce: string;
+  nonce?: string;
 
   @Exclude()
   @Prop()
-  accessToken: string;
+  accessToken?: string;
 
   @Exclude()
   @Prop()
-  refreshToken: string;
+  refreshToken?: string;
 
   @Prop()
   createdAt: Date;

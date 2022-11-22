@@ -5,9 +5,7 @@ module.exports = {
   moduleNameMapper,
   preset: 'ts-jest',
   testEnvironment: 'node',
-
   rootDir: './',
-
   collectCoverage: true,
   collectCoverageFrom: [
     '<rootDir>/**/*.ts',
@@ -19,7 +17,6 @@ module.exports = {
   ],
   coverageProvider: 'v8',
   resetModules: true,
-  // Add the community jest-extended matchers
   setupFilesAfterEnv: ['jest-extended'],
   verbose: false,
 };

@@ -3,23 +3,21 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { User, UserDocument } from '@/users/schemas/users.schema';
+import { User } from '@/users/schemas/users.schema';
 
-import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
-import { Model } from 'mongoose';
-import { NonceResponse } from './interfaces/nonce-response.interface';
 import { UsersService } from '@/users/users.service';
-import { randomString } from '@/shared/random.shared';
 import { generateLoginMessage } from './auth.utils';
 import { ethers } from 'ethers';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { UtilsProvider } from '@/utils/utils.provider';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private utils: UtilsProvider,
   ) {}
 
   /**
@@ -30,11 +28,11 @@ export class AuthService {
    */
   async generateUserNonce(identityEthAddress: string): Promise<User> {
     // Generate random nonce used for auth request
-    const nonce = randomString();
+    const nonce = await this.utils.randomString();
 
     const user = await this.usersService.findOneByEth(identityEthAddress);
     if (user) {
-      return this.usersService.updateUser(user._id, { nonce });
+      return this.usersService.update(user._id, { nonce });
     }
 
     // Create new user if none exists
