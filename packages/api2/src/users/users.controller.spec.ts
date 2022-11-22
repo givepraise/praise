@@ -13,12 +13,6 @@ describe('UsersController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        MongooseModule.forRootAsync({
-          imports: [ConfigModule],
-          useFactory: praiseDatabaseUri,
-          inject: [ConfigService],
-        }),
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
       ],
       controllers: [UsersController],

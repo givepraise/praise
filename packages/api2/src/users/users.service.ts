@@ -146,4 +146,9 @@ export class UsersService {
 
     return this.findOneById(_id);
   }
+
+  async create(user: User): Promise<User> {
+    const createdUser = new this.userModel(user);
+    return createdUser.save();
+  }
 }

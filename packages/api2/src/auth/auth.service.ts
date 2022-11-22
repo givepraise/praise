@@ -30,9 +30,23 @@ export class AuthService {
    * @param identityEthAddress
    * @returns NonceResponse
    */
+<<<<<<< Updated upstream
   async nonce(identityEthAddress: string): Promise<NonceResponseDto> {
+=======
+<<<<<<< Updated upstream
+  async nonce(ethereumAddress: string): Promise<NonceResponse> {
+>>>>>>> Stashed changes
     // Generate random nonce used for auth request
+=======
+  async nonce(identityEthAddress: string): Promise<NonceResponseDto> {
+>>>>>>> Stashed changes
     const nonce = randomString();
+
+    const user = await this.usersService.findOneByEth(identityEthAddress);
+
+    if (!user) {
+      this.usersService.updateUser(user._id, {nonce});
+    // Generate random nonce used for auth request
 
     // Update existing user or create new
     await this.userModel.findOneAndUpdate(

@@ -7,23 +7,16 @@ import { AuthService } from './auth.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersService } from '@/users/users.service';
 import { praiseDatabaseUri } from '@/shared/database.shared';
+import { JwtService } from '@nestjs/jwt';
 
 describe('AuthController', () => {
   let controller: AuthController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        MongooseModule.forRootAsync({
-          imports: [ConfigModule],
-          useFactory: praiseDatabaseUri,
-          inject: [ConfigService],
-        }),
-        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-      ],
+      imports: [],
       controllers: [AuthController],
-      providers: [AuthService, UsersService],
+      providers: [AuthService, UsersService, JwtService],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);

@@ -9,13 +9,7 @@ import { praiseDatabaseUri } from './shared/database.shared';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: praiseDatabaseUri,
-      inject: [ConfigService],
-    }),
-
+    MongooseModule.forRoot(praiseDatabaseUri),
     UsersModule,
     UserAccountsModule,
     AuthModule,
