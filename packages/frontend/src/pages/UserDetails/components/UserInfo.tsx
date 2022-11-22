@@ -67,8 +67,8 @@ export const UserInfo = ({
       </div>
 
       <div className="relative sm:flex sm:justify-between">
-        <div className="">
-          <h2 className="mb-5 ">
+        <div>
+          <h2 className="mb-5">
             {user.username.length < 24
               ? user.username
               : shortenEthAddress(user.username)}

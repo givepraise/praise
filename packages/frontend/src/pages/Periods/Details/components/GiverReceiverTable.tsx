@@ -71,6 +71,8 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
         ])
       : [];
 
+      console.log(data);
+
     const options = {
       columns,
       data: data,
