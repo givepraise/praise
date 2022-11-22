@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Types } from 'mongoose';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
-import { UserRole } from '../interfaces/userRole.interface';
+import { UserRole } from '../interfaces/user-role.interface';
 
 export type UserDocument = User & Document;
 

@@ -8,18 +8,16 @@ import { User, UserDocument } from '@/users/schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
-import { NonceResponseDto } from './dto/nonce-response.dto';
+import { NonceResponse } from './interfaces/nonce-response.interface';
 import { UsersService } from '@/users/users.service';
 import { randomString } from '@/shared/random.shared';
 import { generateLoginMessage } from './auth.utils';
 import { ethers } from 'ethers';
-import { JwtPayload } from './dto/jwt-payload.dto';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name)
-    private userModel: Model<UserDocument>,
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
@@ -30,32 +28,22 @@ export class AuthService {
    * @param identityEthAddress
    * @returns NonceResponse
    */
-<<<<<<< Updated upstream
-  async nonce(identityEthAddress: string): Promise<NonceResponseDto> {
-=======
-<<<<<<< Updated upstream
-  async nonce(ethereumAddress: string): Promise<NonceResponse> {
->>>>>>> Stashed changes
+  async generateUserNonce(identityEthAddress: string): Promise<User> {
     // Generate random nonce used for auth request
-=======
-  async nonce(identityEthAddress: string): Promise<NonceResponseDto> {
->>>>>>> Stashed changes
     const nonce = randomString();
 
     const user = await this.usersService.findOneByEth(identityEthAddress);
+    if (user) {
+      return this.usersService.updateUser(user._id, { nonce });
+    }
 
-    if (!user) {
-      this.usersService.updateUser(user._id, {nonce});
-    // Generate random nonce used for auth request
-
-    // Update existing user or create new
-    await this.userModel.findOneAndUpdate(
-      { identityEthAddress },
-      { nonce },
-      { upsert: true, new: true },
-    );
-
-    return { identityEthAddress, nonce };
+    // Create new user if none exists
+    return this.usersService.create({
+      identityEthAddress,
+      rewardsEthAddress: identityEthAddress,
+      username: identityEthAddress,
+      nonce,
+    });
   }
 
   /**
@@ -80,6 +68,8 @@ export class AuthService {
     // Recover signer from generated message + signature
     const generatedMsg = generateLoginMessage(identityEthAddress, user.nonce);
     const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
+
+    // Recovered signer address must match identityEthAddress
     if (signerAddress !== identityEthAddress)
       throw new BadRequestException('Signature verification failed');
 

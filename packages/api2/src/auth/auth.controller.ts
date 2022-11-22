@@ -1,8 +1,8 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { NonceResponseDto } from './dto/nonce-response.dto';
+import { NonceResponse } from './interfaces/nonce-response.interface';
 import { LoginRequestDto } from './dto/login-request.dto';
-import { LoginResponseDto } from './dto/login-response.dto';
+import { LoginResponse } from './interfaces/login-response.interface';
 import { NonceRequestDto } from './dto/nonce-request.dto';
 
 @Controller('auth')
@@ -10,17 +10,21 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('nonce')
-  async nonce(
-    @Body() nonceRquestDto: NonceRequestDto,
-  ): Promise<NonceResponseDto> {
+  async nonce(@Body() nonceRquestDto: NonceRequestDto): Promise<NonceResponse> {
     const { identityEthAddress } = nonceRquestDto;
-    return this.authService.nonce(identityEthAddress);
+    const { nonce } = await this.authService.generateUserNonce(
+      identityEthAddress,
+    );
+    return {
+      identityEthAddress,
+      nonce,
+    };
   }
 
   @Post('login')
   async login(
     @Body() loginRequestDto: LoginRequestDto,
-  ): Promise<LoginResponseDto> {
+  ): Promise<LoginResponse> {
     const { identityEthAddress, signature } = loginRequestDto;
     const accessToken = await this.authService.login(
       identityEthAddress,
