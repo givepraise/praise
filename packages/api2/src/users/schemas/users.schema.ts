@@ -2,7 +2,7 @@ import { Exclude, Transform } from 'class-transformer';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Types } from 'mongoose';
-import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
+import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { UserRole } from '../interfaces/userRole.interface';
 
 export type UserDocument = User & Document;
@@ -23,8 +23,14 @@ export class User {
   @Transform(({ value }) => value.toString())
   _id: Types.ObjectId;
 
+  @Prop({ required: true, unique: true, index: true })
+  identityEthAddress: string;
+
+  @Prop({ required: true })
+  rewardsEthAddress: string;
+
   @Prop({ required: true, unique: true })
-  ethereumAddress: string;
+  username: string;
 
   @Prop({
     type: [

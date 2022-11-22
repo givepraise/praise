@@ -1,5 +1,5 @@
 export interface LoginResponseDto {
-  ethereumAddress: string;
+  identityEthAddress: string;
   accessToken: string;
   tokenType: string;
 }
