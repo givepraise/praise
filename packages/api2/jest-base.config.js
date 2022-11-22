@@ -18,5 +18,6 @@ module.exports = {
   coverageProvider: 'v8',
   resetModules: true,
   setupFilesAfterEnv: ['jest-extended'],
-  verbose: false,
+  verbose: true,
 };
+ 

@@ -2,7 +2,7 @@ const JestBaseConfiguration = require('./jest-base.config');
 
 module.exports = Object.assign(JestBaseConfiguration, {
   roots: ['<rootDir>/src'],
-  coverageDirectory: '<rootDir>/coverage',
+  coverageDirectory: '<rootDir>/docs/coverage',
   coverageThreshold: {
     global: {
       branches: 80,
