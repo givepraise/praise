@@ -1,5 +1,3 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
-
 import { AuthModule } from './auth/auth.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
