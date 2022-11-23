@@ -1,10 +1,10 @@
 import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
 import { Response } from 'express';
-import { PraiseException } from './praise.exception';
+import { ServiceException } from './service-exception';
 
-@Catch(PraiseException)
-export class PraiseExceptionFilter implements ExceptionFilter {
-  catch(exception: PraiseException, host: ArgumentsHost) {
+@Catch(ServiceException)
+export class ServiceExceptionFilter implements ExceptionFilter {
+  catch(exception: ServiceException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = 400; // Bad Request

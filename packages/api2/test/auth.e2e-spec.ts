@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { PraiseExceptionFilter } from '@/shared/praise-exception.filter';
+import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -26,7 +26,7 @@ describe('AppController (e2e)', () => {
         transform: true,
       }),
     );
-    app.useGlobalFilters(new PraiseExceptionFilter());
+    app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();
   });

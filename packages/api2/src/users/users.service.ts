@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { UserRole } from './interfaces/user-role.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { PraiseException } from '@/shared/praise.exception';
+import { ServiceException } from '@/shared/service-exception';
 
 @Injectable()
 export class UsersService {
@@ -40,10 +40,10 @@ export class UsersService {
     roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new PraiseException('User not found.');
+    if (!userDocument) throw new ServiceException('User not found.');
 
     if (userDocument.roles.includes(roleChange.role))
-      throw new PraiseException(`User already has role ${roleChange.role}`);
+      throw new ServiceException(`User already has role ${roleChange.role}`);
 
     userDocument.roles.push(roleChange.role);
     await userDocument.save();
@@ -66,7 +66,7 @@ export class UsersService {
     roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new PraiseException('User not found.');
+    if (!userDocument) throw new ServiceException('User not found.');
 
     const role = roleChange.role;
     const roleIndex = userDocument.roles.indexOf(role);
@@ -77,7 +77,7 @@ export class UsersService {
         roles: { $in: [`${UserRole.ADMIN}`] },
       });
       if (allAdmins.length <= 1) {
-        throw new PraiseException(
+        throw new ServiceException(
           'It is not allowed to remove the last admin!',
         );
       }
@@ -85,7 +85,7 @@ export class UsersService {
 
     // Verify user has role before removing
     if (roleIndex === -1)
-      throw new PraiseException(`User does not have role ${role}`);
+      throw new ServiceException(`User does not have role ${role}`);
 
     //   // If user is currently assigned to the active quantification round, and role is QUANTIFIER throw error
     //   const activePeriods: PeriodDocument[] = await findActivePeriods();
@@ -121,7 +121,7 @@ export class UsersService {
 
   async revokeAccess(_id: Types.ObjectId): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new PraiseException('User not found.');
+    if (!userDocument) throw new ServiceException('User not found.');
 
     userDocument.set('accessToken', undefined);
     userDocument.set('nonce', undefined);
@@ -130,7 +130,7 @@ export class UsersService {
 
   async update(_id: Types.ObjectId, user: UpdateUserDto): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new PraiseException('User not found.');
+    if (!userDocument) throw new ServiceException('User not found.');
 
     for (const [k, v] of Object.entries(user)) {
       userDocument.set(k, v);

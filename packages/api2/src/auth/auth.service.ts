@@ -7,7 +7,7 @@ import { generateLoginMessage } from './auth.utils';
 import { ethers } from 'ethers';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UtilsProvider } from '@/utils/utils.provider';
-import { PraiseException } from '@/shared/praise.exception';
+import { ServiceException } from '@/shared/service-exception';
 
 @Injectable()
 export class AuthService {
@@ -49,12 +49,12 @@ export class AuthService {
   async login(identityEthAddress: string, signature: string): Promise<string> {
     const user = await this.usersService.findOneByEth(identityEthAddress);
     if (!user) {
-      throw new PraiseException('User not found');
+      throw new ServiceException('User not found');
     }
 
     // Check for previously generated nonce
     if (!user.nonce) {
-      throw new PraiseException('Nonce not found');
+      throw new ServiceException('Nonce not found');
     }
 
     // Generate expected message, nonce included.
@@ -64,7 +64,7 @@ export class AuthService {
 
     // Recovered signer address must match identityEthAddress
     if (signerAddress !== identityEthAddress)
-      throw new PraiseException('Signature verification failed');
+      throw new ServiceException('Signature verification failed');
 
     // await logEvent(EventLogTypeKey.AUTHENTICATION, 'Logged in', {
     //   userId: user._id,
