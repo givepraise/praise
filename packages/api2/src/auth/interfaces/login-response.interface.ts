@@ -1,4 +1,4 @@
-export interface LoginResponseDto {
+export interface LoginResponse {
   identityEthAddress: string;
   accessToken: string;
   tokenType: string;

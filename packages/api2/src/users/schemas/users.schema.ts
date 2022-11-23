@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Types } from 'mongoose';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
-import { UserRole } from '../interfaces/userRole.interface';
+import { UserRole } from '../interfaces/user-role.interface';
 
 export type UserDocument = User & Document;
 
@@ -48,15 +48,15 @@ export class User {
 
   @Exclude()
   @Prop()
-  nonce: string;
+  nonce?: string;
 
   @Exclude()
   @Prop()
-  accessToken: string;
+  accessToken?: string;
 
   @Exclude()
   @Prop()
-  refreshToken: string;
+  refreshToken?: string;
 
   @Prop()
   createdAt: Date;

@@ -1,4 +1,4 @@
-import { UserRoleChangeDto } from './dto/userRoleChange.dto';
+import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { User, UserDocument } from './schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -7,8 +7,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { UserRole } from './interfaces/userRole.interface';
+import { UserRole } from './interfaces/user-role.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -39,7 +40,7 @@ export class UsersService {
 
   async addRole(
     _id: Types.ObjectId,
-    roleChange: UserRoleChangeDto,
+    roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
     if (!userDocument) throw new NotFoundException('User not found.');
@@ -66,7 +67,7 @@ export class UsersService {
 
   async removeRole(
     _id: Types.ObjectId,
-    roleChange: UserRoleChangeDto,
+    roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
     if (!userDocument) throw new NotFoundException('User not found.');
@@ -134,16 +135,20 @@ export class UsersService {
     return this.findOneById(_id);
   }
 
-  async updateUser(_id: Types.ObjectId, user: UpdateUserDto): Promise<User> {
+  async update(_id: Types.ObjectId, user: UpdateUserDto): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
     if (!userDocument) throw new NotFoundException('User not found.');
 
     for (const [k, v] of Object.entries(user)) {
       userDocument.set(k, v);
-      console.log(`${JSON.stringify(k)}: ${JSON.stringify(v)}`);
     }
     await userDocument.save();
 
     return this.findOneById(_id);
+  }
+
+  async create(user: CreateUserDto): Promise<User> {
+    const createdUser = new this.userModel(user);
+    return createdUser.save();
   }
 }
