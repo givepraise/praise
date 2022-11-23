@@ -1,4 +1,5 @@
 import {
+  Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
@@ -13,6 +14,7 @@ import { Request } from 'express';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from 'src/objectId.pipe';
 import { ExportTransformer } from 'src/shared/types.shared';
+import { SetSettingDto } from './dto/set-setting.dto';
 import { Settings } from './schemas/settings.schema';
 import { SettingsService } from './settings.service';
 
@@ -41,9 +43,10 @@ export class SettingsController {
   @ApiParam({ name: 'id', type: String })
   async set(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Body() data: SetSettingDto,
     @Req() req: Request,
   ): Promise<Settings> {
-    return this.settingsService.setOne(id, req);
+    return this.settingsService.setOne(id, req, data);
   }
 
   @Get('/customExportTransformer')

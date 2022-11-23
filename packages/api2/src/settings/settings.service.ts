@@ -12,6 +12,7 @@ import { AxiosResponse } from 'axios';
 import axios from 'axios';
 import { TransformerMapOperateItem } from 'ses-node-json-transform';
 import { ExportTransformer } from 'src/shared/types.shared';
+import { SetSettingDto } from './dto/set-setting.dto';
 
 @Injectable()
 export class SettingsService {
@@ -33,11 +34,17 @@ export class SettingsService {
       })
       .lean();
 
+    console.log('SETTING:', setting);
+
     if (!setting) throw new NotFoundException('Settings not found.');
     return new Settings(setting);
   }
 
-  async setOne(_id: Types.ObjectId, req: Request): Promise<Settings> {
+  async setOne(
+    _id: Types.ObjectId,
+    req: Request,
+    data: SetSettingDto,
+  ): Promise<Settings> {
     const setting = await this.settingsModel.findOne({
       _id,
       period: { $exists: 0 },
@@ -52,10 +59,10 @@ export class SettingsService {
         setting.value = uploadResponse;
       }
     } else {
-      if (typeof req.body.value === 'undefined') {
+      if (typeof data.value === 'undefined') {
         throw new BadRequestException('Value is required field');
       }
-      setting.value = req.body.value;
+      setting.value = data.value;
     }
 
     // await logEvent(

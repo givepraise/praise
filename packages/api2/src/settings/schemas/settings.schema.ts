@@ -1,12 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Transform } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { Types } from 'mongoose';
 import { SettingGroup } from '../interfaces/settings-group.interface';
 import { IsSettingValueAllowedBySettingType } from '../validators/settings-type.validator';
 
 export type SettingsDocument = Settings & Document;
 
-@Schema({ timestamps: true })
+@Schema({
+  timestamps: true,
+  // toJSON: {
+  //   virtuals: true,
+  // },
+})
 export class Settings {
   constructor(partial?: Partial<Settings>) {
     if (partial) {
@@ -21,7 +26,36 @@ export class Settings {
   key: string;
 
   @Prop()
+  @IsSettingValueAllowedBySettingType()
   value: string;
+
+  @Expose()
+  get valueRealized(): string | boolean | number | number[] | undefined {
+    if (!this || !this.value) return undefined;
+
+    let realizedValue;
+    if (this.type === 'Integer') {
+      realizedValue = Number.parseInt(this.value);
+    } else if (this.type === 'Float') {
+      realizedValue = parseFloat(this.value);
+    } else if (this.type === 'Boolean') {
+      realizedValue = this.value === 'true' ? true : false;
+    } else if (this.type === 'IntegerList') {
+      realizedValue = this.value
+        .split(',')
+        .map((v: string) => Number.parseInt(v.trim()));
+    } else if (this.type === 'StringList') {
+      realizedValue = this.value.split(',').map((v: string) => v.trim());
+    } else if (this.type === 'Image') {
+      realizedValue = `${process.env.API_URL as string}/uploads/${this.value}`;
+    } else if (this.type === 'JSON') {
+      realizedValue = this.value ? JSON.parse(this.value) : [];
+    } else {
+      realizedValue = this.value;
+    }
+
+    return realizedValue;
+  }
 
   @Prop()
   defaultValue: string;
@@ -41,7 +75,6 @@ export class Settings {
       'JSON',
     ],
   })
-  @IsSettingValueAllowedBySettingType()
   type: string;
 
   @Prop({ required: true })
