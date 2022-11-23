@@ -1,6 +1,7 @@
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { UsersService } from './users.service';
 import {
+  BadRequestException,
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -34,7 +35,9 @@ export class UsersController {
   @Get(':id')
   @ApiParam({ name: 'id', type: String })
   async findOne(@Param('id', ObjectIdPipe) id: Types.ObjectId): Promise<User> {
-    return this.usersService.findOneById(id);
+    const user = await this.usersService.findOneById(id);
+    if (!user) throw new BadRequestException('User not found.');
+    return user;
   }
 
   @Patch(':id/addRole')
