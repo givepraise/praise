@@ -1,3 +1,4 @@
+import { UtilsProvider } from '@/utils/utils.provider';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Settings, SettingsSchema } from './schemas/settings.schema';
@@ -11,6 +12,6 @@ import { SettingsService } from './settings.service';
     ]),
   ],
   controllers: [SettingsController],
-  providers: [SettingsService],
+  providers: [SettingsService, UtilsProvider],
 })
 export class SettingsModule {}
