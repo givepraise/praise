@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from '@/users/schemas/users.schema';
 
 import { JwtService } from '@nestjs/jwt';
@@ -11,6 +7,7 @@ import { generateLoginMessage } from './auth.utils';
 import { ethers } from 'ethers';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UtilsProvider } from '@/utils/utils.provider';
+import { ServiceException } from '@/shared/service-exception';
 
 @Injectable()
 export class AuthService {
@@ -30,18 +27,16 @@ export class AuthService {
     // Generate random nonce used for auth request
     const nonce = await this.utils.randomString();
 
-    try {
-      const user = await this.usersService.findOneByEth(identityEthAddress);
-      return this.usersService.update(user._id, { nonce });
-    } catch (e) {
-      // Create new user if none exists
-      return this.usersService.create({
-        identityEthAddress,
-        rewardsEthAddress: identityEthAddress,
-        username: identityEthAddress,
-        nonce,
-      });
-    }
+    const user = await this.usersService.findOneByEth(identityEthAddress);
+
+    if (user) return this.usersService.update(user._id, { nonce });
+
+    return this.usersService.create({
+      identityEthAddress,
+      rewardsEthAddress: identityEthAddress,
+      username: identityEthAddress,
+      nonce,
+    });
   }
 
   /**
@@ -54,12 +49,12 @@ export class AuthService {
   async login(identityEthAddress: string, signature: string): Promise<string> {
     const user = await this.usersService.findOneByEth(identityEthAddress);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new ServiceException('User not found');
     }
 
     // Check for previously generated nonce
     if (!user.nonce) {
-      throw new BadRequestException('Nonce not found');
+      throw new ServiceException('Nonce not found');
     }
 
     // Generate expected message, nonce included.
@@ -69,7 +64,7 @@ export class AuthService {
 
     // Recovered signer address must match identityEthAddress
     if (signerAddress !== identityEthAddress)
-      throw new BadRequestException('Signature verification failed');
+      throw new ServiceException('Signature verification failed');
 
     // await logEvent(EventLogTypeKey.AUTHENTICATION, 'Logged in', {
     //   userId: user._id,
