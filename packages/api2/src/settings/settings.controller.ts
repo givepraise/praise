@@ -7,6 +7,7 @@ import {
   Patch,
   Req,
   SerializeOptions,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiParam } from '@nestjs/swagger';
@@ -17,12 +18,14 @@ import { ExportTransformer } from 'src/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { Settings } from './schemas/settings.schema';
 import { SettingsService } from './settings.service';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 
 @Controller('settings')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(JwtAuthGuard)
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 
