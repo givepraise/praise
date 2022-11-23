@@ -1,6 +1,7 @@
-import { UserRoleChangeDto } from './dto/userRoleChange.dto';
+import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { UsersService } from './users.service';
 import {
+  BadRequestException,
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -22,38 +23,37 @@ import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
   excludePrefixes: ['__'],
 })
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiParam({ name: 'id', type: String })
   async findOne(@Param('id', ObjectIdPipe) id: Types.ObjectId): Promise<User> {
-    return this.usersService.findOneById(id);
+    const user = await this.usersService.findOneById(id);
+    if (!user) throw new BadRequestException('User not found.');
+    return user;
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch(':id/addRole')
   @ApiParam({ name: 'id', type: String })
   async addRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() roleChange: UserRoleChangeDto,
+    @Body() roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     return this.usersService.addRole(id, roleChange);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch(':id/removeRole')
   @ApiParam({ name: 'id', type: String })
   async removeRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() roleChange: UserRoleChangeDto,
+    @Body() roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     return this.usersService.removeRole(id, roleChange);
   }

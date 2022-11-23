@@ -1,27 +1,20 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { User, UserDocument } from '@/users/schemas/users.schema';
+import { Injectable } from '@nestjs/common';
+import { User } from '@/users/schemas/users.schema';
 
-import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
-import { Model } from 'mongoose';
-import { NonceResponseDto } from './dto/nonce-response.dto';
 import { UsersService } from '@/users/users.service';
-import { randomString } from '@/shared/random.shared';
 import { generateLoginMessage } from './auth.utils';
 import { ethers } from 'ethers';
-import { JwtPayload } from './dto/jwt-payload.dto';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { UtilsProvider } from '@/utils/utils.provider';
+import { ServiceException } from '@/shared/service-exception';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name)
-    private userModel: Model<UserDocument>,
     private usersService: UsersService,
     private jwtService: JwtService,
+    private utils: UtilsProvider,
   ) {}
 
   /**
@@ -30,18 +23,20 @@ export class AuthService {
    * @param identityEthAddress
    * @returns NonceResponse
    */
-  async nonce(identityEthAddress: string): Promise<NonceResponseDto> {
+  async generateUserNonce(identityEthAddress: string): Promise<User> {
     // Generate random nonce used for auth request
-    const nonce = randomString();
+    const nonce = await this.utils.randomString();
 
-    // Update existing user or create new
-    await this.userModel.findOneAndUpdate(
-      { identityEthAddress },
-      { nonce },
-      { upsert: true, new: true },
-    );
+    const user = await this.usersService.findOneByEth(identityEthAddress);
 
-    return { identityEthAddress, nonce };
+    if (user) return this.usersService.update(user._id, { nonce });
+
+    return this.usersService.create({
+      identityEthAddress,
+      rewardsEthAddress: identityEthAddress,
+      username: identityEthAddress,
+      nonce,
+    });
   }
 
   /**
@@ -54,20 +49,22 @@ export class AuthService {
   async login(identityEthAddress: string, signature: string): Promise<string> {
     const user = await this.usersService.findOneByEth(identityEthAddress);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new ServiceException('User not found');
     }
 
     // Check for previously generated nonce
     if (!user.nonce) {
-      throw new BadRequestException('Nonce not found');
+      throw new ServiceException('Nonce not found');
     }
 
     // Generate expected message, nonce included.
     // Recover signer from generated message + signature
     const generatedMsg = generateLoginMessage(identityEthAddress, user.nonce);
     const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
+
+    // Recovered signer address must match identityEthAddress
     if (signerAddress !== identityEthAddress)
-      throw new BadRequestException('Signature verification failed');
+      throw new ServiceException('Signature verification failed');
 
     // await logEvent(EventLogTypeKey.AUTHENTICATION, 'Logged in', {
     //   userId: user._id,
