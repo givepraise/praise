@@ -30,18 +30,18 @@ export class AuthService {
     // Generate random nonce used for auth request
     const nonce = await this.utils.randomString();
 
-    const user = await this.usersService.findOneByEth(identityEthAddress);
-    if (user) {
+    try {
+      const user = await this.usersService.findOneByEth(identityEthAddress);
       return this.usersService.update(user._id, { nonce });
+    } catch (e) {
+      // Create new user if none exists
+      return this.usersService.create({
+        identityEthAddress,
+        rewardsEthAddress: identityEthAddress,
+        username: identityEthAddress,
+        nonce,
+      });
     }
-
-    // Create new user if none exists
-    return this.usersService.create({
-      identityEthAddress,
-      rewardsEthAddress: identityEthAddress,
-      username: identityEthAddress,
-      nonce,
-    });
   }
 
   /**
