@@ -24,6 +24,15 @@ Praise is similar to a team allocation in other token economies, but done via a 
 
 Please see setup instructions at: https://givepraise.xyz/docs/
 
+### Run it in one click
+
+TL:DR
+
+```
+bash .scripts/praise.sh
+```
+Answer the script questions and your server should be good to go
+
 ## Run Praise locally
 
 Prerequisites:
