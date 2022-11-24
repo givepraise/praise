@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { UserDetailsDto } from 'api/dist/user/types';
 import {
   faArrowDownWideShort,
@@ -8,21 +8,15 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
-import { AllPraiseList } from '@/model/praise';
+import {
+  AllPraiseList,
+  praiseSortOptions,
+  PraiseTableSelectedSortOption,
+} from '@/model/praise';
 import { Praise } from '@/components/praise/Praise';
 import { PraiseRow } from '@/components/praise/PraiseRow';
 import { PraisePageLoader } from '@/components/praise/PraisePageLoader';
 import { SelectInput } from '@/components/form/SelectInput';
-
-const sortOptions = [
-  { value: 'createdAt', label: 'Latest' },
-  { value: 'scoreRealized', label: 'Top' },
-];
-
-interface sortOptionsProps {
-  value: string;
-  label: string;
-}
 
 const getUseAccountId = (
   user: UserDetailsDto | undefined
@@ -44,8 +38,8 @@ export const ReceivedGivenPraiseTable = ({
   userAccountType,
   user,
 }: Props): JSX.Element | null => {
-  const [selectedSort, setSelectedSort] = useState<sortOptionsProps>(
-    sortOptions[0]
+  const [selectedSort, setSelectedSort] = useRecoilState(
+    PraiseTableSelectedSortOption
   );
 
   let PRAISE_LIST_KEY =
@@ -100,14 +94,14 @@ export const ReceivedGivenPraiseTable = ({
         </div>
 
         {/* Sort */}
-        <div className="mt-4 ml-4 mr-5 sm:w-24 sm:mt-0 sm:ml-auto bg-warm-gray-50">
+        <div className="mt-4 ml-4 mr-5 sm:w-24 sm:mt-0 sm:ml-auto">
           <SelectInput
             handleChange={(e): void => {
               setSelectedSort(e);
               setPage(1);
             }}
             selected={selectedSort}
-            options={sortOptions}
+            options={praiseSortOptions}
             icon={faArrowDownWideShort}
           />
         </div>
@@ -133,7 +127,7 @@ export const ReceivedGivenPraiseTable = ({
         <PraisePageLoader
           listKey={PRAISE_LIST_KEY}
           queryParams={queryParams}
-          onPageChange={(page): void => setPage(page)}
+          onLoadMoreClick={(page): void => setPage(page)}
         />
       </React.Suspense>
     </>

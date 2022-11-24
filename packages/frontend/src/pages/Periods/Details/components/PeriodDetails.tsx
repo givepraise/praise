@@ -120,9 +120,7 @@ export const PeriodDetails = (): JSX.Element | null => {
                   </Button>
                 ) : null}
                 {period.status === 'QUANTIFY' && isAdmin ? (
-                  <div className="w-3/12">
-                    <ExportDropdown />
-                  </div>
+                  <ExportDropdown />
                 ) : null}
                 <Button
                   variant={'outline'}

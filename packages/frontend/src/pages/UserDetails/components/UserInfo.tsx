@@ -1,10 +1,4 @@
-import {
-  UpdateUserProfileInput,
-  UserDetailsDto,
-  UserDto,
-  UserRole,
-} from 'api/dist/user/types';
-import React from 'react';
+import { UserDetailsDto, UserDto, UserRole } from 'api/dist/user/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCalendarAlt,
@@ -13,7 +7,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
-import { Dialog } from '@headlessui/react';
 import { toast } from 'react-hot-toast';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import { useRecoilValue } from 'recoil';
@@ -21,21 +14,19 @@ import { Box } from '@/components/ui/Box';
 import { formatIsoDateUTC, DATE_FORMAT } from '@/utils/date';
 import { classNames } from '@/utils/index';
 import { Button } from '@/components/ui/Button';
-import { useAdminUsers, useUserProfile } from '@/model/users';
-import { isResponseOk } from '@/model/api';
+import { useAdminUsers } from '@/model/users';
 import { ActiveUserId, HasRole, ROLE_ADMIN } from '@/model/auth';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { EditProfileDialog } from './EditProfileDialog';
 
 interface Params {
   user: UserDetailsDto;
+  isDialogOpen: (value) => void;
 }
 
-export const UserInfo = ({ user }: Params): JSX.Element | null => {
-  const dialogRef = React.useRef(null);
-
-  const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
-
+export const UserInfo = ({
+  user,
+  isDialogOpen,
+}: Params): JSX.Element | null => {
   const { addRole, removeRole } = useAdminUsers();
 
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
@@ -46,23 +37,6 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
   const roles = [UserRole.ADMIN, UserRole.FORWARDER, UserRole.QUANTIFIER];
 
   const discordAccount = user.accounts?.find((a) => a.platform === 'DISCORD');
-
-  const { update } = useUserProfile();
-
-  const handleSaveUserProfile = async (
-    values: UpdateUserProfileInput
-  ): Promise<void> => {
-    const { username, rewardsEthAddress } = values;
-    const response = await update(username, rewardsEthAddress);
-
-    if (isResponseOk(response)) {
-      toast.success('User profile saved');
-    } else {
-      toast.error('Profile update failed');
-    }
-
-    setIsDialogOpen(false);
-  };
 
   const handleRole = async (role: UserRole, user: UserDto): Promise<void> => {
     let resp;
@@ -85,7 +59,7 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
         </div>
         {isProfilePage && (
           <div>
-            <Button onClick={(): void => setIsDialogOpen(true)} className="">
+            <Button onClick={(): void => isDialogOpen(true)} className="">
               Edit profile
             </Button>
           </div>
@@ -198,21 +172,6 @@ export const UserInfo = ({ user }: Params): JSX.Element | null => {
           </div>
         )}
       </>
-
-      <Dialog
-        open={isDialogOpen}
-        onClose={(): void => setIsDialogOpen(false)}
-        className="fixed inset-0 z-10 overflow-y-auto"
-        initialFocus={dialogRef}
-      >
-        <div ref={dialogRef}>
-          <EditProfileDialog
-            onClose={(): void => setIsDialogOpen(false)}
-            onSave={(values): void => void handleSaveUserProfile(values)}
-            user={user}
-          />
-        </div>
-      </Dialog>
     </Box>
   );
 };

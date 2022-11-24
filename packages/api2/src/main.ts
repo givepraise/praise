@@ -20,6 +20,8 @@ async function bootstrap() {
 
   const config = new DocumentBuilder().setTitle('Praise API').build();
   const document = SwaggerModule.createDocument(app, config);
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+
   SwaggerModule.setup('docs', app, document);
 
   app.enableCors({

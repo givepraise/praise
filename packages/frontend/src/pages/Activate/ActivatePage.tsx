@@ -21,7 +21,7 @@ interface Props {
 
 const ActivateDialog = ({ accountId, platform, token }: Props): JSX.Element => {
   const [message, setMessage] = useState<string | undefined>(undefined);
-  const { data } = useAccount();
+  const { address } = useAccount();
 
   useEffect(() => {
     const generateNewMessage = (
@@ -38,18 +38,17 @@ const ActivateDialog = ({ accountId, platform, token }: Props): JSX.Element => {
       }
     };
 
-    if (data?.address && accountId && token)
-      void generateNewMessage(accountId, data.address, token);
-  }, [data, accountId, token]);
+    if (address && accountId && token)
+      void generateNewMessage(accountId, address, token);
+  }, [address, accountId, token]);
 
   const onSignSuccess = async (signature): Promise<void> => {
     try {
-      if (!data?.address || !message || !signature || !accountId)
-        throw new Error();
+      if (!address || !message || !signature || !accountId) throw new Error();
 
       // 3. Verify signature with server
       await requestApiActivate({
-        identityEthAddress: data.address,
+        identityEthAddress: address,
         message,
         signature,
         accountId,

@@ -22,7 +22,8 @@
       "@/shared/*": ["src/shared/*"],
       "@/utils/*": ["src/utils/*"],
       "@/users/*": ["src/users/*"],
-      "@/useraccounts/*": ["src/useraccounts/*"]
+      "@/useraccounts/*": ["src/useraccounts/*"],
+      "@/settings/*": ["src/settings/*"]
     }
   }
 }

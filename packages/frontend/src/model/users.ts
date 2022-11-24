@@ -8,6 +8,7 @@ import {
   useRecoilCallback,
   useRecoilValue,
   useSetRecoilState,
+  useRecoilRefresher_UNSTABLE,
 } from 'recoil';
 import React from 'react';
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
@@ -179,8 +180,10 @@ export const SingleUser = selectorFamily({
           AllUsers,
           allUsers.map((p) => (p._id === user._id ? user : p))
         );
+
         return;
       }
+
       // Add new user
       set(AllUsers, [...allUsers, user]);
     },
@@ -323,12 +326,19 @@ export const useLoadSingleUserDetails = (
 ): AxiosResponse<UserDetailsDto> | AxiosError => {
   const response = useRecoilValue(DetailedSingleUserQuery(userId));
   const setUser = useSetRecoilState(SingleUser(userId));
+  const refresh = useRecoilRefresher_UNSTABLE(DetailedSingleUserQuery(userId));
 
   React.useEffect(() => {
+    if (!refresh) return;
+    refresh();
+  }, [refresh]);
+
+  React.useEffect(() => {
+    if (!refresh || !response) return;
     if (isResponseOk(response)) {
       setUser(response.data);
     }
-  }, [response, setUser]);
+  }, [response, refresh, setUser]);
 
   return response;
 };
