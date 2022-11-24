@@ -1,31 +1,45 @@
-import { Controller, Post, Query, Get, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { NonceResponse } from './schemas/nonce-response.schema';
-import { LoginDto } from './dto/login-request.dto';
-import { LoginResponseDto } from './dto/login-response.dto';
+import { NonceResponse } from './interfaces/nonce-response.interface';
+import { LoginRequestDto } from './dto/login-request.dto';
+import { LoginResponse } from './interfaces/login-response.interface';
+import { NonceRequestDto } from './dto/nonce-request.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Get('nonce')
-  async nonce(
-    @Query('ethereumAddress') ethereumAddress: string,
-  ): Promise<NonceResponse> {
-    return this.authService.nonce(ethereumAddress);
+  @Post('nonce')
+  async nonce(@Body() nonceRquestDto: NonceRequestDto): Promise<NonceResponse> {
+    const { identityEthAddress } = nonceRquestDto;
+    const user = await this.authService.generateUserNonce(identityEthAddress);
+    if (user && user.nonce) {
+      return {
+        identityEthAddress,
+        nonce: user.nonce,
+      };
+    }
+    throw new InternalServerErrorException('Failed to generate nonce.');
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
-    const { ethereumAddress, signature } = loginDto;
+  async login(
+    @Body() loginRequestDto: LoginRequestDto,
+  ): Promise<LoginResponse> {
+    const { identityEthAddress, signature } = loginRequestDto;
     const accessToken = await this.authService.login(
-      ethereumAddress,
+      identityEthAddress,
       signature,
     );
 
     return {
       accessToken,
-      ethereumAddress,
+      identityEthAddress,
       tokenType: 'Bearer',
     };
   }

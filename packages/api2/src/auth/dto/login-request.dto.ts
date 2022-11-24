@@ -1,12 +1,14 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEthAddress } from '@/shared/validators.shared';
 
-export class LoginDto {
+export class LoginRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  ethereumAddress: string;
+  @IsEthAddress()
+  identityEthAddress: string;
 
   @ApiProperty()
   @IsNotEmpty()
