@@ -8,9 +8,6 @@ export type SettingsDocument = Settings & Document;
 
 @Schema({
   timestamps: true,
-  // toJSON: {
-  //   virtuals: true,
-  // },
 })
 export class Settings {
   constructor(partial?: Partial<Settings>) {

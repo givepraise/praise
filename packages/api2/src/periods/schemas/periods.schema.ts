@@ -3,7 +3,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Date, Types } from 'mongoose';
 import { PeriodStatusType } from '../interfaces/statusType.interface';
-import { endDateValidators } from '../validators/periods.validators';
 
 export type PeriodDocument = Period & Document;
 
@@ -35,8 +34,7 @@ export class Period {
 
   @Prop({
     required: true,
-    /** TODO */
-    validator: (value: Date) => endDateValidators,
+    /** TODO validator */
   })
   endDate: Date;
 
