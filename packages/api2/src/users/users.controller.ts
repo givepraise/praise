@@ -16,7 +16,7 @@ import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../objectId.pipe';
 import { User } from './schemas/users.schema';
 import { ApiParam } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/authentication/jwt-auth.guard';
 
 @Controller('users')
 @SerializeOptions({

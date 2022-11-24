@@ -1,4 +1,4 @@
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './authentication/auth.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccountsModule } from './useraccounts/useraccounts.module';
