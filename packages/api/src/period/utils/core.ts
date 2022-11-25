@@ -1,18 +1,4 @@
 import some from 'lodash/some';
-import { PeriodModel } from '../entities';
-import {
-  periodDetailsGiverReceiverListTransformer,
-  periodTransformer,
-} from '../transformers';
-import {
-  PeriodDocument,
-  PeriodDetailsDto,
-  PeriodDetailsQuantifierDto,
-  PeriodDetailsQuantifier,
-  PeriodDetailsGiverReceiver,
-  PeriodDateRange,
-  PeriodStatusType,
-} from '../types';
 import { NotFoundError } from '@/error/errors';
 import { PraiseModel } from '@/praise/entities';
 import { calculateGiverReceiverCompositeScore } from '@/praise/utils/score';
@@ -23,6 +9,20 @@ import {
   countPraiseWithinDateRanges,
   isQuantificationCompleted,
 } from '@/praise/utils/core';
+import {
+  PeriodDocument,
+  PeriodDetailsDto,
+  PeriodDetailsQuantifierDto,
+  PeriodDetailsQuantifier,
+  PeriodDetailsGiverReceiver,
+  PeriodDateRange,
+  PeriodStatusType,
+} from '../types';
+import {
+  periodDetailsGiverReceiverListTransformer,
+  periodTransformer,
+} from '../transformers';
+import { PeriodModel } from '../entities';
 
 /**
  * Fetch the previous period's endDate,

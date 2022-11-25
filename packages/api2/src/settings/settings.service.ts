@@ -9,10 +9,7 @@ import { TransformerMapOperateItem } from 'ses-node-json-transform';
 import { ExportTransformer } from 'src/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { ServiceException } from '../shared/service-exception';
-import { UploadedFile } from 'express-fileupload';
-import mime from 'mime-types';
 import { UtilsProvider } from '@/utils/utils.provider';
-import { unlink } from 'fs/promises';
 
 @Injectable()
 export class SettingsService {
@@ -21,9 +18,6 @@ export class SettingsService {
     private settingsModel: Model<SettingsDocument>,
     private utils: UtilsProvider,
   ) {}
-
-  private uploadDirectory =
-    process.env.NODE_ENV === 'production' ? '/usr/src/uploads/' : 'uploads/';
 
   async findAll(): Promise<Settings[]> {
     const settings = await this.settingsModel.find().lean();
@@ -55,9 +49,9 @@ export class SettingsService {
 
     const originalValue = setting.value;
     if (setting.type === 'Image') {
-      const uploadResponse = await this.upload(req, 'value');
+      const uploadResponse = await this.utils.upload(req, 'value');
       if (uploadResponse) {
-        setting.value && (await this.removeFile(setting.value));
+        setting.value && (await this.utils.removeFile(setting.value));
         setting.value = uploadResponse;
       }
     } else {
@@ -160,34 +154,4 @@ export class SettingsService {
 
     return setting.value;
   }
-
-  private upload = async (req: Request, key: string): Promise<string> => {
-    const file = req.files;
-
-    if (!file) {
-      throw new ServiceException('Uploaded file is missing.');
-    }
-
-    const logo: UploadedFile = file[key] as UploadedFile;
-    const chunk = logo.data.slice(0, 8);
-
-    if (!this.utils.isJpg(chunk) && !this.utils.isPng(chunk)) {
-      throw new ServiceException('Uploaded file is not a valid image.');
-    }
-
-    const randomString = await this.utils.randomString();
-    const fileExtension: string = mime.extension(logo.mimetype) as string;
-    const filename = `${randomString}.${fileExtension}`;
-    const path = `${this.uploadDirectory}${filename}`;
-    await logo.mv(path);
-    return filename;
-  };
-
-  private removeFile = async (filename: string): Promise<void> => {
-    try {
-      await unlink(`${this.uploadDirectory}${filename}`);
-    } catch (e) {
-      // logger.warn(`Could not find a file to remove: ${filename}`);
-    }
-  };
 }
