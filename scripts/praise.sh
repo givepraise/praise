@@ -298,6 +298,11 @@ restart_praise () {
         docker compose -f $PRAISE_HOME/docker-compose.production.yml down
         sleep 1
         docker compose -f $PRAISE_HOME/docker-compose.production.yml up -d --remove-orphans
+    else
+        echo
+        echo "Praise is NOT installed, please install it first to be able to continue with this action"
+        echo
+        main
     fi
 }
 
