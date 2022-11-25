@@ -1,6 +1,9 @@
 #!/bin/bash
 
 PRAISE_HOME="/opt/praise"
+MONGO_INITDB_ROOT_PASSWORD=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-32} | head -n 1)
+MONGO_PASSWORD=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-32} | head -n 1)
+JWT_SECRET=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-32} | head -n 1)
 
 banner() {
 
@@ -32,8 +35,8 @@ installQuestions() {
     read -rp "IPv4 or IPv6 public address: " -e -i "${PUBLIC_IP}" PUBLIC_IP
 
     # Ask User for the Desirted Domain Name for the Praise Bot Server
-    HOSTNAME=""
-    read -rp "What would you like the Praise Bot Domain Name to be? " -e -i "${HOSTNAME}" HOSTNAME
+    HOST=""
+    read -rp "What would you like the Praise Bot Domain Name to be? " -e -i "${HOST}" HOST
     # Ask the user for the DISCORD TOKEN
     DISCORD_TOKEN=""
     read -rp "What is your Discord Token? " -e -i "${DISCORD_TOKEN}" DISCORD_TOKEN
@@ -46,7 +49,7 @@ installQuestions() {
     # Ask the user for the ADMINS wallet Address
     ADMINS=""
     read -rp "What will your praise bot server admin wallet address be (Please insert the addresses separated by comma)? " -e -i "${ADMINS}" ADMINS
-    echo ""
+    echo
     echo "Okay, that was all I needed. We are ready to setup your Praise server now."
     read -n1 -r -p "Press any key to continue..."
 }
@@ -109,9 +112,6 @@ COMMIT
 
 ## Configure Praise
 configure_praise () {
-    local MONGO_INITDB_ROOT_PASSWORD=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-32} | head -n 1)
-    local MONGO_PASSWORD=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-32} | head -n 1)
-    local JWT_SECRET=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-32} | head -n 1)
     sudo echo "
 ###########################################################################
 ## GENERAL ##
@@ -138,14 +138,14 @@ MONGO_PASSWORD=$MONGO_PASSWORD
 
 # The fully qualified domain name for the host where you are running Praise
 # For development: HOST=localhost
-HOST=$HOSTNAME
+HOST=$HOST
 
 ###########################################################################
 ## API ##
 
 # Full URL to the host where the API is running.
 # When running in development, the URL should also include API_PORT
-API_URL=https://$HOSTNAME
+API_URL=https://$HOST
 
 # The API is accessed on this port. In production this port is not exposed
 # externally but API is accessed on {$API_URL}/api
@@ -164,7 +164,7 @@ JWT_REFRESH_EXP=25920000
 ## FRONTEND ##
 
 # Full URL to the host (and optionally port) where frontend is being served
-FRONTEND_URL=https://$HOSTNAME
+FRONTEND_URL=https://$HOST
 
 ## FRONTEND - DEVELOPMENT ONLY ##
 
@@ -173,7 +173,7 @@ FRONTEND_URL=https://$HOSTNAME
 # env variables. There are workarounds but we haven't prioritised to implement them yet.
 #
 # https://jakobzanker.de/blog/inject-environment-variables-into-a-react-app-docker-on-runtime/
-REACT_APP_SERVER_URL=https://$HOSTNAME
+REACT_APP_SERVER_URL=https://$HOST
 
 # Port number used when running frontend for development, outside of Docker
 FRONTEND_PORT=3000
@@ -193,14 +193,14 @@ LOGGER_LEVEL=warn" > $PRAISE_HOME/.env
 }
 
 ## Setup Praise
-setup_praise () {
+install_praise () {
     echo
     echo "Checking if Praise is already Installed"
     if [ -d "$PRAISE_HOME" ]; then
         if [ "$(docker ps -q -f name=frontend-praise)" ] || [ "$(docker ps -q -f name=discord-bot-praise)" ] || [ "$(docker ps -q -f name=api-praise)" ] || [ "$(docker ps -q -f name=mongodb-praise)" ]; then
             echo "Praise is already Installed and Running"
         else
-            echo "Praise is NOT installed"
+            echo "Praise is NOT installed, please install it first to be able to continue with this action"
         fi
     else
         echo "Praise is NOT installed, attempting to install now..."
@@ -236,7 +236,68 @@ setup_praise () {
         echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
         docker compose -f $PRAISE_HOME/docker-compose.production.yml up -d
         echo "++++++++++++++++++ PRAISE IS UP +++++++++++++++++++++"
-        echo "Please point your Praise Domain Name $HOSTNAME to $PUBLIC_IP"
+        echo "Please point your Praise Domain Name $HOST to $PUBLIC_IP"
+    fi
+}
+
+setup_praise () {
+    echo
+    echo "Checking if Praise is already Installed"
+    if [ -d "$PRAISE_HOME" ]; then
+        if [ "$(docker ps -q -f name=frontend-praise)" ] || [ "$(docker ps -q -f name=discord-bot-praise)" ] || [ "$(docker ps -q -f name=api-praise)" ] || [ "$(docker ps -q -f name=mongodb-praise)" ]; then
+            echo "Praise is Installed and Running"
+            echo
+            echo "Checking if a configuration file exists"
+            echo
+            if [ -f "$PRAISE_HOME/.env" ]; then
+                echo "ENV Exists"
+                export $(grep -v '^#' $PRAISE_HOME/.env | xargs)
+                echo
+                # Detect public IPv4 or IPv6 address and pre-fill for the user
+                PUBLIC_IP=$(curl ifconfig.me)
+                read -rp "IPv4 or IPv6 public address: " -e -i "${PUBLIC_IP}" PUBLIC_IP
+                # Ask User for the Desirted Domain Name for the Praise Bot Server
+                HOST=$HOST
+                read -rp "What would you like the Praise Bot Domain Name to be? " -e -i "${HOST}" HOST
+                # Ask the user for the DISCORD TOKEN
+                DISCORD_TOKEN=$DISCORD_TOKEN
+                read -rp "What is your Discord Token? " -e -i "${DISCORD_TOKEN}" DISCORD_TOKEN
+                # Ask the user for the DISCORD CLIENT ID
+                DISCORD_CLIENT_ID=$DISCORD_CLIENT_ID
+                read -rp "What is your Discord Client ID? " -e -i "${DISCORD_CLIENT_ID}" DISCORD_CLIENT_ID
+                # Ask the user for the DISCORD GUILD ID
+                DISCORD_GUILD_ID=$DISCORD_GUILD_ID
+                read -rp "What is your Discord Guild ID? " -e -i "${DISCORD_GUILD_ID}" DISCORD_GUILD_ID
+                # Ask the user for the ADMINS wallet Address
+                ADMINS=$ADMINS
+                read -rp "What will your praise bot server admin wallet address be (Please insert the addresses separated by comma)? " -e -i "${ADMINS}" ADMINS
+                echo
+                echo "Okay, that was all I needed. Praise will be configured using the inputted values"
+                read -n1 -r -p "Press any key to continue..."
+                configure_praise
+                sleep 1
+                restart_praise
+            else
+                echo "Praise Config does not exist"
+            fi
+        else
+            echo "Praise is NOT Running, attempting to start Praise"
+            restart_praise
+            setup_praise
+        fi
+    else
+        echo
+        echo "Praise is NOT installed, please install it first to be able to continue with this action"
+        echo
+        main
+    fi
+}
+
+restart_praise () {
+    if [ -d "$PRAISE_HOME" ]; then
+        docker compose -f $PRAISE_HOME/docker-compose.production.yml down
+        sleep 1
+        docker compose -f $PRAISE_HOME/docker-compose.production.yml up -d --remove-orphans
     fi
 }
 
@@ -297,18 +358,19 @@ main () {
 	echo "Select one of the below options:"
 	echo "   1) Install Praise"
 	echo "   2) Upgrade Praise"
-	echo "   3) Reconfigure Praise"
-	echo "   4) Remove Praise"
-    echo "   5) Exit"
+	echo "   3) Setup Praise"
+    echo "   4) Restart Praise"
+	echo "   5) Remove Praise"
+    echo "   6) Exit"
 	read -p "Answer: " answer
-	until [[ -z "$answer" || "$answer" =~ ^[1-5]$ ]]; do
+	until [[ -z "$answer" || "$answer" =~ ^[1-6]$ ]]; do
 		echo "$answer: invalid selection."
         exit 0
 		read -p "Answer: " answer
 	done
 	case "$answer" in
 		1)
-            setup_praise
+            install_praise
 		;;
 		2)
 			echo
@@ -328,9 +390,12 @@ main () {
             main
 		;;
 		3)
-            reconfigure_praise
+            setup_praise
 		;;
-		4)
+        4)
+            restart_praise
+        ;;
+		5)
             echo
             echo "WARNING: This is a destructive move, removing praise will remove all it's componenets and data."
             echo "This is irriversable"
@@ -348,7 +413,7 @@ main () {
             fi
             main
 		;;
-		5)
+		6)
             echo "Goodbye! :)"
             exit 0
 		;;
