@@ -30,6 +30,7 @@ export class Settings {
   get valueRealized(): string | boolean | number | number[] | undefined {
     if (!this || !this.value) return undefined;
 
+    // TODO: This could be rewritten to be more easily readable
     let realizedValue;
     if (this.type === 'Integer') {
       realizedValue = Number.parseInt(this.value);
