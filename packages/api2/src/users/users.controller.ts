@@ -11,12 +11,14 @@ import {
   SerializeOptions,
   UseGuards,
   UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../objectId.pipe';
 import { User } from './schemas/users.schema';
 import { ApiParam } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/authentication/jwt-auth.guard';
+import { Request } from 'express';
 
 @Controller('users')
 @SerializeOptions({
@@ -27,14 +29,18 @@ import { JwtAuthGuard } from 'src/authentication/jwt-auth.guard';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
-  async findAll(): Promise<User[]> {
+  @Patch()
+  async findAll(@Req() req: any): Promise<User[]> {
+    console.log(req.userId);
     return this.usersService.findAll();
   }
 
   @Get(':id')
   @ApiParam({ name: 'id', type: String })
-  async findOne(@Param('id', ObjectIdPipe) id: Types.ObjectId): Promise<User> {
+  async findOne(
+    @Req() req: Request,
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+  ): Promise<User> {
     const user = await this.usersService.findOneById(id);
     if (!user) throw new BadRequestException('User not found.');
     return user;
