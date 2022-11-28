@@ -5,7 +5,7 @@ import { Types } from 'mongoose';
 import { ObjectIdPipe } from 'src/objectId.pipe';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { PeriodSettingsService } from './periodsettings.service';
-import { PeriodSettings } from './schemas/periodsettings.schema';
+import { PeriodSetting } from './schemas/periodsettings.schema';
 
 @Controller('periodsettings')
 export class PeriodsettingsController {
@@ -15,7 +15,7 @@ export class PeriodsettingsController {
   @ApiParam({ name: 'periodId', type: String })
   async findAll(
     @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
-  ): Promise<PeriodSettings[]> {
+  ): Promise<PeriodSetting[]> {
     return this.periodsettingsService.findAll(periodId);
   }
 
@@ -37,7 +37,7 @@ export class PeriodsettingsController {
     @Param('settingId', ObjectIdPipe) settingId: Types.ObjectId,
     @Body() data: SetPeriodSettingDto,
     @Req() req: Request,
-  ): Promise<PeriodSettings> {
+  ): Promise<PeriodSetting> {
     return this.periodsettingsService.setOne(settingId, periodId, req, data);
   }
 }

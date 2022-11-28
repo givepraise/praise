@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request } from 'express';
 import { Model, Types } from 'mongoose';
-import { Settings, SettingsDocument } from './schemas/settings.schema';
+import { Setting, SettingDocument } from './schemas/settings.schema';
 import { AxiosResponse } from 'axios';
 import axios from 'axios';
 import { TransformerMapOperateItem } from 'ses-node-json-transform';
@@ -15,17 +15,17 @@ import { UploadedFile } from 'express-fileupload';
 @Injectable()
 export class SettingsService {
   constructor(
-    @InjectModel(Settings.name)
-    private settingsModel: Model<SettingsDocument>,
+    @InjectModel(Setting.name)
+    private settingsModel: Model<SettingDocument>,
     private utils: UtilsProvider,
   ) {}
 
-  async findAll(): Promise<Settings[]> {
+  async findAll(): Promise<Setting[]> {
     const settings = await this.settingsModel.find().lean();
-    return settings.map((setting) => new Settings(setting));
+    return settings.map((setting) => new Setting(setting));
   }
 
-  async findOneById(_id: Types.ObjectId): Promise<Settings> {
+  async findOneById(_id: Types.ObjectId): Promise<Setting> {
     const setting = await this.settingsModel
       .findOne({
         _id,
@@ -34,14 +34,14 @@ export class SettingsService {
       .lean();
 
     if (!setting) throw new ServiceException('Settings not found.');
-    return new Settings(setting);
+    return new Setting(setting);
   }
 
   async setOne(
     _id: Types.ObjectId,
     req: Request,
     data: SetSettingDto,
-  ): Promise<Settings> {
+  ): Promise<Setting> {
     const setting = await this.settingsModel.findOne({
       _id,
       period: { $exists: 0 },

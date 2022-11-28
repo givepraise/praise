@@ -1,4 +1,4 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { PeriodSettings } from '../schemas/periodsettings.schema';
+import { PeriodSetting } from '../schemas/periodsettings.schema';
 
-export class SetPeriodSettingDto extends PartialType(PeriodSettings) {}
+export class SetPeriodSettingDto extends PartialType(PeriodSetting) {}

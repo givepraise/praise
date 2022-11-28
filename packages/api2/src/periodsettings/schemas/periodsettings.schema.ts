@@ -1,17 +1,17 @@
-import { Settings } from '@/settings/schemas/settings.schema';
+import { Setting } from '@/settings/schemas/settings.schema';
 import { InjectModel, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Transform } from 'class-transformer';
 import { SchemaTypes, Types } from 'mongoose';
 
-export type PeriodSettingsDocument = PeriodSettings & Document;
+export type PeriodSettingDocument = PeriodSetting & Document;
 
 @Schema({
   timestamps: true,
 })
-export class PeriodSettings extends Settings {
+export class PeriodSetting extends Setting {
   constructor(
-    @InjectModel('Settings') public readonly settings: Partial<Settings>,
-    partial?: Partial<PeriodSettings>,
+    @InjectModel('Settings') public readonly settings: Partial<Setting>,
+    partial?: Partial<PeriodSetting>,
   ) {
     super(settings);
 
@@ -25,5 +25,4 @@ export class PeriodSettings extends Settings {
   period: Types.ObjectId;
 }
 
-export const PeriodSettingsSchema =
-  SchemaFactory.createForClass(PeriodSettings);
+export const PeriodSettingsSchema = SchemaFactory.createForClass(PeriodSetting);

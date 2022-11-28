@@ -3,11 +3,11 @@ import { randomBytes } from 'crypto';
 import { UploadedFile } from 'express-fileupload';
 import { unlink } from 'fs/promises';
 import mime from 'mime-types';
+import { ConstantsProvider } from 'src/constants/constants.provider';
 
 @Injectable()
 export class UtilsProvider {
-  private uploadDirectory =
-    process.env.NODE_ENV === 'production' ? '/usr/src/uploads/' : 'uploads/';
+  constructor(private constants: ConstantsProvider) {}
 
   randomString(bytes = 10): string {
     return randomBytes(bytes).toString('hex');
@@ -47,12 +47,12 @@ export class UtilsProvider {
     const randomString = this.randomString();
     const fileExtension: string = mime.extension(file.mimetype) as string;
     const filename = `${randomString}.${fileExtension}`;
-    const path = `${this.uploadDirectory}${filename}`;
+    const path = `${this.constants.uploadDirectory}${filename}`;
     await file.mv(path);
     return filename;
   };
 
   removeFile = async (filename: string): Promise<void> => {
-    await unlink(`${this.uploadDirectory}${filename}`);
+    await unlink(`${this.constants.uploadDirectory}${filename}`);
   };
 }

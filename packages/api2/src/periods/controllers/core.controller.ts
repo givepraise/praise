@@ -22,9 +22,9 @@ export class CoreController {
     return this.periodsService.findOneById(id);
   }
 
-  @Get('create')
-  @ApiParam({ name: 'id', type: String })
-  async create(@Body() createPeriodDto: CreatePeriodDto): Promise<Period> {
-    return this.periodsService.createPeriod(createPeriodDto);
-  }
+  // @Get('create')
+  // @ApiParam({ name: 'id', type: String })
+  // async create(@Body() createPeriodDto: CreatePeriodDto): Promise<Period> {
+  //   return this.periodsService.createPeriod(createPeriodDto);
+  // }
 }
