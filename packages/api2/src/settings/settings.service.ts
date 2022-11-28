@@ -10,6 +10,7 @@ import { ExportTransformer } from 'src/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { ServiceException } from '../shared/service-exception';
 import { UtilsProvider } from '@/utils/utils.provider';
+import { UploadedFile } from 'express-fileupload';
 
 @Injectable()
 export class SettingsService {
@@ -47,13 +48,26 @@ export class SettingsService {
     });
     if (!setting) throw new ServiceException('Settings not found.');
 
-    const originalValue = setting.value;
     if (setting.type === 'Image') {
-      const uploadResponse = await this.utils.upload(req, 'value');
-      if (uploadResponse) {
-        setting.value && (await this.utils.removeFile(setting.value));
-        setting.value = uploadResponse;
+      const file = req.files;
+      if (!file) {
+        throw new ServiceException('Uploaded file is missing.');
       }
+
+      const logo: UploadedFile = file['value'] as UploadedFile;
+      if (!this.utils.isImage(logo)) {
+        throw new ServiceException('Uploaded file is not an image.');
+      }
+
+      // Remove previous file
+      try {
+        setting.value && (await this.utils.removeFile(setting.value));
+      } catch (err) {
+        // Ignore error
+      }
+
+      const savedFilename = await this.utils.saveFile(logo);
+      setting.value = savedFilename;
     } else {
       if (typeof data.value === 'undefined') {
         throw new ServiceException('Value is required field');

@@ -11,6 +11,7 @@ import {
   PeriodSettingsDocument,
 } from './schemas/periodsettings.schema';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
+import { UploadedFile } from 'express-fileupload';
 
 @Injectable()
 export class PeriodSettingsService {
@@ -65,14 +66,27 @@ export class PeriodSettingsService {
     });
     if (!periodSetting) throw new ServiceException('PeriodSettings not found.');
 
-    const originalValue = periodSetting.value;
     if (periodSetting.type === 'Image') {
-      const uploadResponse = await this.utils.upload(req, 'value');
-      if (uploadResponse) {
+      const file = req.files;
+      if (!file) {
+        throw new ServiceException('Uploaded file is missing.');
+      }
+
+      const logo: UploadedFile = file['value'] as UploadedFile;
+      if (!this.utils.isImage(logo)) {
+        throw new ServiceException('Uploaded file is not an image.');
+      }
+
+      // Remove previous file
+      try {
         periodSetting.value &&
           (await this.utils.removeFile(periodSetting.value));
-        periodSetting.value = uploadResponse;
+      } catch (err) {
+        // Ignore error
       }
+
+      const savedFilename = await this.utils.saveFile(logo);
+      periodSetting.value = savedFilename;
     } else {
       if (typeof data.value === 'undefined') {
         throw new ServiceException('Value is required field');
