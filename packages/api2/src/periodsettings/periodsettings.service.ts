@@ -25,7 +25,6 @@ export class PeriodSettingsService {
 
   async findAll(periodId: Types.ObjectId): Promise<PeriodSetting[]> {
     const period = await this.periodsService.findOneById(periodId);
-    if (!period) throw new ServiceException('Period not found.');
 
     const settings = await this.periodSettingsModel
       .find({ period: period._id })
@@ -37,8 +36,7 @@ export class PeriodSettingsService {
     settingId: Types.ObjectId,
     periodId: Types.ObjectId,
   ): Promise<PeriodSetting> {
-    const period = await this.periodsService.findOneById(periodId);
-    if (!period) throw new ServiceException('Period not found.');
+    await this.periodsService.findOneById(periodId);
 
     const periodSetting = await this.periodSettingsModel
       .findOne({ id: settingId, period: periodId })
@@ -55,7 +53,7 @@ export class PeriodSettingsService {
     data: SetPeriodSettingDto,
   ): Promise<PeriodSetting> {
     const period = await this.periodsService.findOneById(periodId);
-    if (!period) throw new ServiceException('Period not found');
+
     if (period.status !== PeriodStatusType.OPEN)
       throw new ServiceException(
         'Period settings can only be changed when period status is OPEN.',
