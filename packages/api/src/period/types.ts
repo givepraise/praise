@@ -45,6 +45,7 @@ export interface PeriodDetailsGiverReceiver {
   quantifications?: Array<Array<QuantificationDocument>>;
   scoreRealized: number;
   userAccounts: UserAccountDocument[];
+  username?: string;
 }
 
 export interface PeriodDetailsGiverReceiverDto {
@@ -55,6 +56,7 @@ export interface PeriodDetailsGiverReceiverDto {
   rewardsEthAddress?: string;
   scoreRealized: number;
   userAccount?: UserAccountDto;
+  username?: string;
 }
 
 export interface PeriodDetailsQuantifier {

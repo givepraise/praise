@@ -57,7 +57,15 @@ const listOfQuantificationListsTransformer = async (
 const periodDetailsGiverReceiverToDto = async (
   gr: PeriodDetailsGiverReceiver
 ): Promise<PeriodDetailsGiverReceiverDto> => {
-  const { _id, praiseCount, quantifications, scoreRealized, userAccounts } = gr;
+  const {
+    _id,
+    praiseCount,
+    quantifications,
+    scoreRealized,
+    userAccounts,
+    username,
+  } = gr;
+  console.log({gr});
   return {
     _id: _id.toString(),
     praiseCount,
@@ -69,6 +77,7 @@ const periodDetailsGiverReceiverToDto = async (
       Array.isArray(userAccounts) && userAccounts.length > 0
         ? userAccountTransformer(userAccounts[0])
         : undefined,
+    username,
   };
 };
 
