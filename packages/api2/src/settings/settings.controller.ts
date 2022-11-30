@@ -16,7 +16,7 @@ import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../objectId.pipe';
 import { ExportTransformer } from 'src/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
-import { Settings } from './schemas/settings.schema';
+import { Setting } from './schemas/settings.schema';
 import { SettingsService } from './settings.service';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 
@@ -30,7 +30,7 @@ export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 
   @Get()
-  async findAll(): Promise<Settings[]> {
+  async findAll(): Promise<Setting[]> {
     return this.settingsService.findAll();
   }
 
@@ -38,7 +38,7 @@ export class SettingsController {
   @ApiParam({ name: 'id', type: String })
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-  ): Promise<Settings> {
+  ): Promise<Setting> {
     return this.settingsService.findOneById(id);
   }
 
@@ -48,7 +48,7 @@ export class SettingsController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() data: SetSettingDto,
     @Req() req: Request,
-  ): Promise<Settings> {
+  ): Promise<Setting> {
     return this.settingsService.setOne(id, req, data);
   }
 

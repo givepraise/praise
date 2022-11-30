@@ -9,11 +9,6 @@ import {
   countPraiseWithinDateRanges,
   isQuantificationCompleted,
 } from '@/praise/utils/core';
-import { PeriodModel } from '../entities';
-import {
-  periodDetailsGiverReceiverListTransformer,
-  periodTransformer,
-} from '../transformers';
 import {
   PeriodDocument,
   PeriodDetailsDto,
@@ -23,6 +18,11 @@ import {
   PeriodDateRange,
   PeriodStatusType,
 } from '../types';
+import {
+  periodDetailsGiverReceiverListTransformer,
+  periodTransformer,
+} from '../transformers';
+import { PeriodModel } from '../entities';
 
 /**
  * Fetch the previous period's endDate,

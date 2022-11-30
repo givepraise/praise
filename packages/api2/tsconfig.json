@@ -18,7 +18,8 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/auth/*": ["src/authentication/*"],
+      "@/authentication/*": ["src/authentication/*"],
+      "@/constants/*": ["src/constants/*"],
       "@/shared/*": ["src/shared/*"],
       "@/utils/*": ["src/utils/*"],
       "@/users/*": ["src/users/*"],

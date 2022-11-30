@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { UtilsProvider } from './utils/utils.provider';
 import { praiseDatabaseUri } from './shared/database.shared';
 import { SettingsModule } from './settings/settings.module';
+import { PeriodsettingsModule } from './periodsettings/periodsettings.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { SettingsModule } from './settings/settings.module';
     UserAccountsModule,
     AuthModule,
     SettingsModule,
+    PeriodsettingsModule,
   ],
   providers: [UtilsProvider],
 })

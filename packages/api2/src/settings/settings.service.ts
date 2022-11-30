@@ -2,35 +2,30 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request } from 'express';
 import { Model, Types } from 'mongoose';
-import { Settings, SettingsDocument } from './schemas/settings.schema';
+import { Setting, SettingDocument } from './schemas/settings.schema';
 import { AxiosResponse } from 'axios';
 import axios from 'axios';
 import { TransformerMapOperateItem } from 'ses-node-json-transform';
 import { ExportTransformer } from 'src/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { ServiceException } from '../shared/service-exception';
-import { UploadedFile } from 'express-fileupload';
-import mime from 'mime-types';
 import { UtilsProvider } from '@/utils/utils.provider';
-import { unlink } from 'fs/promises';
+import { UploadedFile } from 'express-fileupload';
 
 @Injectable()
 export class SettingsService {
   constructor(
-    @InjectModel(Settings.name)
-    private settingsModel: Model<SettingsDocument>,
+    @InjectModel(Setting.name)
+    private settingsModel: Model<SettingDocument>,
     private utils: UtilsProvider,
   ) {}
 
-  private uploadDirectory =
-    process.env.NODE_ENV === 'production' ? '/usr/src/uploads/' : 'uploads/';
-
-  async findAll(): Promise<Settings[]> {
+  async findAll(): Promise<Setting[]> {
     const settings = await this.settingsModel.find().lean();
-    return settings.map((setting) => new Settings(setting));
+    return settings.map((setting) => new Setting(setting));
   }
 
-  async findOneById(_id: Types.ObjectId): Promise<Settings> {
+  async findOneById(_id: Types.ObjectId): Promise<Setting> {
     const setting = await this.settingsModel
       .findOne({
         _id,
@@ -39,27 +34,40 @@ export class SettingsService {
       .lean();
 
     if (!setting) throw new ServiceException('Settings not found.');
-    return new Settings(setting);
+    return new Setting(setting);
   }
 
   async setOne(
     _id: Types.ObjectId,
     req: Request,
     data: SetSettingDto,
-  ): Promise<Settings> {
+  ): Promise<Setting> {
     const setting = await this.settingsModel.findOne({
       _id,
       period: { $exists: 0 },
     });
     if (!setting) throw new ServiceException('Settings not found.');
 
-    const originalValue = setting.value;
     if (setting.type === 'Image') {
-      const uploadResponse = await this.upload(req, 'value');
-      if (uploadResponse) {
-        setting.value && (await this.removeFile(setting.value));
-        setting.value = uploadResponse;
+      const file = req.files;
+      if (!file) {
+        throw new ServiceException('Uploaded file is missing.');
       }
+
+      const logo: UploadedFile = file['value'] as UploadedFile;
+      if (!this.utils.isImage(logo)) {
+        throw new ServiceException('Uploaded file is not an image.');
+      }
+
+      // Remove previous file
+      try {
+        setting.value && (await this.utils.removeFile(setting.value));
+      } catch (err) {
+        // Ignore error
+      }
+
+      const savedFilename = await this.utils.saveFile(logo);
+      setting.value = savedFilename;
     } else {
       if (typeof data.value === 'undefined') {
         throw new ServiceException('Value is required field');
@@ -160,34 +168,4 @@ export class SettingsService {
 
     return setting.value;
   }
-
-  private upload = async (req: Request, key: string): Promise<string> => {
-    const file = req.files;
-
-    if (!file) {
-      throw new ServiceException('Uploaded file is missing.');
-    }
-
-    const logo: UploadedFile = file[key] as UploadedFile;
-    const chunk = logo.data.slice(0, 8);
-
-    if (!this.utils.isJpg(chunk) && !this.utils.isPng(chunk)) {
-      throw new ServiceException('Uploaded file is not a valid image.');
-    }
-
-    const randomString = await this.utils.randomString();
-    const fileExtension: string = mime.extension(logo.mimetype) as string;
-    const filename = `${randomString}.${fileExtension}`;
-    const path = `${this.uploadDirectory}${filename}`;
-    await logo.mv(path);
-    return filename;
-  };
-
-  private removeFile = async (filename: string): Promise<void> => {
-    try {
-      await unlink(`${this.uploadDirectory}${filename}`);
-    } catch (e) {
-      // logger.warn(`Could not find a file to remove: ${filename}`);
-    }
-  };
 }

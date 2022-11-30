@@ -10,11 +10,13 @@ praiseRouter.getAsync('/:id', controller.single);
 praiseRouter.patchAsync(
   '/:id/quantify',
   authMiddleware(UserRole.QUANTIFIER),
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   controller.quantify
 );
 praiseRouter.patchAsync(
   '/quantify',
   authMiddleware(UserRole.QUANTIFIER),
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   controller.quantifyMultiple
 );
 

@@ -1,3 +1,4 @@
+import { ConstantsProvider } from '@/constants/constants.provider';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UtilsProvider } from './utils.provider';
 
@@ -6,7 +7,7 @@ describe('Utils', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UtilsProvider],
+      providers: [UtilsProvider, ConstantsProvider],
     }).compile();
 
     provider = module.get<UtilsProvider>(UtilsProvider);
