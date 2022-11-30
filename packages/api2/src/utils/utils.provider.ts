@@ -1,8 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
+import { UploadedFile } from 'express-fileupload';
+import { unlink } from 'fs/promises';
+import mime from 'mime-types';
+import { ConstantsProvider } from '@/constants/constants.provider';
 
 @Injectable()
 export class UtilsProvider {
+  constructor(private constants: ConstantsProvider) {}
+
   randomString(bytes = 10): string {
     return randomBytes(bytes).toString('hex');
   }
@@ -31,4 +37,22 @@ export class UtilsProvider {
       buffer[7] === 0x0a
     );
   }
+
+  isImage(file: UploadedFile): boolean {
+    const buffer = file.data;
+    return this.isJpg(buffer) || this.isPng(buffer);
+  }
+
+  saveFile = async (file: UploadedFile): Promise<string> => {
+    const randomString = this.randomString();
+    const fileExtension: string = mime.extension(file.mimetype) as string;
+    const filename = `${randomString}.${fileExtension}`;
+    const path = `${this.constants.uploadDirectory}${filename}`;
+    await file.mv(path);
+    return filename;
+  };
+
+  removeFile = async (filename: string): Promise<void> => {
+    await unlink(`${this.constants.uploadDirectory}${filename}`);
+  };
 }

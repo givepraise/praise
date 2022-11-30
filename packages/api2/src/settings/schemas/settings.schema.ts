@@ -4,16 +4,13 @@ import { Types } from 'mongoose';
 import { SettingGroup } from '../interfaces/settings-group.interface';
 import { IsSettingValueAllowedBySettingType } from '../validators/settings-type.validator';
 
-export type SettingsDocument = Settings & Document;
+export type SettingDocument = Setting & Document;
 
 @Schema({
   timestamps: true,
-  // toJSON: {
-  //   virtuals: true,
-  // },
 })
-export class Settings {
-  constructor(partial?: Partial<Settings>) {
+export class Setting {
+  constructor(partial?: Partial<Setting>) {
     if (partial) {
       Object.assign(this, partial);
     }
@@ -30,31 +27,29 @@ export class Settings {
   value: string;
 
   @Expose()
-  get valueRealized(): string | boolean | number | number[] | undefined {
+  get valueRealized():
+    | string
+    | string[]
+    | boolean
+    | number
+    | number[]
+    | undefined {
     if (!this || !this.value) return undefined;
 
-    let realizedValue;
-    if (this.type === 'Integer') {
-      realizedValue = Number.parseInt(this.value);
-    } else if (this.type === 'Float') {
-      realizedValue = parseFloat(this.value);
-    } else if (this.type === 'Boolean') {
-      realizedValue = this.value === 'true' ? true : false;
-    } else if (this.type === 'IntegerList') {
-      realizedValue = this.value
+    if (this.type === 'Integer') return Number.parseInt(this.value);
+    if (this.type === 'Float') return Number.parseFloat(this.value);
+    if (this.type === 'Boolean') return this.value === 'true' ? true : false;
+    if (this.type === 'IntegerList')
+      return this.value
         .split(',')
         .map((v: string) => Number.parseInt(v.trim()));
-    } else if (this.type === 'StringList') {
-      realizedValue = this.value.split(',').map((v: string) => v.trim());
-    } else if (this.type === 'Image') {
-      realizedValue = `${process.env.API_URL as string}/uploads/${this.value}`;
-    } else if (this.type === 'JSON') {
-      realizedValue = this.value ? JSON.parse(this.value) : [];
-    } else {
-      realizedValue = this.value;
-    }
+    if (this.type === 'StringList')
+      return this.value.split(',').map((v: string) => v.trim());
+    if (this.type === 'Image')
+      return `${process.env.API_URL as string}/uploads/${this.value}`;
+    if (this.type === 'JSON') return this.value ? JSON.parse(this.value) : [];
 
-    return realizedValue;
+    return this.value;
   }
 
   @Prop()
@@ -102,4 +97,4 @@ export class Settings {
   subgroup: number;
 }
 
-export const SettingsSchema = SchemaFactory.createForClass(Settings);
+export const SettingSchema = SchemaFactory.createForClass(Setting);
