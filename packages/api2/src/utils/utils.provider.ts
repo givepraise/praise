@@ -3,7 +3,7 @@ import { randomBytes } from 'crypto';
 import { UploadedFile } from 'express-fileupload';
 import { unlink } from 'fs/promises';
 import mime from 'mime-types';
-import { ConstantsProvider } from 'src/constants/constants.provider';
+import { ConstantsProvider } from '@/constants/constants.provider';
 
 @Injectable()
 export class UtilsProvider {
