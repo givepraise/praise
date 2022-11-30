@@ -24,3 +24,10 @@ export interface PaginatedResponseBody<T> {
   hasMore?: Boolean;
   docs: T[];
 }
+
+export interface QueryInput {
+  sortColumn?: string;
+  sortType?: string;
+  limit?: string;
+  page?: string;
+}

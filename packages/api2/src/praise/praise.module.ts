@@ -1,3 +1,5 @@
+import { ConstantsProvider } from '@/constants/constants.provider';
+import { UtilsProvider } from '@/utils/utils.provider';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PraiseController } from './praise.controller';
@@ -9,6 +11,6 @@ import { Praise, PraiseSchema } from './schemas/praise.schema';
     MongooseModule.forFeature([{ name: Praise.name, schema: PraiseSchema }]),
   ],
   controllers: [PraiseController],
-  providers: [PraiseService],
+  providers: [PraiseService, UtilsProvider, ConstantsProvider],
 })
 export class PraiseModule {}

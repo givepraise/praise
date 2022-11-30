@@ -23,7 +23,7 @@ import { Praise } from './schemas/praise.schema';
   excludePrefixes: ['__'],
 })
 @UseInterceptors(ClassSerializerInterceptor)
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 export class PraiseController {
   constructor(private readonly praiseService: PraiseService) {}
 
