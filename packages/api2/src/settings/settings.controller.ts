@@ -18,7 +18,7 @@ import { ExportTransformer } from 'src/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { Setting } from './schemas/settings.schema';
 import { SettingsService } from './settings.service';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '@/authentication/jwt-auth.guard';
 
 @Controller('settings')
 @SerializeOptions({
