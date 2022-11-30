@@ -10,5 +10,9 @@ import { Period, PeriodSchema } from './schemas/periods.schema';
   ],
   controllers: [CoreController],
   providers: [PeriodsService],
+  exports: [
+    PeriodsService,
+    MongooseModule.forFeature([{ name: Period.name, schema: PeriodSchema }]),
+  ],
 })
 export class PeriodsModule {}

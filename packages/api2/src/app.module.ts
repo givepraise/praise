@@ -8,6 +8,7 @@ import { praiseDatabaseUri } from './shared/database.shared';
 import { SettingsModule } from './settings/settings.module';
 import { PeriodSettingsModule } from './periodsettings/periodsettings.module';
 import { PraiseModule } from './praise/praise.module';
+import { ConstantsProvider } from './constants/constants.provider';
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import { PraiseModule } from './praise/praise.module';
     PeriodSettingsModule,
     PraiseModule,
   ],
-  providers: [UtilsProvider],
+  providers: [UtilsProvider, ConstantsProvider],
 })
 export class AppModule {}
