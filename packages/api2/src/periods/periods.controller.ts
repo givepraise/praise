@@ -1,10 +1,11 @@
-import { Get, Param } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApiParam } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from 'src/objectId.pipe';
 import { PeriodsService } from './periods.service';
 import { Period } from './schemas/periods.schema';
 
+@Controller('periods')
 export class PeriodsController {
   constructor(private readonly periodsService: PeriodsService) {}
 

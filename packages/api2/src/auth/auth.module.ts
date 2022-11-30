@@ -7,6 +7,7 @@ import { UsersModule } from '@/users/users.module';
 import { UsersService } from '@/users/users.service';
 import { JwtStrategy } from './jwt.strategy';
 import { UtilsProvider } from '@/utils/utils.provider';
+import { ConstantsProvider } from '@/constants/constants.provider';
 
 @Module({
   imports: [
@@ -17,7 +18,13 @@ import { UtilsProvider } from '@/utils/utils.provider';
       signOptions: { expiresIn: '60s' },
     }),
   ],
-  providers: [AuthService, UsersService, JwtStrategy, UtilsProvider],
+  providers: [
+    AuthService,
+    UsersService,
+    JwtStrategy,
+    UtilsProvider,
+    ConstantsProvider,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}
