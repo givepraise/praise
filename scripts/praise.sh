@@ -559,7 +559,6 @@ main () {
                 echo "Praise Restoration Aborted"
                 sleep 1
             fi
-            restore_praise
             main
 		;;
 		8)
