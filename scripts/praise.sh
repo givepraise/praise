@@ -1,6 +1,7 @@
 #!/bin/bash
 
 PRAISE_HOME="/opt/praise"
+BACKUP_DIR="$PRAISE_HOME/backups"
 MONGO_INITDB_ROOT_PASSWORD=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-32} | head -n 1)
 MONGO_PASSWORD=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-32} | head -n 1)
 JWT_SECRET=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-32} | head -n 1)
@@ -117,7 +118,7 @@ configure_praise () {
 ## GENERAL ##
 
 # Running through Docker: NODE_ENV=production
-NODE_ENV=production
+NODE_ENV=$PRAISE_ENV
 
 ###########################################################################
 ## DATABASE ##
@@ -234,7 +235,7 @@ install_praise () {
         echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
         echo "++++++++++++++++++ STARTING PRAISE ++++++++++++++++++"
         echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
-        docker compose -f $PRAISE_HOME/docker-compose.production.yml up -d
+        docker compose -f $PRAISE_HOME/docker-compose.$PRAISE_ENV.yml up -d
         echo "++++++++++++++++++ PRAISE IS UP +++++++++++++++++++++"
         echo "Please point your Praise Domain Name $HOST to $PUBLIC_IP"
     fi
@@ -279,6 +280,7 @@ setup_praise () {
                 restart_praise
             else
                 echo "Praise Config does not exist"
+                sleep 2
             fi
         else
             echo "Praise is NOT Running, attempting to start Praise"
@@ -289,19 +291,21 @@ setup_praise () {
         echo
         echo "Praise is NOT installed, please install it first to be able to continue with this action"
         echo
+        sleep 2
         main
     fi
 }
 
 restart_praise () {
     if [ -d "$PRAISE_HOME" ]; then
-        docker compose -f $PRAISE_HOME/docker-compose.production.yml down
+        docker compose -f $PRAISE_HOME/docker-compose.$PRAISE_ENV.yml down
         sleep 1
-        docker compose -f $PRAISE_HOME/docker-compose.production.yml up -d --remove-orphans
+        docker compose -f $PRAISE_HOME/docker-compose.$PRAISE_ENV.yml up -d --remove-orphans
     else
         echo
         echo "Praise is NOT installed, please install it first to be able to continue with this action"
         echo
+        sleep 2
         main
     fi
 }
@@ -314,7 +318,7 @@ remove_praise () {
             echo
             echo "Shutting down containers..."
             echo
-            docker compose -f $PRAISE_HOME/docker-compose.production.yml down
+            docker compose -f $PRAISE_HOME/docker-compose.$PRAISE_ENV.yml down
             echo
             echo "Deleting images..."
             echo
@@ -332,6 +336,7 @@ remove_praise () {
         fi
     else
         echo "Praise is NOT Running or not Installed Correctly"
+        sleep 2
     fi
 }
 
@@ -341,18 +346,125 @@ upgrade_praise () {
         if [ "$(docker ps -q -f name=frontend-praise)" ] || [ "$(docker ps -q -f name=discord-bot-praise)" ] || [ "$(docker ps -q -f name=api-praise)" ] || [ "$(docker ps -q -f name=mongodb-praise)" ]; then
             cd $PRAISE_HOME
             git pull
+            mkdir -p $BACKUP_DIR
+            local backup_name="$BACKUP_DIR/upgrade-database-backup-$(date +"%F-%T").archive"
             export $(grep -v '^#' $PRAISE_HOME/.env | xargs)
-            docker exec -i mongodb-praise /usr/bin/mongodump --authenticationDatabase admin --archive -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD --db praise_db > $PRAISE_HOME/database-upgrade-backup-$(date +"%F-%T").archive
+            docker exec -i mongodb-praise /usr/bin/mongodump --authenticationDatabase admin --archive -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD --db praise_db > $backup_name
             echo "Backup DONE .."
-            docker compose -f $PRAISE_HOME/docker-compose.production.yml pull
-            docker compose -f $PRAISE_HOME/docker-compose.production.yml down
-            docker compose -f $PRAISE_HOME/docker-compose.production.yml up -d --remove-orphans
+            docker compose -f $PRAISE_HOME/docker-compose.$PRAISE_ENV.yml pull
+            docker compose -f $PRAISE_HOME/docker-compose.$PRAISE_ENV.yml down
+            docker compose -f $PRAISE_HOME/docker-compose.$PRAISE_ENV.yml up -d --remove-orphans
             echo "Congrats, your praise system is up-to-date"
         else
             echo "Praise is either NOT Running or NOT installed correctly"
+            sleep 2
         fi
     else
         echo "Praise is either NOT Running or NOT installed correctly"
+        sleep 2
+    fi
+}
+
+backup_praise () {
+    echo "Checking if Praise is running"
+    if [ -d "$PRAISE_HOME" ]; then
+        if [ "$(docker ps -q -f name=frontend-praise)" ] || [ "$(docker ps -q -f name=discord-bot-praise)" ] || [ "$(docker ps -q -f name=api-praise)" ] || [ "$(docker ps -q -f name=mongodb-praise)" ]; then
+            echo "Backing up Praise now .."
+            mkdir -p $BACKUP_DIR
+            local backup_name="$BACKUP_DIR/database-backup-$(date +"%F-%T").archive"
+            export $(grep -v '^#' $PRAISE_HOME/.env | xargs)
+            docker exec -i mongodb-praise /usr/bin/mongodump --authenticationDatabase admin --archive -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD --db praise_db > $backup_name
+            echo "Backup Done, you can find it here: $backup_name"
+            sleep 2
+        else
+            echo "Praise is either NOT Running or NOT installed correctly"
+            sleep 2
+        fi
+    else
+        echo "Praise is either NOT Running or NOT installed correctly"
+        sleep 2
+    fi
+}
+
+restore_praise () {
+    echo "Checking if Praise is Installed"
+    if [ -d "$PRAISE_HOME" ]; then
+        local backups_count=$(ls -t $BACKUP_DIR | egrep '\.archive$' 2>/dev/null | wc -l)
+        if [ $backups_count != 0 ]; then
+            local bck_lst_file="/tmp/praisebcklist"
+            local numlist="/tmp/praisenumlist"
+            local backup_list=$(ls -t $BACKUP_DIR | egrep '\.archive$')
+            ls -t $BACKUP_DIR | egrep '\.archive$' > $bck_lst_file
+            echo "The below backups were found: "
+            echo '1' > $numlist
+            declare -i backup_num=1
+            for backup in $backup_list; do
+                sed -i s/$/\|$backup_num/ $numlist
+                echo "$backup_num)" $backup
+                let "backup_num+=1"
+            done
+            read -p "Please choose the number of the backup file you want to restore: " bckanswer
+            until [[ -z "$bckanswer" || "$bckanswer" =~ ^[1-$backups_count]$ ]]; do
+                echo "$answer: invalid selection for a backup, returning to the main menu"
+                sleep 2
+                main
+                read -p "Please choose the number of the backup file you want to restore: " bckanswer
+            done
+            backfile=$(sed -n "${bckanswer}p" < $bck_lst_file)
+            export $(grep -v '^#' $PRAISE_HOME/.env | xargs)
+            valid=$(cat $numlist)
+            docker_volumes=$(docker volume ls -q)
+            eval "case \"$bckanswer\" in
+                $valid)
+                    echo \"You chose backup number: $bckanswer\"
+                    echo \"You chose this backup file: $backfile\"
+                    echo ${BACKUP_DIR}/${backfile}
+                    docker compose -f $PRAISE_HOME/docker-compose.$PRAISE_ENV.yml down
+                    docker volume rm $docker_volumes
+                    docker compose -f $PRAISE_HOME/docker-compose.$PRAISE_ENV.yml up mongodb -d --remove-orphans
+                    docker exec -i mongodb-praise sh -c \"mongorestore --authenticationDatabase admin --nsInclude=praise_db.* --uri='mongodb://$MONGO_INITDB_ROOT_USERNAME:$MONGO_INITDB_ROOT_PASSWORD@mongodb:27017/?authSource=admin' --drop --preserveUUID --archive\" < ${BACKUP_DIR}/${backfile}
+                    docker compose -f $PRAISE_HOME/docker-compose.$PRAISE_ENV.yml up -d --remove-orphans
+                    ;;
+                *)
+                    echo \"Choice is not Valid\"
+                    ;;
+            esac"
+            rm $numlist
+            rm $bck_lst_file
+            sleep 2
+            main
+        else
+            echo "No Backups were found .."
+            sleep 2
+            main
+        fi
+    else
+        echo "Praise is NOT Installed, please install praise first to run this action"
+        sleep 2    
+    fi
+}
+
+praise_version () {
+    echo "Please chose which version of praise you want to install"
+    echo "1) Stable"
+    echo "2) Latest (Dev)"
+    read -rp "Please select which number [1/2]: " -e -i "1" version
+    until [[ "$version" =~ ^[12]*$ ]]; do
+        echo "$version: invalid selection."
+        read -rp "Confirm Praise version? [1/2]: " -e -i "1" version
+    done
+    if [[ "$version" =~ ^[1]$ ]]; then
+        export PRAISE_ENV=production
+        echo $PRAISE_ENV
+        sleep 1
+    elif [[ "$version" =~ ^[2]$ ]]; then
+        export PRAISE_ENV=development
+        echo $PRAISE_ENV
+        sleep 1
+    else
+        echo "Invalid Option, Praise Install Aborted"
+        sleep 1
+        main
     fi
 }
 
@@ -366,16 +478,24 @@ main () {
 	echo "   3) Setup Praise"
     echo "   4) Restart Praise"
 	echo "   5) Remove Praise"
-    echo "   6) Exit"
+	echo "   6) Backup Praise-DB"
+    echo "   7) Restore Praise-DB (Not Stable for now)"
+    echo "   8) Exit"
 	read -p "Answer: " answer
-	until [[ -z "$answer" || "$answer" =~ ^[1-6]$ ]]; do
+	until [[ -z "$answer" || "$answer" =~ ^[1-8]$ ]]; do
 		echo "$answer: invalid selection."
         exit 0
 		read -p "Answer: " answer
 	done
 	case "$answer" in
 		1)
-            install_praise
+            echo "Checking if Praise is Installed"
+            if [ -d "$PRAISE_HOME" ]; then
+                echo "Praise is already Installed"
+            else
+                praise_version
+                install_praise
+            fi
 		;;
 		2)
 			echo
@@ -386,6 +506,7 @@ main () {
 				read -rp "Confirm Praise removal? [y/N]: " -e -i "y" upgrade
 			done
 			if [[ "$upgrade" =~ ^[yY]$ ]]; then
+                praise_version
                 upgrade_praise
                 sleep 1
             else
@@ -418,7 +539,30 @@ main () {
             fi
             main
 		;;
-		6)
+        6)
+            backup_praise
+            main
+		;;
+        7)
+            echo
+            echo "WARNING: This is a destructive move, restoring praise will remove all it's current data."
+            echo "This is irriversable"
+			read -rp "Are you sure you want to restore Praise? [y/N]: " -e -i "N" restore
+			until [[ "$restore" =~ ^[yYnN]*$ ]]; do
+				echo "$restore: invalid selection."
+				read -rp "Confirm Praise Restoration? [y/N]: " -e -i "N" restore
+			done
+			if [[ "$restore" =~ ^[yY]$ ]]; then
+                restore_praise
+                sleep 1
+            else
+                echo "Praise Restoration Aborted"
+                sleep 1
+            fi
+            restore_praise
+            main
+		;;
+		8)
             echo "Goodbye! :)"
             exit 0
 		;;
