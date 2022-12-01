@@ -45,6 +45,16 @@ export class PeriodSettingsService {
     return new PeriodSetting(periodSetting);
   }
 
+  async findOne(
+    key: string,
+    periodId: Types.ObjectId | undefined = undefined,
+  ): Promise<PeriodSetting | null> {
+    return await this.periodSettingsModel.findOne({
+      key,
+      period: periodId,
+    });
+  }
+
   async setOne(
     settingId: Types.ObjectId,
     periodId: Types.ObjectId,

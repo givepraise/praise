@@ -20,7 +20,7 @@ export class Quantification {
   dismissed: boolean;
 
   @Prop({ type: Types.ObjectId, ref: 'Praise' })
-  duplicatePraise: Praise;
+  duplicatePraise?: Praise;
 
   @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
   quantifier: UserAccount;

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Transform } from 'class-transformer';
-import mongoose, { model, Types } from 'mongoose';
+import { model, Types } from 'mongoose';
 import { Quantification } from 'src/quantifications/schemas/quantifications.schema';
 import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
@@ -44,6 +44,12 @@ export class Praise {
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Quantification' }] })
   quantifications: Quantification[];
+
+  @Prop({ type: Date })
+  createdAt: Date;
+
+  @Prop({ type: Date })
+  updatedAt: Date;
 }
 
 export const PraiseSchema =
