@@ -65,7 +65,6 @@ const periodDetailsGiverReceiverToDto = async (
     userAccounts,
     username,
   } = gr;
-  console.log({gr});
   return {
     _id: _id.toString(),
     praiseCount,

@@ -205,6 +205,26 @@ export const findPeriodDetailsDto = async (
         },
       },
       {
+        $unwind: {
+          path: '$useraccounts',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userAccounts.user',
+          foreignField: '_id',
+          as: 'users.userName',
+        },
+      },
+      {
+        $unwind: {
+          path: '$users.userName',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $group: {
           _id: '$giver',
           praiseCount: { $count: {} },
@@ -212,6 +232,7 @@ export const findPeriodDetailsDto = async (
             $push: '$quantifications',
           },
           userAccounts: { $first: '$userAccounts' },
+          username: { $first: '$users.userName.username' },
         },
       },
       {

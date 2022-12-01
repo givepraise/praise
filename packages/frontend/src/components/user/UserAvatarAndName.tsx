@@ -16,6 +16,7 @@ interface UserNameProps {
   periodId?: string;
   avatarClassName?: string;
   nameClassName?: string;
+  userName?: string;
 }
 
 const WrappedUserAvatarAndName = ({
@@ -26,6 +27,7 @@ const WrappedUserAvatarAndName = ({
   periodId,
   avatarClassName,
   nameClassName,
+  userName,
 }: UserNameProps): JSX.Element | null => {
   const userFromGlobalState = useRecoilValue(SingleUser(userId));
 
@@ -51,6 +53,7 @@ const WrappedUserAvatarAndName = ({
         <div className={classNames('flex items-center', nameClassName)}>
           <UserName
             user={mergedUser}
+            userName={userName}
             userAccount={userAccount}
             usePseudonym={usePseudonym}
             periodId={periodId}

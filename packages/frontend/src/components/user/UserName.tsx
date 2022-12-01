@@ -10,6 +10,7 @@ interface UserNameProps {
   usePseudonym?: boolean;
   periodId?: string;
   className?: string;
+  userName?: string;
 }
 
 const WrappedUserName = ({
@@ -18,6 +19,7 @@ const WrappedUserName = ({
   usePseudonym = false,
   periodId,
   className,
+  userName,
 }: UserNameProps): JSX.Element => {
   let name;
 
@@ -38,7 +40,7 @@ const WrappedUserName = ({
       if (usePseudonym && periodId) {
         name = <UserPseudonym userId={userAccount._id} periodId={periodId} />;
       } else {
-        name = userAccount.nameRealized;
+        name = userName ? userName : userAccount.nameRealized;
       }
     }
   }

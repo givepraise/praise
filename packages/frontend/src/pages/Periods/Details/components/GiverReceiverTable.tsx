@@ -40,6 +40,7 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
           Cell: (data: any): JSX.Element => (
             <UserAvatarAndName
               userAccount={data.row.original.userAccount}
+              userName={data.row.original.username}
               avatarClassName="text-2xl"
             />
           ),
@@ -70,8 +71,6 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
           (user): string => user._id.toString(),
         ])
       : [];
-
-      console.log(data);
 
     const options = {
       columns,
