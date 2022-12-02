@@ -1,5 +1,5 @@
-import { parse, parseISO, formatRelative } from 'date-fns';
-import { enUS } from 'date-fns/esm/locale';
+import { parse, parseISO, formatRelative, formatDistance } from 'date-fns';
+import { enGB } from 'date-fns/esm/locale';
 import { utcToZonedTime, format } from 'date-fns-tz';
 import jstz from 'jstz';
 
@@ -23,23 +23,35 @@ const utcDateToLocal = (dateUtc: Date): Date => {
 
 export const localizeAndFormatIsoDateRelative = (dateIso: string): string => {
   const formatRelativeLocale = {
-    lastWeek: "'last' eeee p",
-    yesterday: "'yesterday' p",
-    today: "'today' p",
+    lastWeek: 'eeee',
+    yesterday: "'yesterday'",
+    today: ' ',
     tomorrow: "'tomorrow' p",
     nextWeek: 'eeee p',
     other: DATE_FORMAT,
   };
 
   const locale = {
-    ...enUS,
+    ...enGB,
     formatRelative: (token) => formatRelativeLocale[token],
   };
 
   const dateUtc = parseISO(dateIso);
   const dateLocal = utcDateToLocal(dateUtc);
 
-  return formatRelative(dateLocal, new Date(), { locale });
+  const formatDisanceValue = formatDistance(new Date(dateLocal), new Date(), {
+    addSuffix: true,
+  });
+
+  const dateSuffix =
+    parseInt(formatDisanceValue) > 6
+      ? ''
+      : Number.isNaN(parseInt(formatDisanceValue))
+      ? formatDisanceValue
+      : ', ' + formatDisanceValue;
+
+  // return formatRelative(dateLocal, new Date(), { locale }) + dateSuffix;
+  return formatRelative(dateLocal, new Date()) + dateSuffix;
 };
 
 export const localizeAndFormatIsoDate = (
