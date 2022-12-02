@@ -2,16 +2,16 @@
 import { Document, Model, Types } from 'mongoose';
 import { PaginationModel, PaginationOptions } from 'mongoose-paginate-ts';
 import { TransformerMap } from 'ses-node-json-transform';
+import { Query } from '../shared/types';
+import { PeriodSettingDto } from '../periodsettings/types';
+import { UserAccountDocument, UserAccountDto } from '../useraccount/types';
 import {
-  Quantifier,
+  PraiseDto,
+  Quantification,
   QuantificationDocument,
   QuantificationDto,
-  Quantification,
-  PraiseDto,
-} from '@/praise/types';
-import { Query } from '@/shared/types';
-import { UserAccountDocument, UserAccountDto } from '@/useraccount/types';
-import { PeriodSettingDto } from '@/periodsettings/types';
+  Quantifier,
+} from '../praise/types';
 export enum PeriodStatusType {
   OPEN = 'OPEN',
   QUANTIFY = 'QUANTIFY',

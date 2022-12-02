@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { UserAccountDocument, UserAccountDto } from '@/useraccount/types';
+import { UserAccountDocument, UserAccountDto } from '../useraccount/types';
 
 export enum UserRole {
   ADMIN = 'ADMIN',

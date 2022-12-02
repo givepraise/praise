@@ -4,8 +4,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request } from 'express';
 import { Model, Types } from 'mongoose';
-import { PeriodDocument } from 'src/periods/schemas/periods.schema';
-import { PeriodStatusType } from '../../../api/src/period/types';
 import {
   PeriodSetting,
   PeriodSettingDocument,
@@ -13,6 +11,7 @@ import {
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { UploadedFile } from 'express-fileupload';
 import { PeriodsService } from '../periods/periods.service';
+import { PeriodStatusType } from '../periods/enums/status-type.enum';
 
 @Injectable()
 export class PeriodSettingsService {
@@ -44,6 +43,16 @@ export class PeriodSettingsService {
 
     if (!periodSetting) throw new ServiceException('PeriodSetting not found.');
     return new PeriodSetting(periodSetting);
+  }
+
+  async findOne(
+    key: string,
+    periodId: Types.ObjectId | undefined = undefined,
+  ): Promise<PeriodSetting | null> {
+    return await this.periodSettingsModel.findOne({
+      key,
+      period: periodId,
+    });
   }
 
   async setOne(
