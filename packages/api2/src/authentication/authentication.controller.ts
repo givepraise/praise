@@ -4,15 +4,15 @@ import {
   Body,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthenticationService } from './authentication.service';
 import { NonceResponse } from './interfaces/nonce-response.interface';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { LoginResponse } from './interfaces/login-response.interface';
 import { NonceRequestDto } from './dto/nonce-request.dto';
 
 @Controller('auth')
-export class AuthController {
-  constructor(private authService: AuthService) {}
+export class AuthenticationController {
+  constructor(private authService: AuthenticationService) {}
 
   @Post('nonce')
   async nonce(@Body() nonceRquestDto: NonceRequestDto): Promise<NonceResponse> {

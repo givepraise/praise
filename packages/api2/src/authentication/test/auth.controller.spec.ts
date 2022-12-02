@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthController } from '../auth.controller';
-import { AuthService } from '../auth.service';
+import { AuthenticationController } from '../authentication.controller';
+import { AuthenticationService } from '../authentication.service';
 import { UsersService } from '@/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -8,18 +8,20 @@ jest.mock('@/users/users.service');
 jest.mock('@/auth/auth.service');
 
 describe('AuthController', () => {
-  let authController: AuthController;
-  let authService: AuthService;
+  let authController: AuthenticationController;
+  let authService: AuthenticationService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
-      controllers: [AuthController],
-      providers: [AuthService, UsersService, JwtService],
+      controllers: [AuthenticationController],
+      providers: [AuthenticationService, UsersService, JwtService],
     }).compile();
 
-    authController = module.get<AuthController>(AuthController);
-    authService = module.get<AuthService>(AuthService);
+    authController = module.get<AuthenticationController>(
+      AuthenticationController,
+    );
+    authService = module.get<AuthenticationService>(AuthenticationService);
     jest.clearAllMocks();
   });
 
