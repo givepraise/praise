@@ -1,7 +1,7 @@
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { Praise } from 'src/praise/schemas/praise.schema';
+import { Praise } from '@/praise/schemas/praise.schema';
 
 export type QuantificationDocument = Quantification & Document;
 

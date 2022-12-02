@@ -1,8 +1,8 @@
+import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { Body, Controller, Get, Param, Patch, Req } from '@nestjs/common';
 import { ApiParam } from '@nestjs/swagger';
 import { Request } from 'express';
 import { Types } from 'mongoose';
-import { ObjectIdPipe } from 'src/objectId.pipe';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { PeriodSettingsService } from './periodsettings.service';
 import { PeriodSetting } from './schemas/periodsettings.schema';

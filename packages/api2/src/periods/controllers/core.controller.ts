@@ -1,7 +1,7 @@
 import { Body, Get, Param } from '@nestjs/common';
 import { ApiParam } from '@nestjs/swagger';
 import { Types } from 'mongoose';
-import { ObjectIdPipe } from 'src/objectId.pipe';
+import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { CreatePeriodDto } from '../dto/create-period.dto';
 import { PeriodsService } from '../periods.service';
 import { Period } from '../schemas/periods.schema';

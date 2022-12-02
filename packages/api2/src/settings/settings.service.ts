@@ -6,12 +6,12 @@ import { Setting, SettingDocument } from './schemas/settings.schema';
 import { AxiosResponse } from 'axios';
 import axios from 'axios';
 import { TransformerMapOperateItem } from 'ses-node-json-transform';
-import { ExportTransformer } from 'src/shared/types.shared';
+import { ExportTransformer } from '@/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
-import { ServiceException } from '../shared/service-exception';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { UploadedFile } from 'express-fileupload';
-import { PeriodSettingsService } from 'src/periodsettings/periodsettings.service';
+import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
+import { ServiceException } from '@/shared/service-exception';
 
 @Injectable()
 export class SettingsService {

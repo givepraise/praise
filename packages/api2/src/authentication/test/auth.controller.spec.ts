@@ -5,7 +5,7 @@ import { UsersService } from '@/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 
 jest.mock('@/users/users.service');
-jest.mock('@/auth/auth.service');
+jest.mock('@/authentication/authentication.service');
 
 describe('AuthController', () => {
   let authController: AuthenticationController;

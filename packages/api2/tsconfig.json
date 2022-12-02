@@ -21,11 +21,14 @@
       "@/authentication/*": ["src/authentication/*"],
       "@/constants/*": ["src/constants/*"],
       "@/periods/*": ["src/periods/*"],
+      "@/periodsettings/*": ["src/periodsettings/*"],
+      "@/praise/*": ["src/praise/*"],
+      "@/quantifications/*": ["src/quantifications/*"],
       "@/settings/*": ["src/settings/*"],
       "@/shared/*": ["src/shared/*"],
       "@/utils/*": ["src/utils/*"],
       "@/users/*": ["src/users/*"],
-      "@/useraccounts/*": ["src/useraccounts/*"],
+      "@/useraccounts/*": ["src/useraccounts/*"]
     }
   }
 }
