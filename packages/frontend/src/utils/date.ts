@@ -50,8 +50,7 @@ export const localizeAndFormatIsoDateRelative = (dateIso: string): string => {
       ? formatDisanceValue
       : ', ' + formatDisanceValue;
 
-  // return formatRelative(dateLocal, new Date(), { locale }) + dateSuffix;
-  return formatRelative(dateLocal, new Date()) + dateSuffix;
+  return formatRelative(dateLocal, new Date(), { locale }) + dateSuffix;
 };
 
 export const localizeAndFormatIsoDate = (
