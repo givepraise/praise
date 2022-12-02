@@ -16,6 +16,5 @@ export const ReceiverSummaryTable = (): JSX.Element | null => {
   );
 
   if (!praiseList) return null;
-  console.log({praiseList});
   return <GiverReceiverSummaryPraiseItems praiseList={praiseList} />;
 };
