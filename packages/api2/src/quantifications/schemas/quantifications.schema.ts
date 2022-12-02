@@ -24,6 +24,15 @@ export class Quantification {
 
   @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
   quantifier: UserAccount;
+
+  @Prop({ type: Types.ObjectId, ref: 'Praise' })
+  praise: Praise;
+
+  @Prop({ type: Date })
+  createdAt: Date;
+
+  @Prop({ type: Date })
+  updatedAt: Date;
 }
 
 export const QuantificationsSchema =
