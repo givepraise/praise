@@ -20,11 +20,12 @@
     "paths": {
       "@/authentication/*": ["src/authentication/*"],
       "@/constants/*": ["src/constants/*"],
+      "@/periods/*": ["src/periods/*"],
+      "@/settings/*": ["src/settings/*"],
       "@/shared/*": ["src/shared/*"],
       "@/utils/*": ["src/utils/*"],
       "@/users/*": ["src/users/*"],
       "@/useraccounts/*": ["src/useraccounts/*"],
-      "@/settings/*": ["src/settings/*"]
     }
   }
 }

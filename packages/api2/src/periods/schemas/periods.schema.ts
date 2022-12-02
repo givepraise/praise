@@ -2,7 +2,7 @@ import { Transform } from 'class-transformer';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Date, Types } from 'mongoose';
-import { PeriodStatusType } from '../interfaces/statusType.interface';
+import { PeriodStatusType } from '../enums/status-type.enum';
 
 export type PeriodDocument = Period & Document;
 
@@ -34,14 +34,15 @@ export class Period {
 
   @Prop({
     required: true,
+    type: Date,
     /** TODO validator */
   })
   endDate: Date;
 
-  @Prop()
+  @Prop({ type: Date })
   createdAt: Date;
 
-  @Prop()
+  @Prop({ type: Date })
   updatedAt: Date;
 }
 

@@ -6,7 +6,9 @@ import { UsersModule } from './users/users.module';
 import { UtilsProvider } from './utils/utils.provider';
 import { praiseDatabaseUri } from './shared/database.shared';
 import { SettingsModule } from './settings/settings.module';
-import { PeriodsettingsModule } from './periodsettings/periodsettings.module';
+import { PeriodSettingsModule } from './periodsettings/periodsettings.module';
+import { PraiseModule } from './praise/praise.module';
+import { ConstantsProvider } from './constants/constants.provider';
 
 @Module({
   imports: [
@@ -15,8 +17,9 @@ import { PeriodsettingsModule } from './periodsettings/periodsettings.module';
     UserAccountsModule,
     AuthenticationModule,
     SettingsModule,
-    PeriodsettingsModule,
+    PeriodSettingsModule,
+    PraiseModule,
   ],
-  providers: [UtilsProvider],
+  providers: [UtilsProvider, ConstantsProvider],
 })
 export class AppModule {}

@@ -11,12 +11,14 @@ import { SetSettingDto } from './dto/set-setting.dto';
 import { ServiceException } from '../shared/service-exception';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { UploadedFile } from 'express-fileupload';
+import { PeriodSettingsService } from 'src/periodsettings/periodsettings.service';
 
 @Injectable()
 export class SettingsService {
   constructor(
     @InjectModel(Setting.name)
     private settingsModel: Model<SettingDocument>,
+    private periodSettingsService: PeriodSettingsService,
     private utils: UtilsProvider,
   ) {}
 
@@ -144,28 +146,28 @@ export class SettingsService {
   ): Promise<
     string | boolean | number | number[] | string[] | object | undefined
   > {
-    // let setting;
-    // if (!periodId) {
-    const setting = await this.settingsModel.findOne({
-      key,
-    });
+    let setting;
+    if (!periodId) {
+      const setting = await this.settingsModel.findOne({
+        key,
+      });
 
-    if (!setting) {
-      throw Error(`Setting ${key} does not exist`);
+      if (!setting) {
+        throw new ServiceException(`Setting ${key} does not exist`);
+      }
+    } else {
+      setting = await this.periodSettingsService.findOne(key, periodId);
+
+      if (!setting) {
+        const periodString = periodId
+          ? `period ${periodId.toString()}`
+          : 'global';
+        throw new ServiceException(
+          `periodsetting ${key} does not exist for ${periodString}`,
+        );
+      }
     }
-    // } else {
-    //   setting = await PeriodSettingsModel.findOne({
-    //     key,
-    //     period: periodId,
-    //   });
-    //   if (!setting) {
-    //     const periodString = periodId
-    //       ? `period ${periodId.toString()}`
-    //       : 'global';
-    //     throw Error(`periodsetting ${key} does not exist for ${periodString}`);
-    //   }
-    // }
 
-    return setting.value;
+    return setting ? setting.value : undefined;
   }
 }
