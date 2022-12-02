@@ -10,8 +10,8 @@ import {
 } from './schemas/periodsettings.schema';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { UploadedFile } from 'express-fileupload';
-import { PeriodsService } from '../periods/periods.service';
-import { PeriodStatusType } from '../periods/enums/status-type.enum';
+import { PeriodsService } from '@/periods/periods.service';
+import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 
 @Injectable()
 export class PeriodSettingsService {

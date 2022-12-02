@@ -1,5 +1,5 @@
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { AuthenticationController } from './authentication.controller';
+import { AuthenticationService } from './authentication.service';
 import { JwtModule } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
@@ -19,12 +19,12 @@ import { ConstantsProvider } from '@/constants/constants.provider';
     }),
   ],
   providers: [
-    AuthService,
+    AuthenticationService,
     UsersService,
     JwtStrategy,
     UtilsProvider,
     ConstantsProvider,
   ],
-  controllers: [AuthController],
+  controllers: [AuthenticationController],
 })
-export class AuthModule {}
+export class AuthenticationModule {}

@@ -3,14 +3,14 @@ import { User } from '@/users/schemas/users.schema';
 
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@/users/users.service';
-import { generateLoginMessage } from './auth.utils';
+import { generateLoginMessage } from './authentication.utils';
 import { ethers } from 'ethers';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { ServiceException } from '@/shared/service-exception';
 
 @Injectable()
-export class AuthService {
+export class AuthenticationService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,

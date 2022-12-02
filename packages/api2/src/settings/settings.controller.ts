@@ -13,12 +13,12 @@ import {
 import { ApiParam } from '@nestjs/swagger';
 import { Request } from 'express';
 import { Types } from 'mongoose';
-import { ObjectIdPipe } from '../objectId.pipe';
-import { ExportTransformer } from 'src/shared/types.shared';
+import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
+import { ExportTransformer } from '@/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { Setting } from './schemas/settings.schema';
 import { SettingsService } from './settings.service';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '@/authentication/jwt-auth.guard';
 
 @Controller('settings')
 @SerializeOptions({

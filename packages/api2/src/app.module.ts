@@ -1,4 +1,4 @@
-import { AuthModule } from './auth/auth.module';
+import { AuthenticationModule } from './authentication/authentication.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccountsModule } from './useraccounts/useraccounts.module';
@@ -15,7 +15,7 @@ import { ConstantsProvider } from './constants/constants.provider';
     MongooseModule.forRoot(praiseDatabaseUri),
     UsersModule,
     UserAccountsModule,
-    AuthModule,
+    AuthenticationModule,
     SettingsModule,
     PeriodSettingsModule,
     PraiseModule,

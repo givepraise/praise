@@ -9,12 +9,12 @@ import { PraiseService } from './praise.service';
 import { Praise, PraiseSchema } from './schemas/praise.schema';
 import { PeriodSchema } from '../periods/schemas/periods.schema';
 import { Setting, SettingSchema } from '@/settings/schemas/settings.schema';
-import { PeriodSettingsService } from 'src/periodsettings/periodsettings.service';
 import {
   PeriodSetting,
   PeriodSettingsSchema,
-} from 'src/periodsettings/schemas/periodsettings.schema';
+} from '@/periodsettings/schemas/periodsettings.schema';
 import { PeriodsService } from '@/periods/periods.service';
+import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 
 @Module({
   imports: [

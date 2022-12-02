@@ -1,4 +1,4 @@
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '@/authentication/jwt-auth.guard';
 import { PaginatedResponseBody } from '@/shared/types.shared';
 import {
   BadRequestException,
@@ -16,7 +16,7 @@ import { ApiParam } from '@nestjs/swagger';
 import { isArray } from 'class-validator';
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { ObjectIdPipe } from 'src/objectId.pipe';
+import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { PraiseDetailsDto } from './dto/praise-details.dto';
 import { PraiseQuantificationCreateUpdateInput } from './intefaces/praise-quantification-input.interface';
 import { PraiseQuantifyMultiplePraiseInput } from './intefaces/praise-quantify-multiple-input.interface';

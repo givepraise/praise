@@ -1,4 +1,4 @@
-import { generateLoginMessage } from '../auth.utils';
+import { generateLoginMessage } from '../authentication.utils';
 
 describe('generateLoginMessage', () => {
   it('should be defined', () => {
