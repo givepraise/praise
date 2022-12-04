@@ -90,4 +90,25 @@ describe('AppController (e2e)', () => {
         });
     });
   });
+
+  describe('POST /api/auth/login', () => {
+    it('should return 401 when missing identityEthAddress', async () => {
+      return request(server)
+        .post('/auth/login')
+        .send({ signature: 'any' })
+        .expect(401);
+    });
+    it('should return 401 when missing signature', async () => {
+      return request(server)
+        .post('/auth/login')
+        .send({ identityEthAddress: 'any' })
+        .expect(401);
+    });
+    it('should return 401 when submitting identityEthAddress that does not exist', async () => {
+      return request(server)
+        .post('/auth/login')
+        .send({ identityEthAddress: 'invalid', signature: 'any' })
+        .expect(401);
+    });
+  });
 });

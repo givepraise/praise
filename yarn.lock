@@ -5472,6 +5472,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/passport-local@npm:^1.0.34":
+  version: 1.0.34
+  resolution: "@types/passport-local@npm:1.0.34"
+  dependencies:
+    "@types/express": "*"
+    "@types/passport": "*"
+    "@types/passport-strategy": "*"
+  checksum: c8e162f571c8685344f4496b1473645eb1244a2ecb1c810854d43ac8897145083ac7412b8d3a3231f72f27a22d57e526fc8421d8208c18cdff8f83266e875f37
+  languageName: node
+  linkType: hard
+
 "@types/passport-strategy@npm:*":
   version: 0.2.35
   resolution: "@types/passport-strategy@npm:0.2.35"
@@ -6768,6 +6779,7 @@ __metadata:
     "@types/jest": 28.1.8
     "@types/node": ^16.0.0
     "@types/passport-jwt": ^3.0.7
+    "@types/passport-local": ^1.0.34
     "@types/supertest": ^2.0.11
     "@typescript-eslint/eslint-plugin": ^5.0.0
     "@typescript-eslint/parser": ^5.0.0
@@ -6784,6 +6796,7 @@ __metadata:
     mongoose-paginate-ts: ^1.2.7
     passport: ^0.6.0
     passport-jwt: ^4.0.0
+    passport-local: ^1.0.0
     prettier: ^2.3.2
     reflect-metadata: ^0.1.13
     rimraf: ^3.0.2
@@ -16429,6 +16442,15 @@ __metadata:
     jsonwebtoken: ^8.2.0
     passport-strategy: ^1.0.0
   checksum: d0499ebb819c714d885a9c03a6c5d6dfae916c1a81ccb62357136d5bf477529327e9b8fc658f61f97c565651d2bd78eccec4543474a08e944132f0e2ec47cc3d
+  languageName: node
+  linkType: hard
+
+"passport-local@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "passport-local@npm:1.0.0"
+  dependencies:
+    passport-strategy: 1.x.x
+  checksum: 86dc08b12f05f0ce1bb109780ccb0377eff45bbba70aa9c0d65f092b3ef476d344c0443517db2e9f3e5ec0ca849171ab25fb622164e0f69a677173af42b9bba7
   languageName: node
   linkType: hard
 

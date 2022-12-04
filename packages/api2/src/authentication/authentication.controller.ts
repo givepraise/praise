@@ -3,12 +3,15 @@ import {
   Post,
   Body,
   InternalServerErrorException,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { NonceResponse } from './interfaces/nonce-response.interface';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { LoginResponse } from './interfaces/login-response.interface';
 import { NonceRequestDto } from './dto/nonce-request.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthenticationController {
@@ -27,20 +30,27 @@ export class AuthenticationController {
     throw new InternalServerErrorException('Failed to generate nonce.');
   }
 
+  @UseGuards(AuthGuard('eth-signature'))
   @Post('login')
-  async login(
-    @Body() loginRequestDto: LoginRequestDto,
-  ): Promise<LoginResponse> {
-    const { identityEthAddress, signature } = loginRequestDto;
-    const accessToken = await this.authService.login(
-      identityEthAddress,
-      signature,
-    );
-
-    return {
-      accessToken,
-      identityEthAddress,
-      tokenType: 'Bearer',
-    };
+  async login(@Request() req: Request) {
+    console.log(req);
+    return req;
   }
+
+  // @Post('login')
+  // async login(
+  //   @Body() loginRequestDto: LoginRequestDto,
+  // ): Promise<LoginResponse> {
+  //   const { identityEthAddress, signature } = loginRequestDto;
+  //   const accessToken = await this.authService.login(
+  //     identityEthAddress,
+  //     signature,
+  //   );
+
+  //   return {
+  //     accessToken,
+  //     identityEthAddress,
+  //     tokenType: 'Bearer',
+  //   };
+  // }
 }

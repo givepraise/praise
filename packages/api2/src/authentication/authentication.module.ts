@@ -8,6 +8,7 @@ import { UsersService } from '@/users/users.service';
 import { JwtStrategy } from './jwt.strategy';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { ConstantsProvider } from '@/constants/constants.provider';
+import { EthSignatureStrategy } from './eth-signature.strategy';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ConstantsProvider } from '@/constants/constants.provider';
     AuthenticationService,
     UsersService,
     JwtStrategy,
+    EthSignatureStrategy,
     UtilsProvider,
     ConstantsProvider,
   ],
