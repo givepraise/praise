@@ -19,7 +19,7 @@
     "test:watch": "yarn run load-env jest --watch",
     "test:cov": "yarn run load-env jest --coverage",
     "test:debug": "yarn run load-env node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "yarn run load-env jest --config ./jest-e2e.config.js",
+    "test:e2e": "NODE_ENV=testing && MONGO_DB=praise_db_testing_tmp yarn run load-env jest --config ./jest-e2e.config.js",
     "migrator": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts"
   },
   "dependencies": {

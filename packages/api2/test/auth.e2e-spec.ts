@@ -9,17 +9,22 @@ import { AppModule } from '../src/app.module';
 import { Server } from 'http';
 import { Wallet } from 'ethers';
 import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
+import { UsersService } from '@/users/users.service';
+import { UsersModule } from '@/users/users.module';
+import { UsersSeeder } from '@/database/seeder/users.seeder';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let server: Server;
-
+  let module: TestingModule;
+  let usersSeeder: UsersSeeder;
+  let usersService: UsersService;
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+    module = await Test.createTestingModule({
+      imports: [AppModule, UsersModule],
+      providers: [UsersService, UsersSeeder],
     }).compile();
-
-    app = moduleFixture.createNestApplication();
+    app = module.createNestApplication();
     app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
@@ -29,6 +34,12 @@ describe('AppController (e2e)', () => {
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();
+    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
+    usersService = module.get<UsersService>(UsersService);
+  });
+
+  beforeEach(async () => {
+    await usersService.getModel().deleteMany({});
   });
 
   afterAll(async () => {
@@ -69,13 +80,14 @@ describe('AppController (e2e)', () => {
         });
     });
     it('should return 201 and correct body when identityEthAddress is valid, existing user', async () => {
-      // Seed database with a user
-      // TODO: Use a test database
-      // Replace address below with address from seeded user
+      const wallet = Wallet.createRandom();
+      await usersSeeder.seedUser({
+        identityEthAddress: wallet.address,
+      });
       return request(server)
         .post('/auth/nonce')
         .send({
-          identityEthAddress: '0xa32aECda752cF4EF89956e83d60C04835d4FA867',
+          identityEthAddress: wallet.address,
         })
         .expect(201)
         .then((response) => {
@@ -84,9 +96,7 @@ describe('AppController (e2e)', () => {
           expect(response.body.nonce).not.toBeUndefined();
           expect(response.body.nonce).not.toEqual('');
           expect(response.body).toHaveProperty('identityEthAddress');
-          expect(response.body.identityEthAddress).toEqual(
-            '0xa32aECda752cF4EF89956e83d60C04835d4FA867',
-          );
+          expect(response.body.identityEthAddress).toEqual(wallet.address);
         });
     });
   });
