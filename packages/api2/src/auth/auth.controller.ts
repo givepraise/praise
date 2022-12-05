@@ -11,11 +11,7 @@ import { NonceResponse } from './interfaces/nonce-response.interface';
 import { LoginResponse } from './interfaces/login-response.interface';
 import { NonceRequestDto } from './dto/nonce-request.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from '@/users/schemas/users.schema';
-
-interface RequestWithUser extends Request {
-  user: User;
-}
+import { RequestWithUser } from './interfaces/request-with-user.interface';
 
 @Controller('auth')
 export class AuthController {
