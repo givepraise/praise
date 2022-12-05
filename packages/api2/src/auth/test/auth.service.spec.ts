@@ -5,22 +5,38 @@ import { UsersService } from '@/users/users.service';
 import { userStub } from '@/users/test/stubs/user.stub';
 import { JwtService } from '@nestjs/jwt';
 import { UtilsProvider } from '@/utils/utils.provider';
+import { LoginResponse } from '../interfaces/login-response.interface';
+import { accessTokenStub } from './stubs/access-token';
 
 jest.mock('@/users/users.service');
 jest.mock('@/utils/utils.provider');
 
+const mockJwtService = {
+  sign: jest.fn().mockReturnValue(accessTokenStub),
+};
+
 describe('AuthService', () => {
   let authService: AuthService;
   let usersService: UsersService;
+  let jwtService: JwtService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
-      providers: [AuthService, UsersService, JwtService, UtilsProvider],
+      providers: [
+        AuthService,
+        UsersService,
+        UtilsProvider,
+        {
+          provide: JwtService,
+          useValue: mockJwtService,
+        },
+      ],
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
     usersService = module.get<UsersService>(UsersService);
+    jwtService = module.get<JwtService>(JwtService);
   });
 
   describe('generateUserNonce', () => {
@@ -39,6 +55,25 @@ describe('AuthService', () => {
         rewardsEthAddress: userStub.identityEthAddress,
         username: userStub.identityEthAddress,
         nonce: '1234567890',
+      });
+    });
+  });
+
+  describe('login', () => {
+    test('calls jwtService.sign with correct payload', async () => {
+      await authService.login(userStub);
+      expect(jwtService.sign).toBeCalledWith({
+        userId: userStub._id.toString(),
+        identityEthAddress: userStub.identityEthAddress,
+        roles: userStub.roles,
+      });
+    });
+    test('returns correct response', async () => {
+      const response = await authService.login(userStub);
+      expect(response).toEqual<LoginResponse>({
+        accessToken: accessTokenStub,
+        identityEthAddress: userStub.identityEthAddress,
+        tokenType: 'Bearer',
       });
     });
   });
