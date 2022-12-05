@@ -53,15 +53,14 @@ export class AuthService {
       identityEthAddress,
       roles,
     } as JwtPayload;
-    const jwt = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload);
 
     // await logEvent(EventLogTypeKey.AUTHENTICATION, 'Logged in', {
     //   userId: user._id,
     // });
 
     return {
-      accessToken: jwt,
-      refreshToken: jwt,
+      accessToken,
       identityEthAddress,
       tokenType: 'Bearer',
     };

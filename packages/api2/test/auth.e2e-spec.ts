@@ -194,69 +194,10 @@ describe('AuthController (E2E)', () => {
         .send(body)
         .expect(201)
         .then((response2) => {
+          expect(response2.body.tokenType).toEqual('Bearer');
+          expect(response2.body.identityEthAddress).toEqual(wallet.address);
           expect(response2.body).toHaveProperty('accessToken');
-          expect(response2.body).toHaveProperty('refreshToken');
         });
     });
   });
 });
-
-// describe('POST /auth/refresh', () => {
-//   test('200 response with new accessToken & same refreshToken', async function () {
-//     const wallet = Wallet.createRandom();
-//     await seedUser({ identityEthAddress: wallet.address });
-//     const { refreshToken, accessToken } = await loginUser(wallet, this.client);
-
-//     const FORM_DATA = {
-//       refreshToken,
-//     };
-
-//     const response3 = await this.client
-//       .post('/api/auth/refresh')
-//       .set('Accept', 'application/json')
-//       .send(FORM_DATA);
-
-//     expect(response3.status).to.equal(200);
-//     expect(response3.body).to.have.property('accessToken');
-//     expect(response3.body).to.have.property('refreshToken');
-//     expect(response3.body.accessToken).to.not.equal(
-//       accessToken,
-//       'Access Token not refreshed'
-//     );
-//     expect(response3.body.refreshToken).to.equal(
-//       refreshToken,
-//       'Refresh Token was unexpectedly refreshed'
-//     );
-//   });
-
-//   test('401 response when invalid refreshToken', async function () {
-//     const BAD_REFRESH_TOKEN = 'ABCD12345';
-
-//     const wallet = Wallet.createRandom();
-//     await seedUser({ identityEthAddress: wallet.address });
-//     await loginUser(wallet, this.client);
-
-//     const FORM_DATA = {
-//       refreshToken: BAD_REFRESH_TOKEN,
-//     };
-
-//     const response3 = await this.client
-//       .post('/api/auth/refresh')
-//       .set('Accept', 'application/json')
-//       .send(FORM_DATA);
-
-//     expect(response3.status).to.equal(401);
-//   });
-
-//   test('401 response when missing refreshToken', async function () {
-//     const wallet = Wallet.createRandom();
-//     await seedUser({ identityEthAddress: wallet.address });
-//     await loginUser(wallet, this.client);
-
-//     const response3 = await this.client
-//       .post('/api/auth/refresh')
-//       .set('Accept', 'application/json');
-
-//     expect(response3.status).to.equal(401);
-//   });
-// });
