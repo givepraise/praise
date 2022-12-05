@@ -4,7 +4,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '@/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { UtilsProvider } from '@/utils/utils.provider';
-import { JwtPayload } from '../interfaces/jwt-payload.interface';
 import { generateLoginMessage } from '../auth.utils';
 import { ethers } from 'ethers';
 
@@ -25,8 +24,6 @@ export class EthSignatureStrategy extends PassportStrategy(
   }
 
   async validate(identityEthAddress: string, signature: string): Promise<any> {
-    console.log('identityEthAddress', identityEthAddress);
-    console.log('signature', signature);
     const user = await this.usersService.findOneByEth(identityEthAddress);
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -40,24 +37,16 @@ export class EthSignatureStrategy extends PassportStrategy(
     // Generate expected message, nonce included.
     // Recover signer from generated message + signature
     const generatedMsg = generateLoginMessage(identityEthAddress, user.nonce);
-    const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
 
-    // Recovered signer address must match identityEthAddress
-    if (signerAddress !== identityEthAddress)
-      throw new UnauthorizedException('Signature verification failed');
+    try {
+      // Recovered signer address must match identityEthAddress
+      const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
+      if (signerAddress !== identityEthAddress)
+        throw new UnauthorizedException('Signature verification failed');
+    } catch (e) {
+      throw new UnauthorizedException();
+    }
 
-    // await logEvent(EventLogTypeKey.AUTHENTICATION, 'Logged in', {
-    //   userId: user._id,
-    // });
-
-    // Sign payload to create accesstoken
-    const payload = {
-      userId: user._id.toString(),
-      identityEthAddress,
-      roles: user.roles,
-    } as JwtPayload;
-
-    const jwt = this.jwtService.sign(payload);
-    return jwt;
+    return user;
   }
 }

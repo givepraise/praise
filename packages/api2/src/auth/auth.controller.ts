@@ -8,10 +8,14 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { NonceResponse } from './interfaces/nonce-response.interface';
-import { LoginRequestDto } from './dto/login-request.dto';
 import { LoginResponse } from './interfaces/login-response.interface';
 import { NonceRequestDto } from './dto/nonce-request.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { User } from '@/users/schemas/users.schema';
+
+interface RequestWithUser extends Request {
+  user: User;
+}
 
 @Controller('auth')
 export class AuthController {
@@ -32,25 +36,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard('eth-signature'))
   @Post('login')
-  async login(@Request() req: Request) {
-    console.log(req);
-    return req;
+  async login(@Request() req: RequestWithUser): Promise<LoginResponse> {
+    return this.authService.login(req.user);
   }
-
-  // @Post('login')
-  // async login(
-  //   @Body() loginRequestDto: LoginRequestDto,
-  // ): Promise<LoginResponse> {
-  //   const { identityEthAddress, signature } = loginRequestDto;
-  //   const accessToken = await this.authService.login(
-  //     identityEthAddress,
-  //     signature,
-  //   );
-
-  //   return {
-  //     accessToken,
-  //     identityEthAddress,
-  //     tokenType: 'Bearer',
-  //   };
-  // }
 }
