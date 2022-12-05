@@ -6,7 +6,7 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import { AuthenticationService } from './authentication.service';
+import { AuthService } from './auth.service';
 import { NonceResponse } from './interfaces/nonce-response.interface';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { LoginResponse } from './interfaces/login-response.interface';
@@ -14,8 +14,8 @@ import { NonceRequestDto } from './dto/nonce-request.dto';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
-export class AuthenticationController {
-  constructor(private authService: AuthenticationService) {}
+export class AuthController {
+  constructor(private authService: AuthService) {}
 
   @Post('nonce')
   async nonce(@Body() nonceRquestDto: NonceRequestDto): Promise<NonceResponse> {

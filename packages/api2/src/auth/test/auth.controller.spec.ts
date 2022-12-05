@@ -1,27 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthenticationController } from '../authentication.controller';
-import { AuthenticationService } from '../authentication.service';
+import { AuthController } from '../auth.controller';
+import { AuthService } from '../auth.service';
 import { UsersService } from '@/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 
 jest.mock('@/users/users.service');
-jest.mock('@/authentication/authentication.service');
+jest.mock('@/auth/auth.service');
 
 describe('AuthController', () => {
-  let authController: AuthenticationController;
-  let authService: AuthenticationService;
+  let authController: AuthController;
+  let authService: AuthService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
-      controllers: [AuthenticationController],
-      providers: [AuthenticationService, UsersService, JwtService],
+      controllers: [AuthController],
+      providers: [AuthService, UsersService, JwtService],
     }).compile();
 
-    authController = module.get<AuthenticationController>(
-      AuthenticationController,
-    );
-    authService = module.get<AuthenticationService>(AuthenticationService);
+    authController = module.get<AuthController>(AuthController);
+    authService = module.get<AuthService>(AuthService);
     jest.clearAllMocks();
   });
 
@@ -58,20 +56,6 @@ describe('AuthController', () => {
       authService.generateUserNonce = jest.fn().mockReturnValue(null);
       expect(authController.nonce(nonceRequestDto)).rejects.toThrowError(
         'Failed to generate nonce.',
-      );
-    });
-  });
-
-  describe('login', () => {
-    test('should call authService.login with correct params', async () => {
-      const loginRequestDto = {
-        identityEthAddress: '0xF2f5C73fa04406b1995e397B55c24aB1f3eA726C',
-        signature: 'signature',
-      };
-      await authController.login(loginRequestDto);
-      expect(authService.login).toBeCalledWith(
-        loginRequestDto.identityEthAddress,
-        loginRequestDto.signature,
       );
     });
   });
