@@ -20,6 +20,7 @@ export interface UserAccountDocument extends UserAccount, Document {}
 export interface UserAccountDto {
   _id: string;
   user?: string;
+  username?: string;
   accountId: string;
   name: string;
   nameRealized: string;

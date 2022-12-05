@@ -23,6 +23,7 @@ export const userAccountTransformer = (
   return {
     _id,
     user: user?._id,
+    username: user?.username,
     accountId,
     name,
     nameRealized: generateUserAccountNameRealized(userAccountDocument),

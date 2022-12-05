@@ -103,6 +103,7 @@ export const Praise = ({
                     userAccount={praise.giver}
                     usePseudonym={usePseudonyms}
                     periodId={periodId}
+                    userName={praise.giver.username}
                     className="font-bold"
                   />
                 ) : (
@@ -126,6 +127,7 @@ export const Praise = ({
                     userAccount={praise.receiver}
                     usePseudonym={usePseudonyms}
                     periodId={periodId}
+                    userName={praise.receiver.username}
                     nameClassName="font-bold"
                   />
                 </div>

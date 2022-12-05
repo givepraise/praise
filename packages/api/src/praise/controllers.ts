@@ -45,7 +45,20 @@ export const all = async (
     query,
     ...queryInput,
     sort: getQuerySort(req.query),
-    populate: 'giver receiver forwarder',
+    populate: [
+      {
+        path: 'giver',
+        populate: { path: 'user', select: 'username' },
+      },
+      {
+        path: 'receiver',
+        populate: { path: 'user', select: 'username' },
+      },
+      {
+        path: 'forwarder',
+        populate: { path: 'user', select: 'username' },
+      },
+    ],
   });
 
   if (!praisePagination)
@@ -74,9 +87,20 @@ export const single = async (
   req: Request,
   res: TypedResponse<PraiseDetailsDto>
 ): Promise<void> => {
-  const praise = await PraiseModel.findById(req.params.id).populate(
-    'giver receiver forwarder'
-  );
+  const praise = await PraiseModel.findById(req.params.id).populate([
+    {
+      path: 'giver',
+      populate: { path: 'user', select: 'username' },
+    },
+    {
+      path: 'receiver',
+      populate: { path: 'user', select: 'username' },
+    },
+    {
+      path: 'forwarder',
+      populate: { path: 'user', select: 'username' },
+    },
+  ]);
   if (!praise) throw new NotFoundError('Praise');
   const praiseDetailsDto: PraiseDetailsDto = await praiseTransformer(praise);
 

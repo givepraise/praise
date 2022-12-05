@@ -289,7 +289,20 @@ const getGiverReceiverPraiseItems = async (
       [key]: new Types.ObjectId(id),
     })
     .sort({ createdAt: -1 })
-    .populate('receiver giver forwarder');
+    .populate([
+      {
+        path: 'giver',
+        populate: { path: 'user', select: 'username' },
+      },
+      {
+        path: 'receiver',
+        populate: { path: 'user', select: 'username' },
+      },
+      {
+        path: 'forwarder',
+        populate: { path: 'user', select: 'username' },
+      },
+    ]);
 
   const praiseDetailsDtoList: PraiseDetailsDto[] = [];
   if (praiseList) {
