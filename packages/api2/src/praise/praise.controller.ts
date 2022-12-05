@@ -1,4 +1,3 @@
-import { JwtAuthGuard } from '@/authentication/jwt-auth.guard';
 import { PaginatedResponseBody } from '@/shared/types.shared';
 import {
   BadRequestException,
@@ -9,7 +8,6 @@ import {
   Param,
   Req,
   SerializeOptions,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiParam } from '@nestjs/swagger';

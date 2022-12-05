@@ -3,14 +3,12 @@ import { User } from '@/users/schemas/users.schema';
 
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@/users/users.service';
-import { generateLoginMessage } from './authentication.utils';
-import { ethers } from 'ethers';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UtilsProvider } from '@/utils/utils.provider';
-import { ServiceException } from '@/shared/service-exception';
+import { LoginResponse } from './interfaces/login-response.interface';
 
 @Injectable()
-export class AuthenticationService {
+export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
@@ -44,39 +42,27 @@ export class AuthenticationService {
    *
    *  @param identityEthAddress
    *  @param signature
-   *  @returns string
+   *  @returns LoginResponse
    */
-  async login(identityEthAddress: string, signature: string): Promise<string> {
-    const user = await this.usersService.findOneByEth(identityEthAddress);
-    if (!user) {
-      throw new ServiceException('User not found');
-    }
+  async login(user: User): Promise<LoginResponse> {
+    const { _id: userId, identityEthAddress, roles } = user;
 
-    // Check for previously generated nonce
-    if (!user.nonce) {
-      throw new ServiceException('Nonce not found');
-    }
-
-    // Generate expected message, nonce included.
-    // Recover signer from generated message + signature
-    const generatedMsg = generateLoginMessage(identityEthAddress, user.nonce);
-    const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
-
-    // Recovered signer address must match identityEthAddress
-    if (signerAddress !== identityEthAddress)
-      throw new ServiceException('Signature verification failed');
+    // Sign payload to create accesstoken
+    const payload = {
+      userId: userId.toString(),
+      identityEthAddress,
+      roles,
+    } as JwtPayload;
+    const accessToken = this.jwtService.sign(payload);
 
     // await logEvent(EventLogTypeKey.AUTHENTICATION, 'Logged in', {
     //   userId: user._id,
     // });
 
-    // Sign payload to create accesstoken
-    const payload = {
-      userId: user._id.toString(),
+    return {
+      accessToken,
       identityEthAddress,
-      roles: user.roles,
-    } as JwtPayload;
-
-    return this.jwtService.sign(payload);
+      tokenType: 'Bearer',
+    };
   }
 }
