@@ -2,8 +2,6 @@ import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '@/users/users.service';
-import { JwtService } from '@nestjs/jwt';
-import { UtilsProvider } from '@/utils/utils.provider';
 import { generateLoginMessage } from '../auth.utils';
 import { ethers } from 'ethers';
 
@@ -12,11 +10,7 @@ export class EthSignatureStrategy extends PassportStrategy(
   Strategy,
   'eth-signature',
 ) {
-  constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
-    private utils: UtilsProvider,
-  ) {
+  constructor(private usersService: UsersService) {
     super({
       usernameField: 'identityEthAddress',
       passwordField: 'signature',
@@ -41,10 +35,9 @@ export class EthSignatureStrategy extends PassportStrategy(
     try {
       // Recovered signer address must match identityEthAddress
       const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
-      if (signerAddress !== identityEthAddress)
-        throw new UnauthorizedException('Signature verification failed');
+      if (signerAddress !== identityEthAddress) throw new Error();
     } catch (e) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Signature verification failed');
     }
 
     return user;
