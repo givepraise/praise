@@ -39,14 +39,17 @@ export const localizeAndFormatIsoDateRelative = (dateIso: string): string => {
   const dateUtc = parseISO(dateIso);
   const dateLocal = utcDateToLocal(dateUtc);
 
-  const formatDisanceValue = formatDistance(new Date(dateLocal), new Date(), {
+  const localDate = new Date(dateLocal);
+  const currentDate = new Date();
+
+  const formatDisanceValue = formatDistance(localDate, currentDate, {
     addSuffix: true,
   });
 
   const dateSuffix =
-    parseInt(formatDisanceValue) > 6
+    Math.round((currentDate.getTime() - localDate.getTime()) / 86400000) > 6
       ? ''
-      : Number.isNaN(parseInt(formatDisanceValue))
+      : Math.round((currentDate.getTime() - localDate.getTime()) / 86400000) < 1
       ? formatDisanceValue
       : ', ' + formatDisanceValue;
 
