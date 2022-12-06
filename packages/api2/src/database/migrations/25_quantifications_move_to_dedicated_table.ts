@@ -1,7 +1,7 @@
 import { model } from 'mongoose';
 import { Praise } from 'src/praise/schemas/praise.schema';
-import { PraiseSchema } from '../schemas/praise.schema';
-import { QuantificationSchema } from '../schemas/quantification.schema';
+import { PraiseSchema } from '../schemas/praise/praise.schema';
+import { QuantificationSchema } from '../schemas/quantification/quantification.schema';
 import { Quantification } from '../../quantifications/schemas/quantifications.schema';
 
 const up = async (): Promise<void> => {
@@ -32,7 +32,12 @@ const up = async (): Promise<void> => {
 };
 
 const down = async (): Promise<void> => {
-  /** TODO */
+  const QuantificationModel = model<Quantification>(
+    'Quantification',
+    QuantificationSchema,
+  );
+
+  QuantificationModel.deleteMany({});
 };
 
 export { up, down };

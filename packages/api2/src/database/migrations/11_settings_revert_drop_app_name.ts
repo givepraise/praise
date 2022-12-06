@@ -1,5 +1,6 @@
-import { SettingGroup } from '@/settings/types';
-import { SettingsModel } from '@/settings/entities';
+import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
+import { model } from 'mongoose';
+import { SettingSchema } from '../schemas/settings/07_settings.schema';
 
 const deleteSettings = [
   {
@@ -13,13 +14,15 @@ const deleteSettings = [
 ];
 
 const up = async (): Promise<void> => {
-  await SettingsModel.insertMany(deleteSettings);
+  const SettingModel = model('Setting', SettingSchema);
+  await SettingModel.insertMany(deleteSettings);
 };
 
 const down = async (): Promise<void> => {
   const deleteSettingKeys = deleteSettings.map((s) => s.key);
 
-  await SettingsModel.deleteMany({ key: { $in: deleteSettingKeys } });
+  const SettingModel = model('Setting', SettingSchema);
+  await SettingModel.deleteMany({ key: { $in: deleteSettingKeys } });
 };
 
 export { up, down };

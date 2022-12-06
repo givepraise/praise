@@ -1,11 +1,37 @@
-import mongoose, { Types } from 'mongoose';
-import { PraiseModel } from '@/praise/entities';
-import { UserModel } from '@/user/entities';
-import { generateUserNameFromAccount } from '@/user/utils/entity';
-import { UserAccountModel } from '@/useraccount/entities';
-import { UserDocument } from '@/user/types';
+import { Praise } from '@/praise/schemas/praise.schema';
+import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
+import { User } from '@/users/schemas/users.schema';
+import mongoose, { model, Types } from 'mongoose';
+import { PraiseSchema } from '../schemas/praise/praise.schema';
+import { UserSchema } from '../schemas/user/user.schema';
+import { userAccountSchema } from '../schemas/useraccount/useraccount.schema';
 
-export const generateUserName = async (user: UserDocument): Promise<string> => {
+/**
+ * Generate username from user account name
+ * If username is already taken than create one with discriminator
+ *
+ * @param userAccount
+ * @returns {Promise<string>}
+ */
+const generateUserNameFromAccount = async (
+  userAccount: UserAccount,
+): Promise<string | null> => {
+  const UserModel = model<User>('User', UserSchema);
+  let username;
+  if (userAccount.platform === 'DISCORD' && userAccount.name.indexOf('#') > 0) {
+    username = userAccount.name.split('#')[0];
+  } else {
+    username = userAccount.name;
+  }
+
+  const exists = await UserModel.find({ username }).lean();
+  if (exists.length === 0) return username;
+  if (userAccount.platform === 'DISCORD') return userAccount.name;
+  return null;
+};
+
+const generateUserName = async (user: User): Promise<string> => {
+  const UserAccountModel = model<UserAccount>('UserAccount', userAccountSchema);
   const accounts = await UserAccountModel.find({
     user: new Types.ObjectId(user._id),
   });
@@ -26,13 +52,14 @@ export const generateUserName = async (user: UserDocument): Promise<string> => {
 };
 
 const up = async (): Promise<void> => {
+  const UserModel = model<User>('User', UserSchema);
   const users = await UserModel.find().lean();
 
   if (users.length === 0) return;
 
   const indexes = await UserModel.collection.indexes();
   const indexExists = indexes.some(
-    (index) => index.name === 'ethereumAddress_1'
+    (index: any) => index.name === 'ethereumAddress_1',
   );
   if (indexExists) {
     await UserModel.collection.dropIndex('ethereumAddress_1');
@@ -52,13 +79,15 @@ const up = async (): Promise<void> => {
           $unset: { ethereumAddress: 1 },
         },
       },
-    }))
+    })),
   );
 
   await mongoose.connection.db.collection('users').bulkWrite(updates);
 };
 
 const down = async (): Promise<void> => {
+  const PraiseModel = model<Praise>('Praise', PraiseSchema);
+
   await PraiseModel.updateMany(
     {
       rewardsEthAddress: { $exists: true },
@@ -67,7 +96,7 @@ const down = async (): Promise<void> => {
     },
     {
       $unset: { rewardsEthAddress: 1, identityEthAddress: 1, username: 1 },
-    }
+    },
   );
 };
 

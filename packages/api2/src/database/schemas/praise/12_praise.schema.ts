@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { QuantificationSchema } from './quantification.schema';
+import { QuantificationSchema } from '../quantification/quantification.schema';
 const { Schema } = mongoose;
 const { ObjectId } = Schema.Types;
 

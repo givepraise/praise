@@ -1,15 +1,18 @@
-import { PeriodSettingsModel } from '@/periodsettings/entities';
-import { SettingGroup } from '@/settings/types';
+import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
+import { model } from 'mongoose';
+import { PeriodSettingsSchema } from '../schemas/periodsettings/periodsettings.schema';
 
 const up = async (): Promise<void> => {
-  await PeriodSettingsModel.updateMany(
+  const PeriodSettingModel = model('Setting', PeriodSettingsSchema);
+  await PeriodSettingModel.updateMany(
     {},
-    { $set: { group: SettingGroup.PERIOD_DEFAULT } }
+    { $set: { group: SettingGroup.PERIOD_DEFAULT } },
   );
 };
 
 const down = async (): Promise<void> => {
-  await PeriodSettingsModel.updateMany({}, { $unset: { group: 1 } });
+  const PeriodSettingModel = model('Setting', PeriodSettingsSchema);
+  await PeriodSettingModel.updateMany({}, { $unset: { group: 1 } });
 };
 
 export { up, down };

@@ -1,4 +1,5 @@
-import { SettingsModel } from '../../settings/entities';
+import { model } from 'mongoose';
+import { SettingSchema } from '../schemas/settings/01_settings.schema';
 
 const settings = [
   {
@@ -29,9 +30,10 @@ const up = async (): Promise<void> => {
       filter: { key: s.key },
       update: { $set: { type: s.newType } },
     },
-  }));
+  })) as any;
 
-  await SettingsModel.bulkWrite(settingUpdates);
+  const SettingModel = model('Setting', SettingSchema);
+  await SettingModel.bulkWrite(settingUpdates);
 };
 
 const down = async (): Promise<void> => {
@@ -40,9 +42,10 @@ const down = async (): Promise<void> => {
       filter: { key: s.key },
       update: { $set: { type: s.originalType } },
     },
-  }));
+  })) as any;
 
-  await SettingsModel.bulkWrite(settingUpdates);
+  const SettingModel = model('Setting', SettingSchema);
+  await SettingModel.bulkWrite(settingUpdates);
 };
 
 export { up, down };

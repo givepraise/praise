@@ -1,4 +1,5 @@
-import { SettingsModel } from '../../settings/entities';
+import { model } from 'mongoose';
+import { SettingSchema } from '../schemas/settings/01_settings.schema';
 
 const settings = [
   {
@@ -107,16 +108,18 @@ const up = async (): Promise<void> => {
       filter: { key: s.key },
       update: { $set: { label: s.label, description: s.description } },
     },
-  }));
+  })) as any;
 
-  await SettingsModel.bulkWrite(settingUpdates);
+  const SettingModel = model('Setting', SettingSchema);
+  await SettingModel.bulkWrite(settingUpdates);
 };
 
 const down = async (): Promise<void> => {
   const allKeys = settings.map((s) => s.key);
-  await SettingsModel.updateMany(
+  const SettingModel = model('Setting', SettingSchema);
+  await SettingModel.updateMany(
     { key: { $in: allKeys } },
-    { $set: { label: undefined, description: undefined } }
+    { $set: { label: undefined, description: undefined } },
   );
 };
 

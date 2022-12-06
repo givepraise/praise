@@ -1,5 +1,6 @@
-import { SettingsModel } from '../../settings/entities';
-import { PeriodSettingsModel } from '../../periodsettings/entities';
+import { model } from 'mongoose';
+import { PeriodSettingsSchema } from '../schemas/periodsettings/periodsettings.schema';
+import { SettingSchema } from '../schemas/settings/03_settings.schema';
 
 const original = {
   key: 'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS',
@@ -15,26 +16,32 @@ const fixed = {
 };
 
 const up = async (): Promise<void> => {
-  await SettingsModel.updateOne(
+  const SettingModel = model('Setting', SettingSchema);
+  const PeriodSettingsModel = model('PeriodSettings', PeriodSettingsSchema);
+
+  await SettingModel.updateOne(
     { key: original.key },
-    { $set: { label: fixed.label, description: fixed.description } }
+    { $set: { label: fixed.label, description: fixed.description } },
   );
 
   await PeriodSettingsModel.updateMany(
     { key: original.key },
-    { $set: { label: fixed.label, description: fixed.description } }
+    { $set: { label: fixed.label, description: fixed.description } },
   );
 };
 
 const down = async (): Promise<void> => {
-  await SettingsModel.updateOne(
+  const SettingModel = model('Setting', SettingSchema);
+  const PeriodSettingsModel = model('PeriodSettings', PeriodSettingsSchema);
+
+  await SettingModel.updateOne(
     { key: original.key },
     {
       $set: {
         label: original.label,
         description: original.description,
       },
-    }
+    },
   );
 
   await PeriodSettingsModel.updateMany(
@@ -44,7 +51,7 @@ const down = async (): Promise<void> => {
         label: original.label,
         description: original.description,
       },
-    }
+    },
   );
 };
 

@@ -129,7 +129,7 @@ const down = async (): Promise<void> => {
   const allKeys = settings.map((s) => s.key);
   await SettingsModel.updateMany(
     { key: { $in: allKeys } },
-    { $set: { defaultValue: undefined } }
+    { $set: { defaultValue: undefined } },
   );
 };
 

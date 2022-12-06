@@ -1,5 +1,14 @@
-import { EventLogTypeModel } from '../../eventlog/entities';
-import { EventLogTypeKey } from '../../eventlog/types';
+import { EventLogSchema } from '../schemas/eventlog/eventlog.schema';
+import { model } from 'mongoose';
+
+enum EventLogTypeKey {
+  PERMISSION = 'PERMISSION',
+  AUTHENTICATION = 'AUTHENTICATION',
+  PERIOD = 'PERIOD',
+  PRAISE = 'PRAISE',
+  QUANTIFICATION = 'QUANTIFICATION',
+  SETTING = 'SETTING',
+}
 
 const eventLogTypes = [
   {
@@ -45,12 +54,14 @@ const up = async (): Promise<void> => {
     },
   }));
 
-  await EventLogTypeModel.bulkWrite(upsertQueries);
+  const EventLogModel = model('EventLog', EventLogSchema);
+  await EventLogModel.bulkWrite(upsertQueries);
 };
 
 const down = async (): Promise<void> => {
   const allKeys = eventLogTypes.map((s) => s.key);
-  await EventLogTypeModel.deleteMany({ key: { $in: allKeys } });
+  const EventLogModel = model('EventLog', EventLogSchema);
+  await EventLogModel.deleteMany({ key: { $in: allKeys } });
 };
 
 export { up, down };
