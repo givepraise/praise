@@ -1,5 +1,5 @@
 export interface LoginResponse {
-  identityEthAddress: string;
   accessToken: string;
+  identityEthAddress: string;
   tokenType: string;
 }

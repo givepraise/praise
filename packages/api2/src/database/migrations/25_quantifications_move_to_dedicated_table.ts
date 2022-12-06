@@ -1,11 +1,10 @@
 import { model } from 'mongoose';
-import { Praise } from 'src/praise/schemas/praise.schema';
-import { PraiseSchema } from '../schemas/praise/praise.schema';
+import { PraiseSchema } from '../schemas/praise/12_praise.schema';
 import { QuantificationSchema } from '../schemas/quantification/quantification.schema';
 import { Quantification } from '../../quantifications/schemas/quantifications.schema';
 
 const up = async (): Promise<void> => {
-  const PraiseModel = model<Praise>('Praise', PraiseSchema);
+  const PraiseModel = model('Praise', PraiseSchema);
   const QuantificationModel = model<Quantification>(
     'Quantification',
     QuantificationSchema,

@@ -16,6 +16,10 @@ export class UsersService {
     private userModel: Model<UserDocument>,
   ) {}
 
+  getModel(): Model<UserDocument> {
+    return this.userModel;
+  }
+
   async findAll(): Promise<User[]> {
     const users = await this.userModel.find().populate('accounts').lean();
     return users.map((user) => new User(user));

@@ -18,8 +18,9 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/authentication/*": ["src/authentication/*"],
+      "@/auth/*": ["src/auth/*"],
       "@/constants/*": ["src/constants/*"],
+      "@/database/*": ["src/database/*"],
       "@/periods/*": ["src/periods/*"],
       "@/periodsettings/*": ["src/periodsettings/*"],
       "@/praise/*": ["src/praise/*"],
