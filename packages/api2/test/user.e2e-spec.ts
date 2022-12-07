@@ -12,27 +12,8 @@ import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { generateLoginMessage } from '@/auth/auth.utils';
-
-const loginUser = async (app: INestApplication, wallet: Wallet) => {
-  const nonceResponse = await request(app.getHttpServer())
-    .post('/auth/nonce')
-    .send({
-      identityEthAddress: wallet.address,
-    })
-    .expect(201);
-  const { nonce } = nonceResponse.body;
-  const message = generateLoginMessage(wallet.address, nonce);
-  const signature = await wallet.signMessage(message);
-  const loginResponse = await request(app.getHttpServer())
-    .post('/auth/login')
-    .send({
-      identityEthAddress: wallet.address,
-      signature,
-    })
-    .expect(201);
-  return loginResponse.body;
-};
+import { authorizedRequest, loginUser } from './test.common';
+import { User } from '@/users/schemas/users.schema';
 
 describe('UserController (E2E)', () => {
   let app: INestApplication;
@@ -40,6 +21,7 @@ describe('UserController (E2E)', () => {
   let module: TestingModule;
   let usersSeeder: UsersSeeder;
   let usersService: UsersService;
+
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [AppModule, UsersModule],
@@ -59,23 +41,57 @@ describe('UserController (E2E)', () => {
     usersService = module.get<UsersService>(UsersService);
   });
 
-  // beforeEach(async () => {});
-
   afterAll(async () => {
     await app.close();
   });
 
   describe('GET /api/users', () => {
+    let wallet;
+    let accessToken: string;
+    const users: User[] = [];
+
+    beforeAll(async () => {
+      // Clear the database
+      await usersService.getModel().deleteMany({});
+
+      // Seed the database
+      wallet = Wallet.createRandom();
+      users.push(
+        await usersSeeder.seedUser({
+          identityEthAddress: wallet.address,
+          rewardsAddress: wallet.address,
+        }),
+      );
+      users.push(await usersSeeder.seedUser({}));
+
+      // Login and get access token
+      const response = await loginUser(app, wallet);
+      accessToken = response.accessToken;
+    });
+
     test('401 when not authenticated', async () => {
       return request(server).get('/users').send().expect(401);
     });
+
     test('200 when authenticated', async () => {
-      const wallet = Wallet.createRandom();
-      const { accessToken } = await loginUser(app, wallet);
-      const response = await request(server)
-        .get('/users')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(200);
+      await authorizedRequest('/users', app, accessToken).expect(200);
+    });
+
+    test('that returned user list matches seeded list', async () => {
+      const response = await authorizedRequest(
+        '/users',
+        app,
+        accessToken,
+      ).expect(200);
+      expect(response.body.length).toBe(users.length);
+      for (const returnedUser of response.body) {
+        expect(
+          users.some(
+            (user) =>
+              user.identityEthAddress === returnedUser.identityEthAddress,
+          ),
+        ).toBe(true);
+      }
     });
   });
 });
