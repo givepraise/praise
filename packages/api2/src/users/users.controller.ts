@@ -19,23 +19,28 @@ import { User } from './schemas/users.schema';
 import { ApiParam } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { Request } from 'express';
+import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { Permission } from '@/auth/enums/permission.enum';
+import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 
 @Controller('users')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(PermissionsGuard)
 @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Patch()
-  async findAll(@Req() req: any): Promise<User[]> {
-    console.log(req.userId);
+  @Get()
+  @Permissions(Permission.UsersFind)
+  async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
   @Get(':id')
+  @Permissions(Permission.UsersFind)
   @ApiParam({ name: 'id', type: String })
   async findOne(
     @Req() req: Request,
@@ -47,6 +52,7 @@ export class UsersController {
   }
 
   @Patch(':id/addRole')
+  @Permissions(Permission.UsersManageRoles)
   @ApiParam({ name: 'id', type: String })
   async addRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -56,6 +62,7 @@ export class UsersController {
   }
 
   @Patch(':id/removeRole')
+  @Permissions(Permission.UsersManageRoles)
   @ApiParam({ name: 'id', type: String })
   async removeRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
