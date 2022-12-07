@@ -21,25 +21,26 @@ import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
+import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 
 @Controller('users')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(PermissionsGuard)
 @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
   @Permissions(Permission.UsersFind)
-  async findAll(@Req() req: any): Promise<User[]> {
-    console.log(req.user);
+  async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
   @Get(':id')
-  @Permissions(Permission.UsersManageRoles)
+  @Permissions(Permission.UsersFind)
   @ApiParam({ name: 'id', type: String })
   async findOne(
     @Req() req: Request,

@@ -34,7 +34,7 @@ const loginUser = async (app: INestApplication, wallet: Wallet) => {
   return loginResponse.body;
 };
 
-describe('AuthController (E2E)', () => {
+describe('UserController (E2E)', () => {
   let app: INestApplication;
   let server: Server;
   let module: TestingModule;
@@ -69,14 +69,13 @@ describe('AuthController (E2E)', () => {
     test('401 when not authenticated', async () => {
       return request(server).get('/users').send().expect(401);
     });
-    test('401 when authenticated', async () => {
+    test('200 when authenticated', async () => {
       const wallet = Wallet.createRandom();
       const { accessToken } = await loginUser(app, wallet);
-      const users = await request(server)
+      const response = await request(server)
         .get('/users')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200);
-      console.log(users);
     });
   });
 });

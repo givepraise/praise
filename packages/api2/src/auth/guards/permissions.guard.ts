@@ -1,10 +1,18 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  Logger,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
 import { Permission } from '../enums/permission.enum';
+import { RolePermissions } from '../role-permissions';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
+  private readonly logger = new Logger(PermissionsGuard.name);
+
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -16,6 +24,22 @@ export class PermissionsGuard implements CanActivate {
       return true;
     }
     const { user } = context.switchToHttp().getRequest();
-    return requiredPermissions.some((role) => user.roles?.includes(role));
+    if (!user) {
+      this.logger.error(
+        "No user found in request. Make sure you're using the JwtAuthGuard before the PermissionsGuard.",
+      );
+      return false;
+    }
+    for (const role of user.roles) {
+      const rolePermissions = RolePermissions[role];
+      if (
+        requiredPermissions.some((permission) =>
+          rolePermissions.includes(permission),
+        )
+      ) {
+        return true;
+      }
+    }
+    return false;
   }
 }
