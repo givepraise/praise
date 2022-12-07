@@ -2,8 +2,9 @@ import { model } from 'mongoose';
 import { PraiseSchema } from '../schemas/praise/12_praise.schema';
 import { QuantificationSchema } from '../schemas/quantification/quantification.schema';
 import { Quantification } from '../../quantifications/schemas/quantifications.schema';
+import { MigrationsContext } from '../interfaces/migration-context.interface';
 
-const up = async (): Promise<void> => {
+const up = async ({ context }: MigrationsContext): Promise<void> => {
   const PraiseModel = model('Praise', PraiseSchema);
   const QuantificationModel = model<Quantification>(
     'Quantification',

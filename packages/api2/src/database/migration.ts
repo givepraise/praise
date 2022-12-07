@@ -7,14 +7,19 @@ import { Connection } from 'mongoose';
  * @param {Connection} connection
  * @returns {Umzug}
  */
-const setupMigrator = (connection: Connection): Umzug => {
+const setupMigrator = (connection: Connection, context: any): Umzug => {
   const migrator = new Umzug({
     migrations: { glob: 'src/database/migrations/*.ts' },
     storage: new MongoDBStorage({ connection, collectionName: 'migrations' }),
     logger: console,
+    context,
   });
 
   return migrator;
 };
 
-export { setupMigrator };
+const runMigrations = async (migrator: Umzug, context: any): Promise<void> => {  
+  await migrator.up(context);
+};
+
+export { setupMigrator, runMigrations };

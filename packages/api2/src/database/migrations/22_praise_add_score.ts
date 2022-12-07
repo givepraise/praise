@@ -15,9 +15,10 @@ const up = async (): Promise<void> => {
         filter: { _id: s._id },
         update: {
           $set: {
-            scoreRealized: await calculateQuantificationsCompositeScore(
-              s.quantifications,
-            ),
+            // scoreRealized: await calculateQuantificationsCompositeScore(
+            //   s.quantifications,
+            // ),
+            scoreRealized: 0,
           },
         },
       },
