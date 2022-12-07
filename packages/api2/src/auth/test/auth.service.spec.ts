@@ -5,7 +5,7 @@ import { UsersService } from '@/users/users.service';
 import { userStub } from '@/users/test/stubs/user.stub';
 import { JwtService } from '@nestjs/jwt';
 import { UtilsProvider } from '@/utils/utils.provider';
-import { LoginResponse } from '../interfaces/login-response.interface';
+import { LoginResponse } from '../dto/login-response.dto';
 import { accessTokenStub } from './stubs/access-token';
 
 jest.mock('@/users/users.service');
