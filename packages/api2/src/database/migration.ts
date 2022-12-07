@@ -1,25 +1,42 @@
 import { Umzug, MongoDBStorage } from 'umzug';
-import { Connection } from 'mongoose';
+import { INestApplication } from '@nestjs/common';
+import { PraiseService } from '@/praise/praise.service';
+import { UsersService } from '@/users/users.service';
+import { PeriodsService } from '@/periods/periods.service';
+import { SettingsService } from '@/settings/settings.service';
+import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
+import { UtilsProvider } from '@/utils/utils.provider';
+import { closeDatabaseConnection, connectDatabase } from './connection';
 
 /**
- * Configure and instantiate Umzug (database migration library)
+ * Configure Umzug (database migration library) and run migrations
  *
- * @param {Connection} connection
  * @returns {Umzug}
  */
-const setupMigrator = (connection: Connection, context: any): Umzug => {
+const runDatabaseMigrations = async (app: INestApplication): Promise<void> => {
+  const db = await connectDatabase('localhost');
+
   const migrator = new Umzug({
     migrations: { glob: 'src/database/migrations/*.ts' },
-    storage: new MongoDBStorage({ connection, collectionName: 'migrations' }),
+    storage: new MongoDBStorage({
+      connection: db.connection,
+      collectionName: 'migrations',
+    }),
     logger: console,
-    context,
+    context: {
+      praiseService: app.get(PraiseService),
+      usersService: app.get(UsersService),
+      periodsService: app.get(PeriodsService),
+      settingsService: app.get(SettingsService),
+      periodSettingsService: app.get(PeriodSettingsService),
+      utilsProvider: app.get(UtilsProvider),
+    },
   });
 
-  return migrator;
+  require('ts-node/register');
+  await migrator.up();
+
+  await closeDatabaseConnection();
 };
 
-const runMigrations = async (migrator: Umzug, context: any): Promise<void> => {  
-  await migrator.up(context);
-};
-
-export { setupMigrator, runMigrations };
+export { runDatabaseMigrations };

@@ -5,30 +5,32 @@ import { Quantification } from '../../quantifications/schemas/quantifications.sc
 import { MigrationsContext } from '../interfaces/migration-context.interface';
 
 const up = async ({ context }: MigrationsContext): Promise<void> => {
-  const PraiseModel = model('Praise', PraiseSchema);
-  const QuantificationModel = model<Quantification>(
-    'Quantification',
-    QuantificationSchema,
-  );
-  const praiseItems = await PraiseModel.find();
+  console.log('Context', context);
 
-  const quantifications = praiseItems.reduce(
-    (acc, praiseItem) => [
-      ...acc,
-      ...praiseItem.quantifications.map((quantification) => ({
-        quantifier: quantification.quantifier,
-        score: quantification.score,
-        dismissed: quantification.dismissed,
-        duplicatePraise: quantification.duplicatePraise,
-        createdAt: quantification.createdAt,
-        updatedAt: quantification.updatedAt,
-        praise: praiseItem._id,
-      })),
-    ],
-    [] as Quantification[],
-  );
+  // const PraiseModel = model('Praise', PraiseSchema);
+  // const QuantificationModel = model<Quantification>(
+  //   'Quantification',
+  //   QuantificationSchema,
+  // );
+  // const praiseItems = await PraiseModel.find();
 
-  await QuantificationModel.insertMany(quantifications);
+  // const quantifications = praiseItems.reduce(
+  //   (acc, praiseItem) => [
+  //     ...acc,
+  //     ...praiseItem.quantifications.map((quantification) => ({
+  //       quantifier: quantification.quantifier,
+  //       score: quantification.score,
+  //       dismissed: quantification.dismissed,
+  //       duplicatePraise: quantification.duplicatePraise,
+  //       createdAt: quantification.createdAt,
+  //       updatedAt: quantification.updatedAt,
+  //       praise: praiseItem._id,
+  //     })),
+  //   ],
+  //   [] as Quantification[],
+  // );
+
+  // await QuantificationModel.insertMany(quantifications);
 };
 
 const down = async (): Promise<void> => {

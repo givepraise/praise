@@ -15,7 +15,7 @@ interface DatabaseConfig {
  * @returns {Promise<typeof mongoose>}
  */
 export const connectDatabase = async (
-  configOverride: DatabaseConfig | {} = {}
+  configOverride: DatabaseConfig | {} = {},
 ): Promise<typeof mongoose> => {
   const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_HOST, MONGO_PORT, MONGO_DB } =
     process.env;
@@ -44,4 +44,14 @@ export const connectDatabase = async (
   } catch (error) {
     throw Error('Could not connect to database');
   }
+};
+
+/**
+ * Close database connection
+ * @returns {Promise<void>}
+ * @memberof Database
+ * @throws {Error} - If connection could not be closed successfully (e.g. connection does not exist) an error is thrown
+ */
+export const closeDatabaseConnection = async (): Promise<void> => {
+  await mongoose.connection.close();
 };
