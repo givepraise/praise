@@ -6,10 +6,8 @@ module.exports = Object.assign(JestBaseConfiguration, {
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
-
   // A list of paths to directories that Jest should use to search for files in
   roots: ['<rootDir>/test'],
-
   coverageDirectory: '<rootDir>/docs/e2e-coverage',
   coverageThreshold: {
     global: {
