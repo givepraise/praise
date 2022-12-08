@@ -1,8 +1,8 @@
 import { model } from 'mongoose';
-import { PraiseSchema } from '../schemas/praise/12_praise.schema';
+import { MigrationsContext } from '../interfaces/migration-context.interface';
+import { PraiseModel, PraiseSchema } from '../schemas/praise/12_praise.schema';
 
-const up = async (): Promise<void> => {
-  const PraiseModel = model('Praise', PraiseSchema);
+const up = async ({ context }: MigrationsContext): Promise<void> => {
   const praises = await PraiseModel.find({
     scoreRealized: { $exists: false },
   });
@@ -15,10 +15,10 @@ const up = async (): Promise<void> => {
         filter: { _id: s._id },
         update: {
           $set: {
-            // scoreRealized: await calculateQuantificationsCompositeScore(
-            //   s.quantifications,
-            // ),
-            scoreRealized: 0,
+            scoreRealized:
+              await context.quantificationsService.calculateQuantificationsCompositeScore(
+                s.quantifications,
+              ),
           },
         },
       },
@@ -29,7 +29,6 @@ const up = async (): Promise<void> => {
 };
 
 const down = async (): Promise<void> => {
-  const PraiseModel = model('Praise', PraiseSchema);
   await PraiseModel.updateMany(
     {
       scoreRealized: { $exists: true },

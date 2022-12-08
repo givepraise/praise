@@ -1,8 +1,7 @@
 import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
-import { model } from 'mongoose';
-import { PeriodSchema } from '../schemas/period/period.schema';
-import { PeriodSettingsSchema } from '../schemas/periodsettings/periodsettings.schema';
-import { SettingSchema } from '../schemas/settings/07_settings.schema';
+import { PeriodModel } from '../schemas/period/period.schema';
+import { PeriodSettingsModel } from '../schemas/periodsettings/periodsettings.schema';
+import { SettingModel } from '../schemas/settings/07_settings.schema';
 
 const newSetting = {
   key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
@@ -15,10 +14,6 @@ const newSetting = {
 };
 
 const up = async (): Promise<void> => {
-  const SettingModel = model('Setting', SettingSchema);
-  const PeriodSettingModel = model('PeriodSetting', PeriodSettingsSchema);
-  const PeriodModel = model('Period', PeriodSchema);
-
   await SettingModel.create(newSetting);
 
   const periods = await PeriodModel.find({});
@@ -27,15 +22,12 @@ const up = async (): Promise<void> => {
     period: p._id,
   }));
 
-  await PeriodSettingModel.insertMany(periodsettings);
+  await PeriodSettingsModel.insertMany(periodsettings);
 };
 
 const down = async (): Promise<void> => {
-  const SettingModel = model('Setting', SettingSchema);
-  const PeriodSettingModel = model('PeriodSetting', PeriodSettingsSchema);
-
   await SettingModel.deleteMany({ key: newSetting.key });
-  await PeriodSettingModel.deleteMany({ key: newSetting.key });
+  await PeriodSettingsModel.deleteMany({ key: newSetting.key });
 };
 
 export { up, down };

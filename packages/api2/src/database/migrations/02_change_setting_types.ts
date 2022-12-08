@@ -1,5 +1,8 @@
 import { model } from 'mongoose';
-import { SettingSchema } from '../schemas/settings/01_settings.schema';
+import {
+  SettingModel,
+  SettingSchema,
+} from '../schemas/settings/01_settings.schema';
 
 const settings = [
   {
@@ -32,7 +35,6 @@ const up = async (): Promise<void> => {
     },
   })) as any;
 
-  const SettingModel = model('Setting', SettingSchema);
   await SettingModel.bulkWrite(settingUpdates);
 };
 
@@ -44,7 +46,6 @@ const down = async (): Promise<void> => {
     },
   })) as any;
 
-  const SettingModel = model('Setting', SettingSchema);
   await SettingModel.bulkWrite(settingUpdates);
 };
 

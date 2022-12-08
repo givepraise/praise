@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { PeriodSchema } from '../period/period.schema';
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 const { ObjectId } = Schema.Types;
 
 export const PeriodSettingsSchema = new Schema(
@@ -16,4 +16,9 @@ export const PeriodSettingsSchema = new Schema(
   {
     timestamps: true,
   },
+);
+
+export const PeriodSettingsModel = model(
+  'PeriodSettings',
+  PeriodSettingsSchema,
 );

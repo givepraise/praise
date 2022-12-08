@@ -1,6 +1,6 @@
 import { UserRole } from '@/users/interfaces/user-role.interface';
 import mongoose from 'mongoose';
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 const { ObjectId } = Schema.Types;
 
 export const UserSchema = new Schema({
@@ -40,3 +40,5 @@ export const UserSchema = new Schema({
     type: Date,
   },
 });
+
+export const UserModel = model('User', UserSchema);

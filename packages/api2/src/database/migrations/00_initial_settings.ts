@@ -1,5 +1,4 @@
-import { model } from 'mongoose';
-import { SettingSchema } from '../schemas/settings/00_settings.schema';
+import { SettingModel } from '../schemas/settings/00_settings.schema';
 
 const settings = [
   {
@@ -119,12 +118,10 @@ const up = async (): Promise<void> => {
     },
   })) as any;
 
-  const SettingModel = model('Setting', SettingSchema);
   await SettingModel.bulkWrite(settingUpdates);
 };
 
 const down = async (): Promise<void> => {
-  const SettingModel = model('Setting', SettingSchema);
   const allKeys = settings.map((s) => s.key);
   await SettingModel.deleteMany({ key: { $in: allKeys } });
 };

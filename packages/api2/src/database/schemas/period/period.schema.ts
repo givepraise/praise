@@ -1,6 +1,6 @@
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 import mongoose from 'mongoose';
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 const { ObjectId } = Schema.Types;
 
 export const PeriodSchema = new Schema(
@@ -25,3 +25,5 @@ export const PeriodSchema = new Schema(
     timestamps: true,
   },
 );
+
+export const PeriodModel = model('Period', PeriodSchema);

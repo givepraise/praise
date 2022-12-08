@@ -1,8 +1,7 @@
-import { model } from 'mongoose';
-import { PraiseSchema } from '../schemas/praise/praise.schema';
+import { PaginatedPraiseModel } from '@/praise/schemas/praise.schema';
+import { PraiseModel } from '../schemas/praise/12_praise.schema';
 
 const up = async (): Promise<void> => {
-  const PraiseModel = model('Praise', PraiseSchema);
   const praises = await PraiseModel.find({
     reasonRealized: { $exists: false },
   });
@@ -20,8 +19,7 @@ const up = async (): Promise<void> => {
 };
 
 const down = async (): Promise<void> => {
-  const PraiseModel = model('Praise', PraiseSchema);
-  await PraiseModel.updateMany(
+  await PaginatedPraiseModel.updateMany(
     {
       reasonRealized: { $exists: true },
     },

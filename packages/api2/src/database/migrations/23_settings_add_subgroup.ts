@@ -1,6 +1,6 @@
 import { Setting } from '@/settings/schemas/settings.schema';
 import { model } from 'mongoose';
-import { SettingSchema } from '../schemas/settings/settings.schema';
+import { SettingSchema } from '../schemas/settings/21_settings.schema';
 
 const settings = [
   {

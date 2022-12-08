@@ -1,6 +1,9 @@
 import { model } from 'mongoose';
-import { PeriodSettingsSchema } from '../schemas/periodsettings/periodsettings.schema';
-import { SettingSchema } from '../schemas/settings/03_settings.schema';
+import {
+  PeriodSettingsModel,
+  PeriodSettingsSchema,
+} from '../schemas/periodsettings/periodsettings.schema';
+import { SettingModel } from '../schemas/settings/03_settings.schema';
 
 const original = {
   key: 'PRAISE_QUANTIFY_RECEIVER_PSEUDONYMS',
@@ -16,9 +19,6 @@ const fixed = {
 };
 
 const up = async (): Promise<void> => {
-  const SettingModel = model('Setting', SettingSchema);
-  const PeriodSettingsModel = model('PeriodSettings', PeriodSettingsSchema);
-
   await SettingModel.updateOne(
     { key: original.key },
     { $set: { label: fixed.label, description: fixed.description } },
@@ -31,9 +31,6 @@ const up = async (): Promise<void> => {
 };
 
 const down = async (): Promise<void> => {
-  const SettingModel = model('Setting', SettingSchema);
-  const PeriodSettingsModel = model('PeriodSettings', PeriodSettingsSchema);
-
   await SettingModel.updateOne(
     { key: original.key },
     {

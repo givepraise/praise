@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 
 export const EventLogSchema = new Schema(
   {
@@ -34,3 +34,5 @@ export const EventLogSchema = new Schema(
     timestamps: true,
   },
 );
+
+export const EventLogModel = model('EventLog', EventLogSchema);

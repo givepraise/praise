@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 const { ObjectId } = Schema.Types;
 
-export const userAccountSchema = new Schema(
+export const UserAccountSchema = new Schema(
   {
     _id: {
       type: ObjectId,
@@ -28,3 +28,5 @@ export const userAccountSchema = new Schema(
     timestamps: true,
   },
 );
+
+export const UserAccountModel = model('UserAccount', UserAccountSchema);

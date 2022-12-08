@@ -58,4 +58,4 @@ export const PraiseSchema =
 export const PaginatedPraiseModel = model<
   PraiseDocument,
   Pagination<PraiseDocument>
->('Praise', PraiseSchema);
+>('PaginatedPraiseModel', PraiseSchema);

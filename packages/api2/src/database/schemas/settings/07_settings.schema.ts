@@ -1,6 +1,6 @@
 import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
 import mongoose from 'mongoose';
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 
 export const SettingSchema = new Schema({
   key: { type: String, required: true },
@@ -26,3 +26,5 @@ export const SettingSchema = new Schema({
   periodOverridable: { type: Boolean, required: true },
   group: { type: Number, enum: SettingGroup, required: true },
 });
+
+export const SettingModel = model('Setting', SettingSchema);

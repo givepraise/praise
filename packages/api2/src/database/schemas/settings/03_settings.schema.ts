@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 
 export const SettingSchema = new Schema({
   key: { type: String, required: true },
@@ -24,3 +24,5 @@ export const SettingSchema = new Schema({
   description: { type: String },
   periodOverridable: { type: Boolean, required: true },
 });
+
+export const SettingModel = model('Setting', SettingSchema);

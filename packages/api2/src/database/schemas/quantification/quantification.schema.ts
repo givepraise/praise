@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 const { ObjectId } = Schema.Types;
 
 export const QuantificationSchema = new Schema({
@@ -38,3 +38,8 @@ export const QuantificationSchema = new Schema({
     type: Date,
   },
 });
+
+export const QuantificationModel = model(
+  'Quantification',
+  QuantificationSchema,
+);

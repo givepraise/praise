@@ -1,7 +1,6 @@
 import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
-import { model } from 'mongoose';
-import { PeriodSettingsSchema } from '../schemas/periodsettings/periodsettings.schema';
-import { SettingSchema } from '../schemas/settings/07_settings.schema';
+import { PeriodSettingsModel } from '../schemas/periodsettings/periodsettings.schema';
+import { SettingModel } from '../schemas/settings/07_settings.schema';
 
 const oldSetting = {
   key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
@@ -24,22 +23,16 @@ const newSetting = {
 };
 
 const up = async (): Promise<void> => {
-  const SettingModel = model('Setting', SettingSchema);
-  const PeriodSettingModel = model('PeriodSetting', PeriodSettingsSchema);
-
   await SettingModel.updateMany({ key: oldSetting.key }, { $set: newSetting });
-  await PeriodSettingModel.updateMany(
+  await PeriodSettingsModel.updateMany(
     { key: oldSetting.key },
     { $set: newSetting },
   );
 };
 
 const down = async (): Promise<void> => {
-  const SettingModel = model('Setting', SettingSchema);
-  const PeriodSettingModel = model('PeriodSetting', PeriodSettingsSchema);
-
   await SettingModel.updateMany({ key: newSetting.key }, { $set: oldSetting });
-  await PeriodSettingModel.updateMany(
+  await PeriodSettingsModel.updateMany(
     { key: newSetting.key },
     { $set: oldSetting },
   );

@@ -2,9 +2,9 @@ import { Praise } from '@/praise/schemas/praise.schema';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { User } from '@/users/schemas/users.schema';
 import mongoose, { model, Types } from 'mongoose';
-import { PraiseSchema } from '../schemas/praise/praise.schema';
+import { PraiseSchema } from '../schemas/praise/00_praise.schema';
 import { UserSchema } from '../schemas/user/user.schema';
-import { userAccountSchema } from '../schemas/useraccount/useraccount.schema';
+import { UserAccountSchema } from '../schemas/useraccount/useraccount.schema';
 
 /**
  * Generate username from user account name
@@ -31,7 +31,7 @@ const generateUserNameFromAccount = async (
 };
 
 const generateUserName = async (user: User): Promise<string> => {
-  const UserAccountModel = model<UserAccount>('UserAccount', userAccountSchema);
+  const UserAccountModel = model<UserAccount>('UserAccount', UserAccountSchema);
   const accounts = await UserAccountModel.find({
     user: new Types.ObjectId(user._id),
   });
