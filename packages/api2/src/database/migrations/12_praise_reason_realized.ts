@@ -1,4 +1,5 @@
-import { PraiseModel } from '@/praise/entities';
+import { PaginatedPraiseModel } from '@/praise/schemas/praise.schema';
+import { PraiseModel } from '../schemas/praise/12_praise.schema';
 
 const up = async (): Promise<void> => {
   const praises = await PraiseModel.find({
@@ -12,19 +13,19 @@ const up = async (): Promise<void> => {
       filter: { _id: s._id },
       update: { $set: { reasonRealized: s.reason } },
     },
-  }));
+  })) as any;
 
   await PraiseModel.bulkWrite(updates);
 };
 
 const down = async (): Promise<void> => {
-  await PraiseModel.updateMany(
+  await PaginatedPraiseModel.updateMany(
     {
       reasonRealized: { $exists: true },
     },
     {
       $unset: { reasonRealized: 1 },
-    }
+    },
   );
 };
 

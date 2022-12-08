@@ -1,27 +1,29 @@
-import { PraiseModel } from '@/praise/entities';
-import { calculateQuantificationsCompositeScore } from '../../praise/utils/score';
+import { model } from 'mongoose';
+import { MigrationsContext } from '../interfaces/migration-context.interface';
+import { PraiseModel, PraiseSchema } from '../schemas/praise/12_praise.schema';
 
-const up = async (): Promise<void> => {
+const up = async ({ context }: MigrationsContext): Promise<void> => {
   const praises = await PraiseModel.find({
     scoreRealized: { $exists: false },
   });
 
   if (praises.length === 0) return;
 
-  const updates = await Promise.all(
-    praises.map(async (s) => ({
+  const updates = (await Promise.all(
+    praises.map(async (s: any) => ({
       updateOne: {
         filter: { _id: s._id },
         update: {
           $set: {
-            scoreRealized: await calculateQuantificationsCompositeScore(
-              s.quantifications
-            ),
+            scoreRealized:
+              await context.quantificationsService.calculateQuantificationsCompositeScore(
+                s.quantifications,
+              ),
           },
         },
       },
-    }))
-  );
+    })),
+  )) as any;
 
   await PraiseModel.bulkWrite(updates);
 };
@@ -33,7 +35,7 @@ const down = async (): Promise<void> => {
     },
     {
       $unset: { scoreRealized: 1 },
-    }
+    },
   );
 };
 

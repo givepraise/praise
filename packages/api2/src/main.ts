@@ -5,9 +5,11 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import { ServiceExceptionFilter } from './shared/service-exception.filter';
+import { runDatabaseMigrations } from './database/migration';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.setGlobalPrefix('api/');
   app.useGlobalPipes(
     new ValidationPipe({
@@ -27,6 +29,9 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
   });
+
+  await runDatabaseMigrations(app);
   await app.listen(process.env.API_PORT || 3000);
 }
+
 bootstrap();

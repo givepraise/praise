@@ -229,12 +229,10 @@ export class PraiseService {
    * Determines the associated period by:
    *  finding the period with the lowest endDate, that is greater than the praise.createdAt date
    *
-   * @param {PraiseDocument} praise
+   * @param {Praise} praise
    * @returns {(Promise<PeriodDocument | undefined>)}
    */
-  getPraisePeriod = async (
-    praise: PraiseDocument,
-  ): Promise<Period | undefined> => {
+  getPraisePeriod = async (praise: Praise): Promise<Period | undefined> => {
     const period = await this.periodModel
       .find(
         // only periods ending after praise created

@@ -1,8 +1,7 @@
-import { SettingGroup } from '@/settings/types';
-import { SettingsModel } from '@/settings/entities';
-import { PeriodSettingsModel } from '@/periodsettings/entities';
-import { PeriodModel } from '@/period/entities';
-import { PeriodDocument } from '@/period/types';
+import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
+import { PeriodModel } from '../schemas/period/period.schema';
+import { PeriodSettingsModel } from '../schemas/periodsettings/periodsettings.schema';
+import { SettingModel } from '../schemas/settings/07_settings.schema';
 
 const newSetting = {
   key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
@@ -15,10 +14,10 @@ const newSetting = {
 };
 
 const up = async (): Promise<void> => {
-  await SettingsModel.create(newSetting);
+  await SettingModel.create(newSetting);
 
   const periods = await PeriodModel.find({});
-  const periodsettings = periods.map((p: PeriodDocument) => ({
+  const periodsettings = periods.map((p: any) => ({
     ...newSetting,
     period: p._id,
   }));
@@ -27,7 +26,7 @@ const up = async (): Promise<void> => {
 };
 
 const down = async (): Promise<void> => {
-  await SettingsModel.deleteMany({ key: newSetting.key });
+  await SettingModel.deleteMany({ key: newSetting.key });
   await PeriodSettingsModel.deleteMany({ key: newSetting.key });
 };
 

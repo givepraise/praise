@@ -1,20 +1,53 @@
 import { Umzug, MongoDBStorage } from 'umzug';
-import { Connection } from 'mongoose';
+import { INestApplication, Logger } from '@nestjs/common';
+import { PraiseService } from '@/praise/praise.service';
+import { UsersService } from '@/users/users.service';
+import { PeriodsService } from '@/periods/periods.service';
+import { SettingsService } from '@/settings/settings.service';
+import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
+import { UtilsProvider } from '@/utils/utils.provider';
+import { closeDatabaseConnection, connectDatabase } from './connection';
+import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 
 /**
- * Configure and instantiate Umzug (database migration library)
+ * Configure Umzug (database migration library) and run migrations
  *
- * @param {Connection} connection
  * @returns {Umzug}
  */
-const setupMigrator = (connection: Connection): Umzug => {
-  const migrator = new Umzug({
-    migrations: { glob: 'src/database/migrations/*.ts' },
-    storage: new MongoDBStorage({ connection, collectionName: 'migrations' }),
-    logger: console,
-  });
+const runDatabaseMigrations = async (app: INestApplication): Promise<void> => {
+  const logger = new Logger(PermissionsGuard.name);
 
-  return migrator;
+  try {
+    const db = await connectDatabase('localhost');
+    logger.log('Connected to database');
+
+    const migrator = new Umzug({
+      migrations: { glob: 'src/database/migrations/*.ts' },
+      storage: new MongoDBStorage({
+        connection: db.connection,
+        collectionName: 'migrations',
+      }),
+      logger: console,
+      context: {
+        praiseService: app.get(PraiseService),
+        usersService: app.get(UsersService),
+        periodsService: app.get(PeriodsService),
+        settingsService: app.get(SettingsService),
+        periodSettingsService: app.get(PeriodSettingsService),
+        utilsProvider: app.get(UtilsProvider),
+      },
+    });
+    logger.log('Migrator created');
+
+    require('ts-node/register');
+    await migrator.up();
+    logger.log('Migrations run');
+
+    await closeDatabaseConnection();
+    logger.log('Database connection closed');
+  } catch (error) {
+    logger.error(error);
+  }
 };
 
-export { setupMigrator };
+export { runDatabaseMigrations };

@@ -7,6 +7,7 @@ import { UserRole } from './interfaces/user-role.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ServiceException } from '@/shared/service-exception';
+import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 
 @Injectable()
 export class UsersService {
@@ -146,4 +147,30 @@ export class UsersService {
     const createdUser = new this.userModel(userDto);
     return createdUser.save();
   }
+
+  /**
+   * Generate username from user account name
+   * If username is already taken than create one with discriminator
+   *
+   * @param userAccount
+   * @returns {Promise<string>}
+   */
+  generateUserNameFromAccount = async (
+    userAccount: UserAccount,
+  ): Promise<string | null> => {
+    let username;
+    if (
+      userAccount.platform === 'DISCORD' &&
+      userAccount.name.indexOf('#') > 0
+    ) {
+      username = userAccount.name.split('#')[0];
+    } else {
+      username = userAccount.name;
+    }
+
+    const exists = await this.userModel.find({ username }).lean();
+    if (exists.length === 0) return username;
+    if (userAccount.platform === 'DISCORD') return userAccount.name;
+    return null;
+  };
 }
