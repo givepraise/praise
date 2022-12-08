@@ -1,7 +1,7 @@
 import { userStub } from '../test/stubs/user.stub';
 
 export const UsersService = jest.fn().mockReturnValue({
-  findAll: jest.fn().mockResolvedValue([]),
+  findAll: jest.fn().mockResolvedValue([userStub]),
   findOneById: jest.fn().mockResolvedValue(userStub),
   findOneByEth: jest.fn().mockResolvedValue(userStub),
   addRole: jest.fn().mockResolvedValue(userStub),

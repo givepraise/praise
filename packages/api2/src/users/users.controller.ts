@@ -28,13 +28,13 @@ import { PermissionsGuard } from '@/auth/guards/permissions.guard';
   excludePrefixes: ['__'],
 })
 @UseInterceptors(ClassSerializerInterceptor)
-@UseGuards(PermissionsGuard)
-@UseGuards(JwtAuthGuard)
+// @UseGuards(PermissionsGuard)
+// @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @Permissions(Permission.UsersFind)
+  // @Permissions(Permission.UsersFind)
   async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }

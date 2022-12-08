@@ -4,7 +4,9 @@ import { UsersController } from '../users.controller';
 import { UsersService } from '../users.service';
 // import { userStub } from './stubs/user.stub';
 
-describe('AuthController', () => {
+jest.mock('@/users/users.service');
+
+describe('UsersController', () => {
   let usersController: UsersController;
   let usersService: UsersService;
 
