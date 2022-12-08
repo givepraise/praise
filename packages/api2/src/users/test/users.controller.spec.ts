@@ -25,11 +25,12 @@ describe('UsersController', () => {
   describe('findAll', () => {
     let users: User[];
     beforeEach(async () => {
-      users = await usersController.findAll();
+      // users = await usersController.findAll();
       jest.clearAllMocks();
     });
 
     test('findAll should call usersService', async () => {
+      users = await usersController.findAll();
       expect(usersService.findAll).toHaveBeenCalled();
     });
   });
