@@ -17,10 +17,12 @@ import { LoginRequest } from './dto/login-request.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authEthSignatureService: EthSignatureService) {}
+  constructor(private readonly ethSignatureService: EthSignatureService) {}
 
   @Post('eth-signature/nonce')
-  @ApiOperation({ summary: 'Generates a nonce for the user and returns it' })
+  @ApiOperation({
+    summary: 'Generates a nonce for the user and returns it',
+  })
   @ApiBody({
     type: NonceRequest,
     description: 'A request containing the user identityEthAddress',
@@ -32,7 +34,7 @@ export class AuthController {
   })
   async nonce(@Body() nonceRquestDto: NonceRequest): Promise<NonceResponse> {
     const { identityEthAddress } = nonceRquestDto;
-    const user = await this.authEthSignatureService.generateUserNonce(
+    const user = await this.ethSignatureService.generateUserNonce(
       identityEthAddress,
     );
     if (user && user.nonce) {
@@ -63,6 +65,6 @@ export class AuthController {
     type: LoginResponse,
   })
   async login(@Request() req: RequestWithUser): Promise<LoginResponse> {
-    return this.authEthSignatureService.login(req.user);
+    return this.ethSignatureService.login(req.user);
   }
 }

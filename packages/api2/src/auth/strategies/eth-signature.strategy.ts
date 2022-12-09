@@ -6,6 +6,9 @@ import { ethers } from 'ethers';
 import { EthSignatureService } from '../eth-signature.service';
 
 @Injectable()
+/**
+ * Passport strategy for authenticating users using Ethereum signature.
+ */
 export class EthSignatureStrategy extends PassportStrategy(
   Strategy,
   'eth-signature',
@@ -19,33 +22,41 @@ export class EthSignatureStrategy extends PassportStrategy(
       passwordField: 'signature',
     });
   }
-
+  /**
+   * Validate user signature and return user if valid.
+   *
+   * @param identityEthAddress
+   * @param signature
+   * @returns
+   */
   async validate(identityEthAddress: string, signature: string): Promise<any> {
+    // Check if user exists
     const user = await this.usersService.findOneByEth(identityEthAddress);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
 
-    // Check for previously generated nonce
+    // Check if user has previously generated a nonce
     if (!user.nonce) {
       throw new UnauthorizedException('Nonce not found');
     }
 
-    // Generate expected message, nonce included.
-    // Recover signer from generated message + signature
-    const generatedMsg = this.ethSignatureService.generateLoginMessage(
+    // Generate expected message
+    const message = this.ethSignatureService.generateLoginMessage(
       identityEthAddress,
       user.nonce,
     );
 
+    // Verify signature
     try {
       // Recovered signer address must match identityEthAddress
-      const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
+      const signerAddress = ethers.utils.verifyMessage(message, signature);
       if (signerAddress !== identityEthAddress) throw new Error();
     } catch (e) {
       throw new UnauthorizedException('Signature verification failed');
     }
 
+    // Return user if all checks pass
     return user;
   }
 }
