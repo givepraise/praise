@@ -2,15 +2,18 @@ import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '@/users/users.service';
-import { generateLoginMessage } from '../auth.utils';
 import { ethers } from 'ethers';
+import { EthSignatureService } from '../eth-signature.service';
 
 @Injectable()
 export class EthSignatureStrategy extends PassportStrategy(
   Strategy,
   'eth-signature',
 ) {
-  constructor(private usersService: UsersService) {
+  constructor(
+    private usersService: UsersService,
+    private ethSignatureService: EthSignatureService,
+  ) {
     super({
       usernameField: 'identityEthAddress',
       passwordField: 'signature',
@@ -30,7 +33,10 @@ export class EthSignatureStrategy extends PassportStrategy(
 
     // Generate expected message, nonce included.
     // Recover signer from generated message + signature
-    const generatedMsg = generateLoginMessage(identityEthAddress, user.nonce);
+    const generatedMsg = this.ethSignatureService.generateLoginMessage(
+      identityEthAddress,
+      user.nonce,
+    );
 
     try {
       // Recovered signer address must match identityEthAddress

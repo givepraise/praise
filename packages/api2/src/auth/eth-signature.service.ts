@@ -8,7 +8,7 @@ import { UtilsProvider } from '@/utils/utils.provider';
 import { LoginResponse } from './dto/login-response.dto';
 
 @Injectable()
-export class AuthService {
+export class EthSignatureService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
@@ -36,6 +36,20 @@ export class AuthService {
       nonce,
     });
   }
+
+  /**
+   * Generate a login message that will be signed by the frontend user, and validated by the api
+   * @param  {string} account
+   * @param  {string} nonce
+   * @returns string
+   */
+  generateLoginMessage = (account: string, nonce: string): string => {
+    return (
+      'SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n' +
+      `ADDRESS:\n${account}\n\n` +
+      `NONCE:\n${nonce}`
+    );
+  };
 
   /**
    * Verifies a user's signature of a login message and returns a JWT token.
