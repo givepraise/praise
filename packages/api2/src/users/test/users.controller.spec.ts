@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '../schemas/users.schema';
 import { UsersController } from '../users.controller';
 import { UsersService } from '../users.service';
-// import { userStub } from './stubs/user.stub';
+import { userStub } from './stubs/user.stub';
 
 jest.mock('@/users/users.service');
 
@@ -32,6 +32,11 @@ describe('UsersController', () => {
     test('findAll should call usersService', async () => {
       users = await usersController.findAll();
       expect(usersService.findAll).toHaveBeenCalled();
+    });
+
+    test('findAll should return an array of users', async () => {
+      users = await usersController.findAll();
+      expect(users).toEqual([userStub]);
     });
   });
 });
