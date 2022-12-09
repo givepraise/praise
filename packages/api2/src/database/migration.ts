@@ -15,11 +15,11 @@ import { Logger } from '@/shared/logger';
  *
  * @returns {Umzug}
  */
-const runDatabaseMigrations = async (app: INestApplication): Promise<void> => {
+const Migrations = async (app: INestApplication): Promise<void> => {
   const logger = new Logger(PermissionsGuard.name);
 
   try {
-    const db = await connectDatabase('localhost');
+    const db = await connectDatabase();
     logger.log('Connected to database');
 
     const migrator = new Umzug({
@@ -51,4 +51,4 @@ const runDatabaseMigrations = async (app: INestApplication): Promise<void> => {
   }
 };
 
-export { runDatabaseMigrations };
+export { Migrations };

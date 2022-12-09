@@ -119,6 +119,7 @@ const up = async (): Promise<void> => {
     updateOne: {
       filter: { key: s.key },
       update: { $set: { defaultValue: s.defaultValue } },
+      upsert: true,
     },
   }));
 

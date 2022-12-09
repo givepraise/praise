@@ -1,6 +1,6 @@
-import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
+import { SettingGroup } from '../../settings/interfaces/settings-group.interface';
 import { PeriodModel } from '../schemas/period/period.schema';
-import { PeriodSettingsModel } from '../schemas/periodsettings/periodsettings.schema';
+import { PeriodSettingsModel } from '../schemas/periodsettings/07_periodsettings.schema';
 import { SettingModel } from '../schemas/settings/07_settings.schema';
 
 const newSetting = {
@@ -11,6 +11,7 @@ const newSetting = {
   description:
     'Evenly assign praise among all quantifiers. If enabled, the setting "Praise per Quantifer" will be ignored',
   group: SettingGroup.PERIOD_DEFAULT,
+  periodOverridable: true,
 };
 
 const up = async (): Promise<void> => {

@@ -1,6 +1,5 @@
-import { model } from 'mongoose';
 import { MigrationsContext } from '../interfaces/migration-context.interface';
-import { PraiseModel, PraiseSchema } from '../schemas/praise/12_praise.schema';
+import { PraiseModel } from '../schemas/praise/12_praise.schema';
 
 const up = async ({ context }: MigrationsContext): Promise<void> => {
   const praises = await PraiseModel.find({

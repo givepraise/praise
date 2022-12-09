@@ -1,6 +1,6 @@
-import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
+import { SettingGroup } from '../../settings/interfaces/settings-group.interface';
 import { PeriodModel } from '../schemas/period/period.schema';
-import { PeriodSettingsModel } from '../schemas/periodsettings/periodsettings.schema';
+import { PeriodSettingsModel } from '../schemas/periodsettings/01_periodsettings.schema';
 import { SettingModel } from '../schemas/settings/01_settings.schema';
 
 const insertNewPeriodSettings = async (period: any): Promise<void> => {
@@ -62,16 +62,14 @@ const up = async (): Promise<void> => {
 
   // Copy default settings for all existing periods
   const allPeriods = await PeriodModel.find();
-  await Promise.all(allPeriods.map((p) => insertNewPeriodSettings(p)));
+  // await Promise.all(allPeriods.map((p) => insertNewPeriodSettings(p)));
 };
 
 const down = async (): Promise<void> => {
-  await SettingModel.syncIndexes();
-  await PeriodSettingsModel.syncIndexes();
-
-  await SettingModel.updateMany({}, { $unset: { periodOverridable: 1 } });
-
-  await PeriodSettingsModel.deleteMany({});
+  // await SettingModel.syncIndexes();
+  // await PeriodSettingsModel.syncIndexes();
+  // await SettingModel.updateMany({}, { $unset: { periodOverridable: 1 } });
+  // await PeriodSettingsModel.deleteMany({});
 };
 
 export { up, down };

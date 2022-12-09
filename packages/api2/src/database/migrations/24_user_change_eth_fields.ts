@@ -1,10 +1,8 @@
-import { Praise } from '@/praise/schemas/praise.schema';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
-import { User } from '@/users/schemas/users.schema';
-import mongoose, { model, Types } from 'mongoose';
-import { PraiseSchema } from '../schemas/praise/00_praise.schema';
-import { UserSchema } from '../schemas/user/user.schema';
-import { UserAccountSchema } from '../schemas/useraccount/useraccount.schema';
+import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
+import mongoose, { Types } from 'mongoose';
+import { PraiseModel } from '../schemas/praise/12_praise.schema';
+import { UserModel } from '../schemas/user/user.schema';
+import { UserAccountModel } from '../schemas/useraccount/useraccount.schema';
 
 /**
  * Generate username from user account name
@@ -16,7 +14,6 @@ import { UserAccountSchema } from '../schemas/useraccount/useraccount.schema';
 const generateUserNameFromAccount = async (
   userAccount: UserAccount,
 ): Promise<string | null> => {
-  const UserModel = model<User>('User', UserSchema);
   let username;
   if (userAccount.platform === 'DISCORD' && userAccount.name.indexOf('#') > 0) {
     username = userAccount.name.split('#')[0];
@@ -30,11 +27,10 @@ const generateUserNameFromAccount = async (
   return null;
 };
 
-const generateUserName = async (user: User): Promise<string> => {
-  const UserAccountModel = model<UserAccount>('UserAccount', UserAccountSchema);
-  const accounts = await UserAccountModel.find({
+const generateUserName = async (user: any): Promise<string> => {
+  const accounts = (await UserAccountModel.find({
     user: new Types.ObjectId(user._id),
-  });
+  })) as UserAccount[];
 
   if (accounts && accounts.length > 0) {
     const discordAccount = accounts.find((a) => a.platform === 'DISCORD');
@@ -52,7 +48,6 @@ const generateUserName = async (user: User): Promise<string> => {
 };
 
 const up = async (): Promise<void> => {
-  const UserModel = model<User>('User', UserSchema);
   const users = await UserModel.find().lean();
 
   if (users.length === 0) return;
@@ -86,8 +81,6 @@ const up = async (): Promise<void> => {
 };
 
 const down = async (): Promise<void> => {
-  const PraiseModel = model<Praise>('Praise', PraiseSchema);
-
   await PraiseModel.updateMany(
     {
       rewardsEthAddress: { $exists: true },

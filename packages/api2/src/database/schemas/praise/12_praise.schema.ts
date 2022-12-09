@@ -51,4 +51,5 @@ export const PraiseSchema = new Schema({
   },
 });
 
+delete mongoose.models['Praise'];
 export const PraiseModel = model('Praise', PraiseSchema);

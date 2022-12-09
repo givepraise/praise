@@ -1,5 +1,5 @@
-import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
-import { PeriodSettingsModel } from '../schemas/periodsettings/periodsettings.schema';
+import { SettingGroup } from '../../settings/interfaces/settings-group.interface';
+import { PeriodSettingsModel } from '../schemas/periodsettings/07_periodsettings.schema';
 import { SettingModel } from '../schemas/settings/07_settings.schema';
 
 const oldSetting = {

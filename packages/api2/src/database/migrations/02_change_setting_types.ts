@@ -1,8 +1,4 @@
-import { model } from 'mongoose';
-import {
-  SettingModel,
-  SettingSchema,
-} from '../schemas/settings/01_settings.schema';
+import { SettingModel } from '../schemas/settings/01_settings.schema';
 
 const settings = [
   {

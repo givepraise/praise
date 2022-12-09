@@ -5,7 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import { ServiceExceptionFilter } from './shared/service-exception.filter';
-import { runDatabaseMigrations } from './database/migration';
+import { Migrations } from './database/migration';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -30,7 +30,7 @@ async function bootstrap() {
     origin: '*',
   });
 
-  await runDatabaseMigrations(app);
+  await Migrations(app);
   await app.listen(process.env.API_PORT || 3000);
 }
 

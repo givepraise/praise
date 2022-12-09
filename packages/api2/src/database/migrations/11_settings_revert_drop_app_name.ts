@@ -1,4 +1,4 @@
-import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
+import { SettingGroup } from '../../settings/interfaces/settings-group.interface';
 import { SettingModel } from '../schemas/settings/07_settings.schema';
 
 const deleteSettings = [
@@ -9,6 +9,7 @@ const deleteSettings = [
     group: SettingGroup.APPLICATION,
     value: 'Praise',
     type: 'String',
+    periodOverridable: false,
   },
 ];
 

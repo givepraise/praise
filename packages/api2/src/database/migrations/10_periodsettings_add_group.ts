@@ -1,5 +1,5 @@
-import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
-import { PeriodSettingsModel } from '../schemas/periodsettings/periodsettings.schema';
+import { SettingGroup } from '../../settings/interfaces/settings-group.interface';
+import { PeriodSettingsModel } from '../schemas/periodsettings/07_periodsettings.schema';
 
 const up = async (): Promise<void> => {
   await PeriodSettingsModel.updateMany(

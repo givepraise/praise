@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
+const { ObjectId } = Schema.Types;
 
-export const SettingSchema = new Schema({
+export const PeriodSettingsSchema = new Schema({
   key: { type: String, required: true },
   value: { type: String, required: false },
   type: {
@@ -20,10 +21,16 @@ export const SettingSchema = new Schema({
     ],
     required: true,
   },
-  label: { type: String, required: true },
-  description: { type: String },
-  periodOverridable: { type: Boolean, required: true },
+  period: {
+    type: ObjectId,
+    ref: 'Period',
+    required: true,
+    index: true,
+  },
 });
 
-delete mongoose.models['Setting'];
-export const SettingModel = model('Setting', SettingSchema);
+delete mongoose.models['PeriodSettings'];
+export const PeriodSettingsModel = model(
+  'PeriodSettings',
+  PeriodSettingsSchema,
+);

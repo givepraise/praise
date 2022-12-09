@@ -55,7 +55,7 @@ export class Praise {
 export const PraiseSchema =
   SchemaFactory.createForClass(Praise).plugin(mongoosePagination);
 
-export const PaginatedPraiseModel = model<
-  PraiseDocument,
-  Pagination<PraiseDocument>
->('PaginatedPraiseModel', PraiseSchema);
+export const PraiseModel = model<PraiseDocument, Pagination<PraiseDocument>>(
+  'Praise',
+  PraiseSchema,
+);

@@ -1,4 +1,3 @@
-import { PaginatedPraiseModel } from '@/praise/schemas/praise.schema';
 import { PraiseModel } from '../schemas/praise/12_praise.schema';
 
 const up = async (): Promise<void> => {
@@ -19,7 +18,7 @@ const up = async (): Promise<void> => {
 };
 
 const down = async (): Promise<void> => {
-  await PaginatedPraiseModel.updateMany(
+  await PraiseModel.updateMany(
     {
       reasonRealized: { $exists: true },
     },

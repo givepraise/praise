@@ -1,4 +1,4 @@
-import { UserRole } from '@/users/interfaces/user-role.interface';
+import { UserRole } from '../../../users/interfaces/user-role.interface';
 import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 const { ObjectId } = Schema.Types;

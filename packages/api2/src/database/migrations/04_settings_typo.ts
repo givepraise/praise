@@ -2,7 +2,7 @@ import { model } from 'mongoose';
 import {
   PeriodSettingsModel,
   PeriodSettingsSchema,
-} from '../schemas/periodsettings/periodsettings.schema';
+} from '../schemas/periodsettings/03_periodsettings.schema';
 import { SettingModel } from '../schemas/settings/03_settings.schema';
 
 const original = {

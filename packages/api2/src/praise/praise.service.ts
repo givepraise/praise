@@ -1,11 +1,7 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import {
-  PaginatedPraiseModel,
-  Praise,
-  PraiseDocument,
-} from './schemas/praise.schema';
+import { PraiseModel, Praise, PraiseDocument } from './schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
 import { Request } from 'express';
 import { PaginatedResponseBody } from '@/shared/types.shared';
@@ -22,7 +18,7 @@ import { SettingsService } from '@/settings/settings.service';
 export class PraiseService {
   constructor(
     @InjectModel(Praise.name)
-    private praiseModel: typeof PaginatedPraiseModel,
+    private praiseModel: typeof PraiseModel,
     @InjectModel(Period.name)
     private periodModel: Model<Period>,
     private settingsService: SettingsService,

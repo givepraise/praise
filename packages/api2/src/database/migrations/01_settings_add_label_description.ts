@@ -106,8 +106,9 @@ const up = async (): Promise<void> => {
     updateOne: {
       filter: { key: s.key },
       update: { $set: { label: s.label, description: s.description } },
+      upsert: true,
     },
-  })) as any;
+  }));
 
   await SettingModel.bulkWrite(settingUpdates);
 };
