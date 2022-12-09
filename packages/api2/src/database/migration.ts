@@ -1,5 +1,5 @@
 import { Umzug, MongoDBStorage } from 'umzug';
-import { INestApplication, Logger } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { PraiseService } from '@/praise/praise.service';
 import { UsersService } from '@/users/users.service';
 import { PeriodsService } from '@/periods/periods.service';
@@ -8,6 +8,7 @@ import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { closeDatabaseConnection, connectDatabase } from './connection';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
+import { Logger } from '@/shared/logger';
 
 /**
  * Configure Umzug (database migration library) and run migrations
@@ -27,7 +28,7 @@ const runDatabaseMigrations = async (app: INestApplication): Promise<void> => {
         connection: db.connection,
         collectionName: 'migrations',
       }),
-      logger: console,
+      logger,
       context: {
         praiseService: app.get(PraiseService),
         usersService: app.get(UsersService),
