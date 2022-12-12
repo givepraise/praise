@@ -2,20 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@/users/schemas/users.schema';
 
 import { JwtService } from '@nestjs/jwt';
-<<<<<<< HEAD
-import { Model } from 'mongoose';
-import { NonceResponse } from './schemas/nonce-response.schema';
-import { UsersService } from '../users/users.service';
-import { randomString } from '../_shared/random.shared';
-import { generateLoginMessage } from './auth.utils';
-import { ethers } from 'ethers';
-import { JwtPayload } from './dto/jwt-payload.dto';
-=======
 import { UsersService } from '@/users/users.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { LoginResponse } from './dto/login-response.dto';
->>>>>>> api2
 
 @Injectable()
 export class AuthService {

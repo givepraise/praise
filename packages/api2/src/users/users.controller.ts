@@ -14,11 +14,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
-<<<<<<< HEAD
-import { ObjectIdPipe } from '../_shared/objectId.pipe';
-=======
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
->>>>>>> api2
 import { User } from './schemas/users.schema';
 import { ApiParam } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';

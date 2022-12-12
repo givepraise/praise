@@ -38,11 +38,7 @@
     "ethers": "^5.7.2",
     "lodash": "^4.17.21",
     "mongoose": "^6.7.0",
-<<<<<<< HEAD
-    "mongoose-paginate-v2": "^1.7.1",
-=======
     "mongoose-paginate-ts": "^1.2.7",
->>>>>>> api2
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
