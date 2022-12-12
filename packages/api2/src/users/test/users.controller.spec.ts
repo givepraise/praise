@@ -2,12 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '../schemas/users.schema';
 import { UsersController } from '../users.controller';
 import { UsersService } from '../users.service';
-import { Request } from 'express';
 import { userStub } from './stubs/user.stub';
-import { REQUEST } from '@nestjs/core/router/request/request-constants';
-// import { REQUEST } from '@nestjs/core/router';
-// import { REQUEST } from '@nestjs/core';
-// import { REQUEST } from '@nestjs/core/router/request';
+import { UpdateUserRoleDto } from '../dto/update-user-role.dto';
 
 jest.mock('@/users/users.service');
 
@@ -19,13 +15,7 @@ describe('UsersController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       controllers: [UsersController],
-      providers: [
-        UsersService,
-        {
-          provide: REQUEST,
-          useValue: Request,
-        },
-      ],
+      providers: [UsersService],
     }).compile();
 
     usersController = module.get<UsersController>(UsersController);
@@ -36,7 +26,6 @@ describe('UsersController', () => {
   describe('findAll', () => {
     let users: User[];
     beforeEach(async () => {
-      // users = await usersController.findAll();
       jest.clearAllMocks();
     });
 
@@ -58,13 +47,34 @@ describe('UsersController', () => {
     });
 
     test('should call usersService', async () => {
-      user = await usersController.findOne(Request, userStub._id);
+      user = await usersController.findOne(userStub._id);
       expect(usersService.findOneById).toBeCalledWith(userStub._id);
     });
 
-    // test('should return an array of one user', async () => {
-    //   users = await usersController.findAll();
-    //   expect(users).toEqual([userStub]);
+    test('should return an object of one user', async () => {
+      user = await usersController.findOne(userStub._id);
+      expect(user).toEqual(userStub);
+    });
+  });
+
+  describe('addRole', () => {
+    let user: User;
+    beforeEach(async () => {
+      jest.clearAllMocks();
+    });
+
+    test('should call usersService', async () => {
+      const updateUserRoleDto: UpdateUserRoleDto = {
+        role: userStub.roles[0],
+      };
+
+      user = await usersController.addRole(userStub._id, updateUserRoleDto);
+      expect(usersService.addRole).toBeCalledWith(userStub._id);
+    });
+
+    // test('should return an object of one user', async () => {
+    //   user = await usersController.findOne(userStub._id);
+    //   expect(user).toEqual(userStub);
     // });
   });
 });

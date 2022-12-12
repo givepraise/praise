@@ -1,3 +1,4 @@
+import { UserRole } from '@/users/interfaces/user-role.interface';
 import { User } from '@/users/schemas/users.schema';
 import { Types } from 'mongoose';
 
@@ -6,7 +7,7 @@ export const userStub: User = {
   username: 'test',
   identityEthAddress: '0x0000000000000000000000000000000000000000',
   rewardsEthAddress: '0x0000000000000000000000000000000000000000',
-  roles: ['user'],
+  roles: [UserRole.USER],
   accounts: [],
   nonce: 'nonce',
   createdAt: new Date(),

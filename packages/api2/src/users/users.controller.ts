@@ -42,10 +42,7 @@ export class UsersController {
   @Get(':id')
   @Permissions(Permission.UsersFind)
   @ApiParam({ name: 'id', type: String })
-  async findOne(
-    @Req() req: Request,
-    @Param('id', ObjectIdPipe) id: Types.ObjectId,
-  ): Promise<User> {
+  async findOne(@Param('id', ObjectIdPipe) id: Types.ObjectId): Promise<User> {
     const user = await this.usersService.findOneById(id);
     if (!user) throw new BadRequestException('User not found.');
     return user;
