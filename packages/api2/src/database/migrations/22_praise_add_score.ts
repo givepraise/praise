@@ -8,7 +8,7 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
 
   if (praises.length === 0) return;
 
-  const updates = (await Promise.all(
+  const updates = await Promise.all(
     praises.map(async (s: any) => ({
       updateOne: {
         filter: { _id: s._id },
@@ -20,9 +20,10 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
               ),
           },
         },
+        upsert: true,
       },
-    })),
-  )) as any;
+    })) as any,
+  );
 
   await PraiseModel.bulkWrite(updates);
 };

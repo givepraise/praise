@@ -9,6 +9,7 @@ import { SettingsModule } from './settings/settings.module';
 import { PeriodSettingsModule } from './periodsettings/periodsettings.module';
 import { PraiseModule } from './praise/praise.module';
 import { ConstantsProvider } from './constants/constants.provider';
+import { QuantificationsModule } from './quantifications/quantifications.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ConstantsProvider } from './constants/constants.provider';
     SettingsModule,
     PeriodSettingsModule,
     PraiseModule,
+    QuantificationsModule,
   ],
   providers: [UtilsProvider, ConstantsProvider],
 })

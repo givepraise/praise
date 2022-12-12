@@ -9,6 +9,7 @@ import { UtilsProvider } from '@/utils/utils.provider';
 import { closeDatabaseConnection, connectDatabase } from './connection';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { Logger } from '@/shared/logger';
+import { QuantificationsService } from '@/quantifications/quantifications.service';
 
 /**
  * Configure Umzug (database migration library) and run migrations
@@ -35,6 +36,7 @@ const Migrations = async (app: INestApplication): Promise<void> => {
         periodsService: app.get(PeriodsService),
         settingsService: app.get(SettingsService),
         periodSettingsService: app.get(PeriodSettingsService),
+        quantificationsService: app.get(QuantificationsService),
         utilsProvider: app.get(UtilsProvider),
       },
     });
