@@ -19,10 +19,10 @@ export class Praise {
   _id: Types.ObjectId;
 
   @Prop({ required: true })
-  reason: string;
+  reasonRaw: string;
 
   @Prop({ required: true })
-  reasonRealized: string;
+  reason: string;
 
   @Prop({ required: true })
   sourceId: string;

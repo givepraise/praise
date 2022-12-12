@@ -21,11 +21,6 @@ export const PraiseSchema = new Schema({
     type: String,
     required: true,
   },
-  score: {
-    type: Number,
-    required: true,
-    default: 0,
-  },
   receiver: {
     type: ObjectId,
     ref: 'UserAccount',

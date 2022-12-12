@@ -1,6 +1,6 @@
 import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
 import mongoose, { Types } from 'mongoose';
-import { PraiseModel } from '../schemas/praise/12_praise.schema';
+import { PraiseModel } from '../schemas/praise/22_praise.schema';
 import { UserModel } from '../schemas/user/user.schema';
 import { UserAccountModel } from '../schemas/useraccount/useraccount.schema';
 

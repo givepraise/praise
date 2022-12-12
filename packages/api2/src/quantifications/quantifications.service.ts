@@ -9,6 +9,8 @@ import { ServiceException } from '../shared/service-exception';
 
 export class QuantificationsService {
   constructor(
+    @InjectModel(Quantification.name)
+    private quantificationModel: Model<Quantification>,
     @InjectModel(Praise.name)
     private praiseModel: Model<Praise>,
     private settingsService: SettingsService,
@@ -21,6 +23,28 @@ export class QuantificationsService {
    * @type {number}
    */
   DIGITS_PRECISION = 2;
+
+  /**
+   * Returns a list of quantifications for a given praiseId
+   *
+   * @param {Types.ObjectId} praiseId
+   * @returns {Promise<Quantification[]>}
+   * @throws {ServiceException}
+   */
+  findQuantificationsByPraiseId = async (
+    praiseId: Types.ObjectId,
+  ): Promise<Quantification[]> => {
+    const quantifications = await this.quantificationModel.find({
+      praise: praiseId,
+    });
+
+    if (!quantifications) {
+      throw new ServiceException(
+        `Quantifications for praise ${praiseId} not found`,
+      );
+    }
+    return quantifications;
+  };
 
   /**
    * Check if Quantification was completed

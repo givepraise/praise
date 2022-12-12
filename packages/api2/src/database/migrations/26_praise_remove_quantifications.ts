@@ -1,4 +1,4 @@
-import { PraiseModel } from '../schemas/praise/12_praise.schema';
+import { PraiseModel } from '../schemas/praise/22_praise.schema';
 
 const up = async (): Promise<void> => {
   await PraiseModel.updateMany(

@@ -14,6 +14,11 @@ export const QuantificationSchema = new Schema({
     required: true,
     default: 0,
   },
+  scoreRealized: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
   dismissed: {
     type: Boolean,
     required: true,

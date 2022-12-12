@@ -9,11 +9,11 @@ export const PraiseSchema = new Schema({
     required: true,
     set: (value: string) => value.toString(),
   },
-  reason: {
+  reasonRaw: {
     type: String,
     required: true,
   },
-  reasonRealized: {
+  reason: {
     type: String,
     required: true,
   },
@@ -24,6 +24,11 @@ export const PraiseSchema = new Schema({
   sourceName: {
     type: String,
     required: true,
+  },
+  score: {
+    type: Number,
+    required: true,
+    default: 0,
   },
   receiver: {
     type: ObjectId,

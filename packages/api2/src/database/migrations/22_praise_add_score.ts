@@ -9,14 +9,14 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
   if (praises.length === 0) return;
 
   const updates = await Promise.all(
-    praises.map(async (s: any) => ({
+    praises.map(async (p: any) => ({
       updateOne: {
-        filter: { _id: s._id },
+        filter: { _id: p._id },
         update: {
           $set: {
             scoreRealized:
               await context.quantificationsService.calculateQuantificationsCompositeScore(
-                s.quantifications,
+                p.quantifications,
               ),
           },
         },
