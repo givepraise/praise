@@ -1,17 +1,18 @@
 import { Document } from 'mongoose';
-import { QueryInput } from '@/shared/types';
-import { UserDocument } from '@/user/types';
+import { QueryInput } from '../shared/types';
+import { UserDocument } from '../user/types';
 import {
   PraiseImportUserAccountInput,
   UserAccountDocument,
   UserAccountDto,
-} from '@/useraccount/types';
+} from '../useraccount/types';
 
 interface Praise {
   reason: string;
   reasonRealized: string;
   sourceId: string;
   sourceName: string;
+  scoreRealized: number;
   quantifications: QuantificationDocument[];
   giver: UserAccountDocument;
   receiver: UserAccountDocument;
@@ -97,6 +98,7 @@ export interface QuantifierPoolById {
 
 export interface PraiseAllInput extends QueryInput {
   receiver?: string;
+  giver?: string;
 }
 
 export interface PraiseImportInput {
@@ -111,6 +113,7 @@ export interface PraiseImportInput {
 
 export interface PraiseExportInput {
   receiver?: string;
+  giver?: string;
   createdAt?: {
     $gt: string;
     $lte: string;

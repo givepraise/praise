@@ -5,7 +5,6 @@ import helmet from 'helmet';
 import fileUpload from 'express-fileupload';
 import { ErrorHandler } from '@/error/ErrorHandler';
 import { seedData, seedAdminUsers } from '@/database/seeder/app';
-import { setupMigrator } from './database/migration';
 import { connectDatabase } from './database/connection';
 import { baseRouter } from './routes';
 import { envCheck } from './pre-start/envCheck';
@@ -21,34 +20,21 @@ import { morganMiddleware } from './shared/morganMiddleware';
  * @returns {Promise<void>}
  */
 const setupDatabase = async (NODE_ENV = 'development'): Promise<void> => {
-  let db;
-
   // Check for required ENV variables
   envCheck(requiredEnvVariables);
 
   // Connect to database
   if (NODE_ENV === 'testing') {
     logger.info('Connecting to test database…');
-    db = await connectDatabase({
+    await connectDatabase({
       MONGO_DB: 'praise_db_testing_tmp',
     });
     logger.info('Connected to test database.');
   } else {
     logger.info('Connecting to database…');
-    db = await connectDatabase();
+    await connectDatabase();
     logger.info('Connected to database.');
   }
-
-  // Checks database migrations and run them if they are not already applied
-  // logger.info('Checking for pending migrations…');
-  // const umzug = setupMigrator(db.connection);
-  // const migrations = await umzug.pending();
-  // logger.info(`Found ${migrations.length} pending migrations`);
-  // await umzug.up();
-
-  // if (migrations.length > 0) {
-  //   logger.info('Migrations complete.');
-  // }
 
   // Seed database with fake data in 'development' environment
   if (NODE_ENV === 'development') {

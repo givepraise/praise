@@ -25,11 +25,11 @@ const activate = async (
   req: TypedRequestBody<ActivateRequestBody>,
   res: Response
 ): Promise<void> => {
-  const { ethereumAddress, signature, accountId } = req.body;
+  const { identityEthAddress, signature, accountId } = req.body;
 
-  if (!ethereumAddress || !signature || !accountId)
+  if (!identityEthAddress || !signature || !accountId)
     throw new BadRequestError(
-      'ethereumAddress, signature, and accountId required'
+      'identityEthAddress, signature, and accountId required'
     );
 
   // Find previously generated token
@@ -48,20 +48,19 @@ const activate = async (
   // Generate expected message, token included.
   const generatedMsg = generateActivateMessage(
     accountId,
-    ethereumAddress,
+    identityEthAddress,
     userAccount.activateToken
   );
 
   // Verify signature against generated message
   // Recover signer and compare against query address
   const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
-  if (signerAddress !== ethereumAddress)
+  if (signerAddress !== identityEthAddress)
     throw new UnauthorizedError('Verification failed.');
 
   // Find existing user or create new
   const user = await UserModel.findOneAndUpdate(
-    { ethereumAddress },
-    { ethereumAddress },
+    { identityEthAddress },
     { upsert: true, new: true }
   );
   if (!user) throw new NotFoundError('User');

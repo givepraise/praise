@@ -6,7 +6,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersService } from '../users/users.service';
-import { praiseDatabaseUri } from '../_shared/database.shared';
+import { praiseDatabaseUri } from '../shared/database.shared';
 
 describe('AuthController', () => {
   let controller: AuthController;

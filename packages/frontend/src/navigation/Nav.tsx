@@ -10,6 +10,7 @@ import {
   faBullhorn,
   faFire,
   faFileLines,
+  faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
@@ -19,6 +20,7 @@ import { SingleSetting } from '@/model/settings';
 import { EthAccount } from '@/components/account/EthAccount';
 import { AdminOnly } from '@/components/auth/AdminOnly';
 import { Theme } from '@/model/theme';
+import { ActiveUserId } from '@/model/auth';
 import { NavItem } from './NavItem';
 
 const NavLogo = (): JSX.Element => {
@@ -58,6 +60,7 @@ const NavLogo = (): JSX.Element => {
 };
 
 export const Nav = (): JSX.Element => {
+  const userId = useRecoilValue(ActiveUserId);
   const setTheme = useSetRecoilState(Theme);
 
   const handleTheme = (theme: string): void => {
@@ -79,7 +82,19 @@ export const Nav = (): JSX.Element => {
               <NavLogo />
             </li>
 
+            <NavItem
+              icon={faUser}
+              description="Profile"
+              to={`/users/${userId}`}
+            />
             <NavItem icon={faCalendarAlt} description="Periods" to="/periods" />
+            <NavItem
+              icon={faUserFriends}
+              description="Users"
+              to="/users"
+              exact={true}
+            />
+            <NavItem icon={faBook} description="Logs" to="/eventlogs" />
             <AdminOnly>
               <NavItem
                 icon={faCog}
@@ -87,10 +102,6 @@ export const Nav = (): JSX.Element => {
                 to="/settings/application"
               />
             </AdminOnly>
-            <AdminOnly>
-              <NavItem icon={faUserFriends} description="Users" to="/users" />
-            </AdminOnly>
-            <NavItem icon={faBook} description="Logs" to="/eventlogs" />
           </ul>
         </div>
 

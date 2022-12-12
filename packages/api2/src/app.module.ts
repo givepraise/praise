@@ -1,28 +1,27 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
-
 import { AuthModule } from './auth/auth.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccountsModule } from './useraccounts/useraccounts.module';
 import { UsersModule } from './users/users.module';
-import { praiseDatabaseUri } from './_shared/database.shared';
-import { SharedModule } from './_shared/shared.module';
 import { EventLogModule } from './event-log/event-log.module';
+import { UtilsProvider } from './utils/utils.provider';
+import { praiseDatabaseUri } from './shared/database.shared';
+import { SettingsModule } from './settings/settings.module';
+import { PeriodSettingsModule } from './periodsettings/periodsettings.module';
+import { PraiseModule } from './praise/praise.module';
+import { ConstantsProvider } from './constants/constants.provider';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: praiseDatabaseUri,
-      inject: [ConfigService],
-    }),
-
+    MongooseModule.forRoot(praiseDatabaseUri),
     UsersModule,
     UserAccountsModule,
     AuthModule,
-    SharedModule,
     EventLogModule,
+    SettingsModule,
+    PeriodSettingsModule,
+    PraiseModule,
   ],
+  providers: [UtilsProvider, ConstantsProvider],
 })
 export class AppModule {}

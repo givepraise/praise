@@ -1,16 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Document, Model, Types } from 'mongoose';
 import { PaginationModel, PaginationOptions } from 'mongoose-paginate-ts';
+import { TransformerMap } from 'ses-node-json-transform';
+import { Query } from '../shared/types';
+import { PeriodSettingDto } from '../periodsettings/types';
+import { UserAccountDocument, UserAccountDto } from '../useraccount/types';
 import {
-  Quantifier,
+  PraiseDto,
+  Quantification,
   QuantificationDocument,
   QuantificationDto,
-  Quantification,
-  PraiseDto,
-} from '@/praise/types';
-import { Query } from '@/shared/types';
-import { UserAccountDocument, UserAccountDto } from '@/useraccount/types';
-import { PeriodSettingDto } from '@/periodsettings/types';
-
+  Quantifier,
+} from '../praise/types';
 export enum PeriodStatusType {
   OPEN = 'OPEN',
   QUANTIFY = 'QUANTIFY',
@@ -50,7 +51,8 @@ export interface PeriodDetailsGiverReceiverDto {
   _id: string;
   praiseCount: number;
   quantifications?: Array<Array<QuantificationDto>>;
-  ethereumAddress?: string;
+  identityEthAddress?: string;
+  rewardsEthAddress?: string;
   scoreRealized: number;
   userAccount?: UserAccountDto;
 }
@@ -130,18 +132,9 @@ export interface ReplaceQuantifierRequestBody {
   newQuantifierId: string;
 }
 
-export interface ExportTransformerOperateItem {
-  run: string;
-  on: string;
-}
-
-export interface ExportTransformerMap {
+export interface ExportTransformer {
   name: string;
-  map: {
-    item: Object;
-    operate: ExportTransformerOperateItem[];
-    each: string;
-  };
+  map: TransformerMap;
   context: {};
   filterColumn: string;
   includeCsvHeaderRow?: boolean;

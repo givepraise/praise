@@ -10,6 +10,7 @@ import { PraiseModel } from '@/praise/entities';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
 import { praiseListTransformer } from '@/praise/transformers';
+import { UserAccountModel } from '@/useraccount/entities';
 import {
   PeriodDetailsDto,
   PeriodStatusType,
@@ -88,54 +89,58 @@ export const assignQuantifiers = async (
       'Some praise has already been assigned for this period'
     );
 
-  const assignedQuantifiers = await assignQuantifiersDryRun(
-    req.params.periodId
-  );
+  // Make five attempts at assigning quantifiers
+  // Since the algorithm is random, it's possible that the first attempt
+  // will fail to assign all quantifiers.
+  let assignedQuantifiers;
+  for (let i = 0; i < 5; i++) {
+    assignedQuantifiers = await assignQuantifiersDryRun(req.params.periodId);
+    if (assignedQuantifiers.remainingAssignmentsCount === 0) break;
+  }
 
-  if (assignedQuantifiers.remainingAssignmentsCount > 0)
+  if (!assignedQuantifiers) {
+    throw new Error('Failed to assign quantifiers.');
+  }
+
+  if (assignedQuantifiers.remainingAssignmentsCount > 0) {
     throw new BadRequestError(
       `Failed to assign ${assignedQuantifiers.remainingAssignmentsCount} collection of praise to a quantifier`
     );
+  }
 
-  let successfulAssignment = false;
-  for (let i = 0; i < 3; i++) {
-    if (successfulAssignment) break;
-
-    try {
-      // Generate list of db queries to apply changes specified by assignedQuantifiers
-      const bulkQueries = flatten(
-        assignedQuantifiers.poolAssignments.map((q) =>
-          q.receivers.map((receiver) => ({
-            updateMany: {
-              filter: { _id: { $in: receiver.praiseIds } },
-              update: {
-                $push: {
-                  quantifications: {
-                    quantifier: q._id,
-                  },
+  try {
+    // Generate list of db queries to apply changes specified by assignedQuantifiers
+    const bulkQueries = flatten(
+      assignedQuantifiers.poolAssignments.map((q) =>
+        q.receivers.map((receiver) => ({
+          updateMany: {
+            filter: { _id: { $in: receiver.praiseIds } },
+            update: {
+              $push: {
+                quantifications: {
+                  quantifier: q._id,
                 },
               },
             },
-          }))
-        )
-      );
+          },
+        }))
+      )
+    );
 
-      // 2022-06-30
-      // Ignoring this TS error that new quantification object does not meet expected type
-      //  It may be related to running $push within an updateMany within a bulkWrite *for a sub-document type*
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      await PraiseModel.bulkWrite(bulkQueries);
-      successfulAssignment = true;
-    } catch (e) {
-      await logEvent(
-        EventLogTypeKey.PERIOD,
-        `Failed to assign random quantifiers to all praise in period "${period.name}", retrying...`,
-        {
-          userId: res.locals.currentUser._id,
-        }
-      );
-    }
+    // 2022-06-30
+    // Ignoring this TS error that new quantification object does not meet expected type
+    //  It may be related to running $push within an updateMany within a bulkWrite *for a sub-document type*
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    await PraiseModel.bulkWrite(bulkQueries);
+  } catch (e) {
+    await logEvent(
+      EventLogTypeKey.PERIOD,
+      `Failed to assign random quantifiers to all praise in period "${period.name}", retrying...`,
+      {
+        userId: res.locals.currentUser._id,
+      }
+    );
   }
 
   await PeriodModel.updateOne(
@@ -213,7 +218,23 @@ export const replaceQuantifier = async (
 
     // Original quantifier
     'quantifications.quantifier': currentQuantifierId,
-  }).distinct('_id');
+  }).lean();
+
+  const newQuantifierAccounts = await UserAccountModel.find({
+    user: newQuantifierId,
+  }).lean();
+
+  if (newQuantifierAccounts) {
+    affectedPraiseIds.find((p) => {
+      for (const ua of newQuantifierAccounts) {
+        if (ua._id.equals(p.receiver)) {
+          throw new BadRequestError(
+            'Replacement quantifier cannot be assigned to quantify their own received praise.'
+          );
+        }
+      }
+    });
+  }
 
   await PraiseModel.updateMany(
     {

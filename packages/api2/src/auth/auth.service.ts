@@ -1,12 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { User, UserDocument } from '../users/schemas/users.schema';
+import { Injectable } from '@nestjs/common';
+import { User } from '@/users/schemas/users.schema';
 
-import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
+<<<<<<< HEAD
 import { Model } from 'mongoose';
 import { NonceResponse } from './schemas/nonce-response.schema';
 import { UsersService } from '../users/users.service';
@@ -14,72 +10,69 @@ import { randomString } from '../_shared/random.shared';
 import { generateLoginMessage } from './auth.utils';
 import { ethers } from 'ethers';
 import { JwtPayload } from './dto/jwt-payload.dto';
+=======
+import { UsersService } from '@/users/users.service';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { UtilsProvider } from '@/utils/utils.provider';
+import { LoginResponse } from './dto/login-response.dto';
+>>>>>>> api2
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name)
-    private userModel: Model<UserDocument>,
     private usersService: UsersService,
     private jwtService: JwtService,
+    private utils: UtilsProvider,
   ) {}
 
   /**
    * Generates a nonce for the user and returns it.
    *
-   * @param ethereumAddress
+   * @param identityEthAddress
    * @returns NonceResponse
    */
-  async nonce(ethereumAddress: string): Promise<NonceResponse> {
+  async generateUserNonce(identityEthAddress: string): Promise<User> {
     // Generate random nonce used for auth request
-    const nonce = randomString();
+    const nonce = await this.utils.randomString();
 
-    // Update existing user or create new
-    await this.userModel.findOneAndUpdate(
-      { ethereumAddress },
-      { nonce },
-      { upsert: true, new: true },
-    );
+    const user = await this.usersService.findOneByEth(identityEthAddress);
 
-    return { ethereumAddress, nonce };
+    if (user) return this.usersService.update(user._id, { nonce });
+
+    return this.usersService.create({
+      identityEthAddress,
+      rewardsEthAddress: identityEthAddress,
+      username: identityEthAddress,
+      nonce,
+    });
   }
 
   /**
    * Verifies a user's signature of a login message and returns a JWT token.
    *
-   *  @param ethereumAddress
+   *  @param identityEthAddress
    *  @param signature
-   *  @returns string
+   *  @returns LoginResponse
    */
-  async login(ethereumAddress: string, signature: string): Promise<string> {
-    const user = await this.usersService.findOneByEth(ethereumAddress);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+  async login(user: User): Promise<LoginResponse> {
+    const { _id: userId, identityEthAddress, roles } = user;
 
-    // Check for previously generated nonce
-    if (!user.nonce) {
-      throw new BadRequestException('Nonce not found');
-    }
-
-    // Generate expected message, nonce included.
-    // Recover signer from generated message + signature
-    const generatedMsg = generateLoginMessage(ethereumAddress, user.nonce);
-    const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
-    if (signerAddress !== ethereumAddress)
-      throw new BadRequestException('Signature verification failed');
+    // Sign payload to create accesstoken
+    const payload = {
+      userId: userId.toString(),
+      identityEthAddress,
+      roles,
+    } as JwtPayload;
+    const accessToken = this.jwtService.sign(payload);
 
     // await logEvent(EventLogTypeKey.AUTHENTICATION, 'Logged in', {
     //   userId: user._id,
     // });
 
-    // Sign payload to create accesstoken
-    const payload = {
-      userId: user._id.toString(),
-      ethereumAddress,
-      roles: user.roles,
-    } as JwtPayload;
-
-    return this.jwtService.sign(payload);
+    return {
+      accessToken,
+      identityEthAddress,
+      tokenType: 'Bearer',
+    };
   }
 }

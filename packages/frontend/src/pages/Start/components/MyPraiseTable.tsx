@@ -42,7 +42,7 @@ export const MyPraiseTable = (): JSX.Element | null => {
     );
 
   return (
-    <>
+    <div className="pb-6">
       <ul>
         {allPraise?.map((praise, index) => (
           <PraiseRow praise={praise} key={index}>
@@ -57,8 +57,11 @@ export const MyPraiseTable = (): JSX.Element | null => {
           </div>
         }
       >
-        <PraisePageLoader listKey={PRAISE_LIST_KEY} receiverId={receiverId} />
+        <PraisePageLoader
+          listKey={PRAISE_LIST_KEY}
+          queryParams={{ receiver: receiverId }}
+        />
       </React.Suspense>
-    </>
+    </div>
   );
 };

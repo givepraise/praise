@@ -18,10 +18,10 @@ export const EthAccount = ({
   showDownCaret = true,
   showRightCaret = false,
 }: EthAccountParams): JSX.Element | null => {
-  const { data } = useAccount();
+  const { address } = useAccount();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-  if (!data?.address) return null;
+  if (!address) return null;
 
   return (
     <>
@@ -34,9 +34,9 @@ export const EthAccount = ({
       >
         <div className="flex items-center space-x-2">
           <div className="inline-block h-5">
-            <Jazzicon address={data.address} className="w-4 h-4" />
+            <Jazzicon address={address} className="w-4 h-4" />
           </div>
-          <span>{shortenEthAddress(data.address)}</span>
+          <span>{shortenEthAddress(address)}</span>
         </div>
         <div>
           {showDownCaret && (
@@ -49,7 +49,7 @@ export const EthAccount = ({
       </div>
       <EthAccountDialog
         open={isDialogOpen}
-        address={data.address}
+        address={address}
         onClose={(): void => setIsDialogOpen(false)}
       />
     </>

@@ -3,7 +3,7 @@ import mime from 'mime-types';
 import { UploadedFile } from 'express-fileupload';
 import { unlink } from 'fs/promises';
 import { randomBytes } from 'crypto';
-import { BadRequestError, InternalServerError } from '@/error/errors';
+import { BadRequestError } from '@/error/errors';
 import { PraiseAllInput, PraiseExportInput } from '@/praise/types';
 import { QueryInput } from './types';
 import { logger } from './logger';
@@ -34,11 +34,15 @@ export const getQuerySort = (input: QueryInput): Object => {
 };
 
 export const getPraiseAllInput = (q: PraiseAllInput): Object => {
-  const { receiver } = q;
+  const { receiver, giver } = q;
   const query: PraiseExportInput = {};
 
   if (receiver) {
     query.receiver = encodeURIComponent(receiver);
+  }
+
+  if (giver) {
+    query.giver = encodeURIComponent(giver);
   }
 
   return query;
@@ -56,6 +60,31 @@ export const getQueryInput = (q: QueryInput): Object => {
   return query;
 };
 
+function isJpg(buffer: Uint8Array): boolean {
+  if (!buffer || buffer.length < 3) {
+    return false;
+  }
+
+  return buffer[0] === 255 && buffer[1] === 216 && buffer[2] === 255;
+}
+
+function isPng(buffer: Uint8Array): boolean {
+  if (!buffer || buffer.length < 8) {
+    return false;
+  }
+
+  return (
+    buffer[0] === 0x89 &&
+    buffer[1] === 0x50 &&
+    buffer[2] === 0x4e &&
+    buffer[3] === 0x47 &&
+    buffer[4] === 0x0d &&
+    buffer[5] === 0x0a &&
+    buffer[6] === 0x1a &&
+    buffer[7] === 0x0a
+  );
+}
+
 export const upload = async (req: Request, key: string): Promise<string> => {
   const file = req.files;
 
@@ -63,20 +92,18 @@ export const upload = async (req: Request, key: string): Promise<string> => {
     throw new BadRequestError('Uploaded file is missing.');
   }
 
-  try {
-    const logo: UploadedFile = file[key] as UploadedFile;
-    const fileExtension: string = mime.extension(logo.mimetype) as string;
+  const logo: UploadedFile = file[key] as UploadedFile;
+  const chunk = logo.data.slice(0, 8);
 
-    const filename = `${getRandomString()}.${fileExtension}`;
-    const path = `${uploadDirectory}${filename}`;
-
-    await logo.mv(path);
-
-    return filename;
-  } catch (e) {
-    console.log('ERROR:', e);
-    throw new InternalServerError('File upload failed.');
+  if (!isJpg(chunk) && !isPng(chunk)) {
+    throw new BadRequestError('Uploaded file is not a valid image.');
   }
+
+  const fileExtension: string = mime.extension(logo.mimetype) as string;
+  const filename = `${getRandomString()}.${fileExtension}`;
+  const path = `${uploadDirectory}${filename}`;
+  await logo.mv(path);
+  return filename;
 };
 
 export const removeFile = async (filename: string): Promise<void> => {

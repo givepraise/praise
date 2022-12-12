@@ -12,16 +12,16 @@ const LoginPage = React.lazy(() => import('@/pages/Login/LoginPage'));
 export const Routes = (): JSX.Element => {
   const [tokenSet, setTokenSet] = useRecoilState(ActiveTokenSet);
   const decodedToken = useRecoilValue(DecodedAccessToken);
-  const { data } = useAccount();
+  const { address } = useAccount();
 
   // Clear ActiveTokenSet if ethereum address changes
   useEffect(() => {
-    if (tokenSet && decodedToken?.ethereumAddress !== data?.address) {
+    if (tokenSet && decodedToken?.identityEthAddress !== address) {
       setTokenSet(undefined);
     }
-  }, [tokenSet, data?.address, decodedToken?.ethereumAddress, setTokenSet]);
+  }, [tokenSet, address, decodedToken?.identityEthAddress, setTokenSet]);
 
-  return tokenSet && decodedToken?.ethereumAddress === data?.address ? (
+  return tokenSet && decodedToken?.identityEthAddress === address ? (
     <Switch>
       <Route exact path="/activate">
         <ActivatePage />
@@ -29,7 +29,6 @@ export const Routes = (): JSX.Element => {
       <Route exact path="/404">
         <ErrorPage error={{ message: 'Not found' }} />
       </Route>
-
       <AuthenticatedLayout />
     </Switch>
   ) : (

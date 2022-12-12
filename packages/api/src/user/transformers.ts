@@ -1,6 +1,5 @@
 import { userAccountListTransformer } from '@/useraccount/transformers';
-import { UserDocument, UserDto, UserRole } from './types';
-import { generateUserName } from './utils/entity';
+import { UserDetailsDto, UserDocument, UserDto, UserStats } from './types';
 
 /**
  * Serialize a User
@@ -9,38 +8,53 @@ import { generateUserName } from './utils/entity';
  * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
  * @returns {Promise<UserDto>}
  */
-export const userTransformer = async (
-  userDocument: UserDocument,
-  currentUserRoles: UserRole[] = [UserRole.USER]
-): Promise<UserDto> => {
-  const { _id, roles, createdAt, updatedAt } = userDocument;
-
-  /* Only return eth address to admin or quantifier */
-  let ethereumAddress;
-  if (
-    currentUserRoles.includes(UserRole.ADMIN) ||
-    currentUserRoles.includes(UserRole.QUANTIFIER)
-  ) {
-    ethereumAddress = userDocument.ethereumAddress;
-  }
+export const userTransformer = (userDocument: UserDocument): UserDto => {
+  const {
+    _id,
+    roles,
+    username,
+    createdAt,
+    updatedAt,
+    identityEthAddress,
+    rewardsEthAddress,
+  } = userDocument;
 
   let accounts;
   if (userDocument.accounts) {
     accounts = userAccountListTransformer(userDocument.accounts);
   }
 
-  // Generate user name
-  const nameRealized = await generateUserName(userDocument);
-
   return {
     _id,
     roles,
-    ethereumAddress,
+    identityEthAddress,
+    rewardsEthAddress,
     accounts,
-    nameRealized,
+    username,
     createdAt: createdAt.toISOString(),
     updatedAt: updatedAt.toISOString(),
   } as UserDto;
+};
+
+/**
+ * Serialize a User with Stats
+ *
+ * @param {UserDocument} userDocument
+ * @param {UserRole[]} [currentUserRoles=[UserRole.USER]]
+ * @returns {Promise<UserDto>}
+ */
+export const userDetailTransformer = (
+  userDocument: UserDocument,
+  userStats: UserStats | null
+): UserDetailsDto => {
+  const user = userTransformer(userDocument) as UserDetailsDto;
+
+  if (!userStats) return user;
+
+  return {
+    ...user,
+    ...userStats,
+  };
 };
 
 /**
@@ -51,10 +65,7 @@ export const userTransformer = async (
  * @returns {Promise<UserDto[]>}
  */
 export const userListTransformer = (
-  userDocuments: UserDocument[],
-  currentUserRoles: UserRole[] = [UserRole.USER]
+  userDocuments: UserDocument[]
 ): Promise<UserDto[]> => {
-  return Promise.all(
-    userDocuments.map((d) => userTransformer(d, currentUserRoles))
-  );
+  return Promise.all(userDocuments.map((d) => userTransformer(d)));
 };

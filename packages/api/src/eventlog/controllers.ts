@@ -32,7 +32,7 @@ export const all = async (
     throw new BadRequestError('limit and page are required');
 
   const query: EventLogInput = {};
-  if (isString(req.query.type)) {
+  if (isString(req.query.type) && req.query.type.length > 0) {
     const typesArray = req.query.type.split(',');
     const types = await EventLogTypeModel.find({ key: { $in: typesArray } });
     query.type = types.map((item) => new mongoose.Types.ObjectId(item.id));

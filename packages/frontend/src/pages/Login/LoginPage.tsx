@@ -6,7 +6,7 @@ import { requestApiAuth, requestNonce } from '@/utils/auth';
 import { SignMessageLayout } from '../../layouts/SignMessageLayout';
 
 const LoginPage = (): JSX.Element => {
-  const { data } = useAccount();
+  const { address } = useAccount();
   const [message, setMessage] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -21,15 +21,15 @@ const LoginPage = (): JSX.Element => {
       }
     };
 
-    if (data?.address) void generateNewMessage(data.address);
-  }, [data]);
+    if (address) void generateNewMessage(address);
+  }, [address]);
 
   const onSignSuccess = async (signature): Promise<void> => {
     try {
-      if (!data?.address) throw new Error();
+      if (!address) throw new Error();
 
       // Verify signature with server
-      await requestApiAuth({ ethereumAddress: data.address, signature });
+      await requestApiAuth({ identityEthAddress: address, signature });
     } catch (err) {
       toast.error('Login failed');
     }

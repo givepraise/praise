@@ -14,7 +14,7 @@ export const requestApiAuth = async (
   params: AuthRequestInput
 ): Promise<TokenSet | undefined> => {
   const apiClient = makeApiClient();
-  const response = await apiClient.post('/auth', params);
+  const response = await apiClient.post('/auth/login', params);
   if (!response) throw Error('Failed to request authorization');
 
   const { accessToken, refreshToken } =
@@ -35,7 +35,7 @@ export const requestApiAuthRefresh = async (): Promise<
 
   try {
     const apiClient = makeApiClient();
-    const response = await apiClient.post('auth/refresh', {
+    const response = await apiClient.post('/auth/refresh', {
       refreshToken: tokenSet?.refreshToken,
     });
     const { accessToken, refreshToken: newRefreshToken } =
@@ -55,12 +55,12 @@ export const requestApiAuthRefresh = async (): Promise<
 };
 
 export const requestNonce = async (
-  ethereumAddress: string
+  identityEthAddress: string
 ): Promise<string> => {
   const apiClient = makeApiClient();
 
-  const response = await apiClient.get('/auth/nonce', {
-    params: { ethereumAddress },
+  const response = await apiClient.post('/auth/nonce', {
+    identityEthAddress,
   });
 
   const { nonce } = response.data as NonceResponse;
@@ -71,10 +71,10 @@ export const requestNonce = async (
 export const requestApiActivate = async (
   params: ActivateRequestBody
 ): Promise<boolean> => {
-  const { ethereumAddress, accountId, message, signature } = params;
+  const { identityEthAddress, accountId, message, signature } = params;
   const apiClient = makeApiClient();
   const response = await apiClient.post('/activate', {
-    ethereumAddress,
+    identityEthAddress,
     accountId,
     message,
     signature,

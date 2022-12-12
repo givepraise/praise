@@ -89,22 +89,13 @@ export const AuthenticatedRoutes = ({
 }: Props): JSX.Element | null => {
   return (
     <Switch>
-      <AuthRoute
-        userRoles={userRoles}
-        roles={[ROLE_ADMIN]}
-        exact
-        path={'/users'}
-      >
+      <Route exact path={'/users'}>
         <UsersPage />
-      </AuthRoute>
+      </Route>
 
-      <AuthRoute
-        userRoles={userRoles}
-        roles={[ROLE_ADMIN]}
-        path={'/users/:userId'}
-      >
+      <Route path={'/users/:userId'}>
         <UserDetailsPage />
-      </AuthRoute>
+      </Route>
 
       <Route exact path={'/periods'}>
         <PeriodsPage />
@@ -165,6 +156,10 @@ export const AuthenticatedRoutes = ({
       <AuthRoute userRoles={userRoles} roles={[ROLE_ADMIN]} path={'/settings'}>
         <SettingsPage />
       </AuthRoute>
+
+      <Route path="/profile">
+        <UserDetailsPage />
+      </Route>
 
       <Route exact path="/">
         <StartPage />

@@ -6,7 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccountsModule } from '../useraccounts/useraccounts.module';
 import { UsersModule } from './users.module';
 import { UsersService } from './users.service';
-import { praiseDatabaseUri } from '../_shared/database.shared';
+import { praiseDatabaseUri } from '../shared/database.shared';
 
 describe('UsersService', () => {
   let service: UsersService;

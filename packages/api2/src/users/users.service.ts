@@ -1,14 +1,12 @@
-import { UserRoleChangeDto } from './dto/userRoleChange.dto';
+import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { User, UserDocument } from './schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { UserRole } from './interfaces/userRole.interface';
+import { Injectable } from '@nestjs/common';
+import { UserRole } from './interfaces/user-role.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ServiceException } from '@/shared/service-exception';
 
 @Injectable()
 export class UsersService {
@@ -17,39 +15,42 @@ export class UsersService {
     private userModel: Model<UserDocument>,
   ) {}
 
+  getModel(): Model<UserDocument> {
+    return this.userModel;
+  }
+
   async findAll(): Promise<User[]> {
     const users = await this.userModel.find().populate('accounts').lean();
     return users.map((user) => new User(user));
   }
 
-  async findOneById(_id: Types.ObjectId): Promise<User> {
+  async findOneById(_id: Types.ObjectId): Promise<User | null> {
     const user = await this.userModel.findById(_id).populate('accounts').lean();
-    if (!user) throw new NotFoundException('User not found.');
-    return new User(user);
+    if (user) return new User(user);
+    return null;
   }
 
-  async findOneByEth(ethereumAddress: string): Promise<User> {
+  async findOneByEth(identityEthAddress: string): Promise<User | null> {
     const user = await this.userModel
-      .findOne({ ethereumAddress })
+      .findOne({ identityEthAddress })
       .populate('accounts')
       .lean();
-    if (!user) throw new NotFoundException('User not found.');
-    return new User(user);
+    if (user) return new User(user);
+    return null;
   }
 
   async addRole(
     _id: Types.ObjectId,
-    roleChange: UserRoleChangeDto,
+    roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new NotFoundException('User not found.');
+    if (!userDocument) throw new ServiceException('User not found.');
 
     if (userDocument.roles.includes(roleChange.role))
-      throw new BadRequestException(`User already has role ${roleChange.role}`);
+      throw new ServiceException(`User already has role ${roleChange.role}`);
 
     userDocument.roles.push(roleChange.role);
     await userDocument.save();
-    await this.revokeAccess(_id);
 
     // await logEvent(
     //   EventLogTypeKey.PERMISSION,
@@ -61,15 +62,15 @@ export class UsersService {
     //   }
     // );
 
-    return this.findOneById(_id);
+    return this.revokeAccess(_id);
   }
 
   async removeRole(
     _id: Types.ObjectId,
-    roleChange: UserRoleChangeDto,
+    roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new NotFoundException('User not found.');
+    if (!userDocument) throw new ServiceException('User not found.');
 
     const role = roleChange.role;
     const roleIndex = userDocument.roles.indexOf(role);
@@ -80,7 +81,7 @@ export class UsersService {
         roles: { $in: [`${UserRole.ADMIN}`] },
       });
       if (allAdmins.length <= 1) {
-        throw new BadRequestException(
+        throw new ServiceException(
           'It is not allowed to remove the last admin!',
         );
       }
@@ -88,7 +89,7 @@ export class UsersService {
 
     // Verify user has role before removing
     if (roleIndex === -1)
-      throw new BadRequestException(`User does not have role ${role}`);
+      throw new ServiceException(`User does not have role ${role}`);
 
     //   // If user is currently assigned to the active quantification round, and role is QUANTIFIER throw error
     //   const activePeriods: PeriodDocument[] = await findActivePeriods();
@@ -101,14 +102,13 @@ export class UsersService {
     //       'quantifications.quantifier': user._id,
     //     });
     //     if (assignedPraiseCount > 0)
-    //       throw new BadRequestError(
+    //       throw new PraiseException(
     //         'Cannot remove quantifier currently assigned to quantification period'
     //       );
     //   }
 
     userDocument.roles.splice(roleIndex, 1);
     await userDocument.save();
-    await this.revokeAccess(_id);
 
     //   await logEvent(
     //     EventLogTypeKey.PERMISSION,
@@ -120,30 +120,30 @@ export class UsersService {
     //     }
     //   );
 
-    return this.findOneById(_id);
+    return this.revokeAccess(_id);
   }
 
   async revokeAccess(_id: Types.ObjectId): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new NotFoundException('User not found.');
+    if (!userDocument) throw new ServiceException('User not found.');
 
     userDocument.set('accessToken', undefined);
     userDocument.set('nonce', undefined);
-    await userDocument.save();
-
-    return this.findOneById(_id);
+    return userDocument.save();
   }
 
-  async updateUser(_id: Types.ObjectId, user: UpdateUserDto): Promise<User> {
+  async update(_id: Types.ObjectId, user: UpdateUserDto): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new NotFoundException('User not found.');
+    if (!userDocument) throw new ServiceException('User not found.');
 
     for (const [k, v] of Object.entries(user)) {
       userDocument.set(k, v);
-      console.log(`${JSON.stringify(k)}: ${JSON.stringify(v)}`);
     }
-    await userDocument.save();
+    return userDocument.save();
+  }
 
-    return this.findOneById(_id);
+  async create(userDto: CreateUserDto): Promise<User> {
+    const createdUser = new this.userModel(userDto);
+    return createdUser.save();
   }
 }

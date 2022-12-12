@@ -11,7 +11,7 @@ import { isString } from 'lodash';
 import mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import { EventLogInput } from './interfaces';
-import { getQuerySort } from 'src/_shared/util';
+import { getQuerySort } from '@/shared/util';
 import { Pagination } from 'mongoose-paginate-ts';
 import {
   eventLogListTransformer,

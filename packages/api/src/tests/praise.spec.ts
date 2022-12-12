@@ -21,7 +21,7 @@ describe('GET /api/praise/all', () => {
   it('200 response with json body containing paginated list of praises', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -56,7 +56,7 @@ describe('GET /api/praise/all', () => {
   it('200 response with json body containing paginated list of praises, filtered by reciever', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -121,7 +121,7 @@ describe('GET /api/praise/:id', () => {
   it('200 response with json body containing a praise', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -163,7 +163,7 @@ describe('GET /api/praise/:id', () => {
   it('praise may contain a forwarder', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
     });
     const { accessToken } = await loginUser(wallet, this.client);
 
@@ -204,7 +204,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
   it('200 response with json body containing list with single praise with updated score', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -252,7 +252,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
   it('200 response with json body containing list with single praise dismissed', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -302,7 +302,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
   it('200 response with json body containing list with single praise marked duplicate', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -355,13 +355,19 @@ describe('PATCH /api/praise/:id/quantify', () => {
     );
   });
 
+  // eslint-disable-next-line no-restricted-properties
   it('200 response with json body containing list of updated praises', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
+
+    const period = await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'QUANTIFY',
+    });
 
     // Original Praise
     const praise = await seedPraise({ createdAt: new Date() });
@@ -379,10 +385,6 @@ describe('PATCH /api/praise/:id/quantify', () => {
       duplicatePraise: praise._id,
     });
 
-    const period = await seedPeriod({
-      endDate: faker.date.future(),
-      status: 'QUANTIFY',
-    });
     await PeriodSettingsModel.updateOne(
       {
         period: period._id,
@@ -425,7 +427,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
   it('404 response if praise does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -446,7 +448,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
   it('400 response if praise does not have associated period', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -474,21 +476,21 @@ describe('PATCH /api/praise/:id/quantify', () => {
   it('400 response if associated period status is not QUANTIFY', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
+
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'OPEN',
+    });
 
     const praise = await seedPraise({ createdAt: new Date() });
     await seedQuantification(praise, quantifier, {
       score: 0,
       dismissed: false,
       duplicatePraise: undefined,
-    });
-
-    await seedPeriod({
-      endDate: faker.date.future(),
-      status: 'OPEN',
     });
 
     const FORM_DATA = {
@@ -507,17 +509,17 @@ describe('PATCH /api/praise/:id/quantify', () => {
   it('400 response if user is not an assigned quantifier', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
-
-    const praise = await seedPraise({ createdAt: new Date() });
 
     await seedPeriod({
       endDate: faker.date.future(),
       status: 'QUANTIFY',
     });
+
+    const praise = await seedPraise({ createdAt: new Date() });
 
     const FORM_DATA = {
       score: 13,
@@ -535,7 +537,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
   it('400 response if praise marked duplicate of itself', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -567,7 +569,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
   it('400 response if praise marked duplicate of non-existant praise', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -599,10 +601,15 @@ describe('PATCH /api/praise/:id/quantify', () => {
   it('400 response if praise marked duplicate of another duplicate', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
+
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'QUANTIFY',
+    });
 
     const praise = await seedPraise({ createdAt: new Date() });
     await seedQuantification(praise, quantifier, {
@@ -625,11 +632,6 @@ describe('PATCH /api/praise/:id/quantify', () => {
       duplicatePraise: praise2._id,
     });
 
-    await seedPeriod({
-      endDate: faker.date.future(),
-      status: 'QUANTIFY',
-    });
-
     const FORM_DATA = {
       duplicatePraise: praise3._id.toString(),
     };
@@ -646,7 +648,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
   it('403 response if user is not QUANTIFIER', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -678,7 +680,7 @@ describe('PATCH /api/praise/:id/quantify', () => {
   it('401 response if user not authenticated', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
 
@@ -715,7 +717,7 @@ describe('PATCH /api/praise/quantify', () => {
   it('200 response with json body containing list with multiple praise with updated score', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -773,7 +775,7 @@ describe('PATCH /api/praise/quantify', () => {
   it('200 response with json body containing list with single praise that was dismissed but not anymore after quantification', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -820,10 +822,15 @@ describe('PATCH /api/praise/quantify', () => {
   it('200 response with json body containing list with single praise that was marked as duplicate but not anymore after quantification', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
+
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'QUANTIFY',
+    });
 
     const praiseIds = [];
 
@@ -841,11 +848,6 @@ describe('PATCH /api/praise/quantify', () => {
       score: 0,
       dismissed: false,
       duplicatePraise: praise._id.toString(),
-    });
-
-    await seedPeriod({
-      endDate: faker.date.future(),
-      status: 'QUANTIFY',
     });
 
     const FORM_DATA = {
@@ -876,17 +878,22 @@ describe('PATCH /api/praise/quantify', () => {
   it('200 response with json body containing list with single praise that is duplicate and which score also changed when original praise score was changed', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
+
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'QUANTIFY',
+    });
 
     const praiseIds = [];
 
     const praise = await seedPraise({ createdAt: new Date() });
     praiseIds.push(praise.id);
     await seedQuantification(praise, quantifier, {
-      score: 13,
+      score: 144,
       dismissed: false,
       duplicatePraise: undefined,
     });
@@ -896,11 +903,6 @@ describe('PATCH /api/praise/quantify', () => {
       score: 0,
       dismissed: false,
       duplicatePraise: praise._id.toString(),
-    });
-
-    await seedPeriod({
-      endDate: faker.date.future(),
-      status: 'QUANTIFY',
     });
 
     const FORM_DATA = {
@@ -925,7 +927,7 @@ describe('PATCH /api/praise/quantify', () => {
   it('404 response if praise does not exist', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -949,7 +951,7 @@ describe('PATCH /api/praise/quantify', () => {
   it('400 response if praise does not have associated period', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
@@ -980,21 +982,21 @@ describe('PATCH /api/praise/quantify', () => {
   it('400 response if associated period status is not QUANTIFY', async function () {
     const wallet = Wallet.createRandom();
     const quantifier = await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);
+
+    await seedPeriod({
+      endDate: faker.date.future(),
+      status: 'OPEN',
+    });
 
     const praise = await seedPraise({ createdAt: new Date() });
     await seedQuantification(praise, quantifier, {
       score: 0,
       dismissed: false,
       duplicatePraise: undefined,
-    });
-
-    await seedPeriod({
-      endDate: faker.date.future(),
-      status: 'OPEN',
     });
 
     const praiseIds = [praise._id];
@@ -1016,7 +1018,7 @@ describe('PATCH /api/praise/quantify', () => {
   it('400 response if user is not an assigned quantifier', async function () {
     const wallet = Wallet.createRandom();
     await seedUser({
-      ethereumAddress: wallet.address,
+      identityEthAddress: wallet.address,
       roles: ['USER', 'QUANTIFIER'],
     });
     const { accessToken } = await loginUser(wallet, this.client);

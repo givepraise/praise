@@ -5,7 +5,7 @@ import { User, UserSchema } from './schemas/users.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { praiseDatabaseUri } from '../_shared/database.shared';
+import { praiseDatabaseUri } from '../shared/database.shared';
 
 describe('UsersController', () => {
   let controller: UsersController;

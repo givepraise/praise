@@ -21,6 +21,14 @@ import { getQueryInput, getQuerySort } from '@/shared/functions';
 import { PraiseModel } from '@/praise/entities';
 import { EventLogTypeKey } from '@/eventlog/types';
 import { logEvent } from '@/eventlog/utils';
+import { periodTransformer } from '../transformers';
+import { PeriodModel } from '../entities';
+import {
+  findPeriodDetailsDto,
+  getPeriodDateRangeQuery,
+  getPreviousPeriodEndDate,
+  isPeriodLatest,
+} from '../utils/core';
 import {
   PeriodDetailsDto,
   PeriodUpdateInput,
@@ -29,14 +37,6 @@ import {
   PeriodReceiverPraiseInput,
   PeriodGiverPraiseInput,
 } from '../types';
-import {
-  findPeriodDetailsDto,
-  getPeriodDateRangeQuery,
-  getPreviousPeriodEndDate,
-  isPeriodLatest,
-} from '../utils/core';
-import { PeriodModel } from '../entities';
-import { periodTransformer } from '../transformers';
 
 /**
  * Fetch a paginated list of Periods

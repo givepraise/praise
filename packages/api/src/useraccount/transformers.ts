@@ -45,5 +45,6 @@ export const userAccountListTransformer = (
   if (userAccountDocuments && Array.isArray(userAccountDocuments)) {
     return userAccountDocuments.map((d) => userAccountTransformer(d));
   }
+
   return [];
 };
