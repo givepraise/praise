@@ -4,6 +4,7 @@ import { UsersController } from '../users.controller';
 import { UsersService } from '../users.service';
 import { userStub } from './stubs/user.stub';
 import { UpdateUserRoleDto } from '../dto/update-user-role.dto';
+import { UserRole } from '../interfaces/user-role.interface';
 
 jest.mock('@/users/users.service');
 
@@ -57,24 +58,31 @@ describe('UsersController', () => {
     });
   });
 
+  type UserRoleMap = keyof typeof UserRole;
   describe('addRole', () => {
     let user: User;
     beforeEach(async () => {
       jest.clearAllMocks();
     });
 
-    test('should call usersService', async () => {
-      const updateUserRoleDto: UpdateUserRoleDto = {
-        role: userStub.roles[0],
-      };
+    const updateUserRoleDto: UpdateUserRoleDto = {
+      role: UserRole[userStub.roles[0] as UserRoleMap],
+    };
 
+    test('should call usersService', async () => {
       user = await usersController.addRole(userStub._id, updateUserRoleDto);
-      expect(usersService.addRole).toBeCalledWith(userStub._id);
+      expect(usersService.addRole).toBeCalledWith(
+        userStub._id,
+        updateUserRoleDto,
+      );
     });
 
-    // test('should return an object of one user', async () => {
-    //   user = await usersController.findOne(userStub._id);
-    //   expect(user).toEqual(userStub);
-    // });
+    test('should return an object of one user', async () => {
+      const userRole = await usersController.addRole(
+        userStub._id,
+        updateUserRoleDto,
+      );
+      expect(userRole).toEqual(updateUserRoleDto.role);
+    });
   });
 });
