@@ -6,7 +6,7 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { EthSignatureService } from './eth-signature.service';
 import { NonceResponse } from './dto/nonce-response.dto';
 import { LoginResponse } from './dto/login-response.dto';
 import { NonceRequest } from './dto/nonce-request.dto';
@@ -17,10 +17,12 @@ import { LoginRequest } from './dto/login-request.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly ethSignatureService: EthSignatureService) {}
 
-  @Post('nonce')
-  @ApiOperation({ summary: 'Generates a nonce for the user and returns it' })
+  @Post('eth-signature/nonce')
+  @ApiOperation({
+    summary: 'Generates a nonce for the user and returns it',
+  })
   @ApiBody({
     type: NonceRequest,
     description: 'A request containing the user identityEthAddress',
@@ -32,7 +34,9 @@ export class AuthController {
   })
   async nonce(@Body() nonceRquestDto: NonceRequest): Promise<NonceResponse> {
     const { identityEthAddress } = nonceRquestDto;
-    const user = await this.authService.generateUserNonce(identityEthAddress);
+    const user = await this.ethSignatureService.generateUserNonce(
+      identityEthAddress,
+    );
     if (user && user.nonce) {
       return {
         identityEthAddress,
@@ -43,7 +47,7 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard('eth-signature'))
-  @Post('login')
+  @Post('eth-signature/login')
   @ApiOperation({
     summary: "Verifies a user's signature and returns a JWT token",
   })
@@ -61,6 +65,6 @@ export class AuthController {
     type: LoginResponse,
   })
   async login(@Request() req: RequestWithUser): Promise<LoginResponse> {
-    return this.authService.login(req.user);
+    return this.ethSignatureService.login(req.user);
   }
 }
