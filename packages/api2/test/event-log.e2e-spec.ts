@@ -71,7 +71,17 @@ describe('EventLog (E2E)', () => {
     });
 
     test('200 when authenticated', async () => {
-      await authorizedRequest('/event-log', app, accessToken).expect(200);
+      console.log('accessToken', accessToken);
+      try {
+        const response = await authorizedRequest(
+          '/event-log?limit=10&page=1&sortColumn=createdAt&sortType=desc&search=lkjljk&types=HEJ,SVEH',
+          app,
+          accessToken,
+        ).expect(400);
+        console.log('response', response);
+      } catch (error) {
+        console.log('error', error);
+      }
     });
   });
 });

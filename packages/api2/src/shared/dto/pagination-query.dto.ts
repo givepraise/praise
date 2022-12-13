@@ -1,22 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsIn, IsInt, IsOptional, IsString } from 'class-validator';
 
 export class PaginationQuery {
   @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  limit?: number;
+  @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  limit: number;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  page?: number;
+  @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  page: number;
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
   sortColumn: string;
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
+  @IsIn(['asc', 'desc'])
   sortType: string;
 }
