@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateEventLogDto } from './dto/create-event-log.dto';
 import {
   EventLogType,
@@ -10,13 +10,13 @@ import { EventLog, EventLogModel } from './entities/event-log.entity';
 import { isString } from 'lodash';
 import mongoose from 'mongoose';
 import { Request, Response } from 'express';
-import { EventLogInput } from './interfaces';
-import { getQuerySort } from '@/shared/util';
 import { Pagination } from 'mongoose-paginate-ts';
 import {
   eventLogListTransformer,
   eventLogTypeListTransformer,
 } from './transformers';
+import { PaginationQuery } from '@/shared/dto/pagination-query.dto';
+import { FindAllQuery } from './dto/find-all-query.dto';
 
 @Injectable()
 export class EventLogService {
@@ -44,47 +44,50 @@ export class EventLogService {
     await this.eventLogModel.create(data);
   }
 
-  async findAll(req: Request, res: Response) {
-    if (!req.query.limit || !req.query.page)
-      throw new BadRequestException('limit and page are required');
+  async findAll(options: FindAllQuery) {
+    const { page, limit, sortColumn, sortType, search, type } = options;
 
-    const query: EventLogInput = {};
-    if (isString(req.query.type)) {
-      const typesArray = req.query.type.split(',');
-      const types = await this.eventLogTypeModel.find({
+    let types: Types.ObjectId[] = [];
+    if (type.length > 0) {
+      const typesArray = type.split(',');
+      const t = await this.eventLogTypeModel.find({
         key: { $in: typesArray },
       });
-      query.type = types.map((item) => new mongoose.Types.ObjectId(item.id));
+      types = t.map((item) => new mongoose.Types.ObjectId(item.id));
     }
 
-    if (isString(req.query.search) && req.query.search.length > 0) {
-      query.description = {
-        $regex: `${req.query.search}`,
+    let description;
+    if (search.length > 0) {
+      description = {
+        $regex: `${search}`,
         $options: 'i',
       };
     }
 
-    const paginateQuery = {
-      query,
-      limit: parseInt(req.query.limit as string),
-      page: parseInt(req.query.page),
-      sort: getQuerySort(req.query),
-    };
+    // const paginateQuery = {
+    //   query: {
+    //     type,
+    //     description,
+    //   },
+    //   limit,
+    //   page,
+    //   sort: getQuerySort(req.query),
+    // };
 
-    const response = await this.eventLogModel.paginate(paginateQuery);
+    // const response = await EventLogModel.paginate(paginateQuery);
 
-    if (!response) throw new BadRequestException('Failed to query event logs');
+    // if (!response) throw new BadRequestError('Failed to query event logs');
 
-    const docs = response.docs ? response.docs : [];
-    const docsTransfomed = await eventLogListTransformer(
-      docs,
-      res.locals.currentUser.roles,
-    );
+    // const docs = response.docs ? response.docs : [];
+    // const docsTransfomed = await eventLogListTransformer(
+    //   docs,
+    //   res.locals.currentUser.roles,
+    // );
 
-    res.status(200).json({
-      ...response,
-      docs: docsTransfomed,
-    });
+    // res.status(StatusCodes.OK).json({
+    //   ...response,
+    //   docs: docsTransfomed,
+    // });
   }
 
   async types(req: Request, res: Response) {

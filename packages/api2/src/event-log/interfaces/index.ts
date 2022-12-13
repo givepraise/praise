@@ -7,7 +7,7 @@ export enum EventLogTypeKey {
   SETTING = 'SETTING',
 }
 
-export interface EventLogInput {
-  type?: Types.ObjectId[];
-  description?: Object;
-}
+// export interface EventLogInput {
+//   type?: Types.ObjectId[];
+//   description?: Object;
+// }
