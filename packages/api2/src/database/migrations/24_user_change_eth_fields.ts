@@ -52,11 +52,17 @@ const up = async (): Promise<void> => {
 
   if (users.length === 0) return;
 
-  const indexes = await UserModel.collection.indexes();
-  const indexExists = indexes.some(
-    (index: any) => index.name === 'ethereumAddress_1',
+  const delay = (ms: any) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  // Check if the index exists
+  const indexExists = await UserModel.collection.indexExists(
+    'ethereumAddress_1',
   );
+
   if (indexExists) {
+    // Wait for the index to be ready
+    await delay(10000);
+    // The index is ready to be used, so we can drop it
     await UserModel.collection.dropIndex('ethereumAddress_1');
   }
 
