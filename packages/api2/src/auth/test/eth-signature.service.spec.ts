@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { AuthService } from '../auth.service';
+import { EthSignatureService } from '../eth-signature.service';
 import { UsersService } from '@/users/users.service';
 import { userStub } from '@/users/test/stubs/user.stub';
 import { JwtService } from '@nestjs/jwt';
@@ -15,8 +15,8 @@ const mockJwtService = {
   sign: jest.fn().mockReturnValue(accessTokenStub),
 };
 
-describe('AuthService', () => {
-  let authService: AuthService;
+describe('EthSignatureService', () => {
+  let ethSignatureService: EthSignatureService;
   let usersService: UsersService;
   let jwtService: JwtService;
 
@@ -24,7 +24,7 @@ describe('AuthService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       providers: [
-        AuthService,
+        EthSignatureService,
         UsersService,
         UtilsProvider,
         {
@@ -34,14 +34,14 @@ describe('AuthService', () => {
       ],
     }).compile();
 
-    authService = module.get<AuthService>(AuthService);
+    ethSignatureService = module.get<EthSignatureService>(EthSignatureService);
     usersService = module.get<UsersService>(UsersService);
     jwtService = module.get<JwtService>(JwtService);
   });
 
   describe('generateUserNonce', () => {
     test('calls usersService.update when user exists since before', async () => {
-      await authService.generateUserNonce(userStub.identityEthAddress);
+      await ethSignatureService.generateUserNonce(userStub.identityEthAddress);
       expect(usersService.update).toBeCalledWith(userStub._id, {
         nonce: '1234567890',
       });
@@ -49,7 +49,7 @@ describe('AuthService', () => {
 
     test('calls usersService.create when user does not exist', async () => {
       usersService.findOneByEth = jest.fn().mockResolvedValue(null);
-      await authService.generateUserNonce(userStub.identityEthAddress);
+      await ethSignatureService.generateUserNonce(userStub.identityEthAddress);
       expect(usersService.create).toBeCalledWith({
         identityEthAddress: userStub.identityEthAddress,
         rewardsEthAddress: userStub.identityEthAddress,
@@ -59,9 +59,22 @@ describe('AuthService', () => {
     });
   });
 
+  describe('generateLoginMessage', () => {
+    it('should be defined', () => {
+      const msg =
+        'SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\n' +
+        `ADDRESS:\n0x123\n\n` +
+        `NONCE:\n456`;
+
+      expect(ethSignatureService.generateLoginMessage('0x123', '456')).toEqual(
+        msg,
+      );
+    });
+  });
+
   describe('login', () => {
     test('calls jwtService.sign with correct payload', async () => {
-      await authService.login(userStub);
+      await ethSignatureService.login(userStub);
       expect(jwtService.sign).toBeCalledWith({
         userId: userStub._id.toString(),
         identityEthAddress: userStub.identityEthAddress,
@@ -69,7 +82,7 @@ describe('AuthService', () => {
       });
     });
     test('returns correct response', async () => {
-      const response = await authService.login(userStub);
+      const response = await ethSignatureService.login(userStub);
       expect(response).toEqual<LoginResponse>({
         accessToken: accessTokenStub,
         identityEthAddress: userStub.identityEthAddress,

@@ -1,5 +1,5 @@
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { EthSignatureService } from './eth-signature.service';
 import { JwtModule } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
@@ -9,6 +9,8 @@ import { UtilsProvider } from '@/utils/utils.provider';
 import { ConstantsProvider } from '@/constants/constants.provider';
 import { EthSignatureStrategy } from './strategies/eth-signature.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { EventLogModule } from '@/event-log/event-log.module';
+import { EventLogService } from '@/event-log/event-log.service';
 
 @Module({
   imports: [
@@ -18,10 +20,10 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_ACCESS_EXP },
     }),
+    EventLogModule,
   ],
   providers: [
-    AuthService,
-    UsersService,
+    EthSignatureService,
     JwtStrategy,
     EthSignatureStrategy,
     UtilsProvider,

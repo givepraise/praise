@@ -6,6 +6,9 @@ import { UsersService } from '@/users/users.service';
 import { Types } from 'mongoose';
 
 @Injectable()
+/**
+ * Passport strategy for authenticating users using JWT.
+ */
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly usersService: UsersService) {
     super({

@@ -51,19 +51,8 @@ export class UsersService {
       throw new ServiceException(`User already has role ${roleChange.role}`);
 
     userDocument.roles.push(roleChange.role);
-    await userDocument.save();
-
-    // await logEvent(
-    //   EventLogTypeKey.PERMISSION,
-    //   `Added role "${role}" to user with id "${(
-    //     user._id as Types.ObjectId
-    //   ).toString()}"`,
-    //   {
-    //     userId: res.locals.currentUser._id,
-    //   }
-    // );
-
-    return this.revokeAccess(_id);
+    const user = await userDocument.save();
+    return new User(user);
   }
 
   async removeRole(
@@ -109,28 +98,8 @@ export class UsersService {
     //   }
 
     userDocument.roles.splice(roleIndex, 1);
-    await userDocument.save();
-
-    //   await logEvent(
-    //     EventLogTypeKey.PERMISSION,
-    //     `Removed role "${role}" from user with id "${(
-    //       user._id as Types.ObjectId
-    //     ).toString()}`,
-    //     {
-    //       userId: res.locals.currentUser._id,
-    //     }
-    //   );
-
-    return this.revokeAccess(_id);
-  }
-
-  async revokeAccess(_id: Types.ObjectId): Promise<User> {
-    const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new ServiceException('User not found.');
-
-    userDocument.set('accessToken', undefined);
-    userDocument.set('nonce', undefined);
-    return userDocument.save();
+    const user = await userDocument.save();
+    return new User(user);
   }
 
   async update(_id: Types.ObjectId, user: UpdateUserDto): Promise<User> {
