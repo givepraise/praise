@@ -85,4 +85,35 @@ describe('UsersController', () => {
       expect(userRole).toEqual(updateUserRoleDto.role);
     });
   });
+
+  describe('removeRole', () => {
+    let user: User;
+    beforeEach(async () => {
+      jest.clearAllMocks();
+    });
+
+    const updateUserRoleDto: UpdateUserRoleDto = {
+      role: UserRole[userStub.roles[0] as UserRoleMap],
+    };
+
+    test('should call usersService', async () => {
+      const userT = await usersController.removeRole(
+        userStub._id,
+        updateUserRoleDto,
+      );
+      console.log({userT});
+      expect(usersService.removeRole).toBeCalledWith(
+        userStub._id,
+        updateUserRoleDto,
+      );
+    });
+
+    test('should return an object of one user', async () => {
+      const userRole = await usersController.addRole(
+        userStub._id,
+        updateUserRoleDto,
+      );
+      expect(userRole).toEqual(updateUserRoleDto.role);
+    });
+  });
 });

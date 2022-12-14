@@ -8,7 +8,10 @@ export const UsersService = jest.fn().mockReturnValue({
     .fn()
     .mockResolvedValue(userStub)
     .mockResolvedValue(userStub.roles[0]),
-  removeRole: jest.fn().mockResolvedValue(userStub),
+  removeRole: jest
+    .fn()
+    .mockResolvedValue(userStub)
+    .mockResolvedValue(userStub.roles[0]),
   revokeAccess: jest.fn().mockResolvedValue(userStub),
   update: jest.fn().mockResolvedValue(userStub),
   create: jest.fn().mockResolvedValue(userStub),
