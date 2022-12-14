@@ -13,6 +13,7 @@ import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
 import { EthSignatureService } from '@/auth/eth-signature.service';
+import { EventLogModule } from '@/event-log/event-log.module';
 
 describe('AuthController (E2E)', () => {
   let app: INestApplication;
@@ -23,8 +24,8 @@ describe('AuthController (E2E)', () => {
   let ethSignatureService: EthSignatureService;
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule],
-      providers: [UsersService, UsersSeeder],
+      imports: [AppModule, UsersModule, EventLogModule],
+      providers: [UsersSeeder],
     }).compile();
     app = module.createNestApplication();
     app.useLogger(new ConsoleLogger());

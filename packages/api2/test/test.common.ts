@@ -33,7 +33,7 @@ export const loginUser = async (
   return loginResponse.body;
 };
 
-export const authorizedRequest = (
+export const authorizedGetRequest = (
   url: string,
   app: INestApplication,
   accessToken: string,

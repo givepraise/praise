@@ -5,6 +5,8 @@ import { UsersService } from '@/users/users.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { LoginResponse } from './dto/login-response.dto';
+import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 
 @Injectable()
 /**
@@ -15,6 +17,7 @@ export class EthSignatureService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly utils: UtilsProvider,
+    private readonly eventLogService: EventLogService,
   ) {}
 
   /**
@@ -78,9 +81,10 @@ export class EthSignatureService {
     // Sign payload to create access token
     const accessToken = this.jwtService.sign(payload);
 
-    // await logEvent(EventLogTypeKey.AUTHENTICATION, 'Logged in', {
-    //   userId: user._id,
-    // });
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.AUTHENTICATION,
+      description: 'Logged in',
+    });
 
     // Return login response with access token
     return {

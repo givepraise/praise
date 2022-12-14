@@ -7,8 +7,10 @@ import { EthSignatureService } from '../eth-signature.service';
 import { JwtModule } from '@nestjs/jwt';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { ConstantsProvider } from '@/constants/constants.provider';
+import { EventLogService } from '@/event-log/event-log.service';
 
 jest.mock('@/users/users.service');
+jest.mock('@/event-log/event-log.service');
 
 describe('EthSignatureStrategy', () => {
   let usersService: UsersService;
@@ -29,6 +31,7 @@ describe('EthSignatureStrategy', () => {
         EthSignatureService,
         UtilsProvider,
         ConstantsProvider,
+        EventLogService,
       ],
     }).compile();
 

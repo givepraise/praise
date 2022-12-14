@@ -6856,8 +6856,10 @@ __metadata:
     ethers: ^5.7.2
     jest: 28.1.3
     jest-extended: ^3.1.0
+    lodash: ^4.17.21
     mongoose: ^6.7.0
     mongoose-paginate-ts: ^1.2.7
+    nestjs-request-context: ^2.1.0
     passport: ^0.6.0
     passport-jwt: ^4.0.0
     passport-local: ^1.0.0
@@ -15817,6 +15819,15 @@ __metadata:
   version: 2.6.2
   resolution: "neo-async@npm:2.6.2"
   checksum: deac9f8d00eda7b2e5cd1b2549e26e10a0faa70adaa6fdadca701cc55f49ee9018e427f424bac0c790b7c7e2d3068db97f3093f1093975f2acb8f8818b936ed9
+  languageName: node
+  linkType: hard
+
+"nestjs-request-context@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "nestjs-request-context@npm:2.1.0"
+  peerDependencies:
+    "@nestjs/common": ^9.0.5
+  checksum: cc7554bcf198b5e4a2d7b55a45abd3ea198fe4627e237f24e9f3f07d8b311985558a5f10e5ad1d090207bde68837224e6b91ce33f60f72028091d9fd46d1b79b
   languageName: node
   linkType: hard
 
