@@ -1,4 +1,3 @@
-import { PaginatedResponseBody } from '@/shared/types.shared';
 import {
   BadRequestException,
   Body,
@@ -6,20 +5,22 @@ import {
   Controller,
   Get,
   Param,
+  Query,
   Req,
   SerializeOptions,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiParam } from '@nestjs/swagger';
 import { isArray } from 'class-validator';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
-import { PraiseDetailsDto } from './dto/praise-details.dto';
 import { PraiseQuantificationCreateUpdateInput } from './intefaces/praise-quantification-input.interface';
 import { PraiseQuantifyMultiplePraiseInput } from './intefaces/praise-quantify-multiple-input.interface';
 import { PraiseService } from './praise.service';
 import { Praise } from './schemas/praise.schema';
+import { FindAllPraisePaginatedQuery } from './dto/find-all-praise-paginated-query.dto';
+import { PaginationModel } from 'mongoose-paginate-ts';
 
 @Controller('praise')
 @SerializeOptions({
@@ -31,10 +32,10 @@ export class PraiseController {
   constructor(private readonly praiseService: PraiseService) {}
 
   @Get()
-  async findAll(
-    @Req() req: Request,
-  ): Promise<PaginatedResponseBody<PraiseDetailsDto>> {
-    return this.praiseService.findAll(req);
+  async findAllPaginated(
+    @Query() options: FindAllPraisePaginatedQuery,
+  ): Promise<PaginationModel<Praise>> {
+    return this.praiseService.findAllPaginated(options);
   }
 
   @Get(':id')

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PeriodSettingsService } from './periodsettings.service';
-import { PeriodsettingsController } from './periodsettings.controller';
+import { PeriodSettingsController } from './periodsettings.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   PeriodSetting,
@@ -17,7 +17,7 @@ import { ConstantsProvider } from '@/constants/constants.provider';
     ]),
     PeriodsModule,
   ],
-  controllers: [PeriodsettingsController],
+  controllers: [PeriodSettingsController],
   providers: [PeriodSettingsService, UtilsProvider, ConstantsProvider],
   exports: [
     PeriodSettingsService,

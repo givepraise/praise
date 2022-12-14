@@ -81,6 +81,25 @@ export class QuantificationsService {
   }
 
   /**
+   * @param quantifierId
+   * @param duplicatePraiseExist
+   * @returns Promise<Quantification[]>
+   */
+  async findByQuantifierAndDuplicatePraiseExist(
+    quantifierId: Types.ObjectId,
+    duplicatePraiseExist: boolean,
+  ): Promise<Quantification[]> {
+    const quantifications = await this.quantificationModel
+      .find({
+        quantifier: quantifierId,
+        duplicatePraise: { $exists: duplicatePraiseExist },
+      })
+      .lean();
+
+    return quantifications;
+  }
+
+  /**
    * Returns a list of quantifications for a given praiseId
    *
    * @param {Types.ObjectId} praiseId

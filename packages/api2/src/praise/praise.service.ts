@@ -1,20 +1,15 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { PraiseModel, Praise, PraiseDocument } from './schemas/praise.schema';
+import { PraiseModel, Praise } from './schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
-import { Request } from 'express';
-import { PaginatedResponseBody } from '@/shared/types.shared';
-import { PraiseDetailsDto } from './dto/praise-details.dto';
-import { UtilsProvider } from '@/utils/utils.provider';
-import { PraiseAllInput } from './intefaces/praise-all-input.inteface';
-import { PraiseExportInput } from './intefaces/praise-export-input.interface';
 import { QuantifyPraiseProps } from './intefaces/quantify-praise.interface';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 import { Period } from '@/periods/schemas/periods.schema';
 import { SettingsService } from '@/settings/settings.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
-import { User } from '@/users/schemas/users.schema';
+import { FindAllPraisePaginatedQuery } from './dto/find-all-praise-paginated-query.dto';
+import { PaginationModel } from 'mongoose-paginate-ts';
 
 @Injectable()
 export class PraiseService {
@@ -24,20 +19,34 @@ export class PraiseService {
     @InjectModel(Period.name)
     private periodModel: Model<Period>,
     private settingsService: SettingsService,
-    private utils: UtilsProvider,
     private quantificationsService: QuantificationsService,
   ) {}
 
-  async findAll(
-    req: Request,
-  ): Promise<PaginatedResponseBody<PraiseDetailsDto>> {
-    const query = this.getPraiseAllInput(req.query);
-    const queryInput = this.utils.getQueryInput(req.query);
+  /**
+   * Find all praise paginated
+   *
+   * @param options
+   * @returns {Promise<PaginationModel<Praise>>}
+   * @throws {ServiceException}
+   */
+  async findAllPaginated(
+    options: FindAllPraisePaginatedQuery,
+  ): Promise<PaginationModel<Praise>> {
+    const { sortColumn, sortType } = options;
+    const query = {} as any;
+
+    if (options.receiver) {
+      query.receiver = new Types.ObjectId(options.receiver);
+    }
+
+    if (options.giver) {
+      query.giver = new Types.ObjectId(options.giver);
+    }
 
     const praisePagination = await this.praiseModel.paginate({
+      ...options,
       query,
-      ...queryInput,
-      sort: this.utils.getQuerySort(req.query),
+      sort: sortColumn && sortType ? { [sortColumn]: sortType } : undefined,
       populate: [
         {
           path: 'giver',
@@ -57,9 +66,7 @@ export class PraiseService {
     if (!praisePagination)
       throw new ServiceException('Failed to paginate praise data');
 
-    const docs = praisePagination.docs.map(
-      (praise) => new Praise(praise),
-    ) as PraiseDetailsDto[];
+    const docs = praisePagination.docs.map((praise) => new Praise(praise));
 
     return {
       ...praisePagination,
@@ -67,6 +74,13 @@ export class PraiseService {
     };
   }
 
+  /**
+   * Find one praise by id
+   * @param _id
+   * @returns {Promise<Praise>}
+   * @throws {ServiceException}
+   *
+   **/
   async findOneById(_id: Types.ObjectId): Promise<Praise> {
     const praise = await this.praiseModel
       .findById(_id)
@@ -78,21 +92,6 @@ export class PraiseService {
     return praise;
   }
 
-  getPraiseAllInput = (q: PraiseAllInput): PraiseAllInput => {
-    const { receiver, giver } = q;
-    const query: PraiseExportInput = {};
-
-    if (receiver) {
-      query.receiver = encodeURIComponent(receiver);
-    }
-
-    if (giver) {
-      query.giver = encodeURIComponent(giver);
-    }
-
-    return query;
-  };
-
   quantifyPraise = async ({
     id,
     bodyParams,
@@ -103,6 +102,7 @@ export class PraiseService {
     const praise = await this.praiseModel
       .findById(id)
       .populate('giver receiver forwarder');
+
     if (!praise) throw new ServiceException('Praise');
 
     const period = await this.getPraisePeriod(praise);
@@ -142,8 +142,8 @@ export class PraiseService {
     const affectedPraises: Praise[] = [praise];
 
     const praisesDuplicateOfThis = await this.findDuplicatePraiseItems(
-      praise,
-      currentUser,
+      praise._id,
+      currentUser._id,
     );
 
     if (praisesDuplicateOfThis?.length > 0)
@@ -162,15 +162,11 @@ export class PraiseService {
           'Praise cannot be marked duplicate when it is the original of another duplicate',
         );
 
-      const praisesDuplicateOfAnotherDuplicate = await this.praiseModel.find({
-        _id: duplicatePraise,
-        quantifications: {
-          $elemMatch: {
-            quantifier: currentUser._id,
-            duplicatePraise: { $exists: 1 },
-          },
-        },
-      });
+      const praisesDuplicateOfAnotherDuplicate =
+        await this.findPraisesDuplicateOfAnotherDuplicate(
+          new Types.ObjectId(duplicatePraise),
+          currentUser._id,
+        );
 
       if (praisesDuplicateOfAnotherDuplicate?.length > 0)
         throw new ServiceException(
@@ -252,23 +248,51 @@ export class PraiseService {
 
   /**
    * Find all praises that are duplicates of the given praise
-   * @param {Praise} praise
-   * @param {User} quantifier
+   * @param {Types.ObjectId} praiseId
+   * @param {Types.ObjectId} quantifierId
    * @returns {Promise<Praise[]>}
    *
    */
   findDuplicatePraiseItems = async (
-    praise: Praise,
-    quantifier: User,
+    praiseId: Types.ObjectId,
+    quantifierId: Types.ObjectId,
   ): Promise<Praise[]> => {
     const duplicateQuantifications =
       await this.quantificationsService.findByQuantifierAndDuplicatePraise(
-        quantifier._id,
-        praise._id,
+        quantifierId,
+        praiseId,
       );
 
     const duplicatePraiseItems = await this.praiseModel.find({
       _id: { $in: duplicateQuantifications.map((q) => q.praise) },
+    });
+
+    return duplicatePraiseItems;
+  };
+
+  /**
+   * Find all praises that are duplicates of the given duplicate praise
+   * @param {Types.ObjectId} duplicatePraiseId
+   * @param {Types.ObjectId} quantifierId
+   * @returns {Promise<Praise[]>}
+   *
+   **/
+  findPraisesDuplicateOfAnotherDuplicate = async (
+    duplicatePraiseId: Types.ObjectId,
+    quantifierId: Types.ObjectId,
+  ): Promise<Praise[]> => {
+    const duplicateQuantifications =
+      await this.quantificationsService.findByQuantifierAndDuplicatePraiseExist(
+        quantifierId,
+        true,
+      );
+
+    const duplicatePraiseItems = await this.praiseModel.find({
+      _id: {
+        $in: duplicateQuantifications.map(
+          (q) => q.praise._id === duplicatePraiseId,
+        ),
+      },
     });
 
     return duplicatePraiseItems;

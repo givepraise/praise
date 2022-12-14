@@ -64,7 +64,7 @@ export class EventLogService {
     options: FindAllPaginatedQuery,
   ): Promise<PaginationModel<EventLog>> {
     const { page, limit, sortColumn, sortType, search, types } = options;
-    let query = {} as any;
+    const query = {} as any;
 
     // Filter by types
     if (Array.isArray(types) && types.length > 0) {
