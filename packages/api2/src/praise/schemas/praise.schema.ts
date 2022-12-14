@@ -42,8 +42,7 @@ export class Praise {
   @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
   forwarder: UserAccount;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Quantification' }] })
-  quantifications: Quantification[];
+  quantifications: Types.ObjectId[];
 
   @Prop({ type: Date })
   createdAt: Date;
@@ -59,3 +58,9 @@ export const PraiseModel = model<PraiseDocument, Pagination<PraiseDocument>>(
   'Praise',
   PraiseSchema,
 );
+
+PraiseSchema.virtual('quantifications', {
+  ref: 'Quantification',
+  localField: '_id',
+  foreignField: 'praise',
+});

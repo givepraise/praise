@@ -15,6 +15,11 @@ import {
 } from '@/periodsettings/schemas/periodsettings.schema';
 import { PeriodsService } from '@/periods/periods.service';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
+import { QuantificationsService } from '@/quantifications/quantifications.service';
+import {
+  Quantification,
+  QuantificationsSchema,
+} from '@/quantifications/schemas/quantifications.schema';
 
 @Module({
   imports: [
@@ -23,6 +28,9 @@ import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
     MongooseModule.forFeature([{ name: Period.name, schema: PeriodSchema }]),
     MongooseModule.forFeature([
       { name: PeriodSetting.name, schema: PeriodSettingsSchema },
+    ]),
+    MongooseModule.forFeature([
+      { name: Quantification.name, schema: QuantificationsSchema },
     ]),
   ],
   controllers: [PraiseController],
@@ -33,6 +41,7 @@ import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
     SettingsService,
     PeriodSettingsService,
     PeriodsService,
+    QuantificationsService,
   ],
   exports: [SettingsService],
 })

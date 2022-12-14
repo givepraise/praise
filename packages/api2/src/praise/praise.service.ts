@@ -13,6 +13,8 @@ import { QuantifyPraiseProps } from './intefaces/quantify-praise.interface';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 import { Period } from '@/periods/schemas/periods.schema';
 import { SettingsService } from '@/settings/settings.service';
+import { QuantificationsService } from '@/quantifications/quantifications.service';
+import { User } from '@/users/schemas/users.schema';
 
 @Injectable()
 export class PraiseService {
@@ -23,6 +25,7 @@ export class PraiseService {
     private periodModel: Model<Period>,
     private settingsService: SettingsService,
     private utils: UtilsProvider,
+    private quantificationsService: QuantificationsService,
   ) {}
 
   async findAll(
@@ -67,10 +70,11 @@ export class PraiseService {
   async findOneById(_id: Types.ObjectId): Promise<Praise> {
     const praise = await this.praiseModel
       .findById(_id)
-      .populate('giver receiver forwarder')
+      .populate('giver receiver forwarder quantifications')
       .lean();
 
     if (!praise) throw new ServiceException('Praise item not found.');
+
     return praise;
   }
 
@@ -123,9 +127,11 @@ export class PraiseService {
       );
     }
 
-    const quantification = praise.quantifications.find((q) =>
-      q.quantifier._id.equals(currentUser._id),
-    );
+    const quantification =
+      await this.quantificationsService.findOneByQuantifierAndPraise(
+        currentUser._id,
+        praise._id,
+      );
 
     if (!quantification)
       throw new ServiceException('User not assigned as quantifier for praise.');
@@ -133,18 +139,12 @@ export class PraiseService {
     let eventLogMessage = '';
 
     // Collect all affected praises (i.e. any praises whose scoreRealized will change as a result of this change)
-    const affectedPraises: PraiseDocument[] = [praise];
+    const affectedPraises: Praise[] = [praise];
 
-    const praisesDuplicateOfThis = await this.praiseModel
-      .find({
-        quantifications: {
-          $elemMatch: {
-            quantifier: currentUser._id,
-            duplicatePraise: praise._id,
-          },
-        },
-      })
-      .populate('giver receiver forwarder');
+    const praisesDuplicateOfThis = await this.findDuplicatePraiseItems(
+      praise,
+      currentUser,
+    );
 
     if (praisesDuplicateOfThis?.length > 0)
       affectedPraises.push(...praisesDuplicateOfThis);
@@ -248,5 +248,29 @@ export class PraiseService {
     if (!period || period.length === 0) return undefined;
 
     return period[0];
+  };
+
+  /**
+   * Find all praises that are duplicates of the given praise
+   * @param {Praise} praise
+   * @param {User} quantifier
+   * @returns {Promise<Praise[]>}
+   *
+   */
+  findDuplicatePraiseItems = async (
+    praise: Praise,
+    quantifier: User,
+  ): Promise<Praise[]> => {
+    const duplicateQuantifications =
+      await this.quantificationsService.findByQuantifierAndDuplicatePraise(
+        quantifier._id,
+        praise._id,
+      );
+
+    const duplicatePraiseItems = await this.praiseModel.find({
+      _id: { $in: duplicateQuantifications.map((q) => q.praise) },
+    });
+
+    return duplicatePraiseItems;
   };
 }
