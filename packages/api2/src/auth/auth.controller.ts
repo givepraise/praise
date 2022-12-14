@@ -70,14 +70,6 @@ export class AuthController {
     type: LoginResponse,
   })
   async login(@Request() req: RequestWithUser): Promise<LoginResponse> {
-    const loginResponse = await this.ethSignatureService.login(req.user);
-
-    await this.eventLogService.logEvent({
-      user: req.user._id,
-      typeKey: EventLogTypeKey.AUTHENTICATION,
-      description: 'Logged in',
-    });
-
-    return loginResponse;
+    return this.ethSignatureService.login(req.user);
   }
 }

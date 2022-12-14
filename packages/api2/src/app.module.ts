@@ -10,10 +10,12 @@ import { SettingsModule } from './settings/settings.module';
 import { PeriodSettingsModule } from './periodsettings/periodsettings.module';
 import { PraiseModule } from './praise/praise.module';
 import { ConstantsProvider } from './constants/constants.provider';
+import { RequestContextModule } from 'nestjs-request-context';
 
 @Module({
   imports: [
     MongooseModule.forRoot(praiseDatabaseUri),
+    RequestContextModule,
     UsersModule,
     UserAccountsModule,
     AuthModule,
