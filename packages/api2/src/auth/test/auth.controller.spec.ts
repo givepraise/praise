@@ -9,7 +9,7 @@ jest.mock('@/auth/eth-signature.service');
 
 describe('AuthController', () => {
   let authController: AuthController;
-  let authService: EthSignatureService;
+  let ethSignatureService: EthSignatureService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -19,7 +19,7 @@ describe('AuthController', () => {
     }).compile();
 
     authController = module.get<AuthController>(AuthController);
-    authService = module.get<EthSignatureService>(EthSignatureService);
+    ethSignatureService = module.get<EthSignatureService>(EthSignatureService);
     jest.clearAllMocks();
   });
 
@@ -33,7 +33,7 @@ describe('AuthController', () => {
         identityEthAddress: '0xF2f5C73fa04406b1995e397B55c24aB1f3eA726C',
       };
       await authController.nonce(nonceRequestDto);
-      expect(authService.generateUserNonce).toBeCalledWith(
+      expect(ethSignatureService.generateUserNonce).toBeCalledWith(
         nonceRequestDto.identityEthAddress,
       );
     });
@@ -53,7 +53,7 @@ describe('AuthController', () => {
       const nonceRequestDto = {
         identityEthAddress: '0xF2f5C73fa04406b1995e397B55c24aB1f3eA726C',
       };
-      authService.generateUserNonce = jest.fn().mockReturnValue(null);
+      ethSignatureService.generateUserNonce = jest.fn().mockReturnValue(null);
       expect(authController.nonce(nonceRequestDto)).rejects.toThrowError(
         'Failed to generate nonce.',
       );
