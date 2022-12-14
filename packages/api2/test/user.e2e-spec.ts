@@ -65,7 +65,7 @@ describe('UserController (E2E)', () => {
       users.push(await usersSeeder.seedUser({}));
 
       // Login and get access token
-      const response = await loginUser(app, wallet);
+      const response = await loginUser(app, module, wallet);
       accessToken = response.accessToken;
     });
 

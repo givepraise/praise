@@ -15,6 +15,12 @@ export class PermissionsGuard implements CanActivate {
 
   constructor(private reflector: Reflector) {}
 
+  /**
+   * Checks if the user has the required permissions to access the route.
+   *
+   * @param context
+   * @returns
+   */
   canActivate(context: ExecutionContext): boolean {
     const requiredPermissions = this.reflector.getAllAndOverride<Permission[]>(
       PERMISSIONS_KEY,

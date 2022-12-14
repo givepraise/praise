@@ -1,25 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../auth.controller';
-import { AuthService } from '../auth.service';
+import { EthSignatureService } from '../eth-signature.service';
 import { UsersService } from '@/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 
 jest.mock('@/users/users.service');
-jest.mock('@/auth/auth.service');
+jest.mock('@/auth/eth-signature.service');
 
 describe('AuthController', () => {
   let authController: AuthController;
-  let authService: AuthService;
+  let authService: EthSignatureService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       controllers: [AuthController],
-      providers: [AuthService, UsersService, JwtService],
+      providers: [EthSignatureService, UsersService, JwtService],
     }).compile();
 
     authController = module.get<AuthController>(AuthController);
-    authService = module.get<AuthService>(AuthService);
+    authService = module.get<EthSignatureService>(EthSignatureService);
     jest.clearAllMocks();
   });
 

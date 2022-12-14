@@ -10,7 +10,7 @@ import { QueryInput } from '@/shared/types.shared';
 export class UtilsProvider {
   constructor(private constants: ConstantsProvider) {}
 
-  randomString(bytes = 10): string {
+  async randomString(bytes = 10): Promise<string> {
     return randomBytes(bytes).toString('hex');
   }
 

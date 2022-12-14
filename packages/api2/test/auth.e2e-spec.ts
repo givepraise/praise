@@ -12,7 +12,7 @@ import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { generateLoginMessage } from '@/auth/auth.utils';
+import { EthSignatureService } from '@/auth/eth-signature.service';
 
 describe('AuthController (E2E)', () => {
   let app: INestApplication;
@@ -20,6 +20,7 @@ describe('AuthController (E2E)', () => {
   let module: TestingModule;
   let usersSeeder: UsersSeeder;
   let usersService: UsersService;
+  let ethSignatureService: EthSignatureService;
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [AppModule, UsersModule],
@@ -37,6 +38,7 @@ describe('AuthController (E2E)', () => {
     await app.init();
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
     usersService = module.get<UsersService>(UsersService);
+    ethSignatureService = module.get<EthSignatureService>(EthSignatureService);
   });
 
   beforeEach(async () => {
@@ -47,26 +49,29 @@ describe('AuthController (E2E)', () => {
     await app.close();
   });
 
-  describe('POST /api/auth/nonce', () => {
+  describe('POST /api/auth/eth-signature/nonce', () => {
     test('400 when missing identityEthAddress', async () => {
-      return request(server).post('/auth/nonce').send().expect(400);
+      return request(server)
+        .post('/auth/eth-signature/nonce')
+        .send()
+        .expect(400);
     });
     test('400 when identityEthAddress is empty', async () => {
       return request(server)
-        .post('/auth/nonce')
+        .post('/auth/eth-signature/nonce')
         .send(JSON.stringify({ identityEthAddress: '' }))
         .expect(400);
     });
     test('400 when identityEthAddress is invalid', async () => {
       return request(server)
-        .post('/auth/nonce')
+        .post('/auth/eth-signature/nonce')
         .send({ identityEthAddress: 'invalid' })
         .expect(400);
     });
     test('201 and correct body when identityEthAddress is valid, new user', async () => {
       const wallet = Wallet.createRandom();
       return request(server)
-        .post('/auth/nonce')
+        .post('/auth/eth-signature/nonce')
         .send({
           identityEthAddress: wallet.address,
         })
@@ -86,7 +91,7 @@ describe('AuthController (E2E)', () => {
         identityEthAddress: wallet.address,
       });
       return request(server)
-        .post('/auth/nonce')
+        .post('/auth/eth-signature/nonce')
         .send({
           identityEthAddress: wallet.address,
         })
@@ -102,22 +107,22 @@ describe('AuthController (E2E)', () => {
     });
   });
 
-  describe('POST /api/auth/login', () => {
+  describe('POST /api/auth/eth-signature/login', () => {
     test('401 when missing identityEthAddress', async () => {
       return request(server)
-        .post('/auth/login')
+        .post('/auth/eth-signature/login')
         .send({ signature: 'any' })
         .expect(401);
     });
     test('401 when missing signature', async () => {
       return request(server)
-        .post('/auth/login')
+        .post('/auth/eth-signature/login')
         .send({ identityEthAddress: 'any' })
         .expect(401);
     });
     test('401 when submitting identityEthAddress that does not exist', async () => {
       return request(server)
-        .post('/auth/login')
+        .post('/auth/eth-signature/login')
         .send({ identityEthAddress: 'invalid', signature: 'any' })
         .expect(401);
     });
@@ -125,7 +130,7 @@ describe('AuthController (E2E)', () => {
       const wallet = Wallet.createRandom();
 
       await request(server)
-        .post('/auth/nonce')
+        .post('/auth/eth-signature/nonce')
         .send({ identityEthAddress: wallet.address });
 
       const signature = 'invalid signature';
@@ -135,16 +140,22 @@ describe('AuthController (E2E)', () => {
         signature: signature,
       };
 
-      return request(server).post('/auth/login').send(body).expect(401);
+      return request(server)
+        .post('/auth/eth-signature/login')
+        .send(body)
+        .expect(401);
     });
     test('401 response when nonce invalid', async function () {
       const wallet = Wallet.createRandom();
 
       await request(server)
-        .post('/auth/nonce')
+        .post('/auth/eth-signature/nonce')
         .send({ identityEthAddress: wallet.address });
 
-      const message = generateLoginMessage(wallet.address, 'invalid nonce');
+      const message = ethSignatureService.generateLoginMessage(
+        wallet.address,
+        'invalid nonce',
+      );
       const signature = await wallet.signMessage(message);
 
       const body = {
@@ -152,13 +163,16 @@ describe('AuthController (E2E)', () => {
         signature: signature,
       };
 
-      return request(server).post('/auth/login').send(body).expect(401);
+      return request(server)
+        .post('/auth/eth-signature/login')
+        .send(body)
+        .expect(401);
     });
     test('401 response when message badly formatted', async function () {
       const wallet = Wallet.createRandom();
 
       const response = await request(server)
-        .post('/auth/nonce')
+        .post('/auth/eth-signature/nonce')
         .send({ identityEthAddress: wallet.address });
 
       const message =
@@ -172,16 +186,22 @@ describe('AuthController (E2E)', () => {
         signature: signature,
       };
 
-      return request(server).post('/auth/login').send(body).expect(401);
+      return request(server)
+        .post('/auth/eth-signature/login')
+        .send(body)
+        .expect(401);
     });
     test('201 response with accessToken & refreshToken', async function () {
       const wallet = Wallet.createRandom();
 
       const response = await request(server)
-        .post('/auth/nonce')
+        .post('/auth/eth-signature/nonce')
         .send({ identityEthAddress: wallet.address });
 
-      const message = generateLoginMessage(wallet.address, response.body.nonce);
+      const message = ethSignatureService.generateLoginMessage(
+        wallet.address,
+        response.body.nonce,
+      );
       const signature = await wallet.signMessage(message);
 
       const body = {
@@ -190,7 +210,7 @@ describe('AuthController (E2E)', () => {
       };
 
       return request(server)
-        .post('/auth/login')
+        .post('/auth/eth-signature/login')
         .send(body)
         .expect(201)
         .then((response2) => {
