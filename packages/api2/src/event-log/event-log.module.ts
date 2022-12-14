@@ -17,5 +17,12 @@ import { EventLogService } from './event-log.service';
   ],
   controllers: [EventLogController],
   providers: [EventLogService],
+  exports: [
+    EventLogService,
+    MongooseModule.forFeature([
+      { name: EventLog.name, schema: EventLogSchema },
+      { name: EventLogType.name, schema: EventLogTypeSchema },
+    ]),
+  ],
 })
 export class EventLogModule {}

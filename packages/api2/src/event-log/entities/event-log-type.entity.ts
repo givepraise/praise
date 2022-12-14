@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { EventLogTypeKey } from '../interfaces';
+import { EventLogTypeKey } from '../enums/event-log-type-key';
 
-export type EventLogTypeDocument = EventLogType & Document;
+export type EventLogTypeDocument = EventLogTypeKey & Document;
 
 @Schema({ timestamps: true })
 export class EventLogType {
@@ -26,10 +26,5 @@ export class EventLogType {
   })
   description: string;
 }
-
-// export const EventLogTypeModel = model<
-//   EventLogTypeDocument,
-//   Pagination<EventLogTypeDocument>
-// >('EventLogType', eventLogTypeSchema);
 
 export const EventLogTypeSchema = SchemaFactory.createForClass(EventLogType);

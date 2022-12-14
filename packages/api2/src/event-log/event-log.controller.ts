@@ -1,12 +1,13 @@
-import { Controller, Get, Query, Req, Res, UseGuards } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { PaginationQuery } from '@/shared/dto/pagination-query.dto';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { FindAllQuery } from './dto/find-all-query.dto';
+import { FindAllPaginatedQuery } from './dto/find-all-paginated-query.dto';
 import { EventLogService } from './event-log.service';
+import { PaginationModel } from 'mongoose-paginate-ts';
+import { EventLog } from './entities/event-log.entity';
+import { EventLogType } from './entities/event-log-type.entity';
 
 @Controller('event-log')
 @UseGuards(PermissionsGuard)
@@ -16,14 +17,15 @@ export class EventLogController {
 
   @Get()
   @Permissions(Permission.EventLogView)
-  findAll(@Query() options: FindAllQuery) {
-    console.log('options', options);
-    return this.eventLogService.findAll(options);
+  findAllPaginated(
+    @Query() options: FindAllPaginatedQuery,
+  ): Promise<PaginationModel<EventLog>> {
+    return this.eventLogService.findAllPaginated(options);
   }
 
   @Get('types')
   @Permissions(Permission.EventLogView)
-  types(@Req() req: Request, @Res() res: Response) {
-    // return this.eventLogService.types(req, res);
+  types(): Promise<EventLogType[]> {
+    return this.eventLogService.findTypes();
   }
 }

@@ -7,6 +7,12 @@ export type EventLogModel = Pagination<EventLogDocument>;
 
 @Schema({ timestamps: true })
 export class EventLog {
+  constructor(partial?: Partial<EventLog>) {
+    if (partial) {
+      Object.assign(this, partial);
+    }
+  }
+
   @Prop({
     type: Types.ObjectId,
     ref: 'User',

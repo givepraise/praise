@@ -1,24 +1,20 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { CreateEventLogDto } from './dto/create-event-log.dto';
 import {
   EventLogType,
   EventLogTypeDocument,
 } from './entities/event-log-type.entity';
 import {
   EventLog,
-  EventLogModel,
+  EventLogDocument,
   PaginatedEventLogModel,
 } from './entities/event-log.entity';
-import { isString } from 'lodash';
 import mongoose from 'mongoose';
-import { Request, Response } from 'express';
-import { Pagination } from 'mongoose-paginate-ts';
-import { PaginationQuery } from '@/shared/dto/pagination-query.dto';
-import { FindAllQuery } from './dto/find-all-query.dto';
-import { UtilsProvider } from '@/utils/utils.provider';
-
+import { PaginationModel } from 'mongoose-paginate-ts';
+import { FindAllPaginatedQuery } from './dto/find-all-paginated-query.dto';
+import { ServiceException } from '@/shared/service-exception';
+import { CreateEventLogDto } from './dto/create-event-log.dto';
 @Injectable()
 export class EventLogService {
   constructor(
@@ -28,79 +24,85 @@ export class EventLogService {
     private eventLogTypeModel: Model<EventLogTypeDocument>,
   ) {}
 
-  // async logEvent(createEventLogDto: CreateEventLogDto): Promise<void> {
-  //   const { typeKey, description, userInfo, periodId } = createEventLogDto;
-  //   const type = await this.eventLogTypeModel
-  //     .findOne({ key: typeKey.toString() })
-  //     .orFail();
+  /**
+   * Convenience method to get the EventLog Model
+   * @returns
+   */
+  getModel(): Model<EventLogDocument> {
+    return this.eventLogModel;
+  }
 
-  //   const data = {
-  //     type: type._id,
-  //     description,
-  //     user: userInfo.userId ? userInfo.userId : undefined,
-  //     useraccount: userInfo.userAccountId ? userInfo.userAccountId : undefined,
-  //     period: periodId,
-  //   };
+  /**
+   * Convenience method to get the EventLogType Model
+   * @returns
+   */
+  getTypeModel(): Model<EventLogTypeDocument> {
+    return this.eventLogTypeModel;
+  }
 
-  //   await this.eventLogModel.create(data);
-  // }
+  async logEvent(createEventLogDto: CreateEventLogDto): Promise<EventLog> {
+    const { typeKey } = createEventLogDto;
+    const type = await this.eventLogTypeModel
+      .findOne({ key: typeKey.toString() })
+      .orFail();
 
-  async findAll(options: FindAllQuery) {
+    const eventLogData = {
+      ...createEventLogDto,
+      type: type._id,
+    };
+
+    const eventLog = new this.eventLogModel(eventLogData);
+    return eventLog.save();
+  }
+
+  /**
+   * Find all event logs. Paginated.
+   * @param options
+   * @returns
+   */
+  async findAllPaginated(
+    options: FindAllPaginatedQuery,
+  ): Promise<PaginationModel<EventLog>> {
     const { page, limit, sortColumn, sortType, search, types } = options;
+    let query = {} as any;
 
-    let typeFilter: Types.ObjectId[] = [];
-    if (types.length > 0) {
+    // Filter by types
+    if (Array.isArray(types) && types.length > 0) {
       const t = await this.eventLogTypeModel.find({
         key: { $in: types },
       });
-      typeFilter = t.map((item) => new mongoose.Types.ObjectId(item.id));
+      query.types = t.map((item) => new mongoose.Types.ObjectId(item.id));
     }
 
-    let descriptionRegex;
-    if (search.length > 0) {
-      descriptionRegex = {
+    // Search contents of description field
+    if (search && search.length > 0) {
+      query.description = {
         $regex: `${search}`,
         $options: 'i',
       };
     }
 
+    // Sorting - defaults to descending
+    const sort =
+      sortColumn && sortType ? { [sortColumn]: sortType } : undefined;
+
     const paginateQuery = {
-      query: {
-        types: typeFilter,
-        description: descriptionRegex,
-      },
+      query,
       limit,
       page,
-      sort: sortColumn && sortType ? { [sortColumn]: sortType } : undefined,
+      sort,
     };
 
     const response = await this.eventLogModel.paginate(paginateQuery);
-    console.log('response', response);
-    // if (!response) throw new BadRequestError('Failed to query event logs');
+    if (!response) throw new ServiceException('Failed to query event logs');
 
-    // const docs = response.docs ? response.docs : [];
-    // const docsTransfomed = await eventLogListTransformer(
-    //   docs,
-    //   res.locals.currentUser.roles,
-    // );
-
-    // res.status(StatusCodes.OK).json({
-    //   ...response,
-    //   docs: docsTransfomed,
-    // });
+    return {
+      ...response,
+      docs: response.docs.map((item) => new EventLog(item)),
+    };
   }
 
-  // async types(req: Request, res: Response) {
-  //   const response = await this.eventLogTypeModel.find();
-
-  //   if (!response)
-  //     throw new BadRequestException('Failed to query event log types');
-
-  //   const docsTransfomed = await eventLogTypeListTransformer(response);
-
-  //   res.status(200).json({
-  //     ...response,
-  //     docs: docsTransfomed,
-  //   });
-  // }
+  async findTypes(): Promise<EventLogType[]> {
+    return this.eventLogTypeModel.find();
+  }
 }

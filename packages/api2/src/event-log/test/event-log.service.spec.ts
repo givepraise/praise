@@ -1,12 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EventLogService } from './event-log.service';
+import { AppModule } from '../../app.module';
+import { EventLogModule } from '../event-log.module';
+import { EventLogService } from '../event-log.service';
 
 describe('EventLogService', () => {
   let service: EventLogService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EventLogService],
+      imports: [AppModule, EventLogModule],
+      // TODO: AppModule is imported to get the database connection, should instead use a mock database
     }).compile();
 
     service = module.get<EventLogService>(EventLogService);

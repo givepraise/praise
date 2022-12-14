@@ -15,14 +15,14 @@ export class PaginationQuery {
   @Type(() => Number)
   page: number;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  sortColumn: string;
+  sortColumn?: string;
 
-  @ApiProperty()
+  @ApiProperty({ enum: ['asc', 'desc'], default: 'desc', required: false })
   @IsString()
   @IsOptional()
   @IsIn(['asc', 'desc'])
-  sortType: string;
+  sortType?: string;
 }

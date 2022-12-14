@@ -1,40 +1,17 @@
-import { UserRole } from '@/users/interfaces/user-role.interface';
-import { User } from '@/users/schemas/users.schema';
-import { UsersService } from '@/users/users.service';
+import { EventLogService } from '@/event-log/event-log.service';
 import { faker } from '@faker-js/faker';
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { EventLogTypeDocument } from 'src/event-log/entities/event-log-type.entity';
 import { EventLogDocument } from 'src/event-log/entities/event-log.entity';
 import { UsersSeeder } from './users.seeder';
 
 @Injectable()
 export class EventLogSeeder {
-  userModel = this.usersService.getModel();
+  eventLogTypeModel = this.eventLogService.getTypeModel();
+  eventLogModel = this.eventLogService.getModel();
   constructor(
-    private readonly usersService: UsersService,
     private readonly userSeeder: UsersSeeder,
-    private eventLogTypeModel: Model<EventLogTypeDocument>,
-    private eventLogModel: Model<EventLogDocument>,
+    private readonly eventLogService: EventLogService,
   ) {}
-
-  /**
-   * Generate and save a fake User
-   *
-   * @param {Object} [userData={}]
-   * @returns {Promise<UserDocument>}
-   */
-  seedUser = async (userData: unknown): Promise<User> => {
-    const user = await this.userModel.create({
-      identityEthAddress: faker.finance.ethereumAddress(),
-      rewardsEthAddress: faker.finance.ethereumAddress(),
-      username: faker.internet.userName(),
-      roles: [UserRole.USER],
-      ...(userData as any),
-    });
-
-    return user;
-  };
 
   /**
    * Generate and save a fake EventLog

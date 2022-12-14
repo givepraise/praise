@@ -78,10 +78,6 @@ export class EthSignatureService {
     // Sign payload to create access token
     const accessToken = this.jwtService.sign(payload);
 
-    // await logEvent(EventLogTypeKey.AUTHENTICATION, 'Logged in', {
-    //   userId: user._id,
-    // });
-
     // Return login response with access token
     return {
       accessToken,

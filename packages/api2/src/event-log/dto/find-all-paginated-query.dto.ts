@@ -1,21 +1,15 @@
 import { PaginationQuery } from '@/shared/dto/pagination-query.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import {
-  ArrayNotEmpty,
-  IsArray,
-  IsIn,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
-export class FindAllQuery extends PaginationQuery {
-  @ApiProperty()
+export class FindAllPaginatedQuery extends PaginationQuery {
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   search: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
