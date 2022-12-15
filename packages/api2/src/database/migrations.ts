@@ -74,7 +74,7 @@ export const closeDatabaseConnection = async (): Promise<void> => {
  * @returns {Umzug}
  */
 export const runDbMigrations = async (app: INestApplication): Promise<void> => {
-  const logger = new Logger(PermissionsGuard.name);
+  const logger = new Logger();
 
   try {
     const db = await connectDatabase();
@@ -86,7 +86,7 @@ export const runDbMigrations = async (app: INestApplication): Promise<void> => {
         connection: db.connection,
         collectionName: 'migrations',
       }),
-      logger,
+      logger: console,
       context: {
         praiseService: app.get(PraiseService),
         usersService: app.get(UsersService),
