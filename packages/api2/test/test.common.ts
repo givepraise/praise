@@ -42,3 +42,37 @@ export const authorizedGetRequest = (
     .get(url)
     .set('Authorization', `Bearer ${accessToken}`);
 };
+
+export const authorizedPostRequest = (
+  url: string,
+  app: INestApplication,
+  accessToken: string,
+  body: any,
+) => {
+  return request(app.getHttpServer())
+    .post(url)
+    .set('Authorization', `Bearer ${accessToken}`)
+    .send(body);
+};
+
+export const authorizedPutRequest = (
+  url: string,
+  app: INestApplication,
+  accessToken: string,
+  body: any,
+) => {
+  return request(app.getHttpServer())
+    .put(url)
+    .set('Authorization', `Bearer ${accessToken}`)
+    .send(body);
+};
+
+export const authorizedDeleteRequest = (
+  url: string,
+  app: INestApplication,
+  accessToken: string,
+) => {
+  return request(app.getHttpServer())
+    .delete(url)
+    .set('Authorization', `Bearer ${accessToken}`);
+};
