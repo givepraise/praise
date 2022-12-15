@@ -12,6 +12,7 @@ import { PraiseModule } from './praise/praise.module';
 import { ConstantsProvider } from './constants/constants.provider';
 import { QuantificationsModule } from './quantifications/quantifications.module';
 import { RequestContextModule } from 'nestjs-request-context';
+import { ApiKeyModule } from './api-key/api-key.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { RequestContextModule } from 'nestjs-request-context';
     RequestContextModule,
     UsersModule,
     UserAccountsModule,
+    ApiKeyModule,
     AuthModule,
     EventLogModule,
     SettingsModule,
