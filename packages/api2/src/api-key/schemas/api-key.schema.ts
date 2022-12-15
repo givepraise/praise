@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { Document } from 'mongoose';
 import { ApiKeyUserRole } from '../enums/api-key-user-roles';
 
@@ -14,21 +14,20 @@ export class ApiKey {
     }
   }
 
-  @ApiProperty()
   @ApiResponseProperty({
     example: '89f7edbd',
   })
   @Prop({ type: String, required: true })
   name: string;
 
-  @ApiProperty()
-  @ApiResponseProperty({
-    example: 'Telegram bot API key',
+  @ApiProperty({
+    example: 'My API Key',
   })
-  @Prop({ type: String, required: true })
+  @IsNotEmpty()
+  @IsString()
+  @Prop({ type: String, required: true, minlength: 3, maxlength: 255 })
   description: string;
 
-  @ApiProperty()
   @ApiResponseProperty({
     example: '$2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i',
   })
@@ -36,18 +35,15 @@ export class ApiKey {
   hash: string;
 
   @ApiProperty({ enum: ApiKeyUserRole, required: true })
-  @ApiResponseProperty({
-    example: 'READ',
-  })
-  @Prop({ enum: ApiKeyUserRole, required: true })
   @IsEnum(ApiKeyUserRole)
+  @Prop({ enum: ApiKeyUserRole, required: true })
   role: ApiKeyUserRole;
 
-  @ApiProperty()
+  @ApiResponseProperty()
   @Prop({ type: Date })
   createdAt: Date;
 
-  @ApiProperty()
+  @ApiResponseProperty()
   @Prop({ type: Date })
   updatedAt: Date;
 }

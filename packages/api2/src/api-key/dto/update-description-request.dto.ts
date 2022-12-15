@@ -1,9 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { PickType } from '@nestjs/swagger';
+import { ApiKey } from '../schemas/api-key.schema';
 
-export class UpdateDescriptionRequest {
-  @ApiProperty({ example: 'Telegram API key', required: true })
-  @IsNotEmpty()
-  @IsString()
-  description: string;
-}
+export class UpdateDescriptionRequest extends PickType(ApiKey, [
+  'description',
+] as const) {}

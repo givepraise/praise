@@ -20,6 +20,7 @@ import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { Types } from 'mongoose';
 import { ApiKey } from './schemas/api-key.schema';
 import { UpdateDescriptionRequest } from './dto/update-description-request.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('api-key')
 @UseGuards(PermissionsGuard)
@@ -27,6 +28,14 @@ import { UpdateDescriptionRequest } from './dto/update-description-request.dto';
 export class ApiKeyController {
   constructor(private readonly apiKeyService: ApiKeyService) {}
   @Post()
+  @ApiOperation({
+    summary: 'Create API key',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'API key created',
+    type: CreateApiKeyResponse,
+  })
   @Permissions(Permission.ApiKeyManage)
   createApiKey(
     @Body() createApiKeyRequest: CreateApiKeyRequest,
@@ -35,12 +44,28 @@ export class ApiKeyController {
   }
 
   @Get()
+  @ApiOperation({
+    summary: 'List all API keys',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Array of API keys',
+    type: [ApiKey],
+  })
   @Permissions(Permission.ApiKeyView)
   findAll(): Promise<ApiKey[]> {
     return this.apiKeyService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({
+    summary: 'Get API key by ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'An API key',
+    type: ApiKey,
+  })
   @Permissions(Permission.ApiKeyView)
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -53,6 +78,14 @@ export class ApiKeyController {
   }
 
   @Put(':id')
+  @ApiOperation({
+    summary: 'Update API key description',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'API key with updated description',
+    type: ApiKey,
+  })
   @Permissions(Permission.ApiKeyManage)
   async updateApiKeyDescription(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -62,6 +95,14 @@ export class ApiKeyController {
   }
 
   @Delete(':id')
+  @ApiOperation({
+    summary: 'Revoke API key',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Revoked API key',
+    type: ApiKey,
+  })
   @Permissions(Permission.ApiKeyManage)
   async revokeApiKey(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,

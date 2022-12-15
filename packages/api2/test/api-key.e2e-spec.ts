@@ -136,7 +136,11 @@ describe('EventLog (E2E)', () => {
         role: ApiKeyUserRole.READ,
       });
 
-      const response = await authorizedGetRequest('/api-key', app, accessToken);
+      const response = await authorizedGetRequest(
+        '/api-key',
+        app,
+        accessToken,
+      ).expect(200);
 
       expect(response.body).toBeDefined();
       expect(response.body.length).toEqual(3);
@@ -165,7 +169,7 @@ describe('EventLog (E2E)', () => {
         `/api-key/${createResponse.body._id}`,
         app,
         accessToken,
-      );
+      ).expect(200);
 
       expect(response.body).toBeDefined();
       expect(response.body._id).toEqual(createResponse.body._id);
