@@ -5,7 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import { ServiceExceptionFilter } from './shared/service-exception.filter';
-import { runDbMigrations } from './database/run-db-migrations';
+import { runDbMigrations } from './database/migrations';
 
 async function bootstrap() {
   // Create an instance of the Nest app
