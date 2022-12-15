@@ -15,7 +15,7 @@ export class UsersSeeder {
    * @param {Object} [userData={}]
    * @returns {Promise<UserDocument>}
    */
-  seedUser = async (userData: unknown): Promise<User> => {
+  seedUser = async (userData?: unknown): Promise<User> => {
     const user = await this.userModel.create({
       identityEthAddress: faker.finance.ethereumAddress(),
       rewardsEthAddress: faker.finance.ethereumAddress(),

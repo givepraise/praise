@@ -6,6 +6,10 @@ import { Permission } from './enums/permission.enum';
  *  the route.
  */
 export const RolePermissions: { [key: string]: string[] } = {
-  ADMIN: [Permission.UsersFind, Permission.UsersManageRoles],
-  USER: [Permission.UsersFind],
+  ADMIN: [
+    Permission.UsersFind,
+    Permission.UsersManageRoles,
+    Permission.EventLogView,
+  ],
+  USER: [Permission.UsersFind, Permission.EventLogView],
 };
