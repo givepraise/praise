@@ -1,4 +1,4 @@
-import { EventLogTypeModel } from '../schemas/eventlogtype/eventlogtype.schema';
+import { EventLogTypeModel } from '../schemas/event-log-type/event-log-type.schema';
 
 enum EventLogTypeKey {
   PERMISSION = 'PERMISSION',
