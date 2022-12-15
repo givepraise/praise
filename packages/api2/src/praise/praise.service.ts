@@ -1,7 +1,7 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { PraiseModel, Praise } from './schemas/praise.schema';
+import { PraiseModel, Praise, PraiseDocument } from './schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
 import { QuantifyPraiseProps } from './intefaces/quantify-praise.interface';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
@@ -9,7 +9,10 @@ import { Period } from '@/periods/schemas/periods.schema';
 import { SettingsService } from '@/settings/settings.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
 import { FindAllPraisePaginatedQuery } from './dto/find-all-praise-paginated-query.dto';
-import { PaginationModel } from 'mongoose-paginate-ts';
+import { PaginationModel } from '@/shared/dto/pagination-model.dto';
+import { Pagination } from 'mongoose-paginate-ts';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 
 @Injectable()
 export class PraiseService {
@@ -20,7 +23,16 @@ export class PraiseService {
     private periodModel: Model<Period>,
     private settingsService: SettingsService,
     private quantificationsService: QuantificationsService,
+    private eventLogService: EventLogService,
   ) {}
+
+  /**
+   * Convenience method to get the Praise Model
+   * @returns
+   */
+  getModel(): Pagination<PraiseDocument> {
+    return this.praiseModel;
+  }
 
   /**
    * Find all praise paginated
@@ -202,14 +214,12 @@ export class PraiseService {
 
     await praise.save();
 
-    // await logEvent(
-    //   EventLogTypeKey.QUANTIFICATION,
-    //   eventLogMessage,
-    //   {
-    //     userId: currentUser._id,
-    //   },
-    //   period._id,
-    // );
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.PERMISSION,
+      description: eventLogMessage,
+      periodId: period._id,
+      user: currentUser._id,
+    });
 
     return affectedPraises;
   };

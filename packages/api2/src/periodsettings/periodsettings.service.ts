@@ -12,6 +12,8 @@ import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { UploadedFile } from 'express-fileupload';
 import { PeriodsService } from '@/periods/periods.service';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
+import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 
 @Injectable()
 export class PeriodSettingsService {
@@ -20,6 +22,7 @@ export class PeriodSettingsService {
     private periodSettingsModel: Model<PeriodSettingDocument>,
     private periodsService: PeriodsService,
     private utils: UtilsProvider,
+    private eventLogService: EventLogService,
   ) {}
 
   async findAll(periodId: Types.ObjectId): Promise<PeriodSetting[]> {
@@ -72,7 +75,10 @@ export class PeriodSettingsService {
       _id: settingId,
       period: periodId,
     });
+
     if (!periodSetting) throw new ServiceException('PeriodSettings not found.');
+
+    const originalValue = periodSetting.value;
 
     if (periodSetting.type === 'Image') {
       const file = req.files;
@@ -102,15 +108,12 @@ export class PeriodSettingsService {
       periodSetting.value = data.value;
     }
 
-    // await logEvent(
-    //   EventLogTypeKey.SETTING,
-    //   `Updated global setting "${setting.label}" from "${
-    //     originalValue || ''
-    //   }" to "${setting.value || ''}"`,
-    //   {
-    //     userId: res.locals.currentUser._id,
-    //   },
-    // );
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.SETTING,
+      description: `Updated global setting "${periodSetting.label}" from "${
+        originalValue || ''
+      }" to "${periodSetting.value || ''}"`,
+    });
 
     await periodSetting.save();
     return this.findOneById(settingId, periodId);

@@ -20,7 +20,7 @@ export class EventLogSeeder {
    * @returns {Promise<EventLogDocument>}
    */
   seedEventLog = async (
-    eventLogData: Object = {},
+    eventLogData: Record<string, unknown> = {},
   ): Promise<EventLogDocument> => {
     const createdAt = faker.date.recent();
     const randomUser = await this.userSeeder.seedUser();

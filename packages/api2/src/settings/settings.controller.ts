@@ -5,13 +5,11 @@ import {
   Get,
   Param,
   Patch,
-  Req,
   SerializeOptions,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiParam } from '@nestjs/swagger';
-import { Request } from 'express';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { ExportTransformer } from '@/shared/types.shared';
@@ -47,9 +45,8 @@ export class SettingsController {
   async set(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() data: SetSettingDto,
-    @Req() req: Request,
   ): Promise<Setting> {
-    return this.settingsService.setOne(id, req, data);
+    return this.settingsService.setOne(id, data);
   }
 
   @Get('/customExportTransformer')

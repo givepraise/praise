@@ -12,6 +12,9 @@ import { UtilsProvider } from '@/utils/utils.provider';
 import { UploadedFile } from 'express-fileupload';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { ServiceException } from '@/shared/service-exception';
+import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { RequestContext } from 'nestjs-request-context';
 
 @Injectable()
 export class SettingsService {
@@ -20,6 +23,7 @@ export class SettingsService {
     private settingsModel: Model<SettingDocument>,
     private periodSettingsService: PeriodSettingsService,
     private utils: UtilsProvider,
+    private eventLogService: EventLogService,
   ) {}
 
   async findAll(): Promise<Setting[]> {
@@ -39,18 +43,16 @@ export class SettingsService {
     return new Setting(setting);
   }
 
-  async setOne(
-    _id: Types.ObjectId,
-    req: Request,
-    data: SetSettingDto,
-  ): Promise<Setting> {
+  async setOne(_id: Types.ObjectId, data: SetSettingDto): Promise<Setting> {
     const setting = await this.settingsModel.findOne({
       _id,
       period: { $exists: 0 },
     });
     if (!setting) throw new ServiceException('Settings not found.');
 
+    const originalValue = setting.value;
     if (setting.type === 'Image') {
+      const req: Request = RequestContext.currentContext.req;
       const file = req.files;
       if (!file) {
         throw new ServiceException('Uploaded file is missing.');
@@ -77,15 +79,12 @@ export class SettingsService {
       setting.value = data.value;
     }
 
-    // await logEvent(
-    //   EventLogTypeKey.SETTING,
-    //   `Updated global setting "${setting.label}" from "${
-    //     originalValue || ''
-    //   }" to "${setting.value || ''}"`,
-    //   {
-    //     userId: res.locals.currentUser._id,
-    //   },
-    // );
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.SETTING,
+      description: `Updated global setting "${setting.label}" from "${
+        originalValue || ''
+      }" to "${setting.value || ''}"`,
+    });
 
     await setting.save();
     return this.findOneById(_id);

@@ -7,7 +7,6 @@ import { SettingsService } from '@/settings/settings.service';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { closeDatabaseConnection, connectDatabase } from './connection';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { Logger } from '@/shared/logger';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
 
@@ -17,7 +16,7 @@ import { QuantificationsService } from '@/quantifications/quantifications.servic
  * @returns {Umzug}
  */
 const Migrations = async (app: INestApplication): Promise<void> => {
-  const logger = new Logger(PermissionsGuard.name);
+  const logger = new Logger();
 
   try {
     const db = await connectDatabase();

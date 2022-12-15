@@ -10,6 +10,8 @@ export const RolePermissions: { [key: string]: string[] } = {
     Permission.UsersFind,
     Permission.UsersManageRoles,
     Permission.EventLogView,
+    Permission.PraiseFind,
   ],
-  USER: [Permission.UsersFind, Permission.EventLogView],
+  USER: [Permission.UsersFind, Permission.EventLogView, Permission.PraiseFind],
+  QUANTIFIER: [Permission.PraiseQuantify],
 };

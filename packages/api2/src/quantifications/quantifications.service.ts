@@ -24,6 +24,14 @@ export class QuantificationsService {
   DIGITS_PRECISION = 2;
 
   /**
+   * Convenience method to get the Quantification Model
+   * @returns
+   */
+  getModel(): Model<Quantification> {
+    return this.quantificationModel;
+  }
+
+  /**
    * Returns a quantification by its id
    *
    * @param {Types.ObjectId} _id

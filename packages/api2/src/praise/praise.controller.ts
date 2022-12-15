@@ -8,6 +8,7 @@ import {
   Query,
   Req,
   SerializeOptions,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiParam } from '@nestjs/swagger';
@@ -20,18 +21,24 @@ import { PraiseQuantifyMultiplePraiseInput } from './intefaces/praise-quantify-m
 import { PraiseService } from './praise.service';
 import { Praise } from './schemas/praise.schema';
 import { FindAllPraisePaginatedQuery } from './dto/find-all-praise-paginated-query.dto';
-import { PaginationModel } from 'mongoose-paginate-ts';
+import { PaginationModel } from '@/shared/dto/pagination-model.dto';
+import { PermissionsGuard } from '@/auth/guards/permissions.guard';
+import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { Permission } from '@/auth/enums/permission.enum';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @Controller('praise')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
 @UseInterceptors(ClassSerializerInterceptor)
-// @UseGuards(JwtAuthGuard)
+@UseGuards(PermissionsGuard)
+@UseGuards(JwtAuthGuard)
 export class PraiseController {
   constructor(private readonly praiseService: PraiseService) {}
 
   @Get()
+  @Permissions(Permission.PraiseFind)
   async findAllPaginated(
     @Query() options: FindAllPraisePaginatedQuery,
   ): Promise<PaginationModel<Praise>> {
@@ -39,6 +46,7 @@ export class PraiseController {
   }
 
   @Get(':id')
+  @Permissions(Permission.PraiseFind)
   @ApiParam({ name: 'id', type: String })
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -47,6 +55,7 @@ export class PraiseController {
   }
 
   @Get(':id/quantify')
+  @Permissions(Permission.PraiseQuantify)
   @ApiParam({ name: 'id', type: String })
   async quantify(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -61,6 +70,7 @@ export class PraiseController {
   }
 
   @Get('quantify')
+  @Permissions(Permission.PraiseQuantify)
   async quantifyMultiple(
     @Body() data: PraiseQuantifyMultiplePraiseInput,
     @Req() res: Response,
