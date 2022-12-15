@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 import { Document, model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 
@@ -13,6 +14,7 @@ export class EventLog {
     }
   }
 
+  @ApiProperty()
   @Prop({
     type: Types.ObjectId,
     ref: 'User',
@@ -20,6 +22,7 @@ export class EventLog {
   })
   user: Types.ObjectId;
 
+  @ApiProperty()
   @Prop({
     type: Types.ObjectId,
     ref: 'UserAccount',
@@ -29,6 +32,7 @@ export class EventLog {
 
   // "Related Period" of an eventlog - only used for quantification events
   //    which are restricted to ADMIN users when period is active
+  @ApiProperty()
   @Prop({
     type: Types.ObjectId,
     ref: 'Period',
@@ -36,6 +40,7 @@ export class EventLog {
   })
   period: Types.ObjectId;
 
+  @ApiProperty()
   @Prop({
     type: Types.ObjectId,
     ref: 'EventLogType',
@@ -44,6 +49,7 @@ export class EventLog {
   })
   type: Types.ObjectId;
 
+  @ApiProperty()
   @Prop({ type: String, required: true })
   description: string;
 }

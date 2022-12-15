@@ -8,12 +8,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ServiceException } from '@/shared/service-exception';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
+import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
+    private eventLogService: EventLogService,
   ) {}
 
   getModel(): Model<UserDocument> {
@@ -52,6 +55,14 @@ export class UsersService {
 
     userDocument.roles.push(roleChange.role);
     const user = await userDocument.save();
+
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.PERMISSION,
+      description: `Added role "${roleChange.role}" to user with id "${(
+        user._id as Types.ObjectId
+      ).toString()}"`,
+    });
+
     return new User(user);
   }
 
@@ -99,6 +110,14 @@ export class UsersService {
 
     userDocument.roles.splice(roleIndex, 1);
     const user = await userDocument.save();
+
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.PERMISSION,
+      description: `Removed role "${roleChange.role}" from user with id "${(
+        user._id as Types.ObjectId
+      ).toString()}"`,
+    });
+
     return new User(user);
   }
 

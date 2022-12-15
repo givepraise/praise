@@ -61,17 +61,7 @@ export class UsersController {
     @Request() request: RequestWithUser,
     @Body() roleChange: UpdateUserRoleDto,
   ): Promise<User> {
-    const user = await this.usersService.addRole(id, roleChange);
-
-    await this.eventLogService.logEvent({
-      user: request.user._id,
-      typeKey: EventLogTypeKey.PERMISSION,
-      description: `Added role "${roleChange.role}" to user with id "${(
-        user._id as Types.ObjectId
-      ).toString()}"`,
-    });
-
-    return user;
+    return this.usersService.addRole(id, roleChange);
   }
 
   @Patch(':id/removeRole')
@@ -82,16 +72,6 @@ export class UsersController {
     @Request() request: RequestWithUser,
     @Body() roleChange: UpdateUserRoleDto,
   ): Promise<User> {
-    const user = await this.usersService.removeRole(id, roleChange);
-
-    await this.eventLogService.logEvent({
-      user: request.user._id,
-      typeKey: EventLogTypeKey.PERMISSION,
-      description: `Removed role "${roleChange.role}" from user with id "${(
-        user._id as Types.ObjectId
-      ).toString()}"`,
-    });
-
-    return user;
+    return this.usersService.removeRole(id, roleChange);
   }
 }

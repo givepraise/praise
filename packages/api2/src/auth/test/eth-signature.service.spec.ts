@@ -7,10 +7,12 @@ import { JwtService } from '@nestjs/jwt';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { LoginResponse } from '../dto/login-response.dto';
 import { accessTokenStub } from './stubs/access-token';
+import { EventLogService } from '@/event-log/event-log.service';
 
 jest.mock('@/users/users.service');
 jest.mock('@/utils/utils.provider');
-
+jest.mock('@/event-log/event-log.service');
+q;
 const mockJwtService = {
   sign: jest.fn().mockReturnValue(accessTokenStub),
 };
@@ -31,6 +33,7 @@ describe('EthSignatureService', () => {
           provide: JwtService,
           useValue: mockJwtService,
         },
+        EventLogService,
       ],
     }).compile();
 
