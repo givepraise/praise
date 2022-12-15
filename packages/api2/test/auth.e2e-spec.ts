@@ -14,6 +14,7 @@ import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
 import { EthSignatureService } from '@/auth/eth-signature.service';
 import { EventLogModule } from '@/event-log/event-log.module';
+import { runDbMigrations } from '@/database/migrations';
 
 describe('AuthController (E2E)', () => {
   let app: INestApplication;
@@ -37,6 +38,7 @@ describe('AuthController (E2E)', () => {
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();
+    await runDbMigrations(app);
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
     usersService = module.get<UsersService>(UsersService);
     ethSignatureService = module.get<EthSignatureService>(EthSignatureService);

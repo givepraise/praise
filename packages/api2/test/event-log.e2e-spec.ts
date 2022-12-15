@@ -16,6 +16,7 @@ import { authorizedGetRequest, loginUser } from './test.common';
 import { EventLogSeeder } from '@/database/seeder/event-log.seeder';
 import { EventLogModule } from '@/event-log/event-log.module';
 import { EventLogService } from '@/event-log/event-log.service';
+import { runDbMigrations } from '@/database/migrations';
 
 describe('EventLog (E2E)', () => {
   let app: INestApplication;
@@ -43,6 +44,7 @@ describe('EventLog (E2E)', () => {
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();
+    await runDbMigrations(app);
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
     usersService = module.get<UsersService>(UsersService);
     eventLogSeeder = module.get<EventLogSeeder>(EventLogSeeder);

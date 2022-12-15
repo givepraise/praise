@@ -9,6 +9,7 @@ import {
 import { PeriodsModule } from '@/periods/periods.module';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { ConstantsProvider } from '@/constants/constants.provider';
+import { EventLogModule } from '@/event-log/event-log.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ConstantsProvider } from '@/constants/constants.provider';
       { name: PeriodSetting.name, schema: PeriodSettingsSchema },
     ]),
     PeriodsModule,
+    EventLogModule,
   ],
   controllers: [PeriodSettingsController],
   providers: [PeriodSettingsService, UtilsProvider, ConstantsProvider],

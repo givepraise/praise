@@ -1,5 +1,5 @@
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import mongoose from 'mongoose';
-import { EventLogTypeKey } from '../../../eventlogs/interfaces/eventlog-type.interface';
 const { Schema, model } = mongoose;
 
 const EventLogTypeSchema = new Schema(

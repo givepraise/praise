@@ -6,11 +6,13 @@ import { Setting, SettingSchema } from './schemas/settings.schema';
 import { SettingsController } from './settings.controller';
 import { SettingsService } from './settings.service';
 import { PeriodSettingsModule } from '@/periodsettings/periodsettings.module';
+import { EventLogModule } from '@/event-log/event-log.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Setting.name, schema: SettingSchema }]),
     PeriodSettingsModule,
+    EventLogModule,
   ],
   controllers: [SettingsController],
   providers: [SettingsService, UtilsProvider, ConstantsProvider],
