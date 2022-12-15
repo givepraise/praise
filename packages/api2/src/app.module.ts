@@ -10,6 +10,7 @@ import { SettingsModule } from './settings/settings.module';
 import { PeriodSettingsModule } from './periodsettings/periodsettings.module';
 import { PraiseModule } from './praise/praise.module';
 import { ConstantsProvider } from './constants/constants.provider';
+import { QuantificationsModule } from './quantifications/quantifications.module';
 import { RequestContextModule } from 'nestjs-request-context';
 
 @Module({
@@ -23,6 +24,7 @@ import { RequestContextModule } from 'nestjs-request-context';
     SettingsModule,
     PeriodSettingsModule,
     PraiseModule,
+    QuantificationsModule,
   ],
   providers: [UtilsProvider, ConstantsProvider],
 })

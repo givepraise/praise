@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { QuantificationSchema } from './quantification.schema';
-const { Schema } = mongoose;
+import { QuantificationSchema } from '../quantification/quantification.schema';
+const { Schema, model } = mongoose;
 const { ObjectId } = Schema.Types;
 
 export const PraiseSchema = new Schema({
@@ -50,3 +50,6 @@ export const PraiseSchema = new Schema({
     type: Date,
   },
 });
+
+delete mongoose.models['Praise'];
+export const PraiseModel = model('Praise', PraiseSchema);

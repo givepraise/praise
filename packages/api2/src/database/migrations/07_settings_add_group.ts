@@ -1,5 +1,5 @@
-import { SettingGroup } from '@/settings/types';
-import { SettingsModel } from '../../settings/entities';
+import { SettingGroup } from '../../settings/interfaces/settings-group.interface';
+import { SettingModel } from '../schemas/settings/03_settings.schema';
 
 const overridableSettingKeys = [
   'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
@@ -110,21 +110,21 @@ const up = async (): Promise<void> => {
       filter: { key: s.key },
       update: { $set: { group: s.group }, $unset: { periodOverridable: true } },
     },
-  }));
+  })) as any;
 
-  await SettingsModel.bulkWrite(settingUpdates);
+  await SettingModel.bulkWrite(settingUpdates);
 };
 
 const down = async (): Promise<void> => {
   const allKeys = settings.map((s) => s.key);
-  await SettingsModel.updateMany(
+  await SettingModel.updateMany(
     { key: { $in: allKeys } },
-    { $unset: { group: 1 }, $set: { periodOverridable: false } }
+    { $unset: { group: 1 }, $set: { periodOverridable: false } },
   );
 
-  await SettingsModel.updateMany(
+  await SettingModel.updateMany(
     { key: { $in: overridableSettingKeys } },
-    { $set: { periodOverridable: true } }
+    { $set: { periodOverridable: true } },
   );
 };
 

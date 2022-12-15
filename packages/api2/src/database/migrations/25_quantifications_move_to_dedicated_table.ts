@@ -1,15 +1,14 @@
 import { model } from 'mongoose';
-import { Praise } from '../../praise/schemas/praise.schema';
-import { PraiseSchema } from '../schemas/praise.schema';
-import { QuantificationSchema } from '../schemas/quantification.schema';
+import { PraiseModel } from '../schemas/praise/22_praise.schema';
+import { QuantificationSchema } from '../schemas/quantification/quantification.schema';
 import { Quantification } from '../../quantifications/schemas/quantifications.schema';
 
 const up = async (): Promise<void> => {
-  const PraiseModel = model<Praise>('Praise', PraiseSchema);
   const QuantificationModel = model<Quantification>(
     'Quantification',
     QuantificationSchema,
   );
+
   const praiseItems = await PraiseModel.find();
 
   const quantifications = praiseItems.reduce(
@@ -32,7 +31,11 @@ const up = async (): Promise<void> => {
 };
 
 const down = async (): Promise<void> => {
-  /** TODO */
+  const QuantificationModel = model<Quantification>(
+    'Quantification',
+    QuantificationSchema,
+  );
+  QuantificationModel.deleteMany({});
 };
 
 export { up, down };

@@ -12,7 +12,7 @@ import { EventLogService } from '@/event-log/event-log.service';
 jest.mock('@/users/users.service');
 jest.mock('@/utils/utils.provider');
 jest.mock('@/event-log/event-log.service');
-q;
+
 const mockJwtService = {
   sign: jest.fn().mockReturnValue(accessTokenStub),
 };
