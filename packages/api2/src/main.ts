@@ -5,7 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import { ServiceExceptionFilter } from './shared/service-exception.filter';
-import { Migrations } from './database/migration';
+import { runDbMigrations } from './database/run-db-migrations';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -29,8 +29,7 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
   });
-
-  await Migrations(app);
+  await runDbMigrations(app);
   await app.listen(process.env.API_PORT || 3000);
 }
 

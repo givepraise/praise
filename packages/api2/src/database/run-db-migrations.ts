@@ -16,7 +16,7 @@ import { QuantificationsService } from '@/quantifications/quantifications.servic
  *
  * @returns {Umzug}
  */
-const Migrations = async (app: INestApplication): Promise<void> => {
+export const runDbMigrations = async (app: INestApplication): Promise<void> => {
   const logger = new Logger(PermissionsGuard.name);
 
   try {
@@ -52,5 +52,3 @@ const Migrations = async (app: INestApplication): Promise<void> => {
     logger.error(error);
   }
 };
-
-export { Migrations };
