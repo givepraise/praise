@@ -18,6 +18,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
+      "@/api-key/*": ["src/api-key/*"],
       "@/auth/*": ["src/auth/*"],
       "@/constants/*": ["src/constants/*"],
       "@/database/*": ["src/database/*"],

@@ -15,7 +15,6 @@ import { RequestWithUser } from './interfaces/request-with-user.interface';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { LoginRequest } from './dto/login-request.dto';
 import { EventLogService } from '@/event-log/event-log.service';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 
 @Controller('auth')
 export class AuthController {

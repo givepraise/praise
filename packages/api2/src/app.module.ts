@@ -13,6 +13,7 @@ import { ConstantsProvider } from './constants/constants.provider';
 import { QuantificationsModule } from './quantifications/quantifications.module';
 import { RequestContextModule } from 'nestjs-request-context';
 import { PeriodsModule } from './periods/periods.module';
+import { ApiKeyModule } from './api-key/api-key.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PeriodsModule } from './periods/periods.module';
     RequestContextModule,
     UsersModule,
     UserAccountsModule,
+    ApiKeyModule,
     AuthModule,
     EventLogModule,
     SettingsModule,

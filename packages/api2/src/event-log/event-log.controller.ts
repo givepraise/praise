@@ -7,7 +7,7 @@ import { FindAllPaginatedQuery } from './dto/find-all-paginated-query.dto';
 import { EventLogService } from './event-log.service';
 import { EventLog } from './entities/event-log.entity';
 import { EventLogType } from './entities/event-log-type.entity';
-import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PaginationModel } from '@/shared/dto/pagination-model.dto';
 
 @Controller('event-log')

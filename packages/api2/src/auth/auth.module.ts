@@ -4,13 +4,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from '@/users/users.module';
-import { UsersService } from '@/users/users.service';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { ConstantsProvider } from '@/constants/constants.provider';
 import { EthSignatureStrategy } from './strategies/eth-signature.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { EventLogModule } from '@/event-log/event-log.module';
-import { EventLogService } from '@/event-log/event-log.service';
 
 @Module({
   imports: [

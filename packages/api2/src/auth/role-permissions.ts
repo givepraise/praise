@@ -7,11 +7,18 @@ import { Permission } from './enums/permission.enum';
  */
 export const RolePermissions: { [key: string]: string[] } = {
   ADMIN: [
+    Permission.ApiKeyView,
+    Permission.ApiKeyManage,
     Permission.UsersFind,
     Permission.UsersManageRoles,
     Permission.EventLogView,
     Permission.PraiseFind,
   ],
-  USER: [Permission.UsersFind, Permission.EventLogView, Permission.PraiseFind],
+  USER: [
+    Permission.UsersFind,
+    Permission.EventLogView,
+    Permission.ApiKeyView,
+    Permission.PraiseFind,
+  ],
   QUANTIFIER: [Permission.PraiseQuantify],
 };
