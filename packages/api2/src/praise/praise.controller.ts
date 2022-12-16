@@ -6,17 +6,14 @@ import {
   Get,
   Param,
   Query,
-  Req,
   SerializeOptions,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { isArray } from 'class-validator';
-import { Response } from 'express';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
-import { PraiseQuantificationCreateUpdateInput } from './intefaces/praise-quantification-input.interface';
 import { PraiseQuantifyMultiplePraiseInput } from './intefaces/praise-quantify-multiple-input.interface';
 import { PraiseService } from './praise.service';
 import { Praise } from './schemas/praise.schema';
@@ -26,6 +23,7 @@ import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { CreateUpdateQuantificationRequest } from '@/quantifications/dto/create-update-quantification-request.dto';
 
 @Controller('praise')
 @SerializeOptions({
@@ -38,6 +36,12 @@ export class PraiseController {
   constructor(private readonly praiseService: PraiseService) {}
 
   @Get()
+  @ApiOperation({ summary: 'List praise items, paginated results' })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated praise items',
+    type: PaginationModel<Praise>,
+  })
   @Permissions(Permission.PraiseFind)
   async findAllPaginated(
     @Query() options: FindAllPraisePaginatedQuery,
@@ -46,6 +50,12 @@ export class PraiseController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Find praise item by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Praise item',
+    type: Praise,
+  })
   @Permissions(Permission.PraiseFind)
   @ApiParam({ name: 'id', type: String })
   async findOne(
@@ -55,25 +65,34 @@ export class PraiseController {
   }
 
   @Get(':id/quantify')
+  @ApiOperation({ summary: 'Quantify praise item by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Praise item',
+    type: Praise,
+  })
   @Permissions(Permission.PraiseQuantify)
   @ApiParam({ name: 'id', type: String })
   async quantify(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() data: PraiseQuantificationCreateUpdateInput,
-    @Req() res: Response,
+    @Body() data: CreateUpdateQuantificationRequest,
   ): Promise<Praise[]> {
     return this.praiseService.quantifyPraise({
       id: id.toString(),
       bodyParams: data,
-      currentUser: res.locals.currentUser,
     });
   }
 
   @Get('quantify')
+  @ApiOperation({ summary: 'Quantify multiple praise items' })
+  @ApiResponse({
+    status: 200,
+    description: 'Praise items',
+    type: [Praise],
+  })
   @Permissions(Permission.PraiseQuantify)
   async quantifyMultiple(
     @Body() data: PraiseQuantifyMultiplePraiseInput,
-    @Req() res: Response,
   ): Promise<Praise[]> {
     const { praiseIds } = data;
 
@@ -86,7 +105,6 @@ export class PraiseController {
         const affectedPraises = await this.praiseService.quantifyPraise({
           id,
           bodyParams: data,
-          currentUser: res.locals.currentUser,
         });
 
         return affectedPraises;

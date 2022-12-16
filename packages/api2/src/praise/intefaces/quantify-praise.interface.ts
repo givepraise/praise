@@ -1,8 +1,6 @@
-import { UserDocument } from '@/users/schemas/users.schema';
-import { PraiseQuantificationCreateUpdateInput } from './praise-quantification-input.interface';
+import { CreateUpdateQuantificationRequest } from '@/quantifications/dto/create-update-quantification-request.dto';
 
 export interface QuantifyPraiseProps {
   id: string;
-  bodyParams: PraiseQuantificationCreateUpdateInput;
-  currentUser: UserDocument;
+  bodyParams: CreateUpdateQuantificationRequest;
 }

@@ -13,14 +13,16 @@ import { PaginationModel } from '@/shared/dto/pagination-model.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { RequestContext } from 'nestjs-request-context';
+import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
+import { PeriodsService } from '@/periods/periods.service';
 
 @Injectable()
 export class PraiseService {
   constructor(
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
-    @InjectModel(Period.name)
-    private periodModel: Model<Period>,
+    private periodService: PeriodsService,
     private settingsService: SettingsService,
     private quantificationsService: QuantificationsService,
     private eventLogService: EventLogService,
@@ -104,11 +106,20 @@ export class PraiseService {
     return praise;
   }
 
+  /**
+   * Quantify praise item
+   *
+   * @param id {string}
+   * @param bodyParams {CreateUpdateQuantificationRequest}
+   * @returns {Promise<Praise[]>}
+   * @throws {ServiceException}
+   *
+   **/
   quantifyPraise = async ({
     id,
     bodyParams,
-    currentUser,
   }: QuantifyPraiseProps): Promise<Praise[]> => {
+    const req: RequestWithUser = RequestContext.currentContext.req;
     const { score, dismissed, duplicatePraise } = bodyParams;
 
     const praise = await this.praiseModel
@@ -117,7 +128,7 @@ export class PraiseService {
 
     if (!praise) throw new ServiceException('Praise');
 
-    const period = await this.getPraisePeriod(praise);
+    const period = await this.periodService.getPraisePeriod(praise);
     if (!period)
       throw new ServiceException('Praise does not have an associated period');
 
@@ -141,7 +152,7 @@ export class PraiseService {
 
     const quantification =
       await this.quantificationsService.findOneByQuantifierAndPraise(
-        currentUser._id,
+        req.user._id,
         praise._id,
       );
 
@@ -155,7 +166,7 @@ export class PraiseService {
 
     const praisesDuplicateOfThis = await this.findDuplicatePraiseItems(
       praise._id,
-      currentUser._id,
+      req.user._id,
     );
 
     if (praisesDuplicateOfThis?.length > 0)
@@ -177,7 +188,7 @@ export class PraiseService {
       const praisesDuplicateOfAnotherDuplicate =
         await this.findPraisesDuplicateOfAnotherDuplicate(
           new Types.ObjectId(duplicatePraise),
-          currentUser._id,
+          req.user._id,
         );
 
       if (praisesDuplicateOfAnotherDuplicate?.length > 0)
@@ -218,42 +229,10 @@ export class PraiseService {
       typeKey: EventLogTypeKey.PERMISSION,
       description: eventLogMessage,
       periodId: period._id,
-      user: currentUser._id,
     });
 
-    return affectedPraises;
-  };
-
-  /**
-   * Fetch the period associated with a praise instance,
-   *  (as they are currently not related in database)
-   *
-   * Determines the associated period by:
-   *  finding the period with the lowest endDate, that is greater than the praise.createdAt date
-   *
-   * @param {Praise} praise
-   * @returns {(Promise<PeriodDocument | undefined>)}
-   */
-  getPraisePeriod = async (praise: Praise): Promise<Period | undefined> => {
-    const period = await this.periodModel
-      .find(
-        // only periods ending after praise created
-        {
-          endDate: { $gte: praise.createdAt },
-        },
-        null,
-        // sort periods by ending date ascending
-        {
-          sort: { endDate: 1 },
-        },
-
-        // select the period with the earliest ending date
-      )
-      .limit(1);
-
-    if (!period || period.length === 0) return undefined;
-
-    return period[0];
+    const docs = affectedPraises.map((praise) => new Praise(praise));
+    return docs;
   };
 
   /**

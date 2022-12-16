@@ -1,4 +1,4 @@
-export interface PraiseQuantificationCreateUpdateInput {
+export interface CreateUpdateQuantificationRequest {
   score: number;
   dismissed?: boolean;
   duplicatePraise?: string;
