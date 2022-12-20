@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Types } from 'mongoose';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
-import { UserRole } from '../interfaces/user-role.interface';
+import { AuthRole } from '@/auth/enums/auth-role.enum';
 
 export type UserDocument = User & Document;
 
@@ -36,11 +36,11 @@ export class User {
     type: [
       {
         type: String,
-        enum: [UserRole],
+        enum: [AuthRole],
       },
     ],
-    default: [UserRole.USER],
-    enum: [UserRole],
+    default: [AuthRole.USER],
+    enum: [AuthRole],
   })
   roles: string[];
 

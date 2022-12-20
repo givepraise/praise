@@ -3,13 +3,13 @@ import { User, UserDocument } from './schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { UserRole } from './interfaces/user-role.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ServiceException } from '@/shared/service-exception';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { AuthRole } from '@/auth/enums/auth-role.enum';
 
 @Injectable()
 export class UsersService {
@@ -77,9 +77,9 @@ export class UsersService {
     const roleIndex = userDocument.roles.indexOf(role);
 
     // It is not allowed to remove the last admin!
-    if (role === UserRole.ADMIN) {
+    if (role === AuthRole.ADMIN) {
       const allAdmins = await this.userModel.find({
-        roles: { $in: [`${UserRole.ADMIN}`] },
+        roles: { $in: [`${AuthRole.ADMIN}`] },
       });
       if (allAdmins.length <= 1) {
         throw new ServiceException(
