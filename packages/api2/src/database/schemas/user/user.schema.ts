@@ -1,4 +1,4 @@
-import { UserRole } from '../../../users/interfaces/user-role.interface';
+import { AuthRole } from '@/auth/enums/auth-role.enum';
 import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 const { ObjectId } = Schema.Types;
@@ -28,10 +28,10 @@ export const UserSchema = new Schema({
     type: [
       {
         type: String,
-        enum: [UserRole],
+        enum: [AuthRole],
       },
     ],
-    default: [UserRole.USER],
+    default: [AuthRole.USER],
   },
   createdAt: {
     type: Date,

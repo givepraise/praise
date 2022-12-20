@@ -55,8 +55,22 @@ export class ApiKeyService {
    * @returns {Promise<ApiKey|null>} A promise that resolves to the found API key, or null if no API key is found with the given ID.
    */
   async findOne(id: Types.ObjectId): Promise<ApiKey | null> {
-    const apiKey = await this.apiKeyModel.findById(id);
-    return apiKey ? apiKey.toObject() : null;
+    const apiKey = await this.apiKeyModel.findById(id).lean();
+    return apiKey || null;
+  }
+
+  /**
+   * Finds an API key by key.
+   * @param {string} key - The key of the API key to find.
+   * @returns {Promise<ApiKey|null>} A promise that resolves to the found API key, or null if no API key is found with the given key.
+   */
+  async findOneByKey(key: string): Promise<ApiKey | null> {
+    const apiKey = await this.apiKeyModel
+      .findOne({
+        key,
+      })
+      .lean();
+    return apiKey || null;
   }
 
   /**
