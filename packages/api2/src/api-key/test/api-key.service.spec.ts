@@ -1,4 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { AppModule } from '../../app.module';
+import { ApiKeyModule } from '../api-key.module';
 import { ApiKeyService } from '../api-key.service';
 
 describe('ApiKeyService', () => {
@@ -6,7 +8,7 @@ describe('ApiKeyService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ApiKeyService],
+      imports: [AppModule, ApiKeyModule],
     }).compile();
 
     service = module.get<ApiKeyService>(ApiKeyService);
