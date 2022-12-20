@@ -52,6 +52,16 @@ export class UsersController {
     return user;
   }
 
+  @Patch(':id')
+  @Permissions(Permission.UsersFind)
+  async updateProfile(
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Request() request: RequestWithUser, //TODO: remove this, is this needed?
+    @Body() user: User,
+  ): Promise<User> {
+    return this.usersService.update(id, user);
+  }
+
   @Patch(':id/addRole')
   @Permissions(Permission.UsersManageRoles)
   @ApiParam({ name: 'id', type: String })
