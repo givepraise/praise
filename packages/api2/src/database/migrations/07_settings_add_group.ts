@@ -1,4 +1,4 @@
-import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
+import { SettingGroup } from '../../settings/interfaces/settings-group.interface';
 import { SettingModel } from '../schemas/settings/03_settings.schema';
 
 const overridableSettingKeys = [

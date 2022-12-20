@@ -12,8 +12,10 @@ import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { authorizedRequest, loginUser } from './test.common';
+import { authorizedGetRequest, loginUser } from './test.common';
 import { User } from '@/users/schemas/users.schema';
+import { EventLogModule } from '@/event-log/event-log.module';
+import { runDbMigrations } from '@/database/migrations';
 
 describe('UserController (E2E)', () => {
   let app: INestApplication;
@@ -24,8 +26,8 @@ describe('UserController (E2E)', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule],
-      providers: [UsersService, UsersSeeder],
+      imports: [AppModule, UsersModule, EventLogModule],
+      providers: [UsersSeeder],
     }).compile();
     app = module.createNestApplication();
     app.useLogger(new ConsoleLogger());
@@ -37,6 +39,7 @@ describe('UserController (E2E)', () => {
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();
+    await runDbMigrations(app);
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
     usersService = module.get<UsersService>(UsersService);
   });
@@ -74,11 +77,11 @@ describe('UserController (E2E)', () => {
     });
 
     test('200 when authenticated', async () => {
-      await authorizedRequest('/users', app, accessToken).expect(200);
+      await authorizedGetRequest('/users', app, accessToken).expect(200);
     });
 
     test('that returned user list matches seeded list', async () => {
-      const response = await authorizedRequest(
+      const response = await authorizedGetRequest(
         '/users',
         app,
         accessToken,

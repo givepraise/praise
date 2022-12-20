@@ -25,4 +25,5 @@ export const SettingSchema = new Schema({
   periodOverridable: { type: Boolean, required: true },
 });
 
+delete mongoose.models['Setting'];
 export const SettingModel = model('Setting', SettingSchema);

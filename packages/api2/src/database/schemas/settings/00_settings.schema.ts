@@ -22,4 +22,5 @@ export const SettingSchema = new Schema({
   },
 });
 
+delete mongoose.models['Setting'];
 export const SettingModel = model('Setting', SettingSchema);

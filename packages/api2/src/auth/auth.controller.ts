@@ -14,10 +14,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { LoginRequest } from './dto/login-request.dto';
+import { EventLogService } from '@/event-log/event-log.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly ethSignatureService: EthSignatureService) {}
+  constructor(
+    private readonly ethSignatureService: EthSignatureService,
+    private readonly eventLogService: EventLogService,
+  ) {}
 
   @Post('eth-signature/nonce')
   @ApiOperation({

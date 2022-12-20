@@ -1,5 +1,5 @@
 import { model } from 'mongoose';
-import { PraiseModel, PraiseSchema } from '../schemas/praise/12_praise.schema';
+import { PraiseModel } from '../schemas/praise/22_praise.schema';
 import { QuantificationSchema } from '../schemas/quantification/quantification.schema';
 import { Quantification } from '../../quantifications/schemas/quantifications.schema';
 

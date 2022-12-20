@@ -1,4 +1,4 @@
-import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
+import { SettingGroup } from '../../../settings/interfaces/settings-group.interface';
 import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 
@@ -29,4 +29,5 @@ export const SettingSchema = new Schema({
   subgroup: { type: Number },
 });
 
+delete mongoose.models['Setting'];
 export const SettingModel = model('Setting', SettingSchema);

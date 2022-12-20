@@ -3,16 +3,17 @@ import { SettingsService } from '@/settings/settings.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Quantification } from './schemas/quantifications.schema';
-import sum from 'lodash/sum';
+import { sum } from 'lodash';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
 
 export class QuantificationsService {
   constructor(
+    @InjectModel(Quantification.name)
+    private quantificationModel: Model<Quantification>,
     @InjectModel(Praise.name)
     private praiseModel: Model<Praise>,
     private settingsService: SettingsService,
-    private praiseService: PraiseService,
   ) {}
 
   /**
@@ -21,6 +22,86 @@ export class QuantificationsService {
    * @type {number}
    */
   DIGITS_PRECISION = 2;
+
+  /**
+   * Returns a quantification by its id
+   *
+   * @param {Types.ObjectId} _id
+   * @returns {Promise<Quantification>}
+   * @throws {ServiceException}
+   **/
+  async findOneById(_id: Types.ObjectId): Promise<Quantification> {
+    const quantification = await this.quantificationModel.findById(_id).lean();
+
+    if (!quantification)
+      throw new ServiceException('Quantification item not found.');
+
+    return quantification;
+  }
+
+  /**
+   * Returns a quantification by its quantifier and praise
+   *
+   *  @param {Types.ObjectId} quantifierId
+   * @param {Types.ObjectId} praiseId
+   * @returns {Promise<Quantification>}
+   * @throws {ServiceException}
+   **/
+  async findOneByQuantifierAndPraise(
+    quantifierId: Types.ObjectId,
+    praiseId: Types.ObjectId,
+  ): Promise<Quantification> {
+    const quantification = await this.quantificationModel
+      .findOne({ quantifier: quantifierId, praise: praiseId })
+      .lean();
+
+    if (!quantification)
+      throw new ServiceException('Quantification item not found.');
+
+    return quantification;
+  }
+
+  /**
+   * Returns a quantifications by its quantifier and duplicate praise id
+   *
+   *  @param {Types.ObjectId} quantifierId
+   * @param {Types.ObjectId} praiseId
+   * @returns {Promise<Quantification[]>}
+   * @throws {ServiceException}
+   **/
+  async findByQuantifierAndDuplicatePraise(
+    quantifierId: Types.ObjectId,
+    praiseId: Types.ObjectId,
+  ): Promise<Quantification[]> {
+    const quantifications = await this.quantificationModel
+      .find({ quantifier: quantifierId, duplicatePraise: praiseId })
+      .lean();
+
+    return quantifications;
+  }
+
+  /**
+   * Returns a list of quantifications for a given praiseId
+   *
+   * @param {Types.ObjectId} praiseId
+   * @returns {Promise<Quantification[]>}
+   * @throws {ServiceException}
+   */
+  findQuantificationsByPraiseId = async (
+    praiseId: Types.ObjectId,
+  ): Promise<Quantification[]> => {
+    const quantifications = await this.quantificationModel.find({
+      praise: praiseId,
+    });
+
+    if (!quantifications) {
+      throw new ServiceException(
+        `Quantifications for praise ${praiseId} not found`,
+      );
+    }
+
+    return quantifications;
+  };
 
   /**
    * Check if Quantification was completed
@@ -96,29 +177,29 @@ export class QuantificationsService {
         'Quantification does not have duplicatePraise, cannot calculate duplicate score',
       );
 
-    let score = 0;
+    const score = 0;
     const praise = await this.praiseModel.findById(
       quantification.duplicatePraise._id,
     );
 
-    if (praise && praise.quantifications) {
-      const originalQuantification = praise.quantifications.find((q) =>
-        q.quantifier._id.equals(quantification.quantifier._id),
-      );
+    // if (praise && praise.quantifications) {
+    //   const originalQuantification = praise.quantifications.find((q) =>
+    //     q.quantifier._id.equals(quantification.quantifier._id),
+    //   );
 
-      if (originalQuantification && originalQuantification.dismissed) {
-        score = 0;
-      } else if (originalQuantification && !originalQuantification.dismissed) {
-        const period = await this.praiseService.getPraisePeriod(praise);
-        if (!period)
-          throw new ServiceException('Quantification has no associated period');
+    //   if (originalQuantification && originalQuantification.dismissed) {
+    //     score = 0;
+    //   } else if (originalQuantification && !originalQuantification.dismissed) {
+    //     const period = await this.praiseService.getPraisePeriod(praise);
+    //     if (!period)
+    //       throw new ServiceException('Quantification has no associated period');
 
-        score = await this.calculateDuplicateScore(
-          originalQuantification,
-          period._id,
-        );
-      }
-    }
+    //     score = await this.calculateDuplicateScore(
+    //       originalQuantification,
+    //       period._id,
+    //     );
+    //   }
+    // }
 
     return score;
   };

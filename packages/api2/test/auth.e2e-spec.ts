@@ -13,6 +13,10 @@ import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
 import { EthSignatureService } from '@/auth/eth-signature.service';
+import { EventLogModule } from '@/event-log/event-log.module';
+import { runDbMigrations } from '@/database/migrations';
+import { ApiKeySeeder } from '@/database/seeder/api-key.seeder';
+import { ApiKeyModule } from '@/api-key/api-key.module';
 
 describe('AuthController (E2E)', () => {
   let app: INestApplication;
@@ -21,10 +25,11 @@ describe('AuthController (E2E)', () => {
   let usersSeeder: UsersSeeder;
   let usersService: UsersService;
   let ethSignatureService: EthSignatureService;
+  let apiKeySeeder: ApiKeySeeder;
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule],
-      providers: [UsersService, UsersSeeder],
+      imports: [AppModule, UsersModule, EventLogModule, ApiKeyModule],
+      providers: [UsersSeeder, ApiKeySeeder],
     }).compile();
     app = module.createNestApplication();
     app.useLogger(new ConsoleLogger());
@@ -36,9 +41,11 @@ describe('AuthController (E2E)', () => {
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();
+    await runDbMigrations(app);
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
     usersService = module.get<UsersService>(UsersService);
     ethSignatureService = module.get<EthSignatureService>(EthSignatureService);
+    apiKeySeeder = module.get<ApiKeySeeder>(ApiKeySeeder);
   });
 
   beforeEach(async () => {
@@ -50,24 +57,39 @@ describe('AuthController (E2E)', () => {
   });
 
   describe('POST /api/auth/eth-signature/nonce', () => {
+    /**
+     *
+     */
     test('400 when missing identityEthAddress', async () => {
       return request(server)
         .post('/auth/eth-signature/nonce')
         .send()
         .expect(400);
     });
+
+    /**
+     *
+     */
     test('400 when identityEthAddress is empty', async () => {
       return request(server)
         .post('/auth/eth-signature/nonce')
         .send(JSON.stringify({ identityEthAddress: '' }))
         .expect(400);
     });
+
+    /**
+     *
+     */
     test('400 when identityEthAddress is invalid', async () => {
       return request(server)
         .post('/auth/eth-signature/nonce')
         .send({ identityEthAddress: 'invalid' })
         .expect(400);
     });
+
+    /**
+     *
+     */
     test('201 and correct body when identityEthAddress is valid, new user', async () => {
       const wallet = Wallet.createRandom();
       return request(server)
@@ -85,6 +107,10 @@ describe('AuthController (E2E)', () => {
           expect(response.body.identityEthAddress).toEqual(wallet.address);
         });
     });
+
+    /**
+     *
+     */
     test('201 and correct body when identityEthAddress is valid, existing user', async () => {
       const wallet = Wallet.createRandom();
       await usersSeeder.seedUser({
@@ -114,18 +140,30 @@ describe('AuthController (E2E)', () => {
         .send({ signature: 'any' })
         .expect(401);
     });
+
+    /**
+     *
+     */
     test('401 when missing signature', async () => {
       return request(server)
         .post('/auth/eth-signature/login')
         .send({ identityEthAddress: 'any' })
         .expect(401);
     });
+
+    /**
+     *
+     */
     test('401 when submitting identityEthAddress that does not exist', async () => {
       return request(server)
         .post('/auth/eth-signature/login')
         .send({ identityEthAddress: 'invalid', signature: 'any' })
         .expect(401);
     });
+
+    /**
+     *
+     */
     test('401 response when signature mismatch', async function () {
       const wallet = Wallet.createRandom();
 
@@ -145,6 +183,10 @@ describe('AuthController (E2E)', () => {
         .send(body)
         .expect(401);
     });
+
+    /**
+     *
+     */
     test('401 response when nonce invalid', async function () {
       const wallet = Wallet.createRandom();
 
@@ -168,6 +210,10 @@ describe('AuthController (E2E)', () => {
         .send(body)
         .expect(401);
     });
+
+    /**
+     *
+     */
     test('401 response when message badly formatted', async function () {
       const wallet = Wallet.createRandom();
 
@@ -191,6 +237,10 @@ describe('AuthController (E2E)', () => {
         .send(body)
         .expect(401);
     });
+
+    /**
+     *
+     */
     test('201 response with accessToken & refreshToken', async function () {
       const wallet = Wallet.createRandom();
 
@@ -218,6 +268,30 @@ describe('AuthController (E2E)', () => {
           expect(response2.body.identityEthAddress).toEqual(wallet.address);
           expect(response2.body).toHaveProperty('accessToken');
         });
+    });
+  });
+
+  describe('API KEY authentication, GET /api/users', () => {
+    test('401 when missing api key', async () => {
+      return request(server).get('/users').expect(401);
+    });
+
+    /**
+     *
+     */
+    test('401 when api key is invalid', async () => {
+      return request(server).get('/users').set('token', 'invalid').expect(401);
+    });
+
+    /**
+     *
+     */
+    test('200 when api key is valid', async () => {
+      const apiKey = await apiKeySeeder.seedApiKey();
+      return request(server)
+        .get('/users')
+        .set('x-api-key', apiKey.key)
+        .expect(200);
     });
   });
 });

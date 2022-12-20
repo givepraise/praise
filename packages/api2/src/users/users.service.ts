@@ -3,17 +3,20 @@ import { User, UserDocument } from './schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { UserRole } from './interfaces/user-role.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ServiceException } from '@/shared/service-exception';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
+import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { AuthRole } from '@/auth/enums/auth-role.enum';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
+    private eventLogService: EventLogService,
   ) {}
 
   getModel(): Model<UserDocument> {
@@ -51,19 +54,16 @@ export class UsersService {
       throw new ServiceException(`User already has role ${roleChange.role}`);
 
     userDocument.roles.push(roleChange.role);
-    await userDocument.save();
+    const user = await userDocument.save();
 
-    // await logEvent(
-    //   EventLogTypeKey.PERMISSION,
-    //   `Added role "${role}" to user with id "${(
-    //     user._id as Types.ObjectId
-    //   ).toString()}"`,
-    //   {
-    //     userId: res.locals.currentUser._id,
-    //   }
-    // );
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.PERMISSION,
+      description: `Added role "${roleChange.role}" to user with id "${(
+        user._id as Types.ObjectId
+      ).toString()}"`,
+    });
 
-    return this.revokeAccess(_id);
+    return new User(user);
   }
 
   async removeRole(
@@ -77,9 +77,9 @@ export class UsersService {
     const roleIndex = userDocument.roles.indexOf(role);
 
     // It is not allowed to remove the last admin!
-    if (role === UserRole.ADMIN) {
+    if (role === AuthRole.ADMIN) {
       const allAdmins = await this.userModel.find({
-        roles: { $in: [`${UserRole.ADMIN}`] },
+        roles: { $in: [`${AuthRole.ADMIN}`] },
       });
       if (allAdmins.length <= 1) {
         throw new ServiceException(
@@ -109,28 +109,16 @@ export class UsersService {
     //   }
 
     userDocument.roles.splice(roleIndex, 1);
-    await userDocument.save();
+    const user = await userDocument.save();
 
-    //   await logEvent(
-    //     EventLogTypeKey.PERMISSION,
-    //     `Removed role "${role}" from user with id "${(
-    //       user._id as Types.ObjectId
-    //     ).toString()}`,
-    //     {
-    //       userId: res.locals.currentUser._id,
-    //     }
-    //   );
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.PERMISSION,
+      description: `Removed role "${roleChange.role}" from user with id "${(
+        user._id as Types.ObjectId
+      ).toString()}"`,
+    });
 
-    return this.revokeAccess(_id);
-  }
-
-  async revokeAccess(_id: Types.ObjectId): Promise<User> {
-    const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new ServiceException('User not found.');
-
-    userDocument.set('accessToken', undefined);
-    userDocument.set('nonce', undefined);
-    return userDocument.save();
+    return new User(user);
   }
 
   async update(_id: Types.ObjectId, user: UpdateUserDto): Promise<User> {

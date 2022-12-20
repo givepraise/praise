@@ -11,17 +11,18 @@ import {
   SerializeOptions,
   UseGuards,
   UseInterceptors,
-  Req,
+  Request,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { User } from './schemas/users.schema';
 import { ApiParam } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
-import { Request } from 'express';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
+import { EventLogService } from '@/event-log/event-log.service';
+import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 @SerializeOptions({
@@ -29,9 +30,12 @@ import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 })
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(PermissionsGuard)
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard(['jwt', 'api-key']))
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly eventLogService: EventLogService,
+  ) {}
 
   @Get()
   @Permissions(Permission.UsersFind)
@@ -53,6 +57,7 @@ export class UsersController {
   @ApiParam({ name: 'id', type: String })
   async addRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Request() request: RequestWithUser,
     @Body() roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     return this.usersService.addRole(id, roleChange);
@@ -63,6 +68,7 @@ export class UsersController {
   @ApiParam({ name: 'id', type: String })
   async removeRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Request() request: RequestWithUser,
     @Body() roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     return this.usersService.removeRole(id, roleChange);

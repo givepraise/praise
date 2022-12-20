@@ -18,9 +18,11 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
+      "@/api-key/*": ["src/api-key/*"],
       "@/auth/*": ["src/auth/*"],
       "@/constants/*": ["src/constants/*"],
       "@/database/*": ["src/database/*"],
+      "@/event-log/*": ["src/event-log/*"],
       "@/periods/*": ["src/periods/*"],
       "@/periodsettings/*": ["src/periodsettings/*"],
       "@/praise/*": ["src/praise/*"],

@@ -1,6 +1,5 @@
-import { model } from 'mongoose';
 import { MigrationsContext } from '../interfaces/migration-context.interface';
-import { PraiseModel, PraiseSchema } from '../schemas/praise/12_praise.schema';
+import { PraiseModel } from '../schemas/praise/12_praise.schema';
 
 const up = async ({ context }: MigrationsContext): Promise<void> => {
   const praises = await PraiseModel.find({
@@ -9,21 +8,22 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
 
   if (praises.length === 0) return;
 
-  const updates = (await Promise.all(
-    praises.map(async (s: any) => ({
+  const updates = await Promise.all(
+    praises.map(async (p: any) => ({
       updateOne: {
-        filter: { _id: s._id },
+        filter: { _id: p._id },
         update: {
           $set: {
             scoreRealized:
               await context.quantificationsService.calculateQuantificationsCompositeScore(
-                s.quantifications,
+                p.quantifications,
               ),
           },
         },
+        upsert: true,
       },
-    })),
-  )) as any;
+    })) as any,
+  );
 
   await PraiseModel.bulkWrite(updates);
 };
