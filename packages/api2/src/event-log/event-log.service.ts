@@ -4,19 +4,18 @@ import { Model, Types } from 'mongoose';
 import {
   EventLogType,
   EventLogTypeDocument,
-} from './entities/event-log-type.entity';
+} from './schemas/event-log-type.schema';
 import {
   EventLog,
   EventLogDocument,
   PaginatedEventLogModel,
-} from './entities/event-log.entity';
+} from './schemas/event-log.schema';
 import mongoose from 'mongoose';
 import { PaginationModel } from 'mongoose-paginate-ts';
 import { FindAllPaginatedQuery } from './dto/find-all-paginated-query.dto';
 import { ServiceException } from '@/shared/service-exception';
 import { CreateEventLogDto } from './dto/create-event-log.dto';
 import { RequestContext } from 'nestjs-request-context';
-import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
 @Injectable()
 export class EventLogService {
   constructor(
@@ -46,12 +45,13 @@ export class EventLogService {
     const { typeKey } = createEventLogDto;
     const type = await this.eventLogTypeModel
       .findOne({ key: typeKey.toString() })
+      .lean()
       .orFail();
 
-    const req: RequestWithUser = RequestContext.currentContext.req;
-
     const eventLogData = {
-      user: req.user._id,
+      user: new Types.ObjectId(
+        RequestContext.currentContext?.req?.user?.userId,
+      ),
       ...createEventLogDto,
       type: type._id,
     };
