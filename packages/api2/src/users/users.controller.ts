@@ -11,7 +11,7 @@ import {
   SerializeOptions,
   UseGuards,
   UseInterceptors,
-  Request,
+  Put,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
@@ -20,8 +20,6 @@ import { ApiParam } from '@nestjs/swagger';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
-import { EventLogService } from '@/event-log/event-log.service';
-import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
@@ -32,10 +30,7 @@ import { AuthGuard } from '@nestjs/passport';
 @UseGuards(PermissionsGuard)
 @UseGuards(AuthGuard(['jwt', 'api-key']))
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly eventLogService: EventLogService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Get()
   @Permissions(Permission.UsersFind)
@@ -52,11 +47,11 @@ export class UsersController {
     return user;
   }
 
-  @Patch(':id')
-  @Permissions(Permission.UsersFind)
+  @Put(':id')
+  @Permissions(Permission.UserProfileUpdate)
+  @ApiParam({ name: 'id', type: String })
   async updateProfile(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Request() request: RequestWithUser, //TODO: remove this, is this needed?
     @Body() user: User,
   ): Promise<User> {
     return this.usersService.update(id, user);
@@ -67,7 +62,6 @@ export class UsersController {
   @ApiParam({ name: 'id', type: String })
   async addRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Request() request: RequestWithUser,
     @Body() roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     return this.usersService.addRole(id, roleChange);
@@ -78,7 +72,6 @@ export class UsersController {
   @ApiParam({ name: 'id', type: String })
   async removeRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Request() request: RequestWithUser,
     @Body() roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     return this.usersService.removeRole(id, roleChange);

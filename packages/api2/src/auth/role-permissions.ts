@@ -9,6 +9,7 @@ const PERMISSIONS_USER = [
   Permission.UsersFind,
   Permission.EventLogView,
   Permission.ApiKeyView,
+  Permission.UserProfileUpdate,
 ];
 const PERMISSIONS_FORWARDER = [...PERMISSIONS_USER];
 const PERMISSIONS_QUANTIFIER = [...PERMISSIONS_USER];
