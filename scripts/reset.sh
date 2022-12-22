@@ -8,7 +8,7 @@ then
   echo
   echo "Shutting down containers..."
   echo
-  docker compose -f ./docker-compose.production.yml down
+  docker-compose -f ./docker-compose.production.yml down
   echo
   echo "Deleting images..."
   echo
