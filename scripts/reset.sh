@@ -6,15 +6,11 @@ echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
   echo
-  echo "Shutting down containers..."
+  echo "Shutting down containers, and removing volumes..."
   echo
-  docker-compose -f ./docker-compose.production.yml down
+  docker-compose -f ../docker-compose.production.yml down -v
   echo
   echo "Deleting images..."
   echo
   docker rmi -f $(docker images -aq)
-  echo
-  echo "Deleting volumes..."
-  echo
-  docker volume rm $(docker volume ls -q)
 fi
