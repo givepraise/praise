@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import {
   UserAccount,
   UserAccountDocument,
@@ -15,5 +15,15 @@ export class UserAccountsService {
 
   getModel(): Model<UserAccountDocument> {
     return this.userAccountModel;
+  }
+
+  /**
+   * Returns a user account by user ID
+   *
+   * @param {Types.ObjectId} userId
+   * @returns {Promise<UserAccountDocument>}
+   */
+  async findOneByUserId(userId: Types.ObjectId): Promise<UserAccountDocument> {
+    return this.userAccountModel.findOne({ userId }).lean();
   }
 }

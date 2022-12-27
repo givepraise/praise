@@ -6,6 +6,7 @@ import { Quantification } from './schemas/quantifications.schema';
 import { sum } from 'lodash';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
+import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 
 export class QuantificationsService {
   constructor(
@@ -14,6 +15,7 @@ export class QuantificationsService {
     @InjectModel(Praise.name)
     private praiseModel: Model<Praise>,
     private settingsService: SettingsService,
+    private userAccountsService: UserAccountsService,
   ) {}
 
   /**
@@ -56,15 +58,15 @@ export class QuantificationsService {
    * @throws {ServiceException}
    **/
   async findOneByQuantifierAndPraise(
-    quantifierId: Types.ObjectId,
+    userId: Types.ObjectId,
     praiseId: Types.ObjectId,
-  ): Promise<Quantification> {
-    const quantification = await this.quantificationModel
-      .findOne({ quantifier: quantifierId, praise: praiseId })
-      .lean();
+  ): Promise<Quantification | null> {
+    const quantifier = await this.userAccountsService.findOneByUserId(userId);
 
-    if (!quantification)
-      throw new ServiceException('Quantification item not found.');
+    const quantification = await this.quantificationModel
+      .findOne({ quantifier: quantifier._id, praise: praiseId })
+      .populate('quantifier praise')
+      .lean();
 
     return quantification;
   }

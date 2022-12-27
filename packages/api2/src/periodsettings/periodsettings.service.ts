@@ -4,10 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request } from 'express';
 import { Model, Types } from 'mongoose';
-import {
-  PeriodSetting,
-  PeriodSettingDocument,
-} from './schemas/periodsettings.schema';
+import { PeriodSetting } from './schemas/periodsettings.schema';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { UploadedFile } from 'express-fileupload';
 import { PeriodsService } from '@/periods/periods.service';
@@ -19,11 +16,19 @@ import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 export class PeriodSettingsService {
   constructor(
     @InjectModel(PeriodSetting.name)
-    private periodSettingsModel: Model<PeriodSettingDocument>,
+    private periodSettingsModel: Model<PeriodSetting>,
     private periodsService: PeriodsService,
     private utils: UtilsProvider,
     private eventLogService: EventLogService,
   ) {}
+
+  /**
+   * Convenience method to get the PeriodSettings Model
+   * @returns
+   */
+  getModel(): Model<PeriodSetting> {
+    return this.periodSettingsModel;
+  }
 
   async findAll(periodId: Types.ObjectId): Promise<PeriodSetting[]> {
     const period = await this.periodsService.findOneById(periodId);

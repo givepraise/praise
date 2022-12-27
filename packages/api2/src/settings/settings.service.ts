@@ -20,11 +20,19 @@ import { RequestContext } from 'nestjs-request-context';
 export class SettingsService {
   constructor(
     @InjectModel(Setting.name)
-    private settingsModel: Model<SettingDocument>,
+    private settingsModel: Model<Setting>,
     private periodSettingsService: PeriodSettingsService,
     private utils: UtilsProvider,
     private eventLogService: EventLogService,
   ) {}
+
+  /**
+   * Convenience method to get the Settings Model
+   * @returns
+   */
+  getModel(): Model<Setting> {
+    return this.settingsModel;
+  }
 
   async findAll(): Promise<Setting[]> {
     const settings = await this.settingsModel.find().lean();

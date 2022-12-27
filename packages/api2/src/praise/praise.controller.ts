@@ -5,6 +5,7 @@ import {
   Controller,
   Get,
   Param,
+  Post,
   Query,
   SerializeOptions,
   UseGuards,
@@ -12,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { isArray } from 'class-validator';
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { PraiseQuantifyMultiplePraiseInput } from './intefaces/praise-quantify-multiple-input.interface';
 import { PraiseService } from './praise.service';
@@ -28,6 +29,7 @@ import { CreateUpdateQuantificationRequest } from '@/quantifications/dto/create-
 @Controller('praise')
 @SerializeOptions({
   excludePrefixes: ['__'],
+  groups: ['praise'],
 })
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(PermissionsGuard)
@@ -42,7 +44,7 @@ export class PraiseController {
     description: 'Paginated praise items',
     type: PaginationModel<Praise>,
   })
-  @Permissions(Permission.PraiseFind)
+  @Permissions(Permission.PraiseView)
   async findAllPaginated(
     @Query() options: FindAllPraisePaginatedQuery,
   ): Promise<PaginationModel<Praise>> {
@@ -56,7 +58,7 @@ export class PraiseController {
     description: 'Praise item',
     type: Praise,
   })
-  @Permissions(Permission.PraiseFind)
+  @Permissions(Permission.PraiseView)
   @ApiParam({ name: 'id', type: String })
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -64,12 +66,12 @@ export class PraiseController {
     return this.praiseService.findOneById(id);
   }
 
-  @Get(':id/quantify')
+  @Post(':id/quantify')
   @ApiOperation({ summary: 'Quantify praise item by id' })
   @ApiResponse({
     status: 200,
-    description: 'Praise item',
-    type: Praise,
+    description: 'Praise items',
+    type: [Praise],
   })
   @Permissions(Permission.PraiseQuantify)
   @ApiParam({ name: 'id', type: String })
@@ -83,7 +85,7 @@ export class PraiseController {
     });
   }
 
-  @Get('quantify')
+  @Post('quantify')
   @ApiOperation({ summary: 'Quantify multiple praise items' })
   @ApiResponse({
     status: 200,

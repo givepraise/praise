@@ -2,14 +2,22 @@ import { Praise } from '@/praise/schemas/praise.schema';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Period, PeriodDocument } from './schemas/periods.schema';
+import { Period } from './schemas/periods.schema';
 
 @Injectable()
 export class PeriodsService {
   constructor(
     @InjectModel(Period.name)
-    private periodModel: Model<PeriodDocument>,
+    private periodModel: Model<Period>,
   ) {}
+
+  /**
+   * Convenience method to get the Period Model
+   * @returns
+   */
+  getModel(): Model<Period> {
+    return this.periodModel;
+  }
 
   async findAll(): Promise<Period[]> {
     const periods = await this.periodModel.find().lean();
@@ -30,7 +38,7 @@ export class PeriodsService {
    *  finding the period with the lowest endDate, that is greater than the praise.createdAt date
    *
    * @param {Praise} praise
-   * @returns {(Promise<PeriodDocument | undefined>)}
+   * @returns {(Promise<Period | undefined>)}
    */
   getPraisePeriod = async (praise: Praise): Promise<Period | undefined> => {
     const period = await this.periodModel

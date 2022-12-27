@@ -4,6 +4,6 @@ export enum Permission {
   UsersFind = 'users:find',
   UsersManageRoles = 'users:manageRoles',
   EventLogView = 'eventLog:view',
-  PraiseFind = 'praise:find',
+  PraiseView = 'praise:view',
   PraiseQuantify = 'praise:quantify',
 }

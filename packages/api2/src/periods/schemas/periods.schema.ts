@@ -21,12 +21,7 @@ export class Period {
   name: string;
 
   @Prop({
-    type: [
-      {
-        type: String,
-        enum: PeriodStatusType,
-      },
-    ],
+    type: String,
     enum: PeriodStatusType,
     default: PeriodStatusType.OPEN,
   })

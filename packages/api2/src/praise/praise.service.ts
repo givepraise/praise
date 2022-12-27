@@ -124,7 +124,8 @@ export class PraiseService {
 
     const praise = await this.praiseModel
       .findById(id)
-      .populate('giver receiver forwarder');
+      .populate('giver receiver forwarder')
+      .lean();
 
     if (!praise) throw new ServiceException('Praise');
 
@@ -137,10 +138,12 @@ export class PraiseService {
         'Period associated with praise does have status QUANTIFY',
       );
 
-    const allowedScore = (await this.settingsService.settingValue(
+    const settingAllowedScores = (await this.settingsService.settingValue(
       'PRAISE_QUANTIFY_ALLOWED_VALUES',
       period._id,
-    )) as number[];
+    )) as string;
+
+    const allowedScore = settingAllowedScores.split(',').map(Number);
 
     if (!allowedScore.includes(score)) {
       throw new ServiceException(
@@ -177,7 +180,7 @@ export class PraiseService {
       if (duplicatePraise === praise._id.toString())
         throw new ServiceException('Praise cannot be a duplicate of itself');
 
-      const dp = await this.praiseModel.findById(duplicatePraise);
+      const dp = await this.praiseModel.findById(duplicatePraise).lean();
       if (!dp) throw new ServiceException('Duplicate praise item not found');
 
       if (praisesDuplicateOfThis?.length > 0)
@@ -223,15 +226,13 @@ export class PraiseService {
       } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
     }
 
-    await praise.save();
-
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.PERMISSION,
       description: eventLogMessage,
       periodId: period._id,
     });
 
-    const docs = affectedPraises.map((praise) => new Praise(praise));
+    const docs = affectedPraises.map((p) => new Praise(p));
     return docs;
   };
 
@@ -252,9 +253,12 @@ export class PraiseService {
         praiseId,
       );
 
-    const duplicatePraiseItems = await this.praiseModel.find({
-      _id: { $in: duplicateQuantifications.map((q) => q.praise) },
-    });
+    const duplicatePraiseItems = await this.praiseModel
+      .find({
+        _id: { $in: duplicateQuantifications.map((q) => q.praise) },
+      })
+      .populate('giver receiver forwarder')
+      .lean();
 
     return duplicatePraiseItems;
   };

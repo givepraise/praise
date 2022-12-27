@@ -7,6 +7,7 @@ import {
   Quantification,
   QuantificationsSchema,
 } from './schemas/quantifications.schema';
+import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import {
     ]),
     forwardRef(() => PraiseModule),
     SettingsModule,
+    UserAccountsModule,
   ],
   providers: [QuantificationsService],
   exports: [

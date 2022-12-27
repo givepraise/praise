@@ -12,13 +12,13 @@ export const RolePermissions: { [key: string]: string[] } = {
     Permission.UsersFind,
     Permission.UsersManageRoles,
     Permission.EventLogView,
-    Permission.PraiseFind,
+    Permission.PraiseView,
   ],
   USER: [
     Permission.UsersFind,
     Permission.EventLogView,
     Permission.ApiKeyView,
-    Permission.PraiseFind,
+    Permission.PraiseView,
   ],
   QUANTIFIER: [Permission.PraiseQuantify],
 };
