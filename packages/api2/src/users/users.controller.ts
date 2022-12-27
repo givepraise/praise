@@ -12,6 +12,7 @@ import {
   UseGuards,
   UseInterceptors,
   Put,
+  Request,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
@@ -21,6 +22,7 @@ import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
 
 @Controller('users')
 @SerializeOptions({
@@ -52,8 +54,12 @@ export class UsersController {
   @ApiParam({ name: 'id', type: String })
   async updateProfile(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Request() req: RequestWithUser,
     @Body() user: User,
   ): Promise<User> {
+    if (req.user._id.toString() !== id.toString()) {
+      throw new BadRequestException('You can only update your own profile.');
+    }
     return this.usersService.update(id, user);
   }
 
