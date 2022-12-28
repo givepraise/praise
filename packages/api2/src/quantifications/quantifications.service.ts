@@ -260,4 +260,29 @@ export class QuantificationsService {
 
     return score;
   };
+
+  /**
+   * Update a quantification
+   *
+   * @param {Quantification} quantification
+   * @returns {Promise<Quantification>}
+   * @throws {ServiceException}
+   */
+  updateQuantification = async (
+    quantification: Quantification,
+  ): Promise<Quantification> => {
+    const updatedQuantification = await this.quantificationModel
+      .findOneAndUpdate({ _id: quantification._id }, quantification, {
+        new: true,
+      })
+      .lean();
+
+    if (!updatedQuantification) {
+      throw new ServiceException(
+        `Quantification ${quantification._id} not found`,
+      );
+    }
+
+    return updatedQuantification;
+  };
 }

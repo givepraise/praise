@@ -3,6 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { QuantificationsService } from '../quantifications.service';
+import { Transform } from 'class-transformer';
 
 export type QuantificationDocument = Quantification & Document;
 
@@ -16,6 +17,9 @@ export class Quantification {
       Object.assign(this, partial);
     }
   }
+
+  @Transform(({ value }) => value.toString())
+  _id: Types.ObjectId;
 
   @Prop({ required: true, default: 0 })
   score: number;
