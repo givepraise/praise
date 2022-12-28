@@ -1,4 +1,4 @@
-import { UserRole } from '@/users/interfaces/user-role.interface';
+import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
 import { UsersService } from '@/users/users.service';
 import { faker } from '@faker-js/faker';
@@ -20,7 +20,7 @@ export class UsersSeeder {
       identityEthAddress: faker.finance.ethereumAddress(),
       rewardsEthAddress: faker.finance.ethereumAddress(),
       username: faker.internet.userName(),
-      roles: [UserRole.USER],
+      roles: [AuthRole.USER],
       ...(userData as any),
     });
 

@@ -9,6 +9,8 @@ import { ConstantsProvider } from '@/constants/constants.provider';
 import { EthSignatureStrategy } from './strategies/eth-signature.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { EventLogModule } from '@/event-log/event-log.module';
+import { ApiKeyStrategy } from './strategies/api-key.strategy';
+import { ApiKeyModule } from '@/api-key/api-key.module';
 
 @Module({
   imports: [
@@ -19,11 +21,13 @@ import { EventLogModule } from '@/event-log/event-log.module';
       signOptions: { expiresIn: process.env.JWT_ACCESS_EXP },
     }),
     EventLogModule,
+    ApiKeyModule,
   ],
   providers: [
     EthSignatureService,
     JwtStrategy,
     EthSignatureStrategy,
+    ApiKeyStrategy,
     UtilsProvider,
     ConstantsProvider,
   ],

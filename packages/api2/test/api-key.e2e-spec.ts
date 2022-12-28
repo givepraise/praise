@@ -18,11 +18,10 @@ import {
   loginUser,
 } from './test.common';
 import { runDbMigrations } from '@/database/migrations';
-import { UserRole } from '@/users/interfaces/user-role.interface';
 import { ApiKeyService } from '@/api-key/api-key.service';
 import { ApiKeyModule } from '@/api-key/api-key.module';
 import { UsersModule } from '@/users/users.module';
-import { ApiKeyUserRole } from '@/api-key/enums/api-key-user-roles';
+import { AuthRole } from '@/auth/enums/auth-role.enum';
 
 describe('EventLog (E2E)', () => {
   let app: INestApplication;
@@ -57,7 +56,7 @@ describe('EventLog (E2E)', () => {
     await usersSeeder.seedUser({
       identityEthAddress: wallet.address,
       rewardsAddress: wallet.address,
-      roles: [UserRole.ADMIN],
+      roles: [AuthRole.ADMIN],
     });
 
     // Login and get access token
@@ -79,7 +78,7 @@ describe('EventLog (E2E)', () => {
       await usersSeeder.seedUser({
         identityEthAddress: wallet2.address,
         rewardsAddress: wallet2.address,
-        roles: [UserRole.USER],
+        roles: [AuthRole.USER],
       });
 
       const response = await loginUser(app, module, wallet2);
@@ -87,7 +86,7 @@ describe('EventLog (E2E)', () => {
 
       await authorizedPostRequest('/api-key', app, accessToken2, {
         description: 'test key',
-        role: ApiKeyUserRole.READ,
+        role: AuthRole.APIKEY_READ,
       }).expect(403);
     });
 
@@ -101,13 +100,13 @@ describe('EventLog (E2E)', () => {
         accessToken,
         {
           description: 'test API key',
-          role: ApiKeyUserRole.READ,
+          role: AuthRole.APIKEY_READ,
         },
       ).expect(201);
 
       expect(response.body).toBeDefined();
       expect(response.body.description).toEqual('test API key');
-      expect(response.body.role).toEqual(ApiKeyUserRole.READ);
+      expect(response.body.role).toEqual(AuthRole.APIKEY_READ);
       expect(response.body.key).toBeDefined();
       expect(response.body.key).toHaveLength(64);
       expect(response.body.name).toEqual(response.body.key.slice(0, 8));
@@ -125,15 +124,15 @@ describe('EventLog (E2E)', () => {
 
       await authorizedPostRequest('/api-key', app, accessToken, {
         description: 'test API key',
-        role: ApiKeyUserRole.READ,
+        role: AuthRole.APIKEY_READ,
       });
       await authorizedPostRequest('/api-key', app, accessToken, {
         description: 'test API key 2',
-        role: ApiKeyUserRole.READ,
+        role: AuthRole.APIKEY_READ,
       });
       await authorizedPostRequest('/api-key', app, accessToken, {
         description: 'test API key 3',
-        role: ApiKeyUserRole.READ,
+        role: AuthRole.APIKEY_READ,
       });
 
       const response = await authorizedGetRequest(
@@ -161,7 +160,7 @@ describe('EventLog (E2E)', () => {
         accessToken,
         {
           description: 'test API key',
-          role: ApiKeyUserRole.READ,
+          role: AuthRole.APIKEY_READ,
         },
       ).expect(201);
 
@@ -187,7 +186,7 @@ describe('EventLog (E2E)', () => {
         accessToken,
         {
           description: 'test API key',
-          role: ApiKeyUserRole.READ,
+          role: AuthRole.APIKEY_READ,
         },
       ).expect(201);
 
@@ -217,7 +216,7 @@ describe('EventLog (E2E)', () => {
         accessToken,
         {
           description: 'test API key',
-          role: ApiKeyUserRole.READ,
+          role: AuthRole.APIKEY_READ,
         },
       ).expect(201);
 
