@@ -19,10 +19,6 @@ installQuestions() {
     echo "Welcome to the Praise Setup!"
     echo "I need to ask you a few questions before starting the setup."
 
-    # Detect public IPv4 or IPv6 address and pre-fill for the user
-    PUBLIC_IP=$(curl ifconfig.me)
-    read -rp "IPv4 or IPv6 public address: " -e -i "${PUBLIC_IP}" PUBLIC_IP
-
     # Ask User for the Desirted Domain Name for the Praise Bot Server
     HOST=""
     read -rp "What would you like the Praise Bot Domain Name to be? " -e -i "${HOST}" HOST
@@ -50,7 +46,7 @@ configure_praise () {
 ## GENERAL ##
 
 # Running through Docker: NODE_ENV=production
-NODE_ENV=$PRAISE_ENV
+NODE_ENV=$NODE_ENV
 
 ###########################################################################
 ## DATABASE ##
@@ -78,7 +74,7 @@ HOST=$HOST
 
 # Full URL to the host where the API is running.
 # When running in development, the URL should also include API_PORT
-API_URL=https://$HOST
+API_URL=http://$HOST
 
 # The API is accessed on this port. In production this port is not exposed
 # externally but API is accessed on {$API_URL}/api
@@ -97,7 +93,7 @@ JWT_REFRESH_EXP=25920000
 ## FRONTEND ##
 
 # Full URL to the host (and optionally port) where frontend is being served
-FRONTEND_URL=https://$HOST
+FRONTEND_URL=http://$HOST
 
 ## FRONTEND - DEVELOPMENT ONLY ##
 
@@ -106,7 +102,7 @@ FRONTEND_URL=https://$HOST
 # env variables. There are workarounds but we haven't prioritised to implement them yet.
 #
 # https://jakobzanker.de/blog/inject-environment-variables-into-a-react-app-docker-on-runtime/
-REACT_APP_SERVER_URL=https://$HOST
+REACT_APP_SERVER_URL=http://$HOST
 
 # Port number used when running frontend for development, outside of Docker
 FRONTEND_PORT=$FRONTEND_PORT
@@ -135,12 +131,12 @@ praise_env () {
         read -rp "Confirm Praise env? [1/2]: " -e -i "1" env
     done
     if [[ "$env" =~ ^[1]$ ]]; then
-        export PRAISE_ENV=production
-        echo $PRAISE_ENV
+        export NODE_ENV=production
+        echo $NODE_ENV
         sleep 1
     elif [[ "$env" =~ ^[2]$ ]]; then
-        export PRAISE_ENV=development
-        echo $PRAISE_ENV
+        export NODE_ENV=development
+        echo $NODE_ENV
         sleep 1
     else
         echo "Invalid Option, Praise Setup Aborted"
@@ -161,11 +157,40 @@ configure_compose () {
     sed -i "s/container_name: .*frontend-praise/container_name: ${HOST}-frontend-praise/" $PRAISE_HOME/docker-compose.multi.yml
 }
 
+extract_conf () {
+    export $(grep -v '^#' $PRAISE_HOME/.env | xargs)
+    echo
+    # Ask User for the Desirted Domain Name for the Praise Bot Server
+    HOST=$HOST
+    read -rp "What would you like the Praise Bot Domain Name to be? " -e -i "${HOST}" HOST
+    # Ask the user for the DISCORD TOKEN
+    DISCORD_TOKEN=$DISCORD_TOKEN
+    read -rp "What is your Discord Token? " -e -i "${DISCORD_TOKEN}" DISCORD_TOKEN
+    # Ask the user for the DISCORD CLIENT ID
+    DISCORD_CLIENT_ID=$DISCORD_CLIENT_ID
+    read -rp "What is your Discord Client ID? " -e -i "${DISCORD_CLIENT_ID}" DISCORD_CLIENT_ID
+    # Ask the user for the DISCORD GUILD ID
+    DISCORD_GUILD_ID=$DISCORD_GUILD_ID
+    read -rp "What is your Discord Guild ID? " -e -i "${DISCORD_GUILD_ID}" DISCORD_GUILD_ID
+    # Ask the user for the ADMINS wallet Address
+    ADMINS=$ADMINS
+    read -rp "What will your praise bot server admin wallet address be (Please insert the addresses separated by comma)? " -e -i "${ADMINS}" ADMINS
+    echo
+    echo "Okay, that was all I needed. Praise will be configured using the inputted values"
+    read -n1 -r -p "Press any key to continue..."
+}
+
 main () {
-    praise_env
-    installQuestions
-    configure_compose
-    configure_praise
+    if [ -f "$PRAISE_HOME/.env" ]; then
+        echo "ENV Exists"
+        extract_conf
+        configure_praise
+    else
+        praise_env
+        installQuestions
+        configure_compose
+        configure_praise
+    fi
 }
 
 main
