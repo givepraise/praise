@@ -29,7 +29,6 @@ import { PraiseService } from '@/praise/praise.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
-import { UserRole } from '@/users/interfaces/user-role.interface';
 import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
 import { PeriodsModule } from '@/periods/periods.module';
 import { Period } from '@/periods/schemas/periods.schema';
@@ -41,10 +40,9 @@ import { SettingsSeeder } from '@/database/seeder/settings.seeder';
 import { SettingsModule } from '@/settings/settings.module';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
-import { PaginationModel } from '@/shared/dto/pagination-model.dto';
 import { FindAllPraisePaginatedQuery } from '@/praise/dto/find-all-praise-paginated-query.dto';
 import { Types } from 'mongoose';
-import { praise } from '../../api/src/period/controllers/core';
+import { AuthRole } from '@/auth/enums/auth-role.enum';
 
 describe('Praise (E2E)', () => {
   let app: INestApplication;
@@ -134,7 +132,7 @@ describe('Praise (E2E)', () => {
     const user = await usersSeeder.seedUser({
       identityEthAddress: wallet.address,
       rewardsAddress: wallet.address,
-      roles: [UserRole.USER, UserRole.QUANTIFIER],
+      roles: [AuthRole.USER, AuthRole.QUANTIFIER],
     });
 
     quantifier = await userAccountsSeeder.seedUserAccount({
