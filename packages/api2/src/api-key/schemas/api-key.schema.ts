@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { Document } from 'mongoose';
-import { ApiKeyUserRole } from '../enums/api-key-user-roles';
+import { AuthRole } from '../../auth/enums/auth-role.enum';
 
 export type ApiKeyDocument = ApiKey & Document;
 
@@ -34,10 +34,10 @@ export class ApiKey {
   @Prop({ type: String, required: true })
   hash: string;
 
-  @ApiProperty({ enum: ApiKeyUserRole, required: true })
-  @IsEnum(ApiKeyUserRole)
-  @Prop({ enum: ApiKeyUserRole, required: true })
-  role: ApiKeyUserRole;
+  @ApiProperty({ enum: AuthRole, required: true })
+  @IsEnum(AuthRole)
+  @Prop({ enum: AuthRole, required: true })
+  role: AuthRole;
 
   @ApiResponseProperty()
   @Prop({ type: Date })

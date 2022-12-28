@@ -1,12 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { AppModule } from '../../app.module';
 import { ApiKeyController } from '../api-key.controller';
+import { ApiKeyModule } from '../api-key.module';
 
 describe('ApiKeyController', () => {
   let controller: ApiKeyController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [ApiKeyController],
+      imports: [AppModule, ApiKeyModule],
     }).compile();
 
     controller = module.get<ApiKeyController>(ApiKeyController);

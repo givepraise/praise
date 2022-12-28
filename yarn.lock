@@ -6904,6 +6904,7 @@ __metadata:
     passport: ^0.6.0
     passport-jwt: ^4.0.0
     passport-local: ^1.0.0
+    passport-unique-token: ^3.0.0
     prettier: ^2.3.2
     reflect-metadata: ^0.1.13
     rimraf: ^3.0.2
@@ -16661,6 +16662,15 @@ __metadata:
   version: 1.0.0
   resolution: "passport-strategy@npm:1.0.0"
   checksum: 5086693f2508e538dffa55a338c89fe8192fb5f4478c71f80cd5890b8573419a098f4fec88b505374f60bbe9049f6f24b9f3992678612528a3370b4dc73354a2
+  languageName: node
+  linkType: hard
+
+"passport-unique-token@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "passport-unique-token@npm:3.0.0"
+  dependencies:
+    passport-strategy: ^1.0.0
+  checksum: 24287fd3718700c6818bae0203286a0c55a92a35758a85fc3b3f8abbd7c22257443c33f2a6971bac0de4a508aa33ff1cb8560a4cb355a6dad9e60a42d0069202
   languageName: node
   linkType: hard
 
