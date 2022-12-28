@@ -1,11 +1,9 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { PraiseModel, Praise, PraiseDocument } from './schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
-import { QuantifyPraiseProps } from './intefaces/quantify-praise.interface';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
-import { Period } from '@/periods/schemas/periods.schema';
 import { SettingsService } from '@/settings/settings.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
 import { FindAllPraisePaginatedQuery } from './dto/find-all-praise-paginated-query.dto';
@@ -13,9 +11,10 @@ import { PaginationModel } from '@/shared/dto/pagination-model.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { RequestContext } from 'nestjs-request-context';
 import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
 import { PeriodsService } from '@/periods/periods.service';
+import { CreateUpdateQuantification } from '@/quantifications/dto/create-update-quantification.dto';
+import { RequestContext } from 'nestjs-request-context';
 
 @Injectable()
 export class PraiseService {
@@ -46,19 +45,20 @@ export class PraiseService {
   async findAllPaginated(
     options: FindAllPraisePaginatedQuery,
   ): Promise<PaginationModel<Praise>> {
-    const { sortColumn, sortType } = options;
+    const { sortColumn, sortType, receiver, giver, page, limit } = options;
     const query = {} as any;
 
-    if (options.receiver) {
-      query.receiver = new Types.ObjectId(options.receiver);
+    if (receiver) {
+      query.receiver = receiver;
     }
 
-    if (options.giver) {
-      query.giver = new Types.ObjectId(options.giver);
+    if (giver) {
+      query.giver = giver;
     }
 
     const praisePagination = await this.praiseModel.paginate({
-      ...options,
+      page,
+      limit,
       query,
       sort: sortColumn && sortType ? { [sortColumn]: sortType } : undefined,
       populate: [
@@ -80,6 +80,7 @@ export class PraiseService {
     if (!praisePagination)
       throw new ServiceException('Failed to paginate praise data');
 
+    // Map the praise documents to the Praise class
     const docs = praisePagination.docs.map((praise) => new Praise(praise));
 
     return {
@@ -110,49 +111,37 @@ export class PraiseService {
    * Quantify praise item
    *
    * @param id {string}
-   * @param bodyParams {CreateUpdateQuantificationRequest}
+   * @param bodyParams {CreateUpdateQuantification}
    * @returns {Promise<Praise[]>}
    * @throws {ServiceException}
    *
    **/
-  quantifyPraise = async ({
-    id,
-    bodyParams,
-  }: QuantifyPraiseProps): Promise<Praise[]> => {
-    const req: RequestWithUser = RequestContext.currentContext.req;
-    const { score, dismissed, duplicatePraise } = bodyParams;
+  quantifyPraise = async (
+    id: Types.ObjectId,
+    params: CreateUpdateQuantification,
+  ): Promise<Praise[]> => {
+    const { score, dismissed, duplicatePraise } = params;
 
+    // Get the praise item
     const praise = await this.praiseModel
       .findById(id)
       .populate('giver receiver forwarder')
       .lean();
+    if (!praise) throw new ServiceException('Praise item not found');
 
-    if (!praise) throw new ServiceException('Praise');
-
+    // Get the period associated with the praise item
     const period = await this.periodService.getPraisePeriod(praise);
     if (!period)
       throw new ServiceException('Praise does not have an associated period');
 
+    // Check if the period is in the QUANTIFY status
     if (period.status !== PeriodStatusType.QUANTIFY)
       throw new ServiceException(
         'Period associated with praise does have status QUANTIFY',
       );
 
-    const settingAllowedScores = (await this.settingsService.settingValue(
-      'PRAISE_QUANTIFY_ALLOWED_VALUES',
-      period._id,
-    )) as string;
-
-    const allowedScore = settingAllowedScores.split(',').map(Number);
-
-    if (!allowedScore.includes(score)) {
-      throw new ServiceException(
-        `Score ${score} is not allowed. Allowed scores are: ${allowedScore.join(
-          ', ',
-        )}`,
-      );
-    }
-
+    // Check that user is assigned as quantifier for the praise item
+    const req: RequestWithUser = RequestContext.currentContext.req;
     const quantification =
       await this.quantificationsService.findOneByQuantifierAndPraise(
         req.user._id,
@@ -177,7 +166,7 @@ export class PraiseService {
 
     // Modify praise quantification values
     if (duplicatePraise) {
-      if (duplicatePraise === praise._id.toString())
+      if (duplicatePraise === praise._id)
         throw new ServiceException('Praise cannot be a duplicate of itself');
 
       const dp = await this.praiseModel.findById(duplicatePraise).lean();
@@ -217,6 +206,28 @@ export class PraiseService {
         praise._id as Types.ObjectId
       ).toString()}"`;
     } else {
+      if (!score) {
+        throw new ServiceException(
+          'Score or dismissed or duplicatePraise is required',
+        );
+      }
+
+      // Check if the score is allowed
+      const settingAllowedScores = (await this.settingsService.settingValue(
+        'PRAISE_QUANTIFY_ALLOWED_VALUES',
+        period._id,
+      )) as string;
+
+      const allowedScore = settingAllowedScores.split(',').map(Number);
+
+      if (!allowedScore.includes(score)) {
+        throw new ServiceException(
+          `Score ${score} is not allowed. Allowed scores are: ${allowedScore.join(
+            ', ',
+          )}`,
+        );
+      }
+
       quantification.score = score;
       quantification.dismissed = false;
       quantification.duplicatePraise = undefined;
@@ -225,6 +236,8 @@ export class PraiseService {
         quantification.score
       } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
     }
+
+    await this.quantificationsService.updateQuantification(quantification);
 
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.PERMISSION,

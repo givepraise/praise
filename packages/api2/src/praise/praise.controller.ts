@@ -15,7 +15,7 @@ import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { isArray } from 'class-validator';
 import { Model, Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
-import { PraiseQuantifyMultiplePraiseInput } from './intefaces/praise-quantify-multiple-input.interface';
+import { QuantifyMultiple } from './dto/praise-quantify-multiple-input.interface';
 import { PraiseService } from './praise.service';
 import { Praise } from './schemas/praise.schema';
 import { FindAllPraisePaginatedQuery } from './dto/find-all-praise-paginated-query.dto';
@@ -24,7 +24,7 @@ import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
-import { CreateUpdateQuantificationRequest } from '@/quantifications/dto/create-update-quantification-request.dto';
+import { CreateUpdateQuantification } from '@/quantifications/dto/create-update-quantification.dto';
 
 @Controller('praise')
 @SerializeOptions({
@@ -77,12 +77,9 @@ export class PraiseController {
   @ApiParam({ name: 'id', type: String })
   async quantify(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() data: CreateUpdateQuantificationRequest,
+    @Body() data: CreateUpdateQuantification,
   ): Promise<Praise[]> {
-    return this.praiseService.quantifyPraise({
-      id: id.toString(),
-      bodyParams: data,
-    });
+    return this.praiseService.quantifyPraise(id, data);
   }
 
   @Post('quantify')
@@ -93,10 +90,8 @@ export class PraiseController {
     type: [Praise],
   })
   @Permissions(Permission.PraiseQuantify)
-  async quantifyMultiple(
-    @Body() data: PraiseQuantifyMultiplePraiseInput,
-  ): Promise<Praise[]> {
-    const { praiseIds } = data;
+  async quantifyMultiple(@Body() data: QuantifyMultiple): Promise<Praise[]> {
+    const { praiseIds, params } = data;
 
     if (!isArray(praiseIds)) {
       throw new BadRequestException('praiseIds must be an array');
@@ -104,10 +99,10 @@ export class PraiseController {
 
     const praiseItems = await Promise.all(
       praiseIds.map(async (id) => {
-        const affectedPraises = await this.praiseService.quantifyPraise({
+        const affectedPraises = await this.praiseService.quantifyPraise(
           id,
-          bodyParams: data,
-        });
+          params,
+        );
 
         return affectedPraises;
       }),

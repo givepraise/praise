@@ -595,7 +595,9 @@ describe('Praise (E2E)', () => {
         accessToken,
         {
           praiseIds: [praise._id, praise2._id],
-          score: 144,
+          params: {
+            score: 144,
+          },
         },
       );
 
