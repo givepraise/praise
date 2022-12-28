@@ -18,11 +18,6 @@ installQuestions() {
 
     echo "Welcome to the Praise Setup!"
     echo "I need to ask you a few questions before starting the setup."
-
-    # Detect public IPv4 or IPv6 address and pre-fill for the user
-    PUBLIC_IP=$(curl ifconfig.me)
-    read -rp "IPv4 or IPv6 public address: " -e -i "${PUBLIC_IP}" PUBLIC_IP
-
     # Ask User for the Desirted Domain Name for the Praise Bot Server
     HOST=""
     read -rp "What would you like the Praise Bot Domain Name to be? " -e -i "${HOST}" HOST
@@ -50,7 +45,7 @@ configure_praise () {
 ## GENERAL ##
 
 # Running through Docker: NODE_ENV=production
-NODE_ENV=$PRAISE_ENV
+NODE_ENV=$NODE_ENV
 
 ###########################################################################
 ## DATABASE ##
@@ -135,12 +130,12 @@ praise_env () {
         read -rp "Confirm Praise env? [1/2]: " -e -i "1" env
     done
     if [[ "$env" =~ ^[1]$ ]]; then
-        export PRAISE_ENV=production
-        echo $PRAISE_ENV
+        export NODE_ENV=production
+        echo $NODE_ENV
         sleep 1
     elif [[ "$env" =~ ^[2]$ ]]; then
-        export PRAISE_ENV=development
-        echo $PRAISE_ENV
+        export NODE_ENV=development
+        echo $NODE_ENV
         sleep 1
     else
         echo "Invalid Option, Praise Setup Aborted"
