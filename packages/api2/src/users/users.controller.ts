@@ -23,6 +23,7 @@ import { Permission } from '@/auth/enums/permission.enum';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 @SerializeOptions({
@@ -55,7 +56,7 @@ export class UsersController {
   async updateProfile(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Request() req: RequestWithUser,
-    @Body() user: User,
+    @Body() user: UpdateUserDto,
   ): Promise<User> {
     if (req.user._id.toString() !== id.toString()) {
       throw new BadRequestException('You can only update your own profile.');
