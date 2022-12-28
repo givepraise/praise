@@ -21,7 +21,7 @@ export class PeriodsSeeder {
     const createdAt = faker.date.recent();
 
     const Period = await this.PeriodModel.create({
-      name: faker.name.firstName(),
+      name: faker.random.words(3),
       status: PeriodStatusType.OPEN,
       endDate: faker.date.recent(),
       createdAt,

@@ -30,7 +30,7 @@ export class PraiseSeeder {
       reasonRaw: faker.lorem.sentence(),
       sourceId: faker.datatype.uuid(),
       sourceName: 'DISCORD',
-      score: faker.datatype.number(),
+      score: 0,
       giver: randomGiver._id,
       receiver: randomReceiver._id,
       quantifications: [],

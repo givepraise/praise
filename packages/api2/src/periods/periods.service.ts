@@ -19,15 +19,26 @@ export class PeriodsService {
     return this.periodModel;
   }
 
+  /**
+   * Find all periods
+   *
+   * @returns {Promise<Period[]>}
+   */
   async findAll(): Promise<Period[]> {
     const periods = await this.periodModel.find().lean();
     return periods.map((period) => new Period(period));
   }
 
+  /**
+   * Find a period by its id
+   *
+   * @param {Types.ObjectId} _id
+   * @returns {Promise<Period>}
+   */
   async findOneById(_id: Types.ObjectId): Promise<Period> {
     const period = await this.periodModel.findById(_id).lean();
     if (!period) throw new NotFoundException('Period not found.');
-    return new Period(period);
+    return period;
   }
 
   /**

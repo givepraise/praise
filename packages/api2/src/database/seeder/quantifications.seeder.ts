@@ -22,8 +22,8 @@ export class QuantificationsSeeder {
     const createdAt = faker.date.recent();
 
     const Quantification = await this.QuantificationModel.create({
-      score: faker.datatype.number({ min: 0, max: 100 }),
-      scoreRealized: faker.datatype.number({ min: 0, max: 100 }),
+      score: 0,
+      scoreRealized: 0,
       dismissed: faker.datatype.boolean(),
       quantifier: null,
       createdAt,
