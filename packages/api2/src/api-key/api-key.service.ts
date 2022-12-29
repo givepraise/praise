@@ -9,6 +9,7 @@ import { CreateApiKeyResponse } from './dto/create-api-key-response';
 import { ServiceException } from '@/shared/service-exception';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { RequestContext } from 'nestjs-request-context';
 
 @Injectable()
 export class ApiKeyService {
@@ -31,7 +32,7 @@ export class ApiKeyService {
    * Creates a new API key.
    * @param {CreateApiKeyRequest} createApiKeyDto - The request payload containing the API key details.
    * @returns {Promise<CreateApiKeyResponse>} A promise that resolves to the response containing the created API key.
-   * @throws {ServiceException} If there is an error while creating the API key.
+   * @throws {ServiceException}, If there is an error while creating the API key.
    */
   async createApiKey(
     createApiKeyDto: CreateApiKeyRequest,

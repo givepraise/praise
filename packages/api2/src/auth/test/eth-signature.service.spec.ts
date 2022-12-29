@@ -77,7 +77,7 @@ describe('EthSignatureService', () => {
 
   describe('login', () => {
     test('calls jwtService.sign with correct payload', async () => {
-      await ethSignatureService.login(userStub);
+      await ethSignatureService.login(userStub._id);
       expect(jwtService.sign).toBeCalledWith({
         userId: userStub._id.toString(),
         identityEthAddress: userStub.identityEthAddress,
@@ -85,7 +85,7 @@ describe('EthSignatureService', () => {
       });
     });
     test('returns correct response', async () => {
-      const response = await ethSignatureService.login(userStub);
+      const response = await ethSignatureService.login(userStub._id);
       expect(response).toEqual<LoginResponse>({
         accessToken: accessTokenStub,
         identityEthAddress: userStub.identityEthAddress,

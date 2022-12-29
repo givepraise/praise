@@ -11,10 +11,10 @@ import { PaginationModel } from '@/shared/dto/pagination-model.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
 import { PeriodsService } from '@/periods/periods.service';
 import { CreateUpdateQuantification } from '@/quantifications/dto/create-update-quantification.dto';
 import { RequestContext } from 'nestjs-request-context';
+import { RequestWithAuthContext } from '@/auth/interfaces/request-with-auth-context.interface';
 import { Period } from '@/periods/schemas/periods.schema';
 import { PeriodDetailsQuantifier } from '@/periods/interfaces/period-details-quantifier.interface';
 import { PeriodDetailsGiverReceiver } from '@/periods/interfaces/period-details-giver-receiver.interface';
@@ -24,8 +24,8 @@ export class PraiseService {
   constructor(
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
-    // private periodsService: PeriodsService,
-    // private settingsService: SettingsService,
+    private periodService: PeriodsService,
+    private settingsService: SettingsService,
     private quantificationsService: QuantificationsService,
     private eventLogService: EventLogService,
   ) {}
@@ -107,7 +107,7 @@ export class PraiseService {
 
     if (!praise) throw new ServiceException('Praise item not found.');
 
-    return praise;
+    return new Praise(praise);
   }
 
   /**
@@ -115,7 +115,7 @@ export class PraiseService {
    *
    * @param id {string}
    * @param bodyParams {CreateUpdateQuantification}
-   * @returns {Promise<Praise[]>}
+   * @returns An array of all affected praise items
    * @throws {ServiceException}
    *
    **/
@@ -125,7 +125,7 @@ export class PraiseService {
   ): Promise<Praise[]> => {
     const { score, dismissed, duplicatePraise } = params;
 
-    // Get the praise item
+    // Get the praise item in question
     const praise = await this.praiseModel
       .findById(id)
       .populate('giver receiver forwarder')
@@ -133,58 +133,62 @@ export class PraiseService {
     if (!praise) throw new ServiceException('Praise item not found');
 
     // Get the period associated with the praise item
-    // const period = await this.periodsService.getPraisePeriod(praise);
-    const period = undefined;
+    const period = await this.periodService.getPraisePeriod(praise);
     if (!period)
       throw new ServiceException('Praise does not have an associated period');
 
     // Check if the period is in the QUANTIFY status
-    // if (period.status !== PeriodStatusType.QUANTIFY)
-    //   throw new ServiceException(
-    //     'Period associated with praise does have status QUANTIFY',
-    //   );
-
-    // Check that user is assigned as quantifier for the praise item
-    const req: RequestWithUser = RequestContext.currentContext.req;
-    const quantification =
-      await this.quantificationsService.findOneByQuantifierAndPraise(
-        req.user._id,
-        praise._id,
+    if (period.status !== PeriodStatusType.QUANTIFY)
+      throw new ServiceException(
+        'Period associated with praise does have status QUANTIFY',
       );
 
-    if (!quantification)
+    // Check that user is assigned as quantifier for the praise item
+    const req: RequestWithAuthContext = RequestContext.currentContext.req;
+    const userId = req.user?.userId;
+    if (!userId)
+      throw new ServiceException('User not found in request context');
+
+    const quantification =
+      await this.quantificationsService.findOneByQuantifierAndPraise(
+        userId,
+        praise._id,
+      );
+    if (!quantification) {
       throw new ServiceException('User not assigned as quantifier for praise.');
+    }
 
     let eventLogMessage = '';
 
-    // Collect all affected praises (i.e. any praises whose scoreRealized will change as a result of this change)
+    // Collect all affected praises (i.e. any praises whose score will change as a result of this change)
     const affectedPraises: Praise[] = [praise];
-
     const praisesDuplicateOfThis = await this.findDuplicatePraiseItems(
       praise._id,
-      req.user._id,
+      userId,
     );
-
     if (praisesDuplicateOfThis?.length > 0)
       affectedPraises.push(...praisesDuplicateOfThis);
 
-    // Modify praise quantification values
     if (duplicatePraise) {
+      // Check that the duplicatePraise is not the same as the praise item
       if (duplicatePraise === praise._id)
         throw new ServiceException('Praise cannot be a duplicate of itself');
 
+      // Find the original praise item
       const dp = await this.praiseModel.findById(duplicatePraise).lean();
       if (!dp) throw new ServiceException('Duplicate praise item not found');
 
+      // Check that this praise item is not already the original of another duplicate
       if (praisesDuplicateOfThis?.length > 0)
         throw new ServiceException(
           'Praise cannot be marked duplicate when it is the original of another duplicate',
         );
 
+      // Check that this praise item does not become the duplicate of another duplicate
       const praisesDuplicateOfAnotherDuplicate =
         await this.findPraisesDuplicateOfAnotherDuplicate(
           new Types.ObjectId(duplicatePraise),
-          req.user._id,
+          userId,
         );
 
       if (praisesDuplicateOfAnotherDuplicate?.length > 0)
@@ -192,6 +196,7 @@ export class PraiseService {
           'Praise cannot be marked duplicate of another duplicate',
         );
 
+      // When marking a praise as duplicate, the score is set to 0 and the dismissed flag is cleared
       quantification.score = 0;
       quantification.dismissed = false;
       quantification.duplicatePraise = dp;
@@ -202,6 +207,7 @@ export class PraiseService {
         dp._id as Types.ObjectId
       ).toString()}"`;
     } else if (dismissed) {
+      // When dismissing a praise, the score is set to 0, any duplicatePraise is cleared and the dismissed flag is set
       quantification.score = 0;
       quantification.dismissed = true;
       quantification.duplicatePraise = undefined;
@@ -212,16 +218,15 @@ export class PraiseService {
     } else {
       if (!score) {
         throw new ServiceException(
-          'Score or dismissed or duplicatePraise is required',
+          'Score, dismissed or duplicatePraise is required',
         );
       }
 
       // Check if the score is allowed
-      const settingAllowedScores = '0, 144';
-      // const settingAllowedScores = (await this.settingsService.settingValue(
-      //   'PRAISE_QUANTIFY_ALLOWED_VALUES',
-      //   period._id,
-      // )) as string;
+      const settingAllowedScores = (await this.settingsService.settingValue(
+        'PRAISE_QUANTIFY_ALLOWED_VALUES',
+        period._id,
+      )) as string;
 
       const allowedScore = settingAllowedScores.split(',').map(Number);
 
@@ -233,6 +238,7 @@ export class PraiseService {
         );
       }
 
+      // When quantifying a praise, the score is set, any duplicatePraise is cleared and the dismissed flag is cleared
       quantification.score = score;
       quantification.dismissed = false;
       quantification.duplicatePraise = undefined;
@@ -242,15 +248,38 @@ export class PraiseService {
       } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
     }
 
+    // Save updated quantification
     await this.quantificationsService.updateQuantification(quantification);
+
+    const docs: Praise[] = [];
+
+    // Update the score of the praise item and all duplicates
+    for (const p of affectedPraises) {
+      const score =
+        await this.quantificationsService.calculateQuantificationsCompositeScore(
+          p,
+        );
+
+      const praiseWithScore: Praise = await this.praiseModel
+        .findByIdAndUpdate(
+          p._id,
+          {
+            score,
+          },
+          { new: true },
+        )
+        .populate('giver receiver forwarder quantifications')
+        .lean();
+
+      docs.push(new Praise(praiseWithScore));
+    }
 
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.PERMISSION,
       description: eventLogMessage,
-      // periodId: period._id,
+      periodId: period._id,
     });
 
-    const docs = affectedPraises.map((p) => new Praise(p));
     return docs;
   };
 
@@ -278,7 +307,7 @@ export class PraiseService {
       .populate('giver receiver forwarder')
       .lean();
 
-    return duplicatePraiseItems;
+    return duplicatePraiseItems.map((p) => new Praise(p));
   };
 
   /**
@@ -306,7 +335,7 @@ export class PraiseService {
       },
     });
 
-    return duplicatePraiseItems;
+    return duplicatePraiseItems.map((p) => new Praise(p));
   };
 
   /**
@@ -363,9 +392,34 @@ export class PraiseService {
         },
       },
       {
+        $lookup: {
+          from: 'useraccounts',
+          localField: 'giver',
+          foreignField: '_id',
+          as: 'userAccounts',
+        },
+      },
+      {
+        $lookup: {
+          from: 'quantifications',
+          localField: '_id',
+          foreignField: 'praise',
+          as: 'quantifications',
+        },
+      },
+      {
         $group: {
           _id: '$giver',
           praiseCount: { $count: {} },
+          quantifications: {
+            $push: '$quantifications',
+          },
+          userAccounts: { $first: '$userAccounts' },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
         },
       },
     ]);
@@ -393,9 +447,34 @@ export class PraiseService {
         },
       },
       {
+        $lookup: {
+          from: 'useraccounts',
+          localField: 'receiver',
+          foreignField: '_id',
+          as: 'userAccounts',
+        },
+      },
+      {
+        $lookup: {
+          from: 'quantifications',
+          localField: '_id',
+          foreignField: 'praise',
+          as: 'quantifications',
+        },
+      },
+      {
         $group: {
           _id: '$receiver',
           praiseCount: { $count: {} },
+          quantifications: {
+            $push: '$quantifications',
+          },
+          userAccounts: { $first: '$userAccounts' },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
         },
       },
     ]);

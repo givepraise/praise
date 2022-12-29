@@ -30,6 +30,7 @@ export class PermissionsGuard implements CanActivate {
       return true;
     }
     const { user } = context.switchToHttp().getRequest();
+    console.log(user.identityEthAddress, user.roles, requiredPermissions);
     if (!user) {
       this.logger.error(
         "No user found in request. Make sure you're using the JwtAuthGuard before the PermissionsGuard.",

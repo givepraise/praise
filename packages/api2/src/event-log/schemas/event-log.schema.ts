@@ -30,6 +30,14 @@ export class EventLog {
   })
   useraccount: Types.ObjectId;
 
+  @ApiProperty()
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'ApiKey',
+    index: true,
+  })
+  apiKey: Types.ObjectId;
+
   // "Related Period" of an eventlog - only used for quantification events
   //    which are restricted to ADMIN users when period is active
   @ApiProperty()

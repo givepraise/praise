@@ -69,6 +69,6 @@ export class AuthController {
     type: LoginResponse,
   })
   async login(@Request() req: RequestWithUser): Promise<LoginResponse> {
-    return this.ethSignatureService.login(req.user);
+    return this.ethSignatureService.login(req.user._id);
   }
 }

@@ -22,7 +22,7 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
             $set: {
               score:
                 await context.quantificationsService.calculateQuantificationsCompositeScore(
-                  quantifications,
+                  p,
                 ),
             },
           },

@@ -6,6 +6,9 @@ import { AppModule } from '../../app.module';
 import { PraiseController } from '../praise.controller';
 import { PraiseModule } from '../praise.module';
 import { PraiseService } from '../praise.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Praise, PraiseSchema } from '../schemas/praise.schema';
+import { EventLogModule } from '@/event-log/event-log.module';
 
 describe('PraiseController', () => {
   let controller: PraiseController;
@@ -14,10 +17,14 @@ describe('PraiseController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         AppModule,
+        MongooseModule.forFeature([
+          { name: Praise.name, schema: PraiseSchema },
+        ]),
         PraiseModule,
         PeriodsModule,
         SettingsModule,
         QuantificationsModule,
+        EventLogModule,
       ],
       // TODO: AppModule is imported to get the database connection, should instead use a mock database
       controllers: [PraiseController],

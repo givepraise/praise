@@ -24,7 +24,7 @@ export class PeriodsService {
     private periodModel: typeof PeriodModel,
     private eventLogService: EventLogService,
     private praiseService: PraiseService,
-    private quantificationService: QuantificationsService,
+    private quantificationsService: QuantificationsService,
   ) {}
 
   /**
@@ -229,7 +229,7 @@ export class PeriodsService {
   ): PeriodDetailsQuantifierDto[] => {
     const quantifiersWithQuantificationCounts = quantifiers.map((q) => {
       const finishedCount = q.quantifications.filter((quantification) =>
-        this.quantificationService.isQuantificationCompleted(quantification),
+        this.quantificationsService.isQuantificationCompleted(quantification),
       ).length;
 
       return {

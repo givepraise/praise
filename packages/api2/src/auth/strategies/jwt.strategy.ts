@@ -4,6 +4,7 @@ import { JwtPayload } from '../interfaces/jwt-payload.interface';
 import { PassportStrategy } from '@nestjs/passport';
 import { UsersService } from '@/users/users.service';
 import { AuthContext } from '../auth-context';
+import { Types } from 'mongoose';
 
 @Injectable()
 /**
@@ -19,6 +20,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload): Promise<AuthContext | null> {
-    return payload;
+    return { ...payload, userId: new Types.ObjectId(payload.userId) };
   }
 }
