@@ -43,6 +43,7 @@ import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
 import { FindAllPraisePaginatedQuery } from '@/praise/dto/find-all-praise-paginated-query.dto';
 import { Types } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
+import { User } from '@/users/schemas/users.schema';
 
 describe('Praise (E2E)', () => {
   let app: INestApplication;
@@ -60,9 +61,11 @@ describe('Praise (E2E)', () => {
   let quantificationsService: QuantificationsService;
   let userAccountsSeeder: UserAccountsSeeder;
   let userAccountsService: UserAccountsService;
-  let wallet;
+  let wallet, wallet2, wallet3, wallet4;
   let accessToken: string;
-  let quantifier: UserAccount;
+  let quantifier: User;
+  let quantifier2: User;
+  let quantifier3: User;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -135,9 +138,11 @@ describe('Praise (E2E)', () => {
       roles: [AuthRole.USER, AuthRole.QUANTIFIER],
     });
 
-    quantifier = await userAccountsSeeder.seedUserAccount({
-      user: user,
-      ethAddress: wallet.address,
+    wallet2 = Wallet.createRandom();
+    quantifier = await usersSeeder.seedUser({
+      identityEthAddress: wallet2.address,
+      rewardsAddress: wallet2.address,
+      roles: [AuthRole.USER, AuthRole.QUANTIFIER],
     });
 
     // Login and get access token
@@ -182,9 +187,10 @@ describe('Praise (E2E)', () => {
       //Clear the database
       await praiseService.getModel().deleteMany({});
 
+      const p: Praise[] = [];
       // Seed the database with 12 praise items
       for (let i = 0; i < 12; i++) {
-        await praiseSeeder.seedPraise();
+        p.push(await praiseSeeder.seedPraise());
       }
 
       const options: FindAllPraisePaginatedQuery = {
@@ -211,6 +217,19 @@ describe('Praise (E2E)', () => {
       expect(response.body.page).toBe(1);
       expect(response.body.limit).toBe(10);
       expect(response.body.totalPages).toBe(2);
+
+      const praise = response.body.docs[0];
+      const praise2 = p.find((x) => x._id.toString() === praise._id);
+      expect(praise).toBeDefined();
+      expect(praise2).toBeDefined();
+      expect(praise._id).toBe(praise2!._id.toString());
+      expect(praise.giver._id).toBe(praise2!.giver.toString());
+      expect(praise.receiver._id).toBe(praise2!.receiver.toString());
+      expect(praise.reason).toBe(praise2!.reason);
+      expect(praise.reasonRaw).toBe(praise2!.reasonRaw);
+      expect(praise.score).toBe(praise2!.score);
+      expect(praise.sourceId).toBe(praise2!.sourceId);
+      expect(praise.sourceName).toBe(praise2!.sourceName);
     });
   });
 

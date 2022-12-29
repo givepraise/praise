@@ -21,7 +21,7 @@ import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { EventLogService } from '@/event-log/event-log.service';
-import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
+import { RequestWithAuthContext } from '@/auth/interfaces/request-with-user.interface';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
@@ -57,7 +57,6 @@ export class UsersController {
   @ApiParam({ name: 'id', type: String })
   async addRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Request() request: RequestWithUser,
     @Body() roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     return this.usersService.addRole(id, roleChange);
@@ -68,7 +67,6 @@ export class UsersController {
   @ApiParam({ name: 'id', type: String })
   async removeRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Request() request: RequestWithUser,
     @Body() roleChange: UpdateUserRoleDto,
   ): Promise<User> {
     return this.usersService.removeRole(id, roleChange);

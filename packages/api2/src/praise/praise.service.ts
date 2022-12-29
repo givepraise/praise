@@ -11,7 +11,7 @@ import { PaginationModel } from '@/shared/dto/pagination-model.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
+import { RequestWithAuthContext } from '@/auth/interfaces/request-with-user.interface';
 import { PeriodsService } from '@/periods/periods.service';
 import { CreateUpdateQuantification } from '@/quantifications/dto/create-update-quantification.dto';
 import { RequestContext } from 'nestjs-request-context';
@@ -141,10 +141,14 @@ export class PraiseService {
       );
 
     // Check that user is assigned as quantifier for the praise item
-    const req: RequestWithUser = RequestContext.currentContext.req;
+    const req: RequestWithAuthContext = RequestContext.currentContext.req;
+    const userId = req.user?.userId;
+    if (!userId)
+      throw new ServiceException('User not found in request context');
+
     const quantification =
       await this.quantificationsService.findOneByQuantifierAndPraise(
-        req.user._id,
+        new Types.ObjectId(req.user.userId),
         praise._id,
       );
     if (!quantification) {
@@ -157,7 +161,7 @@ export class PraiseService {
     const affectedPraises: Praise[] = [praise];
     const praisesDuplicateOfThis = await this.findDuplicatePraiseItems(
       praise._id,
-      req.user._id,
+      userId,
     );
     if (praisesDuplicateOfThis?.length > 0)
       affectedPraises.push(...praisesDuplicateOfThis);
@@ -181,7 +185,7 @@ export class PraiseService {
       const praisesDuplicateOfAnotherDuplicate =
         await this.findPraisesDuplicateOfAnotherDuplicate(
           new Types.ObjectId(duplicatePraise),
-          req.user._id,
+          userId,
         );
 
       if (praisesDuplicateOfAnotherDuplicate?.length > 0)

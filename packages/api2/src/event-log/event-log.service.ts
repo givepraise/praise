@@ -16,7 +16,7 @@ import { FindAllPaginatedQuery } from './dto/find-all-paginated-query.dto';
 import { ServiceException } from '@/shared/service-exception';
 import { CreateEventLogDto } from './dto/create-event-log.dto';
 import { RequestContext } from 'nestjs-request-context';
-import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
+import { RequestWithAuthContext } from '@/auth/interfaces/request-with-user.interface';
 @Injectable()
 export class EventLogService {
   constructor(
@@ -48,10 +48,11 @@ export class EventLogService {
       .findOne({ key: typeKey.toString() })
       .orFail();
 
-    const req: RequestWithUser = RequestContext.currentContext.req;
+    const req: RequestWithAuthContext = RequestContext.currentContext.req;
 
     const eventLogData = {
-      user: req.user._id,
+      user: req.user?.userId,
+      apiKey: req.user?.apiKeyId,
       ...createEventLogDto,
       type: type._id,
     };

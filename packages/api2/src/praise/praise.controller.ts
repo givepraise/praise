@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { isArray } from 'class-validator';
-import { Model, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { QuantifyMultiple } from './dto/praise-quantify-multiple-input.interface';
 import { PraiseService } from './praise.service';
