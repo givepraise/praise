@@ -11,7 +11,7 @@ import { EventLogModule } from '@/event-log/event-log.module';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Praise.name, schema: PraiseSchema }]),
-    PeriodsModule,
+    forwardRef(() => PeriodsModule),
     forwardRef(() => QuantificationsModule),
     SettingsModule,
     EventLogModule,

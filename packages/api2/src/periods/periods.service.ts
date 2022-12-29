@@ -9,23 +9,19 @@ import { PaginationModel } from '@/shared/dto/pagination-model.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { CreatePeriod } from './dto/create-period.dto';
 import { add, compareAsc, parseISO } from 'date-fns';
-import { SettingsService } from '@/settings/settings.service';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { findPeriodDetailsDto } from '../../../api/src/period/utils/core';
 import { PraiseService } from '../praise/praise.service';
 import { PeriodDetailsQuantifier } from './interfaces/period-details-quantifier.interface';
 import { PeriodDetailsGiverReceiver } from './interfaces/period-details-giver-receiver.interface';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
 import { PeriodDetailsQuantifierDto } from './dto/period-details-quantifier.dto';
-import { PeriodDetails } from './dto/period-details.dto';
 
 @Injectable()
 export class PeriodsService {
   constructor(
     @InjectModel(Period.name)
     private periodModel: typeof PeriodModel,
-    private settingsService: SettingsService,
     private eventLogService: EventLogService,
     private praiseService: PraiseService,
     private quantificationService: QuantificationsService,

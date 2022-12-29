@@ -16,7 +16,6 @@ import { PeriodsService } from '@/periods/periods.service';
 import { CreateUpdateQuantification } from '@/quantifications/dto/create-update-quantification.dto';
 import { RequestContext } from 'nestjs-request-context';
 import { Period } from '@/periods/schemas/periods.schema';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { PeriodDetailsQuantifier } from '@/periods/interfaces/period-details-quantifier.interface';
 import { PeriodDetailsGiverReceiver } from '@/periods/interfaces/period-details-giver-receiver.interface';
 
@@ -25,8 +24,8 @@ export class PraiseService {
   constructor(
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
-    private periodService: PeriodsService,
-    private settingsService: SettingsService,
+    // private periodsService: PeriodsService,
+    // private settingsService: SettingsService,
     private quantificationsService: QuantificationsService,
     private eventLogService: EventLogService,
   ) {}
@@ -134,15 +133,16 @@ export class PraiseService {
     if (!praise) throw new ServiceException('Praise item not found');
 
     // Get the period associated with the praise item
-    const period = await this.periodService.getPraisePeriod(praise);
+    // const period = await this.periodsService.getPraisePeriod(praise);
+    const period = undefined;
     if (!period)
       throw new ServiceException('Praise does not have an associated period');
 
     // Check if the period is in the QUANTIFY status
-    if (period.status !== PeriodStatusType.QUANTIFY)
-      throw new ServiceException(
-        'Period associated with praise does have status QUANTIFY',
-      );
+    // if (period.status !== PeriodStatusType.QUANTIFY)
+    //   throw new ServiceException(
+    //     'Period associated with praise does have status QUANTIFY',
+    //   );
 
     // Check that user is assigned as quantifier for the praise item
     const req: RequestWithUser = RequestContext.currentContext.req;
@@ -217,10 +217,11 @@ export class PraiseService {
       }
 
       // Check if the score is allowed
-      const settingAllowedScores = (await this.settingsService.settingValue(
-        'PRAISE_QUANTIFY_ALLOWED_VALUES',
-        period._id,
-      )) as string;
+      const settingAllowedScores = '0, 144';
+      // const settingAllowedScores = (await this.settingsService.settingValue(
+      //   'PRAISE_QUANTIFY_ALLOWED_VALUES',
+      //   period._id,
+      // )) as string;
 
       const allowedScore = settingAllowedScores.split(',').map(Number);
 
@@ -246,7 +247,7 @@ export class PraiseService {
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.PERMISSION,
       description: eventLogMessage,
-      periodId: period._id,
+      // periodId: period._id,
     });
 
     const docs = affectedPraises.map((p) => new Praise(p));

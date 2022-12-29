@@ -15,7 +15,7 @@ import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
       { name: Quantification.name, schema: QuantificationsSchema },
     ]),
     forwardRef(() => PraiseModule),
-    SettingsModule,
+    forwardRef(() => SettingsModule),
     UserAccountsModule,
   ],
   providers: [QuantificationsService],

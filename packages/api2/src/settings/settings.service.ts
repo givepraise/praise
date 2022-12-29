@@ -22,7 +22,6 @@ export class SettingsService {
   constructor(
     @InjectModel(Setting.name)
     private settingsModel: Model<Setting>,
-    private periodSettingsService: PeriodSettingsService,
     private utils: UtilsProvider,
     private eventLogService: EventLogService,
   ) {}
@@ -186,27 +185,27 @@ export class SettingsService {
   ): Promise<
     string | boolean | number | number[] | string[] | object | undefined
   > {
-    let setting;
-    if (!periodId) {
-      const setting = await this.settingsModel.findOne({
-        key,
-      });
+    // let setting;
+    // if (!periodId) {
+    const setting = await this.settingsModel.findOne({
+      key,
+    });
 
-      if (!setting) {
-        throw new ServiceException(`Setting ${key} does not exist`);
-      }
-    } else {
-      setting = await this.periodSettingsService.findOne(key, periodId);
-
-      if (!setting) {
-        const periodString = periodId
-          ? `period ${periodId.toString()}`
-          : 'global';
-        throw new ServiceException(
-          `periodsetting ${key} does not exist for ${periodString}`,
-        );
-      }
+    if (!setting) {
+      throw new ServiceException(`Setting ${key} does not exist`);
     }
+    // } else {
+    //   setting = await this.periodSettingsService.findOne(key, periodId);
+
+    //   if (!setting) {
+    //     const periodString = periodId
+    //       ? `period ${periodId.toString()}`
+    //       : 'global';
+    //     throw new ServiceException(
+    //       `periodsetting ${key} does not exist for ${periodString}`,
+    //     );
+    //   }
+    // }
 
     return setting ? setting.value : undefined;
   }

@@ -4,7 +4,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Quantification } from './schemas/quantifications.schema';
 import { sum } from 'lodash';
-import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 
@@ -12,8 +11,7 @@ export class QuantificationsService {
   constructor(
     @InjectModel(Quantification.name)
     private quantificationModel: Model<Quantification>,
-    @InjectModel(Praise.name)
-    private praiseModel: Model<Praise>,
+    private praiseService: PraiseService,
     private settingsService: SettingsService,
     private userAccountsService: UserAccountsService,
   ) {}
@@ -207,7 +205,7 @@ export class QuantificationsService {
       );
 
     const score = 0;
-    const praise = await this.praiseModel.findById(
+    const praise = await this.praiseService.findOneById(
       quantification.duplicatePraise._id,
     );
 
