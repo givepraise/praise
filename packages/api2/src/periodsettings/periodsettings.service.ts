@@ -4,23 +4,31 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request } from 'express';
 import { Model, Types } from 'mongoose';
-import {
-  PeriodSetting,
-  PeriodSettingDocument,
-} from './schemas/periodsettings.schema';
+import { PeriodSetting } from './schemas/periodsettings.schema';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { UploadedFile } from 'express-fileupload';
 import { PeriodsService } from '@/periods/periods.service';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
+import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 
 @Injectable()
 export class PeriodSettingsService {
   constructor(
     @InjectModel(PeriodSetting.name)
-    private periodSettingsModel: Model<PeriodSettingDocument>,
+    private periodSettingsModel: Model<PeriodSetting>,
     private periodsService: PeriodsService,
     private utils: UtilsProvider,
+    private eventLogService: EventLogService,
   ) {}
+
+  /**
+   * Convenience method to get the PeriodSettings Model
+   * @returns
+   */
+  getModel(): Model<PeriodSetting> {
+    return this.periodSettingsModel;
+  }
 
   async findAll(periodId: Types.ObjectId): Promise<PeriodSetting[]> {
     const period = await this.periodsService.findOneById(periodId);
@@ -72,7 +80,10 @@ export class PeriodSettingsService {
       _id: settingId,
       period: periodId,
     });
+
     if (!periodSetting) throw new ServiceException('PeriodSettings not found.');
+
+    const originalValue = periodSetting.value;
 
     if (periodSetting.type === 'Image') {
       const file = req.files;
@@ -102,15 +113,12 @@ export class PeriodSettingsService {
       periodSetting.value = data.value;
     }
 
-    // await logEvent(
-    //   EventLogTypeKey.SETTING,
-    //   `Updated global setting "${setting.label}" from "${
-    //     originalValue || ''
-    //   }" to "${setting.value || ''}"`,
-    //   {
-    //     userId: res.locals.currentUser._id,
-    //   },
-    // );
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.SETTING,
+      description: `Updated global setting "${periodSetting.label}" from "${
+        originalValue || ''
+      }" to "${periodSetting.value || ''}"`,
+    });
 
     await periodSetting.save();
     return this.findOneById(settingId, periodId);

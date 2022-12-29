@@ -1,43 +1,66 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { PraiseModel, Praise, PraiseDocument } from './schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
-import { Request } from 'express';
-import { PaginatedResponseBody } from '@/shared/types.shared';
-import { PraiseDetailsDto } from './dto/praise-details.dto';
-import { UtilsProvider } from '@/utils/utils.provider';
-import { PraiseAllInput } from './intefaces/praise-all-input.inteface';
-import { PraiseExportInput } from './intefaces/praise-export-input.interface';
-import { QuantifyPraiseProps } from './intefaces/quantify-praise.interface';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
-import { Period } from '@/periods/schemas/periods.schema';
 import { SettingsService } from '@/settings/settings.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
-import { User } from '@/users/schemas/users.schema';
+import { FindAllPraisePaginatedQuery } from './dto/find-all-praise-paginated-query.dto';
+import { PaginationModel } from '@/shared/dto/pagination-model.dto';
+import { Pagination } from 'mongoose-paginate-ts';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { PeriodsService } from '@/periods/periods.service';
+import { CreateUpdateQuantification } from '@/quantifications/dto/create-update-quantification.dto';
+import { RequestContext } from 'nestjs-request-context';
+import { RequestWithAuthContext } from '@/auth/interfaces/request-with-auth-context.interface';
 
 @Injectable()
 export class PraiseService {
   constructor(
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
-    @InjectModel(Period.name)
-    private periodModel: Model<Period>,
+    private periodService: PeriodsService,
     private settingsService: SettingsService,
-    private utils: UtilsProvider,
     private quantificationsService: QuantificationsService,
+    private eventLogService: EventLogService,
   ) {}
 
-  async findAll(
-    req: Request,
-  ): Promise<PaginatedResponseBody<PraiseDetailsDto>> {
-    const query = this.getPraiseAllInput(req.query);
-    const queryInput = this.utils.getQueryInput(req.query);
+  /**
+   * Convenience method to get the Praise Model
+   * @returns
+   */
+  getModel(): Pagination<PraiseDocument> {
+    return this.praiseModel;
+  }
+
+  /**
+   * Find all praise paginated
+   *
+   * @param options
+   * @returns {Promise<PaginationModel<Praise>>}
+   * @throws {ServiceException}
+   */
+  async findAllPaginated(
+    options: FindAllPraisePaginatedQuery,
+  ): Promise<PaginationModel<Praise>> {
+    const { sortColumn, sortType, receiver, giver, page, limit } = options;
+    const query = {} as any;
+
+    if (receiver) {
+      query.receiver = receiver;
+    }
+
+    if (giver) {
+      query.giver = giver;
+    }
 
     const praisePagination = await this.praiseModel.paginate({
+      page,
+      limit,
       query,
-      ...queryInput,
-      sort: this.utils.getQuerySort(req.query),
+      sort: sortColumn && sortType ? { [sortColumn]: sortType } : undefined,
       populate: [
         {
           path: 'giver',
@@ -57,9 +80,8 @@ export class PraiseService {
     if (!praisePagination)
       throw new ServiceException('Failed to paginate praise data');
 
-    const docs = praisePagination.docs.map(
-      (praise) => new Praise(praise),
-    ) as PraiseDetailsDto[];
+    // Map the praise documents to the Praise class
+    const docs = praisePagination.docs.map((praise) => new Praise(praise));
 
     return {
       ...praisePagination,
@@ -67,6 +89,13 @@ export class PraiseService {
     };
   }
 
+  /**
+   * Find one praise by id
+   * @param _id
+   * @returns {Promise<Praise>}
+   * @throws {ServiceException}
+   *
+   **/
   async findOneById(_id: Types.ObjectId): Promise<Praise> {
     const praise = await this.praiseModel
       .findById(_id)
@@ -75,108 +104,96 @@ export class PraiseService {
 
     if (!praise) throw new ServiceException('Praise item not found.');
 
-    return praise;
+    return new Praise(praise);
   }
 
-  getPraiseAllInput = (q: PraiseAllInput): PraiseAllInput => {
-    const { receiver, giver } = q;
-    const query: PraiseExportInput = {};
+  /**
+   * Quantify praise item
+   *
+   * @param id {string}
+   * @param bodyParams {CreateUpdateQuantification}
+   * @returns An array of all affected praise items
+   * @throws {ServiceException}
+   *
+   **/
+  quantifyPraise = async (
+    id: Types.ObjectId,
+    params: CreateUpdateQuantification,
+  ): Promise<Praise[]> => {
+    const { score, dismissed, duplicatePraise } = params;
 
-    if (receiver) {
-      query.receiver = encodeURIComponent(receiver);
-    }
-
-    if (giver) {
-      query.giver = encodeURIComponent(giver);
-    }
-
-    return query;
-  };
-
-  quantifyPraise = async ({
-    id,
-    bodyParams,
-    currentUser,
-  }: QuantifyPraiseProps): Promise<Praise[]> => {
-    const { score, dismissed, duplicatePraise } = bodyParams;
-
+    // Get the praise item in question
     const praise = await this.praiseModel
       .findById(id)
-      .populate('giver receiver forwarder');
-    if (!praise) throw new ServiceException('Praise');
+      .populate('giver receiver forwarder')
+      .lean();
+    if (!praise) throw new ServiceException('Praise item not found');
 
-    const period = await this.getPraisePeriod(praise);
+    // Get the period associated with the praise item
+    const period = await this.periodService.getPraisePeriod(praise);
     if (!period)
       throw new ServiceException('Praise does not have an associated period');
 
+    // Check if the period is in the QUANTIFY status
     if (period.status !== PeriodStatusType.QUANTIFY)
       throw new ServiceException(
         'Period associated with praise does have status QUANTIFY',
       );
 
-    const allowedScore = (await this.settingsService.settingValue(
-      'PRAISE_QUANTIFY_ALLOWED_VALUES',
-      period._id,
-    )) as number[];
-
-    if (!allowedScore.includes(score)) {
-      throw new ServiceException(
-        `Score ${score} is not allowed. Allowed scores are: ${allowedScore.join(
-          ', ',
-        )}`,
-      );
-    }
+    // Check that user is assigned as quantifier for the praise item
+    const req: RequestWithAuthContext = RequestContext.currentContext.req;
+    const userId = req.user?.userId;
+    if (!userId)
+      throw new ServiceException('User not found in request context');
 
     const quantification =
       await this.quantificationsService.findOneByQuantifierAndPraise(
-        currentUser._id,
+        userId,
         praise._id,
       );
-
-    if (!quantification)
+    if (!quantification) {
       throw new ServiceException('User not assigned as quantifier for praise.');
+    }
 
     let eventLogMessage = '';
 
-    // Collect all affected praises (i.e. any praises whose scoreRealized will change as a result of this change)
+    // Collect all affected praises (i.e. any praises whose score will change as a result of this change)
     const affectedPraises: Praise[] = [praise];
-
     const praisesDuplicateOfThis = await this.findDuplicatePraiseItems(
-      praise,
-      currentUser,
+      praise._id,
+      userId,
     );
-
     if (praisesDuplicateOfThis?.length > 0)
       affectedPraises.push(...praisesDuplicateOfThis);
 
-    // Modify praise quantification values
     if (duplicatePraise) {
-      if (duplicatePraise === praise._id.toString())
+      // Check that the duplicatePraise is not the same as the praise item
+      if (duplicatePraise === praise._id)
         throw new ServiceException('Praise cannot be a duplicate of itself');
 
-      const dp = await this.praiseModel.findById(duplicatePraise);
+      // Find the original praise item
+      const dp = await this.praiseModel.findById(duplicatePraise).lean();
       if (!dp) throw new ServiceException('Duplicate praise item not found');
 
+      // Check that this praise item is not already the original of another duplicate
       if (praisesDuplicateOfThis?.length > 0)
         throw new ServiceException(
           'Praise cannot be marked duplicate when it is the original of another duplicate',
         );
 
-      const praisesDuplicateOfAnotherDuplicate = await this.praiseModel.find({
-        _id: duplicatePraise,
-        quantifications: {
-          $elemMatch: {
-            quantifier: currentUser._id,
-            duplicatePraise: { $exists: 1 },
-          },
-        },
-      });
+      // Check that this praise item does not become the duplicate of another duplicate
+      const praisesDuplicateOfAnotherDuplicate =
+        await this.findPraisesDuplicateOfAnotherDuplicate(
+          new Types.ObjectId(duplicatePraise),
+          userId,
+        );
 
       if (praisesDuplicateOfAnotherDuplicate?.length > 0)
         throw new ServiceException(
           'Praise cannot be marked duplicate of another duplicate',
         );
 
+      // When marking a praise as duplicate, the score is set to 0 and the dismissed flag is cleared
       quantification.score = 0;
       quantification.dismissed = false;
       quantification.duplicatePraise = dp;
@@ -187,6 +204,7 @@ export class PraiseService {
         dp._id as Types.ObjectId
       ).toString()}"`;
     } else if (dismissed) {
+      // When dismissing a praise, the score is set to 0, any duplicatePraise is cleared and the dismissed flag is set
       quantification.score = 0;
       quantification.dismissed = true;
       quantification.duplicatePraise = undefined;
@@ -195,6 +213,29 @@ export class PraiseService {
         praise._id as Types.ObjectId
       ).toString()}"`;
     } else {
+      if (!score) {
+        throw new ServiceException(
+          'Score, dismissed or duplicatePraise is required',
+        );
+      }
+
+      // Check if the score is allowed
+      const settingAllowedScores = (await this.settingsService.settingValue(
+        'PRAISE_QUANTIFY_ALLOWED_VALUES',
+        period._id,
+      )) as string;
+
+      const allowedScore = settingAllowedScores.split(',').map(Number);
+
+      if (!allowedScore.includes(score)) {
+        throw new ServiceException(
+          `Score ${score} is not allowed. Allowed scores are: ${allowedScore.join(
+            ', ',
+          )}`,
+        );
+      }
+
+      // When quantifying a praise, the score is set, any duplicatePraise is cleared and the dismissed flag is cleared
       quantification.score = score;
       quantification.dismissed = false;
       quantification.duplicatePraise = undefined;
@@ -204,73 +245,93 @@ export class PraiseService {
       } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
     }
 
-    await praise.save();
+    // Save updated quantification
+    await this.quantificationsService.updateQuantification(quantification);
 
-    // await logEvent(
-    //   EventLogTypeKey.QUANTIFICATION,
-    //   eventLogMessage,
-    //   {
-    //     userId: currentUser._id,
-    //   },
-    //   period._id,
-    // );
+    const docs: Praise[] = [];
 
-    return affectedPraises;
-  };
+    // Update the score of the praise item and all duplicates
+    for (const p of affectedPraises) {
+      const score =
+        await this.quantificationsService.calculateQuantificationsCompositeScore(
+          p,
+        );
 
-  /**
-   * Fetch the period associated with a praise instance,
-   *  (as they are currently not related in database)
-   *
-   * Determines the associated period by:
-   *  finding the period with the lowest endDate, that is greater than the praise.createdAt date
-   *
-   * @param {Praise} praise
-   * @returns {(Promise<PeriodDocument | undefined>)}
-   */
-  getPraisePeriod = async (praise: Praise): Promise<Period | undefined> => {
-    const period = await this.periodModel
-      .find(
-        // only periods ending after praise created
-        {
-          endDate: { $gte: praise.createdAt },
-        },
-        null,
-        // sort periods by ending date ascending
-        {
-          sort: { endDate: 1 },
-        },
+      const praiseWithScore: Praise = await this.praiseModel
+        .findByIdAndUpdate(
+          p._id,
+          {
+            score,
+          },
+          { new: true },
+        )
+        .populate('giver receiver forwarder quantifications')
+        .lean();
 
-        // select the period with the earliest ending date
-      )
-      .limit(1);
+      docs.push(new Praise(praiseWithScore));
+    }
 
-    if (!period || period.length === 0) return undefined;
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.PERMISSION,
+      description: eventLogMessage,
+      periodId: period._id,
+    });
 
-    return period[0];
+    return docs;
   };
 
   /**
    * Find all praises that are duplicates of the given praise
-   * @param {Praise} praise
-   * @param {User} quantifier
+   * @param {Types.ObjectId} praiseId
+   * @param {Types.ObjectId} quantifierId
    * @returns {Promise<Praise[]>}
    *
    */
   findDuplicatePraiseItems = async (
-    praise: Praise,
-    quantifier: User,
+    praiseId: Types.ObjectId,
+    quantifierId: Types.ObjectId,
   ): Promise<Praise[]> => {
     const duplicateQuantifications =
       await this.quantificationsService.findByQuantifierAndDuplicatePraise(
-        quantifier._id,
-        praise._id,
+        quantifierId,
+        praiseId,
+      );
+
+    const duplicatePraiseItems = await this.praiseModel
+      .find({
+        _id: { $in: duplicateQuantifications.map((q) => q.praise) },
+      })
+      .populate('giver receiver forwarder')
+      .lean();
+
+    return duplicatePraiseItems.map((p) => new Praise(p));
+  };
+
+  /**
+   * Find all praises that are duplicates of the given duplicate praise
+   * @param {Types.ObjectId} duplicatePraiseId
+   * @param {Types.ObjectId} quantifierId
+   * @returns {Promise<Praise[]>}
+   *
+   **/
+  findPraisesDuplicateOfAnotherDuplicate = async (
+    duplicatePraiseId: Types.ObjectId,
+    quantifierId: Types.ObjectId,
+  ): Promise<Praise[]> => {
+    const duplicateQuantifications =
+      await this.quantificationsService.findByQuantifierAndDuplicatePraiseExist(
+        quantifierId,
+        true,
       );
 
     const duplicatePraiseItems = await this.praiseModel.find({
-      _id: { $in: duplicateQuantifications.map((q) => q.praise) },
+      _id: {
+        $in: duplicateQuantifications.map(
+          (q) => q.praise._id === duplicatePraiseId,
+        ),
+      },
     });
 
-    return duplicatePraiseItems;
+    return duplicatePraiseItems.map((p) => new Praise(p));
   };
 }

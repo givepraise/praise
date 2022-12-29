@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import {
   EventLogType,
   EventLogTypeDocument,
@@ -16,6 +16,8 @@ import { FindAllPaginatedQuery } from './dto/find-all-paginated-query.dto';
 import { ServiceException } from '@/shared/service-exception';
 import { CreateEventLogDto } from './dto/create-event-log.dto';
 import { RequestContext } from 'nestjs-request-context';
+import { has } from 'lodash';
+import { User } from '@/users/schemas/users.schema';
 @Injectable()
 export class EventLogService {
   constructor(
@@ -48,10 +50,16 @@ export class EventLogService {
       .lean()
       .orFail();
 
+    const req = RequestContext.currentContext?.req;
+
+    // Try to get user id from either RequestWithAuthContext or from RequestWithUserContext
+    const userId = has(req, 'user._id')
+      ? (req.user as User)._id // RequestWithUserContext
+      : req?.user?.userId; // RequestWithAuthContext
+
     const eventLogData = {
-      user: new Types.ObjectId(
-        RequestContext.currentContext?.req?.user?.userId,
-      ),
+      user: userId,
+      apiKey: req?.user?.apiKeyId, // RequestWithAuthContext
       ...createEventLogDto,
       type: type._id,
     };

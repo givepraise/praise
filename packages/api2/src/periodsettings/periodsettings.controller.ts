@@ -8,7 +8,7 @@ import { PeriodSettingsService } from './periodsettings.service';
 import { PeriodSetting } from './schemas/periodsettings.schema';
 
 @Controller('periodsettings')
-export class PeriodsettingsController {
+export class PeriodSettingsController {
   constructor(private readonly periodsettingsService: PeriodSettingsService) {}
 
   @Get(':periodId/settings/all')

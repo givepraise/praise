@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { AuthRole } from '../../auth/enums/auth-role.enum';
+import { Transform } from 'class-transformer';
 
 export type ApiKeyDocument = ApiKey & Document;
 
@@ -13,6 +14,9 @@ export class ApiKey {
       Object.assign(this, partial);
     }
   }
+
+  @Transform(({ value }) => value.toString())
+  _id: Types.ObjectId;
 
   @ApiResponseProperty({
     example: '89f7edbd',
