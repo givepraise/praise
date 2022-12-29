@@ -1,6 +1,6 @@
 import { Request } from '@nestjs/common';
-import { AuthContext } from '../auth-context';
+import { User } from '@/users/schemas/users.schema';
 
-export interface RequestWithAuthContext extends Request {
-  user: AuthContext;
+export interface RequestWithUser extends Request {
+  user: User;
 }

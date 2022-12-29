@@ -11,7 +11,7 @@ import { NonceResponse } from './dto/nonce-response.dto';
 import { LoginResponse } from './dto/login-response.dto';
 import { NonceRequest } from './dto/nonce-request.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { RequestWithAuthContext } from './interfaces/request-with-user.interface';
+import { RequestWithUser } from './interfaces/request-with-user.interface';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { LoginRequest } from './dto/login-request.dto';
 import { EventLogService } from '@/event-log/event-log.service';
@@ -68,10 +68,7 @@ export class AuthController {
     description: 'User authenticated successfully',
     type: LoginResponse,
   })
-  async login(@Request() req: RequestWithAuthContext): Promise<LoginResponse> {
-    if (!req.user?.userId) {
-      throw new InternalServerErrorException('Failed to authenticate user.');
-    }
-    return this.ethSignatureService.login(req.user.userId);
+  async login(@Request() req: RequestWithUser): Promise<LoginResponse> {
+    return this.ethSignatureService.login(req.user._id);
   }
 }

@@ -11,10 +11,10 @@ import { PaginationModel } from '@/shared/dto/pagination-model.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { RequestWithAuthContext } from '@/auth/interfaces/request-with-user.interface';
 import { PeriodsService } from '@/periods/periods.service';
 import { CreateUpdateQuantification } from '@/quantifications/dto/create-update-quantification.dto';
 import { RequestContext } from 'nestjs-request-context';
+import { RequestWithAuthContext } from '@/auth/interfaces/request-with-auth-context.interface';
 
 @Injectable()
 export class PraiseService {
@@ -148,7 +148,7 @@ export class PraiseService {
 
     const quantification =
       await this.quantificationsService.findOneByQuantifierAndPraise(
-        new Types.ObjectId(req.user.userId),
+        userId,
         praise._id,
       );
     if (!quantification) {

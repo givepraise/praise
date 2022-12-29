@@ -63,6 +63,7 @@ describe('Praise (E2E)', () => {
   let userAccountsService: UserAccountsService;
   let wallet, wallet2, wallet3, wallet4;
   let accessToken: string;
+  let user: User;
   let quantifier: User;
   let quantifier2: User;
   let quantifier3: User;
@@ -130,24 +131,23 @@ describe('Praise (E2E)', () => {
     await periodsService.getModel().deleteMany({});
     await periodSettingsService.getModel().deleteMany({});
 
-    // Seed the database
+    // Seed a user and login
     wallet = Wallet.createRandom();
-    const user = await usersSeeder.seedUser({
+    user = await usersSeeder.seedUser({
       identityEthAddress: wallet.address,
       rewardsAddress: wallet.address,
       roles: [AuthRole.USER, AuthRole.QUANTIFIER],
     });
 
-    wallet2 = Wallet.createRandom();
-    quantifier = await usersSeeder.seedUser({
-      identityEthAddress: wallet2.address,
-      rewardsAddress: wallet2.address,
-      roles: [AuthRole.USER, AuthRole.QUANTIFIER],
-    });
-
-    // Login and get access token
     const response = await loginUser(app, module, wallet);
     accessToken = response.accessToken;
+
+    wallet2 = Wallet.createRandom();
+    // quantifier = await usersSeeder.seedUser({
+    //   identityEthAddress: wallet2.address,
+    //   rewardsAddress: wallet2.address,
+    //   roles: [AuthRole.USER, AuthRole.QUANTIFIER],
+    // });
   });
 
   afterAll(async () => {
@@ -161,7 +161,7 @@ describe('Praise (E2E)', () => {
       praise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier._id,
+        quantifier: user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -240,7 +240,7 @@ describe('Praise (E2E)', () => {
       praise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier._id,
+        quantifier: user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -293,10 +293,13 @@ describe('Praise (E2E)', () => {
     let periodSettingsAllowedValues: PeriodSetting;
 
     beforeEach(async () => {
+      await praiseService.getModel().deleteMany({});
+      await quantificationsService.getModel().deleteMany({});
+
       praise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier._id,
+        quantifier: user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -324,7 +327,7 @@ describe('Praise (E2E)', () => {
         .expect(401);
     });
 
-    test('201 when correct data is sent', async () => {
+    test('oiuou 201 when correct data is sent', async () => {
       const response = await authorizedPostRequest(
         `/praise/${praise._id}/quantify`,
         app,
@@ -343,7 +346,7 @@ describe('Praise (E2E)', () => {
       expect(p.quantifications.length).toBe(1);
       expect(p.quantifications[0].score).toBe(144);
       expect(p.quantifications[0].scoreRealized).toBe(144);
-      expect(p.quantifications[0].quantifier).toBe(quantifier._id.toString());
+      expect(p.quantifications[0].quantifier).toBe(user._id.toString());
       expect(p.quantifications[0].praise).toBe(praise._id.toString());
       expect(p.quantifications[0].dismissed).toBe(false);
       expect(p.quantifications[0].createdAt).toBeDefined();
@@ -507,7 +510,7 @@ describe('Praise (E2E)', () => {
       const duplicatePraise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier._id,
+        quantifier: user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -536,7 +539,7 @@ describe('Praise (E2E)', () => {
       const duplicatePraise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier._id,
+        quantifier: user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -566,7 +569,7 @@ describe('Praise (E2E)', () => {
       const duplicatePraise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier._id,
+        quantifier: user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -593,7 +596,7 @@ describe('Praise (E2E)', () => {
       praise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier._id,
+        quantifier: user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -623,7 +626,7 @@ describe('Praise (E2E)', () => {
       });
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier._id,
+        quantifier: user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
