@@ -7,6 +7,8 @@ import { CreateApiKeyRequest } from './dto/create-api-key-request.dto';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { CreateApiKeyResponse } from './dto/create-api-key-response';
 import { ServiceException } from '@/shared/service-exception';
+import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 
 @Injectable()
 export class ApiKeyService {
@@ -14,6 +16,7 @@ export class ApiKeyService {
     @InjectModel(ApiKey.name)
     private readonly apiKeyModel: Model<ApiKeyDocument>,
     private readonly utils: UtilsProvider,
+    private readonly eventLogService: EventLogService,
   ) {}
 
   /**
@@ -43,6 +46,12 @@ export class ApiKeyService {
       hash,
     });
     await apiKey.save();
+
+    this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.AUTHENTICATION,
+      description: `Created API key: ${apiKey.name}`,
+    });
+
     return {
       ...apiKey.toObject(),
       key,
@@ -114,6 +123,12 @@ export class ApiKeyService {
       throw new ServiceException('Invalid API key ID');
     }
     await this.apiKeyModel.deleteOne({ _id: id });
+
+    this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.AUTHENTICATION,
+      description: `Revoked API key: ${apiKey.name}`,
+    });
+
     return apiKey.toObject();
   }
 }
