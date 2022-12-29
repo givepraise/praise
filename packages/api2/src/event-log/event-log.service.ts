@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import {
   EventLogType,
   EventLogTypeDocument,
-} from './entities/event-log-type.entity';
+} from './schemas/event-log-type.schema';
 import {
   EventLog,
   EventLogDocument,
   PaginatedEventLogModel,
-} from './entities/event-log.entity';
+} from './schemas/event-log.schema';
 import mongoose from 'mongoose';
 import { PaginationModel } from 'mongoose-paginate-ts';
 import { FindAllPaginatedQuery } from './dto/find-all-paginated-query.dto';
@@ -46,6 +46,7 @@ export class EventLogService {
     const { typeKey } = createEventLogDto;
     const type = await this.eventLogTypeModel
       .findOne({ key: typeKey.toString() })
+      .lean()
       .orFail();
 
     const req: RequestWithAuthContext = RequestContext.currentContext.req;
