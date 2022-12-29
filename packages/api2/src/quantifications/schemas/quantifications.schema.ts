@@ -2,17 +2,13 @@ import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { Praise } from '@/praise/schemas/praise.schema';
-import { QuantificationsService } from '../quantifications.service';
 import { Transform } from 'class-transformer';
 
 export type QuantificationDocument = Quantification & Document;
 
 @Schema({ timestamps: true })
 export class Quantification {
-  constructor(
-    public quantificationsService: QuantificationsService,
-    partial?: Partial<Quantification>,
-  ) {
+  constructor(partial?: Partial<Quantification>) {
     if (partial) {
       Object.assign(this, partial);
     }
@@ -31,12 +27,15 @@ export class Quantification {
   dismissed: boolean;
 
   @Prop({ type: Types.ObjectId, ref: 'Praise' })
+  @Transform(({ value }) => value.toString())
   duplicatePraise?: Praise;
 
   @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
+  @Transform(({ value }) => value.toString())
   quantifier: UserAccount;
 
   @Prop({ type: Types.ObjectId, ref: 'Praise' })
+  @Transform(({ value }) => value.toString())
   praise: Praise;
 
   @Prop({ type: Date })
@@ -47,11 +46,5 @@ export class Quantification {
 }
 
 const QuantificationsSchema = SchemaFactory.createForClass(Quantification);
-
-// QuantificationsSchema.virtual('scoreRealized').get(function (
-//   this: Quantification,
-// ) {
-//   return this.quantificationsService.calculateQuantificationScore(this);
-// });
 
 export { QuantificationsSchema };

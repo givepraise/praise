@@ -25,7 +25,7 @@ export class PraiseSeeder {
     const randomGiver = await this.UserAccountsSeeder.seedUserAccount();
     const randomReceiver = await this.UserAccountsSeeder.seedUserAccount();
 
-    const Praise = await this.PraiseModel.create({
+    const praise = await this.PraiseModel.create({
       reason: faker.lorem.sentence(),
       reasonRaw: faker.lorem.sentence(),
       sourceId: faker.datatype.uuid(),
@@ -39,6 +39,6 @@ export class PraiseSeeder {
       ...PraiseData,
     });
 
-    return Praise;
+    return praise.toObject();
   };
 }

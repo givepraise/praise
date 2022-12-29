@@ -246,7 +246,17 @@ describe('Praise (E2E)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toBeDefined();
+
+      const p = response.body as Praise;
+      expect(p).toBeDefined();
+      expect(p._id).toBe(praise._id.toString());
+      expect(p.giver._id).toBe(praise.giver.toString());
+      expect(p.receiver._id).toBe(praise.receiver.toString());
+      expect(p.reason).toBe(praise.reason);
+      expect(p.reasonRaw).toBe(praise.reasonRaw);
+      expect(p.score).toBe(praise.score);
+      expect(p.sourceId).toBe(praise.sourceId);
+      expect(p.sourceName).toBe(praise.sourceName);
     });
 
     test('400 when praise does not exist', async () => {
@@ -295,7 +305,7 @@ describe('Praise (E2E)', () => {
         .expect(401);
     });
 
-    test('098j9 201 when correct data is sent', async () => {
+    test('201 when correct data is sent', async () => {
       const response = await authorizedPostRequest(
         `/praise/${praise._id}/quantify`,
         app,
@@ -307,10 +317,17 @@ describe('Praise (E2E)', () => {
 
       expect(response.status).toBe(201);
       expect(response.body).toBeDefined();
-      expect(response.body[0]._id).toBe(praise._id.toString());
-      expect(response.body[0].score).toBe(144);
-      expect(response.body[0].scoreRealized).toBe(144);
-      expect(response.body[0].dismissed).toBe(false);
+
+      const p = response.body[0] as Praise;
+      expect(p._id).toBe(praise._id.toString());
+      expect(p.score).toBe(144);
+      expect(p.quantifications.length).toBe(1);
+      expect(p.quantifications[0].score).toBe(144);
+      expect(p.quantifications[0].scoreRealized).toBe(144);
+      expect(p.quantifications[0].quantifier).toBe(quantifier._id.toString());
+      expect(p.quantifications[0].praise).toBe(praise._id.toString());
+      expect(p.quantifications[0].dismissed).toBe(false);
+      expect(p.quantifications[0].createdAt).toBeDefined();
     });
 
     test('400 when wrong score is sent', async () => {

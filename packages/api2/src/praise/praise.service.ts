@@ -104,7 +104,7 @@ export class PraiseService {
 
     if (!praise) throw new ServiceException('Praise item not found.');
 
-    return praise;
+    return new Praise(praise);
   }
 
   /**
@@ -254,15 +254,17 @@ export class PraiseService {
         );
 
       const praiseWithScore: Praise = await this.praiseModel
-        .findOneAndUpdate(
-          { _id: p._id },
+        .findByIdAndUpdate(
+          p._id,
           {
             score,
           },
+          { new: true },
         )
+        .populate('giver receiver forwarder quantifications')
         .lean();
 
-      docs.push(praiseWithScore);
+      docs.push(new Praise(praiseWithScore));
     }
 
     await this.eventLogService.logEvent({
@@ -298,7 +300,7 @@ export class PraiseService {
       .populate('giver receiver forwarder')
       .lean();
 
-    return duplicatePraiseItems;
+    return duplicatePraiseItems.map((p) => new Praise(p));
   };
 
   /**
@@ -326,6 +328,6 @@ export class PraiseService {
       },
     });
 
-    return duplicatePraiseItems;
+    return duplicatePraiseItems.map((p) => new Praise(p));
   };
 }

@@ -1,9 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Transform } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 import { model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { ApiResponseProperty } from '@nestjs/swagger';
+import { has } from 'lodash';
+import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 
 export type PraiseDocument = Praise & Document;
 
@@ -12,6 +14,25 @@ export class Praise {
   constructor(partial?: Partial<Praise>) {
     if (partial) {
       Object.assign(this, partial);
+      this.receiver = has(this.receiver, '_id')
+        ? new UserAccount(this.receiver)
+        : this.receiver;
+      this.giver = has(this.giver, '_id')
+        ? new UserAccount(this.giver)
+        : this.giver;
+      this.forwarder = has(this.forwarder, '_id')
+        ? new UserAccount(this.forwarder)
+        : this.forwarder;
+      if (
+        Array.isArray(this.quantifications) &&
+        this.quantifications.length > 0
+      ) {
+        this.quantifications = this.quantifications.map((quantification) => {
+          return has(quantification, '_id')
+            ? new Quantification(quantification)
+            : quantification;
+        });
+      }
     }
   }
 
@@ -67,9 +88,9 @@ export class Praise {
   forwarder: UserAccount;
 
   @ApiResponseProperty({
-    type: [Types.ObjectId],
+    type: [Quantification],
   })
-  quantifications: Types.ObjectId[];
+  quantifications: Quantification[];
 
   @ApiResponseProperty()
   @Prop({ type: Date })
@@ -83,13 +104,13 @@ export class Praise {
 export const PraiseSchema =
   SchemaFactory.createForClass(Praise).plugin(mongoosePagination);
 
-export const PraiseModel = model<PraiseDocument, Pagination<PraiseDocument>>(
-  'Praise',
-  PraiseSchema,
-);
-
 PraiseSchema.virtual('quantifications', {
   ref: 'Quantification',
   localField: '_id',
   foreignField: 'praise',
 });
+
+export const PraiseModel = model<PraiseDocument, Pagination<PraiseDocument>>(
+  'Praise',
+  PraiseSchema,
+);
