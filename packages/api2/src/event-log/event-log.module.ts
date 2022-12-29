@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { EventLogController } from './event-log.controller';
-import { EventLog, EventLogSchema } from './entities/event-log.entity';
+import { EventLog, EventLogSchema } from './schemas/event-log.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   EventLogType,
   EventLogTypeSchema,
-} from './entities/event-log-type.entity';
+} from './schemas/event-log-type.schema';
 import { EventLogService } from './event-log.service';
 
 @Module({
