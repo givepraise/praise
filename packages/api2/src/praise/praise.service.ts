@@ -15,6 +15,10 @@ import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
 import { PeriodsService } from '@/periods/periods.service';
 import { CreateUpdateQuantification } from '@/quantifications/dto/create-update-quantification.dto';
 import { RequestContext } from 'nestjs-request-context';
+import { Period } from '@/periods/schemas/periods.schema';
+import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
+import { PeriodDetailsQuantifier } from '@/periods/interfaces/period-details-quantifier.interface';
+import { PeriodDetailsGiverReceiver } from '@/periods/interfaces/period-details-giver-receiver.interface';
 
 @Injectable()
 export class PraiseService {
@@ -302,5 +306,99 @@ export class PraiseService {
     });
 
     return duplicatePraiseItems;
+  };
+
+  /**
+   * Find all quantifiers who quantified praises in the given period
+   * @param {Period} period
+   * @param {Date} previousPeriodEndDate
+   * @returns {Promise<PeriodDetailsQuantifier[]>}
+   * */
+  findPeriodQuantifiers = async (
+    period: Period,
+    previousPeriodEndDate: Date,
+  ): Promise<PeriodDetailsQuantifier[]> => {
+    const quantifiers = this.praiseModel.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gt: previousPeriodEndDate,
+            $lte: period.endDate,
+          },
+        },
+      },
+      { $unwind: '$quantifications' },
+      {
+        $group: {
+          _id: '$quantifications.quantifier',
+          praiseCount: { $count: {} },
+          quantifications: {
+            $push: '$quantifications',
+          },
+        },
+      },
+    ]);
+
+    return quantifiers;
+  };
+
+  /**
+   * Find all givers who gave praises in the given period
+   * @param {Period} period
+   * @param {Date} previousPeriodEndDate
+   * @returns {Promise<PeriodDetailsGiverReceiver[]>}
+   * */
+  findPeriodGivers = async (
+    period: Period,
+    previousPeriodEndDate: Date,
+  ): Promise<PeriodDetailsGiverReceiver[]> => {
+    const givers = this.praiseModel.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gt: previousPeriodEndDate,
+            $lte: period.endDate,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$giver',
+          praiseCount: { $count: {} },
+        },
+      },
+    ]);
+
+    return givers;
+  };
+
+  /**
+   * Find all receivers who received praises in the given period
+   * @param {Period} period
+   * @param {Date} previousPeriodEndDate
+   * @returns {Promise<PeriodDetailsGiverReceiver[]>}
+   * */
+  findPeriodReceivers = async (
+    period: Period,
+    previousPeriodEndDate: Date,
+  ): Promise<PeriodDetailsGiverReceiver[]> => {
+    const receivers = this.praiseModel.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gt: previousPeriodEndDate,
+            $lte: period.endDate,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$receiver',
+          praiseCount: { $count: {} },
+        },
+      },
+    ]);
+
+    return receivers;
   };
 }

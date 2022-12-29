@@ -15,6 +15,7 @@ import { ServiceException } from '@/shared/service-exception';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { RequestContext } from 'nestjs-request-context';
+import { SettingGroup } from './interfaces/settings-group.interface';
 
 @Injectable()
 export class SettingsService {
@@ -34,11 +35,23 @@ export class SettingsService {
     return this.settingsModel;
   }
 
+  /**
+   * Find all settings
+   * @returns {Promise<Setting[]>}
+   * @throws {ServiceException}
+   *
+   * */
   async findAll(): Promise<Setting[]> {
-    const settings = await this.settingsModel.find().lean();
-    return settings.map((setting) => new Setting(setting));
+    return await this.settingsModel.find().lean();
   }
 
+  /**
+   * Find one setting by id
+   * @param _id
+   * @returns {Promise<Setting>}
+   * @throws {ServiceException}
+   *
+   * */
   async findOneById(_id: Types.ObjectId): Promise<Setting> {
     const setting = await this.settingsModel
       .findOne({
@@ -51,6 +64,13 @@ export class SettingsService {
     return new Setting(setting);
   }
 
+  /**
+   * Set one setting by id
+   * @param key
+   * @returns {Promise<Setting>}
+   * @throws {ServiceException}
+   *
+   * */
   async setOne(_id: Types.ObjectId, data: SetSettingDto): Promise<Setting> {
     const setting = await this.settingsModel.findOne({
       _id,
@@ -98,6 +118,12 @@ export class SettingsService {
     return this.findOneById(_id);
   }
 
+  /**
+   * Find custom export transformer
+   * @returns {Promise<ExportTransformer>}
+   * @throws {ServiceException}
+   *
+   * */
   async findCustomExportTransformer() {
     const customExportMapSetting = (await this.settingValue(
       'CUSTOM_EXPORT_MAP',
@@ -147,6 +173,13 @@ export class SettingsService {
     }
   }
 
+  /**
+   * Find one setting value by key
+   * @param key
+   * @returns {Promise<Setting>}
+   * @throws {ServiceException}
+   *
+   * */
   async settingValue(
     key: string,
     periodId: Types.ObjectId | undefined = undefined,
@@ -176,5 +209,19 @@ export class SettingsService {
     }
 
     return setting ? setting.value : undefined;
+  }
+
+  /**
+   * Find settings by group
+   * @param group {SettingGroup}
+   * @returns {Promise<Setting[]>}
+   * @throws {ServiceException}
+   * */
+  async findByGroup(group: SettingGroup): Promise<Setting[]> {
+    return await this.settingsModel
+      .find({
+        group,
+      })
+      .lean();
   }
 }

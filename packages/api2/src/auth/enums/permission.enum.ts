@@ -6,4 +6,5 @@ export enum Permission {
   EventLogView = 'eventLog:view',
   PraiseView = 'praise:view',
   PraiseQuantify = 'praise:quantify',
+  PeriodView = 'period:view',
 }
