@@ -29,7 +29,6 @@ import { CreateUpdateQuantification } from '@/quantifications/dto/create-update-
 @Controller('praise')
 @SerializeOptions({
   excludePrefixes: ['__'],
-  groups: ['praise'],
 })
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(PermissionsGuard)

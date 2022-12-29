@@ -156,11 +156,11 @@ describe('Praise (E2E)', () => {
       praise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier,
+        quantifier: quantifier._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
-        praise: praise,
+        praise: praise._id,
       });
 
       await periodsSeeder.seedPeriod({
@@ -221,11 +221,11 @@ describe('Praise (E2E)', () => {
       praise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier,
+        quantifier: quantifier._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
-        praise: praise,
+        praise: praise._id,
       });
 
       await periodsSeeder.seedPeriod({
@@ -267,11 +267,11 @@ describe('Praise (E2E)', () => {
       praise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier,
+        quantifier: quantifier._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
-        praise: praise,
+        praise: praise._id,
       });
 
       period = await periodsSeeder.seedPeriod({
@@ -295,7 +295,7 @@ describe('Praise (E2E)', () => {
         .expect(401);
     });
 
-    test('201 when correct data is sent', async () => {
+    test('098j9 201 when correct data is sent', async () => {
       const response = await authorizedPostRequest(
         `/praise/${praise._id}/quantify`,
         app,
@@ -306,6 +306,11 @@ describe('Praise (E2E)', () => {
       );
 
       expect(response.status).toBe(201);
+      expect(response.body).toBeDefined();
+      expect(response.body[0]._id).toBe(praise._id.toString());
+      expect(response.body[0].score).toBe(144);
+      expect(response.body[0].scoreRealized).toBe(144);
+      expect(response.body[0].dismissed).toBe(false);
     });
 
     test('400 when wrong score is sent', async () => {
@@ -408,7 +413,7 @@ describe('Praise (E2E)', () => {
         accessToken,
         {
           score: 144,
-          duplicatePraise: praiseItem._id.toString(),
+          duplicatepraise: praiseItem._id.toString(),
         },
       ).expect(400);
     });
@@ -466,11 +471,11 @@ describe('Praise (E2E)', () => {
       const duplicatePraise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier,
+        quantifier: quantifier._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
-        praise: duplicatePraise,
+        praise: duplicatePraise._id,
       });
 
       return authorizedPostRequest(
@@ -495,11 +500,11 @@ describe('Praise (E2E)', () => {
       const duplicatePraise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier,
+        quantifier: quantifier._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
-        praise: duplicatePraise,
+        praise: duplicatePraise._id,
         duplicatePraise: duplicatePraise._id.toString(),
       });
 
@@ -525,11 +530,11 @@ describe('Praise (E2E)', () => {
       const duplicatePraise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier,
+        quantifier: quantifier._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
-        praise: duplicatePraise,
+        praise: duplicatePraise._id,
       });
 
       return authorizedPostRequest(
@@ -552,11 +557,11 @@ describe('Praise (E2E)', () => {
       praise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier,
+        quantifier: quantifier._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
-        praise: praise,
+        praise: praise._id,
       });
 
       period = await periodsSeeder.seedPeriod({
@@ -582,11 +587,11 @@ describe('Praise (E2E)', () => {
       });
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: quantifier,
+        quantifier: quantifier._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
-        praise: praise2,
+        praise: praise2._id,
       });
 
       const response = await authorizedPostRequest(

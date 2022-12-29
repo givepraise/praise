@@ -1,21 +1,21 @@
-import { PraiseService } from '@/praise/praise.service';
 import { SettingsService } from '@/settings/settings.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Quantification } from './schemas/quantifications.schema';
-import { sum } from 'lodash';
+import { sum, has } from 'lodash';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
+import { PeriodsService } from '@/periods/periods.service';
+import { User } from '@/users/schemas/users.schema';
 
 export class QuantificationsService {
   constructor(
     @InjectModel(Quantification.name)
     private quantificationModel: Model<Quantification>,
-    @InjectModel(Praise.name)
-    private praiseModel: Model<Praise>,
     private settingsService: SettingsService,
     private userAccountsService: UserAccountsService,
+    private periodsService: PeriodsService,
   ) {}
 
   /**
@@ -119,9 +119,11 @@ export class QuantificationsService {
   findQuantificationsByPraiseId = async (
     praiseId: Types.ObjectId,
   ): Promise<Quantification[]> => {
-    const quantifications = await this.quantificationModel.find({
-      praise: praiseId,
-    });
+    const quantifications = await this.quantificationModel
+      .find({
+        praise: praiseId,
+      })
+      .lean();
 
     if (!quantifications) {
       throw new ServiceException(
@@ -154,17 +156,43 @@ export class QuantificationsService {
    * @returns {Promise<number>}
    */
   calculateQuantificationsCompositeScore = async (
-    quantifications: Quantification[],
+    praise: Praise,
+    saveQuantifications = true,
   ): Promise<number> => {
+    // Get all quantifications for this praise item
+    const quantifications = await this.findQuantificationsByPraiseId(
+      praise._id,
+    );
+
+    // Filter out quantifications that are not completed
     const completedQuantifications = quantifications.filter((q) =>
       this.isQuantificationCompleted(q),
     );
+
+    // If no quantifications are completed the score is 0
     if (completedQuantifications.length === 0) return 0;
 
+    // Calculate the score for each quantification
     const scores = await Promise.all(
-      completedQuantifications.map((q) => this.calculateQuantificationScore(q)),
+      completedQuantifications.map((q) => {
+        const s = this.calculateQuantificationScore(praise, q);
+        return s;
+      }),
     );
 
+    // Save the scores to the database
+    if (saveQuantifications) {
+      for (let i = 0; i < completedQuantifications.length; i++) {
+        const q = completedQuantifications[i];
+        const s = scores[i];
+        await this.quantificationModel.updateOne(
+          { _id: q._id },
+          { $set: { scoreRealized: s } },
+        );
+      }
+    }
+
+    // Calculate the composite score by averaging the scores of all completed quantifications
     const compositeScore = +(
       sum(scores) / completedQuantifications.length
     ).toFixed(this.DIGITS_PRECISION);
@@ -179,16 +207,21 @@ export class QuantificationsService {
    * @returns {Promise<number>}
    */
   calculateQuantificationScore = async (
+    praise: Praise,
     quantification: Quantification,
   ): Promise<number> => {
+    // The manual score is the score that the quantifier has given to the praise item
     let score = quantification.score;
-
+    // Dismissed oveerrides the manual score and has a score of 0
     if (quantification.dismissed) {
       score = 0;
     } else if (quantification.duplicatePraise) {
-      score = await this.calculateQuantificationDuplicateScore(quantification);
+      // A duplicate praise overrides the manual/dismissed score and is calculated based on the "original" praise
+      score = await this.calculateQuantificationDuplicateScore(
+        praise,
+        quantification,
+      );
     }
-
     return score;
   };
 
@@ -199,36 +232,40 @@ export class QuantificationsService {
    * @returns {Promise<number>}
    */
   calculateQuantificationDuplicateScore = async (
+    praise: Praise,
     quantification: Quantification,
   ): Promise<number> => {
+    // Not possible to calculate duplicate score if the quantification is not linked to an original praise
     if (!quantification.duplicatePraise)
       throw Error(
         'Quantification does not have duplicatePraise, cannot calculate duplicate score',
       );
 
-    const score = 0;
-    const praise = await this.praiseModel.findById(
-      quantification.duplicatePraise._id,
+    // Find the original quantification
+    const originalQuantification = await this.quantificationModel
+      .findOne({
+        praise: quantification.duplicatePraise,
+        duplicatePraise: undefined,
+        quantifier: quantification.quantifier,
+      })
+      .lean();
+    if (!originalQuantification) {
+      throw new ServiceException(
+        'No original quantification found, cannot calculate duplicate score',
+      );
+    }
+
+    // Find the period associated with the current praise item
+    const period = await this.periodsService.getPraisePeriod(praise);
+    if (!period) {
+      throw new ServiceException('Quantification has no associated period');
+    }
+
+    // Calculate the duplicate score based on the original quantification and the period
+    const score = await this.calculateDuplicateScore(
+      originalQuantification,
+      period._id,
     );
-
-    // if (praise && praise.quantifications) {
-    //   const originalQuantification = praise.quantifications.find((q) =>
-    //     q.quantifier._id.equals(quantification.quantifier._id),
-    //   );
-
-    //   if (originalQuantification && originalQuantification.dismissed) {
-    //     score = 0;
-    //   } else if (originalQuantification && !originalQuantification.dismissed) {
-    //     const period = await this.praiseService.getPraisePeriod(praise);
-    //     if (!period)
-    //       throw new ServiceException('Quantification has no associated period');
-
-    //     score = await this.calculateDuplicateScore(
-    //       originalQuantification,
-    //       period._id,
-    //     );
-    //   }
-    // }
 
     return score;
   };
@@ -245,6 +282,7 @@ export class QuantificationsService {
     originalQuantification: Quantification,
     periodId: Types.ObjectId,
   ): Promise<number> => {
+    // A duplicate praise quantiification is calculated based on the original quantification's score and the duplicatePraisePercentage setting
     const duplicatePraisePercentage = (await this.settingsService.settingValue(
       'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
       periodId,
@@ -272,9 +310,21 @@ export class QuantificationsService {
     quantification: Quantification,
   ): Promise<Quantification> => {
     const updatedQuantification = await this.quantificationModel
-      .findOneAndUpdate({ _id: quantification._id }, quantification, {
-        new: true,
-      })
+      .findOneAndUpdate(
+        { _id: quantification._id },
+        {
+          ...quantification,
+          quantifier: has(quantification.quantifier, '_id')
+            ? quantification.quantifier._id
+            : quantification.quantifier,
+          praise: has(quantification.praise, '_id')
+            ? quantification.praise._id
+            : quantification.praise,
+        },
+        {
+          new: true,
+        },
+      )
       .lean();
 
     if (!updatedQuantification) {

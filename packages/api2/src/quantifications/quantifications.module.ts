@@ -1,6 +1,5 @@
-import { PraiseModule } from '@/praise/praise.module';
 import { SettingsModule } from '@/settings/settings.module';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { QuantificationsService } from './quantifications.service';
 import {
@@ -8,22 +7,19 @@ import {
   QuantificationsSchema,
 } from './schemas/quantifications.schema';
 import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
+import { PeriodsModule } from '@/periods/periods.module';
+import { PeriodsService } from '@/periods/periods.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Quantification.name, schema: QuantificationsSchema },
     ]),
-    forwardRef(() => PraiseModule),
     SettingsModule,
+    PeriodsModule,
     UserAccountsModule,
   ],
-  providers: [QuantificationsService],
-  exports: [
-    QuantificationsService,
-    MongooseModule.forFeature([
-      { name: Quantification.name, schema: QuantificationsSchema },
-    ]),
-  ],
+  providers: [QuantificationsService, PeriodsService],
+  exports: [QuantificationsService],
 })
 export class QuantificationsModule {}

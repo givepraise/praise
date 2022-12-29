@@ -24,6 +24,7 @@ export class Quantification {
   @Prop({ required: true, default: 0 })
   score: number;
 
+  @Prop({ required: true, default: 0 })
   scoreRealized: number;
 
   @Prop({ required: true })
@@ -47,10 +48,10 @@ export class Quantification {
 
 const QuantificationsSchema = SchemaFactory.createForClass(Quantification);
 
-QuantificationsSchema.virtual('scoreRealized').get(function (
-  this: Quantification,
-) {
-  return this.quantificationsService.calculateQuantificationScore(this);
-});
+// QuantificationsSchema.virtual('scoreRealized').get(function (
+//   this: Quantification,
+// ) {
+//   return this.quantificationsService.calculateQuantificationScore(this);
+// });
 
 export { QuantificationsSchema };
