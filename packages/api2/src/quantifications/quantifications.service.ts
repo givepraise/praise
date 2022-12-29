@@ -5,16 +5,15 @@ import { Quantification } from './schemas/quantifications.schema';
 import { sum, has } from 'lodash';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
-import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { PeriodsService } from '@/periods/periods.service';
-import { User } from '@/users/schemas/users.schema';
+import { UsersService } from '@/users/users.service';
 
 export class QuantificationsService {
   constructor(
     @InjectModel(Quantification.name)
     private quantificationModel: Model<Quantification>,
     private settingsService: SettingsService,
-    private userAccountsService: UserAccountsService,
+    private usersService: UsersService,
     private periodsService: PeriodsService,
   ) {}
 
@@ -61,7 +60,8 @@ export class QuantificationsService {
     userId: Types.ObjectId,
     praiseId: Types.ObjectId,
   ): Promise<Quantification | null> {
-    const quantifier = await this.userAccountsService.findOneByUserId(userId);
+    const quantifier = await this.usersService.findOneById(userId);
+    if (!quantifier) return null;
 
     const quantification = await this.quantificationModel
       .findOne({ quantifier: quantifier._id, praise: praiseId })

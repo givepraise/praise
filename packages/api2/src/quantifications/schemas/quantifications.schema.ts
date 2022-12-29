@@ -1,8 +1,8 @@
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { Transform } from 'class-transformer';
+import { User } from '@/users/schemas/users.schema';
 
 export type QuantificationDocument = Quantification & Document;
 
@@ -30,9 +30,9 @@ export class Quantification {
   @Transform(({ value }) => value.toString())
   duplicatePraise?: Praise;
 
-  @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
+  @Prop({ type: Types.ObjectId, ref: 'User' })
   @Transform(({ value }) => value.toString())
-  quantifier: UserAccount;
+  quantifier: User;
 
   @Prop({ type: Types.ObjectId, ref: 'Praise' })
   @Transform(({ value }) => value.toString())

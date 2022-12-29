@@ -8,7 +8,7 @@ import {
 } from './schemas/quantifications.schema';
 import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
 import { PeriodsModule } from '@/periods/periods.module';
-import { PeriodsService } from '@/periods/periods.service';
+import { UsersModule } from '@/users/users.module';
 
 @Module({
   imports: [
@@ -18,8 +18,9 @@ import { PeriodsService } from '@/periods/periods.service';
     SettingsModule,
     PeriodsModule,
     UserAccountsModule,
+    UsersModule,
   ],
-  providers: [QuantificationsService, PeriodsService],
+  providers: [QuantificationsService],
   exports: [QuantificationsService],
 })
 export class QuantificationsModule {}
