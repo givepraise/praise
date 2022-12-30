@@ -14,7 +14,7 @@ import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
   authorizedGetRequest,
-  authorizedPostRequest,
+  authorizedPutRequest,
   loginUser,
 } from './test.common';
 import { runDbMigrations } from '@/database/migrations';
@@ -288,7 +288,7 @@ describe('Praise (E2E)', () => {
     });
   });
 
-  describe('POST /api/praise/{id}/quantify', () => {
+  describe('PUT /api/praise/{id}/quantify', () => {
     let praise: Praise;
     let period: Period;
     let periodSettingsAllowedValues: PeriodSetting;
@@ -323,13 +323,13 @@ describe('Praise (E2E)', () => {
 
     test('401 when not authenticated', async () => {
       return request(server)
-        .post(`/praise/${praise._id}/quantify`)
+        .put(`/praise/${praise._id}/quantify`)
         .send()
         .expect(401);
     });
 
-    test('201 and correct body when quantifying - single quantification', async () => {
-      const response = await authorizedPostRequest(
+    test('200 and correct body when quantifying - single quantification', async () => {
+      const response = await authorizedPutRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -338,7 +338,7 @@ describe('Praise (E2E)', () => {
         },
       );
 
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
 
       const p = response.body[0] as Praise;
@@ -356,7 +356,7 @@ describe('Praise (E2E)', () => {
     });
 
     test('400 when wrong score is sent', async () => {
-      const response = await authorizedPostRequest(
+      const response = await authorizedPutRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -373,7 +373,7 @@ describe('Praise (E2E)', () => {
     });
 
     test('400 when praise does not exist', async () => {
-      return authorizedPostRequest(
+      return authorizedPutRequest(
         `/praise/${new Types.ObjectId()}/quantify`,
         app,
         users[0].accessToken,
@@ -391,7 +391,7 @@ describe('Praise (E2E)', () => {
         status: PeriodStatusType.QUANTIFY,
       });
 
-      return authorizedPostRequest(
+      return authorizedPutRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -409,7 +409,7 @@ describe('Praise (E2E)', () => {
         status: PeriodStatusType.OPEN,
       });
 
-      return authorizedPostRequest(
+      return authorizedPutRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -431,7 +431,7 @@ describe('Praise (E2E)', () => {
         status: PeriodStatusType.QUANTIFY,
       });
 
-      return authorizedPostRequest(
+      return authorizedPutRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         accessTokenAuth,
@@ -449,7 +449,7 @@ describe('Praise (E2E)', () => {
         status: PeriodStatusType.QUANTIFY,
       });
 
-      return authorizedPostRequest(
+      return authorizedPutRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -468,7 +468,7 @@ describe('Praise (E2E)', () => {
         status: PeriodStatusType.QUANTIFY,
       });
 
-      return authorizedPostRequest(
+      return authorizedPutRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -491,7 +491,7 @@ describe('Praise (E2E)', () => {
         createdAt: praise.createdAt.getDate() - 1,
       });
 
-      return authorizedPostRequest(
+      return authorizedPutRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -520,7 +520,7 @@ describe('Praise (E2E)', () => {
         praise: duplicatePraise._id,
       });
 
-      return authorizedPostRequest(
+      return authorizedPutRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -550,7 +550,7 @@ describe('Praise (E2E)', () => {
         duplicatePraise: duplicatePraise._id.toString(),
       });
 
-      return authorizedPostRequest(
+      return authorizedPutRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -579,7 +579,7 @@ describe('Praise (E2E)', () => {
         praise: duplicatePraise._id,
       });
 
-      return authorizedPostRequest(
+      return authorizedPutRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -591,7 +591,7 @@ describe('Praise (E2E)', () => {
     });
   });
 
-  describe('POST /api/praise/{id}/quantify - multiple quantifications', () => {
+  describe('PUT /api/praise/{id}/quantify - multiple quantifications', () => {
     let praise: Praise;
     let period: Period;
 
@@ -630,7 +630,7 @@ describe('Praise (E2E)', () => {
 
     test('Quantifying multiple praise - scores and averages correct', async () => {
       // Quantify, quantifier 1
-      await authorizedPostRequest(
+      await authorizedPutRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -639,7 +639,7 @@ describe('Praise (E2E)', () => {
         },
       );
       // Quantify, quantifier 2
-      await authorizedPostRequest(
+      await authorizedPutRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[1].accessToken,
@@ -648,7 +648,7 @@ describe('Praise (E2E)', () => {
         },
       );
       // Quantify, quantifier 3
-      await authorizedPostRequest(
+      await authorizedPutRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[2].accessToken,
@@ -673,7 +673,7 @@ describe('Praise (E2E)', () => {
 
     test('Quantifying multiple praise - scores and averages correct - with dismissed', async () => {
       // Quantify, quantifier 1
-      await authorizedPostRequest(
+      await authorizedPutRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -682,7 +682,7 @@ describe('Praise (E2E)', () => {
         },
       );
       // Quantify, quantifier 2
-      await authorizedPostRequest(
+      await authorizedPutRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[1].accessToken,
@@ -691,7 +691,7 @@ describe('Praise (E2E)', () => {
         },
       );
       // Quantify, quantifier 3
-      await authorizedPostRequest(
+      await authorizedPutRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[2].accessToken,
@@ -725,7 +725,7 @@ describe('Praise (E2E)', () => {
       });
 
       // Quantify, quantifier 1
-      await authorizedPostRequest(
+      await authorizedPutRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -734,7 +734,7 @@ describe('Praise (E2E)', () => {
         },
       );
       // Quantify, quantifier 2
-      await authorizedPostRequest(
+      await authorizedPutRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[1].accessToken,
@@ -744,7 +744,7 @@ describe('Praise (E2E)', () => {
       );
       // Quantify, quantifier 3
       // Give score to duplicate praise
-      await authorizedPostRequest(
+      await authorizedPutRequest(
         `/praise/${praise2._id}/quantify`,
         app,
         users[2].accessToken,
@@ -753,7 +753,7 @@ describe('Praise (E2E)', () => {
         },
       );
       // Mark second quantification as duplicate
-      await authorizedPostRequest(
+      await authorizedPutRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[2].accessToken,
@@ -783,7 +783,7 @@ describe('Praise (E2E)', () => {
     });
   });
 
-  describe('POST /api/praise/quantify', () => {
+  describe('PUT /api/praise/quantify', () => {
     let praise: Praise;
     let period: Period;
 
@@ -812,10 +812,10 @@ describe('Praise (E2E)', () => {
     });
 
     test('401 when not authenticated', async () => {
-      return request(server).post(`/praise/quantify`).send().expect(401);
+      return request(server).put(`/praise/quantify`).send().expect(401);
     });
 
-    test('201 when correct data is sent', async () => {
+    test('200 when correct data is sent', async () => {
       const praise2 = await praiseSeeder.seedPraise({
         createdAt: praise.createdAt,
       });
@@ -828,7 +828,7 @@ describe('Praise (E2E)', () => {
         praise: praise2._id,
       });
 
-      const response = await authorizedPostRequest(
+      const response = await authorizedPutRequest(
         `/praise/quantify`,
         app,
         users[0].accessToken,
@@ -840,7 +840,7 @@ describe('Praise (E2E)', () => {
         },
       );
 
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(200);
     });
   });
 });
