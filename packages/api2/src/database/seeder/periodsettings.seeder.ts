@@ -6,8 +6,7 @@ import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
 
 @Injectable()
 export class PeriodSettingsSeeder {
-  PeriodSettingsModel = this.PeriodSettingsService.getModel();
-  constructor(private readonly PeriodSettingsService: PeriodSettingsService) {}
+  constructor(private readonly periodSettingsService: PeriodSettingsService) {}
 
   /**
    * Generate and save a fake PeriodSettings
@@ -18,7 +17,7 @@ export class PeriodSettingsSeeder {
   seedPeriodSettings = async (
     PeriodSettingsData: Record<string, unknown> = {},
   ): Promise<PeriodSetting> => {
-    const PeriodSetting = await this.PeriodSettingsModel.create({
+    const PeriodSetting = await this.periodSettingsService.getModel().create({
       period: PeriodSettingsData.period || null,
       key: PeriodSettingsData.key || faker.random.word(),
       value: PeriodSettingsData.value || faker.random.word(),

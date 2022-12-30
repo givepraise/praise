@@ -6,7 +6,6 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UsersSeeder {
-  userModel = this.usersService.getModel();
   constructor(private readonly usersService: UsersService) {}
 
   /**
@@ -16,7 +15,7 @@ export class UsersSeeder {
    * @returns {Promise<UserDocument>}
    */
   seedUser = async (userData?: unknown): Promise<User> => {
-    const user = await this.userModel.create({
+    const user = await this.usersService.getModel().create({
       identityEthAddress: faker.finance.ethereumAddress(),
       rewardsEthAddress: faker.finance.ethereumAddress(),
       username: faker.internet.userName(),

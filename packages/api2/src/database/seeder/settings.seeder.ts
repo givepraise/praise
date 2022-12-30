@@ -6,8 +6,7 @@ import { Setting } from '@/settings/schemas/settings.schema';
 
 @Injectable()
 export class SettingsSeeder {
-  SettingsModel = this.SettingsService.getModel();
-  constructor(private readonly SettingsService: SettingsService) {}
+  constructor(private readonly settingsService: SettingsService) {}
 
   /**
    * Generate and save a fake Settings
@@ -18,7 +17,7 @@ export class SettingsSeeder {
   seedSettings = async (
     SettingsData: Record<string, unknown> = {},
   ): Promise<Setting> => {
-    const Setting = await this.SettingsModel.create({
+    const Setting = await this.settingsService.getModel().create({
       period: SettingsData.period || null,
       key: SettingsData.key || faker.random.word(),
       value: SettingsData.value || faker.random.word(),
