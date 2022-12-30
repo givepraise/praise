@@ -6,10 +6,9 @@ import { UserAccountsSeeder } from './useraccounts.seeder';
 
 @Injectable()
 export class PraiseSeeder {
-  PraiseModel = this.PraiseService.getModel();
   constructor(
-    private readonly UserAccountsSeeder: UserAccountsSeeder,
-    private readonly PraiseService: PraiseService,
+    private readonly userAccountsSeeder: UserAccountsSeeder,
+    private readonly praiseService: PraiseService,
   ) {}
 
   /**
@@ -22,10 +21,10 @@ export class PraiseSeeder {
     PraiseData: Record<string, unknown> = {},
   ): Promise<PraiseDocument> => {
     const createdAt = faker.date.recent();
-    const randomGiver = await this.UserAccountsSeeder.seedUserAccount();
-    const randomReceiver = await this.UserAccountsSeeder.seedUserAccount();
+    const randomGiver = await this.userAccountsSeeder.seedUserAccount();
+    const randomReceiver = await this.userAccountsSeeder.seedUserAccount();
 
-    const praise = await this.PraiseModel.create({
+    const praise = await this.praiseService.getModel().create({
       reason: faker.lorem.sentence(),
       reasonRaw: faker.lorem.sentence(),
       sourceId: faker.datatype.uuid(),

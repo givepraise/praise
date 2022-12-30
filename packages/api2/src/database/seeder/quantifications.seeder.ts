@@ -5,9 +5,8 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class QuantificationsSeeder {
-  QuantificationModel = this.QuantificationsService.getModel();
   constructor(
-    private readonly QuantificationsService: QuantificationsService,
+    private readonly quantificationsService: QuantificationsService,
   ) {}
 
   /**
@@ -21,7 +20,7 @@ export class QuantificationsSeeder {
   ): Promise<Quantification> => {
     const createdAt = faker.date.recent();
 
-    const Quantification = await this.QuantificationModel.create({
+    const Quantification = await this.quantificationsService.getModel().create({
       score: 0,
       scoreRealized: 0,
       dismissed: faker.datatype.boolean(),

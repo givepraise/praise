@@ -6,9 +6,8 @@ import { UsersSeeder } from './users.seeder';
 
 @Injectable()
 export class UserAccountsSeeder {
-  userAccountModel = this.UserAccountsService.getModel();
   constructor(
-    private readonly UserAccountsService: UserAccountsService,
+    private readonly userAccountsService: UserAccountsService,
     private readonly userSeeder: UsersSeeder,
   ) {}
 
@@ -21,7 +20,7 @@ export class UserAccountsSeeder {
   seedUserAccount = async (userAccountData?: unknown): Promise<UserAccount> => {
     const randomUser = await this.userSeeder.seedUser();
 
-    const userAccount = await this.userAccountModel.create({
+    const userAccount = await this.userAccountsService.getModel().create({
       user: randomUser._id,
       accountId: faker.datatype.uuid(),
       name: faker.name.firstName(),
