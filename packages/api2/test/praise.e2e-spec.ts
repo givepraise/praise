@@ -474,7 +474,7 @@ describe('Praise (E2E)', () => {
         users[0].accessToken,
         {
           score: 144,
-          duplicatePraise: new Types.ObjectId().toString(),
+          duplicatePraiseId: new Types.ObjectId().toString(),
         },
       ).expect(400);
     });
@@ -497,7 +497,7 @@ describe('Praise (E2E)', () => {
         users[0].accessToken,
         {
           score: 144,
-          duplicatePraise: duplicatePraise._id.toString(),
+          duplicatePraiseId: duplicatePraise._id.toString(),
         },
       ).expect(400);
     });
@@ -526,7 +526,7 @@ describe('Praise (E2E)', () => {
         users[0].accessToken,
         {
           score: 144,
-          duplicatePraise: duplicatePraise._id.toString(),
+          duplicatePraiseId: duplicatePraise._id.toString(),
         },
       ).expect(400);
     });
@@ -547,7 +547,7 @@ describe('Praise (E2E)', () => {
         scoreRealized: 0,
         dismissed: false,
         praise: duplicatePraise._id,
-        duplicatePraise: duplicatePraise._id.toString(),
+        duplicatePraiseId: duplicatePraise._id.toString(),
       });
 
       return authorizedPutRequest(
@@ -556,7 +556,7 @@ describe('Praise (E2E)', () => {
         users[0].accessToken,
         {
           score: 144,
-          duplicatePraise: duplicatePraise._id.toString(),
+          duplicatePraiseId: duplicatePraise._id.toString(),
         },
       ).expect(400);
     });
@@ -585,7 +585,7 @@ describe('Praise (E2E)', () => {
         users[0].accessToken,
         {
           score: 144,
-          duplicatePraise: duplicatePraise._id.toString(),
+          duplicatePraiseId: duplicatePraise._id.toString(),
         },
       ).expect(400);
     });
@@ -758,7 +758,7 @@ describe('Praise (E2E)', () => {
         app,
         users[2].accessToken,
         {
-          duplicatePraise: praise2._id.toString(),
+          duplicatePraiseId: praise2._id.toString(),
         },
       );
 

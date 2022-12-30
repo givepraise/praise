@@ -120,7 +120,7 @@ export class PraiseService {
     id: Types.ObjectId,
     params: CreateUpdateQuantification,
   ): Promise<Praise[]> => {
-    const { score, dismissed, duplicatePraise } = params;
+    const { score, dismissed, duplicatePraiseId } = params;
 
     // Get the praise item in question
     const praise = await this.praiseModel
@@ -166,13 +166,13 @@ export class PraiseService {
     if (praisesDuplicateOfThis?.length > 0)
       affectedPraises.push(...praisesDuplicateOfThis);
 
-    if (duplicatePraise) {
+    if (duplicatePraiseId) {
       // Check that the duplicatePraise is not the same as the praise item
-      if (duplicatePraise === praise._id)
+      if (praise._id.equals(duplicatePraiseId))
         throw new ServiceException('Praise cannot be a duplicate of itself');
 
       // Find the original praise item
-      const dp = await this.praiseModel.findById(duplicatePraise).lean();
+      const dp = await this.praiseModel.findById(duplicatePraiseId).lean();
       if (!dp) throw new ServiceException('Duplicate praise item not found');
 
       // Check that this praise item is not already the original of another duplicate
@@ -184,7 +184,7 @@ export class PraiseService {
       // Check that this praise item does not become the duplicate of another duplicate
       const praisesDuplicateOfAnotherDuplicate =
         await this.findPraisesDuplicateOfAnotherDuplicate(
-          new Types.ObjectId(duplicatePraise),
+          new Types.ObjectId(duplicatePraiseId),
           userId,
         );
 
