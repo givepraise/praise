@@ -38,12 +38,17 @@ import { PeriodSettingsSeeder } from '@/database/seeder/periodsettings.seeder';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { SettingsSeeder } from '@/database/seeder/settings.seeder';
 import { SettingsModule } from '@/settings/settings.module';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
 import { FindAllPraisePaginatedQuery } from '@/praise/dto/find-all-praise-paginated-query.dto';
 import { Types } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
+
+class LoggedInUser {
+  accessToken: string;
+  user: User;
+  wallet: Wallet;
+}
 
 describe('Praise (E2E)', () => {
   let app: INestApplication;
@@ -59,14 +64,9 @@ describe('Praise (E2E)', () => {
   let periodSettingsSeeder: PeriodSettingsSeeder;
   let quantificationsSeeder: QuantificationsSeeder;
   let quantificationsService: QuantificationsService;
-  let userAccountsSeeder: UserAccountsSeeder;
   let userAccountsService: UserAccountsService;
-  let wallet, wallet2, wallet3, wallet4;
-  let accessToken: string;
-  let user: User;
-  let quantifier: User;
-  let quantifier2: User;
-  let quantifier3: User;
+
+  const users: LoggedInUser[] = [];
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -113,7 +113,6 @@ describe('Praise (E2E)', () => {
     quantificationsService = module.get<QuantificationsService>(
       QuantificationsService,
     );
-    userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
     userAccountsService = module.get<UserAccountsService>(UserAccountsService);
     periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
     periodsService = module.get<PeriodsService>(PeriodsService);
@@ -131,23 +130,21 @@ describe('Praise (E2E)', () => {
     await periodsService.getModel().deleteMany({});
     await periodSettingsService.getModel().deleteMany({});
 
-    // Seed a user and login
-    wallet = Wallet.createRandom();
-    user = await usersSeeder.seedUser({
-      identityEthAddress: wallet.address,
-      rewardsAddress: wallet.address,
-      roles: [AuthRole.USER, AuthRole.QUANTIFIER],
-    });
-
-    const response = await loginUser(app, module, wallet);
-    accessToken = response.accessToken;
-
-    wallet2 = Wallet.createRandom();
-    // quantifier = await usersSeeder.seedUser({
-    //   identityEthAddress: wallet2.address,
-    //   rewardsAddress: wallet2.address,
-    //   roles: [AuthRole.USER, AuthRole.QUANTIFIER],
-    // });
+    // Seed and login 3 users
+    for (let i = 0; i < 3; i++) {
+      const wallet = Wallet.createRandom();
+      const user = await usersSeeder.seedUser({
+        identityEthAddress: wallet.address,
+        rewardsAddress: wallet.address,
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
+      });
+      const response = await loginUser(app, module, wallet);
+      users.push({
+        accessToken: response.accessToken,
+        user,
+        wallet,
+      });
+    }
   });
 
   afterAll(async () => {
@@ -161,7 +158,7 @@ describe('Praise (E2E)', () => {
       praise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: user._id,
+        quantifier: users[0].user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -179,7 +176,11 @@ describe('Praise (E2E)', () => {
     });
 
     test('200 when correct data is sent', async () => {
-      const response = await authorizedGetRequest('/praise', app, accessToken);
+      const response = await authorizedGetRequest(
+        '/praise',
+        app,
+        users[0].accessToken,
+      );
       expect(response.status).toBe(200);
     });
 
@@ -207,7 +208,7 @@ describe('Praise (E2E)', () => {
       const response = await authorizedGetRequest(
         `/praise?${urlParams}`,
         app,
-        accessToken,
+        users[0].accessToken,
       ).expect(200);
 
       expect(response.body).toBeDefined();
@@ -240,7 +241,7 @@ describe('Praise (E2E)', () => {
       praise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: user._id,
+        quantifier: users[0].user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -261,7 +262,7 @@ describe('Praise (E2E)', () => {
       const response = await authorizedGetRequest(
         `/praise/${praise._id}`,
         app,
-        accessToken,
+        users[0].accessToken,
       );
 
       expect(response.status).toBe(200);
@@ -282,7 +283,7 @@ describe('Praise (E2E)', () => {
       return authorizedGetRequest(
         `/praise/${new Types.ObjectId()}`,
         app,
-        accessToken,
+        users[0].accessToken,
       ).expect(400);
     });
   });
@@ -299,7 +300,7 @@ describe('Praise (E2E)', () => {
       praise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: user._id,
+        quantifier: users[0].user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -327,11 +328,11 @@ describe('Praise (E2E)', () => {
         .expect(401);
     });
 
-    test('oiuou 201 when correct data is sent', async () => {
+    test('201 and correct body when quantifying - single quantification', async () => {
       const response = await authorizedPostRequest(
         `/praise/${praise._id}/quantify`,
         app,
-        accessToken,
+        users[0].accessToken,
         {
           score: 144,
         },
@@ -346,7 +347,9 @@ describe('Praise (E2E)', () => {
       expect(p.quantifications.length).toBe(1);
       expect(p.quantifications[0].score).toBe(144);
       expect(p.quantifications[0].scoreRealized).toBe(144);
-      expect(p.quantifications[0].quantifier).toBe(user._id.toString());
+      expect(p.quantifications[0].quantifier).toBe(
+        users[0].user._id.toString(),
+      );
       expect(p.quantifications[0].praise).toBe(praise._id.toString());
       expect(p.quantifications[0].dismissed).toBe(false);
       expect(p.quantifications[0].createdAt).toBeDefined();
@@ -356,7 +359,7 @@ describe('Praise (E2E)', () => {
       const response = await authorizedPostRequest(
         `/praise/${praise._id}/quantify`,
         app,
-        accessToken,
+        users[0].accessToken,
         {
           score: 666,
         },
@@ -373,7 +376,7 @@ describe('Praise (E2E)', () => {
       return authorizedPostRequest(
         `/praise/${new Types.ObjectId()}/quantify`,
         app,
-        accessToken,
+        users[0].accessToken,
         {
           score: 144,
         },
@@ -391,7 +394,7 @@ describe('Praise (E2E)', () => {
       return authorizedPostRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
-        accessToken,
+        users[0].accessToken,
         {
           score: 144,
         },
@@ -409,7 +412,7 @@ describe('Praise (E2E)', () => {
       return authorizedPostRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
-        accessToken,
+        users[0].accessToken,
         {
           score: 144,
         },
@@ -449,7 +452,7 @@ describe('Praise (E2E)', () => {
       return authorizedPostRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
-        accessToken,
+        users[0].accessToken,
         {
           score: 144,
           duplicatepraise: praiseItem._id.toString(),
@@ -468,7 +471,7 @@ describe('Praise (E2E)', () => {
       return authorizedPostRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
-        accessToken,
+        users[0].accessToken,
         {
           score: 144,
           duplicatePraise: new Types.ObjectId().toString(),
@@ -491,7 +494,7 @@ describe('Praise (E2E)', () => {
       return authorizedPostRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
-        accessToken,
+        users[0].accessToken,
         {
           score: 144,
           duplicatePraise: duplicatePraise._id.toString(),
@@ -510,7 +513,7 @@ describe('Praise (E2E)', () => {
       const duplicatePraise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: user._id,
+        quantifier: users[0].user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -520,7 +523,7 @@ describe('Praise (E2E)', () => {
       return authorizedPostRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
-        accessToken,
+        users[0].accessToken,
         {
           score: 144,
           duplicatePraise: duplicatePraise._id.toString(),
@@ -539,7 +542,7 @@ describe('Praise (E2E)', () => {
       const duplicatePraise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: user._id,
+        quantifier: users[0].user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -550,7 +553,7 @@ describe('Praise (E2E)', () => {
       return authorizedPostRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
-        accessToken,
+        users[0].accessToken,
         {
           score: 144,
           duplicatePraise: duplicatePraise._id.toString(),
@@ -569,7 +572,7 @@ describe('Praise (E2E)', () => {
       const duplicatePraise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: user._id,
+        quantifier: users[0].user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -579,12 +582,204 @@ describe('Praise (E2E)', () => {
       return authorizedPostRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
-        accessToken,
+        users[0].accessToken,
         {
           score: 144,
           duplicatePraise: duplicatePraise._id.toString(),
         },
       ).expect(400);
+    });
+  });
+
+  describe('POST /api/praise/{id}/quantify - multiple quantifications', () => {
+    let praise: Praise;
+    let period: Period;
+
+    beforeEach(async () => {
+      await praiseService.getModel().deleteMany({});
+      await quantificationsService.getModel().deleteMany({});
+
+      praise = await praiseSeeder.seedPraise();
+
+      // Seed three quantifications
+      for (let i = 0; i < 3; i++) {
+        await quantificationsSeeder.seedQuantification({
+          quantifier: users[i].user._id,
+          praise: praise._id,
+        });
+      }
+
+      period = await periodsSeeder.seedPeriod({
+        endDate: praise.createdAt,
+        status: PeriodStatusType.QUANTIFY,
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
+        value: '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
+        type: 'StringList',
+      });
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        key: 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
+        value: '0.1',
+        type: 'Float',
+      });
+    });
+
+    test('Quantifying multiple praise - scores and averages correct', async () => {
+      // Quantify, quantifier 1
+      await authorizedPostRequest(
+        `/praise/${praise._id}/quantify`,
+        app,
+        users[0].accessToken,
+        {
+          score: 8,
+        },
+      );
+      // Quantify, quantifier 2
+      await authorizedPostRequest(
+        `/praise/${praise._id}/quantify`,
+        app,
+        users[1].accessToken,
+        {
+          score: 13,
+        },
+      );
+      // Quantify, quantifier 3
+      await authorizedPostRequest(
+        `/praise/${praise._id}/quantify`,
+        app,
+        users[2].accessToken,
+        {
+          score: 144,
+        },
+      );
+
+      const response = await authorizedGetRequest(
+        `/praise/${praise._id}`,
+        app,
+        users[0].accessToken,
+      );
+
+      expect(response.status).toBe(200);
+
+      const p = response.body as Praise;
+      expect(p).toBeDefined();
+      expect(p.quantifications.length).toBe(3);
+      expect(p.score).toBe(55);
+    });
+
+    test('Quantifying multiple praise - scores and averages correct - with dismissed', async () => {
+      // Quantify, quantifier 1
+      await authorizedPostRequest(
+        `/praise/${praise._id}/quantify`,
+        app,
+        users[0].accessToken,
+        {
+          score: 8,
+        },
+      );
+      // Quantify, quantifier 2
+      await authorizedPostRequest(
+        `/praise/${praise._id}/quantify`,
+        app,
+        users[1].accessToken,
+        {
+          dismissed: true,
+        },
+      );
+      // Quantify, quantifier 3
+      await authorizedPostRequest(
+        `/praise/${praise._id}/quantify`,
+        app,
+        users[2].accessToken,
+        {
+          score: 144,
+        },
+      );
+
+      const response = await authorizedGetRequest(
+        `/praise/${praise._id}`,
+        app,
+        users[0].accessToken,
+      );
+
+      expect(response.status).toBe(200);
+
+      const p = response.body as Praise;
+      expect(p).toBeDefined();
+      expect(p.quantifications.length).toBe(3);
+      expect(p.score).toBe(76);
+    });
+
+    test('Quantifying multiple praise - scores and averages correct - with duplicates and dismissed', async () => {
+      // Seed duplicate praise
+      const praise2 = await praiseSeeder.seedPraise();
+
+      // Seed a quantification for duplicate praise, quantifier 3
+      await quantificationsSeeder.seedQuantification({
+        quantifier: users[2].user._id,
+        praise: praise2._id,
+      });
+
+      // Quantify, quantifier 1
+      await authorizedPostRequest(
+        `/praise/${praise._id}/quantify`,
+        app,
+        users[0].accessToken,
+        {
+          score: 8,
+        },
+      );
+      // Quantify, quantifier 2
+      await authorizedPostRequest(
+        `/praise/${praise._id}/quantify`,
+        app,
+        users[1].accessToken,
+        {
+          dismissed: true,
+        },
+      );
+      // Quantify, quantifier 3
+      // Give score to duplicate praise
+      await authorizedPostRequest(
+        `/praise/${praise2._id}/quantify`,
+        app,
+        users[2].accessToken,
+        {
+          score: 144,
+        },
+      );
+      // Mark second quantification as duplicate
+      await authorizedPostRequest(
+        `/praise/${praise._id}/quantify`,
+        app,
+        users[2].accessToken,
+        {
+          duplicatePraise: praise2._id.toString(),
+        },
+      );
+
+      const response = await authorizedGetRequest(
+        `/praise/${praise._id}`,
+        app,
+        users[0].accessToken,
+      );
+
+      expect(response.status).toBe(200);
+
+      const p = response.body;
+      expect(p).toBeDefined();
+      expect(p.score).toBe(11.2);
+      expect(p.quantifications.length).toBe(3);
+      const duplicateQuant = p.quantifications.find(
+        (q: { duplicatePraise: string }) =>
+          q.duplicatePraise === praise2._id.toString(),
+      );
+      expect(duplicateQuant).toBeDefined();
+      expect(duplicateQuant.scoreRealized).toBe(14.4);
     });
   });
 
@@ -596,7 +791,7 @@ describe('Praise (E2E)', () => {
       praise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: user._id,
+        quantifier: users[0].user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -626,7 +821,7 @@ describe('Praise (E2E)', () => {
       });
 
       await quantificationsSeeder.seedQuantification({
-        quantifier: user._id,
+        quantifier: users[0].user._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -636,7 +831,7 @@ describe('Praise (E2E)', () => {
       const response = await authorizedPostRequest(
         `/praise/quantify`,
         app,
-        accessToken,
+        users[0].accessToken,
         {
           praiseIds: [praise._id, praise2._id],
           params: {
