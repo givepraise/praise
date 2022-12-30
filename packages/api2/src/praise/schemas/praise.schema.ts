@@ -75,19 +75,19 @@ export class Praise {
   @ApiResponseProperty({
     example: '639b178f19296ee0f2d0585d',
   })
-  @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
+  @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
   receiver: UserAccount;
 
   @ApiResponseProperty({
     example: '639b178f19296ee0f2d0585d',
   })
-  @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
+  @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
   giver: UserAccount;
 
   @ApiResponseProperty({
     example: '639b178f19296ee0f2d0585d',
   })
-  @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
+  @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
   forwarder: UserAccount;
 
   @ApiResponseProperty({

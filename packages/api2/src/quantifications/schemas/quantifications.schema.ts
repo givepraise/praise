@@ -48,14 +48,14 @@ export class Quantification {
   @Transform(({ value }) => value.toString())
   duplicatePraise?: Praise;
 
-  @Prop({ type: Types.ObjectId, ref: 'User' })
+  @Prop({ type: Types.ObjectId, ref: 'User', index: true })
   @ApiResponseProperty({
     example: '639b178f19296ee0f2d0585d',
   })
   @Transform(({ value }) => value.toString())
   quantifier: User;
 
-  @Prop({ type: Types.ObjectId, ref: 'Praise' })
+  @Prop({ type: Types.ObjectId, ref: 'Praise', index: true })
   // TODO: This is not working, adding the example here causes a circular dependency error
   // @ApiResponseProperty({
   //   example: '639b178f19296ee0f2d0585d',

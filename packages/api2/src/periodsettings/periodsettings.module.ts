@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PeriodSettingsService } from './periodsettings.service';
 import { PeriodSettingsController } from './periodsettings.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -16,7 +16,7 @@ import { EventLogModule } from '@/event-log/event-log.module';
     MongooseModule.forFeature([
       { name: PeriodSetting.name, schema: PeriodSettingsSchema },
     ]),
-    PeriodsModule,
+    // forwardRef(() => PeriodsModule),
     EventLogModule,
   ],
   controllers: [PeriodSettingsController],

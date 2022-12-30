@@ -1,8 +1,10 @@
 import { Transform } from 'class-transformer';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { Date, Types } from 'mongoose';
+import { Types, model } from 'mongoose';
 import { PeriodStatusType } from '../enums/status-type.enum';
+import { mongoosePagination } from 'mongoose-paginate-ts';
+import { PaginatedPeriodModel } from '../interfaces/paginated-period.interface';
 
 export type PeriodDocument = Period & Document;
 
@@ -41,4 +43,14 @@ export class Period {
   updatedAt: Date;
 }
 
-export const PeriodSchema = SchemaFactory.createForClass(Period);
+export const PeriodSchema =
+  SchemaFactory.createForClass(Period).plugin(mongoosePagination);
+
+PeriodSchema.statics.getLatest = function (): PeriodDocument {
+  return this.findOne({}).sort({ endDate: -1 });
+};
+
+export const PeriodModel = model<PeriodDocument, PaginatedPeriodModel>(
+  'Period',
+  PeriodSchema,
+);
