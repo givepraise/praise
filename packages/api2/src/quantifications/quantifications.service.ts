@@ -165,10 +165,12 @@ export class QuantificationsService {
       praise._id,
     );
 
-    // Filter out quantifications that are not completed
-    const completedQuantifications = quantifications.filter((q) =>
-      this.isQuantificationCompleted(q),
-    );
+    // Filter out dismissed quantifications and quantifications that are not completed
+    const completedQuantifications = quantifications.filter((q) => {
+      if (!this.isQuantificationCompleted(q)) return false;
+      if (q.dismissed) return false;
+      return true;
+    });
 
     // If no quantifications are completed the score is 0
     if (completedQuantifications.length === 0) return 0;
