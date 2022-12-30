@@ -18,6 +18,9 @@ import { EventLogModule } from '@/event-log/event-log.module';
   ],
   controllers: [PraiseController],
   providers: [PraiseService],
-  exports: [PraiseService],
+  exports: [
+    PraiseService,
+    MongooseModule.forFeature([{ name: Praise.name, schema: PraiseSchema }]),
+  ],
 })
 export class PraiseModule {}

@@ -1,5 +1,5 @@
-import { Praise } from '@/praise/schemas/praise.schema';
-import { Injectable } from '@nestjs/common';
+import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { Period, PeriodDocument, PeriodModel } from './schemas/periods.schema';
@@ -8,7 +8,7 @@ import { PaginationQuery } from '@/shared/dto/pagination-query.dto';
 import { PaginationModel } from '@/shared/dto/pagination-model.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { CreatePeriod } from './dto/create-period.dto';
-import { add, compareAsc, parseISO } from 'date-fns';
+import { add, compareAsc } from 'date-fns';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { PraiseService } from '../praise/praise.service';
@@ -22,8 +22,12 @@ export class PeriodsService {
   constructor(
     @InjectModel(Period.name)
     private periodModel: typeof PeriodModel,
+    @InjectModel(Praise.name)
+    private praiseModel: typeof PraiseModel,
     private eventLogService: EventLogService,
+    @Inject(forwardRef(() => PraiseService))
     private praiseService: PraiseService,
+    @Inject(forwardRef(() => QuantificationsService))
     private quantificationsService: QuantificationsService,
   ) {}
 
@@ -120,20 +124,18 @@ export class PeriodsService {
    * */
   create = async (data: CreatePeriod): Promise<Period> => {
     const { name, endDate: endDateInput } = data;
-
-    const endDate = parseISO(endDateInput);
     const latestPeriod = await this.periodModel.getLatest();
 
     if (latestPeriod) {
       const earliestDate = add(latestPeriod.endDate, { days: 7 });
-      if (compareAsc(earliestDate, endDate) === 1) {
+      if (compareAsc(earliestDate, endDateInput) === 1) {
         throw new ServiceException(
           'End date must be at least 7 days after the latest end date',
         );
       }
     }
 
-    const period = await this.periodModel.create({ name, endDate });
+    const period = await this.periodModel.create({ name, endDateInput });
     await this.insertNewPeriodSettings(period);
 
     await this.eventLogService.logEvent({
@@ -162,9 +164,9 @@ export class PeriodsService {
       PeriodDetailsGiverReceiver[],
       PeriodDetailsGiverReceiver[],
     ] = await Promise.all([
-      this.praiseService.findPeriodQuantifiers(period, previousPeriodEndDate),
-      this.praiseService.findPeriodReceivers(period, previousPeriodEndDate),
-      this.praiseService.findPeriodGivers(period, previousPeriodEndDate),
+      this.findPeriodQuantifiers(period, previousPeriodEndDate),
+      this.findPeriodReceivers(period, previousPeriodEndDate),
+      this.findPeriodGivers(period, previousPeriodEndDate),
     ]);
 
     const quantifiersWithCountsData = this.quantifiersWithCounts(quantifiers);
@@ -240,5 +242,146 @@ export class PeriodsService {
     });
 
     return quantifiersWithQuantificationCounts;
+  };
+
+  /**
+   * Find all quantifiers who quantified praises in the given period
+   * @param {Period} period
+   * @param {Date} previousPeriodEndDate
+   * @returns {Promise<PeriodDetailsQuantifier[]>}
+   * */
+  findPeriodQuantifiers = async (
+    period: Period,
+    previousPeriodEndDate: Date,
+  ): Promise<PeriodDetailsQuantifier[]> => {
+    const quantifiers = this.praiseModel.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gt: previousPeriodEndDate,
+            $lte: period.endDate,
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'quantifications',
+          localField: '_id',
+          foreignField: 'praise',
+          as: 'quantifications',
+        },
+      },
+      {
+        $lookup: {
+          from: 'useraccounts',
+          localField: 'quantifier',
+          foreignField: '_id',
+          as: 'userAccount',
+        },
+      },
+      {
+        $unwind: '$quantifications',
+      },
+      {
+        $group: {
+          _id: '$quantifications.quantifier',
+          praiseCount: { $count: {} },
+          quantifier: { $first: '$quantifier' },
+          quantifications: { $push: '$quantifications' },
+        },
+      },
+    ]);
+
+    return quantifiers;
+  };
+
+  /**
+   * Find all givers who gave praises in the given period
+   * @param {Period} period
+   * @param {Date} previousPeriodEndDate
+   * @returns {Promise<PeriodDetailsGiverReceiver[]>}
+   * */
+  findPeriodGivers = async (
+    period: Period,
+    previousPeriodEndDate: Date,
+  ): Promise<PeriodDetailsGiverReceiver[]> => {
+    const givers = this.praiseModel.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gt: previousPeriodEndDate,
+            $lte: period.endDate,
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'useraccounts',
+          localField: 'giver',
+          foreignField: '_id',
+          as: 'userAccounts',
+        },
+      },
+      {
+        $group: {
+          _id: '$giver',
+          praiseCount: { $count: {} },
+          score: { $sum: '$score' },
+          userAccounts: { $first: '$userAccounts' },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]);
+
+    return givers;
+  };
+
+  /**
+   * Find all receivers who received praises in the given period
+   * @param {Period} period
+   * @param {Date} previousPeriodEndDate
+   * @returns {Promise<PeriodDetailsGiverReceiver[]>}
+   * */
+  findPeriodReceivers = async (
+    period: Period,
+    previousPeriodEndDate: Date,
+  ): Promise<PeriodDetailsGiverReceiver[]> => {
+    const receivers = this.praiseModel.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gt: previousPeriodEndDate,
+            $lte: period.endDate,
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'useraccounts',
+          localField: 'receiver',
+          foreignField: '_id',
+          as: 'userAccounts',
+        },
+      },
+      {
+        $group: {
+          _id: '$receiver',
+          praiseCount: { $count: {} },
+          score: { $sum: '$score' },
+          userAccounts: { $first: '$userAccounts' },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]);
+
+    return receivers;
   };
 }

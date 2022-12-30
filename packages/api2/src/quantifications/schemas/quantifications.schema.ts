@@ -30,11 +30,11 @@ export class Quantification {
   @Transform(({ value }) => value.toString())
   duplicatePraise?: Praise;
 
-  @Prop({ type: Types.ObjectId, ref: 'User' })
+  @Prop({ type: Types.ObjectId, ref: 'User', index: true })
   @Transform(({ value }) => value.toString())
   quantifier: User;
 
-  @Prop({ type: Types.ObjectId, ref: 'Praise' })
+  @Prop({ type: Types.ObjectId, ref: 'Praise', index: true })
   @Transform(({ value }) => value.toString())
   praise: Praise;
 

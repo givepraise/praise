@@ -12,7 +12,7 @@ import { QuantificationsModule } from '@/quantifications/quantifications.module'
     MongooseModule.forFeature([{ name: Period.name, schema: PeriodSchema }]),
     EventLogModule,
     forwardRef(() => PraiseModule),
-    // forwardRef(() => QuantificationsModule),
+    forwardRef(() => QuantificationsModule),
   ],
   controllers: [PeriodsController],
   providers: [PeriodsService],

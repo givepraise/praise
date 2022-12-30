@@ -72,19 +72,19 @@ export class Praise {
   @ApiResponseProperty({
     type: UserAccount,
   })
-  @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
+  @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
   receiver: UserAccount;
 
   @ApiResponseProperty({
     type: UserAccount,
   })
-  @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
+  @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
   giver: UserAccount;
 
   @ApiResponseProperty({
     type: UserAccount,
   })
-  @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
+  @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
   forwarder: UserAccount;
 
   @ApiResponseProperty({
