@@ -84,7 +84,9 @@ export class EthSignatureService {
     } as JwtPayload;
 
     // Sign payload to create access token
-    const accessToken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: '7d',
+    });
 
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.AUTHENTICATION,
