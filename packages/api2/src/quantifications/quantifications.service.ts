@@ -323,6 +323,11 @@ export class QuantificationsService {
           praise: has(quantification.praise, '_id')
             ? quantification.praise._id
             : quantification.praise,
+          duplicatePraise:
+            quantification.duplicatePraise &&
+            has(quantification.duplicatePraise, '_id')
+              ? quantification.duplicatePraise._id
+              : quantification.duplicatePraise,
         },
         {
           new: true,
