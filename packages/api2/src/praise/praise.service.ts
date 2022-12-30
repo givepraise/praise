@@ -215,7 +215,7 @@ export class PraiseService {
     } else {
       if (!score) {
         throw new ServiceException(
-          'Score, dismissed or duplicatePraise is required',
+          'Score, dismissed or duplicatePraiseId is required',
         );
       }
 

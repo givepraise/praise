@@ -328,6 +328,56 @@ describe('Praise (E2E)', () => {
         .expect(401);
     });
 
+    test('Invalid quantification parameters - no parameters', async () => {
+      const response = await authorizedPutRequest(
+        `/praise/${praise._id}/quantify`,
+        app,
+        users[0].accessToken,
+        {},
+      );
+
+      expect(response.status).toBe(400);
+    });
+
+    test('Invalid quantification parameters - score is string', async () => {
+      const response = await authorizedPutRequest(
+        `/praise/${praise._id}/quantify`,
+        app,
+        users[0].accessToken,
+        {
+          score: 'string',
+        },
+      );
+
+      expect(response.status).toBe(400);
+    });
+
+    test('Invalid quantification parameters - score is too large', async () => {
+      const response = await authorizedPutRequest(
+        `/praise/${praise._id}/quantify`,
+        app,
+        users[0].accessToken,
+        {
+          score: 100098798798798798796897876897687698768,
+        },
+      );
+
+      expect(response.status).toBe(400);
+    });
+
+    test('Invalid quantification parameters - duplicate is not booleans ', async () => {
+      const response = await authorizedPutRequest(
+        `/praise/${praise._id}/quantify`,
+        app,
+        users[0].accessToken,
+        {
+          dismissed: 'string',
+        },
+      );
+
+      expect(response.status).toBe(400);
+    });
+
     test('200 and correct body when quantifying - single quantification', async () => {
       const response = await authorizedPutRequest(
         `/praise/${praise._id}/quantify`,
