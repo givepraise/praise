@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Exclude, Transform } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
@@ -36,31 +36,34 @@ export class Praise {
     }
   }
 
+  @ApiResponseProperty({
+    example: '639b178f19296ee0f2d0585d',
+  })
   @Transform(({ value }) => value.toString())
   _id: Types.ObjectId;
 
   @ApiResponseProperty({
     example: 'for making edits in the welcome text',
   })
-  @Prop({ required: true })
+  @Prop({ required: true, maxlength: 280 })
   reasonRaw: string;
 
   @ApiResponseProperty({
     example: 'for making edits in the welcome text',
   })
-  @Prop({ required: true })
+  @Prop({ required: true, maxlength: 280 })
   reason: string;
 
   @ApiResponseProperty({
     example: 'DISCORD:666',
   })
-  @Prop({ required: true })
+  @Prop({ required: true, maxlength: 100 })
   sourceId: string;
 
   @ApiResponseProperty({
     example: 'DISCORD',
   })
-  @Prop({ required: true })
+  @Prop({ required: true, maxlength: 100 })
   sourceName: string;
 
   @ApiResponseProperty({
@@ -70,19 +73,19 @@ export class Praise {
   score: number;
 
   @ApiResponseProperty({
-    type: UserAccount,
+    example: '639b178f19296ee0f2d0585d',
   })
   @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
   receiver: UserAccount;
 
   @ApiResponseProperty({
-    type: UserAccount,
+    example: '639b178f19296ee0f2d0585d',
   })
   @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
   giver: UserAccount;
 
   @ApiResponseProperty({
-    type: UserAccount,
+    example: '639b178f19296ee0f2d0585d',
   })
   @Prop({ type: Types.ObjectId, ref: 'UserAccount' })
   forwarder: UserAccount;
