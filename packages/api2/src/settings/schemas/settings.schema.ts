@@ -95,6 +95,9 @@ export class Setting {
 
   @Prop()
   subgroup: number;
+
+  @Prop()
+  periodOverridable: boolean;
 }
 
 export const SettingSchema = SchemaFactory.createForClass(Setting);

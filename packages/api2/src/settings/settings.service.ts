@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request } from 'express';
 import { Model, Types } from 'mongoose';
@@ -16,12 +16,15 @@ import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { RequestContext } from 'nestjs-request-context';
 import { SettingGroup } from './interfaces/settings-group.interface';
+import { RequestWithFiles } from './interfaces/request-with-files.interface';
 
 @Injectable()
 export class SettingsService {
   constructor(
     @InjectModel(Setting.name)
     private settingsModel: Model<Setting>,
+    @Inject(forwardRef(() => PeriodSettingsService))
+    private periodSettingsService: PeriodSettingsService,
     private utils: UtilsProvider,
     private eventLogService: EventLogService,
   ) {}
@@ -70,7 +73,10 @@ export class SettingsService {
    * @throws {ServiceException}
    *
    * */
-  async setOne(_id: Types.ObjectId, data: SetSettingDto): Promise<Setting> {
+  async setOne(
+    _id: Types.ObjectId,
+    data: SetSettingDto,
+  ): Promise<Setting> {
     const setting = await this.settingsModel.findOne({
       _id,
       period: { $exists: 0 },

@@ -38,4 +38,11 @@ describe('SettingsController', () => {
       expect(response._id).toEqual(settingStub._id);
     });
   });
+
+  describe('PUT /api/settings/:id', () => {
+    it('200 response with json body containing a updated setting', async function () {
+      const response = await settingsController.set(settingStub._id, { description: 'New Description' }, {});
+      expect(response._id).toEqual(settingStub._id);
+    });
+  });
 });
