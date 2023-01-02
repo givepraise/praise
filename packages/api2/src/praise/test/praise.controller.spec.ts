@@ -9,6 +9,7 @@ import { PraiseService } from '../praise.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Praise, PraiseSchema } from '../schemas/praise.schema';
 import { EventLogModule } from '@/event-log/event-log.module';
+import { forwardRef } from '@nestjs/common';
 
 describe('PraiseController', () => {
   let controller: PraiseController;
@@ -20,10 +21,10 @@ describe('PraiseController', () => {
         MongooseModule.forFeature([
           { name: Praise.name, schema: PraiseSchema },
         ]),
-        PraiseModule,
-        PeriodsModule,
-        SettingsModule,
-        QuantificationsModule,
+        forwardRef(() => PraiseModule),
+        forwardRef(() =>  PeriodsModule),
+        forwardRef(() => SettingsModule),
+        forwardRef(() => QuantificationsModule),
         EventLogModule,
       ],
       // TODO: AppModule is imported to get the database connection, should instead use a mock database

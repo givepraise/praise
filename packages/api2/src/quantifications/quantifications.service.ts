@@ -7,13 +7,16 @@ import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
 import { PeriodsService } from '@/periods/periods.service';
 import { UsersService } from '@/users/users.service';
+import { Inject, forwardRef } from '@nestjs/common';
 
 export class QuantificationsService {
   constructor(
     @InjectModel(Quantification.name)
     private quantificationModel: Model<Quantification>,
+    @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
     private usersService: UsersService,
+    @Inject(forwardRef(() => PeriodsService))
     private periodsService: PeriodsService,
   ) {}
 

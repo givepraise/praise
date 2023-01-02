@@ -19,7 +19,7 @@ import { SettingsService } from '@/settings/settings.service';
       { name: PeriodSetting.name, schema: PeriodSettingsSchema },
     ]),
     EventLogModule,
-    PeriodsModule,
+    forwardRef(() => PeriodsModule),
     forwardRef(() => SettingsModule),
   ],
   controllers: [PeriodSettingsController],
