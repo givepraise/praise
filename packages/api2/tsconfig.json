@@ -18,6 +18,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
+      "@/activate/*": ["src/activate/*"],
       "@/api-key/*": ["src/api-key/*"],
       "@/auth/*": ["src/auth/*"],
       "@/constants/*": ["src/constants/*"],

@@ -14,21 +14,23 @@ import { QuantificationsModule } from './quantifications/quantifications.module'
 import { RequestContextModule } from 'nestjs-request-context';
 import { PeriodsModule } from './periods/periods.module';
 import { ApiKeyModule } from './api-key/api-key.module';
+import { ActivateModule } from './activate/activate.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot(praiseDatabaseUri),
-    RequestContextModule,
-    UsersModule,
-    UserAccountsModule,
+    ActivateModule,
     ApiKeyModule,
     AuthModule,
     EventLogModule,
-    SettingsModule,
+    PeriodsModule,
     PeriodSettingsModule,
     PraiseModule,
     QuantificationsModule,
-    PeriodsModule,
+    RequestContextModule,
+    SettingsModule,
+    UserAccountsModule,
+    UsersModule,
   ],
   providers: [UtilsProvider, ConstantsProvider],
 })

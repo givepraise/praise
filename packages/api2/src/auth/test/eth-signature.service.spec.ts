@@ -78,11 +78,16 @@ describe('EthSignatureService', () => {
   describe('login', () => {
     test('calls jwtService.sign with correct payload', async () => {
       await ethSignatureService.login(userStub._id);
-      expect(jwtService.sign).toBeCalledWith({
-        userId: userStub._id.toString(),
-        identityEthAddress: userStub.identityEthAddress,
-        roles: userStub.roles,
-      });
+      expect(jwtService.sign).toBeCalledWith(
+        {
+          userId: userStub._id.toString(),
+          identityEthAddress: userStub.identityEthAddress,
+          roles: userStub.roles,
+        },
+        {
+          expiresIn: '7d',
+        },
+      );
     });
     test('returns correct response', async () => {
       const response = await ethSignatureService.login(userStub._id);
