@@ -110,6 +110,7 @@ export class UsersService {
 
     userDocument.roles.splice(roleIndex, 1);
     const user = await userDocument.save();
+    await user.populate('accounts');
 
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.PERMISSION,
@@ -128,12 +129,15 @@ export class UsersService {
     for (const [k, v] of Object.entries(user)) {
       userDocument.set(k, v);
     }
-    return userDocument.save();
+    const updatedUserDocument = await userDocument.save();
+    return new User(updatedUserDocument.toObject());
   }
 
   async create(userDto: CreateUserDto): Promise<User> {
     const createdUser = new this.userModel(userDto);
-    return createdUser.save();
+    await createdUser.save();
+    await createdUser.populate('accounts');
+    return new User(createdUser.toObject());
   }
 
   /**
