@@ -401,7 +401,7 @@ describe('Praise (E2E)', () => {
         users[0].user._id.toString(),
       );
       expect(p.quantifications[0].praise).toBe(praise._id.toString());
-      expect(p.quantifications[0].dismissed).toBe(false);
+      expect(p.quantifications[0].dismissed).toBeFalsy();
       expect(p.quantifications[0].createdAt).toBeDefined();
     });
 

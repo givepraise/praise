@@ -31,8 +31,8 @@ import { Praise } from '@/praise/schemas/praise.schema';
   excludePrefixes: ['__'],
 })
 @UseInterceptors(ClassSerializerInterceptor)
-// @UseGuards(PermissionsGuard)
-// @UseGuards(JwtAuthGuard)
+@UseGuards(PermissionsGuard)
+@UseGuards(JwtAuthGuard)
 export class PeriodsController {
   constructor(private readonly periodsService: PeriodsService) {}
 

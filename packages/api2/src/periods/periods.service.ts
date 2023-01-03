@@ -128,7 +128,6 @@ export class PeriodsService {
   create = async (data: CreatePeriod): Promise<Period> => {
     const { name, endDate: endDateInput } = data;
     const latestPeriod = await this.periodModel.getLatest();
-
     const endDate = parseISO(endDateInput);
 
     if (latestPeriod) {
@@ -192,17 +191,13 @@ export class PeriodsService {
       if (period.status !== PeriodStatusType.OPEN)
         throw new ServiceException('Date change only allowed on open periods.');
 
-      try {
-        const newEndDate = parseISO(endDate);
+      const newEndDate = parseISO(endDate);
 
-        eventLogMessages.push(
-          `Updated the end date of period "${period.name}" to ${endDate} UTC`,
-        );
+      eventLogMessages.push(
+        `Updated the end date of period "${period.name}" to ${endDate} UTC`,
+      );
 
-        period.endDate = newEndDate;
-      } catch (e) {
-        throw new ServiceException('Invalid date format.');
-      }
+      period.endDate = newEndDate;
     }
 
     await period.save();
@@ -225,7 +220,7 @@ export class PeriodsService {
    **/
   close = async (_id: Types.ObjectId): Promise<Period> => {
     const period = await this.periodModel.findById(_id);
-    if (!period) throw new ServiceException('Period');
+    if (!period) throw new ServiceException('Period not found');
 
     if (period.status === PeriodStatusType.CLOSED)
       throw new ServiceException('Period is already closed');
