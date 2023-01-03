@@ -18,7 +18,7 @@ export class UserAccount {
   @Prop({ type: SchemaTypes.ObjectId, ref: 'User', default: null })
   user: Types.ObjectId;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, index: true })
   accountId: string;
 
   @Prop({ required: true })
