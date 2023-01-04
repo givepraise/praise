@@ -6,8 +6,8 @@ import { Period, PeriodDocument, PeriodModel } from './schemas/periods.schema';
 import { ServiceException } from '../shared/service-exception';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { Pagination } from 'mongoose-paginate-ts';
-import { CreatePeriod } from './dto/create-period.dto';
-import { add, compareAsc } from 'date-fns';
+import { CreatePeriodInputDto } from './dto/create-period-input.dto';
+import { add, compareAsc, parseISO } from 'date-fns';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { PraiseService } from '../praise/praise.service';
@@ -15,7 +15,10 @@ import { PeriodDetailsQuantifier } from './interfaces/period-details-quantifier.
 import { PeriodDetailsGiverReceiver } from './interfaces/period-details-giver-receiver.interface';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
 import { PeriodDetailsQuantifierDto } from './dto/period-details-quantifier.dto';
-import { PeriodPaginationModelDto } from './dto/period-pagination-model.dto';
+import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
+import { isString } from 'lodash';
+import { PeriodStatusType } from './enums/status-type.enum';
+import { PeriodPaginatedResponseDto } from './dto/period-paginated-response.dto';
 
 @Injectable()
 export class PeriodsService {
@@ -48,7 +51,7 @@ export class PeriodsService {
    */
   async findAllPaginated(
     options: PaginatedQueryDto,
-  ): Promise<PeriodPaginationModelDto> {
+  ): Promise<PeriodPaginatedResponseDto> {
     const { sortColumn, sortType, page, limit } = options;
     const query = {} as any;
 
@@ -116,20 +119,21 @@ export class PeriodsService {
    * @throws {ServiceException} if period creation fails
    *
    * */
-  create = async (data: CreatePeriod): Promise<Period> => {
+  create = async (data: CreatePeriodInputDto): Promise<Period> => {
     const { name, endDate: endDateInput } = data;
     const latestPeriod = await this.periodModel.getLatest();
+    const endDate = parseISO(endDateInput);
 
     if (latestPeriod) {
       const earliestDate = add(latestPeriod.endDate, { days: 7 });
-      if (compareAsc(earliestDate, endDateInput) === 1) {
+      if (compareAsc(earliestDate, endDate) === 1) {
         throw new ServiceException(
           'End date must be at least 7 days after the latest end date',
         );
       }
     }
 
-    const period = await this.periodModel.create({ name, endDateInput });
+    const period = await this.periodModel.create({ name, endDate });
     await this.insertNewPeriodSettings(period);
 
     await this.eventLogService.logEvent({
@@ -140,6 +144,116 @@ export class PeriodsService {
     const periodDetailsDto = await this.findPeriodDetails(period._id);
 
     return periodDetailsDto;
+  };
+
+  /**
+   * Update a period
+   *
+   * @param {Types.ObjectId} _id
+   * @param {UpdatePeriodInputDto} data
+   * @returns {Promise<Period>}
+   * @throws {ServiceException} if period update fails
+   **/
+  update = async (
+    _id: Types.ObjectId,
+    data: UpdatePeriodInputDto,
+  ): Promise<Period> => {
+    const period = await this.periodModel.findById(_id);
+    if (!period) throw new ServiceException('Period not found.');
+
+    const { name, endDate } = data;
+
+    if (!name && !endDate)
+      throw new ServiceException(
+        'Updated name or endDate to must be specified',
+      );
+
+    const eventLogMessages = [];
+
+    if (name) {
+      eventLogMessages.push(
+        `Updated the name of period "${period.name}" to "${name}"`,
+      );
+
+      period.name = name;
+    }
+
+    if (isString(endDate)) {
+      const latest = await this.isPeriodLatest(period);
+      if (!latest)
+        throw new ServiceException(
+          'Date change only allowed on latest period.',
+        );
+
+      if (period.status !== PeriodStatusType.OPEN)
+        throw new ServiceException('Date change only allowed on open periods.');
+
+      const newEndDate = parseISO(endDate);
+
+      eventLogMessages.push(
+        `Updated the end date of period "${period.name}" to ${endDate} UTC`,
+      );
+
+      period.endDate = newEndDate;
+    }
+
+    await period.save();
+
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.PERIOD,
+      description: eventLogMessages.join(', '),
+    });
+
+    return await this.findPeriodDetails(period._id);
+  };
+
+  /**
+   * Close a period
+   *
+   * @param {Types.ObjectId} _id
+   * @returns {Promise<Period>}
+   * @throws {ServiceException} if period not found
+   * @throws {ServiceException} if period is already closed
+   **/
+  close = async (_id: Types.ObjectId): Promise<Period> => {
+    const period = await this.periodModel.findById(_id);
+    if (!period) throw new ServiceException('Period not found');
+
+    if (period.status === PeriodStatusType.CLOSED)
+      throw new ServiceException('Period is already closed');
+
+    period.status = PeriodStatusType.CLOSED;
+    await period.save();
+
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.PERIOD,
+      description: `Closed the period "${period.name}"`,
+    });
+
+    return await this.findPeriodDetails(period._id);
+  };
+
+  /**
+   * Get all praise items from period
+   *
+   * @param {Types.ObjectId} _id
+   * @returns {Promise<Praise[]>}
+   * @throws {ServiceException} if period not found
+   **/
+  praise = async (_id: Types.ObjectId): Promise<Praise[]> => {
+    const period = await this.periodModel.findById(_id);
+    if (!period) throw new ServiceException('Period not found');
+
+    const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
+
+    return await this.praiseModel
+      .find()
+      .where({
+        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+      })
+      .sort({ createdAt: -1 })
+      .populate('receiver giver forwarder quantifications')
+      .lean();
   };
 
   /**
@@ -377,5 +491,23 @@ export class PeriodsService {
     ]);
 
     return receivers;
+  };
+
+  /**
+   * Check if period has the latest endDate of all periods?
+   *
+   * @param {Period} period
+   * @returns {Promise<boolean>}
+   */
+  isPeriodLatest = async (period: Period): Promise<boolean> => {
+    const latestPeriods = await this.periodModel
+      .find({})
+      .sort({ endDate: -1 })
+      .orFail();
+
+    if (latestPeriods.length === 0) return true;
+    if (latestPeriods[0]._id.toString() === period._id.toString()) return true;
+
+    return false;
   };
 }
