@@ -6,15 +6,15 @@ import { ServiceException } from '../shared/service-exception';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 import { SettingsService } from '@/settings/settings.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
-import { FindAllPraisePaginatedQuery } from './dto/find-all-praise-paginated-query.dto';
-import { PaginationModel } from '@/shared/dto/pagination-model.dto';
+import { PraisePaginatedQueryDto } from './dto/praise-paginated-query.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { PeriodsService } from '@/periods/periods.service';
-import { CreateUpdateQuantification } from '@/quantifications/dto/create-update-quantification.dto';
+import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
 import { RequestContext } from 'nestjs-request-context';
 import { RequestWithAuthContext } from '@/auth/interfaces/request-with-auth-context.interface';
+import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
 
 @Injectable()
 export class PraiseService {
@@ -45,8 +45,8 @@ export class PraiseService {
    * @throws {ServiceException}
    */
   async findAllPaginated(
-    options: FindAllPraisePaginatedQuery,
-  ): Promise<PaginationModel<Praise>> {
+    options: PraisePaginatedQueryDto,
+  ): Promise<PraisePaginatedResponseDto> {
     const { sortColumn, sortType, receiver, giver, page, limit } = options;
     const query = {} as any;
 
@@ -66,15 +66,15 @@ export class PraiseService {
       populate: [
         {
           path: 'giver',
-          populate: { path: 'user', select: 'username' },
+          populate: { path: 'user' },
         },
         {
           path: 'receiver',
-          populate: { path: 'user', select: 'username' },
+          populate: { path: 'user' },
         },
         {
           path: 'forwarder',
-          populate: { path: 'user', select: 'username' },
+          populate: { path: 'user' },
         },
       ],
     });
@@ -82,13 +82,7 @@ export class PraiseService {
     if (!praisePagination)
       throw new ServiceException('Failed to paginate praise data');
 
-    // Map the praise documents to the Praise class
-    const docs = praisePagination.docs.map((praise) => new Praise(praise));
-
-    return {
-      ...praisePagination,
-      docs,
-    };
+    return praisePagination;
   }
 
   /**
@@ -101,26 +95,40 @@ export class PraiseService {
   async findOneById(_id: Types.ObjectId): Promise<Praise> {
     const praise = await this.praiseModel
       .findById(_id)
-      .populate('giver receiver forwarder quantifications')
+      .populate([
+        {
+          path: 'giver',
+          populate: { path: 'user' },
+        },
+        {
+          path: 'receiver',
+          populate: { path: 'user' },
+        },
+        {
+          path: 'forwarder',
+          populate: { path: 'user' },
+        },
+        'quantifications',
+      ])
       .lean();
 
     if (!praise) throw new ServiceException('Praise item not found.');
 
-    return new Praise(praise);
+    return praise;
   }
 
   /**
    * Quantify praise item
    *
    * @param id {string}
-   * @param bodyParams {CreateUpdateQuantification}
+   * @param bodyParams {QuantifyInputDto}
    * @returns An array of all affected praise items
    * @throws {ServiceException}
    *
    **/
   quantifyPraise = async (
     id: Types.ObjectId,
-    params: CreateUpdateQuantification,
+    params: QuantifyInputDto,
   ): Promise<Praise[]> => {
     const { score, dismissed, duplicatePraiseId } = params;
 
@@ -270,7 +278,7 @@ export class PraiseService {
         .populate('giver receiver forwarder quantifications')
         .lean();
 
-      docs.push(new Praise(praiseWithScore));
+      docs.push(praiseWithScore);
     }
 
     await this.eventLogService.logEvent({
@@ -306,7 +314,7 @@ export class PraiseService {
       .populate('giver receiver forwarder')
       .lean();
 
-    return duplicatePraiseItems.map((p) => new Praise(p));
+    return duplicatePraiseItems;
   };
 
   /**
@@ -326,14 +334,16 @@ export class PraiseService {
         true,
       );
 
-    const duplicatePraiseItems = await this.praiseModel.find({
-      _id: {
-        $in: duplicateQuantifications.map(
-          (q) => q.praise._id === duplicatePraiseId,
-        ),
-      },
-    });
+    const duplicatePraiseItems = await this.praiseModel
+      .find({
+        _id: {
+          $in: duplicateQuantifications.map(
+            (q) => q.praise._id === duplicatePraiseId,
+          ),
+        },
+      })
+      .lean();
 
-    return duplicatePraiseItems.map((p) => new Praise(p));
+    return duplicatePraiseItems;
   };
 }

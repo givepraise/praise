@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Types } from 'mongoose';
 
-export class CreateUpdateQuantification {
+export class QuantifyInputDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()

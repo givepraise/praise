@@ -2,7 +2,7 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request } from 'express';
 import { Model, Types } from 'mongoose';
-import { Setting, SettingDocument } from './schemas/settings.schema';
+import { Setting } from './schemas/settings.schema';
 import { AxiosResponse } from 'axios';
 import axios from 'axios';
 import { TransformerMapOperateItem } from 'ses-node-json-transform';
@@ -10,7 +10,6 @@ import { ExportTransformer } from '@/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { UploadedFile } from 'express-fileupload';
-import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { ServiceException } from '@/shared/service-exception';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
@@ -62,7 +61,7 @@ export class SettingsService {
       .lean();
 
     if (!setting) throw new ServiceException('Settings not found.');
-    return new Setting(setting);
+    return setting;
   }
 
   /**

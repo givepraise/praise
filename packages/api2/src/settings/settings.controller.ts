@@ -1,6 +1,5 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Get,
   Param,
@@ -20,12 +19,13 @@ import { Setting } from './schemas/settings.schema';
 import { SettingsService } from './settings.service';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 
 @Controller('settings')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseInterceptors(ClassSerializerInterceptor)
+@UseInterceptors(MongooseClassSerializerInterceptor(Setting))
 @UseGuards(JwtAuthGuard)
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}

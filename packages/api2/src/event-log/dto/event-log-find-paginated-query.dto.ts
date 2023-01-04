@@ -1,9 +1,9 @@
-import { PaginationQuery } from '@/shared/dto/pagination-query.dto';
+import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsArray, IsOptional, IsString } from 'class-validator';
 
-export class FindAllPaginatedQuery extends PaginationQuery {
+export class EventLogFindPaginatedQueryDto extends PaginatedQueryDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()

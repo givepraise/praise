@@ -14,7 +14,7 @@ export const requestApiAuth = async (
   params: AuthRequestInput
 ): Promise<TokenSet | undefined> => {
   const apiClient = makeApiClient();
-  const response = await apiClient.post('/auth/login', params);
+  const response = await apiClient.post('/auth/eth-signature/login', params);
   if (!response) throw Error('Failed to request authorization');
 
   const { accessToken, refreshToken } =
@@ -59,7 +59,7 @@ export const requestNonce = async (
 ): Promise<string> => {
   const apiClient = makeApiClient();
 
-  const response = await apiClient.post('/auth/nonce', {
+  const response = await apiClient.post('/auth/eth-signature/nonce', {
     identityEthAddress,
   });
 

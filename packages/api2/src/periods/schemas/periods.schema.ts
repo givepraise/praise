@@ -1,10 +1,10 @@
-import { Transform } from 'class-transformer';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-
 import { Types, model } from 'mongoose';
 import { PeriodStatusType } from '../enums/status-type.enum';
 import { mongoosePagination } from 'mongoose-paginate-ts';
 import { PaginatedPeriodModel } from '../interfaces/paginated-period.interface';
+import { ExposeId } from '@/shared/expose-id.decorator';
+import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 
 export type PeriodDocument = Period & Document;
 
@@ -15,11 +15,12 @@ export class Period {
       Object.assign(this, partial);
     }
   }
-
-  @Transform(({ value }) => value.toString())
+  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ExposeId()
   _id: Types.ObjectId;
 
   @Prop({ required: true, unique: true, minlength: 3, maxlength: 64 })
+  @ApiProperty({ example: 'June 2021' })
   name: string;
 
   @Prop({
@@ -27,6 +28,7 @@ export class Period {
     enum: PeriodStatusType,
     default: PeriodStatusType.OPEN,
   })
+  @ApiResponseProperty({ example: 'OPEN' })
   status: string;
 
   @Prop({
@@ -34,12 +36,15 @@ export class Period {
     type: Date,
     /** TODO validator */
   })
+  @ApiResponseProperty()
   endDate: Date;
 
   @Prop({ type: Date })
+  @ApiResponseProperty()
   createdAt: Date;
 
   @Prop({ type: Date })
+  @ApiResponseProperty()
   updatedAt: Date;
 }
 

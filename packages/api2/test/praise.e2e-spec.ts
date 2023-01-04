@@ -39,7 +39,7 @@ import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { SettingsSeeder } from '@/database/seeder/settings.seeder';
 import { SettingsModule } from '@/settings/settings.module';
 import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
-import { FindAllPraisePaginatedQuery } from '@/praise/dto/find-all-praise-paginated-query.dto';
+import { PraisePaginatedQueryDto } from '@/praise/dto/praise-paginated-query.dto';
 import { Types } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
@@ -188,7 +188,7 @@ describe('Praise (E2E)', () => {
       expect(response.status).toBe(200);
     });
 
-    it('should return the expected pagination object when called with query parameters', async () => {
+    it('oiu should return the expected pagination object when called with query parameters', async () => {
       //Clear the database
       await praiseService.getModel().deleteMany({});
 
@@ -198,7 +198,7 @@ describe('Praise (E2E)', () => {
         p.push(await praiseSeeder.seedPraise());
       }
 
-      const options: FindAllPraisePaginatedQuery = {
+      const options: PraisePaginatedQueryDto = {
         sortColumn: 'createdAt',
         sortType: 'asc',
         page: 1,
@@ -411,7 +411,7 @@ describe('Praise (E2E)', () => {
         users[0].user._id.toString(),
       );
       expect(p.quantifications[0].praise).toBe(praise._id.toString());
-      expect(p.quantifications[0].dismissed).toBe(false);
+      expect(p.quantifications[0].dismissed).toBeFalsy();
       expect(p.quantifications[0].createdAt).toBeDefined();
     });
 

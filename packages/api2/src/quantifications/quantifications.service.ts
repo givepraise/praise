@@ -48,7 +48,7 @@ export class QuantificationsService {
     if (!quantification)
       throw new ServiceException('Quantification item not found.');
 
-    return new Quantification(quantification);
+    return quantification;
   }
 
   /**
@@ -72,7 +72,7 @@ export class QuantificationsService {
       .lean();
 
     if (!quantification) return null;
-    return new Quantification(quantification);
+    return quantification;
   }
 
   /**
@@ -91,7 +91,7 @@ export class QuantificationsService {
       .find({ quantifier: quantifierId, duplicatePraise: praiseId })
       .lean();
 
-    return quantifications.map((q) => new Quantification(q));
+    return quantifications;
   }
 
   /**
@@ -110,7 +110,7 @@ export class QuantificationsService {
       })
       .lean();
 
-    return quantifications.map((q) => new Quantification(q));
+    return quantifications;
   }
 
   /**
@@ -135,7 +135,7 @@ export class QuantificationsService {
       );
     }
 
-    return quantifications.map((q) => new Quantification(q));
+    return quantifications;
   };
 
   /**
@@ -344,6 +344,6 @@ export class QuantificationsService {
       );
     }
 
-    return new Quantification(updatedQuantification);
+    return updatedQuantification;
   };
 }

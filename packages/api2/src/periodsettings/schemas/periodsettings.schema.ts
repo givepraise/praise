@@ -1,8 +1,8 @@
 import { Setting } from '@/settings/schemas/settings.schema';
 import { IsSettingValueAllowedBySettingType } from '@/settings/validators/settings-type.validator';
 import { InjectModel, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Transform } from 'class-transformer';
 import { SchemaTypes, Types } from 'mongoose';
+import { ExposeId } from '@/shared/expose-id.decorator';
 
 export type PeriodSettingDocument = PeriodSetting & Document;
 
@@ -16,11 +16,8 @@ export class PeriodSetting {
     }
   }
 
-  @Transform(({ value }) => value.toString())
-  _id: Types.ObjectId;
-
-  // @Transform(({ value }) => value.toString())
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Period', default: null })
+  @ExposeId()
   period: Types.ObjectId;
 
   // @Transform(({ value }) => value.toString())
@@ -32,10 +29,10 @@ export class PeriodSetting {
   value: string;
 
   @Prop({ type: Date })
-  createdAt: Date
+  createdAt: Date;
 
   @Prop({ type: Date })
-  updatedAt: Date
+  updatedAt: Date;
 }
 
 export const PeriodSettingsSchema = SchemaFactory.createForClass(PeriodSetting);
