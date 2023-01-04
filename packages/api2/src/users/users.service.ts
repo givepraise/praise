@@ -27,19 +27,15 @@ export class UsersService {
     return this.userModel.find().populate('accounts').lean();
   }
 
-  async findOneById(_id: Types.ObjectId): Promise<User | null> {
-    const user = await this.userModel.findById(_id).populate('accounts').lean();
-    if (!user) return null;
-    return user;
+  async findOneById(_id: Types.ObjectId): Promise<User> {
+    return this.userModel.findById(_id).populate('accounts').lean();
   }
 
-  async findOneByEth(identityEthAddress: string): Promise<User | null> {
-    const user = await this.userModel
+  async findOneByEth(identityEthAddress: string): Promise<User> {
+    return this.userModel
       .findOne({ identityEthAddress })
       .populate('accounts')
       .lean();
-    if (!user) return null;
-    return user;
   }
 
   async addRole(
@@ -62,7 +58,7 @@ export class UsersService {
       ).toString()}"`,
     });
 
-    return user.toObject();
+    return this.findOneById(user._id);
   }
 
   async removeRole(
@@ -109,7 +105,6 @@ export class UsersService {
 
     userDocument.roles.splice(roleIndex, 1);
     const user = await userDocument.save();
-    await user.populate('accounts');
 
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.PERMISSION,
@@ -118,7 +113,7 @@ export class UsersService {
       ).toString()}"`,
     });
 
-    return user.toObject();
+    return this.findOneById(user._id);
   }
 
   async update(_id: Types.ObjectId, user: UpdateUserInputDto): Promise<User> {
