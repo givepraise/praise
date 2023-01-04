@@ -19,6 +19,7 @@ export class PeriodSettingsService {
   constructor(
     @InjectModel(PeriodSetting.name)
     private periodSettingsModel: Model<PeriodSetting>,
+    @Inject(forwardRef(() => PeriodsService))
     private periodsService: PeriodsService,
     @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
@@ -39,9 +40,10 @@ export class PeriodSettingsService {
 
     const settings = await this.periodSettingsModel
       .find({ period: period._id })
+      .lean()
       .populate('period')
       .populate('setting')
-      .lean();
+      .exec();
     return settings.map((setting) => new PeriodSetting(setting));
   }
 
@@ -49,13 +51,12 @@ export class PeriodSettingsService {
     settingId: Types.ObjectId,
     periodId: Types.ObjectId,
   ): Promise<PeriodSetting> {
-    await this.periodsService.findOneById(periodId);
-
     const periodSetting = await this.periodSettingsModel
-      .findOne({ setting: settingId, period: periodId })
+      .findOne({ period: periodId, setting: settingId })
+      .lean()
       .populate('period')
       .populate('setting')
-      .lean();
+      .exec();
 
     if (!periodSetting) throw new ServiceException('PeriodSetting not found.');
     return new PeriodSetting(periodSetting);

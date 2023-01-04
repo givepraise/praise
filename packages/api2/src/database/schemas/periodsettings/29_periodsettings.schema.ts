@@ -22,6 +22,14 @@ export const PeriodSettingsSchema = new Schema({
     required: true,
     index: true,
   },
+  createdAt: {
+    type: Date,
+    required: true
+  },
+  updatedAt: {
+    type: Date,
+    required: true
+  }
 });
 
 delete mongoose.models['PeriodSettings'];

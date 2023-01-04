@@ -19,17 +19,23 @@ export class PeriodSetting {
   @Transform(({ value }) => value.toString())
   _id: Types.ObjectId;
 
-  @Transform(({ value }) => value.toString())
+  // @Transform(({ value }) => value.toString())
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Period', default: null })
   period: Types.ObjectId;
 
-  @Transform(({ value }) => value.toString())
+  // @Transform(({ value }) => value.toString())
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Setting', default: null })
   setting: Types.ObjectId;
 
   @Prop()
   @IsSettingValueAllowedBySettingType()
   value: string;
+
+  @Prop({ type: Date })
+  createdAt: Date
+
+  @Prop({ type: Date })
+  updatedAt: Date
 }
 
 export const PeriodSettingsSchema = SchemaFactory.createForClass(PeriodSetting);

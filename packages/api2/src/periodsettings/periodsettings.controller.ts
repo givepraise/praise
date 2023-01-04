@@ -33,7 +33,7 @@ export class PeriodSettingsController {
     return this.periodsettingsService.findAll(periodId);
   }
 
-  @Get('/:periodId/setting/:settingId')
+  @Get('/:periodId/settings/:settingId')
   @ApiOperation({ summary: 'Finds a Period Setting for a given Period ID' })
   @ApiResponse({
     status: 200,
