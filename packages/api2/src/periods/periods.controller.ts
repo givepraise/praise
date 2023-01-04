@@ -111,7 +111,7 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Period Praise items',
-    type: Period,
+    type: [Praise],
   })
   @Permissions(Permission.PeriodView)
   @ApiParam({ name: 'id', type: String })
