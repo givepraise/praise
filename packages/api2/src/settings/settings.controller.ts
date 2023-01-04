@@ -8,7 +8,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiParam } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { ExportTransformer } from '@/shared/types.shared';
@@ -19,6 +19,7 @@ import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 
 @Controller('settings')
+@ApiTags('Settings')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })

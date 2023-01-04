@@ -14,7 +14,7 @@ import {
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { User } from './schemas/users.schema';
-import { ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
@@ -23,6 +23,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 
 @Controller('users')
+@ApiTags('Users')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
