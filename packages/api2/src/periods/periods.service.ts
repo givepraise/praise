@@ -4,8 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { Period, PeriodDocument, PeriodModel } from './schemas/periods.schema';
 import { ServiceException } from '../shared/service-exception';
-import { PaginationQuery } from '@/shared/dto/pagination-query.dto';
-import { PaginationModel } from '@/shared/dto/pagination-model.dto';
+import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { CreatePeriod } from './dto/create-period.dto';
 import { add, compareAsc, parseISO } from 'date-fns';
@@ -19,6 +18,7 @@ import { PeriodDetailsQuantifierDto } from './dto/period-details-quantifier.dto'
 import { UpdatePeriod } from './dto/update-period.dto';
 import { isString } from 'lodash';
 import { PeriodStatusType } from './enums/status-type.enum';
+import { PeriodPaginationModelDto } from './dto/period-pagination-model.dto';
 
 @Injectable()
 export class PeriodsService {
@@ -50,8 +50,8 @@ export class PeriodsService {
    * @throws {ServiceException}
    */
   async findAllPaginated(
-    options: PaginationQuery,
-  ): Promise<PaginationModel<Period>> {
+    options: PaginatedQueryDto,
+  ): Promise<PeriodPaginationModelDto> {
     const { sortColumn, sortType, page, limit } = options;
     const query = {} as any;
 
@@ -65,13 +65,7 @@ export class PeriodsService {
     if (!periodPagination)
       throw new ServiceException('Failed to paginate period data');
 
-    // Map the praise documents to the Praise class
-    const docs = periodPagination.docs.map((period) => new Period(period));
-
-    return {
-      ...periodPagination,
-      docs,
-    };
+    return periodPagination;
   }
 
   /**

@@ -81,7 +81,7 @@ export const AllPeriods = atom<PeriodDetailsDto[]>({
       setSelf(
         getPromise(
           ApiAuthGet({
-            url: '/periods/all?sortColumn=endDate&sortType=desc',
+            url: '/periods?sortColumn=endDate&sortType=desc',
           })
         ).then((response) => {
           if (isResponseOk(response)) {

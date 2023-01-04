@@ -1,11 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { has } from 'lodash';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
+import { ExposeId } from '@/shared/expose-id.decorator';
 
 export type PraiseDocument = Praise & Document;
 
@@ -39,7 +40,7 @@ export class Praise {
   @ApiResponseProperty({
     example: '639b178f19296ee0f2d0585d',
   })
-  @Transform(({ value }) => value.toString())
+  @ExposeId()
   _id: Types.ObjectId;
 
   @ApiResponseProperty({
@@ -73,26 +74,30 @@ export class Praise {
   score: number;
 
   @ApiResponseProperty({
-    example: '639b178f19296ee0f2d0585d',
+    type: UserAccount,
   })
   @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
-  receiver: UserAccount;
+  @Type(() => UserAccount)
+  receiver: UserAccount | Types.ObjectId;
 
   @ApiResponseProperty({
-    example: '639b178f19296ee0f2d0585d',
+    type: UserAccount,
   })
   @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
-  giver: UserAccount;
+  @Type(() => UserAccount)
+  giver: UserAccount | Types.ObjectId;
 
   @ApiResponseProperty({
-    example: '639b178f19296ee0f2d0585d',
+    type: UserAccount,
   })
   @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
-  forwarder: UserAccount;
+  @Type(() => UserAccount)
+  forwarder: UserAccount | Types.ObjectId;
 
   @ApiResponseProperty({
     type: [Quantification],
   })
+  @Type(() => Quantification)
   quantifications: Quantification[];
 
   @ApiResponseProperty()
