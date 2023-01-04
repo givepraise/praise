@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsIn, IsInt, IsOptional, IsString } from 'class-validator';
 
-export class PaginationQuery {
+export class PaginatedQueryDto {
   @ApiProperty({
     example: 10,
   })

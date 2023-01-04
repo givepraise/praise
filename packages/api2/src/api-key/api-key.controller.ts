@@ -14,14 +14,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiKeyService } from './api-key.service';
-import { CreateApiKeyRequest } from './dto/create-api-key-request.dto';
+import { CreateApiKeyInputDto } from './dto/create-api-key-input.dto';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
-import { CreateApiKeyResponse } from './dto/create-api-key-response';
+import { CreateApiKeyResponseDto } from './dto/create-api-key-response';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { Types } from 'mongoose';
 import { ApiKey } from './schemas/api-key.schema';
-import { UpdateDescriptionRequest } from './dto/update-description-request.dto';
+import { UpdateDescriptionInputDto } from './dto/update-description-input.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 
@@ -40,12 +40,12 @@ export class ApiKeyController {
   @ApiResponse({
     status: 201,
     description: 'API key created',
-    type: CreateApiKeyResponse,
+    type: CreateApiKeyResponseDto,
   })
   @Permissions(Permission.ApiKeyManage)
   createApiKey(
-    @Body() createApiKeyRequest: CreateApiKeyRequest,
-  ): Promise<CreateApiKeyResponse> {
+    @Body() createApiKeyRequest: CreateApiKeyInputDto,
+  ): Promise<CreateApiKeyResponseDto> {
     return this.apiKeyService.createApiKey(createApiKeyRequest);
   }
 
@@ -98,7 +98,7 @@ export class ApiKeyController {
   @UseInterceptors(MongooseClassSerializerInterceptor(ApiKey))
   async updateApiKeyDescription(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() body: UpdateDescriptionRequest,
+    @Body() body: UpdateDescriptionInputDto,
   ): Promise<ApiKey> {
     return this.apiKeyService.updateDescription(id, body.description);
   }

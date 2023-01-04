@@ -5,7 +5,7 @@ import {
   UserAccount,
   UserAccountDocument,
 } from './schemas/useraccounts.schema';
-import { UpdateUserAccountDto } from './dto/update-user-account.dto';
+import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { ServiceException } from '@/shared/service-exception';
 
 @Injectable()
@@ -46,7 +46,7 @@ export class UserAccountsService {
    */
   async update(
     _id: Types.ObjectId,
-    updateUserAccountDto: UpdateUserAccountDto,
+    updateUserAccountDto: UpdateUserAccountInputDto,
   ): Promise<UserAccount> {
     const userAccountDocument = await this.userAccountModel.findById(_id);
     if (!userAccountDocument)

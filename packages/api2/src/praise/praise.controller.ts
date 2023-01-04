@@ -17,14 +17,14 @@ import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { QuantifyMultipleInputDto } from './dto/quantify-multiple-input.dto';
 import { PraiseService } from './praise.service';
 import { Praise } from './schemas/praise.schema';
-import { PraisePaginationQuery } from './dto/praise-pagination-query.dto';
+import { PraisePaginatedQueryDto } from './dto/praise-paginated-query.dto';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
-import { PraisePaginationModelDto } from './dto/praise-pagination-model.dto';
+import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
 
 @Controller('praise')
 @SerializeOptions({
@@ -41,12 +41,12 @@ export class PraiseController {
   @ApiResponse({
     status: 200,
     description: 'Paginated praise items',
-    type: PraisePaginationModelDto,
+    type: PraisePaginatedResponseDto,
   })
   @Permissions(Permission.PraiseView)
   async findAllPaginated(
-    @Query() options: PraisePaginationQuery,
-  ): Promise<PraisePaginationModelDto> {
+    @Query() options: PraisePaginatedQueryDto,
+  ): Promise<PraisePaginatedResponseDto> {
     return this.praiseService.findAllPaginated(options);
   }
 

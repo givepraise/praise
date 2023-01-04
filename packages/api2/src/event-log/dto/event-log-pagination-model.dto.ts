@@ -1,9 +1,9 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { PaginationModel } from '@/shared/dto/pagination-model.dto';
+import { PaginatedResponseDto } from '@/shared/dto/paginated-response.dto';
 import { EventLog } from '../schemas/event-log.schema';
 
-export class EventLogPaginationModelDto extends PaginationModel {
+export class EventLogPaginatedResponseDto extends PaginatedResponseDto {
   @ApiResponseProperty({
     type: [EventLog],
   })

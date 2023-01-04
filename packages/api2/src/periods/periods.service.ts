@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { Period, PeriodDocument, PeriodModel } from './schemas/periods.schema';
 import { ServiceException } from '../shared/service-exception';
-import { PaginationQuery } from '@/shared/dto/pagination-query.dto';
+import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { CreatePeriod } from './dto/create-period.dto';
 import { add, compareAsc } from 'date-fns';
@@ -47,7 +47,7 @@ export class PeriodsService {
    * @throws {ServiceException}
    */
   async findAllPaginated(
-    options: PaginationQuery,
+    options: PaginatedQueryDto,
   ): Promise<PeriodPaginationModelDto> {
     const { sortColumn, sortType, page, limit } = options;
     const query = {} as any;

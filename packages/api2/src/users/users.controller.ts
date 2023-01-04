@@ -1,4 +1,4 @@
-import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
 import { UsersService } from './users.service';
 import {
   BadRequestException,
@@ -70,7 +70,7 @@ export class UsersController {
   @ApiParam({ name: 'id', type: String })
   async addRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() roleChange: UpdateUserRoleDto,
+    @Body() roleChange: UpdateUserRoleInputDto,
   ): Promise<User> {
     return this.usersService.addRole(id, roleChange);
   }
@@ -85,7 +85,7 @@ export class UsersController {
   @ApiParam({ name: 'id', type: String })
   async removeRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() roleChange: UpdateUserRoleDto,
+    @Body() roleChange: UpdateUserRoleInputDto,
   ): Promise<User> {
     return this.usersService.removeRole(id, roleChange);
   }

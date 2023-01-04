@@ -6,7 +6,7 @@ import { ServiceException } from '../shared/service-exception';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 import { SettingsService } from '@/settings/settings.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
-import { PraisePaginationQuery } from './dto/praise-pagination-query.dto';
+import { PraisePaginatedQueryDto } from './dto/praise-paginated-query.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
@@ -14,7 +14,7 @@ import { PeriodsService } from '@/periods/periods.service';
 import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
 import { RequestContext } from 'nestjs-request-context';
 import { RequestWithAuthContext } from '@/auth/interfaces/request-with-auth-context.interface';
-import { PraisePaginationModelDto } from './dto/praise-pagination-model.dto';
+import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
 
 @Injectable()
 export class PraiseService {
@@ -43,8 +43,8 @@ export class PraiseService {
    * @throws {ServiceException}
    */
   async findAllPaginated(
-    options: PraisePaginationQuery,
-  ): Promise<PraisePaginationModelDto> {
+    options: PraisePaginatedQueryDto,
+  ): Promise<PraisePaginatedResponseDto> {
     const { sortColumn, sortType, receiver, giver, page, limit } = options;
     const query = {} as any;
 

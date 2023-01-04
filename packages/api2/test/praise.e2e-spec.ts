@@ -39,7 +39,7 @@ import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { SettingsSeeder } from '@/database/seeder/settings.seeder';
 import { SettingsModule } from '@/settings/settings.module';
 import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
-import { PraisePaginationQuery } from '@/praise/dto/praise-pagination-query.dto';
+import { PraisePaginatedQueryDto } from '@/praise/dto/praise-paginated-query.dto';
 import { Types } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
@@ -194,7 +194,7 @@ describe('Praise (E2E)', () => {
         p.push(await praiseSeeder.seedPraise());
       }
 
-      const options: PraisePaginationQuery = {
+      const options: PraisePaginatedQueryDto = {
         sortColumn: 'createdAt',
         sortType: 'asc',
         page: 1,

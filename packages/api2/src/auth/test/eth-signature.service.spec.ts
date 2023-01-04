@@ -5,7 +5,7 @@ import { UsersService } from '@/users/users.service';
 import { userStub } from '@/users/test/stubs/user.stub';
 import { JwtService } from '@nestjs/jwt';
 import { UtilsProvider } from '@/utils/utils.provider';
-import { LoginResponse } from '../dto/login-response.dto';
+import { LoginResponseDto } from '../dto/login-response.dto';
 import { accessTokenStub } from './stubs/access-token';
 import { EventLogService } from '@/event-log/event-log.service';
 
@@ -91,7 +91,7 @@ describe('EthSignatureService', () => {
     });
     test('returns correct response', async () => {
       const response = await ethSignatureService.login(userStub._id);
-      expect(response).toEqual<LoginResponse>({
+      expect(response).toEqual<LoginResponseDto>({
         accessToken: accessTokenStub,
         identityEthAddress: userStub.identityEthAddress,
         tokenType: 'Bearer',

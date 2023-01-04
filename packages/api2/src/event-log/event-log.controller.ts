@@ -9,13 +9,13 @@ import {
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { FindAllPaginatedQuery } from './dto/find-all-paginated-query.dto';
+import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-query.dto';
 import { EventLogService } from './event-log.service';
 import { EventLog } from './schemas/event-log.schema';
 import { EventLogType } from './schemas/event-log-type.schema';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { EventLogPaginationModelDto } from './dto/event-log-pagination-model.dto';
+import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.dto';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 
 @Controller('event-log')
@@ -32,13 +32,13 @@ export class EventLogController {
   @ApiResponse({
     status: 200,
     description: 'Paginated event logs',
-    type: EventLogPaginationModelDto,
+    type: EventLogPaginatedResponseDto,
   })
   @Permissions(Permission.EventLogView)
   @UseInterceptors(MongooseClassSerializerInterceptor(EventLog))
   findAllPaginated(
-    @Query() options: FindAllPaginatedQuery,
-  ): Promise<EventLogPaginationModelDto> {
+    @Query() options: EventLogFindPaginatedQueryDto,
+  ): Promise<EventLogPaginatedResponseDto> {
     return this.eventLogService.findAllPaginated(options);
   }
 

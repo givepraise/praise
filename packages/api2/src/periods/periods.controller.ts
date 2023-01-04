@@ -13,7 +13,7 @@ import { PeriodsService } from './periods.service';
 import { Period } from './schemas/periods.schema';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
-import { PaginationQuery } from '@/shared/dto/pagination-query.dto';
+import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { PeriodPaginationModelDto } from './dto/period-pagination-model.dto';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 
@@ -34,7 +34,7 @@ export class PeriodsController {
   })
   @Permissions(Permission.PeriodView)
   async findAllPaginated(
-    @Query() options: PaginationQuery,
+    @Query() options: PaginatedQueryDto,
   ): Promise<PeriodPaginationModelDto> {
     return this.periodsService.findAllPaginated(options);
   }
