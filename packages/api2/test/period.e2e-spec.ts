@@ -12,11 +12,7 @@ import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
-import {
-  authorizedGetRequest,
-  authorizedPutRequest,
-  loginUser,
-} from './test.common';
+import { authorizedGetRequest, loginUser } from './test.common';
 import { runDbMigrations } from '@/database/migrations';
 import { PraiseModule } from '@/praise/praise.module';
 import { QuantificationsModule } from '@/quantifications/quantifications.module';
@@ -27,7 +23,6 @@ import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder'
 import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
 import { PraiseService } from '@/praise/praise.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
-import { Praise } from '@/praise/schemas/praise.schema';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
 import { PeriodsModule } from '@/periods/periods.module';
@@ -38,14 +33,9 @@ import { PeriodSettingsSeeder } from '@/database/seeder/periodsettings.seeder';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { SettingsSeeder } from '@/database/seeder/settings.seeder';
 import { SettingsModule } from '@/settings/settings.module';
-import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
-import { FindAllPraisePaginatedQuery } from '@/praise/dto/find-all-praise-paginated-query.dto';
-import { Types } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
-import { praise } from '../../api/src/period/controllers/core';
-import { PaginationQuery } from '@/shared/dto/pagination-query.dto';
-import parseISO from 'date-fns/parseISO';
+import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 
 class LoggedInUser {
   accessToken: string;
@@ -64,7 +54,6 @@ describe('Period (E2E)', () => {
   let periodsService: PeriodsService;
   let periodsSeeder: PeriodsSeeder;
   let periodSettingsService: PeriodSettingsService;
-  let periodSettingsSeeder: PeriodSettingsSeeder;
   let quantificationsSeeder: QuantificationsSeeder;
   let quantificationsService: QuantificationsService;
   let userAccountsService: UserAccountsService;
@@ -119,8 +108,6 @@ describe('Period (E2E)', () => {
     userAccountsService = module.get<UserAccountsService>(UserAccountsService);
     periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
     periodsService = module.get<PeriodsService>(PeriodsService);
-    periodSettingsSeeder =
-      module.get<PeriodSettingsSeeder>(PeriodSettingsSeeder);
     periodSettingsService = module.get<PeriodSettingsService>(
       PeriodSettingsService,
     );
@@ -267,7 +254,7 @@ describe('Period (E2E)', () => {
         p.push(await periodsSeeder.seedPeriod());
       }
 
-      const options: PaginationQuery = {
+      const options: PaginatedQueryDto = {
         sortColumn: 'createdAt',
         sortType: 'asc',
         page: 1,

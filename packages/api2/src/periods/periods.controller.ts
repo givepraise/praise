@@ -18,13 +18,13 @@ import { Period } from './schemas/periods.schema';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
-import { PeriodPaginationModelDto } from './dto/period-pagination-model.dto';
+import { PeriodPaginatedResponseDto } from './dto/period-paginated-response.dto';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
-import { CreatePeriod } from './dto/create-period.dto';
-import { UpdatePeriod } from './dto/update-period.dto';
+import { CreatePeriodInputDto } from './dto/create-period-input.dto';
+import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
 
 @Controller('periods')
 @SerializeOptions({
@@ -41,12 +41,12 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Periods',
-    type: PeriodPaginationModelDto,
+    type: PeriodPaginatedResponseDto,
   })
   @Permissions(Permission.PeriodView)
   async findAllPaginated(
     @Query() options: PaginatedQueryDto,
-  ): Promise<PeriodPaginationModelDto> {
+  ): Promise<PeriodPaginatedResponseDto> {
     return this.periodsService.findAllPaginated(options);
   }
 
@@ -73,7 +73,7 @@ export class PeriodsController {
     type: Period,
   })
   @Permissions(Permission.PeriodCreate)
-  async create(@Body() createPeriodDto: CreatePeriod): Promise<Period> {
+  async create(@Body() createPeriodDto: CreatePeriodInputDto): Promise<Period> {
     return this.periodsService.create(createPeriodDto);
   }
 
@@ -88,7 +88,7 @@ export class PeriodsController {
   @ApiParam({ name: 'id', type: String })
   async update(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() updatePeriodDto: UpdatePeriod,
+    @Body() updatePeriodDto: UpdatePeriodInputDto,
   ): Promise<Period> {
     return this.periodsService.update(id, updatePeriodDto);
   }
