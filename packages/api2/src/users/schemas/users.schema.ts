@@ -1,11 +1,11 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Types } from 'mongoose';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { ExposeId } from '@/shared/expose-id.decorator';
+import { UserAccountNoUserId } from '@/useraccounts/dto/useraccount-no-user-id.dto';
 
 export type UserDocument = User & Document;
 
@@ -16,7 +16,7 @@ export class User {
       Object.assign(this, partial);
       if (partial.accounts) {
         this.accounts = partial.accounts.map(
-          (account) => new UserAccount(account),
+          (account) => new UserAccountNoUserId(account),
         );
       }
     }
@@ -62,9 +62,10 @@ export class User {
   roles: string[];
 
   @ApiResponseProperty({
-    type: [UserAccount],
+    type: [UserAccountNoUserId],
   })
-  accounts: UserAccount[];
+  @Type(() => UserAccountNoUserId)
+  accounts: UserAccountNoUserId[];
 
   @Exclude()
   @Prop()
