@@ -10,4 +10,6 @@ export const userAccountStub: UserAccount = {
   avatarId: 'DISCORD:810180621930070088:810180622336262195',
   platform: 'DISCORD',
   activateToken: 'DISCORD:810180621930070088:810180622336262195',
+  createdAt: new Date('2021-08-17T15:00:00.000Z'),
+  updatedAt: new Date('2021-08-17T15:00:00.000Z'),
 };
