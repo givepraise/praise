@@ -284,7 +284,6 @@ describe('EventLog (E2E)', () => {
 
       const user = response.body;
 
-      console.log(user);
       expect(user.identityEthAddress).toBe(wallet.address);
       expect(user.rewardsEthAddress).toBe(wallet.address);
       expect(user.username).toBe(ua.name);

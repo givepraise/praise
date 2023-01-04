@@ -9,7 +9,9 @@ import {
   Param,
   Post,
   Put,
+  SerializeOptions,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiKeyService } from './api-key.service';
 import { CreateApiKeyRequest } from './dto/create-api-key-request.dto';
@@ -21,10 +23,14 @@ import { Types } from 'mongoose';
 import { ApiKey } from './schemas/api-key.schema';
 import { UpdateDescriptionRequest } from './dto/update-description-request.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 
 @Controller('api-key')
 @UseGuards(PermissionsGuard)
 @UseGuards(JwtAuthGuard)
+@SerializeOptions({
+  excludePrefixes: ['__'],
+})
 export class ApiKeyController {
   constructor(private readonly apiKeyService: ApiKeyService) {}
   @Post()
@@ -53,6 +59,7 @@ export class ApiKeyController {
     type: [ApiKey],
   })
   @Permissions(Permission.ApiKeyView)
+  @UseInterceptors(MongooseClassSerializerInterceptor(ApiKey))
   findAll(): Promise<ApiKey[]> {
     return this.apiKeyService.findAll();
   }
@@ -67,6 +74,7 @@ export class ApiKeyController {
     type: ApiKey,
   })
   @Permissions(Permission.ApiKeyView)
+  @UseInterceptors(MongooseClassSerializerInterceptor(ApiKey))
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<ApiKey> {
@@ -87,6 +95,7 @@ export class ApiKeyController {
     type: ApiKey,
   })
   @Permissions(Permission.ApiKeyManage)
+  @UseInterceptors(MongooseClassSerializerInterceptor(ApiKey))
   async updateApiKeyDescription(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() body: UpdateDescriptionRequest,
@@ -104,6 +113,7 @@ export class ApiKeyController {
     type: ApiKey,
   })
   @Permissions(Permission.ApiKeyManage)
+  @UseInterceptors(MongooseClassSerializerInterceptor(ApiKey))
   async revokeApiKey(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<ApiKey> {

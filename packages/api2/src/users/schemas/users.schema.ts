@@ -1,10 +1,11 @@
-import { Exclude, Transform } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Types } from 'mongoose';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { ApiResponseProperty } from '@nestjs/swagger';
+import { ExposeId } from '@/shared/expose-id.decorator';
 
 export type UserDocument = User & Document;
 
@@ -24,7 +25,7 @@ export class User {
   @ApiResponseProperty({
     example: '5f9f1b9b9b9b9b9b9b9b9b9b',
   })
-  @Transform(({ value }) => value.toString())
+  @ExposeId()
   _id: Types.ObjectId;
 
   @ApiResponseProperty({

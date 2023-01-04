@@ -14,7 +14,7 @@ import { usePraiseAppVersion } from '@/model/app';
 import { HeaderBanner } from '@/components/ui/HeaderBanner';
 
 export const AuthenticatedLayout = (): JSX.Element | null => {
-  useRecoilValue(ApiAuthGet({ url: '/settings/all' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.
+  useRecoilValue(ApiAuthGet({ url: '/settings' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
   const activeUserRoles = useRecoilValue(ActiveUserRoles);

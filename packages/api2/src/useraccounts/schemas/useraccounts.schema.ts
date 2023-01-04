@@ -1,8 +1,10 @@
-import { Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { SchemaTypes, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Platform } from '../interfaces/platform/platform.interface';
 import { ApiResponseProperty } from '@nestjs/swagger';
+import { User } from '@/users/schemas/users.schema';
+import { ExposeId } from '@/shared/expose-id.decorator';
 
 export type UserAccountDocument = UserAccount & Document;
 
@@ -15,15 +17,15 @@ export class UserAccount {
   @ApiResponseProperty({
     example: '63b428f7d9ca4f6ff5370d05',
   })
-  @Transform(({ value }) => value.toString())
+  @ExposeId()
   _id: Types.ObjectId;
 
   @ApiResponseProperty({
-    example: '63b428f7d9ca4f6ff5370d0a',
+    type: User,
   })
-  @Transform(({ value }) => value.toString())
   @Prop({ type: SchemaTypes.ObjectId, ref: 'User', default: null, index: true })
-  user: Types.ObjectId;
+  @Type(() => User)
+  user: User | Types.ObjectId;
 
   @ApiResponseProperty({
     type: 'Unique platform specific account id',

@@ -11,13 +11,13 @@ import {
   PaginatedEventLogModel,
 } from './schemas/event-log.schema';
 import mongoose from 'mongoose';
-import { PaginationModel } from 'mongoose-paginate-ts';
 import { FindAllPaginatedQuery } from './dto/find-all-paginated-query.dto';
 import { ServiceException } from '@/shared/service-exception';
 import { CreateEventLogDto } from './dto/create-event-log.dto';
 import { RequestContext } from 'nestjs-request-context';
 import { has } from 'lodash';
 import { User } from '@/users/schemas/users.schema';
+import { EventLogPaginationModelDto } from './dto/event-log-pagination-model.dto';
 @Injectable()
 export class EventLogService {
   constructor(
@@ -75,7 +75,7 @@ export class EventLogService {
    */
   async findAllPaginated(
     options: FindAllPaginatedQuery,
-  ): Promise<PaginationModel<EventLog>> {
+  ): Promise<EventLogPaginationModelDto> {
     const { page, limit, sortColumn, sortType, search, types } = options;
     const query = {} as any;
 
@@ -106,13 +106,12 @@ export class EventLogService {
       sort,
     };
 
-    const response = await this.eventLogModel.paginate(paginateQuery);
-    if (!response) throw new ServiceException('Failed to query event logs');
+    const eventLogPagination = await this.eventLogModel.paginate(paginateQuery);
 
-    return {
-      ...response,
-      docs: response.docs.map((item) => new EventLog(item)),
-    };
+    if (!eventLogPagination)
+      throw new ServiceException('Failed to query event logs');
+
+    return eventLogPagination;
   }
 
   async findTypes(): Promise<EventLogType[]> {

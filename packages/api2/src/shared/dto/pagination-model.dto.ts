@@ -1,24 +1,50 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiResponseProperty } from '@nestjs/swagger';
 
-export class PaginationModel<T> {
-  @ApiProperty()
+export class PaginationModel {
+  @ApiResponseProperty({
+    example: 1200,
+  })
   totalDocs: number | undefined;
-  @ApiProperty()
+
+  @ApiResponseProperty({
+    example: 10,
+  })
   limit: number | undefined;
-  @ApiProperty()
+
+  @ApiResponseProperty({
+    example: 12,
+  })
   totalPages: number | undefined;
-  @ApiProperty()
+
+  @ApiResponseProperty({
+    example: 2,
+  })
   page: number | undefined;
-  @ApiProperty()
+
+  @ApiResponseProperty({
+    example: 1,
+  })
   pagingCounter: number | undefined;
-  @ApiProperty()
+
+  @ApiResponseProperty({
+    example: false,
+  })
+  // eslint-disable-next-line @typescript-eslint/ban-types
   hasPrevPage: Boolean | undefined;
-  @ApiProperty()
+
+  @ApiResponseProperty({
+    example: true,
+  })
+  // eslint-disable-next-line @typescript-eslint/ban-types
   hasNextPage: Boolean | undefined;
-  @ApiProperty()
+
+  @ApiResponseProperty({
+    example: 1,
+  })
   prevPage: number | undefined;
-  @ApiProperty()
+
+  @ApiResponseProperty({
+    example: 3,
+  })
   nextPage: number | undefined;
-  @ApiProperty()
-  docs: T[];
 }

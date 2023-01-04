@@ -1,15 +1,27 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  SerializeOptions,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { Model, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { PeriodsService } from './periods.service';
 import { Period } from './schemas/periods.schema';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
-import { PaginationModel } from '@/shared/dto/pagination-model.dto';
 import { PaginationQuery } from '@/shared/dto/pagination-query.dto';
+import { PeriodPaginationModelDto } from './dto/period-pagination-model.dto';
+import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 
 @Controller('periods')
+@SerializeOptions({
+  excludePrefixes: ['__'],
+})
+@UseInterceptors(MongooseClassSerializerInterceptor(Period))
 export class PeriodsController {
   constructor(private readonly periodsService: PeriodsService) {}
 
@@ -18,12 +30,12 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Periods',
-    type: Model<Period>,
+    type: PeriodPaginationModelDto,
   })
   @Permissions(Permission.PeriodView)
   async findAllPaginated(
     @Query() options: PaginationQuery,
-  ): Promise<PaginationModel<Period>> {
+  ): Promise<PeriodPaginationModelDto> {
     return this.periodsService.findAllPaginated(options);
   }
 

@@ -3,13 +3,17 @@ import { Type } from 'class-transformer';
 import { IsIn, IsInt, IsOptional, IsString } from 'class-validator';
 
 export class PaginationQuery {
-  @ApiProperty()
+  @ApiProperty({
+    example: 10,
+  })
   @IsOptional()
   @IsInt()
   @Type(() => Number)
   limit: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 1,
+  })
   @IsOptional()
   @IsInt()
   @Type(() => Number)

@@ -25,7 +25,7 @@ export class UserAccountsService {
   async findOneByUserId(userId: Types.ObjectId): Promise<UserAccount | null> {
     const userAccount = await this.userAccountModel.findOne({ userId }).lean();
     if (!userAccount) return null;
-    return new UserAccount(userAccount);
+    return userAccount;
   }
 
   /**
@@ -38,7 +38,7 @@ export class UserAccountsService {
       .findOne({ userAccountId })
       .lean();
     if (!userAccount) return null;
-    return new UserAccount(userAccount);
+    return userAccount;
   }
 
   /**
@@ -57,6 +57,6 @@ export class UserAccountsService {
     }
 
     await userAccountDocument.save();
-    return new UserAccount(userAccountDocument);
+    return userAccountDocument.toObject();
   }
 }

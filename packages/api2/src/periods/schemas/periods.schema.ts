@@ -1,10 +1,9 @@
-import { Transform } from 'class-transformer';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-
 import { Types, model } from 'mongoose';
 import { PeriodStatusType } from '../enums/status-type.enum';
 import { mongoosePagination } from 'mongoose-paginate-ts';
 import { PaginatedPeriodModel } from '../interfaces/paginated-period.interface';
+import { ExposeId } from '@/shared/expose-id.decorator';
 
 export type PeriodDocument = Period & Document;
 
@@ -16,7 +15,7 @@ export class Period {
     }
   }
 
-  @Transform(({ value }) => value.toString())
+  @ExposeId()
   _id: Types.ObjectId;
 
   @Prop({ required: true, unique: true, minlength: 3, maxlength: 64 })

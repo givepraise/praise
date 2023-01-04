@@ -5,7 +5,6 @@ import { Types } from 'mongoose';
 import { Period, PeriodDocument, PeriodModel } from './schemas/periods.schema';
 import { ServiceException } from '../shared/service-exception';
 import { PaginationQuery } from '@/shared/dto/pagination-query.dto';
-import { PaginationModel } from '@/shared/dto/pagination-model.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { CreatePeriod } from './dto/create-period.dto';
 import { add, compareAsc } from 'date-fns';
@@ -16,6 +15,7 @@ import { PeriodDetailsQuantifier } from './interfaces/period-details-quantifier.
 import { PeriodDetailsGiverReceiver } from './interfaces/period-details-giver-receiver.interface';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
 import { PeriodDetailsQuantifierDto } from './dto/period-details-quantifier.dto';
+import { PeriodPaginationModelDto } from './dto/period-pagination-model.dto';
 
 @Injectable()
 export class PeriodsService {
@@ -48,7 +48,7 @@ export class PeriodsService {
    */
   async findAllPaginated(
     options: PaginationQuery,
-  ): Promise<PaginationModel<Period>> {
+  ): Promise<PeriodPaginationModelDto> {
     const { sortColumn, sortType, page, limit } = options;
     const query = {} as any;
 
@@ -62,13 +62,7 @@ export class PeriodsService {
     if (!periodPagination)
       throw new ServiceException('Failed to paginate period data');
 
-    // Map the praise documents to the Praise class
-    const docs = periodPagination.docs.map((period) => new Period(period));
-
-    return {
-      ...periodPagination,
-      docs,
-    };
+    return periodPagination;
   }
 
   /**
