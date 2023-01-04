@@ -12,19 +12,20 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { Model, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { PeriodsService } from './periods.service';
 import { Period } from './schemas/periods.schema';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
-import { PaginationModel } from '@/shared/dto/pagination-model.dto';
-import { PaginationQuery } from '@/shared/dto/pagination-query.dto';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { CreatePeriod } from './dto/create-period.dto';
 import { UpdatePeriod } from './dto/update-period.dto';
 import { Praise } from '@/praise/schemas/praise.schema';
+import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
+import { PeriodPaginationModelDto } from './dto/period-pagination-model.dto';
+import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 
 @Controller('periods')
 @SerializeOptions({
@@ -33,6 +34,7 @@ import { Praise } from '@/praise/schemas/praise.schema';
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(PermissionsGuard)
 @UseGuards(JwtAuthGuard)
+@UseInterceptors(MongooseClassSerializerInterceptor(Period))
 export class PeriodsController {
   constructor(private readonly periodsService: PeriodsService) {}
 
@@ -41,12 +43,12 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Periods',
-    type: Model<Period>,
+    type: PeriodPaginationModelDto,
   })
   @Permissions(Permission.PeriodView)
   async findAllPaginated(
-    @Query() options: PaginationQuery,
-  ): Promise<PaginationModel<Period>> {
+    @Query() options: PaginatedQueryDto,
+  ): Promise<PeriodPaginationModelDto> {
     return this.periodsService.findAllPaginated(options);
   }
 

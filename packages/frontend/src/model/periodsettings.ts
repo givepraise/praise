@@ -23,7 +23,7 @@ export const AllPeriodSettings = atomFamily<
       setSelf(
         getPromise(
           ApiAuthGet({
-            url: `/periodsettings/${periodId}/settings/all`,
+            url: `/periodsettings/${periodId}/settings`,
           })
         ).then((response) => {
           if (isResponseOk(response)) {

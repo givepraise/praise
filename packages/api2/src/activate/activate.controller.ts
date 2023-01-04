@@ -1,6 +1,5 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Post,
   SerializeOptions,
@@ -10,12 +9,13 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ActivateInputDto } from './dto/activate-input.dto';
 import { User } from '@/users/schemas/users.schema';
 import { ActivateService } from './activate.service';
+import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 
 @Controller('activate')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseInterceptors(ClassSerializerInterceptor)
+@UseInterceptors(MongooseClassSerializerInterceptor(User))
 export class ActivateController {
   constructor(private activateService: ActivateService) {}
 

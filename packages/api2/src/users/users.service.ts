@@ -1,10 +1,10 @@
-import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
 import { User, UserDocument } from './schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserInputDto } from './dto/update-user-input.dto';
+import { CreateUserInputDto } from './dto/create-user-input.dto';
 import { ServiceException } from '@/shared/service-exception';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { EventLogService } from '@/event-log/event-log.service';
@@ -24,14 +24,13 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    const users = await this.userModel.find().populate('accounts').lean();
-    return users.map((user) => new User(user));
+    return this.userModel.find().populate('accounts').lean();
   }
 
   async findOneById(_id: Types.ObjectId): Promise<User | null> {
     const user = await this.userModel.findById(_id).populate('accounts').lean();
-    if (user) return new User(user);
-    return null;
+    if (!user) return null;
+    return user;
   }
 
   async findOneByEth(identityEthAddress: string): Promise<User | null> {
@@ -39,13 +38,13 @@ export class UsersService {
       .findOne({ identityEthAddress })
       .populate('accounts')
       .lean();
-    if (user) return new User(user);
-    return null;
+    if (!user) return null;
+    return user;
   }
 
   async addRole(
     _id: Types.ObjectId,
-    roleChange: UpdateUserRoleDto,
+    roleChange: UpdateUserRoleInputDto,
   ): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
     if (!userDocument) throw new ServiceException('User not found.');
@@ -63,12 +62,12 @@ export class UsersService {
       ).toString()}"`,
     });
 
-    return new User(user);
+    return user.toObject();
   }
 
   async removeRole(
     _id: Types.ObjectId,
-    roleChange: UpdateUserRoleDto,
+    roleChange: UpdateUserRoleInputDto,
   ): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
     if (!userDocument) throw new ServiceException('User not found.');
@@ -119,10 +118,10 @@ export class UsersService {
       ).toString()}"`,
     });
 
-    return new User(user);
+    return user.toObject();
   }
 
-  async update(_id: Types.ObjectId, user: UpdateUserDto): Promise<User> {
+  async update(_id: Types.ObjectId, user: UpdateUserInputDto): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
     if (!userDocument) throw new ServiceException('User not found.');
 
@@ -130,14 +129,14 @@ export class UsersService {
       userDocument.set(k, v);
     }
     const updatedUserDocument = await userDocument.save();
-    return new User(updatedUserDocument.toObject());
+    return updatedUserDocument.toObject();
   }
 
-  async create(userDto: CreateUserDto): Promise<User> {
+  async create(userDto: CreateUserInputDto): Promise<User> {
     const createdUser = new this.userModel(userDto);
     await createdUser.save();
     await createdUser.populate('accounts');
-    return new User(createdUser.toObject());
+    return createdUser.toObject();
   }
 
   /**

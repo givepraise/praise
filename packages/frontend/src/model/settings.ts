@@ -21,7 +21,7 @@ export const AllSettings = atom<SettingDto[] | undefined>({
       setSelf(
         getPromise(
           ApiAuthGet({
-            url: '/settings/all',
+            url: '/settings',
           })
         ).then((response) => {
           if (isResponseOk(response)) {

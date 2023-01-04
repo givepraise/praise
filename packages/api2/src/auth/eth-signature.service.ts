@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@/users/users.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UtilsProvider } from '@/utils/utils.provider';
-import { LoginResponse } from './dto/login-response.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { Types } from 'mongoose';
@@ -70,7 +70,7 @@ export class EthSignatureService {
    * @param user User object with information about the user
    * @returns LoginResponse
    */
-  async login(userId: Types.ObjectId): Promise<LoginResponse> {
+  async login(userId: Types.ObjectId): Promise<LoginResponseDto> {
     const user = await this.usersService.findOneById(userId);
     if (!user) throw new ServiceException('User not found');
 

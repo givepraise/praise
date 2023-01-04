@@ -131,9 +131,7 @@ const AllPraiseQuery = selectorFamily<
       const qs = Object.keys(query)
         .map((key) => `${key}=${query[key]}`)
         .join('&');
-      const response = get(
-        ApiAuthGet({ url: `/praise/all${qs ? `?${qs}` : ''}` })
-      );
+      const response = get(ApiAuthGet({ url: `/praise${qs ? `?${qs}` : ''}` }));
       return response as
         | AxiosResponse<PaginatedResponseBody<PraiseDto>>
         | AxiosError;
