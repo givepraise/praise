@@ -1,10 +1,10 @@
-import { CreateUpdateQuantification } from '@/quantifications/dto/create-update-quantification.dto';
+import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 
-export class QuantifyMultiple {
+export class QuantifyMultipleInputDto {
   @ApiProperty()
-  params: CreateUpdateQuantification;
+  params: QuantifyInputDto;
 
   @ApiProperty({
     example: [

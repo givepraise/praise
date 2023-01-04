@@ -1,9 +1,9 @@
+import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { Document, Types } from 'mongoose';
-import { AuthRole } from '../../auth/enums/auth-role.enum';
-import { Transform } from 'class-transformer';
+import { ExposeId } from '@/shared/expose-id.decorator';
 
 export type ApiKeyDocument = ApiKey & Document;
 
@@ -15,7 +15,7 @@ export class ApiKey {
     }
   }
 
-  @Transform(({ value }) => value.toString())
+  @ExposeId()
   _id: Types.ObjectId;
 
   @ApiResponseProperty({

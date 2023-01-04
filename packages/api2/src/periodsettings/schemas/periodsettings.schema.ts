@@ -1,7 +1,7 @@
 import { Setting } from '@/settings/schemas/settings.schema';
 import { InjectModel, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Transform } from 'class-transformer';
 import { SchemaTypes, Types } from 'mongoose';
+import { ExposeId } from '@/shared/expose-id.decorator';
 
 export type PeriodSettingDocument = PeriodSetting & Document;
 
@@ -20,8 +20,8 @@ export class PeriodSetting extends Setting {
     }
   }
 
-  @Transform(({ value }) => value.toString())
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Period', default: null })
+  @ExposeId()
   period: Types.ObjectId;
 }
 
