@@ -6,8 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useHistory } from 'react-router-dom';
 import { classNames } from '@/utils/index';
 import { UserAvatar } from './UserAvatar';
-import { UserDto } from '@/model/user/user.dto';
 import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
+import { UserDto } from '@/model/user/dto/user.dto';
 
 interface UserPopoverProps {
   user?: UserDto;

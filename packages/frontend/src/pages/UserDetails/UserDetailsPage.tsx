@@ -19,7 +19,7 @@ import {
   SingleUserParams,
   useLoadSingleUserDetails,
   useUserProfile,
-} from '@/model/users';
+} from '@/model/user/users';
 import { BackLink } from '@/navigation/BackLink';
 import { isResponseOk } from '@/model/api';
 import { UserInfo } from './components/UserInfo';

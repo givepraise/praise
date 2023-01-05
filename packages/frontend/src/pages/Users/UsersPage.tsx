@@ -1,7 +1,7 @@
 import { faUserFriends } from '@fortawesome/free-solid-svg-icons';
 import { useRecoilValue } from 'recoil';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
-import { AllUsers } from '@/model/users';
+import { AllUsers } from '@/model/user/users';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
 import { UsersStatistics } from './components/UsersStatistics';

@@ -14,7 +14,7 @@ export const handleErrors = (err: AxiosError): AxiosError => {
     if (statusCode === 404) {
       // Resource not found
       // Redirect to 404 page
-      window.location.href = '/404';
+      //window.location.href = '/404';
     } else if ([403, 400].includes(statusCode)) {
       // Forbidden or bad request
       const isJsonBlob = (data): data is Blob =>

@@ -1,4 +1,3 @@
-import { UserDetailsDto, UserDto, UserRole } from 'api/dist/user/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import {
   atom,
@@ -13,8 +12,11 @@ import {
 import React from 'react';
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
 import { useApiAuthClient } from '@/utils/api';
-import { isResponseOk, ApiAuthGet } from './api';
-import { AllPeriods } from './periods';
+import { isResponseOk, ApiAuthGet } from '../api';
+import { AllPeriods } from '../periods';
+import { UserDto } from './dto/user.dto';
+import { UserRole } from './enums/user-role.enum';
+import { UserWithStatsDto } from './dto/user-with-stats.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfUser = (object: any): object is UserDto => {
@@ -162,12 +164,12 @@ export const SingleUser = selectorFamily({
   key: 'SingleUser',
   get:
     (userId: string | undefined) =>
-    ({ get }): UserDetailsDto | undefined => {
+    ({ get }): UserWithStatsDto | undefined => {
       const allUsers = get(AllUsers);
       if (!allUsers || !userId) return undefined;
       return allUsers.filter(
         (user) => user._id === userId
-      )[0] as UserDetailsDto;
+      )[0] as UserWithStatsDto;
     },
   set:
     (userId: string | undefined) =>
@@ -282,8 +284,8 @@ export const useUserProfile = (): useUserProfileReturn => {
       async (
         username: string,
         rewardsEthAddress: string
-      ): Promise<AxiosResponse<UserDetailsDto>> => {
-        const response: AxiosResponse<UserDetailsDto> =
+      ): Promise<AxiosResponse<UserWithStatsDto>> => {
+        const response: AxiosResponse<UserWithStatsDto> =
           await apiAuthClient.patch('/users/updateProfile', {
             username,
             rewardsEthAddress,
@@ -308,12 +310,12 @@ const DetailedSingleUserQuery = selectorFamily({
   key: 'DetailedSingleUserQuery',
   get:
     (userId: string) =>
-    ({ get }): AxiosResponse<UserDetailsDto> | AxiosError => {
+    ({ get }): AxiosResponse<UserWithStatsDto> | AxiosError => {
       return get(
         ApiAuthGet({
           url: `/users/${userId}`,
         })
-      ) as AxiosResponse<UserDetailsDto> | AxiosError;
+      ) as AxiosResponse<UserWithStatsDto> | AxiosError;
     },
 });
 
@@ -323,7 +325,7 @@ const DetailedSingleUserQuery = selectorFamily({
  */
 export const useLoadSingleUserDetails = (
   userId: string
-): AxiosResponse<UserDetailsDto> | AxiosError => {
+): AxiosResponse<UserWithStatsDto> | AxiosError => {
   const response = useRecoilValue(DetailedSingleUserQuery(userId));
   const setUser = useSetRecoilState(SingleUser(userId));
   const refresh = useRecoilRefresher_UNSTABLE(DetailedSingleUserQuery(userId));

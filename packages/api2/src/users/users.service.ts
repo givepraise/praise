@@ -10,12 +10,18 @@ import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
+import { UserWithStatsDto } from './dto/user-with-stats.dto';
+import { Praise, PraiseDocument } from '@/praise/schemas/praise.schema';
+import { UserStatsDto } from './dto/user-stats.dto';
+import { use } from 'passport';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
+    @InjectModel(Praise.name)
+    private praiseModel: Model<PraiseDocument>,
     private eventLogService: EventLogService,
   ) {}
 
@@ -27,21 +33,70 @@ export class UsersService {
     return this.userModel.find().populate('accounts').lean();
   }
 
-  async findOneById(_id: Types.ObjectId): Promise<User> {
-    return this.userModel.findById(_id).populate('accounts').lean();
+  async getUserStats(user: UserDocument): Promise<UserStatsDto | null> {
+    if (!user.accounts || user.accounts.length === 0) return null;
+    const accountIds = user.accounts?.map((a) => new Types.ObjectId(a._id));
+
+    const receivedStats = await this.praiseModel.aggregate([
+      {
+        $match: {
+          receiver: { $in: accountIds },
+        },
+      },
+      {
+        $group: {
+          _id: '$receiver',
+          totalScore: { $sum: '$score' },
+          totalCount: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const givenStats = await this.praiseModel.aggregate([
+      {
+        $match: {
+          giver: { $in: accountIds },
+        },
+      },
+      {
+        $group: {
+          _id: '$giver',
+          totalScore: { $sum: '$score' },
+          totalCount: { $sum: 1 },
+        },
+      },
+    ]);
+
+    return {
+      receivedTotalScore: receivedStats[0]?.totalScore || 0,
+      receivedTotalCount: receivedStats[0]?.totalCount || 0,
+      givenTotalScore: givenStats[0]?.totalScore || 0,
+      givenTotalCount: givenStats[0]?.totalCount || 0,
+    };
   }
 
-  async findOneByEth(identityEthAddress: string): Promise<User> {
-    return this.userModel
-      .findOne({ identityEthAddress })
+  async findOne(query: any): Promise<UserWithStatsDto> {
+    const user = await this.userModel
+      .findOne(query)
       .populate('accounts')
       .lean();
+    if (!user) throw new ServiceException('User not found.');
+    const userStats = await this.getUserStats(user);
+    return { ...user, ...userStats };
+  }
+
+  async findOneById(_id: Types.ObjectId): Promise<UserWithStatsDto> {
+    return this.findOne({ _id });
+  }
+
+  async findOneByEth(identityEthAddress: string): Promise<UserWithStatsDto> {
+    return this.findOne({ identityEthAddress });
   }
 
   async addRole(
     _id: Types.ObjectId,
     roleChange: UpdateUserRoleInputDto,
-  ): Promise<User> {
+  ): Promise<UserWithStatsDto> {
     const userDocument = await this.userModel.findById(_id);
     if (!userDocument) throw new ServiceException('User not found.');
 
@@ -64,7 +119,7 @@ export class UsersService {
   async removeRole(
     _id: Types.ObjectId,
     roleChange: UpdateUserRoleInputDto,
-  ): Promise<User> {
+  ): Promise<UserWithStatsDto> {
     const userDocument = await this.userModel.findById(_id);
     if (!userDocument) throw new ServiceException('User not found.');
 

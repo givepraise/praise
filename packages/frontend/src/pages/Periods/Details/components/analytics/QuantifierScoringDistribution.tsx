@@ -5,7 +5,7 @@ import { BoxPlotDataPoint } from '@sgratzl/chartjs-chart-boxplot';
 import { QuantificationDto } from 'api/dist/praise/types';
 import { PeriodPageParams } from '@/model/periods';
 import { AllPeriodQuantificationsGroupedByQuantifier } from '@/model/periodAnalytics';
-import { ManyUsers } from '@/model/users';
+import { ManyUsers } from '@/model/user/users';
 import { BoxPlot } from './Boxplot';
 
 export const QuantifierScoringDistribution = (): JSX.Element | null => {

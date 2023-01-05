@@ -1,5 +1,5 @@
 import { UserAccountPlatform } from './useraccount-platform.type';
-import { UserDto } from '../user/user.dto';
+import { UserDto } from '@/model/user/dto/user.dto';
 
 export interface UserAccountDto {
   _id: string;

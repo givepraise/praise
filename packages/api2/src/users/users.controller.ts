@@ -21,6 +21,7 @@ import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { EventLogService } from '@/event-log/event-log.service';
 import { AuthGuard } from '@nestjs/passport';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
+import { UserWithStatsDto } from './dto/user-with-stats.dto';
 
 @Controller('users')
 @ApiTags('Users')
@@ -52,10 +53,12 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'A single user',
-    type: User,
+    type: UserWithStatsDto,
   })
   @ApiParam({ name: 'id', type: String })
-  async findOne(@Param('id', ObjectIdPipe) id: Types.ObjectId): Promise<User> {
+  async findOne(
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+  ): Promise<UserWithStatsDto> {
     const user = await this.usersService.findOneById(id);
     if (!user) throw new BadRequestException('User not found.');
     return user;
@@ -66,13 +69,13 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'The updated user',
-    type: User,
+    type: UserWithStatsDto,
   })
   @ApiParam({ name: 'id', type: String })
   async addRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() roleChange: UpdateUserRoleInputDto,
-  ): Promise<User> {
+  ): Promise<UserWithStatsDto> {
     return this.usersService.addRole(id, roleChange);
   }
 
@@ -81,13 +84,13 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'The updated user',
-    type: User,
+    type: UserWithStatsDto,
   })
   @ApiParam({ name: 'id', type: String })
   async removeRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() roleChange: UpdateUserRoleInputDto,
-  ): Promise<User> {
+  ): Promise<UserWithStatsDto> {
     return this.usersService.removeRole(id, roleChange);
   }
 }
