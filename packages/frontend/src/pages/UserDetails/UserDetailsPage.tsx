@@ -52,7 +52,7 @@ const UserDetailsPage = (): JSX.Element | null => {
     values: UpdateUserProfileInput
   ): Promise<void> => {
     const { username, rewardsEthAddress } = values;
-    const response = await update(username, rewardsEthAddress);
+    const response = await update(user._id, username, rewardsEthAddress);
 
     if (isResponseOk(response)) {
       toast.success('User profile saved');

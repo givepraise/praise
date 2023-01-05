@@ -271,6 +271,7 @@ export const useAdminUsers = (): useAdminUsersReturns => {
 
 type useUserProfileReturn = {
   update: (
+    userId: string,
     username: string,
     rewardsEthAddress: string
   ) => Promise<AxiosResponse<UserDto>>;
@@ -282,11 +283,12 @@ export const useUserProfile = (): useUserProfileReturn => {
   const update = useRecoilCallback(
     ({ set }) =>
       async (
+        userId: string,
         username: string,
         rewardsEthAddress: string
       ): Promise<AxiosResponse<UserWithStatsDto>> => {
         const response: AxiosResponse<UserWithStatsDto> =
-          await apiAuthClient.patch('/users/updateProfile', {
+          await apiAuthClient.patch(`/users/${userId}`, {
             username,
             rewardsEthAddress,
           });
