@@ -61,7 +61,10 @@ export class UsersController {
     if (req.user._id.toString() !== id.toString()) {
       throw new BadRequestException('You can only update your own profile.');
     }
-    return this.usersService.update(id, {user.rewardsEthAddress, user.username});
+    return this.usersService.update(id, {
+      username: user.username,
+      rewardsEthAddress: user.rewardsEthAddress,
+    });
   }
 
   @Patch(':id/addRole')
