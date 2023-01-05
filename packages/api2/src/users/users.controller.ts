@@ -33,7 +33,10 @@ import { UpdateUserRequestDto } from './dto/update-user-request.dto';
 @UseGuards(PermissionsGuard)
 @UseGuards(AuthGuard(['jwt', 'api-key']))
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly eventLogService: EventLogService,
+  ) {}
 
   @Get()
   @Permissions(Permission.UsersFind)
