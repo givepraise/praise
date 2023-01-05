@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { useRecoilValue } from 'recoil';
 import { useHistory } from 'react-router-dom';
-import { UserAccountDto } from 'api/dist/useraccount/types';
 import { getMarkdownText } from '@/utils/parser';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
@@ -23,6 +22,7 @@ import { useQuantifyPraise } from '@/model/praise';
 import { SourceName } from './SourceName';
 import { UserAvatarAndName } from '../user/UserAvatarAndName';
 import { InlineLabelClosable } from '../ui/InlineLabelClosable';
+import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
 
 interface Props {
   praise: PraiseDto;
@@ -59,8 +59,13 @@ export const Praise = ({
     (event: React.MouseEvent<HTMLTableRowElement>) => {
       event.stopPropagation();
 
-      if (userAccount && userAccount.user) {
-        history.push(`/users/${userAccount.user}`);
+      const userId =
+        userAccount && typeof userAccount.user === 'object'
+          ? userAccount.user._id
+          : (userAccount?.user as string);
+
+      if (userId) {
+        history.push(`/users/${userId}`);
       }
     };
 

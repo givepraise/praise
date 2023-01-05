@@ -55,20 +55,14 @@ const WrappedUserPopover = ({
     discordUsername = userAccount.name;
   }
 
-  const handleClick =
-    (userAccount: UserAccountDto | undefined) =>
-    (event: React.MouseEvent<HTMLTableRowElement>) => {
-      event.stopPropagation();
+  const handleClick = () => (event: React.MouseEvent<HTMLTableRowElement>) => {
+    event.stopPropagation();
 
-      if (user) {
-        history.push(`/users/${user._id}`);
-        return;
-      }
-
-      if (userAccount && userAccount.user) {
-        history.push(`/users/${userAccount.user}`);
-      }
-    };
+    if (localUser) {
+      history.push(`/users/${localUser._id}`);
+      return;
+    }
+  };
 
   return (
     <div className={classNames('inline-block', className)}>
@@ -88,7 +82,7 @@ const WrappedUserPopover = ({
       {open && (
         <div
           className="absolute z-10 cursor-pointer"
-          onClickCapture={handleClick(userAccount)}
+          onClickCapture={handleClick()}
           onMouseOver={(): void => {
             closeTimeout && clearTimeout(closeTimeout);
           }}
