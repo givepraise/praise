@@ -7,16 +7,17 @@ import {
   Request,
 } from '@nestjs/common';
 import { EthSignatureService } from './eth-signature.service';
-import { NonceResponse } from './dto/nonce-response.dto';
-import { LoginResponse } from './dto/login-response.dto';
-import { NonceRequest } from './dto/nonce-request.dto';
+import { NonceResponseDto } from './dto/nonce-response.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
+import { NonceInputDto } from './dto/nonce-input.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { LoginRequest } from './dto/login-request.dto';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { LoginInputDto } from './dto/login-input.dto';
 import { EventLogService } from '@/event-log/event-log.service';
 
 @Controller('auth')
+@ApiTags('Authentication')
 export class AuthController {
   constructor(
     private readonly ethSignatureService: EthSignatureService,
@@ -28,15 +29,17 @@ export class AuthController {
     summary: 'Generates a nonce for the user and returns it',
   })
   @ApiBody({
-    type: NonceRequest,
+    type: NonceInputDto,
     description: 'A request containing the user identityEthAddress',
   })
   @ApiResponse({
     status: 201,
     description: 'Nonce generated successfully',
-    type: NonceResponse,
+    type: NonceResponseDto,
   })
-  async nonce(@Body() nonceRquestDto: NonceRequest): Promise<NonceResponse> {
+  async nonce(
+    @Body() nonceRquestDto: NonceInputDto,
+  ): Promise<NonceResponseDto> {
     const { identityEthAddress } = nonceRquestDto;
     const user = await this.ethSignatureService.generateUserNonce(
       identityEthAddress,
@@ -56,7 +59,7 @@ export class AuthController {
     summary: "Verifies a user's signature and returns a JWT token",
   })
   @ApiBody({
-    type: LoginRequest,
+    type: LoginInputDto,
     description:
       'A request containing the user identityEthAddress and signed' +
       'login message. The signed message should be structured as follows: \n\n' +
@@ -66,9 +69,9 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description: 'User authenticated successfully',
-    type: LoginResponse,
+    type: LoginResponseDto,
   })
-  async login(@Request() req: RequestWithUser): Promise<LoginResponse> {
-    return this.ethSignatureService.login(req.user);
+  async login(@Request() req: RequestWithUser): Promise<LoginResponseDto> {
+    return this.ethSignatureService.login(req.user._id);
   }
 }

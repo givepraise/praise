@@ -1,4 +1,4 @@
-import { PraiseDto } from 'api/dist/praise/types';
+import { PraiseDto } from '@/model/praise/praise.dto';
 import { PaginatedResponseBody } from 'api/dist/shared/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
@@ -23,7 +23,7 @@ export type PageParams = {
 
 export const praiseSortOptions = [
   { value: 'createdAt', label: 'Latest' },
-  { value: 'scoreRealized', label: 'Top' },
+  { value: 'score', label: 'Top' },
 ];
 
 interface sortOptionsProps {
@@ -131,9 +131,7 @@ const AllPraiseQuery = selectorFamily<
       const qs = Object.keys(query)
         .map((key) => `${key}=${query[key]}`)
         .join('&');
-      const response = get(
-        ApiAuthGet({ url: `/praise/all${qs ? `?${qs}` : ''}` })
-      );
+      const response = get(ApiAuthGet({ url: `/praise${qs ? `?${qs}` : ''}` }));
       return response as
         | AxiosResponse<PaginatedResponseBody<PraiseDto>>
         | AxiosError;

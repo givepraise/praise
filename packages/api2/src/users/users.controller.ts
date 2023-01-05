@@ -1,9 +1,8 @@
-import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
 import { UsersService } from './users.service';
 import {
   BadRequestException,
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Get,
   Param,
@@ -11,25 +10,26 @@ import {
   SerializeOptions,
   UseGuards,
   UseInterceptors,
-  Put,
-  Request,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { User } from './schemas/users.schema';
-import { ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
+import { EventLogService } from '@/event-log/event-log.service';
 import { AuthGuard } from '@nestjs/passport';
-import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
+import { UserWithStatsDto } from './dto/user-with-stats.dto';
+import { UpdateUserRequestDto } from './dto/update-user-request.dto';
 
 @Controller('users')
+@ApiTags('Users')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseInterceptors(ClassSerializerInterceptor)
+@UseInterceptors(MongooseClassSerializerInterceptor(User))
 @UseGuards(PermissionsGuard)
 @UseGuards(AuthGuard(['jwt', 'api-key']))
 export class UsersController {
@@ -37,53 +37,76 @@ export class UsersController {
 
   @Get()
   @Permissions(Permission.UsersFind)
+  @ApiResponse({
+    status: 200,
+    description: 'All users',
+    type: [User],
+  })
   async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
   @Get(':id')
   @Permissions(Permission.UsersFind)
+  @ApiResponse({
+    status: 200,
+    description: 'A single user',
+    type: UserWithStatsDto,
+  })
   @ApiParam({ name: 'id', type: String })
-  async findOne(@Param('id', ObjectIdPipe) id: Types.ObjectId): Promise<User> {
+  async findOne(
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+  ): Promise<UserWithStatsDto> {
     const user = await this.usersService.findOneById(id);
     if (!user) throw new BadRequestException('User not found.');
     return user;
   }
 
-  @Put(':id')
-  @Permissions(Permission.UserProfileUpdate)
+  @Patch(':id')
+  @Permissions(Permission.UsersFind)
+  @ApiOperation({
+    summary: 'Updates a user',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Updated user',
+    type: UpdateUserRequestDto,
+  })
   @ApiParam({ name: 'id', type: String })
-  async updateProfile(
+  async update(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Request() req: RequestWithUser,
-    @Body() user: UpdateUserDto,
-  ): Promise<User> {
-    if (req.user._id.toString() !== id.toString()) {
-      throw new BadRequestException('You can only update your own profile.');
-    }
-    return this.usersService.update(id, {
-      username: user.username,
-      rewardsEthAddress: user.rewardsEthAddress,
-    });
+    @Body() updateUserInputDto: UpdateUserRequestDto,
+  ): Promise<UserWithStatsDto> {
+    return this.usersService.update(id, updateUserInputDto);
   }
 
   @Patch(':id/addRole')
   @Permissions(Permission.UsersManageRoles)
+  @ApiResponse({
+    status: 200,
+    description: 'The updated user',
+    type: UserWithStatsDto,
+  })
   @ApiParam({ name: 'id', type: String })
   async addRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() roleChange: UpdateUserRoleDto,
-  ): Promise<User> {
+    @Body() roleChange: UpdateUserRoleInputDto,
+  ): Promise<UserWithStatsDto> {
     return this.usersService.addRole(id, roleChange);
   }
 
   @Patch(':id/removeRole')
   @Permissions(Permission.UsersManageRoles)
+  @ApiResponse({
+    status: 200,
+    description: 'The updated user',
+    type: UserWithStatsDto,
+  })
   @ApiParam({ name: 'id', type: String })
   async removeRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() roleChange: UpdateUserRoleDto,
-  ): Promise<User> {
+    @Body() roleChange: UpdateUserRoleInputDto,
+  ): Promise<UserWithStatsDto> {
     return this.usersService.removeRole(id, roleChange);
   }
 }

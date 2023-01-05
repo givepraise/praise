@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Expose, Transform } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { Types } from 'mongoose';
 import { SettingGroup } from '../interfaces/settings-group.interface';
 import { IsSettingValueAllowedBySettingType } from '../validators/settings-type.validator';
+import { ExposeId } from '@/shared/expose-id.decorator';
 
 export type SettingDocument = Setting & Document;
 
@@ -16,7 +17,7 @@ export class Setting {
     }
   }
 
-  @Transform(({ value }) => value.toString())
+  @ExposeId()
   _id: Types.ObjectId;
 
   @Prop({ required: true })
@@ -81,12 +82,7 @@ export class Setting {
   @Prop({
     required: true,
     enum: SettingGroup,
-    type: [
-      {
-        type: Number,
-        enum: SettingGroup,
-      },
-    ],
+    type: Number,
   })
   group: number;
 

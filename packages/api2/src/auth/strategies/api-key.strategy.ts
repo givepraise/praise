@@ -20,6 +20,7 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, 'api-key') {
     if (key) {
       return {
         roles: [key.role],
+        apiKeyId: key._id,
       };
     }
     return null;

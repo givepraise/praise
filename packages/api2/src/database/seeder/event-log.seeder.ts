@@ -1,13 +1,11 @@
 import { EventLogService } from '@/event-log/event-log.service';
 import { faker } from '@faker-js/faker';
 import { Injectable } from '@nestjs/common';
-import { EventLogDocument } from 'src/event-log/entities/event-log.entity';
+import { EventLogDocument } from '@/event-log/schemas/event-log.schema';
 import { UsersSeeder } from './users.seeder';
 
 @Injectable()
 export class EventLogSeeder {
-  eventLogTypeModel = this.eventLogService.getTypeModel();
-  eventLogModel = this.eventLogService.getModel();
   constructor(
     private readonly userSeeder: UsersSeeder,
     private readonly eventLogService: EventLogService,
@@ -20,16 +18,16 @@ export class EventLogSeeder {
    * @returns {Promise<EventLogDocument>}
    */
   seedEventLog = async (
-    eventLogData: Object = {},
+    eventLogData: Record<string, unknown> = {},
   ): Promise<EventLogDocument> => {
     const createdAt = faker.date.recent();
     const randomUser = await this.userSeeder.seedUser();
-    const eventLogTypes = await this.eventLogTypeModel.find({});
+    const eventLogTypes = await this.eventLogService.getTypeModel().find({});
     const randomEventLogType = eventLogTypes
       .sort(() => 0.5 - Math.random())
       .slice(0, eventLogTypes.length)[0];
 
-    const eventLog = await this.eventLogModel.create({
+    const eventLog = await this.eventLogService.getModel().create({
       user: randomUser._id,
       type: randomEventLogType._id,
       description: faker.lorem.lines(1),

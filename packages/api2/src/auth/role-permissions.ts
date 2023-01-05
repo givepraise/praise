@@ -9,14 +9,17 @@ const PERMISSIONS_USER = [
   Permission.UsersFind,
   Permission.EventLogView,
   Permission.ApiKeyView,
-  Permission.UserProfileUpdate,
+  Permission.PraiseView,
+  Permission.PeriodView,
 ];
 const PERMISSIONS_FORWARDER = [...PERMISSIONS_USER];
-const PERMISSIONS_QUANTIFIER = [...PERMISSIONS_USER];
+const PERMISSIONS_QUANTIFIER = [...PERMISSIONS_USER, Permission.PraiseQuantify];
 const PERMISSIONS_ADMIN = [
   ...PERMISSIONS_USER,
   Permission.ApiKeyManage,
   Permission.UsersManageRoles,
+  Permission.PeriodCreate,
+  Permission.PeriodUpdate,
 ];
 const PERMISSION_APIKEY_READ = [...PERMISSIONS_USER];
 const PERMISSION_APIKEY_READWRITE = [...PERMISSIONS_USER];

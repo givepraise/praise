@@ -3,13 +3,11 @@ import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { UserDto } from 'api/dist/user/types';
-import { UserAccountDto } from 'api/dist/useraccount/types';
-import { useRecoilValue } from 'recoil';
 import { useHistory } from 'react-router-dom';
-import { SingleUser } from '@/model/users';
 import { classNames } from '@/utils/index';
 import { UserAvatar } from './UserAvatar';
+import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
+import { UserDto } from '@/model/user/dto/user.dto';
 
 interface UserPopoverProps {
   user?: UserDto;
@@ -34,47 +32,37 @@ const WrappedUserPopover = ({
   const [closeTimeout, setCloseTimeout] = React.useState<NodeJS.Timeout | null>(
     null
   );
-  const userAccountUser = useRecoilValue(SingleUser(userAccount?.user));
 
   if (!user && !userAccount) return null;
 
   if (usePseudonym) return children;
 
+  const localUser =
+    user ||
+    (typeof userAccount?.user === 'object' ? userAccount?.user : undefined);
+
   let discordUsername: string | undefined;
   let identityEthAddress: string | undefined;
 
-  if (user) {
-    discordUsername = user.accounts?.find(
+  if (localUser) {
+    discordUsername = localUser.accounts?.find(
       (account) => account.platform === 'DISCORD'
     )?.name;
-    identityEthAddress = user.identityEthAddress;
-  } else {
-    if (userAccountUser) {
-      discordUsername = userAccountUser.accounts?.find(
-        (account) => account.platform === 'DISCORD'
-      )?.name;
-      identityEthAddress = userAccountUser.identityEthAddress;
-    } else {
-      if (userAccount && userAccount.platform === 'DISCORD') {
-        discordUsername = userAccount.name;
-      }
-    }
+    identityEthAddress = localUser.identityEthAddress;
   }
 
-  const handleClick =
-    (userAccount: UserAccountDto | undefined) =>
-    (event: React.MouseEvent<HTMLTableRowElement>) => {
-      event.stopPropagation();
+  if (userAccount && userAccount.platform === 'DISCORD') {
+    discordUsername = userAccount.name;
+  }
 
-      if (user) {
-        history.push(`/users/${user._id}`);
-        return;
-      }
+  const handleClick = () => (event: React.MouseEvent<HTMLTableRowElement>) => {
+    event.stopPropagation();
 
-      if (userAccount && userAccount.user) {
-        history.push(`/users/${userAccount.user}`);
-      }
-    };
+    if (localUser) {
+      history.push(`/users/${localUser._id}`);
+      return;
+    }
+  };
 
   return (
     <div className={classNames('inline-block', className)}>
@@ -94,7 +82,7 @@ const WrappedUserPopover = ({
       {open && (
         <div
           className="absolute z-10 cursor-pointer"
-          onClickCapture={handleClick(userAccount)}
+          onClickCapture={handleClick()}
           onMouseOver={(): void => {
             closeTimeout && clearTimeout(closeTimeout);
           }}

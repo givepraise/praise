@@ -1,9 +1,10 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import { atom, selectorFamily, useRecoilCallback } from 'recoil';
-import { SettingDto, SettingSetInput } from 'api/dist/settings/types';
 import { isEmpty } from 'lodash';
 import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from './api';
+import { SettingDto } from './settings/dto/setting.dto';
+import { SetInputDto } from './settings/dto/set-input.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfSetting = (object: any): object is SettingDto => {
@@ -21,7 +22,7 @@ export const AllSettings = atom<SettingDto[] | undefined>({
       setSelf(
         getPromise(
           ApiAuthGet({
-            url: '/settings/all',
+            url: '/settings',
           })
         ).then((response) => {
           if (isResponseOk(response)) {
@@ -72,7 +73,7 @@ type useSetSettingReturn = {
 export const useSetSetting = (): useSetSettingReturn => {
   const apiAuthClient = useApiAuthClient();
 
-  const reqData = (setting: SettingDto): SettingSetInput | FormData => {
+  const reqData = (setting: SettingDto): SetInputDto | FormData => {
     if (setting.type === 'Image') {
       if (
         setting.value &&
@@ -96,7 +97,7 @@ export const useSetSetting = (): useSetSettingReturn => {
       ): Promise<AxiosResponse<SettingDto> | AxiosError | undefined> => {
         if (!instanceOfSetting(setting)) return;
         const response: AxiosResponse<SettingDto> = await apiAuthClient.patch(
-          `/admin/settings/${setting._id}/set`,
+          `/settings/${setting._id}/set`,
           reqData(setting)
         );
         if (isResponseOk(response)) {

@@ -4,115 +4,123 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request } from 'express';
 import { Model, Types } from 'mongoose';
-import {
-  PeriodSetting,
-  PeriodSettingDocument,
-} from './schemas/periodsettings.schema';
+import { PeriodSetting } from './schemas/periodsettings.schema';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { UploadedFile } from 'express-fileupload';
 import { PeriodsService } from '@/periods/periods.service';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
+import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 
 @Injectable()
 export class PeriodSettingsService {
   constructor(
     @InjectModel(PeriodSetting.name)
-    private periodSettingsModel: Model<PeriodSettingDocument>,
-    private periodsService: PeriodsService,
+    private periodSettingsModel: Model<PeriodSetting>,
+    // private periodsService: PeriodsService,
     private utils: UtilsProvider,
+    private eventLogService: EventLogService,
   ) {}
 
-  async findAll(periodId: Types.ObjectId): Promise<PeriodSetting[]> {
-    const period = await this.periodsService.findOneById(periodId);
-
-    const settings = await this.periodSettingsModel
-      .find({ period: period._id })
-      .lean();
-    return settings.map((setting) => new PeriodSetting(setting));
+  /**
+   * Convenience method to get the PeriodSettings Model
+   * @returns
+   */
+  getModel(): Model<PeriodSetting> {
+    return this.periodSettingsModel;
   }
 
-  async findOneById(
-    settingId: Types.ObjectId,
-    periodId: Types.ObjectId,
-  ): Promise<PeriodSetting> {
-    await this.periodsService.findOneById(periodId);
+  // async findAll(periodId: Types.ObjectId): Promise<PeriodSetting[]> {
+  //   const period = await this.periodsService.findOneById(periodId);
 
-    const periodSetting = await this.periodSettingsModel
-      .findOne({ id: settingId, period: periodId })
-      .lean();
+  //   const settings = await this.periodSettingsModel
+  //     .find({ period: period._id })
+  //     .lean();
+  //   return settings.map((setting) => new PeriodSetting(setting));
+  // }
 
-    if (!periodSetting) throw new ServiceException('PeriodSetting not found.');
-    return new PeriodSetting(periodSetting);
-  }
+  // async findOneById(
+  //   settingId: Types.ObjectId,
+  //   periodId: Types.ObjectId,
+  // ): Promise<PeriodSetting> {
+  //   await this.periodsService.findOneById(periodId);
 
-  async findOne(
-    key: string,
-    periodId: Types.ObjectId | undefined = undefined,
-  ): Promise<PeriodSetting | null> {
-    return await this.periodSettingsModel.findOne({
-      key,
-      period: periodId,
-    });
-  }
+  //   const periodSetting = await this.periodSettingsModel
+  //     .findOne({ id: settingId, period: periodId })
+  //     .lean();
 
-  async setOne(
-    settingId: Types.ObjectId,
-    periodId: Types.ObjectId,
-    req: Request,
-    data: SetPeriodSettingDto,
-  ): Promise<PeriodSetting> {
-    const period = await this.periodsService.findOneById(periodId);
+  //   if (!periodSetting) throw new ServiceException('PeriodSetting not found.');
+  //   return new PeriodSetting(periodSetting);
+  // }
 
-    if (period.status !== PeriodStatusType.OPEN)
-      throw new ServiceException(
-        'Period settings can only be changed when period status is OPEN.',
-      );
+  // async findOne(
+  //   key: string,
+  //   periodId: Types.ObjectId | undefined = undefined,
+  // ): Promise<PeriodSetting | null> {
+  //   return await this.periodSettingsModel.findOne({
+  //     key,
+  //     period: periodId,
+  //   });
+  // }
 
-    const periodSetting = await this.periodSettingsModel.findOne({
-      _id: settingId,
-      period: periodId,
-    });
-    if (!periodSetting) throw new ServiceException('PeriodSettings not found.');
+  // async setOne(
+  //   settingId: Types.ObjectId,
+  //   periodId: Types.ObjectId,
+  //   req: Request,
+  //   data: SetPeriodSettingDto,
+  // ): Promise<PeriodSetting> {
+  //   const period = await this.periodsService.findOneById(periodId);
 
-    if (periodSetting.type === 'Image') {
-      const file = req.files;
-      if (!file) {
-        throw new ServiceException('Uploaded file is missing.');
-      }
+  //   if (period.status !== PeriodStatusType.OPEN)
+  //     throw new ServiceException(
+  //       'Period settings can only be changed when period status is OPEN.',
+  //     );
 
-      const logo: UploadedFile = file['value'] as UploadedFile;
-      if (!this.utils.isImage(logo)) {
-        throw new ServiceException('Uploaded file is not an image.');
-      }
+  //   const periodSetting = await this.periodSettingsModel.findOne({
+  //     _id: settingId,
+  //     period: periodId,
+  //   });
 
-      // Remove previous file
-      try {
-        periodSetting.value &&
-          (await this.utils.removeFile(periodSetting.value));
-      } catch (err) {
-        // Ignore error
-      }
+  //   if (!periodSetting) throw new ServiceException('PeriodSettings not found.');
 
-      const savedFilename = await this.utils.saveFile(logo);
-      periodSetting.value = savedFilename;
-    } else {
-      if (typeof data.value === 'undefined') {
-        throw new ServiceException('Value is required field');
-      }
-      periodSetting.value = data.value;
-    }
+  //   const originalValue = periodSetting.value;
 
-    // await logEvent(
-    //   EventLogTypeKey.SETTING,
-    //   `Updated global setting "${setting.label}" from "${
-    //     originalValue || ''
-    //   }" to "${setting.value || ''}"`,
-    //   {
-    //     userId: res.locals.currentUser._id,
-    //   },
-    // );
+  //   if (periodSetting.type === 'Image') {
+  //     const file = req.files;
+  //     if (!file) {
+  //       throw new ServiceException('Uploaded file is missing.');
+  //     }
 
-    await periodSetting.save();
-    return this.findOneById(settingId, periodId);
-  }
+  //     const logo: UploadedFile = file['value'] as UploadedFile;
+  //     if (!this.utils.isImage(logo)) {
+  //       throw new ServiceException('Uploaded file is not an image.');
+  //     }
+
+  //     // Remove previous file
+  //     try {
+  //       periodSetting.value &&
+  //         (await this.utils.removeFile(periodSetting.value));
+  //     } catch (err) {
+  //       // Ignore error
+  //     }
+
+  //     const savedFilename = await this.utils.saveFile(logo);
+  //     periodSetting.value = savedFilename;
+  //   } else {
+  //     if (typeof data.value === 'undefined') {
+  //       throw new ServiceException('Value is required field');
+  //     }
+  //     periodSetting.value = data.value;
+  //   }
+
+  //   await this.eventLogService.logEvent({
+  //     typeKey: EventLogTypeKey.SETTING,
+  //     description: `Updated global setting "${periodSetting.label}" from "${
+  //       originalValue || ''
+  //     }" to "${periodSetting.value || ''}"`,
+  //   });
+
+  //   await periodSetting.save();
+  //   return this.findOneById(settingId, periodId);
+  // }
 }

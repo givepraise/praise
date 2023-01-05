@@ -4,7 +4,6 @@ import { UploadedFile } from 'express-fileupload';
 import { unlink } from 'fs/promises';
 import mime from 'mime-types';
 import { ConstantsProvider } from '@/constants/constants.provider';
-import { QueryInput } from '@/shared/types.shared';
 
 @Injectable()
 export class UtilsProvider {
@@ -55,32 +54,5 @@ export class UtilsProvider {
 
   removeFile = async (filename: string): Promise<void> => {
     await unlink(`${this.constants.uploadDirectory}${filename}`);
-  };
-
-  getQueryInput = (q: QueryInput): QueryInput => {
-    const { sortColumn, sortType, limit, page } = q;
-    const query: QueryInput = {};
-
-    query.sortColumn = sortColumn ? encodeURIComponent(sortColumn) : undefined;
-    query.sortType = sortType ? encodeURIComponent(sortType) : undefined;
-    query.limit = limit ? encodeURIComponent(limit) : '20';
-    query.page = page ? encodeURIComponent(page) : undefined;
-
-    return query;
-  };
-
-  getQuerySort = (input: QueryInput): Record<string, unknown> => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sort: any = {};
-
-    if (input.sortColumn) {
-      const sortColumn: string = encodeURIComponent(input.sortColumn);
-      const sortType: string | undefined = input.sortType
-        ? encodeURIComponent(input.sortType)
-        : undefined;
-      sort[sortColumn] = sortType === 'desc' ? -1 : 1;
-    }
-
-    return sort;
   };
 }

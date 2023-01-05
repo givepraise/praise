@@ -4,9 +4,11 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@/users/users.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UtilsProvider } from '@/utils/utils.provider';
-import { LoginResponse } from './dto/login-response.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { Types } from 'mongoose';
+import { ServiceException } from '@/shared/service-exception';
 
 @Injectable()
 /**
@@ -68,8 +70,11 @@ export class EthSignatureService {
    * @param user User object with information about the user
    * @returns LoginResponse
    */
-  async login(user: User): Promise<LoginResponse> {
-    const { _id: userId, identityEthAddress, roles } = user;
+  async login(userId: Types.ObjectId): Promise<LoginResponseDto> {
+    const user = await this.usersService.findOneById(userId);
+    if (!user) throw new ServiceException('User not found');
+
+    const { identityEthAddress, roles } = user;
 
     // Create payload for the JWT token
     const payload: JwtPayload = {
@@ -79,7 +84,9 @@ export class EthSignatureService {
     } as JwtPayload;
 
     // Sign payload to create access token
-    const accessToken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: '7d',
+    });
 
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.AUTHENTICATION,

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request } from 'express';
 import { Model, Types } from 'mongoose';
-import { Setting, SettingDocument } from './schemas/settings.schema';
+import { Setting } from './schemas/settings.schema';
 import { AxiosResponse } from 'axios';
 import axios from 'axios';
 import { TransformerMapOperateItem } from 'ses-node-json-transform';
@@ -10,23 +10,46 @@ import { ExportTransformer } from '@/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { UploadedFile } from 'express-fileupload';
-import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { ServiceException } from '@/shared/service-exception';
+import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { RequestContext } from 'nestjs-request-context';
+import { SettingGroup } from './interfaces/settings-group.interface';
 
 @Injectable()
 export class SettingsService {
   constructor(
     @InjectModel(Setting.name)
-    private settingsModel: Model<SettingDocument>,
-    private periodSettingsService: PeriodSettingsService,
+    private settingsModel: Model<Setting>,
     private utils: UtilsProvider,
+    private eventLogService: EventLogService,
   ) {}
 
-  async findAll(): Promise<Setting[]> {
-    const settings = await this.settingsModel.find().lean();
-    return settings.map((setting) => new Setting(setting));
+  /**
+   * Convenience method to get the Settings Model
+   * @returns
+   */
+  getModel(): Model<Setting> {
+    return this.settingsModel;
   }
 
+  /**
+   * Find all settings
+   * @returns {Promise<Setting[]>}
+   * @throws {ServiceException}
+   *
+   * */
+  async findAll(): Promise<Setting[]> {
+    return await this.settingsModel.find().lean();
+  }
+
+  /**
+   * Find one setting by id
+   * @param _id
+   * @returns {Promise<Setting>}
+   * @throws {ServiceException}
+   *
+   * */
   async findOneById(_id: Types.ObjectId): Promise<Setting> {
     const setting = await this.settingsModel
       .findOne({
@@ -36,21 +59,26 @@ export class SettingsService {
       .lean();
 
     if (!setting) throw new ServiceException('Settings not found.');
-    return new Setting(setting);
+    return setting;
   }
 
-  async setOne(
-    _id: Types.ObjectId,
-    req: Request,
-    data: SetSettingDto,
-  ): Promise<Setting> {
+  /**
+   * Set one setting by id
+   * @param key
+   * @returns {Promise<Setting>}
+   * @throws {ServiceException}
+   *
+   * */
+  async setOne(_id: Types.ObjectId, data: SetSettingDto): Promise<Setting> {
     const setting = await this.settingsModel.findOne({
       _id,
       period: { $exists: 0 },
     });
     if (!setting) throw new ServiceException('Settings not found.');
 
+    const originalValue = setting.value;
     if (setting.type === 'Image') {
+      const req: Request = RequestContext.currentContext.req;
       const file = req.files;
       if (!file) {
         throw new ServiceException('Uploaded file is missing.');
@@ -77,20 +105,23 @@ export class SettingsService {
       setting.value = data.value;
     }
 
-    // await logEvent(
-    //   EventLogTypeKey.SETTING,
-    //   `Updated global setting "${setting.label}" from "${
-    //     originalValue || ''
-    //   }" to "${setting.value || ''}"`,
-    //   {
-    //     userId: res.locals.currentUser._id,
-    //   },
-    // );
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.SETTING,
+      description: `Updated global setting "${setting.label}" from "${
+        originalValue || ''
+      }" to "${setting.value || ''}"`,
+    });
 
     await setting.save();
     return this.findOneById(_id);
   }
 
+  /**
+   * Find custom export transformer
+   * @returns {Promise<ExportTransformer>}
+   * @throws {ServiceException}
+   *
+   * */
   async findCustomExportTransformer() {
     const customExportMapSetting = (await this.settingValue(
       'CUSTOM_EXPORT_MAP',
@@ -140,34 +171,55 @@ export class SettingsService {
     }
   }
 
+  /**
+   * Find one setting value by key
+   * @param key
+   * @returns {Promise<Setting>}
+   * @throws {ServiceException}
+   *
+   * */
   async settingValue(
     key: string,
     periodId: Types.ObjectId | undefined = undefined,
   ): Promise<
     string | boolean | number | number[] | string[] | object | undefined
   > {
-    let setting;
-    if (!periodId) {
-      const setting = await this.settingsModel.findOne({
-        key,
-      });
+    // let setting;
+    // if (!periodId) {
+    const setting = await this.settingsModel.findOne({
+      key,
+    });
 
-      if (!setting) {
-        throw new ServiceException(`Setting ${key} does not exist`);
-      }
-    } else {
-      setting = await this.periodSettingsService.findOne(key, periodId);
-
-      if (!setting) {
-        const periodString = periodId
-          ? `period ${periodId.toString()}`
-          : 'global';
-        throw new ServiceException(
-          `periodsetting ${key} does not exist for ${periodString}`,
-        );
-      }
+    if (!setting) {
+      throw new ServiceException(`Setting ${key} does not exist`);
     }
+    // } else {
+    //   setting = await this.periodSettingsService.findOne(key, periodId);
+
+    //   if (!setting) {
+    //     const periodString = periodId
+    //       ? `period ${periodId.toString()}`
+    //       : 'global';
+    //     throw new ServiceException(
+    //       `periodsetting ${key} does not exist for ${periodString}`,
+    //     );
+    //   }
+    // }
 
     return setting ? setting.value : undefined;
+  }
+
+  /**
+   * Find settings by group
+   * @param group {SettingGroup}
+   * @returns {Promise<Setting[]>}
+   * @throws {ServiceException}
+   * */
+  async findByGroup(group: SettingGroup): Promise<Setting[]> {
+    return await this.settingsModel
+      .find({
+        group,
+      })
+      .lean();
   }
 }

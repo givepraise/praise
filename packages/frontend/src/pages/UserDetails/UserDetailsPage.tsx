@@ -19,7 +19,7 @@ import {
   SingleUserParams,
   useLoadSingleUserDetails,
   useUserProfile,
-} from '@/model/users';
+} from '@/model/user/users';
 import { BackLink } from '@/navigation/BackLink';
 import { isResponseOk } from '@/model/api';
 import { UserInfo } from './components/UserInfo';
@@ -52,7 +52,7 @@ const UserDetailsPage = (): JSX.Element | null => {
     values: UpdateUserProfileInput
   ): Promise<void> => {
     const { username, rewardsEthAddress } = values;
-    const response = await update(username, rewardsEthAddress);
+    const response = await update(user._id, username, rewardsEthAddress);
 
     if (isResponseOk(response)) {
       toast.success('User profile saved');

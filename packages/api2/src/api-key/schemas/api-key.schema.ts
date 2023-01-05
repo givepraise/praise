@@ -1,8 +1,9 @@
+import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { Document } from 'mongoose';
-import { AuthRole } from '../../auth/enums/auth-role.enum';
+import { Document, Types } from 'mongoose';
+import { ExposeId } from '@/shared/expose-id.decorator';
 
 export type ApiKeyDocument = ApiKey & Document;
 
@@ -13,6 +14,9 @@ export class ApiKey {
       Object.assign(this, partial);
     }
   }
+
+  @ExposeId()
+  _id: Types.ObjectId;
 
   @ApiResponseProperty({
     example: '89f7edbd',

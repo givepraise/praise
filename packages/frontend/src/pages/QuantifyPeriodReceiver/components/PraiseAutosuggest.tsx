@@ -1,6 +1,6 @@
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from 'api/dist/praise/types';
+import { PraiseDto } from '@/model/praise/praise.dto';
 import { useCombobox } from 'downshift';
 import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
@@ -13,6 +13,7 @@ import {
 } from '@/model/periods';
 import { ActiveUserId } from '@/model/auth';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
+import { idLabel } from '@/model/praise/praise.utils';
 
 interface PraiseAutosuggestProps {
   onClose(): void;
@@ -75,7 +76,7 @@ export const PraiseAutosuggest = ({
         if (filteredData) {
           setInputItems(
             filteredData.filter((praise) =>
-              praise?._idLabelRealized.includes(search)
+              idLabel(praise?._id).includes(search)
             )
           );
         }
@@ -122,7 +123,7 @@ export const PraiseAutosuggest = ({
                 key={item._id}
                 {...getItemProps({ item, index })}
               >
-                {item._idLabelRealized} -{' '}
+                {idLabel(item._id)} -{' '}
                 {usePseudonyms ? (
                   <UserPseudonym userId={item.giver._id} periodId={periodId} />
                 ) : (

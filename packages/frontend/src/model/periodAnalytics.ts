@@ -1,16 +1,17 @@
-import { PraiseDetailsDto, QuantificationDto } from 'api/dist/praise/types';
 import { selectorFamily } from 'recoil';
 import { AllPeriodPraise } from './periods';
+import { PraiseDto } from './praise/praise.dto';
+import { QuantificationDto } from './quantification/quantification.dto';
 
 export const PeriodPraiseSortedByScore = selectorFamily({
   key: 'PeriodPraiseSortedByScore',
   get:
     (periodId: string | undefined) =>
-    ({ get }): PraiseDetailsDto[] | undefined => {
+    ({ get }): PraiseDto[] | undefined => {
       if (!periodId) return undefined;
       const praise = get(AllPeriodPraise(periodId));
       if (!praise) return undefined;
-      return [...praise].sort((a, b) => b.scoreRealized - a.scoreRealized);
+      return [...praise].sort((a, b) => b.score - a.score);
     },
 });
 
@@ -18,7 +19,7 @@ export const PeriodTop10Praise = selectorFamily({
   key: 'PeriodTop10Praise',
   get:
     (periodId: string | undefined) =>
-    ({ get }): PraiseDetailsDto[] | undefined => {
+    ({ get }): PraiseDto[] | undefined => {
       if (!periodId) return undefined;
       const praise = get(PeriodPraiseSortedByScore(periodId));
       if (!praise) return undefined;
@@ -26,7 +27,7 @@ export const PeriodTop10Praise = selectorFamily({
     },
 });
 
-export interface PraiseDetailsStats extends PraiseDetailsDto {
+export interface PraiseDetailsStats extends PraiseDto {
   maxScore: number;
   minScore: number;
   scoreSpread: number;
@@ -70,7 +71,7 @@ export const PeriodStatsSelector = selectorFamily({
       return {
         totalPraise: praise.length,
         totalPraiseScoreRealized: praise.reduce(
-          (acc, curr) => acc + curr.scoreRealized,
+          (acc, curr) => acc + (curr.score as number),
           0
         ),
       };

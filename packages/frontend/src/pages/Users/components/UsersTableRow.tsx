@@ -1,7 +1,8 @@
 import { useHistory } from 'react-router-dom';
-import { UserDto, UserRole } from 'api/dist/user/types';
 import { InlineLabel } from '@/components/ui/InlineLabel';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
+import { UserRole } from '@/model/user/enums/user-role.enum';
+import { UserDto } from '@/model/user/dto/user.dto';
 
 interface IUsersTableRow {
   data: UserDto;

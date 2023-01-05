@@ -1,22 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import {
   EventLogType,
   EventLogTypeDocument,
-} from './entities/event-log-type.entity';
+} from './schemas/event-log-type.schema';
 import {
   EventLog,
   EventLogDocument,
   PaginatedEventLogModel,
-} from './entities/event-log.entity';
+} from './schemas/event-log.schema';
 import mongoose from 'mongoose';
-import { PaginationModel } from 'mongoose-paginate-ts';
-import { FindAllPaginatedQuery } from './dto/find-all-paginated-query.dto';
+import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-query.dto';
 import { ServiceException } from '@/shared/service-exception';
-import { CreateEventLogDto } from './dto/create-event-log.dto';
+import { CreateEventLogInputDto } from './dto/create-event-log-input.dto';
 import { RequestContext } from 'nestjs-request-context';
-import { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
+import { has } from 'lodash';
+import { User } from '@/users/schemas/users.schema';
+import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.dto';
 @Injectable()
 export class EventLogService {
   constructor(
@@ -42,16 +43,23 @@ export class EventLogService {
     return this.eventLogTypeModel;
   }
 
-  async logEvent(createEventLogDto: CreateEventLogDto): Promise<EventLog> {
+  async logEvent(createEventLogDto: CreateEventLogInputDto): Promise<EventLog> {
     const { typeKey } = createEventLogDto;
     const type = await this.eventLogTypeModel
       .findOne({ key: typeKey.toString() })
+      .lean()
       .orFail();
 
-    const req: RequestWithUser = RequestContext.currentContext.req;
+    const req = RequestContext.currentContext?.req;
+
+    // Try to get user id from either RequestWithAuthContext or from RequestWithUserContext
+    const userId = has(req, 'user._id')
+      ? (req.user as User)._id // RequestWithUserContext
+      : req?.user?.userId; // RequestWithAuthContext
 
     const eventLogData = {
-      user: req.user._id,
+      user: userId,
+      apiKey: req?.user?.apiKeyId, // RequestWithAuthContext
       ...createEventLogDto,
       type: type._id,
     };
@@ -66,10 +74,10 @@ export class EventLogService {
    * @returns
    */
   async findAllPaginated(
-    options: FindAllPaginatedQuery,
-  ): Promise<PaginationModel<EventLog>> {
+    options: EventLogFindPaginatedQueryDto,
+  ): Promise<EventLogPaginatedResponseDto> {
     const { page, limit, sortColumn, sortType, search, types } = options;
-    let query = {} as any;
+    const query = {} as any;
 
     // Filter by types
     if (Array.isArray(types) && types.length > 0) {
@@ -98,13 +106,12 @@ export class EventLogService {
       sort,
     };
 
-    const response = await this.eventLogModel.paginate(paginateQuery);
-    if (!response) throw new ServiceException('Failed to query event logs');
+    const eventLogPagination = await this.eventLogModel.paginate(paginateQuery);
 
-    return {
-      ...response,
-      docs: response.docs.map((item) => new EventLog(item)),
-    };
+    if (!eventLogPagination)
+      throw new ServiceException('Failed to query event logs');
+
+    return eventLogPagination;
   }
 
   async findTypes(): Promise<EventLogType[]> {

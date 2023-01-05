@@ -3,10 +3,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ApiKey, ApiKeyDocument } from './schemas/api-key.schema';
 import * as bcrypt from 'bcrypt';
-import { CreateApiKeyRequest } from './dto/create-api-key-request.dto';
+import { CreateApiKeyInputDto } from './dto/create-api-key-input.dto';
 import { UtilsProvider } from '@/utils/utils.provider';
-import { CreateApiKeyResponse } from './dto/create-api-key-response';
+import { CreateApiKeyResponseDto } from './dto/create-api-key-response';
 import { ServiceException } from '@/shared/service-exception';
+import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { RequestContext } from 'nestjs-request-context';
 
 @Injectable()
 export class ApiKeyService {
@@ -14,6 +17,7 @@ export class ApiKeyService {
     @InjectModel(ApiKey.name)
     private readonly apiKeyModel: Model<ApiKeyDocument>,
     private readonly utils: UtilsProvider,
+    private readonly eventLogService: EventLogService,
   ) {}
 
   /**
@@ -26,13 +30,13 @@ export class ApiKeyService {
 
   /**
    * Creates a new API key.
-   * @param {CreateApiKeyRequest} createApiKeyDto - The request payload containing the API key details.
-   * @returns {Promise<CreateApiKeyResponse>} A promise that resolves to the response containing the created API key.
-   * @throws {ServiceException} If there is an error while creating the API key.
+   * @param {CreateApiKeyInputDto} createApiKeyDto - The request payload containing the API key details.
+   * @returns {Promise<CreateApiKeyResponseDto>} A promise that resolves to the response containing the created API key.
+   * @throws {ServiceException}, If there is an error while creating the API key.
    */
   async createApiKey(
-    createApiKeyDto: CreateApiKeyRequest,
-  ): Promise<CreateApiKeyResponse> {
+    createApiKeyDto: CreateApiKeyInputDto,
+  ): Promise<CreateApiKeyResponseDto> {
     const key = await this.utils.randomString(32);
     const name = key.slice(0, 8);
     const hash = await bcrypt.hash(key, 10);
@@ -43,6 +47,12 @@ export class ApiKeyService {
       hash,
     });
     await apiKey.save();
+
+    this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.AUTHENTICATION,
+      description: `Created API key: ${apiKey.name}`,
+    });
+
     return {
       ...apiKey.toObject(),
       key,
@@ -75,9 +85,9 @@ export class ApiKeyService {
 
   /**
    * Finds all API keys.
-   * @returns {Promise<CreateApiKeyResponse[]>} A promise that resolves to an array of all API keys.
+   * @returns {Promise<CreateApiKeyResponseDto[]>} A promise that resolves to an array of all API keys.
    */
-  async findAll(): Promise<CreateApiKeyResponse[]> {
+  async findAll(): Promise<CreateApiKeyResponseDto[]> {
     const apiKeys = await this.apiKeyModel.find();
     return apiKeys.map((apiKey) => apiKey.toObject());
   }
@@ -114,6 +124,12 @@ export class ApiKeyService {
       throw new ServiceException('Invalid API key ID');
     }
     await this.apiKeyModel.deleteOne({ _id: id });
+
+    this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.AUTHENTICATION,
+      description: `Revoked API key: ${apiKey.name}`,
+    });
+
     return apiKey.toObject();
   }
 }

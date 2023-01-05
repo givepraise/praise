@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PeriodSettingsService } from './periodsettings.service';
-import { PeriodsettingsController } from './periodsettings.controller';
+import { PeriodSettingsController } from './periodsettings.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   PeriodSetting,
@@ -9,15 +9,17 @@ import {
 import { PeriodsModule } from '@/periods/periods.module';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { ConstantsProvider } from '@/constants/constants.provider';
+import { EventLogModule } from '@/event-log/event-log.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: PeriodSetting.name, schema: PeriodSettingsSchema },
     ]),
-    PeriodsModule,
+    // forwardRef(() => PeriodsModule),
+    EventLogModule,
   ],
-  controllers: [PeriodsettingsController],
+  controllers: [PeriodSettingsController],
   providers: [PeriodSettingsService, UtilsProvider, ConstantsProvider],
   exports: [
     PeriodSettingsService,

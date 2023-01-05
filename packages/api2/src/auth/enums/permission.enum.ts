@@ -5,4 +5,9 @@ export enum Permission {
   UserProfileUpdate = 'userProfile:update',
   UsersManageRoles = 'users:manageRoles',
   EventLogView = 'eventLog:view',
+  PraiseView = 'praise:view',
+  PraiseQuantify = 'praise:quantify',
+  PeriodView = 'period:view',
+  PeriodCreate = 'period:create',
+  PeriodUpdate = 'period:update',
 }

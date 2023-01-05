@@ -10,11 +10,6 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
 
   const updates = await Promise.all(
     praises.map(async (p: any) => {
-      const quantifications =
-        await context.quantificationsService.findQuantificationsByPraiseId(
-          p._id,
-        );
-
       return {
         updateOne: {
           filter: { _id: p._id },
@@ -22,7 +17,7 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
             $set: {
               score:
                 await context.quantificationsService.calculateQuantificationsCompositeScore(
-                  quantifications,
+                  p,
                 ),
             },
           },
