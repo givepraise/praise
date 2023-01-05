@@ -23,7 +23,7 @@ export type PageParams = {
 
 export const praiseSortOptions = [
   { value: 'createdAt', label: 'Latest' },
-  { value: 'scoreRealized', label: 'Top' },
+  { value: 'score', label: 'Top' },
 ];
 
 interface sortOptionsProps {
