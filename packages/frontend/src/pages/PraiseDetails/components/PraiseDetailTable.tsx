@@ -96,7 +96,7 @@ export const PraiseDetailTable = (): JSX.Element => {
 
   const options = {
     columns,
-    data: praise ? praise.quantifications : [],
+    data: praise?.quantifications ? praise.quantifications : [],
   } as TableOptions<{}>;
   const tableInstance = useTable(options);
 

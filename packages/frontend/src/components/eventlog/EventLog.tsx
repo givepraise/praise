@@ -7,7 +7,7 @@ import {
   localizeAndFormatIsoDate,
 } from '@/utils/date';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { SingleUser } from '@/model/users';
+import { SingleUser } from '@/model/user/users';
 import { classNames } from '@/utils/index';
 import { InlineLabel } from '../ui/InlineLabel';
 import { Notice } from '../ui/Notice';

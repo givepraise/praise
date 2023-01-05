@@ -52,7 +52,7 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
         {
           Header: 'Total Score',
           className: 'text-right pr-5',
-          accessor: 'scoreRealized',
+          accessor: 'score',
           sortType: 'basic',
         },
       ],

@@ -10,7 +10,7 @@ import {
   AllForwarderUsers,
   AllQuantifierUsers,
   AllUsers,
-} from '@/model/users';
+} from '@/model/user/users';
 import { Button } from '@/components/ui/Button';
 
 interface DownloadUserDto extends Omit<UserDto, 'accounts'> {

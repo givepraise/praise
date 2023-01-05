@@ -1,12 +1,12 @@
-import { UserDto } from 'api/dist/user/types';
-import { UserAccountDto } from 'api/dist/useraccount/types';
 import { useRecoilValue } from 'recoil';
 import React from 'react';
-import { SingleUser } from '@/model/users';
+import { SingleUser } from '@/model/user/users';
 import { classNames } from '@/utils/index';
 import { UserAvatar } from './UserAvatar';
 import { UserName } from './UserName';
 import { UserPopover } from './UserPopover';
+import { UserDto } from '@/model/user/dto/user.dto';
+import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
 
 interface UserNameProps {
   user?: UserDto;

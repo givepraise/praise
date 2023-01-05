@@ -8,7 +8,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiParam } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { ExportTransformer } from '@/shared/types.shared';
@@ -17,8 +17,10 @@ import { Setting } from './schemas/settings.schema';
 import { SettingsService } from './settings.service';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
+import { HydrateSetSettingRequestInterceptor } from './hydrate-set-setting-request.interceptor';
 
 @Controller('settings')
+@ApiTags('Settings')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
@@ -41,6 +43,7 @@ export class SettingsController {
   }
 
   @Patch(':id/set')
+  @UseInterceptors(HydrateSetSettingRequestInterceptor)
   @ApiParam({ name: 'id', type: String })
   async set(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,

@@ -14,15 +14,18 @@ import {
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { User } from './schemas/users.schema';
-import { ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { EventLogService } from '@/event-log/event-log.service';
 import { AuthGuard } from '@nestjs/passport';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
+import { UserWithStatsDto } from './dto/user-with-stats.dto';
+import { UpdateUserRequestDto } from './dto/update-user-request.dto';
 
 @Controller('users')
+@ApiTags('Users')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
@@ -51,13 +54,33 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'A single user',
-    type: User,
+    type: UserWithStatsDto,
   })
   @ApiParam({ name: 'id', type: String })
-  async findOne(@Param('id', ObjectIdPipe) id: Types.ObjectId): Promise<User> {
+  async findOne(
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+  ): Promise<UserWithStatsDto> {
     const user = await this.usersService.findOneById(id);
     if (!user) throw new BadRequestException('User not found.');
     return user;
+  }
+
+  @Patch(':id')
+  @Permissions(Permission.UsersFind)
+  @ApiOperation({
+    summary: 'Updates a user',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Updated user',
+    type: UpdateUserRequestDto,
+  })
+  @ApiParam({ name: 'id', type: String })
+  async update(
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Body() updateUserInputDto: UpdateUserRequestDto,
+  ): Promise<UserWithStatsDto> {
+    return this.usersService.update(id, updateUserInputDto);
   }
 
   @Patch(':id/addRole')
@@ -65,13 +88,13 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'The updated user',
-    type: User,
+    type: UserWithStatsDto,
   })
   @ApiParam({ name: 'id', type: String })
   async addRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() roleChange: UpdateUserRoleInputDto,
-  ): Promise<User> {
+  ): Promise<UserWithStatsDto> {
     return this.usersService.addRole(id, roleChange);
   }
 
@@ -80,13 +103,13 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'The updated user',
-    type: User,
+    type: UserWithStatsDto,
   })
   @ApiParam({ name: 'id', type: String })
   async removeRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() roleChange: UpdateUserRoleInputDto,
-  ): Promise<User> {
+  ): Promise<UserWithStatsDto> {
     return this.usersService.removeRole(id, roleChange);
   }
 }

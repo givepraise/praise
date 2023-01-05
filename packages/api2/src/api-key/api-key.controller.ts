@@ -22,10 +22,11 @@ import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { Types } from 'mongoose';
 import { ApiKey } from './schemas/api-key.schema';
 import { UpdateDescriptionInputDto } from './dto/update-description-input.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 
 @Controller('api-key')
+@ApiTags('API Key')
 @UseGuards(PermissionsGuard)
 @UseGuards(JwtAuthGuard)
 @SerializeOptions({

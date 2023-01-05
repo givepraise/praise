@@ -82,12 +82,7 @@ export class Setting {
   @Prop({
     required: true,
     enum: SettingGroup,
-    type: [
-      {
-        type: Number,
-        enum: SettingGroup,
-      },
-    ],
+    type: Number,
   })
   group: number;
 

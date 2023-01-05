@@ -1,6 +1,6 @@
 import { useRecoilValue } from 'recoil';
 import React from 'react';
-import { PseudonymForUser } from '@/model/users';
+import { PseudonymForUser } from '@/model/user/users';
 interface UserPseudonymParams {
   userId: string;
   periodId: string;

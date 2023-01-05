@@ -10,7 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { PeriodsService } from './periods.service';
@@ -27,6 +27,7 @@ import { CreatePeriodInputDto } from './dto/create-period-input.dto';
 import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
 
 @Controller('periods')
+@ApiTags('Periods')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })

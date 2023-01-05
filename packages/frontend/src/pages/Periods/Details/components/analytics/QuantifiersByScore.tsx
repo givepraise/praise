@@ -4,7 +4,7 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { TreemapDataPoint } from 'chartjs-chart-treemap';
 import { PeriodPageParams, SinglePeriod } from '@/model/periods';
 import { PeriodQuantifierStats } from '@/model/periodAnalytics';
-import { ManyUsers } from '@/model/users';
+import { ManyUsers } from '@/model/user/users';
 import { UserDataPoint, Treemap } from './Treemap';
 
 export const QuantifiersByScore = (): JSX.Element | null => {

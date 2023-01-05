@@ -49,11 +49,11 @@ export class PraiseService {
     const query = {} as any;
 
     if (receiver) {
-      query.receiver = receiver;
+      query.receiver = new Types.ObjectId(receiver);
     }
 
     if (giver) {
-      query.giver = giver;
+      query.giver = new Types.ObjectId(giver);
     }
 
     const praisePagination = await this.praiseModel.paginate({

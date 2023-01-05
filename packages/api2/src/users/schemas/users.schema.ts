@@ -1,11 +1,13 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Types } from 'mongoose';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { ApiResponseProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { ExposeId } from '@/shared/expose-id.decorator';
+import { UserAccountNoUserId } from '@/useraccounts/dto/useraccount-no-user-id.dto';
+import { IsOptional, IsString } from 'class-validator';
+import { IsEthAddress } from '@/shared/validators.shared';
 
 export type UserDocument = User & Document;
 
@@ -16,7 +18,7 @@ export class User {
       Object.assign(this, partial);
       if (partial.accounts) {
         this.accounts = partial.accounts.map(
-          (account) => new UserAccount(account),
+          (account) => new UserAccountNoUserId(account),
         );
       }
     }
@@ -34,15 +36,19 @@ export class User {
   @Prop({ required: true, unique: true, index: true })
   identityEthAddress: string;
 
-  @ApiResponseProperty({
+  @ApiProperty({
     example: '0xAAB27b150451726EC7738aa1d0A94505c8729bd1',
   })
+  @IsOptional()
+  @IsEthAddress()
   @Prop({ required: true })
   rewardsEthAddress: string;
 
-  @ApiResponseProperty({
+  @ApiProperty({
     example: 'darth',
   })
+  @IsOptional()
+  @IsString()
   @Prop({ required: true, unique: true })
   username: string;
 
@@ -62,9 +68,10 @@ export class User {
   roles: string[];
 
   @ApiResponseProperty({
-    type: [UserAccount],
+    type: [UserAccountNoUserId],
   })
-  accounts: UserAccount[];
+  @Type(() => UserAccountNoUserId)
+  accounts: UserAccountNoUserId[];
 
   @Exclude()
   @Prop()

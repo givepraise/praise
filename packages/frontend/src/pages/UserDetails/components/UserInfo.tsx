@@ -1,4 +1,3 @@
-import { UserDetailsDto, UserDto, UserRole } from 'api/dist/user/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCalendarAlt,
@@ -14,12 +13,15 @@ import { Box } from '@/components/ui/Box';
 import { formatIsoDateUTC, DATE_FORMAT } from '@/utils/date';
 import { classNames } from '@/utils/index';
 import { Button } from '@/components/ui/Button';
-import { useAdminUsers } from '@/model/users';
+import { useAdminUsers } from '@/model/user/users';
 import { ActiveUserId, HasRole, ROLE_ADMIN } from '@/model/auth';
 import { UserAvatar } from '@/components/user/UserAvatar';
+import { UserWithStatsDto } from '@/model/user/dto/user-with-stats.dto';
+import { UserRole } from '@/model/user/enums/user-role.enum';
+import { UserDto } from '@/model/user/dto/user.dto';
 
 interface Params {
-  user: UserDetailsDto;
+  user: UserWithStatsDto;
   isDialogOpen: (value) => void;
 }
 
