@@ -1,4 +1,3 @@
-import { PraiseDto } from 'api/dist/praise/types';
 import { Tooltip } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
@@ -23,6 +22,8 @@ import { SourceName } from './SourceName';
 import { UserAvatarAndName } from '../user/UserAvatarAndName';
 import { InlineLabelClosable } from '../ui/InlineLabelClosable';
 import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
+import { PraiseDto } from '@/model/praise/praise.dto';
+import { idLabel } from '@/model/praise/praise.utils';
 
 interface Props {
   praise: PraiseDto;
@@ -152,7 +153,7 @@ export const Praise = ({
           <div className="w-full pb-2 cursor-pointer">
             {showIdPrefix && (
               <InlineLabel
-                text={praise._idLabelRealized}
+                text={idLabel(praise._id)}
                 className="bg-warm-gray-400"
               />
             )}
@@ -172,7 +173,7 @@ export const Praise = ({
             )}
             <span
               dangerouslySetInnerHTML={{
-                __html: getMarkdownText(praise.reasonRealized),
+                __html: getMarkdownText(praise.reason),
               }}
               className={classNames(
                 dismissed ? 'line-through' : '',
@@ -193,7 +194,7 @@ export const Praise = ({
                   className="mr-1 text-yellow-400"
                   color=""
                 />
-                {praise.scoreRealized}
+                {praise.score}
                 {' • '}
               </>
             )}

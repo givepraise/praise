@@ -49,9 +49,9 @@ export const QuantificationSpread = (): JSX.Element | null => {
         callbacks: {
           title: function (a) {
             const p = data[a[0].dataIndex];
-            return p.reasonRealized.length > 80
-              ? `${p.reasonRealized.substring(0, 80)}...`
-              : p.reasonRealized;
+            return p.reason.length > 80
+              ? `${p.reason.substring(0, 80)}...`
+              : p.reason;
           },
         },
       },
