@@ -234,7 +234,7 @@ export const useAdminUsers = (): useAdminUsersReturns => {
     role: UserRole
   ): Promise<AxiosResponse<UserDto> | AxiosError> => {
     const response: AxiosResponse<UserDto> = await apiAuthClient.patch(
-      `/admin/users/${userId}/${endpoint}`,
+      `/users/${userId}/${endpoint}`,
       {
         role,
       }
