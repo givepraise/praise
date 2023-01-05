@@ -10,7 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { PeriodsService } from './periods.service';
@@ -34,6 +34,7 @@ import {
 import { PeriodReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.dto';
 
 @Controller('periods')
+@ApiTags('Periods')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
@@ -118,7 +119,7 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Period Praise items',
-    type: Period,
+    type: [Praise],
   })
   @Permissions(Permission.PeriodView)
   @ApiParam({ name: 'id', type: String })

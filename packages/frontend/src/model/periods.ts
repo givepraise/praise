@@ -6,8 +6,6 @@ import {
   PeriodReplaceQuantifierDto,
   VerifyQuantifierPoolSizeResponse,
 } from 'api/dist/period/types';
-import { PraiseDetailsDto, PraiseDto } from 'api/dist/praise/types';
-import { UserAccountDto } from 'api/dist/useraccount/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
@@ -31,6 +29,8 @@ import { useApiAuthClient } from '@/utils/api';
 import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from './api';
 import { ActiveUserId } from './auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from './praise';
+import { PraiseDto } from './praise/praise.dto';
+import { UserAccountDto } from './useraccount/useraccount.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfPeriod = (object: any): object is PeriodDetailsDto => {
@@ -99,10 +99,7 @@ export const AllPeriods = atom<PeriodDetailsDto[]>({
   ],
 });
 
-export const AllPeriodPraise = atomFamily<
-  PraiseDetailsDto[] | undefined,
-  string
->({
+export const AllPeriodPraise = atomFamily<PraiseDto[] | undefined, string>({
   key: 'AllPeriodPraise',
   default: undefined,
   effects: (periodId) => [
@@ -114,7 +111,7 @@ export const AllPeriodPraise = atomFamily<
           })
         ).then((response) => {
           if (isResponseOk(response)) {
-            const praiseDetails = response.data as PraiseDetailsDto[];
+            const praiseDetails = response.data as PraiseDto[];
             if (Array.isArray(praiseDetails) && praiseDetails.length > 0)
               return praiseDetails;
           }
@@ -208,7 +205,7 @@ export const useLoadSinglePeriodDetails = (
 type useCreatePeriodReturn = {
   createPeriod: (
     period: PeriodCreateInput
-  ) => Promise<AxiosResponse<PraiseDetailsDto> | AxiosError>;
+  ) => Promise<AxiosResponse<PraiseDto> | AxiosError>;
 };
 
 /**
@@ -221,7 +218,7 @@ export const useCreatePeriod = (): useCreatePeriodReturn => {
     ({ set }) =>
       async (
         periodInput: PeriodCreateInput
-      ): Promise<AxiosResponse<PraiseDetailsDto> | AxiosError> => {
+      ): Promise<AxiosResponse<PraiseDto> | AxiosError> => {
         const response = await apiAuthClient.post(
           '/admin/periods/create',
           periodInput
@@ -240,7 +237,7 @@ export const useCreatePeriod = (): useCreatePeriodReturn => {
 type useUpdatePeriodReturn = {
   updatePeriod: (
     period: PeriodUpdateInput
-  ) => Promise<AxiosResponse<PraiseDetailsDto> | AxiosError>;
+  ) => Promise<AxiosResponse<PraiseDto> | AxiosError>;
 };
 
 /**
@@ -253,7 +250,7 @@ export const useUpdatePeriod = (): useUpdatePeriodReturn => {
     ({ set }) =>
       async (
         periodInput: PeriodUpdateInput
-      ): Promise<AxiosResponse<PraiseDetailsDto> | AxiosError> => {
+      ): Promise<AxiosResponse<PraiseDto> | AxiosError> => {
         const response = await apiAuthClient.patch(
           `/admin/periods/${periodInput._id}/update`,
           periodInput
@@ -828,7 +825,8 @@ export const useReplaceQuantifier = (
             periodReplaceQuantifierDto.period
           );
           periodReplaceQuantifierDto.praises.forEach((praise) => {
-            set(SinglePraise(praise._id), praise);
+            // TODO: UNCOMMENT!
+            //set(SinglePraise(praise._id), praise);
           });
         }
 

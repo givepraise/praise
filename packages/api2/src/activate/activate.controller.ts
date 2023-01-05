@@ -5,13 +5,14 @@ import {
   SerializeOptions,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ActivateInputDto } from './dto/activate-input.dto';
 import { User } from '@/users/schemas/users.schema';
 import { ActivateService } from './activate.service';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 
 @Controller('activate')
+@ApiTags('Activate')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })

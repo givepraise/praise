@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRecoilValue, useRecoilState } from 'recoil';
-import { UserDto, UserRole } from 'api/dist/user/types';
 import {
   AllAdminUsers,
   AllForwarderUsers,
@@ -12,11 +11,13 @@ import {
   UsersTablePage,
   UsersTableLastPage,
   roleOptions,
-} from '@/model/users';
+} from '@/model/user/users';
 import { SearchInput } from '@/components/form/SearchInput';
 import { SelectInput } from '@/components/form/SelectInput';
 import { UsersTableRow } from './UsersTableRow';
 import { UsersTablePagination } from './UsersTablePagination';
+import { UserDto } from '@/model/user/dto/user.dto';
+import { UserRole } from '@/model/user/enums/user-role.enum';
 
 const USERS_PER_PAGE = 10;
 

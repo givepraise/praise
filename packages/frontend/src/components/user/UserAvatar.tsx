@@ -1,8 +1,8 @@
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { UserDto } from 'api/dist/user/types';
-import { UserAccountDto } from 'api/dist/useraccount/types';
 import React from 'react';
+import { UserDto } from '@/model/user/dto/user.dto';
+import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
 
 const discordAvatarUrl = (account: UserAccountDto): string => {
   return `https://cdn.discordapp.com/avatars/${account.accountId}/${account.avatarId}.webp?size=128`;

@@ -16,7 +16,7 @@ import {
   useClosePeriod,
   useLoadSinglePeriodDetails,
 } from '@/model/periods';
-import { AllQuantifierUsers } from '@/model/users';
+import { AllQuantifierUsers } from '@/model/user/users';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
 import { getPreviousPeriod } from '@/utils/periods';
 import { PeriodStatsSelector } from '@/model/periodAnalytics';

@@ -4,10 +4,11 @@ import {
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from 'api/dist/praise/types';
+import { PraiseDto } from '@/model/praise/praise.dto';
 
 import { Button } from '@/components/ui/Button';
 import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
+import { idLabel } from '@/model/praise/praise.utils';
 
 interface DismissDialogProps {
   open: boolean;
@@ -42,7 +43,7 @@ export const DismissDialog = ({
             scope for the praise system.
           </p>
           <p className="text-center">
-            {praises.map((p) => p._idLabelRealized).join(', ')}
+            {praises.map((p) => idLabel(p._id)).join(', ')}
           </p>
           <div className="flex justify-center">
             <Button

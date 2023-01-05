@@ -1,4 +1,4 @@
-import { PraiseDto } from 'api/dist/praise/types';
+import { PraiseDto } from '@/model/praise/praise.dto';
 import getWeek from 'date-fns/getWeek';
 import parseISO from 'date-fns/parseISO';
 import groupBy from 'lodash/groupBy';
@@ -75,7 +75,7 @@ export const QuantifyTable = ({
 
       const filteredData = data.filter((praise: PraiseDto) => {
         const searchString = searchValue.toLowerCase();
-        const reason = praise.reasonRealized.toLowerCase();
+        const reason = praise.reason.toLowerCase();
         const giver = praise.giver.name.toLowerCase();
 
         return reason.includes(searchString) || giver.includes(searchString);
