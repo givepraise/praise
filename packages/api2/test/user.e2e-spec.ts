@@ -93,7 +93,7 @@ describe('UserController (E2E)', () => {
             (user) =>
               user.identityEthAddress === returnedUser.identityEthAddress,
           ),
-        ).toBe(true);
+        ).toBeTrue();
       }
     });
   });

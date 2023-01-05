@@ -25,6 +25,13 @@ import { Praise } from '@/praise/schemas/praise.schema';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { CreatePeriodInputDto } from './dto/create-period-input.dto';
 import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
+import { VerifyQuantifierPoolSizeDto } from './dto/verify-quantifiers-pool-size.dto';
+import { PeriodDetailsDto } from './dto/period-details.dto';
+import {
+  PeriodReplaceQuantifierInputDto,
+  ReplaceQuantifierInputDto,
+} from './dto/replace-quantifier-input.dto';
+import { PeriodReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.dto';
 
 @Controller('periods')
 @SerializeOptions({
@@ -119,5 +126,51 @@ export class PeriodsController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<Praise[]> {
     return this.periodsService.praise(id);
+  }
+
+  @Get(':id/verifyQuantifierPoolSize')
+  @ApiOperation({ summary: 'Verify quantifier pool size' })
+  @ApiResponse({
+    status: 200,
+    description: 'Period',
+    type: Period,
+  })
+  @Permissions(Permission.PeriodAssign)
+  @ApiParam({ name: 'id', type: String })
+  async verifyQuantifierPoolSize(
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+  ): Promise<VerifyQuantifierPoolSizeDto> {
+    return this.periodsService.verifyQuantifierPoolSize(id);
+  }
+
+  @Patch(':id/assignQuantifiers')
+  @ApiOperation({ summary: 'Assign quantifiers to period' })
+  @ApiResponse({
+    status: 200,
+    description: 'Period',
+    type: Period,
+  })
+  @Permissions(Permission.PeriodAssign)
+  @ApiParam({ name: 'id', type: String })
+  async assignQuantifiers(
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+  ): Promise<PeriodDetailsDto> {
+    return this.periodsService.assignQuantifiers(id);
+  }
+
+  @Patch(':id/replaceQuantifier')
+  @ApiOperation({ summary: 'Replace quantifier in period' })
+  @ApiResponse({
+    status: 200,
+    description: 'Period',
+    type: Period,
+  })
+  @Permissions(Permission.PeriodAssign)
+  @ApiParam({ name: 'id', type: String })
+  async replaceQuantifier(
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Body() replaceQuantifierDto: PeriodReplaceQuantifierInputDto,
+  ): Promise<PeriodReplaceQuantifierResponseDto> {
+    return this.periodsService.replaceQuantifier(id, replaceQuantifierDto);
   }
 }

@@ -66,3 +66,8 @@ export class UserAccount {
 }
 
 export const UserAccountSchema = SchemaFactory.createForClass(UserAccount);
+
+export const UserAccountModel = model<UserAccountDocument>(
+  'UserAccount',
+  UserAccountSchema,
+);

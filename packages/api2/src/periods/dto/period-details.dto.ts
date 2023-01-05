@@ -3,7 +3,7 @@ import { PeriodStatusType } from '../enums/status-type.enum';
 import { PeriodDetailsGiverReceiver } from '../interfaces/period-details-giver-receiver.interface';
 import { PeriodDetailsQuantifier } from '../interfaces/period-details-quantifier.interface';
 
-export interface PeriodDetails {
+export interface PeriodDetailsDto {
   _id: string;
   name: string;
   status: PeriodStatusType;

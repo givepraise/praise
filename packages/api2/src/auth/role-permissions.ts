@@ -20,6 +20,7 @@ const PERMISSIONS_ADMIN = [
   Permission.UsersManageRoles,
   Permission.PeriodCreate,
   Permission.PeriodUpdate,
+  Permission.PeriodAssign,
 ];
 const PERMISSION_APIKEY_READ = [...PERMISSIONS_USER];
 const PERMISSION_APIKEY_READWRITE = [...PERMISSIONS_USER];
