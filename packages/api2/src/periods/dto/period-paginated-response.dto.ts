@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { PaginatedResponseDto } from '@/shared/dto/paginated-response.dto';
 import { Period } from '../schemas/periods.schema';
 
-export class PeriodPaginationModelDto extends PaginatedResponseDto {
+export class PeriodPaginatedResponseDto extends PaginatedResponseDto {
   @ApiResponseProperty({
     type: [Period],
   })

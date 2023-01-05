@@ -6,7 +6,7 @@ import { Period, PeriodDocument, PeriodModel } from './schemas/periods.schema';
 import { ServiceException } from '../shared/service-exception';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { Pagination } from 'mongoose-paginate-ts';
-import { CreatePeriod } from './dto/create-period.dto';
+import { CreatePeriodInputDto } from './dto/create-period-input.dto';
 import { add, compareAsc, parseISO } from 'date-fns';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
@@ -15,10 +15,10 @@ import { PeriodDetailsQuantifier } from './interfaces/period-details-quantifier.
 import { PeriodDetailsGiverReceiver } from './interfaces/period-details-giver-receiver.interface';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
 import { PeriodDetailsQuantifierDto } from './dto/period-details-quantifier.dto';
-import { UpdatePeriod } from './dto/update-period.dto';
+import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
 import { isString } from 'lodash';
 import { PeriodStatusType } from './enums/status-type.enum';
-import { PeriodPaginationModelDto } from './dto/period-pagination-model.dto';
+import { PeriodPaginatedResponseDto } from './dto/period-paginated-response.dto';
 
 @Injectable()
 export class PeriodsService {
@@ -51,7 +51,7 @@ export class PeriodsService {
    */
   async findAllPaginated(
     options: PaginatedQueryDto,
-  ): Promise<PeriodPaginationModelDto> {
+  ): Promise<PeriodPaginatedResponseDto> {
     const { sortColumn, sortType, page, limit } = options;
     const query = {} as any;
 
@@ -119,7 +119,7 @@ export class PeriodsService {
    * @throws {ServiceException} if period creation fails
    *
    * */
-  create = async (data: CreatePeriod): Promise<Period> => {
+  create = async (data: CreatePeriodInputDto): Promise<Period> => {
     const { name, endDate: endDateInput } = data;
     const latestPeriod = await this.periodModel.getLatest();
     const endDate = parseISO(endDateInput);
@@ -150,11 +150,14 @@ export class PeriodsService {
    * Update a period
    *
    * @param {Types.ObjectId} _id
-   * @param {UpdatePeriod} data
+   * @param {UpdatePeriodInputDto} data
    * @returns {Promise<Period>}
    * @throws {ServiceException} if period update fails
    **/
-  update = async (_id: Types.ObjectId, data: UpdatePeriod): Promise<Period> => {
+  update = async (
+    _id: Types.ObjectId,
+    data: UpdatePeriodInputDto,
+  ): Promise<Period> => {
     const period = await this.periodModel.findById(_id);
     if (!period) throw new ServiceException('Period not found.');
 
