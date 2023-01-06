@@ -24,6 +24,7 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
         options: 1,
         subgroup: 1,
         periodOverridable: 1,
+        type: 1,
       },
     },
   );
