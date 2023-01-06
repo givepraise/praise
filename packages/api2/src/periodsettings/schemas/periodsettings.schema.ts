@@ -20,7 +20,6 @@ export class PeriodSetting {
   _id: Types.ObjectId;
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Period', default: null })
-  @ExposeId()
   period: Types.ObjectId;
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Setting', default: null })

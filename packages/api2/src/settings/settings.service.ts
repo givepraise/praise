@@ -15,6 +15,7 @@ import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { RequestContext } from 'nestjs-request-context';
 import { SettingGroup } from './interfaces/settings-group.interface';
+import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 
 @Injectable()
 export class SettingsService {
