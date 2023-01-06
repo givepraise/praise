@@ -10,7 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiParam } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { ExportTransformer } from '@/shared/types.shared';
@@ -20,8 +20,10 @@ import { SettingsService } from './settings.service';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
+import { HydrateSetSettingRequestInterceptor } from './hydrate-set-setting-request.interceptor';
 
 @Controller('settings')
+@ApiTags('Settings')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
@@ -60,6 +62,7 @@ export class SettingsController {
   }
 
   @Put(':id')
+  @UseInterceptors(HydrateSetSettingRequestInterceptor)
   @ApiOperation({
     summary: 'Returns an updated setting',
   })

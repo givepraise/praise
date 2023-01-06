@@ -4,7 +4,7 @@ import {
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from 'api/dist/praise/types';
+import { PraiseDto } from '@/model/praise/praise.dto';
 import { useState } from 'react';
 import { QuantifySlider } from '@/pages/QuantifyPeriodReceiver/components/QuantifySlider';
 import { ScrollableDialog } from '@/components/ui/ScrollableDialog';

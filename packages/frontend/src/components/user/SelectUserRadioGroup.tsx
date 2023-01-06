@@ -1,9 +1,9 @@
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { RadioGroup } from '@headlessui/react';
-import { UserDto } from 'api/dist/user/types';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from './UserAvatarAndName';
+import { UserDto } from '@/model/user/dto/user.dto';
 
 interface Props {
   users?: UserDto[];

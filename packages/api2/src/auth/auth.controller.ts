@@ -12,11 +12,12 @@ import { LoginResponseDto } from './dto/login-response.dto';
 import { NonceInputDto } from './dto/nonce-input.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginInputDto } from './dto/login-input.dto';
 import { EventLogService } from '@/event-log/event-log.service';
 
 @Controller('auth')
+@ApiTags('Authentication')
 export class AuthController {
   constructor(
     private readonly ethSignatureService: EthSignatureService,

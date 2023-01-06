@@ -11,7 +11,7 @@ import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
-import { SingleUser } from '@/model/users';
+import { SingleUser } from '@/model/user/users';
 import { PeriodQuantifierStats } from '@/model/periodAnalytics';
 import { QuantifierSummaryTable } from './components/QuantifierSummaryTable';
 

@@ -3,7 +3,7 @@ import { atom, selector, selectorFamily } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
 import { TokenSet, JwtTokenData } from 'api/dist/auth/types';
 import { UserRole } from 'api/dist/user/types';
-import { SingleUser } from './users';
+import { SingleUser } from './user/users';
 
 const { persistAtom } = recoilPersist();
 

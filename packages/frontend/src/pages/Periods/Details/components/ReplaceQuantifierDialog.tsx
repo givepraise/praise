@@ -11,7 +11,7 @@ import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { SelectUserRadioGroup } from '@/components/user/SelectUserRadioGroup';
 import { Notice } from '@/components/ui/Notice';
-import { AllQuantifierUsers } from '@/model/users';
+import { AllQuantifierUsers } from '@/model/user/users';
 import { Button } from '@/components/ui/Button';
 
 interface Props {

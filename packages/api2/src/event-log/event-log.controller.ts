@@ -13,12 +13,13 @@ import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-qu
 import { EventLogService } from './event-log.service';
 import { EventLog } from './schemas/event-log.schema';
 import { EventLogType } from './schemas/event-log-type.schema';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.dto';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 
 @Controller('event-log')
+@ApiTags('Event Log')
 @UseGuards(PermissionsGuard)
 @UseGuards(AuthGuard(['jwt', 'api-key']))
 @SerializeOptions({

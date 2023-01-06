@@ -1,17 +1,17 @@
 import { faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
-import { UserDto } from 'api/dist/user/types';
 import { Field, Form } from 'react-final-form';
 import { ValidationErrors } from 'final-form';
 import { Button } from '@/components/ui/Button';
 import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 import { UpdateProfileSubmitButton } from './UpdateProfileSubmitButton';
+import { UserWithStatsDto } from '@/model/user/dto/user-with-stats.dto';
 
 interface PeriodCloseDialogProps {
   onClose(): void;
   onSave(values): void;
-  user: UserDto;
+  user: UserWithStatsDto;
 }
 
 const validate = (

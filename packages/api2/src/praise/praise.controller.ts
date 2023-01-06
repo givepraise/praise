@@ -10,7 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { isArray } from 'class-validator';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
@@ -27,6 +27,7 @@ import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-seri
 import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
 
 @Controller('praise')
+@ApiTags('Praise')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
