@@ -5,8 +5,9 @@ import { Quantification } from './schemas/quantifications.schema';
 import { sum, has } from 'lodash';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
-import { PeriodsService } from '@/periods/periods.service';
 import { UsersService } from '@/users/users.service';
+import { PraiseService } from '@/praise/praise.service';
+import { forwardRef, Inject } from '@nestjs/common';
 
 export class QuantificationsService {
   constructor(
@@ -14,7 +15,8 @@ export class QuantificationsService {
     private quantificationModel: Model<Quantification>,
     private settingsService: SettingsService,
     private usersService: UsersService,
-    private periodsService: PeriodsService,
+    @Inject(forwardRef(() => PraiseService))
+    private praiseService: PraiseService,
   ) {}
 
   /**
@@ -259,7 +261,7 @@ export class QuantificationsService {
     }
 
     // Find the period associated with the current praise item
-    const period = await this.periodsService.getPraisePeriod(praise);
+    const period = await this.praiseService.getPraisePeriod(praise);
     if (!period) {
       throw new ServiceException('Quantification has no associated period');
     }

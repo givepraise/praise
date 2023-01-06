@@ -1,16 +1,16 @@
 import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
-import { PeriodStatusType } from '../enums/status-type.enum';
 import { PeriodDetailsGiverReceiver } from '../interfaces/period-details-giver-receiver.interface';
-import { PeriodDetailsQuantifier } from '../interfaces/period-details-quantifier.interface';
+import { Types } from 'mongoose';
+import { PeriodDetailsQuantifierDto } from './period-details-quantifier.dto';
 
 export interface PeriodDetailsDto {
-  _id: string;
+  _id: Types.ObjectId;
   name: string;
-  status: PeriodStatusType;
-  endDate: string;
-  createdAt: string;
-  updatedAt: string;
-  quantifiers?: PeriodDetailsQuantifier[];
+  status: string;
+  endDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  quantifiers?: PeriodDetailsQuantifierDto[];
   givers?: PeriodDetailsGiverReceiver[];
   receivers?: PeriodDetailsGiverReceiver[];
   settings?: PeriodSetting[];

@@ -1,18 +1,18 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PraiseController } from './praise.controller';
 import { PraiseService } from './praise.service';
 import { Praise, PraiseSchema } from './schemas/praise.schema';
 import { QuantificationsModule } from '@/quantifications/quantifications.module';
-import { PeriodsModule } from '@/periods/periods.module';
 import { SettingsModule } from '@/settings/settings.module';
 import { EventLogModule } from '@/event-log/event-log.module';
+import { Period, PeriodSchema } from '@/periods/schemas/periods.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Praise.name, schema: PraiseSchema }]),
-    forwardRef(() => PeriodsModule),
-    QuantificationsModule,
+    MongooseModule.forFeature([{ name: Period.name, schema: PeriodSchema }]),
+    forwardRef(() => QuantificationsModule),
     SettingsModule,
     EventLogModule,
   ],

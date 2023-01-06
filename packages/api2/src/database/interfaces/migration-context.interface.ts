@@ -1,4 +1,4 @@
-import { PeriodsService } from '@/periods/periods.service';
+import { PeriodsService } from '@/periods/services/periods.service';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { PraiseService } from '@/praise/praise.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';

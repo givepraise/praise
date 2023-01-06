@@ -2,7 +2,7 @@ import { Umzug, MongoDBStorage } from 'umzug';
 import { INestApplication } from '@nestjs/common';
 import { PraiseService } from '@/praise/praise.service';
 import { UsersService } from '@/users/users.service';
-import { PeriodsService } from '@/periods/periods.service';
+import { PeriodsService } from '@/periods/services/periods.service';
 import { SettingsService } from '@/settings/settings.service';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { UtilsProvider } from '@/utils/utils.provider';

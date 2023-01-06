@@ -7,7 +7,7 @@ import { Model, Types } from 'mongoose';
 import { PeriodSetting } from './schemas/periodsettings.schema';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { UploadedFile } from 'express-fileupload';
-import { PeriodsService } from '@/periods/periods.service';
+import { PeriodsService } from '@/periods/services/periods.service';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';

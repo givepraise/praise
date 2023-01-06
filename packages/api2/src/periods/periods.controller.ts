@@ -13,7 +13,7 @@ import {
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
-import { PeriodsService } from './periods.service';
+import { PeriodsService } from './services/periods.service';
 import { Period } from './schemas/periods.schema';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
@@ -27,11 +27,9 @@ import { CreatePeriodInputDto } from './dto/create-period-input.dto';
 import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
 import { VerifyQuantifierPoolSizeDto } from './dto/verify-quantifiers-pool-size.dto';
 import { PeriodDetailsDto } from './dto/period-details.dto';
-import {
-  PeriodReplaceQuantifierInputDto,
-  ReplaceQuantifierInputDto,
-} from './dto/replace-quantifier-input.dto';
+import { PeriodReplaceQuantifierInputDto } from './dto/replace-quantifier-input.dto';
 import { PeriodReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.dto';
+import { PeriodAssignmentsService } from './services/period-assignments.service';
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -42,7 +40,10 @@ import { PeriodReplaceQuantifierResponseDto } from './dto/replace-quantifier-rep
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(MongooseClassSerializerInterceptor(Period))
 export class PeriodsController {
-  constructor(private readonly periodsService: PeriodsService) {}
+  constructor(
+    private readonly periodsService: PeriodsService,
+    private readonly periodAssignmentsService: PeriodAssignmentsService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'List all periods' })
@@ -69,7 +70,7 @@ export class PeriodsController {
   @ApiParam({ name: 'id', type: String })
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-  ): Promise<Period> {
+  ): Promise<PeriodDetailsDto> {
     return this.periodsService.findPeriodDetails(id);
   }
 
@@ -141,7 +142,7 @@ export class PeriodsController {
   async verifyQuantifierPoolSize(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<VerifyQuantifierPoolSizeDto> {
-    return this.periodsService.verifyQuantifierPoolSize(id);
+    return this.periodAssignmentsService.verifyQuantifierPoolSize(id);
   }
 
   @Patch(':id/assignQuantifiers')
@@ -156,7 +157,7 @@ export class PeriodsController {
   async assignQuantifiers(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<PeriodDetailsDto> {
-    return this.periodsService.assignQuantifiers(id);
+    return this.periodAssignmentsService.assignQuantifiers(id);
   }
 
   @Patch(':id/replaceQuantifier')
@@ -172,6 +173,9 @@ export class PeriodsController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() replaceQuantifierDto: PeriodReplaceQuantifierInputDto,
   ): Promise<PeriodReplaceQuantifierResponseDto> {
-    return this.periodsService.replaceQuantifier(id, replaceQuantifierDto);
+    return this.periodAssignmentsService.replaceQuantifier(
+      id,
+      replaceQuantifierDto,
+    );
   }
 }

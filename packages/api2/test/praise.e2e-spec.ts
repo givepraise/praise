@@ -21,7 +21,7 @@ import { runDbMigrations } from '@/database/migrations';
 import { PraiseModule } from '@/praise/praise.module';
 import { QuantificationsModule } from '@/quantifications/quantifications.module';
 import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
-import { PeriodsService } from '../src/periods/periods.service';
+import { PeriodsService } from '../src/periods/services/periods.service';
 import { PraiseSeeder } from '@/database/seeder/praise.seeder';
 import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder';
 import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
