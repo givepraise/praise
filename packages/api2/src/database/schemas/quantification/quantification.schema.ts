@@ -44,6 +44,7 @@ export const QuantificationSchema = new Schema({
   },
 });
 
+delete mongoose.models['Quantification'];
 export const QuantificationModel = model(
   'Quantification',
   QuantificationSchema,
