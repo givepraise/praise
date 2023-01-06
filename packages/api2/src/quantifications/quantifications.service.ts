@@ -255,10 +255,12 @@ export class QuantificationsService {
         quantifier: quantification.quantifier,
       })
       .lean();
+
+    // If no original quantification is found, the score is set to 0
+    // This should not happen, but an older version of the api sometimes saved
+    // duplicatePraise values without a corresponding original quantification
     if (!originalQuantification) {
-      throw new ServiceException(
-        'No original quantification found, cannot calculate duplicate score',
-      );
+      return 0;
     }
 
     // Find the period associated with the current praise item

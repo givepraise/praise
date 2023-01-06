@@ -18,4 +18,5 @@ const EventLogTypeSchema = new Schema(
   },
 );
 
+delete mongoose.models['EventLogType'];
 export const EventLogTypeModel = model('EventLogType', EventLogTypeSchema);
