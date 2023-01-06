@@ -29,4 +29,5 @@ export const PeriodSchema = new Schema({
   },
 });
 
+delete mongoose.models['Period'];
 export const PeriodModel = model('Period', PeriodSchema);

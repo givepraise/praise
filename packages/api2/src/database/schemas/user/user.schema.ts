@@ -1,4 +1,4 @@
-import { AuthRole } from '@/auth/enums/auth-role.enum';
+import { AuthRole } from '../../../auth/enums/auth-role.enum';
 import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 const { ObjectId } = Schema.Types;
@@ -41,4 +41,5 @@ export const UserSchema = new Schema({
   },
 });
 
+delete mongoose.models['User'];
 export const UserModel = model('User', UserSchema);
