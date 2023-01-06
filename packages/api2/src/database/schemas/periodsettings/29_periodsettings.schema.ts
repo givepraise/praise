@@ -22,6 +22,22 @@ export const PeriodSettingsSchema = new Schema({
     required: true,
     index: true,
   },
+  type: {
+    type: String,
+    enum: [
+      'Integer',
+      'Float',
+      'String',
+      'Textarea',
+      'Boolean',
+      'IntegerList',
+      'StringList',
+      'Image',
+      'Radio',
+      'JSON',
+    ],
+    required: true,
+  },
   createdAt: {
     type: Date,
     required: true

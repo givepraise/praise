@@ -23,6 +23,7 @@ export const PeriodSettingsSchema = new Schema({
     ],
     required: true,
   },
+  options: { type: String },
   label: { type: String, required: true },
   description: { type: String },
   periodOverridable: { type: Boolean, required: true },

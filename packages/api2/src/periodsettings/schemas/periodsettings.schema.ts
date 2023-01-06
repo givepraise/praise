@@ -16,16 +16,34 @@ export class PeriodSetting {
     }
   }
 
+  @ExposeId()
+  _id: Types.ObjectId;
+
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Period', default: null })
   @ExposeId()
   period: Types.ObjectId;
 
-  // @Transform(({ value }) => value.toString())
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Setting', default: null })
   setting: Types.ObjectId;
 
+  @Prop({
+    required: true,
+    enum: [
+      'Integer',
+      'Float',
+      'String',
+      'Textarea',
+      'Boolean',
+      'IntegerList',
+      'StringList',
+      'Image',
+      'Radio',
+      'JSON',
+    ],
+  })
+  type: string;
+
   @Prop()
-  @IsSettingValueAllowedBySettingType()
   value: string;
 
   @Prop({ type: Date })

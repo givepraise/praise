@@ -39,7 +39,6 @@ import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { SettingsSeeder } from '@/database/seeder/settings.seeder';
 import { SettingsModule } from '@/settings/settings.module';
 import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
-import { FindAllPraisePaginatedQuery } from '@/praise/dto/find-all-praise-paginated-query.dto';
 import { Types } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
@@ -184,7 +183,7 @@ describe('Period Setting (E2E)', () => {
       setting = await settingsSeeder.seedSettings({
         key: 'PRAISE_SUCCESS_MESSAGE',
         value: '✅ Praise {@receivers} {reason}',
-        type: 'Textarea',
+        type: 'String',
       });
 
       periodSetting =
@@ -192,6 +191,7 @@ describe('Period Setting (E2E)', () => {
           period: period,
           setting: setting,
           value: '✅ Praise {@receivers} {reason}',
+          type: 'String'
         });
 
       period2 = await periodsSeeder.seedPeriod({
@@ -203,6 +203,7 @@ describe('Period Setting (E2E)', () => {
           period: period2,
           setting: setting,
           value: '✅ Praise {@receivers} {reason}',
+          type: 'String'
         });
     });
 
@@ -252,7 +253,7 @@ describe('Period Setting (E2E)', () => {
       setting = await settingsSeeder.seedSettings({
         key: 'PRAISE_SUCCESS_MESSAGE',
         value: '✅ Praise {@receivers} {reason}',
-        type: 'Textarea',
+        type: 'String',
       });
 
       periodSetting =
@@ -260,11 +261,12 @@ describe('Period Setting (E2E)', () => {
           period: period,
           setting: setting,
           value: '✅ Praise {@receivers} {reason}',
+          type: 'String'
         });
     });
 
     test('401 when not authenticated', async () => {
-      return request(server).get(`/period/${period._id}/settings/${periodSetting._id}`).send().expect(401);
+      return request(server).get(`/period/${period._id}/settings/${setting._id}`).send().expect(401);
     });
 
     test('200 when correct data is sent', async () => {
@@ -301,7 +303,7 @@ describe('Period Setting (E2E)', () => {
       setting = await settingsSeeder.seedSettings({
         key: 'PRAISE_SUCCESS_MESSAGE',
         value: '✅ Praise {@receivers} {reason}',
-        type: 'Textarea',
+        type: 'String',
       });
 
       periodSetting =
@@ -309,6 +311,7 @@ describe('Period Setting (E2E)', () => {
           period: period,
           setting: setting,
           value: '✅ Praise {@receivers} {reason}',
+          type: 'String'
         });
     });
 
@@ -342,17 +345,17 @@ describe('Period Setting (E2E)', () => {
     });
 
     test('Update periodSetting value with correct parameters', async () => {
-      const newValue = 'SUPERRR Praise {@receivers} {reason}';
+      const newValue = 'Praise Text';
       const response = await authorizedPutRequest(
         `/period/${period._id}/settings/${setting._id}`,
         app,
         users[2].accessToken,
         {
           value: newValue,
-        },
+        }
       );
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
       expect(response.body.value).toBe(newValue);
     });

@@ -61,7 +61,7 @@ const up = async (): Promise<void> => {
   );
 
   // Copy default settings for all existing periods
-  const allPeriods = await PeriodModel.find();
+  // const allPeriods = await PeriodModel.find();
   // await Promise.all(allPeriods.map((p) => insertNewPeriodSettings(p)));
 };
 

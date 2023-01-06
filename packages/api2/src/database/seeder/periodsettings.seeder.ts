@@ -20,6 +20,7 @@ export class PeriodSettingsSeeder {
     const PeriodSetting = await this.periodSettingsService.getModel().create({
       period: PeriodSettingsData.period || null,
       setting: PeriodSettingsData.setting || null,
+      type: PeriodSettingsData.type || 'String',
       value: PeriodSettingsData.value || faker.random.word(),
     });
 
