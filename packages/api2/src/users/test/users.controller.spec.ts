@@ -3,7 +3,7 @@ import { User } from '../schemas/users.schema';
 import { UsersController } from '../users.controller';
 import { UsersService } from '../users.service';
 import { userStub } from './stubs/user.stub';
-import { UpdateUserRoleDto } from '../dto/update-user-role.dto';
+import { UpdateUserRoleInputDto } from '../dto/update-user-role-input.dto';
 import { UserRole } from '../interfaces/user-role.interface';
 
 jest.mock('@/users/users.service');
@@ -65,7 +65,7 @@ describe('UsersController', () => {
       jest.clearAllMocks();
     });
 
-    const updateUserRoleDto: UpdateUserRoleDto = {
+    const updateUserRoleDto: UpdateUserRoleInputDto = {
       role: UserRole[userStub.roles[0] as UserRoleMap],
     };
 
@@ -92,7 +92,7 @@ describe('UsersController', () => {
       jest.clearAllMocks();
     });
 
-    const updateUserRoleDto: UpdateUserRoleDto = {
+    const updateUserRoleDto: UpdateUserRoleInputDto = {
       role: UserRole[userStub.roles[0] as UserRoleMap],
     };
 
@@ -101,7 +101,6 @@ describe('UsersController', () => {
         userStub._id,
         updateUserRoleDto,
       );
-      console.log({userT});
       expect(usersService.removeRole).toBeCalledWith(
         userStub._id,
         updateUserRoleDto,
