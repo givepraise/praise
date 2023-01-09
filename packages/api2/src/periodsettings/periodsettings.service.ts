@@ -72,7 +72,7 @@ export class PeriodSettingsService {
     if (!setting) throw new ServiceException('Setting not found.');
     if (!validate(data.value, setting.type)) {
       throw new ServiceException(
-        `Settings value ${setting.value} is not valid for type ${setting.type}.`,
+        `Settings value ${data.value} is not valid for type ${setting.type}.`,
       );
     }
 
@@ -123,7 +123,7 @@ export class PeriodSettingsService {
     await periodSetting.save();
 
     await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.PERIOD_SETTING,
+      typeKey: EventLogTypeKey.SETTING,
       description: `Updated period "${period.name}" setting "${
         setting.label
       }" from "${originalValue || ''}" to "${setting.value || ''}"`,

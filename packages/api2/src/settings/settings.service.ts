@@ -99,7 +99,7 @@ export class SettingsService {
     if (!setting) throw new ServiceException('Settings not found.');
     if (!validate(data.value, setting.type)) {
       throw new ServiceException(
-        `Settings value ${setting.value} is not valid for type ${setting.type}.`,
+        `Settings value ${data.value} is not valid for type ${setting.type}.`,
       );
     }
 
