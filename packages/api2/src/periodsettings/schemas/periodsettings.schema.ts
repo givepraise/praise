@@ -5,6 +5,7 @@ import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { Period } from '@/periods/schemas/periods.schema';
 import { Type } from 'class-transformer';
 import { Setting } from '@/settings/schemas/settings.schema';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export type PeriodSettingDocument = PeriodSetting & Document;
 
@@ -39,6 +40,8 @@ export class PeriodSetting {
   setting: Types.ObjectId;
 
   @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
   @Prop()
   value: string;
 
