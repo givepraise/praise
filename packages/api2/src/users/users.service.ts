@@ -178,8 +178,10 @@ export class UsersService {
     for (const [k, v] of Object.entries(user)) {
       userDocument.set(k, v);
     }
-    const updatedUserDocument = await userDocument.save();
-    return updatedUserDocument.toObject();
+
+    await userDocument.save();
+
+    return this.findOneById(userDocument._id);
   }
 
   async create(userDto: CreateUserInputDto): Promise<User> {

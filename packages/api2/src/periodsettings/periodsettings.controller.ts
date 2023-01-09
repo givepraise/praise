@@ -5,12 +5,12 @@ import {
   Controller,
   Get,
   Param,
-  Put,
+  Patch,
   SerializeOptions,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { PeriodSettingsService } from './periodsettings.service';
@@ -20,21 +20,22 @@ import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('period')
+@Controller('periods')
+@ApiTags('Periods')
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-// @UseGuards(PermissionsGuard)
-// @UseGuards(AuthGuard(['jwt', 'api-key']))
+@UseGuards(PermissionsGuard)
+@UseGuards(AuthGuard(['jwt', 'api-key']))
 export class PeriodSettingsController {
   constructor(private readonly periodsettingsService: PeriodSettingsService) {}
 
   @Get(':periodId/settings')
-  @ApiOperation({ summary: 'List Period Settings for a given Period ID' })
+  @ApiOperation({ summary: 'List all period settings.' })
   @ApiResponse({
     status: 200,
-    description: 'All Period Settings',
+    description: 'All period settings',
     type: [PeriodSetting],
   })
   @Permissions(Permission.PeriodSettingsView)
@@ -46,10 +47,10 @@ export class PeriodSettingsController {
   }
 
   @Get('/:periodId/settings/:settingId')
-  @ApiOperation({ summary: 'Finds a Period Setting for a given Period ID' })
+  @ApiOperation({ summary: 'Get a period setting.' })
   @ApiResponse({
     status: 200,
-    description: 'Period Setting',
+    description: 'Period setting',
     type: PeriodSetting,
   })
   @Permissions(Permission.PeriodSettingsView)
@@ -62,11 +63,11 @@ export class PeriodSettingsController {
     return this.periodsettingsService.findOneById(settingId, periodId);
   }
 
-  @Put('/:periodId/settings/:settingId')
-  @ApiOperation({ summary: 'Updates a Period Setting for a given Period ID' })
+  @Patch('/:periodId/settings/:settingId')
+  @ApiOperation({ summary: 'Set value for a period setting.' })
   @ApiResponse({
     status: 200,
-    description: 'Updated Period Setting',
+    description: 'Updated period setting',
     type: PeriodSetting,
   })
   @Permissions(Permission.PeriodSettingsManage)

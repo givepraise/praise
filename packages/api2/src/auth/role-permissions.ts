@@ -10,6 +10,7 @@ const PERMISSIONS_USER = [
   Permission.EventLogView,
   Permission.ApiKeyView,
   Permission.PraiseView,
+  Permission.SettingsView,
   Permission.PeriodSettingsView,
   Permission.PeriodView,
 ];
@@ -33,6 +34,7 @@ const PERMISSIONS_ADMIN = [
   ...PERMISSIONS_USER,
   Permission.ApiKeyManage,
   Permission.UsersManageRoles,
+  Permission.SettingsManage,
   Permission.PeriodSettingsManage,
   Permission.PeriodCreate,
   Permission.PeriodUpdate,

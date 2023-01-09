@@ -23,11 +23,6 @@ import { SettingsModule } from '@/settings/settings.module';
   ],
   controllers: [PeriodSettingsController],
   providers: [PeriodSettingsService, UtilsProvider, ConstantsProvider],
-  exports: [
-    PeriodSettingsService,
-    MongooseModule.forFeature([
-      { name: PeriodSetting.name, schema: PeriodSettingsSchema },
-    ]),
-  ],
+  exports: [PeriodSettingsService],
 })
 export class PeriodSettingsModule {}
