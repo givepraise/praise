@@ -10,7 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { PeriodSettingsService } from './periodsettings.service';
@@ -20,7 +20,8 @@ import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('period')
+@Controller('periods')
+@ApiTags('Periods')
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({
   excludePrefixes: ['__'],
