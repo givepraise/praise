@@ -13,6 +13,7 @@ import { EventLogService } from '@/event-log/event-log.service';
 import { RequestContext } from 'nestjs-request-context';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { SettingsService } from '@/settings/settings.service';
+import { validate } from '@/settings/utils/settings.validate';
 
 @Injectable()
 export class PeriodSettingsService {
@@ -69,6 +70,11 @@ export class PeriodSettingsService {
   ): Promise<PeriodSetting> {
     const setting = await this.settingsService.findOneById(settingId);
     if (!setting) throw new ServiceException('Setting not found.');
+    if (!validate(data.value, setting.type)) {
+      throw new ServiceException(
+        `Settings value ${setting.value} is not valid for type ${setting.type}.`,
+      );
+    }
 
     const period = await this.periodsService.findOneById(periodId);
     if (!period) throw new ServiceException('Period not found.');

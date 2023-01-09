@@ -18,15 +18,7 @@ import {
   loginUser,
 } from './test.common';
 import { runDbMigrations } from '@/database/migrations';
-import { PraiseModule } from '@/praise/praise.module';
-import { QuantificationsModule } from '@/quantifications/quantifications.module';
-import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
 import { PeriodsService } from '../src/periods/periods.service';
-import { PraiseSeeder } from '@/database/seeder/praise.seeder';
-import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder';
-import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
-import { PraiseService } from '@/praise/praise.service';
-import { QuantificationsService } from '@/quantifications/quantifications.service';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
 import { PeriodsModule } from '@/periods/periods.module';
@@ -41,6 +33,7 @@ import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
 import { Setting } from '@/settings/schemas/settings.schema';
+import { SettingsService } from '@/settings/settings.service';
 
 class LoggedInUser {
   accessToken: string;
@@ -54,14 +47,12 @@ describe('Period Setting (E2E)', () => {
   let module: TestingModule;
   let usersSeeder: UsersSeeder;
   let usersService: UsersService;
-  let praiseService: PraiseService;
   let periodsService: PeriodsService;
   let periodsSeeder: PeriodsSeeder;
+  let settingsService: SettingsService;
   let settingsSeeder: SettingsSeeder;
   let periodSettingsService: PeriodSettingsService;
   let periodSettingsSeeder: PeriodSettingsSeeder;
-  let quantificationsService: QuantificationsService;
-  let userAccountsService: UserAccountsService;
 
   const users: LoggedInUser[] = [];
 
@@ -70,18 +61,12 @@ describe('Period Setting (E2E)', () => {
       imports: [
         AppModule,
         UsersModule,
-        PraiseModule,
-        QuantificationsModule,
-        UserAccountsModule,
         PeriodsModule,
         PeriodSettingsModule,
         SettingsModule,
       ],
       providers: [
         UsersSeeder,
-        PraiseSeeder,
-        QuantificationsSeeder,
-        UserAccountsSeeder,
         PeriodsSeeder,
         PeriodSettingsSeeder,
         SettingsSeeder,
@@ -102,9 +87,8 @@ describe('Period Setting (E2E)', () => {
 
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
     usersService = module.get<UsersService>(UsersService);
-    praiseService = module.get<PraiseService>(PraiseService);
-    userAccountsService = module.get<UserAccountsService>(UserAccountsService);
     settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder);
+    settingsService = module.get<SettingsService>(SettingsService);
     periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
     periodsService = module.get<PeriodsService>(PeriodsService);
     periodSettingsSeeder =
@@ -114,10 +98,8 @@ describe('Period Setting (E2E)', () => {
     );
 
     // Clear the database
+    await settingsService.getModel().deleteMany({});
     await usersService.getModel().deleteMany({});
-    await praiseService.getModel().deleteMany({});
-    await quantificationsService.getModel().deleteMany({});
-    await userAccountsService.getModel().deleteMany({});
     await periodsService.getModel().deleteMany({});
     await periodSettingsService.getModel().deleteMany({});
 
@@ -335,6 +317,282 @@ describe('Period Setting (E2E)', () => {
       const newValue = 'Praise Text';
       const response = await authorizedPutRequest(
         `/period/${period._id}/settings/${setting._id}`,
+        app,
+        users[2].accessToken,
+        {
+          value: newValue,
+        },
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+      expect(response.body.value).toBe(newValue);
+    });
+
+    test('Invalid settings value - Integer', async () => {
+      const value = '99';
+      const s = await settingsSeeder.seedSettings({
+        key: 'INT_SETTING',
+        value,
+        type: 'Integer',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: s,
+        value,
+      });
+
+      const newValue = 'not an integer'; // invalid value
+      const response = await authorizedPutRequest(
+        `/period/${period._id}/settings/${s._id}`,
+        app,
+        users[2].accessToken,
+        {
+          value: newValue,
+        },
+      );
+
+      expect(response.status).toBe(400);
+    });
+    test('Valid settings value - Integer', async () => {
+      const value = 99;
+      const s = await settingsSeeder.seedSettings({
+        key: 'INT_SETTING',
+        value,
+        type: 'Integer',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: s,
+        value,
+      });
+
+      const newValue = 100; // valid value
+      const response = await authorizedPutRequest(
+        `/period/${period._id}/settings/${s._id}`,
+        app,
+        users[2].accessToken,
+        {
+          value: newValue,
+        },
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+      expect(response.body.value).toBe(newValue.toString());
+    });
+
+    test('Invalid settings value - Float', async () => {
+      const value = '99.99';
+      const s = await settingsSeeder.seedSettings({
+        key: 'FLOAT_SETTING',
+        value,
+        type: 'Float',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: s,
+        value,
+      });
+
+      const newValue = 'not a float'; // invalid value
+      const response = await authorizedPutRequest(
+        `/period/${period._id}/settings/${s._id}`,
+        app,
+        users[2].accessToken,
+        {
+          value: newValue,
+        },
+      );
+
+      expect(response.status).toBe(400);
+    });
+    test('Valid settings value - Float', async () => {
+      const value = '99.99';
+      const s = await settingsSeeder.seedSettings({
+        key: 'FLOAT_SETTING',
+        value,
+        type: 'Float',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: s,
+        value,
+      });
+
+      const newValue = 100.99; // valid value
+      const response = await authorizedPutRequest(
+        `/period/${period._id}/settings/${s._id}`,
+        app,
+        users[2].accessToken,
+        {
+          value: newValue,
+        },
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+      expect(response.body.value).toBe(newValue.toString());
+    });
+
+    test('Invalid settings value - Boolean', async () => {
+      const value = true;
+      const s = await settingsSeeder.seedSettings({
+        key: 'BOOL_SETTING',
+        value,
+        type: 'Boolean',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: s,
+        value,
+      });
+
+      const newValue = 'not a boolean'; // invalid value
+      const response = await authorizedPutRequest(
+        `/period/${period._id}/settings/${s._id}`,
+        app,
+        users[2].accessToken,
+        {
+          value: newValue,
+        },
+      );
+
+      expect(response.status).toBe(400);
+    });
+    test('Valid settings value - Boolean', async () => {
+      const value = true;
+      const s = await settingsSeeder.seedSettings({
+        key: 'BOOL_SETTING',
+        value,
+        type: 'Boolean',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: s,
+        value,
+      });
+
+      const newValue = false; // valid value
+      const response = await authorizedPutRequest(
+        `/period/${period._id}/settings/${s._id}`,
+        app,
+        users[2].accessToken,
+        {
+          value: newValue,
+        },
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+      expect(response.body.value).toBe(newValue.toString());
+    });
+
+    test('Invalid settings value - IntegerList', async () => {
+      const value = '1, 2, 3';
+      const s = await settingsSeeder.seedSettings({
+        key: 'INT_LIST_SETTING',
+        value,
+        type: 'IntegerList',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: s,
+        value,
+      });
+
+      const newValue = 'not an integer list'; // invalid value
+      const response = await authorizedPutRequest(
+        `/period/${period._id}/settings/${s._id}`,
+        app,
+        users[2].accessToken,
+        {
+          value: newValue,
+        },
+      );
+
+      expect(response.status).toBe(400);
+    });
+    test('Valid settings value - IntegerList', async () => {
+      const value = '1, 2, 3';
+      const s = await settingsSeeder.seedSettings({
+        key: 'INT_LIST_SETTING',
+        value,
+        type: 'IntegerList',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: s,
+        value,
+      });
+
+      const newValue = '4, 5, 6'; // valid value
+      const response = await authorizedPutRequest(
+        `/period/${period._id}/settings/${s._id}`,
+        app,
+        users[2].accessToken,
+        {
+          value: newValue,
+        },
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+      expect(response.body.value).toBe(newValue);
+    });
+
+    test('Invalid settings value - JSON', async () => {
+      const value = '{"key": "value"}';
+      const s = await settingsSeeder.seedSettings({
+        key: 'JSON_SETTING',
+        value,
+        type: 'JSON',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: s,
+        value,
+      });
+
+      const newValue = 'not a JSON'; // invalid value
+      const response = await authorizedPutRequest(
+        `/period/${period._id}/settings/${s._id}`,
+        app,
+        users[2].accessToken,
+        {
+          value: newValue,
+        },
+      );
+
+      expect(response.status).toBe(400);
+    });
+
+    test('Valid settings value - JSON', async () => {
+      const value = '{"key": "value"}';
+      const s = await settingsSeeder.seedSettings({
+        key: 'JSON_SETTING',
+        value,
+        type: 'JSON',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: s,
+        value,
+      });
+
+      const newValue = '{"key": "new value"}'; // valid value
+      const response = await authorizedPutRequest(
+        `/period/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
         {

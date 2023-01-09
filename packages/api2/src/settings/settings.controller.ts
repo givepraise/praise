@@ -17,7 +17,6 @@ import { SettingsService } from './settings.service';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
-import { HydrateSetSettingRequestInterceptor } from './hydrate-set-setting-request.interceptor';
 
 @Controller('settings')
 @ApiTags('Settings')
@@ -59,7 +58,6 @@ export class SettingsController {
   }
 
   @Put(':id')
-  @UseInterceptors(HydrateSetSettingRequestInterceptor)
   @ApiOperation({
     summary: 'Returns an updated setting',
   })

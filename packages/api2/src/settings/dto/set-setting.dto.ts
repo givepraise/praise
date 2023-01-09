@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/swagger';
+import { PickType } from '@nestjs/swagger';
 import { Setting } from '../schemas/settings.schema';
 
-export class SetSettingDto extends PartialType(Setting) {}
+export class SetSettingDto extends PickType(Setting, ['value']) {}

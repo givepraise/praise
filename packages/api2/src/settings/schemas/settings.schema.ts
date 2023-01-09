@@ -2,7 +2,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose } from 'class-transformer';
 import { Types } from 'mongoose';
 import { SettingGroup } from '../interfaces/settings-group.interface';
-import { IsSettingValueAllowedBySettingType } from '../validators/settings-type.validator';
 import { ExposeId } from '@/shared/expose-id.decorator';
 
 export type SettingDocument = Setting & Document;
@@ -24,7 +23,6 @@ export class Setting {
   key: string;
 
   @Prop()
-  @IsSettingValueAllowedBySettingType()
   value: string;
 
   @Expose()

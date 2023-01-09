@@ -16,6 +16,7 @@ import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { RequestContext } from 'nestjs-request-context';
 import { SettingGroup } from './interfaces/settings-group.interface';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
+import { validate } from './utils/settings.validate';
 
 @Injectable()
 export class SettingsService {
@@ -96,6 +97,11 @@ export class SettingsService {
       period: { $exists: 0 },
     });
     if (!setting) throw new ServiceException('Settings not found.');
+    if (!validate(data.value, setting.type)) {
+      throw new ServiceException(
+        `Settings value ${setting.value} is not valid for type ${setting.type}.`,
+      );
+    }
 
     const originalValue = setting.value;
     if (setting.type === 'Image') {

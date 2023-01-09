@@ -1,6 +1,4 @@
-import { Setting } from '@/settings/schemas/settings.schema';
-import { IsSettingValueAllowedBySettingType } from '@/settings/validators/settings-type.validator';
-import { InjectModel, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { SchemaTypes, Types } from 'mongoose';
 import { ExposeId } from '@/shared/expose-id.decorator';
 
