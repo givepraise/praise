@@ -69,7 +69,6 @@ export const formatIsoDateUTC = (
  * Returns true if date1 is equal to or after date2
  */
 export const isDateEqualOrAfter = (date1: string, date2: string): boolean => {
-  console.log('Comparing dates', date1, date2);
   if (compareAsc(Date.parse(date1), Date.parse(date2)) >= 0) return true;
   return false;
 };
