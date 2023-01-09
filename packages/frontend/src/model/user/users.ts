@@ -7,7 +7,6 @@ import {
   useRecoilCallback,
   useRecoilValue,
   useSetRecoilState,
-  useRecoilRefresher_UNSTABLE,
 } from 'recoil';
 import React from 'react';
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
@@ -17,16 +16,12 @@ import { AllPeriods } from '../periods';
 import { UserDto } from './dto/user.dto';
 import { UserRole } from './enums/user-role.enum';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
+import { isDateEqualOrAfter } from '@/utils/date';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfUser = (object: any): object is UserDto => {
   return 'identityEthAddress' in object;
 };
-
-interface roleOptionsProps {
-  value: string;
-  label: string;
-}
 
 export const roleOptions = [
   { label: 'All users', value: UserRole.USER },
@@ -54,31 +49,6 @@ export const AllUsers = atom<UserDto[] | undefined>({
       );
     },
   ],
-});
-
-export const UsersTableData = atom<UserDto[] | undefined>({
-  key: 'UsersTableData',
-  default: undefined,
-});
-
-export const UsersTableSelectedRole = atom<roleOptionsProps>({
-  key: 'UsersTableSelectedRole',
-  default: roleOptions[0],
-});
-
-export const UsersTableFilter = atom<string>({
-  key: 'UsersTableFilter',
-  default: '',
-});
-
-export const UsersTablePage = atom<number>({
-  key: 'UsersTablePage',
-  default: 1,
-});
-
-export const UsersTableLastPage = atom<number>({
-  key: 'UsersTableLastPage',
-  default: 0,
 });
 
 export const AllAdminUsers = selector({
@@ -115,6 +85,9 @@ type PseudonymForUserParams = {
   periodId: string;
   userId: string;
 };
+/**
+ * User pseudonym for a given period.
+ */
 export const PseudonymForUser = selectorFamily({
   key: 'PseudonymForUser',
   get:
@@ -143,22 +116,11 @@ export const PseudonymForUser = selectorFamily({
     },
 });
 
-/**
- * Types for `useParams()`
- */
 export type SingleUserParams = {
   userId: string;
 };
-
 /**
- * Types for `useParams()`
- */
-export type PublicProfileParams = {
-  username: string;
-};
-
-/**
- * Selector that returns one individual Period.
+ * Selector that returns one individual User by id.
  */
 export const SingleUser = selectorFamily({
   key: 'SingleUser',
@@ -191,6 +153,9 @@ export const SingleUser = selectorFamily({
     },
 });
 
+/**
+ * Selector that returns one individual User by username.
+ */
 export const SingleUserByUsername = selectorFamily({
   key: 'SingleUserByUsername',
   get:
@@ -226,6 +191,9 @@ type useAdminUsersReturns = {
   ) => Promise<AxiosResponse<UserDto> | AxiosError>;
 };
 
+/**
+ * Administer users. Add or remove roles.
+ */
 export const useAdminUsers = (): useAdminUsersReturns => {
   const apiAuthClient = useApiAuthClient();
   const [allUsers, setAllUsers] = useRecoilState(AllUsers);
@@ -276,7 +244,9 @@ type useUserProfileReturn = {
     rewardsEthAddress: string
   ) => Promise<AxiosResponse<UserDto>>;
 };
-
+/**
+ * Edit a user's profile.
+ */
 export const useUserProfile = (): useUserProfileReturn => {
   const apiAuthClient = useApiAuthClient();
 
@@ -329,20 +299,17 @@ export const useLoadSingleUserDetails = (
   userId: string
 ): AxiosResponse<UserWithStatsDto> | AxiosError => {
   const response = useRecoilValue(DetailedSingleUserQuery(userId));
+  const user = useRecoilValue(SingleUser(userId));
   const setUser = useSetRecoilState(SingleUser(userId));
-  const refresh = useRecoilRefresher_UNSTABLE(DetailedSingleUserQuery(userId));
 
   React.useEffect(() => {
-    if (!refresh) return;
-    refresh();
-  }, [refresh]);
-
-  React.useEffect(() => {
-    if (!refresh || !response) return;
+    if (!response || !user) return;
     if (isResponseOk(response)) {
-      setUser(response.data);
+      if (isDateEqualOrAfter(response.data.updatedAt, user.updatedAt)) {
+        setUser(response.data);
+      }
     }
-  }, [response, refresh, setUser]);
+  }, [response, user, setUser]);
 
   return response;
 };
