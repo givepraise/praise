@@ -25,8 +25,8 @@ import { AuthGuard } from '@nestjs/passport';
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-// @UseGuards(PermissionsGuard)
-// @UseGuards(AuthGuard(['jwt', 'api-key']))
+@UseGuards(PermissionsGuard)
+@UseGuards(AuthGuard(['jwt', 'api-key']))
 export class PeriodSettingsController {
   constructor(private readonly periodsettingsService: PeriodSettingsService) {}
 
