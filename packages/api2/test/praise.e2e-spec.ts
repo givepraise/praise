@@ -44,7 +44,6 @@ import { Types } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
 import { Setting } from '@/settings/schemas/settings.schema';
-import { SettingsService } from '@/settings/settings.service';
 
 class LoggedInUser {
   accessToken: string;
@@ -117,7 +116,7 @@ describe('Praise (E2E)', () => {
       QuantificationsService,
     );
     userAccountsService = module.get<UserAccountsService>(UserAccountsService);
-    settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder)
+    settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder);
     periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
     periodsService = module.get<PeriodsService>(PeriodsService);
     periodSettingsSeeder =

@@ -18,9 +18,7 @@ import { PeriodSettingsModule } from '@/periodsettings/periodsettings.module';
   providers: [SettingsService, UtilsProvider, ConstantsProvider],
   exports: [
     SettingsService,
-    MongooseModule.forFeature([
-      { name: Setting.name, schema: SettingSchema },
-    ]),
-  ]
+    MongooseModule.forFeature([{ name: Setting.name, schema: SettingSchema }]),
+  ],
 })
 export class SettingsModule {}

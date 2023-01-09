@@ -3,9 +3,7 @@ import {
   Controller,
   Get,
   Param,
-  Patch,
   Put,
-  Req,
   SerializeOptions,
   UseGuards,
   UseInterceptors,
@@ -13,7 +11,6 @@ import {
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
-import { ExportTransformer } from '@/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { Setting } from './schemas/settings.schema';
 import { SettingsService } from './settings.service';

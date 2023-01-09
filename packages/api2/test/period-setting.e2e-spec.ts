@@ -27,7 +27,6 @@ import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder'
 import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
 import { PraiseService } from '@/praise/praise.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
-import { Praise } from '@/praise/schemas/praise.schema';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
 import { PeriodsModule } from '@/periods/periods.module';
@@ -39,11 +38,9 @@ import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { SettingsSeeder } from '@/database/seeder/settings.seeder';
 import { SettingsModule } from '@/settings/settings.module';
 import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
-import { Types } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
 import { Setting } from '@/settings/schemas/settings.schema';
-import { SettingsService } from '@/settings/settings.service';
 
 class LoggedInUser {
   accessToken: string;
@@ -57,14 +54,12 @@ describe('Period Setting (E2E)', () => {
   let module: TestingModule;
   let usersSeeder: UsersSeeder;
   let usersService: UsersService;
-  let praiseSeeder: PraiseSeeder;
   let praiseService: PraiseService;
   let periodsService: PeriodsService;
   let periodsSeeder: PeriodsSeeder;
   let settingsSeeder: SettingsSeeder;
   let periodSettingsService: PeriodSettingsService;
   let periodSettingsSeeder: PeriodSettingsSeeder;
-  let quantificationsSeeder: QuantificationsSeeder;
   let quantificationsService: QuantificationsService;
   let userAccountsService: UserAccountsService;
 
@@ -107,16 +102,9 @@ describe('Period Setting (E2E)', () => {
 
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
     usersService = module.get<UsersService>(UsersService);
-    praiseSeeder = module.get<PraiseSeeder>(PraiseSeeder);
     praiseService = module.get<PraiseService>(PraiseService);
-    quantificationsSeeder = module.get<QuantificationsSeeder>(
-      QuantificationsSeeder,
-    );
-    quantificationsService = module.get<QuantificationsService>(
-      QuantificationsService,
-    );
     userAccountsService = module.get<UserAccountsService>(UserAccountsService);
-    settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder)
+    settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder);
     periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
     periodsService = module.get<PeriodsService>(PeriodsService);
     periodSettingsSeeder =
@@ -173,7 +161,6 @@ describe('Period Setting (E2E)', () => {
     let period2: Period;
     let setting: Setting;
     let periodSetting: PeriodSetting;
-    let periodSetting2: PeriodSetting;
 
     beforeEach(async () => {
       period = await periodsSeeder.seedPeriod({
@@ -186,29 +173,30 @@ describe('Period Setting (E2E)', () => {
         type: 'String',
       });
 
-      periodSetting =
-        await periodSettingsSeeder.seedPeriodSettings({
-          period: period,
-          setting: setting,
-          value: '✅ Praise {@receivers} {reason}',
-          type: 'String'
-        });
+      periodSetting = await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: setting,
+        value: '✅ Praise {@receivers} {reason}',
+        type: 'String',
+      });
 
       period2 = await periodsSeeder.seedPeriod({
         status: PeriodStatusType.OPEN,
       });
 
-      periodSetting2 =
-        await periodSettingsSeeder.seedPeriodSettings({
-          period: period2,
-          setting: setting,
-          value: '✅ Praise {@receivers} {reason}',
-          type: 'String'
-        });
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period2,
+        setting: setting,
+        value: '✅ Praise {@receivers} {reason}',
+        type: 'String',
+      });
     });
 
     test('401 when not authenticated', async () => {
-      return request(server).get(`/period/${period._id}/settings`).send().expect(401);
+      return request(server)
+        .get(`/period/${period._id}/settings`)
+        .send()
+        .expect(401);
     });
 
     test('200 when correct data is sent', async () => {
@@ -221,7 +209,6 @@ describe('Period Setting (E2E)', () => {
     });
 
     it('should return the all periodSettings for a given period', async () => {
-
       const response = await authorizedGetRequest(
         `/period/${period._id}/settings`,
         app,
@@ -256,17 +243,19 @@ describe('Period Setting (E2E)', () => {
         type: 'String',
       });
 
-      periodSetting =
-        await periodSettingsSeeder.seedPeriodSettings({
-          period: period,
-          setting: setting,
-          value: '✅ Praise {@receivers} {reason}',
-          type: 'String'
-        });
+      periodSetting = await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: setting,
+        value: '✅ Praise {@receivers} {reason}',
+        type: 'String',
+      });
     });
 
     test('401 when not authenticated', async () => {
-      return request(server).get(`/period/${period._id}/settings/${setting._id}`).send().expect(401);
+      return request(server)
+        .get(`/period/${period._id}/settings/${setting._id}`)
+        .send()
+        .expect(401);
     });
 
     test('200 when correct data is sent', async () => {
@@ -293,7 +282,6 @@ describe('Period Setting (E2E)', () => {
   describe('PUT /api/period/{periodId}/settings/{settingId}', () => {
     let period: Period;
     let setting: Setting;
-    let periodSetting: PeriodSetting;
 
     beforeEach(async () => {
       period = await periodsSeeder.seedPeriod({
@@ -306,13 +294,12 @@ describe('Period Setting (E2E)', () => {
         type: 'String',
       });
 
-      periodSetting =
-        await periodSettingsSeeder.seedPeriodSettings({
-          period: period,
-          setting: setting,
-          value: '✅ Praise {@receivers} {reason}',
-          type: 'String'
-        });
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: setting,
+        value: '✅ Praise {@receivers} {reason}',
+        type: 'String',
+      });
     });
 
     test('401 when not authenticated', async () => {
@@ -352,7 +339,7 @@ describe('Period Setting (E2E)', () => {
         users[2].accessToken,
         {
           value: newValue,
-        }
+        },
       );
 
       expect(response.status).toBe(200);

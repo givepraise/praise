@@ -11,7 +11,6 @@ import { UtilsProvider } from '@/utils/utils.provider';
 import { ConstantsProvider } from '@/constants/constants.provider';
 import { EventLogModule } from '@/event-log/event-log.module';
 import { SettingsModule } from '@/settings/settings.module';
-import { SettingsService } from '@/settings/settings.service';
 
 @Module({
   imports: [

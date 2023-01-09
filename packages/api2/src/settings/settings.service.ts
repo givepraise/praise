@@ -90,10 +90,7 @@ export class SettingsService {
    * @throws {ServiceException}
    *
    * */
-  async setOne(
-    _id: Types.ObjectId,
-    data: SetSettingDto,
-  ): Promise<Setting> {
+  async setOne(_id: Types.ObjectId, data: SetSettingDto): Promise<Setting> {
     const setting = await this.settingsModel.findOne({
       _id,
       period: { $exists: 0 },
