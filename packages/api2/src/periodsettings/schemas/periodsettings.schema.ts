@@ -1,6 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { SchemaTypes, Types } from 'mongoose';
 import { ExposeId } from '@/shared/expose-id.decorator';
+import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import { Period } from '@/periods/schemas/periods.schema';
+import { Type } from 'class-transformer';
+import { Setting } from '@/settings/schemas/settings.schema';
 
 export type PeriodSettingDocument = PeriodSetting & Document;
 
@@ -14,15 +18,27 @@ export class PeriodSetting {
     }
   }
 
+  @ApiResponseProperty({
+    example: '62291b7ea8b1619f78818524',
+  })
   @ExposeId()
   _id: Types.ObjectId;
 
+  @ApiResponseProperty({
+    type: [Period],
+  })
+  @Type(() => Period)
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Period', default: null })
   period: Types.ObjectId;
 
+  @ApiResponseProperty({
+    type: [Setting],
+  })
+  @Type(() => Setting)
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Setting', default: null })
   setting: Types.ObjectId;
 
+  @ApiProperty()
   @Prop()
   value: string;
 

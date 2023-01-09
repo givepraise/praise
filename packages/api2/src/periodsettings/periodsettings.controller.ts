@@ -5,14 +5,12 @@ import {
   Controller,
   Get,
   Param,
-  ParseBoolPipe,
   Put,
-  Req,
+  SerializeOptions,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { Request } from 'express';
 import { Types } from 'mongoose';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { PeriodSettingsService } from './periodsettings.service';
@@ -24,8 +22,11 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Controller('period')
 @UseInterceptors(ClassSerializerInterceptor)
-@UseGuards(PermissionsGuard)
-@UseGuards(AuthGuard(['jwt', 'api-key']))
+@SerializeOptions({
+  excludePrefixes: ['__'],
+})
+// @UseGuards(PermissionsGuard)
+// @UseGuards(AuthGuard(['jwt', 'api-key']))
 export class PeriodSettingsController {
   constructor(private readonly periodsettingsService: PeriodSettingsService) {}
 
