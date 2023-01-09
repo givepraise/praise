@@ -5,7 +5,7 @@ import {
   Controller,
   Get,
   Param,
-  Put,
+  Patch,
   SerializeOptions,
   UseGuards,
   UseInterceptors,
@@ -63,7 +63,7 @@ export class PeriodSettingsController {
     return this.periodsettingsService.findOneById(settingId, periodId);
   }
 
-  @Put('/:periodId/settings/:settingId')
+  @Patch('/:periodId/settings/:settingId')
   @ApiOperation({ summary: 'Set value for a period setting.' })
   @ApiResponse({
     status: 200,

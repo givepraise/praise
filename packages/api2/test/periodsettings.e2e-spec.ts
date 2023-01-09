@@ -14,7 +14,7 @@ import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
   authorizedGetRequest,
-  authorizedPutRequest,
+  authorizedPatchRequest,
   loginUser,
 } from './test.common';
 import { runDbMigrations } from '@/database/migrations';
@@ -285,13 +285,13 @@ describe('Period Settings (E2E)', () => {
 
     test('401 when not authenticated', async () => {
       return request(server)
-        .put(`/periods/${period._id}/settings/${setting._id}`)
+        .patch(`/periods/${period._id}/settings/${setting._id}`)
         .send()
         .expect(401);
     });
 
     test('403 when user has no permission to edit', async () => {
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/periods/${period._id}/settings/${setting._id}`,
         app,
         users[0].accessToken,
@@ -302,7 +302,7 @@ describe('Period Settings (E2E)', () => {
     });
 
     test('Invalid periodSettings parameters - no parameters', async () => {
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/periods/${period._id}/settings/${setting._id}`,
         app,
         users[2].accessToken, // admin
@@ -314,7 +314,7 @@ describe('Period Settings (E2E)', () => {
 
     test('Update periodSetting value with correct parameters', async () => {
       const newValue = 'Praise Text';
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/periods/${period._id}/settings/${setting._id}`,
         app,
         users[2].accessToken,
@@ -343,7 +343,7 @@ describe('Period Settings (E2E)', () => {
       });
 
       const newValue = 'not an integer'; // invalid value
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
@@ -369,7 +369,7 @@ describe('Period Settings (E2E)', () => {
       });
 
       const newValue = 100; // valid value
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
@@ -398,7 +398,7 @@ describe('Period Settings (E2E)', () => {
       });
 
       const newValue = 'not a float'; // invalid value
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
@@ -424,7 +424,7 @@ describe('Period Settings (E2E)', () => {
       });
 
       const newValue = 100.99; // valid value
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
@@ -453,7 +453,7 @@ describe('Period Settings (E2E)', () => {
       });
 
       const newValue = 'not a boolean'; // invalid value
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
@@ -479,7 +479,7 @@ describe('Period Settings (E2E)', () => {
       });
 
       const newValue = false; // valid value
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
@@ -508,7 +508,7 @@ describe('Period Settings (E2E)', () => {
       });
 
       const newValue = 'not an integer list'; // invalid value
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
@@ -534,7 +534,7 @@ describe('Period Settings (E2E)', () => {
       });
 
       const newValue = '4, 5, 6'; // valid value
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
@@ -563,7 +563,7 @@ describe('Period Settings (E2E)', () => {
       });
 
       const newValue = 'not a JSON'; // invalid value
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
@@ -590,7 +590,7 @@ describe('Period Settings (E2E)', () => {
       });
 
       const newValue = '{"key": "new value"}'; // valid value
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
