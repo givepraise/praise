@@ -25,23 +25,6 @@ export class PeriodSetting {
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Setting', default: null })
   setting: Types.ObjectId;
 
-  @Prop({
-    required: true,
-    enum: [
-      'Integer',
-      'Float',
-      'String',
-      'Textarea',
-      'Boolean',
-      'IntegerList',
-      'StringList',
-      'Image',
-      'Radio',
-      'JSON',
-    ],
-  })
-  type: string;
-
   @Prop()
   value: string;
 

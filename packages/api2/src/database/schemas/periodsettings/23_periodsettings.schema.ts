@@ -35,6 +35,12 @@ export const PeriodSettingsSchema = new Schema({
     required: true,
     index: true,
   },
+  setting: {
+    type: ObjectId,
+    ref: 'Setting',
+    required: true,
+    index: true,
+  },
 });
 
 delete mongoose.models['PeriodSettings'];

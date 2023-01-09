@@ -66,6 +66,24 @@ export class SettingsService {
   }
 
   /**
+   * Find one setting by key or none
+   * @param key
+   * @returns {Promise<Setting>}
+   * @throws {ServiceException}
+   *
+   * */
+  async findOneByKey(key: string): Promise<Setting | null> {
+    const setting = await this.settingsModel
+      .findOne({
+        key,
+        period: { $exists: 0 },
+      })
+      .lean();
+
+    return setting;
+  }
+
+  /**
    * Set one setting by id
    * @param key
    * @returns {Promise<Setting>}
