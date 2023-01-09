@@ -32,10 +32,10 @@ export class PeriodSettingsController {
   constructor(private readonly periodsettingsService: PeriodSettingsService) {}
 
   @Get(':periodId/settings')
-  @ApiOperation({ summary: 'List Period Settings for a given Period ID' })
+  @ApiOperation({ summary: 'List all period settings.' })
   @ApiResponse({
     status: 200,
-    description: 'All Period Settings',
+    description: 'All period settings',
     type: [PeriodSetting],
   })
   @Permissions(Permission.PeriodSettingsView)
@@ -47,10 +47,10 @@ export class PeriodSettingsController {
   }
 
   @Get('/:periodId/settings/:settingId')
-  @ApiOperation({ summary: 'Finds a Period Setting for a given Period ID' })
+  @ApiOperation({ summary: 'Get a period setting.' })
   @ApiResponse({
     status: 200,
-    description: 'Period Setting',
+    description: 'Period setting',
     type: PeriodSetting,
   })
   @Permissions(Permission.PeriodSettingsView)
@@ -64,10 +64,10 @@ export class PeriodSettingsController {
   }
 
   @Put('/:periodId/settings/:settingId')
-  @ApiOperation({ summary: 'Updates a Period Setting for a given Period ID' })
+  @ApiOperation({ summary: 'Set value for a period setting.' })
   @ApiResponse({
     status: 200,
-    description: 'Updated Period Setting',
+    description: 'Updated period setting',
     type: PeriodSetting,
   })
   @Permissions(Permission.PeriodSettingsManage)

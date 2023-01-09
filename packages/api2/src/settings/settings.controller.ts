@@ -14,7 +14,7 @@ import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { Setting } from './schemas/settings.schema';
 import { SettingsService } from './settings.service';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 import { AuthGuard } from '@nestjs/passport';
 import { Permission } from '@/auth/enums/permission.enum';
@@ -34,11 +34,11 @@ export class SettingsController {
 
   @Get()
   @ApiOperation({
-    summary: 'Returns the general settings not belonging to a period',
+    summary: 'List all settings.',
   })
   @ApiResponse({
     status: 200,
-    description: 'Settings returned succesfully',
+    description: 'All settings.',
     type: [Setting],
   })
   @Permissions(Permission.SettingsView)
@@ -48,11 +48,11 @@ export class SettingsController {
 
   @Get(':id')
   @ApiOperation({
-    summary: 'Returns an specified setting by id',
+    summary: 'Get a setting.',
   })
   @ApiResponse({
     status: 200,
-    description: 'Setting returned succesfully',
+    description: 'Setting.',
     type: Setting,
   })
   @ApiParam({ name: 'id', type: String })
@@ -65,15 +65,11 @@ export class SettingsController {
 
   @Patch(':id')
   @ApiOperation({
-    summary: 'Returns an updated setting',
-  })
-  @ApiBody({
-    type: SetSettingDto,
-    description: 'A request containing the user identityEthAddress',
+    summary: 'Set a value for a setting.',
   })
   @ApiResponse({
     status: 200,
-    description: 'Setting returned succesfully',
+    description: 'Updated setting.',
     type: Setting,
   })
   @ApiParam({ name: 'id', type: String })

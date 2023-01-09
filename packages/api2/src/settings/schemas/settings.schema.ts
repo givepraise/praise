@@ -3,7 +3,8 @@ import { Expose } from 'class-transformer';
 import { Types } from 'mongoose';
 import { SettingGroup } from '../interfaces/settings-group.interface';
 import { ExposeId } from '@/shared/expose-id.decorator';
-import { ApiResponseProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export type SettingDocument = Setting & Document;
 
@@ -27,9 +28,11 @@ export class Setting {
   @Prop({ required: true })
   key: string;
 
-  @ApiResponseProperty({
+  @ApiProperty({
     example: '666',
   })
+  @IsNotEmpty()
+  @IsString()
   @Prop()
   value: string;
 
