@@ -36,3 +36,4 @@ export class PeriodSetting {
 }
 
 export const PeriodSettingsSchema = SchemaFactory.createForClass(PeriodSetting);
+PeriodSettingsSchema.index({ period: 1, setting: 1 }, { unique: true });
