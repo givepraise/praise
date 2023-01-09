@@ -137,7 +137,7 @@ describe('Period Settings (E2E)', () => {
     await app.close();
   });
 
-  describe('GET /api/period/{periodId}/settings', () => {
+  describe('GET /api/periods/{periodId}/settings', () => {
     let period: Period;
     let period2: Period;
     let setting: Setting;
@@ -175,14 +175,14 @@ describe('Period Settings (E2E)', () => {
 
     test('401 when not authenticated', async () => {
       return request(server)
-        .get(`/period/${period._id}/settings`)
+        .get(`/periods/${period._id}/settings`)
         .send()
         .expect(401);
     });
 
     test('200 when correct data is sent', async () => {
       const response = await authorizedGetRequest(
-        `/period/${period._id}/settings`,
+        `/periods/${period._id}/settings`,
         app,
         users[0].accessToken,
       );
@@ -191,7 +191,7 @@ describe('Period Settings (E2E)', () => {
 
     it('should return the all periodSettings for a given period', async () => {
       const response = await authorizedGetRequest(
-        `/period/${period._id}/settings`,
+        `/periods/${period._id}/settings`,
         app,
         users[0].accessToken,
       ).expect(200);
@@ -208,7 +208,7 @@ describe('Period Settings (E2E)', () => {
     });
   });
 
-  describe('GET /api/period/{periodId}/settings/{settingId}', () => {
+  describe('GET /api/periods/{periodId}/settings/{settingId}', () => {
     let period: Period;
     let setting: Setting;
     let periodSetting: PeriodSetting;
@@ -234,14 +234,14 @@ describe('Period Settings (E2E)', () => {
 
     test('401 when not authenticated', async () => {
       return request(server)
-        .get(`/period/${period._id}/settings/${setting._id}`)
+        .get(`/periods/${period._id}/settings/${setting._id}`)
         .send()
         .expect(401);
     });
 
     test('200 when correct data is sent', async () => {
       const response = await authorizedGetRequest(
-        `/period/${period._id}/settings/${setting._id}`,
+        `/periods/${period._id}/settings/${setting._id}`,
         app,
         users[0].accessToken,
       );
@@ -260,7 +260,7 @@ describe('Period Settings (E2E)', () => {
     });
   });
 
-  describe('PUT /api/period/{periodId}/settings/{settingId}', () => {
+  describe('PUT /api/periods/{periodId}/settings/{settingId}', () => {
     let period: Period;
     let setting: Setting;
 
@@ -285,14 +285,14 @@ describe('Period Settings (E2E)', () => {
 
     test('401 when not authenticated', async () => {
       return request(server)
-        .put(`/period/${period._id}/settings/${setting._id}`)
+        .put(`/periods/${period._id}/settings/${setting._id}`)
         .send()
         .expect(401);
     });
 
     test('403 when user has no permission to edit', async () => {
       const response = await authorizedPutRequest(
-        `/period/${period._id}/settings/${setting._id}`,
+        `/periods/${period._id}/settings/${setting._id}`,
         app,
         users[0].accessToken,
         {},
@@ -303,7 +303,7 @@ describe('Period Settings (E2E)', () => {
 
     test('Invalid periodSettings parameters - no parameters', async () => {
       const response = await authorizedPutRequest(
-        `/period/${period._id}/settings/${setting._id}`,
+        `/periods/${period._id}/settings/${setting._id}`,
         app,
         users[2].accessToken, // admin
         {},
@@ -315,7 +315,7 @@ describe('Period Settings (E2E)', () => {
     test('Update periodSetting value with correct parameters', async () => {
       const newValue = 'Praise Text';
       const response = await authorizedPutRequest(
-        `/period/${period._id}/settings/${setting._id}`,
+        `/periods/${period._id}/settings/${setting._id}`,
         app,
         users[2].accessToken,
         {
@@ -344,7 +344,7 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = 'not an integer'; // invalid value
       const response = await authorizedPutRequest(
-        `/period/${period._id}/settings/${s._id}`,
+        `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
         {
@@ -370,11 +370,11 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = 100; // valid value
       const response = await authorizedPutRequest(
-        `/period/${period._id}/settings/${s._id}`,
+        `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
         {
-          value: newValue,
+          value: newValue.toString(),
         },
       );
 
@@ -399,7 +399,7 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = 'not a float'; // invalid value
       const response = await authorizedPutRequest(
-        `/period/${period._id}/settings/${s._id}`,
+        `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
         {
@@ -425,11 +425,11 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = 100.99; // valid value
       const response = await authorizedPutRequest(
-        `/period/${period._id}/settings/${s._id}`,
+        `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
         {
-          value: newValue,
+          value: newValue.toString(),
         },
       );
 
@@ -454,7 +454,7 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = 'not a boolean'; // invalid value
       const response = await authorizedPutRequest(
-        `/period/${period._id}/settings/${s._id}`,
+        `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
         {
@@ -480,11 +480,11 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = false; // valid value
       const response = await authorizedPutRequest(
-        `/period/${period._id}/settings/${s._id}`,
+        `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
         {
-          value: newValue,
+          value: newValue.toString(),
         },
       );
 
@@ -509,7 +509,7 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = 'not an integer list'; // invalid value
       const response = await authorizedPutRequest(
-        `/period/${period._id}/settings/${s._id}`,
+        `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
         {
@@ -535,7 +535,7 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = '4, 5, 6'; // valid value
       const response = await authorizedPutRequest(
-        `/period/${period._id}/settings/${s._id}`,
+        `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
         {
@@ -564,7 +564,7 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = 'not a JSON'; // invalid value
       const response = await authorizedPutRequest(
-        `/period/${period._id}/settings/${s._id}`,
+        `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
         {
@@ -591,7 +591,7 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = '{"key": "new value"}'; // valid value
       const response = await authorizedPutRequest(
-        `/period/${period._id}/settings/${s._id}`,
+        `/periods/${period._id}/settings/${s._id}`,
         app,
         users[2].accessToken,
         {
