@@ -32,14 +32,12 @@ export class EthSignatureService {
     // Generate random nonce used for auth request
     const nonce = await this.utils.randomString();
 
-    // Find user by their Ethereum address
-    const user = await this.usersService.findOneByEth(identityEthAddress);
-
-    if (user) {
-      // Update user's nonce
+    try {
+      // Find user by their Ethereum address, update nonce
+      const user = await this.usersService.findOneByEth(identityEthAddress);
       return this.usersService.update(user._id, { nonce });
-    } else {
-      // Create a new user
+    } catch (e) {
+      // No user found, create a new user
       return this.usersService.create({
         identityEthAddress,
         rewardsEthAddress: identityEthAddress,

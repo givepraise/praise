@@ -73,19 +73,21 @@ export class ActivateService {
       throw new ServiceException('Verification failed');
     }
 
+    // Generate username
+    const username =
+      (await this.usersService.generateUserNameFromAccount(userAccount)) ||
+      identityEthAddress;
+
     // Find existing user or create new
-    let user = await this.usersService.findOneByEth(identityEthAddress);
-    if (!user) {
-      const username =
-        (await this.usersService.generateUserNameFromAccount(userAccount)) ||
-        identityEthAddress;
+    let user;
+    try {
+      user = await this.usersService.findOneByEth(identityEthAddress);
+    } catch (e) {
       user = await this.usersService.create({
         identityEthAddress,
         rewardsEthAddress: identityEthAddress,
         username,
       });
-
-      if (!user) throw new ServiceException('User creation failed');
     }
 
     // Link user account with user
