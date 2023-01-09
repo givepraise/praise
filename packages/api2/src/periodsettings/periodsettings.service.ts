@@ -62,29 +62,16 @@ export class PeriodSettingsService {
     return new PeriodSetting(periodSetting);
   }
 
-  async findOne(
-    key: string,
-    periodId: Types.ObjectId | undefined = undefined,
-  ): Promise<PeriodSetting | null> {
-    return await this.periodSettingsModel.findOne({
-      key,
-      period: periodId,
-    });
-  }
-
   async setOne(
     settingId: Types.ObjectId,
     periodId: Types.ObjectId,
     data: SetPeriodSettingDto,
-    file?: {
-      value: UploadedFile
-    },
   ): Promise<PeriodSetting> {
-    const period = await this.periodsService.findOneById(periodId);
     const setting = await this.settingsService.findOneById(settingId);
-
     if (!setting) throw new ServiceException('Setting not found.');
 
+    const period = await this.periodsService.findOneById(periodId);
+    if (!period) throw new ServiceException('Period not found.');
     if (period.status !== PeriodStatusType.OPEN)
       throw new ServiceException(
         'Period settings can only be changed when period status is OPEN.',
@@ -94,7 +81,7 @@ export class PeriodSettingsService {
       setting: settingId,
       period: periodId,
     });
-    if (!periodSetting) throw new ServiceException('PeriodSettings not found.');
+    if (!periodSetting) throw new ServiceException('Period setting not found.');
 
     const originalValue = periodSetting.value;
 
@@ -127,14 +114,15 @@ export class PeriodSettingsService {
       periodSetting.value = data.value;
     }
 
+    await periodSetting.save();
+
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.PERIOD_SETTING,
-      description: `Updated period "${period.name}" setting "${setting.label}" from "${
-        originalValue  || ''
-      }" to "${setting.value || ''}"`,
+      description: `Updated period "${period.name}" setting "${
+        setting.label
+      }" from "${originalValue || ''}" to "${setting.value || ''}"`,
     });
 
-    await periodSetting.save();
     return this.findOneById(settingId, periodId);
   }
 }
