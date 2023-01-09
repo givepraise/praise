@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request } from 'express';
 import { Model, Types } from 'mongoose';
@@ -15,12 +15,16 @@ import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { RequestContext } from 'nestjs-request-context';
 import { SettingGroup } from './interfaces/settings-group.interface';
+import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
+import { validate } from './utils/settings.validate';
 
 @Injectable()
 export class SettingsService {
   constructor(
     @InjectModel(Setting.name)
     private settingsModel: Model<Setting>,
+    @Inject(forwardRef(() => PeriodSettingsService))
+    private periodSettingsService: PeriodSettingsService,
     private utils: UtilsProvider,
     private eventLogService: EventLogService,
   ) {}
@@ -63,6 +67,24 @@ export class SettingsService {
   }
 
   /**
+   * Find one setting by key or none
+   * @param key
+   * @returns {Promise<Setting>}
+   * @throws {ServiceException}
+   *
+   * */
+  async findOneByKey(key: string): Promise<Setting | null> {
+    const setting = await this.settingsModel
+      .findOne({
+        key,
+        period: { $exists: 0 },
+      })
+      .lean();
+
+    return setting;
+  }
+
+  /**
    * Set one setting by id
    * @param key
    * @returns {Promise<Setting>}
@@ -75,6 +97,11 @@ export class SettingsService {
       period: { $exists: 0 },
     });
     if (!setting) throw new ServiceException('Settings not found.');
+    if (!validate(data.value, setting.type)) {
+      throw new ServiceException(
+        `Settings value ${data.value} is not valid for type ${setting.type}.`,
+      );
+    }
 
     const originalValue = setting.value;
     if (setting.type === 'Image') {

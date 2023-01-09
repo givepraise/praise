@@ -1,6 +1,6 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { PraiseModel, Praise, PraiseDocument } from './schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
@@ -21,7 +21,9 @@ export class PraiseService {
   constructor(
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
+    @Inject(forwardRef(() => PeriodsService))
     private periodService: PeriodsService,
+    @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
     private quantificationsService: QuantificationsService,
     private eventLogService: EventLogService,

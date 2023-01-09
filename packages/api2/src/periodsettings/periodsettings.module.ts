@@ -10,14 +10,16 @@ import { PeriodsModule } from '@/periods/periods.module';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { ConstantsProvider } from '@/constants/constants.provider';
 import { EventLogModule } from '@/event-log/event-log.module';
+import { SettingsModule } from '@/settings/settings.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: PeriodSetting.name, schema: PeriodSettingsSchema },
     ]),
-    // forwardRef(() => PeriodsModule),
     EventLogModule,
+    forwardRef(() => PeriodsModule),
+    forwardRef(() => SettingsModule),
   ],
   controllers: [PeriodSettingsController],
   providers: [PeriodSettingsService, UtilsProvider, ConstantsProvider],

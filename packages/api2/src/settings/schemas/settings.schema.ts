@@ -2,8 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose } from 'class-transformer';
 import { Types } from 'mongoose';
 import { SettingGroup } from '../interfaces/settings-group.interface';
-import { IsSettingValueAllowedBySettingType } from '../validators/settings-type.validator';
 import { ExposeId } from '@/shared/expose-id.decorator';
+import { ApiResponseProperty } from '@nestjs/swagger';
 
 export type SettingDocument = Setting & Document;
 
@@ -17,14 +17,20 @@ export class Setting {
     }
   }
 
+  @ApiResponseProperty({ example: '621f802b813dbdbaddeaf799' })
   @ExposeId()
   _id: Types.ObjectId;
 
+  @ApiResponseProperty({
+    example: 'SETTING_KEY',
+  })
   @Prop({ required: true })
   key: string;
 
+  @ApiResponseProperty({
+    example: '666',
+  })
   @Prop()
-  @IsSettingValueAllowedBySettingType()
   value: string;
 
   @Expose()
@@ -53,9 +59,15 @@ export class Setting {
     return this.value;
   }
 
+  @ApiResponseProperty({
+    example: '555',
+  })
   @Prop()
   defaultValue: string;
 
+  @ApiResponseProperty({
+    example: 'Integer',
+  })
   @Prop({
     required: true,
     enum: [
@@ -73,12 +85,21 @@ export class Setting {
   })
   type: string;
 
+  @ApiResponseProperty({
+    example: 'Quantifiers Per Praise',
+  })
   @Prop({ required: true })
   label: string;
 
+  @ApiResponseProperty({
+    example: 'How many redundant quantifications are assigned to each praise?',
+  })
   @Prop()
   description: string;
 
+  @ApiResponseProperty({
+    example: '0',
+  })
   @Prop({
     required: true,
     enum: SettingGroup,
@@ -86,11 +107,21 @@ export class Setting {
   })
   group: number;
 
+  @ApiResponseProperty()
   @Prop()
   options: string;
 
+  @ApiResponseProperty({
+    example: '0',
+  })
   @Prop()
   subgroup: number;
+
+  @ApiResponseProperty({
+    example: 'true',
+  })
+  @Prop()
+  periodOverridable: boolean;
 }
 
 export const SettingSchema = SchemaFactory.createForClass(Setting);

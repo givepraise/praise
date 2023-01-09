@@ -4,9 +4,24 @@ const { Schema, model } = mongoose;
 const { ObjectId } = Schema.Types;
 
 export const PeriodSettingsSchema = new Schema({
-  key: { type: String, required: true },
+  _id: {
+    type: ObjectId,
+    required: true,
+    set: (value: string) => value.toString(),
+  },
   value: { type: String, required: false },
-  defaultValue: { type: String, required: false },
+  period: {
+    type: ObjectId,
+    ref: 'Period',
+    required: true,
+    index: true,
+  },
+  setting: {
+    type: ObjectId,
+    ref: 'Period',
+    required: true,
+    index: true,
+  },
   type: {
     type: String,
     enum: [
@@ -23,24 +38,14 @@ export const PeriodSettingsSchema = new Schema({
     ],
     required: true,
   },
-  options: { type: String },
-  label: { type: String, required: true },
-  description: { type: String },
-  periodOverridable: { type: Boolean, required: true },
-  group: { type: Number, enum: SettingGroup, required: true },
-  subgroup: { type: Number },
-  period: {
-    type: ObjectId,
-    ref: 'Period',
-    required: true,
-    index: true,
+  createdAt: {
+    type: Date,
+    required: true
   },
-  setting: {
-    type: ObjectId,
-    ref: 'Setting',
-    required: true,
-    index: true,
-  },
+  updatedAt: {
+    type: Date,
+    required: true
+  }
 });
 
 delete mongoose.models['PeriodSettings'];

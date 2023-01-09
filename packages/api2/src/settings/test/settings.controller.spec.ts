@@ -7,7 +7,6 @@ jest.mock('@/settings/settings.service');
 
 describe('SettingsController', () => {
   let settingsController: SettingsController;
-  let settingsService: SettingsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -17,7 +16,6 @@ describe('SettingsController', () => {
     }).compile();
 
     settingsController = module.get<SettingsController>(SettingsController);
-    settingsService = module.get<SettingsService>(SettingsService);
     jest.clearAllMocks();
   });
 
@@ -35,6 +33,15 @@ describe('SettingsController', () => {
   describe('GET /api/settings/:id', () => {
     it('200 response with json body containing a setting', async function () {
       const response = await settingsController.findOne(settingStub._id);
+      expect(response._id).toEqual(settingStub._id);
+    });
+  });
+
+  describe('PUT /api/settings/:id', () => {
+    it('200 response with json body containing a updated setting', async function () {
+      const response = await settingsController.set(settingStub._id, {
+        description: 'New Description',
+      });
       expect(response._id).toEqual(settingStub._id);
     });
   });
