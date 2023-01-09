@@ -7,7 +7,6 @@ enum EventLogTypeKey {
   PRAISE = 'PRAISE',
   QUANTIFICATION = 'QUANTIFICATION',
   SETTING = 'SETTING',
-  PERIOD_SETTING = 'PERIOD_SETTING'
 }
 
 const eventLogTypes = [
@@ -40,11 +39,6 @@ const eventLogTypes = [
     key: EventLogTypeKey.QUANTIFICATION,
     label: 'Quantification',
     description: 'An action to quantify praise',
-  },
-  {
-    key: EventLogTypeKey.PERIOD_SETTING,
-    label: 'Period Setting',
-    description: 'An action to period setting',
   },
 ];
 
