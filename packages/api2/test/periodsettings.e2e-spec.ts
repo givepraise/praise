@@ -19,7 +19,6 @@ import {
 } from './test.common';
 import { runDbMigrations } from '@/database/migrations';
 import { PeriodsService } from '../src/periods/periods.service';
-import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
 import { PeriodsModule } from '@/periods/periods.module';
 import { Period } from '@/periods/schemas/periods.schema';
@@ -41,7 +40,7 @@ class LoggedInUser {
   wallet: Wallet;
 }
 
-describe('Period Setting (E2E)', () => {
+describe('Period Settings (E2E)', () => {
   let app: INestApplication;
   let server: Server;
   let module: TestingModule;

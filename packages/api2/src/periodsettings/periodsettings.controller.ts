@@ -1,5 +1,16 @@
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
-import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseBoolPipe, Put, Req, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Param,
+  ParseBoolPipe,
+  Put,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 import { Types } from 'mongoose';
@@ -25,7 +36,7 @@ export class PeriodSettingsController {
     description: 'All Period Settings',
     type: [PeriodSetting],
   })
-  @Permissions(Permission.UsersViewPeriodSettings)
+  @Permissions(Permission.PeriodSettingsView)
   @ApiParam({ name: 'periodId', type: String })
   async findAll(
     @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
@@ -40,7 +51,7 @@ export class PeriodSettingsController {
     description: 'Period Setting',
     type: PeriodSetting,
   })
-  @Permissions(Permission.UsersViewPeriodSettings)
+  @Permissions(Permission.PeriodSettingsView)
   @ApiParam({ name: 'periodId', type: String })
   @ApiParam({ name: 'settingId', type: String })
   findOne(
@@ -57,7 +68,7 @@ export class PeriodSettingsController {
     description: 'Updated Period Setting',
     type: PeriodSetting,
   })
-  @Permissions(Permission.UsersManagePeriodSettings)
+  @Permissions(Permission.PeriodSettingsManage)
   @ApiParam({ name: 'periodId', type: String })
   @ApiParam({ name: 'settingId', type: String })
   async set(

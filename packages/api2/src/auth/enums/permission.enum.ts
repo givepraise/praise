@@ -7,8 +7,8 @@ export enum Permission {
   PraiseView = 'praise:view',
   PraiseQuantify = 'praise:quantify',
   PeriodView = 'period:view',
-  UsersViewPeriodSettings = 'users:viewPeriodSettings',
-  UsersManagePeriodSettings = 'users:managePeriodSettings',
   PeriodCreate = 'period:create',
   PeriodUpdate = 'period:update',
+  PeriodSettingsView = 'periodSettings:view',
+  PeriodSettingsManage = 'periodSettings:manage',
 }
