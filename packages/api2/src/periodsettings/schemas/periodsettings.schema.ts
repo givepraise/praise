@@ -1,28 +1,56 @@
-import { Setting } from '@/settings/schemas/settings.schema';
-import { InjectModel, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { SchemaTypes, Types } from 'mongoose';
 import { ExposeId } from '@/shared/expose-id.decorator';
+import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import { Period } from '@/periods/schemas/periods.schema';
+import { Type } from 'class-transformer';
+import { Setting } from '@/settings/schemas/settings.schema';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export type PeriodSettingDocument = PeriodSetting & Document;
 
 @Schema({
   timestamps: true,
 })
-export class PeriodSetting extends Setting {
-  constructor(
-    @InjectModel('Settings') public readonly settings: Partial<Setting>,
-    partial?: Partial<PeriodSetting>,
-  ) {
-    super(settings);
-
+export class PeriodSetting {
+  constructor(partial?: Partial<PeriodSetting>) {
     if (partial) {
       Object.assign(this, partial);
     }
   }
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'Period', default: null })
+  @ApiResponseProperty({
+    example: '62291b7ea8b1619f78818524',
+  })
   @ExposeId()
+  _id: Types.ObjectId;
+
+  @ApiResponseProperty({
+    type: [Period],
+  })
+  @Type(() => Period)
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'Period', default: null })
   period: Types.ObjectId;
+
+  @ApiResponseProperty({
+    type: [Setting],
+  })
+  @Type(() => Setting)
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'Setting', default: null })
+  setting: Types.ObjectId;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @Prop()
+  value: string;
+
+  @Prop({ type: Date })
+  createdAt: Date;
+
+  @Prop({ type: Date })
+  updatedAt: Date;
 }
 
 export const PeriodSettingsSchema = SchemaFactory.createForClass(PeriodSetting);
+PeriodSettingsSchema.index({ period: 1, setting: 1 }, { unique: true });

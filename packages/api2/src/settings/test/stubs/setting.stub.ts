@@ -14,4 +14,5 @@ export const settingStub: Setting = {
   group: SettingGroup.APPLICATION,
   options: '',
   subgroup: 1,
+  periodOverridable: false,
 };

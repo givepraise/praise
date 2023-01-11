@@ -67,6 +67,18 @@ export const authorizedPutRequest = (
     .send(body);
 };
 
+export const authorizedPatchRequest = (
+  url: string,
+  app: INestApplication,
+  accessToken: string,
+  body: any,
+) => {
+  return request(app.getHttpServer())
+    .patch(url)
+    .set('Authorization', `Bearer ${accessToken}`)
+    .send(body);
+};
+
 export const authorizedDeleteRequest = (
   url: string,
   app: INestApplication,

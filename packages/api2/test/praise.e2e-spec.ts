@@ -43,6 +43,7 @@ import { PraisePaginatedQueryDto } from '@/praise/dto/praise-paginated-query.dto
 import { Types } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
+import { Setting } from '@/settings/schemas/settings.schema';
 
 class LoggedInUser {
   accessToken: string;
@@ -60,6 +61,7 @@ describe('Praise (E2E)', () => {
   let praiseService: PraiseService;
   let periodsService: PeriodsService;
   let periodsSeeder: PeriodsSeeder;
+  let settingsSeeder: SettingsSeeder;
   let periodSettingsService: PeriodSettingsService;
   let periodSettingsSeeder: PeriodSettingsSeeder;
   let quantificationsSeeder: QuantificationsSeeder;
@@ -114,6 +116,7 @@ describe('Praise (E2E)', () => {
       QuantificationsService,
     );
     userAccountsService = module.get<UserAccountsService>(UserAccountsService);
+    settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder);
     periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
     periodsService = module.get<PeriodsService>(PeriodsService);
     periodSettingsSeeder =
@@ -291,6 +294,7 @@ describe('Praise (E2E)', () => {
   describe('PUT /api/praise/{id}/quantify', () => {
     let praise: Praise;
     let period: Period;
+    let setting: Setting;
     let periodSettingsAllowedValues: PeriodSetting;
 
     beforeEach(async () => {
@@ -312,12 +316,17 @@ describe('Praise (E2E)', () => {
         status: PeriodStatusType.QUANTIFY,
       });
 
+      setting = await settingsSeeder.seedSettings({
+        key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
+        value: '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
+        type: 'StringList',
+      });
+
       periodSettingsAllowedValues =
         await periodSettingsSeeder.seedPeriodSettings({
           period: period,
-          key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
+          setting: setting,
           value: '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
-          type: 'StringList',
         });
     });
 
@@ -664,17 +673,29 @@ describe('Praise (E2E)', () => {
         status: PeriodStatusType.QUANTIFY,
       });
 
-      await periodSettingsSeeder.seedPeriodSettings({
+      const allowedValuesSetting = await settingsSeeder.seedSettings({
         period: period,
         key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
         value: '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
         type: 'StringList',
       });
-      await periodSettingsSeeder.seedPeriodSettings({
+
+      const praisePercentageSetting = await settingsSeeder.seedSettings({
         period: period,
         key: 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
         value: '0.1',
         type: 'Float',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setitng: allowedValuesSetting,
+        value: '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
+      });
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: praisePercentageSetting,
+        value: '0.1',
       });
     });
 
@@ -853,11 +874,16 @@ describe('Praise (E2E)', () => {
         status: PeriodStatusType.QUANTIFY,
       });
 
-      await periodSettingsSeeder.seedPeriodSettings({
-        period: period,
+      const setting = await settingsSeeder.seedSettings({
         key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
         value: '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
         type: 'StringList',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: setting,
+        value: '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
       });
     });
 

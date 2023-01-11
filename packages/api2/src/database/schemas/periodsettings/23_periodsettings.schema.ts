@@ -23,6 +23,7 @@ export const PeriodSettingsSchema = new Schema({
     ],
     required: true,
   },
+  options: { type: String },
   label: { type: String, required: true },
   description: { type: String },
   periodOverridable: { type: Boolean, required: true },
@@ -31,6 +32,12 @@ export const PeriodSettingsSchema = new Schema({
   period: {
     type: ObjectId,
     ref: 'Period',
+    required: true,
+    index: true,
+  },
+  setting: {
+    type: ObjectId,
+    ref: 'Setting',
     required: true,
     index: true,
   },

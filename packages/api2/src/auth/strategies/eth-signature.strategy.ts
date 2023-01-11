@@ -30,9 +30,11 @@ export class EthSignatureStrategy extends PassportStrategy(
    * @returns
    */
   async validate(identityEthAddress: string, signature: string): Promise<any> {
+    let user;
     // Check if user exists
-    const user = await this.usersService.findOneByEth(identityEthAddress);
-    if (!user) {
+    try {
+      user = await this.usersService.findOneByEth(identityEthAddress);
+    } catch (e) {
       throw new UnauthorizedException('User not found');
     }
 
