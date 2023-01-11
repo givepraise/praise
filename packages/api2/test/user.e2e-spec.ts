@@ -97,4 +97,50 @@ describe('UserController (E2E)', () => {
       }
     });
   });
+
+  describe('GET /api/users/:id', () => {
+    let wallet;
+    let accessToken: string;
+    let user: User;
+
+    beforeAll(async () => {
+      // Clear the database
+      await usersService.getModel().deleteMany({});
+
+      // Seed the database
+      wallet = Wallet.createRandom();
+      user = await usersSeeder.seedUser({
+        identityEthAddress: wallet.address,
+        rewardsAddress: wallet.address,
+      });
+
+      // Login and get access token
+      const response = await loginUser(app, module, wallet);
+      accessToken = response.accessToken;
+    });
+
+    test('401 when not authenticated', async () => {
+      return request(server).get(`/users/${user._id}`).send().expect(401);
+    });
+
+    test('404 when user not found', async () => {
+      await authorizedGetRequest('/users/5f9f1c1b9b9b9b9b9b9b9b9b', app, accessToken)
+        .expect(404);
+    });
+
+    test('200 when authenticated', async () => {
+      await authorizedGetRequest(`/users/${user._id}`, app, accessToken)
+        .expect(200);
+    });
+
+    test('that returned user matches seeded user', async () => {
+      const response = await authorizedGetRequest(
+        `/users/${user._id}`,
+        app,
+        accessToken,
+      ).expect(200);
+      expect(response.body.identityEthAddress).toBe(user.identityEthAddress);
+    });
+  });
+
 });
