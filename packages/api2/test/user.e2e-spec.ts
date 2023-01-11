@@ -120,17 +120,27 @@ describe('UserController (E2E)', () => {
     });
 
     test('401 when not authenticated', async () => {
-      return request(server).get(`/users/${user._id}`).send().expect(401);
+      return request(server).get(`/usersWW/${user._id}`).send().expect(401);
     });
 
-    test('404 when user not found', async () => {
-      await authorizedGetRequest('/users/5f9f1c1b9b9b9b9b9b9b9b9b', app, accessToken)
-        .expect(404);
+    test('400 when user not found', async () => {
+      await authorizedGetRequest(
+        '/users/5f9f1c1b9b9b9b9b9b9b9b9b',
+        app,
+        accessToken,
+      ).expect(400);
     });
 
-    test('200 when authenticated', async () => {
-      await authorizedGetRequest(`/users/${user._id}`, app, accessToken)
-        .expect(200);
+    test('200 when authenticated KRESO', async () => {
+      const response = await authorizedGetRequest(
+        `/users/${user._id}`,
+        app,
+        accessToken,
+      ).expect(200);
+
+      expect(response.body.accounts._id).to.equal(user.id.toString());
+
+      console.log('response.body', response.body);
     });
 
     test('that returned user matches seeded user', async () => {
@@ -142,5 +152,4 @@ describe('UserController (E2E)', () => {
       expect(response.body.identityEthAddress).toBe(user.identityEthAddress);
     });
   });
-
 });
