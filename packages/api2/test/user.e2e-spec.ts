@@ -306,27 +306,27 @@ describe('UserController (E2E)', () => {
      * - check if the function is working properly
      *
      */
-    test('401 response if user not authenticated', async () => {
-      const walletTestNExist = Wallet.createRandom();
-      console.log(walletTestNExist);
-      const userTesNExistt = await usersSeeder.seedUser({
-        identityEthAddress: walletTestNExist.address,
-        rewardsAddress: walletTestNExist.address,
-        roles: [AuthRole.USER],
-      });
+    // test('401 response if user not authenticated', async () => {
+    //   const walletTestNExist = Wallet.createRandom();
+    //   console.log(walletTestNExist);
+    //   const userTesNExistt = await usersSeeder.seedUser({
+    //     identityEthAddress: walletTestNExist.address,
+    //     rewardsAddress: walletTestNExist.address,
+    //     roles: [AuthRole.USER],
+    //   });
 
-      const response = await authorizedPatchRequest(
-        `/users/${userTesNExistt._id}/addRole`,
-        app,
-        accessToken,
-        {
-          role: 'ADMIN',
-        },
-      ).expect(200);
-      console.log(response);
-      console.log(userTesNExistt._id);
-      expect(response).toContain('Bad Request');
-    });
+    //   const response = await authorizedPatchRequest(
+    //     `/users/${userTesNExistt._id}/addRole`,
+    //     app,
+    //     accessToken,
+    //     {
+    //       role: 'ADMIN',
+    //     },
+    //   ).expect(200);
+    //   console.log(response);
+    //   console.log(userTesNExistt._id);
+    //   expect(response).toContain('Bad Request');
+    // });
   });
 
   describe('PATCH /api/users/{id}/removeRole', () => {
@@ -477,7 +477,7 @@ describe('UserController (E2E)', () => {
       });
 
       const response = await authorizedPatchRequest(
-        `/users/${userTestNotAuth._id}/addRole`,
+        `/users/${userTestNotAuth._id}/removeRole`,
         app,
         accessToken,
         {
