@@ -1,17 +1,29 @@
 import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
 import { PeriodDetailsGiverReceiver } from '../interfaces/period-details-giver-receiver.interface';
-import { Types } from 'mongoose';
 import { PeriodDetailsQuantifierDto } from './period-details-quantifier.dto';
+import { Period } from '../schemas/periods.schema';
+import { ApiResponseProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
-export interface PeriodDetailsDto {
-  _id: Types.ObjectId;
-  name: string;
-  status: string;
-  endDate: Date;
-  createdAt: Date;
-  updatedAt: Date;
+export class PeriodDetailsDto extends Period {
+  @ApiResponseProperty({
+    type: [PeriodDetailsQuantifierDto],
+  })
+  @Type(() => PeriodDetailsQuantifierDto)
   quantifiers?: PeriodDetailsQuantifierDto[];
+  @ApiResponseProperty({
+    type: [PeriodDetailsGiverReceiver],
+  })
+  @Type(() => PeriodDetailsGiverReceiver)
   givers?: PeriodDetailsGiverReceiver[];
+  @ApiResponseProperty({
+    type: [PeriodDetailsGiverReceiver],
+  })
+  @Type(() => PeriodDetailsGiverReceiver)
   receivers?: PeriodDetailsGiverReceiver[];
+  @ApiResponseProperty({
+    type: [PeriodSetting],
+  })
+  @Type(() => PeriodSetting)
   settings?: PeriodSetting[];
 }

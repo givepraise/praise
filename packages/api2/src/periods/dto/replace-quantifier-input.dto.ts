@@ -1,4 +1,4 @@
-export class PeriodReplaceQuantifierInputDto {
+export class ReplaceQuantifierInputDto {
   quantifierId: string;
   quantifierIdNew: string;
 }

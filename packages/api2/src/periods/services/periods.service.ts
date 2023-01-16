@@ -116,7 +116,7 @@ export class PeriodsService {
    *
    * @param {Types.ObjectId} _id
    * @param {UpdatePeriodInputDto} data
-   * @returns {Promise<Period>}
+   * @returns {Promise<PeriodDetailsDto>}
    * @throws {ServiceException} if period update fails
    **/
   update = async (
@@ -176,7 +176,7 @@ export class PeriodsService {
    * Close a period
    *
    * @param {Types.ObjectId} _id
-   * @returns {Promise<Period>}
+   * @returns {Promise<PeriodDetailsDto>}
    * @throws {ServiceException} if period not found
    * @throws {ServiceException} if period is already closed
    **/

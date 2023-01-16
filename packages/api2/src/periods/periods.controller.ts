@@ -27,8 +27,8 @@ import { CreatePeriodInputDto } from './dto/create-period-input.dto';
 import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
 import { VerifyQuantifierPoolSizeDto } from './dto/verify-quantifiers-pool-size.dto';
 import { PeriodDetailsDto } from './dto/period-details.dto';
-import { PeriodReplaceQuantifierInputDto } from './dto/replace-quantifier-input.dto';
-import { PeriodReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.dto';
+import { ReplaceQuantifierInputDto } from './dto/replace-quantifier-input.dto';
+import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.dto';
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 
 @Controller('periods')
@@ -64,7 +64,7 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Period',
-    type: Period,
+    type: PeriodDetailsDto,
   })
   @Permissions(Permission.PeriodView)
   @ApiParam({ name: 'id', type: String })
@@ -82,7 +82,9 @@ export class PeriodsController {
     type: Period,
   })
   @Permissions(Permission.PeriodCreate)
-  async create(@Body() createPeriodDto: CreatePeriodInputDto): Promise<Period> {
+  async create(
+    @Body() createPeriodDto: CreatePeriodInputDto,
+  ): Promise<PeriodDetailsDto> {
     return this.periodsService.create(createPeriodDto);
   }
 
@@ -91,14 +93,14 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Period',
-    type: Period,
+    type: PeriodDetailsDto,
   })
   @Permissions(Permission.PeriodUpdate)
   @ApiParam({ name: 'id', type: String })
   async update(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() updatePeriodDto: UpdatePeriodInputDto,
-  ): Promise<Period> {
+  ): Promise<PeriodDetailsDto> {
     return this.periodsService.update(id, updatePeriodDto);
   }
 
@@ -107,11 +109,13 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Period',
-    type: Period,
+    type: PeriodDetailsDto,
   })
   @Permissions(Permission.PeriodUpdate)
   @ApiParam({ name: 'id', type: String })
-  async close(@Param('id', ObjectIdPipe) id: Types.ObjectId): Promise<Period> {
+  async close(
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+  ): Promise<PeriodDetailsDto> {
     return this.periodsService.close(id);
   }
 
@@ -135,7 +139,7 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Period',
-    type: Period,
+    type: VerifyQuantifierPoolSizeDto,
   })
   @Permissions(Permission.PeriodAssign)
   @ApiParam({ name: 'id', type: String })
@@ -150,7 +154,7 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Period',
-    type: Period,
+    type: PeriodDetailsDto,
   })
   @Permissions(Permission.PeriodAssign)
   @ApiParam({ name: 'id', type: String })
@@ -165,14 +169,14 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Period',
-    type: Period,
+    type: ReplaceQuantifierResponseDto,
   })
   @Permissions(Permission.PeriodAssign)
   @ApiParam({ name: 'id', type: String })
   async replaceQuantifier(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() replaceQuantifierDto: PeriodReplaceQuantifierInputDto,
-  ): Promise<PeriodReplaceQuantifierResponseDto> {
+    @Body() replaceQuantifierDto: ReplaceQuantifierInputDto,
+  ): Promise<ReplaceQuantifierResponseDto> {
     return this.periodAssignmentsService.replaceQuantifier(
       id,
       replaceQuantifierDto,

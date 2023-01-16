@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { VerifyQuantifierPoolSizeDto } from '../dto/verify-quantifiers-pool-size.dto';
-import { Assignments } from '../dto/assignments.dto';
+import { AssignmentsDto } from '../dto/assignments.dto';
 import { Receiver } from '@/praise/interfaces/receiver.interface';
 import { Quantifier } from '@/praise/interfaces/quantifier.interface';
 import greedyPartitioning from 'greedy-number-partitioning';
@@ -24,12 +24,12 @@ import { SettingsService } from '@/settings/settings.service';
 import { EventLogService } from '@/event-log/event-log.service';
 import { Types } from 'mongoose';
 import { ServiceException } from '@/shared/service-exception';
-import { UserRole } from '@/users/interfaces/user-roles.interfce';
+import { AuthRole } from '@/users/interfaces/user-roles.interface';
 import { PeriodDetailsDto } from '../dto/period-details.dto';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { PeriodStatusType } from '../enums/status-type.enum';
-import { PeriodReplaceQuantifierResponseDto } from '../dto/replace-quantifier-reponse.dto';
-import { PeriodReplaceQuantifierInputDto } from '../dto/replace-quantifier-input.dto';
+import { ReplaceQuantifierResponseDto } from '../dto/replace-quantifier-reponse.dto';
+import { ReplaceQuantifierInputDto } from '../dto/replace-quantifier-input.dto';
 import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interface';
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
 import { PeriodsService } from './periods.service';
@@ -67,7 +67,7 @@ export class PeriodAssignmentsService {
       )) as boolean;
 
     const quantifierPoolSize = await this.userModel.count({
-      roles: UserRole.QUANTIFIER,
+      roles: AuthRole.QUANTIFIER,
     });
 
     let response;
@@ -177,12 +177,12 @@ export class PeriodAssignmentsService {
    * @param {Period} period
    * @param {string} currentQuantifierId
    * @param {string} newQuantifierId
-   * @returns {Promise<PeriodReplaceQuantifierResponseDto>}
+   * @returns {Promise<ReplaceQuantifierResponseDto>}
    **/
   replaceQuantifier = async (
     _id: Types.ObjectId,
-    replaceQuantifierInputDto: PeriodReplaceQuantifierInputDto,
-  ): Promise<PeriodReplaceQuantifierResponseDto> => {
+    replaceQuantifierInputDto: ReplaceQuantifierInputDto,
+  ): Promise<ReplaceQuantifierResponseDto> => {
     const {
       quantifierId: currentQuantifierId,
       quantifierIdNew: newQuantifierId,
@@ -212,7 +212,7 @@ export class PeriodAssignmentsService {
     if (!newQuantifier)
       throw new ServiceException('Replacement quantifier does not exist');
 
-    if (!newQuantifier.roles.includes(UserRole.QUANTIFIER))
+    if (!newQuantifier.roles.includes(AuthRole.QUANTIFIER))
       throw new ServiceException(
         'Replacement quantifier does not have role QUANTIFIER',
       );
@@ -322,7 +322,7 @@ export class PeriodAssignmentsService {
    */
   assignQuantifiersDryRun = async (
     _id: Types.ObjectId,
-  ): Promise<Assignments> => {
+  ): Promise<AssignmentsDto> => {
     const period = await this.periodsService.findOneById(_id);
 
     const PRAISE_QUANTIFIERS_ASSIGN_EVENLY =
@@ -367,7 +367,7 @@ export class PeriodAssignmentsService {
   prepareAssignmentsEvenly = async (
     period: Period,
     PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number,
-  ): Promise<Assignments> => {
+  ): Promise<AssignmentsDto> => {
     // Query a list of receivers with their collection of praise
     const receivers: Receiver[] = await this.queryReceiversWithPraise(period);
 
@@ -521,7 +521,7 @@ export class PeriodAssignmentsService {
    */
   queryQuantifierPoolRandomized = async (): Promise<Quantifier[]> => {
     let quantifierPool = await this.userModel.aggregate([
-      { $match: { roles: UserRole.QUANTIFIER } },
+      { $match: { roles: AuthRole.QUANTIFIER } },
       {
         $lookup: {
           from: 'useraccounts',
@@ -554,7 +554,7 @@ export class PeriodAssignmentsService {
   generateAssignments = (
     assignmentBins: Receiver[][],
     quantifierPool: Quantifier[],
-  ): Assignments => {
+  ): AssignmentsDto => {
     // Convert array of quantifiers to a single object, keyed by _id
     const quantifierPoolById = quantifierPool.reduce<QuantifierPoolById>(
       (poolById, q) => {
@@ -653,7 +653,7 @@ export class PeriodAssignmentsService {
   verifyAssignments = async (
     period: Period,
     PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number,
-    assignments: Assignments,
+    assignments: AssignmentsDto,
   ): Promise<void> => {
     const previousPeriodEndDate =
       await this.periodsService.getPreviousPeriodEndDate(period);
@@ -721,7 +721,7 @@ export class PeriodAssignmentsService {
     period: Period,
     PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number,
     targetBinSize: number,
-  ): Promise<Assignments> => {
+  ): Promise<AssignmentsDto> => {
     // Query a list of receivers with their collection of praise
     const receivers: Receiver[] = await this.queryReceiversWithPraise(period);
 
