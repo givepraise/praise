@@ -13,7 +13,7 @@ import {
   localizeAndFormatIsoDateRelative,
   DATE_FORMAT_LONG_NAME,
 } from '@/utils/date';
-import { SinglePeriodByDate } from '@/model/periods';
+import { SinglePeriodByDate } from '@/model/periods/periods';
 import { HasRole, ROLE_ADMIN } from '@/model/auth';
 import { UserPopover } from '@/components/user/UserPopover';
 import { UserName } from '@/components/user/UserName';

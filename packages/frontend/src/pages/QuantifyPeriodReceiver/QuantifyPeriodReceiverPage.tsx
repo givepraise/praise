@@ -14,7 +14,7 @@ import {
   PeriodQuantifierReceivers,
   SinglePeriod,
   usePeriodQuantifierPraise,
-} from '@/model/periods';
+} from '@/model/periods/periods';
 import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import { getQuantificationReceiverStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';

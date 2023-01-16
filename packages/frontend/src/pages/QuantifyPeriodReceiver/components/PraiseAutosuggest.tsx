@@ -10,7 +10,7 @@ import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
 import {
   PeriodAndReceiverPageParams,
   PeriodQuantifierReceiverPraise,
-} from '@/model/periods';
+} from '@/model/periods/periods';
 import { ActiveUserId } from '@/model/auth';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { idLabel } from '@/model/praise/praise.utils';

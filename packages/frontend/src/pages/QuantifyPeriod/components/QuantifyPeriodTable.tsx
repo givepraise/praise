@@ -11,7 +11,7 @@ import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   QuantifierReceiverData,
-} from '@/model/periods';
+} from '@/model/periods/periods';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { ActiveUserId } from '@/model/auth';
 

@@ -12,10 +12,10 @@ const UsersPage = React.lazy(() => import('@/pages/Users/UsersPage'));
 
 const PeriodsPage = React.lazy(() => import('@/pages/Periods/PeriodsPage'));
 const PeriodsCreateUpdatePage = React.lazy(
-  () => import('@/pages/Periods/Create/PeriodCreatePage')
+  () => import('@/pages/PeriodCreate/PeriodCreatePage')
 );
 const PeriodDetailsPage = React.lazy(
-  () => import('@/pages/Periods/Details/PeriodDetailsPage')
+  () => import('@/pages/PeriodDetails/PeriodDetailsPage')
 );
 const PeriodReceiverSummaryPage = React.lazy(
   () => import('@/pages/Periods/ReceiverSummary/ReceiverSummaryPage')

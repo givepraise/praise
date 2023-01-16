@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
-import { PeriodQuantifierReceivers } from '@/model/periods';
+import { PeriodQuantifierReceivers } from '@/model/periods/periods';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { ActiveUserId } from '@/model/auth';
 

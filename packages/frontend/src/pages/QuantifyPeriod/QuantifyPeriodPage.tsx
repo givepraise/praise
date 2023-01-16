@@ -8,7 +8,7 @@ import {
   PeriodQuantifierReceivers,
   SinglePeriod,
   usePeriodQuantifierPraise,
-} from '@/model/periods';
+} from '@/model/periods/periods';
 import { getQuantificationStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';
