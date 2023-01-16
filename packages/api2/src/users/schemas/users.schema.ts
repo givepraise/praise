@@ -77,14 +77,6 @@ export class User {
   @Prop()
   nonce?: string;
 
-  @Exclude()
-  @Prop()
-  accessToken?: string;
-
-  @Exclude()
-  @Prop()
-  refreshToken?: string;
-
   @ApiResponseProperty()
   @Prop()
   createdAt: Date;
