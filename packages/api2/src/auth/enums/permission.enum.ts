@@ -10,4 +10,8 @@ export enum Permission {
   PeriodCreate = 'period:create',
   PeriodUpdate = 'period:update',
   PeriodAssign = 'period:assign',
+  SettingsView = 'settings:view',
+  SettingsManage = 'settings:manage',
+  PeriodSettingsView = 'periodSettings:view',
+  PeriodSettingsManage = 'periodSettings:manage',
 }

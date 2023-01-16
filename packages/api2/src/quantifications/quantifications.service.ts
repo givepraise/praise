@@ -7,12 +7,13 @@ import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
 import { UsersService } from '@/users/users.service';
 import { PraiseService } from '@/praise/praise.service';
-import { forwardRef, Inject } from '@nestjs/common';
+import { Inject, forwardRef } from '@nestjs/common';
 
 export class QuantificationsService {
   constructor(
     @InjectModel(Quantification.name)
     private quantificationModel: Model<Quantification>,
+    @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
     private usersService: UsersService,
     @Inject(forwardRef(() => PraiseService))
@@ -254,10 +255,12 @@ export class QuantificationsService {
         quantifier: quantification.quantifier,
       })
       .lean();
+
+    // If no original quantification is found, the score is set to 0
+    // This should not happen, but an older version of the api sometimes saved
+    // duplicatePraise values without a corresponding original quantification
     if (!originalQuantification) {
-      throw new ServiceException(
-        'No original quantification found, cannot calculate duplicate score',
-      );
+      return 0;
     }
 
     // Find the period associated with the current praise item

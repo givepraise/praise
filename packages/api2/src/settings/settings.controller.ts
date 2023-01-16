@@ -11,13 +11,15 @@ import {
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
-import { ExportTransformer } from '@/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { Setting } from './schemas/settings.schema';
 import { SettingsService } from './settings.service';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
-import { HydrateSetSettingRequestInterceptor } from './hydrate-set-setting-request.interceptor';
+import { AuthGuard } from '@nestjs/passport';
+import { Permission } from '@/auth/enums/permission.enum';
+import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 
 @Controller('settings')
 @ApiTags('Settings')
@@ -25,35 +27,57 @@ import { HydrateSetSettingRequestInterceptor } from './hydrate-set-setting-reque
   excludePrefixes: ['__'],
 })
 @UseInterceptors(MongooseClassSerializerInterceptor(Setting))
-@UseGuards(JwtAuthGuard)
+@UseGuards(PermissionsGuard)
+@UseGuards(AuthGuard(['jwt', 'api-key']))
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 
   @Get()
+  @ApiOperation({
+    summary: 'List all settings.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'All settings.',
+    type: [Setting],
+  })
+  @Permissions(Permission.SettingsView)
   async findAll(): Promise<Setting[]> {
     return this.settingsService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({
+    summary: 'Get a setting.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Setting.',
+    type: Setting,
+  })
   @ApiParam({ name: 'id', type: String })
+  @Permissions(Permission.SettingsView)
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<Setting> {
     return this.settingsService.findOneById(id);
   }
 
-  @Patch(':id/set')
-  @UseInterceptors(HydrateSetSettingRequestInterceptor)
+  @Patch(':id')
+  @ApiOperation({
+    summary: 'Set a value for a setting.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Updated setting.',
+    type: Setting,
+  })
   @ApiParam({ name: 'id', type: String })
+  @Permissions(Permission.SettingsManage)
   async set(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() data: SetSettingDto,
   ): Promise<Setting> {
     return this.settingsService.setOne(id, data);
-  }
-
-  @Get('/customExportTransformer')
-  async customExportTransformer(): Promise<ExportTransformer> {
-    return this.settingsService.findCustomExportTransformer();
   }
 }

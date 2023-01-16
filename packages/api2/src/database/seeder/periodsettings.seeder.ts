@@ -19,14 +19,8 @@ export class PeriodSettingsSeeder {
   ): Promise<PeriodSetting> => {
     const PeriodSetting = await this.periodSettingsService.getModel().create({
       period: PeriodSettingsData.period || null,
-      key: PeriodSettingsData.key || faker.random.word(),
+      setting: PeriodSettingsData.setting || null,
       value: PeriodSettingsData.value || faker.random.word(),
-      type: PeriodSettingsData.type || faker.random.word(),
-      label: PeriodSettingsData.label || faker.random.word(),
-      description: PeriodSettingsData.description || faker.random.word(),
-      group: PeriodSettingsData.group || SettingGroup.PERIOD_DEFAULT,
-      subgroup: PeriodSettingsData.subgroup || faker.random.numeric(),
-      ...PeriodSettingsData,
     });
 
     return PeriodSetting;

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PeriodsController } from './periods.controller';
 import { Period, PeriodSchema } from './schemas/periods.schema';
@@ -23,7 +23,7 @@ import { Praise, PraiseSchema } from '@/praise/schemas/praise.schema';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: Praise.name, schema: PraiseSchema }]),
     EventLogModule,
-    SettingsModule,
+    forwardRef(() => SettingsModule),
     QuantificationsModule,
   ],
   controllers: [PeriodsController],

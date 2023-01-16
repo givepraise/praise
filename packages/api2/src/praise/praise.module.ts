@@ -7,13 +7,15 @@ import { QuantificationsModule } from '@/quantifications/quantifications.module'
 import { SettingsModule } from '@/settings/settings.module';
 import { EventLogModule } from '@/event-log/event-log.module';
 import { Period, PeriodSchema } from '@/periods/schemas/periods.schema';
+import { PeriodsModule } from '@/periods/periods.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Praise.name, schema: PraiseSchema }]),
     MongooseModule.forFeature([{ name: Period.name, schema: PeriodSchema }]),
+    forwardRef(() => PeriodsModule),
     forwardRef(() => QuantificationsModule),
-    SettingsModule,
+    forwardRef(() => SettingsModule),
     EventLogModule,
   ],
   controllers: [PraiseController],

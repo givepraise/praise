@@ -1,6 +1,6 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+
 import { PraiseModel, Praise, PraiseDocument } from './schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
@@ -15,6 +15,8 @@ import { RequestContext } from 'nestjs-request-context';
 import { RequestWithAuthContext } from '@/auth/interfaces/request-with-auth-context.interface';
 import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
 import { Period, PeriodModel } from '@/periods/schemas/periods.schema';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { PeriodsService } from '@/periods/services/periods.service';
 
 @Injectable()
 export class PraiseService {
@@ -23,6 +25,9 @@ export class PraiseService {
     private praiseModel: typeof PraiseModel,
     @InjectModel(Period.name)
     private periodModel: typeof PeriodModel,
+    @Inject(forwardRef(() => PeriodsService))
+    private periodService: PeriodsService,
+    @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
     @Inject(forwardRef(() => QuantificationsService))
     private quantificationsService: QuantificationsService,

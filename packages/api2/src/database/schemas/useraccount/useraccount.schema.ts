@@ -29,4 +29,5 @@ export const UserAccountSchema = new Schema(
   },
 );
 
+delete mongoose.models['UserAccount'];
 export const UserAccountModel = model('UserAccount', UserAccountSchema);
