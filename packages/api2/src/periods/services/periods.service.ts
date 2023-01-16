@@ -1,5 +1,4 @@
 import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { Period, PeriodDocument, PeriodModel } from '../schemas/periods.schema';
@@ -19,6 +18,7 @@ import { isString } from 'lodash';
 import { PeriodStatusType } from '../enums/status-type.enum';
 import { PeriodPaginatedResponseDto } from '../dto/period-paginated-response.dto';
 import { PeriodDetailsDto } from '../dto/period-details.dto';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PeriodsService {

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { VerifyQuantifierPoolSizeDto } from '../dto/verify-quantifiers-pool-size.dto';
 import { Assignments } from '../dto/assignments.dto';
 import { Receiver } from '@/praise/interfaces/receiver.interface';
-import { Quantifier } from '@/praise/interfaces/quantifier.interface.';
+import { Quantifier } from '@/praise/interfaces/quantifier.interface';
 import greedyPartitioning from 'greedy-number-partitioning';
 import { firstFit, PackingOutput } from 'bin-packer';
 import flatten from 'lodash/flatten';

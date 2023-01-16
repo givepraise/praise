@@ -36,8 +36,8 @@ import { PeriodAssignmentsService } from './services/period-assignments.service'
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseGuards(PermissionsGuard)
-@UseGuards(JwtAuthGuard)
+// @UseGuards(PermissionsGuard)
+// @UseGuards(JwtAuthGuard)
 @UseInterceptors(MongooseClassSerializerInterceptor(Period))
 export class PeriodsController {
   constructor(
