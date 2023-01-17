@@ -13,6 +13,7 @@ import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { Notice } from '@/components/ui/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
+import { PeriodDetailsGiverReceiverDto } from '@/model/periods/dto/period-details-giver-receiver.dto';
 
 type GiverReceiverType = 'giver' | 'receiver';
 
@@ -83,14 +84,16 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
           },
         ],
       },
-    } as TableOptions<{}>;
-    const tableInstance = useTable(options, useSortBy);
+    } as TableOptions<PeriodDetailsGiverReceiverDto>;
+    const tableInstance = useTable<PeriodDetailsGiverReceiverDto>(
+      options,
+      useSortBy
+    );
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
       tableInstance;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleClick = (data: any) => (): void => {
+    const handleClick = (data: PeriodDetailsGiverReceiverDto) => (): void => {
       history.push(`/periods/${periodId}/${type}/${data._id}`);
     };
 
