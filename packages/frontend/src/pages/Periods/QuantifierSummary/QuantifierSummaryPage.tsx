@@ -6,13 +6,13 @@ import {
   PeriodAndQuantifierPageParams,
   PeriodQuantifierReceivers,
   SinglePeriod,
-} from '@/model/periods';
+} from '@/model/periods/periods';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
 import { SingleUser } from '@/model/user/users';
-import { PeriodQuantifierStats } from '@/model/periodAnalytics';
+import { PeriodQuantifierStats } from '@/model/periods/periodAnalytics';
 import { QuantifierSummaryTable } from './components/QuantifierSummaryTable';
 
 const QuantifierSummaryMessage = (): JSX.Element | null => {

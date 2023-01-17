@@ -5,6 +5,7 @@ import { mongoosePagination } from 'mongoose-paginate-ts';
 import { PaginatedPeriodModel } from '../interfaces/paginated-period.interface';
 import { ExposeId } from '@/shared/expose-id.decorator';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import { IsString, Length } from 'class-validator';
 
 export type PeriodDocument = Period & Document;
 
@@ -21,6 +22,8 @@ export class Period {
 
   @Prop({ required: true, unique: true, minlength: 3, maxlength: 64 })
   @ApiProperty({ example: 'June 2021' })
+  @IsString()
+  @Length(3, 64)
   name: string;
 
   @Prop({

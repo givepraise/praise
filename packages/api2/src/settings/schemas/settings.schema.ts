@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose } from 'class-transformer';
 import { Types } from 'mongoose';
-import { SettingGroup } from '../interfaces/settings-group.interface';
+import { SettingGroup } from '../enums/setting-group.enum';
 import { ExposeId } from '@/shared/expose-id.decorator';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
+import { valueToValueRealized } from '../utils/value-to-value-realized.util';
 
 export type SettingDocument = Setting & Document;
 
@@ -36,6 +37,9 @@ export class Setting {
   @Prop()
   value: string;
 
+  @ApiResponseProperty({
+    example: 666,
+  })
   @Expose()
   get valueRealized():
     | string
@@ -44,22 +48,7 @@ export class Setting {
     | number
     | number[]
     | undefined {
-    if (!this || !this.value) return undefined;
-
-    if (this.type === 'Integer') return Number.parseInt(this.value);
-    if (this.type === 'Float') return Number.parseFloat(this.value);
-    if (this.type === 'Boolean') return this.value === 'true' ? true : false;
-    if (this.type === 'IntegerList')
-      return this.value
-        .split(',')
-        .map((v: string) => Number.parseInt(v.trim()));
-    if (this.type === 'StringList')
-      return this.value.split(',').map((v: string) => v.trim());
-    if (this.type === 'Image')
-      return `${process.env.API_URL as string}/uploads/${this.value}`;
-    if (this.type === 'JSON') return this.value ? JSON.parse(this.value) : [];
-
-    return this.value;
+    return valueToValueRealized(this.value, this.type);
   }
 
   @ApiResponseProperty({

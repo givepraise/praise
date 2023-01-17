@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { SettingGroup } from '@/settings/interfaces/settings-group.interface';
+import { SettingGroup } from '@/settings/enums/setting-group.enum';
 import { Setting } from '@/settings/schemas/settings.schema';
 
 export const settingStub: Setting = {

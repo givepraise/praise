@@ -9,7 +9,7 @@ import { useRecoilValue } from 'recoil';
 import upperFirst from 'lodash/upperFirst';
 import lowerCase from 'lodash/lowerCase';
 import { useAccount } from 'wagmi';
-import { AccountActivated } from '@/model/activate';
+import { AccountActivated } from '@/model/activate/activate';
 import { requestApiActivate } from '@/utils/auth';
 import { SignMessageLayout } from '../../layouts/SignMessageLayout';
 

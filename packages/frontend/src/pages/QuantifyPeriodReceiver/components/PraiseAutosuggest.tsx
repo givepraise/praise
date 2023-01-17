@@ -6,12 +6,12 @@ import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { classNames } from '@/utils/index';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
 import {
   PeriodAndReceiverPageParams,
   PeriodQuantifierReceiverPraise,
-} from '@/model/periods';
-import { ActiveUserId } from '@/model/auth';
+} from '@/model/periods/periods';
+import { ActiveUserId } from '@/model/auth/auth';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
 import { idLabel } from '@/model/praise/praise.utils';
 

@@ -14,7 +14,7 @@ import { ServiceException } from '@/shared/service-exception';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { RequestContext } from 'nestjs-request-context';
-import { SettingGroup } from './interfaces/settings-group.interface';
+import { SettingGroup } from './enums/setting-group.enum';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { validate } from './utils/settings.validate';
 
@@ -24,7 +24,6 @@ export class SettingsService {
     @InjectModel(Setting.name)
     private settingsModel: Model<Setting>,
     @Inject(forwardRef(() => PeriodSettingsService))
-    private periodSettingsService: PeriodSettingsService,
     private utils: UtilsProvider,
     private eventLogService: EventLogService,
   ) {}

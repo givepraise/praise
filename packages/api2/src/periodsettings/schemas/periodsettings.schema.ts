@@ -30,20 +30,25 @@ export class PeriodSetting {
   })
   @Type(() => Period)
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Period', default: null })
-  period: Types.ObjectId;
+  period: Types.ObjectId | Period;
 
   @ApiResponseProperty({
     type: [Setting],
   })
   @Type(() => Setting)
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Setting', default: null })
-  setting: Types.ObjectId;
+  setting: Types.ObjectId | Setting;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
   @Prop()
   value: string;
+
+  @ApiResponseProperty({
+    example: 666,
+  })
+  valueRealized: string | string[] | boolean | number | number[] | undefined;
 
   @Prop({ type: Date })
   createdAt: Date;

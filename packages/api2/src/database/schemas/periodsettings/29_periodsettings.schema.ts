@@ -1,4 +1,4 @@
-import { SettingGroup } from '../../../settings/interfaces/settings-group.interface';
+import { SettingGroup } from '../../../settings/enums/setting-group.enum';
 import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 const { ObjectId } = Schema.Types;
@@ -40,12 +40,12 @@ export const PeriodSettingsSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    required: true
+    required: true,
   },
   updatedAt: {
     type: Date,
-    required: true
-  }
+    required: true,
+  },
 });
 
 delete mongoose.models['PeriodSettings'];

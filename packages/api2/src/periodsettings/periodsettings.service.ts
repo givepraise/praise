@@ -14,6 +14,7 @@ import { RequestContext } from 'nestjs-request-context';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { SettingsService } from '@/settings/settings.service';
 import { validate } from '@/settings/utils/settings.validate';
+import { SettingGroup } from '@/settings/enums/setting-group.enum';
 
 @Injectable()
 export class PeriodSettingsService {
@@ -130,5 +131,32 @@ export class PeriodSettingsService {
     });
 
     return this.findOneById(settingId, periodId);
+  }
+
+  /**
+   * Create period settings for a period based on the default settings found
+   * in the settings collection, marked with the PERIOD_DEFAULT group.
+   */
+  async createSettingsForPeriod(periodId: Types.ObjectId) {
+    const settingsAllreadyExist = await this.findAll(periodId);
+    if (settingsAllreadyExist.length > 0) {
+      throw new ServiceException(
+        'Period settings already exist for this period.',
+      );
+    }
+
+    const periodSettingsDefaults = await this.settingsService.findByGroup(
+      SettingGroup.PERIOD_DEFAULT,
+    );
+
+    const periodSettings = periodSettingsDefaults.map((setting) => {
+      return {
+        period: periodId,
+        setting: setting._id,
+        value: setting.value,
+      };
+    });
+
+    return this.periodSettingsModel.insertMany(periodSettings);
   }
 }

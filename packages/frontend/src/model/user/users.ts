@@ -12,7 +12,7 @@ import React from 'react';
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
 import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from '../api';
-import { AllPeriods } from '../periods';
+import { AllPeriods } from '../periods/periods';
 import { UserDto } from './dto/user.dto';
 import { UserRole } from './enums/user-role.enum';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';

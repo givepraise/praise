@@ -1,4 +1,4 @@
-import { SettingGroup } from '../../settings/interfaces/settings-group.interface';
+import { SettingGroup } from '../../settings/enums/setting-group.enum';
 import { PeriodModel } from '../schemas/period/period.schema';
 import { PeriodSettingsModel } from '../schemas/periodsettings/01_periodsettings.schema';
 import { SettingModel } from '../schemas/settings/01_settings.schema';

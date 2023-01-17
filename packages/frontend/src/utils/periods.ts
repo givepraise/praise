@@ -1,10 +1,8 @@
-import {
-  PeriodDetailsQuantifierDto,
-  PeriodDetailsDto,
-  PeriodStatusType,
-} from 'api/dist/period/types';
 import { compareDesc } from 'date-fns';
-import { QuantifierReceiverData } from '@/model/periods';
+import { QuantifierReceiverData } from '@/model/periods/periods';
+import { PeriodDetailsDto } from '@/model/periods/dto/period-details.dto';
+import { PeriodDetailsQuantifierDto } from '@/model/periods/dto/period-details-quantifier.dto';
+import { PeriodStatusType } from '@/model/periods/enums/period-status-type.enum';
 
 export const getPreviousPeriod = (
   allPeriods: PeriodDetailsDto[],

@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { AxiosError, AxiosResponse } from 'axios';
-import { AllSettings, useSetSetting } from '@/model/settings';
+import { AllSettings, useSetSetting } from '@/model/settings/settings';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { SubPageNav } from '@/navigation/SubPageNav';
 import { NavItem } from '@/navigation/NavItem';

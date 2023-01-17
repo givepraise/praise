@@ -1,17 +1,18 @@
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
-import {
-  PeriodDetailsDto,
-  PeriodDetailsGiverReceiverDto,
-} from 'api/dist/period/types';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { PeriodAndReceiverPageParams, SinglePeriod } from '@/model/periods';
+import {
+  PeriodAndReceiverPageParams,
+  SinglePeriod,
+} from '@/model/periods/periods';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
 import { ReceiverSummaryTable } from './components/ReceiverSummaryTable';
+import { PeriodDetailsGiverReceiverDto } from '@/model/periods/dto/period-details-giver-receiver.dto';
+import { PeriodDetailsDto } from '@/model/periods/dto/period-details.dto';
 
 const getReceiver = (
   periodDetails: PeriodDetailsDto,
@@ -34,7 +35,7 @@ const PeriodReceiverMessage = (): JSX.Element | null => {
       <div className="mt-5">
         Period: {periodDetails.name}
         <br />
-        Total score, praise received: {receiver.scoreRealized}
+        Total score, praise received: {receiver.score}
       </div>
     </Box>
   );
