@@ -1,34 +1,31 @@
-import { faTimesCircle, faUsers } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Dialog } from '@headlessui/react';
-import React from 'react';
-import { toast } from 'react-hot-toast';
-import { useHistory, useParams } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
-
-import { Button } from '@/components/ui/Button';
+import { InlineLabel } from '@/components/ui/InlineLabel';
 import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
+import { PeriodStatsSelector } from '@/model/periods/periodAnalytics';
 import {
   AllPeriods,
   PeriodPageParams,
+  useLoadSinglePeriodDetails,
   SinglePeriod,
   useAssignQuantifiers,
-  useClosePeriod,
-  useLoadSinglePeriodDetails,
 } from '@/model/periods/periods';
 import { AllQuantifierUsers } from '@/model/user/users';
-import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
+import { formatIsoDateUTC, DATE_FORMAT } from '@/utils/date';
 import { getPreviousPeriod } from '@/utils/periods';
-import { PeriodStatsSelector } from '@/model/periods/periodAnalytics';
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dialog } from '@headlessui/react';
+import { Button } from '@mui/material';
+import React from 'react';
+import toast from 'react-hot-toast';
+import { useParams, useHistory } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 import { PeriodAssignDialog } from './AssignDialog';
-import { PeriodCloseDialog } from './CloseDialog';
-import { PeriodDateForm } from './PeriodDateForm';
+import { CloseButton } from './CloseButton';
 import { ExportDropdown } from './ExportDropdown';
-import { InlineLabel } from '@/components/ui/InlineLabel';
+import { PeriodDateForm } from './PeriodDateForm';
 import { PeriodNameForm } from './PeriodNameForm';
 
 export const PeriodDetailsHead = (): JSX.Element | null => {
-  const [isCloseDialogOpen, setIsCloseDialogOpen] = React.useState(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = React.useState(false);
 
   const allPeriods = useRecoilValue(AllPeriods);
@@ -42,18 +39,12 @@ export const PeriodDetailsHead = (): JSX.Element | null => {
   const history = useHistory();
 
   const assignDialogRef = React.useRef(null);
-  const closeDialogRef = React.useRef(null);
 
-  const { closePeriod } = useClosePeriod();
   const { assignQuantifiers } = useAssignQuantifiers(periodId);
 
   if (!period || !allPeriods) return null;
 
   const previousPeriod = getPreviousPeriod(allPeriods, period);
-
-  const handleClosePeriod = (): void => {
-    void closePeriod(periodId);
-  };
 
   const handleAssign = (): void => {
     const toastId = 'assignToast';
@@ -139,17 +130,7 @@ export const PeriodDetailsHead = (): JSX.Element | null => {
                 {period.status === 'QUANTIFY' && isAdmin ? (
                   <ExportDropdown />
                 ) : null}
-                <Button
-                  variant={'outline'}
-                  onClick={(): void => setIsCloseDialogOpen(true)}
-                >
-                  <FontAwesomeIcon
-                    icon={faTimesCircle}
-                    size="1x"
-                    className="mr-2"
-                  />
-                  Close period
-                </Button>
+                <CloseButton />
               </div>
             ) : null}
 
@@ -157,20 +138,6 @@ export const PeriodDetailsHead = (): JSX.Element | null => {
           </div>
         </>
       )}
-
-      <Dialog
-        open={isCloseDialogOpen}
-        onClose={(): void => setIsCloseDialogOpen(false)}
-        className="fixed inset-0 z-10 overflow-y-auto"
-        initialFocus={closeDialogRef}
-      >
-        <div ref={closeDialogRef}>
-          <PeriodCloseDialog
-            onClose={(): void => setIsCloseDialogOpen(false)}
-            onRemove={(): void => handleClosePeriod()}
-          />
-        </div>
-      </Dialog>
 
       {period.status === 'OPEN' && isAdmin ? (
         <Dialog
