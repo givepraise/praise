@@ -19,10 +19,12 @@ import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { ValueRealizedInterceptor } from './interceptors/value-realized.interceptor';
 
 @Controller('periods')
 @ApiTags('Periods')
 @UseInterceptors(ClassSerializerInterceptor)
+@UseInterceptors(ValueRealizedInterceptor)
 @SerializeOptions({
   excludePrefixes: ['__'],
 })

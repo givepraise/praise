@@ -4,15 +4,17 @@ import { PeriodsController } from './periods.controller';
 import { Period, PeriodSchema } from './schemas/periods.schema';
 import { EventLogModule } from '../event-log/event-log.module';
 import { QuantificationsModule } from '@/quantifications/quantifications.module';
+import { PeriodSettingsModule } from '@/periodsettings/periodsettings.module';
+import { PraiseModule } from '@/praise/praise.module';
+import { Praise, PraiseSchema } from '@/praise/schemas/praise.schema';
 import { SettingsModule } from '@/settings/settings.module';
-import { PeriodAssignmentsService } from './services/period-assignments.service';
 import {
   UserAccount,
   UserAccountSchema,
 } from '@/useraccounts/schemas/useraccounts.schema';
 import { User, UserSchema } from '@/users/schemas/users.schema';
+import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PeriodsService } from './services/periods.service';
-import { Praise, PraiseSchema } from '@/praise/schemas/praise.schema';
 
 @Module({
   imports: [
@@ -24,7 +26,9 @@ import { Praise, PraiseSchema } from '@/praise/schemas/praise.schema';
     MongooseModule.forFeature([{ name: Praise.name, schema: PraiseSchema }]),
     EventLogModule,
     forwardRef(() => SettingsModule),
-    QuantificationsModule,
+    forwardRef(() => PeriodSettingsModule),
+    forwardRef(() => PraiseModule),
+    forwardRef(() => QuantificationsModule),
   ],
   controllers: [PeriodsController],
   providers: [PeriodsService, PeriodAssignmentsService],

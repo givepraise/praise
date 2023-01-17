@@ -4,9 +4,9 @@ import { Praise } from '@/components/praise/Praise';
 import {
   usePeriodQuantifierPraise,
   PeriodAndQuantifierPageParams,
-} from '@/model/periods';
+} from '@/model/periods/periods';
 import { PraiseRow } from '@/components/praise/PraiseRow';
-import { AllPraiseList } from '@/model/praise';
+import { AllPraiseList } from '@/model/praise/praise';
 import { periodQuantifierPraiseListKey } from '@/utils/periods';
 import { Box } from '@/components/ui/Box';
 

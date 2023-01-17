@@ -12,8 +12,8 @@ import { useRecoilValue } from 'recoil';
 import { Praise } from '@/components/praise/Praise';
 import { Button } from '@/components/ui/Button';
 import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
-import { PeriodPageParams } from '@/model/periods';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+import { PeriodPageParams } from '@/model/periods/periods';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
 
 import { QuantifySlider } from './QuantifySlider';
 

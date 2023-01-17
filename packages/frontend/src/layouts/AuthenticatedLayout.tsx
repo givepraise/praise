@@ -4,12 +4,12 @@ import { Dialog, Transition } from '@headlessui/react';
 import { faX, faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
-import { SingleSetting } from '@/model/settings';
+import { SingleSetting } from '@/model/settings/settings';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
 import { ApiAuthGet } from '@/model/api';
 import { LoadScreen } from '@/components/ui/LoadScreen';
-import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth';
+import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { usePraiseAppVersion } from '@/model/app';
 import { HeaderBanner } from '@/components/ui/HeaderBanner';
 

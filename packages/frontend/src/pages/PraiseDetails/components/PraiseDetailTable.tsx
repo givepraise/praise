@@ -7,13 +7,13 @@ import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { InlineLabel } from '@/components/ui/InlineLabel';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
-import { SinglePeriodByDate } from '@/model/periods';
+import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
+import { SinglePeriodByDate } from '@/model/periods/periods';
 import {
   PageParams,
   useLoadSinglePraiseDetails,
   SinglePraise,
-} from '@/model/praise';
+} from '@/model/praise/praise';
 import { classNames } from '@/utils/index';
 import { localizeAndFormatIsoDate } from '@/utils/date';
 

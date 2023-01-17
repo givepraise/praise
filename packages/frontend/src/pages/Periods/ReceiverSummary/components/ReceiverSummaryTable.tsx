@@ -3,8 +3,8 @@ import { useRecoilValue } from 'recoil';
 import {
   PeriodAndReceiverPageParams,
   usePeriodReceiverPraise,
-} from '@/model/periods';
-import { AllPraiseList } from '@/model/praise';
+} from '@/model/periods/periods';
+import { AllPraiseList } from '@/model/praise/praise';
 import { periodReceiverPraiseListKey } from '@/utils/periods';
 import { GiverReceiverSummaryPraiseItems } from '../../components/GiverReceiverSummaryPraiseItems';
 

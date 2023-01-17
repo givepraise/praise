@@ -1,4 +1,4 @@
-import { SettingGroup } from '../../../settings/interfaces/settings-group.interface';
+import { SettingGroup } from '../../../settings/enums/setting-group.enum';
 import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 

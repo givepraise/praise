@@ -10,9 +10,12 @@ import {
   faMinusCircle,
   faScaleUnbalanced,
 } from '@fortawesome/free-solid-svg-icons';
-import { useQuantifyMultiplePraise, useQuantifyPraise } from '@/model/praise';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
-import { PeriodQuantifierReceiverPraise } from '@/model/periods';
+import {
+  useQuantifyMultiplePraise,
+  useQuantifyPraise,
+} from '@/model/praise/praise';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
+import { PeriodQuantifierReceiverPraise } from '@/model/periods/periods';
 import { SearchInput } from '@/components/form/SearchInput';
 import { QuantifyMultipleDialog } from '@/pages/QuantifyPeriodReceiver/components/QuantifyMultipleDialog';
 import { IconButtonRound } from '@/components/ui/IconButtonRound';

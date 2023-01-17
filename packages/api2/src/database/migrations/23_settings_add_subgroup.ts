@@ -1,4 +1,4 @@
-import { SettingModel } from '../schemas/settings/21_settings.schema';
+import { SettingModel } from '../schemas/settings/23_settings.schema';
 
 const settings = [
   {

@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
 import { Notice } from '@/components/ui/Notice';
 import { Praise } from '@/components/praise/Praise';
-import { ActiveUserId } from '@/model/auth';
+import { ActiveUserId } from '@/model/auth/auth';
 import {
   findPraiseQuantification,
   shortenDuplicatePraiseId,

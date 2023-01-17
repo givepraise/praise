@@ -10,7 +10,7 @@ import {
 import { recoilPersist } from 'recoil-persist';
 import { ApiAuthGet, isResponseOk } from './api';
 import { ExternalGet } from './axios';
-import { SingleSetting } from './settings';
+import { SingleSetting } from './settings/settings';
 
 const { persistAtom } = recoilPersist();
 

@@ -2,7 +2,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useAccount } from 'wagmi';
 import React, { useEffect } from 'react';
-import { ActiveTokenSet, DecodedAccessToken } from '@/model/auth';
+import { ActiveTokenSet, DecodedAccessToken } from '@/model/auth/auth';
 import { AuthenticatedLayout } from '../layouts/AuthenticatedLayout';
 
 const ActivatePage = React.lazy(() => import('@/pages/Activate/ActivatePage'));
