@@ -2,7 +2,7 @@ import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSetRecoilState } from 'recoil';
 import { useHistory } from 'react-router-dom';
-import { ActiveTokenSet } from '@/model/auth';
+import { ActiveTokenSet } from '@/model/auth/auth';
 import { Button } from '@/components/ui/Button';
 
 interface NotFoundProps {

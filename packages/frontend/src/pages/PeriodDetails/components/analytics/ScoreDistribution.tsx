@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil';
 import { ChartData, ChartOptions } from 'chart.js';
 import { PeriodPageParams } from '@/model/periods/periods';
 import { PeriodQuantScoreDistribution } from '@/model/periods/periodAnalytics';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
 import { VerticalBar } from './VerticalBar';
 
 export const ScoreDistribution = (): JSX.Element | null => {

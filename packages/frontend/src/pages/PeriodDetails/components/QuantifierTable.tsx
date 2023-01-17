@@ -17,7 +17,7 @@ import {
 import { Notice } from '@/components/ui/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { isResponseOk } from '@/model/api';
 import { ReplaceQuantifierDialog } from './ReplaceQuantifierDialog';
 

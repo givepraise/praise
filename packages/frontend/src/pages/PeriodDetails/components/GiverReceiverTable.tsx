@@ -9,7 +9,7 @@ import {
   SinglePeriod,
   useLoadSinglePeriodDetails,
 } from '@/model/periods/periods';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { Notice } from '@/components/ui/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';

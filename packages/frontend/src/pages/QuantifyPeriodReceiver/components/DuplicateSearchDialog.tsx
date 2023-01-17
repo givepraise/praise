@@ -7,7 +7,7 @@ import { useRecoilValue } from 'recoil';
 import { Button } from '@/components/ui/Button';
 import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
 import { PeriodPageParams } from '@/model/periods/periods';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
 
 import { PraiseAutosuggest } from './PraiseAutosuggest';
 

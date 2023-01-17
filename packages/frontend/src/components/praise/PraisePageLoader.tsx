@@ -5,7 +5,7 @@ import {
   AllPraiseQueryPagination,
   AllPraiseQueryParameters,
   useAllPraise,
-} from '@/model/praise';
+} from '@/model/praise/praise';
 import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 import { PraiseLoadMoreLink } from './PraiseLoadMoreLink';
 

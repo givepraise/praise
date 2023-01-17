@@ -1,11 +1,9 @@
+import { PeriodDto } from '@/model/periods/dto/period.dto';
+import { SettingDto } from '@/model/settings/dto/setting.dto';
+
 export interface PeriodSettingDto {
   _id: string;
-  key: string;
   value: string;
-  valueRealized: string | boolean | number | number[];
-  type: string;
-  label: string;
-  description?: string;
-  period: string;
-  options?: string;
+  setting: SettingDto;
+  period: PeriodDto;
 }

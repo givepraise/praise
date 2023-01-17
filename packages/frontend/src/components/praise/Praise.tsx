@@ -14,10 +14,10 @@ import {
   DATE_FORMAT_LONG_NAME,
 } from '@/utils/date';
 import { SinglePeriodByDate } from '@/model/periods/periods';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { UserPopover } from '@/components/user/UserPopover';
 import { UserName } from '@/components/user/UserName';
-import { useQuantifyPraise } from '@/model/praise';
+import { useQuantifyPraise } from '@/model/praise/praise';
 import { SourceName } from './SourceName';
 import { UserAvatarAndName } from '../user/UserAvatarAndName';
 import { InlineLabelClosable } from '../ui/InlineLabelClosable';

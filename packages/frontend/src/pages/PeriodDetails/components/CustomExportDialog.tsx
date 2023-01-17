@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
-import { SingleSetting } from '@/model/settings';
+import { SingleSetting } from '@/model/settings/settings';
 
 interface PeriodCloseDialogProps {
   title: string;

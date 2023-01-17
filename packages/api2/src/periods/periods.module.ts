@@ -6,11 +6,13 @@ import { Period, PeriodSchema } from './schemas/periods.schema';
 import { EventLogModule } from '../event-log/event-log.module';
 import { PraiseModule } from '@/praise/praise.module';
 import { QuantificationsModule } from '@/quantifications/quantifications.module';
+import { PeriodSettingsModule } from '@/periodsettings/periodsettings.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Period.name, schema: PeriodSchema }]),
     EventLogModule,
+    forwardRef(() => PeriodSettingsModule),
     forwardRef(() => PraiseModule),
     forwardRef(() => QuantificationsModule),
   ],

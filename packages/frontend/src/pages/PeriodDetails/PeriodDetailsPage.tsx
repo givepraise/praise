@@ -19,7 +19,7 @@ import { useRecoilValue } from 'recoil';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
-import { ActiveUserId, HasRole, ROLE_ADMIN } from '@/model/auth';
+import { ActiveUserId, HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import {
   PeriodPageParams,
   SinglePeriod,

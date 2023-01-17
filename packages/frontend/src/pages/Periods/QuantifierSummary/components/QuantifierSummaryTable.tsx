@@ -6,7 +6,7 @@ import {
   PeriodAndQuantifierPageParams,
 } from '@/model/periods/periods';
 import { PraiseRow } from '@/components/praise/PraiseRow';
-import { AllPraiseList } from '@/model/praise';
+import { AllPraiseList } from '@/model/praise/praise';
 import { periodQuantifierPraiseListKey } from '@/utils/periods';
 import { Box } from '@/components/ui/Box';
 

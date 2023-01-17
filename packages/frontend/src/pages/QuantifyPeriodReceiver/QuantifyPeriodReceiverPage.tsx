@@ -15,12 +15,12 @@ import {
   SinglePeriod,
   usePeriodQuantifierPraise,
 } from '@/model/periods/periods';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
 import { getQuantificationReceiverStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
-import { ActiveUserId } from '@/model/auth';
+import { ActiveUserId } from '@/model/auth/auth';
 import { QuantifyTable } from './components/QuantifyTable';
 
 const PeriodBreadCrumb = (): JSX.Element | null => {

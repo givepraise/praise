@@ -12,7 +12,7 @@ import {
   useSetRecoilState,
 } from 'recoil';
 import { useApiAuthClient } from '@/utils/api';
-import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from './api';
+import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from '../api';
 
 /**
  * Types for `useParams()`

@@ -1,4 +1,4 @@
-import { SettingGroup } from '../../settings/interfaces/settings-group.interface';
+import { SettingGroup } from '../../settings/enums/settings-group.enum';
 import { PeriodSettingsModel } from '../schemas/periodsettings/07_periodsettings.schema';
 
 const up = async (): Promise<void> => {

@@ -1,11 +1,16 @@
 import { useRecoilRefresher_UNSTABLE, useRecoilValue } from 'recoil';
-import { PeriodSettingDto } from 'api/dist/periodsettings/types';
 import { toast } from 'react-hot-toast';
 import { AxiosError, AxiosResponse } from 'axios';
 import { SettingsForm } from '@/components/settings/SettingsForm';
-import { AllPeriodSettings, useSetPeriodSetting } from '@/model/periodsettings';
+import {
+  AllPeriodSettings,
+  periodSettingToSetting,
+  useSetPeriodSetting,
+} from '@/model/periodsettings/periodsettings';
 import { isResponseOk } from '@/model/api';
 import { PeriodPoolRequirementsQuery } from '@/model/periods/periods';
+import { SettingDto } from '@/model/settings/dto/setting.dto';
+import { PeriodSettingDto } from '@/model/periodsettings/dto/period-settings.dto';
 
 interface Params {
   periodId: string;
@@ -24,14 +29,15 @@ const PeriodSettingsForm = ({
   const { setSetting } = useSetPeriodSetting(periodId);
 
   const onSubmit = async (
-    setting: PeriodSettingDto
+    setting: SettingDto
   ): Promise<AxiosResponse<PeriodSettingDto> | AxiosError | undefined> => {
     try {
       const response = await setSetting(setting);
       if (isResponseOk(response)) {
         // Reload quantify pool requirements
         refreshPoolRequirements();
-        const setting = response.data;
+        const periodSetting = response.data;
+        const setting = periodSettingToSetting(periodSetting);
         toast.success(`Saved setting "${setting.label}"`);
       }
       return response;

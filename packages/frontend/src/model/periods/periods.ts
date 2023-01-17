@@ -18,8 +18,8 @@ import {
 } from '@/utils/periods';
 import { useApiAuthClient } from '@/utils/api';
 import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from '../api';
-import { ActiveUserId } from '../auth';
-import { AllPraiseList, PraiseIdList, SinglePraise } from '../praise';
+import { ActiveUserId } from '../auth/auth';
+import { AllPraiseList, PraiseIdList, SinglePraise } from '../praise/praise';
 import { PraiseDto } from '../praise/praise.dto';
 import { UserAccountDto } from '../useraccount/useraccount.dto';
 import { PeriodDetailsDto } from './dto/period-details.dto';
@@ -217,10 +217,7 @@ export const useCreatePeriod = (): useCreatePeriodReturn => {
       async (
         periodInput: PeriodCreateInput
       ): Promise<AxiosResponse<PraiseDto> | AxiosError> => {
-        const response = await apiAuthClient.post(
-          '/admin/periods/create',
-          periodInput
-        );
+        const response = await apiAuthClient.post('/periods', periodInput);
         if (isResponseOk(response)) {
           const period = response.data as PeriodDetailsDto;
           set(SinglePeriod(period._id), period);

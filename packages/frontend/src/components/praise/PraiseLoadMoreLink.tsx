@@ -1,6 +1,6 @@
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AllPraiseQueryPaginationInterface } from '@/model/praise';
+import { AllPraiseQueryPaginationInterface } from '@/model/praise/praise';
 
 interface Params {
   praisePagination: AllPraiseQueryPaginationInterface;

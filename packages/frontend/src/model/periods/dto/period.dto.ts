@@ -1,6 +1,6 @@
 import { PeriodStatusType } from '../enums/period-status-type.enum';
 
-export interface Period {
+export interface PeriodDto {
   name: string;
   status: PeriodStatusType;
   endDate: Date;

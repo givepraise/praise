@@ -14,7 +14,7 @@ import {
 import { saveLocalFile } from '@/utils/file';
 
 import { SelectInputOption, SelectInput } from '@/components/form/SelectInput';
-import { SingleSetting } from '@/model/settings';
+import { SingleSetting } from '@/model/settings/settings';
 import { CustomExportTransformer } from '@/model/app';
 import { PeriodCustomExportDialog } from './CustomExportDialog';
 

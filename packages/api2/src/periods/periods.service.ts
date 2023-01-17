@@ -10,7 +10,6 @@ import { CreatePeriodInputDto } from './dto/create-period-input.dto';
 import { add, compareAsc, parseISO } from 'date-fns';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { PraiseService } from '../praise/praise.service';
 import { PeriodDetailsQuantifier } from './interfaces/period-details-quantifier.interface';
 import { PeriodDetailsGiverReceiver } from './interfaces/period-details-giver-receiver.interface';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
@@ -19,7 +18,7 @@ import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
 import { isString } from 'lodash';
 import { PeriodStatusType } from './enums/status-type.enum';
 import { PeriodPaginatedResponseDto } from './dto/period-paginated-response.dto';
-
+import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 @Injectable()
 export class PeriodsService {
   constructor(
@@ -28,15 +27,14 @@ export class PeriodsService {
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
     private eventLogService: EventLogService,
-    @Inject(forwardRef(() => PraiseService))
-    private praiseService: PraiseService,
+    @Inject(forwardRef(() => PeriodSettingsService))
+    private periodSettingsService: PeriodSettingsService,
     @Inject(forwardRef(() => QuantificationsService))
     private quantificationsService: QuantificationsService,
   ) {}
 
   /**
    * Convenience method to get the Period Model
-   * @returns
    */
   getModel(): Pagination<PeriodDocument> {
     return this.periodModel;
@@ -44,10 +42,6 @@ export class PeriodsService {
 
   /**
    * Find all periods paginated
-   *
-   * @param options
-   * @returns {Promise<PaginationModel<Period>>}
-   * @throws {ServiceException}
    */
   async findAllPaginated(
     options: PaginatedQueryDto,
@@ -86,9 +80,6 @@ export class PeriodsService {
    *
    * Determines the associated period by:
    *  finding the period with the lowest endDate, that is greater than the praise.createdAt date
-   *
-   * @param {Praise} praise
-   * @returns {(Promise<Period | undefined>)}
    */
   getPraisePeriod = async (praise: Praise): Promise<Period | undefined> => {
     const period = await this.periodModel
@@ -114,10 +105,6 @@ export class PeriodsService {
 
   /**
    * Create a new period
-   * @param {Period} period
-   * @returns {Promise<Period>}
-   * @throws {ServiceException} if period creation fails
-   *
    * */
   create = async (data: CreatePeriodInputDto): Promise<Period> => {
     const { name, endDate: endDateInput } = data;
@@ -134,7 +121,9 @@ export class PeriodsService {
     }
 
     const period = await this.periodModel.create({ name, endDate });
-    await this.insertNewPeriodSettings(period);
+
+    // Create period settings
+    await this.periodSettingsService.createSettingsForPeriod(period._id);
 
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.PERIOD,
@@ -148,11 +137,6 @@ export class PeriodsService {
 
   /**
    * Update a period
-   *
-   * @param {Types.ObjectId} _id
-   * @param {UpdatePeriodInputDto} data
-   * @returns {Promise<Period>}
-   * @throws {ServiceException} if period update fails
    **/
   update = async (
     _id: Types.ObjectId,
@@ -313,19 +297,6 @@ export class PeriodsService {
       : new Date(+0);
 
     return previousEndDate;
-  };
-
-  /**
-   * Create all default PeriodSettings for a given Period,
-   *  by copying all Settings with group PERIOD_DEFAULT
-   *
-   * @param {PeriodDocument} period
-   * @returns {Promise<void>}
-   */
-  insertNewPeriodSettings = async (period: PeriodDocument): Promise<void> => {
-    /**
-     * TODO: Insert settings for the period
-     */
   };
 
   /**

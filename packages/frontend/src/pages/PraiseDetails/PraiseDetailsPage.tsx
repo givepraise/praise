@@ -7,7 +7,7 @@ import {
   PageParams,
   useLoadSinglePraiseDetails,
   SinglePraise,
-} from '@/model/praise';
+} from '@/model/praise/praise';
 import { Praise } from '@/components/praise/Praise';
 import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';

@@ -1,4 +1,4 @@
-import { SettingGroup } from '../../settings/interfaces/settings-group.interface';
+import { SettingGroup } from '../../settings/enums/settings-group.enum';
 import { SettingModel } from '../schemas/settings/07_settings.schema';
 
 const deleteSettings = [

@@ -2,9 +2,9 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { atom, selectorFamily, useRecoilCallback } from 'recoil';
 import { isEmpty } from 'lodash';
 import { useApiAuthClient } from '@/utils/api';
-import { isResponseOk, ApiAuthGet } from './api';
-import { SettingDto } from './settings/dto/setting.dto';
-import { SetInputDto } from './settings/dto/set-input.dto';
+import { isResponseOk, ApiAuthGet } from '../api';
+import { SettingDto } from './dto/setting.dto';
+import { SetInputDto } from './dto/set-input.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfSetting = (object: any): object is SettingDto => {
@@ -97,7 +97,7 @@ export const useSetSetting = (): useSetSettingReturn => {
       ): Promise<AxiosResponse<SettingDto> | AxiosError | undefined> => {
         if (!instanceOfSetting(setting)) return;
         const response: AxiosResponse<SettingDto> = await apiAuthClient.patch(
-          `/settings/${setting._id}/set`,
+          `/settings/${setting._id}`,
           reqData(setting)
         );
         if (isResponseOk(response)) {

@@ -11,7 +11,7 @@ import {
 } from '@/model/periods/periods';
 import { getQuantificationStats } from '@/utils/periods';
 import { Box } from '@/components/ui/Box';
-import { ActiveUserId } from '@/model/auth';
+import { ActiveUserId } from '@/model/auth/auth';
 import { PeriodStatusType } from '@/model/periods/enums/period-status-type.enum';
 
 export const QuantifierMessage = (): JSX.Element | null => {

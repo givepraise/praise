@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
 import { useRecoilValue } from 'recoil';
-import { AccessToken } from '@/model/auth';
+import { AccessToken } from '@/model/auth/auth';
 import { requestApiAuthRefresh } from './auth';
 import { handleErrors } from './axios';
 

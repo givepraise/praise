@@ -4,7 +4,7 @@ import {
   PeriodAndReceiverPageParams,
   usePeriodReceiverPraise,
 } from '@/model/periods/periods';
-import { AllPraiseList } from '@/model/praise';
+import { AllPraiseList } from '@/model/praise/praise';
 import { periodReceiverPraiseListKey } from '@/utils/periods';
 import { GiverReceiverSummaryPraiseItems } from '../../components/GiverReceiverSummaryPraiseItems';
 

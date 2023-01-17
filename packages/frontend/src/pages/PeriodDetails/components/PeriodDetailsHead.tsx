@@ -7,7 +7,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 import { Button } from '@/components/ui/Button';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import {
   AllPeriods,
   PeriodPageParams,
