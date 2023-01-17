@@ -39,6 +39,7 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           Cell: (data: any): JSX.Element => (
             <UserAvatarAndName
+              userId={data.row.original.user}
               userAccount={data.row.original}
               avatarClassName="text-2xl"
             />
