@@ -1,8 +1,11 @@
+import { ExposeId } from '@/shared/expose-id.decorator';
 import { ApiResponseProperty } from '@nestjs/swagger';
+import { Types } from 'mongoose';
 
 export class PeriodDetailsQuantifierDto {
   @ApiResponseProperty()
-  _id: string;
+  @ExposeId()
+  _id: Types.ObjectId;
 
   @ApiResponseProperty({ type: 'number', example: 1 })
   finishedCount: number;

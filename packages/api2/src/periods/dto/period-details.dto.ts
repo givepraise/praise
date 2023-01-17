@@ -1,5 +1,4 @@
 import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
-import { PeriodDetailsGiverReceiver } from '../interfaces/period-details-giver-receiver.interface';
 import { PeriodDetailsQuantifierDto } from './period-details-quantifier.dto';
 import { Period } from '../schemas/periods.schema';
 import { ApiResponseProperty } from '@nestjs/swagger';
@@ -16,12 +15,12 @@ export class PeriodDetailsDto extends Period {
     type: [PeriodDetailsGiverReceiverDto],
   })
   @Type(() => PeriodDetailsGiverReceiverDto)
-  givers?: PeriodDetailsGiverReceiver[];
+  givers?: PeriodDetailsGiverReceiverDto[];
   @ApiResponseProperty({
     type: [PeriodDetailsGiverReceiverDto],
   })
   @Type(() => PeriodDetailsGiverReceiverDto)
-  receivers?: PeriodDetailsGiverReceiver[];
+  receivers?: PeriodDetailsGiverReceiverDto[];
   @ApiResponseProperty({
     type: [PeriodSetting],
   })

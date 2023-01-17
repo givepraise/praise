@@ -310,7 +310,7 @@ export class PeriodsService {
       ).length;
 
       return {
-        _id: q._id,
+        _id: new Types.ObjectId(q._id),
         praiseCount: q.praiseCount,
         finishedCount,
       };

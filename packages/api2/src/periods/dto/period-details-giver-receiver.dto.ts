@@ -1,10 +1,13 @@
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
+import { ExposeId } from '@/shared/expose-id.decorator';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { ApiResponseProperty } from '@nestjs/swagger';
+import { Types } from 'mongoose';
 
 export class PeriodDetailsGiverReceiverDto {
   @ApiResponseProperty({ example: '5f5f5f5f5f5f5f5f5f5f5f5f' })
-  _id: string;
+  @ExposeId()
+  _id: Types.ObjectId;
 
   @ApiResponseProperty({ type: 'number', example: '5' })
   praiseCount: number;

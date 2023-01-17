@@ -38,6 +38,7 @@ import { PeriodAssignmentsService } from './services/period-assignments.service'
 })
 // @UseGuards(PermissionsGuard)
 // @UseGuards(JwtAuthGuard)
+@UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
 @UseInterceptors(MongooseClassSerializerInterceptor(Period))
 export class PeriodsController {
   constructor(
