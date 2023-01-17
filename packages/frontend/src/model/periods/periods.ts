@@ -8,7 +8,6 @@ import {
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
-  useSetRecoilState,
 } from 'recoil';
 
 import {
@@ -29,6 +28,7 @@ import { PeriodStatusType } from './enums/period-status-type.enum';
 import { VerifyQuantifierPoolSizeResponseDto } from './dto/verify-quantifier-pool-size-reponse.dto';
 import { PeriodReplaceQuantifierInputDto } from './dto/period-replace-quantifier-input.dto';
 import { PaginatedResponseBodyDto } from '@/model/shared/dto/paginated-response-body.dto';
+import { isDateEqualOrAfter } from '@/utils/date';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfPeriod = (object: any): object is PeriodDetailsDto => {
@@ -189,13 +189,16 @@ export const useLoadSinglePeriodDetails = (
   periodId: string
 ): AxiosResponse<PeriodDetailsDto> | AxiosError => {
   const response = useRecoilValue(DetailedSinglePeriodQuery(periodId));
-  const setPeriod = useSetRecoilState(SinglePeriod(periodId));
+  const [period, setPeriod] = useRecoilState(SinglePeriod(periodId));
 
   React.useEffect(() => {
-    if (isResponseOk(response)) {
+    if (
+      isResponseOk(response) &&
+      (!period || isDateEqualOrAfter(response.data.updatedAt, period.updatedAt))
+    ) {
       setPeriod(response.data);
     }
-  }, [response, setPeriod]);
+  }, [response, period, setPeriod]);
 
   return response;
 };
@@ -279,7 +282,7 @@ export const useClosePeriod = (): useClosePeriodReturn => {
         periodId: string
       ): Promise<AxiosResponse<PeriodDetailsDto> | AxiosError> => {
         const response = await apiAuthClient.patch(
-          `/admin/periods/${periodId}/close`,
+          `/periods/${periodId}/close`,
           {}
         );
         if (isResponseOk(response)) {

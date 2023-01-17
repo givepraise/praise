@@ -1,39 +1,37 @@
-import {
-  faBalanceScaleLeft,
-  faCalendarAlt,
-  faChartBar,
-  faCog,
-  faHandHoldingHeart,
-  faHandsPraying,
-} from '@fortawesome/free-solid-svg-icons';
-import React, { Suspense } from 'react';
-import {
-  Redirect,
-  Route,
-  Switch,
-  useParams,
-  useRouteMatch,
-} from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
-
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
-import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
 import { ActiveUserId, HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import {
   PeriodPageParams,
-  SinglePeriod,
   useLoadSinglePeriodDetails,
+  SinglePeriod,
   usePeriodQuantifierPraise,
 } from '@/model/periods/periods';
 import { BackLink } from '@/navigation/BackLink';
 import { NavItem } from '@/navigation/NavItem';
 import { SubPageNav } from '@/navigation/SubPageNav';
-
+import {
+  faCalendarAlt,
+  faHandsPraying,
+  faHandHoldingHeart,
+  faBalanceScaleLeft,
+  faCog,
+  faChartBar,
+} from '@fortawesome/free-solid-svg-icons';
+import { PeriodStatusType } from 'api/dist/period/types';
+import React, { Suspense } from 'react';
+import {
+  useParams,
+  useRouteMatch,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { GiverReceiverTable } from './components/GiverReceiverTable';
 import { PeriodDetailsHead } from './components/PeriodDetailsHead';
 import { QuantifierMessage } from './components/QuantifierMessage';
-import { GiverReceiverTable } from './components/GiverReceiverTable';
-import { PeriodStatusType } from '@/model/periods/enums/period-status-type.enum';
+import { Box } from '@/components/ui/Box';
 
 const QuantifierTable = React.lazy(
   () => import('./components/QuantifierTable')

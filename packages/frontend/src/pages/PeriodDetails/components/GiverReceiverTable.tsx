@@ -13,6 +13,7 @@ import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { Notice } from '@/components/ui/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
+import { PeriodDetailsGiverReceiverDto } from '@/model/periods/dto/period-details-giver-receiver.dto';
 
 type GiverReceiverType = 'giver' | 'receiver';
 
@@ -39,7 +40,8 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           Cell: (data: any): JSX.Element => (
             <UserAvatarAndName
-              userAccount={data.row.original.userAccount}
+              userId={data.row.original.user}
+              userAccount={data.row.original}
               avatarClassName="text-2xl"
             />
           ),
@@ -60,14 +62,14 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
     );
     const data = period?.[pluralType]
       ? sortBy(period[pluralType], [
-          // First, sort by user score
-          (user): number => {
-            if (!user?.scoreRealized) return 0;
-            return user.scoreRealized;
+          // First, sort by user.score
+          (userAccount): number => {
+            if (!userAccount?.score) return 0;
+            return userAccount.score;
           },
 
-          // Then by user _id
-          (user): string => user._id.toString(),
+          // Then by user.name
+          (user): string => user.name,
         ])
       : [];
 
@@ -77,19 +79,21 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
       initialState: {
         sortBy: [
           {
-            id: period?.status === 'OPEN' ? 'praiseCount' : 'praiseScore',
+            id: period?.status === 'OPEN' ? 'praiseCount' : 'score',
             desc: true,
           },
         ],
       },
-    } as TableOptions<{}>;
-    const tableInstance = useTable(options, useSortBy);
+    } as TableOptions<PeriodDetailsGiverReceiverDto>;
+    const tableInstance = useTable<PeriodDetailsGiverReceiverDto>(
+      options,
+      useSortBy
+    );
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
       tableInstance;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleClick = (data: any) => (): void => {
+    const handleClick = (data: PeriodDetailsGiverReceiverDto) => (): void => {
       history.push(`/periods/${periodId}/${type}/${data._id}`);
     };
 

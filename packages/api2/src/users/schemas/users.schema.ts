@@ -1,7 +1,7 @@
 import { Exclude, Type } from 'class-transformer';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { Types } from 'mongoose';
+import { Types, model } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { ExposeId } from '@/shared/expose-id.decorator';
@@ -93,3 +93,5 @@ UserSchema.virtual('accounts', {
   localField: '_id',
   foreignField: 'user',
 });
+
+export const UserModel = model<UserDocument>('User', UserSchema);

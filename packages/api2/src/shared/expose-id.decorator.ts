@@ -5,6 +5,6 @@ import { Transform } from 'class-transformer';
  */
 export const ExposeId = () => (target: any, propertyKey: string) => {
   Transform(({ obj, key }) => {
-    return obj[key].toString();
+    return obj[key] ? obj[key].toString() : '';
   })(target, propertyKey);
 };

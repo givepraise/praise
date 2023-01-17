@@ -26,7 +26,7 @@ export const GiversByScore = (): JSX.Element | null => {
   const leafs = period.givers.map((giver) => {
     return {
       _id: giver._id,
-      name: giver.userAccount?.nameRealized || '',
+      name: giver.name || '',
       size: giver.score,
       opacity: (giver.score / sortGiversByScore[0].score) * 1.0 + 0.1,
     };

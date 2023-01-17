@@ -145,7 +145,7 @@ export class UsersService {
     //   // If user is currently assigned to the active quantification round, and role is QUANTIFIER throw error
     //   const activePeriods: PeriodDocument[] = await findActivePeriods();
 
-    //   if (role === UserRole.QUANTIFIER && activePeriods.length > 0) {
+    //   if (role === AuthRole.QUANTIFIER && activePeriods.length > 0) {
     //     const dateRanges: PeriodDateRange[] = await Promise.all(
     //       activePeriods.map((period) => getPeriodDateRangeQuery(period))
     //     );

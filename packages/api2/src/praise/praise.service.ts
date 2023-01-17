@@ -1,6 +1,6 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+
 import { PraiseModel, Praise, PraiseDocument } from './schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
@@ -10,21 +10,26 @@ import { PraisePaginatedQueryDto } from './dto/praise-paginated-query.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { PeriodsService } from '@/periods/periods.service';
 import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
 import { RequestContext } from 'nestjs-request-context';
 import { RequestWithAuthContext } from '@/auth/interfaces/request-with-auth-context.interface';
 import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
+import { Period, PeriodModel } from '@/periods/schemas/periods.schema';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { PeriodsService } from '@/periods/services/periods.service';
 
 @Injectable()
 export class PraiseService {
   constructor(
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
+    @InjectModel(Period.name)
+    private periodModel: typeof PeriodModel,
     @Inject(forwardRef(() => PeriodsService))
     private periodService: PeriodsService,
     @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
+    @Inject(forwardRef(() => QuantificationsService))
     private quantificationsService: QuantificationsService,
     private eventLogService: EventLogService,
   ) {}
@@ -140,7 +145,7 @@ export class PraiseService {
     if (!praise) throw new ServiceException('Praise item not found');
 
     // Get the period associated with the praise item
-    const period = await this.periodService.getPraisePeriod(praise);
+    const period = await this.getPraisePeriod(praise);
     if (!period)
       throw new ServiceException('Praise does not have an associated period');
 
@@ -345,5 +350,37 @@ export class PraiseService {
       .lean();
 
     return duplicatePraiseItems;
+  };
+
+  /**
+   * Fetch the period associated with a praise instance,
+   *  (as they are currently not related in database)
+   *
+   * Determines the associated period by:
+   *  finding the period with the lowest endDate, that is greater than the praise.createdAt date
+   *
+   * @param {Praise} praise
+   * @returns {(Promise<Period | undefined>)}
+   */
+  getPraisePeriod = async (praise: Praise): Promise<Period | undefined> => {
+    const period = await this.periodModel
+      .find(
+        // only periods ending after praise created
+        {
+          endDate: { $gte: praise.createdAt },
+        },
+        null,
+        // sort periods by ending date ascending
+        {
+          sort: { endDate: 1 },
+        },
+
+        // select the period with the earliest ending date
+      )
+      .limit(1);
+
+    if (!period || period.length === 0) return undefined;
+
+    return period[0];
   };
 }

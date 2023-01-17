@@ -1,23 +1,40 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PeriodsController } from './periods.controller';
-import { PeriodsService } from './periods.service';
 import { Period, PeriodSchema } from './schemas/periods.schema';
 import { EventLogModule } from '../event-log/event-log.module';
-import { PraiseModule } from '@/praise/praise.module';
 import { QuantificationsModule } from '@/quantifications/quantifications.module';
 import { PeriodSettingsModule } from '@/periodsettings/periodsettings.module';
+import { PraiseModule } from '@/praise/praise.module';
+import { Praise, PraiseSchema } from '@/praise/schemas/praise.schema';
+import { SettingsModule } from '@/settings/settings.module';
+import {
+  UserAccount,
+  UserAccountSchema,
+} from '@/useraccounts/schemas/useraccounts.schema';
+import { User, UserSchema } from '@/users/schemas/users.schema';
+import { PeriodAssignmentsService } from './services/period-assignments.service';
+import { PeriodsService } from './services/periods.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Period.name, schema: PeriodSchema }]),
+    MongooseModule.forFeature([
+      { name: UserAccount.name, schema: UserAccountSchema },
+    ]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: Praise.name, schema: PraiseSchema }]),
     EventLogModule,
+    forwardRef(() => SettingsModule),
     forwardRef(() => PeriodSettingsModule),
     forwardRef(() => PraiseModule),
     forwardRef(() => QuantificationsModule),
   ],
   controllers: [PeriodsController],
-  providers: [PeriodsService],
-  exports: [PeriodsService],
+  providers: [PeriodsService, PeriodAssignmentsService],
+  exports: [
+    PeriodsService,
+    MongooseModule.forFeature([{ name: Period.name, schema: PeriodSchema }]),
+  ],
 })
 export class PeriodsModule {}
