@@ -1,4 +1,4 @@
-import { SettingGroup } from '../../settings/enums/settings-group.enum';
+import { SettingGroup } from '../../settings/enums/setting-group.enum';
 import { SettingModel } from '../schemas/settings/03_settings.schema';
 
 const overridableSettingKeys = [

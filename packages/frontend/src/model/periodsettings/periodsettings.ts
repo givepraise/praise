@@ -16,6 +16,7 @@ export const periodSettingToSetting = (
   return {
     ...periodSetting.setting,
     value: periodSetting.value,
+    valueRealized: periodSetting.valueRealized,
   };
 };
 
@@ -113,7 +114,7 @@ export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
       data.append('value', setting.value);
       return data;
     } else {
-      return setting;
+      return { value: setting.value || '' };
     }
   };
 

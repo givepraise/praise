@@ -14,7 +14,7 @@ import { RequestContext } from 'nestjs-request-context';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { SettingsService } from '@/settings/settings.service';
 import { validate } from '@/settings/utils/settings.validate';
-import { SettingGroup } from '@/settings/enums/settings-group.enum';
+import { SettingGroup } from '@/settings/enums/setting-group.enum';
 
 @Injectable()
 export class PeriodSettingsService {
