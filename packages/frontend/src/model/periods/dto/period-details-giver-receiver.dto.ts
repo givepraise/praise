@@ -1,8 +1,11 @@
-import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
-
 export interface PeriodDetailsGiverReceiverDto {
   _id: string;
+  accountId: string;
+  name: string;
+  avatarId: string;
+  platform: string;
   praiseCount: number;
   score: number;
-  userAccount?: UserAccountDto;
+  createdAt: Date;
+  updatedAt: Date;
 }

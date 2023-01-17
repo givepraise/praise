@@ -39,7 +39,7 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           Cell: (data: any): JSX.Element => (
             <UserAvatarAndName
-              userAccount={data.row.original.userAccount}
+              userAccount={data.row.original}
               avatarClassName="text-2xl"
             />
           ),
@@ -60,14 +60,14 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
     );
     const data = period?.[pluralType]
       ? sortBy(period[pluralType], [
-          // First, sort by user score
-          (user): number => {
-            if (!user?.scoreRealized) return 0;
-            return user.scoreRealized;
+          // First, sort by user.score
+          (userAccount): number => {
+            if (!userAccount?.score) return 0;
+            return userAccount.score;
           },
 
-          // Then by user _id
-          (user): string => user._id.toString(),
+          // Then by user.name
+          (user): string => user.name,
         ])
       : [];
 
@@ -77,7 +77,7 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
       initialState: {
         sortBy: [
           {
-            id: period?.status === 'OPEN' ? 'praiseCount' : 'praiseScore',
+            id: period?.status === 'OPEN' ? 'praiseCount' : 'score',
             desc: true,
           },
         ],

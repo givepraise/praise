@@ -24,7 +24,7 @@ export const GiversByNumber = (): JSX.Element | null => {
   const leafs = period.givers.map((giver) => {
     return {
       _id: giver._id,
-      name: giver.userAccount?.nameRealized || '',
+      name: giver.name || '',
       size: giver.praiseCount,
       opacity:
         (giver.praiseCount / sortGiversByNumber[0].praiseCount) * 1.0 + 0.1,

@@ -236,6 +236,10 @@ export class PeriodsService {
 
     const quantifiersWithCountsData = this.quantifiersWithCounts(quantifiers);
 
+    for (const receiver of receivers) {
+      console.log(receiver.score);
+    }
+
     const periodDetails = {
       ...period,
       receivers,
@@ -382,6 +386,7 @@ export class PeriodsService {
       {
         $group: {
           _id: '$giver',
+          user: { $first: '$userAccount.user' },
           accountId: { $first: '$userAccount.accountId' },
           name: { $first: '$userAccount.name' },
           avatarId: { $first: '$userAccount.avatarId' },
@@ -437,6 +442,7 @@ export class PeriodsService {
       {
         $group: {
           _id: '$receiver',
+          user: { $first: '$userAccount.user' },
           accountId: { $first: '$userAccount.accountId' },
           name: { $first: '$userAccount.name' },
           avatarId: { $first: '$userAccount.avatarId' },

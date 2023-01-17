@@ -24,7 +24,7 @@ export const ReceiversByScore = (): JSX.Element | null => {
   const leafs = period.receivers.map((receiver) => {
     return {
       _id: receiver._id,
-      name: receiver.userAccount?.nameRealized || '',
+      name: receiver.name || '',
       size: receiver.score,
       opacity: (receiver.score / sortReceiversByScore[0].score) * 1.0 + 0.1,
     };

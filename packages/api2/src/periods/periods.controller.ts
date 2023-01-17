@@ -39,7 +39,6 @@ import { PeriodAssignmentsService } from './services/period-assignments.service'
 })
 @UseGuards(PermissionsGuard)
 @UseGuards(JwtAuthGuard)
-@UseInterceptors(ClassSerializerInterceptor)
 export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,
@@ -70,6 +69,7 @@ export class PeriodsController {
   })
   @Permissions(Permission.PeriodView)
   @ApiParam({ name: 'id', type: String })
+  @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<PeriodDetailsDto> {
@@ -84,6 +84,7 @@ export class PeriodsController {
     type: PeriodDetailsDto,
   })
   @Permissions(Permission.PeriodCreate)
+  @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async create(
     @Body() createPeriodDto: CreatePeriodInputDto,
   ): Promise<PeriodDetailsDto> {
@@ -99,6 +100,7 @@ export class PeriodsController {
   })
   @Permissions(Permission.PeriodUpdate)
   @ApiParam({ name: 'id', type: String })
+  @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async update(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() updatePeriodDto: UpdatePeriodInputDto,
@@ -115,6 +117,7 @@ export class PeriodsController {
   })
   @Permissions(Permission.PeriodUpdate)
   @ApiParam({ name: 'id', type: String })
+  @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async close(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<PeriodDetailsDto> {
@@ -160,6 +163,7 @@ export class PeriodsController {
   })
   @Permissions(Permission.PeriodAssign)
   @ApiParam({ name: 'id', type: String })
+  @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async assignQuantifiers(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<PeriodDetailsDto> {
