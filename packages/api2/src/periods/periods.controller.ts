@@ -9,6 +9,7 @@ import {
   SerializeOptions,
   UseGuards,
   UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
@@ -36,10 +37,9 @@ import { PeriodAssignmentsService } from './services/period-assignments.service'
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-// @UseGuards(PermissionsGuard)
-// @UseGuards(JwtAuthGuard)
-@UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
-@UseInterceptors(MongooseClassSerializerInterceptor(Period))
+@UseGuards(PermissionsGuard)
+@UseGuards(JwtAuthGuard)
+@UseInterceptors(ClassSerializerInterceptor)
 export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,
@@ -54,6 +54,7 @@ export class PeriodsController {
     type: PeriodPaginatedResponseDto,
   })
   @Permissions(Permission.PeriodView)
+  @UseInterceptors(MongooseClassSerializerInterceptor(Period))
   async findAllPaginated(
     @Query() options: PaginatedQueryDto,
   ): Promise<PeriodPaginatedResponseDto> {
@@ -80,7 +81,7 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Period',
-    type: Period,
+    type: PeriodDetailsDto,
   })
   @Permissions(Permission.PeriodCreate)
   async create(

@@ -1,23 +1,21 @@
-import { Quantification } from '@/quantifications/schemas/quantifications.schema';
-import { ExposeId } from '@/shared/expose-id.decorator';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
-import { ApiResponseProperty } from '@nestjs/swagger';
-import { Types } from 'mongoose';
+import { ApiResponseProperty, PickType } from '@nestjs/swagger';
 
-export class PeriodDetailsGiverReceiverDto {
-  @ApiResponseProperty({ example: '5f5f5f5f5f5f5f5f5f5f5f5f' })
-  @ExposeId()
-  _id: Types.ObjectId;
-
+export class PeriodDetailsGiverReceiverDto extends PickType(UserAccount, [
+  '_id',
+  'accountId',
+  'name',
+  'avatarId',
+  'createdAt',
+  'updatedAt',
+  'platform',
+]) {
   @ApiResponseProperty({ type: 'number', example: '5' })
   praiseCount: number;
 
-  @ApiResponseProperty({ type: [Quantification] })
-  quantifications?: Array<Quantification>;
-
   @ApiResponseProperty({ type: 'number', example: 144 })
-  scoreRealized: number;
+  score: number;
 
-  @ApiResponseProperty({ type: [UserAccount] })
-  userAccounts: UserAccount[];
+  // @ApiResponseProperty({ type: [Quantification] })
+  // quantifications?: Array<Quantification>;
 }

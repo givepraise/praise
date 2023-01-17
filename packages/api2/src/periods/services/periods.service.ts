@@ -18,8 +18,7 @@ import { PeriodDetailsDto } from '../dto/period-details.dto';
 import { PeriodPaginatedResponseDto } from '../dto/period-paginated-response.dto';
 import { UpdatePeriodInputDto } from '../dto/update-period-input.dto';
 import { PeriodStatusType } from '../enums/status-type.enum';
-import { PeriodDetailsGiverReceiver } from '../interfaces/period-details-giver-receiver.interface';
-import { PeriodDetailsQuantifier } from '../interfaces/period-details-quantifier.interface';
+import { PeriodDetailsGiverReceiverDto } from '../dto/period-details-giver-receiver.dto';
 @Injectable()
 export class PeriodsService {
   constructor(
@@ -226,9 +225,9 @@ export class PeriodsService {
     const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
 
     const [quantifiers, receivers, givers]: [
-      PeriodDetailsQuantifier[],
-      PeriodDetailsGiverReceiver[],
-      PeriodDetailsGiverReceiver[],
+      PeriodDetailsQuantifierDto[],
+      PeriodDetailsGiverReceiverDto[],
+      PeriodDetailsGiverReceiverDto[],
     ] = await Promise.all([
       this.findPeriodQuantifiers(period, previousPeriodEndDate),
       this.findPeriodReceivers(period, previousPeriodEndDate),
@@ -236,16 +235,12 @@ export class PeriodsService {
     ]);
 
     const quantifiersWithCountsData = this.quantifiersWithCounts(quantifiers);
-    // const periodSettings = await PeriodSettingsModel.find({
-    //   period: period._id,
-    // });
 
     const periodDetails = {
       ...period,
       receivers,
       givers,
       quantifiers: [...quantifiersWithCountsData],
-      // settings: periodSettings,
     };
 
     return periodDetails;
@@ -275,27 +270,25 @@ export class PeriodsService {
 
   /**
    * Attach finishedCounts to a list of Praise.quantifiers with details in a period
-   *
-   * @param {PeriodDetailsQuantifier[]} quantifiers
-   * @returns {PeriodDetailsQuantifierDto[]}
    */
   quantifiersWithCounts = (
-    quantifiers: PeriodDetailsQuantifier[],
-  ): PeriodDetailsQuantifierDto[] => {
-    const quantifiersWithQuantificationCounts = quantifiers.map((q) => {
+    quantifiers: PeriodDetailsQuantifierDto[],
+  ): PeriodDetailsQuantifierDto[] =>
+    quantifiers.map((q) => {
       const finishedCount = q.quantifications.filter((quantification) =>
         this.quantificationsService.isQuantificationCompleted(quantification),
       ).length;
 
-      return {
-        _id: new Types.ObjectId(q._id),
+      return new PeriodDetailsQuantifierDto({
+        _id: q._id,
+        username: q.username,
+        identityEthAddress: q.identityEthAddress,
         praiseCount: q.praiseCount,
         finishedCount,
-      };
+        createdAt: q.createdAt,
+        updatedAt: q.updatedAt,
+      });
     });
-
-    return quantifiersWithQuantificationCounts;
-  };
 
   /**
    * Find all quantifiers who quantified praises in the given period
@@ -306,7 +299,7 @@ export class PeriodsService {
   findPeriodQuantifiers = async (
     period: Period,
     previousPeriodEndDate: Date,
-  ): Promise<PeriodDetailsQuantifier[]> => {
+  ): Promise<PeriodDetailsQuantifierDto[]> => {
     const quantifiers = this.praiseModel.aggregate([
       {
         $match: {
@@ -321,26 +314,32 @@ export class PeriodsService {
           from: 'quantifications',
           localField: '_id',
           foreignField: 'praise',
-          as: 'quantifications',
+          as: 'quantification',
         },
+      },
+      {
+        $unwind: '$quantification',
       },
       {
         $lookup: {
-          from: 'useraccounts',
-          localField: 'quantifier',
+          from: 'users',
+          localField: 'quantification.quantifier',
           foreignField: '_id',
-          as: 'userAccount',
+          as: 'user',
         },
       },
       {
-        $unwind: '$quantifications',
+        $unwind: '$user',
       },
       {
         $group: {
-          _id: '$quantifications.quantifier',
+          _id: '$user._id',
+          identityEthAddress: { $first: '$user.identityEthAddress' },
+          username: { $first: '$user.username' },
+          createdAt: { $first: '$user.createdAt' },
+          updatedAt: { $first: '$user.updatedAt' },
           praiseCount: { $count: {} },
-          quantifier: { $first: '$quantifier' },
-          quantifications: { $push: '$quantifications' },
+          quantifications: { $push: '$quantification' },
         },
       },
     ]);
@@ -357,7 +356,7 @@ export class PeriodsService {
   findPeriodGivers = async (
     period: Period,
     previousPeriodEndDate: Date,
-  ): Promise<PeriodDetailsGiverReceiver[]> => {
+  ): Promise<PeriodDetailsGiverReceiverDto[]> => {
     const givers = this.praiseModel.aggregate([
       {
         $match: {
@@ -376,11 +375,21 @@ export class PeriodsService {
         },
       },
       {
+        $set: {
+          userAccount: { $first: '$userAccounts' },
+        },
+      },
+      {
         $group: {
           _id: '$giver',
+          accountId: { $first: '$userAccount.accountId' },
+          name: { $first: '$userAccount.name' },
+          avatarId: { $first: '$userAccount.avatarId' },
+          createdAt: { $first: '$userAccount.createdAt' },
+          updatdAt: { $first: '$userAccount.updatedAt' },
+          platform: { $first: '$userAccount.platform' },
           praiseCount: { $count: {} },
           score: { $sum: '$score' },
-          userAccounts: { $first: '$userAccounts' },
         },
       },
       {
@@ -402,7 +411,7 @@ export class PeriodsService {
   findPeriodReceivers = async (
     period: Period,
     previousPeriodEndDate: Date,
-  ): Promise<PeriodDetailsGiverReceiver[]> => {
+  ): Promise<PeriodDetailsGiverReceiverDto[]> => {
     const receivers = this.praiseModel.aggregate([
       {
         $match: {
@@ -421,11 +430,21 @@ export class PeriodsService {
         },
       },
       {
+        $set: {
+          userAccount: { $first: '$userAccounts' },
+        },
+      },
+      {
         $group: {
           _id: '$receiver',
+          accountId: { $first: '$userAccount.accountId' },
+          name: { $first: '$userAccount.name' },
+          avatarId: { $first: '$userAccount.avatarId' },
+          createdAt: { $first: '$userAccount.createdAt' },
+          updatdAt: { $first: '$userAccount.updatedAt' },
+          platform: { $first: '$userAccount.platform' },
           praiseCount: { $count: {} },
           score: { $sum: '$score' },
-          userAccounts: { $first: '$userAccounts' },
         },
       },
       {

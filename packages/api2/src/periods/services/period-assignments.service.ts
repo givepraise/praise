@@ -155,7 +155,7 @@ export class PeriodAssignmentsService {
       //  It may be related to running $push within an updateMany within a bulkWrite *for a sub-document type*
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      await this.praiseModel.bulkWrite(bulkQueries);
+      //await this.praiseModel.bulkWrite(bulkQueries);
     } catch (e) {
       await this.eventLogService.logEvent({
         typeKey: EventLogTypeKey.PERIOD,
