@@ -236,10 +236,6 @@ export class PeriodsService {
 
     const quantifiersWithCountsData = this.quantifiersWithCounts(quantifiers);
 
-    for (const receiver of receivers) {
-      console.log(receiver.score);
-    }
-
     const periodDetails = {
       ...period,
       receivers,
