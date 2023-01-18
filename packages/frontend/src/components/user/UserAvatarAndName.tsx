@@ -27,7 +27,12 @@ const WrappedUserAvatarAndName = ({
   avatarClassName,
   nameClassName,
 }: UserNameProps): JSX.Element | null => {
-  const userFromGlobalState = useRecoilValue(SingleUser(userId));
+  const mergedUserId =
+    userAccount?.user && typeof userAccount.user === 'string'
+      ? userAccount.user
+      : userId;
+
+  const userFromGlobalState = useRecoilValue(SingleUser(mergedUserId));
 
   if ((!user && !userId && !userAccount) || (usePseudonym && !periodId))
     return null;

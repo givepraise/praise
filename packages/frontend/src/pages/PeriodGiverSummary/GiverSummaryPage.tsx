@@ -5,33 +5,39 @@ import { useRecoilValue } from 'recoil';
 import {
   PeriodAndGiverPageParams,
   SinglePeriod,
+  useLoadSinglePeriodDetails,
 } from '@/model/periods/periods';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
 import { GiverSummaryTable } from './components/GiverSummaryTable';
-import { PeriodDetailsGiverReceiverDto } from '@/model/periods/dto/period-details-giver-receiver.dto';
 import { PeriodDetailsDto } from '@/model/periods/dto/period-details.dto';
+import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 
 const getGiver = (
   periodDetails: PeriodDetailsDto,
   giverId: string
-): PeriodDetailsGiverReceiverDto | undefined => {
+): UserAccountDto | undefined => {
   return periodDetails.givers?.find((r) => r._id === giverId);
 };
 
 const PeriodGiverMessage = (): JSX.Element | null => {
   const { periodId, giverId } = useParams<PeriodAndGiverPageParams>();
+  useLoadSinglePeriodDetails(periodId); // Load period details
   const periodDetails = useRecoilValue(SinglePeriod(periodId));
 
-  if (!periodDetails) return null;
+  if (!periodDetails || !periodDetails.givers) return null;
+
   const giver = getGiver(periodDetails, giverId);
   if (!giver) return null;
 
   return (
     <Box className="mb-5">
-      <h2>{giver.name}</h2>
+      <h2>
+        <UserAvatarAndName userAccount={giver} />
+      </h2>
       <div className="mt-5">
         Period: {periodDetails.name}
         <br />

@@ -1,7 +1,7 @@
 import { PeriodStatusType } from '../enums/period-status-type.enum';
-import { PeriodDetailsGiverReceiverDto } from './period-details-giver-receiver.dto';
 import { PeriodSettingDto } from '@/model/periodsettings/dto/period-settings.dto';
 import { PeriodDetailsQuantifierDto } from './period-details-quantifier.dto';
+import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
 
 export interface PeriodDetailsDto {
   _id: string;
@@ -11,7 +11,7 @@ export interface PeriodDetailsDto {
   createdAt: string;
   updatedAt: string;
   quantifiers?: PeriodDetailsQuantifierDto[];
-  givers?: PeriodDetailsGiverReceiverDto[];
-  receivers?: PeriodDetailsGiverReceiverDto[];
+  givers?: UserAccountDto[];
+  receivers?: UserAccountDto[];
   settings?: PeriodSettingDto[];
 }

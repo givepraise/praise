@@ -12,7 +12,7 @@ import { SelectInput } from '@/components/form/SelectInput';
 import {
   AllEventLogsQueryParameters,
   AllEventLogTypes,
-} from '@/model/eventlogs';
+} from '@/model/eventlog/eventlogs';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { Page } from '@/components/ui/Page';
 import { Box } from '@/components/ui/Box';

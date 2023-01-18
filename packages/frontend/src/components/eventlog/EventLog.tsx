@@ -1,4 +1,3 @@
-import { EventLogDto, EventLogTypeKey } from 'api/dist/eventlog/types';
 import { useRecoilValue } from 'recoil';
 import { Tooltip } from '@mui/material';
 import {
@@ -13,6 +12,8 @@ import { InlineLabel } from '../ui/InlineLabel';
 import { Notice } from '../ui/Notice';
 import { UserName } from '../user/UserName';
 import { UserPopover } from '../user/UserPopover';
+import { EventLogDto } from '@/model/eventlog/dto/event-log.dto';
+import { EventLogTypeKey } from '@/model/eventlog/enum/event-log-type-key.enum';
 
 const eventLogTypeColors = {
   [EventLogTypeKey.PERMISSION]: 'bg-orange-400',

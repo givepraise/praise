@@ -5,33 +5,38 @@ import { useRecoilValue } from 'recoil';
 import {
   PeriodAndReceiverPageParams,
   SinglePeriod,
+  useLoadSinglePeriodDetails,
 } from '@/model/periods/periods';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
 import { ReceiverSummaryTable } from './components/ReceiverSummaryTable';
-import { PeriodDetailsGiverReceiverDto } from '@/model/periods/dto/period-details-giver-receiver.dto';
 import { PeriodDetailsDto } from '@/model/periods/dto/period-details.dto';
+import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
+import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
 
 const getReceiver = (
   periodDetails: PeriodDetailsDto,
   receiverId: string
-): PeriodDetailsGiverReceiverDto | undefined => {
+): UserAccountDto | undefined => {
   return periodDetails.receivers?.find((r) => r._id === receiverId);
 };
 
 const PeriodReceiverMessage = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();
+  useLoadSinglePeriodDetails(periodId); // Load period details
   const periodDetails = useRecoilValue(SinglePeriod(periodId));
 
-  if (!periodDetails) return null;
+  if (!periodDetails || !periodDetails.receivers) return null;
+
   const receiver = getReceiver(periodDetails, receiverId);
   if (!receiver) return null;
-
   return (
     <Box className="mb-5">
-      <h2>{receiver.name}</h2>
+      <h2>
+        <UserAvatarAndName userAccount={receiver} />
+      </h2>
       <div className="mt-5">
         Period: {periodDetails.name}
         <br />

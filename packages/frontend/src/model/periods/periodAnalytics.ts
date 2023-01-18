@@ -118,7 +118,7 @@ export const AllPeriodQuantificationsGroupedByQuantifier = selectorFamily({
 });
 
 export interface QuantifierQuantStats {
-  _id: string;
+  userId: string;
   totalQuantifications: number;
   minScore: number;
   maxScore: number;
@@ -159,7 +159,7 @@ export const PeriodQuantifierStats = selectorFamily({
           quantifications.length;
         const medianScore = median(scores);
         quantifierQuantStats.push({
-          _id: quantifier,
+          userId: quantifier,
           totalQuantifications: quantifications.length,
           minScore,
           maxScore,
@@ -169,6 +169,23 @@ export const PeriodQuantifierStats = selectorFamily({
         });
       });
       return quantifierQuantStats;
+    },
+});
+
+type PeriodSingleQuantifierStatsParams = {
+  periodId: string | undefined;
+  quantifierId: string | undefined;
+};
+
+export const PeriodSingleQuantifierStats = selectorFamily({
+  key: 'PeriodSingleQuantifierStats',
+  get:
+    (params: PeriodSingleQuantifierStatsParams) =>
+    ({ get }): QuantifierQuantStats | undefined => {
+      if (!params.periodId || !params.quantifierId) return undefined;
+      return get(PeriodQuantifierStats(params.periodId))?.find(
+        (q) => q.userId === params.quantifierId
+      );
     },
 });
 

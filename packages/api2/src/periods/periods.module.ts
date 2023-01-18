@@ -15,6 +15,8 @@ import {
 import { User, UserSchema } from '@/users/schemas/users.schema';
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PeriodsService } from './services/periods.service';
+import { Quantification } from '@/quantifications/schemas/quantifications.schema';
+import { QuantificationSchema } from '@/database/schemas/quantification/quantification.schema';
 
 @Module({
   imports: [
@@ -24,6 +26,9 @@ import { PeriodsService } from './services/periods.service';
     ]),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: Praise.name, schema: PraiseSchema }]),
+    MongooseModule.forFeature([
+      { name: Quantification.name, schema: QuantificationSchema },
+    ]),
     EventLogModule,
     forwardRef(() => SettingsModule),
     forwardRef(() => PeriodSettingsModule),
