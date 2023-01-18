@@ -29,6 +29,7 @@ import { VerifyQuantifierPoolSizeResponseDto } from './dto/verify-quantifier-poo
 import { PeriodReplaceQuantifierInputDto } from './dto/period-replace-quantifier-input.dto';
 import { PaginatedResponseBodyDto } from '@/model/shared/dto/paginated-response-body.dto';
 import { isDateEqualOrAfter } from '@/utils/date';
+import { PeriodDetailsQuantifierDto } from './dto/period-details-quantifier.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const instanceOfPeriod = (object: any): object is PeriodDetailsDto => {
@@ -207,6 +208,45 @@ type useCreatePeriodReturn = {
   createPeriod: (
     period: PeriodCreateInput
   ) => Promise<AxiosResponse<PraiseDto> | AxiosError>;
+};
+
+/**
+ * Returns one giver for a given period.
+ */
+export const useSinglePeriodGiver = (
+  periodId: string,
+  giverId: string
+): UserAccountDto | undefined => {
+  useLoadSinglePeriodDetails(periodId);
+  const period = useRecoilValue(SinglePeriod(periodId));
+  if (!period || !period.givers) return undefined;
+  return period.givers.find((u) => u._id === giverId);
+};
+
+/**
+ * Returns one receiver for a given period.
+ */
+export const useSinglePeriodReceiver = (
+  periodId: string,
+  receiverId: string
+): UserAccountDto | undefined => {
+  useLoadSinglePeriodDetails(periodId);
+  const period = useRecoilValue(SinglePeriod(periodId));
+  if (!period || !period.receivers) return undefined;
+  return period.receivers.find((u) => u._id === receiverId);
+};
+
+/**
+ * Returns one quantifier for a given period.
+ */
+export const useSinglePeriodQuantifier = (
+  periodId: string,
+  quantifierId: string
+): PeriodDetailsQuantifierDto | undefined => {
+  useLoadSinglePeriodDetails(periodId);
+  const period = useRecoilValue(SinglePeriod(periodId));
+  if (!period || !period.quantifiers) return undefined;
+  return period.quantifiers.find((q) => q._id === quantifierId);
 };
 
 /**
@@ -452,7 +492,7 @@ const PeriodReceiverPraiseQuery = selectorFamily({
       const { periodId, receiverId } = params;
       return get(
         ApiAuthGet({
-          url: `/periods/${periodId}/receiverPraise?id=${receiverId}`,
+          url: `/periods/${periodId}/praise/receiver/${receiverId}`,
         })
       ) as AxiosResponse<PraiseDto[]> | AxiosError;
     },
@@ -499,7 +539,7 @@ const PeriodGiverPraiseQuery = selectorFamily({
       const { periodId, giverId } = params;
       return get(
         ApiAuthGet({
-          url: `/periods/${periodId}/giverPraise?id=${giverId}`,
+          url: `/periods/${periodId}/praise/giver/${giverId}`,
         })
       ) as AxiosResponse<PraiseDto[]> | AxiosError;
     },
@@ -622,7 +662,7 @@ const PeriodQuantifierPraiseQuery = selectorFamily({
       if (!periodId || !quantifierId) return undefined;
       return get(
         ApiAuthGet({
-          url: `/periods/${periodId}/quantifierPraise?quantifierId=${quantifierId}`,
+          url: `/periods/${periodId}/praise/quantifier/${quantifierId}`,
         })
       ) as AxiosResponse<PraiseDto[]> | AxiosError;
     },

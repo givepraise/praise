@@ -32,6 +32,7 @@ import { GiverReceiverTable } from './components/GiverReceiverTable';
 import { PeriodDetailsHead } from './components/PeriodDetailsHead';
 import { QuantifierMessage } from './components/QuantifierMessage';
 import { Box } from '@/components/ui/Box';
+import { LoadPlaceholder } from '@/components/LoadPlaceholder';
 
 const QuantifierTable = React.lazy(
   () => import('./components/QuantifierTable')
@@ -40,6 +41,14 @@ const PeriodSettingsForm = React.lazy(
   () => import('./components/PeriodSettingsForm')
 );
 const Analytics = React.lazy(() => import('./components/Analytics'));
+
+const PeriodDetailsHeadFallback = (): JSX.Element => {
+  return (
+    <Box className="mb-5" variant="wide">
+      <LoadPlaceholder height={200} />
+    </Box>
+  );
+};
 
 export const PeriodDetailsPage = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -60,7 +69,7 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
       <BreadCrumb name="Periods" icon={faCalendarAlt} />
       <BackLink />
 
-      <React.Suspense fallback={null}>
+      <React.Suspense fallback={<PeriodDetailsHeadFallback />}>
         <Box variant={'wide'} className="mb-5">
           <PeriodDetailsHead />
         </Box>

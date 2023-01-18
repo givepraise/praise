@@ -13,7 +13,7 @@ export const QuantifiersByScore = (): JSX.Element | null => {
   const period = useRecoilValue(SinglePeriod(periodId));
   const allQuantifierStats = useRecoilValue(PeriodQuantifierStats(periodId));
   const quantifierUsers = useRecoilValue(
-    ManyUsers(allQuantifierStats && allQuantifierStats.map((q) => q._id))
+    ManyUsers(allQuantifierStats && allQuantifierStats.map((q) => q.userId))
   );
 
   if (!period || !period.receivers || !allQuantifierStats) return null;
@@ -24,8 +24,8 @@ export const QuantifiersByScore = (): JSX.Element | null => {
 
   const leafs = allQuantifierStats.map((q) => {
     return {
-      _id: q._id,
-      name: quantifierUsers?.find((u) => u?._id === q._id)?.username || '',
+      _id: q.userId,
+      name: quantifierUsers?.find((u) => u?._id === q.userId)?.username || '',
       size: q.totalScore,
       opacity: (q.totalScore / sortStatsScore[0].totalScore) * 1.0 + 0.1,
     };
