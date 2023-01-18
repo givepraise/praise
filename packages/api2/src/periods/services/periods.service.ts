@@ -372,21 +372,28 @@ export class PeriodsService {
         },
       },
       {
+        $set: {
+          userAccount: { $first: '$userAccounts' },
+        },
+      },
+      {
         $group: {
           _id: '$giver',
-          user: { $first: '$userAccounts.user' },
-          accountId: { $first: '$userAccounts.accountId' },
-          name: { $first: '$userAccounts.name' },
-          avatarId: { $first: '$userAccounts.avatarId' },
-          createdAt: { $first: '$userAccounts.createdAt' },
-          updatdAt: { $first: '$userAccounts.updatedAt' },
-          platform: { $first: '$userAccounts.platform' },
-          praiseCount: { $sum: 1 },
+          user: { $first: '$userAccount.user' },
+          accountId: { $first: '$userAccount.accountId' },
+          name: { $first: '$userAccount.name' },
+          avatarId: { $first: '$userAccount.avatarId' },
+          createdAt: { $first: '$userAccount.createdAt' },
+          updatdAt: { $first: '$userAccount.updatedAt' },
+          platform: { $first: '$userAccount.platform' },
+          praiseCount: { $count: {} },
           score: { $sum: '$score' },
         },
       },
       {
-        $sort: { _id: 1 },
+        $sort: {
+          _id: 1,
+        },
       },
     ]);
 
@@ -421,21 +428,28 @@ export class PeriodsService {
         },
       },
       {
+        $set: {
+          userAccount: { $first: '$userAccounts' },
+        },
+      },
+      {
         $group: {
-          _id: '$receiver',
-          user: { $first: '$userAccounts.user' },
-          accountId: { $first: '$userAccounts.accountId' },
-          name: { $first: '$userAccounts.name' },
-          avatarId: { $first: '$userAccounts.avatarId' },
-          createdAt: { $first: '$userAccounts.createdAt' },
-          updatdAt: { $first: '$userAccounts.updatedAt' },
-          platform: { $first: '$userAccounts.platform' },
-          praiseCount: { $sum: 1 },
+          _id: '$giver',
+          user: { $first: '$userAccount.user' },
+          accountId: { $first: '$userAccount.accountId' },
+          name: { $first: '$userAccount.name' },
+          avatarId: { $first: '$userAccount.avatarId' },
+          createdAt: { $first: '$userAccount.createdAt' },
+          updatdAt: { $first: '$userAccount.updatedAt' },
+          platform: { $first: '$userAccount.platform' },
+          praiseCount: { $count: {} },
           score: { $sum: '$score' },
         },
       },
       {
-        $sort: { _id: 1 },
+        $sort: {
+          _id: 1,
+        },
       },
     ]);
 
