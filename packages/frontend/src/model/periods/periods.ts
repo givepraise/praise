@@ -211,9 +211,35 @@ type useCreatePeriodReturn = {
 };
 
 /**
+ * Returns one giver for a given period.
+ */
+export const useSinglePeriodGiver = (
+  periodId: string,
+  giverId: string
+): UserAccountDto | undefined => {
+  useLoadSinglePeriodDetails(periodId);
+  const period = useRecoilValue(SinglePeriod(periodId));
+  if (!period || !period.givers) return undefined;
+  return period.givers.find((u) => u._id === giverId);
+};
+
+/**
+ * Returns one receiver for a given period.
+ */
+export const useSinglePeriodReceiver = (
+  periodId: string,
+  receiverId: string
+): UserAccountDto | undefined => {
+  useLoadSinglePeriodDetails(periodId);
+  const period = useRecoilValue(SinglePeriod(periodId));
+  if (!period || !period.receivers) return undefined;
+  return period.receivers.find((u) => u._id === receiverId);
+};
+
+/**
  * Returns one quantifier for a given period.
  */
-export const useSingleQuantifier = (
+export const useSinglePeriodQuantifier = (
   periodId: string,
   quantifierId: string
 ): PeriodDetailsQuantifierDto | undefined => {
