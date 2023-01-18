@@ -1,48 +1,25 @@
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
-import {
-  PeriodAndGiverPageParams,
-  SinglePeriod,
-  useLoadSinglePeriodDetails,
-} from '@/model/periods/periods';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { BackLink } from '@/navigation/BackLink';
-import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
 import { GiverSummaryTable } from './components/GiverSummaryTable';
-import { PeriodDetailsDto } from '@/model/periods/dto/period-details.dto';
-import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
-import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
+import { GiverSummaryHead } from './components/GiverSummaryHead';
+import { Box } from '@/components/ui/Box';
+import { LoadPlaceholder } from '@/components/LoadPlaceholder';
 
-const getGiver = (
-  periodDetails: PeriodDetailsDto,
-  giverId: string
-): UserAccountDto | undefined => {
-  return periodDetails.givers?.find((r) => r._id === giverId);
-};
-
-const PeriodGiverMessage = (): JSX.Element | null => {
-  const { periodId, giverId } = useParams<PeriodAndGiverPageParams>();
-  useLoadSinglePeriodDetails(periodId); // Load period details
-  const periodDetails = useRecoilValue(SinglePeriod(periodId));
-
-  if (!periodDetails || !periodDetails.givers) return null;
-
-  const giver = getGiver(periodDetails, giverId);
-  if (!giver) return null;
-
+const GiverSummaryHeadFallback = (): JSX.Element => {
   return (
     <Box className="mb-5">
-      <h2>
-        <UserAvatarAndName userAccount={giver} />
-      </h2>
-      <div className="mt-5">
-        Period: {periodDetails.name}
-        <br />
-        Total score, praise given: {giver.score}
-      </div>
+      <LoadPlaceholder height={100} />
+    </Box>
+  );
+};
+
+const GiverSummaryTableFallback = (): JSX.Element => {
+  return (
+    <Box>
+      <LoadPlaceholder height={600} />
     </Box>
   );
 };
@@ -53,11 +30,11 @@ const GiverSummaryPage = (): JSX.Element => {
       <BreadCrumb name={'Giver summary for period'} icon={faCalendarAlt} />
       <BackLink />
 
-      <React.Suspense fallback={null}>
-        <PeriodGiverMessage />
+      <React.Suspense fallback={<GiverSummaryHeadFallback />}>
+        <GiverSummaryHead />
       </React.Suspense>
 
-      <React.Suspense fallback={null}>
+      <React.Suspense fallback={<GiverSummaryTableFallback />}>
         <GiverSummaryTable />
       </React.Suspense>
     </Page>

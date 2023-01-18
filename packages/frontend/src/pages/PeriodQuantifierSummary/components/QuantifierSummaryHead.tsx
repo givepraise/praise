@@ -2,7 +2,7 @@ import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { PeriodSingleQuantifierStats } from '@/model/periods/periodAnalytics';
 import {
   PeriodAndQuantifierPageParams,
-  useSingleQuantifier,
+  useSinglePeriodQuantifier,
   SinglePeriod,
 } from '@/model/periods/periods';
 import { Box } from '@/components/ui/Box';
@@ -11,7 +11,7 @@ import { useRecoilValue } from 'recoil';
 
 export const QuantifierSummaryHead = (): JSX.Element | null => {
   const { periodId, quantifierId } = useParams<PeriodAndQuantifierPageParams>();
-  const quantifier = useSingleQuantifier(periodId, quantifierId);
+  const quantifier = useSinglePeriodQuantifier(periodId, quantifierId);
   const periodDetails = useRecoilValue(SinglePeriod(periodId));
   const quantifierStats = useRecoilValue(
     PeriodSingleQuantifierStats({ periodId, quantifierId })

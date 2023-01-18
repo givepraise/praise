@@ -10,6 +10,7 @@ export interface PeriodDetailsDto {
   endDate: string;
   createdAt: string;
   updatedAt: string;
+  numberOfPraise: number;
   quantifiers?: PeriodDetailsQuantifierDto[];
   givers?: UserAccountDto[];
   receivers?: UserAccountDto[];

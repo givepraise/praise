@@ -1,13 +1,11 @@
 import { InlineLabel } from '@/components/ui/InlineLabel';
 import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
-import { PeriodStatsSelector } from '@/model/periods/periodAnalytics';
 import {
   AllPeriods,
   PeriodPageParams,
   useLoadSinglePeriodDetails,
   SinglePeriod,
 } from '@/model/periods/periods';
-import { AllQuantifierUsers } from '@/model/user/users';
 import { formatIsoDateUTC, DATE_FORMAT } from '@/utils/date';
 import { getPreviousPeriod } from '@/utils/periods';
 import { useParams } from 'react-router-dom';
@@ -19,13 +17,12 @@ import { PeriodNameForm } from './PeriodNameForm';
 import { AssignButton } from './AssignButton';
 
 export const PeriodDetailsHead = (): JSX.Element | null => {
-  const allPeriods = useRecoilValue(AllPeriods);
-  const allQuantifiers = useRecoilValue(AllQuantifierUsers);
   const { periodId } = useParams<PeriodPageParams>();
+
+  const allPeriods = useRecoilValue(AllPeriods);
   useLoadSinglePeriodDetails(periodId); // Fetch additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const periodStats = useRecoilValue(PeriodStatsSelector(periodId));
 
   if (!period || !allPeriods) return null;
 
@@ -59,20 +56,18 @@ export const PeriodDetailsHead = (): JSX.Element | null => {
       {!isAdmin ? (
         <>
           <div>Period end: {formatIsoDateUTC(period.endDate)}</div>
-          <div>Number of praise: {periodStats?.totalPraise}</div>
+          <div>Number of praise: {period.numberOfPraise}</div>
         </>
       ) : (
         <>
           <PeriodDateForm />
-          <div>Number of praise: {periodStats?.totalPraise}</div>
+          <div>Number of praise: {period.numberOfPraise}</div>
           <div className="mt-5">
             {period.status === 'OPEN' || period.status === 'QUANTIFY' ? (
               <div className="flex justify-between gap-4">
                 {period.status === 'OPEN' &&
                 period.receivers &&
-                period?.receivers.length > 0 &&
-                allQuantifiers &&
-                allQuantifiers.length > 0 ? (
+                period?.receivers.length > 0 ? (
                   <AssignButton />
                 ) : null}
                 {period.status === 'QUANTIFY' && isAdmin ? (
