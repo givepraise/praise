@@ -196,7 +196,9 @@ export class PeriodsService {
   /**
    * Get all praise items from period
    **/
-  findAllPraise = async (periodId: Types.ObjectId): Promise<Praise[]> => {
+  findAllPraise = async (
+    periodId: Types.ObjectId,
+  ): Promise<PraiseWithUserAccountsWithUserRefDto[]> => {
     const period = await this.periodModel.findById(periodId);
     if (!period) throw new ServiceException('Period not found');
 

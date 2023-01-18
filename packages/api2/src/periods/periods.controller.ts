@@ -131,14 +131,16 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Period Praise items',
-    type: [Praise],
+    type: [PraiseWithUserAccountsWithUserRefDto],
   })
   @Permissions(Permission.PeriodView)
   @ApiParam({ name: 'id', type: String })
-  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
+  )
   async praise(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-  ): Promise<Praise[]> {
+  ): Promise<PraiseWithUserAccountsWithUserRefDto[]> {
     return this.periodsService.findAllPraise(id);
   }
 
