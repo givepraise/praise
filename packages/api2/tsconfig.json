@@ -17,6 +17,7 @@
     "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
     "paths": {
       "@/activate/*": ["src/activate/*"],
       "@/api-key/*": ["src/api-key/*"],

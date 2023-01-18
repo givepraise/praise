@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import {
   ConsoleLogger,
   INestApplication,
@@ -36,6 +36,7 @@ import { SettingsModule } from '@/settings/settings.module';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
+import { Setting } from '@/settings/schemas/settings.schema';
 
 class LoggedInUser {
   accessToken: string;
@@ -57,6 +58,9 @@ describe('Period (E2E)', () => {
   let quantificationsSeeder: QuantificationsSeeder;
   let quantificationsService: QuantificationsService;
   let userAccountsService: UserAccountsService;
+  let userAccountsSeeder: UserAccountsSeeder;
+  let settingsSeeder: SettingsSeeder;
+  let periodSettingsSeeder: PeriodSettingsSeeder;
 
   const users: LoggedInUser[] = [];
 
@@ -111,6 +115,11 @@ describe('Period (E2E)', () => {
     periodSettingsService = module.get<PeriodSettingsService>(
       PeriodSettingsService,
     );
+    userAccountsService = module.get<UserAccountsService>(UserAccountsService);
+    userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
+    settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder);
+    periodSettingsSeeder =
+      module.get<PeriodSettingsSeeder>(PeriodSettingsSeeder);
 
     // Clear the database
     await usersService.getModel().deleteMany({});
@@ -119,6 +128,7 @@ describe('Period (E2E)', () => {
     await userAccountsService.getModel().deleteMany({});
     await periodsService.getModel().deleteMany({});
     await periodSettingsService.getModel().deleteMany({});
+    await userAccountsService.getModel().deleteMany({});
 
     // Seed and login 3 users
     for (let i = 0; i < 3; i++) {
@@ -637,6 +647,163 @@ describe('Period (E2E)', () => {
       expect(response.body[0].quantifications[0].quantifier).toBeDefined();
       expect(response.body[0].receiver).toBeDefined();
       expect(response.body[0].giver).toBeDefined();
+    });
+  });
+
+  describe('PATCH /periods/:periodId/assignQuantifiers', () => {
+    let PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: Setting;
+    let PRAISE_QUANTIFIERS_ASSIGN_EVENLY: Setting;
+
+    beforeEach(async () => {
+      await periodsService.getModel().deleteMany({});
+      await praiseService.getModel().deleteMany({});
+      // await usersService.getModel().deleteMany({});
+      // await userAccountsService.getModel().deleteMany({});
+      // await periodSettingsService.getModel().deleteMany({});
+
+      PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER =
+        await settingsSeeder.seedSettings({
+          key: 'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
+          value: '2',
+          type: 'Integer',
+        });
+
+      PRAISE_QUANTIFIERS_ASSIGN_EVENLY = await settingsSeeder.seedSettings({
+        key: 'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
+        value: 'false',
+        type: 'Boolean',
+      });
+    });
+
+    test('200 response with json body containing assignments with PRAISE_QUANTIFIERS_ASSIGN_EVENLY=false', async function () {
+      const wallet = Wallet.createRandom();
+      await usersSeeder.seedUser({
+        identityEthAddress: wallet.address,
+        roles: ['USER', 'ADMIN'],
+      });
+
+      const receiver1 = await userAccountsSeeder.seedUserAccount();
+      const receiver2 = await userAccountsSeeder.seedUserAccount();
+      const receiver3 = await userAccountsSeeder.seedUserAccount();
+
+      const receiversSorted = [receiver1, receiver2, receiver3].sort((a, b) =>
+        a._id.toString().localeCompare(b._id.toString()),
+      );
+
+      const yesterday = new Date(new Date());
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: yesterday,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: yesterday,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: yesterday,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: yesterday,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: yesterday,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver2._id,
+        createdAt: yesterday,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver2._id,
+        createdAt: yesterday,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver2._id,
+        createdAt: yesterday,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver2._id,
+        createdAt: yesterday,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver3._id,
+        createdAt: yesterday,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver3._id,
+        createdAt: yesterday,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver3._id,
+        createdAt: yesterday,
+      });
+
+      const period = await periodsSeeder.seedPeriod();
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period._id,
+        setting: PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER._id,
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period._id,
+        setting: PRAISE_QUANTIFIERS_ASSIGN_EVENLY._id,
+      });
+
+      await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const response = await request(server)
+        .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .send()
+        .expect('Content-Type', /json/);
+      // .expect(200);
+
+      console.log('response.body', response.body);
+
+      expect(200);
+      expect(response.body._id).toEqual(period._id.toString());
+      expect(response.body.status).toEqual('QUANTIFY');
+
+      expect(response.body.receivers).toHaveLength(3);
+      expect(response.body.receivers[0]._id).toEqual(
+        receiversSorted[0]._id.toString(),
+      );
+      expect(response.body.receivers[0].praiseCount).toEqual(5);
+
+      expect(response.body.receivers[1]._id).toEqual(
+        receiversSorted[1]._id.toString(),
+      );
+      expect(response.body.receivers[1].praiseCount).toEqual(4);
+
+      expect(response.body.receivers[2]._id).toEqual(
+        receiversSorted[2]._id.toString(),
+      );
+      expect(response.body.receivers[2].praiseCount).toEqual(3);
+
+      expect(response.body.quantifiers).toHaveLength(3);
+      // expect(response.body.quantifiers[0].praiseCount).toEqual(12);
+      // expect(response.body.quantifiers[1].praiseCount).toEqual(12);
+      // expect(response.body.quantifiers[2].praiseCount).toEqual(12);
+
+      // expect(response.body.quantifiers[0].finishedCount).toEqual(0);
+      // expect(response.body.quantifiers[1].finishedCount).toEqual(0);
+      // expect(response.body.quantifiers[2].finishedCount).toEqual(0);
     });
   });
 });

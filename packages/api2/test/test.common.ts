@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Wallet } from 'ethers';
 import { TestingModule } from '@nestjs/testing';
