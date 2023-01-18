@@ -354,10 +354,18 @@ export class PeriodsService {
       this.findPeriodGivers(period, previousPeriodEndDate),
     ]);
 
+    const numberOfPraise = await this.praiseModel.countDocuments({
+      createdAt: {
+        $gt: previousPeriodEndDate,
+        $lte: period.endDate,
+      },
+    });
+
     const quantifiersWithCountsData = this.quantifiersWithCounts(quantifiers);
 
     const periodDetails = {
       ...period,
+      numberOfPraise,
       receivers,
       givers,
       quantifiers: [...quantifiersWithCountsData],
