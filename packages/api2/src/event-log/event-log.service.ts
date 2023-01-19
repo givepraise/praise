@@ -104,6 +104,11 @@ export class EventLogService {
       limit,
       page,
       sort,
+      populate: [
+        {
+          path: 'type',
+        },
+      ],
     };
 
     const eventLogPagination = await this.eventLogModel.paginate(paginateQuery);
