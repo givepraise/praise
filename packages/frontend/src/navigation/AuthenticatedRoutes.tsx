@@ -18,13 +18,13 @@ const PeriodDetailsPage = React.lazy(
   () => import('@/pages/PeriodDetails/PeriodDetailsPage')
 );
 const PeriodReceiverSummaryPage = React.lazy(
-  () => import('@/pages/Periods/ReceiverSummary/ReceiverSummaryPage')
+  () => import('@/pages/PeriodReceiverSummary/ReceiverSummaryPage')
 );
 const PeriodGiverSummaryPage = React.lazy(
-  () => import('@/pages/Periods/GiverSummary/GiverSummaryPage')
+  () => import('@/pages/PeriodGiverSummary/GiverSummaryPage')
 );
 const PeriodQuantifierSummaryPage = React.lazy(
-  () => import('@/pages/Periods/QuantifierSummary/QuantifierSummaryPage')
+  () => import('@/pages/PeriodQuantifierSummary/QuantifierSummaryPage')
 );
 
 const PraiseDetailsPage = React.lazy(

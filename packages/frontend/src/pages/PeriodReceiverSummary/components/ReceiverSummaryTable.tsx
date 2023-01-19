@@ -6,7 +6,7 @@ import {
 } from '@/model/periods/periods';
 import { AllPraiseList } from '@/model/praise/praise';
 import { periodReceiverPraiseListKey } from '@/utils/periods';
-import { GiverReceiverSummaryPraiseItems } from '../../components/GiverReceiverSummaryPraiseItems';
+import { GiverReceiverSummaryPraiseItems } from '../../Periods/components/GiverReceiverSummaryPraiseItems';
 
 export const ReceiverSummaryTable = (): JSX.Element | null => {
   const { periodId, receiverId } = useParams<PeriodAndReceiverPageParams>();

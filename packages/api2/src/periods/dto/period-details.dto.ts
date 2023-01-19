@@ -10,16 +10,24 @@ export class PeriodDetailsDto extends Period {
   })
   @Type(() => PeriodDetailsQuantifierDto)
   quantifiers?: PeriodDetailsQuantifierDto[];
+
   @ApiResponseProperty({
     type: [PeriodDetailsGiverReceiverDto],
   })
   @Type(() => PeriodDetailsGiverReceiverDto)
   givers?: PeriodDetailsGiverReceiverDto[];
+
   @ApiResponseProperty({
     type: [PeriodDetailsGiverReceiverDto],
   })
   @Type(() => PeriodDetailsGiverReceiverDto)
   receivers?: PeriodDetailsGiverReceiverDto[];
+
+  @ApiResponseProperty({
+    example: 543,
+  })
+  numberOfPraise: number;
+
   // @ApiResponseProperty({
   //   type: [PeriodSetting],
   // })

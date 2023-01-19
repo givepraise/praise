@@ -3,7 +3,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dispatch, SetStateAction } from 'react';
 import { useRecoilValue } from 'recoil';
 import { EventLog } from '@/components/eventlog/EventLog';
-import { AllEventLogs, AllEventLogsQueryParameters } from '@/model/eventlogs';
+import {
+  AllEventLogs,
+  AllEventLogsQueryParameters,
+} from '@/model/eventlog/eventlogs';
 import { classNames } from '@/utils/index';
 
 interface EventLogsTableProps {

@@ -31,14 +31,16 @@ import { PeriodDetailsDto } from './dto/period-details.dto';
 import { ReplaceQuantifierInputDto } from './dto/replace-quantifier-input.dto';
 import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.dto';
 import { PeriodAssignmentsService } from './services/period-assignments.service';
+import { PraiseModel } from '@/database/schemas/praise/12_praise.schema';
+import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 
 @Controller('periods')
 @ApiTags('Periods')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseGuards(PermissionsGuard)
-@UseGuards(JwtAuthGuard)
+// @UseGuards(PermissionsGuard)
+// @UseGuards(JwtAuthGuard)
 export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,
@@ -129,14 +131,86 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Period Praise items',
-    type: [Praise],
+    type: [PraiseWithUserAccountsWithUserRefDto],
   })
   @Permissions(Permission.PeriodView)
   @ApiParam({ name: 'id', type: String })
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
+  )
   async praise(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-  ): Promise<Praise[]> {
-    return this.periodsService.praise(id);
+  ): Promise<PraiseWithUserAccountsWithUserRefDto[]> {
+    return this.periodsService.findAllPraise(id);
+  }
+
+  @Get(':periodId/praise/receiver/:receiverId')
+  @ApiOperation({
+    summary: 'Fetch all Praise in a period for a given receiver',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Period Praise items',
+    type: [PraiseWithUserAccountsWithUserRefDto],
+  })
+  @Permissions(Permission.PeriodView)
+  @ApiParam({ name: 'periodId', type: String })
+  @ApiParam({ name: 'receiverId', type: String })
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
+  )
+  async praiseByReceiver(
+    @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
+    @Param('receiverId', ObjectIdPipe) receiverId: Types.ObjectId,
+  ): Promise<PraiseWithUserAccountsWithUserRefDto[]> {
+    return this.periodsService.findAllPraiseByReceiver(periodId, receiverId);
+  }
+
+  @Get(':periodId/praise/giver/:giverId')
+  @ApiOperation({
+    summary: 'Fetch all Praise in a period for a given giver',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Period Praise items',
+    type: [PraiseWithUserAccountsWithUserRefDto],
+  })
+  @Permissions(Permission.PeriodView)
+  @ApiParam({ name: 'periodId', type: String })
+  @ApiParam({ name: 'giverId', type: String })
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
+  )
+  async praiseByGiver(
+    @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
+    @Param('giverId', ObjectIdPipe) giverId: Types.ObjectId,
+  ): Promise<PraiseWithUserAccountsWithUserRefDto[]> {
+    return this.periodsService.findAllPraiseByGiver(periodId, giverId);
+  }
+
+  @Get(':periodId/praise/quantifier/:quantifierId')
+  @ApiOperation({
+    summary: 'Fetch all Praise in a period for a given quantifier',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Period Praise items',
+    type: [PraiseWithUserAccountsWithUserRefDto],
+  })
+  @Permissions(Permission.PeriodView)
+  @ApiParam({ name: 'periodId', type: String })
+  @ApiParam({ name: 'quantifierId', type: String })
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
+  )
+  async praiseByQuantifier(
+    @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
+    @Param('quantifierId', ObjectIdPipe) quantifierId: Types.ObjectId,
+  ): Promise<PraiseWithUserAccountsWithUserRefDto[]> {
+    return this.periodsService.findAllPraiseByQuantifier(
+      periodId,
+      quantifierId,
+    );
   }
 
   @Get(':id/verifyQuantifierPoolSize')
