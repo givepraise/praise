@@ -1,4 +1,4 @@
 export class ReplaceQuantifierInputDto {
-  quantifierId: string;
-  quantifierIdNew: string;
+  currentQuantifierId: string;
+  newQuantifierId: string;
 }

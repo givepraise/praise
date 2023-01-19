@@ -33,6 +33,8 @@ import { ReplaceQuantifierInputDto } from '../dto/replace-quantifier-input.dto';
 import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interface';
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
 import { PeriodsService } from './periods.service';
+import { Quantification } from '../../quantifications/schemas/quantifications.schema';
+import { QuantificationModel } from '@/database/schemas/quantification/quantification.schema';
 
 @Injectable()
 export class PeriodAssignmentsService {
@@ -45,6 +47,8 @@ export class PeriodAssignmentsService {
     private userModel: typeof UserModel,
     @InjectModel(UserAccount.name)
     private userAccountModel: typeof UserAccountModel,
+    @InjectModel(Quantification.name)
+    private quantificationModel: typeof QuantificationModel,
     private settingsService: SettingsService,
     private eventLogService: EventLogService,
     private periodsService: PeriodsService,
@@ -155,7 +159,7 @@ export class PeriodAssignmentsService {
       //  It may be related to running $push within an updateMany within a bulkWrite *for a sub-document type*
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      await this.praiseModel.bulkWrite(bulkQueries);
+      // await this.praiseModel.bulkWrite(bulkQueries);
     } catch (e) {
       await this.eventLogService.logEvent({
         typeKey: EventLogTypeKey.PERIOD,
@@ -188,10 +192,8 @@ export class PeriodAssignmentsService {
     _id: Types.ObjectId,
     replaceQuantifierInputDto: ReplaceQuantifierInputDto,
   ): Promise<ReplaceQuantifierResponseDto> => {
-    const {
-      quantifierId: currentQuantifierId,
-      quantifierIdNew: newQuantifierId,
-    } = replaceQuantifierInputDto;
+    const { currentQuantifierId, newQuantifierId } = replaceQuantifierInputDto;
+
     const period = await this.periodsService.findOneById(_id);
 
     if (period.status !== 'QUANTIFY')
@@ -224,35 +226,40 @@ export class PeriodAssignmentsService {
 
     const dateRangeQuery = await this.getPeriodDateRangeQuery(period);
 
-    const praiseAlreadyAssignedToNewQuantifier = await this.praiseModel.find({
-      // Praise within time period
-      createdAt: dateRangeQuery,
+    const praiseItemsInPeriod = await this.periodsService.praise(period._id);
+    const praiseIds = praiseItemsInPeriod.map((p) => p._id);
 
-      // Both original and new quantifiers assigned
-      $and: [
-        { 'quantifications.quantifier': currentQuantifierId },
-        { 'quantifications.quantifier': newQuantifierId },
-      ],
-    });
+    const praiseQuantificationsAlreadyAssignedToNewQuantifier =
+      await this.quantificationModel.find({
+        praise: { $in: praiseIds },
+        quantifier: newQuantifierId,
+      });
 
-    if (praiseAlreadyAssignedToNewQuantifier?.length > 0)
+    if (praiseQuantificationsAlreadyAssignedToNewQuantifier?.length > 0)
       throw new ServiceException(
         "Replacement quantifier is already assigned to some of the original quantifier's praise",
       );
+
+    const originalQuantifierQuantifications = await this.quantificationModel
+      .find({
+        quantifier: new Types.ObjectId(currentQuantifierId),
+      })
+      .lean();
+
+    const originalQuantifierQuantificationPraiseIds =
+      originalQuantifierQuantifications.map((q) => q.praise);
 
     const affectedPraiseIds = await this.praiseModel
       .find({
         // Praise within time period
         createdAt: dateRangeQuery,
-
-        // Original quantifier
-        'quantifications.quantifier': currentQuantifierId,
+        _id: { $in: originalQuantifierQuantificationPraiseIds },
       })
       .lean();
 
     const newQuantifierAccounts = await this.userAccountModel
       .find({
-        user: newQuantifierId,
+        user: new Types.ObjectId(newQuantifierId),
       })
       .lean();
 
@@ -271,33 +278,44 @@ export class PeriodAssignmentsService {
       });
     }
 
-    await this.praiseModel.updateMany(
-      {
-        // Praise within time period
+    const quantificationsToUpdate = await this.quantificationModel
+      .find({
+        // Quantification within time period
         createdAt: dateRangeQuery,
-
         // Original quantifier
-        'quantifications.quantifier': currentQuantifierId,
+        quantifier: new Types.ObjectId(currentQuantifierId),
+      })
+      .lean();
+
+    // Update quantifications
+    await this.quantificationModel.updateMany(
+      {
+        _id: { $in: quantificationsToUpdate.map((q) => q._id) },
       },
       {
         $set: {
           // Reset score
-          'quantifications.$[elem].score': 0,
-          'quantifications.$[elem].dismissed': false,
+          score: 0,
+          dismissed: false,
 
           // Assign new quantifier
-          'quantifications.$[elem].quantifier': newQuantifierId,
+          quantifier: new Types.ObjectId(newQuantifierId),
         },
         $unset: {
-          'quantifications.$[elem].duplicatePraise': 1,
+          duplicatePraise: 1,
         },
       },
+    );
+
+    // Update praise scores
+    await this.praiseModel.updateMany(
       {
-        arrayFilters: [
-          {
-            'elem.quantifier': currentQuantifierId,
-          },
-        ],
+        _id: { $in: quantificationsToUpdate.map((q) => q.praise) },
+      },
+      {
+        $set: {
+          score: 0,
+        },
       },
     );
 
@@ -494,7 +512,7 @@ export class PeriodAssignmentsService {
     const previousPeriodEndDate =
       await this.periodsService.getPreviousPeriodEndDate(period);
 
-    return this.praiseModel.aggregate([
+    return await this.praiseModel.aggregate([
       {
         $match: {
           createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
