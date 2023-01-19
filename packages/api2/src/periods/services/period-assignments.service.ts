@@ -136,30 +136,21 @@ export class PeriodAssignmentsService {
     }
 
     try {
-      // Generate list of db queries to apply changes specified by assignedQuantifiers
-      const bulkQueries = flatten(
+      // Generate list of db queries to insert quantifications
+      const insertManyQuantifications = flatten(
         assignedQuantifiers.poolAssignments.map((q) =>
-          q.receivers.map((receiver) => ({
-            updateMany: {
-              filter: { _id: { $in: receiver.praiseIds } },
-              update: {
-                $push: {
-                  quantifications: {
-                    quantifier: q._id,
-                  },
-                },
-              },
-            },
-          })),
+          q.receivers.map((receiver) =>
+            this.quantificationModel.insertMany(
+              receiver.praiseIds.map((praiseId) => ({
+                praise: praiseId,
+                quantifier: q._id,
+              })),
+            ),
+          ),
         ),
       );
-
-      // 2022-06-30
-      // Ignoring this TS error that new quantification object does not meet expected type
-      //  It may be related to running $push within an updateMany within a bulkWrite *for a sub-document type*
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      // await this.praiseModel.bulkWrite(bulkQueries);
+      // Execute all db queries
+      await Promise.all(insertManyQuantifications);
     } catch (e) {
       await this.eventLogService.logEvent({
         typeKey: EventLogTypeKey.PERIOD,
@@ -226,7 +217,9 @@ export class PeriodAssignmentsService {
 
     const dateRangeQuery = await this.getPeriodDateRangeQuery(period);
 
-    const praiseItemsInPeriod = await this.periodsService.praise(period._id);
+    const praiseItemsInPeriod = await this.periodsService.findAllPraise(
+      period._id,
+    );
     const praiseIds = praiseItemsInPeriod.map((p) => p._id);
 
     const praiseQuantificationsAlreadyAssignedToNewQuantifier =
