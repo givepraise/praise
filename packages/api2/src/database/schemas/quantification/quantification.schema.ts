@@ -22,6 +22,7 @@ export const QuantificationSchema = new Schema({
   dismissed: {
     type: Boolean,
     required: true,
+    default: false,
   },
   duplicatePraise: {
     type: ObjectId,
