@@ -104,6 +104,11 @@ export class EventLogService {
       limit,
       page,
       sort,
+      populate: [
+        {
+          path: 'type',
+        },
+      ],
     };
 
     const eventLogPagination = await this.eventLogModel.paginate(paginateQuery);
@@ -115,6 +120,6 @@ export class EventLogService {
   }
 
   async findTypes(): Promise<EventLogType[]> {
-    return this.eventLogTypeModel.find();
+    return this.eventLogTypeModel.find().lean();
   }
 }

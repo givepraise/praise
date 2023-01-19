@@ -29,7 +29,7 @@ export const AllEventLogsQuery = selectorFamily({
       const qs = Object.keys(query)
         .map((key) => `${key}=${query[key]}`)
         .join('&');
-      return get(ApiAuthGet({ url: `/eventlogs/all${qs ? `?${qs}` : ''}` })) as
+      return get(ApiAuthGet({ url: `/event-log${qs ? `?${qs}` : ''}` })) as
         | AxiosResponse<PaginatedResponseBodyDto<EventLogDto>>
         | AxiosError;
     },
@@ -58,27 +58,24 @@ export const AllEventLogs = selectorFamily({
  */
 export const AllEventLogTypesQuery = selector({
   key: 'AllEventLogTypesQuery',
-  get: ({
-    get,
-  }): AxiosResponse<PaginatedResponseBodyDto<EventLogTypeDto>> | AxiosError => {
+  get: ({ get }): AxiosResponse<EventLogTypeDto[]> | AxiosError => {
     return get(
       ApiAuthGet({
-        url: '/eventlogs/types',
+        url: '/event-log/types',
       })
-    ) as AxiosResponse<PaginatedResponseBodyDto<EventLogTypeDto>> | AxiosError;
+    ) as AxiosResponse<EventLogTypeDto[]> | AxiosError;
   },
 });
 
 /**
  * Fetch all event logs.
- * @returns Paginated event log types response if query is successful.
  */
 export const AllEventLogTypes = selector({
   key: 'AllEventLogTypes',
   get: ({ get }): EventLogTypeDto[] | undefined => {
     const response = get(AllEventLogTypesQuery);
     if (isResponseOk(response)) {
-      return response.data.docs;
+      return response.data;
     }
   },
 });
