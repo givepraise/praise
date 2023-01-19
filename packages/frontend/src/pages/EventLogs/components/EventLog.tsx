@@ -8,10 +8,10 @@ import {
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { SingleUser } from '@/model/user/users';
 import { classNames } from '@/utils/index';
-import { InlineLabel } from '../ui/InlineLabel';
-import { Notice } from '../ui/Notice';
-import { UserName } from '../user/UserName';
-import { UserPopover } from '../user/UserPopover';
+import { InlineLabel } from '../../../components/ui/InlineLabel';
+import { Notice } from '../../../components/ui/Notice';
+import { UserName } from '../../../components/user/UserName';
+import { UserPopover } from '../../../components/user/UserPopover';
 import { EventLogDto } from '@/model/eventlog/dto/event-log.dto';
 import { EventLogTypeKey } from '@/model/eventlog/enum/event-log-type-key.enum';
 

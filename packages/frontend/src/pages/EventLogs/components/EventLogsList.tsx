@@ -2,7 +2,7 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dispatch, SetStateAction } from 'react';
 import { useRecoilValue } from 'recoil';
-import { EventLog } from '@/components/eventlog/EventLog';
+import { EventLog } from '@/pages/EventLogs/components/EventLog';
 import {
   AllEventLogs,
   AllEventLogsQueryParameters,
