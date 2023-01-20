@@ -11,9 +11,9 @@ import { logEvent } from '@/eventlog/utils';
 import { TypedRequestBody } from '@/shared/types';
 import { UserModel } from '@/user/entities';
 import { UserAccountModel } from '@/useraccount/entities';
+import { generateUserNameFromAccount } from '@/user/utils/entity';
 import { ActivateRequestBody } from './types';
 import { generateActivateMessage } from './utils';
-import { generateUserNameFromAccount } from '@/user/utils/entity';
 
 /**
  * Activate a useraccount and associate it with a user.
