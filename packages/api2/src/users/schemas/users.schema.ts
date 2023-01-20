@@ -93,5 +93,3 @@ UserSchema.virtual('accounts', {
   localField: '_id',
   foreignField: 'user',
 });
-
-export const UserModel = model<UserDocument>('User', UserSchema);

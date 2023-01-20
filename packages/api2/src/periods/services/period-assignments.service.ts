@@ -15,14 +15,11 @@ import { some } from 'lodash';
 import { InjectModel } from '@nestjs/mongoose';
 import { Period, PeriodModel } from '../schemas/periods.schema';
 import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
-import { User, UserModel } from '@/users/schemas/users.schema';
-import {
-  UserAccount,
-  UserAccountModel,
-} from '@/useraccounts/schemas/useraccounts.schema';
+import { User } from '@/users/schemas/users.schema';
+import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { SettingsService } from '@/settings/settings.service';
 import { EventLogService } from '@/event-log/event-log.service';
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ServiceException } from '@/shared/service-exception';
 import { AuthRole } from '@/users/interfaces/user-roles.interface';
 import { PeriodDetailsDto } from '../dto/period-details.dto';
@@ -33,9 +30,7 @@ import { ReplaceQuantifierInputDto } from '../dto/replace-quantifier-input.dto';
 import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interface';
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
 import { PeriodsService } from './periods.service';
-import { Quantification } from '../../quantifications/schemas/quantifications.schema';
-import { QuantificationModel } from '@/database/schemas/quantification/quantification.schema';
-
+import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 @Injectable()
 export class PeriodAssignmentsService {
   constructor(
@@ -44,11 +39,11 @@ export class PeriodAssignmentsService {
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
     @InjectModel(User.name)
-    private userModel: typeof UserModel,
+    private userModel: Model<User>,
     @InjectModel(UserAccount.name)
-    private userAccountModel: typeof UserAccountModel,
+    private userAccountModel: typeof Model<UserAccount>,
     @InjectModel(Quantification.name)
-    private quantificationModel: typeof QuantificationModel,
+    private quantificationModel: Model<Quantification>,
     private settingsService: SettingsService,
     private eventLogService: EventLogService,
     private periodsService: PeriodsService,
