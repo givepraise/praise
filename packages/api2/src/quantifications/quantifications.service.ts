@@ -62,17 +62,42 @@ export class QuantificationsService {
   async findOneByQuantifierAndPraise(
     userId: Types.ObjectId,
     praiseId: Types.ObjectId,
-  ): Promise<Quantification | null> {
-    const quantifier = await this.usersService.findOneById(userId);
-    if (!quantifier) return null;
+  ): Promise<Quantification> {
+    const quantification = await this.quantificationModel.aggregate([
+      {
+        $match: {
+          quantifier: userId,
+          praise: praiseId,
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'quantifier',
+          foreignField: '_id',
+          as: 'quantifier',
+        },
+      },
+      {
+        $lookup: {
+          from: 'praises',
+          localField: 'praise',
+          foreignField: '_id',
+          as: 'praise',
+        },
+      },
+      {
+        $unwind: '$quantifier',
+      },
+      {
+        $unwind: '$praise',
+      },
+    ]);
 
-    const quantification = await this.quantificationModel
-      .findOne({ quantifier: quantifier._id, praise: praiseId })
-      .populate('quantifier praise')
-      .lean();
+    if (!Array.isArray(quantification) || quantification.length === 0)
+      throw new ServiceException('Quantification not found.');
 
-    if (!quantification) return null;
-    return quantification;
+    return quantification[0];
   }
 
   /**
