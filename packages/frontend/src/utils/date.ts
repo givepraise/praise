@@ -24,8 +24,8 @@ const utcDateToLocal = (dateUtc: Date): Date => {
 export const localizeAndFormatIsoDateRelative = (dateIso: string): string => {
   const formatRelativeLocale = {
     lastWeek: 'eeee',
-    yesterday: "'yesterday'",
-    today: ' ',
+    yesterday: "'yesterday', p",
+    today: 'p',
     tomorrow: "'tomorrow' p",
     nextWeek: 'eeee p',
     other: DATE_FORMAT,
@@ -42,16 +42,20 @@ export const localizeAndFormatIsoDateRelative = (dateIso: string): string => {
   const localDate = new Date(dateLocal);
   const currentDate = new Date();
 
-  const formatDisanceValue = formatDistance(localDate, currentDate, {
-    addSuffix: true,
-  });
+  const differenceInDays = Math.round(
+    (currentDate.getTime() - localDate.getTime()) / 86400000
+  );
+  const isMoreThanAWeekAgo = differenceInDays >= 8;
+  const isMoreThanTwoDaysAgo = differenceInDays > 2;
 
-  const dateSuffix =
-    Math.round((currentDate.getTime() - localDate.getTime()) / 86400000) > 6
-      ? ''
-      : Math.round((currentDate.getTime() - localDate.getTime()) / 86400000) < 1
-      ? formatDisanceValue
-      : ', ' + formatDisanceValue;
+  let dateSuffix = '';
+  if (!isMoreThanAWeekAgo && isMoreThanTwoDaysAgo) {
+    dateSuffix =
+      ', ' +
+      formatDistance(localDate, currentDate, {
+        addSuffix: true,
+      });
+  }
 
   return formatRelative(dateLocal, new Date(), { locale }) + dateSuffix;
 };
