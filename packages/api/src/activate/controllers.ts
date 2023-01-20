@@ -13,6 +13,7 @@ import { UserModel } from '@/user/entities';
 import { UserAccountModel } from '@/useraccount/entities';
 import { ActivateRequestBody } from './types';
 import { generateActivateMessage } from './utils';
+import { generateUserNameFromAccount } from '@/user/utils/entity';
 
 /**
  * Activate a useraccount and associate it with a user.
@@ -64,6 +65,20 @@ const activate = async (
     { upsert: true, new: true }
   );
   if (!user) throw new NotFoundError('User');
+
+  // Set rewardsEthAddress if not set
+  if (!user.rewardsEthAddress) {
+    user.rewardsEthAddress = identityEthAddress;
+  }
+
+  // Set username if not set
+  if (!user.username || user.username === identityEthAddress) {
+    user.username =
+      (await generateUserNameFromAccount(userAccount)) || identityEthAddress;
+  }
+
+  // Save user changes
+  await user.save();
 
   // Link user account with user
   userAccount.user = user;
