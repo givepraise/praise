@@ -52,7 +52,7 @@ export class Quantification {
     example: '639b178f19296ee0f2d0585d',
   })
   @ExposeId()
-  quantifier: User;
+  quantifier: User | Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Praise', index: true })
   // TODO: This is not working, adding the example here causes a circular dependency error
@@ -60,7 +60,7 @@ export class Quantification {
   //   example: '639b178f19296ee0f2d0585d',
   // })
   @ExposeId()
-  praise: Praise;
+  praise: Praise | Types.ObjectId;
 
   @ApiResponseProperty({
     example: '639b178f19296ee0f2d0585d',
@@ -74,5 +74,4 @@ export class Quantification {
 }
 
 const QuantificationsSchema = SchemaFactory.createForClass(Quantification);
-
 export { QuantificationsSchema };
