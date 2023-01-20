@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Frontend**: Better handling of relative dates #720
 - **Devops**: Added docker-compose installation script and modified scripts #754
 - **Devops**: Allow mongodb port number to be configurable in .env #760
 - **Devops**: Enhanced the multi-setup scripts #761
