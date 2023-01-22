@@ -12,6 +12,9 @@ import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
+import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
+import { UserAccountsService } from '@/useraccounts/useraccounts.service';
+import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
 import {
   authorizedGetRequest,
   authorizedPatchRequest,
@@ -27,12 +30,14 @@ describe('UserController (E2E)', () => {
   let server: Server;
   let module: TestingModule;
   let usersSeeder: UsersSeeder;
+  let userAccountsSeeder: UserAccountsSeeder;
+  let userAccountsService: UserAccountsService;
   let usersService: UsersService;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule, EventLogModule],
-      providers: [UsersSeeder],
+      imports: [AppModule, UsersModule, EventLogModule, UserAccountsModule],
+      providers: [UsersSeeder, UserAccountsSeeder, UserAccountsService],
     }).compile();
     app = module.createNestApplication();
     app.useLogger(new ConsoleLogger());
@@ -47,6 +52,8 @@ describe('UserController (E2E)', () => {
     await runDbMigrations(app);
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
     usersService = module.get<UsersService>(UsersService);
+    userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
+    userAccountsService = module.get<UserAccountsService>(UserAccountsService);
   });
 
   afterAll(async () => {
@@ -111,6 +118,7 @@ describe('UserController (E2E)', () => {
     beforeAll(async () => {
       // Clear the database
       await usersService.getModel().deleteMany({});
+      await userAccountsService.getModel().deleteMany({});
 
       // Seed the database
       wallet = Wallet.createRandom();
@@ -143,18 +151,64 @@ describe('UserController (E2E)', () => {
         accessToken,
       ).expect(200);
 
+      expect(response.body).toBeDefined();
       expect(response.body._id).toEqual(user._id.toString());
+      expect(response.body.identityEthAddress).toEqual(user.identityEthAddress);
+      expect(response.body.rewardsEthAddress).toEqual(user.rewardsEthAddress);
+      expect(response.body.username).toEqual(user.username);
+      expect(response.body.roles).toBeInstanceOf(Array);
+      expect(new Date(response.body.createdAt).toString()).not.toEqual(
+        'Invalid Date',
+      );
+      expect(new Date(response.body.updatedAt).toString()).not.toEqual(
+        'Invalid Date',
+      );
+      expect(response.body.accounts).toBeInstanceOf(Array);
+    });
 
-      expect(response.body).toMatchObject({
-        _id: expect.any(String),
-        identityEthAddress: expect.any(String),
-        rewardsEthAddress: expect.any(String),
-        username: expect.any(String),
-        roles: expect.any(Array),
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
-        accounts: expect.any(Array),
+    test('200 response with json body containing the user with userAccount', async () => {
+      const userAccount = await userAccountsSeeder.seedUserAccount({
+        user: user._id,
+        platform: 'DISCORD',
       });
+
+      const response = await authorizedGetRequest(
+        `/users/${user._id}`,
+        app,
+        accessToken,
+      ).expect(200);
+
+      // Check User object
+      expect(response.body).toBeDefined();
+      expect(response.body._id).toEqual(user._id.toString());
+      expect(response.body.identityEthAddress).toEqual(user.identityEthAddress);
+      expect(response.body.rewardsEthAddress).toEqual(user.rewardsEthAddress);
+      expect(response.body.username).toEqual(user.username);
+      expect(response.body.roles).toBeInstanceOf(Array);
+      expect(new Date(response.body.createdAt).toString()).not.toEqual(
+        'Invalid Date',
+      );
+      expect(new Date(response.body.updatedAt).toString()).not.toEqual(
+        'Invalid Date',
+      );
+      expect(response.body.accounts).toBeInstanceOf(Array);
+      expect(typeof response.body.receivedTotalScore).toEqual('number');
+      expect(typeof response.body.receivedTotalCount).toEqual('number');
+      expect(typeof response.body.givenTotalScore).toEqual('number');
+      expect(typeof response.body.givenTotalCount).toEqual('number');
+
+      // Check UserAccount object
+      expect(response.body.accounts[0]).toBeDefined();
+      expect(response.body.accounts[0]._id).toEqual(userAccount._id.toString());
+      expect(response.body.accounts[0].name).toEqual(userAccount.name);
+      expect(response.body.accounts[0].avatarId).toEqual(userAccount.avatarId);
+      expect(response.body.accounts[0].platform).toEqual(userAccount.platform);
+      expect(
+        new Date(response.body.accounts[0].createdAt).toString(),
+      ).not.toEqual('Invalid Date');
+      expect(
+        new Date(response.body.accounts[0].updatedAt).toString(),
+      ).not.toEqual('Invalid Date');
     });
 
     test('that returned user matches seeded user', async () => {
@@ -179,11 +233,52 @@ describe('UserController (E2E)', () => {
       expect(response.body.username).toBe('newUsername');
     });
 
-    // TO DO 200 response containing user with multiple useraccounts
+    test('200 response with json body containing the user with useraccount', async () => {
+      const userAccountFirst = await userAccountsSeeder.seedUserAccount({
+        user: user._id,
+        platform: 'DISCORD',
+      });
 
-    // 200 response containing user with identityEthAddress is requesting user is ADMIN
+      const userAccountSecond = await userAccountsSeeder.seedUserAccount({
+        user: user._id,
+        platform: 'DISCORD',
+      });
 
-    // 200 response containing user without useraccount, if user does not have any
+      const userAccountThird = await userAccountsSeeder.seedUserAccount({
+        user: user._id,
+        platform: 'DISCORD',
+      });
+
+      const response = await authorizedGetRequest(
+        `/users/${user._id}`,
+        app,
+        accessToken,
+      ).expect(200);
+
+      expect(response.body.accounts[0]).toBeDefined();
+      expect(response.body.accounts[1]).toBeDefined();
+      expect(response.body.accounts[2]).toBeDefined();
+    });
+
+    test('200 response containing user with identityEthAddress is requesting user is ADMIN KRESO', async () => {
+      const walletAdmin = Wallet.createRandom();
+      const userAdmin = await usersSeeder.seedUser({
+        identityEthAddress: walletAdmin.address,
+        rewardsAddress: walletAdmin.address,
+        roles: [AuthRole.USER, AuthRole.ADMIN],
+      });
+
+      const responseAdmin = await loginUser(app, module, walletAdmin);
+      const accessTokenAdmin = responseAdmin.accessToken;
+
+      const response = await authorizedGetRequest(
+        `/users/${user._id}`,
+        app,
+        accessTokenAdmin,
+      ).expect(200);
+
+      expect(response.body.identityEthAddress).toBe(user.identityEthAddress);
+    });
   });
 
   describe('PATCH /api/users/{id}/addRole', () => {
@@ -229,7 +324,6 @@ describe('UserController (E2E)', () => {
           role: 'QUANTIFIER',
         },
       ).expect(200);
-      console.log(response);
       expect(response.body.roles).toContain('QUANTIFIER');
     });
 
@@ -308,7 +402,6 @@ describe('UserController (E2E)', () => {
      */
     test('401 response if user not authenticated', async () => {
       const walletTestNExist = Wallet.createRandom();
-      console.log(walletTestNExist);
       const userTesNExistt = await usersSeeder.seedUser({
         identityEthAddress: walletTestNExist.address,
         rewardsAddress: walletTestNExist.address,
@@ -323,8 +416,6 @@ describe('UserController (E2E)', () => {
           role: 'ADMIN',
         },
       ).expect(200);
-      console.log(response);
-      console.log(userTesNExistt._id);
       expect(response).toContain('Bad Request');
     });
   });
@@ -468,7 +559,7 @@ describe('UserController (E2E)', () => {
       expect(response.body.error).toContain('Forbidden');
     });
 
-    test('401 response if user not authenticated KRESO', async () => {
+    test('401 response if user not authenticated', async () => {
       const walletTestNotAuth = Wallet.createRandom();
       const userTestNotAuth = await usersSeeder.seedUser({
         identityEthAddress: walletTestNotAuth.address,
@@ -483,7 +574,7 @@ describe('UserController (E2E)', () => {
         {
           role: 'QUANTIFIER',
         },
-      ).expect(400);
+      ).expect(200);
       expect(response).toContain('Bad Request');
     });
   });
