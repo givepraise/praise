@@ -18,6 +18,13 @@ import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
 import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
 import { QuantificationsModule } from '@/quantifications/quantifications.module';
+import { PraiseModule } from '@/praise/praise.module';
+import { Praise } from '@/praise/schemas/praise.schema';
+import { PraiseSeeder } from '@/database/seeder/praise.seeder';
+import { PraiseService } from '@/praise/praise.service';
+import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
+import { PeriodsModule } from '@/periods/periods.module';
+import { PeriodsService } from '../src/periods/periods.service';
 import {
   authorizedGetRequest,
   authorizedPatchRequest,
@@ -27,6 +34,7 @@ import { User } from '@/users/schemas/users.schema';
 import { EventLogModule } from '@/event-log/event-log.module';
 import { runDbMigrations } from '@/database/migrations';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
+import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 
 describe('UserController (E2E)', () => {
   let app: INestApplication;
@@ -38,6 +46,10 @@ describe('UserController (E2E)', () => {
   let usersService: UsersService;
   let quantificationsSeeder: QuantificationsSeeder;
   let quantificationsService: QuantificationsService;
+  let praiseSeeder: PraiseSeeder;
+  let praiseService: PraiseService;
+  let periodsSeeder: PeriodsSeeder;
+  let periodsService: PeriodsService;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -47,12 +59,16 @@ describe('UserController (E2E)', () => {
         EventLogModule,
         UserAccountsModule,
         QuantificationsModule,
+        PraiseModule,
+        PeriodsModule,
       ],
       providers: [
         UsersSeeder,
         UserAccountsSeeder,
         UserAccountsService,
         QuantificationsSeeder,
+        PraiseSeeder,
+        PeriodsSeeder,
       ],
     }).compile();
     app = module.createNestApplication();
@@ -76,6 +92,10 @@ describe('UserController (E2E)', () => {
     quantificationsService = module.get<QuantificationsService>(
       QuantificationsService,
     );
+    praiseSeeder = module.get<PraiseSeeder>(PraiseSeeder);
+    praiseService = module.get<PraiseService>(PraiseService);
+    periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
+    periodsService = module.get<PeriodsService>(PeriodsService);
   });
 
   afterAll(async () => {
@@ -439,6 +459,8 @@ describe('UserController (E2E)', () => {
     beforeAll(async () => {
       // Clear the database
       await usersService.getModel().deleteMany({});
+      await periodsService.getModel().deleteMany({});
+      await praiseService.getModel().deleteMany({});
       await quantificationsService.getModel().deleteMany({});
 
       // Seed the database
@@ -549,7 +571,25 @@ describe('UserController (E2E)', () => {
       );
     });
 
+    // TODO: Fix this test
     test('400 response if removing QUANTIFIER role from actively assigned quantifier KRESO', async () => {
+      const praise: Praise = await praiseSeeder.seedPraise();
+
+      await quantificationsSeeder.seedQuantification({
+        quantifier: user._id,
+        score: 0,
+        scoreRealized: 0,
+        dismissed: false,
+        praise: praise._id,
+      });
+
+      await periodsSeeder.seedPeriod({
+        endDate: praise.createdAt,
+        status: PeriodStatusType.QUANTIFY,
+      });
+
+      console.log(user);
+
       const response = await authorizedPatchRequest(
         `/users/${user._id}/removeRole`,
         app,
@@ -558,6 +598,7 @@ describe('UserController (E2E)', () => {
           role: 'QUANTIFIER',
         },
       ).expect(200);
+      console.log(response.body);
       expect(response.body.error).toContain('Bad Request');
       expect(response.body.message).toContain(
         'It is not allowed to remove the last admin!',
