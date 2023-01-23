@@ -15,6 +15,9 @@ import { UsersSeeder } from '@/database/seeder/users.seeder';
 import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
+import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder';
+import { QuantificationsService } from '@/quantifications/quantifications.service';
+import { QuantificationsModule } from '@/quantifications/quantifications.module';
 import {
   authorizedGetRequest,
   authorizedPatchRequest,
@@ -33,11 +36,24 @@ describe('UserController (E2E)', () => {
   let userAccountsSeeder: UserAccountsSeeder;
   let userAccountsService: UserAccountsService;
   let usersService: UsersService;
+  let quantificationsSeeder: QuantificationsSeeder;
+  let quantificationsService: QuantificationsService;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule, EventLogModule, UserAccountsModule],
-      providers: [UsersSeeder, UserAccountsSeeder, UserAccountsService],
+      imports: [
+        AppModule,
+        UsersModule,
+        EventLogModule,
+        UserAccountsModule,
+        QuantificationsModule,
+      ],
+      providers: [
+        UsersSeeder,
+        UserAccountsSeeder,
+        UserAccountsService,
+        QuantificationsSeeder,
+      ],
     }).compile();
     app = module.createNestApplication();
     app.useLogger(new ConsoleLogger());
@@ -54,6 +70,12 @@ describe('UserController (E2E)', () => {
     usersService = module.get<UsersService>(UsersService);
     userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
     userAccountsService = module.get<UserAccountsService>(UserAccountsService);
+    quantificationsSeeder = module.get<QuantificationsSeeder>(
+      QuantificationsSeeder,
+    );
+    quantificationsService = module.get<QuantificationsService>(
+      QuantificationsService,
+    );
   });
 
   afterAll(async () => {
@@ -260,7 +282,7 @@ describe('UserController (E2E)', () => {
       expect(response.body.accounts[2]).toBeDefined();
     });
 
-    test('200 response containing user with identityEthAddress is requesting user is ADMIN KRESO', async () => {
+    test('200 response containing user with identityEthAddress is requesting user is ADMIN', async () => {
       const walletAdmin = Wallet.createRandom();
       const userAdmin = await usersSeeder.seedUser({
         identityEthAddress: walletAdmin.address,
@@ -324,10 +346,21 @@ describe('UserController (E2E)', () => {
           role: 'QUANTIFIER',
         },
       ).expect(200);
+      expect(response.body).toBeDefined();
+      expect(response.body._id).toEqual(user._id.toString());
+      expect(response.body.identityEthAddress).toEqual(user.identityEthAddress);
+      expect(response.body.rewardsEthAddress).toEqual(user.rewardsEthAddress);
+      expect(response.body.username).toEqual(user.username);
+      expect(response.body.roles).toBeInstanceOf(Array);
       expect(response.body.roles).toContain('QUANTIFIER');
+      expect(new Date(response.body.createdAt).toString()).not.toEqual(
+        'Invalid Date',
+      );
+      expect(new Date(response.body.updatedAt).toString()).not.toEqual(
+        'Invalid Date',
+      );
+      expect(response.body.accounts).toBeInstanceOf(Array);
     });
-
-    // 200 response with json body containing the updated user
 
     test('400 response if role does not exist', async () => {
       const response = await authorizedPatchRequest(
@@ -363,12 +396,7 @@ describe('UserController (E2E)', () => {
       expect(response.body.error).toContain('Bad Request');
     });
 
-    test('403 response if user is not admin', async () => {
-      /**
-       * Can I here just use the user that is already seeded?
-       * Just changing the role to USER?
-       */
-
+    test('403 response if user is not ADMIN', async () => {
       const walletTest = Wallet.createRandom();
       const userTest = await usersSeeder.seedUser({
         identityEthAddress: walletTest.address,
@@ -376,14 +404,13 @@ describe('UserController (E2E)', () => {
         roles: [AuthRole.USER],
       });
 
-      // Login and get access token
-      const responseUser = await loginUser(app, module, walletTest);
-      accessToken = responseUser.accessToken;
+      const responseUserTest = await loginUser(app, module, walletTest);
+      const accessTokenTest = responseUserTest.accessToken;
 
       const response = await authorizedPatchRequest(
         `/users/${userTest._id}/addRole`,
         app,
-        accessToken,
+        accessTokenTest,
         {
           role: 'QUANTIFIER',
         },
@@ -391,32 +418,16 @@ describe('UserController (E2E)', () => {
       expect(response.body.error).toContain('Forbidden');
     });
 
-    /**
-     * TO DO
-     *
-     * this test is not working, ask Kristofer for help.
-     *
-     * - who build the "addRole" function?
-     * - check if the function is working properly
-     *
-     */
     test('401 response if user not authenticated', async () => {
-      const walletTestNExist = Wallet.createRandom();
-      const userTesNExistt = await usersSeeder.seedUser({
-        identityEthAddress: walletTestNExist.address,
-        rewardsAddress: walletTestNExist.address,
-        roles: [AuthRole.USER],
-      });
-
       const response = await authorizedPatchRequest(
-        `/users/${userTesNExistt._id}/addRole`,
+        `/users/${user._id}/addRole`,
         app,
-        accessToken,
+        '',
         {
           role: 'ADMIN',
         },
-      ).expect(200);
-      expect(response).toContain('Bad Request');
+      ).expect(401);
+      expect(response.body.message).toContain('Unauthorized');
     });
   });
 
@@ -428,6 +439,7 @@ describe('UserController (E2E)', () => {
     beforeAll(async () => {
       // Clear the database
       await usersService.getModel().deleteMany({});
+      await quantificationsService.getModel().deleteMany({});
 
       // Seed the database
       wallet = Wallet.createRandom();
@@ -451,11 +463,23 @@ describe('UserController (E2E)', () => {
           role: 'QUANTIFIER',
         },
       ).expect(200);
+
+      expect(response.body).toBeDefined();
+      expect(response.body._id).toEqual(user._id.toString());
+      expect(response.body.identityEthAddress).toEqual(user.identityEthAddress);
+      expect(response.body.rewardsEthAddress).toEqual(user.rewardsEthAddress);
+      expect(response.body.username).toEqual(user.username);
+      expect(response.body.roles).toBeInstanceOf(Array);
       expect(response.body.roles).not.toContain('QUANTIFIER');
       expect(response.body.roles).toContain('USER');
+      expect(new Date(response.body.createdAt).toString()).not.toEqual(
+        'Invalid Date',
+      );
+      expect(new Date(response.body.updatedAt).toString()).not.toEqual(
+        'Invalid Date',
+      );
+      expect(response.body.accounts).toBeInstanceOf(Array);
     });
-
-    // 200 response logs out updated user
 
     test('404 response if user does not exist', async () => {
       const response = await authorizedPatchRequest(
@@ -499,10 +523,6 @@ describe('UserController (E2E)', () => {
         roles: [AuthRole.USER, AuthRole.ADMIN],
       });
 
-      // Login and get access token
-      const responseUser = await loginUser(app, module, walletTest);
-      accessToken = responseUser.accessToken;
-
       const response = await authorizedPatchRequest(
         `/users/${userTest._id}/removeRole`,
         app,
@@ -529,14 +549,22 @@ describe('UserController (E2E)', () => {
       );
     });
 
-    // 400 response if removing QUANTIFIER role from actively assigned quantifier
+    test('400 response if removing QUANTIFIER role from actively assigned quantifier KRESO', async () => {
+      const response = await authorizedPatchRequest(
+        `/users/${user._id}/removeRole`,
+        app,
+        accessToken,
+        {
+          role: 'QUANTIFIER',
+        },
+      ).expect(200);
+      expect(response.body.error).toContain('Bad Request');
+      expect(response.body.message).toContain(
+        'It is not allowed to remove the last admin!',
+      );
+    });
 
     test('403 response if user is not admin', async () => {
-      /**
-       * Can I here just use the user that is already seeded?
-       * Just changing the role to USER?
-       */
-
       const walletTest = Wallet.createRandom();
       const userTest = await usersSeeder.seedUser({
         identityEthAddress: walletTest.address,
@@ -544,14 +572,13 @@ describe('UserController (E2E)', () => {
         roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
-      // Login and get access token
-      const responseUser = await loginUser(app, module, walletTest);
-      accessToken = responseUser.accessToken;
+      const responseUserTest = await loginUser(app, module, walletTest);
+      const accessTokenTest = responseUserTest.accessToken;
 
       const response = await authorizedPatchRequest(
         `/users/${userTest._id}/removeRole`,
         app,
-        accessToken,
+        accessTokenTest,
         {
           role: 'QUANTIFIER',
         },
@@ -559,23 +586,23 @@ describe('UserController (E2E)', () => {
       expect(response.body.error).toContain('Forbidden');
     });
 
-    test('401 response if user not authenticated', async () => {
+    test('401 response if user not authenticated KRESO', async () => {
       const walletTestNotAuth = Wallet.createRandom();
       const userTestNotAuth = await usersSeeder.seedUser({
         identityEthAddress: walletTestNotAuth.address,
         rewardsAddress: walletTestNotAuth.address,
-        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
+        roles: [AuthRole.USER, AuthRole.ADMIN, AuthRole.QUANTIFIER],
       });
 
       const response = await authorizedPatchRequest(
         `/users/${userTestNotAuth._id}/removeRole`,
         app,
-        accessToken,
+        '',
         {
           role: 'QUANTIFIER',
         },
-      ).expect(200);
-      expect(response).toContain('Bad Request');
+      ).expect(401);
+      expect(response.body.message).toContain('Unauthorized');
     });
   });
 });
