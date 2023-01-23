@@ -38,6 +38,7 @@ import { User } from '@/users/schemas/users.schema';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { Setting } from '@/settings/schemas/settings.schema';
 import { some } from 'lodash';
+import { PeriodDetailsQuantifierDto } from '@/periods/dto/period-details-quantifier.dto';
 
 class LoggedInUser {
   accessToken: string;
@@ -658,9 +659,10 @@ describe('Period (E2E)', () => {
     beforeEach(async () => {
       await periodsService.getModel().deleteMany({});
       await praiseService.getModel().deleteMany({});
-      // await usersService.getModel().deleteMany({});
-      // await userAccountsService.getModel().deleteMany({});
-      // await periodSettingsService.getModel().deleteMany({});
+      await usersService.getModel().deleteMany({});
+      await userAccountsService.getModel().deleteMany({});
+      await periodSettingsService.getModel().deleteMany({});
+      await quantificationsService.getModel().deleteMany({});
 
       PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER =
         await settingsSeeder.seedSettings({
@@ -752,6 +754,10 @@ describe('Period (E2E)', () => {
         receiver: receiver3._id,
         createdAt: dayInPeriod,
       });
+      await praiseSeeder.seedPraise({
+        receiver: receiver3._id,
+        createdAt: dayInPeriod,
+      });
 
       await periodSettingsSeeder.seedPeriodSettings({
         period: period._id,
@@ -801,16 +807,14 @@ describe('Period (E2E)', () => {
       expect(response.body.receivers[2]._id).toEqual(
         receiversSorted[2]._id.toString(),
       );
-      expect(response.body.receivers[2].praiseCount).toEqual(3);
+      expect(response.body.receivers[2].praiseCount).toEqual(4);
 
-      // expect(response.body.quantifiers).toHaveLength(3);
-      // expect(response.body.quantifiers[0].praiseCount).toEqual(12);
-      // expect(response.body.quantifiers[1].praiseCount).toEqual(12);
-      // expect(response.body.quantifiers[2].praiseCount).toEqual(12);
+      expect(response.body.quantifiers).toHaveLength(4);
+      // expect(response.body.quantifiers[0].praiseCount).toEqual(9);
 
-      // expect(response.body.quantifiers[0].finishedCount).toEqual(0);
-      // expect(response.body.quantifiers[1].finishedCount).toEqual(0);
-      // expect(response.body.quantifiers[2].finishedCount).toEqual(0);
+      expect(response.body.quantifiers[0].finishedCount).toEqual(0);
+      expect(response.body.quantifiers[1].finishedCount).toEqual(0);
+      expect(response.body.quantifiers[2].finishedCount).toEqual(0);
     });
 
     test('200 response with json body containing assignments with PRAISE_QUANTIFIERS_ASSIGN_EVENLY=true', async function () {
@@ -889,6 +893,10 @@ describe('Period (E2E)', () => {
         receiver: receiver3._id,
         createdAt: dayInPeriod,
       });
+      await praiseSeeder.seedPraise({
+        receiver: receiver3._id,
+        createdAt: dayInPeriod,
+      });
 
       await periodSettingsSeeder.seedPeriodSettings({
         period: period._id,
@@ -938,7 +946,84 @@ describe('Period (E2E)', () => {
       expect(response.body.receivers[2]._id).toEqual(
         receiversSorted[2]._id.toString(),
       );
-      expect(response.body.receivers[2].praiseCount).toEqual(3);
+      expect(response.body.receivers[2].praiseCount).toEqual(4);
+
+      const quantifiersWith9Praises = response.body.quantifiers.filter(
+        (quantifier: PeriodDetailsQuantifierDto) =>
+          quantifier.praiseCount === 9,
+      );
+      const quantifiersWith4Praises = response.body.quantifiers.filter(
+        (quantifier: PeriodDetailsQuantifierDto) =>
+          quantifier.praiseCount === 4,
+      );
+
+      expect(quantifiersWith9Praises).toHaveLength(2);
+      expect(quantifiersWith4Praises).toHaveLength(2);
+    });
+
+    test('200 response when praise items number = 200 and PRAISE_QUANTIFIERS_ASSIGN_EVENLY=true', async function () {
+      const wallet = Wallet.createRandom();
+      await usersSeeder.seedUser({
+        identityEthAddress: wallet.address,
+        roles: ['USER', 'ADMIN'],
+      });
+
+      const period = await periodsSeeder.seedPeriod();
+
+      const dayInPeriod = new Date(period.endDate.getTime());
+      dayInPeriod.setDate(period.endDate.getDate() - 1);
+
+      // create 20 receivers
+      for (let i = 0; i < 20; i++) {
+        await userAccountsSeeder.seedUserAccount();
+      }
+
+      const receivers = await userAccountsService.getModel().find().lean();
+
+      // create 200 praises and evenly distribute them among receivers
+      for (let i = 0; i < 200; i++) {
+        await praiseSeeder.seedPraise({
+          receiver: receivers[i % 20]._id,
+          createdAt: dayInPeriod,
+        });
+      }
+
+      const praiseItems = await praiseService.getModel().find().lean();
+
+      // create 3 quantifiers
+      for (let i = 0; i < 3; i++) {
+        await usersSeeder.seedUser({
+          roles: ['USER', 'QUANTIFIER'],
+        });
+      }
+
+      const quantifiers = await usersService
+        .getModel()
+        .find({ roles: 'QUANTIFIER' })
+        .lean();
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period._id,
+        setting: PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER._id,
+        value: 3,
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period._id,
+        setting: PRAISE_QUANTIFIERS_ASSIGN_EVENLY._id,
+        value: 'true',
+      });
+
+      const response = await request(server)
+        .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .send()
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      /**
+       * TODO: check if we have 600 quantifications assigned to 3 quantifiers
+       */
     });
 
     test('400 response if periodId does not exist', async function () {
