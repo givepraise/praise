@@ -7,7 +7,6 @@ import { EventLogType } from './event-log-type.schema';
 import { Type } from 'class-transformer';
 
 export type EventLogDocument = EventLog & Document;
-export type EventLogModel = Pagination<EventLogDocument>;
 
 @Schema({ timestamps: true })
 export class EventLog {
@@ -77,7 +76,7 @@ export class EventLog {
 export const EventLogSchema =
   SchemaFactory.createForClass(EventLog).plugin(mongoosePagination);
 
-export const PaginatedEventLogModel = model<
+export const EventLogModel = model<
   EventLogDocument,
   Pagination<EventLogDocument>
 >('EventLog', EventLogSchema);
