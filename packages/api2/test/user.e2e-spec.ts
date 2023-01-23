@@ -147,6 +147,7 @@ describe('UserController (E2E)', () => {
             (user) =>
               user.identityEthAddress === returnedUser.identityEthAddress,
           ),
+          // eslint-disable-next-line jest-extended/prefer-to-be-true
         ).toBe(true);
       }
     });

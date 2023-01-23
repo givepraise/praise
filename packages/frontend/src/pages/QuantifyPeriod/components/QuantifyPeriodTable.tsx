@@ -6,14 +6,14 @@ import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { classNames } from '@/utils/index';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
 import {
   PeriodPageParams,
   PeriodQuantifierReceivers,
   QuantifierReceiverData,
-} from '@/model/periods';
+} from '@/model/periods/periods';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
-import { ActiveUserId } from '@/model/auth';
+import { ActiveUserId } from '@/model/auth/auth';
 
 const DoneLabel = (): JSX.Element => {
   return (

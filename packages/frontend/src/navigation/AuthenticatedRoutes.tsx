@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import difference from 'lodash/difference';
-import { ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth';
+import { ROLE_ADMIN, ROLE_QUANTIFIER } from '@/model/auth/auth';
 
 const StartPage = React.lazy(() => import('@/pages/Start/StartPage'));
 const SettingsPage = React.lazy(() => import('@/pages/Settings/SettingsPage'));
@@ -12,19 +12,19 @@ const UsersPage = React.lazy(() => import('@/pages/Users/UsersPage'));
 
 const PeriodsPage = React.lazy(() => import('@/pages/Periods/PeriodsPage'));
 const PeriodsCreateUpdatePage = React.lazy(
-  () => import('@/pages/Periods/Create/PeriodCreatePage')
+  () => import('@/pages/PeriodCreate/PeriodCreatePage')
 );
 const PeriodDetailsPage = React.lazy(
-  () => import('@/pages/Periods/Details/PeriodDetailsPage')
+  () => import('@/pages/PeriodDetails/PeriodDetailsPage')
 );
 const PeriodReceiverSummaryPage = React.lazy(
-  () => import('@/pages/Periods/ReceiverSummary/ReceiverSummaryPage')
+  () => import('@/pages/PeriodReceiverSummary/ReceiverSummaryPage')
 );
 const PeriodGiverSummaryPage = React.lazy(
-  () => import('@/pages/Periods/GiverSummary/GiverSummaryPage')
+  () => import('@/pages/PeriodGiverSummary/GiverSummaryPage')
 );
 const PeriodQuantifierSummaryPage = React.lazy(
-  () => import('@/pages/Periods/QuantifierSummary/QuantifierSummaryPage')
+  () => import('@/pages/PeriodQuantifierSummary/QuantifierSummaryPage')
 );
 
 const PraiseDetailsPage = React.lazy(

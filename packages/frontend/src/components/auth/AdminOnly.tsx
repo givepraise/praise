@@ -1,5 +1,5 @@
 import { useRecoilValue } from 'recoil';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 
 interface AdminOnlyProps {
   children: JSX.Element;

@@ -38,6 +38,7 @@ const PERMISSIONS_ADMIN = [
   Permission.PeriodSettingsManage,
   Permission.PeriodCreate,
   Permission.PeriodUpdate,
+  Permission.PeriodAssign,
 ];
 
 /**

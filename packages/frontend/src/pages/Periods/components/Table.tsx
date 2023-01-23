@@ -1,13 +1,13 @@
 /* eslint-disable react/jsx-key */
-import { PeriodDetailsDto } from 'api/dist/period/types';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { TableOptions, useSortBy, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { classNames } from '@/utils/index';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
-import { AllPeriods } from '@/model/periods';
+import { AllPeriods } from '@/model/periods/periods';
 import { InlineLabel } from '@/components/ui/InlineLabel';
+import { PeriodDetailsDto } from '@/model/periods/dto/period-details.dto';
 
 export const PeriodsTable = (): JSX.Element => {
   const allPeriods = useRecoilValue(AllPeriods);

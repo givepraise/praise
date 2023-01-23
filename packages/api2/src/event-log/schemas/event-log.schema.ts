@@ -1,7 +1,10 @@
+import { ExposeId } from '@/shared/expose-id.decorator';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { Document, model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
+import { EventLogType } from './event-log-type.schema';
+import { Type } from 'class-transformer';
 
 export type EventLogDocument = EventLog & Document;
 export type EventLogModel = Pagination<EventLogDocument>;
@@ -14,7 +17,12 @@ export class EventLog {
     }
   }
 
-  @ApiProperty()
+  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ExposeId()
+  _id: Types.ObjectId;
+
+  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ExposeId()
   @Prop({
     type: Types.ObjectId,
     ref: 'User',
@@ -22,7 +30,8 @@ export class EventLog {
   })
   user: Types.ObjectId;
 
-  @ApiProperty()
+  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ExposeId()
   @Prop({
     type: Types.ObjectId,
     ref: 'UserAccount',
@@ -30,7 +39,8 @@ export class EventLog {
   })
   useraccount: Types.ObjectId;
 
-  @ApiProperty()
+  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ExposeId()
   @Prop({
     type: Types.ObjectId,
     ref: 'ApiKey',
@@ -40,7 +50,8 @@ export class EventLog {
 
   // "Related Period" of an eventlog - only used for quantification events
   //    which are restricted to ADMIN users when period is active
-  @ApiProperty()
+  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ExposeId()
   @Prop({
     type: Types.ObjectId,
     ref: 'Period',
@@ -48,14 +59,15 @@ export class EventLog {
   })
   period: Types.ObjectId;
 
-  @ApiProperty()
+  @ApiResponseProperty({ type: EventLogType })
+  @Type(() => EventLogType)
   @Prop({
     type: Types.ObjectId,
     ref: 'EventLogType',
     required: true,
     index: true,
   })
-  type: Types.ObjectId;
+  type: Types.ObjectId | EventLogType;
 
   @ApiProperty()
   @Prop({ type: String, required: true })

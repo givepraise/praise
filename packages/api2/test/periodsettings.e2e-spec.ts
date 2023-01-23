@@ -18,7 +18,6 @@ import {
   loginUser,
 } from './test.common';
 import { runDbMigrations } from '@/database/migrations';
-import { PeriodsService } from '../src/periods/periods.service';
 import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
 import { PeriodsModule } from '@/periods/periods.module';
 import { Period } from '@/periods/schemas/periods.schema';
@@ -33,6 +32,7 @@ import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
 import { Setting } from '@/settings/schemas/settings.schema';
 import { SettingsService } from '@/settings/settings.service';
+import { PeriodsService } from '@/periods/services/periods.service';
 
 class LoggedInUser {
   accessToken: string;

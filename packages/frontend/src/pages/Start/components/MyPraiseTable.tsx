@@ -1,10 +1,10 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
-import { AllPraiseList } from '@/model/praise';
+import { AllPraiseList } from '@/model/praise/praise';
 import { Praise } from '@/components/praise/Praise';
 import { PraiseRow } from '@/components/praise/PraiseRow';
-import { ActiveUserId } from '@/model/auth';
+import { ActiveUserId } from '@/model/auth/auth';
 import { SingleUser } from '@/model/user/users';
 import { PraisePageLoader } from '@/components/praise/PraisePageLoader';
 import { UserDto } from '@/model/user/dto/user.dto';

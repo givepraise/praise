@@ -11,7 +11,7 @@ import {
   AllPraiseList,
   praiseSortOptions,
   PraiseTableSelectedSortOption,
-} from '@/model/praise';
+} from '@/model/praise/praise';
 import { Praise } from '@/components/praise/Praise';
 import { PraiseRow } from '@/components/praise/PraiseRow';
 import { PraisePageLoader } from '@/components/praise/PraisePageLoader';
