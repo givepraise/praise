@@ -253,7 +253,7 @@ export class PeriodsController {
   @ApiParam({ name: 'id', type: String })
   async replaceQuantifier(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() replaceQuantifierDto: ReplaceQuantifierInputDto,
+    @Body() replaceQuantifierDto: any,
   ): Promise<ReplaceQuantifierResponseDto> {
     return this.periodAssignmentsService.replaceQuantifier(
       id,

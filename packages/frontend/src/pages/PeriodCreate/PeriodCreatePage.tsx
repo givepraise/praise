@@ -65,6 +65,7 @@ const PeriodsForm = (): JSX.Element => {
     };
 
     const response = await createPeriod(newPeriod);
+
     if (isResponseOk(response)) {
       toast.success('Period created');
       setTimeout(() => {

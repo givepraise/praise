@@ -1150,8 +1150,6 @@ describe('Period (E2E)', () => {
         .send(FORM_DATA)
         .expect('Content-Type', /json/);
 
-      // console.log('response.body', response.body);
-
       expect(200);
       expect(response.body.period._id).toEqual(period._id.toString());
       expect(response.body.period.quantifiers).toHaveLength(1);

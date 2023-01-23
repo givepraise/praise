@@ -189,7 +189,7 @@ export class PeriodAssignmentsService {
 
     if (!currentQuantifierId || !newQuantifierId)
       throw new ServiceException(
-        'Both originalQuantifierId and newQuantifierId must be specified',
+        'Both currentQuantifierId and newQuantifierId must be specified',
       );
 
     if (currentQuantifierId === newQuantifierId)
