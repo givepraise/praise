@@ -44,12 +44,12 @@ describe('UserController (E2E)', () => {
   let usersService: UsersService;
   let userAccountsSeeder: UserAccountsSeeder;
   let userAccountsService: UserAccountsService;
-  let quantificationsSeeder: QuantificationsSeeder;
-  let quantificationsService: QuantificationsService;
   let praiseSeeder: PraiseSeeder;
   let praiseService: PraiseService;
   let periodsSeeder: PeriodsSeeder;
   let periodsService: PeriodsService;
+  let quantificationsSeeder: QuantificationsSeeder;
+  let quantificationsService: QuantificationsService;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -65,8 +65,8 @@ describe('UserController (E2E)', () => {
       providers: [
         UsersSeeder,
         UserAccountsSeeder,
-        QuantificationsSeeder,
         PraiseSeeder,
+        QuantificationsSeeder,
         PeriodsSeeder,
       ],
     }).compile();
