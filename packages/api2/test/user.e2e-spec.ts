@@ -24,7 +24,7 @@ import { PraiseSeeder } from '@/database/seeder/praise.seeder';
 import { PraiseService } from '@/praise/praise.service';
 import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
 import { PeriodsModule } from '@/periods/periods.module';
-import { PeriodsService } from '../src/periods/periods.service';
+import { PeriodsService } from '@/periods/services/periods.service';
 import {
   authorizedGetRequest,
   authorizedPatchRequest,
@@ -41,9 +41,9 @@ describe('UserController (E2E)', () => {
   let server: Server;
   let module: TestingModule;
   let usersSeeder: UsersSeeder;
+  let usersService: UsersService;
   let userAccountsSeeder: UserAccountsSeeder;
   let userAccountsService: UserAccountsService;
-  let usersService: UsersService;
   let quantificationsSeeder: QuantificationsSeeder;
   let quantificationsService: QuantificationsService;
   let praiseSeeder: PraiseSeeder;
@@ -58,14 +58,13 @@ describe('UserController (E2E)', () => {
         UsersModule,
         EventLogModule,
         UserAccountsModule,
-        QuantificationsModule,
         PraiseModule,
+        QuantificationsModule,
         PeriodsModule,
       ],
       providers: [
         UsersSeeder,
         UserAccountsSeeder,
-        // UserAccountsService,
         QuantificationsSeeder,
         PraiseSeeder,
         PeriodsSeeder,
@@ -573,33 +572,33 @@ describe('UserController (E2E)', () => {
     });
 
     // TODO: Fix this test
-    test('400 response if removing QUANTIFIER role from actively assigned quantifier', async () => {
-      // const praise: Praise = await praiseSeeder.seedPraise();
-      // await quantificationsSeeder.seedQuantification({
-      //   quantifier: user._id,
-      //   score: 0,
-      //   scoreRealized: 0,
-      //   dismissed: false,
-      //   praise: praise._id,
-      // });
-      // await periodsSeeder.seedPeriod({
-      //   endDate: praise.createdAt,
-      //   status: PeriodStatusType.QUANTIFY,
-      // });
-      // console.log(user);
-      // const response = await authorizedPatchRequest(
-      //   `/users/${user._id}/removeRole`,
-      //   app,
-      //   accessToken,
-      //   {
-      //     role: 'QUANTIFIER',
-      //   },
-      // ).expect(200);
-      // console.log(response.body);
-      // expect(response.body.error).toContain('Bad Request');
-      // expect(response.body.message).toContain(
-      //   'It is not allowed to remove the last admin!',
-      // );
+    test('400 response if removing QUANTIFIER role from actively assigned quantifier KRESO', async () => {
+      const praise: Praise = await praiseSeeder.seedPraise();
+      await quantificationsSeeder.seedQuantification({
+        quantifier: user._id,
+        score: 0,
+        scoreRealized: 0,
+        dismissed: false,
+        praise: praise._id,
+      });
+      await periodsSeeder.seedPeriod({
+        endDate: praise.createdAt,
+        status: PeriodStatusType.QUANTIFY,
+      });
+      console.log(user);
+      const response = await authorizedPatchRequest(
+        `/users/${user._id}/removeRole`,
+        app,
+        accessToken,
+        {
+          role: 'QUANTIFIER',
+        },
+      ).expect(200);
+      console.log(response.body);
+      expect(response.body.error).toContain('Bad Request');
+      expect(response.body.message).toContain(
+        'It is not allowed to remove the last admin!',
+      );
     });
 
     test('403 response if user is not admin', async () => {
