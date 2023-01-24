@@ -863,10 +863,10 @@ export const useReplaceQuantifier = (
             SinglePeriod(periodReplaceQuantifierDto.period._id),
             periodReplaceQuantifierDto.period
           );
-          periodReplaceQuantifierDto.praises.forEach((praise) => {
-            // TODO: UNCOMMENT!
-            //set(SinglePraise(praise._id), praise);
-          });
+          // periodReplaceQuantifierDto.praises.forEach((praise) => {
+          // TODO: UNCOMMENT!
+          //set(SinglePraise(praise._id), praise);
+          // });
         }
 
         return response;

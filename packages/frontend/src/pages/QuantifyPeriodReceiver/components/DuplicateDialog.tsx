@@ -46,7 +46,13 @@ export const DuplicateDialog = ({
       periodId,
       key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
     })
-  ) as number[];
+  ) as string;
+
+  const allowedValuesArray = allowedValues.split(',').map((value) => {
+    const parsedValue = parseInt(value, 10);
+    if (isNaN(parsedValue)) return 0;
+    return parsedValue;
+  });
 
   const duplicatePraisePercentage = useRecoilValue(
     SinglePeriodSettingValueRealized({
@@ -90,7 +96,7 @@ export const DuplicateDialog = ({
           />
           <div className="flex justify-center">
             <QuantifySlider
-              allowedScores={allowedValues}
+              allowedScores={allowedValuesArray}
               score={score}
               onChange={(newScore): void => setScore(newScore)}
             />
