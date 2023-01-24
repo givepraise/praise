@@ -9,7 +9,6 @@ import {
   SerializeOptions,
   UseGuards,
   UseInterceptors,
-  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
@@ -253,7 +252,7 @@ export class PeriodsController {
   @ApiParam({ name: 'id', type: String })
   async replaceQuantifier(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() replaceQuantifierDto: any,
+    @Body() replaceQuantifierDto: ReplaceQuantifierInputDto,
   ): Promise<ReplaceQuantifierResponseDto> {
     return this.periodAssignmentsService.replaceQuantifier(
       id,
