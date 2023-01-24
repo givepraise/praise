@@ -142,8 +142,8 @@ export class UsersService {
     if (roleIndex === -1)
       throw new ServiceException(`User does not have role ${role}`);
 
-    //   // If user is currently assigned to the active quantification round, and role is QUANTIFIER throw error
-    //   const activePeriods: PeriodDocument[] = await findActivePeriods();
+    // If user is currently assigned to the active quantification round, and role is QUANTIFIER throw error
+    const activePeriods: PeriodDocument[] = await findActivePeriods();
 
     //   if (role === AuthRole.QUANTIFIER && activePeriods.length > 0) {
     //     const dateRanges: PeriodDateRange[] = await Promise.all(
