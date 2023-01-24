@@ -19,8 +19,8 @@ import { Module, forwardRef } from '@nestjs/common';
     forwardRef(() => PraiseModule),
     forwardRef(() => SettingsModule),
     forwardRef(() => PeriodsModule),
+    forwardRef(() => UsersModule),
     UserAccountsModule,
-    UsersModule,
   ],
   providers: [QuantificationsService],
   exports: [

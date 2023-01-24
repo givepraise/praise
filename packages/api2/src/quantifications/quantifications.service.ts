@@ -15,6 +15,7 @@ export class QuantificationsService {
     private quantificationModel: Model<Quantification>,
     @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
+    @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
     @Inject(forwardRef(() => PraiseService))
     private praiseService: PraiseService,
