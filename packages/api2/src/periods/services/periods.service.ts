@@ -630,7 +630,7 @@ export class PeriodsService {
    * @returns {Promise<PeriodDateRangeDto>}
    */
   getPeriodDateRangeQuery = async (
-    period: PeriodDocument,
+    period: Period,
   ): Promise<PeriodDateRangeDto> => ({
     $gt: await this.getPreviousPeriodEndDate(period),
     $lte: period.endDate,
