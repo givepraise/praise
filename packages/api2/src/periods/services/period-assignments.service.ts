@@ -501,7 +501,7 @@ export class PeriodAssignmentsService {
     const previousPeriodEndDate =
       await this.periodsService.getPreviousPeriodEndDate(period);
 
-    return await this.praiseModel.aggregate([
+    return this.praiseModel.aggregate([
       {
         $match: {
           createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
