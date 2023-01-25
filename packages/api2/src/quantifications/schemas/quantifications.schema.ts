@@ -62,14 +62,12 @@ export class Quantification {
   @ExposeId()
   praise: Praise | Types.ObjectId;
 
-  @ApiResponseProperty({
-    example: '639b178f19296ee0f2d0585d',
-  })
   @Prop({ type: Date })
+  @ApiResponseProperty({ example: '2021-06-01T00:00:00.000Z' })
   createdAt: Date;
 
-  @ApiResponseProperty()
   @Prop({ type: Date })
+  @ApiResponseProperty({ example: '2021-06-01T00:00:00.000Z' })
   updatedAt: Date;
 }
 
