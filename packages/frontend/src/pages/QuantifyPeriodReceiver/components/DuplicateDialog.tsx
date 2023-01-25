@@ -16,6 +16,7 @@ import { PeriodPageParams } from '@/model/periods/periods';
 import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
 
 import { QuantifySlider } from './QuantifySlider';
+import { stringToNumberArray } from '@/utils/numbers';
 
 interface DuplicateDialogProps {
   onClose(): void;
@@ -48,11 +49,7 @@ export const DuplicateDialog = ({
     })
   ) as string;
 
-  const allowedValuesArray = allowedValues.split(',').map((value) => {
-    const parsedValue = parseInt(value, 10);
-    if (isNaN(parsedValue)) return 0;
-    return parsedValue;
-  });
+  const allowedValuesArray = stringToNumberArray(allowedValues);
 
   const duplicatePraisePercentage = useRecoilValue(
     SinglePeriodSettingValueRealized({

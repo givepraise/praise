@@ -25,6 +25,7 @@ import { DuplicateSearchDialog } from './DuplicateSearchDialog';
 import { QuantifyPraiseRow } from './QuantifyPraiseRow';
 import { QuantifyBackNextLink } from './BackNextLink';
 import { DismissDialog } from './DismissDialog';
+import { stringToNumberArray } from '@/utils/numbers';
 
 interface Props {
   periodId: string;
@@ -71,13 +72,7 @@ export const QuantifyTable = ({
     })
   ) as string;
 
-  const allowedValuesArray = allowedValues.split(',').map((value) => {
-    const parsedValue = parseInt(value, 10);
-    if (isNaN(parsedValue)) return 0;
-    return parsedValue;
-  });
-
-  console.log('ALLOWED VALUES:', allowedValues);
+  const allowedValuesArray = stringToNumberArray(allowedValues);
 
   const filterBySearchValue = React.useCallback(
     (data: PraiseDto[] | undefined): PraiseDto[] => {
