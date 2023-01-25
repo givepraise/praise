@@ -5,11 +5,7 @@ import {
   EventLogType,
   EventLogTypeDocument,
 } from './schemas/event-log-type.schema';
-import {
-  EventLog,
-  EventLogDocument,
-  EventLogModel,
-} from './schemas/event-log.schema';
+import { EventLog, EventLogModel } from './schemas/event-log.schema';
 import mongoose from 'mongoose';
 import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-query.dto';
 import { ServiceException } from '@/shared/service-exception';
@@ -66,7 +62,8 @@ export class EventLogService {
     };
 
     const eventLog = new this.eventLogModel(eventLogData);
-    return eventLog.save();
+    const a = await eventLog.save();
+    return new EventLog(a);
   }
 
   /**
