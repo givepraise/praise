@@ -17,6 +17,8 @@ import { EventLogSeeder } from '@/database/seeder/event-log.seeder';
 import { EventLogModule } from '@/event-log/event-log.module';
 import { EventLogService } from '@/event-log/event-log.service';
 import { runDbMigrations } from '@/database/migrations';
+import { EventLogType } from '@/event-log/schemas/event-log-type.schema';
+import { EventLog } from '@/event-log/schemas/event-log.schema';
 
 describe('EventLog (E2E)', () => {
   let app: INestApplication;
@@ -96,6 +98,10 @@ describe('EventLog (E2E)', () => {
       expect(response.body.page).toBe(1);
       expect(response.body.limit).toBe(10);
       expect(response.body.totalPages).toBe(2);
+
+      const e = response.body.docs[0];
+      expect(e).toBeProperlySerialized();
+      expect(e).toBeValidClass(EventLog);
     });
   });
 
@@ -113,7 +119,10 @@ describe('EventLog (E2E)', () => {
 
       expect(response.body).toBeDefined();
       expect(response.body.length).toBeGreaterThan(0);
-      expect(response.body[0]._id).toBeDefined();
+
+      const e = response.body[0];
+      expect(e).toBeProperlySerialized();
+      expect(e).toBeValidClass(EventLogType);
     });
   });
 });

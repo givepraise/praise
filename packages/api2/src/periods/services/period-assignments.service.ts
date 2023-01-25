@@ -24,7 +24,6 @@ import { SettingsService } from '@/settings/settings.service';
 import { EventLogService } from '@/event-log/event-log.service';
 import { Types } from 'mongoose';
 import { ServiceException } from '@/shared/service-exception';
-import { AuthRole } from '@/users/interfaces/user-roles.interface';
 import { PeriodDetailsDto } from '../dto/period-details.dto';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { PeriodStatusType } from '../enums/status-type.enum';
@@ -33,6 +32,7 @@ import { ReplaceQuantifierInputDto } from '../dto/replace-quantifier-input.dto';
 import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interface';
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
 import { PeriodsService } from './periods.service';
+import { AuthRole } from '@/auth/enums/auth-role.enum';
 
 @Injectable()
 export class PeriodAssignmentsService {

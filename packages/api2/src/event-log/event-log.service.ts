@@ -5,11 +5,7 @@ import {
   EventLogType,
   EventLogTypeDocument,
 } from './schemas/event-log-type.schema';
-import {
-  EventLog,
-  EventLogDocument,
-  PaginatedEventLogModel,
-} from './schemas/event-log.schema';
+import { EventLog, EventLogModel } from './schemas/event-log.schema';
 import mongoose from 'mongoose';
 import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-query.dto';
 import { ServiceException } from '@/shared/service-exception';
@@ -18,11 +14,12 @@ import { RequestContext } from 'nestjs-request-context';
 import { has } from 'lodash';
 import { User } from '@/users/schemas/users.schema';
 import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.dto';
+
 @Injectable()
 export class EventLogService {
   constructor(
     @InjectModel(EventLog.name)
-    private eventLogModel: typeof PaginatedEventLogModel,
+    private eventLogModel: typeof EventLogModel,
     @InjectModel(EventLogType.name)
     private eventLogTypeModel: Model<EventLogTypeDocument>,
   ) {}
@@ -31,7 +28,7 @@ export class EventLogService {
    * Convenience method to get the EventLog Model
    * @returns
    */
-  getModel(): Model<EventLogDocument> {
+  getModel(): typeof EventLogModel {
     return this.eventLogModel;
   }
 
@@ -65,7 +62,8 @@ export class EventLogService {
     };
 
     const eventLog = new this.eventLogModel(eventLogData);
-    return eventLog.save();
+    const a = await eventLog.save();
+    return new EventLog(a);
   }
 
   /**
