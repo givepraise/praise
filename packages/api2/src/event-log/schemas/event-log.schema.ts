@@ -77,7 +77,7 @@ export class EventLog {
 export const EventLogSchema =
   SchemaFactory.createForClass(EventLog).plugin(mongoosePagination);
 
-export const PaginatedEventLogModel = model<
-  EventLogDocument,
-  Pagination<EventLogDocument>
->('EventLog', EventLogSchema);
+export const PaginatedEventLogModel = model<EventLog, Pagination<EventLog>>(
+  'EventLog',
+  EventLogSchema,
+);

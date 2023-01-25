@@ -31,7 +31,7 @@ export class EventLogService {
    * Convenience method to get the EventLog Model
    * @returns
    */
-  getModel(): Model<EventLogDocument> {
+  getModel(): Model<EventLog> {
     return this.eventLogModel;
   }
 
