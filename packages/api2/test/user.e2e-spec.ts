@@ -85,14 +85,14 @@ describe('UserController (E2E)', () => {
     usersService = module.get<UsersService>(UsersService);
     userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
     userAccountsService = module.get<UserAccountsService>(UserAccountsService);
+    praiseSeeder = module.get<PraiseSeeder>(PraiseSeeder);
+    praiseService = module.get<PraiseService>(PraiseService);
     quantificationsSeeder = module.get<QuantificationsSeeder>(
       QuantificationsSeeder,
     );
     quantificationsService = module.get<QuantificationsService>(
       QuantificationsService,
     );
-    praiseSeeder = module.get<PraiseSeeder>(PraiseSeeder);
-    praiseService = module.get<PraiseService>(PraiseService);
     periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
     periodsService = module.get<PeriodsService>(PeriodsService);
   });
@@ -571,11 +571,24 @@ describe('UserController (E2E)', () => {
       );
     });
 
-    // TODO: Fix this test
-    test('400 response if removing QUANTIFIER role from actively assigned quantifier KRESO', async () => {
+    test('400 response if removing QUANTIFIER role from actively assigned quantifier', async () => {
+      const walletAdminActive = Wallet.createRandom();
+      const userAdminActive = await usersSeeder.seedUser({
+        identityEthAddress: walletAdminActive.address,
+        rewardsAddress: walletAdminActive.address,
+        roles: [AuthRole.USER, AuthRole.ADMIN, AuthRole.QUANTIFIER],
+      });
+
+      const responseAdminActive = await loginUser(
+        app,
+        module,
+        walletAdminActive,
+      );
+      const accessTokenAdminActive = responseAdminActive.accessToken;
+
       const praise: Praise = await praiseSeeder.seedPraise();
       await quantificationsSeeder.seedQuantification({
-        quantifier: user._id,
+        quantifier: userAdminActive._id,
         score: 0,
         scoreRealized: 0,
         dismissed: false,
@@ -585,19 +598,19 @@ describe('UserController (E2E)', () => {
         endDate: praise.createdAt,
         status: PeriodStatusType.QUANTIFY,
       });
-      console.log(user);
+
       const response = await authorizedPatchRequest(
-        `/users/${user._id}/removeRole`,
+        `/users/${userAdminActive._id}/removeRole`,
         app,
-        accessToken,
+        accessTokenAdminActive,
         {
           role: 'QUANTIFIER',
         },
-      ).expect(200);
-      console.log(response.body);
+      ).expect(400);
+
       expect(response.body.error).toContain('Bad Request');
       expect(response.body.message).toContain(
-        'It is not allowed to remove the last admin!',
+        'Cannot remove quantifier currently assigned to quantification period',
       );
     });
 
