@@ -94,13 +94,34 @@ export const authorizedDeleteRequest = (
 
 expect.extend({
   /**
+   * Custom jest matcher to check if an object has been properly serialized by NestJS.
+   */
+  toBeProperlySerialized(received: any) {
+    // If the object has a __v property, it has not been properly serialized.
+    const fail = received.hasOwnProperty('__v');
+    if (fail) {
+      return {
+        message: () => `expected object to be serialized but was not`,
+        pass: false,
+      };
+    } else {
+      return {
+        message: () => `expected object to be serialized`,
+        pass: true,
+      };
+    }
+  },
+});
+
+expect.extend({
+  /**
    * Custom jest matcher to check if an object is valid according to a class.
    */
   async toBeValidClass(received: any, expectedClass: ClassConstructor<any>) {
     const instance = plainToInstance(expectedClass, received);
-    const v = await validate(instance);
-    console.log(JSON.stringify(v));
-    if (v.length === 0) {
+    const validationErrors = await validate(instance);
+    const pass = validationErrors.length === 0;
+    if (pass) {
       return {
         message: () =>
           `expected object to be valid according to class ${expectedClass.name}`,
@@ -109,19 +130,13 @@ expect.extend({
     } else {
       return {
         message: () =>
-          `FAILED expected object to be valid according to class ${
+          `expected object to be valid according to class ${
             expectedClass.name
-          }.\n\nObject: ${JSON.stringify(received, undefined, 2)}\n${v.map(
-            (e) => {
-              let msg = '';
-              if (Array.isArray(e.constraints)) {
-                msg += e.constraints.map((c) => `\n- Constraint: ${c}`).join();
-              } else {
-                msg += `\n- Constraint: ${JSON.stringify(e.constraints)}`;
-              }
-              return msg;
-            },
-          )}))}`,
+          } but had the following validation errors:\n\nValidation errors: ${JSON.stringify(
+            validationErrors,
+            undefined,
+            2,
+          )}`,
         pass: false,
       };
     }
