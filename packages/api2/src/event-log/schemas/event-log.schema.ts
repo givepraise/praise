@@ -5,6 +5,7 @@ import { Document, model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { EventLogType } from './event-log-type.schema';
 import { Type } from 'class-transformer';
+import { IsString, Validate, ValidateNested } from 'class-validator';
 
 export type EventLogDocument = EventLog & Document;
 
@@ -16,11 +17,12 @@ export class EventLog {
     }
   }
 
-  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7', required: true })
+  @IsString()
   @ExposeId()
   _id: Types.ObjectId;
 
-  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7' })
   @ExposeId()
   @Prop({
     type: Types.ObjectId,
@@ -29,7 +31,7 @@ export class EventLog {
   })
   user: Types.ObjectId;
 
-  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7' })
   @ExposeId()
   @Prop({
     type: Types.ObjectId,
@@ -38,7 +40,7 @@ export class EventLog {
   })
   useraccount: Types.ObjectId;
 
-  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7' })
   @ExposeId()
   @Prop({
     type: Types.ObjectId,
@@ -49,7 +51,7 @@ export class EventLog {
 
   // "Related Period" of an eventlog - only used for quantification events
   //    which are restricted to ADMIN users when period is active
-  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7' })
   @ExposeId()
   @Prop({
     type: Types.ObjectId,
@@ -58,7 +60,8 @@ export class EventLog {
   })
   period: Types.ObjectId;
 
-  @ApiResponseProperty({ type: EventLogType })
+  @ApiProperty({ type: EventLogType, required: true })
+  @ValidateNested()
   @Type(() => EventLogType)
   @Prop({
     type: Types.ObjectId,
@@ -68,7 +71,8 @@ export class EventLog {
   })
   type: Types.ObjectId | EventLogType;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'A description of teh event ', required: true })
+  @IsString()
   @Prop({ type: String, required: true })
   description: string;
 }
