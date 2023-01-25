@@ -1022,7 +1022,7 @@ describe('Period (E2E)', () => {
         .expect(200);
 
       /**
-       * TODO: check if we have 600 quantifications assigned to 3 quantifiers
+       * //TODO: check if we have 600 quantifications assigned to 3 quantifiers
        */
     });
 
