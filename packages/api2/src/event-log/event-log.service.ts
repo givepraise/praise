@@ -62,8 +62,8 @@ export class EventLogService {
     };
 
     const eventLog = new this.eventLogModel(eventLogData);
-    const a = await eventLog.save();
-    return new EventLog(a);
+    const eventLogDocument = await eventLog.save();
+    return new EventLog(eventLogDocument);
   }
 
   /**
