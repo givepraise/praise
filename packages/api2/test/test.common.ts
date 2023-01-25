@@ -3,6 +3,9 @@ import { INestApplication } from '@nestjs/common';
 import { Wallet } from 'ethers';
 import { TestingModule } from '@nestjs/testing';
 import { EthSignatureService } from '@/auth/eth-signature.service';
+import { ClassConstructor, plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
+import '@testing-library/jest-dom';
 
 export const loginUser = async (
   app: INestApplication,
@@ -88,3 +91,39 @@ export const authorizedDeleteRequest = (
     .delete(url)
     .set('Authorization', `Bearer ${accessToken}`);
 };
+
+expect.extend({
+  /**
+   * Custom jest matcher to check if an object is valid according to a class.
+   */
+  async toBeValidClass(received: any, expectedClass: ClassConstructor<any>) {
+    const instance = plainToInstance(expectedClass, received);
+    const v = await validate(instance);
+    console.log(JSON.stringify(v));
+    if (v.length === 0) {
+      return {
+        message: () =>
+          `expected object to be valid according to class ${expectedClass.name}`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () =>
+          `FAILED expected object to be valid according to class ${
+            expectedClass.name
+          }.\n\nObject: ${JSON.stringify(received, undefined, 2)}\n${v.map(
+            (e) => {
+              let msg = '';
+              if (Array.isArray(e.constraints)) {
+                msg += e.constraints.map((c) => `\n- Constraint: ${c}`).join();
+              } else {
+                msg += `\n- Constraint: ${JSON.stringify(e.constraints)}`;
+              }
+              return msg;
+            },
+          )}))}`,
+        pass: false,
+      };
+    }
+  },
+});
