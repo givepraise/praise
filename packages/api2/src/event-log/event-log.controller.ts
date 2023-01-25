@@ -20,8 +20,8 @@ import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-seri
 
 @Controller('event-log')
 @ApiTags('Event Log')
-// @UseGuards(PermissionsGuard)
-// @UseGuards(AuthGuard(['jwt', 'api-key']))
+@UseGuards(PermissionsGuard)
+@UseGuards(AuthGuard(['jwt', 'api-key']))
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
