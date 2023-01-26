@@ -1,4 +1,3 @@
-import { shortenEthAddress } from 'api/dist/user/utils/core';
 import {
   faTimes,
   faCopy,
@@ -14,6 +13,7 @@ import { useRef } from 'react';
 import { ActiveTokenSet } from '@/model/auth/auth';
 import { Button } from '../ui/Button';
 import { Box } from '../ui/Box';
+import { shortenEthAddress } from 'shared/functions/shortenEthAddress';
 
 interface EthAccountDialogProps {
   open?: boolean;

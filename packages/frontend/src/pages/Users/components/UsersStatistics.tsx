@@ -1,6 +1,5 @@
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type { UserDto } from 'api/dist/user/types';
 import { useState } from 'react';
 import { CSVLink } from 'react-csv';
 import { useRecoilValue } from 'recoil';
@@ -12,6 +11,7 @@ import {
   AllUsers,
 } from '@/model/user/users';
 import { Button } from '@/components/ui/Button';
+import { UserDto } from 'shared/dto/user.dto';
 
 interface DownloadUserDto extends Omit<UserDto, 'accounts'> {
   discordName?: string;

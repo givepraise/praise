@@ -2,11 +2,12 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { ChartData, ChartOptions } from 'chart.js';
 import { BoxPlotDataPoint } from '@sgratzl/chartjs-chart-boxplot';
-import { QuantificationDto } from 'api/dist/praise/types';
+
 import { PeriodPageParams } from '@/model/periods/periods';
 import { AllPeriodQuantificationsGroupedByQuantifier } from '@/model/periods/periodAnalytics';
 import { ManyUsers } from '@/model/user/users';
 import { BoxPlot } from './Boxplot';
+import { QuantificationDto } from 'shared/dto/quantification.dto';
 
 export const QuantifierScoringDistribution = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();

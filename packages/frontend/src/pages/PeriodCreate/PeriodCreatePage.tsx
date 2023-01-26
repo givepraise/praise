@@ -5,7 +5,6 @@ import React from 'react';
 import { Field, Form } from 'react-final-form';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { ApiErrorResponseData } from 'api/dist/error/types';
 import { DATE_FORMAT } from '@/utils/date';
 import { useCreatePeriod } from '@/model/periods/periods';
 import { isApiResponseValidationError, isResponseOk } from '@/model/api';
@@ -17,6 +16,7 @@ import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
 import { SubmitButton } from './components/SubmitButton';
 import { PeriodCreateInput } from '@/model/periods/dto/period-create.dto';
+import { ApiErrorResponseData } from 'shared/interfaces/api-error-reponse-data.interface';
 
 const validate = (
   values: Record<string, string>

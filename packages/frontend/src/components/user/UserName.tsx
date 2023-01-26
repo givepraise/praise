@@ -1,8 +1,8 @@
-import { shortenEthAddress } from 'api/dist/user/utils/core';
 import React from 'react';
 import { UserPseudonym } from './UserPseudonym';
 import { UserDto } from '@/model/user/dto/user.dto';
 import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
+import { shortenEthAddress } from 'shared/functions/shortenEthAddress';
 
 interface UserNameProps {
   user?: UserDto;

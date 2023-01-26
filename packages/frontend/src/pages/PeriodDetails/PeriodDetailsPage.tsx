@@ -18,7 +18,6 @@ import {
   faCog,
   faChartBar,
 } from '@fortawesome/free-solid-svg-icons';
-import { PeriodStatusType } from 'api/dist/period/types';
 import React, { Suspense } from 'react';
 import {
   useParams,
@@ -33,6 +32,7 @@ import { PeriodDetailsHead } from './components/PeriodDetailsHead';
 import { QuantifierMessage } from './components/QuantifierMessage';
 import { Box } from '@/components/ui/Box';
 import { LoadPlaceholder } from '@/components/LoadPlaceholder';
+import { PeriodStatusType } from 'shared/enums/period-status-type.enum';
 
 const QuantifierTable = React.lazy(
   () => import('./components/QuantifierTable')

@@ -1,24 +1,22 @@
-import {
-  AuthRequestInput,
-  AuthResponse,
-  NonceResponse,
-  TokenSet,
-} from 'api/dist/auth/types';
-import { ActivateRequestBody } from 'api/dist/activate/types';
 import { getRecoil, setRecoil } from 'recoil-nexus';
 import { ActiveTokenSet } from '@/model/auth/auth';
 import { AccountActivated } from '@/model/activate/activate';
 import { makeApiClient } from './api';
+import { AuthRequestInputDto } from 'shared/dto/auth-request.dto';
+import { TokenSet } from 'shared/interfaces/token-set.interface';
+import { AuthResponseDto } from 'shared/dto/auth-response.dto';
+import { NonceResponseDto } from 'shared/dto/nonce-response.dto';
+import { ActivateRequestBodyDto } from 'shared/dto/activate-request-body.dto';
 
 export const requestApiAuth = async (
-  params: AuthRequestInput
+  params: AuthRequestInputDto
 ): Promise<TokenSet | undefined> => {
   const apiClient = makeApiClient();
   const response = await apiClient.post('/auth/eth-signature/login', params);
   if (!response) throw Error('Failed to request authorization');
 
   const { accessToken, refreshToken } =
-    response.data as unknown as AuthResponse;
+    response.data as unknown as AuthResponseDto;
 
   setRecoil(ActiveTokenSet, {
     accessToken,
@@ -39,7 +37,7 @@ export const requestApiAuthRefresh = async (): Promise<
       refreshToken: tokenSet?.refreshToken,
     });
     const { accessToken, refreshToken: newRefreshToken } =
-      response.data as AuthResponse;
+      response.data as AuthResponseDto;
 
     const newTokenSet = {
       accessToken,
@@ -63,13 +61,13 @@ export const requestNonce = async (
     identityEthAddress,
   });
 
-  const { nonce } = response.data as NonceResponse;
+  const { nonce } = response.data as NonceResponseDto;
 
   return nonce;
 };
 
 export const requestApiActivate = async (
-  params: ActivateRequestBody
+  params: ActivateRequestBodyDto
 ): Promise<boolean> => {
   const { identityEthAddress, accountId, message, signature } = params;
   const apiClient = makeApiClient();

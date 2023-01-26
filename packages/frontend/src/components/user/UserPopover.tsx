@@ -1,5 +1,4 @@
 import React from 'react';
-import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,6 +7,7 @@ import { classNames } from '@/utils/index';
 import { UserAvatar } from './UserAvatar';
 import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
 import { UserDto } from '@/model/user/dto/user.dto';
+import { shortenEthAddress } from 'shared/functions/shortenEthAddress';
 
 interface UserPopoverProps {
   user?: UserDto;

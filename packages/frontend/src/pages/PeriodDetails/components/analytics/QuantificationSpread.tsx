@@ -2,11 +2,11 @@ import { useHistory, useParams } from 'react-router-dom';
 import { atom, useRecoilValue } from 'recoil';
 import { ChartData, ChartOptions } from 'chart.js';
 import { BoxPlotDataPoint } from '@sgratzl/chartjs-chart-boxplot';
-import { QuantificationDto } from 'api/dist/praise/types';
 import { PeriodPageParams } from '@/model/periods/periods';
 import { PeriodPraiseOutliers } from '@/model/periods/periodAnalytics';
 import { BoxPlot } from './Boxplot';
 import { Pagination } from './Pagination';
+import { QuantificationDto } from 'shared/dto/quantification.dto';
 
 const QuantificationSpreadPagination = atom<number>({
   key: 'QuantificationSpreadPagination',
