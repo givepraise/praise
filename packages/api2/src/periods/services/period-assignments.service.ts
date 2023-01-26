@@ -531,7 +531,7 @@ export class PeriodAssignmentsService {
    * @returns
    */
   queryQuantifierPoolRandomized = async (): Promise<Quantifier[]> => {
-    let quantifierPool = this.userModel.aggregate([
+    let quantifierPool = await this.userModel.aggregate([
       { $match: { roles: AuthRole.QUANTIFIER } },
       {
         $lookup: {

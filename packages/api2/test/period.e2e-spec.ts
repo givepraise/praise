@@ -1021,9 +1021,7 @@ describe('Period (E2E)', () => {
         .expect('Content-Type', /json/)
         .expect(200);
 
-      /**
-       * TODO: check if we have 600 quantifications assigned to 3 quantifiers
-       */
+      // TODO: check if we have 600 quantifications assigned to 3 quantifiers
     });
 
     test('400 response if periodId does not exist', async function () {

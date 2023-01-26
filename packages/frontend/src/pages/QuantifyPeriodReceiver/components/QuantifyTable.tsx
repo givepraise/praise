@@ -77,8 +77,6 @@ export const QuantifyTable = ({
     return parsedValue;
   });
 
-  console.log('ALLOWED VALUES:', allowedValues);
-
   const filterBySearchValue = React.useCallback(
     (data: PraiseDto[] | undefined): PraiseDto[] => {
       if (!data) return [];

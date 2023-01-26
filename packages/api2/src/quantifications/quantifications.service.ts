@@ -5,7 +5,6 @@ import { Quantification } from './schemas/quantifications.schema';
 import { sum, has } from 'lodash';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
-import { UsersService } from '@/users/users.service';
 import { PraiseService } from '@/praise/praise.service';
 import { Inject, forwardRef } from '@nestjs/common';
 
@@ -15,7 +14,6 @@ export class QuantificationsService {
     private quantificationModel: Model<Quantification>,
     @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
-    private usersService: UsersService,
     @Inject(forwardRef(() => PraiseService))
     private praiseService: PraiseService,
   ) {}
@@ -63,7 +61,7 @@ export class QuantificationsService {
     userId: Types.ObjectId,
     praiseId: Types.ObjectId,
   ): Promise<Quantification> {
-    const quantification = this.quantificationModel.aggregate([
+    const quantification = await this.quantificationModel.aggregate([
       {
         $match: {
           quantifier: userId,

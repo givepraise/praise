@@ -272,7 +272,7 @@ export class PeriodsService {
 
     const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
 
-    const response = this.praiseModel.aggregate([
+    const response = await this.praiseModel.aggregate([
       // Include only praise items created in the given period
       {
         $match: {

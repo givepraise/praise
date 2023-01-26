@@ -36,7 +36,7 @@ export class UsersService {
     if (!user.accounts || user.accounts.length === 0) return null;
     const accountIds = user.accounts?.map((a) => new Types.ObjectId(a._id));
 
-    const receivedStats = this.praiseModel.aggregate([
+    const receivedStats = await this.praiseModel.aggregate([
       {
         $match: {
           receiver: { $in: accountIds },
@@ -51,7 +51,7 @@ export class UsersService {
       },
     ]);
 
-    const givenStats = this.praiseModel.aggregate([
+    const givenStats = await this.praiseModel.aggregate([
       {
         $match: {
           giver: { $in: accountIds },
