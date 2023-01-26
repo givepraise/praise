@@ -430,7 +430,7 @@ export class PeriodsService {
     period: Period,
     previousPeriodEndDate: Date,
   ): Promise<PeriodDetailsQuantifierDto[]> => {
-    const quantifiers = this.praiseModel.aggregate([
+    return this.praiseModel.aggregate([
       {
         $match: {
           createdAt: {
@@ -471,8 +471,6 @@ export class PeriodsService {
         },
       },
     ]);
-
-    return quantifiers;
   };
 
   /**
@@ -485,7 +483,7 @@ export class PeriodsService {
     period: Period,
     previousPeriodEndDate: Date,
   ): Promise<PeriodDetailsGiverReceiverDto[]> => {
-    const givers = this.praiseModel.aggregate([
+    return this.praiseModel.aggregate([
       {
         $match: {
           createdAt: {
@@ -527,8 +525,6 @@ export class PeriodsService {
         },
       },
     ]);
-
-    return givers;
   };
 
   /**
@@ -541,7 +537,7 @@ export class PeriodsService {
     period: Period,
     previousPeriodEndDate: Date,
   ): Promise<PeriodDetailsGiverReceiverDto[]> => {
-    const receivers = this.praiseModel.aggregate([
+    return this.praiseModel.aggregate([
       {
         $match: {
           createdAt: {
@@ -583,8 +579,6 @@ export class PeriodsService {
         },
       },
     ]);
-
-    return receivers;
   };
 
   /**

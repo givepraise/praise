@@ -15,7 +15,6 @@ import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
   authorizedGetRequest,
   authorizedPatchRequest,
-  authorizedPutRequest,
   loginUser,
 } from './test.common';
 import { runDbMigrations } from '@/database/migrations';

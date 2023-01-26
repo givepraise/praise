@@ -1,11 +1,33 @@
-import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  Validate,
+  ValidationArguments,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+} from 'class-validator';
 import { Document, Types } from 'mongoose';
 import { ExposeId } from '@/shared/expose-id.decorator';
+import { AuthRole } from '@/auth/enums/auth-role.enum';
 
 export type ApiKeyDocument = ApiKey & Document;
+
+/**
+ * Allowed roles for API keys: APIKEY_READWRITE, APIKEY_READ
+ * @see AuthRole
+ */
+@ValidatorConstraint({ name: 'allowedApiKeyRole', async: false })
+export class AllowedApiKeyRole implements ValidatorConstraintInterface {
+  validate(role: string, args: ValidationArguments) {
+    return AuthRole.APIKEY_READWRITE === role || AuthRole.APIKEY_READ === role;
+  }
+
+  defaultMessage(args: ValidationArguments) {
+    return 'Role ($value) is not allowed. Allowed roles: APIKEY_READWRITE, APIKEY_READ';
+  }
+}
 
 @Schema({ timestamps: true })
 export class ApiKey {
@@ -38,8 +60,11 @@ export class ApiKey {
   @Prop({ type: String, required: true })
   hash: string;
 
-  @ApiProperty({ enum: AuthRole, required: true })
-  @IsEnum(AuthRole)
+  @ApiProperty({
+    example: 'APIKEY_READWRITE',
+    required: true,
+  })
+  @Validate(AllowedApiKeyRole)
   @Prop({ enum: AuthRole, required: true })
   role: AuthRole;
 
