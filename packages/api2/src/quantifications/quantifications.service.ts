@@ -63,7 +63,7 @@ export class QuantificationsService {
     userId: Types.ObjectId,
     praiseId: Types.ObjectId,
   ): Promise<Quantification> {
-    const quantification = await this.quantificationModel.aggregate([
+    const quantification = this.quantificationModel.aggregate([
       {
         $match: {
           quantifier: userId,

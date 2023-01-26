@@ -500,7 +500,7 @@ export class PeriodAssignmentsService {
     const previousPeriodEndDate =
       await this.periodsService.getPreviousPeriodEndDate(period);
 
-    return await this.praiseModel.aggregate([
+    return this.praiseModel.aggregate([
       {
         $match: {
           createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
@@ -531,7 +531,7 @@ export class PeriodAssignmentsService {
    * @returns
    */
   queryQuantifierPoolRandomized = async (): Promise<Quantifier[]> => {
-    let quantifierPool = await this.userModel.aggregate([
+    let quantifierPool = this.userModel.aggregate([
       { $match: { roles: AuthRole.QUANTIFIER } },
       {
         $lookup: {

@@ -272,7 +272,7 @@ export class PeriodsService {
 
     const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
 
-    const response = await this.praiseModel.aggregate([
+    const response = this.praiseModel.aggregate([
       // Include only praise items created in the given period
       {
         $match: {
@@ -430,7 +430,7 @@ export class PeriodsService {
     period: Period,
     previousPeriodEndDate: Date,
   ): Promise<PeriodDetailsQuantifierDto[]> => {
-    const quantifiers = await this.praiseModel.aggregate([
+    const quantifiers = this.praiseModel.aggregate([
       {
         $match: {
           createdAt: {
@@ -485,7 +485,7 @@ export class PeriodsService {
     period: Period,
     previousPeriodEndDate: Date,
   ): Promise<PeriodDetailsGiverReceiverDto[]> => {
-    const givers = await this.praiseModel.aggregate([
+    const givers = this.praiseModel.aggregate([
       {
         $match: {
           createdAt: {
@@ -541,7 +541,7 @@ export class PeriodsService {
     period: Period,
     previousPeriodEndDate: Date,
   ): Promise<PeriodDetailsGiverReceiverDto[]> => {
-    const receivers = await this.praiseModel.aggregate([
+    const receivers = this.praiseModel.aggregate([
       {
         $match: {
           createdAt: {
