@@ -4021,6 +4021,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kurkle/color@npm:^0.3.0":
+  version: 0.3.2
+  resolution: "@kurkle/color@npm:0.3.2"
+  checksum: 79e97b31f8f6efb28c69d373f94b0c7480226fe8ec95221f518ac998e156444a496727ce47de6d728eb5c3369288e794cba82cae34253deb0d472d3bfe080e49
+  languageName: node
+  linkType: hard
+
 "@leichtgewicht/ip-codec@npm:^2.0.1":
   version: 2.0.4
   resolution: "@leichtgewicht/ip-codec@npm:2.0.4"
@@ -4741,17 +4748,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sgratzl/chartjs-chart-boxplot@npm:^3.9.0":
-  version: 3.10.0
-  resolution: "@sgratzl/chartjs-chart-boxplot@npm:3.10.0"
+"@sgratzl/chartjs-chart-boxplot@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "@sgratzl/chartjs-chart-boxplot@npm:4.1.1"
   dependencies:
     "@sgratzl/boxplots": ^1.3.0
   peerDependencies:
-    chart.js: ^3.9.1
+    chart.js: ^4.1.1
   dependenciesMeta:
-    chart.js@3.9.1:
+    chart.js@4.0.1:
       unplugged: true
-  checksum: 00f2c3676339c2379a0f2b079bb661fd7ce6d4c8ddce7c011e7e605f87f10eb093c7ca04a9179370976b37cba1d5ab4391f6810c668b4a8c30a07dfbfe21a976
+    chart.js@4.1.2:
+      unplugged: true
+  checksum: 56a9eaa43d6ce42c1d6b8d142bbe2c3274d378967a86f45a733c9ee3096175bc37b994f4ff41b807c918c9709b49a7ee3f1ec46284d6a557f221f7d5a5303918
   languageName: node
   linkType: hard
 
@@ -8342,19 +8351,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:^3.9.1":
-  version: 3.9.1
-  resolution: "chart.js@npm:3.9.1"
-  checksum: 9ab0c0ac01215af0b3f020f2e313030fd6e347b48ed17d5484ee9c4e8ead45e78ae71bea16c397621c386b409ce0b14bf17f9f6c2492cd15b56c0f433efdfff6
+"chart.js@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "chart.js@npm:4.2.0"
+  dependencies:
+    "@kurkle/color": ^0.3.0
+  checksum: 281b023c013de8700a5208a45d35248b02119fadb574d0c104c7e0720605e085195ce546fd3aa27625e9db1188fdd5f7491a411463b9c30b7654a5f4b13d8d80
   languageName: node
   linkType: hard
 
-"chartjs-chart-treemap@npm:^2.0.2":
-  version: 2.2.0
-  resolution: "chartjs-chart-treemap@npm:2.2.0"
+"chartjs-chart-treemap@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "chartjs-chart-treemap@npm:2.3.0"
   peerDependencies:
     chart.js: ">=3.0.0"
-  checksum: 8b11cadb524ef63a84c12807e4a0db5a34e2572a1c2449b28862c2ba44af006cb08a224c611855a5b8e91bbfdb0669061ce05f848b8394fe490d2df9e7cedffe
+  checksum: f6a338acf79d796f7469c1a0f00bf0afc9372af4d4631c4410a011f0fb73f4366a8bad042c1582b367bc41c8cb89179766a581ed245eaa5b15d3c3ebd68b42e1
   languageName: node
   linkType: hard
 
@@ -11847,7 +11858,7 @@ __metadata:
     "@headlessui/react": ^1.4.1
     "@mui/material": ^5.3.0
     "@rainbow-me/rainbowkit": ^0.7.4
-    "@sgratzl/chartjs-chart-boxplot": ^3.9.0
+    "@sgratzl/chartjs-chart-boxplot": ^4.1.1
     "@tailwindcss/forms": latest
     "@types/react": ^17.0.19
     "@types/react-csv": ^1.1.2
@@ -11861,8 +11872,8 @@ __metadata:
     autoprefixer: ^10.4.7
     axios: ^0.22.0
     axios-auth-refresh: ^3.2.2
-    chart.js: ^3.9.1
-    chartjs-chart-treemap: ^2.0.2
+    chart.js: ^4.2.0
+    chartjs-chart-treemap: ^2.3.0
     craco-alias: ^3.0.1
     date-fns: ^2.25.0
     date-fns-tz: ^1.3.3
@@ -11885,7 +11896,7 @@ __metadata:
     prettier: ^2.5.1
     query-string: ^7.1.0
     react: ^17.0.2
-    react-chartjs-2: ^4.3.1
+    react-chartjs-2: ^5.2.0
     react-csv: ^2.2.2
     react-dom: ^17.0.2
     react-final-form: ^6.5.7
@@ -18446,13 +18457,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-chartjs-2@npm:^4.3.1":
-  version: 4.3.1
-  resolution: "react-chartjs-2@npm:4.3.1"
+"react-chartjs-2@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "react-chartjs-2@npm:5.2.0"
   peerDependencies:
-    chart.js: ^3.5.0
+    chart.js: ^4.1.1
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 574d12cc43b9b4a0f1e04cc692982e16ef7083c03da2a8a9fc2180fe9bcadc793008f81d8f4eec5465925eff84c95d7c523cb74376858b363ae75a83bb3c2a5d
+  checksum: ace702185be1450e5888a8bcd8b5fc1995067e3b11d236764a67f5567a3d7c32ff16923b8d48d3d39bda6e45135da6c044c9b43fbe8e1978f95aca9d2c0ce348
   languageName: node
   linkType: hard
 
