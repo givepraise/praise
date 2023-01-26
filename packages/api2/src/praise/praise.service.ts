@@ -17,6 +17,7 @@ import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto'
 import { Period, PeriodModel } from '@/periods/schemas/periods.schema';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '@/periods/services/periods.service';
+import { parse } from 'json2csv';
 
 @Injectable()
 export class PraiseService {
@@ -88,6 +89,27 @@ export class PraiseService {
       throw new ServiceException('Failed to paginate praise data');
 
     return praisePagination;
+  }
+
+  /**
+   * returns all of the model in json format
+   * Do not populate relations
+   */
+  async export(
+    format: string = 'csv',
+    startDate: string,
+    endDate: string,
+    periodId: number
+  ): Promise<Praise[] | string> {
+    const praises = await this.praiseModel
+      .find({
+        createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        periodId: periodId
+      })
+      .lean();
+
+    if (format !== 'csv') return praises;
+    return parse(praises);
   }
 
   /**

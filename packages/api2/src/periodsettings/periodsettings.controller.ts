@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Patch,
+  Res,
   SerializeOptions,
   UseGuards,
   UseInterceptors,

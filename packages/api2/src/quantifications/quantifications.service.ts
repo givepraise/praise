@@ -8,6 +8,7 @@ import { ServiceException } from '../shared/service-exception';
 import { UsersService } from '@/users/users.service';
 import { PraiseService } from '@/praise/praise.service';
 import { Inject, forwardRef } from '@nestjs/common';
+import { parse } from 'json2csv';
 
 export class QuantificationsService {
   constructor(
@@ -33,6 +34,27 @@ export class QuantificationsService {
    */
   getModel(): Model<Quantification> {
     return this.quantificationModel;
+  }
+
+  /**
+   * returns all of the model in json format
+   * Do not populate relations
+   */
+  async export(
+    format: string = 'csv',
+    startDate: string,
+    endDate: string,
+    periodId: number
+  ): Promise<Quantification[] | string> {
+    const quantifications = await this.quantificationModel
+      .find({
+        createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        periodId: periodId
+      })
+      .lean();
+
+    if (format !== 'csv') return quantifications;
+    return parse(quantifications);
   }
 
   /**

@@ -6,6 +6,7 @@ import {
   Param,
   Put,
   Query,
+  Res,
   SerializeOptions,
   UseGuards,
   UseInterceptors,
@@ -25,6 +26,8 @@ import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
+import { Response } from 'express';
+import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
 
 @Controller('praise')
 @ApiTags('Praise')
@@ -111,5 +114,35 @@ export class PraiseController {
     );
 
     return praiseItems.flat();
+  }
+
+  @Get('export')
+  @ApiOperation({ summary: 'Export Praises document to json or csv' })
+  @ApiResponse({
+    status: 200,
+    description: 'Praise Export',
+    type: [Praise],
+  })
+  @Permissions(Permission.UsersExport)
+  @ApiParam({ name: 'format', type: String })
+  @ApiParam({ name: 'startDate', type: String })
+  @ApiParam({ name: 'endDate', type: String })
+  @ApiParam({ name: 'periodId', type: Number })
+  async export(
+    @Query() options: ExportRequestOptions,
+    @Res() res: Response,
+  ): Promise<Praise[] | Response> {
+    const praises = await this.praiseService.export(
+      options.format,
+      options.startDate,
+      options.endDate,
+      options.periodId
+    );
+
+    if (options.format === 'json') return praises as Praise[];
+
+    res.header('Content-Type', 'text/csv');
+    res.attachment('praises.csv');
+    return res.send(praises);
   }
 }

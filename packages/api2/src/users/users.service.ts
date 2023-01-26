@@ -14,6 +14,7 @@ import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { Praise, PraiseDocument } from '@/praise/schemas/praise.schema';
 import { UserStatsDto } from './dto/user-stats.dto';
 import { use } from 'passport';
+import { parse } from 'json2csv';
 
 @Injectable()
 export class UsersService {
@@ -31,6 +32,17 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     return this.userModel.find().populate('accounts').lean();
+  }
+
+  /**
+   * returns all of the model in json format
+   * Do not populate relations
+   */
+  async export(format: string = 'csv'): Promise<User[] | string> {
+    const users = await this.userModel.find().lean();
+
+    if (format !== 'csv') return users;
+    return parse(users);
   }
 
   async getUserStats(user: UserDocument): Promise<UserStatsDto | null> {

@@ -7,9 +7,8 @@ import {
   Patch,
   Post,
   SerializeOptions,
-  UseGuards,
   UseInterceptors,
-  ClassSerializerInterceptor,
+  Res,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
@@ -20,9 +19,6 @@ import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 import { PeriodPaginatedResponseDto } from './dto/period-paginated-response.dto';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
-import { Praise } from '@/praise/schemas/praise.schema';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { CreatePeriodInputDto } from './dto/create-period-input.dto';
 import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
@@ -33,6 +29,8 @@ import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.d
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PraiseModel } from '@/database/schemas/praise/12_praise.schema';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
+import { Response } from 'express';
+import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -261,5 +259,27 @@ export class PeriodsController {
       id,
       replaceQuantifierDto,
     );
+  }
+
+  @Get('export')
+  @ApiOperation({ summary: 'Export periods document to json or csv' })
+  @ApiResponse({
+    status: 200,
+    description: 'Periods Export',
+    type: [Period],
+  })
+  @Permissions(Permission.PeriodExport)
+  @ApiParam({ name: 'format', type: String })
+  async export(
+    @Query() options: ExportRequestOptions,
+    @Res() res: Response,
+  ): Promise<Period[] | Response<string>> {
+    const periods = await this.periodsService.export(options.format);
+
+    if (options.format === 'json') return periods as Period[];
+
+    res.header('Content-Type', 'text/csv');
+    res.attachment('periods.csv');
+    return res.send(periods);
   }
 }

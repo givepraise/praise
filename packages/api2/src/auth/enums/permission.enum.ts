@@ -2,6 +2,7 @@ export enum Permission {
   ApiKeyManage = 'apiKey:manage',
   ApiKeyView = 'apiKey:view',
   UsersFind = 'users:find',
+  UsersExport = 'users:export',
   UsersManageRoles = 'users:manageRoles',
   EventLogView = 'eventLog:view',
   PraiseView = 'praise:view',
@@ -10,8 +11,12 @@ export enum Permission {
   PeriodCreate = 'period:create',
   PeriodUpdate = 'period:update',
   PeriodAssign = 'period:assign',
+  PeriodExport = 'period:export',
   SettingsView = 'settings:view',
   SettingsManage = 'settings:manage',
   PeriodSettingsView = 'periodSettings:view',
   PeriodSettingsManage = 'periodSettings:manage',
+  QuantificationsExport = 'quantifications:export',
+  PraiseExport = 'praise:export',
+  UserAccountsExport = 'userAccounts:export'
 }

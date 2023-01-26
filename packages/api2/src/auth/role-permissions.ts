@@ -39,6 +39,11 @@ const PERMISSIONS_ADMIN = [
   Permission.PeriodCreate,
   Permission.PeriodUpdate,
   Permission.PeriodAssign,
+  Permission.PeriodExport,
+  Permission.UsersExport,
+  Permission.QuantificationsExport,
+  Permission.PraiseExport,
+  Permission.UserAccountsExport,
 ];
 
 /**

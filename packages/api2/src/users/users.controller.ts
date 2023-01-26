@@ -7,10 +7,13 @@ import {
   Get,
   Param,
   Patch,
+  Query,
+  Res,
   SerializeOptions,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { User } from './schemas/users.schema';
@@ -23,6 +26,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { UpdateUserRequestDto } from './dto/update-user-request.dto';
+import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
 
 @Controller('users')
 @ApiTags('Users')
@@ -37,6 +41,28 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly eventLogService: EventLogService,
   ) {}
+
+  @Get('export')
+  @ApiOperation({ summary: 'Export users document to json or csv' })
+  @ApiResponse({
+    status: 200,
+    description: 'Users Export',
+    type: [User],
+  })
+  @Permissions(Permission.UsersExport)
+  @ApiParam({ name: 'format', type: String })
+  async export(
+    @Query() options: ExportRequestOptions,
+    @Res() res: Response,
+  ): Promise<User[] | Response<string>> {
+    const users = await this.usersService.export(options.format);
+
+    if (options.format === 'json') return users as User[];
+
+    res.header('Content-Type', 'text/csv');
+    res.attachment('users.csv');
+    return res.send(users);
+  }
 
   @Get()
   @Permissions(Permission.UsersFind)

@@ -22,6 +22,8 @@ import { PeriodDetailsGiverReceiverDto } from '../dto/period-details-giver-recei
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 import { QuantificationModel } from '@/database/schemas/quantification/quantification.schema';
+import { parse } from 'json2csv';
+
 @Injectable()
 export class PeriodsService {
   constructor(
@@ -65,6 +67,16 @@ export class PeriodsService {
       throw new ServiceException('Failed to paginate period data');
 
     return periodPagination;
+  }
+
+  /**
+   * returns all of the model in json format
+   */
+  async export(format: string = 'csv'): Promise<Period[] | string> {
+    const periods = await this.periodModel.find().lean();
+
+    if (format !== 'csv') return periods;
+    return parse(periods);
   }
 
   /**
