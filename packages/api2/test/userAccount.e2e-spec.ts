@@ -110,40 +110,41 @@ describe('UserAccountsController (E2E)', () => {
       await authorizedGetRequest('/user_accounts/export?format=json', app, accessToken).expect(200);
     });
 
-    // test('returns userAccounts list that matches seeded list in json format', async () => {
-    //   const response = await authorizedGetRequest(
-    //     '/user_accounts/export?format=json',
-    //     app,
-    //     accessToken,
-    //   ).expect(200);
-    //   expect(response.body.length).toBe(userAccounts.length);
-    //   for (const returnedUser of response.body) {
-    //     expect(
-    //       userAccounts.some(
-    //         (account) =>
-    //           account._id === returnedUser._id,
-    //       ),
-    //       // eslint-disable-next-line jest-extended/prefer-to-be-true
-    //     ).toBe(true);
-    //   }
-    // });
+    test('returns userAccounts list that matches seeded list in json format', async () => {
+      const response = await authorizedGetRequest(
+        '/user_accounts/export?format=json',
+        app,
+        accessToken,
+      ).expect(200);
+      expect(response.body.length).toBe(userAccounts.length);
+      for (const returnedUser of response.body) {
+        expect(
+          userAccounts.some(
+            (account) =>
+              String(account._id) === returnedUser._id,
+          ),
+          // eslint-disable-next-line jest-extended/prefer-to-be-true
+        ).toBe(true);
+      }
+    });
 
-  //   test('returns user list that matches seeded list in csv format', async () => {
-  //     const response = await authorizedGetRequest(
-  //       '/users/export',
-  //       app,
-  //       accessToken,
-  //     ).expect(200);
-  //     expect(response.text).toBeDefined();
-  //     expect(response.text).toContain(users[0].identityEthAddress);
-  //     expect(response.text).toContain(users[1].identityEthAddress);
-  //     expect(response.text).toContain('_id');
-  //     expect(response.text).toContain('identityEthAddress');
-  //     expect(response.text).toContain('rewardsEthAddress');
-  //     expect(response.text).toContain('username');
-  //     expect(response.text).toContain('roles');
-  //     expect(response.text).toContain('createdAt');
-  //     expect(response.text).toContain('updatedAt');
-  //   });
+    test('returns user list that matches seeded list in csv format', async () => {
+      const response = await authorizedGetRequest(
+        '/user_accounts/export?format=csv',
+        app,
+        accessToken,
+      ).expect(200);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain(String(userAccounts[0]._id));
+      expect(response.text).toContain('_id');
+      expect(response.text).toContain('user');
+      expect(response.text).toContain('accountId');
+      expect(response.text).toContain('name');
+      expect(response.text).toContain('avatarId');
+      expect(response.text).toContain('platform');
+      // expect(response.text).toContain('activateToken');
+      expect(response.text).toContain('createdAt');
+      expect(response.text).toContain('updatedAt');
+    });
   });
 });
