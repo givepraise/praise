@@ -22,6 +22,8 @@ import { PeriodDetailsGiverReceiverDto } from '../dto/period-details-giver-recei
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 import { QuantificationModel } from '@/database/schemas/quantification/quantification.schema';
+import { PeriodPaginatedQueryDto } from '../dto/period-paginated-query.dto';
+import { PraisePaginatedWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-paginated-with-user-accounts-with-user-ref.dto';
 @Injectable()
 export class PeriodsService {
   constructor(
@@ -212,6 +214,56 @@ export class PeriodsService {
       .sort({ createdAt: -1 })
       .populate('receiver giver forwarder quantifications')
       .lean();
+  };
+
+  /**
+   * Get all praise items from period - paginated
+   **/
+  findAllPraisePaginated = async (
+    periodId: Types.ObjectId,
+    options: PeriodPaginatedQueryDto,
+  ): Promise<PraisePaginatedWithUserAccountsWithUserRefDto[]> => {
+    console.log(options);
+    const { sortColumn, sortType, page, limit } = options;
+    const query = {} as any;
+
+    const period = await this.periodModel.findById(periodId);
+    if (!period) throw new ServiceException('Period not found');
+
+    const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
+
+    const praisePagination = await this.praiseModel.paginate({
+      page,
+      limit,
+      query: {
+        ...query,
+        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+      },
+      sort: sortColumn && sortType ? { [sortColumn]: sortType } : undefined,
+      populate: [
+        {
+          path: 'giver',
+          populate: { path: 'user' },
+        },
+        {
+          path: 'receiver',
+          populate: { path: 'user' },
+        },
+        {
+          path: 'forwarder',
+          populate: { path: 'user' },
+        },
+        {
+          path: 'quantifications',
+          populate: { path: 'user' },
+        },
+      ],
+    });
+
+    if (!praisePagination)
+      throw new ServiceException('Failed to paginate period data');
+
+    return praisePagination;
   };
 
   /**

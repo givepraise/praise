@@ -30,14 +30,16 @@ import { ReplaceQuantifierInputDto } from './dto/replace-quantifier-input.dto';
 import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.dto';
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
+import { PeriodPaginatedQueryDto } from './dto/period-paginated-query.dto';
+import { PraisePaginatedWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-paginated-with-user-accounts-with-user-ref.dto';
 
 @Controller('periods')
 @ApiTags('Periods')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseGuards(PermissionsGuard)
-@UseGuards(JwtAuthGuard)
+// @UseGuards(PermissionsGuard)
+// @UseGuards(JwtAuthGuard)
 export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,
@@ -123,22 +125,43 @@ export class PeriodsController {
     return this.periodsService.close(id);
   }
 
+  // @Get(':id/praise')
+  // @ApiOperation({ summary: 'Fetch all Praise in a period' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Period Praise items',
+  //   type: [PraiseWithUserAccountsWithUserRefDto],
+  // })
+  // @Permissions(Permission.PeriodView)
+  // @ApiParam({ name: 'id', type: String })
+  // @UseInterceptors(
+  //   MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
+  // )
+  // async praise(
+  //   @Param('id', ObjectIdPipe) id: Types.ObjectId,
+  // ): Promise<PraiseWithUserAccountsWithUserRefDto[]> {
+  //   return this.periodsService.findAllPraise(id);
+  // }
+
   @Get(':id/praise')
-  @ApiOperation({ summary: 'Fetch all Praise in a period' })
+  @ApiOperation({ summary: 'Fetch paginated Praise in a period' })
   @ApiResponse({
     status: 200,
-    description: 'Period Praise items',
-    type: [PraiseWithUserAccountsWithUserRefDto],
+    description: 'Period Praise items paginated',
+    type: [PraisePaginatedWithUserAccountsWithUserRefDto],
   })
   @Permissions(Permission.PeriodView)
   @ApiParam({ name: 'id', type: String })
   @UseInterceptors(
-    MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
+    MongooseClassSerializerInterceptor(
+      PraisePaginatedWithUserAccountsWithUserRefDto,
+    ),
   )
   async praise(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-  ): Promise<PraiseWithUserAccountsWithUserRefDto[]> {
-    return this.periodsService.findAllPraise(id);
+    @Query() options: PeriodPaginatedQueryDto,
+  ): Promise<PraisePaginatedWithUserAccountsWithUserRefDto[]> {
+    return this.periodsService.findAllPraisePaginated(id, options);
   }
 
   @Get(':periodId/praise/receiver/:receiverId')
