@@ -16,6 +16,7 @@ import { authorizedGetRequest, loginUser } from './test.common';
 import { User } from '@/users/schemas/users.schema';
 import { EventLogModule } from '@/event-log/event-log.module';
 import { runDbMigrations } from '@/database/migrations';
+import { AuthRole } from '@/auth/enums/auth-role.enum';
 
 describe('UserController (E2E)', () => {
   let app: INestApplication;
@@ -48,6 +49,76 @@ describe('UserController (E2E)', () => {
     await app.close();
   });
 
+  describe('GET /api/users/export', () => {
+    let wallet;
+    let accessToken: string;
+    const users: User[] = [];
+
+    beforeAll(async () => {
+      // Clear the database
+      await usersService.getModel().deleteMany({});
+
+      // Seed the database
+      wallet = Wallet.createRandom();
+      users.push(
+        await usersSeeder.seedUser({
+          identityEthAddress: wallet.address,
+          rewardsAddress: wallet.address,
+          roles: [AuthRole.ADMIN]
+        }),
+      );
+      users.push(await usersSeeder.seedUser({}));
+
+      // Login and get access token
+      const response = await loginUser(app, module, wallet);
+      accessToken = response.accessToken;
+    });
+
+    test('401 when not authenticated', async () => {
+      await request(server).get('/users/export').send().expect(401);
+    });
+
+    test('200 when authenticated', async () => {
+      await authorizedGetRequest('/users/export?format=json', app, accessToken).expect(200);
+    });
+
+    test('returns user list that matches seeded list in json format', async () => {
+      const response = await authorizedGetRequest(
+        '/users/export?format=json',
+        app,
+        accessToken,
+      ).expect(200);
+      expect(response.body.length).toBe(users.length);
+      for (const returnedUser of response.body) {
+        expect(
+          users.some(
+            (user) =>
+              user.identityEthAddress === returnedUser.identityEthAddress,
+          ),
+          // eslint-disable-next-line jest-extended/prefer-to-be-true
+        ).toBe(true);
+      }
+    });
+
+    test('returns user list that matches seeded list in csv format', async () => {
+      const response = await authorizedGetRequest(
+        '/users/export',
+        app,
+        accessToken,
+      ).expect(200);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain(users[0].identityEthAddress);
+      expect(response.text).toContain(users[1].identityEthAddress);
+      expect(response.text).toContain('_id');
+      expect(response.text).toContain('identityEthAddress');
+      expect(response.text).toContain('rewardsEthAddress');
+      expect(response.text).toContain('username');
+      expect(response.text).toContain('roles');
+      expect(response.text).toContain('createdAt');
+      expect(response.text).toContain('updatedAt');
+    });
+  });
+
   describe('GET /api/users', () => {
     let wallet;
     let accessToken: string;
@@ -73,7 +144,7 @@ describe('UserController (E2E)', () => {
     });
 
     test('401 when not authenticated', async () => {
-      return request(server).get('/users').send().expect(401);
+      await request(server).get('/users').send().expect(401);
     });
 
     test('200 when authenticated', async () => {

@@ -104,7 +104,6 @@ export class PraiseService {
     const praises = await this.praiseModel
       .find({
         createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) },
-        periodId: periodId
       })
       .lean();
 

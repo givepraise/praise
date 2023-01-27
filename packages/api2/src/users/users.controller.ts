@@ -10,6 +10,7 @@ import {
   Query,
   Res,
   SerializeOptions,
+  StreamableFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -27,6 +28,7 @@ import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-seri
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { UpdateUserRequestDto } from './dto/update-user-request.dto';
 import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
+import { Readable } from 'stream';
 
 @Controller('users')
 @ApiTags('Users')
@@ -42,7 +44,7 @@ export class UsersController {
     private readonly eventLogService: EventLogService,
   ) {}
 
-  @Get('export')
+  @Get('/export')
   @ApiOperation({ summary: 'Export users document to json or csv' })
   @ApiResponse({
     status: 200,
@@ -53,15 +55,17 @@ export class UsersController {
   @ApiParam({ name: 'format', type: String })
   async export(
     @Query() options: ExportRequestOptions,
-    @Res() res: Response,
-  ): Promise<User[] | Response<string>> {
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<User[] | undefined> {
     const users = await this.usersService.export(options.format);
 
     if (options.format === 'json') return users as User[];
 
-    res.header('Content-Type', 'text/csv');
-    res.attachment('users.csv');
-    return res.send(users);
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': 'attachment; filename="users.csv"',
+    });
+    res.send(users)
   }
 
   @Get()

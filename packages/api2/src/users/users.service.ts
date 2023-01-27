@@ -2,7 +2,7 @@ import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
 import { User, UserDocument } from './schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import { UpdateUserInputDto } from './dto/update-user-input.dto';
 import { CreateUserInputDto } from './dto/create-user-input.dto';
 import { ServiceException } from '@/shared/service-exception';
@@ -15,6 +15,7 @@ import { Praise, PraiseDocument } from '@/praise/schemas/praise.schema';
 import { UserStatsDto } from './dto/user-stats.dto';
 import { use } from 'passport';
 import { parse } from 'json2csv';
+import { Readable } from "stream";
 
 @Injectable()
 export class UsersService {
@@ -35,7 +36,7 @@ export class UsersService {
   }
 
   /**
-   * returns all of the model in json format
+   * returns all of the model in json or csv format
    * Do not populate relations
    */
   async export(format: string = 'csv'): Promise<User[] | string> {

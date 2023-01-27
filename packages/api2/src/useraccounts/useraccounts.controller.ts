@@ -22,8 +22,8 @@ import { UserAccountsService } from './useraccounts.service';
 import { Response } from 'express';
 import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
 
-@Controller('quantifications')
-@ApiTags('Quantifications')
+@Controller('user_accounts')
+@ApiTags('UserAccounts')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
@@ -44,16 +44,18 @@ export class UserAccountsController {
   })
   @Permissions(Permission.UserAccountsExport)
   @ApiParam({ name: 'format', type: String })
-  async findOne(
+  async export(
     @Query() options: ExportRequestOptions,
-    @Res() res: Response,
-  ): Promise<UserAccount[] | Response<string>> {
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<UserAccount[] | undefined> {
     const userAccounts = await this.userAccountsService.export(options.format);
 
     if (options.format === 'json') return userAccounts as UserAccount[];
 
-    res.header('Content-Type', 'text/csv');
-    res.attachment('userAccounts.csv');
-    return res.send(userAccounts);
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': 'attachment; filename="users.csv"',
+    });
+    res.send(userAccounts);
   }
 }

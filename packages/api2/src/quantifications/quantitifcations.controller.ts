@@ -49,8 +49,8 @@ export class QuantificationsController {
   @Permissions(Permission.QuantificationsExport)
   async findOne(
     @Query() options: ExportRequestOptions,
-    @Res() res: Response,
-  ): Promise<Quantification[] | Response> {
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<Quantification[] | undefined> {
     const quantifications = await this.quantificationsService.export(
       options.format,
       options.startDate,
@@ -60,8 +60,10 @@ export class QuantificationsController {
 
     if (options.format === 'json') return quantifications as Quantification[];
 
-    res.header('Content-Type', 'text/csv');
-    res.attachment('quantifications.csv');
-    return res.send(quantifications);
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': 'attachment; filename="users.csv"',
+    });
+    res.send(quantifications);
   }
 }

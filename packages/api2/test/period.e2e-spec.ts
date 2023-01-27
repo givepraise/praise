@@ -212,6 +212,71 @@ describe('Period (E2E)', () => {
     });
   });
 
+  describe('GET /periods/export', () => {
+    let period: Period;
+    let periods: Period[] = [];
+
+    beforeAll(async () => {
+      await periodsService.getModel().deleteMany({});
+
+      period = await periodsSeeder.seedPeriod({
+        status: PeriodStatusType.OPEN,
+        endDate: new Date(),
+      });
+
+      periods.push(period);
+
+      const previousPeriodEndDate = new Date(period.endDate.getTime());
+      previousPeriodEndDate.setDate(period.endDate.getDate() - 30);
+
+      periods.push(await periodsSeeder.seedPeriod({
+        status: PeriodStatusType.OPEN,
+        endDate: previousPeriodEndDate,
+      }));
+    });
+
+    test('401 when not authenticated', async () => {
+      await request(server).get(`/periods/export`).send().expect(401);
+    });
+
+    test('returns period list that matches seeded list in json format', async () => {
+      const response = await authorizedGetRequest(
+        '/periods/export?format=json',
+        app,
+        users[0].accessToken,
+      );
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBe(periods.length);
+      for (const returnedPeriod of response.body) {
+        expect(
+          periods.some(
+            (periodCreated) =>
+              periodCreated.endDate.toISOString() === returnedPeriod.endDate,
+          ),
+          // eslint-disable-next-line jest-extended/prefer-to-be-true
+        ).toBe(true);
+      }
+    });
+
+    test('returns period list that matches seeded list in csv format', async () => {
+      const response = await authorizedGetRequest(
+        '/periods/export?format=csv',
+        app,
+        users[0].accessToken,
+      );
+      expect(response.status).toBe(200);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain(periods[0].endDate.toISOString());
+      expect(response.text).toContain(periods[1].endDate.toISOString());
+      expect(response.text).toContain('_id');
+      expect(response.text).toContain('name');
+      expect(response.text).toContain('status');
+      expect(response.text).toContain('endDate');
+      expect(response.text).toContain('createdAt');
+      expect(response.text).toContain('updatedAt');
+    });
+  });
+
   describe('GET /periods', () => {
     let period: Period;
 

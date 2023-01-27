@@ -9,6 +9,7 @@ import {
   SerializeOptions,
   UseInterceptors,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
@@ -31,19 +32,45 @@ import { PraiseModel } from '@/database/schemas/praise/12_praise.schema';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Response } from 'express';
 import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
+import { PermissionsGuard } from '@/auth/guards/permissions.guard';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @Controller('periods')
 @ApiTags('Periods')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-// @UseGuards(PermissionsGuard)
-// @UseGuards(JwtAuthGuard)
+@UseGuards(PermissionsGuard)
+@UseGuards(JwtAuthGuard)
 export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,
     private readonly periodAssignmentsService: PeriodAssignmentsService,
   ) {}
+
+  @Get('export')
+  @ApiOperation({ summary: 'Export periods document to json or csv' })
+  @ApiResponse({
+    status: 200,
+    description: 'Periods Export',
+    type: [Period],
+  })
+  @Permissions(Permission.PeriodExport)
+  @ApiParam({ name: 'format', type: String })
+  async export(
+    @Query() options: ExportRequestOptions,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<Period[] | undefined> {
+    const periods = await this.periodsService.export(options.format);
+
+    if (options.format === 'json') return periods as Period[];
+
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': 'attachment; filename="users.csv"',
+    });
+    res.send(periods);
+  }
 
   @Get()
   @ApiOperation({ summary: 'List all periods' })
@@ -259,27 +286,5 @@ export class PeriodsController {
       id,
       replaceQuantifierDto,
     );
-  }
-
-  @Get('export')
-  @ApiOperation({ summary: 'Export periods document to json or csv' })
-  @ApiResponse({
-    status: 200,
-    description: 'Periods Export',
-    type: [Period],
-  })
-  @Permissions(Permission.PeriodExport)
-  @ApiParam({ name: 'format', type: String })
-  async export(
-    @Query() options: ExportRequestOptions,
-    @Res() res: Response,
-  ): Promise<Period[] | Response<string>> {
-    const periods = await this.periodsService.export(options.format);
-
-    if (options.format === 'json') return periods as Period[];
-
-    res.header('Content-Type', 'text/csv');
-    res.attachment('periods.csv');
-    return res.send(periods);
   }
 }

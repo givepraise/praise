@@ -1,28 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class ExportRequestOptions {
   @ApiProperty({
     default: 'csv',
-    enum: ['json', 'csv']
   })
   @IsOptional()
   @IsString()
   @Type(() => String)
   format: string;
 
-  @ApiProperty({
-    example: '',
-  })
+  @ApiProperty()
   @IsOptional()
   @IsString()
   @Type(() => String)
   startDate: string;
 
-  @ApiProperty({
-    example: '',
-  })
+  @ApiProperty()
   @IsOptional()
   @IsString()
   @Type(() => String)

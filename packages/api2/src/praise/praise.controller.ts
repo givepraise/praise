@@ -54,6 +54,38 @@ export class PraiseController {
     return this.praiseService.findAllPaginated(options);
   }
 
+  @Get('export')
+  @ApiOperation({ summary: 'Export Praises document to json or csv' })
+  @ApiResponse({
+    status: 200,
+    description: 'Praise Export',
+    type: [Praise],
+  })
+  @Permissions(Permission.UsersExport)
+  @ApiParam({ name: 'format', type: String })
+  @ApiParam({ name: 'startDate', type: Date })
+  @ApiParam({ name: 'endDate', type: Date })
+  @ApiParam({ name: 'periodId', type: Number })
+  async export(
+    @Query() options: ExportRequestOptions,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<Praise[] | undefined> {
+    const praises = await this.praiseService.export(
+      options.format,
+      options.startDate,
+      options.endDate,
+      options.periodId
+    );
+
+    if (options.format === 'json') return praises as Praise[];
+
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': 'attachment; filename="users.csv"',
+    });
+    res.send(praises);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Find praise item by id' })
   @ApiResponse({
@@ -114,35 +146,5 @@ export class PraiseController {
     );
 
     return praiseItems.flat();
-  }
-
-  @Get('export')
-  @ApiOperation({ summary: 'Export Praises document to json or csv' })
-  @ApiResponse({
-    status: 200,
-    description: 'Praise Export',
-    type: [Praise],
-  })
-  @Permissions(Permission.UsersExport)
-  @ApiParam({ name: 'format', type: String })
-  @ApiParam({ name: 'startDate', type: String })
-  @ApiParam({ name: 'endDate', type: String })
-  @ApiParam({ name: 'periodId', type: Number })
-  async export(
-    @Query() options: ExportRequestOptions,
-    @Res() res: Response,
-  ): Promise<Praise[] | Response> {
-    const praises = await this.praiseService.export(
-      options.format,
-      options.startDate,
-      options.endDate,
-      options.periodId
-    );
-
-    if (options.format === 'json') return praises as Praise[];
-
-    res.header('Content-Type', 'text/csv');
-    res.attachment('praises.csv');
-    return res.send(praises);
   }
 }

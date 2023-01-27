@@ -49,7 +49,7 @@ export class QuantificationsService {
     const quantifications = await this.quantificationModel
       .find({
         createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) },
-        periodId: periodId
+        // periodId: periodId
       })
       .lean();
 
