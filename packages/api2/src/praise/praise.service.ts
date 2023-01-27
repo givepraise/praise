@@ -25,8 +25,6 @@ export class PraiseService {
     private praiseModel: typeof PraiseModel,
     @InjectModel(Period.name)
     private periodModel: typeof PeriodModel,
-    @Inject(forwardRef(() => PeriodsService))
-    private periodService: PeriodsService,
     @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
     @Inject(forwardRef(() => QuantificationsService))

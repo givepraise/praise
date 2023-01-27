@@ -32,6 +32,7 @@ import { PeriodAssignmentsService } from './services/period-assignments.service'
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { PeriodPaginatedQueryDto } from './dto/period-paginated-query.dto';
 import { PraisePaginatedWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-paginated-with-user-accounts-with-user-ref.dto';
+import { PraisePaginatedResponseDto } from '@/praise/dto/praise-paginated-response.dto';
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -148,19 +149,17 @@ export class PeriodsController {
   @ApiResponse({
     status: 200,
     description: 'Period Praise items paginated',
-    type: [PraisePaginatedWithUserAccountsWithUserRefDto],
+    type: [PraisePaginatedResponseDto],
   })
   @Permissions(Permission.PeriodView)
   @ApiParam({ name: 'id', type: String })
   @UseInterceptors(
-    MongooseClassSerializerInterceptor(
-      PraisePaginatedWithUserAccountsWithUserRefDto,
-    ),
+    MongooseClassSerializerInterceptor(PraisePaginatedResponseDto),
   )
   async praise(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Query() options: PeriodPaginatedQueryDto,
-  ): Promise<PraisePaginatedWithUserAccountsWithUserRefDto[]> {
+  ): Promise<PraisePaginatedResponseDto> {
     return this.periodsService.findAllPraisePaginated(id, options);
   }
 

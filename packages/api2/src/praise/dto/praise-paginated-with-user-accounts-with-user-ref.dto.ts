@@ -1,9 +1,9 @@
-import { UserAccountWithUserRefDto } from '@/useraccounts/dto/useraccount-with-user-ref.dto';
-import { Praise } from '../schemas/praise.schema';
-import { Types } from 'mongoose';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { Praise } from '../schemas/praise.schema';
 import { PaginatedResponseDto } from '@/shared/dto/paginated-response.dto';
+import { UserAccountWithUserRefDto } from '@/useraccounts/dto/useraccount-with-user-ref.dto';
+import { Types } from 'mongoose';
 
 export class PraisePaginatedWithUserAccountsWithUserRefDto extends PaginatedResponseDto {
   @ApiResponseProperty({

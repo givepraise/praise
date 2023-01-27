@@ -1,4 +1,8 @@
-import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
+import {
+  Praise,
+  PraiseDocument,
+  PraiseModel,
+} from '@/praise/schemas/praise.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { Period, PeriodDocument, PeriodModel } from '../schemas/periods.schema';
@@ -20,10 +24,9 @@ import { UpdatePeriodInputDto } from '../dto/update-period-input.dto';
 import { PeriodStatusType } from '../enums/status-type.enum';
 import { PeriodDetailsGiverReceiverDto } from '../dto/period-details-giver-receiver.dto';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
-import { Quantification } from '@/quantifications/schemas/quantifications.schema';
-import { QuantificationModel } from '@/database/schemas/quantification/quantification.schema';
 import { PeriodPaginatedQueryDto } from '../dto/period-paginated-query.dto';
-import { PraisePaginatedWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-paginated-with-user-accounts-with-user-ref.dto';
+import { PraisePaginatedResponseDto } from '@/praise/dto/praise-paginated-response.dto';
+
 @Injectable()
 export class PeriodsService {
   constructor(
@@ -31,8 +34,6 @@ export class PeriodsService {
     private periodModel: typeof PeriodModel,
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
-    @InjectModel(Quantification.name)
-    private quantificationModel: typeof QuantificationModel,
     private eventLogService: EventLogService,
     @Inject(forwardRef(() => PeriodSettingsService))
     private periodSettingsService: PeriodSettingsService,
@@ -222,7 +223,7 @@ export class PeriodsService {
   findAllPraisePaginated = async (
     periodId: Types.ObjectId,
     options: PeriodPaginatedQueryDto,
-  ): Promise<PraisePaginatedWithUserAccountsWithUserRefDto[]> => {
+  ): Promise<PraisePaginatedResponseDto> => {
     console.log(options);
     const { sortColumn, sortType, page, limit } = options;
     const query = {} as any;
