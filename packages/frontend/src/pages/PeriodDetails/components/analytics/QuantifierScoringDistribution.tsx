@@ -7,7 +7,7 @@ import { PeriodPageParams } from '@/model/periods/periods';
 import { AllPeriodQuantificationsGroupedByQuantifier } from '@/model/periods/periodAnalytics';
 import { ManyUsers } from '@/model/user/users';
 import { BoxPlot } from './Boxplot';
-import { QuantificationDto } from 'shared/dto/quantification.dto';
+import { QuantificationDto } from '@/model/quantification/quantification.dto';
 
 export const QuantifierScoringDistribution = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();

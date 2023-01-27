@@ -1,5 +1,5 @@
-import { UserRole } from 'shared/enums/user-role.enum';
-import { UserAccount } from './user-account.interface';
+import { UserAccount } from '@/model/useraccount/interfaces/useraccount.interface';
+import { UserRole } from '../enums/user-role.enum';
 
 export interface User {
   identityEthAddress: string;

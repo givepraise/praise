@@ -19,7 +19,7 @@ import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { isResponseOk } from '@/model/api';
 import { ReplaceQuantifierDialog } from './ReplaceQuantifierDialog';
-import { Quantifier } from 'shared/interfaces/quantifier.interface';
+import { Quantifier } from '@/model/useraccount/interfaces/quantifier.interface';
 
 const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();

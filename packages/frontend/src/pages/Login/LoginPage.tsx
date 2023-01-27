@@ -1,9 +1,9 @@
-import { generateLoginMessage } from 'api/dist/auth/utils';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { useAccount } from 'wagmi';
 import { requestApiAuth, requestNonce } from '@/utils/auth';
 import { SignMessageLayout } from '../../layouts/SignMessageLayout';
+import { generateLoginMessage } from '@/utils/message';
 
 const LoginPage = (): JSX.Element => {
   const { address } = useAccount();

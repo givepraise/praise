@@ -11,7 +11,7 @@ import {
   AllUsers,
 } from '@/model/user/users';
 import { Button } from '@/components/ui/Button';
-import { UserDto } from 'shared/dto/user.dto';
+import { UserDto } from '@/model/user/dto/user.dto';
 
 interface DownloadUserDto extends Omit<UserDto, 'accounts'> {
   discordName?: string;

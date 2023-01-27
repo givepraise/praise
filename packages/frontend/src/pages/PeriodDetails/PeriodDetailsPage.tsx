@@ -32,7 +32,7 @@ import { PeriodDetailsHead } from './components/PeriodDetailsHead';
 import { QuantifierMessage } from './components/QuantifierMessage';
 import { Box } from '@/components/ui/Box';
 import { LoadPlaceholder } from '@/components/LoadPlaceholder';
-import { PeriodStatusType } from 'shared/enums/period-status-type.enum';
+import { PeriodStatusType } from '@/model/periods/enums/period-status-type.enum';
 
 const QuantifierTable = React.lazy(
   () => import('./components/QuantifierTable')

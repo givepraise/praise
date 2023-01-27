@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import { classNames } from '@/utils/index';
 import { EthAccountDialog } from './EthAccountDialog';
-import { shortenEthAddress } from 'shared/functions/shortenEthAddress';
+import { shortenEthAddress } from '@/utils/string';
 
 interface EthAccountParams {
   className?: string;

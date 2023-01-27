@@ -1,12 +1,11 @@
-import { UserAccountPlatform } from 'shared/types/user-account-platform.type';
-import { User } from './user.interface';
+import { User } from '@/model/user/interfaces/user.interface';
 
 export interface UserAccount {
   user?: User;
   accountId: string;
   name: string;
   avatarId?: string;
-  platform: UserAccountPlatform;
+  platform: string;
   activateToken?: string;
   createdAt: Date;
   updatedAt: Date;

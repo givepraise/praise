@@ -14,8 +14,8 @@ import { DiscordBotSettings } from './components/DiscordBotSettings';
 import { CustomExportSettings } from './components/CustomExportSettings';
 import { PeriodDefaultsSettings } from './components/PeriodDefaultsSettings';
 import { ApplicationSettings } from './components/ApplicationSettings';
-import { SettingGroup } from 'shared/enums/setting-group.enum';
-import { SettingDto } from 'shared/dto/setting.dto';
+import { SettingGroup } from '@/model/settings/enums/setting-group.enum';
+import { SettingDto } from '@/model/settings/dto/setting.dto';
 
 const SettingsPage = (): JSX.Element | null => {
   const settings = useRecoilValue(AllSettings);

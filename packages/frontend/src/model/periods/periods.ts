@@ -20,7 +20,7 @@ import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from '../api';
 import { ActiveUserId } from '../auth/auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from '../praise/praise';
 import { PraiseDto } from '../praise/praise.dto';
-import { UserAccountDto } from '../useraccount/useraccount.dto';
+import { UserAccountDto } from '../useraccount/dto/useraccount.dto';
 import { PeriodDetailsDto } from './dto/period-details.dto';
 import { PeriodCreateInput } from './dto/period-create.dto';
 import { PeriodUpdateInput } from './dto/period-update-input.dto';

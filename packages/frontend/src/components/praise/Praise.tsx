@@ -21,9 +21,9 @@ import { useQuantifyPraise } from '@/model/praise/praise';
 import { SourceName } from './SourceName';
 import { UserAvatarAndName } from '../user/UserAvatarAndName';
 import { InlineLabelClosable } from '../ui/InlineLabelClosable';
-import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
 import { PraiseDto } from '@/model/praise/praise.dto';
 import { idLabel } from '@/model/praise/praise.utils';
+import { UserAccountDto } from '@/model/useraccount/dto/useraccount.dto';
 
 interface Props {
   praise: PraiseDto;

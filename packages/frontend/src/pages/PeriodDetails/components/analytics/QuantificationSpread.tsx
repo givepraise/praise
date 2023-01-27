@@ -6,7 +6,7 @@ import { PeriodPageParams } from '@/model/periods/periods';
 import { PeriodPraiseOutliers } from '@/model/periods/periodAnalytics';
 import { BoxPlot } from './Boxplot';
 import { Pagination } from './Pagination';
-import { QuantificationDto } from 'shared/dto/quantification.dto';
+import { QuantificationDto } from '@/model/quantification/quantification.dto';
 
 const QuantificationSpreadPagination = atom<number>({
   key: 'QuantificationSpreadPagination',

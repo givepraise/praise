@@ -1,4 +1,4 @@
-import { TokenData } from './tokean-data.interface';
+import { TokenData } from './token-data.interface';
 
 export interface JwtTokenData extends TokenData {
   sub: string;
