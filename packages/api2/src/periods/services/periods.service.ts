@@ -24,7 +24,6 @@ import { UpdatePeriodInputDto } from '../dto/update-period-input.dto';
 import { PeriodStatusType } from '../enums/status-type.enum';
 import { PeriodDetailsGiverReceiverDto } from '../dto/period-details-giver-receiver.dto';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
-import { PeriodPaginatedQueryDto } from '../dto/period-paginated-query.dto';
 import { PraisePaginatedResponseDto } from '@/praise/dto/praise-paginated-response.dto';
 
 @Injectable()
@@ -222,9 +221,8 @@ export class PeriodsService {
    **/
   findAllPraisePaginated = async (
     periodId: Types.ObjectId,
-    options: PeriodPaginatedQueryDto,
+    options: PaginatedQueryDto,
   ): Promise<PraisePaginatedResponseDto> => {
-    console.log(options);
     const { sortColumn, sortType, page, limit } = options;
     const query = {} as any;
 
@@ -256,7 +254,7 @@ export class PeriodsService {
         },
         {
           path: 'quantifications',
-          populate: { path: 'user' },
+          populate: { path: 'quantifier' },
         },
       ],
     });

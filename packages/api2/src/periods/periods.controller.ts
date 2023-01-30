@@ -30,8 +30,6 @@ import { ReplaceQuantifierInputDto } from './dto/replace-quantifier-input.dto';
 import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.dto';
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
-import { PeriodPaginatedQueryDto } from './dto/period-paginated-query.dto';
-import { PraisePaginatedWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-paginated-with-user-accounts-with-user-ref.dto';
 import { PraisePaginatedResponseDto } from '@/praise/dto/praise-paginated-response.dto';
 
 @Controller('periods')
@@ -158,7 +156,7 @@ export class PeriodsController {
   )
   async praise(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Query() options: PeriodPaginatedQueryDto,
+    @Query() options: PaginatedQueryDto,
   ): Promise<PraisePaginatedResponseDto> {
     return this.periodsService.findAllPraisePaginated(id, options);
   }
