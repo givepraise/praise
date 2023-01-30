@@ -4021,6 +4021,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kurkle/color@npm:^0.3.0":
+  version: 0.3.2
+  resolution: "@kurkle/color@npm:0.3.2"
+  checksum: 79e97b31f8f6efb28c69d373f94b0c7480226fe8ec95221f518ac998e156444a496727ce47de6d728eb5c3369288e794cba82cae34253deb0d472d3bfe080e49
+  languageName: node
+  linkType: hard
+
 "@leichtgewicht/ip-codec@npm:^2.0.1":
   version: 2.0.4
   resolution: "@leichtgewicht/ip-codec@npm:2.0.4"
@@ -8342,10 +8349,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:^3.9.1":
-  version: 3.9.1
-  resolution: "chart.js@npm:3.9.1"
-  checksum: 9ab0c0ac01215af0b3f020f2e313030fd6e347b48ed17d5484ee9c4e8ead45e78ae71bea16c397621c386b409ce0b14bf17f9f6c2492cd15b56c0f433efdfff6
+"chart.js@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "chart.js@npm:4.2.0"
+  dependencies:
+    "@kurkle/color": ^0.3.0
+  checksum: 281b023c013de8700a5208a45d35248b02119fadb574d0c104c7e0720605e085195ce546fd3aa27625e9db1188fdd5f7491a411463b9c30b7654a5f4b13d8d80
   languageName: node
   linkType: hard
 
@@ -11861,7 +11870,7 @@ __metadata:
     autoprefixer: ^10.4.7
     axios: ^0.22.0
     axios-auth-refresh: ^3.2.2
-    chart.js: ^3.9.1
+    chart.js: ^4.2.0
     chartjs-chart-treemap: ^2.0.2
     craco-alias: ^3.0.1
     date-fns: ^2.25.0

@@ -80,7 +80,7 @@ export class EventLog {
 export const EventLogSchema =
   SchemaFactory.createForClass(EventLog).plugin(mongoosePagination);
 
-export const EventLogModel = model<
-  EventLogDocument,
-  Pagination<EventLogDocument>
->('EventLog', EventLogSchema);
+export const EventLogModel = model<EventLog, Pagination<EventLog>>(
+  'EventLog',
+  EventLogSchema,
+);
