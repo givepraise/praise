@@ -186,7 +186,7 @@ describe('Period (E2E)', () => {
       return request(server).get(`/periods/${period._id}`).send().expect(401);
     });
 
-    test('should return 200 and the period details', async () => {
+    test('should return 200 and the period details KRESO', async () => {
       const response = await request(server)
         .get(`/periods/${period._id}`)
         .set('Authorization', `Bearer ${users[0].accessToken}`)
