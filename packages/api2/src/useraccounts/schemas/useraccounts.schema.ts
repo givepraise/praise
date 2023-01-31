@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { model, SchemaTypes, Types } from 'mongoose';
+import { SchemaTypes, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { User } from '@/users/schemas/users.schema';
@@ -63,8 +63,3 @@ export class UserAccount {
 }
 
 export const UserAccountSchema = SchemaFactory.createForClass(UserAccount);
-
-export const UserAccountModel = model<UserAccountDocument>(
-  'UserAccount',
-  UserAccountSchema,
-);

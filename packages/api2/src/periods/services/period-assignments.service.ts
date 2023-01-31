@@ -1,38 +1,36 @@
-import { Injectable } from '@nestjs/common';
-import { VerifyQuantifierPoolSizeDto } from '../dto/verify-quantifiers-pool-size.dto';
-import { AssignmentsDto } from '../dto/assignments.dto';
-import { Receiver } from '@/praise/interfaces/receiver.interface';
+import { AuthRole } from '@/auth/enums/auth-role.enum';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { EventLogService } from '@/event-log/event-log.service';
 import { Quantifier } from '@/praise/interfaces/quantifier.interface';
-import greedyPartitioning from 'greedy-number-partitioning';
-import { firstFit, PackingOutput } from 'bin-packer';
+import { Receiver } from '@/praise/interfaces/receiver.interface';
+import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
+import { Quantification } from '@/quantifications/schemas/quantifications.schema';
+import { SettingsService } from '@/settings/settings.service';
+import { ServiceException } from '@/shared/service-exception';
+import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
+import { User } from '@/users/schemas/users.schema';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
 import flatten from 'lodash/flatten';
 import intersection from 'lodash/intersection';
 import range from 'lodash/range';
 import sum from 'lodash/sum';
 import zip from 'lodash/zip';
 import every from 'lodash/every';
-import { some } from 'lodash';
-import { InjectModel } from '@nestjs/mongoose';
-import { Period, PeriodModel } from '../schemas/periods.schema';
-import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
-import { User, UserModel } from '@/users/schemas/users.schema';
-import {
-  UserAccount,
-  UserAccountModel,
-} from '@/useraccounts/schemas/useraccounts.schema';
-import { SettingsService } from '@/settings/settings.service';
-import { EventLogService } from '@/event-log/event-log.service';
-import { Types } from 'mongoose';
-import { ServiceException } from '@/shared/service-exception';
-import { PeriodDetailsDto } from '../dto/period-details.dto';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { PeriodStatusType } from '../enums/status-type.enum';
-import { ReplaceQuantifierResponseDto } from '../dto/replace-quantifier-reponse.dto';
-import { ReplaceQuantifierInputDto } from '../dto/replace-quantifier-input.dto';
-import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interface';
+import some from 'lodash/some';
+import { firstFit, PackingOutput } from 'bin-packer';
+import greedyPartitioning from 'greedy-number-partitioning';
+import { AssignmentsDto } from '../dto/assignments.dto';
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
+import { PeriodDetailsDto } from '../dto/period-details.dto';
+import { ReplaceQuantifierInputDto } from '../dto/replace-quantifier-input.dto';
+import { ReplaceQuantifierResponseDto } from '../dto/replace-quantifier-reponse.dto';
+import { VerifyQuantifierPoolSizeDto } from '../dto/verify-quantifiers-pool-size.dto';
+import { PeriodStatusType } from '../enums/status-type.enum';
+import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interface';
+import { Period, PeriodModel } from '../schemas/periods.schema';
 import { PeriodsService } from './periods.service';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
 
 @Injectable()
 export class PeriodAssignmentsService {
@@ -42,9 +40,11 @@ export class PeriodAssignmentsService {
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
     @InjectModel(User.name)
-    private userModel: typeof UserModel,
+    private userModel: Model<User>,
     @InjectModel(UserAccount.name)
-    private userAccountModel: typeof UserAccountModel,
+    private userAccountModel: typeof Model<UserAccount>,
+    @InjectModel(Quantification.name)
+    private quantificationModel: Model<Quantification>,
     private settingsService: SettingsService,
     private eventLogService: EventLogService,
     private periodsService: PeriodsService,
@@ -132,30 +132,21 @@ export class PeriodAssignmentsService {
     }
 
     try {
-      // Generate list of db queries to apply changes specified by assignedQuantifiers
-      const bulkQueries = flatten(
+      // Generate list of db queries to insert quantifications
+      const insertManyQuantifications = flatten(
         assignedQuantifiers.poolAssignments.map((q) =>
-          q.receivers.map((receiver) => ({
-            updateMany: {
-              filter: { _id: { $in: receiver.praiseIds } },
-              update: {
-                $push: {
-                  quantifications: {
-                    quantifier: q._id,
-                  },
-                },
-              },
-            },
-          })),
+          q.receivers.map((receiver) =>
+            this.quantificationModel.insertMany(
+              receiver.praiseIds.map((praiseId) => ({
+                praise: praiseId,
+                quantifier: q._id,
+              })),
+            ),
+          ),
         ),
       );
-
-      // 2022-06-30
-      // Ignoring this TS error that new quantification object does not meet expected type
-      //  It may be related to running $push within an updateMany within a bulkWrite *for a sub-document type*
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      //await this.praiseModel.bulkWrite(bulkQueries);
+      // Execute all db queries
+      await Promise.all(insertManyQuantifications);
     } catch (e) {
       await this.eventLogService.logEvent({
         typeKey: EventLogTypeKey.PERIOD,
@@ -188,10 +179,8 @@ export class PeriodAssignmentsService {
     _id: Types.ObjectId,
     replaceQuantifierInputDto: ReplaceQuantifierInputDto,
   ): Promise<ReplaceQuantifierResponseDto> => {
-    const {
-      quantifierId: currentQuantifierId,
-      quantifierIdNew: newQuantifierId,
-    } = replaceQuantifierInputDto;
+    const { currentQuantifierId, newQuantifierId } = replaceQuantifierInputDto;
+
     const period = await this.periodsService.findOneById(_id);
 
     if (period.status !== 'QUANTIFY')
@@ -201,7 +190,7 @@ export class PeriodAssignmentsService {
 
     if (!currentQuantifierId || !newQuantifierId)
       throw new ServiceException(
-        'Both originalQuantifierId and newQuantifierId must be specified',
+        'Both currentQuantifierId and newQuantifierId must be specified',
       );
 
     if (currentQuantifierId === newQuantifierId)
@@ -224,35 +213,42 @@ export class PeriodAssignmentsService {
 
     const dateRangeQuery = await this.getPeriodDateRangeQuery(period);
 
-    const praiseAlreadyAssignedToNewQuantifier = await this.praiseModel.find({
-      // Praise within time period
-      createdAt: dateRangeQuery,
+    const praiseItemsInPeriod = await this.periodsService.findAllPraise(
+      period._id,
+    );
+    const praiseIds = praiseItemsInPeriod.map((p) => p._id);
 
-      // Both original and new quantifiers assigned
-      $and: [
-        { 'quantifications.quantifier': currentQuantifierId },
-        { 'quantifications.quantifier': newQuantifierId },
-      ],
-    });
+    const praiseQuantificationsAlreadyAssignedToNewQuantifier =
+      await this.quantificationModel.find({
+        praise: { $in: praiseIds },
+        quantifier: newQuantifierId,
+      });
 
-    if (praiseAlreadyAssignedToNewQuantifier?.length > 0)
+    if (praiseQuantificationsAlreadyAssignedToNewQuantifier?.length > 0)
       throw new ServiceException(
         "Replacement quantifier is already assigned to some of the original quantifier's praise",
       );
+
+    const originalQuantifierQuantifications = await this.quantificationModel
+      .find({
+        quantifier: new Types.ObjectId(currentQuantifierId),
+      })
+      .lean();
+
+    const originalQuantifierQuantificationPraiseIds =
+      originalQuantifierQuantifications.map((q) => q.praise);
 
     const affectedPraiseIds = await this.praiseModel
       .find({
         // Praise within time period
         createdAt: dateRangeQuery,
-
-        // Original quantifier
-        'quantifications.quantifier': currentQuantifierId,
+        _id: { $in: originalQuantifierQuantificationPraiseIds },
       })
       .lean();
 
     const newQuantifierAccounts = await this.userAccountModel
       .find({
-        user: newQuantifierId,
+        user: new Types.ObjectId(newQuantifierId),
       })
       .lean();
 
@@ -271,33 +267,44 @@ export class PeriodAssignmentsService {
       });
     }
 
-    await this.praiseModel.updateMany(
-      {
-        // Praise within time period
+    const quantificationsToUpdate = await this.quantificationModel
+      .find({
+        // Quantification within time period
         createdAt: dateRangeQuery,
-
         // Original quantifier
-        'quantifications.quantifier': currentQuantifierId,
+        quantifier: new Types.ObjectId(currentQuantifierId),
+      })
+      .lean();
+
+    // Update quantifications
+    await this.quantificationModel.updateMany(
+      {
+        _id: { $in: quantificationsToUpdate.map((q) => q._id) },
       },
       {
         $set: {
           // Reset score
-          'quantifications.$[elem].score': 0,
-          'quantifications.$[elem].dismissed': false,
+          score: 0,
+          dismissed: false,
 
           // Assign new quantifier
-          'quantifications.$[elem].quantifier': newQuantifierId,
+          quantifier: new Types.ObjectId(newQuantifierId),
         },
         $unset: {
-          'quantifications.$[elem].duplicatePraise': 1,
+          duplicatePraise: 1,
         },
       },
+    );
+
+    // Update praise scores
+    await this.praiseModel.updateMany(
       {
-        arrayFilters: [
-          {
-            'elem.quantifier': currentQuantifierId,
-          },
-        ],
+        _id: { $in: quantificationsToUpdate.map((q) => q.praise) },
+      },
+      {
+        $set: {
+          score: 0,
+        },
       },
     );
 
@@ -782,9 +789,11 @@ export class PeriodAssignmentsService {
   isAnyPraiseAssigned = async (period: Period): Promise<boolean> => {
     const periodDateRangeQuery = await this.getPeriodDateRangeQuery(period);
 
-    const praises = await this.praiseModel.find({
-      createdAt: periodDateRangeQuery,
-    });
+    const praises = await this.praiseModel
+      .find({
+        createdAt: periodDateRangeQuery,
+      })
+      .populate('quantifications');
 
     const quantifiersPerPraiseReceiver =
       (await this.settingsService.settingValue(

@@ -30,7 +30,7 @@ export const isResponseOk = <T>(
 ): response is AxiosResponse<T> => {
   const axiosResponse = response as AxiosResponse;
   if (!axiosResponse) return false;
-  return axiosResponse.status === 200;
+  return axiosResponse.status === 200 || axiosResponse.status === 201;
 };
 
 export const isApiResponseAxiosError = (
