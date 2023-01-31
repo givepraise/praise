@@ -1,4 +1,3 @@
-import { SettingDto, SettingGroup } from 'api/dist/settings/types';
 import { faCogs } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
@@ -15,6 +14,8 @@ import { DiscordBotSettings } from './components/DiscordBotSettings';
 import { CustomExportSettings } from './components/CustomExportSettings';
 import { PeriodDefaultsSettings } from './components/PeriodDefaultsSettings';
 import { ApplicationSettings } from './components/ApplicationSettings';
+import { SettingGroup } from '@/model/settings/enums/setting-group.enum';
+import { SettingDto } from '@/model/settings/dto/setting.dto';
 
 const SettingsPage = (): JSX.Element | null => {
   const settings = useRecoilValue(AllSettings);

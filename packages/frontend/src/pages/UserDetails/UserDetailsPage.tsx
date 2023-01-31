@@ -7,7 +7,6 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
 import { useParams } from 'react-router-dom';
-import { UpdateUserProfileInput } from 'api/dist/user/types';
 import { toast } from 'react-hot-toast';
 import { Dialog } from '@headlessui/react';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
@@ -28,6 +27,7 @@ import {
   ReceivedGivenPraiseTable,
 } from './components/ReceivedGivenPraiseTable';
 import { EditProfileDialog } from './components/EditProfileDialog';
+import { UpdateUserProfileDto } from '@/model/user/dto/update-user-profile.dto';
 
 const UserDetailsPage = (): JSX.Element | null => {
   const dialogRef = React.useRef(null);
@@ -49,7 +49,7 @@ const UserDetailsPage = (): JSX.Element | null => {
   if (!user) return null;
 
   const handleSaveUserProfile = async (
-    values: UpdateUserProfileInput
+    values: UpdateUserProfileDto
   ): Promise<void> => {
     const { username, rewardsEthAddress } = values;
     const response = await update(user._id, username, rewardsEthAddress);

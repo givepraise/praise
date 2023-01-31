@@ -1,5 +1,5 @@
 import { QuantificationDto } from '../quantification/quantification.dto';
-import { UserAccountDto } from '../useraccount/useraccount.dto';
+import { UserAccountDto } from '../useraccount/dto/useraccount.dto';
 
 export interface PraiseDto {
   _id: string;

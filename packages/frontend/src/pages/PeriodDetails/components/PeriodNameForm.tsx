@@ -4,7 +4,6 @@ import { Field, Form } from 'react-final-form';
 import { toast } from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { ApiErrorResponseData } from 'api/dist/error/types';
 import {
   PeriodPageParams,
   SinglePeriod,
@@ -13,6 +12,7 @@ import {
 import { isApiResponseValidationError, isResponseOk } from '@/model/api';
 import { OutsideClickHandler } from '@/components/OutsideClickHandler';
 import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
+import { ApiErrorResponseData } from 'shared/interfaces/api-error-reponse-data.interface';
 
 const validate = (
   values: Record<string, string>

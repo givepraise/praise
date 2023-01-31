@@ -6,7 +6,7 @@ import { UserAvatar } from './UserAvatar';
 import { UserName } from './UserName';
 import { UserPopover } from './UserPopover';
 import { UserDto } from '@/model/user/dto/user.dto';
-import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
+import { UserAccountDto } from '@/model/useraccount/dto/useraccount.dto';
 
 interface UserNameProps {
   user?: UserDto;
