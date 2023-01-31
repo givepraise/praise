@@ -158,7 +158,9 @@ export class PeriodsController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Query() options: PaginatedQueryDto,
   ): Promise<PraisePaginatedResponseDto> {
-    return this.periodsService.findAllPraisePaginated(id, options);
+    const temp = await this.periodsService.findAllPraisePaginated(id, options);
+    console.log(temp);
+    return temp;
   }
 
   @Get(':periodId/praise/receiver/:receiverId')
