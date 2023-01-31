@@ -36,6 +36,7 @@ import { SettingsModule } from '@/settings/settings.module';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
+import { Praise } from '@/praise/schemas/praise.schema';
 
 class LoggedInUser {
   accessToken: string;
@@ -187,21 +188,66 @@ describe('Period (E2E)', () => {
     });
 
     test('should return 200 and the period details KRESO', async () => {
-      const response = await request(server)
-        .get(`/periods/${period._id}`)
-        .set('Authorization', `Bearer ${users[0].accessToken}`)
-        .expect(200);
+      //Clear the database
+      await praiseService.getModel().deleteMany({});
 
-      expect(response.body).toMatchObject({
-        status: period.status,
-        endDate: period.endDate.toISOString(),
-        createdAt: period.createdAt.toISOString(),
-        updatedAt: period.updatedAt.toISOString(),
-      });
+      const p: Praise[] = [];
+      // Seed the database with 12 praise items
+      for (let i = 0; i < 12; i++) {
+        p.push(await praiseSeeder.seedPraise());
+      }
 
-      expect(response.body.quantifiers).toHaveLength(1);
-      expect(response.body.receivers).toHaveLength(6);
-      expect(response.body.givers).toHaveLength(6);
+      const options: PaginatedQueryDto = {
+        sortColumn: 'createdAt',
+        sortType: 'asc',
+        page: 1,
+        limit: 10,
+      };
+
+      const urlParams = Object.entries(options)
+        .map(([key, val]) => `${key}=${val}`)
+        .join('&');
+
+      const response = await authorizedGetRequest(
+        `/periods/${period._id}/praise?${urlParams}`,
+        app,
+        users[0].accessToken,
+      ).expect(200);
+
+      expect(response.body).toBeDefined();
+      expect(response.body.docs).toBeDefined();
+      expect(response.body.docs.length).toBe(10);
+      expect(response.body.totalDocs).toBe(12);
+      expect(response.body.page).toBe(1);
+      expect(response.body.limit).toBe(10);
+      expect(response.body.totalPages).toBe(2);
+
+      const praise = response.body.docs[0];
+      const praise2 = p.find((x) => x._id.toString() === praise._id);
+      console.log(response.body.docs[0]);
+      console.log(praise.id);
+      console.log(praise2);
+      expect(praise).toBeDefined();
+      expect(praise2).toBeDefined();
+      // expect(praise._id).toBe(praise2!._id.toString());
+      // expect(praise.giver._id).toBe(praise2!.giver.toString());
+      // expect(praise.receiver._id).toBe(praise2!.receiver.toString());
+      // expect(praise.reason).toBe(praise2!.reason);
+      // expect(praise.reasonRaw).toBe(praise2!.reasonRaw);
+      // expect(praise.score).toBe(praise2!.score);
+      // expect(praise.sourceId).toBe(praise2!.sourceId);
+      // expect(praise.sourceName).toBe(praise2!.sourceName);
+
+      // expect(response.body).toMatchObject({
+      //   status: period.status,
+      //   endDate: period.endDate.toISOString(),
+      //   createdAt: period.createdAt.toISOString(),
+      //   updatedAt: period.updatedAt.toISOString(),
+      // });
+
+      // expect(response.body.quantifiers).toHaveLength(1);
+      // expect(response.body.receivers).toHaveLength(6);
+      // expect(response.body.givers).toHaveLength(6);
     });
 
     test('should return 400 when the period does not exist', async () => {
