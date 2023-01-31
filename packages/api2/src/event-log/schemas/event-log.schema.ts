@@ -1,11 +1,11 @@
 import { ExposeId } from '@/shared/expose-id.decorator';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Document, model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { EventLogType } from './event-log-type.schema';
 import { Type } from 'class-transformer';
-import { IsString, Validate, ValidateNested } from 'class-validator';
+import { IsString, ValidateNested } from 'class-validator';
 
 export type EventLogDocument = EventLog & Document;
 

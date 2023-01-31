@@ -13,7 +13,6 @@ import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { Praise, PraiseDocument } from '@/praise/schemas/praise.schema';
 import { UserStatsDto } from './dto/user-stats.dto';
-import { use } from 'passport';
 
 @Injectable()
 export class UsersService {
