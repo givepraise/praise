@@ -40,6 +40,7 @@ import { Setting } from '@/settings/schemas/settings.schema';
 import { some } from 'lodash';
 import { PeriodDetailsQuantifierDto } from '@/periods/dto/period-details-quantifier.dto';
 import { SettingsService } from '@/settings/settings.service';
+import { Praise } from '@/praise/schemas/praise.schema';
 
 class LoggedInUser {
   accessToken: string;
@@ -218,6 +219,10 @@ describe('Period (E2E)', () => {
       expect(response.body.quantifiers).toHaveLength(1);
       expect(response.body.receivers).toHaveLength(6);
       expect(response.body.givers).toHaveLength(6);
+
+      const e = response.body;
+      expect(e).toBeProperlySerialized();
+      expect(e).toBeValidClass(Period);
     });
 
     test('should return 400 when the period does not exist', async () => {
@@ -259,6 +264,10 @@ describe('Period (E2E)', () => {
         users[0].accessToken,
       );
       expect(response.status).toBe(200);
+
+      const e = response.body.docs[0];
+      expect(e).toBeProperlySerialized();
+      expect(e).toBeValidClass(Period);
     });
 
     test('should return the expected pagination object when called with query parameters', async () => {
@@ -303,6 +312,9 @@ describe('Period (E2E)', () => {
       expect(period.status).toBe(period2!.status);
       expect(period.endDate).toBe(period2!.endDate.toISOString());
       expect(period.name).toBe(period2!.name);
+
+      expect(period).toBeProperlySerialized();
+      expect(period).toBeValidClass(Period);
     });
   });
 
@@ -354,6 +366,10 @@ describe('Period (E2E)', () => {
       expect(response.body.quantifiers).toBeDefined();
       expect(response.body.receivers).toBeDefined();
       expect(response.body.givers).toBeDefined();
+
+      const e = response.body;
+      expect(e).toBeProperlySerialized();
+      expect(e).toBeValidClass(Period);
     });
 
     test('should return 400 when period with the same name already exists', async () => {
@@ -524,6 +540,10 @@ describe('Period (E2E)', () => {
       expect(response.body.quantifiers).toBeDefined();
       expect(response.body.receivers).toBeDefined();
       expect(response.body.givers).toBeDefined();
+
+      const e = response.body;
+      expect(e).toBeProperlySerialized();
+      expect(e).toBeValidClass(Period);
     });
   });
 
@@ -586,6 +606,10 @@ describe('Period (E2E)', () => {
       expect(response.body.quantifiers).toBeDefined();
       expect(response.body.receivers).toBeDefined();
       expect(response.body.givers).toBeDefined();
+
+      const e = response.body;
+      expect(e).toBeProperlySerialized();
+      expect(e).toBeValidClass(Period);
     });
   });
 
@@ -653,6 +677,10 @@ describe('Period (E2E)', () => {
       expect(response.body[0].quantifications[0].quantifier).toBeDefined();
       expect(response.body[0].receiver).toBeDefined();
       expect(response.body[0].giver).toBeDefined();
+
+      const e = response.body[0];
+      expect(e).toBeProperlySerialized();
+      expect(e).toBeValidClass(Praise);
     });
   });
 
@@ -820,6 +848,10 @@ describe('Period (E2E)', () => {
       expect(response.body.quantifiers[0].finishedCount).toEqual(0);
       expect(response.body.quantifiers[1].finishedCount).toEqual(0);
       expect(response.body.quantifiers[2].finishedCount).toEqual(0);
+
+      const e = response.body;
+      expect(e).toBeProperlySerialized();
+      expect(e).toBeValidClass(Period);
     });
 
     test('200 response with json body containing assignments with PRAISE_QUANTIFIERS_ASSIGN_EVENLY=true', async function () {
@@ -965,6 +997,10 @@ describe('Period (E2E)', () => {
 
       expect(quantifiersWith9Praises).toHaveLength(2);
       expect(quantifiersWith4Praises).toHaveLength(2);
+
+      const e = response.body;
+      expect(e).toBeProperlySerialized();
+      expect(e).toBeValidClass(Period);
     });
 
     test('200 response when praise items number = 200 and PRAISE_QUANTIFIERS_ASSIGN_EVENLY=true', async function () {
@@ -1040,6 +1076,10 @@ describe('Period (E2E)', () => {
       expect(response.body.quantifiers[2].praiseCount).toEqual(
         praiseItems.length,
       );
+
+      const e = response.body;
+      expect(e).toBeProperlySerialized();
+      expect(e).toBeValidClass(Period);
     });
 
     test('400 response if periodId does not exist', async function () {
