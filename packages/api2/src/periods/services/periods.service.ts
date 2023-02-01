@@ -494,70 +494,53 @@ export class PeriodsService {
     quantifierId: Types.ObjectId,
     options: PaginatedQueryDto,
   ): Promise<PraisePaginatedResponseDto> => {
+    const { sortColumn, sortType, page, limit } = options;
+    const query = {} as any;
+
     const period = await this.periodModel.findById(periodId);
     if (!period) throw new ServiceException('Period not found');
 
     const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
 
-    const response = await this.praiseModel.aggregate([
-      // Include only praise items created in the given period
-      {
-        $match: {
-          createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+    const praisePagination = await this.praiseModel.paginate({
+      page,
+      limit,
+      query: {
+        ...query,
+        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+        'quantifications.quantifier': quantifierId,
+      },
+      sort: sortColumn && sortType ? { [sortColumn]: sortType } : undefined,
+      populate: [
+        {
+          path: 'giver',
+          populate: { path: 'user' },
         },
-      },
-      // Include all quantifications for the given praise
-      {
-        $lookup: {
-          from: 'quantifications',
-          localField: '_id',
-          foreignField: 'praise',
-          as: 'quantifications',
+        {
+          path: 'receiver',
+          populate: { path: 'user' },
         },
-      },
-      // Include only praise items with quantifications for the given quantifier.
-      {
-        $match: {
-          'quantifications.quantifier': quantifierId,
+        {
+          path: 'forwarder',
+          populate: { path: 'user' },
         },
-      },
-      // Populate the giver, receiver and forwarder fields
-      {
-        $lookup: {
-          from: 'useraccounts',
-          localField: 'giver',
-          foreignField: '_id',
-          as: 'giver',
+        {
+          path: 'quantifications',
+          // match: { quantifier: quantifierId }, MATCHING BUT NOT POPULATING!!!
+          populate: { path: 'quantifier', select: '_id' },
         },
-      },
-      {
-        $unwind: '$giver',
-      },
-      {
-        $lookup: {
-          from: 'useraccounts',
-          localField: 'receiver',
-          foreignField: '_id',
-          as: 'receiver',
+        {
+          path: 'forwarder',
+          model: 'useraccounts',
+          match: { _id: { $ne: null } },
         },
-      },
-      {
-        $unwind: '$receiver',
-      },
-      {
-        $lookup: {
-          from: 'useraccounts',
-          localField: 'forwarder',
-          foreignField: '_id',
-          as: 'forwarder',
-        },
-      },
-      {
-        $unwind: { path: '$forwarder', preserveNullAndEmptyArrays: true },
-      },
-    ]);
+      ],
+    });
 
-    return response;
+    if (!praisePagination)
+      throw new ServiceException('Failed to paginate period data');
+
+    return praisePagination;
   };
 
   /**
