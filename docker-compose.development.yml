@@ -14,7 +14,7 @@ services:
 
   api:
     container_name: api-praise
-    image: ghcr.io/commons-stack/praise-dev/api:latest
+    image: ghcr.io/givepraise/praise-dev/api:latest
     env_file:
       - .env
     restart: always
@@ -27,7 +27,7 @@ services:
 
   discord-bot:
     container_name: discord-bot-praise
-    image: ghcr.io/commons-stack/praise-dev/discord-bot:latest
+    image: ghcr.io/givepraise/praise-dev/discord-bot:latest
     env_file:
       - .env
     restart: always
@@ -36,7 +36,7 @@ services:
 
   frontend:
     container_name: frontend-praise
-    image: ghcr.io/commons-stack/praise-dev/frontend:latest
+    image: ghcr.io/givepraise/praise-dev/frontend:latest
     env_file:
       - .env
     restart: unless-stopped
