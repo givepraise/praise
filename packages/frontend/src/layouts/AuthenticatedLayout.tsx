@@ -91,7 +91,7 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
             🎉 There is a new version of Praise out! You are running{' '}
             {appVersion.current}, latest version is {appVersion.latest}.{' '}
             <a
-              href="https://github.com/commons-stack/praise/releases"
+              href="https://github.com/givepraise/praise/releases"
               className="font-bold"
               target="_blank"
               rel="noreferrer"

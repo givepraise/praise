@@ -21,7 +21,7 @@ export interface GithubResponse {
 export const GithubVersionQuery = selector({
   key: 'GithubVersionQuery',
   get: ({ get }): AxiosResponse<GithubResponse> => {
-    const repoOwner = 'commons-stack';
+    const repoOwner = 'givepraise';
     const repoName = 'praise';
 
     return get(
