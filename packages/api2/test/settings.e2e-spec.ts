@@ -129,9 +129,13 @@ describe('Period Settings (E2E)', () => {
 
       expect(response.body).toBeDefined();
       expect(response.body.length).toBe(1);
-      expect(response.body[0]).toBeDefined();
-      expect(response.body[0]._id).toBe(setting._id.toString());
-      expect(response.body[0].value).toBe(setting.value);
+
+      const s = response.body[0];
+      expect(s).toBeDefined();
+      expect(s._id).toBe(setting._id.toString());
+      expect(s.value).toBe(setting.value);
+      expect(s).toBeProperlySerialized();
+      expect(s).toBeValidClass(Setting);
     });
   });
 
@@ -160,11 +164,13 @@ describe('Period Settings (E2E)', () => {
 
       expect(response.status).toBe(200);
 
-      const ps = response.body;
-      expect(ps).toBeDefined();
-      expect(ps).toBeDefined();
-      expect(ps._id).toBe(setting._id.toString());
-      expect(ps.value).toBe(setting.value);
+      const s = response.body;
+      expect(s).toBeDefined();
+      expect(s).toBeDefined();
+      expect(s._id).toBe(setting._id.toString());
+      expect(s.value).toBe(setting.value);
+      expect(s).toBeProperlySerialized();
+      expect(s).toBeValidClass(Setting);
     });
   });
 
@@ -229,9 +235,10 @@ describe('Period Settings (E2E)', () => {
 
       expect(response.status).toBe(400);
     });
+
     test('Valid settings value - Integer', async () => {
       const value = 99;
-      const s = await settingsSeeder.seedSettings({
+      const testSetting = await settingsSeeder.seedSettings({
         key: 'INT_SETTING',
         value,
         type: 'Integer',
@@ -239,7 +246,7 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = 100; // valid value
       const response = await authorizedPatchRequest(
-        `/settings/${s._id}`,
+        `/settings/${testSetting._id}`,
         app,
         users[2].accessToken,
         {
@@ -248,8 +255,12 @@ describe('Period Settings (E2E)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toBeDefined();
-      expect(response.body.value).toBe(newValue.toString());
+
+      const s = response.body;
+      expect(s).toBeDefined();
+      expect(s.value).toBe(newValue.toString());
+      expect(s).toBeProperlySerialized();
+      expect(s).toBeValidClass(Setting);
     });
 
     test('Invalid settings value - Float', async () => {
@@ -274,7 +285,7 @@ describe('Period Settings (E2E)', () => {
     });
     test('Valid settings value - Float', async () => {
       const value = '99.99';
-      const s = await settingsSeeder.seedSettings({
+      const testSetting = await settingsSeeder.seedSettings({
         key: 'FLOAT_SETTING',
         value,
         type: 'Float',
@@ -282,7 +293,7 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = 100.99; // valid value
       const response = await authorizedPatchRequest(
-        `/settings/${s._id}`,
+        `/settings/${testSetting._id}`,
         app,
         users[2].accessToken,
         {
@@ -291,8 +302,12 @@ describe('Period Settings (E2E)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toBeDefined();
-      expect(response.body.value).toBe(newValue.toString());
+
+      const s = response.body;
+      expect(s).toBeDefined();
+      expect(s.value).toBe(newValue.toString());
+      expect(s).toBeProperlySerialized();
+      expect(s).toBeValidClass(Setting);
     });
 
     test('Invalid settings value - Boolean', async () => {
@@ -317,7 +332,7 @@ describe('Period Settings (E2E)', () => {
     });
     test('Valid settings value - Boolean', async () => {
       const value = true;
-      const s = await settingsSeeder.seedSettings({
+      const testSetting = await settingsSeeder.seedSettings({
         key: 'BOOL_SETTING',
         value,
         type: 'Boolean',
@@ -325,7 +340,7 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = false; // valid value
       const response = await authorizedPatchRequest(
-        `/settings/${s._id}`,
+        `/settings/${testSetting._id}`,
         app,
         users[2].accessToken,
         {
@@ -334,8 +349,12 @@ describe('Period Settings (E2E)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toBeDefined();
-      expect(response.body.value).toBe(newValue.toString());
+
+      const s = response.body;
+      expect(s).toBeDefined();
+      expect(s.value).toBe(newValue.toString());
+      expect(s).toBeProperlySerialized();
+      expect(s).toBeValidClass(Setting);
     });
 
     test('Invalid settings value - IntegerList', async () => {
@@ -358,9 +377,10 @@ describe('Period Settings (E2E)', () => {
 
       expect(response.status).toBe(400);
     });
+
     test('Valid settings value - IntegerList', async () => {
       const value = '1, 2, 3';
-      const s = await settingsSeeder.seedSettings({
+      const testSetting = await settingsSeeder.seedSettings({
         key: 'INT_LIST_SETTING',
         value,
         type: 'IntegerList',
@@ -368,7 +388,7 @@ describe('Period Settings (E2E)', () => {
 
       const newValue = '4, 5, 6'; // valid value
       const response = await authorizedPatchRequest(
-        `/settings/${s._id}`,
+        `/settings/${testSetting._id}`,
         app,
         users[2].accessToken,
         {
@@ -377,8 +397,12 @@ describe('Period Settings (E2E)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toBeDefined();
-      expect(response.body.value).toBe(newValue);
+
+      const s = response.body;
+      expect(s).toBeDefined();
+      expect(s.value).toBe(newValue);
+      expect(s).toBeProperlySerialized();
+      expect(s).toBeValidClass(Setting);
     });
 
     test('Invalid settings value - JSON', async () => {
@@ -423,6 +447,10 @@ describe('Period Settings (E2E)', () => {
       expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
       expect(response.body.value).toBe(newValue);
+
+      const e = response.body;
+      expect(e).toBeProperlySerialized();
+      expect(e).toBeValidClass(Setting);
     });
   });
 });

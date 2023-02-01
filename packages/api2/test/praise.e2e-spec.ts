@@ -44,6 +44,7 @@ import { Types } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
 import { Setting } from '@/settings/schemas/settings.schema';
+import { SettingsService } from '@/settings/settings.service';
 
 class LoggedInUser {
   accessToken: string;
@@ -62,6 +63,7 @@ describe('Praise (E2E)', () => {
   let periodsService: PeriodsService;
   let periodsSeeder: PeriodsSeeder;
   let settingsSeeder: SettingsSeeder;
+  let settingsService: SettingsService;
   let periodSettingsService: PeriodSettingsService;
   let periodSettingsSeeder: PeriodSettingsSeeder;
   let quantificationsSeeder: QuantificationsSeeder;
@@ -117,6 +119,7 @@ describe('Praise (E2E)', () => {
     );
     userAccountsService = module.get<UserAccountsService>(UserAccountsService);
     settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder);
+    settingsService = module.get<SettingsService>(SettingsService);
     periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
     periodsService = module.get<PeriodsService>(PeriodsService);
     periodSettingsSeeder =
@@ -132,6 +135,7 @@ describe('Praise (E2E)', () => {
     await userAccountsService.getModel().deleteMany({});
     await periodsService.getModel().deleteMany({});
     await periodSettingsService.getModel().deleteMany({});
+    await settingsService.getModel().deleteMany({});
 
     // Seed and login 3 users
     for (let i = 0; i < 3; i++) {
@@ -185,9 +189,13 @@ describe('Praise (E2E)', () => {
         users[0].accessToken,
       );
       expect(response.status).toBe(200);
+
+      const p = response.body;
+      expect(p).toBeProperlySerialized();
+      expect(p).toBeValidClass(Praise);
     });
 
-    it('oiu should return the expected pagination object when called with query parameters', async () => {
+    test('200 and should return the expected pagination object when called with query parameters', async () => {
       //Clear the database
       await praiseService.getModel().deleteMany({});
 
@@ -234,6 +242,9 @@ describe('Praise (E2E)', () => {
       expect(praise.score).toBe(praise2!.score);
       expect(praise.sourceId).toBe(praise2!.sourceId);
       expect(praise.sourceName).toBe(praise2!.sourceName);
+
+      expect(praise).toBeProperlySerialized();
+      expect(praise).toBeValidClass(Praise);
     });
   });
 
@@ -280,6 +291,9 @@ describe('Praise (E2E)', () => {
       expect(p.score).toBe(praise.score);
       expect(p.sourceId).toBe(praise.sourceId);
       expect(p.sourceName).toBe(praise.sourceName);
+
+      expect(p).toBeProperlySerialized();
+      expect(p).toBeValidClass(Praise);
     });
 
     test('400 when praise does not exist', async () => {
@@ -300,6 +314,9 @@ describe('Praise (E2E)', () => {
     beforeEach(async () => {
       await praiseService.getModel().deleteMany({});
       await quantificationsService.getModel().deleteMany({});
+      await settingsService.getModel().deleteMany({});
+      await periodsService.getModel().deleteMany({});
+      await periodSettingsService.getModel().deleteMany({});
 
       praise = await praiseSeeder.seedPraise();
 
@@ -412,6 +429,9 @@ describe('Praise (E2E)', () => {
       expect(p.quantifications[0].praise).toBe(praise._id.toString());
       expect(p.quantifications[0].dismissed).toBeFalsy();
       expect(p.quantifications[0].createdAt).toBeDefined();
+
+      expect(p).toBeProperlySerialized();
+      expect(p).toBeValidClass(Praise);
     });
 
     test('400 when wrong score is sent', async () => {
@@ -657,6 +677,9 @@ describe('Praise (E2E)', () => {
     beforeEach(async () => {
       await praiseService.getModel().deleteMany({});
       await quantificationsService.getModel().deleteMany({});
+      await settingsService.getModel().deleteMany({});
+      await periodsService.getModel().deleteMany({});
+      await periodSettingsService.getModel().deleteMany({});
 
       praise = await praiseSeeder.seedPraise();
 
@@ -689,7 +712,7 @@ describe('Praise (E2E)', () => {
 
       await periodSettingsSeeder.seedPeriodSettings({
         period: period,
-        setitng: allowedValuesSetting,
+        setting: allowedValuesSetting,
         value: '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
       });
       await periodSettingsSeeder.seedPeriodSettings({
@@ -740,6 +763,9 @@ describe('Praise (E2E)', () => {
       expect(p).toBeDefined();
       expect(p.quantifications.length).toBe(3);
       expect(p.score).toBe(55);
+
+      expect(p).toBeProperlySerialized();
+      expect(p).toBeValidClass(Praise);
     });
 
     test('Quantifying multiple praise - scores and averages correct - with dismissed', async () => {
@@ -783,6 +809,9 @@ describe('Praise (E2E)', () => {
       expect(p).toBeDefined();
       expect(p.quantifications.length).toBe(3);
       expect(p.score).toBe(76);
+
+      expect(p).toBeProperlySerialized();
+      expect(p).toBeValidClass(Praise);
     });
 
     test('Quantifying multiple praise - scores and averages correct - with duplicates and dismissed', async () => {
@@ -851,6 +880,9 @@ describe('Praise (E2E)', () => {
       );
       expect(duplicateQuant).toBeDefined();
       expect(duplicateQuant.scoreRealized).toBe(14.4);
+
+      expect(p).toBeProperlySerialized();
+      expect(p).toBeValidClass(Praise);
     });
   });
 
@@ -859,6 +891,12 @@ describe('Praise (E2E)', () => {
     let period: Period;
 
     beforeEach(async () => {
+      await praiseService.getModel().deleteMany({});
+      await quantificationsService.getModel().deleteMany({});
+      await settingsService.getModel().deleteMany({});
+      await periodsService.getModel().deleteMany({});
+      await periodSettingsService.getModel().deleteMany({});
+
       praise = await praiseSeeder.seedPraise();
 
       await quantificationsSeeder.seedQuantification({
@@ -917,6 +955,10 @@ describe('Praise (E2E)', () => {
       );
 
       expect(response.status).toBe(200);
+
+      const p = response.body as Praise[];
+      expect(p).toBeProperlySerialized();
+      expect(p).toBeValidClass(Praise);
     });
   });
 });
