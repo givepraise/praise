@@ -31,6 +31,7 @@ import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.d
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { PraisePaginatedResponseDto } from '@/praise/dto/praise-paginated-response.dto';
+import { Praise } from '@/praise/schemas/praise.schema';
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -124,24 +125,6 @@ export class PeriodsController {
     return this.periodsService.close(id);
   }
 
-  // @Get(':id/praise')
-  // @ApiOperation({ summary: 'Fetch all Praise in a period' })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'Period Praise items',
-  //   type: [PraiseWithUserAccountsWithUserRefDto],
-  // })
-  // @Permissions(Permission.PeriodView)
-  // @ApiParam({ name: 'id', type: String })
-  // @UseInterceptors(
-  //   MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
-  // )
-  // async praise(
-  //   @Param('id', ObjectIdPipe) id: Types.ObjectId,
-  // ): Promise<PraiseWithUserAccountsWithUserRefDto[]> {
-  //   return this.periodsService.findAllPraise(id);
-  // }
-
   @Get(':id/praise')
   @ApiOperation({ summary: 'Fetch paginated Praise in a period' })
   @ApiResponse({
@@ -151,86 +134,88 @@ export class PeriodsController {
   })
   @Permissions(Permission.PeriodView)
   @ApiParam({ name: 'id', type: String })
-  @UseInterceptors(
-    MongooseClassSerializerInterceptor(PraisePaginatedResponseDto),
-  )
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
   async praise(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Query() options: PaginatedQueryDto,
   ): Promise<PraisePaginatedResponseDto> {
-    const temp = await this.periodsService.findAllPraisePaginated(id, options);
-    console.log(temp);
-    return temp;
+    return this.periodsService.findAllPraisePaginated(id, options);
   }
 
   @Get(':periodId/praise/receiver/:receiverId')
   @ApiOperation({
-    summary: 'Fetch all Praise in a period for a given receiver',
+    summary: 'Fetch all Praise in a period for a given receiver paginated',
   })
   @ApiResponse({
     status: 200,
-    description: 'Period Praise items',
-    type: [PraiseWithUserAccountsWithUserRefDto],
+    description: 'Period Praise items paginated',
+    type: [PraisePaginatedResponseDto],
   })
   @Permissions(Permission.PeriodView)
   @ApiParam({ name: 'periodId', type: String })
   @ApiParam({ name: 'receiverId', type: String })
-  @UseInterceptors(
-    MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
-  )
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
   async praiseByReceiver(
     @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
     @Param('receiverId', ObjectIdPipe) receiverId: Types.ObjectId,
-  ): Promise<PraiseWithUserAccountsWithUserRefDto[]> {
-    return this.periodsService.findAllPraiseByReceiver(periodId, receiverId);
+    @Query() options: PaginatedQueryDto,
+  ): Promise<PraisePaginatedResponseDto> {
+    return this.periodsService.findAllPraiseByReceiverPaginated(
+      periodId,
+      receiverId,
+      options,
+    );
   }
 
   @Get(':periodId/praise/giver/:giverId')
   @ApiOperation({
-    summary: 'Fetch all Praise in a period for a given giver',
+    summary: 'Fetch all Praise in a period for a given giver paginated',
   })
   @ApiResponse({
     status: 200,
-    description: 'Period Praise items',
-    type: [PraiseWithUserAccountsWithUserRefDto],
+    description: 'Period Praise items paginated',
+    type: [PraisePaginatedResponseDto],
   })
   @Permissions(Permission.PeriodView)
   @ApiParam({ name: 'periodId', type: String })
   @ApiParam({ name: 'giverId', type: String })
-  @UseInterceptors(
-    MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
-  )
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
   async praiseByGiver(
     @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
     @Param('giverId', ObjectIdPipe) giverId: Types.ObjectId,
-  ): Promise<PraiseWithUserAccountsWithUserRefDto[]> {
-    return this.periodsService.findAllPraiseByGiver(periodId, giverId);
-  }
-
-  @Get(':periodId/praise/quantifier/:quantifierId')
-  @ApiOperation({
-    summary: 'Fetch all Praise in a period for a given quantifier',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Period Praise items',
-    type: [PraiseWithUserAccountsWithUserRefDto],
-  })
-  @Permissions(Permission.PeriodView)
-  @ApiParam({ name: 'periodId', type: String })
-  @ApiParam({ name: 'quantifierId', type: String })
-  @UseInterceptors(
-    MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
-  )
-  async praiseByQuantifier(
-    @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
-    @Param('quantifierId', ObjectIdPipe) quantifierId: Types.ObjectId,
-  ): Promise<PraiseWithUserAccountsWithUserRefDto[]> {
-    return this.periodsService.findAllPraiseByQuantifier(
+    @Query() options: PaginatedQueryDto,
+  ): Promise<PraisePaginatedResponseDto> {
+    return this.periodsService.findAllPraiseByGiverPaginated(
       periodId,
-      quantifierId,
+      giverId,
+      options,
     );
   }
+
+  // @Get(':periodId/praise/quantifier/:quantifierId')
+  // @ApiOperation({
+  //   summary: 'Fetch all Praise in a period for a given quantifier paginated',
+  // })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Period Praise items paginated',
+  //   type: [PraisePaginatedResponseDto],
+  // })
+  // @Permissions(Permission.PeriodView)
+  // @ApiParam({ name: 'periodId', type: String })
+  // @ApiParam({ name: 'quantifierId', type: String })
+  // @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
+  // async praiseByQuantifier(
+  //   @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
+  //   @Param('quantifierId', ObjectIdPipe) quantifierId: Types.ObjectId,
+  //   @Query() options: PaginatedQueryDto,
+  // ): Promise<PraisePaginatedResponseDto> {
+  //   return this.periodsService.findAllPraiseByQuantifierPaginated(
+  //     periodId,
+  //     quantifierId,
+  //     options,
+  //   );
+  // }
 
   @Get(':id/verifyQuantifierPoolSize')
   @ApiOperation({ summary: 'Verify quantifier pool size' })

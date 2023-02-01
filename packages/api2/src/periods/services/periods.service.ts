@@ -289,7 +289,58 @@ export class PeriodsService {
   };
 
   /**
-   * Get all praise items from period for a given receiver
+   * Get all praise items from period for a given receiver - paginated
+   **/
+  findAllPraiseByReceiverPaginated = async (
+    periodId: Types.ObjectId,
+    receiverId: Types.ObjectId,
+    options: PaginatedQueryDto,
+  ): Promise<PraisePaginatedResponseDto> => {
+    const { sortColumn, sortType, page, limit } = options;
+    const query = {} as any;
+
+    const period = await this.periodModel.findById(periodId);
+    if (!period) throw new ServiceException('Period not found');
+
+    const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
+
+    const praisePagination = await this.praiseModel.paginate({
+      page,
+      limit,
+      query: {
+        ...query,
+        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+        receiver: receiverId,
+      },
+      sort: sortColumn && sortType ? { [sortColumn]: sortType } : undefined,
+      populate: [
+        {
+          path: 'giver',
+          populate: { path: 'user' },
+        },
+        {
+          path: 'receiver',
+          populate: { path: 'user' },
+        },
+        {
+          path: 'forwarder',
+          populate: { path: 'user' },
+        },
+        {
+          path: 'quantifications',
+          populate: { path: 'quantifier' },
+        },
+      ],
+    });
+
+    if (!praisePagination)
+      throw new ServiceException('Failed to paginate period data');
+
+    return praisePagination;
+  };
+
+  /**
+   * Get all praise items from period for a given giver
    **/
   findAllPraiseByGiver = async (
     periodId: Types.ObjectId,
@@ -312,7 +363,58 @@ export class PeriodsService {
   };
 
   /**
-   * Get all praise items from period for a given receiver
+   * Get all praise items from period for a given giver - paginated
+   **/
+  findAllPraiseByGiverPaginated = async (
+    periodId: Types.ObjectId,
+    giverId: Types.ObjectId,
+    options: PaginatedQueryDto,
+  ): Promise<PraisePaginatedResponseDto> => {
+    const { sortColumn, sortType, page, limit } = options;
+    const query = {} as any;
+
+    const period = await this.periodModel.findById(periodId);
+    if (!period) throw new ServiceException('Period not found');
+
+    const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
+
+    const praisePagination = await this.praiseModel.paginate({
+      page,
+      limit,
+      query: {
+        ...query,
+        createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+        giver: giverId,
+      },
+      sort: sortColumn && sortType ? { [sortColumn]: sortType } : undefined,
+      populate: [
+        {
+          path: 'giver',
+          populate: { path: 'user' },
+        },
+        {
+          path: 'receiver',
+          populate: { path: 'user' },
+        },
+        {
+          path: 'forwarder',
+          populate: { path: 'user' },
+        },
+        {
+          path: 'quantifications',
+          populate: { path: 'quantifier' },
+        },
+      ],
+    });
+
+    if (!praisePagination)
+      throw new ServiceException('Failed to paginate period data');
+
+    return praisePagination;
+  };
+
+  /**
+   * Get all praise items from period for a given quantifier
    **/
   findAllPraiseByQuantifier = async (
     periodId: Types.ObjectId,
@@ -383,6 +485,80 @@ export class PeriodsService {
 
     return response;
   };
+
+  /**
+   * Get all praise items from period for a given quantifier - pagianted
+   **/
+  // findAllPraiseByQuantifierPaginated = async (
+  //   periodId: Types.ObjectId,
+  //   quantifierId: Types.ObjectId,
+  //   options: PaginatedQueryDto,
+  // ): Promise<PraisePaginatedResponseDto> => {
+  //   const period = await this.periodModel.findById(periodId);
+  //   if (!period) throw new ServiceException('Period not found');
+
+  //   const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
+
+  //   const response = await this.praiseModel.aggregate([
+  //     // Include only praise items created in the given period
+  //     {
+  //       $match: {
+  //         createdAt: { $gt: previousPeriodEndDate, $lte: period.endDate },
+  //       },
+  //     },
+  //     // Include all quantifications for the given praise
+  //     {
+  //       $lookup: {
+  //         from: 'quantifications',
+  //         localField: '_id',
+  //         foreignField: 'praise',
+  //         as: 'quantifications',
+  //       },
+  //     },
+  //     // Include only praise items with quantifications for the given quantifier.
+  //     {
+  //       $match: {
+  //         'quantifications.quantifier': quantifierId,
+  //       },
+  //     },
+  //     // Populate the giver, receiver and forwarder fields
+  //     {
+  //       $lookup: {
+  //         from: 'useraccounts',
+  //         localField: 'giver',
+  //         foreignField: '_id',
+  //         as: 'giver',
+  //       },
+  //     },
+  //     {
+  //       $unwind: '$giver',
+  //     },
+  //     {
+  //       $lookup: {
+  //         from: 'useraccounts',
+  //         localField: 'receiver',
+  //         foreignField: '_id',
+  //         as: 'receiver',
+  //       },
+  //     },
+  //     {
+  //       $unwind: '$receiver',
+  //     },
+  //     {
+  //       $lookup: {
+  //         from: 'useraccounts',
+  //         localField: 'forwarder',
+  //         foreignField: '_id',
+  //         as: 'forwarder',
+  //       },
+  //     },
+  //     {
+  //       $unwind: { path: '$forwarder', preserveNullAndEmptyArrays: true },
+  //     },
+  //   ]);
+
+  //   return response;
+  // };
 
   /**
    * Return a PeriodDetails DTO for a given period
