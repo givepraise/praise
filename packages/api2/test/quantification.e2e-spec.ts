@@ -34,6 +34,8 @@ import { QuantificationsModule } from '@/quantifications/quantifications.module'
 import { Praise } from '@/praise/schemas/praise.schema';
 import { faker } from '@faker-js/faker';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
+import { PeriodStatusType } from '@/periods/enums/status-type.enum';
+import { Period } from '@/periods/schemas/periods.schema';
 
 describe('UserAccountsController (E2E)', () => {
   let app: INestApplication;
@@ -124,6 +126,7 @@ describe('UserAccountsController (E2E)', () => {
     let endDate: Date;
     let dateBetween: Date;
     let quantifications: Quantification[] = [];
+    let period: Period;
 
     beforeAll(done => {
       done()
@@ -139,6 +142,7 @@ describe('UserAccountsController (E2E)', () => {
       // Clear the database
       await quantificationsService.getModel().deleteMany({});
       await praiseService.getModel().deleteMany();
+      await periodsService.getModel().deleteMany();
 
       // Seed the database
       startDate = faker.date.past();
@@ -185,6 +189,21 @@ describe('UserAccountsController (E2E)', () => {
         praise: praises[2]._id,
         createdAt: startDate,
       }));
+
+      await periodsSeeder.seedPeriod({
+        endDate: praises[0].createdAt,
+        status: PeriodStatusType.QUANTIFY,
+      });
+
+      await periodsSeeder.seedPeriod({
+        endDate: praises[1].createdAt,
+        status: PeriodStatusType.QUANTIFY,
+      });
+
+      period = await periodsSeeder.seedPeriod({
+        endDate: praises[2].createdAt,
+        status: PeriodStatusType.QUANTIFY,
+      });
     });
 
     test('401 when not authenticated', async () => {
@@ -206,6 +225,18 @@ describe('UserAccountsController (E2E)', () => {
         adminUserAccessToken
       ).expect(400);
       expect(response.body.message).toBe('Invalid date filtering option.');
+    });
+
+    test('returns quantification filtered by latest periodId', async () => {
+      const response = await authorizedGetRequest(
+        `/quantifications/export?format=json&periodId=${period._id}`,
+        app,
+        adminUserAccessToken,
+      ).expect(200);
+      expect(response.body.length).toBe(1);
+      expect(
+        String(quantifications[2]._id) === response.body[0]._id,
+      ).toBe(true)
     });
 
     test('returns quantifications that matches seeded list in json format, filtered by date', async () => {
