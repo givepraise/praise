@@ -20,7 +20,7 @@ import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from '../api';
 import { ActiveUserId } from '../auth/auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from '../praise/praise';
 import { PraiseDto } from '../praise/praise.dto';
-import { UserAccountDto } from '../useraccount/useraccount.dto';
+import { UserAccountDto } from '../useraccount/dto/useraccount.dto';
 import { PeriodDetailsDto } from './dto/period-details.dto';
 import { PeriodCreateInput } from './dto/period-create.dto';
 import { PeriodUpdateInput } from './dto/period-update-input.dto';
@@ -290,7 +290,7 @@ export const useUpdatePeriod = (): useUpdatePeriodReturn => {
         periodInput: PeriodUpdateInput
       ): Promise<AxiosResponse<PraiseDto> | AxiosError> => {
         const response = await apiAuthClient.patch(
-          `/admin/periods/${periodInput._id}/update`,
+          `/periods/${periodInput._id}/update`,
           periodInput
         );
         if (isResponseOk(response)) {
@@ -350,7 +350,7 @@ export const PeriodPoolRequirementsQuery = selectorFamily({
     }): AxiosResponse<VerifyQuantifierPoolSizeResponseDto> | AxiosError => {
       return get(
         ApiAuthGet({
-          url: `/admin/periods/${periodId}/verifyQuantifierPoolSize`,
+          url: `/periods/${periodId}/verifyQuantifierPoolSize`,
         })
       ) as AxiosResponse<VerifyQuantifierPoolSizeResponseDto> | AxiosError;
     },
@@ -393,7 +393,7 @@ export const useAssignQuantifiers = (
   > => {
     if (!period) return undefined;
     const response = await apiAuthClient.patch(
-      `/admin/periods/${periodId}/assignQuantifiers`,
+      `/periods/${periodId}/assignQuantifiers`,
       {}
     );
     if (isResponseOk(response)) {
@@ -852,13 +852,10 @@ export const useReplaceQuantifier = (
         AxiosResponse<PeriodReplaceQuantifierInputDto> | AxiosError
       > => {
         const response: AxiosResponse<PeriodReplaceQuantifierInputDto> =
-          await apiAuthClient.patch(
-            `/admin/periods/${periodId}/replaceQuantifier`,
-            {
-              currentQuantifierId,
-              newQuantifierId,
-            }
-          );
+          await apiAuthClient.patch(`/periods/${periodId}/replaceQuantifier`, {
+            currentQuantifierId,
+            newQuantifierId,
+          });
 
         if (isResponseOk(response)) {
           const periodReplaceQuantifierDto = response.data;
@@ -866,10 +863,10 @@ export const useReplaceQuantifier = (
             SinglePeriod(periodReplaceQuantifierDto.period._id),
             periodReplaceQuantifierDto.period
           );
-          periodReplaceQuantifierDto.praises.forEach((praise) => {
-            // TODO: UNCOMMENT!
-            //set(SinglePraise(praise._id), praise);
-          });
+          // periodReplaceQuantifierDto.praises.forEach((praise) => {
+          // TODO: UNCOMMENT!
+          //set(SinglePraise(praise._id), praise);
+          // });
         }
 
         return response;

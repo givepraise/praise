@@ -1,4 +1,4 @@
-import { UserAccountDto } from '@/model/useraccount/useraccount.dto';
+import { UserAccountDto } from '@/model/useraccount/dto/useraccount.dto';
 
 export interface UserDto {
   _id: string;

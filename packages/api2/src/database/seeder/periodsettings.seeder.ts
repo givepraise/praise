@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker';
 import { Injectable } from '@nestjs/common';
 import { PeriodSettingsService } from '../../periodsettings/periodsettings.service';
 import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
-import { SettingGroup } from '@/settings/enums/setting-group.enum';
 
 @Injectable()
 export class PeriodSettingsSeeder {

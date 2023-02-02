@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import {
   ConsoleLogger,
   INestApplication,
@@ -14,7 +14,7 @@ import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
   authorizedGetRequest,
-  authorizedPutRequest,
+  authorizedPatchRequest,
   loginUser,
 } from './test.common';
 import { runDbMigrations } from '@/database/migrations';
@@ -464,13 +464,13 @@ describe('Praise (E2E)', () => {
 
     test('401 when not authenticated', async () => {
       return request(server)
-        .put(`/praise/${praise._id}/quantify`)
+        .patch(`/praise/${praise._id}/quantify`)
         .send()
         .expect(401);
     });
 
     test('Invalid quantification parameters - no parameters', async () => {
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -481,7 +481,7 @@ describe('Praise (E2E)', () => {
     });
 
     test('Invalid quantification parameters - score is string', async () => {
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -494,7 +494,7 @@ describe('Praise (E2E)', () => {
     });
 
     test('Invalid quantification parameters - score is too large', async () => {
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -507,7 +507,7 @@ describe('Praise (E2E)', () => {
     });
 
     test('Invalid quantification parameters - duplicate is not booleans ', async () => {
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -520,7 +520,7 @@ describe('Praise (E2E)', () => {
     });
 
     test('200 and correct body when quantifying - single quantification', async () => {
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -547,7 +547,7 @@ describe('Praise (E2E)', () => {
     });
 
     test('400 when wrong score is sent', async () => {
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -564,7 +564,7 @@ describe('Praise (E2E)', () => {
     });
 
     test('400 when praise does not exist', async () => {
-      return authorizedPutRequest(
+      return authorizedPatchRequest(
         `/praise/${new Types.ObjectId()}/quantify`,
         app,
         users[0].accessToken,
@@ -582,7 +582,7 @@ describe('Praise (E2E)', () => {
         status: PeriodStatusType.QUANTIFY,
       });
 
-      return authorizedPutRequest(
+      return authorizedPatchRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -600,7 +600,7 @@ describe('Praise (E2E)', () => {
         status: PeriodStatusType.OPEN,
       });
 
-      return authorizedPutRequest(
+      return authorizedPatchRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -622,7 +622,7 @@ describe('Praise (E2E)', () => {
         status: PeriodStatusType.QUANTIFY,
       });
 
-      return authorizedPutRequest(
+      return authorizedPatchRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         accessTokenAuth,
@@ -640,7 +640,7 @@ describe('Praise (E2E)', () => {
         status: PeriodStatusType.QUANTIFY,
       });
 
-      return authorizedPutRequest(
+      return authorizedPatchRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -659,7 +659,7 @@ describe('Praise (E2E)', () => {
         status: PeriodStatusType.QUANTIFY,
       });
 
-      return authorizedPutRequest(
+      return authorizedPatchRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -682,7 +682,7 @@ describe('Praise (E2E)', () => {
         createdAt: praise.createdAt.getDate() - 1,
       });
 
-      return authorizedPutRequest(
+      return authorizedPatchRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -711,7 +711,7 @@ describe('Praise (E2E)', () => {
         praise: duplicatePraise._id,
       });
 
-      return authorizedPutRequest(
+      return authorizedPatchRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -741,7 +741,7 @@ describe('Praise (E2E)', () => {
         duplicatePraiseId: duplicatePraise._id.toString(),
       });
 
-      return authorizedPutRequest(
+      return authorizedPatchRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -770,7 +770,7 @@ describe('Praise (E2E)', () => {
         praise: duplicatePraise._id,
       });
 
-      return authorizedPutRequest(
+      return authorizedPatchRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
@@ -833,7 +833,7 @@ describe('Praise (E2E)', () => {
 
     test('Quantifying multiple praise - scores and averages correct', async () => {
       // Quantify, quantifier 1
-      await authorizedPutRequest(
+      await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -842,7 +842,7 @@ describe('Praise (E2E)', () => {
         },
       );
       // Quantify, quantifier 2
-      await authorizedPutRequest(
+      await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[1].accessToken,
@@ -851,7 +851,7 @@ describe('Praise (E2E)', () => {
         },
       );
       // Quantify, quantifier 3
-      await authorizedPutRequest(
+      await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[2].accessToken,
@@ -876,7 +876,7 @@ describe('Praise (E2E)', () => {
 
     test('Quantifying multiple praise - scores and averages correct - with dismissed', async () => {
       // Quantify, quantifier 1
-      await authorizedPutRequest(
+      await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -885,7 +885,7 @@ describe('Praise (E2E)', () => {
         },
       );
       // Quantify, quantifier 2
-      await authorizedPutRequest(
+      await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[1].accessToken,
@@ -894,7 +894,7 @@ describe('Praise (E2E)', () => {
         },
       );
       // Quantify, quantifier 3
-      await authorizedPutRequest(
+      await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[2].accessToken,
@@ -928,7 +928,7 @@ describe('Praise (E2E)', () => {
       });
 
       // Quantify, quantifier 1
-      await authorizedPutRequest(
+      await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[0].accessToken,
@@ -937,7 +937,7 @@ describe('Praise (E2E)', () => {
         },
       );
       // Quantify, quantifier 2
-      await authorizedPutRequest(
+      await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[1].accessToken,
@@ -947,7 +947,7 @@ describe('Praise (E2E)', () => {
       );
       // Quantify, quantifier 3
       // Give score to duplicate praise
-      await authorizedPutRequest(
+      await authorizedPatchRequest(
         `/praise/${praise2._id}/quantify`,
         app,
         users[2].accessToken,
@@ -956,7 +956,7 @@ describe('Praise (E2E)', () => {
         },
       );
       // Mark second quantification as duplicate
-      await authorizedPutRequest(
+      await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
         users[2].accessToken,
@@ -1020,7 +1020,7 @@ describe('Praise (E2E)', () => {
     });
 
     test('401 when not authenticated', async () => {
-      return request(server).put(`/praise/quantify`).send().expect(401);
+      return request(server).patch(`/praise/quantify`).send().expect(401);
     });
 
     test('200 when correct data is sent', async () => {
@@ -1036,7 +1036,7 @@ describe('Praise (E2E)', () => {
         praise: praise2._id,
       });
 
-      const response = await authorizedPutRequest(
+      const response = await authorizedPatchRequest(
         `/praise/quantify`,
         app,
         users[0].accessToken,

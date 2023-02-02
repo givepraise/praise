@@ -28,7 +28,6 @@ import { PeriodDetailsDto } from './dto/period-details.dto';
 import { ReplaceQuantifierInputDto } from './dto/replace-quantifier-input.dto';
 import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.dto';
 import { PeriodAssignmentsService } from './services/period-assignments.service';
-import { PraiseModel } from '@/database/schemas/praise/12_praise.schema';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Response } from 'express';
 import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
