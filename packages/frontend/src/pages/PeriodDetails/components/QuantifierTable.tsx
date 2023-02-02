@@ -6,7 +6,6 @@ import { useRecoilValue } from 'recoil';
 import sortBy from 'lodash/sortBy';
 import { faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Quantifier } from 'api/dist/praise/types';
 import { toast } from 'react-hot-toast';
 import {
   PeriodPageParams,
@@ -20,6 +19,7 @@ import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { isResponseOk } from '@/model/api';
 import { ReplaceQuantifierDialog } from './ReplaceQuantifierDialog';
+import { Quantifier } from '@/model/useraccount/interfaces/quantifier.interface';
 
 const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();

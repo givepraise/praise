@@ -1,4 +1,3 @@
-import { generateActivateMessage } from 'api/dist/activate/utils';
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import queryString from 'query-string';
@@ -12,6 +11,7 @@ import { useAccount } from 'wagmi';
 import { AccountActivated } from '@/model/activate/activate';
 import { requestApiActivate } from '@/utils/auth';
 import { SignMessageLayout } from '../../layouts/SignMessageLayout';
+import { generateActivateMessage } from '@/utils/message';
 
 interface Props {
   accountId: string;

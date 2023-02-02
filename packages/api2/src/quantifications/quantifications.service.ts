@@ -5,7 +5,6 @@ import { Quantification } from './schemas/quantifications.schema';
 import { sum, has } from 'lodash';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
-import { UsersService } from '@/users/users.service';
 import { PraiseService } from '@/praise/praise.service';
 import { Inject, forwardRef } from '@nestjs/common';
 
@@ -15,7 +14,6 @@ export class QuantificationsService {
     private quantificationModel: Model<Quantification>,
     @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
-    private usersService: UsersService,
     @Inject(forwardRef(() => PraiseService))
     private praiseService: PraiseService,
   ) {}
@@ -62,17 +60,42 @@ export class QuantificationsService {
   async findOneByQuantifierAndPraise(
     userId: Types.ObjectId,
     praiseId: Types.ObjectId,
-  ): Promise<Quantification | null> {
-    const quantifier = await this.usersService.findOneById(userId);
-    if (!quantifier) return null;
+  ): Promise<Quantification> {
+    const quantification = await this.quantificationModel.aggregate([
+      {
+        $match: {
+          quantifier: userId,
+          praise: praiseId,
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'quantifier',
+          foreignField: '_id',
+          as: 'quantifier',
+        },
+      },
+      {
+        $lookup: {
+          from: 'praises',
+          localField: 'praise',
+          foreignField: '_id',
+          as: 'praise',
+        },
+      },
+      {
+        $unwind: '$quantifier',
+      },
+      {
+        $unwind: '$praise',
+      },
+    ]);
 
-    const quantification = await this.quantificationModel
-      .findOne({ quantifier: quantifier._id, praise: praiseId })
-      .populate('quantifier praise')
-      .lean();
+    if (!Array.isArray(quantification) || quantification.length === 0)
+      throw new ServiceException('Quantification not found.');
 
-    if (!quantification) return null;
-    return quantification;
+    return quantification[0];
   }
 
   /**
