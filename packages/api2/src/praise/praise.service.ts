@@ -99,7 +99,7 @@ export class PraiseService {
     format: string = 'csv',
     startDate: string,
     endDate: string,
-    periodId: Types.ObjectId,
+    periodId: string,
   ): Promise<Praise[] | string> {
     const [fromDate, toDate] = await this.selectDateFilterRange(
       periodId, startDate, endDate
@@ -117,7 +117,7 @@ export class PraiseService {
 
   /**
    * Select date range to filter by, using either period or custom dates
-   * @param {Types.ObjectId} periodId
+   * @param {string} periodId
    * @param {String} startDate
    * @param {String} endDate
    * @returns {Promise<[Date, Date]>}
@@ -125,7 +125,7 @@ export class PraiseService {
    *
    **/
   async selectDateFilterRange(
-    periodId: Types.ObjectId,
+    periodId: string,
     startDate: string,
     endDate: string,
   ): Promise<[Date, Date]> {
@@ -136,7 +136,9 @@ export class PraiseService {
     if (startDate && endDate) return [new Date(startDate), new Date(endDate)];
 
     if (periodId) {
-      const period = await this.periodModel.findById(periodId);
+      const period = await this.periodModel.findById(
+        new Types.ObjectId(periodId)
+      );
       if (!period) throw new ServiceException('Period not found');
 
       const previousPeriodEndDate = await this.periodService.getPreviousPeriodEndDate(period);

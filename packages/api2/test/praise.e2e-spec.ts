@@ -208,6 +208,15 @@ describe('Praise (E2E)', () => {
       ).expect(200);
     });
 
+    test('400 when filtering by periodId and date range', async() => {
+      const response = await authorizedGetRequest(
+        `/praise/export?format=json&periodId=6348acd2e1a47ca32e79f46f&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
+        app,
+        adminUserAccessToken
+      ).expect(400);
+      expect(response.body.message).toBe('Invalid date filtering option.');
+    });
+
     test('returns praises that matches seeded list in json format, filtered by date', async () => {
       const response = await authorizedGetRequest(
         `/praise/export?format=json&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,

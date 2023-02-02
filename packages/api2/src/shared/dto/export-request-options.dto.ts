@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString } from 'class-validator';
-import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../pipes/object-id.pipe';
+import { Types } from 'mongoose';
 
 export class ExportRequestOptions {
   @ApiProperty({
@@ -25,11 +25,9 @@ export class ExportRequestOptions {
   @Type(() => String)
   endDate: string;
 
-  @ApiProperty({
-    example: 1,
-  })
+  @ApiProperty()
   @IsOptional()
-  @IsInt()
-  @Type(() => ObjectIdPipe)
-  periodId: Types.ObjectId;
+  @IsString()
+  @Type(() => String)
+  periodId: string;
 }

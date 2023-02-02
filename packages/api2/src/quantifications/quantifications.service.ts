@@ -44,7 +44,7 @@ export class QuantificationsService {
     format: string = 'csv',
     startDate: string,
     endDate: string,
-    periodId: Types.ObjectId
+    periodId: string,
   ): Promise<Quantification[] | string> {
     const [fromDate, toDate] = await this.praiseService.selectDateFilterRange(
       periodId, startDate, endDate

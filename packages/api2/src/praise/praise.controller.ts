@@ -63,9 +63,9 @@ export class PraiseController {
   })
   @Permissions(Permission.UsersExport)
   @ApiParam({ name: 'format', type: String })
-  @ApiParam({ name: 'startDate', type: Date })
-  @ApiParam({ name: 'endDate', type: Date })
-  @ApiParam({ name: 'periodId', type: Number })
+  @ApiParam({ name: 'startDate', type: String })
+  @ApiParam({ name: 'endDate', type: String })
+  @ApiParam({ name: 'periodId', type: String })
   async export(
     @Query() options: ExportRequestOptions,
     @Res({ passthrough: true }) res: Response,
