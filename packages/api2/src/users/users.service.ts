@@ -37,7 +37,7 @@ export class UsersService {
    * returns all of the model in json or csv format
    * Do not populate relations
    */
-  async export(format: string = 'csv'): Promise<User[] | string> {
+  async export(format = 'csv'): Promise<User[] | string> {
     const users = await this.userModel.find().lean();
 
     if (format !== 'csv') return users;

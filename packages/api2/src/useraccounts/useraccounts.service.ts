@@ -32,7 +32,7 @@ export class UserAccountsService {
   /**
    * returns all of the model in json format
    */
-  async export(format: string = 'csv'): Promise<UserAccount[] | string> {
+  async export(format = 'csv'): Promise<UserAccount[] | string> {
     const userAccounts = await this.userAccountModel.find().lean();
 
     if (format !== 'csv') return userAccounts;

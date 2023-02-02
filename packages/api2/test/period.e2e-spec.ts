@@ -226,7 +226,7 @@ describe('Period (E2E)', () => {
 
   describe('GET /periods/export', () => {
     let period: Period;
-    let periods: Period[] = [];
+    const periods: Period[] = [];
 
     beforeAll(async () => {
       await periodsService.getModel().deleteMany({});
@@ -241,10 +241,12 @@ describe('Period (E2E)', () => {
       const previousPeriodEndDate = new Date(period.endDate.getTime());
       previousPeriodEndDate.setDate(period.endDate.getDate() - 30);
 
-      periods.push(await periodsSeeder.seedPeriod({
-        status: PeriodStatusType.OPEN,
-        endDate: previousPeriodEndDate,
-      }));
+      periods.push(
+        await periodsSeeder.seedPeriod({
+          status: PeriodStatusType.OPEN,
+          endDate: previousPeriodEndDate,
+        }),
+      );
     });
 
     test('401 when not authenticated', async () => {

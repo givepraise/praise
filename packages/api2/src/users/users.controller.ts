@@ -10,7 +10,6 @@ import {
   Query,
   Res,
   SerializeOptions,
-  StreamableFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -28,7 +27,6 @@ import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-seri
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { UpdateUserRequestDto } from './dto/update-user-request.dto';
 import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
-import { Readable } from 'stream';
 
 @Controller('users')
 @ApiTags('Users')
@@ -65,7 +63,7 @@ export class UsersController {
       'Content-Type': 'text/csv',
       'Content-Disposition': 'attachment; filename="users.csv"',
     });
-    res.send(users)
+    res.send(users);
   }
 
   @Get()

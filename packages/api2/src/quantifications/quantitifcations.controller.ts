@@ -1,9 +1,6 @@
 import {
-  Body,
   Controller,
   Get,
-  Param,
-  Patch,
   Query,
   Res,
   SerializeOptions,
@@ -31,7 +28,9 @@ import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
 @UseGuards(PermissionsGuard)
 @UseGuards(AuthGuard(['jwt', 'api-key']))
 export class QuantificationsController {
-  constructor(private readonly quantificationsService: QuantificationsService) {}
+  constructor(
+    private readonly quantificationsService: QuantificationsService,
+  ) {}
 
   @Get('export')
   @ApiOperation({

@@ -64,7 +64,7 @@ describe('UserController (E2E)', () => {
         await usersSeeder.seedUser({
           identityEthAddress: wallet.address,
           rewardsAddress: wallet.address,
-          roles: [AuthRole.ADMIN]
+          roles: [AuthRole.ADMIN],
         }),
       );
       users.push(await usersSeeder.seedUser({}));
@@ -79,7 +79,11 @@ describe('UserController (E2E)', () => {
     });
 
     test('200 when authenticated', async () => {
-      await authorizedGetRequest('/users/export?format=json', app, accessToken).expect(200);
+      await authorizedGetRequest(
+        '/users/export?format=json',
+        app,
+        accessToken,
+      ).expect(200);
     });
 
     test('returns user list that matches seeded list in json format', async () => {

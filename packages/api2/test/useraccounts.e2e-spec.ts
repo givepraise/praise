@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import {
   ConsoleLogger,
   INestApplication,
@@ -64,15 +64,15 @@ describe('UserAccountsController (E2E)', () => {
     const users: User[] = [];
     const userAccounts: UserAccount[] = [];
 
-    beforeAll(done => {
-      done()
-    })
+    beforeAll((done) => {
+      done();
+    });
 
-    afterAll(done => {
+    afterAll((done) => {
       // Closing the DB connection allows Jest to exit successfully.
-      mongoose.connection.close()
-      done()
-    })
+      mongoose.connection.close();
+      done();
+    });
 
     beforeAll(async () => {
       // Clear the database
@@ -85,7 +85,7 @@ describe('UserAccountsController (E2E)', () => {
         await usersSeeder.seedUser({
           identityEthAddress: wallet.address,
           rewardsAddress: wallet.address,
-          roles: [AuthRole.ADMIN]
+          roles: [AuthRole.ADMIN],
         }),
       );
       users.push(await usersSeeder.seedUser({}));
@@ -107,7 +107,11 @@ describe('UserAccountsController (E2E)', () => {
     });
 
     test('200 when authenticated', async () => {
-      await authorizedGetRequest('/user_accounts/export?format=json', app, accessToken).expect(200);
+      await authorizedGetRequest(
+        '/user_accounts/export?format=json',
+        app,
+        accessToken,
+      ).expect(200);
     });
 
     test('returns userAccounts list that matches seeded list in json format', async () => {
@@ -120,8 +124,7 @@ describe('UserAccountsController (E2E)', () => {
       for (const returnedUser of response.body) {
         expect(
           userAccounts.some(
-            (account) =>
-              String(account._id) === returnedUser._id,
+            (account) => String(account._id) === returnedUser._id,
           ),
           // eslint-disable-next-line jest-extended/prefer-to-be-true
         ).toBe(true);

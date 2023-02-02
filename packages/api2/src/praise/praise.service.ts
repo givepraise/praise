@@ -96,13 +96,15 @@ export class PraiseService {
    * Do not populate relations
    */
   async export(
-    format: string = 'csv',
+    format = 'csv',
     startDate: string,
     endDate: string,
     periodId: string,
   ): Promise<Praise[] | string> {
     const [fromDate, toDate] = await this.selectDateFilterRange(
-      periodId, startDate, endDate
+      periodId,
+      startDate,
+      endDate,
     );
 
     const praises = await this.praiseModel
@@ -129,7 +131,7 @@ export class PraiseService {
     startDate: string,
     endDate: string,
   ): Promise<[Date, Date]> {
-    if (periodId && startDate && endDate) {
+    if (periodId && (startDate || endDate)) {
       throw new ServiceException('Invalid date filtering option.');
     }
 
@@ -137,16 +139,17 @@ export class PraiseService {
 
     if (periodId) {
       const period = await this.periodModel.findById(
-        new Types.ObjectId(periodId)
+        new Types.ObjectId(periodId),
       );
       if (!period) throw new ServiceException('Period not found');
 
-      const previousPeriodEndDate = await this.periodService.getPreviousPeriodEndDate(period);
-      return [previousPeriodEndDate, period.endDate]
+      const previousPeriodEndDate =
+        await this.periodService.getPreviousPeriodEndDate(period);
+      return [previousPeriodEndDate, period.endDate];
     }
 
     throw new ServiceException('Invalid date filtering option.');
-  };
+  }
 
   /**
    * Find one praise by id

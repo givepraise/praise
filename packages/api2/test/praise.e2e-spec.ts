@@ -27,7 +27,7 @@ import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder'
 import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
 import { PraiseService } from '@/praise/praise.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
-import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
+import { Praise } from '@/praise/schemas/praise.schema';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
 import { PeriodsModule } from '@/periods/periods.module';
@@ -168,7 +168,7 @@ describe('Praise (E2E)', () => {
 
   describe('GET /api/praise/export', () => {
     let praise: Praise;
-    let praises: Praise[] = [];
+    const praises: Praise[] = [];
     let startDate: Date;
     let endDate: Date;
     let dateBetween: Date;
@@ -183,18 +183,22 @@ describe('Praise (E2E)', () => {
       endDate = faker.date.future();
 
       praise = await praiseSeeder.seedPraise({
-        createdAt: endDate
+        createdAt: endDate,
       });
 
       praises.push(praise);
 
-      praises.push(await praiseSeeder.seedPraise({
-        createdAt: dateBetween
-      }));
+      praises.push(
+        await praiseSeeder.seedPraise({
+          createdAt: dateBetween,
+        }),
+      );
 
-      praises.push(await praiseSeeder.seedPraise({
-        createdAt: startDate
-      }));
+      praises.push(
+        await praiseSeeder.seedPraise({
+          createdAt: startDate,
+        }),
+      );
 
       await periodsSeeder.seedPeriod({
         endDate: praises[0].createdAt,
@@ -220,15 +224,15 @@ describe('Praise (E2E)', () => {
       await authorizedGetRequest(
         `/praise/export?format=json&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
         app,
-        adminUserAccessToken
+        adminUserAccessToken,
       ).expect(200);
     });
 
-    test('400 when filtering by periodId and date range', async() => {
+    test('400 when filtering by periodId and date range', async () => {
       const response = await authorizedGetRequest(
         `/praise/export?format=json&periodId=6348acd2e1a47ca32e79f46f&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
         app,
-        adminUserAccessToken
+        adminUserAccessToken,
       ).expect(400);
       expect(response.body.message).toBe('Invalid date filtering option.');
     });
@@ -240,9 +244,7 @@ describe('Praise (E2E)', () => {
         adminUserAccessToken,
       ).expect(200);
       expect(response.body.length).toBe(1);
-      expect(
-        String(praises[2]._id) === response.body[0]._id,
-      ).toBe(true)
+      expect(String(praises[2]._id) === response.body[0]._id).toBe(true);
     });
 
     test('returns praises that matches seeded list in json format, filtered by date', async () => {
@@ -256,8 +258,7 @@ describe('Praise (E2E)', () => {
       for (const returnedPraise of response.body) {
         expect(
           praises.some(
-            (createdPraise) =>
-            String(createdPraise._id) === returnedPraise._id,
+            (createdPraise) => String(createdPraise._id) === returnedPraise._id,
           ),
           // eslint-disable-next-line jest-extended/prefer-to-be-true
         ).toBe(true);
