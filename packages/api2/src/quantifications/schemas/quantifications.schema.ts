@@ -54,7 +54,6 @@ export class Quantification {
   })
   @Prop({ type: Types.ObjectId, ref: 'User', index: true })
   @Type(() => User)
-  @ExposeId()
   quantifier: User | Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Praise', index: true })
