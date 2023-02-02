@@ -1,10 +1,6 @@
-import {
-  Praise,
-  PraiseDocument,
-  PraiseModel,
-} from '@/praise/schemas/praise.schema';
+import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { Types, model } from 'mongoose';
 import { Period, PeriodDocument, PeriodModel } from '../schemas/periods.schema';
 import { ServiceException } from '../../shared/service-exception';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
@@ -254,7 +250,7 @@ export class PeriodsService {
         },
         {
           path: 'quantifications',
-          populate: { path: 'quantifier' },
+          populate: { path: 'quantifier', model: 'User' },
         },
       ],
     });
@@ -328,7 +324,7 @@ export class PeriodsService {
         },
         {
           path: 'quantifications',
-          populate: { path: 'quantifier' },
+          populate: { path: 'quantifier', model: 'User' },
         },
       ],
     });
@@ -402,7 +398,7 @@ export class PeriodsService {
         },
         {
           path: 'quantifications',
-          populate: { path: 'quantifier' },
+          populate: { path: 'quantifier', model: 'User' },
         },
       ],
     });
@@ -526,8 +522,7 @@ export class PeriodsService {
         },
         {
           path: 'quantifications',
-          // match: { quantifier: quantifierId }, MATCHING BUT NOT POPULATING!!!
-          populate: { path: 'quantifier', select: '_id' },
+          populate: { path: 'quantifier', model: 'User' },
         },
         {
           path: 'forwarder',

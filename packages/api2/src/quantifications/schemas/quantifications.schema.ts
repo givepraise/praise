@@ -4,6 +4,7 @@ import { Praise } from '@/praise/schemas/praise.schema';
 import { User } from '@/users/schemas/users.schema';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { ExposeId } from '@/shared/expose-id.decorator';
+import { Type } from 'class-transformer';
 
 export type QuantificationDocument = Quantification & Document;
 
@@ -47,10 +48,12 @@ export class Quantification {
   @ExposeId()
   duplicatePraise?: Praise;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', index: true })
   @ApiResponseProperty({
+    type: User,
     example: '639b178f19296ee0f2d0585d',
   })
+  @Prop({ type: Types.ObjectId, ref: 'User', index: true })
+  @Type(() => User)
   @ExposeId()
   quantifier: User | Types.ObjectId;
 
@@ -59,6 +62,7 @@ export class Quantification {
   // @ApiResponseProperty({
   //   example: '639b178f19296ee0f2d0585d',
   // })
+  @Type(() => Praise)
   @ExposeId()
   praise: Praise | Types.ObjectId;
 
