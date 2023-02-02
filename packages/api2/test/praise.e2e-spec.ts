@@ -172,6 +172,7 @@ describe('Praise (E2E)', () => {
     let startDate: Date;
     let endDate: Date;
     let dateBetween: Date;
+    let period: Period;
 
     beforeAll(async () => {
       // Clear the database
@@ -194,6 +195,21 @@ describe('Praise (E2E)', () => {
       praises.push(await praiseSeeder.seedPraise({
         createdAt: startDate
       }));
+
+      await periodsSeeder.seedPeriod({
+        endDate: praises[0].createdAt,
+        status: PeriodStatusType.QUANTIFY,
+      });
+
+      await periodsSeeder.seedPeriod({
+        endDate: praises[1].createdAt,
+        status: PeriodStatusType.QUANTIFY,
+      });
+
+      period = await periodsSeeder.seedPeriod({
+        endDate: praises[2].createdAt,
+        status: PeriodStatusType.QUANTIFY,
+      });
     });
 
     test('401 when not authenticated', async () => {
@@ -215,6 +231,18 @@ describe('Praise (E2E)', () => {
         adminUserAccessToken
       ).expect(400);
       expect(response.body.message).toBe('Invalid date filtering option.');
+    });
+
+    test('returns quantification filtered by latest periodId', async () => {
+      const response = await authorizedGetRequest(
+        `/praise/export?format=json&periodId=${period._id}`,
+        app,
+        adminUserAccessToken,
+      ).expect(200);
+      expect(response.body.length).toBe(1);
+      expect(
+        String(praises[2]._id) === response.body[0]._id,
+      ).toBe(true)
     });
 
     test('returns praises that matches seeded list in json format, filtered by date', async () => {
