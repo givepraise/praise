@@ -398,16 +398,7 @@ export class PeriodsService {
         },
         {
           path: 'quantifications',
-          populate: [
-            {
-              path: 'quantifier',
-              populate: {
-                path: 'quantifier',
-                model: 'User',
-                model: 'Quantifier',
-              },
-            },
-          ],
+          populate: { path: 'quantifier', model: 'User' },
         },
       ],
     });

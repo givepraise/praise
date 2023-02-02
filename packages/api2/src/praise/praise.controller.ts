@@ -32,8 +32,8 @@ import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto'
   excludePrefixes: ['__'],
 })
 @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
-// @UseGuards(PermissionsGuard)
-// @UseGuards(JwtAuthGuard)
+@UseGuards(PermissionsGuard)
+@UseGuards(JwtAuthGuard)
 export class PraiseController {
   constructor(private readonly praiseService: PraiseService) {}
 
