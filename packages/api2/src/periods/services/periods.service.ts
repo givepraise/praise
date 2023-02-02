@@ -1,6 +1,6 @@
 import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Types, model } from 'mongoose';
+import { Types } from 'mongoose';
 import { Period, PeriodDocument, PeriodModel } from '../schemas/periods.schema';
 import { ServiceException } from '../../shared/service-exception';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
@@ -398,7 +398,16 @@ export class PeriodsService {
         },
         {
           path: 'quantifications',
-          populate: { path: 'quantifier', model: 'User' },
+          populate: [
+            {
+              path: 'quantifier',
+              populate: {
+                path: 'quantifier',
+                model: 'User',
+                model: 'Quantifier',
+              },
+            },
+          ],
         },
       ],
     });
