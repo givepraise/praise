@@ -81,7 +81,7 @@ export class PraiseController {
 
     res.set({
       'Content-Type': 'text/csv',
-      'Content-Disposition': 'attachment; filename="users.csv"',
+      'Content-Disposition': 'attachment; filename="praise.csv"',
     });
     res.send(praises);
   }

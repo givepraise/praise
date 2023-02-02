@@ -66,7 +66,7 @@ export class PeriodsController {
 
     res.set({
       'Content-Type': 'text/csv',
-      'Content-Disposition': 'attachment; filename="users.csv"',
+      'Content-Disposition': 'attachment; filename="periods.csv"',
     });
     res.send(periods);
   }
