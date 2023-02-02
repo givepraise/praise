@@ -99,17 +99,52 @@ export class PraiseService {
     format: string = 'csv',
     startDate: string,
     endDate: string,
-    periodId: number
+    periodId: Types.ObjectId,
   ): Promise<Praise[] | string> {
+    const [fromDate, toDate] = await this.selectDateFilterRange(
+      periodId, startDate, endDate
+    );
+
     const praises = await this.praiseModel
       .find({
-        createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        createdAt: { $gte: fromDate, $lte: toDate },
       })
       .lean();
 
     if (format !== 'csv') return praises;
     return parse(praises);
   }
+
+  /**
+   * Select date range to filter by, using either period or custom dates
+   * @param {Types.ObjectId} periodId
+   * @param {String} startDate
+   * @param {String} endDate
+   * @returns {Promise<[Date, Date]>}
+   * @throws {ServiceException}
+   *
+   **/
+  async selectDateFilterRange(
+    periodId: Types.ObjectId,
+    startDate: string,
+    endDate: string,
+  ): Promise<[Date, Date]> {
+    if (periodId && startDate && endDate) {
+      throw new ServiceException('Invalid date filtering option.');
+    }
+
+    if (startDate && endDate) return [new Date(startDate), new Date(endDate)];
+
+    if (periodId) {
+      const period = await this.periodModel.findById(periodId);
+      if (!period) throw new ServiceException('Period not found');
+
+      const previousPeriodEndDate = await this.periodService.getPreviousPeriodEndDate(period);
+      return [previousPeriodEndDate, period.endDate]
+    }
+
+    throw new ServiceException('Invalid date filtering option.');
+  };
 
   /**
    * Find one praise by id

@@ -44,12 +44,15 @@ export class QuantificationsService {
     format: string = 'csv',
     startDate: string,
     endDate: string,
-    periodId: number
+    periodId: Types.ObjectId
   ): Promise<Quantification[] | string> {
+    const [fromDate, toDate] = await this.praiseService.selectDateFilterRange(
+      periodId, startDate, endDate
+    );
+
     const quantifications = await this.quantificationModel
       .find({
-        createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) },
-        // periodId: periodId
+        createdAt: { $gte: fromDate, $lte: toDate },
       })
       .lean();
 

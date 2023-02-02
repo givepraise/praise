@@ -32,8 +32,8 @@ import { PraiseModel } from '@/database/schemas/praise/12_praise.schema';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Response } from 'express';
 import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 
 @Controller('periods')
 @ApiTags('Periods')
