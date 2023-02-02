@@ -72,7 +72,7 @@ export class PeriodsService {
   /**
    * returns all of the model in json format
    */
-  async export(format: string = 'csv'): Promise<Period[] | string> {
+  async export(format = 'csv'): Promise<Period[] | string> {
     const periods = await this.periodModel.find().lean();
 
     if (format !== 'csv') return periods;
