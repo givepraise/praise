@@ -167,6 +167,28 @@ export class PeriodsController {
     );
   }
 
+  // @Get(':periodId/praise/giver/:giverId')
+  // @ApiOperation({
+  //   summary: 'Fetch all Praise in a period for a given giver',
+  // })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Period Praise items',
+  //   type: [PraiseWithUserAccountsWithUserRefDto],
+  // })
+  // @Permissions(Permission.PeriodView)
+  // @ApiParam({ name: 'periodId', type: String })
+  // @ApiParam({ name: 'giverId', type: String })
+  // @UseInterceptors(
+  //   MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
+  // )
+  // async praiseByGiver(
+  //   @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
+  //   @Param('giverId', ObjectIdPipe) giverId: Types.ObjectId,
+  // ): Promise<PraiseWithUserAccountsWithUserRefDto[]> {
+  //   return this.periodsService.findAllPraiseByGiver(periodId, giverId);
+  // }
+
   @Get(':periodId/praise/giver/:giverId')
   @ApiOperation({
     summary: 'Fetch all Praise in a period for a given giver paginated',
