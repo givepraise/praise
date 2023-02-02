@@ -74,7 +74,7 @@ export class PraiseController {
       options.format,
       options.startDate,
       options.endDate,
-      options.periodId
+      options.periodId,
     );
 
     if (options.format === 'json') return praises as Praise[];
