@@ -28,15 +28,18 @@ export const QuantificationSchema = new Schema(
     duplicatePraise: {
       type: ObjectId,
       ref: 'Praise',
+      index: true,
     },
     quantifier: {
       type: ObjectId,
       ref: 'UserAccount',
+      index: true,
     },
     praise: {
       type: ObjectId,
       ref: 'Praise',
       required: true,
+      index: true,
     },
     createdAt: {
       type: Date,
