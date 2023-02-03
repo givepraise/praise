@@ -66,7 +66,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @Permissions(Permission.UsersFind)
+  @Permissions(Permission.UserProfileUpdate)
   @ApiOperation({
     summary: 'Updates a user',
   })
