@@ -206,7 +206,15 @@ describe('UserController (E2E)', () => {
     });
 
     test('200 when authenticated', async () => {
-      await authorizedGetRequest('/users', app, accessToken).expect(200);
+      const response = await authorizedGetRequest(
+        '/users',
+        app,
+        accessToken,
+      ).expect(200);
+
+      const u = response.body[0];
+      expect(u).toBeProperlySerialized();
+      expect(u).toBeValidClass(User);
     });
 
     test('that returned user list matches seeded list', async () => {
@@ -215,8 +223,11 @@ describe('UserController (E2E)', () => {
         app,
         accessToken,
       ).expect(200);
-      expect(response.body.length).toBe(users.length);
-      for (const returnedUser of response.body) {
+
+      const u = response.body;
+      expect(u.length).toBe(users.length);
+
+      for (const returnedUser of u) {
         expect(
           users.some(
             (user) =>
@@ -225,6 +236,9 @@ describe('UserController (E2E)', () => {
           // eslint-disable-next-line jest-extended/prefer-to-be-true
         ).toBe(true);
       }
+
+      expect(u).toBeProperlySerialized();
+      expect(u).toBeValidClass(User);
     });
   });
 

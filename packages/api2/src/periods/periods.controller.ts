@@ -26,7 +26,7 @@ import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
 import { VerifyQuantifierPoolSizeDto } from './dto/verify-quantifiers-pool-size.dto';
 import { PeriodDetailsDto } from './dto/period-details.dto';
 import { ReplaceQuantifierInputDto } from './dto/replace-quantifier-input.dto';
-import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.dto';
+import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-response.dto';
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Response } from 'express';

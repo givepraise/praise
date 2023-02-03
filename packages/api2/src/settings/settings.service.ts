@@ -24,9 +24,9 @@ export class SettingsService {
     @InjectModel(Setting.name)
     private settingsModel: Model<Setting>,
     @Inject(forwardRef(() => PeriodSettingsService))
+    private periodSettingsService: PeriodSettingsService,
     private utils: UtilsProvider,
     private eventLogService: EventLogService,
-    private periodSettingsService: PeriodSettingsService,
   ) {}
 
   /**
