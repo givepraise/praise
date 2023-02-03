@@ -62,20 +62,11 @@ export class PraiseController {
     type: [Praise],
   })
   @Permissions(Permission.UsersExport)
-  @ApiParam({ name: 'format', type: String })
-  @ApiParam({ name: 'startDate', type: String })
-  @ApiParam({ name: 'endDate', type: String })
-  @ApiParam({ name: 'periodId', type: String })
   async export(
     @Query() options: ExportRequestOptions,
     @Res({ passthrough: true }) res: Response,
   ): Promise<Praise[] | undefined> {
-    const praises = await this.praiseService.export(
-      options.format,
-      options.startDate,
-      options.endDate,
-      options.periodId,
-    );
+    const praises = await this.praiseService.export(options);
 
     if (options.format === 'json') return praises as Praise[];
 

@@ -41,21 +41,12 @@ export class QuantificationsController {
     description: 'Quantifications export',
     type: [Quantification],
   })
-  @ApiParam({ name: 'format', type: String })
-  @ApiParam({ name: 'startDate', type: String })
-  @ApiParam({ name: 'endDate', type: String })
-  @ApiParam({ name: 'periodId', type: String })
   @Permissions(Permission.QuantificationsExport)
   async findOne(
     @Query() options: ExportRequestOptions,
     @Res({ passthrough: true }) res: Response,
   ): Promise<Quantification[] | undefined> {
-    const quantifications = await this.quantificationsService.export(
-      options.format,
-      options.startDate,
-      options.endDate,
-      options.periodId,
-    );
+    const quantifications = await this.quantificationsService.export(options);
 
     if (options.format === 'json') return quantifications as Quantification[];
 
