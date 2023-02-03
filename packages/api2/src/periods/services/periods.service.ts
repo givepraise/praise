@@ -23,7 +23,7 @@ import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-u
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 import { QuantificationModel } from '@/database/schemas/quantification/quantification.schema';
 import { parse } from 'json2csv';
-
+import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
 @Injectable()
 export class PeriodsService {
   constructor(
@@ -610,4 +610,34 @@ export class PeriodsService {
 
     return false;
   };
+
+  /**
+   * Find all Periods where status = QUANTIFY
+   *
+   * @param {object} [match={}]
+   * @returns {Promise<Period[]>}
+   */
+  findActivePeriods = async (match: object = {}): Promise<Period[]> => {
+    let periods: Period[] | Period = await this.periodModel.find({
+      status: PeriodStatusType.QUANTIFY,
+      ...match,
+    });
+    if (!Array.isArray(periods)) periods = [periods];
+
+    return periods;
+  };
+
+  /**
+   * Generate object for use in mongoose queries,
+   *  to filter by date range of a Period
+   *
+   * @param {Period} period
+   * @returns {Promise<PeriodDateRangeDto>}
+   */
+  getPeriodDateRangeQuery = async (
+    period: Period,
+  ): Promise<PeriodDateRangeDto> => ({
+    $gt: await this.getPreviousPeriodEndDate(period),
+    $lte: period.endDate,
+  });
 }

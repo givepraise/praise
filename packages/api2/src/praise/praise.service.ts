@@ -18,6 +18,7 @@ import { Period, PeriodModel } from '@/periods/schemas/periods.schema';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '@/periods/services/periods.service';
 import { parse } from 'json2csv';
+import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
 
 @Injectable()
 export class PraiseService {
@@ -443,5 +444,29 @@ export class PraiseService {
     if (!period || period.length === 0) return undefined;
 
     return period[0];
+  };
+
+  /**
+   * Count Praise created within any given date range
+   *
+   * @param {PeriodDateRange[]} dateRanges
+   * @param {object} [match={}]
+   * @returns {Promise<number>}
+   */
+  countPraiseWithinDateRanges = async (
+    dateRanges: PeriodDateRangeDto[],
+    match: object = {},
+  ): Promise<number> => {
+    const withinDateRangeQueries: { createdAt: PeriodDateRangeDto }[] =
+      dateRanges.map((q) => ({
+        createdAt: q,
+      }));
+
+    const assignedPraiseCount: number = await this.praiseModel.count({
+      $or: withinDateRangeQueries,
+      ...match,
+    });
+
+    return assignedPraiseCount;
   };
 }

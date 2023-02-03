@@ -94,6 +94,8 @@ describe('Period (E2E)', () => {
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
       }),
     );
     app.useGlobalFilters(new ServiceExceptionFilter());

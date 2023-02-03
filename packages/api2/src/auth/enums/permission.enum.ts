@@ -3,6 +3,7 @@ export enum Permission {
   ApiKeyView = 'apiKey:view',
   UsersFind = 'users:find',
   UsersExport = 'users:export',
+  UserProfileUpdate = 'userProfile:update',
   UsersManageRoles = 'users:manageRoles',
   UserAccountsExport = 'userAccounts:export',
   EventLogView = 'eventLog:view',

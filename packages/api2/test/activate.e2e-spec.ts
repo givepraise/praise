@@ -21,6 +21,8 @@ import { ActivateModule } from '@/activate/activate.module';
 import { EventLogModule } from '@/event-log/event-log.module';
 import { EventLogService } from '@/event-log/__mocks__/event-log.service';
 import { UsersService } from '@/users/users.service';
+import { PeriodsModule } from '@/periods/periods.module';
+import { PraiseModule } from '@/praise/praise.module';
 
 describe('EventLog (E2E)', () => {
   let app: INestApplication;
@@ -39,6 +41,8 @@ describe('EventLog (E2E)', () => {
         UserAccountsModule,
         ActivateModule,
         EventLogModule,
+        PeriodsModule,
+        PraiseModule,
       ],
       providers: [
         UsersSeeder,
@@ -54,6 +58,8 @@ describe('EventLog (E2E)', () => {
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
       }),
     );
     app.useGlobalFilters(new ServiceExceptionFilter());
