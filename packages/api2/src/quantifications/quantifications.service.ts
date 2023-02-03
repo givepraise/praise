@@ -8,6 +8,8 @@ import { ServiceException } from '../shared/service-exception';
 import { PraiseService } from '@/praise/praise.service';
 import { Inject, forwardRef } from '@nestjs/common';
 import { parse } from 'json2csv';
+import { PeriodsService } from '@/periods/services/periods.service';
+import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
 
 export class QuantificationsService {
   constructor(
@@ -17,6 +19,8 @@ export class QuantificationsService {
     private settingsService: SettingsService,
     @Inject(forwardRef(() => PraiseService))
     private praiseService: PraiseService,
+    @Inject(forwardRef(() => PeriodsService))
+    private periodService: PeriodsService,
   ) {}
 
   /**
@@ -39,20 +43,36 @@ export class QuantificationsService {
    * Do not populate relations
    */
   async export(
-    format: string = 'csv',
-    startDate: string,
-    endDate: string,
-    periodId: string,
+    options: ExportRequestOptions,
   ): Promise<Quantification[] | string> {
-    const [fromDate, toDate] = await this.praiseService.selectDateFilterRange(
-      periodId, startDate, endDate
-    );
+    const { periodId, startDate, endDate, format } = options;
+    const query = {} as any;
 
-    const quantifications = await this.quantificationModel
-      .find({
-        createdAt: { $gte: fromDate, $lte: toDate },
-      })
-      .lean();
+    if (periodId) {
+      if (startDate || endDate) {
+        // If periodId is set, startDate and endDate should not be set
+        throw new ServiceException(
+          'Invalid date filtering option. When periodId is set, startDate and endDate should not be set.',
+        );
+      }
+      const period = await this.periodService.findOneById(periodId);
+      query.createdAt = this.periodService.getPeriodDateRangeQuery(period);
+    } else {
+      if (startDate && endDate) {
+        // If periodId is not set but startDate and endDate are set, use them to filter
+        query.createdAt = {
+          $gte: startDate,
+          $lte: endDate,
+        };
+      } else if (startDate || endDate) {
+        // If periodId is not set and only one of startDate and endDate is set, throw an error
+        throw new ServiceException(
+          'Invalid date filtering option. When periodId is not set, both startDate and endDate should be set.',
+        );
+      }
+    }
+
+    const quantifications = await this.quantificationModel.find(query).lean();
 
     if (format !== 'csv') return quantifications;
     return parse(quantifications);

@@ -19,6 +19,7 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '@/periods/services/periods.service';
 import { parse } from 'json2csv';
 import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
+import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
 
 @Injectable()
 export class PraiseService {
@@ -96,60 +97,38 @@ export class PraiseService {
    * returns all of the model in json format
    * Do not populate relations
    */
-  async export(
-    format = 'csv',
-    startDate: string,
-    endDate: string,
-    periodId: string,
-  ): Promise<Praise[] | string> {
-    const [fromDate, toDate] = await this.selectDateFilterRange(
-      periodId,
-      startDate,
-      endDate,
-    );
+  async export(options: ExportRequestOptions): Promise<Praise[] | string> {
+    const { periodId, startDate, endDate, format } = options;
+    const query = {} as any;
 
-    const praises = await this.praiseModel
-      .find({
-        createdAt: { $gte: fromDate, $lte: toDate },
-      })
-      .lean();
+    if (periodId) {
+      if (startDate || endDate) {
+        // If periodId is set, startDate and endDate should not be set
+        throw new ServiceException(
+          'Invalid date filtering option. When periodId is set, startDate and endDate should not be set.',
+        );
+      }
+      const period = await this.periodService.findOneById(periodId);
+      query.createdAt = this.periodService.getPeriodDateRangeQuery(period);
+    } else {
+      if (startDate && endDate) {
+        // If periodId is not set but startDate and endDate are set, use them to filter
+        query.createdAt = {
+          $gte: startDate,
+          $lte: endDate,
+        };
+      } else if (startDate || endDate) {
+        // If periodId is not set and only one of startDate and endDate is set, throw an error
+        throw new ServiceException(
+          'Invalid date filtering option. When periodId is not set, both startDate and endDate should be set.',
+        );
+      }
+    }
+
+    const praises = await this.praiseModel.find(query).lean();
 
     if (format !== 'csv') return praises;
     return parse(praises);
-  }
-
-  /**
-   * Select date range to filter by, using either period or custom dates
-   * @param {string} periodId
-   * @param {String} startDate
-   * @param {String} endDate
-   * @returns {Promise<[Date, Date]>}
-   * @throws {ServiceException}
-   *
-   **/
-  async selectDateFilterRange(
-    periodId: string,
-    startDate: string,
-    endDate: string,
-  ): Promise<[Date, Date]> {
-    if (periodId && (startDate || endDate)) {
-      throw new ServiceException('Invalid date filtering option.');
-    }
-
-    if (startDate && endDate) return [new Date(startDate), new Date(endDate)];
-
-    if (periodId) {
-      const period = await this.periodModel.findById(
-        new Types.ObjectId(periodId),
-      );
-      if (!period) throw new ServiceException('Period not found');
-
-      const previousPeriodEndDate =
-        await this.periodService.getPreviousPeriodEndDate(period);
-      return [previousPeriodEndDate, period.endDate];
-    }
-
-    throw new ServiceException('Invalid date filtering option.');
   }
 
   /**
