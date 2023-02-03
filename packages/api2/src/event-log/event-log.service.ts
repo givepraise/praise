@@ -22,7 +22,7 @@ export class EventLogService {
     private eventLogModel: typeof EventLogModel,
     @InjectModel(EventLogType.name)
     private eventLogTypeModel: Model<EventLogTypeDocument>,
-  ) {}
+  ) { }
 
   /**
    * Convenience method to get the EventLog Model
@@ -74,15 +74,16 @@ export class EventLogService {
   async findAllPaginated(
     options: EventLogFindPaginatedQueryDto,
   ): Promise<EventLogPaginatedResponseDto> {
+
     const { page, limit, sortColumn, sortType, search, types } = options;
     const query = {} as any;
 
     // Filter by types
-    if (Array.isArray(types) && types.length > 0) {
+    if (Array.isArray(types) && types.length > 0 && types[0]) {
       const t = await this.eventLogTypeModel.find({
         key: { $in: types },
       });
-      query.types = t.map((item) => new mongoose.Types.ObjectId(item.id));
+      query.type = t.map((item) => new mongoose.Types.ObjectId(item.id));
     }
 
     // Search contents of description field

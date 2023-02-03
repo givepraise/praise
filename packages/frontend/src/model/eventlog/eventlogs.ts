@@ -10,7 +10,7 @@ export type AllEventLogsQueryParameters = {
   sortType: string;
   limit: number;
   page: number;
-  type: string;
+  types: string;
   search: string;
 };
 
