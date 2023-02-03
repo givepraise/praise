@@ -128,7 +128,21 @@ export class PraiseService {
     const praises = await this.praiseModel.find(query).lean();
 
     if (format !== 'csv') return praises;
-    return parse(praises);
+
+    const fields = [
+      '_id',
+      'giver',
+      'forwarder',
+      'receiver',
+      'reason',
+      'reasonRaw',
+      'score',
+      'sourceId',
+      'sourceName',
+      'createdAt',
+      'updatedAt',
+    ];
+    return praises.length > 0 ? parse(praises, { fields }) : fields.toString();
   }
 
   /**

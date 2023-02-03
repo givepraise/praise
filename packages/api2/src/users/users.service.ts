@@ -47,7 +47,18 @@ export class UsersService {
     const users = await this.userModel.find().lean();
 
     if (format !== 'csv') return users;
-    return parse(users);
+
+    const fields = [
+      '_id',
+      'username',
+      'identityEthAddress',
+      'rewardsEthAddress',
+      'roles',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    return users.length > 0 ? parse(users, { fields }) : fields.toString();
   }
 
   async getUserStats(user: UserDocument): Promise<UserStatsDto | null> {

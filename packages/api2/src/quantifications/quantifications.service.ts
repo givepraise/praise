@@ -74,8 +74,22 @@ export class QuantificationsService {
 
     const quantifications = await this.quantificationModel.find(query).lean();
 
+    const fields = [
+      '_id',
+      'praise',
+      'quantifier',
+      'score',
+      'scoreRealized',
+      'dismissed',
+      'duplicatePraise',
+      'createdAt',
+      'updatedAt',
+    ];
+
     if (format !== 'csv') return quantifications;
-    return parse(quantifications);
+    return quantifications.length > 0
+      ? parse(quantifications, { fields })
+      : fields.toString();
   }
 
   /**

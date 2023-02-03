@@ -76,7 +76,17 @@ export class PeriodsService {
     const periods = await this.periodModel.find().lean();
 
     if (format !== 'csv') return periods;
-    return parse(periods);
+
+    const fields = [
+      '_id',
+      'name',
+      'status',
+      'endDate',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    return periods.length > 0 ? parse(periods, { fields }) : fields.toString();
   }
 
   /**

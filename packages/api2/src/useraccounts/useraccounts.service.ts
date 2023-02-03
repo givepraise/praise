@@ -36,7 +36,20 @@ export class UserAccountsService {
     const userAccounts = await this.userAccountModel.find().lean();
 
     if (format !== 'csv') return userAccounts;
-    return parse(userAccounts);
+
+    const fields = [
+      '_id',
+      'accountId',
+      'user',
+      'name',
+      'avatarId',
+      'platform',
+      'createdAt',
+      'updatedAt',
+    ];
+    return userAccounts.length > 0
+      ? parse(userAccounts, { fields })
+      : fields.toString();
   }
 
   /**
