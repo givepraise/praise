@@ -3,6 +3,7 @@ import { Transform, Type } from 'class-transformer';
 import { IsDate, IsIn, IsOptional, IsString } from 'class-validator';
 import { Types } from 'mongoose';
 import { IsObjectId } from '../validators.shared';
+import parseISO from 'date-fns/parseISO';
 
 export class ExportRequestOptions {
   @ApiProperty({
@@ -19,13 +20,13 @@ export class ExportRequestOptions {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsDate()
-  @Transform(({ value }) => new Date(value))
+  @Transform(({ value }) => parseISO(value))
   startDate?: Date;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsDate()
-  @Transform(({ value }) => new Date(value))
+  @Transform(({ value }) => parseISO(value))
   endDate?: Date;
 
   @ApiProperty({ required: false, type: String })
