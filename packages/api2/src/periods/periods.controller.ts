@@ -30,7 +30,6 @@ import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.d
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Response } from 'express';
-import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 
@@ -55,14 +54,14 @@ export class PeriodsController {
     type: [Period],
   })
   @Permissions(Permission.PeriodExport)
-  @ApiParam({ name: 'format', type: String })
+  @ApiParam({ name: 'format', enum: ['json', 'csv'], required: true })
   async export(
-    @Query() options: ExportRequestOptions,
+    @Query('format') format: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<Period[] | undefined> {
-    const periods = await this.periodsService.export(options.format);
+    const periods = await this.periodsService.export(format);
 
-    if (options.format === 'json') return periods as Period[];
+    if (format === 'json') return periods as Period[];
 
     res.set({
       'Content-Type': 'text/csv',

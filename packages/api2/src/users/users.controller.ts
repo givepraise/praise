@@ -26,7 +26,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { UpdateUserRequestDto } from './dto/update-user-request.dto';
-import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
 
 @Controller('users')
 @ApiTags('Users')
@@ -50,14 +49,14 @@ export class UsersController {
     type: [User],
   })
   @Permissions(Permission.UsersExport)
-  @ApiParam({ name: 'format', type: String })
+  @ApiParam({ name: 'format', enum: ['json', 'csv'], required: true })
   async export(
-    @Query() options: ExportRequestOptions,
+    @Query('format') format: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<User[] | undefined> {
-    const users = await this.usersService.export(options.format);
+    const users = await this.usersService.export(format);
 
-    if (options.format === 'json') return users as User[];
+    if (format === 'json') return users as User[];
 
     res.set({
       'Content-Type': 'text/csv',

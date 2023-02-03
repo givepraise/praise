@@ -20,7 +20,6 @@ import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { UserAccount } from './schemas/useraccounts.schema';
 import { UserAccountsService } from './useraccounts.service';
 import { Response } from 'express';
-import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
 
 @Controller('user_accounts')
 @ApiTags('UserAccounts')
@@ -43,14 +42,14 @@ export class UserAccountsController {
     type: [UserAccount],
   })
   @Permissions(Permission.UserAccountsExport)
-  @ApiParam({ name: 'format', type: String })
+  @ApiParam({ name: 'format', enum: ['json', 'csv'], required: true })
   async export(
-    @Query() options: ExportRequestOptions,
+    @Query('format') format: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<UserAccount[] | undefined> {
-    const userAccounts = await this.userAccountsService.export(options.format);
+    const userAccounts = await this.userAccountsService.export(format);
 
-    if (options.format === 'json') return userAccounts as UserAccount[];
+    if (format === 'json') return userAccounts as UserAccount[];
 
     res.set({
       'Content-Type': 'text/csv',
