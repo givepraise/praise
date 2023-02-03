@@ -1,8 +1,8 @@
-import { ApiErrorResponseData } from 'api/dist/error/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import { selectorFamily, SerializableParam } from 'recoil';
 import { AccessToken } from './auth/auth';
 import { makeApiAuthClient } from '../utils/api';
+import { ApiErrorResponseData } from 'shared/interfaces/api-error-reponse-data.interface';
 
 export type RequestParams = {
   [key: string]: SerializableParam;

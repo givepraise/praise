@@ -4,7 +4,6 @@ import {
   faScaleBalanced,
   faUserLock,
 } from '@fortawesome/free-solid-svg-icons';
-import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { toast } from 'react-hot-toast';
 import { Jazzicon } from '@ukstv/jazzicon-react';
@@ -19,6 +18,7 @@ import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserWithStatsDto } from '@/model/user/dto/user-with-stats.dto';
 import { UserRole } from '@/model/user/enums/user-role.enum';
 import { UserDto } from '@/model/user/dto/user.dto';
+import { shortenEthAddress } from '@/utils/string';
 
 interface Params {
   user: UserWithStatsDto;

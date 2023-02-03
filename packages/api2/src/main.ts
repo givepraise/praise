@@ -6,6 +6,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import { ServiceExceptionFilter } from './shared/service-exception.filter';
 import { runDbMigrations } from './database/migrations';
+import { version } from '../package.json';
+import { Logger } from './shared/logger';
 
 async function bootstrap() {
   // Create an instance of the Nest app
@@ -19,6 +21,7 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
       whitelist: true,
+      forbidNonWhitelisted: true,
     }),
   );
 
@@ -48,6 +51,12 @@ async function bootstrap() {
 
   // Start the app listening on the API port or default to port 3000
   await app.listen(process.env.API_PORT || 3000);
+
+  // Log the app version and port to the console
+  const logger = new Logger('Bootstrap');
+  logger.log(
+    `Praise API v${version} listening on port ${process.env.API_PORT || 3000}`,
+  );
 }
 
 bootstrap();

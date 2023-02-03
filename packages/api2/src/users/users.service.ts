@@ -13,6 +13,11 @@ import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { Praise, PraiseDocument } from '@/praise/schemas/praise.schema';
 import { UserStatsDto } from './dto/user-stats.dto';
+import { parse } from 'json2csv';
+import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
+import { Period } from '@/periods/schemas/periods.schema';
+import { PeriodsService } from '@/periods/services/periods.service';
+import { PraiseService } from '@/praise/praise.service';
 
 @Injectable()
 export class UsersService {
@@ -22,6 +27,8 @@ export class UsersService {
     @InjectModel(Praise.name)
     private praiseModel: Model<PraiseDocument>,
     private eventLogService: EventLogService,
+    private periodService: PeriodsService,
+    private praiseService: PraiseService,
   ) {}
 
   getModel(): Model<UserDocument> {
@@ -30,6 +37,28 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     return this.userModel.find().populate('accounts').lean();
+  }
+
+  /**
+   * returns all of the model in json or csv format
+   * Do not populate relations
+   */
+  async export(format = 'csv'): Promise<User[] | string> {
+    const users = await this.userModel.find().lean();
+
+    if (format !== 'csv') return users;
+
+    const fields = [
+      '_id',
+      'username',
+      'identityEthAddress',
+      'rewardsEthAddress',
+      'roles',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    return users.length > 0 ? parse(users, { fields }) : fields.toString();
   }
 
   async getUserStats(user: UserDocument): Promise<UserStatsDto | null> {
@@ -141,21 +170,25 @@ export class UsersService {
     if (roleIndex === -1)
       throw new ServiceException(`User does not have role ${role}`);
 
-    //   // If user is currently assigned to the active quantification round, and role is QUANTIFIER throw error
-    //   const activePeriods: PeriodDocument[] = await findActivePeriods();
+    // If user is currently assigned to the active quantification round, and role is QUANTIFIER throw error
+    const activePeriods: Period[] =
+      await this.periodService.findActivePeriods();
 
-    //   if (role === AuthRole.QUANTIFIER && activePeriods.length > 0) {
-    //     const dateRanges: PeriodDateRange[] = await Promise.all(
-    //       activePeriods.map((period) => getPeriodDateRangeQuery(period))
-    //     );
-    //     const assignedPraiseCount = await countPraiseWithinDateRanges(dateRanges, {
-    //       'quantifications.quantifier': user._id,
-    //     });
-    //     if (assignedPraiseCount > 0)
-    //       throw new PraiseException(
-    //         'Cannot remove quantifier currently assigned to quantification period'
-    //       );
-    //   }
+    if (role === AuthRole.QUANTIFIER && activePeriods.length > 0) {
+      const dateRanges: PeriodDateRangeDto[] = await Promise.all(
+        activePeriods.map((period) =>
+          this.periodService.getPeriodDateRangeQuery(period),
+        ),
+      );
+      const assignedPraiseCount =
+        await this.praiseService.countPraiseWithinDateRanges(dateRanges, {
+          'quantifications.quantifier': _id,
+        });
+      if (assignedPraiseCount > 0)
+        throw new ServiceException(
+          'Cannot remove quantifier currently assigned to quantification period',
+        );
+    }
 
     userDocument.roles.splice(roleIndex, 1);
     const user = await userDocument.save();

@@ -31,6 +31,7 @@ export class PraiseSeeder {
       sourceName: 'DISCORD',
       score: 0,
       giver: randomGiver._id,
+      forwarder: randomGiver._id,
       receiver: randomReceiver._id,
       quantifications: [],
       createdAt,
