@@ -27,7 +27,7 @@ export class UsersService {
     private praiseModel: Model<PraiseDocument>,
     private eventLogService: EventLogService,
     private periodService: PeriodsService,
-    private priseService: PraiseService,
+    private praiseService: PraiseService,
   ) {}
 
   getModel(): Model<UserDocument> {
@@ -158,7 +158,7 @@ export class UsersService {
         ),
       );
       const assignedPraiseCount =
-        await this.priseService.countPraiseWithinDateRanges(dateRanges, {
+        await this.praiseService.countPraiseWithinDateRanges(dateRanges, {
           'quantifications.quantifier': _id,
         });
       if (assignedPraiseCount > 0)
