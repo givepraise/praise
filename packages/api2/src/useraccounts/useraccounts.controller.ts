@@ -54,7 +54,7 @@ export class UserAccountsController {
 
     res.set({
       'Content-Type': 'text/csv',
-      'Content-Disposition': 'attachment; filename="users_accounts.csv"',
+      'Content-Disposition': 'attachment; filename="useraccounts.csv"',
     });
     res.send(userAccounts);
   }
