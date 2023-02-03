@@ -22,6 +22,7 @@ import { PeriodDetailsGiverReceiverDto } from '../dto/period-details-giver-recei
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 import { QuantificationModel } from '@/database/schemas/quantification/quantification.schema';
+import { parse } from 'json2csv';
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
 @Injectable()
 export class PeriodsService {
@@ -66,6 +67,26 @@ export class PeriodsService {
       throw new ServiceException('Failed to paginate period data');
 
     return periodPagination;
+  }
+
+  /**
+   * returns all of the model in json format
+   */
+  async export(format = 'csv'): Promise<Period[] | string> {
+    const periods = await this.periodModel.find().lean();
+
+    if (format !== 'csv') return periods;
+
+    const fields = [
+      '_id',
+      'name',
+      'status',
+      'endDate',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    return periods.length > 0 ? parse(periods, { fields }) : fields.toString();
   }
 
   /**

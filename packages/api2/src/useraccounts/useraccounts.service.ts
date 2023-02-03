@@ -7,6 +7,7 @@ import {
 } from './schemas/useraccounts.schema';
 import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { ServiceException } from '@/shared/service-exception';
+import { parse } from 'json2csv';
 
 @Injectable()
 export class UserAccountsService {
@@ -26,6 +27,29 @@ export class UserAccountsService {
     const userAccount = await this.userAccountModel.findOne({ userId }).lean();
     if (!userAccount) return null;
     return userAccount;
+  }
+
+  /**
+   * returns all of the model in json format
+   */
+  async export(format = 'csv'): Promise<UserAccount[] | string> {
+    const userAccounts = await this.userAccountModel.find().lean();
+
+    if (format !== 'csv') return userAccounts;
+
+    const fields = [
+      '_id',
+      'accountId',
+      'user',
+      'name',
+      'avatarId',
+      'platform',
+      'createdAt',
+      'updatedAt',
+    ];
+    return userAccounts.length > 0
+      ? parse(userAccounts, { fields })
+      : fields.toString();
   }
 
   /**

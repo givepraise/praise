@@ -7,6 +7,9 @@ import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
 import { PraiseService } from '@/praise/praise.service';
 import { Inject, forwardRef } from '@nestjs/common';
+import { parse } from 'json2csv';
+import { PeriodsService } from '@/periods/services/periods.service';
+import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
 
 export class QuantificationsService {
   constructor(
@@ -16,6 +19,8 @@ export class QuantificationsService {
     private settingsService: SettingsService,
     @Inject(forwardRef(() => PraiseService))
     private praiseService: PraiseService,
+    @Inject(forwardRef(() => PeriodsService))
+    private periodService: PeriodsService,
   ) {}
 
   /**
@@ -31,6 +36,62 @@ export class QuantificationsService {
    */
   getModel(): Model<Quantification> {
     return this.quantificationModel;
+  }
+
+  /**
+   * returns all of the model in json format
+   * Do not populate relations
+   */
+  async export(
+    options: ExportRequestOptions,
+  ): Promise<Quantification[] | string> {
+    const { periodId, startDate, endDate, format } = options;
+    const query = {} as any;
+
+    if (periodId) {
+      if (startDate || endDate) {
+        // If periodId is set, startDate and endDate should not be set
+        throw new ServiceException(
+          'Invalid date filtering option. When periodId is set, startDate and endDate should not be set.',
+        );
+      }
+      const period = await this.periodService.findOneById(periodId);
+      query.createdAt = await this.periodService.getPeriodDateRangeQuery(
+        period,
+      );
+    } else {
+      if (startDate && endDate) {
+        // If periodId is not set but startDate and endDate are set, use them to filter
+        query.createdAt = {
+          $gte: startDate,
+          $lte: endDate,
+        };
+      } else if (startDate || endDate) {
+        // If periodId is not set and only one of startDate and endDate is set, throw an error
+        throw new ServiceException(
+          'Invalid date filtering option. When periodId is not set, both startDate and endDate should be set.',
+        );
+      }
+    }
+
+    const quantifications = await this.quantificationModel.find(query).lean();
+
+    const fields = [
+      '_id',
+      'praise',
+      'quantifier',
+      'score',
+      'scoreRealized',
+      'dismissed',
+      'duplicatePraise',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    if (format !== 'csv') return quantifications;
+    return quantifications.length > 0
+      ? parse(quantifications, { fields })
+      : fields.toString();
   }
 
   /**

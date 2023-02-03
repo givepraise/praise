@@ -10,6 +10,7 @@ import { UsersModule } from '@/users/users.module';
 import { PraiseModule } from '@/praise/praise.module';
 import { PeriodsModule } from '@/periods/periods.module';
 import { Module, forwardRef } from '@nestjs/common';
+import { QuantificationsController } from './quantitifcations.controller';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { Module, forwardRef } from '@nestjs/common';
     forwardRef(() => UsersModule),
     UserAccountsModule,
   ],
+  controllers: [QuantificationsController],
   providers: [QuantificationsService],
   exports: [
     QuantificationsService,

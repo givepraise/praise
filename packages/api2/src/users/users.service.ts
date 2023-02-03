@@ -13,6 +13,7 @@ import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { Praise, PraiseDocument } from '@/praise/schemas/praise.schema';
 import { UserStatsDto } from './dto/user-stats.dto';
+import { parse } from 'json2csv';
 import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
 import { Period } from '@/periods/schemas/periods.schema';
 import { PeriodsService } from '@/periods/services/periods.service';
@@ -36,6 +37,28 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     return this.userModel.find().populate('accounts').lean();
+  }
+
+  /**
+   * returns all of the model in json or csv format
+   * Do not populate relations
+   */
+  async export(format = 'csv'): Promise<User[] | string> {
+    const users = await this.userModel.find().lean();
+
+    if (format !== 'csv') return users;
+
+    const fields = [
+      '_id',
+      'username',
+      'identityEthAddress',
+      'rewardsEthAddress',
+      'roles',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    return users.length > 0 ? parse(users, { fields }) : fields.toString();
   }
 
   async getUserStats(user: UserDocument): Promise<UserStatsDto | null> {
