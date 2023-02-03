@@ -199,67 +199,22 @@ describe('Period (E2E)', () => {
       return request(server).get(`/periods/${period._id}`).send().expect(401);
     });
 
-    test('should return 200 and the period details KRESO', async () => {
-      //Clear the database
-      await praiseService.getModel().deleteMany({});
+    test('should return 200 and the period details', async () => {
+      const response = await request(server)
+        .get(`/periods/${period._id}`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .expect(200);
 
-      const p: Praise[] = [];
-      // Seed the database with 12 praise items
-      for (let i = 0; i < 12; i++) {
-        p.push(await praiseSeeder.seedPraise());
-      }
+      expect(response.body).toMatchObject({
+        status: period.status,
+        endDate: period.endDate.toISOString(),
+        createdAt: period.createdAt.toISOString(),
+        updatedAt: period.updatedAt.toISOString(),
+      });
 
-      const options: PaginatedQueryDto = {
-        sortColumn: 'createdAt',
-        sortType: 'asc',
-        page: 1,
-        limit: 10,
-      };
-
-      const urlParams = Object.entries(options)
-        .map(([key, val]) => `${key}=${val}`)
-        .join('&');
-
-      const response = await authorizedGetRequest(
-        `/periods/${period._id}/praise?${urlParams}`,
-        app,
-        users[0].accessToken,
-      ).expect(200);
-
-      expect(response.body).toBeDefined();
-      expect(response.body.docs).toBeDefined();
-      expect(response.body.docs.length).toBe(10);
-      expect(response.body.totalDocs).toBe(12);
-      expect(response.body.page).toBe(1);
-      expect(response.body.limit).toBe(10);
-      expect(response.body.totalPages).toBe(2);
-
-      const praise = response.body.docs[0];
-      const praise2 = p.find((x) => x._id.toString() === praise._id);
-      console.log(response.body.docs[0]);
-      console.log(praise.id);
-      console.log(praise2);
-      expect(praise).toBeDefined();
-      expect(praise2).toBeDefined();
-      // expect(praise._id).toBe(praise2!._id.toString());
-      // expect(praise.giver._id).toBe(praise2!.giver.toString());
-      // expect(praise.receiver._id).toBe(praise2!.receiver.toString());
-      // expect(praise.reason).toBe(praise2!.reason);
-      // expect(praise.reasonRaw).toBe(praise2!.reasonRaw);
-      // expect(praise.score).toBe(praise2!.score);
-      // expect(praise.sourceId).toBe(praise2!.sourceId);
-      // expect(praise.sourceName).toBe(praise2!.sourceName);
-
-      // expect(response.body).toMatchObject({
-      //   status: period.status,
-      //   endDate: period.endDate.toISOString(),
-      //   createdAt: period.createdAt.toISOString(),
-      //   updatedAt: period.updatedAt.toISOString(),
-      // });
-
-      // expect(response.body.quantifiers).toHaveLength(1);
-      // expect(response.body.receivers).toHaveLength(6);
-      // expect(response.body.givers).toHaveLength(6);
+      expect(response.body.quantifiers).toHaveLength(1);
+      expect(response.body.receivers).toHaveLength(3);
+      expect(response.body.givers).toHaveLength(3);
     });
 
     test('should return 400 when the period does not exist', async () => {
@@ -690,11 +645,87 @@ describe('Period (E2E)', () => {
         .set('Authorization', `Bearer ${users[0].accessToken}`)
         .expect(200);
 
-      expect(response.body).toHaveLength(3);
-      expect(response.body[0].quantifications).toHaveLength(1);
-      expect(response.body[0].quantifications[0].quantifier).toBeDefined();
-      expect(response.body[0].receiver).toBeDefined();
-      expect(response.body[0].giver).toBeDefined();
+      expect(response.body.docs).toHaveLength(3);
+      expect(response.body.docs[0].quantifications).toHaveLength(1);
+      expect(response.body.docs[0].quantifications[0].quantifier).toBeDefined();
+      expect(response.body.docs[0].receiver).toBeDefined();
+      expect(response.body.docs[0].giver).toBeDefined();
+    });
+  });
+
+  describe('GET /periods/:periodId/praise/receiver/:receiverId', () => {
+    let period: Period;
+
+    beforeEach(async () => {
+      await periodsService.getModel().deleteMany({});
+
+      period = await periodsSeeder.seedPeriod({
+        status: PeriodStatusType.OPEN,
+        endDate: new Date(),
+      });
+
+      const previousPeriodEndDate = new Date(period.endDate.getTime());
+      previousPeriodEndDate.setDate(period.endDate.getDate() - 30);
+
+      await periodsSeeder.seedPeriod({
+        status: PeriodStatusType.OPEN,
+        endDate: previousPeriodEndDate,
+      });
+
+      const previousDay = new Date(period.endDate.getTime());
+      previousDay.setDate(period.endDate.getDate() - 5);
+
+      for (let i = 0; i < 3; i++) {
+        const praise = await praiseSeeder.seedPraise({
+          receiver: users[1].user._id,
+          createdAt: previousDay,
+        });
+
+        await quantificationsSeeder.seedQuantification({
+          createdAt: previousDay,
+          praise: praise._id,
+          quantifier: users[0].user._id,
+        });
+      }
+    });
+
+    test('401 when not authenticated', async () => {
+      return request(server)
+        .get(`/periods/${period._id}/praise/receiver/${users[0].user._id}`)
+        .send()
+        .expect(401);
+    });
+
+    test('should return 400 when the period does not exist', async () => {
+      await praiseService.getModel().deleteMany({});
+
+      const response = await request(server)
+        .get(
+          `/periods/5f5d5f5d5f5d5f5d5f5d5f5d/praise/receiver/5f5d5f5d5f5d5f5d5f5d5f5d`,
+        )
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .expect(400);
+
+      expect(response.body.message).toBe('Period not found');
+    });
+
+    test('should return 200 and list of praise items KRESO', async () => {
+      const response = await request(server)
+        .get(`/periods/${period._id}/praise/receiver/${users[1].user._id}`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .expect(200);
+
+      console.log(response.body);
+      console.log('RECEIVER');
+      console.log(response.body.docs[0].receiver);
+      console.log('RECEIVER IN PRAISE');
+      console.log(users[0].user._id);
+
+      expect(response.body.docs).toHaveLength(3);
+      expect(response.body.docs[0].quantifications).toHaveLength(1);
+      expect(response.body.docs[0].quantifications[0].quantifier).toBeDefined();
+      expect(response.body.docs[0].receiver).toBeDefined();
+      expect(response.body.docs[0].giver).toBeDefined();
     });
   });
 
