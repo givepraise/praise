@@ -1,7 +1,6 @@
 import { Type } from 'class-transformer';
 import { SchemaTypes, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Platform } from '../interfaces/platform/platform.interface';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { User } from '@/users/schemas/users.schema';
 import { ExposeId } from '@/shared/expose-id.decorator';
@@ -48,7 +47,7 @@ export class UserAccount {
   @ApiResponseProperty({
     example: 'DISCORD',
   })
-  @Prop({ type: String, enum: Platform, required: true })
+  @Prop({ type: String, required: true })
   platform: string;
 
   @Prop({ select: false })

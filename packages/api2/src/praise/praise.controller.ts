@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Query,
+  Res,
   SerializeOptions,
   UseGuards,
   UseInterceptors,
@@ -25,6 +26,8 @@ import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
+import { Response } from 'express';
+import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
 
 @Controller('praise')
 @ApiTags('Praise')
@@ -49,6 +52,29 @@ export class PraiseController {
     @Query() options: PraisePaginatedQueryDto,
   ): Promise<PraisePaginatedResponseDto> {
     return this.praiseService.findAllPaginated(options);
+  }
+
+  @Get('export')
+  @ApiOperation({ summary: 'Export Praises document to json or csv' })
+  @ApiResponse({
+    status: 200,
+    description: 'Praise Export',
+    type: [Praise],
+  })
+  @Permissions(Permission.UsersExport)
+  async export(
+    @Query() options: ExportRequestOptions,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<Praise[] | undefined> {
+    const praises = await this.praiseService.export(options);
+
+    if (options.format === 'json') return praises as Praise[];
+
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': 'attachment; filename="praise.csv"',
+    });
+    res.send(praises);
   }
 
   @Get(':id')

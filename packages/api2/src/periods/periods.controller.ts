@@ -7,8 +7,9 @@ import {
   Patch,
   Post,
   SerializeOptions,
-  UseGuards,
   UseInterceptors,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
@@ -19,8 +20,6 @@ import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 import { PeriodPaginatedResponseDto } from './dto/period-paginated-response.dto';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { CreatePeriodInputDto } from './dto/create-period-input.dto';
 import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
@@ -30,6 +29,9 @@ import { ReplaceQuantifierInputDto } from './dto/replace-quantifier-input.dto';
 import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.dto';
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
+import { Response } from 'express';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -43,6 +45,30 @@ export class PeriodsController {
     private readonly periodsService: PeriodsService,
     private readonly periodAssignmentsService: PeriodAssignmentsService,
   ) {}
+
+  @Get('export')
+  @ApiOperation({ summary: 'Export periods document to json or csv' })
+  @ApiResponse({
+    status: 200,
+    description: 'Periods Export',
+    type: [Period],
+  })
+  @Permissions(Permission.PeriodExport)
+  @ApiParam({ name: 'format', enum: ['json', 'csv'], required: true })
+  async export(
+    @Query('format') format: string,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<Period[] | undefined> {
+    const periods = await this.periodsService.export(format);
+
+    if (format === 'json') return periods as Period[];
+
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': 'attachment; filename="periods.csv"',
+    });
+    res.send(periods);
+  }
 
   @Get()
   @ApiOperation({ summary: 'List all periods' })

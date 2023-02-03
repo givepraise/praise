@@ -7,10 +7,13 @@ import {
   Get,
   Param,
   Patch,
+  Query,
+  Res,
   SerializeOptions,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { User } from './schemas/users.schema';
@@ -37,6 +40,30 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly eventLogService: EventLogService,
   ) {}
+
+  @Get('/export')
+  @ApiOperation({ summary: 'Export users document to json or csv' })
+  @ApiResponse({
+    status: 200,
+    description: 'Users Export',
+    type: [User],
+  })
+  @Permissions(Permission.UsersExport)
+  @ApiParam({ name: 'format', enum: ['json', 'csv'], required: true })
+  async export(
+    @Query('format') format: string,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<User[] | undefined> {
+    const users = await this.usersService.export(format);
+
+    if (format === 'json') return users as User[];
+
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': 'attachment; filename="users.csv"',
+    });
+    res.send(users);
+  }
 
   @Get()
   @Permissions(Permission.UsersFind)
@@ -66,7 +93,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @Permissions(Permission.UsersFind)
+  @Permissions(Permission.UserProfileUpdate)
   @ApiOperation({
     summary: 'Updates a user',
   })

@@ -1,4 +1,4 @@
-import { ExportTransformer } from 'api/dist/period/types';
+import { ExportTransformer } from '@/shared/interfaces/export-transformer.interface';
 import { AxiosResponse } from 'axios';
 import {
   atom,
