@@ -284,17 +284,17 @@ describe('UserController (E2E)', () => {
     });
 
     test('200 response with json body containing the user with useraccount', async () => {
-      const userAccountFirst = await userAccountsSeeder.seedUserAccount({
+      await userAccountsSeeder.seedUserAccount({
         user: user._id,
         platform: 'DISCORD',
       });
 
-      const userAccountSecond = await userAccountsSeeder.seedUserAccount({
+      await userAccountsSeeder.seedUserAccount({
         user: user._id,
         platform: 'DISCORD',
       });
 
-      const userAccountThird = await userAccountsSeeder.seedUserAccount({
+      await userAccountsSeeder.seedUserAccount({
         user: user._id,
         platform: 'DISCORD',
       });
@@ -312,7 +312,7 @@ describe('UserController (E2E)', () => {
 
     test('200 response containing user with identityEthAddress is requesting user is ADMIN', async () => {
       const walletAdmin = Wallet.createRandom();
-      const userAdmin = await usersSeeder.seedUser({
+      await usersSeeder.seedUser({
         identityEthAddress: walletAdmin.address,
         rewardsAddress: walletAdmin.address,
         roles: [AuthRole.USER, AuthRole.ADMIN],
