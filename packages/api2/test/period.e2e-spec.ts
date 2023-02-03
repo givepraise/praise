@@ -39,6 +39,7 @@ import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { Setting } from '@/settings/schemas/settings.schema';
 import { some } from 'lodash';
 import { PeriodDetailsQuantifierDto } from '@/periods/dto/period-details-quantifier.dto';
+import { SettingsService } from '@/settings/settings.service';
 
 class LoggedInUser {
   accessToken: string;
@@ -63,6 +64,7 @@ describe('Period (E2E)', () => {
   let userAccountsSeeder: UserAccountsSeeder;
   let settingsSeeder: SettingsSeeder;
   let periodSettingsSeeder: PeriodSettingsSeeder;
+  let settingsService: SettingsService;
 
   const users: LoggedInUser[] = [];
 
@@ -122,6 +124,7 @@ describe('Period (E2E)', () => {
     userAccountsService = module.get<UserAccountsService>(UserAccountsService);
     userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
     settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder);
+    settingsService = module.get<SettingsService>(SettingsService);
     periodSettingsSeeder =
       module.get<PeriodSettingsSeeder>(PeriodSettingsSeeder);
 
@@ -133,6 +136,7 @@ describe('Period (E2E)', () => {
     await periodsService.getModel().deleteMany({});
     await periodSettingsService.getModel().deleteMany({});
     await userAccountsService.getModel().deleteMany({});
+    await settingsService.getModel().deleteMany({});
 
     // Seed and login 3 users
     for (let i = 0; i < 3; i++) {
@@ -732,6 +736,7 @@ describe('Period (E2E)', () => {
       await userAccountsService.getModel().deleteMany({});
       await periodSettingsService.getModel().deleteMany({});
       await quantificationsService.getModel().deleteMany({});
+      await settingsService.getModel().deleteMany({});
 
       PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER =
         await settingsSeeder.seedSettings({
@@ -831,6 +836,7 @@ describe('Period (E2E)', () => {
       await periodSettingsSeeder.seedPeriodSettings({
         period: period._id,
         setting: PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER._id,
+        value: '2',
       });
 
       await periodSettingsSeeder.seedPeriodSettings({
@@ -879,7 +885,6 @@ describe('Period (E2E)', () => {
       expect(response.body.receivers[2].praiseCount).toEqual(4);
 
       expect(response.body.quantifiers).toHaveLength(4);
-      // expect(response.body.quantifiers[0].praiseCount).toEqual(9);
 
       expect(response.body.quantifiers[0].finishedCount).toEqual(0);
       expect(response.body.quantifiers[1].finishedCount).toEqual(0);
@@ -970,6 +975,7 @@ describe('Period (E2E)', () => {
       await periodSettingsSeeder.seedPeriodSettings({
         period: period._id,
         setting: PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER._id,
+        value: '2',
       });
 
       await periodSettingsSeeder.seedPeriodSettings({
@@ -1090,7 +1096,19 @@ describe('Period (E2E)', () => {
         .expect('Content-Type', /json/)
         .expect(200);
 
-      // TODO: check if we have 600 quantifications assigned to 3 quantifiers
+      expect(response.body._id).toEqual(period._id.toString());
+      expect(response.body.status).toEqual('QUANTIFY');
+      expect(response.body.numberOfPraise).toEqual(praiseItems.length);
+      expect(response.body.quantifiers).toHaveLength(quantifiers.length);
+      expect(response.body.quantifiers[0].praiseCount).toEqual(
+        praiseItems.length,
+      );
+      expect(response.body.quantifiers[1].praiseCount).toEqual(
+        praiseItems.length,
+      );
+      expect(response.body.quantifiers[2].praiseCount).toEqual(
+        praiseItems.length,
+      );
     });
 
     test('400 response if periodId does not exist', async function () {
