@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsIn, IsOptional, IsString } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsDate, IsIn, IsOptional, IsString } from 'class-validator';
+import { Types } from 'mongoose';
+import { IsObjectId } from '../validators.shared';
 
 export class ExportRequestOptions {
   @ApiProperty({
     enum: ['csv', 'json'],
     default: 'csv',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -14,21 +16,23 @@ export class ExportRequestOptions {
   @Type(() => String)
   format: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
-  @IsString()
-  @Type(() => String)
-  startDate: string;
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  startDate?: Date;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
-  @IsString()
-  @Type(() => String)
-  endDate: string;
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  endDate?: Date;
 
-  @ApiProperty()
+  @ApiProperty({ required: false, type: String })
   @IsOptional()
-  @IsString()
-  @Type(() => String)
-  periodId: string;
+  @IsObjectId()
+  @Transform(({ value }) =>
+    Types.ObjectId.isValid(value) ? new Types.ObjectId(value) : value,
+  )
+  periodId?: Types.ObjectId;
 }
