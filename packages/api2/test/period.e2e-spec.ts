@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import {
   ConsoleLogger,
   INestApplication,
@@ -36,6 +36,9 @@ import { SettingsModule } from '@/settings/settings.module';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
+import { Setting } from '@/settings/schemas/settings.schema';
+import { some } from 'lodash';
+import { PeriodDetailsQuantifierDto } from '@/periods/dto/period-details-quantifier.dto';
 
 class LoggedInUser {
   accessToken: string;
@@ -57,6 +60,9 @@ describe('Period (E2E)', () => {
   let quantificationsSeeder: QuantificationsSeeder;
   let quantificationsService: QuantificationsService;
   let userAccountsService: UserAccountsService;
+  let userAccountsSeeder: UserAccountsSeeder;
+  let settingsSeeder: SettingsSeeder;
+  let periodSettingsSeeder: PeriodSettingsSeeder;
 
   const users: LoggedInUser[] = [];
 
@@ -111,6 +117,11 @@ describe('Period (E2E)', () => {
     periodSettingsService = module.get<PeriodSettingsService>(
       PeriodSettingsService,
     );
+    userAccountsService = module.get<UserAccountsService>(UserAccountsService);
+    userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
+    settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder);
+    periodSettingsSeeder =
+      module.get<PeriodSettingsSeeder>(PeriodSettingsSeeder);
 
     // Clear the database
     await usersService.getModel().deleteMany({});
@@ -119,6 +130,7 @@ describe('Period (E2E)', () => {
     await userAccountsService.getModel().deleteMany({});
     await periodsService.getModel().deleteMany({});
     await periodSettingsService.getModel().deleteMany({});
+    await userAccountsService.getModel().deleteMany({});
 
     // Seed and login 3 users
     for (let i = 0; i < 3; i++) {
@@ -637,6 +649,815 @@ describe('Period (E2E)', () => {
       expect(response.body[0].quantifications[0].quantifier).toBeDefined();
       expect(response.body[0].receiver).toBeDefined();
       expect(response.body[0].giver).toBeDefined();
+    });
+  });
+
+  describe('PATCH /periods/:periodId/assignQuantifiers', () => {
+    let PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: Setting;
+    let PRAISE_QUANTIFIERS_ASSIGN_EVENLY: Setting;
+
+    beforeEach(async () => {
+      await periodsService.getModel().deleteMany({});
+      await praiseService.getModel().deleteMany({});
+      await usersService.getModel().deleteMany({});
+      await userAccountsService.getModel().deleteMany({});
+      await periodSettingsService.getModel().deleteMany({});
+      await quantificationsService.getModel().deleteMany({});
+
+      PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER =
+        await settingsSeeder.seedSettings({
+          key: 'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
+          value: '2',
+          type: 'Integer',
+        });
+
+      PRAISE_QUANTIFIERS_ASSIGN_EVENLY = await settingsSeeder.seedSettings({
+        key: 'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
+        value: 'false',
+        type: 'Boolean',
+      });
+    });
+
+    test('200 response with json body containing assignments with PRAISE_QUANTIFIERS_ASSIGN_EVENLY=false', async function () {
+      const wallet = Wallet.createRandom();
+      await usersSeeder.seedUser({
+        identityEthAddress: wallet.address,
+        roles: ['USER', 'ADMIN'],
+      });
+
+      const receiver1 = await userAccountsSeeder.seedUserAccount();
+      const receiver2 = await userAccountsSeeder.seedUserAccount();
+      const receiver3 = await userAccountsSeeder.seedUserAccount();
+
+      const receiversSorted = [receiver1, receiver2, receiver3].sort((a, b) =>
+        a._id.toString().localeCompare(b._id.toString()),
+      );
+
+      const period = await periodsSeeder.seedPeriod();
+
+      const dayInPeriod = new Date(period.endDate.getTime());
+      dayInPeriod.setDate(period.endDate.getDate() - 1);
+
+      const quantifier = await userAccountsSeeder.seedUserAccount();
+
+      const praise = await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: dayInPeriod,
+      });
+
+      await quantificationsSeeder.seedQuantification({
+        praise: praise._id,
+        quantifier: quantifier._id,
+      });
+
+      await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver2._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver2._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver2._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver2._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver3._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver3._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver3._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver3._id,
+        createdAt: dayInPeriod,
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period._id,
+        setting: PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER._id,
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period._id,
+        setting: PRAISE_QUANTIFIERS_ASSIGN_EVENLY._id,
+        value: 'false',
+      });
+
+      await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const response = await request(server)
+        .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .send()
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(response.body._id).toEqual(period._id.toString());
+      expect(response.body.status).toEqual('QUANTIFY');
+
+      expect(response.body.receivers).toHaveLength(3);
+      expect(response.body.receivers[0]._id).toEqual(
+        receiversSorted[0]._id.toString(),
+      );
+      expect(response.body.receivers[0].praiseCount).toEqual(5);
+
+      expect(response.body.receivers[1]._id).toEqual(
+        receiversSorted[1]._id.toString(),
+      );
+      expect(response.body.receivers[1].praiseCount).toEqual(4);
+
+      expect(response.body.receivers[2]._id).toEqual(
+        receiversSorted[2]._id.toString(),
+      );
+      expect(response.body.receivers[2].praiseCount).toEqual(4);
+
+      expect(response.body.quantifiers).toHaveLength(4);
+      // expect(response.body.quantifiers[0].praiseCount).toEqual(9);
+
+      expect(response.body.quantifiers[0].finishedCount).toEqual(0);
+      expect(response.body.quantifiers[1].finishedCount).toEqual(0);
+      expect(response.body.quantifiers[2].finishedCount).toEqual(0);
+    });
+
+    test('200 response with json body containing assignments with PRAISE_QUANTIFIERS_ASSIGN_EVENLY=true', async function () {
+      const wallet = Wallet.createRandom();
+      await usersSeeder.seedUser({
+        identityEthAddress: wallet.address,
+        roles: ['USER', 'ADMIN'],
+      });
+
+      const receiver1 = await userAccountsSeeder.seedUserAccount();
+      const receiver2 = await userAccountsSeeder.seedUserAccount();
+      const receiver3 = await userAccountsSeeder.seedUserAccount();
+
+      const receiversSorted = [receiver1, receiver2, receiver3].sort((a, b) =>
+        a._id.toString().localeCompare(b._id.toString()),
+      );
+
+      const period = await periodsSeeder.seedPeriod();
+
+      const dayInPeriod = new Date(period.endDate.getTime());
+      dayInPeriod.setDate(period.endDate.getDate() - 1);
+
+      const quantifier = await userAccountsSeeder.seedUserAccount();
+
+      const praise = await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: dayInPeriod,
+      });
+
+      await quantificationsSeeder.seedQuantification({
+        praise: praise._id,
+        quantifier: quantifier._id,
+      });
+
+      await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver2._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver2._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver2._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver2._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver3._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver3._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver3._id,
+        createdAt: dayInPeriod,
+      });
+      await praiseSeeder.seedPraise({
+        receiver: receiver3._id,
+        createdAt: dayInPeriod,
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period._id,
+        setting: PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER._id,
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period._id,
+        setting: PRAISE_QUANTIFIERS_ASSIGN_EVENLY._id,
+        value: 'true',
+      });
+
+      await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const response = await request(server)
+        .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .send()
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(response.body._id).toEqual(period._id.toString());
+      expect(response.body.status).toEqual('QUANTIFY');
+
+      expect(response.body.receivers).toHaveLength(3);
+      expect(response.body.receivers[0]._id).toEqual(
+        receiversSorted[0]._id.toString(),
+      );
+      expect(response.body.receivers[0].praiseCount).toEqual(5);
+
+      expect(response.body.receivers[1]._id).toEqual(
+        receiversSorted[1]._id.toString(),
+      );
+      expect(response.body.receivers[1].praiseCount).toEqual(4);
+
+      expect(response.body.receivers[2]._id).toEqual(
+        receiversSorted[2]._id.toString(),
+      );
+      expect(response.body.receivers[2].praiseCount).toEqual(4);
+
+      const quantifiersWith9Praises = response.body.quantifiers.filter(
+        (quantifier: PeriodDetailsQuantifierDto) =>
+          quantifier.praiseCount === 9,
+      );
+      const quantifiersWith4Praises = response.body.quantifiers.filter(
+        (quantifier: PeriodDetailsQuantifierDto) =>
+          quantifier.praiseCount === 4,
+      );
+
+      expect(quantifiersWith9Praises).toHaveLength(2);
+      expect(quantifiersWith4Praises).toHaveLength(2);
+    });
+
+    test('200 response when praise items number = 200 and PRAISE_QUANTIFIERS_ASSIGN_EVENLY=true', async function () {
+      const wallet = Wallet.createRandom();
+      await usersSeeder.seedUser({
+        identityEthAddress: wallet.address,
+        roles: ['USER', 'ADMIN'],
+      });
+
+      const period = await periodsSeeder.seedPeriod();
+
+      const dayInPeriod = new Date(period.endDate.getTime());
+      dayInPeriod.setDate(period.endDate.getDate() - 1);
+
+      // create 20 receivers
+      for (let i = 0; i < 20; i++) {
+        await userAccountsSeeder.seedUserAccount();
+      }
+
+      const receivers = await userAccountsService.getModel().find().lean();
+
+      // create 200 praises and evenly distribute them among receivers
+      for (let i = 0; i < 200; i++) {
+        await praiseSeeder.seedPraise({
+          receiver: receivers[i % 20]._id,
+          createdAt: dayInPeriod,
+        });
+      }
+
+      const praiseItems = await praiseService.getModel().find().lean();
+
+      // create 3 quantifiers
+      for (let i = 0; i < 3; i++) {
+        await usersSeeder.seedUser({
+          roles: ['USER', 'QUANTIFIER'],
+        });
+      }
+
+      const quantifiers = await usersService
+        .getModel()
+        .find({ roles: 'QUANTIFIER' })
+        .lean();
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period._id,
+        setting: PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER._id,
+        value: 3,
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period._id,
+        setting: PRAISE_QUANTIFIERS_ASSIGN_EVENLY._id,
+        value: 'true',
+      });
+
+      const response = await request(server)
+        .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .send()
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      // TODO: check if we have 600 quantifications assigned to 3 quantifiers
+    });
+
+    test('400 response if periodId does not exist', async function () {
+      return await request(server)
+        .patch(`/periods/5f5d5f5d5f5d5f5d5f5d5f5d/assignQuantifiers`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .send()
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('400 response if period is not OPEN', async function () {
+      const period = await periodsSeeder.seedPeriod({ status: 'QUANTIFY' });
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .send()
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('400 response if praise has already been assigned for the period', async function () {
+      const period = await periodsSeeder.seedPeriod({ status: 'QUANTIFY' });
+
+      await request(server)
+        .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .send()
+        .expect('Content-Type', /json/);
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .send()
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('403 response if user is not ADMIN', async function () {
+      const period = await periodsSeeder.seedPeriod();
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)
+        .set('Authorization', `Bearer ${users[1].accessToken}`)
+        .send()
+        .expect('Content-Type', /json/)
+        .expect(403);
+    });
+
+    test('401 response with json body if user not authenticated', async function () {
+      const period = await periodsSeeder.seedPeriod();
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)
+        .send()
+        .expect('Content-Type', /json/)
+        .expect(401);
+    });
+  });
+
+  describe('PATCH /api/admin/periods/:periodId/replaceQuantifier', () => {
+    beforeEach(async () => {
+      await periodsService.getModel().deleteMany({});
+      await praiseService.getModel().deleteMany({});
+      await quantificationsService.getModel().deleteMany({});
+      await userAccountsService.getModel().deleteMany({});
+    });
+
+    it('200 response with json body containing period and affected praises', async function () {
+      const receiver1 = await userAccountsSeeder.seedUserAccount();
+
+      const period = await periodsSeeder.seedPeriod({
+        status: 'QUANTIFY',
+      });
+
+      const dayInPeriod = new Date(period.endDate.getTime());
+      dayInPeriod.setDate(period.endDate.getDate() - 1);
+
+      const praise1 = await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: dayInPeriod,
+      });
+      const praise2 = await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: dayInPeriod,
+      });
+      const praise3 = await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: dayInPeriod,
+      });
+
+      const originalQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      const newQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      await quantificationsSeeder.seedQuantification({
+        praise: praise1._id,
+        quantifier: originalQuantifier._id,
+        createdAt: dayInPeriod,
+      });
+      await quantificationsSeeder.seedQuantification({
+        praise: praise2._id,
+        quantifier: originalQuantifier._id,
+        createdAt: dayInPeriod,
+      });
+      await quantificationsSeeder.seedQuantification({
+        praise: praise3._id,
+        quantifier: originalQuantifier._id,
+        createdAt: dayInPeriod,
+      });
+
+      const FORM_DATA = {
+        currentQuantifierId: originalQuantifier._id.toString(),
+        newQuantifierId: newQuantifier._id.toString(),
+      };
+
+      const response = await request(server)
+        .patch(`/periods/${period._id.toString() as string}/replaceQuantifier`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .send(FORM_DATA)
+        .expect('Content-Type', /json/);
+
+      expect(200);
+      expect(response.body.period._id).toEqual(period._id.toString());
+      expect(response.body.period.quantifiers).toHaveLength(1);
+
+      expect(response.body.period.quantifiers[0]._id).toEqual(
+        newQuantifier._id.toString(),
+      );
+      expect(response.body.period.quantifiers[0].finishedCount).toEqual(0);
+
+      expect(response.body.praises.length).toEqual(3);
+      expect(
+        some(response.body.praises[0].quantifications, {
+          quantifier: newQuantifier._id.toString(),
+        }),
+      ).toBeTruthy;
+      expect(
+        some(response.body.praises[1].quantifications, {
+          quantifier: newQuantifier._id.toString(),
+        }),
+      ).toBeTruthy;
+      expect(
+        some(response.body.praises[2].quantifications, {
+          quantifier: newQuantifier._id.toString(),
+        }),
+      ).toBeTruthy;
+
+      expect(
+        some(response.body.praises[0].quantifications, {
+          quantifier: originalQuantifier._id.toString(),
+        }),
+      ).toBeFalsy;
+      expect(
+        some(response.body.praises[1].quantifications, {
+          quantifier: originalQuantifier._id.toString(),
+        }),
+      ).toBeFalsy;
+      expect(
+        some(response.body.praises[2].quantifications, {
+          quantifier: originalQuantifier._id.toString(),
+        }),
+      ).toBeFalsy;
+    });
+
+    test('400 response if periodId does not exist', async function () {
+      const originalQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      const newQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const FORM_DATA = {
+        currentQuantifierId: originalQuantifier._id.toString(),
+        newQuantifierId: newQuantifier._id.toString(),
+      };
+
+      return await request(server)
+        .patch(`/periods/5f5d5f5d5f5d5f5d5f5d5f5d/replaceQuantifier`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .set('Accept', 'application/json')
+        .send(FORM_DATA)
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('400 response if period is not QUANTIFY', async function () {
+      const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
+      const originalQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      const newQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const FORM_DATA = {
+        currentQuantifierId: originalQuantifier._id.toString(),
+        newQuantifierId: newQuantifier._id.toString(),
+      };
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/replaceQuantifier`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .set('Accept', 'application/json')
+        .send(FORM_DATA)
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('400 response if missing currentQuantifierId', async function () {
+      const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
+      const newQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const FORM_DATA = {
+        newQuantifierId: newQuantifier._id.toString(),
+      };
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/replaceQuantifier`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .set('Accept', 'application/json')
+        .send(FORM_DATA)
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('400 response if missing newQuantifierId', async function () {
+      const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
+      const originalQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const FORM_DATA = {
+        currentQuantifierId: originalQuantifier._id.toString(),
+      };
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/replaceQuantifier`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .set('Accept', 'application/json')
+        .send(FORM_DATA)
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('400 response currentQuantifierId is same as newQuantifierId', async function () {
+      const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
+      const originalQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const FORM_DATA = {
+        currentQuantifierId: originalQuantifier._id.toString(),
+        newQuantifierId: originalQuantifier._id.toString(),
+      };
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/replaceQuantifier`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .set('Accept', 'application/json')
+        .send(FORM_DATA)
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('400 response if original user does not exist', async function () {
+      const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
+      const newQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const FORM_DATA = {
+        currentQuantifierId: '5f5d5f5d5f5d5f5d5f5d5f5d',
+        newQuantifierId: newQuantifier._id.toString(),
+      };
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/replaceQuantifier`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .set('Accept', 'application/json')
+        .send(FORM_DATA)
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('400 response if replacement user does not exist', async function () {
+      const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
+      const originalQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const FORM_DATA = {
+        currentQuantifierId: originalQuantifier._id.toString(),
+        newQuantifierId: '5f5d5f5d5f5d5f5d5f5d5f5d',
+      };
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/replaceQuantifier`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .set('Accept', 'application/json')
+        .send(FORM_DATA)
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('400 response if replacement user is not a QUANTIFIER', async function () {
+      const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
+      const originalQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      const newQuantifier = await usersSeeder.seedUser({
+        roles: ['USER'],
+      });
+
+      const FORM_DATA = {
+        currentQuantifierId: originalQuantifier._id.toString(),
+        newQuantifierId: newQuantifier._id.toString(),
+      };
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/replaceQuantifier`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .set('Accept', 'application/json')
+        .send(FORM_DATA)
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('400 response if replacement user is already assigned to some of the same praise as original', async function () {
+      const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
+      const originalQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      const newQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const previousDay = new Date(period.endDate.getTime());
+      previousDay.setDate(period.endDate.getDate() - 5);
+
+      const receiver1 = await userAccountsSeeder.seedUserAccount();
+      const praise1 = await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: previousDay,
+      });
+      const praise2 = await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: previousDay,
+      });
+      const praise3 = await praiseSeeder.seedPraise({
+        receiver: receiver1._id,
+        createdAt: previousDay,
+      });
+
+      await quantificationsSeeder.seedQuantification({
+        praise: praise1._id,
+        quantifier: originalQuantifier._id,
+      });
+      await quantificationsSeeder.seedQuantification({
+        praise: praise2._id,
+        quantifier: originalQuantifier._id,
+      });
+      await quantificationsSeeder.seedQuantification({
+        praise: praise3._id,
+        quantifier: originalQuantifier._id,
+      });
+
+      await quantificationsSeeder.seedQuantification({
+        praise: praise1._id,
+        quantifier: newQuantifier._id,
+      });
+
+      const FORM_DATA = {
+        currentQuantifierId: originalQuantifier._id.toString(),
+        newQuantifierId: newQuantifier._id.toString(),
+      };
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/replaceQuantifier`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .set('Accept', 'application/json')
+        .send(FORM_DATA)
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('403 response if user is not ADMIN', async function () {
+      const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
+      const originalQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      const newQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const FORM_DATA = {
+        currentQuantifierId: originalQuantifier._id.toString(),
+        newQuantifierId: newQuantifier._id.toString(),
+      };
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/replaceQuantifier`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .set('Accept', 'application/json')
+        .send(FORM_DATA)
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('401 response if user is not authenticated', async function () {
+      const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
+      const originalQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+      const newQuantifier = await usersSeeder.seedUser({
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const FORM_DATA = {
+        currentQuantifierId: originalQuantifier._id.toString(),
+        newQuantifierId: newQuantifier._id.toString(),
+      };
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/replaceQuantifier`)
+        .set('Accept', 'application/json')
+        .send(FORM_DATA)
+        .expect('Content-Type', /json/)
+        .expect(401);
     });
   });
 });

@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Document, Types } from 'mongoose';
 import { EventLogTypeKey } from '../enums/event-log-type-key';
 import { Exclude } from 'class-transformer';
+import { IsString } from 'class-validator';
 
 export type EventLogTypeDocument = EventLogTypeKey & Document;
 
@@ -11,7 +12,8 @@ export class EventLogType {
   @Exclude()
   _id: Types.ObjectId;
 
-  @ApiProperty()
+  @ApiProperty({ required: true, example: 'PERMISSION' })
+  @IsString()
   @Prop({
     type: String,
     required: true,
@@ -20,14 +22,19 @@ export class EventLogType {
   })
   key: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    required: true,
+    example: 'An action that changes user permissions',
+  })
+  @IsString()
   @Prop({
     type: String,
     required: true,
   })
   label: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: true, example: "A user's permissions were changed" })
+  @IsString()
   @Prop({
     type: String,
     required: true,

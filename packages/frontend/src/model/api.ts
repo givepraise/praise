@@ -1,8 +1,8 @@
-import { ApiErrorResponseData } from 'api/dist/error/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import { selectorFamily, SerializableParam } from 'recoil';
 import { AccessToken } from './auth/auth';
 import { makeApiAuthClient } from '../utils/api';
+import { ApiErrorResponseData } from 'shared/interfaces/api-error-reponse-data.interface';
 
 export type RequestParams = {
   [key: string]: SerializableParam;
@@ -30,7 +30,7 @@ export const isResponseOk = <T>(
 ): response is AxiosResponse<T> => {
   const axiosResponse = response as AxiosResponse;
   if (!axiosResponse) return false;
-  return axiosResponse.status === 200;
+  return axiosResponse.status === 200 || axiosResponse.status === 201;
 };
 
 export const isApiResponseAxiosError = (

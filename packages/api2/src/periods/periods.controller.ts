@@ -9,7 +9,6 @@ import {
   SerializeOptions,
   UseGuards,
   UseInterceptors,
-  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
@@ -22,7 +21,6 @@ import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-seri
 import { PeriodPaginatedResponseDto } from './dto/period-paginated-response.dto';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
-import { Praise } from '@/praise/schemas/praise.schema';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { CreatePeriodInputDto } from './dto/create-period-input.dto';
 import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
@@ -31,7 +29,6 @@ import { PeriodDetailsDto } from './dto/period-details.dto';
 import { ReplaceQuantifierInputDto } from './dto/replace-quantifier-input.dto';
 import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.dto';
 import { PeriodAssignmentsService } from './services/period-assignments.service';
-import { PraiseModel } from '@/database/schemas/praise/12_praise.schema';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 
 @Controller('periods')
@@ -39,8 +36,8 @@ import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-u
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-// @UseGuards(PermissionsGuard)
-// @UseGuards(JwtAuthGuard)
+@UseGuards(PermissionsGuard)
+@UseGuards(JwtAuthGuard)
 export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,

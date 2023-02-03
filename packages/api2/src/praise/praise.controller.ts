@@ -4,7 +4,7 @@ import {
   Controller,
   Get,
   Param,
-  Put,
+  Patch,
   Query,
   SerializeOptions,
   UseGuards,
@@ -66,7 +66,7 @@ export class PraiseController {
     return this.praiseService.findOneById(id);
   }
 
-  @Put(':id/quantify')
+  @Patch(':id/quantify')
   @ApiOperation({ summary: 'Quantify praise item by id' })
   @ApiResponse({
     status: 200,
@@ -82,7 +82,7 @@ export class PraiseController {
     return this.praiseService.quantifyPraise(id, data);
   }
 
-  @Put('quantify')
+  @Patch('quantify')
   @ApiOperation({ summary: 'Quantify multiple praise items' })
   @ApiResponse({
     status: 200,

@@ -1,9 +1,10 @@
 import jwtDecode from 'jwt-decode';
 import { atom, selector, selectorFamily } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
-import { TokenSet, JwtTokenData } from 'api/dist/auth/types';
-import { UserRole } from 'api/dist/user/types';
-import { SingleUser } from '../user/users';
+import { UserRole } from '../user/enums/user-role.enum';
+import { SingleUser } from '@/model/user/users';
+import { JwtTokenData } from './interfaces/jwt-token-data.interface';
+import { TokenSet } from './interfaces/token-set.interface';
 
 const { persistAtom } = recoilPersist();
 
