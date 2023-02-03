@@ -56,7 +56,9 @@ export class QuantificationsService {
         );
       }
       const period = await this.periodService.findOneById(periodId);
-      query.createdAt = this.periodService.getPeriodDateRangeQuery(period);
+      query.createdAt = await this.periodService.getPeriodDateRangeQuery(
+        period,
+      );
     } else {
       if (startDate && endDate) {
         // If periodId is not set but startDate and endDate are set, use them to filter
