@@ -275,6 +275,12 @@ describe('UserController (E2E)', () => {
       expect(response.body.username).toBe('newUsername');
     });
 
+    test('400 response when trying to update not whitelisted fields', async () => {
+      await authorizedPatchRequest(`/users/${user._id}`, app, accessToken, {
+        identityEthAddress: '0x123',
+      }).expect(400);
+    });
+
     test('200 response with json body containing the user with useraccount', async () => {
       const userAccountFirst = await userAccountsSeeder.seedUserAccount({
         user: user._id,
