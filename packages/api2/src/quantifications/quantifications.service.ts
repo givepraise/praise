@@ -45,7 +45,7 @@ export class QuantificationsService {
   async export(
     options: ExportRequestOptions,
   ): Promise<Quantification[] | string> {
-    const { periodId, startDate, endDate, format } = options;
+    const { periodId, startDate, endDate, format = 'csv' } = options;
     const query = {} as any;
 
     if (periodId) {

@@ -98,7 +98,7 @@ export class PraiseService {
    * Do not populate relations
    */
   async export(options: ExportRequestOptions): Promise<Praise[] | string> {
-    const { periodId, startDate, endDate, format } = options;
+    const { periodId, startDate, endDate, format = 'csv' } = options;
     const query = {} as any;
 
     if (periodId) {

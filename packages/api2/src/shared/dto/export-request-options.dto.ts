@@ -15,7 +15,7 @@ export class ExportRequestOptions {
   @IsString()
   @IsIn(['csv', 'json'])
   @Type(() => String)
-  format: string;
+  format?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
