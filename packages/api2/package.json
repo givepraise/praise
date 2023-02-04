@@ -35,6 +35,7 @@
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
+    "duckdb": "^0.6.1",
     "env-cmd": "^10.1.0",
     "ethers": "^5.7.2",
     "json2csv": "^5.0.6",
