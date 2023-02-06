@@ -10,8 +10,15 @@ import {
   UseInterceptors,
   Res,
   UseGuards,
+  StreamableFile,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { PeriodsService } from './services/periods.service';
@@ -32,14 +39,18 @@ import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-u
 import { Response } from 'express';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
+import { ReadStream, createReadStream } from 'fs';
+import { join } from 'path';
+import { dataDir } from '@/shared/fs.shared';
+import * as fs from 'fs';
 
 @Controller('periods')
 @ApiTags('Periods')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseGuards(PermissionsGuard)
-@UseGuards(JwtAuthGuard)
+// @UseGuards(PermissionsGuard)
+// @UseGuards(JwtAuthGuard)
 export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,
@@ -54,20 +65,38 @@ export class PeriodsController {
     type: [Period],
   })
   @Permissions(Permission.PeriodExport)
-  @ApiParam({ name: 'format', enum: ['json', 'csv'], required: true })
+  @ApiQuery({
+    name: 'format',
+    enum: ['json', 'csv', 'parquet'],
+    required: true,
+  })
   async export(
     @Query('format') format: string,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<Period[] | undefined> {
-    const periods = await this.periodsService.export(format);
+  ): Promise<StreamableFile> {
+    const exportId = await this.periodsService.getExportId();
+    const exportFolder = `${dataDir}/export/periods/${exportId}`;
 
-    if (format === 'json') return periods as Period[];
+    if (fs.existsSync(exportFolder)) {
+      // Return the last insert id = folder name for current export
+      return exportId;
+    } else {
+      // If old export folder exists, delete it
+      if (fs.existsSync(`${dataDir}/export/periods`)) {
+        fs.rmSync(`${dataDir}/export/periods`, { recursive: true });
+      }
+      // Create new export folder
+      fs.mkdirSync(`${exportFolder}`, {
+        recursive: true,
+      });
+    }
 
+    const file = createReadStream(`${exportFolder}/periods.${format}`);
     res.set({
-      'Content-Type': 'text/csv',
-      'Content-Disposition': 'attachment; filename="periods.csv"',
+      'Content-Type': 'application/json',
+      'Content-Disposition': `attachment; filename="periods.${format}"`,
     });
-    res.send(periods);
+    return new StreamableFile(file);
   }
 
   @Get()

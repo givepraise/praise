@@ -1,7 +1,12 @@
 import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
-import { Period, PeriodDocument, PeriodModel } from '../schemas/periods.schema';
+import { Cursor, Types } from 'mongoose';
+import {
+  Period,
+  PeriodDocument,
+  PeriodExportSqlSchema,
+  PeriodModel,
+} from '../schemas/periods.schema';
 import { ServiceException } from '../../shared/service-exception';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { Pagination } from 'mongoose-paginate-ts';
@@ -22,8 +27,15 @@ import { PeriodDetailsGiverReceiverDto } from '../dto/period-details-giver-recei
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 import { QuantificationModel } from '@/database/schemas/quantification/quantification.schema';
-import { parse } from 'json2csv';
+
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
+import duckdb from 'duckdb';
+import * as fs from 'fs';
+import { join } from 'path';
+import { dataDir } from '@/shared/fs.shared';
+import * as csv from 'fast-csv';
+import { Stream } from 'stream';
+
 @Injectable()
 export class PeriodsService {
   constructor(
@@ -69,15 +81,70 @@ export class PeriodsService {
     return periodPagination;
   }
 
+  writeCsvAndJsonFiles = (periodsCursor: any, exportFolder: string) =>
+    new Promise((resolve) => {
+      const transform = (doc: PeriodDocument) => ({
+        _id: doc._id,
+        name: doc.name,
+        status: doc.status,
+        endDate: doc.endDate.toISOString(),
+        createdAt: doc.createdAt.toISOString(),
+        updatedAt: doc.updatedAt.toISOString(),
+      });
+
+      const csvWriter = csv.format({
+        headers: true,
+        transform,
+      });
+
+      csvWriter.pipe(fs.createWriteStream(`${exportFolder}/periods.csv`));
+
+      // Resolve promise when csvWriter is done
+      csvWriter.on('end', () => {
+        resolve(true);
+      });
+
+      // Write to csv and json files
+      periodsCursor.pipe(csvWriter);
+    });
+
   /**
    * returns all of the model in json format
    */
-  async export(format = 'csv'): Promise<Period[] | string> {
-    const periods = await this.periodModel.find().lean();
+  async export(format: string): Promise<string> {
+    console.time('export');
+    if (!format) {
+      throw new ServiceException('Format is required');
+    }
 
-    if (format !== 'csv') return periods;
+    // exportId is the _id of the last inserted period
+    const lastInsert = await this.periodModel
+      .find()
+      .limit(1)
+      .sort({ $natural: -1 });
 
-    const fields = [
+    if (!lastInsert) {
+      throw new ServiceException('No data to export');
+    }
+
+    const exportId = lastInsert[0]._id.toString();
+    const exportFolder = `${dataDir}/export/periods/${exportId}`;
+
+    if (fs.existsSync(exportFolder)) {
+      // Return the last insert id = folder name for current export
+      return exportId;
+    } else {
+      // If old export folder exists, delete it
+      if (fs.existsSync(`${dataDir}/export/periods`)) {
+        fs.rmSync(`${dataDir}/export/periods`, { recursive: true });
+      }
+      // Create new export folder
+      fs.mkdirSync(`${exportFolder}`, {
+        recursive: true,
+      });
+    }
+
+    const includeFields = [
       '_id',
       'name',
       'status',
@@ -86,7 +153,31 @@ export class PeriodsService {
       'updatedAt',
     ];
 
-    return periods.length > 0 ? parse(periods, { fields }) : fields.toString();
+    const periodsCursor = await this.periodModel
+      .find()
+      .select(includeFields.join(' '))
+      .cursor();
+
+    await this.writeCsvAndJsonFiles(periodsCursor, exportFolder);
+
+    const db = new duckdb.Database(':memory:');
+    db.exec(`CREATE TABLE periods (${PeriodExportSqlSchema})`);
+    db.exec(
+      `COPY periods FROM '${exportFolder}/periods.csv' (AUTO_DETECT TRUE, HEADER TRUE);`,
+    );
+    db.exec(
+      `COPY periods TO '${exportFolder}/periods.parquet' (FORMAT PARQUET, COMPRESSION ZSTD);`,
+    );
+    console.timeEnd('export');
+    return exportId;
+  }
+
+  /**
+   * The exportId is the _id of the last inserted period
+   */
+  async getExportId(): Promise<string> {
+    const latestAddedPeriod = await this.findLatestAddedPeriod();
+    return latestAddedPeriod._id.toString();
   }
 
   /**
@@ -99,6 +190,19 @@ export class PeriodsService {
     const period = await this.periodModel.findById(_id).lean();
     if (!period) throw new ServiceException('Period not found.');
     return period;
+  }
+
+  /**
+   * Find the lastest added period
+   */
+  async findLatestAddedPeriod(): Promise<Period> {
+    const period = await this.periodModel
+      .find()
+      .limit(1)
+      .sort({ $natural: -1 })
+      .lean();
+    if (!period[0]) throw new ServiceException('Period not found.');
+    return period[0];
   }
 
   /**

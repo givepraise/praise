@@ -62,3 +62,12 @@ export const PeriodModel = model<PeriodDocument, PaginatedPeriodModel>(
   'Period',
   PeriodSchema,
 );
+
+export const PeriodExportSqlSchema = `
+  _id VARCHAR, 
+  "name" VARCHAR, 
+  status VARCHAR, 
+  "endDate" TIMESTAMP, 
+  "createdAt" TIMESTAMP, 
+  "updatedAt" TIMESTAMP
+`;
