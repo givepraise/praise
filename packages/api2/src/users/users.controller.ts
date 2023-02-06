@@ -32,7 +32,7 @@ import { Permission } from '@/auth/enums/permission.enum';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { EventLogService } from '@/event-log/event-log.service';
 import { AuthGuard } from '@nestjs/passport';
-import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { UpdateUserRequestDto } from './dto/update-user-request.dto';
 import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';

@@ -4,7 +4,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
-import { ExposeId } from '@/shared/expose-id.decorator';
+import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 import { UserAccountNoUserId } from '@/useraccounts/dto/useraccount-no-user-id.dto';
 import { IsOptional, IsString } from 'class-validator';
 import { IsEthAddress } from '@/shared/validators.shared';

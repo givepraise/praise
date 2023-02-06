@@ -6,7 +6,7 @@ import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { has } from 'lodash';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
-import { ExposeId } from '@/shared/expose-id.decorator';
+import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 
 export type PraiseDocument = Praise & Document;
 

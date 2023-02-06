@@ -3,7 +3,7 @@ import { SchemaTypes, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { User } from '@/users/schemas/users.schema';
-import { ExposeId } from '@/shared/expose-id.decorator';
+import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 
 export type UserAccountDocument = UserAccount & Document;
 

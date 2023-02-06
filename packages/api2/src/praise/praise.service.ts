@@ -8,7 +8,7 @@ import {
   PraiseDocument,
   PraiseExportSqlSchema,
 } from './schemas/praise.schema';
-import { ServiceException } from '../shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 import { SettingsService } from '@/settings/settings.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';

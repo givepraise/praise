@@ -10,7 +10,7 @@ import {
   PeriodExportSqlSchema,
   PeriodModel,
 } from '../schemas/periods.schema';
-import { ServiceException } from '../../shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { CreatePeriodInputDto } from '../dto/create-period-input.dto';

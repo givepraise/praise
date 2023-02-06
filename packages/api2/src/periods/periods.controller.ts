@@ -27,7 +27,7 @@ import { PeriodsService } from './services/periods.service';
 import { Period } from './schemas/periods.schema';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
-import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
 import { PeriodPaginatedResponseDto } from './dto/period-paginated-response.dto';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { CreatePeriodInputDto } from './dto/create-period-input.dto';
@@ -42,7 +42,7 @@ import { Response } from 'express';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { allExportsDirPath } from '@/shared/fs.shared';
-import { ExportPeriodsInputDto } from './dto/export-periods-input.dto';
+import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -69,10 +69,9 @@ export class PeriodsController {
   @ApiProduces('application/json')
   @Permissions(Permission.PeriodExport)
   async export(
-    @Query() options: ExportPeriodsInputDto,
+    @Query() options: ExportInputFormatOnlyDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    console.time('export');
     const { format } = options;
     const exportFolderPath = `${allExportsDirPath}/periods`;
     // The export id is the last inserted id in the collection
@@ -96,7 +95,6 @@ export class PeriodsController {
         format === 'json' ? 'application/json' : 'application/octet-stream',
       'Content-Disposition': `attachment; filename="periods.${format}"`,
     });
-    console.timeEnd('export');
     return new StreamableFile(file);
   }
 

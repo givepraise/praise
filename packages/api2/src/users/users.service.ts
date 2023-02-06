@@ -12,7 +12,7 @@ import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { UpdateUserInputDto } from './dto/update-user-input.dto';
 import { CreateUserInputDto } from './dto/create-user-input.dto';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';

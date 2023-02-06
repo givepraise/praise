@@ -33,7 +33,7 @@ import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
-import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
 import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
 import { Response } from 'express';
 import { ExportInputDto } from '@/shared/dto/export-input.dto';

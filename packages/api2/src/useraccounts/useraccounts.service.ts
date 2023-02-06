@@ -10,10 +10,10 @@ import {
   UserAccountsExportSqlSchema,
 } from './schemas/useraccounts.schema';
 import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
-import { ServiceException } from '@/shared/service-exception';
 import { parse } from 'json2csv';
 import { exec } from '@/shared/duckdb.shared';
 import { allExportsDirPath } from '@/shared/fs.shared';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 
 @Injectable()
 export class UserAccountsService {

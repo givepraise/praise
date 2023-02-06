@@ -15,7 +15,7 @@ import { SetSettingDto } from './dto/set-setting.dto';
 import { Setting } from './schemas/settings.schema';
 import { SettingsService } from './settings.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
 import { AuthGuard } from '@nestjs/passport';
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
