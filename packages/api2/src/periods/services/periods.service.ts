@@ -1,6 +1,9 @@
+import * as fs from 'fs';
+import * as csv from 'fast-csv';
+import duckdb from 'duckdb';
 import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Cursor, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import {
   Period,
   PeriodDocument,
@@ -16,6 +19,8 @@ import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
+import { exportsDir } from '@/shared/fs.shared';
+import { exec } from '@/shared/duckdb.shared';
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { isString } from 'class-validator';
 import { PeriodDetailsQuantifierDto } from '../dto/period-details-quantifier.dto';
@@ -27,14 +32,7 @@ import { PeriodDetailsGiverReceiverDto } from '../dto/period-details-giver-recei
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 import { QuantificationModel } from '@/database/schemas/quantification/quantification.schema';
-
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
-import duckdb from 'duckdb';
-import * as fs from 'fs';
-import { join } from 'path';
-import { dataDir } from '@/shared/fs.shared';
-import * as csv from 'fast-csv';
-import { Stream } from 'stream';
 
 @Injectable()
 export class PeriodsService {
@@ -81,69 +79,8 @@ export class PeriodsService {
     return periodPagination;
   }
 
-  writeCsvAndJsonFiles = (periodsCursor: any, exportFolder: string) =>
-    new Promise((resolve) => {
-      const transform = (doc: PeriodDocument) => ({
-        _id: doc._id,
-        name: doc.name,
-        status: doc.status,
-        endDate: doc.endDate.toISOString(),
-        createdAt: doc.createdAt.toISOString(),
-        updatedAt: doc.updatedAt.toISOString(),
-      });
-
-      const csvWriter = csv.format({
-        headers: true,
-        transform,
-      });
-
-      csvWriter.pipe(fs.createWriteStream(`${exportFolder}/periods.csv`));
-
-      // Resolve promise when csvWriter is done
-      csvWriter.on('end', () => {
-        resolve(true);
-      });
-
-      // Write to csv and json files
-      periodsCursor.pipe(csvWriter);
-    });
-
-  /**
-   * returns all of the model in json format
-   */
-  async export(format: string): Promise<string> {
-    console.time('export');
-    if (!format) {
-      throw new ServiceException('Format is required');
-    }
-
-    // exportId is the _id of the last inserted period
-    const lastInsert = await this.periodModel
-      .find()
-      .limit(1)
-      .sort({ $natural: -1 });
-
-    if (!lastInsert) {
-      throw new ServiceException('No data to export');
-    }
-
-    const exportId = lastInsert[0]._id.toString();
-    const exportFolder = `${dataDir}/export/periods/${exportId}`;
-
-    if (fs.existsSync(exportFolder)) {
-      // Return the last insert id = folder name for current export
-      return exportId;
-    } else {
-      // If old export folder exists, delete it
-      if (fs.existsSync(`${dataDir}/export/periods`)) {
-        fs.rmSync(`${dataDir}/export/periods`, { recursive: true });
-      }
-      // Create new export folder
-      fs.mkdirSync(`${exportFolder}`, {
-        recursive: true,
-      });
-    }
-
+  async generateCsvExport() {
+    // Fields to include in the csv
     const includeFields = [
       '_id',
       'name',
@@ -153,23 +90,70 @@ export class PeriodsService {
       'updatedAt',
     ];
 
-    const periodsCursor = await this.periodModel
-      .find()
-      .select(includeFields.join(' '))
-      .cursor();
+    // Serialization rules
+    const transform = (doc: PeriodDocument) => ({
+      _id: doc._id,
+      name: doc.name,
+      status: doc.status,
+      endDate: doc.endDate.toISOString(),
+      createdAt: doc.createdAt.toISOString(),
+      updatedAt: doc.updatedAt.toISOString(),
+    });
 
-    await this.writeCsvAndJsonFiles(periodsCursor, exportFolder);
+    const exportId = await this.getExportId();
+    const exportFolderPath = `${exportsDir}/periods/${exportId}`;
 
+    // Create the export folder if it doesn't exist
+    if (!fs.existsSync(exportFolderPath)) {
+      fs.mkdirSync(exportFolderPath, { recursive: true });
+    }
+
+    // Return a promise that resolves when the csv is done
+    return new Promise((resolve) => {
+      const periodsCursor = this.periodModel
+        .find()
+        .select(includeFields.join(' '))
+        .cursor();
+
+      // Create a csv writer that transforms the data using our rules
+      const csvWriter = csv.format({
+        headers: true,
+        transform,
+      });
+
+      // Pipe the csvWriter to a file
+      csvWriter.pipe(fs.createWriteStream(`${exportFolderPath}/periods.csv`));
+
+      // Resolve promise when csvWriter is done
+      csvWriter.on('end', () => {
+        resolve(true);
+      });
+
+      // Pipe the cursor to the csvWriter
+      periodsCursor.pipe(csvWriter);
+    });
+  }
+
+  /**
+   * Generates all export files - csv and parquet
+   */
+  async generateAllExports() {
+    const exportId = await this.getExportId();
+    const exportFolderPath = `${exportsDir}/periods/${exportId}`;
+
+    await this.generateCsvExport();
+
+    // Create a duckdb database, import the csv file, and export it to parquet
     const db = new duckdb.Database(':memory:');
-    db.exec(`CREATE TABLE periods (${PeriodExportSqlSchema})`);
-    db.exec(
-      `COPY periods FROM '${exportFolder}/periods.csv' (AUTO_DETECT TRUE, HEADER TRUE);`,
+    await exec(db, `CREATE TABLE periods (${PeriodExportSqlSchema})`);
+    await exec(
+      db,
+      `COPY periods FROM '${exportFolderPath}/periods.csv' (AUTO_DETECT TRUE, HEADER TRUE);`,
     );
-    db.exec(
-      `COPY periods TO '${exportFolder}/periods.parquet' (FORMAT PARQUET, COMPRESSION ZSTD);`,
+    await exec(
+      db,
+      `COPY periods TO '${exportFolderPath}/periods.parquet' (FORMAT PARQUET, COMPRESSION ZSTD);`,
     );
-    console.timeEnd('export');
-    return exportId;
   }
 
   /**
