@@ -17,6 +17,9 @@ import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto'
 import { Period, PeriodModel } from '@/periods/schemas/periods.schema';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '@/periods/services/periods.service';
+import { parse } from 'json2csv';
+import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
+import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
 
 @Injectable()
 export class PraiseService {
@@ -88,6 +91,60 @@ export class PraiseService {
       throw new ServiceException('Failed to paginate praise data');
 
     return praisePagination;
+  }
+
+  /**
+   * returns all of the model in json format
+   * Do not populate relations
+   */
+  async export(options: ExportRequestOptions): Promise<Praise[] | string> {
+    const { periodId, startDate, endDate, format } = options;
+    const query = {} as any;
+
+    if (periodId) {
+      if (startDate || endDate) {
+        // If periodId is set, startDate and endDate should not be set
+        throw new ServiceException(
+          'Invalid date filtering option. When periodId is set, startDate and endDate should not be set.',
+        );
+      }
+      const period = await this.periodService.findOneById(periodId);
+      query.createdAt = await this.periodService.getPeriodDateRangeQuery(
+        period,
+      );
+    } else {
+      if (startDate && endDate) {
+        // If periodId is not set but startDate and endDate are set, use them to filter
+        query.createdAt = {
+          $gte: startDate,
+          $lte: endDate,
+        };
+      } else if (startDate || endDate) {
+        // If periodId is not set and only one of startDate and endDate is set, throw an error
+        throw new ServiceException(
+          'Invalid date filtering option. When periodId is not set, both startDate and endDate should be set.',
+        );
+      }
+    }
+
+    const praises = await this.praiseModel.find(query).lean();
+
+    if (format !== 'csv') return praises;
+
+    const fields = [
+      '_id',
+      'giver',
+      'forwarder',
+      'receiver',
+      'reason',
+      'reasonRaw',
+      'score',
+      'sourceId',
+      'sourceName',
+      'createdAt',
+      'updatedAt',
+    ];
+    return praises.length > 0 ? parse(praises, { fields }) : fields.toString();
   }
 
   /**
@@ -394,5 +451,29 @@ export class PraiseService {
     if (!period || period.length === 0) return undefined;
 
     return period[0];
+  };
+
+  /**
+   * Count Praise created within any given date range
+   *
+   * @param {PeriodDateRange[]} dateRanges
+   * @param {object} [match={}]
+   * @returns {Promise<number>}
+   */
+  countPraiseWithinDateRanges = async (
+    dateRanges: PeriodDateRangeDto[],
+    match: object = {},
+  ): Promise<number> => {
+    const withinDateRangeQueries: { createdAt: PeriodDateRangeDto }[] =
+      dateRanges.map((q) => ({
+        createdAt: q,
+      }));
+
+    const assignedPraiseCount: number = await this.praiseModel.count({
+      $or: withinDateRangeQueries,
+      ...match,
+    });
+
+    return assignedPraiseCount;
   };
 }

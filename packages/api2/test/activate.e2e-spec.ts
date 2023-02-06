@@ -21,6 +21,9 @@ import { ActivateModule } from '@/activate/activate.module';
 import { EventLogModule } from '@/event-log/event-log.module';
 import { EventLogService } from '@/event-log/__mocks__/event-log.service';
 import { UsersService } from '@/users/users.service';
+import { User } from '@/users/schemas/users.schema';
+import { PeriodsModule } from '@/periods/periods.module';
+import { PraiseModule } from '@/praise/praise.module';
 
 describe('EventLog (E2E)', () => {
   let app: INestApplication;
@@ -39,6 +42,8 @@ describe('EventLog (E2E)', () => {
         UserAccountsModule,
         ActivateModule,
         EventLogModule,
+        PeriodsModule,
+        PraiseModule,
       ],
       providers: [
         UsersSeeder,
@@ -54,6 +59,8 @@ describe('EventLog (E2E)', () => {
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
       }),
     );
     app.useGlobalFilters(new ServiceExceptionFilter());
@@ -287,6 +294,9 @@ describe('EventLog (E2E)', () => {
       expect(user.identityEthAddress).toBe(wallet.address);
       expect(user.rewardsEthAddress).toBe(wallet.address);
       expect(user.username).toBe(ua.name);
+
+      expect(user).toBeProperlySerialized();
+      expect(user).toBeValidClass(User);
     });
   });
 });

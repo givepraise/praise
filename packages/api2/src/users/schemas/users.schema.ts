@@ -1,7 +1,7 @@
 import { Exclude, Type } from 'class-transformer';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { Types, model } from 'mongoose';
+import { Types } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { ExposeId } from '@/shared/expose-id.decorator';
