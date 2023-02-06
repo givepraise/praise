@@ -122,3 +122,17 @@ export const PraiseModel = model<PraiseDocument, Pagination<PraiseDocument>>(
   'Praise',
   PraiseSchema,
 );
+
+export const PraiseExportSqlSchema = `
+  _id VARCHAR, 
+  giver VARCHAR, 
+  forwarder VARCHAR, 
+  receiver VARCHAR, 
+  reason VARCHAR, 
+  "reasonRaw" VARCHAR, 
+  score DOUBLE, 
+  "sourceId" VARCHAR, 
+  "sourceName" VARCHAR, 
+  "createdAt" TIMESTAMP, 
+  "updatedAt" TIMESTAMP
+`;

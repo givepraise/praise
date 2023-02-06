@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import {
   BadRequestException,
   Body,
@@ -8,10 +9,18 @@ import {
   Query,
   Res,
   SerializeOptions,
+  StreamableFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiProduces,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { isArray } from 'class-validator';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
@@ -28,15 +37,15 @@ import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-seri
 import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
 import { Response } from 'express';
 import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
+import { allExportsDirPath } from '@/shared/fs.shared';
 
 @Controller('praise')
 @ApiTags('Praise')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseInterceptors(MongooseClassSerializerInterceptor(Praise))
-@UseGuards(PermissionsGuard)
-@UseGuards(JwtAuthGuard)
+// @UseGuards(PermissionsGuard)
+// @UseGuards(JwtAuthGuard)
 export class PraiseController {
   constructor(private readonly praiseService: PraiseService) {}
 
@@ -47,6 +56,7 @@ export class PraiseController {
     description: 'Paginated praise items',
     type: PraisePaginatedResponseDto,
   })
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
   @Permissions(Permission.PraiseView)
   async findAllPaginated(
     @Query() options: PraisePaginatedQueryDto,
@@ -56,25 +66,43 @@ export class PraiseController {
 
   @Get('export')
   @ApiOperation({ summary: 'Export Praises document to json or csv' })
-  @ApiResponse({
-    status: 200,
-    description: 'Praise Export',
-    type: [Praise],
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
   })
+  @ApiProduces('application/octet-stream')
+  @ApiProduces('application/json')
   @Permissions(Permission.UsersExport)
   async export(
     @Query() options: ExportRequestOptions,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<Praise[] | undefined> {
-    const praises = await this.praiseService.export(options);
+  ): Promise<StreamableFile> {
+    const { format } = options;
+    const exportsRootDirName = `${allExportsDirPath}/praise`;
+    const exportDirName = await this.praiseService.getExportDirName();
+    const exportId = this.praiseService.getExportId(options);
+    const exportFilePath = `${exportsRootDirName}/${exportDirName}/${exportId}/praise.${format}`;
 
-    if (options.format === 'json') return praises as Praise[];
+    // Cached export don't exist, clear cache and generate new export
+    if (!fs.existsSync(exportFilePath)) {
+      if (!fs.existsSync(`${exportsRootDirName}/${exportDirName}`)) {
+        fs.rmSync(exportsRootDirName, { recursive: true, force: true });
+      }
 
+      console.log("Export file doesn't exist, generating new export files");
+      // Generate new export files
+      await this.praiseService.generateAllExports(options);
+    }
+
+    const file = fs.createReadStream(exportFilePath);
     res.set({
-      'Content-Type': 'text/csv',
-      'Content-Disposition': 'attachment; filename="praise.csv"',
+      'Content-Type':
+        format === 'json' ? 'application/json' : 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="praise.${format}"`,
     });
-    res.send(praises);
+    return new StreamableFile(file);
   }
 
   @Get(':id')
@@ -85,6 +113,7 @@ export class PraiseController {
     type: Praise,
   })
   @Permissions(Permission.PraiseView)
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
   @ApiParam({ name: 'id', type: String })
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -100,6 +129,7 @@ export class PraiseController {
     type: [Praise],
   })
   @Permissions(Permission.PraiseQuantify)
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
   @ApiParam({ name: 'id', type: String })
   async quantify(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -116,6 +146,7 @@ export class PraiseController {
     type: [Praise],
   })
   @Permissions(Permission.PraiseQuantify)
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
   async quantifyMultiple(
     @Body() data: QuantifyMultipleInputDto,
   ): Promise<Praise[]> {

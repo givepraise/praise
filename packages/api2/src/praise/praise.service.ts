@@ -1,7 +1,13 @@
+import * as fs from 'fs';
+import * as csv from 'fast-csv';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-
-import { PraiseModel, Praise, PraiseDocument } from './schemas/praise.schema';
+import {
+  PraiseModel,
+  Praise,
+  PraiseDocument,
+  PraiseExportSqlSchema,
+} from './schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 import { SettingsService } from '@/settings/settings.service';
@@ -20,7 +26,10 @@ import { PeriodsService } from '@/periods/services/periods.service';
 import { parse } from 'json2csv';
 import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
 import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
-
+import { allExportsDirPath } from '@/shared/fs.shared';
+import { exec } from '@/shared/duckdb.shared';
+import duckdb from 'duckdb';
+import crypto from 'crypto';
 @Injectable()
 export class PraiseService {
   constructor(
@@ -93,12 +102,8 @@ export class PraiseService {
     return praisePagination;
   }
 
-  /**
-   * returns all of the model in json format
-   * Do not populate relations
-   */
-  async export(options: ExportRequestOptions): Promise<Praise[] | string> {
-    const { periodId, startDate, endDate, format = 'csv' } = options;
+  async generateCsvExport(options: ExportRequestOptions) {
+    const { periodId, startDate, endDate } = options;
     const query = {} as any;
 
     if (periodId) {
@@ -127,11 +132,8 @@ export class PraiseService {
       }
     }
 
-    const praises = await this.praiseModel.find(query).lean();
-
-    if (format !== 'csv') return praises;
-
-    const fields = [
+    // Fields to include in the csv
+    const includeFields = [
       '_id',
       'giver',
       'forwarder',
@@ -144,7 +146,97 @@ export class PraiseService {
       'createdAt',
       'updatedAt',
     ];
-    return praises.length > 0 ? parse(praises, { fields }) : fields.toString();
+
+    // Serialization rules
+    const transform = (doc: PraiseDocument) => ({
+      _id: doc._id,
+      giver: doc.giver._id,
+      forwarder: doc.forwarder ? doc.forwarder._id : null,
+      receiver: doc.receiver._id,
+      reason: doc.reason,
+      reasonRaw: doc.reasonRaw,
+      score: doc.score,
+      sourceId: doc.sourceId,
+      sourceName: doc.sourceName,
+      createdAt: doc.createdAt.toISOString(),
+      updatedAt: doc.updatedAt.toISOString(),
+    });
+
+    const exportDirName = await this.getExportDirName();
+    const exportId = this.getExportId(options);
+    const exportDirPath = `${allExportsDirPath}/praise/${exportDirName}/${exportId}`;
+
+    // Create the export folder if it doesn't exist
+    if (!fs.existsSync(exportDirPath)) {
+      fs.mkdirSync(exportDirPath, { recursive: true });
+    }
+
+    // Return a promise that resolves when the csv is done
+    return new Promise((resolve) => {
+      const cursor = this.praiseModel
+        .find(query)
+        .select(includeFields.join(' '))
+        .cursor();
+
+      // Create a csv writer that transforms the data using our rules
+      const csvWriter = csv.format({
+        headers: true,
+        transform,
+      });
+
+      // Pipe the csvWriter to a file
+      csvWriter.pipe(fs.createWriteStream(`${exportDirPath}/praise.csv`));
+
+      // Resolve promise when csvWriter is done
+      csvWriter.on('end', () => {
+        resolve(true);
+      });
+
+      // Pipe the cursor to the csvWriter
+      cursor.pipe(csvWriter);
+    });
+  }
+
+  /**
+   * Generates all export files - csv and parquet
+   */
+  async generateAllExports(options: ExportRequestOptions) {
+    const exportDirName = await this.getExportDirName();
+    const exportId = this.getExportId(options);
+    const exportDirPath = `${allExportsDirPath}/praise/${exportDirName}/${exportId}`;
+
+    await this.generateCsvExport(options);
+
+    // Create a duckdb database, import the csv file, and export it to parquet
+    const db = new duckdb.Database(':memory:');
+    await exec(db, `CREATE TABLE praise (${PraiseExportSqlSchema})`);
+    await exec(
+      db,
+      `COPY praise FROM '${exportDirPath}/praise.csv' (AUTO_DETECT TRUE, HEADER TRUE);`,
+    );
+    await exec(
+      db,
+      `COPY praise TO '${exportDirPath}/praise.parquet' (FORMAT PARQUET, COMPRESSION ZSTD);`,
+    );
+  }
+
+  /**
+   * The export directory name is the _id of the last inserted document
+   */
+  async getExportDirName(): Promise<string> {
+    const latestAdded = await this.findLatestAdded();
+    return latestAdded._id.toString();
+  }
+
+  /**
+   *  Create a hashed id based on the export options excluding export format
+   */
+  getExportId(options: ExportRequestOptions): string {
+    const { periodId, startDate, endDate } = options;
+    return crypto
+      .createHash('sha256')
+      .update(JSON.stringify({ periodId, startDate, endDate }))
+      .digest('hex');
   }
 
   /**
@@ -177,6 +269,19 @@ export class PraiseService {
     if (!praise) throw new ServiceException('Praise item not found.');
 
     return praise;
+  }
+
+  /**
+   * Find the lastest added praise
+   */
+  async findLatestAdded(): Promise<Praise> {
+    const praise = await this.praiseModel
+      .find()
+      .limit(1)
+      .sort({ $natural: -1 })
+      .lean();
+    if (!praise[0]) throw new ServiceException('Praise not found.');
+    return praise[0];
   }
 
   /**

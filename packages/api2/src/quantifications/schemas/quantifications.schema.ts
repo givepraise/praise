@@ -73,3 +73,15 @@ export class Quantification {
 
 const QuantificationsSchema = SchemaFactory.createForClass(Quantification);
 export { QuantificationsSchema };
+
+export const QuantificationsExportSqlSchema = `
+  _id VARCHAR, 
+  praise VARCHAR, 
+  quantifier VARCHAR, 
+  score INTEGER, 
+  "scoreRealized" DOUBLE, 
+  dismissed BOOLEAN, 
+  "duplicatePraise" VARCHAR, 
+  "createdAt" TIMESTAMP, 
+  "updatedAt" TIMESTAMP
+`;

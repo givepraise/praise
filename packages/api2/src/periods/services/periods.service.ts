@@ -19,7 +19,7 @@ import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { QuantificationsService } from '@/quantifications/quantifications.service';
-import { exportsDir } from '@/shared/fs.shared';
+import { allExportsDirPath } from '@/shared/fs.shared';
 import { exec } from '@/shared/duckdb.shared';
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { isString } from 'class-validator';
@@ -100,17 +100,17 @@ export class PeriodsService {
       updatedAt: doc.updatedAt.toISOString(),
     });
 
-    const exportId = await this.getExportId();
-    const exportFolderPath = `${exportsDir}/periods/${exportId}`;
+    const exportDirName = await this.getExportDirName();
+    const exportDirPath = `${allExportsDirPath}/periods/${exportDirName}`;
 
     // Create the export folder if it doesn't exist
-    if (!fs.existsSync(exportFolderPath)) {
-      fs.mkdirSync(exportFolderPath, { recursive: true });
+    if (!fs.existsSync(exportDirPath)) {
+      fs.mkdirSync(exportDirPath, { recursive: true });
     }
 
     // Return a promise that resolves when the csv is done
     return new Promise((resolve) => {
-      const periodsCursor = this.periodModel
+      const cursor = this.periodModel
         .find()
         .select(includeFields.join(' '))
         .cursor();
@@ -122,7 +122,7 @@ export class PeriodsService {
       });
 
       // Pipe the csvWriter to a file
-      csvWriter.pipe(fs.createWriteStream(`${exportFolderPath}/periods.csv`));
+      csvWriter.pipe(fs.createWriteStream(`${exportDirPath}/periods.csv`));
 
       // Resolve promise when csvWriter is done
       csvWriter.on('end', () => {
@@ -130,7 +130,7 @@ export class PeriodsService {
       });
 
       // Pipe the cursor to the csvWriter
-      periodsCursor.pipe(csvWriter);
+      cursor.pipe(csvWriter);
     });
   }
 
@@ -138,8 +138,8 @@ export class PeriodsService {
    * Generates all export files - csv and parquet
    */
   async generateAllExports() {
-    const exportId = await this.getExportId();
-    const exportFolderPath = `${exportsDir}/periods/${exportId}`;
+    const exportDirName = await this.getExportDirName();
+    const exportDirPath = `${allExportsDirPath}/periods/${exportDirName}`;
 
     await this.generateCsvExport();
 
@@ -148,20 +148,20 @@ export class PeriodsService {
     await exec(db, `CREATE TABLE periods (${PeriodExportSqlSchema})`);
     await exec(
       db,
-      `COPY periods FROM '${exportFolderPath}/periods.csv' (AUTO_DETECT TRUE, HEADER TRUE);`,
+      `COPY periods FROM '${exportDirPath}/periods.csv' (AUTO_DETECT TRUE, HEADER TRUE);`,
     );
     await exec(
       db,
-      `COPY periods TO '${exportFolderPath}/periods.parquet' (FORMAT PARQUET, COMPRESSION ZSTD);`,
+      `COPY periods TO '${exportDirPath}/periods.parquet' (FORMAT PARQUET, COMPRESSION ZSTD);`,
     );
   }
 
   /**
-   * The exportId is the _id of the last inserted period
+   * The export directory name is the _id of the last inserted document
    */
-  async getExportId(): Promise<string> {
-    const latestAddedPeriod = await this.findLatestAddedPeriod();
-    return latestAddedPeriod._id.toString();
+  async getExportDirName(): Promise<string> {
+    const latestAdded = await this.findLatestAdded();
+    return latestAdded._id.toString();
   }
 
   /**
@@ -177,9 +177,9 @@ export class PeriodsService {
   }
 
   /**
-   * Find the lastest added period
+   * Find the latest added period
    */
-  async findLatestAddedPeriod(): Promise<Period> {
+  async findLatestAdded(): Promise<Period> {
     const period = await this.periodModel
       .find()
       .limit(1)

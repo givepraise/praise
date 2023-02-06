@@ -1,7 +1,13 @@
+import * as fs from 'fs';
+import * as csv from 'fast-csv';
 import { SettingsService } from '@/settings/settings.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Quantification } from './schemas/quantifications.schema';
+import {
+  QuantificationsExportSqlSchema,
+  Quantification,
+  QuantificationDocument,
+} from './schemas/quantifications.schema';
 import { sum, has } from 'lodash';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '../shared/service-exception';
@@ -10,6 +16,10 @@ import { Inject, forwardRef } from '@nestjs/common';
 import { parse } from 'json2csv';
 import { PeriodsService } from '@/periods/services/periods.service';
 import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
+import { allExportsDirPath } from '@/shared/fs.shared';
+import { exec } from '@/shared/duckdb.shared';
+import duckdb from 'duckdb';
+import crypto from 'crypto';
 
 export class QuantificationsService {
   constructor(
@@ -94,6 +104,144 @@ export class QuantificationsService {
       : fields.toString();
   }
 
+  async generateCsvExport(options: ExportRequestOptions) {
+    const { periodId, startDate, endDate } = options;
+    const query = {} as any;
+
+    if (periodId) {
+      if (startDate || endDate) {
+        // If periodId is set, startDate and endDate should not be set
+        throw new ServiceException(
+          'Invalid date filtering option. When periodId is set, startDate and endDate should not be set.',
+        );
+      }
+      const period = await this.periodService.findOneById(periodId);
+      query.createdAt = await this.periodService.getPeriodDateRangeQuery(
+        period,
+      );
+    } else {
+      if (startDate && endDate) {
+        // If periodId is not set but startDate and endDate are set, use them to filter
+        query.createdAt = {
+          $gte: startDate,
+          $lte: endDate,
+        };
+      } else if (startDate || endDate) {
+        // If periodId is not set and only one of startDate and endDate is set, throw an error
+        throw new ServiceException(
+          'Invalid date filtering option. When periodId is not set, both startDate and endDate should be set.',
+        );
+      }
+    }
+
+    // Fields to include in the csv
+    const includeFields = [
+      '_id',
+      'praise',
+      'quantifier',
+      'score',
+      'scoreRealized',
+      'dismissed',
+      'duplicatePraise',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    // Serialization rules
+    const transform = (doc: any) => ({
+      _id: doc._id,
+      praise: doc.praise,
+      quantifier: doc.quantifier,
+      score: doc.score,
+      scoreRealized: doc.scoreRealized,
+      dismissed: doc.dismissed,
+      duplicatePraise: doc.duplicatePraise,
+      createdAt: doc.createdAt.toISOString(),
+      updatedAt: doc.updatedAt.toISOString(),
+    });
+
+    const exportDirName = await this.getExportDirName();
+    const exportId = this.getExportId(options);
+    const exportDirPath = `${allExportsDirPath}/quantifications/${exportDirName}/${exportId}`;
+
+    // Create the export folder if it doesn't exist
+    if (!fs.existsSync(exportDirPath)) {
+      fs.mkdirSync(exportDirPath, { recursive: true });
+    }
+
+    // Return a promise that resolves when the csv is done
+    return new Promise((resolve) => {
+      const cursor = this.quantificationModel
+        .find(query)
+        .select(includeFields.join(' '))
+        .cursor();
+
+      // Create a csv writer that transforms the data using our rules
+      const csvWriter = csv.format({
+        headers: true,
+        transform,
+      });
+
+      // Pipe the csvWriter to a file
+      csvWriter.pipe(
+        fs.createWriteStream(`${exportDirPath}/quantifications.csv`),
+      );
+
+      // Resolve promise when csvWriter is done
+      csvWriter.on('end', () => {
+        resolve(true);
+      });
+
+      // Pipe the cursor to the csvWriter
+      cursor.pipe(csvWriter);
+    });
+  }
+
+  /**
+   * Generates all export files - csv and parquet
+   */
+  async generateAllExports(options: ExportRequestOptions) {
+    const exportDirName = await this.getExportDirName();
+    const exportId = this.getExportId(options);
+    const exportDirPath = `${allExportsDirPath}/quantifications/${exportDirName}/${exportId}`;
+
+    await this.generateCsvExport(options);
+
+    // Create a duckdb database, import the csv file, and export it to parquet
+    const db = new duckdb.Database(':memory:');
+    await exec(
+      db,
+      `CREATE TABLE quantifications (${QuantificationsExportSqlSchema})`,
+    );
+    await exec(
+      db,
+      `COPY quantifications FROM '${exportDirPath}/quantifications.csv' (AUTO_DETECT TRUE, HEADER TRUE);`,
+    );
+    await exec(
+      db,
+      `COPY quantifications TO '${exportDirPath}/quantifications.parquet' (FORMAT PARQUET, COMPRESSION ZSTD);`,
+    );
+  }
+
+  /**
+   * The export directory name is the _id of the last inserted document
+   */
+  async getExportDirName(): Promise<string> {
+    const latestAdded = await this.findLatestAdded();
+    return latestAdded._id.toString();
+  }
+
+  /**
+   *  Create a hashed id based on the export options excluding export format
+   */
+  getExportId(options: ExportRequestOptions): string {
+    const { periodId, startDate, endDate } = options;
+    return crypto
+      .createHash('sha256')
+      .update(JSON.stringify({ periodId, startDate, endDate }))
+      .digest('hex');
+  }
+
   /**
    * Returns a quantification by its id
    *
@@ -108,6 +256,19 @@ export class QuantificationsService {
       throw new ServiceException('Quantification item not found.');
 
     return quantification;
+  }
+
+  /**
+   * Find the lastest added quantification
+   */
+  async findLatestAdded(): Promise<Quantification> {
+    const quantifications = await this.quantificationModel
+      .find()
+      .limit(1)
+      .sort({ $natural: -1 })
+      .lean();
+    if (!quantifications[0]) throw new ServiceException('Praise not found.');
+    return quantifications[0];
   }
 
   /**

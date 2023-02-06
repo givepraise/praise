@@ -13,7 +13,14 @@ import {
   UseGuards,
   StreamableFile,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiProduces,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { PeriodsService } from './services/periods.service';
@@ -34,8 +41,7 @@ import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-u
 import { Response } from 'express';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
-import { createReadStream } from 'fs';
-import { exportsDir } from '@/shared/fs.shared';
+import { allExportsDirPath } from '@/shared/fs.shared';
 import { ExportPeriodsInputDto } from './dto/export-periods-input.dto';
 
 @Controller('periods')
@@ -53,11 +59,14 @@ export class PeriodsController {
 
   @Get('export')
   @ApiOperation({ summary: 'Export periods document to json or csv' })
-  @ApiResponse({
-    status: 200,
-    description: 'Periods Export',
-    type: [Period],
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
   })
+  @ApiProduces('application/octet-stream')
+  @ApiProduces('application/json')
   @Permissions(Permission.PeriodExport)
   async export(
     @Query() options: ExportPeriodsInputDto,
@@ -65,15 +74,15 @@ export class PeriodsController {
   ): Promise<StreamableFile> {
     console.time('export');
     const { format } = options;
-    const exportFolderPath = `${exportsDir}/periods`;
+    const exportFolderPath = `${allExportsDirPath}/periods`;
     // The export id is the last inserted id in the collection
-    const exportId = await this.periodsService.getExportId();
+    const exportId = await this.periodsService.getExportDirName();
     const exportFilePath = `${exportFolderPath}/${exportId}/periods.${format}`;
 
     // Cached export don't exist, clear cache and generate new export
     if (!fs.existsSync(exportFilePath)) {
       if (fs.existsSync(exportFolderPath)) {
-        fs.rmSync(exportFolderPath, { recursive: true });
+        fs.rmSync(exportFolderPath, { recursive: true, force: true });
       }
 
       console.log("Export file doesn't exist, generating new export files");
@@ -81,7 +90,7 @@ export class PeriodsController {
       await this.periodsService.generateAllExports();
     }
 
-    const file = createReadStream(exportFilePath);
+    const file = fs.createReadStream(exportFilePath);
     res.set({
       'Content-Type':
         format === 'json' ? 'application/json' : 'application/octet-stream',
