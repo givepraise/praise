@@ -25,7 +25,7 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '@/periods/services/periods.service';
 import { parse } from 'json2csv';
 import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
-import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
+import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exec } from '@/shared/duckdb.shared';
 import duckdb from 'duckdb';
@@ -102,7 +102,7 @@ export class PraiseService {
     return praisePagination;
   }
 
-  async generateCsvExport(options: ExportRequestOptions) {
+  async generateCsvExport(options: ExportInputDto) {
     const { periodId, startDate, endDate } = options;
     const query = {} as any;
 
@@ -211,7 +211,7 @@ export class PraiseService {
   /**
    * Generates all export files - csv and parquet
    */
-  async generateAllExports(options: ExportRequestOptions) {
+  async generateAllExports(options: ExportInputDto) {
     const exportDirName = await this.getExportDirName();
     const exportId = this.getExportId(options);
     const exportDirPath = `${allExportsDirPath}/praise/${exportDirName}/${exportId}`;
@@ -242,7 +242,7 @@ export class PraiseService {
   /**
    *  Create a hashed id based on the export options excluding export format
    */
-  getExportId(options: ExportRequestOptions): string {
+  getExportId(options: ExportInputDto): string {
     const { periodId, startDate, endDate } = options;
     return crypto
       .createHash('sha256')

@@ -15,7 +15,7 @@ import { PraiseService } from '@/praise/praise.service';
 import { Inject, forwardRef } from '@nestjs/common';
 import { parse } from 'json2csv';
 import { PeriodsService } from '@/periods/services/periods.service';
-import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
+import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exec } from '@/shared/duckdb.shared';
 import duckdb from 'duckdb';
@@ -52,9 +52,7 @@ export class QuantificationsService {
    * returns all of the model in json format
    * Do not populate relations
    */
-  async export(
-    options: ExportRequestOptions,
-  ): Promise<Quantification[] | string> {
+  async export(options: ExportInputDto): Promise<Quantification[] | string> {
     const { periodId, startDate, endDate, format = 'csv' } = options;
     const query = {} as any;
 
@@ -104,7 +102,7 @@ export class QuantificationsService {
       : fields.toString();
   }
 
-  async generateCsvExport(options: ExportRequestOptions) {
+  async generateCsvExport(options: ExportInputDto) {
     const { periodId, startDate, endDate } = options;
     const query = {} as any;
 
@@ -253,7 +251,7 @@ export class QuantificationsService {
   /**
    * Generates all export files - csv and parquet
    */
-  async generateAllExports(options: ExportRequestOptions) {
+  async generateAllExports(options: ExportInputDto) {
     const exportDirName = await this.getExportDirName();
     const exportId = this.getExportId(options);
     const exportDirPath = `${allExportsDirPath}/quantifications/${exportDirName}/${exportId}`;
@@ -287,7 +285,7 @@ export class QuantificationsService {
   /**
    *  Create a hashed id based on the export options excluding export format
    */
-  getExportId(options: ExportRequestOptions): string {
+  getExportId(options: ExportInputDto): string {
     const { periodId, startDate, endDate } = options;
     return crypto
       .createHash('sha256')

@@ -17,7 +17,7 @@ import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { QuantificationsService } from './quantifications.service';
 import { Quantification } from './schemas/quantifications.schema';
 import { Response } from 'express';
-import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
+import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
 
 @Controller('quantifications')
@@ -46,7 +46,7 @@ export class QuantificationsController {
   @ApiProduces('application/json')
   @Permissions(Permission.QuantificationsExport)
   async findOne(
-    @Query() options: ExportRequestOptions,
+    @Query() options: ExportInputDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
     // const quantifications = await this.quantificationsService.export(options);

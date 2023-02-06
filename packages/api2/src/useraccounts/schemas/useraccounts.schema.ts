@@ -63,3 +63,14 @@ export class UserAccount {
 }
 
 export const UserAccountSchema = SchemaFactory.createForClass(UserAccount);
+
+export const UserAccountsExportSqlSchema = `
+  _id VARCHAR, 
+  "accountId" VARCHAR, 
+  "user" VARCHAR, 
+  "name" VARCHAR, 
+  "avatarId" VARCHAR, 
+  platform VARCHAR, 
+  "createdAt" TIMESTAMP, 
+  "updatedAt" TIMESTAMP
+`;

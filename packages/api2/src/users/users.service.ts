@@ -1,5 +1,12 @@
+import * as fs from 'fs';
+import * as csv from 'fast-csv';
+import duckdb from 'duckdb';
 import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
-import { User, UserDocument } from './schemas/users.schema';
+import {
+  User,
+  UserDocument,
+  UsersExportSqlSchema,
+} from './schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
@@ -18,6 +25,8 @@ import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
 import { Period } from '@/periods/schemas/periods.schema';
 import { PeriodsService } from '@/periods/services/periods.service';
 import { PraiseService } from '@/praise/praise.service';
+import { exec } from '@/shared/duckdb.shared';
+import { allExportsDirPath } from '@/shared/fs.shared';
 
 @Injectable()
 export class UsersService {
@@ -39,16 +48,9 @@ export class UsersService {
     return this.userModel.find().populate('accounts').lean();
   }
 
-  /**
-   * returns all of the model in json or csv format
-   * Do not populate relations
-   */
-  async export(format = 'csv'): Promise<User[] | string> {
-    const users = await this.userModel.find().lean();
-
-    if (format !== 'csv') return users;
-
-    const fields = [
+  async generateCsvExport() {
+    // Fields to include in the csv
+    const includeFields = [
       '_id',
       'username',
       'identityEthAddress',
@@ -58,7 +60,79 @@ export class UsersService {
       'updatedAt',
     ];
 
-    return users.length > 0 ? parse(users, { fields }) : fields.toString();
+    // Serialization rules
+    const transform = (doc: UserDocument) => ({
+      _id: doc._id,
+      username: doc.username,
+      identityEthAddress: doc.identityEthAddress,
+      rewardsEthAddress: doc.rewardsEthAddress,
+      roles: doc.roles,
+      createdAt: doc.createdAt.toISOString(),
+      updatedAt: doc.updatedAt.toISOString(),
+    });
+
+    const exportDirName = await this.getExportDirName();
+    const exportDirPath = `${allExportsDirPath}/users/${exportDirName}`;
+
+    // Create the export folder if it doesn't exist
+    if (!fs.existsSync(exportDirPath)) {
+      fs.mkdirSync(exportDirPath, { recursive: true });
+    }
+
+    // Return a promise that resolves when the csv is done
+    return new Promise((resolve) => {
+      const cursor = this.userModel
+        .find()
+        .select(includeFields.join(' '))
+        .cursor();
+
+      // Create a csv writer that transforms the data using our rules
+      const csvWriter = csv.format({
+        headers: true,
+        transform,
+      });
+
+      // Pipe the csvWriter to a file
+      csvWriter.pipe(fs.createWriteStream(`${exportDirPath}/users.csv`));
+
+      // Resolve promise when csvWriter is done
+      csvWriter.on('end', () => {
+        resolve(true);
+      });
+
+      // Pipe the cursor to the csvWriter
+      cursor.pipe(csvWriter);
+    });
+  }
+
+  /**
+   * Generates all export files - csv and parquet
+   */
+  async generateAllExports() {
+    const exportDirName = await this.getExportDirName();
+    const exportDirPath = `${allExportsDirPath}/users/${exportDirName}`;
+
+    await this.generateCsvExport();
+
+    // Create a duckdb database, import the csv file, and export it to parquet
+    const db = new duckdb.Database(':memory:');
+    await exec(db, `CREATE TABLE users (${UsersExportSqlSchema})`);
+    await exec(
+      db,
+      `COPY users FROM '${exportDirPath}/users.csv' (AUTO_DETECT TRUE, HEADER TRUE);`,
+    );
+    await exec(
+      db,
+      `COPY users TO '${exportDirPath}/users.parquet' (FORMAT PARQUET, COMPRESSION ZSTD);`,
+    );
+  }
+
+  /**
+   * The export directory name is the _id of the last inserted document
+   */
+  async getExportDirName(): Promise<string> {
+    const latestAdded = await this.findLatestAdded();
+    return latestAdded._id.toString();
   }
 
   async getUserStats(user: UserDocument): Promise<UserStatsDto | null> {
@@ -119,6 +193,19 @@ export class UsersService {
 
   async findOneByEth(identityEthAddress: string): Promise<UserWithStatsDto> {
     return this.findOne({ identityEthAddress });
+  }
+
+  /**
+   * Find the latest added user
+   */
+  async findLatestAdded(): Promise<User> {
+    const user = await this.userModel
+      .find()
+      .limit(1)
+      .sort({ $natural: -1 })
+      .lean();
+    if (!user[0]) throw new ServiceException('User not found.');
+    return user[0];
   }
 
   async addRole(

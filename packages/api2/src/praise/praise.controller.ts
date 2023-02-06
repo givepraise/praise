@@ -36,7 +36,7 @@ import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
 import { Response } from 'express';
-import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
+import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
 
 @Controller('praise')
@@ -76,7 +76,7 @@ export class PraiseController {
   @ApiProduces('application/json')
   @Permissions(Permission.UsersExport)
   async export(
-    @Query() options: ExportRequestOptions,
+    @Query() options: ExportInputDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
     const { format } = options;

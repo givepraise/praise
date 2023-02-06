@@ -5,7 +5,7 @@ import { Types } from 'mongoose';
 import { IsObjectId } from '../validators.shared';
 import parseISO from 'date-fns/parseISO';
 
-export class ExportRequestOptions {
+export class ExportInputDto {
   @ApiProperty({
     enum: ['csv', 'parquet'],
     default: 'csv',

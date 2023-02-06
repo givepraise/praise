@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
 import { UsersService } from './users.service';
 import {
@@ -10,6 +11,7 @@ import {
   Query,
   Res,
   SerializeOptions,
+  StreamableFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -17,7 +19,14 @@ import { Response } from 'express';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { User } from './schemas/users.schema';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+  ApiProduces,
+} from '@nestjs/swagger';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
@@ -26,15 +35,16 @@ import { AuthGuard } from '@nestjs/passport';
 import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { UpdateUserRequestDto } from './dto/update-user-request.dto';
+import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
+import { allExportsDirPath } from '@/shared/fs.shared';
 
 @Controller('users')
 @ApiTags('Users')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseInterceptors(MongooseClassSerializerInterceptor(User))
-@UseGuards(PermissionsGuard)
-@UseGuards(AuthGuard(['jwt', 'api-key']))
+// @UseGuards(PermissionsGuard)
+// @UseGuards(AuthGuard(['jwt', 'api-key']))
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
@@ -43,26 +53,42 @@ export class UsersController {
 
   @Get('/export')
   @ApiOperation({ summary: 'Export users document to json or csv' })
-  @ApiResponse({
-    status: 200,
-    description: 'Users Export',
-    type: [User],
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
   })
+  @ApiProduces('application/octet-stream')
+  @ApiProduces('application/json')
   @Permissions(Permission.UsersExport)
-  @ApiParam({ name: 'format', enum: ['json', 'csv'], required: true })
   async export(
-    @Query('format') format: string,
+    @Query() options: ExportInputFormatOnlyDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<User[] | undefined> {
-    const users = await this.usersService.export(format);
+  ): Promise<StreamableFile> {
+    const { format } = options;
+    const exportFolderPath = `${allExportsDirPath}/users`;
+    // The export id is the last inserted id in the collection
+    const exportId = await this.usersService.getExportDirName();
+    const exportFilePath = `${exportFolderPath}/${exportId}/users.${format}`;
 
-    if (format === 'json') return users as User[];
+    // Cached export don't exist, clear cache and generate new export
+    if (!fs.existsSync(exportFilePath)) {
+      if (fs.existsSync(exportFolderPath)) {
+        fs.rmSync(exportFolderPath, { recursive: true, force: true });
+      }
 
+      // Generate new export files
+      await this.usersService.generateAllExports();
+    }
+
+    const file = fs.createReadStream(exportFilePath);
     res.set({
-      'Content-Type': 'text/csv',
-      'Content-Disposition': 'attachment; filename="users.csv"',
+      'Content-Type':
+        format === 'json' ? 'application/json' : 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="users.${format}"`,
     });
-    res.send(users);
+    return new StreamableFile(file);
   }
 
   @Get()
@@ -72,6 +98,7 @@ export class UsersController {
     description: 'All users',
     type: [User],
   })
+  @UseInterceptors(MongooseClassSerializerInterceptor(User))
   async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
@@ -83,6 +110,7 @@ export class UsersController {
     description: 'A single user',
     type: UserWithStatsDto,
   })
+  @UseInterceptors(MongooseClassSerializerInterceptor(UserWithStatsDto))
   @ApiParam({ name: 'id', type: String })
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -102,6 +130,7 @@ export class UsersController {
     description: 'Updated user',
     type: UpdateUserRequestDto,
   })
+  @UseInterceptors(MongooseClassSerializerInterceptor(UserWithStatsDto))
   @ApiParam({ name: 'id', type: String })
   async update(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -117,6 +146,7 @@ export class UsersController {
     description: 'The updated user',
     type: UserWithStatsDto,
   })
+  @UseInterceptors(MongooseClassSerializerInterceptor(UserWithStatsDto))
   @ApiParam({ name: 'id', type: String })
   async addRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -132,6 +162,7 @@ export class UsersController {
     description: 'The updated user',
     type: UserWithStatsDto,
   })
+  @UseInterceptors(MongooseClassSerializerInterceptor(UserWithStatsDto))
   @ApiParam({ name: 'id', type: String })
   async removeRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,

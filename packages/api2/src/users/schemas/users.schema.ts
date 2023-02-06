@@ -93,3 +93,13 @@ UserSchema.virtual('accounts', {
   localField: '_id',
   foreignField: 'user',
 });
+
+export const UsersExportSqlSchema = `
+ _id VARCHAR, 
+ username VARCHAR, 
+ "identityEthAddress" VARCHAR, 
+ "rewardsEthAddress" VARCHAR, 
+ roles VARCHAR, 
+ "createdAt" TIMESTAMP, 
+ "updatedAt" TIMESTAMP
+`;
