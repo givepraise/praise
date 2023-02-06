@@ -8,9 +8,6 @@ import { ServiceExceptionFilter } from './shared/service-exception.filter';
 import { runDbMigrations } from './database/migrations';
 import { version } from '../package.json';
 import { Logger } from './shared/logger';
-import { join } from 'path';
-import * as fs from 'fs';
-import { dataDir } from './shared/fs.shared';
 
 async function bootstrap() {
   // Create an instance of the Nest app
@@ -60,9 +57,6 @@ async function bootstrap() {
   logger.log(
     `Praise API v${version} listening on port ${process.env.API_PORT || 3000}`,
   );
-
-  // Create the data folder if it doesn't exist
-  fs.mkdirSync(dataDir, { recursive: true });
 }
 
 bootstrap();
