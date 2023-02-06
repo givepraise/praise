@@ -1,3 +1,3 @@
 import { join } from 'path';
 
-export const dataDir = join(process.cwd(), 'data');
+export const exportsDir = join(process.cwd(), '_exports');
