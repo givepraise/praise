@@ -172,7 +172,18 @@ export class PraiseService {
     }
 
     // Return a promise that resolves when the csv is done
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
+      // Count the number of documents that match the query and write an empty csv, headers only, if there are none
+      const count = await this.praiseModel.countDocuments(query);
+      if (count === 0) {
+        fs.writeFileSync(
+          `${exportDirPath}/praise.csv`,
+          includeFields.join(','),
+        );
+        resolve(true);
+        return;
+      }
+
       const cursor = this.praiseModel
         .find(query)
         .select(includeFields.join(' '))
