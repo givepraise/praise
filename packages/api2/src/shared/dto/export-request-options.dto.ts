@@ -7,13 +7,13 @@ import parseISO from 'date-fns/parseISO';
 
 export class ExportRequestOptions {
   @ApiProperty({
-    enum: ['csv', 'json'],
+    enum: ['csv', 'parquet'],
     default: 'csv',
     required: false,
   })
   @IsOptional()
   @IsString()
-  @IsIn(['csv', 'json'])
+  @IsIn(['csv', 'parquet'])
   @Type(() => String)
   format?: string;
 
