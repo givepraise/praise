@@ -38,8 +38,8 @@ import { Praise } from '@/praise/schemas/praise.schema';
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-// @UseGuards(PermissionsGuard)
-// @UseGuards(JwtAuthGuard)
+@UseGuards(PermissionsGuard)
+@UseGuards(JwtAuthGuard)
 export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,

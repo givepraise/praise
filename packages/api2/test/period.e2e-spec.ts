@@ -40,6 +40,7 @@ import { Praise } from '@/praise/schemas/praise.schema';
 import { Setting } from '@/settings/schemas/settings.schema';
 import { some } from 'lodash';
 import { PeriodDetailsQuantifierDto } from '@/periods/dto/period-details-quantifier.dto';
+import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 
 class LoggedInUser {
   accessToken: string;
@@ -213,8 +214,8 @@ describe('Period (E2E)', () => {
       });
 
       expect(response.body.quantifiers).toHaveLength(1);
-      expect(response.body.receivers).toHaveLength(3);
-      expect(response.body.givers).toHaveLength(3);
+      expect(response.body.receivers).toHaveLength(6);
+      expect(response.body.givers).toHaveLength(6);
     });
 
     test('should return 400 when the period does not exist', async () => {
@@ -655,6 +656,192 @@ describe('Period (E2E)', () => {
 
   describe('GET /periods/:periodId/praise/receiver/:receiverId', () => {
     let period: Period;
+    let receiver: UserAccount;
+
+    beforeEach(async () => {
+      await periodsService.getModel().deleteMany({});
+
+      period = await periodsSeeder.seedPeriod({
+        status: PeriodStatusType.OPEN,
+        endDate: new Date(),
+      });
+
+      const previousPeriodEndDate = new Date(period.endDate.getTime());
+      previousPeriodEndDate.setDate(period.endDate.getDate() - 30);
+
+      await periodsSeeder.seedPeriod({
+        status: PeriodStatusType.OPEN,
+        endDate: previousPeriodEndDate,
+      });
+
+      const previousDay = new Date(period.endDate.getTime());
+      previousDay.setDate(period.endDate.getDate() - 5);
+
+      receiver = await userAccountsSeeder.seedUserAccount();
+
+      for (let i = 0; i < 3; i++) {
+        const praise = await praiseSeeder.seedPraise({
+          receiver: receiver._id,
+          createdAt: previousDay,
+        });
+
+        await quantificationsSeeder.seedQuantification({
+          createdAt: previousDay,
+          praise: praise._id,
+          quantifier: users[0].user._id,
+        });
+      }
+    });
+
+    test('401 when not authenticated', async () => {
+      return request(server)
+        .get(`/periods/${period._id}/praise/receiver/${receiver._id}`)
+        .send()
+        .expect(401);
+    });
+
+    test('should return 400 when the period does not exist', async () => {
+      await praiseService.getModel().deleteMany({});
+
+      const response = await request(server)
+        .get(
+          `/periods/5f5d5f5d5f5d5f5d5f5d5f5d/praise/receiver/5f5d5f5d5f5d5f5d5f5d5f5d`,
+        )
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .expect(400);
+
+      expect(response.body.message).toBe('Period not found');
+    });
+
+    test('should return 200 and list of praise items', async () => {
+      const options: PaginatedQueryDto = {
+        sortColumn: 'createdAt',
+        sortType: 'asc',
+        page: 1,
+        limit: 10,
+      };
+
+      const urlParams = Object.entries(options)
+        .map(([key, val]) => `${key}=${val}`)
+        .join('&');
+
+      const response = await request(server)
+        .get(
+          `/periods/${period._id}/praise/receiver/${receiver._id}?${urlParams}`,
+        )
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .expect(200);
+
+      expect(response.body).toBeDefined();
+      expect(response.body.docs).toBeDefined();
+      expect(response.body.totalDocs).toBe(3);
+      expect(response.body.page).toBe(1);
+      expect(response.body.limit).toBe(10);
+      expect(response.body.totalPages).toBe(1);
+      expect(response.body.docs).toHaveLength(3);
+      expect(response.body.docs[0].quantifications).toHaveLength(1);
+      expect(response.body.docs[0].quantifications[0].quantifier).toBeDefined();
+      expect(response.body.docs[0].receiver).toBeDefined();
+      expect(response.body.docs[0].receiver._id).toEqual(
+        receiver._id.toString(),
+      );
+      expect(response.body.docs[0].giver).toBeDefined();
+    });
+  });
+
+  describe('GET /periods/:periodId/praise/giver/:giverId', () => {
+    let period: Period;
+    let giver: UserAccount;
+
+    beforeEach(async () => {
+      await periodsService.getModel().deleteMany({});
+
+      period = await periodsSeeder.seedPeriod({
+        status: PeriodStatusType.OPEN,
+        endDate: new Date(),
+      });
+
+      const previousPeriodEndDate = new Date(period.endDate.getTime());
+      previousPeriodEndDate.setDate(period.endDate.getDate() - 30);
+
+      await periodsSeeder.seedPeriod({
+        status: PeriodStatusType.OPEN,
+        endDate: previousPeriodEndDate,
+      });
+
+      const previousDay = new Date(period.endDate.getTime());
+      previousDay.setDate(period.endDate.getDate() - 5);
+
+      giver = await userAccountsSeeder.seedUserAccount();
+
+      for (let i = 0; i < 3; i++) {
+        const praise = await praiseSeeder.seedPraise({
+          giver: giver._id,
+          createdAt: previousDay,
+        });
+
+        await quantificationsSeeder.seedQuantification({
+          createdAt: previousDay,
+          praise: praise._id,
+          quantifier: users[0].user._id,
+        });
+      }
+    });
+
+    test('401 when not authenticated', async () => {
+      return request(server)
+        .get(`/periods/${period._id}/praise/giver/${giver._id}`)
+        .send()
+        .expect(401);
+    });
+
+    test('should return 400 when the period does not exist', async () => {
+      await praiseService.getModel().deleteMany({});
+
+      const response = await request(server)
+        .get(
+          `/periods/5f5d5f5d5f5d5f5d5f5d5f5d/praise/giver/5f5d5f5d5f5d5f5d5f5d5f5d`,
+        )
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .expect(400);
+
+      expect(response.body.message).toBe('Period not found');
+    });
+
+    test('should return 200 and list of praise items', async () => {
+      const options: PaginatedQueryDto = {
+        sortColumn: 'createdAt',
+        sortType: 'asc',
+        page: 1,
+        limit: 10,
+      };
+
+      const urlParams = Object.entries(options)
+        .map(([key, val]) => `${key}=${val}`)
+        .join('&');
+
+      const response = await request(server)
+        .get(`/periods/${period._id}/praise/giver/${giver._id}?${urlParams}`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .expect(200);
+
+      expect(response.body).toBeDefined();
+      expect(response.body.docs).toBeDefined();
+      expect(response.body.totalDocs).toBe(3);
+      expect(response.body.page).toBe(1);
+      expect(response.body.limit).toBe(10);
+      expect(response.body.totalPages).toBe(1);
+      expect(response.body.docs).toHaveLength(3);
+      expect(response.body.docs[0].quantifications).toHaveLength(1);
+      expect(response.body.docs[0].quantifications[0].quantifier).toBeDefined();
+      expect(response.body.docs[0].receiver).toBeDefined();
+      expect(response.body.docs[0].giver).toBeDefined();
+      expect(response.body.docs[0].giver._id).toEqual(giver._id.toString());
+    });
+  });
+
+  describe('GET /periods/:periodId/praise/quantifier/:quantifierId', () => {
+    let period: Period;
 
     beforeEach(async () => {
       await periodsService.getModel().deleteMany({});
@@ -677,7 +864,6 @@ describe('Period (E2E)', () => {
 
       for (let i = 0; i < 3; i++) {
         const praise = await praiseSeeder.seedPraise({
-          receiver: users[1].user._id,
           createdAt: previousDay,
         });
 
@@ -691,7 +877,7 @@ describe('Period (E2E)', () => {
 
     test('401 when not authenticated', async () => {
       return request(server)
-        .get(`/periods/${period._id}/praise/receiver/${users[0].user._id}`)
+        .get(`/periods/${period._id}/praise/quantifier/${users[0].user._id}`)
         .send()
         .expect(401);
     });
@@ -701,7 +887,7 @@ describe('Period (E2E)', () => {
 
       const response = await request(server)
         .get(
-          `/periods/5f5d5f5d5f5d5f5d5f5d5f5d/praise/receiver/5f5d5f5d5f5d5f5d5f5d5f5d`,
+          `/periods/5f5d5f5d5f5d5f5d5f5d5f5d/praise/quantifier/5f5d5f5d5f5d5f5d5f5d5f5d`,
         )
         .set('Authorization', `Bearer ${users[0].accessToken}`)
         .expect(400);
@@ -709,21 +895,37 @@ describe('Period (E2E)', () => {
       expect(response.body.message).toBe('Period not found');
     });
 
-    test('should return 200 and list of praise items KRESO', async () => {
+    test('should return 200 and list of praise items', async () => {
+      const options: PaginatedQueryDto = {
+        sortColumn: 'createdAt',
+        sortType: 'asc',
+        page: 1,
+        limit: 10,
+      };
+
+      const urlParams = Object.entries(options)
+        .map(([key, val]) => `${key}=${val}`)
+        .join('&');
+
       const response = await request(server)
-        .get(`/periods/${period._id}/praise/receiver/${users[1].user._id}`)
+        .get(
+          `/periods/${period._id}/praise/quantifier/${users[0].user._id}?${urlParams}`,
+        )
         .set('Authorization', `Bearer ${users[0].accessToken}`)
         .expect(200);
 
-      console.log(response.body);
-      console.log('RECEIVER');
-      console.log(response.body.docs[0].receiver);
-      console.log('RECEIVER IN PRAISE');
-      console.log(users[0].user._id);
-
+      expect(response.body).toBeDefined();
+      expect(response.body.docs).toBeDefined();
+      expect(response.body.totalDocs).toBe(3);
+      expect(response.body.page).toBe(1);
+      expect(response.body.limit).toBe(10);
+      expect(response.body.totalPages).toBe(1);
       expect(response.body.docs).toHaveLength(3);
       expect(response.body.docs[0].quantifications).toHaveLength(1);
       expect(response.body.docs[0].quantifications[0].quantifier).toBeDefined();
+      expect(response.body.docs[0].quantifications[0].quantifier._id).toEqual(
+        users[0].user._id.toString(),
+      );
       expect(response.body.docs[0].receiver).toBeDefined();
       expect(response.body.docs[0].giver).toBeDefined();
     });
