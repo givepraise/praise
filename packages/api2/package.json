@@ -23,7 +23,7 @@
     "migrator": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts"
   },
   "dependencies": {
-    "@fast-csv/parse": "^4.3.6",
+    "@json2csv/node": "^6.1.2",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.0",
@@ -39,8 +39,6 @@
     "duckdb": "^0.6.1",
     "env-cmd": "^10.1.0",
     "ethers": "^5.7.2",
-    "fast-csv": "^4.3.6",
-    "json2csv": "^5.0.6",
     "lodash": "^4.17.21",
     "mongoose": "^6.7.0",
     "mongoose-paginate-ts": "^1.2.7",

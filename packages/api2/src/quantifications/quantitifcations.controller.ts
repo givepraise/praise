@@ -6,19 +6,16 @@ import {
   Res,
   SerializeOptions,
   StreamableFile,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { ApiOperation } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { QuantificationsService } from './quantifications.service';
-import { Quantification } from './schemas/quantifications.schema';
 import { Response } from 'express';
 import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
+import { optionsHash } from '@/shared/export.shared';
 
 @Controller('quantifications')
 @ApiTags('Quantifications')
@@ -49,33 +46,37 @@ export class QuantificationsController {
     @Query() options: ExportInputDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    // const quantifications = await this.quantificationsService.export(options);
-
-    // if (options.format === 'json') return quantifications as Quantification[];
-
-    // res.set({
-    //   'Content-Type': 'text/csv',
-    //   'Content-Disposition': 'attachment; filename="quantification.csv"',
-    // });
-    // res.send(quantifications);
     const { format } = options;
-    const exportsRootDirName = `${allExportsDirPath}/quantifications`;
-    const exportDirName = await this.quantificationsService.getExportDirName();
-    const exportId = this.quantificationsService.getExportId(options);
-    const exportFilePath = `${exportsRootDirName}/${exportDirName}/${exportId}/quantifications.${format}`;
+    // Root path for all exports
+    const rootPath = `${allExportsDirPath}/quantifications`;
 
-    // Cached export don't exist, clear cache and generate new export
-    if (!fs.existsSync(exportFilePath)) {
-      if (!fs.existsSync(`${exportsRootDirName}/${exportDirName}`)) {
-        fs.rmSync(exportsRootDirName, { recursive: true, force: true });
+    // Directory level 1 is the latest quantifications id
+    const dirLevel1 = (
+      await this.quantificationsService.findLatest()
+    )._id.toString();
+
+    // Directory level 2 is the hashed options
+    const dirLevel2 = optionsHash(options);
+
+    const dirPath = `${rootPath}/${dirLevel1}/${dirLevel2}`;
+    const filePath = `${dirPath}/quantifications.${format}`;
+
+    if (!fs.existsSync(filePath)) {
+      // If cached export don't exist
+      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
+        // If the latest quantifications id folder doesn't exist,
+        // database hase been updated, clear all cached exports
+        fs.rmSync(rootPath, { recursive: true, force: true });
       }
 
-      console.log("Export file doesn't exist, generating new export files");
+      // Create directory for new export
+      fs.mkdirSync(dirPath, { recursive: true });
+
       // Generate new export files
-      await this.quantificationsService.generateAllExports(options);
+      await this.quantificationsService.generateAllExports(dirPath, options);
     }
 
-    const file = fs.createReadStream(exportFilePath);
+    const file = fs.createReadStream(filePath);
     res.set({
       'Content-Type':
         format === 'json' ? 'application/json' : 'application/octet-stream',

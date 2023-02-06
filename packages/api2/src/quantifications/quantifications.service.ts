@@ -1,25 +1,21 @@
 import * as fs from 'fs';
-import * as csv from 'fast-csv';
 import { SettingsService } from '@/settings/settings.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
   QuantificationsExportSqlSchema,
   Quantification,
-  QuantificationDocument,
 } from './schemas/quantifications.schema';
 import { sum, has } from 'lodash';
 import { Praise } from '@/praise/schemas/praise.schema';
-import { ServiceException } from '../shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { PraiseService } from '@/praise/praise.service';
 import { Inject, forwardRef } from '@nestjs/common';
-import { parse } from 'json2csv';
 import { PeriodsService } from '@/periods/services/periods.service';
 import { ExportInputDto } from '@/shared/dto/export-input.dto';
-import { allExportsDirPath } from '@/shared/fs.shared';
 import { exec } from '@/shared/duckdb.shared';
 import duckdb from 'duckdb';
-import crypto from 'crypto';
+import { Transform } from '@json2csv/node';
 
 export class QuantificationsService {
   constructor(
@@ -35,8 +31,6 @@ export class QuantificationsService {
 
   /**
    * Digits of precision for rounding calculated scores
-   *
-   * @type {number}
    */
   DIGITS_PRECISION = 2;
 
@@ -48,14 +42,9 @@ export class QuantificationsService {
     return this.quantificationModel;
   }
 
-  /**
-   * returns all of the model in json format
-   * Do not populate relations
-   */
-  async export(options: ExportInputDto): Promise<Quantification[] | string> {
-    const { periodId, startDate, endDate, format = 'csv' } = options;
-    const query = {} as any;
-
+  private async exportInputToQuery(options: ExportInputDto) {
+    const { periodId, startDate, endDate } = options;
+    const query: any = {};
     if (periodId) {
       if (startDate || endDate) {
         // If periodId is set, startDate and endDate should not be set
@@ -81,57 +70,14 @@ export class QuantificationsService {
         );
       }
     }
-
-    const quantifications = await this.quantificationModel.find(query).lean();
-
-    const fields = [
-      '_id',
-      'praise',
-      'quantifier',
-      'score',
-      'scoreRealized',
-      'dismissed',
-      'duplicatePraise',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    if (format !== 'csv') return quantifications;
-    return quantifications.length > 0
-      ? parse(quantifications, { fields })
-      : fields.toString();
+    return query;
   }
 
-  async generateCsvExport(options: ExportInputDto) {
-    const { periodId, startDate, endDate } = options;
-    const query = {} as any;
-
-    if (periodId) {
-      if (startDate || endDate) {
-        // If periodId is set, startDate and endDate should not be set
-        throw new ServiceException(
-          'Invalid date filtering option. When periodId is set, startDate and endDate should not be set.',
-        );
-      }
-      const period = await this.periodService.findOneById(periodId);
-      query.createdAt = await this.periodService.getPeriodDateRangeQuery(
-        period,
-      );
-    } else {
-      if (startDate && endDate) {
-        // If periodId is not set but startDate and endDate are set, use them to filter
-        query.createdAt = {
-          $gte: startDate,
-          $lte: endDate,
-        };
-      } else if (startDate || endDate) {
-        // If periodId is not set and only one of startDate and endDate is set, throw an error
-        throw new ServiceException(
-          'Invalid date filtering option. When periodId is not set, both startDate and endDate should be set.',
-        );
-      }
-    }
-
+  /**
+   * Lookup the quantifications, create a cursor, transform the cursor to a csv stream
+   * and pipe it to a csv file.
+   */
+  async generateCsvExport(path: string, options: ExportInputDto) {
     // Fields to include in the csv
     const includeFields = [
       '_id',
@@ -145,32 +91,35 @@ export class QuantificationsService {
       'updatedAt',
     ];
 
-    // Serialization rules
-    const transform = (doc: any) => ({
-      _id: doc._id,
-      praise: doc.praise,
-      quantifier: doc.quantifier,
-      score: doc.score,
-      scoreRealized: doc.scoreRealized,
-      dismissed: doc.dismissed,
-      duplicatePraise: doc.duplicatePraise,
-      createdAt: doc.createdAt.toISOString(),
-      updatedAt: doc.updatedAt.toISOString(),
-    });
+    const query = await this.exportInputToQuery(options);
 
-    const exportDirName = await this.getExportDirName();
-    const exportId = this.getExportId(options);
-    const exportDirPath = `${allExportsDirPath}/quantifications/${exportDirName}/${exportId}`;
+    // Count the number of documents that matches query
+    const count = await this.praiseService.getModel().aggregate([
+      {
+        $match: query,
+      },
+      {
+        $lookup: {
+          from: 'quantifications',
+          localField: '_id',
+          foreignField: 'praise',
+          as: 'quantification',
+        },
+      },
+      { $unwind: '$quantification' },
+      { $count: 'count' },
+    ]);
 
-    // Create the export folder if it doesn't exist
-    if (!fs.existsSync(exportDirPath)) {
-      fs.mkdirSync(exportDirPath, { recursive: true });
+    // If there are no documents, create an empty CSV file and return
+    if (count.length === 0 || count[0].count === 0) {
+      fs.writeFileSync(`${path}/quantifications.csv`, includeFields.join(','));
+      return;
     }
 
-    // Return a promise that resolves when the csv is done
-    return new Promise(async (resolve) => {
-      // Count the number of documents that match the query and write an empty csv, headers only, if there are none
-      const count = await this.praiseService.getModel().aggregate([
+    // Lookup the quantifications, create a cursor
+    const quantifications = this.praiseService
+      .getModel()
+      .aggregate([
         {
           $match: query,
         },
@@ -183,82 +132,43 @@ export class QuantificationsService {
           },
         },
         { $unwind: '$quantification' },
-        { $count: 'count' },
-      ]);
-
-      if (count.length === 0 || count[0].count === 0) {
-        fs.writeFileSync(
-          `${exportDirPath}/quantifications.csv`,
-          includeFields.join(','),
-        );
-        resolve(true);
-        return;
-      }
-
-      // Create a cursor to stream the documents
-      const cursor = await this.praiseService
-        .getModel()
-        .aggregate([
-          {
-            $match: query,
+        {
+          $project: {
+            _id: '$quantification._id',
+            praise: '$quantification.praise',
+            quantifier: '$quantification.quantifier',
+            score: '$quantification.score',
+            scoreRealized: '$quantification.scoreRealized',
+            dismissed: '$quantification.dismissed',
+            duplicatePraise: '$quantification.duplicatePraise',
+            createdAt: '$quantification.createdAt',
+            updatedAt: '$quantification.updatedAt',
           },
-          {
-            $lookup: {
-              from: 'quantifications',
-              localField: '_id',
-              foreignField: 'praise',
-              as: 'quantification',
-            },
-          },
-          { $unwind: '$quantification' },
-          {
-            $project: {
-              _id: '$quantification._id',
-              praise: '$quantification.praise',
-              quantifier: '$quantification.quantifier',
-              score: '$quantification.score',
-              scoreRealized: '$quantification.scoreRealized',
-              dismissed: '$quantification.dismissed',
-              duplicatePraise: '$quantification.duplicatePraise',
-              createdAt: '$quantification.createdAt',
-              updatedAt: '$quantification.updatedAt',
-            },
-          },
-        ])
-        .cursor();
+        },
+      ])
+      .cursor();
 
-      // Create a csv writer that transforms the data using our rules
-      const csvWriter = csv.format({
-        headers: true,
-        transform,
-      });
-
-      // Pipe the csvWriter to a file
-      csvWriter.pipe(
-        fs.createWriteStream(`${exportDirPath}/quantifications.csv`),
+    // Wrap stream transformation in a promise and return
+    return new Promise(async (resolve) => {
+      const csvTransformer = new Transform(
+        { fields: includeFields },
+        { objectMode: true },
       );
 
-      // Resolve promise when csvWriter is done
-      csvWriter.on('end', () => {
+      const outputFile = fs.createWriteStream(`${path}/quantifications.csv`);
+
+      quantifications.on('end', () => {
         resolve(true);
       });
 
-      // Pipe the cursor to the csvWriter
-      cursor.pipe(csvWriter);
+      quantifications.pipe(csvTransformer).pipe(outputFile);
     });
   }
 
   /**
-   * Generates all export files - csv and parquet
+   * Create a duckdb database, import the csv file, and export it to parquet
    */
-  async generateAllExports(options: ExportInputDto) {
-    const exportDirName = await this.getExportDirName();
-    const exportId = this.getExportId(options);
-    const exportDirPath = `${allExportsDirPath}/quantifications/${exportDirName}/${exportId}`;
-
-    await this.generateCsvExport(options);
-
-    // Create a duckdb database, import the csv file, and export it to parquet
+  async generateParquetExport(path: string) {
     const db = new duckdb.Database(':memory:');
     await exec(
       db,
@@ -266,31 +176,20 @@ export class QuantificationsService {
     );
     await exec(
       db,
-      `COPY quantifications FROM '${exportDirPath}/quantifications.csv' (AUTO_DETECT TRUE, HEADER TRUE);`,
+      `COPY quantifications FROM '${path}/quantifications.csv' (AUTO_DETECT TRUE, HEADER TRUE);`,
     );
     await exec(
       db,
-      `COPY quantifications TO '${exportDirPath}/quantifications.parquet' (FORMAT PARQUET, COMPRESSION ZSTD);`,
+      `COPY quantifications TO '${path}/quantifications.parquet' (FORMAT PARQUET, COMPRESSION ZSTD);`,
     );
   }
 
   /**
-   * The export directory name is the _id of the last inserted document
+   * Generates all export files - csv and parquet
    */
-  async getExportDirName(): Promise<string> {
-    const latestAdded = await this.findLatestAdded();
-    return latestAdded._id.toString();
-  }
-
-  /**
-   *  Create a hashed id based on the export options excluding export format
-   */
-  getExportId(options: ExportInputDto): string {
-    const { periodId, startDate, endDate } = options;
-    return crypto
-      .createHash('sha256')
-      .update(JSON.stringify({ periodId, startDate, endDate }))
-      .digest('hex');
+  async generateAllExports(dirPath: string, options: ExportInputDto) {
+    await this.generateCsvExport(dirPath, options);
+    await this.generateParquetExport(dirPath);
   }
 
   /**
@@ -312,7 +211,7 @@ export class QuantificationsService {
   /**
    * Find the lastest added quantification
    */
-  async findLatestAdded(): Promise<Quantification> {
+  async findLatest(): Promise<Quantification> {
     const quantifications = await this.quantificationModel
       .find()
       .limit(1)
