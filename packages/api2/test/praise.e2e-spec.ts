@@ -1091,8 +1091,6 @@ describe('Praise (E2E)', () => {
         },
       );
 
-      console.log('RESPONSE: ', response.body);
-
       expect(response.status).toBe(200);
 
       const p = response.body as Praise[];

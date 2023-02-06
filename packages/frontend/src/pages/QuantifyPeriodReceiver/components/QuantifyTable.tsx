@@ -130,7 +130,8 @@ export const QuantifyTable = ({
   ): void => {
     const praiseIds = selectedPraises.map((praise) => praise._id);
 
-    void quantifyMultiple(score, praiseIds);
+    const params = { score };
+    void quantifyMultiple(params, praiseIds);
     setSelectedPraises([]);
   };
 
