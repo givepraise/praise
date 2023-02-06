@@ -228,7 +228,7 @@ export class PraiseService {
         praise._id as Types.ObjectId
       ).toString()}"`;
     } else {
-      if (!score) {
+      if (!score && score !== 0) {
         throw new ServiceException(
           'Score, dismissed or duplicatePraiseId is required',
         );
@@ -280,7 +280,19 @@ export class PraiseService {
           },
           { new: true },
         )
-        .populate('giver receiver forwarder quantifications')
+        .populate('forwarder quantifications')
+        .populate({
+          path: 'receiver',
+          populate: {
+            path: 'user',
+          },
+        })
+        .populate({
+          path: 'giver',
+          populate: {
+            path: 'user',
+          },
+        })
         .lean();
 
       docs.push(praiseWithScore);

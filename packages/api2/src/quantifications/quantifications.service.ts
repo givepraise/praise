@@ -171,7 +171,7 @@ export class QuantificationsService {
     return (
       quantification.dismissed ||
       quantification.duplicatePraise !== undefined ||
-      quantification.score > 0
+      quantification.score !== undefined
     );
   };
 
@@ -214,6 +214,9 @@ export class QuantificationsService {
       for (let i = 0; i < completedQuantifications.length; i++) {
         const q = completedQuantifications[i];
         const s = scores[i];
+
+        console.log('Saving score', s, 'for quantification', q._id);
+
         await this.quantificationModel.updateOne(
           { _id: q._id },
           { $set: { scoreRealized: s } },
@@ -359,6 +362,7 @@ export class QuantificationsService {
         },
         {
           new: true,
+          strict: false,
         },
       )
       .lean();

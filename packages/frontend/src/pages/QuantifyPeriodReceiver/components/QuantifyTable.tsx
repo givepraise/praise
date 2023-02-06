@@ -25,7 +25,6 @@ import { DuplicateSearchDialog } from './DuplicateSearchDialog';
 import { QuantifyPraiseRow } from './QuantifyPraiseRow';
 import { QuantifyBackNextLink } from './BackNextLink';
 import { DismissDialog } from './DismissDialog';
-import { stringToNumberArray } from '@/utils/numbers';
 
 interface Props {
   periodId: string;
