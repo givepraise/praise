@@ -170,10 +170,63 @@ export class QuantificationsService {
     }
 
     // Return a promise that resolves when the csv is done
-    return new Promise((resolve) => {
-      const cursor = this.quantificationModel
-        .find(query)
-        .select(includeFields.join(' '))
+    return new Promise(async (resolve) => {
+      // Count the number of documents that match the query and write an empty csv, headers only, if there are none
+      const count = await this.praiseService.getModel().aggregate([
+        {
+          $match: query,
+        },
+        {
+          $lookup: {
+            from: 'quantifications',
+            localField: '_id',
+            foreignField: 'praise',
+            as: 'quantification',
+          },
+        },
+        { $unwind: '$quantification' },
+        { $count: 'count' },
+      ]);
+
+      if (count.length === 0 || count[0].count === 0) {
+        fs.writeFileSync(
+          `${exportDirPath}/quantifications.csv`,
+          includeFields.join(','),
+        );
+        resolve(true);
+        return;
+      }
+
+      // Create a cursor to stream the documents
+      const cursor = await this.praiseService
+        .getModel()
+        .aggregate([
+          {
+            $match: query,
+          },
+          {
+            $lookup: {
+              from: 'quantifications',
+              localField: '_id',
+              foreignField: 'praise',
+              as: 'quantification',
+            },
+          },
+          { $unwind: '$quantification' },
+          {
+            $project: {
+              _id: '$quantification._id',
+              praise: '$quantification.praise',
+              quantifier: '$quantification.quantifier',
+              score: '$quantification.score',
+              scoreRealized: '$quantification.scoreRealized',
+              dismissed: '$quantification.dismissed',
+              duplicatePraise: '$quantification.duplicatePraise',
+              createdAt: '$quantification.createdAt',
+              updatedAt: '$quantification.updatedAt',
+            },
+          },
+        ])
         .cursor();
 
       // Create a csv writer that transforms the data using our rules
