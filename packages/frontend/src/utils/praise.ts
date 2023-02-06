@@ -13,5 +13,5 @@ export const shortenDuplicatePraiseId = (
   userId: string
 ): string => {
   const q = findPraiseQuantification(praise, userId);
-  return q && q.duplicatePraise ? q.duplicatePraise?.slice(-4) : '';
+  return q && q.duplicatePraiseId ? q.duplicatePraiseId?.slice(-4) : '';
 };

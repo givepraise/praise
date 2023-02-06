@@ -244,7 +244,7 @@ type useQuantifyPraiseReturn = {
     praiseId: string,
     score: number,
     dismissed: boolean,
-    duplicatePraise: string | null
+    duplicatePraiseId: string | null
   ) => Promise<void>;
 };
 
@@ -260,14 +260,14 @@ export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
         praiseId: string,
         score: number,
         dismissed: boolean,
-        duplicatePraise: string | null
+        duplicatePraiseId: string | null
       ): Promise<void> => {
         const response: AxiosResponse<PraiseDto[]> = await apiAuthClient.patch(
           `/praise/${praiseId}/quantify`,
           {
             score,
             dismissed,
-            duplicatePraise,
+            duplicatePraiseId,
           }
         );
         if (isResponseOk(response)) {

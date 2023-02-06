@@ -276,8 +276,6 @@ export class QuantificationsService {
         const q = completedQuantifications[i];
         const s = scores[i];
 
-        console.log('Saving score', s, 'for quantification', q._id);
-
         await this.quantificationModel.updateOne(
           { _id: q._id },
           { $set: { scoreRealized: s } },

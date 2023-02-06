@@ -40,7 +40,7 @@ export const QuantifyPraiseRow = ({
   if (!quantification) return null;
 
   const dismissed = quantification.dismissed;
-  const duplicate = !!quantification.duplicatePraise;
+  const duplicate = !!quantification.duplicatePraiseId;
 
   return (
     <tr

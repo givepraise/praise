@@ -767,7 +767,7 @@ export const PeriodQuantifierReceivers = selectorFamily({
             const done =
               quantification.score ||
               quantification.dismissed === true ||
-              quantification.duplicatePraise
+              quantification.duplicatePraiseId
                 ? 1
                 : 0;
 

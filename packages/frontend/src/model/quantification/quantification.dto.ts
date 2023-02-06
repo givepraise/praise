@@ -3,7 +3,7 @@ export interface QuantificationDto {
   score: number;
   scoreRealized?: number;
   dismissed: boolean;
-  duplicatePraise?: string;
+  duplicatePraiseId?: string;
   createdAt: string;
   updatedAt: string;
 }

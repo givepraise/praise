@@ -252,7 +252,7 @@ describe('Praise (E2E)', () => {
         adminUserAccessToken,
       ).expect(200);
       expect(response.body.length).toBe(1);
-      expect(String(praises[2]._id) === response.body[0]._id).toBe(true);
+      expect(String(praises[2]._id) === response.body[0]._id).toBeTrue();
     });
 
     test('returns praises that matches seeded list in json format, filtered by date', async () => {
@@ -1090,6 +1090,8 @@ describe('Praise (E2E)', () => {
           },
         },
       );
+
+      console.log('RESPONSE: ', response.body);
 
       expect(response.status).toBe(200);
 
