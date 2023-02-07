@@ -1,10 +1,8 @@
 {
   "name": "api2",
-  "version": "0.12.2",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "version": "0.13.0",
+  "license": "GPL-3.0-or-later",
+  "description": "The Praise REST API running on Nest.js, using MongoDB for storage.",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
