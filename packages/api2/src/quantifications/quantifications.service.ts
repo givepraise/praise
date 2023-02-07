@@ -232,7 +232,7 @@ export class QuantificationsService {
     return (
       quantification.dismissed ||
       quantification.duplicatePraise !== undefined ||
-      quantification.score !== undefined
+      quantification.score > 0
     );
   };
 
@@ -253,18 +253,22 @@ export class QuantificationsService {
     );
 
     // Filter out dismissed quantifications and quantifications that are not completed
-    const completedQuantifications = quantifications.filter((q) => {
-      if (!this.isQuantificationCompleted(q)) return false;
+    // const completedQuantifications = quantifications.filter((q) => {
+    //   if (!this.isQuantificationCompleted(q)) return false;
+    //   if (q.dismissed) return false;
+    //   return true;
+    // });
+
+    const notDismissedQuantifications = quantifications.filter((q) => {
       if (q.dismissed) return false;
       return true;
     });
 
-    // If no quantifications are completed the score is 0
-    if (completedQuantifications.length === 0) return 0;
+    if (notDismissedQuantifications.length === 0) return 0;
 
     // Calculate the score for each quantification
     const scores = await Promise.all(
-      completedQuantifications.map((q) => {
+      notDismissedQuantifications.map((q) => {
         const s = this.calculateQuantificationScore(praise, q);
         return s;
       }),
@@ -272,8 +276,8 @@ export class QuantificationsService {
 
     // Save the scores to the database
     if (saveQuantifications) {
-      for (let i = 0; i < completedQuantifications.length; i++) {
-        const q = completedQuantifications[i];
+      for (let i = 0; i < notDismissedQuantifications.length; i++) {
+        const q = notDismissedQuantifications[i];
         const s = scores[i];
 
         await this.quantificationModel.updateOne(
@@ -285,7 +289,7 @@ export class QuantificationsService {
 
     // Calculate the composite score by averaging the scores of all completed quantifications
     const compositeScore = +(
-      sum(scores) / completedQuantifications.length
+      sum(scores) / notDismissedQuantifications.length
     ).toFixed(this.DIGITS_PRECISION);
 
     return compositeScore;

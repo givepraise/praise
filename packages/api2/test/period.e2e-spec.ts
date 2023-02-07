@@ -738,7 +738,7 @@ describe('Period (E2E)', () => {
         .expect(200);
 
       const p = response.body[0];
-      expect(p).toHaveLength(3);
+      expect(response.body).toHaveLength(3);
       expect(p.quantifications).toHaveLength(1);
       expect(p.quantifications[0].quantifier).toBeDefined();
       expect(p.receiver).toBeDefined();
