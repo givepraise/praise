@@ -38,7 +38,7 @@ import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto'
 import { Response } from 'express';
 import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
-import { getContentType, optionsHash } from '@/shared/export.shared';
+import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
 import { PraiseExportService } from './services/praise-export.service';
 
 @Controller('praise')
@@ -93,7 +93,7 @@ export class PraiseController {
     const dirLevel1 = (await this.praiseService.findLatest())._id.toString();
 
     // Directory level 2 is the hashed options
-    const dirLevel2 = optionsHash(options);
+    const dirLevel2 = exportOptionsHash(options);
 
     const dirPath = `${rootPath}/${dirLevel1}/${dirLevel2}`;
     const filePath = `${dirPath}/praise.${format}`;
@@ -114,7 +114,7 @@ export class PraiseController {
     }
 
     res.set({
-      'Content-Type': getContentType(format),
+      'Content-Type': exportContentType(format),
       'Content-Disposition': `attachment; filename="praise.${format}"`,
     });
 

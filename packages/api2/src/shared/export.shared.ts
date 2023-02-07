@@ -4,7 +4,7 @@ import crypto from 'crypto';
 /**
  *  Create a hashed id based on the export options excluding export format
  */
-export function optionsHash(options: ExportInputDto): string {
+export function exportOptionsHash(options: ExportInputDto): string {
   const { periodId, startDate, endDate } = options;
   return crypto
     .createHash('shake256', { outputLength: 5 })
@@ -15,7 +15,7 @@ export function optionsHash(options: ExportInputDto): string {
 /**
  * Get the return content type based on the export format
  */
-export function getContentType(format: string): string {
+export function exportContentType(format: string): string {
   switch (format) {
     case 'parquet':
       return 'application/octet-stream';

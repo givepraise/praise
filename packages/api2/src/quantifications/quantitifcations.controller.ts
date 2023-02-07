@@ -15,7 +15,7 @@ import { QuantificationsService } from './services/quantifications.service';
 import { Response } from 'express';
 import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
-import { getContentType, optionsHash } from '@/shared/export.shared';
+import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
 import { QuantificationsExportService } from './services/quantifications-export.service';
 
 @Controller('quantifications')
@@ -59,7 +59,7 @@ export class QuantificationsController {
     )._id.toString();
 
     // Directory level 2 is the hashed options
-    const dirLevel2 = optionsHash(options);
+    const dirLevel2 = exportOptionsHash(options);
 
     const dirPath = `${rootPath}/${dirLevel1}/${dirLevel2}`;
     const filePath = `${dirPath}/quantifications.${format}`;
@@ -83,7 +83,7 @@ export class QuantificationsController {
     }
 
     res.set({
-      'Content-Type': getContentType(format),
+      'Content-Type': exportContentType(format),
       'Content-Disposition': `attachment; filename="quantifications.${format}"`,
     });
 
