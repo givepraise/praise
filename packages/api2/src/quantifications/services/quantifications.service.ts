@@ -1,21 +1,13 @@
-import * as fs from 'fs';
 import { SettingsService } from '@/settings/settings.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import {
-  QuantificationsExportSqlSchema,
-  Quantification,
-} from '../schemas/quantifications.schema';
+import { Quantification } from '../schemas/quantifications.schema';
 import { sum, has } from 'lodash';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import { PraiseService } from '@/praise/praise.service';
 import { Inject, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '@/periods/services/periods.service';
-import { ExportInputDto } from '@/shared/dto/export-input.dto';
-import { exec } from '@/shared/duckdb.shared';
-import duckdb from 'duckdb';
-import { Transform } from '@json2csv/node';
 
 export class QuantificationsService {
   constructor(
