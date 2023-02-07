@@ -11,3 +11,17 @@ export function optionsHash(options: ExportInputDto): string {
     .update(JSON.stringify({ periodId, startDate, endDate }))
     .digest('hex');
 }
+
+/**
+ * Get the return content type based on the export format
+ */
+export function getContentType(format: string): string {
+  switch (format) {
+    case 'parquet':
+      return 'application/octet-stream';
+    case 'json':
+      return 'application/json';
+    default:
+      return 'text/csv'; // csv
+  }
+}

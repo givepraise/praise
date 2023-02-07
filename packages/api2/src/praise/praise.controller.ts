@@ -38,7 +38,7 @@ import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto'
 import { Response } from 'express';
 import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
-import { optionsHash } from '@/shared/export.shared';
+import { getContentType, optionsHash } from '@/shared/export.shared';
 import { PraiseExportService } from './services/praise-export.service';
 
 @Controller('praise')
@@ -84,7 +84,8 @@ export class PraiseController {
     @Query() options: ExportInputDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    const { format } = options;
+    const format = options.format || 'csv';
+
     // Root path for all exports
     const rootPath = `${allExportsDirPath}/praise`;
 
@@ -112,12 +113,12 @@ export class PraiseController {
       await this.praiseExportService.generateAllExports(dirPath, options);
     }
 
-    const file = fs.createReadStream(filePath);
     res.set({
-      'Content-Type':
-        format === 'json' ? 'application/json' : 'application/octet-stream',
+      'Content-Type': getContentType(format),
       'Content-Disposition': `attachment; filename="praise.${format}"`,
     });
+
+    const file = fs.createReadStream(filePath);
     return new StreamableFile(file);
   }
 

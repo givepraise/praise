@@ -15,7 +15,7 @@ import { QuantificationsService } from './services/quantifications.service';
 import { Response } from 'express';
 import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
-import { optionsHash } from '@/shared/export.shared';
+import { getContentType, optionsHash } from '@/shared/export.shared';
 import { QuantificationsExportService } from './services/quantifications-export.service';
 
 @Controller('quantifications')
@@ -48,7 +48,8 @@ export class QuantificationsController {
     @Query() options: ExportInputDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    const { format } = options;
+    const format = options.format || 'csv';
+
     // Root path for all exports
     const rootPath = `${allExportsDirPath}/quantifications`;
 
@@ -81,12 +82,12 @@ export class QuantificationsController {
       );
     }
 
-    const file = fs.createReadStream(filePath);
     res.set({
-      'Content-Type':
-        format === 'json' ? 'application/json' : 'application/octet-stream',
+      'Content-Type': getContentType(format),
       'Content-Disposition': `attachment; filename="quantifications.${format}"`,
     });
+
+    const file = fs.createReadStream(filePath);
     return new StreamableFile(file);
   }
 }
