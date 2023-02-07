@@ -15,7 +15,7 @@ const settings = [
     key: 'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
     label: 'Quantifiers Per Praise',
     description:
-      'How many redundant quantifications are assigned to each praise?',
+      'How many quantifiers are assigned to each praise?',
   },
   {
     key: 'PRAISE_PER_QUANTIFIER',
