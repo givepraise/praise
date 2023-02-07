@@ -11,11 +11,12 @@ import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { ApiOperation } from '@nestjs/swagger';
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { QuantificationsService } from './quantifications.service';
+import { QuantificationsService } from './services/quantifications.service';
 import { Response } from 'express';
 import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { optionsHash } from '@/shared/export.shared';
+import { QuantificationsExportService } from './services/quantifications-export.service';
 
 @Controller('quantifications')
 @ApiTags('Quantifications')
@@ -27,6 +28,7 @@ import { optionsHash } from '@/shared/export.shared';
 export class QuantificationsController {
   constructor(
     private readonly quantificationsService: QuantificationsService,
+    private readonly quantificationsExportService: QuantificationsExportService,
   ) {}
 
   @Get('export')
@@ -73,7 +75,10 @@ export class QuantificationsController {
       fs.mkdirSync(dirPath, { recursive: true });
 
       // Generate new export files
-      await this.quantificationsService.generateAllExports(dirPath, options);
+      await this.quantificationsExportService.generateAllExports(
+        dirPath,
+        options,
+      );
     }
 
     const file = fs.createReadStream(filePath);

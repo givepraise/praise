@@ -16,7 +16,7 @@ import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
 import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder';
-import { QuantificationsService } from '@/quantifications/quantifications.service';
+import { QuantificationsService } from '@/quantifications/services/quantifications.service';
 import { QuantificationsModule } from '@/quantifications/quantifications.module';
 import { PraiseModule } from '@/praise/praise.module';
 import { Praise } from '@/praise/schemas/praise.schema';

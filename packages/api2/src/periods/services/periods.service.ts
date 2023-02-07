@@ -18,7 +18,7 @@ import { add, compareAsc, parseISO } from 'date-fns';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
-import { QuantificationsService } from '@/quantifications/quantifications.service';
+import { QuantificationsService } from '@/quantifications/services/quantifications.service';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exec } from '@/shared/duckdb.shared';
 import { Injectable, Inject, forwardRef } from '@nestjs/common';

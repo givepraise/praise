@@ -21,7 +21,7 @@ import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
 import mongoose from 'mongoose';
 import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder';
-import { QuantificationsService } from '@/quantifications/quantifications.service';
+import { QuantificationsService } from '@/quantifications/services/quantifications.service';
 import { PeriodsService } from '@/periods/services/periods.service';
 import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
 import { PraiseSeeder } from '@/database/seeder/praise.seeder';

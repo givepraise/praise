@@ -7,7 +7,7 @@ import { SettingsService } from '@/settings/settings.service';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { Logger } from '@/shared/logger';
-import { QuantificationsService } from '@/quantifications/quantifications.service';
+import { QuantificationsService } from '@/quantifications/services/quantifications.service';
 
 import mongoose, { ConnectOptions } from 'mongoose';
 
