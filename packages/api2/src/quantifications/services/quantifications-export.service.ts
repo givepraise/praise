@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { QuantificationsExportSqlSchema } from '../schemas/quantifications.schema';
 import { ServiceException } from '@/shared/exceptions/service-exception';
-import { PraiseService } from '@/praise/praise.service';
+import { PraiseService } from '@/praise/services/praise.service';
 import { Inject, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '@/periods/services/periods.service';
 import { ExportInputDto } from '@/shared/dto/export-input.dto';

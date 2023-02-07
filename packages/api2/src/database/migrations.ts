@@ -1,6 +1,6 @@
 import { Umzug, MongoDBStorage } from 'umzug';
 import { INestApplication } from '@nestjs/common';
-import { PraiseService } from '@/praise/praise.service';
+import { PraiseService } from '@/praise/services/praise.service';
 import { UsersService } from '@/users/users.service';
 import { PeriodsService } from '@/periods/services/periods.service';
 import { SettingsService } from '@/settings/settings.service';

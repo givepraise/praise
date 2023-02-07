@@ -21,7 +21,7 @@ import { PeriodsService } from '../src/periods/services/periods.service';
 import { PraiseSeeder } from '@/database/seeder/praise.seeder';
 import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder';
 import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
-import { PraiseService } from '@/praise/praise.service';
+import { PraiseService } from '@/praise/services/praise.service';
 import { QuantificationsService } from '@/quantifications/services/quantifications.service';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { PeriodsSeeder } from '@/database/seeder/periods.seeder';

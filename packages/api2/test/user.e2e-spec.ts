@@ -21,7 +21,7 @@ import { QuantificationsModule } from '@/quantifications/quantifications.module'
 import { PraiseModule } from '@/praise/praise.module';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { PraiseSeeder } from '@/database/seeder/praise.seeder';
-import { PraiseService } from '@/praise/praise.service';
+import { PraiseService } from '@/praise/services/praise.service';
 import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
 import { PeriodsModule } from '@/periods/periods.module';
 import { PeriodsService } from '@/periods/services/periods.service';

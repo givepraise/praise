@@ -24,7 +24,7 @@ import { parse } from 'json2csv';
 import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
 import { Period } from '@/periods/schemas/periods.schema';
 import { PeriodsService } from '@/periods/services/periods.service';
-import { PraiseService } from '@/praise/praise.service';
+import { PraiseService } from '@/praise/services/praise.service';
 import { exec } from '@/shared/duckdb.shared';
 import { allExportsDirPath } from '@/shared/fs.shared';
 
