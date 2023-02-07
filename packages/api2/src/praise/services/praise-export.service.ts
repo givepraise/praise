@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import { InjectModel } from '@nestjs/mongoose';
-import { Cursor } from 'mongoose';
 import {
   PraiseModel,
   Praise,
@@ -10,10 +9,10 @@ import { ServiceException } from '@/shared/exceptions/service-exception';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '@/periods/services/periods.service';
 import { ExportInputDto } from '@/shared/dto/export-input.dto';
-import { exec } from '@/shared/duckdb.shared';
-import duckdb from 'duckdb';
-import stream from 'stream';
-import { Transform } from '@json2csv/node';
+import {
+  generateParquetExport,
+  writeCsvAndJsonExports,
+} from '@/shared/export.shared';
 @Injectable()
 export class PraiseExportService {
   constructor(
@@ -72,73 +71,6 @@ export class PraiseExportService {
   }
 
   /**
-   * Creates a write stream that can be used to write the praise to a json file
-   */
-  private createJsonWriter(path: string): stream.Transform {
-    const writer = fs.createWriteStream(`${path}/praise.json`);
-
-    let separator = '';
-    const jsonWriter = new stream.Transform({
-      objectMode: true,
-      transform: (data, _, done) => {
-        writer.write(`${separator}${JSON.stringify(data)}`);
-        separator = ',';
-        done(null, data);
-      },
-    });
-
-    writer.write('[');
-
-    jsonWriter.on('finish', () => {
-      writer.write(']');
-      writer.end();
-    });
-
-    return jsonWriter;
-  }
-
-  /**
-   * Writes the praise to a csv and json file
-   */
-  private async writeCsvAndJsonExports(
-    praise: Cursor<any, never>,
-    path: string,
-  ) {
-    // Wrap stream transformation in a promise and return
-    return new Promise(async (resolve) => {
-      const jsonWriter = this.createJsonWriter(path);
-      const csvTransformer = new Transform(
-        { fields: this.includeFields },
-        { objectMode: true },
-      );
-
-      const csvWriter = fs.createWriteStream(`${path}/praise.csv`);
-
-      praise.on('end', () => {
-        resolve(true);
-      });
-
-      praise.pipe(jsonWriter).pipe(csvTransformer).pipe(csvWriter);
-    });
-  }
-
-  /**
-   * Create a duckdb database, import the csv file, and export it to parquet
-   */
-  private async generateParquetExport(path: string) {
-    const db = new duckdb.Database(':memory:');
-    await exec(db, `CREATE TABLE praise (${PraiseExportSqlSchema})`);
-    await exec(
-      db,
-      `COPY praise FROM '${path}/praise.csv' (AUTO_DETECT TRUE, HEADER TRUE);`,
-    );
-    await exec(
-      db,
-      `COPY praise TO '${path}/praise.parquet' (FORMAT PARQUET, COMPRESSION ZSTD);`,
-    );
-  }
-
-  /**
    * Generates all export files - csv, json and parquet
    */
   async generateAllExports(path: string, options: ExportInputDto) {
@@ -164,9 +96,9 @@ export class PraiseExportService {
       .cursor();
 
     // Write the csv and json files
-    await this.writeCsvAndJsonExports(praise, path);
+    await writeCsvAndJsonExports('praise', praise, path, this.includeFields);
 
     // Generate the parquet file
-    await this.generateParquetExport(path);
+    await generateParquetExport(path, 'praise', PraiseExportSqlSchema);
   }
 }
