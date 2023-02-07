@@ -25,6 +25,7 @@ import { UserAccountsService } from './useraccounts.service';
 import { Response } from 'express';
 import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
 import { allExportsDirPath } from '@/shared/fs.shared';
+import { exportContentType } from '@/shared/export.shared';
 
 @Controller('useraccounts')
 @ApiTags('UserAccounts')
@@ -53,29 +54,40 @@ export class UserAccountsController {
     @Query() options: ExportInputFormatOnlyDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    const { format } = options;
-    const exportFolderPath = `${allExportsDirPath}/useraccounts`;
-    // The export id is the last inserted id in the collection
-    const exportId = await this.userAccountsService.getExportDirName();
-    const exportFilePath = `${exportFolderPath}/${exportId}/useraccounts.${format}`;
+    const format = options.format || 'csv';
 
-    // Cached export don't exist, clear cache and generate new export
-    if (!fs.existsSync(exportFilePath)) {
-      if (fs.existsSync(exportFolderPath)) {
-        fs.rmSync(exportFolderPath, { recursive: true, force: true });
+    // Root path for all exports
+    const rootPath = `${allExportsDirPath}/useraccounts`;
+
+    // Directory level 1 is the latest useraccounts id
+    const dirLevel1 = (
+      await this.userAccountsService.findLatest()
+    )._id.toString();
+
+    const dirPath = `${rootPath}/${dirLevel1}`;
+    const filePath = `${dirPath}/useraccounts.${format}`;
+
+    if (!fs.existsSync(filePath)) {
+      // If cached export don't exist
+      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
+        // If the latest useraccounts id folder doesn't exist,
+        // database hase been updated, clear all cached exports
+        fs.rmSync(rootPath, { recursive: true, force: true });
       }
 
-      console.log("Export file doesn't exist, generating new export files");
+      // Create directory for new export
+      fs.mkdirSync(dirPath, { recursive: true });
+
       // Generate new export files
-      await this.userAccountsService.generateAllExports();
+      await this.userAccountsService.generateAllExports(dirPath);
     }
 
-    const file = fs.createReadStream(exportFilePath);
     res.set({
-      'Content-Type':
-        format === 'json' ? 'application/json' : 'application/octet-stream',
+      'Content-Type': exportContentType(format),
       'Content-Disposition': `attachment; filename="useraccounts.${format}"`,
     });
+
+    const file = fs.createReadStream(filePath);
     return new StreamableFile(file);
   }
 }

@@ -10,7 +10,6 @@ import {
   SerializeOptions,
   UseInterceptors,
   Res,
-  UseGuards,
   StreamableFile,
 } from '@nestjs/common';
 import {
@@ -39,10 +38,9 @@ import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-response.
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Response } from 'express';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
+import { exportContentType } from '@/shared/export.shared';
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -72,29 +70,38 @@ export class PeriodsController {
     @Query() options: ExportInputFormatOnlyDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    const { format } = options;
-    const exportFolderPath = `${allExportsDirPath}/periods`;
-    // The export id is the last inserted id in the collection
-    const exportId = await this.periodsService.getExportDirName();
-    const exportFilePath = `${exportFolderPath}/${exportId}/periods.${format}`;
+    const format = options.format || 'csv';
 
-    // Cached export don't exist, clear cache and generate new export
-    if (!fs.existsSync(exportFilePath)) {
-      if (fs.existsSync(exportFolderPath)) {
-        fs.rmSync(exportFolderPath, { recursive: true, force: true });
+    // Root path for all exports
+    const rootPath = `${allExportsDirPath}/periods`;
+
+    // Directory level 1 is the latest periods id
+    const dirLevel1 = (await this.periodsService.findLatest())._id.toString();
+
+    const dirPath = `${rootPath}/${dirLevel1}`;
+    const filePath = `${dirPath}/periods.${format}`;
+
+    if (!fs.existsSync(filePath)) {
+      // If cached export don't exist
+      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
+        // If the latest periods id folder doesn't exist,
+        // database hase been updated, clear all cached exports
+        fs.rmSync(rootPath, { recursive: true, force: true });
       }
 
-      console.log("Export file doesn't exist, generating new export files");
+      // Create directory for new export
+      fs.mkdirSync(dirPath, { recursive: true });
+
       // Generate new export files
-      await this.periodsService.generateAllExports();
+      await this.periodsService.generateAllExports(dirPath);
     }
 
-    const file = fs.createReadStream(exportFilePath);
     res.set({
-      'Content-Type':
-        format === 'json' ? 'application/json' : 'application/octet-stream',
+      'Content-Type': exportContentType(format),
       'Content-Disposition': `attachment; filename="periods.${format}"`,
     });
+
+    const file = fs.createReadStream(filePath);
     return new StreamableFile(file);
   }
 

@@ -1,6 +1,4 @@
 import * as fs from 'fs';
-import * as csv from 'fast-csv';
-import duckdb from 'duckdb';
 import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
@@ -19,8 +17,6 @@ import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { QuantificationsService } from '@/quantifications/services/quantifications.service';
-import { allExportsDirPath } from '@/shared/fs.shared';
-import { exec } from '@/shared/duckdb.shared';
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { isString } from 'class-validator';
 import { PeriodDetailsQuantifierDto } from '../dto/period-details-quantifier.dto';
@@ -30,9 +26,11 @@ import { UpdatePeriodInputDto } from '../dto/update-period-input.dto';
 import { PeriodStatusType } from '../enums/status-type.enum';
 import { PeriodDetailsGiverReceiverDto } from '../dto/period-details-giver-receiver.dto';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
-import { Quantification } from '@/quantifications/schemas/quantifications.schema';
-import { QuantificationModel } from '@/database/schemas/quantification/quantification.schema';
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
+import {
+  generateParquetExport,
+  writeCsvAndJsonExports,
+} from '@/shared/export.shared';
 
 @Injectable()
 export class PeriodsService {
@@ -41,8 +39,6 @@ export class PeriodsService {
     private periodModel: typeof PeriodModel,
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
-    @InjectModel(Quantification.name)
-    private quantificationModel: typeof QuantificationModel,
     private eventLogService: EventLogService,
     @Inject(forwardRef(() => PeriodSettingsService))
     private periodSettingsService: PeriodSettingsService,
@@ -79,91 +75,6 @@ export class PeriodsService {
     return periodPagination;
   }
 
-  async generateCsvExport() {
-    // Fields to include in the csv
-    const includeFields = [
-      '_id',
-      'name',
-      'status',
-      'endDate',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Serialization rules
-    const transform = (doc: PeriodDocument) => ({
-      _id: doc._id,
-      name: doc.name,
-      status: doc.status,
-      endDate: doc.endDate.toISOString(),
-      createdAt: doc.createdAt.toISOString(),
-      updatedAt: doc.updatedAt.toISOString(),
-    });
-
-    const exportDirName = await this.getExportDirName();
-    const exportDirPath = `${allExportsDirPath}/periods/${exportDirName}`;
-
-    // Create the export folder if it doesn't exist
-    if (!fs.existsSync(exportDirPath)) {
-      fs.mkdirSync(exportDirPath, { recursive: true });
-    }
-
-    // Return a promise that resolves when the csv is done
-    return new Promise((resolve) => {
-      const cursor = this.periodModel
-        .find()
-        .select(includeFields.join(' '))
-        .cursor();
-
-      // Create a csv writer that transforms the data using our rules
-      const csvWriter = csv.format({
-        headers: true,
-        transform,
-      });
-
-      // Pipe the csvWriter to a file
-      csvWriter.pipe(fs.createWriteStream(`${exportDirPath}/periods.csv`));
-
-      // Resolve promise when csvWriter is done
-      csvWriter.on('end', () => {
-        resolve(true);
-      });
-
-      // Pipe the cursor to the csvWriter
-      cursor.pipe(csvWriter);
-    });
-  }
-
-  /**
-   * Generates all export files - csv and parquet
-   */
-  async generateAllExports() {
-    const exportDirName = await this.getExportDirName();
-    const exportDirPath = `${allExportsDirPath}/periods/${exportDirName}`;
-
-    await this.generateCsvExport();
-
-    // Create a duckdb database, import the csv file, and export it to parquet
-    const db = new duckdb.Database(':memory:');
-    await exec(db, `CREATE TABLE periods (${PeriodExportSqlSchema})`);
-    await exec(
-      db,
-      `COPY periods FROM '${exportDirPath}/periods.csv' (AUTO_DETECT TRUE, HEADER TRUE);`,
-    );
-    await exec(
-      db,
-      `COPY periods TO '${exportDirPath}/periods.parquet' (FORMAT PARQUET, COMPRESSION ZSTD);`,
-    );
-  }
-
-  /**
-   * The export directory name is the _id of the last inserted document
-   */
-  async getExportDirName(): Promise<string> {
-    const latestAdded = await this.findLatestAdded();
-    return latestAdded._id.toString();
-  }
-
   /**
    * Find a period by its id
    *
@@ -179,7 +90,7 @@ export class PeriodsService {
   /**
    * Find the latest added period
    */
-  async findLatestAdded(): Promise<Period> {
+  async findLatest(): Promise<Period> {
     const period = await this.periodModel
       .find()
       .limit(1)
@@ -738,4 +649,37 @@ export class PeriodsService {
     $gt: await this.getPreviousPeriodEndDate(period),
     $lte: period.endDate,
   });
+
+  /**
+   * Generates all export files - csv, json and parquet
+   */
+  async generateAllExports(path: string) {
+    const includeFields = [
+      '_id',
+      'name',
+      'status',
+      'endDate',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    // Count the number of documents that matches query
+    const count = await this.periodModel.countDocuments({});
+
+    // If there are no documents, create empty files and return
+    if (count === 0) {
+      fs.writeFileSync(`${path}/periods.csv`, includeFields.join(','));
+      fs.writeFileSync(`${path}/periods.json`, '[]');
+      return;
+    }
+
+    // Lookup the periods, create a cursor
+    const periods = this.periodModel.aggregate([]).cursor();
+
+    // Write the csv and json files
+    await writeCsvAndJsonExports('periods', periods, path, includeFields);
+
+    // Generate the parquet file
+    await generateParquetExport(path, 'periods', PeriodExportSqlSchema);
+  }
 }

@@ -37,6 +37,7 @@ import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { UpdateUserRequestDto } from './dto/update-user-request.dto';
 import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
 import { allExportsDirPath } from '@/shared/fs.shared';
+import { exportContentType } from '@/shared/export.shared';
 
 @Controller('users')
 @ApiTags('Users')
@@ -66,28 +67,38 @@ export class UsersController {
     @Query() options: ExportInputFormatOnlyDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    const { format } = options;
-    const exportFolderPath = `${allExportsDirPath}/users`;
-    // The export id is the last inserted id in the collection
-    const exportId = await this.usersService.getExportDirName();
-    const exportFilePath = `${exportFolderPath}/${exportId}/users.${format}`;
+    const format = options.format || 'csv';
 
-    // Cached export don't exist, clear cache and generate new export
-    if (!fs.existsSync(exportFilePath)) {
-      if (fs.existsSync(exportFolderPath)) {
-        fs.rmSync(exportFolderPath, { recursive: true, force: true });
+    // Root path for all exports
+    const rootPath = `${allExportsDirPath}/users`;
+
+    // Directory level 1 is the latest users id
+    const dirLevel1 = (await this.usersService.findLatest())._id.toString();
+
+    const dirPath = `${rootPath}/${dirLevel1}`;
+    const filePath = `${dirPath}/users.${format}`;
+
+    if (!fs.existsSync(filePath)) {
+      // If cached export don't exist
+      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
+        // If the latest users id folder doesn't exist,
+        // database hase been updated, clear all cached exports
+        fs.rmSync(rootPath, { recursive: true, force: true });
       }
 
+      // Create directory for new export
+      fs.mkdirSync(dirPath, { recursive: true });
+
       // Generate new export files
-      await this.usersService.generateAllExports();
+      await this.usersService.generateAllExports(dirPath);
     }
 
-    const file = fs.createReadStream(exportFilePath);
     res.set({
-      'Content-Type':
-        format === 'json' ? 'application/json' : 'application/octet-stream',
+      'Content-Type': exportContentType(format),
       'Content-Disposition': `attachment; filename="users.${format}"`,
     });
+
+    const file = fs.createReadStream(filePath);
     return new StreamableFile(file);
   }
 
