@@ -240,7 +240,7 @@ export class PraiseService {
         praise._id as Types.ObjectId
       ).toString()}"`;
     } else {
-      if (!score && score !== 0) {
+      if (score === undefined || score === null) {
         throw new ServiceException(
           'Score, dismissed or duplicatePraiseId is required',
         );

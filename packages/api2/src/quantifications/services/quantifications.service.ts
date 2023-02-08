@@ -2,7 +2,7 @@ import { SettingsService } from '@/settings/settings.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Quantification } from '../schemas/quantifications.schema';
-import { sum, has } from 'lodash';
+import { sum, has, forEach } from 'lodash';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import { PraiseService } from '@/praise/services/praise.service';
@@ -205,33 +205,41 @@ export class QuantificationsService {
       praise._id,
     );
 
-    if (quantifications.length === 0) return 0;
+    // Save the scores to the database
+    if (saveQuantifications) {
+      for await (const q of quantifications) {
+        await this.quantificationModel.updateOne(
+          { _id: q._id },
+          {
+            $set: {
+              scoreRealized: await this.calculateQuantificationScore(praise, q),
+            },
+          },
+        );
+      }
+    }
+
+    // Filter out dismissed quantifications and quantifications that are not completed
+    const completedQuantifications = quantifications.filter((q) => {
+      if (!this.isQuantificationCompleted(q)) return false;
+      if (q.dismissed) return false;
+      return true;
+    });
+
+    if (completedQuantifications.length === 0) return 0;
 
     // Calculate the score for each quantification
-    const scores = await Promise.all(
-      quantifications.map((q) => {
+    const completedQuantificationsScores = await Promise.all(
+      completedQuantifications.map((q) => {
         const s = this.calculateQuantificationScore(praise, q);
         return s;
       }),
     );
 
-    // Save the scores to the database
-    if (saveQuantifications) {
-      for (let i = 0; i < quantifications.length; i++) {
-        const q = quantifications[i];
-        const s = scores[i];
-
-        await this.quantificationModel.updateOne(
-          { _id: q._id },
-          { $set: { scoreRealized: s } },
-        );
-      }
-    }
-
     // Calculate the composite score by averaging the scores of all completed quantifications
-    const compositeScore = +(sum(scores) / quantifications.length).toFixed(
-      this.DIGITS_PRECISION,
-    );
+    const compositeScore = +(
+      sum(completedQuantificationsScores) / completedQuantifications.length
+    ).toFixed(this.DIGITS_PRECISION);
 
     return compositeScore;
   };
