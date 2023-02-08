@@ -6,6 +6,7 @@ import {
   Res,
   SerializeOptions,
   StreamableFile,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { ApiOperation } from '@nestjs/swagger';
@@ -17,14 +18,16 @@ import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
 import { QuantificationsExportService } from './services/quantifications-export.service';
+import { PermissionsGuard } from '@/auth/guards/permissions.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('quantifications')
 @ApiTags('Quantifications')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-// @UseGuards(PermissionsGuard)
-// @UseGuards(AuthGuard(['jwt', 'api-key']))
+@UseGuards(PermissionsGuard)
+@UseGuards(AuthGuard(['jwt', 'api-key']))
 export class QuantificationsController {
   constructor(
     private readonly quantificationsService: QuantificationsService,

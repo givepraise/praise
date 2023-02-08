@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   Res,
   StreamableFile,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -41,14 +42,16 @@ import { Response } from 'express';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
 import { exportContentType } from '@/shared/export.shared';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 
 @Controller('periods')
 @ApiTags('Periods')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-// @UseGuards(PermissionsGuard)
-// @UseGuards(JwtAuthGuard)
+@UseGuards(PermissionsGuard)
+@UseGuards(JwtAuthGuard)
 export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,

@@ -7,7 +7,6 @@ import {
   SerializeOptions,
   StreamableFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -15,12 +14,10 @@ import {
   ApiProduces,
   ApiTags,
 } from '@nestjs/swagger';
-import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
 import { AuthGuard } from '@nestjs/passport';
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
-import { UserAccount } from './schemas/useraccounts.schema';
 import { UserAccountsService } from './useraccounts.service';
 import { Response } from 'express';
 import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
@@ -32,8 +29,8 @@ import { exportContentType } from '@/shared/export.shared';
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-// @UseGuards(PermissionsGuard)
-// @UseGuards(AuthGuard(['jwt', 'api-key']))
+@UseGuards(PermissionsGuard)
+@UseGuards(AuthGuard(['jwt', 'api-key']))
 export class UserAccountsController {
   constructor(private readonly userAccountsService: UserAccountsService) {}
 

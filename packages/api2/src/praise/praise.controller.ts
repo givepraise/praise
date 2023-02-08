@@ -46,8 +46,8 @@ import { PraiseExportService } from './services/praise-export.service';
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-// @UseGuards(PermissionsGuard)
-// @UseGuards(JwtAuthGuard)
+@UseGuards(PermissionsGuard)
+@UseGuards(JwtAuthGuard)
 export class PraiseController {
   constructor(
     private readonly praiseService: PraiseService,

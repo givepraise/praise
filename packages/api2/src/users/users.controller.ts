@@ -44,8 +44,8 @@ import { exportContentType } from '@/shared/export.shared';
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-// @UseGuards(PermissionsGuard)
-// @UseGuards(AuthGuard(['jwt', 'api-key']))
+@UseGuards(PermissionsGuard)
+@UseGuards(AuthGuard(['jwt', 'api-key']))
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
