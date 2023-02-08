@@ -8,10 +8,10 @@ export const findPraiseQuantification = (
   return praise.quantifications.find((q) => q.quantifier === userId);
 };
 
-export const shortenDuplicatePraiseId = (
+export const shortenDuplicatePraise = (
   praise: PraiseDto,
   userId: string
 ): string => {
   const q = findPraiseQuantification(praise, userId);
-  return q && q.duplicatePraiseId ? q.duplicatePraiseId?.slice(-4) : '';
+  return q && q.duplicatePraise ? q.duplicatePraise?.slice(-4) : '';
 };

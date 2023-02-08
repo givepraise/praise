@@ -7,7 +7,7 @@ import { Praise } from '@/components/praise/Praise';
 import { ActiveUserId } from '@/model/auth/auth';
 import {
   findPraiseQuantification,
-  shortenDuplicatePraiseId,
+  shortenDuplicatePraise,
 } from '@/utils/praise';
 import { classNames } from '@/utils/index';
 import { QuantifySlider } from './QuantifySlider';
@@ -40,7 +40,7 @@ export const QuantifyPraiseRow = ({
   if (!quantification) return null;
 
   const dismissed = quantification.dismissed;
-  const duplicate = !!quantification.duplicatePraiseId;
+  const duplicate = !!quantification.duplicatePraise;
 
   return (
     <tr
@@ -60,7 +60,7 @@ export const QuantifyPraiseRow = ({
           periodId={periodId}
           usePseudonyms={usePseudonyms}
           dismissed={dismissed}
-          shortDuplicatePraiseId={shortenDuplicatePraiseId(praise, userId)}
+          shortDuplicatePraise={shortenDuplicatePraise(praise, userId)}
           bigGiverAvatar={false}
           showScore={false}
         />

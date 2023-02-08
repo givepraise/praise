@@ -367,8 +367,10 @@ export class QuantificationsService {
             ? quantification.praise._id
             : quantification.praise,
           duplicatePraise:
-            quantification.duplicatePraise &&
-            has(quantification.duplicatePraise, '_id')
+            quantification.duplicatePraise === undefined
+              ? null
+              : quantification.duplicatePraise &&
+                has(quantification.duplicatePraise, '_id')
               ? quantification.duplicatePraise._id
               : quantification.duplicatePraise,
         },
