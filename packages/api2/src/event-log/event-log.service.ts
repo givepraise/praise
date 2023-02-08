@@ -22,7 +22,7 @@ export class EventLogService {
     private eventLogModel: typeof EventLogModel,
     @InjectModel(EventLogType.name)
     private eventLogTypeModel: Model<EventLogTypeDocument>,
-  ) { }
+  ) {}
 
   /**
    * Convenience method to get the EventLog Model
@@ -74,7 +74,6 @@ export class EventLogService {
   async findAllPaginated(
     options: EventLogFindPaginatedQueryDto,
   ): Promise<EventLogPaginatedResponseDto> {
-
     const { page, limit, sortColumn, sortType, search, types } = options;
     const query = {} as any;
 

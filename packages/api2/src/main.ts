@@ -8,13 +8,10 @@ import { ServiceExceptionFilter } from './shared/service-exception.filter';
 import { runDbMigrations } from './database/migrations';
 import { version } from '../package.json';
 import { Logger } from './shared/logger';
-import morgan from 'morgan';
 
 async function bootstrap() {
   // Create an instance of the Nest app
   const app = await NestFactory.create(AppModule);
-
-  app.use(morgan('dev'))
 
   // Set the global prefix for all routes in the app
   app.setGlobalPrefix('api/');
