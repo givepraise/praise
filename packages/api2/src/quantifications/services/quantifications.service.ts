@@ -2,7 +2,7 @@ import { SettingsService } from '@/settings/settings.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Quantification } from '../schemas/quantifications.schema';
-import { sum, has, forEach } from 'lodash';
+import { sum, has } from 'lodash';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import { PraiseService } from '@/praise/services/praise.service';
