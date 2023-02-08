@@ -78,11 +78,11 @@ export class EventLogService {
     const query = {} as any;
 
     // Filter by types
-    if (Array.isArray(types) && types.length > 0) {
+    if (Array.isArray(types) && types.length > 0 && types[0]) {
       const t = await this.eventLogTypeModel.find({
         key: { $in: types },
       });
-      query.types = t.map((item) => new mongoose.Types.ObjectId(item.id));
+      query.type = t.map((item) => new mongoose.Types.ObjectId(item.id));
     }
 
     // Search contents of description field
