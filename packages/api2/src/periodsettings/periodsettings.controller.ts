@@ -62,7 +62,10 @@ export class PeriodSettingsController {
     @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
     @Param('settingId', ObjectIdPipe) settingId: Types.ObjectId,
   ) {
-    return this.periodsettingsService.findOneById(settingId, periodId);
+    return this.periodsettingsService.findOneBySettingIdAndPeriodId(
+      settingId,
+      periodId,
+    );
   }
 
   @Patch('/:periodId/settings/:settingId')

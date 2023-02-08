@@ -49,7 +49,7 @@ export class PeriodSettingsService {
     return settings.map((setting) => new PeriodSetting(setting));
   }
 
-  async findOneById(
+  async findOneBySettingIdAndPeriodId(
     settingId: Types.ObjectId,
     periodId: Types.ObjectId,
   ): Promise<PeriodSetting> {
@@ -130,7 +130,7 @@ export class PeriodSettingsService {
       }" from "${originalValue || ''}" to "${setting.value || ''}"`,
     });
 
-    return this.findOneById(settingId, periodId);
+    return this.findOneBySettingIdAndPeriodId(settingId, periodId);
   }
 
   /**

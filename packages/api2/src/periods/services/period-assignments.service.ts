@@ -25,7 +25,7 @@ import { AssignmentsDto } from '../dto/assignments.dto';
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
 import { PeriodDetailsDto } from '../dto/period-details.dto';
 import { ReplaceQuantifierInputDto } from '../dto/replace-quantifier-input.dto';
-import { ReplaceQuantifierResponseDto } from '../dto/replace-quantifier-reponse.dto';
+import { ReplaceQuantifierResponseDto } from '../dto/replace-quantifier-response.dto';
 import { VerifyQuantifierPoolSizeDto } from '../dto/verify-quantifiers-pool-size.dto';
 import { PeriodStatusType } from '../enums/status-type.enum';
 import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interface';
