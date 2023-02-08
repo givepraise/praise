@@ -252,23 +252,11 @@ export class QuantificationsService {
       praise._id,
     );
 
-    // Filter out dismissed quantifications and quantifications that are not completed
-    // const completedQuantifications = quantifications.filter((q) => {
-    //   if (!this.isQuantificationCompleted(q)) return false;
-    //   if (q.dismissed) return false;
-    //   return true;
-    // });
-
-    const notDismissedQuantifications = quantifications.filter((q) => {
-      if (q.dismissed) return false;
-      return true;
-    });
-
-    if (notDismissedQuantifications.length === 0) return 0;
+    if (quantifications.length === 0) return 0;
 
     // Calculate the score for each quantification
     const scores = await Promise.all(
-      notDismissedQuantifications.map((q) => {
+      quantifications.map((q) => {
         const s = this.calculateQuantificationScore(praise, q);
         return s;
       }),
@@ -276,8 +264,8 @@ export class QuantificationsService {
 
     // Save the scores to the database
     if (saveQuantifications) {
-      for (let i = 0; i < notDismissedQuantifications.length; i++) {
-        const q = notDismissedQuantifications[i];
+      for (let i = 0; i < quantifications.length; i++) {
+        const q = quantifications[i];
         const s = scores[i];
 
         await this.quantificationModel.updateOne(
@@ -288,9 +276,9 @@ export class QuantificationsService {
     }
 
     // Calculate the composite score by averaging the scores of all completed quantifications
-    const compositeScore = +(
-      sum(scores) / notDismissedQuantifications.length
-    ).toFixed(this.DIGITS_PRECISION);
+    const compositeScore = +(sum(scores) / quantifications.length).toFixed(
+      this.DIGITS_PRECISION,
+    );
 
     return compositeScore;
   };
