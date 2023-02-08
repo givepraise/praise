@@ -1,7 +1,7 @@
 .env
 .DS_Store
 node_modules
-.yarn
+.yarn/*
 !.yarn/cache
 !.yarn/patches
 !.yarn/plugins
