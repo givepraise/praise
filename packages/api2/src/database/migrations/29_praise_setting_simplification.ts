@@ -1,6 +1,5 @@
 import { MigrationsContext } from '../interfaces/migration-context.interface';
 import { PeriodSettingsModel } from '../schemas/periodsettings/23_periodsettings.schema';
-import { SettingModel } from '../schemas/settings/23_settings.schema';
 
 const up = async ({ context }: MigrationsContext): Promise<void> => {
   // Check if the index exists
@@ -25,7 +24,7 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
             $set: {
               setting: (
                 await context.settingsService.findOneByKey(periodSetting.key)
-              )?._id
+              )?._id,
             },
             $unset: {
               key: 1,
@@ -41,7 +40,7 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
           },
           upsert: true,
         },
-      }
+      };
     }) as any,
   );
 
