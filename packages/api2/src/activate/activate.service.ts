@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ActivateInputDto } from './dto/activate-input.dto';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { ethers } from 'ethers';
 import { UsersService } from '@/users/users.service';

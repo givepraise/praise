@@ -8,7 +8,7 @@ import {
 import { EventLog, EventLogModel } from './schemas/event-log.schema';
 import mongoose from 'mongoose';
 import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-query.dto';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { CreateEventLogInputDto } from './dto/create-event-log-input.dto';
 import { RequestContext } from 'nestjs-request-context';
 import { has } from 'lodash';
@@ -78,11 +78,11 @@ export class EventLogService {
     const query = {} as any;
 
     // Filter by types
-    if (Array.isArray(types) && types.length > 0) {
+    if (Array.isArray(types) && types.length > 0 && types[0]) {
       const t = await this.eventLogTypeModel.find({
         key: { $in: types },
       });
-      query.types = t.map((item) => new mongoose.Types.ObjectId(item.id));
+      query.type = t.map((item) => new mongoose.Types.ObjectId(item.id));
     }
 
     // Search contents of description field

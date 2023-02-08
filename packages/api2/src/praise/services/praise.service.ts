@@ -1,26 +1,22 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-
-import { PraiseModel, Praise, PraiseDocument } from './schemas/praise.schema';
-import { ServiceException } from '../shared/service-exception';
+import { PraiseModel, Praise, PraiseDocument } from '../schemas/praise.schema';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 import { SettingsService } from '@/settings/settings.service';
-import { QuantificationsService } from '@/quantifications/quantifications.service';
-import { PraisePaginatedQueryDto } from './dto/praise-paginated-query.dto';
+import { QuantificationsService } from '@/quantifications/services/quantifications.service';
+import { PraisePaginatedQueryDto } from '../dto/praise-paginated-query.dto';
 import { Pagination } from 'mongoose-paginate-ts';
-import { EventLogService } from '../event-log/event-log.service';
+import { EventLogService } from '../../event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
 import { RequestContext } from 'nestjs-request-context';
 import { RequestWithAuthContext } from '@/auth/interfaces/request-with-auth-context.interface';
-import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
+import { PraisePaginatedResponseDto } from '../dto/praise-paginated-response.dto';
 import { Period, PeriodModel } from '@/periods/schemas/periods.schema';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '@/periods/services/periods.service';
-import { parse } from 'json2csv';
 import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
-import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
-
 @Injectable()
 export class PraiseService {
   constructor(
@@ -94,60 +90,6 @@ export class PraiseService {
   }
 
   /**
-   * returns all of the model in json format
-   * Do not populate relations
-   */
-  async export(options: ExportRequestOptions): Promise<Praise[] | string> {
-    const { periodId, startDate, endDate, format } = options;
-    const query = {} as any;
-
-    if (periodId) {
-      if (startDate || endDate) {
-        // If periodId is set, startDate and endDate should not be set
-        throw new ServiceException(
-          'Invalid date filtering option. When periodId is set, startDate and endDate should not be set.',
-        );
-      }
-      const period = await this.periodService.findOneById(periodId);
-      query.createdAt = await this.periodService.getPeriodDateRangeQuery(
-        period,
-      );
-    } else {
-      if (startDate && endDate) {
-        // If periodId is not set but startDate and endDate are set, use them to filter
-        query.createdAt = {
-          $gte: startDate,
-          $lte: endDate,
-        };
-      } else if (startDate || endDate) {
-        // If periodId is not set and only one of startDate and endDate is set, throw an error
-        throw new ServiceException(
-          'Invalid date filtering option. When periodId is not set, both startDate and endDate should be set.',
-        );
-      }
-    }
-
-    const praises = await this.praiseModel.find(query).lean();
-
-    if (format !== 'csv') return praises;
-
-    const fields = [
-      '_id',
-      'giver',
-      'forwarder',
-      'receiver',
-      'reason',
-      'reasonRaw',
-      'score',
-      'sourceId',
-      'sourceName',
-      'createdAt',
-      'updatedAt',
-    ];
-    return praises.length > 0 ? parse(praises, { fields }) : fields.toString();
-  }
-
-  /**
    * Find one praise by id
    * @param _id
    * @returns {Promise<Praise>}
@@ -177,6 +119,19 @@ export class PraiseService {
     if (!praise) throw new ServiceException('Praise item not found.');
 
     return praise;
+  }
+
+  /**
+   * Find the lastest added praise
+   */
+  async findLatest(): Promise<Praise> {
+    const praise = await this.praiseModel
+      .find()
+      .limit(1)
+      .sort({ $natural: -1 })
+      .lean();
+    if (!praise[0]) throw new ServiceException('Praise not found.');
+    return praise[0];
   }
 
   /**

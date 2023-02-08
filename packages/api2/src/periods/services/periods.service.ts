@@ -1,8 +1,14 @@
+import * as fs from 'fs';
 import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { Period, PeriodDocument, PeriodModel } from '../schemas/periods.schema';
-import { ServiceException } from '../../shared/service-exception';
+import {
+  Period,
+  PeriodDocument,
+  PeriodExportSqlSchema,
+  PeriodModel,
+} from '../schemas/periods.schema';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { CreatePeriodInputDto } from '../dto/create-period-input.dto';
@@ -10,7 +16,7 @@ import { add, compareAsc, parseISO } from 'date-fns';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
-import { QuantificationsService } from '@/quantifications/quantifications.service';
+import { QuantificationsService } from '@/quantifications/services/quantifications.service';
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { isString } from 'class-validator';
 import { PeriodDetailsQuantifierDto } from '../dto/period-details-quantifier.dto';
@@ -20,10 +26,12 @@ import { UpdatePeriodInputDto } from '../dto/update-period-input.dto';
 import { PeriodStatusType } from '../enums/status-type.enum';
 import { PeriodDetailsGiverReceiverDto } from '../dto/period-details-giver-receiver.dto';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
-import { Quantification } from '@/quantifications/schemas/quantifications.schema';
-import { QuantificationModel } from '@/database/schemas/quantification/quantification.schema';
-import { parse } from 'json2csv';
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
+import {
+  generateParquetExport,
+  writeCsvAndJsonExports,
+} from '@/shared/export.shared';
+
 @Injectable()
 export class PeriodsService {
   constructor(
@@ -31,8 +39,6 @@ export class PeriodsService {
     private periodModel: typeof PeriodModel,
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
-    @InjectModel(Quantification.name)
-    private quantificationModel: typeof QuantificationModel,
     private eventLogService: EventLogService,
     @Inject(forwardRef(() => PeriodSettingsService))
     private periodSettingsService: PeriodSettingsService,
@@ -70,26 +76,6 @@ export class PeriodsService {
   }
 
   /**
-   * returns all of the model in json format
-   */
-  async export(format = 'csv'): Promise<Period[] | string> {
-    const periods = await this.periodModel.find().lean();
-
-    if (format !== 'csv') return periods;
-
-    const fields = [
-      '_id',
-      'name',
-      'status',
-      'endDate',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    return periods.length > 0 ? parse(periods, { fields }) : fields.toString();
-  }
-
-  /**
    * Find a period by its id
    *
    * @param {Types.ObjectId} _id
@@ -99,6 +85,19 @@ export class PeriodsService {
     const period = await this.periodModel.findById(_id).lean();
     if (!period) throw new ServiceException('Period not found.');
     return period;
+  }
+
+  /**
+   * Find the latest added period
+   */
+  async findLatest(): Promise<Period> {
+    const period = await this.periodModel
+      .find()
+      .limit(1)
+      .sort({ $natural: -1 })
+      .lean();
+    if (!period[0]) throw new ServiceException('Period not found.');
+    return period[0];
   }
 
   /**
@@ -650,4 +649,37 @@ export class PeriodsService {
     $gt: await this.getPreviousPeriodEndDate(period),
     $lte: period.endDate,
   });
+
+  /**
+   * Generates all export files - csv, json and parquet
+   */
+  async generateAllExports(path: string) {
+    const includeFields = [
+      '_id',
+      'name',
+      'status',
+      'endDate',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    // Count the number of documents that matches query
+    const count = await this.periodModel.countDocuments({});
+
+    // If there are no documents, create empty files and return
+    if (count === 0) {
+      fs.writeFileSync(`${path}/periods.csv`, includeFields.join(','));
+      fs.writeFileSync(`${path}/periods.json`, '[]');
+      return;
+    }
+
+    // Lookup the periods, create a cursor
+    const periods = this.periodModel.aggregate([]).cursor();
+
+    // Write the csv and json files
+    await writeCsvAndJsonExports('periods', periods, path, includeFields);
+
+    // Generate the parquet file
+    await generateParquetExport(path, 'periods', PeriodExportSqlSchema);
+  }
 }

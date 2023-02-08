@@ -8,7 +8,7 @@ import { LoginResponseDto } from './dto/login-response.dto';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { Types } from 'mongoose';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 
 @Injectable()
 /**

@@ -4,7 +4,7 @@ import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
-import { ServiceExceptionFilter } from './shared/service-exception.filter';
+import { ServiceExceptionFilter } from './shared/filters/service-exception.filter';
 import { runDbMigrations } from './database/migrations';
 import { version } from '../package.json';
 import { Logger } from './shared/logger';
