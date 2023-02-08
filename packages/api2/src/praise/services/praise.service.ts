@@ -147,7 +147,7 @@ export class PraiseService {
     id: Types.ObjectId,
     params: QuantifyInputDto,
   ): Promise<Praise[]> => {
-    const { score, dismissed, duplicatePraiseId } = params;
+    const { score, dismissed, duplicatePraise } = params;
 
     // Get the praise item in question
     const praise = await this.praiseModel
@@ -193,13 +193,13 @@ export class PraiseService {
     if (praisesDuplicateOfThis?.length > 0)
       affectedPraises.push(...praisesDuplicateOfThis);
 
-    if (duplicatePraiseId) {
+    if (duplicatePraise) {
       // Check that the duplicatePraise is not the same as the praise item
-      if (praise._id.equals(duplicatePraiseId))
+      if (praise._id.equals(duplicatePraise))
         throw new ServiceException('Praise cannot be a duplicate of itself');
 
       // Find the original praise item
-      const dp = await this.praiseModel.findById(duplicatePraiseId).lean();
+      const dp = await this.praiseModel.findById(duplicatePraise).lean();
       if (!dp) throw new ServiceException('Duplicate praise item not found');
 
       // Check that this praise item is not already the original of another duplicate
@@ -211,10 +211,9 @@ export class PraiseService {
       // Check that this praise item does not become the duplicate of another duplicate
       const praisesDuplicateOfAnotherDuplicate =
         await this.findPraisesDuplicateOfAnotherDuplicate(
-          new Types.ObjectId(duplicatePraiseId),
+          new Types.ObjectId(duplicatePraise),
           userId,
         );
-
       if (praisesDuplicateOfAnotherDuplicate?.length > 0)
         throw new ServiceException(
           'Praise cannot be marked duplicate of another duplicate',
@@ -240,9 +239,9 @@ export class PraiseService {
         praise._id as Types.ObjectId
       ).toString()}"`;
     } else {
-      if (!score) {
+      if (score === undefined || score === null) {
         throw new ServiceException(
-          'Score, dismissed or duplicatePraiseId is required',
+          'Score, dismissed or duplicatePraise is required',
         );
       }
 
@@ -292,7 +291,19 @@ export class PraiseService {
           },
           { new: true },
         )
-        .populate('giver receiver forwarder quantifications')
+        .populate('forwarder quantifications')
+        .populate({
+          path: 'receiver',
+          populate: {
+            path: 'user',
+          },
+        })
+        .populate({
+          path: 'giver',
+          populate: {
+            path: 'user',
+          },
+        })
         .lean();
 
       docs.push(praiseWithScore);
@@ -336,13 +347,13 @@ export class PraiseService {
 
   /**
    * Find all praises that are duplicates of the given duplicate praise
-   * @param {Types.ObjectId} duplicatePraiseId
+   * @param {Types.ObjectId} duplicatePraise
    * @param {Types.ObjectId} quantifierId
    * @returns {Promise<Praise[]>}
    *
    **/
   findPraisesDuplicateOfAnotherDuplicate = async (
-    duplicatePraiseId: Types.ObjectId,
+    duplicatePraise: Types.ObjectId,
     quantifierId: Types.ObjectId,
   ): Promise<Praise[]> => {
     const duplicateQuantifications =
@@ -351,11 +362,15 @@ export class PraiseService {
         true,
       );
 
+    const duplicateArray = duplicateQuantifications.filter(
+      (q) => q.praise._id === duplicatePraise,
+    );
+
     const duplicatePraiseItems = await this.praiseModel
       .find({
         _id: {
-          $in: duplicateQuantifications.map(
-            (q) => q.praise._id === duplicatePraiseId,
+          $in: duplicateQuantifications.filter(
+            (q) => q.praise === duplicatePraise,
           ),
         },
       })

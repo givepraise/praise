@@ -205,6 +205,20 @@ export class QuantificationsService {
       praise._id,
     );
 
+    // Save the scores to the database
+    if (saveQuantifications) {
+      for await (const q of quantifications) {
+        await this.quantificationModel.updateOne(
+          { _id: q._id },
+          {
+            $set: {
+              scoreRealized: await this.calculateQuantificationScore(praise, q),
+            },
+          },
+        );
+      }
+    }
+
     // Filter out dismissed quantifications and quantifications that are not completed
     const completedQuantifications = quantifications.filter((q) => {
       if (!this.isQuantificationCompleted(q)) return false;
@@ -212,32 +226,19 @@ export class QuantificationsService {
       return true;
     });
 
-    // If no quantifications are completed the score is 0
     if (completedQuantifications.length === 0) return 0;
 
     // Calculate the score for each quantification
-    const scores = await Promise.all(
+    const completedQuantificationsScores = await Promise.all(
       completedQuantifications.map((q) => {
         const s = this.calculateQuantificationScore(praise, q);
         return s;
       }),
     );
 
-    // Save the scores to the database
-    if (saveQuantifications) {
-      for (let i = 0; i < completedQuantifications.length; i++) {
-        const q = completedQuantifications[i];
-        const s = scores[i];
-        await this.quantificationModel.updateOne(
-          { _id: q._id },
-          { $set: { scoreRealized: s } },
-        );
-      }
-    }
-
     // Calculate the composite score by averaging the scores of all completed quantifications
     const compositeScore = +(
-      sum(scores) / completedQuantifications.length
+      sum(completedQuantificationsScores) / completedQuantifications.length
     ).toFixed(this.DIGITS_PRECISION);
 
     return compositeScore;
@@ -366,13 +367,16 @@ export class QuantificationsService {
             ? quantification.praise._id
             : quantification.praise,
           duplicatePraise:
-            quantification.duplicatePraise &&
-            has(quantification.duplicatePraise, '_id')
+            quantification.duplicatePraise === undefined
+              ? null
+              : quantification.duplicatePraise &&
+                has(quantification.duplicatePraise, '_id')
               ? quantification.duplicatePraise._id
               : quantification.duplicatePraise,
         },
         {
           new: true,
+          strict: false,
         },
       )
       .lean();

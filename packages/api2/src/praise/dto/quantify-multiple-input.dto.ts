@@ -1,9 +1,11 @@
 import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class QuantifyMultipleInputDto {
   @ApiProperty()
+  @IsNotEmpty()
   params: QuantifyInputDto;
 
   @ApiProperty({
@@ -13,5 +15,6 @@ export class QuantifyMultipleInputDto {
       '639b178f19296ee0f2d0585f',
     ],
   })
+  @IsNotEmpty()
   praiseIds: Types.ObjectId[];
 }

@@ -280,8 +280,17 @@ export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
   return { quantify };
 };
 
+type quantifyMultipleParams = {
+  score: number;
+  duplicatePraise?: string | null;
+  dismissed?: boolean;
+};
+
 type useQuantifyMultiplePraiseReturn = {
-  quantifyMultiple: (score: number, praiseIds: string[]) => Promise<void>;
+  quantifyMultiple: (
+    params: quantifyMultipleParams,
+    praiseIds: string[]
+  ) => Promise<void>;
 };
 
 /**
@@ -293,10 +302,13 @@ export const useQuantifyMultiplePraise =
 
     const quantifyMultiple = useRecoilCallback(
       ({ set }) =>
-        async (score: number, praiseIds: string[]): Promise<void> => {
+        async (
+          params: quantifyMultipleParams,
+          praiseIds: string[]
+        ): Promise<void> => {
           const response: AxiosResponse<PraiseDto[]> =
             await apiAuthClient.patch('/praise/quantify', {
-              score,
+              params,
               praiseIds,
             });
           if (isResponseOk(response)) {
