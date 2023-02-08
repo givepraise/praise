@@ -1,10 +1,8 @@
 {
   "name": "api2",
-  "version": "0.12.2",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "version": "0.13.0",
+  "license": "GPL-3.0-or-later",
+  "description": "The Praise REST API running on Nest.js, using MongoDB for storage.",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -23,6 +21,7 @@
     "migrator": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts"
   },
   "dependencies": {
+    "@json2csv/node": "^6.1.2",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.0",
@@ -35,9 +34,9 @@
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
+    "duckdb": "^0.6.1",
     "env-cmd": "^10.1.0",
     "ethers": "^5.7.2",
-    "json2csv": "^5.0.6",
     "lodash": "^4.17.21",
     "mongoose": "^6.7.0",
     "mongoose-paginate-ts": "^1.2.7",

@@ -6,7 +6,7 @@ import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { has } from 'lodash';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
-import { ExposeId } from '@/shared/expose-id.decorator';
+import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 
 export type PraiseDocument = Praise & Document;
 
@@ -122,3 +122,17 @@ export const PraiseModel = model<PraiseDocument, Pagination<PraiseDocument>>(
   'Praise',
   PraiseSchema,
 );
+
+export const PraiseExportSqlSchema = `
+  _id VARCHAR, 
+  giver VARCHAR, 
+  forwarder VARCHAR, 
+  receiver VARCHAR, 
+  reason VARCHAR, 
+  "reasonRaw" VARCHAR, 
+  score DOUBLE, 
+  "sourceId" VARCHAR, 
+  "sourceName" VARCHAR, 
+  "createdAt" TIMESTAMP, 
+  "updatedAt" TIMESTAMP
+`;

@@ -5,17 +5,17 @@ import { Types } from 'mongoose';
 import { IsObjectId } from '../validators.shared';
 import parseISO from 'date-fns/parseISO';
 
-export class ExportRequestOptions {
+export class ExportInputDto {
   @ApiProperty({
-    enum: ['csv', 'json'],
+    enum: ['csv', 'json', 'parquet'],
     default: 'csv',
     required: false,
   })
   @IsOptional()
   @IsString()
-  @IsIn(['csv', 'json'])
+  @IsIn(['csv', 'json', 'parquet'])
   @Type(() => String)
-  format: string;
+  format?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

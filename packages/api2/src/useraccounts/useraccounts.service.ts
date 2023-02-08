@@ -1,13 +1,18 @@
+import * as fs from 'fs';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
   UserAccount,
   UserAccountDocument,
+  UserAccountsExportSqlSchema,
 } from './schemas/useraccounts.schema';
 import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
-import { ServiceException } from '@/shared/service-exception';
-import { parse } from 'json2csv';
+import { ServiceException } from '@/shared/exceptions/service-exception';
+import {
+  generateParquetExport,
+  writeCsvAndJsonExports,
+} from '@/shared/export.shared';
 
 @Injectable()
 export class UserAccountsService {
@@ -30,29 +35,6 @@ export class UserAccountsService {
   }
 
   /**
-   * returns all of the model in json format
-   */
-  async export(format = 'csv'): Promise<UserAccount[] | string> {
-    const userAccounts = await this.userAccountModel.find().lean();
-
-    if (format !== 'csv') return userAccounts;
-
-    const fields = [
-      '_id',
-      'accountId',
-      'user',
-      'name',
-      'avatarId',
-      'platform',
-      'createdAt',
-      'updatedAt',
-    ];
-    return userAccounts.length > 0
-      ? parse(userAccounts, { fields })
-      : fields.toString();
-  }
-
-  /**
    * Returns a user account by user account ID
    */
   async findOneByUserAccountId(
@@ -63,6 +45,19 @@ export class UserAccountsService {
       .lean();
     if (!userAccount) return null;
     return userAccount;
+  }
+
+  /**
+   * Find the latest added user account
+   */
+  async findLatest(): Promise<UserAccount> {
+    const userAccount = await this.userAccountModel
+      .find()
+      .limit(1)
+      .sort({ $natural: -1 })
+      .lean();
+    if (!userAccount[0]) throw new ServiceException('UserAccount not found.');
+    return userAccount[0];
   }
 
   /**
@@ -82,5 +77,49 @@ export class UserAccountsService {
 
     await userAccountDocument.save();
     return userAccountDocument.toObject();
+  }
+
+  /**
+   * Generates all export files - csv, json and parquet
+   */
+  async generateAllExports(path: string) {
+    const includeFields = [
+      '_id',
+      'accountId',
+      'user',
+      'name',
+      'avatarId',
+      'platform',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    // Count the number of documents that matches query
+    const count = await this.userAccountModel.countDocuments({});
+
+    // If there are no documents, create empty files and return
+    if (count === 0) {
+      fs.writeFileSync(`${path}/useraccounts.csv`, includeFields.join(','));
+      fs.writeFileSync(`${path}/useraccounts.json`, '[]');
+      return;
+    }
+
+    // Lookup the periods, create a cursor
+    const useraccounts = this.userAccountModel.aggregate([]).cursor();
+
+    // Write the csv and json files
+    await writeCsvAndJsonExports(
+      'useraccounts',
+      useraccounts,
+      path,
+      includeFields,
+    );
+
+    // Generate the parquet file
+    await generateParquetExport(
+      path,
+      'useraccounts',
+      UserAccountsExportSqlSchema,
+    );
   }
 }

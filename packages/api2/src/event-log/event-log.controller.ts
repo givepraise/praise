@@ -16,7 +16,7 @@ import { EventLogType } from './schemas/event-log-type.schema';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.dto';
-import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
 
 @Controller('event-log')
 @ApiTags('Event Log')

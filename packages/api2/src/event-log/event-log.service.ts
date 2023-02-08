@@ -8,7 +8,7 @@ import {
 import { EventLog, EventLogModel } from './schemas/event-log.schema';
 import mongoose from 'mongoose';
 import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-query.dto';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { CreateEventLogInputDto } from './dto/create-event-log-input.dto';
 import { RequestContext } from 'nestjs-request-context';
 import { has } from 'lodash';

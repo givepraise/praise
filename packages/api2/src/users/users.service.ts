@@ -1,11 +1,16 @@
+import * as fs from 'fs';
 import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
-import { User, UserDocument } from './schemas/users.schema';
+import {
+  User,
+  UserDocument,
+  UsersExportSqlSchema,
+} from './schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { UpdateUserInputDto } from './dto/update-user-input.dto';
 import { CreateUserInputDto } from './dto/create-user-input.dto';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
@@ -13,11 +18,14 @@ import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { Praise, PraiseDocument } from '@/praise/schemas/praise.schema';
 import { UserStatsDto } from './dto/user-stats.dto';
-import { parse } from 'json2csv';
 import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
 import { Period } from '@/periods/schemas/periods.schema';
 import { PeriodsService } from '@/periods/services/periods.service';
-import { PraiseService } from '@/praise/praise.service';
+import { PraiseService } from '@/praise/services/praise.service';
+import {
+  generateParquetExport,
+  writeCsvAndJsonExports,
+} from '@/shared/export.shared';
 
 @Injectable()
 export class UsersService {
@@ -37,28 +45,6 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     return this.userModel.find().populate('accounts').lean();
-  }
-
-  /**
-   * returns all of the model in json or csv format
-   * Do not populate relations
-   */
-  async export(format = 'csv'): Promise<User[] | string> {
-    const users = await this.userModel.find().lean();
-
-    if (format !== 'csv') return users;
-
-    const fields = [
-      '_id',
-      'username',
-      'identityEthAddress',
-      'rewardsEthAddress',
-      'roles',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    return users.length > 0 ? parse(users, { fields }) : fields.toString();
   }
 
   async getUserStats(user: UserDocument): Promise<UserStatsDto | null> {
@@ -119,6 +105,19 @@ export class UsersService {
 
   async findOneByEth(identityEthAddress: string): Promise<UserWithStatsDto> {
     return this.findOne({ identityEthAddress });
+  }
+
+  /**
+   * Find the latest added user
+   */
+  async findLatest(): Promise<User> {
+    const user = await this.userModel
+      .find()
+      .limit(1)
+      .sort({ $natural: -1 })
+      .lean();
+    if (!user[0]) throw new ServiceException('User not found.');
+    return user[0];
   }
 
   async addRole(
@@ -248,4 +247,37 @@ export class UsersService {
     if (userAccount.platform === 'DISCORD') return userAccount.name;
     return null;
   };
+  /**
+   * Generates all export files - csv, json and parquet
+   */
+  async generateAllExports(path: string) {
+    const includeFields = [
+      '_id',
+      'username',
+      'identityEthAddress',
+      'rewardsEthAddress',
+      'roles',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    // Count the number of documents that matches query
+    const count = await this.userModel.countDocuments({});
+
+    // If there are no documents, create empty files and return
+    if (count === 0) {
+      fs.writeFileSync(`${path}/users.csv`, includeFields.join(','));
+      fs.writeFileSync(`${path}/users.json`, '[]');
+      return;
+    }
+
+    // Lookup the periods, create a cursor
+    const users = this.userModel.aggregate([]).cursor();
+
+    // Write the csv and json files
+    await writeCsvAndJsonExports('users', users, path, includeFields);
+
+    // Generate the parquet file
+    await generateParquetExport(path, 'users', UsersExportSqlSchema);
+  }
 }
