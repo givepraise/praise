@@ -9,7 +9,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Document, Types } from 'mongoose';
-import { ExposeId } from '@/shared/expose-id.decorator';
+import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 
 export type ApiKeyDocument = ApiKey & Document;

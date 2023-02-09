@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
+import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
@@ -25,8 +25,8 @@ import { PeriodsService } from '../src/periods/services/periods.service';
 import { PraiseSeeder } from '@/database/seeder/praise.seeder';
 import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder';
 import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
-import { PraiseService } from '@/praise/praise.service';
-import { QuantificationsService } from '@/quantifications/quantifications.service';
+import { PraiseService } from '@/praise/services/praise.service';
+import { QuantificationsService } from '@/quantifications/services/quantifications.service';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
@@ -251,8 +251,9 @@ describe('Praise (E2E)', () => {
         app,
         adminUserAccessToken,
       ).expect(200);
+
       expect(response.body.length).toBe(1);
-      expect(String(praises[2]._id) === response.body[0]._id).toBe(true);
+      expect(String(praises[2]._id) === response.body[0]._id).toBeTruthy();
     });
 
     test('returns praises that matches seeded list in json format, filtered by date', async () => {
@@ -1004,6 +1005,8 @@ describe('Praise (E2E)', () => {
         app,
         users[0].accessToken,
       );
+
+      // console.log('response.body', response.body);
 
       expect(response.status).toBe(200);
 

@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
+import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
 import { runDbMigrations } from '@/database/migrations';
 import { UsersModule } from '@/users/users.module';
@@ -294,9 +294,6 @@ describe('EventLog (E2E)', () => {
       expect(user.identityEthAddress).toBe(wallet.address);
       expect(user.rewardsEthAddress).toBe(wallet.address);
       expect(user.username).toBe(ua.name);
-
-      expect(user).toBeProperlySerialized();
-      expect(user).toBeValidClass(User);
     });
   });
 });

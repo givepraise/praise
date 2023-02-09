@@ -6,7 +6,7 @@ import { Receiver } from '@/praise/interfaces/receiver.interface';
 import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 import { SettingsService } from '@/settings/settings.service';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { User } from '@/users/schemas/users.schema';
 import { Injectable } from '@nestjs/common';

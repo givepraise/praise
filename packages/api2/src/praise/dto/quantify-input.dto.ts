@@ -16,5 +16,5 @@ export class QuantifyInputDto {
   @ApiProperty({ required: false, example: '639b178f19296ee0f2d0585d' })
   @IsOptional()
   @IsString()
-  duplicatePraiseId?: Types.ObjectId;
+  duplicatePraise?: Types.ObjectId;
 }

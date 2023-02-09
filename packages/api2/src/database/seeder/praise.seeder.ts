@@ -1,4 +1,4 @@
-import { PraiseService } from '@/praise/praise.service';
+import { PraiseService } from '@/praise/services/praise.service';
 import { PraiseDocument } from '@/praise/schemas/praise.schema';
 import { faker } from '@faker-js/faker';
 import { Injectable } from '@nestjs/common';

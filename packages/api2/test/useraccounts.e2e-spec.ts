@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
+import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
@@ -58,7 +58,7 @@ describe('UserAccountsController (E2E)', () => {
     await app.close();
   });
 
-  describe('GET /api/user_accounts/export', () => {
+  describe('GET /api/useraccounts/export', () => {
     let wallet;
     let accessToken: string;
     const users: User[] = [];
@@ -103,12 +103,12 @@ describe('UserAccountsController (E2E)', () => {
     });
 
     test('401 when not authenticated', async () => {
-      await request(server).get('/user_accounts/export').send().expect(401);
+      await request(server).get('/useraccounts/export').send().expect(401);
     });
 
     test('200 when authenticated', async () => {
       await authorizedGetRequest(
-        '/user_accounts/export?format=json',
+        '/useraccounts/export?format=json',
         app,
         accessToken,
       ).expect(200);
@@ -116,7 +116,7 @@ describe('UserAccountsController (E2E)', () => {
 
     test('returns userAccounts list that matches seeded list in json format', async () => {
       const response = await authorizedGetRequest(
-        '/user_accounts/export?format=json',
+        '/useraccounts/export?format=json',
         app,
         accessToken,
       ).expect(200);
@@ -133,7 +133,7 @@ describe('UserAccountsController (E2E)', () => {
 
     test('returns user list that matches seeded list in csv format', async () => {
       const response = await authorizedGetRequest(
-        '/user_accounts/export?format=csv',
+        '/useraccounts/export?format=csv',
         app,
         accessToken,
       ).expect(200);

@@ -1,59 +1,96 @@
+import * as fs from 'fs';
 import {
   Controller,
   Get,
   Query,
   Res,
   SerializeOptions,
+  StreamableFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
-import { AuthGuard } from '@nestjs/passport';
+import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
+import { ApiOperation } from '@nestjs/swagger';
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
-import { QuantificationsService } from './quantifications.service';
-import { Quantification } from './schemas/quantifications.schema';
+import { QuantificationsService } from './services/quantifications.service';
 import { Response } from 'express';
-import { ExportRequestOptions } from '@/shared/dto/export-request-options.dto';
+import { ExportInputDto } from '@/shared/dto/export-input.dto';
+import { allExportsDirPath } from '@/shared/fs.shared';
+import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
+import { QuantificationsExportService } from './services/quantifications-export.service';
+import { PermissionsGuard } from '@/auth/guards/permissions.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('quantifications')
 @ApiTags('Quantifications')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseInterceptors(MongooseClassSerializerInterceptor(Quantification))
 @UseGuards(PermissionsGuard)
 @UseGuards(AuthGuard(['jwt', 'api-key']))
 export class QuantificationsController {
   constructor(
     private readonly quantificationsService: QuantificationsService,
+    private readonly quantificationsExportService: QuantificationsExportService,
   ) {}
 
   @Get('export')
   @ApiOperation({
     summary: 'Exports quantifications document to json or csv.',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Quantifications export',
-    type: [Quantification],
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
   })
+  @ApiProduces('application/octet-stream')
+  @ApiProduces('application/json')
   @Permissions(Permission.QuantificationsExport)
   async findOne(
-    @Query() options: ExportRequestOptions,
+    @Query() options: ExportInputDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<Quantification[] | undefined> {
-    const quantifications = await this.quantificationsService.export(options);
+  ): Promise<StreamableFile> {
+    const format = options.format || 'csv';
 
-    if (options.format === 'json') return quantifications as Quantification[];
+    // Root path for all exports
+    const rootPath = `${allExportsDirPath}/quantifications`;
+
+    // Directory level 1 is the latest quantifications id
+    const dirLevel1 = (
+      await this.quantificationsService.findLatest()
+    )._id.toString();
+
+    // Directory level 2 is the hashed options
+    const dirLevel2 = exportOptionsHash(options);
+
+    const dirPath = `${rootPath}/${dirLevel1}/${dirLevel2}`;
+    const filePath = `${dirPath}/quantifications.${format}`;
+
+    if (!fs.existsSync(filePath)) {
+      // If cached export don't exist
+      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
+        // If the latest quantifications id folder doesn't exist,
+        // database hase been updated, clear all cached exports
+        fs.rmSync(rootPath, { recursive: true, force: true });
+      }
+
+      // Create directory for new export
+      fs.mkdirSync(dirPath, { recursive: true });
+
+      // Generate new export files
+      await this.quantificationsExportService.generateAllExports(
+        dirPath,
+        options,
+      );
+    }
 
     res.set({
-      'Content-Type': 'text/csv',
-      'Content-Disposition': 'attachment; filename="quantification.csv"',
+      'Content-Type': exportContentType(format),
+      'Content-Disposition': `attachment; filename="quantifications.${format}"`,
     });
-    res.send(quantifications);
+
+    const file = fs.createReadStream(filePath);
+    return new StreamableFile(file);
   }
 }

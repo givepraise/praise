@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateApiKeyInputDto } from './dto/create-api-key-input.dto';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { RequestContext } from 'nestjs-request-context';
