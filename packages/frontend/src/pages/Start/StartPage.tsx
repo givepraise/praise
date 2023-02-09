@@ -1,10 +1,10 @@
+import React from 'react';
 import {
   faPrayingHands,
   faUser,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
 import { Box } from '@/components/ui/Box';
@@ -12,50 +12,6 @@ import { Page } from '@/components/ui/Page';
 import { Button } from '@/components/ui/Button';
 import { PraiseTable } from './components/PraiseTable';
 import { MyPraiseTable } from './components/MyPraiseTable';
-import * as duckdb from '@duckdb/duckdb-wasm';
-import { DuckDBDataProtocol } from '@duckdb/duckdb-wasm';
-import * as arrow from '@apache-arrow/ts';
-
-const initDuckDB = async (): Promise<void> => {
-  const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
-
-  // Select a bundle based on browser checks
-  const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
-
-  const worker_url = URL.createObjectURL(
-    new Blob([`importScripts("${bundle.mainWorker!}");`], {
-      type: 'text/javascript',
-    })
-  );
-
-  // Instantiate the asynchronus version of DuckDB-wasm
-  const worker = new Worker(worker_url);
-  const logger = new duckdb.ConsoleLogger();
-  const db = new duckdb.AsyncDuckDB(logger, worker);
-  await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
-  URL.revokeObjectURL(worker_url);
-
-  const req = await fetch('http://localhost:8099/api/users/csv');
-  const csv = new Uint8Array(await req.arrayBuffer());
-
-  await db.registerFileBuffer('users.csv', csv);
-
-  // Create a connection to the database
-  const conn = await db.connect();
-
-  await conn.query(
-    "CREATE TABLE users AS SELECT * FROM read_csv_auto('users.csv', header=True);"
-  );
-
-  const res3 = await conn.query('DESCRIBE users;');
-  console.log(res3.toString());
-
-  const res = await conn.query('SELECT * FROM users;');
-  console.log(res.toString());
-
-  const res4 = await conn.query('SELECT count(*) FROM users;');
-  console.log(res4.toString());
-};
 
 const StartPage = (): JSX.Element => {
   const pageViews = {
@@ -63,8 +19,7 @@ const StartPage = (): JSX.Element => {
     myPraiseView: 2,
   };
 
-  void initDuckDB();
-  const [view, setView] = useState<number>(pageViews.praiseView);
+  const [view, setView] = React.useState<number>(pageViews.praiseView);
 
   return (
     <Page>
