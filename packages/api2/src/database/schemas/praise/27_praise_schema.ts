@@ -17,6 +17,10 @@ export const PraiseSchema = new Schema({
     type: String,
     required: true,
   },
+  reasonRaw: {
+    type: String,
+    required: true,
+  },
   sourceId: {
     type: String,
     required: true,
