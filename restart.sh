@@ -8,4 +8,4 @@ else
 fi
 
 docker compose -f ./docker-compose.$VERSION.yml down
-docker compose -f ./docker-compose.$VERSION.yml up
+docker compose -f ./docker-compose.$VERSION.yml up -d
