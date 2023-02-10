@@ -72,7 +72,7 @@ export class PeriodAssignmentsService {
 
     let response;
 
-    if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
+    if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY === true) {
       response = {
         quantifierPoolSize,
         quantifierPoolSizeNeeded: quantifierPoolSize,
@@ -349,7 +349,7 @@ export class PeriodAssignmentsService {
         period._id,
       )) as number;
 
-    if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
+    if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY === true) {
       return this.prepareAssignmentsEvenly(
         period,
         PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER,
