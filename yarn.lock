@@ -12073,6 +12073,7 @@ __metadata:
     recoil: ^0.7.4
     recoil-nexus: ^0.4.0
     recoil-persist: ^4.2.0
+    ses: ^0.18.1
     source-map-explorer: ^2.5.2
     tailwindcss: ^3.0.24
     typescript: ^4.5.5
@@ -19894,6 +19895,13 @@ __metadata:
   version: 0.17.0
   resolution: "ses@npm:0.17.0"
   checksum: c4c668de819b5366da7a9797d4ab0ec9c3efe4904ea64453cad5a48b659c77b817d589584019f5f7ca42802f640dcc706241543c1df00282473320a77397b641
+  languageName: node
+  linkType: hard
+
+"ses@npm:^0.18.1":
+  version: 0.18.1
+  resolution: "ses@npm:0.18.1"
+  checksum: 70ad6918da240833d445434e324f7ec29b1b7efc44ce8c0d75c5521cc1629810397903aec8e9adfe65d1486a19ac715c5254501e25de8925ae58c9f7f582dd76
   languageName: node
   linkType: hard
 
