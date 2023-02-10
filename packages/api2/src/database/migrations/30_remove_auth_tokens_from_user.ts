@@ -14,12 +14,12 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
           update: {
             $unset: {
               accessToken: 1,
-              refreshToken: 1
+              refreshToken: 1,
             },
           },
           upsert: true,
         },
-      }
+      };
     }) as any,
   );
 
