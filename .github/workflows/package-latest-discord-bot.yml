@@ -1,11 +1,11 @@
-name: Api/Development - Create and publish Docker image
+name: Discord-Bot/Latest - Create and publish Docker image
 
 on:
   push:
     branches: ['main']
 
 env:
-  IMAGE_NAME: praise-dev/api
+  IMAGE_NAME: praise/latest/discord-bot
 
 jobs:
   build-and-push-image:
@@ -25,6 +25,6 @@ jobs:
           tags: latest
           addTimestamp: true
           registry: ghcr.io
-          dockerfile: packages/api/Dockerfile
+          dockerfile: packages/discord-bot/Dockerfile
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}

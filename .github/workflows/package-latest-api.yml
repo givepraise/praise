@@ -1,11 +1,11 @@
-name: Setup/Development - Create and publish Docker image
+name: Api/Latest - Create and publish Docker image
 
 on:
   push:
     branches: ['main']
 
 env:
-  IMAGE_NAME: praise-dev/setup
+  IMAGE_NAME: praise/latest/api
 
 jobs:
   build-and-push-image:
@@ -25,6 +25,6 @@ jobs:
           tags: latest
           addTimestamp: true
           registry: ghcr.io
-          dockerfile: packages/setup/Dockerfile
+          dockerfile: packages/api/Dockerfile
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
