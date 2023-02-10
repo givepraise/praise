@@ -1,4 +1,12 @@
 #!/bin/bash
+if  [[ $1 = "--latest" ]]; then
+  echo "Using latest version"
+  VERSION="latest"
+else
+  echo "Using release version"
+  VERSION="release"
+fi
+
 if ! test  -f "$1" ; then
   echo "Could not find database backup"
   echo "Usage: database-restore.sh filename\n"
