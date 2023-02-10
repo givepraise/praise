@@ -1,3 +1,6 @@
+#
+#  Use this Docker Compose file to build Praise from local source files.
+#
 version: '3.8'
 services:
   mongodb:
