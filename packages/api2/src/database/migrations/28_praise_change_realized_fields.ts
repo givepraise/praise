@@ -1,8 +1,7 @@
 import { Types } from 'mongoose';
-import { MigrationsContext } from '../interfaces/migration-context.interface';
 import { PraiseModel } from '../schemas/praise/27_praise_schema';
 
-const up = async ({ context }: MigrationsContext): Promise<void> => {
+const up = async (): Promise<void> => {
   const praises = await PraiseModel.find();
 
   if (praises.length === 0) return;
