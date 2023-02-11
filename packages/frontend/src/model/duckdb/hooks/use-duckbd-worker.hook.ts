@@ -1,15 +1,9 @@
 import * as duckdb from '@duckdb/duckdb-wasm';
-import { useRecoilState } from 'recoil';
-import { DuckDbWorker as DuckDbWorkerReturn } from '../state/duckdb-worker.state';
 import React from 'react';
+import { UseDuckDbWorkerReturn } from '../types/use-duckdb-worker-return.type';
 
-type DuckDbWorkerReturn = {
-  worker: Worker;
-  loading: boolean;
-};
-
-export function useDuckDbWorker(): DuckDbWorkerReturn {
-  const [worker, setWorker] = useRecoilState(DuckDbWorkerReturn);
+export function useDuckDbWorker(): UseDuckDbWorkerReturn {
+  const [worker, setWorker] = React.useState<Worker | undefined>(undefined);
 
   React.useEffect(() => {
     if (worker) {
@@ -38,6 +32,7 @@ export function useDuckDbWorker(): DuckDbWorkerReturn {
       // Release the worker URL to avoid memory leaks
       URL.revokeObjectURL(workerUrl);
 
+      // Set the worker
       setWorker(worker);
     };
     void loadDuckDbWorker();

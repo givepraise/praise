@@ -1,50 +1,32 @@
 import * as duckdb from '@duckdb/duckdb-wasm';
 import { useRecoilValue } from 'recoil';
 import { useDuckDbWorker } from './use-duckbd-worker.hook';
-import { Parquet } from '../state/parquet.state';
+import { ParquetQuery } from '../state/parquet.state';
 import React from 'react';
+import {
+  TablesCreated,
+  tablesCreatedDefaults,
+} from '../types/tables-created.type';
+import { UseDuckDbReturn } from '../types/use-duckdb-return.type';
+import { UseDuckDbInput } from '../types/use-duckdb-input.type';
 
-type ExportUrls = {
-  users?: string;
-  userAccounts?: string;
-  periods?: string;
-  praise?: string;
-  quantifications?: string;
-};
-
-type TablesCreated = {
-  users: boolean;
-  userAccounts: boolean;
-  periods: boolean;
-  praise: boolean;
-  quantifications: boolean;
-};
-
-const tablesDefaults: TablesCreated = {
-  users: false,
-  userAccounts: false,
-  periods: false,
-  praise: false,
-  quantifications: false,
-};
-
-export type DuckDbReturn = {
-  db: duckdb.AsyncDuckDB | undefined;
-  loadingWorker: boolean;
-  tables: TablesCreated;
-};
-
-export function useDuckDb(urls: ExportUrls): DuckDbReturn {
+export function useDuckDb(urls: UseDuckDbInput): UseDuckDbReturn {
   const [db, setDb] = React.useState<duckdb.AsyncDuckDB>();
   const { worker, loading: loadingWorker } = useDuckDbWorker();
-  const [tables, setTables] = React.useState<TablesCreated>(tablesDefaults);
+  const [tables, setTables] = React.useState<TablesCreated>(
+    tablesCreatedDefaults
+  );
 
   // Fetch the parquet files from the API
-  const usersParquet = useRecoilValue(Parquet(urls.users));
-  const userAccountsParquet = useRecoilValue(Parquet(urls.userAccounts));
-  const periodsParquet = useRecoilValue(Parquet(urls.periods));
-  const praiseParquet = useRecoilValue(Parquet(urls.praise));
-  const quantificationsParquet = useRecoilValue(Parquet(urls.quantifications));
+  const usersParquet = useRecoilValue(ParquetQuery(urls.usersUrl));
+  const userAccountsParquet = useRecoilValue(
+    ParquetQuery(urls.useraccountsUrl)
+  );
+  const periodsParquet = useRecoilValue(ParquetQuery(urls.periodsUrl));
+  const praiseParquet = useRecoilValue(ParquetQuery(urls.praisesUrl));
+  const quantificationsParquet = useRecoilValue(
+    ParquetQuery(urls.quantificationsUrl)
+  );
 
   /**
    *  This effect is triggered when the worker is loaded to instantiate the database.
@@ -128,7 +110,7 @@ export function useDuckDb(urls: ExportUrls): DuckDbReturn {
   }, [periodsParquet, createTable]);
 
   React.useEffect(() => {
-    void createTable(praiseParquet, 'praise');
+    void createTable(praiseParquet, 'praises');
   }, [praiseParquet, createTable]);
 
   React.useEffect(() => {
