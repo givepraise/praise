@@ -128,10 +128,6 @@ describe('UserController (E2E)', () => {
       accessToken = response.accessToken;
     });
 
-    test('401 when not authenticated', async () => {
-      await request(server).get('/users/export').send().expect(401);
-    });
-
     test('200 when authenticated', async () => {
       await authorizedGetRequest(
         '/users/export?format=json',

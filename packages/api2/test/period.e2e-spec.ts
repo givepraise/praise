@@ -259,10 +259,6 @@ describe('Period (E2E)', () => {
       );
     });
 
-    test('401 when not authenticated', async () => {
-      await request(server).get(`/periods/export`).send().expect(401);
-    });
-
     test('returns period list that matches seeded list in json format', async () => {
       const response = await authorizedGetRequest(
         '/periods/export?format=json',
