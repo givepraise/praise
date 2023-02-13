@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
 import { Permission } from '../enums/permission.enum';
 import { RolePermissions } from '../role-permissions';
+import { shouldBypassAuth } from '../utils/should-bypass-auth.util';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -22,6 +23,9 @@ export class PermissionsGuard implements CanActivate {
    * @returns
    */
   canActivate(context: ExecutionContext): boolean {
+    if (shouldBypassAuth(context, this.reflector)) {
+      return true;
+    }
     const requiredPermissions = this.reflector.getAllAndOverride<Permission[]>(
       PERMISSIONS_KEY,
       [context.getHandler(), context.getClass()],
