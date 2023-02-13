@@ -60,11 +60,12 @@ export class PeriodAssignmentsService {
   ): Promise<VerifyQuantifierPoolSizeDto> => {
     const period = await this.periodsService.findOneById(_id);
 
-    const PRAISE_QUANTIFIERS_ASSIGN_EVENLY =
+    const PRAISE_QUANTIFIERS_ASSIGN_EVENLY: boolean = JSON.parse(
       (await this.settingsService.settingValue(
         'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
         period._id,
-      )) as boolean;
+      )) as string,
+    );
 
     const quantifierPoolSize = await this.userModel.count({
       roles: AuthRole.QUANTIFIER,
@@ -72,7 +73,7 @@ export class PeriodAssignmentsService {
 
     let response;
 
-    if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY === true) {
+    if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
       response = {
         quantifierPoolSize,
         quantifierPoolSizeNeeded: quantifierPoolSize,
@@ -337,11 +338,12 @@ export class PeriodAssignmentsService {
   ): Promise<AssignmentsDto> => {
     const period = await this.periodsService.findOneById(_id);
 
-    const PRAISE_QUANTIFIERS_ASSIGN_EVENLY =
+    const PRAISE_QUANTIFIERS_ASSIGN_EVENLY: boolean = JSON.parse(
       (await this.settingsService.settingValue(
         'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
         period._id,
-      )) as boolean;
+      )) as string,
+    );
 
     const PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER =
       (await this.settingsService.settingValue(
@@ -349,7 +351,7 @@ export class PeriodAssignmentsService {
         period._id,
       )) as number;
 
-    if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY === true) {
+    if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
       return this.prepareAssignmentsEvenly(
         period,
         PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER,
