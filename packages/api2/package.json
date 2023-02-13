@@ -21,6 +21,7 @@
     "migrator": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts"
   },
   "dependencies": {
+    "@faker-js/faker": "^7.6.0",
     "@json2csv/node": "^6.1.2",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
@@ -31,13 +32,19 @@
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.1.3",
+    "axios": "^1.3.2",
     "bcrypt": "^5.1.0",
+    "bin-packer": "^1.7.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
+    "date-fns": "^2.29.3",
     "duckdb": "^0.7.0",
     "env-cmd": "^10.1.0",
     "ethers": "^5.7.2",
+    "express-fileupload": "^1.4.0",
+    "greedy-number-partitioning": "^0.1.0",
     "lodash": "^4.17.21",
+    "mime-types": "^2.1.35",
     "mongoose": "^6.7.0",
     "mongoose-paginate-ts": "^1.2.7",
     "nestjs-request-context": "^2.1.0",
@@ -47,7 +54,8 @@
     "passport-unique-token": "^3.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "ses-node-json-transform": "^0.1.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
