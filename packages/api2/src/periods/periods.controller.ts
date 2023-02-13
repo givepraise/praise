@@ -44,6 +44,7 @@ import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only'
 import { exportContentType } from '@/shared/export.shared';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
+import { BypassAuth } from '@/auth/decorators/bypass-auth.decorator';
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -68,7 +69,7 @@ export class PeriodsController {
   })
   @ApiProduces('application/octet-stream')
   @ApiProduces('application/json')
-  @Permissions(Permission.PeriodExport)
+  @BypassAuth()
   async export(
     @Query() options: ExportInputFormatOnlyDto,
     @Res({ passthrough: true }) res: Response,

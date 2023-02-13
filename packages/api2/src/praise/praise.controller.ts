@@ -40,6 +40,7 @@ import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
 import { PraiseExportService } from './services/praise-export.service';
+import { BypassAuth } from '@/auth/decorators/bypass-auth.decorator';
 
 @Controller('praise')
 @ApiTags('Praise')
@@ -79,7 +80,7 @@ export class PraiseController {
   })
   @ApiProduces('application/octet-stream')
   @ApiProduces('application/json')
-  @Permissions(Permission.UsersExport)
+  @BypassAuth()
   async export(
     @Query() options: ExportInputDto,
     @Res({ passthrough: true }) res: Response,

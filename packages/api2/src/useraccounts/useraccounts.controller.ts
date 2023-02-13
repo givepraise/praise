@@ -6,7 +6,6 @@ import {
   Res,
   SerializeOptions,
   StreamableFile,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -14,23 +13,18 @@ import {
   ApiProduces,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { Permission } from '@/auth/enums/permission.enum';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { UserAccountsService } from './useraccounts.service';
 import { Response } from 'express';
 import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType } from '@/shared/export.shared';
+import { BypassAuth } from '@/auth/decorators/bypass-auth.decorator';
 
 @Controller('useraccounts')
 @ApiTags('UserAccounts')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseGuards(PermissionsGuard)
-@UseGuards(AuthGuard(['jwt', 'api-key']))
 export class UserAccountsController {
   constructor(private readonly userAccountsService: UserAccountsService) {}
 
@@ -46,7 +40,6 @@ export class UserAccountsController {
   })
   @ApiProduces('application/octet-stream')
   @ApiProduces('application/json')
-  @Permissions(Permission.UserAccountsExport)
   async export(
     @Query() options: ExportInputFormatOnlyDto,
     @Res({ passthrough: true }) res: Response,

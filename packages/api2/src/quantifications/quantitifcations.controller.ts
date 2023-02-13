@@ -6,28 +6,21 @@ import {
   Res,
   SerializeOptions,
   StreamableFile,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { ApiOperation } from '@nestjs/swagger';
-import { Permission } from '@/auth/enums/permission.enum';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { QuantificationsService } from './services/quantifications.service';
 import { Response } from 'express';
 import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
 import { QuantificationsExportService } from './services/quantifications-export.service';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller('quantifications')
 @ApiTags('Quantifications')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseGuards(PermissionsGuard)
-@UseGuards(AuthGuard(['jwt', 'api-key']))
 export class QuantificationsController {
   constructor(
     private readonly quantificationsService: QuantificationsService,
@@ -46,7 +39,6 @@ export class QuantificationsController {
   })
   @ApiProduces('application/octet-stream')
   @ApiProduces('application/json')
-  @Permissions(Permission.QuantificationsExport)
   async findOne(
     @Query() options: ExportInputDto,
     @Res({ passthrough: true }) res: Response,

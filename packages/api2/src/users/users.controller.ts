@@ -38,6 +38,7 @@ import { UpdateUserRequestDto } from './dto/update-user-request.dto';
 import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType } from '@/shared/export.shared';
+import { BypassAuth } from '@/auth/decorators/bypass-auth.decorator';
 
 @Controller('users')
 @ApiTags('Users')
@@ -62,7 +63,7 @@ export class UsersController {
   })
   @ApiProduces('application/octet-stream')
   @ApiProduces('application/json')
-  @Permissions(Permission.UsersExport)
+  @BypassAuth()
   async export(
     @Query() options: ExportInputFormatOnlyDto,
     @Res({ passthrough: true }) res: Response,
