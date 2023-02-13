@@ -14,11 +14,6 @@ const PERMISSIONS_USER = [
   Permission.SettingsView,
   Permission.PeriodSettingsView,
   Permission.PeriodView,
-  Permission.PeriodExport,
-  Permission.UsersExport,
-  Permission.QuantificationsExport,
-  Permission.PraiseExport,
-  Permission.UserAccountsExport,
 ];
 
 /**
