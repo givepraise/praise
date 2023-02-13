@@ -1,21 +1,22 @@
-import { Dialog } from '@headlessui/react';
+import * as arrow from 'apache-arrow';
 import React from 'react';
-import { toast } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-
+import { SelectInput, SelectInputOption } from '@/components/form/SelectInput';
+import { CustomExportTransformer } from '@/model/app';
 import {
   AllPeriods,
   PeriodPageParams,
+  useLoadSinglePeriodDetails,
   SinglePeriod,
   useExportPraise,
-  useLoadSinglePeriodDetails,
 } from '@/model/periods/periods';
-import { saveLocalFile } from '@/utils/file';
-
-import { SelectInputOption, SelectInput } from '@/components/form/SelectInput';
+import { usePeriodReport } from '@/model/report/hooks/use-period-report.hook';
 import { SingleSetting } from '@/model/settings/settings';
-import { CustomExportTransformer } from '@/model/app';
+import { saveLocalFile } from '@/utils/file';
+import { Dialog } from '@headlessui/react';
+
 import { PeriodCustomExportDialog } from './CustomExportDialog';
 
 export const ExportDropdown = (): JSX.Element | null => {
@@ -26,11 +27,11 @@ export const ExportDropdown = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
   useLoadSinglePeriodDetails(periodId); // Fetch additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
-  const { exportPraiseFull, exportPraiseSummary, exportPraiseCustom } =
-    useExportPraise();
+  const { exportPraiseFull, exportPraiseCustom } = useExportPraise();
   const customExportFormat = useRecoilValue(
     SingleSetting('CUSTOM_EXPORT_FORMAT')
   );
+  const exportSummary = usePeriodReport({ periodId, url: '/report.js' });
 
   const customExportTransformer = useRecoilValue(CustomExportTransformer);
 
@@ -85,12 +86,13 @@ export const ExportDropdown = (): JSX.Element | null => {
   const handleExportSummary = (): void => {
     const toastId = 'exportToastSummary';
     void toast.promise(
-      exportPraiseSummary(period),
+      exportSummary.run({ format: 'csv' }),
       {
         loading: 'Exporting …',
-        success: (exportData: Blob | undefined) => {
-          if (exportData) {
-            saveLocalFile(exportData, 'praise-period-export-summary.csv');
+        success: (response: string | arrow.Table) => {
+          if (response) {
+            const fileData = new Blob([response as string]);
+            saveLocalFile(fileData, 'praise-period-export-summary.csv');
             setTimeout(() => toast.remove(toastId), 2000);
             return 'Export done';
           }
@@ -145,7 +147,7 @@ export const ExportDropdown = (): JSX.Element | null => {
     if (option.value === 'export-full') {
       handleExportFull();
     } else if (option.value === 'export-summary') {
-      handleExportSummary();
+      void handleExportSummary();
     } else if (option.value === 'export-custom') {
       setIsCustomExportDialogOpen(true);
     }
