@@ -19,6 +19,9 @@ const PERMISSIONS_USER = [
   Permission.PeriodExport,
   Permission.QuantificationsExport,
   Permission.UserAccountsExport,
+  Permission.UserAccountsView,
+  Permission.UserAccountsCreate,
+  Permission.UserAccountsUpdate
 ];
 
 /**

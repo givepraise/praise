@@ -13,16 +13,64 @@ import {
   generateParquetExport,
   writeCsvAndJsonExports,
 } from '@/shared/export.shared';
+import { CreateUserAccountDto } from './dto/create-user-account-input-dto';
+import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { UsersService } from '@/users/users.service';
 
 @Injectable()
 export class UserAccountsService {
   constructor(
     @InjectModel(UserAccount.name)
     private userAccountModel: Model<UserAccountDocument>,
+    private userService: UsersService,
+    private readonly eventLogService: EventLogService,
   ) {}
 
   getModel(): Model<UserAccountDocument> {
     return this.userAccountModel;
+  }
+
+  /**
+   * Creates a new UserAccount key.
+   * @param {CreateUserAccountDto} createUserAccountDto - The request payload containing the UserAccount Details
+   * @returns {Promise<UserAccount>} A promise that resolves to the response containing the created UserAccount.
+   * @throws {ServiceException}, If there is an error while creating the UserAccount key.
+   */
+  async createUserAccount(
+    createUserAccountDto: CreateUserAccountDto,
+  ): Promise<UserAccount> {
+    const user = await this.userService.findOneById(
+      new Types.ObjectId(createUserAccountDto.userId)
+    );
+
+    if (!user) throw new ServiceException('User not found.');
+
+    const userAccount = new this.userAccountModel({
+      ...createUserAccountDto,
+      user
+    });
+    await userAccount.save();
+
+    this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `Created UserAccount id: ${userAccount.accountId}`,
+    });
+
+    return userAccount;
+  }
+
+  async updateUserAccount(
+    updateUserAccountDto: UpdateUserAccountInputDto
+  ): Promise<UserAccount> {
+    const userAccount = await this.userAccountModel.findOneAndUpdate(
+      { accountId: updateUserAccountDto.accountId },
+      updateUserAccountDto,
+      { upsert: true, new: false }
+    );
+
+    if (!userAccount) throw new ServiceException('UserAccount not found.');
+    return userAccount;
   }
 
   /**
@@ -42,6 +90,8 @@ export class UserAccountsService {
   ): Promise<UserAccount | null> {
     const userAccount = await this.userAccountModel
       .findOne({ userAccountId })
+      .select('_id user accountId name avatarId platform createdAt updatedAt')
+      .populate('user')
       .lean();
     if (!userAccount) return null;
     return userAccount;

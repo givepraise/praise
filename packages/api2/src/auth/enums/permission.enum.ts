@@ -11,6 +11,9 @@ export enum Permission {
 
   // User Accounts
   UserAccountsExport = 'userAccounts:export',
+  UserAccountsView = 'userAccounts:view',
+  UserAccountsCreate = 'userAccounts:create',
+  UserAccountsUpdate = 'userAccounts:update',
 
   // Event Log
   EventLogView = 'eventLog:view',

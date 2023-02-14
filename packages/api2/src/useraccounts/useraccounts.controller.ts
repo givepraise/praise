@@ -1,7 +1,11 @@
 import * as fs from 'fs';
 import {
+  Body,
   Controller,
   Get,
+  Param,
+  Post,
+  Put,
   Query,
   Res,
   SerializeOptions,
@@ -21,6 +25,11 @@ import { exportContentType } from '@/shared/export.shared';
 import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { UserAccount } from './schemas/useraccounts.schema';
+import { ServiceException } from '@/shared/exceptions/service-exception';
+import { CreateUserAccountDto } from './dto/create-user-account-input-dto';
+import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
+
 @Controller('useraccounts')
 @ApiTags('UserAccounts')
 @SerializeOptions({
@@ -29,6 +38,61 @@ import { Permissions } from '@/auth/decorators/permissions.decorator';
 @EnforceAuthAndPermissions()
 export class UserAccountsController {
   constructor(private readonly userAccountsService: UserAccountsService) {}
+
+  @Get('/:id')
+  @ApiOperation({
+    summary: 'Fetch User Account',
+  })
+  @ApiOkResponse({
+    description: 'Fetch a User Account by Account Id',
+    type: UserAccount
+  })
+  @ApiProduces('application/json')
+  @Permissions(Permission.UserAccountsView)
+  async GetOne(
+    @Param('id') id: string,
+  ): Promise<UserAccount> {
+    const userAccount = await this.userAccountsService.findOneByUserAccountId(id);
+    if (!userAccount) throw new ServiceException('UserAccount not found.');
+
+    return userAccount;
+  }
+
+  @Put('/:id')
+  @ApiOperation({
+    summary: 'Update a UserAccount by AccountId',
+  })
+  @ApiOkResponse({
+    description: 'Fetch a UserAccount by AccountId',
+    type: UserAccount
+  })
+  @ApiProduces('application/json')
+  @Permissions(Permission.UserAccountsUpdate)
+  async UpdateOne(
+    @Body() updateUserAccountBody: UpdateUserAccountInputDto,
+  ): Promise<UserAccount> {
+    return this.userAccountsService.updateUserAccount(
+      updateUserAccountBody
+    );
+  }
+
+  @Post()
+  @ApiOperation({
+    summary: 'Creates the userAccount allowing setting activateToken',
+  })
+  @ApiOkResponse({
+    description: 'Created User Account',
+    type: UserAccount
+  })
+  @ApiProduces('application/json')
+  @Permissions(Permission.UserAccountsCreate)
+  async create(
+    @Body() createUserAccountBody: CreateUserAccountDto,
+  ): Promise<UserAccount> {
+    return this.userAccountsService.createUserAccount(
+      createUserAccountBody
+    );
+  }
 
   @Get('export')
   @ApiOperation({
