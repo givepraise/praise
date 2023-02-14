@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Query,
   Res,
   SerializeOptions,
@@ -40,6 +41,8 @@ import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
 import { PraiseExportService } from './services/praise-export.service';
+import { PraiseCreateInputDto } from './dto/praise-create-input.dto';
+import { PraiseCreateResponseDto } from './dto/praise-create-response.dto';
 
 @Controller('praise')
 @ApiTags('Praise')
@@ -185,5 +188,20 @@ export class PraiseController {
     );
 
     return praiseItems.flat();
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Create praise item' })
+  @ApiResponse({
+    status: 200,
+    description: 'Praise item',
+    type: Praise,
+  })
+  @Permissions(Permission.DiscordBotPraise)
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
+  async praise(
+    @Body() data: PraiseCreateInputDto,
+  ): Promise<PraiseCreateResponseDto> {
+    return this.praiseService.createPraiseItem(data);
   }
 }

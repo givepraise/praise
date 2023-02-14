@@ -15,8 +15,11 @@ import { RequestWithAuthContext } from '@/auth/interfaces/request-with-auth-cont
 import { PraisePaginatedResponseDto } from '../dto/praise-paginated-response.dto';
 import { Period, PeriodModel } from '@/periods/schemas/periods.schema';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { PeriodsService } from '@/periods/services/periods.service';
 import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
+import { PraiseCreateInputDto } from '../dto/praise-create-input.dto';
+import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
+import { UserAccountModel } from '@/database/schemas/useraccount/useraccount.schema';
+import { PraiseCreateResponseDto } from '../dto/praise-create-response.dto';
 @Injectable()
 export class PraiseService {
   constructor(
@@ -24,8 +27,8 @@ export class PraiseService {
     private praiseModel: typeof PraiseModel,
     @InjectModel(Period.name)
     private periodModel: typeof PeriodModel,
-    @Inject(forwardRef(() => PeriodsService))
-    private periodService: PeriodsService,
+    @InjectModel(UserAccount.name)
+    private userAccountModel: typeof UserAccountModel,
     @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
     @Inject(forwardRef(() => QuantificationsService))
@@ -433,5 +436,171 @@ export class PraiseService {
     });
 
     return assignedPraiseCount;
+  };
+
+  /**
+   * Creates praises with a given receiver and reason
+   *  and returns the created praises
+   *
+   * @param {PraiseCreateInputDto} data
+   * @returns {Promise<PraiseCreateResponseDto>}
+   * @throws {ServiceException}
+   */
+  createPraiseItem = async (
+    data: PraiseCreateInputDto,
+  ): Promise<PraiseCreateResponseDto> => {
+    const messages = [];
+
+    const { giver, receiverIds, reason, reasonRealized, sourceId, sourceName } =
+      data;
+
+    if (!receiverIds || receiverIds.length === 0) {
+      throw new ServiceException('No receivers specified');
+    }
+
+    const giverAccount = await this.userAccountModel.findOneAndUpdate(
+      { accountId: giver.accountId },
+      giver,
+      { upsert: true, new: true },
+    );
+
+    const praiseItemsCount = await this.praiseModel.countDocuments({
+      giver: giverAccount._id,
+    });
+
+    if (!giverAccount.user) {
+      throw new ServiceException('This praise account is not activated.');
+    }
+
+    const selfPraiseAllowed: boolean = JSON.parse(
+      (await this.settingsService.settingValue(
+        'SELF_PRAISE_ALLOWED',
+      )) as string,
+    );
+
+    let warnSelfPraise = false;
+    if (!selfPraiseAllowed && receiverIds.includes(giverAccount.accountId)) {
+      warnSelfPraise = true;
+    }
+
+    const receivers = await this.userAccountModel
+      .find({
+        accountId: { $in: receiverIds },
+      })
+      .populate('user')
+      .lean();
+
+    const praiseItems: Praise[] = [];
+    for await (const receiver of receivers) {
+      const praiseData = {
+        reason: reason,
+        reasonRealized: reasonRealized,
+        giver: giverAccount._id,
+        sourceId: sourceId,
+        sourceName: sourceName,
+        receiver: receiver._id,
+      };
+
+      const praiseItem = await this.praiseModel.create(praiseData);
+
+      if (praiseItem) {
+        await this.eventLogService.logEvent({
+          typeKey: EventLogTypeKey.PRAISE,
+          description: `Praise created: ${praiseItem._id}`,
+        });
+
+        praiseItems.push(praiseItem);
+      } else {
+        await this.eventLogService.logEvent({
+          typeKey: EventLogTypeKey.PRAISE,
+          description: `Praise not registered for [${giverAccount.accountId}] -> [${receiver.accountId}] for [${reason}]`,
+        });
+      }
+    }
+
+    if (receivers.length !== 0) {
+      messages.push(await this.praiseSuccess(receiverIds, reason));
+    } else if (warnSelfPraise) {
+      messages.push(await this.selfPraiseWarning());
+    } else {
+      messages.push(await this.invalidReceiverError());
+    }
+
+    if (receivers.length && receivers.length !== 0 && praiseItemsCount === 0) {
+      messages.push(await this.firstTimePraiserInfo());
+    }
+
+    return {
+      messages,
+      praiseItems,
+    };
+  };
+
+  /**
+   * Generate success response message for commands/praise
+   *
+   * @param {string[]} praised
+   * @param {string} reason
+   * @returns {Promise<string>}
+   */
+  praiseSuccess = async (
+    praised: string[],
+    reason: string,
+  ): Promise<string> => {
+    const msg = (await this.settingsService.settingValue(
+      'PRAISE_SUCCESS_MESSAGE',
+    )) as string;
+    if (msg) {
+      return msg
+        .replace('{@receivers}', `${praised.join(', ')}`)
+        .replace('{reason}', reason);
+    } else {
+      return 'PRAISE SUCCESSFUL (message not set)';
+    }
+  };
+
+  /**
+   * Generate response info message FIRST_TIME_PRAISER
+   *
+   * @returns {Promise<string>}
+   */
+  firstTimePraiserInfo = async (): Promise<string> => {
+    const msg = (await this.settingsService.settingValue(
+      'FIRST_TIME_PRAISER',
+    )) as string;
+    if (msg) {
+      return msg;
+    }
+    return 'YOU ARE PRAISING FOR THE FIRST TIME. WELCOME TO PRAISE! (message not set)';
+  };
+
+  /**
+   * Generate response error message SELF_PRAISE_WARNING
+   *
+   * @returns {Promise<string>}
+   */
+  selfPraiseWarning = async (): Promise<string> => {
+    const msg = (await this.settingsService.settingValue(
+      'SELF_PRAISE_WARNING',
+    )) as string;
+    if (msg) {
+      return msg;
+    }
+    return 'SELF-PRAISE NOT ALLOWED, PRAISE GIVERS UNABLE TO PRAISE THEMSELVES (message not set)';
+  };
+
+  /**
+   * Generate response error message PRAISE_INVALID_RECEIVERS_ERROR
+   *
+   * @returns {Promise<string>}
+   */
+  invalidReceiverError = async (): Promise<string> => {
+    const msg = (await this.settingsService.settingValue(
+      'PRAISE_INVALID_RECEIVERS_ERROR',
+    )) as string;
+    if (msg) {
+      return msg;
+    }
+    return 'VALID RECEIVERS NOT MENTIONED (message not set)';
   };
 }
