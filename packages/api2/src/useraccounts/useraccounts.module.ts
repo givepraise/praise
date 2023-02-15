@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccount, UserAccountSchema } from './schemas/useraccounts.schema';
 import { UserAccountsService } from './useraccounts.service';
@@ -12,7 +12,7 @@ import { UsersModule } from '@/users/users.module';
       { name: UserAccount.name, schema: UserAccountSchema },
     ]),
     EventLogModule,
-    UsersModule,
+    forwardRef(() => UsersModule),
   ],
   controllers: [UserAccountsController],
   providers: [UserAccountsService],

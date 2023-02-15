@@ -12,8 +12,9 @@ import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filte
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { authorizedGetRequest, loginUser } from './test.common';
+import { authorizedGetRequest, authorizedPostRequest, authorizedPutRequest, loginUser } from './test.common';
 import { User } from '@/users/schemas/users.schema';
+import { faker } from '@faker-js/faker';
 import { EventLogModule } from '@/event-log/event-log.module';
 import { runDbMigrations } from '@/database/migrations';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
@@ -56,6 +57,204 @@ describe('UserAccountsController (E2E)', () => {
 
   afterAll(async () => {
     await app.close();
+  });
+
+  describe('POST /api/useraccounts', () => {
+    let wallet;
+    let accessToken: string;
+    const users: User[] = [];
+    const userAccounts: UserAccount[] = [];
+
+    beforeAll((done) => {
+      done();
+    });
+
+    afterAll((done) => {
+      // Closing the DB connection allows Jest to exit successfully.
+      mongoose.connection.close();
+      done();
+    });
+
+    beforeAll(async () => {
+      // Clear the database
+      await usersService.getModel().deleteMany({});
+      await userAccountsService.getModel().deleteMany();
+
+      // Seed the database
+      wallet = Wallet.createRandom();
+      users.push(
+        await usersSeeder.seedUser({
+          identityEthAddress: wallet.address,
+          rewardsAddress: wallet.address,
+          roles: [AuthRole.ADMIN],
+        }),
+      );
+
+      // Login and get access token
+      const response = await loginUser(app, module, wallet);
+      accessToken = response.accessToken;
+    });
+
+    test('401 when not authenticated', async () => {
+      await request(server).post(`/useraccounts`).send().expect(401);
+    });
+
+    test('200 and correct body when authenticated', async () => {
+      const token = faker.random.word();
+      const accountName = faker.name.firstName();
+      const avatarId = faker.internet.url();
+      const response = await authorizedPostRequest(
+        '/useraccounts',
+        app,
+        accessToken,
+        {
+          accountId: String(users[0]._id),
+          name: accountName,
+          avatarId: avatarId,
+          platform: 'DISCORD',
+          userId: String(users[0]._id),
+          activateToken: token,
+        },
+      ).expect(201);
+
+      expect(response.body).toBeDefined();
+      expect(response.body.accountId).toEqual(String(users[0]._id));
+      expect(response.body.name).toEqual(accountName);
+      expect(response.body.platform).toEqual('DISCORD');
+      expect(response.body.avatarId).toEqual(avatarId);
+      expect(String(response.body.user)).toEqual(String(users[0]._id));
+      expect(response.body.activateToken).toEqual(token);
+    });
+  });
+
+  describe('PUT /api/useraccounts/:id', () => {
+    let wallet;
+    let accessToken: string;
+    const users: User[] = [];
+    const userAccounts: UserAccount[] = [];
+
+    beforeAll((done) => {
+      done();
+    });
+
+    afterAll((done) => {
+      // Closing the DB connection allows Jest to exit successfully.
+      mongoose.connection.close();
+      done();
+    });
+
+    beforeAll(async () => {
+      // Clear the database
+      await usersService.getModel().deleteMany({});
+      await userAccountsService.getModel().deleteMany();
+
+      // Seed the database
+      wallet = Wallet.createRandom();
+      users.push(
+        await usersSeeder.seedUser({
+          identityEthAddress: wallet.address,
+          rewardsAddress: wallet.address,
+          roles: [AuthRole.ADMIN],
+        }),
+      );
+
+      userAccounts.push(
+        await userAccountsSeeder.seedUserAccount({ user: users[0]._id }),
+      );
+
+      // Login and get access token
+      const response = await loginUser(app, module, wallet);
+      accessToken = response.accessToken;
+    });
+
+    test('401 when not authenticated', async () => {
+      await request(server).put(`/useraccounts/${userAccounts[0].accountId}`).send().expect(401);
+    });
+
+    test('200 and correct put body when authenticated', async () => {
+      const accountName = faker.name.firstName();
+      const avatarId = faker.internet.url();
+      const response = await authorizedPutRequest(
+        `/useraccounts/${userAccounts[0].accountId}`,
+        app,
+        accessToken,
+        {
+          name: accountName,
+          avatarId: avatarId,
+          platform: 'DISCORD',
+        },
+      ).expect(200);
+
+      expect(response.body).toBeDefined();
+      expect(response.body.accountId).toEqual(String(userAccounts[0].accountId));
+      expect(response.body.name).toEqual(accountName);
+      expect(response.body.platform).toEqual('DISCORD');
+      expect(response.body.avatarId).toEqual(avatarId);
+      expect(String(response.body.user)).toEqual(String(userAccounts[0].user));
+    });
+  });
+
+  describe('GET /api/useraccounts/:id', () => {
+    let wallet;
+    let accessToken: string;
+    const users: User[] = [];
+    const userAccounts: UserAccount[] = [];
+
+    beforeAll((done) => {
+      done();
+    });
+
+    afterAll((done) => {
+      // Closing the DB connection allows Jest to exit successfully.
+      mongoose.connection.close();
+      done();
+    });
+
+    beforeAll(async () => {
+      // Clear the database
+      await usersService.getModel().deleteMany({});
+      await userAccountsService.getModel().deleteMany();
+
+      // Seed the database
+      wallet = Wallet.createRandom();
+      users.push(
+        await usersSeeder.seedUser({
+          identityEthAddress: wallet.address,
+          rewardsAddress: wallet.address,
+          roles: [AuthRole.ADMIN],
+        }),
+      );
+
+      userAccounts.push(
+        await userAccountsSeeder.seedUserAccount({ user: users[0]._id }),
+      );
+
+      // Login and get access token
+      const response = await loginUser(app, module, wallet);
+      accessToken = response.accessToken;
+    });
+
+    test('401 when not authenticated', async () => {
+      await request(server).get(`/useraccounts/${userAccounts[0].accountId}`).send().expect(401);
+    });
+
+    test('200 when authenticated', async () => {
+      await authorizedGetRequest(
+        `/useraccounts/${userAccounts[0].accountId}`,
+        app,
+        accessToken,
+      ).expect(200);
+    });
+
+    test('returns the fetched user account by id', async () => {
+      const response = await authorizedGetRequest(
+        `/useraccounts/${userAccounts[0].accountId}`,
+        app,
+        accessToken,
+      ).expect(200);
+      expect(response.body._id).toBe(String(userAccounts[0]._id));
+      expect(response.body.activateToken).toBeUndefined();
+    });
   });
 
   describe('GET /api/useraccounts/export', () => {

@@ -7,7 +7,7 @@ import {
   UserAccountDocument,
   UserAccountsExportSqlSchema,
 } from './schemas/useraccounts.schema';
-import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
+import { UpdateUserAccountInputDto, UpdateUserAccountInputRequestDto } from './dto/update-user-account-input.dto';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import {
   generateParquetExport,
@@ -52,21 +52,23 @@ export class UserAccountsService {
     });
     await userAccount.save();
 
-    this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.USER_ACCOUNT,
-      description: `Created UserAccount id: ${userAccount.accountId}`,
-    });
+    // Add another migration? or is original migration run?
+    // this.eventLogService.logEvent({
+    //   typeKey: EventLogTypeKey.USER_ACCOUNT,
+    //   description: `Created UserAccount id: ${userAccount.accountId}`,
+    // });
 
     return userAccount;
   }
 
   async updateUserAccount(
-    updateUserAccountDto: UpdateUserAccountInputDto
+    userAccountId: string,
+    updateUserAccountDto: UpdateUserAccountInputRequestDto
   ): Promise<UserAccount> {
     const userAccount = await this.userAccountModel.findOneAndUpdate(
-      { accountId: updateUserAccountDto.accountId },
+      { accountId: userAccountId },
       updateUserAccountDto,
-      { upsert: true, new: false }
+      { upsert: true, new: true }
     );
 
     if (!userAccount) throw new ServiceException('UserAccount not found.');

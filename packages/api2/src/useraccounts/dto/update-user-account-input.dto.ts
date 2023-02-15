@@ -1,6 +1,10 @@
-export class UpdateUserAccountInputDto {
+import { PartialType } from "@nestjs/mapped-types";
+import { UserAccount } from "../schemas/useraccounts.schema";
+
+export class UpdateUserAccountInputRequestDto {
   name?: string;
   avatarId?: string;
-  accountId?: string;
   platform?: string;
 }
+
+export class UpdateUserAccountInputDto extends PartialType(UserAccount) {}
