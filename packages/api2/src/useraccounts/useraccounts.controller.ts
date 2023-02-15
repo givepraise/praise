@@ -28,7 +28,7 @@ import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { UserAccount } from './schemas/useraccounts.schema';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import { CreateUserAccountDto } from './dto/create-user-account-input-dto';
-import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
+import { UpdateUserAccountInputDto, UpdateUserAccountInputRequestDto } from './dto/update-user-account-input.dto';
 
 @Controller('useraccounts')
 @ApiTags('UserAccounts')
@@ -38,43 +38,6 @@ import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 @EnforceAuthAndPermissions()
 export class UserAccountsController {
   constructor(private readonly userAccountsService: UserAccountsService) {}
-
-  @Get('/:id')
-  @ApiOperation({
-    summary: 'Fetch User Account',
-  })
-  @ApiOkResponse({
-    description: 'Fetch a User Account by Account Id',
-    type: UserAccount
-  })
-  @ApiProduces('application/json')
-  @Permissions(Permission.UserAccountsView)
-  async GetOne(
-    @Param('id') id: string,
-  ): Promise<UserAccount> {
-    const userAccount = await this.userAccountsService.findOneByUserAccountId(id);
-    if (!userAccount) throw new ServiceException('UserAccount not found.');
-
-    return userAccount;
-  }
-
-  @Put('/:id')
-  @ApiOperation({
-    summary: 'Update a UserAccount by AccountId',
-  })
-  @ApiOkResponse({
-    description: 'Fetch a UserAccount by AccountId',
-    type: UserAccount
-  })
-  @ApiProduces('application/json')
-  @Permissions(Permission.UserAccountsUpdate)
-  async UpdateOne(
-    @Body() updateUserAccountBody: UpdateUserAccountInputDto,
-  ): Promise<UserAccount> {
-    return this.userAccountsService.updateUserAccount(
-      updateUserAccountBody
-    );
-  }
 
   @Post()
   @ApiOperation({
@@ -146,5 +109,43 @@ export class UserAccountsController {
 
     const file = fs.createReadStream(filePath);
     return new StreamableFile(file);
+  }
+
+  @Get('/:id')
+  @ApiOperation({
+    summary: 'Fetch User Account',
+  })
+  @ApiOkResponse({
+    description: 'Fetch a User Account by Account Id',
+    type: UserAccount
+  })
+  @ApiProduces('application/json')
+  @Permissions(Permission.UserAccountsView)
+  async GetOne(
+    @Param('id') id: string,
+  ): Promise<UserAccount> {
+    const userAccount = await this.userAccountsService.findOneByUserAccountId(id);
+    if (!userAccount) throw new ServiceException('UserAccount not found.');
+
+    return userAccount;
+  }
+
+  @Put('/:id')
+  @ApiOperation({
+    summary: 'Update a UserAccount by AccountId',
+  })
+  @ApiOkResponse({
+    description: 'Fetch a UserAccount by AccountId',
+    type: UserAccount
+  })
+  @ApiProduces('application/json')
+  @Permissions(Permission.UserAccountsUpdate)
+  async UpdateOne(
+    @Param('id') id: string,
+    @Body() updateUserAccountBody: UpdateUserAccountInputRequestDto,
+  ): Promise<UserAccount> {
+    return this.userAccountsService.updateUserAccount(
+      id, updateUserAccountBody
+    );
   }
 }
