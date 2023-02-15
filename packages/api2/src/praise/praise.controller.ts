@@ -31,7 +31,6 @@ import { PraisePaginatedQueryDto } from './dto/praise-paginated-query.dto';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
 import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
 import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
@@ -41,6 +40,7 @@ import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
 import { PraiseExportService } from './services/praise-export.service';
 import { BypassAuth } from '@/auth/decorators/bypass-auth.decorator';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('praise')
 @ApiTags('Praise')
@@ -48,7 +48,7 @@ import { BypassAuth } from '@/auth/decorators/bypass-auth.decorator';
   excludePrefixes: ['__'],
 })
 @UseGuards(PermissionsGuard)
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard(['jwt', 'api-key']))
 export class PraiseController {
   constructor(
     private readonly praiseService: PraiseService,

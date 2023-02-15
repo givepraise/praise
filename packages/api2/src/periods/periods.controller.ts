@@ -42,9 +42,9 @@ import { Response } from 'express';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
 import { exportContentType } from '@/shared/export.shared';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { BypassAuth } from '@/auth/decorators/bypass-auth.decorator';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -52,7 +52,7 @@ import { BypassAuth } from '@/auth/decorators/bypass-auth.decorator';
   excludePrefixes: ['__'],
 })
 @UseGuards(PermissionsGuard)
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard(['jwt', 'api-key']))
 export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,
