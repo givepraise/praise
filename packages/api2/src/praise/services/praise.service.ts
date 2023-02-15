@@ -451,7 +451,7 @@ export class PraiseService {
   ): Promise<PraiseCreateResponseDto> => {
     const messages = [];
 
-    const { giver, receiverIds, reason, reasonRealized, sourceId, sourceName } =
+    const { giver, receiverIds, reason, reasonRaw, sourceId, sourceName } =
       data;
 
     if (!receiverIds || receiverIds.length === 0) {
@@ -494,7 +494,7 @@ export class PraiseService {
     for await (const receiver of receivers) {
       const praiseData = {
         reason: reason,
-        reasonRealized: reasonRealized,
+        reasonRaw: reasonRaw,
         giver: giverAccount._id,
         sourceId: sourceId,
         sourceName: sourceName,

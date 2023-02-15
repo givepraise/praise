@@ -197,8 +197,8 @@ export class PraiseController {
     description: 'Praise item',
     type: Praise,
   })
-  @Permissions(Permission.DiscordBotPraise)
-  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
+  @Permissions(Permission.BotPraiseCreate)
+  @UseInterceptors(MongooseClassSerializerInterceptor(PraiseCreateResponseDto))
   async praise(
     @Body() data: PraiseCreateInputDto,
   ): Promise<PraiseCreateResponseDto> {

@@ -1,7 +1,7 @@
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class PraiseCreateInputDto {
   @ApiProperty({ required: true })
@@ -10,14 +10,14 @@ export class PraiseCreateInputDto {
 
   @ApiProperty({ required: true })
   @IsString()
-  reasonRealized: string;
+  reasonRaw: string;
 
   @ApiProperty({ required: true })
-  @IsString()
+  @IsNotEmpty()
   receiverIds: string[];
 
   @ApiProperty({ required: true })
-  @Type(() => UserAccount)
+  @IsNotEmpty()
   giver: UserAccount;
 
   @ApiProperty({ required: true })

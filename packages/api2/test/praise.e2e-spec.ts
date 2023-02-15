@@ -15,6 +15,7 @@ import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
   authorizedGetRequest,
   authorizedPatchRequest,
+  authorizedPostRequest,
   loginUser,
 } from './test.common';
 import { runDbMigrations } from '@/database/migrations';
@@ -46,6 +47,7 @@ import { User } from '@/users/schemas/users.schema';
 import { Setting } from '@/settings/schemas/settings.schema';
 import { SettingsService } from '@/settings/settings.service';
 import { faker } from '@faker-js/faker';
+import { seedUser } from '../../api/src/database/seeder/entities';
 
 class LoggedInUser {
   accessToken: string;
@@ -70,8 +72,11 @@ describe('Praise (E2E)', () => {
   let quantificationsSeeder: QuantificationsSeeder;
   let quantificationsService: QuantificationsService;
   let userAccountsService: UserAccountsService;
+  let userAccountsSeeder: UserAccountsSeeder;
   let adminUser: User;
   let adminUserAccessToken: string;
+  let botUser: User;
+  let botUserAccessToken: string;
 
   const users: LoggedInUser[] = [];
 
@@ -123,6 +128,7 @@ describe('Praise (E2E)', () => {
       QuantificationsService,
     );
     userAccountsService = module.get<UserAccountsService>(UserAccountsService);
+    userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
     settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder);
     settingsService = module.get<SettingsService>(SettingsService);
     periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
@@ -158,14 +164,27 @@ describe('Praise (E2E)', () => {
       });
     }
 
+    // Seed and login admin user
     const wallet = Wallet.createRandom();
     adminUser = await usersSeeder.seedUser({
       identityEthAddress: wallet.address,
       rewardsAddress: wallet.address,
       roles: [AuthRole.ADMIN],
     });
+
     const response = await loginUser(app, module, wallet);
     adminUserAccessToken = response.accessToken;
+
+    // Seed and login bot user
+    const botWallet = Wallet.createRandom();
+    const botUser = await usersSeeder.seedUser({
+      identityEthAddress: botWallet.address,
+      rewardsAddress: botWallet.address,
+      roles: [AuthRole.BOT_PRAISE_CREATE],
+    });
+
+    const responseBot = await loginUser(app, module, botWallet);
+    botUserAccessToken = responseBot.accessToken;
   });
 
   afterAll(async () => {
@@ -1099,6 +1118,201 @@ describe('Praise (E2E)', () => {
       const p = response.body as Praise[];
       expect(p).toBeProperlySerialized();
       expect(p).toBeValidClass(Praise);
+    });
+  });
+
+  describe('POST /api/praise - bot trying to create a praise item', () => {
+    let period: Period;
+
+    beforeEach(async () => {
+      await praiseService.getModel().deleteMany({});
+      await quantificationsService.getModel().deleteMany({});
+      await settingsService.getModel().deleteMany({});
+      await periodsService.getModel().deleteMany({});
+      await periodSettingsService.getModel().deleteMany({});
+
+      period = await periodsSeeder.seedPeriod({
+        endDate: new Date(),
+        status: PeriodStatusType.QUANTIFY,
+      });
+
+      const setting = await settingsSeeder.seedSettings({
+        key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
+        value: '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
+        type: 'StringList',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: setting,
+        value: '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
+      });
+
+      await settingsSeeder.seedSettings({
+        key: 'SELF_PRAISE_ALLOWED',
+        value: false,
+        type: 'Boolean',
+      });
+
+      await settingsSeeder.seedSettings({
+        key: 'PRAISE_INVALID_RECEIVERS_ERROR',
+        value: 'VALID RECEIVERS NOT MENTIONED',
+        type: 'String',
+      });
+
+      await settingsSeeder.seedSettings({
+        key: 'PRAISE_SUCCESS_MESSAGE',
+        value: 'PRAISE SUCCESSFUL',
+        type: 'String',
+      });
+
+      await settingsSeeder.seedSettings({
+        key: 'FIRST_TIME_PRAISER',
+        value: 'YOU ARE PRAISING FOR THE FIRST TIME. WELCOME TO PRAISE!',
+        type: 'String',
+      });
+    });
+
+    test('401 when not authenticated', async () => {
+      return request(server).post(`/praise`).send().expect(401);
+    });
+
+    test('403 when authenticated as user', async () => {
+      const response = await authorizedPostRequest(
+        `/praise`,
+        app,
+        users[0].accessToken,
+        {
+          text: 'test',
+        },
+      );
+
+      expect(response.status).toBe(403);
+    });
+
+    test('400 when authenticated as bot', async () => {
+      const response = await authorizedPostRequest(
+        `/praise`,
+        app,
+        botUserAccessToken,
+        {
+          text: 'test',
+        },
+      );
+
+      expect(response.status).toBe(400);
+    });
+
+    test('200 when authenticated as bot and correct data is sent', async () => {
+      const receiverIds = [];
+      for (let i = 0; i < 3; i++) {
+        const user = await userAccountsSeeder.seedUserAccount();
+        receiverIds.push(user.accountId);
+      }
+
+      const giver = await userAccountsSeeder.seedUserAccount();
+
+      const response = await authorizedPostRequest(
+        `/praise`,
+        app,
+        botUserAccessToken,
+        {
+          reason: 'This is a test reason',
+          reasonRaw: 'This is a test reason',
+          giver: giver,
+          receiverIds: receiverIds,
+          sourceId: 'DISCORD:GUILD_ID:CHANNEL_ID',
+          sourceName: 'DISCORD:GUILD_NAME:CHANNEL_NAME',
+        },
+      );
+
+      expect(response.status).toBe(201);
+
+      const rb = response.body;
+      expect(rb.praiseItems).toBeDefined();
+      expect(rb.messages).toBeDefined();
+      expect(rb.praiseItems).toBeInstanceOf(Array);
+      expect(rb.praiseItems).toHaveLength(3);
+
+      expect(rb.messages).toBeInstanceOf(Array);
+      expect(rb.praiseItems[0]).toBeValidClass(Praise);
+      expect(rb.praiseItems[0]).toBeProperlySerialized();
+    });
+
+    test('400 when giver is not activated', async () => {
+      const receiverIds = [];
+      for (let i = 0; i < 3; i++) {
+        const user = await userAccountsSeeder.seedUserAccount();
+        receiverIds.push(user.accountId);
+      }
+
+      const giver = await userAccountsSeeder.seedUserAccount({
+        user: null,
+      });
+
+      const response = await authorizedPostRequest(
+        `/praise`,
+        app,
+        botUserAccessToken,
+        {
+          reason: 'This is a test reason',
+          reasonRaw: 'This is a test reason',
+          giver: giver,
+          receiverIds: receiverIds,
+          sourceId: 'DISCORD:GUILD_ID:CHANNEL_ID',
+          sourceName: 'DISCORD:GUILD_NAME:CHANNEL_NAME',
+        },
+      );
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe(
+        'This praise account is not activated.',
+      );
+    });
+
+    test('400 when receiver ids are not sent', async () => {
+      const giver = await userAccountsSeeder.seedUserAccount();
+
+      const response = await authorizedPostRequest(
+        `/praise`,
+        app,
+        botUserAccessToken,
+        {
+          reason: 'This is a test reason',
+          reasonRaw: 'This is a test reason',
+          giver: giver,
+          sourceId: 'DISCORD:GUILD_ID:CHANNEL_ID',
+          sourceName: 'DISCORD:GUILD_NAME:CHANNEL_NAME',
+          receiverIds: [],
+        },
+      );
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('No receivers specified');
+    });
+
+    test('400 with validation errors when data is missing', async () => {
+      const response = await authorizedPostRequest(
+        `/praise`,
+        app,
+        botUserAccessToken,
+        {
+          invalidAttribute: 'test',
+        },
+      );
+
+      expect(response.status).toBe(400);
+      const rb = response.body;
+
+      expect(rb.message).toContain(
+        'property invalidAttribute should not exist',
+      );
+      expect(rb.message).toContain('reason must be a string');
+      expect(rb.message).toContain('reasonRaw must be a string');
+      expect(rb.message).toContain('receiverIds should not be empty');
+      expect(rb.message).toContain('giver should not be empty');
+      expect(rb.message).toContain('sourceId must be a string');
+      expect(rb.message).toContain('sourceName must be a string');
     });
   });
 });

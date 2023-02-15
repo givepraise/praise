@@ -20,5 +20,5 @@ export enum Permission {
   SettingsManage = 'settings:manage',
   PeriodSettingsView = 'periodSettings:view',
   PeriodSettingsManage = 'periodSettings:manage',
-  DiscordBotPraise = 'discordBot:praise',
+  BotPraiseCreate = 'botPraise:create',
 }
