@@ -15,12 +15,16 @@ import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
 import { QuantificationsExportService } from './services/quantifications-export.service';
+import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
+import { Permission } from '@/auth/enums/permission.enum';
+import { Permissions } from '@/auth/decorators/permissions.decorator';
 
 @Controller('quantifications')
 @ApiTags('Quantifications')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
+@EnforceAuthAndPermissions()
 export class QuantificationsController {
   constructor(
     private readonly quantificationsService: QuantificationsService,
@@ -39,7 +43,8 @@ export class QuantificationsController {
   })
   @ApiProduces('application/octet-stream')
   @ApiProduces('application/json')
-  async findOne(
+  @Permissions(Permission.QuantificationsExport)
+  async export(
     @Query() options: ExportInputDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {

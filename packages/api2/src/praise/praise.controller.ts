@@ -10,7 +10,6 @@ import {
   Res,
   SerializeOptions,
   StreamableFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -28,7 +27,6 @@ import { QuantifyMultipleInputDto } from './dto/quantify-multiple-input.dto';
 import { PraiseService } from './services/praise.service';
 import { Praise } from './schemas/praise.schema';
 import { PraisePaginatedQueryDto } from './dto/praise-paginated-query.dto';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
@@ -39,16 +37,14 @@ import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
 import { PraiseExportService } from './services/praise-export.service';
-import { BypassAuth } from '@/auth/decorators/bypass-auth.decorator';
-import { AuthGuard } from '@nestjs/passport';
+import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
 
 @Controller('praise')
 @ApiTags('Praise')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseGuards(PermissionsGuard)
-@UseGuards(AuthGuard(['jwt', 'api-key']))
+@EnforceAuthAndPermissions()
 export class PraiseController {
   constructor(
     private readonly praiseService: PraiseService,
@@ -80,7 +76,7 @@ export class PraiseController {
   })
   @ApiProduces('application/octet-stream')
   @ApiProduces('application/json')
-  @BypassAuth()
+  @Permissions(Permission.PraiseExport)
   async export(
     @Query() options: ExportInputDto,
     @Res({ passthrough: true }) res: Response,

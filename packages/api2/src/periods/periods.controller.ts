@@ -42,17 +42,14 @@ import { Response } from 'express';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
 import { exportContentType } from '@/shared/export.shared';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
-import { BypassAuth } from '@/auth/decorators/bypass-auth.decorator';
-import { AuthGuard } from '@nestjs/passport';
+import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
 
 @Controller('periods')
 @ApiTags('Periods')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseGuards(PermissionsGuard)
-@UseGuards(AuthGuard(['jwt', 'api-key']))
+@EnforceAuthAndPermissions()
 export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,
@@ -69,7 +66,7 @@ export class PeriodsController {
   })
   @ApiProduces('application/octet-stream')
   @ApiProduces('application/json')
-  @BypassAuth()
+  @Permissions(Permission.PeriodExport)
   async export(
     @Query() options: ExportInputFormatOnlyDto,
     @Res({ passthrough: true }) res: Response,

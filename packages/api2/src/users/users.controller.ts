@@ -12,7 +12,6 @@ import {
   Res,
   SerializeOptions,
   StreamableFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -29,31 +28,28 @@ import {
 } from '@nestjs/swagger';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { EventLogService } from '@/event-log/event-log.service';
-import { AuthGuard } from '@nestjs/passport';
 import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { UpdateUserRequestDto } from './dto/update-user-request.dto';
 import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType } from '@/shared/export.shared';
-import { BypassAuth } from '@/auth/decorators/bypass-auth.decorator';
+import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
 
 @Controller('users')
 @ApiTags('Users')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseGuards(PermissionsGuard)
-@UseGuards(AuthGuard(['jwt', 'api-key']))
+@EnforceAuthAndPermissions()
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly eventLogService: EventLogService,
   ) {}
 
-  @Get('/export')
+  @Get('export')
   @ApiOperation({ summary: 'Export users document to json or csv' })
   @ApiOkResponse({
     schema: {
@@ -63,7 +59,7 @@ export class UsersController {
   })
   @ApiProduces('application/octet-stream')
   @ApiProduces('application/json')
-  @BypassAuth()
+  @Permissions(Permission.UsersExport)
   async export(
     @Query() options: ExportInputFormatOnlyDto,
     @Res({ passthrough: true }) res: Response,
@@ -133,7 +129,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @Permissions(Permission.UserProfileUpdate)
+  @Permissions(Permission.UserUpdateProfile)
   @ApiOperation({
     summary: 'Updates a user',
   })

@@ -18,13 +18,15 @@ import { Response } from 'express';
 import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType } from '@/shared/export.shared';
-import { BypassAuth } from '@/auth/decorators/bypass-auth.decorator';
-
+import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
+import { Permission } from '@/auth/enums/permission.enum';
+import { Permissions } from '@/auth/decorators/permissions.decorator';
 @Controller('useraccounts')
 @ApiTags('UserAccounts')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
+@EnforceAuthAndPermissions()
 export class UserAccountsController {
   constructor(private readonly userAccountsService: UserAccountsService) {}
 
@@ -40,6 +42,7 @@ export class UserAccountsController {
   })
   @ApiProduces('application/octet-stream')
   @ApiProduces('application/json')
+  @Permissions(Permission.UserAccountsExport)
   async export(
     @Query() options: ExportInputFormatOnlyDto,
     @Res({ passthrough: true }) res: Response,
