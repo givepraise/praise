@@ -8,7 +8,6 @@ import { Reflector } from '@nestjs/core';
 import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
 import { Permission } from '../enums/permission.enum';
 import { RolePermissions } from '../role-permissions';
-import { shouldBypassAuth } from '../utils/should-bypass-auth.util';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -18,28 +17,29 @@ export class PermissionsGuard implements CanActivate {
 
   /**
    * Checks if the user has the required permissions to access the route.
-   *
-   * @param context
-   * @returns
    */
   canActivate(context: ExecutionContext): boolean {
-    if (shouldBypassAuth(context, this.reflector)) {
-      return true;
-    }
+    // Get the required permissions from the route handler or controller.
     const requiredPermissions = this.reflector.getAllAndOverride<Permission[]>(
       PERMISSIONS_KEY,
       [context.getHandler(), context.getClass()],
     );
+
+    // If no permissions are required, allow access.
     if (!requiredPermissions) {
       return true;
     }
+
     const { user } = context.switchToHttp().getRequest();
+
     if (!user) {
       this.logger.error(
         "No user found in request. Make sure you're using the JwtAuthGuard before the PermissionsGuard.",
       );
       return false;
     }
+
+    // Check if the user has any of the required permissions.
     for (const role of user.roles) {
       const rolePermissions = RolePermissions[role];
       if (
