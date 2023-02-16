@@ -7,13 +7,18 @@ import { Permission } from './enums/permission.enum';
  */
 const PERMISSIONS_USER = [
   Permission.UsersFind,
-  Permission.UserProfileUpdate,
+  Permission.UserUpdateProfile,
+  Permission.UsersExport,
   Permission.EventLogView,
   Permission.ApiKeyView,
   Permission.PraiseView,
+  Permission.PraiseExport,
   Permission.SettingsView,
   Permission.PeriodSettingsView,
   Permission.PeriodView,
+  Permission.PeriodExport,
+  Permission.QuantificationsExport,
+  Permission.UserAccountsExport,
 ];
 
 /**
