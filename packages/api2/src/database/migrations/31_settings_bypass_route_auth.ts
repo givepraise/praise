@@ -1,5 +1,5 @@
 import { SettingGroup } from '../../settings/enums/setting-group.enum';
-import { SettingModel } from '../schemas/settings/07_settings.schema';
+import { SettingModel } from '../schemas/settings/23_settings.schema';
 
 const settings = [
   {
@@ -12,6 +12,7 @@ const settings = [
     label: 'Bypass Route Authentication',
     description: 'The routes listed here will not require authentication.',
     group: SettingGroup.APPLICATION,
+    periodOverridable: false,
   },
 ];
 
