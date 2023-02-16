@@ -42,7 +42,6 @@ import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
 import { PraiseExportService } from './services/praise-export.service';
 import { PraiseCreateInputDto } from './dto/praise-create-input.dto';
-import { PraiseCreateResponseDto } from './dto/praise-create-response.dto';
 
 @Controller('praise')
 @ApiTags('Praise')
@@ -197,11 +196,9 @@ export class PraiseController {
     description: 'Praise item',
     type: Praise,
   })
-  @Permissions(Permission.BotPraiseCreate)
-  @UseInterceptors(MongooseClassSerializerInterceptor(PraiseCreateResponseDto))
-  async praise(
-    @Body() data: PraiseCreateInputDto,
-  ): Promise<PraiseCreateResponseDto> {
+  @Permissions(Permission.PraiseCreate)
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
+  async praise(@Body() data: PraiseCreateInputDto): Promise<Praise[]> {
     return this.praiseService.createPraiseItem(data);
   }
 }
