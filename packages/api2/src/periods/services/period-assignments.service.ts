@@ -259,11 +259,11 @@ export class PeriodAssignmentsService {
           /**
            * TODO: Test if receiver is always ObjectId
            */
-          if (ua._id.equals(p.receiver as Types.ObjectId)) {
-            throw new ServiceException(
-              'Replacement quantifier cannot be assigned to quantify their own received praise.',
-            );
-          }
+          // if (ua._id.equals(p.receiver as Types.ObjectId)) {
+          //   throw new ServiceException(
+          //     'Replacement quantifier cannot be assigned to quantify their own received praise.',
+          //   );
+          // }
         }
       });
     }
