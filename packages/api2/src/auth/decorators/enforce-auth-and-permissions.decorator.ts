@@ -10,7 +10,7 @@ import { AuthGuard } from '@nestjs/passport';
 export function EnforceAuthAndPermissions() {
   return applyDecorators(
     // Authentication guards
-    UseGuards(AuthGuard(['bypass', 'jwt', 'api-key'])),
+    UseGuards(AuthGuard(['jwt', 'api-key', 'bypass'])),
     // Authorization guards
     UseGuards(PermissionsGuard),
   );
