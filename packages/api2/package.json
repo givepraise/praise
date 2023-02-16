@@ -49,6 +49,7 @@
     "mongoose-paginate-ts": "^1.2.7",
     "nestjs-request-context": "^2.1.0",
     "passport": "^0.6.0",
+    "passport-custom": "^1.1.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "passport-unique-token": "^3.0.0",

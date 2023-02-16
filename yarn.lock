@@ -7013,6 +7013,7 @@ __metadata:
     mongoose-paginate-ts: ^1.2.7
     nestjs-request-context: ^2.1.0
     passport: ^0.6.0
+    passport-custom: ^1.1.1
     passport-jwt: ^4.0.0
     passport-local: ^1.0.0
     passport-unique-token: ^3.0.0
@@ -17022,6 +17023,15 @@ __metadata:
   version: 0.1.1
   resolution: "pascalcase@npm:0.1.1"
   checksum: f83681c3c8ff75fa473a2bb2b113289952f802ff895d435edd717e7cb898b0408cbdb247117a938edcbc5d141020909846cc2b92c47213d764e2a94d2ad2b925
+  languageName: node
+  linkType: hard
+
+"passport-custom@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "passport-custom@npm:1.1.1"
+  dependencies:
+    passport-strategy: 1.x.x
+  checksum: 245b265491c83186002a19db1c812565bb95fd2a7b842f8e8de58f3e22d669f680178b623db6a4be22aecacecd75097b96fa06f35c2b35fe3ef71e9ec77a538d
   languageName: node
   linkType: hard
 
