@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
@@ -20,7 +20,6 @@ import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { isResponseOk } from '@/model/api';
 import { ReplaceQuantifierDialog } from './ReplaceQuantifierDialog';
 import { Quantifier } from '@/model/useraccount/interfaces/quantifier.interface';
-import { PeriodDetailsQuantifierDto } from '@/model/periods/dto/period-details-quantifier.dto';
 
 const QuantifierTable = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -34,8 +33,6 @@ const QuantifierTable = (): JSX.Element => {
   const [quantifierToReplace, setQuantifierToReplace] = useState<
     Quantifier | undefined
   >(undefined);
-
-  const [data, setData] = useState<PeriodDetailsQuantifierDto[]>([]);
 
   const { replaceQuantifier } = useReplaceQuantifier(periodId);
 
@@ -109,22 +106,17 @@ const QuantifierTable = (): JSX.Element => {
     [isAdmin]
   );
 
-  useEffect(() => {
-    const quantifiers = period?.quantifiers
-      ? sortBy(period.quantifiers, [
-          // First, sort by amount of praise remaining
-          (quantifier): number => {
-            return -1 * (quantifier.finishedCount / quantifier.praiseCount);
-          },
+  const data = period?.quantifiers
+    ? sortBy(period.quantifiers, [
+        // First, sort by amount of praise remaining
+        (quantifier): number => {
+          return -1 * (quantifier.finishedCount / quantifier.praiseCount);
+        },
 
-          // Then by quantifier _id
-          (quantifier): string => quantifier._id.toString(),
-        ])
-      : [];
-
-    console.log('HERE', quantifiers);
-    setData(quantifiers);
-  }, [period]);
+        // Then by quantifier _id
+        (quantifier): string => quantifier._id.toString(),
+      ])
+    : [];
 
   const options = {
     columns,
