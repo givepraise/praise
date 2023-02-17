@@ -65,7 +65,10 @@ const PERMISSION_APIKEY_READWRITE = [...PERMISSIONS_USER];
  * Discord bot permissions
  * The discord bot can only praise users.
  */
-const PERMISSION_DISCORD_BOT = [Permission.PraiseCreate];
+const PERMISSION_DISCORD_BOT = [
+  Permission.PraiseCreate,
+  Permission.PraiseForward,
+];
 
 /**
  * Defines which permissions are required for each role. This is used by the

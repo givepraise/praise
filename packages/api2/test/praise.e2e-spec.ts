@@ -1272,7 +1272,7 @@ describe('Praise (E2E)', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe(
-        'This praise account is not activated.',
+        'This praise giver account is not activated.',
       );
     });
 
@@ -1353,6 +1353,205 @@ describe('Praise (E2E)', () => {
       expect(rb.message).toContain('giver.accountId must be a string');
       expect(rb.message).toContain('giver.name must be a string');
       expect(rb.message).toContain('giver.platform must be a string');
+    });
+
+    test('400 when forwarder is sent', async () => {
+      const giver = await userAccountsSeeder.seedUserAccount();
+
+      const receiverIds = [];
+      for (let i = 0; i < 3; i++) {
+        const user = await userAccountsSeeder.seedUserAccount();
+        receiverIds.push(user.accountId);
+      }
+
+      const response = await authorizedPostRequest(
+        `/praise`,
+        app,
+        botUserAccessToken,
+        {
+          reason: 'This is a test reason',
+          reasonRaw: 'This is a test reason',
+          giver: {
+            accountId: giver.accountId,
+            name: giver.name,
+            avatarId: giver.avatarId,
+            platform: giver.platform,
+          },
+          receiverIds: receiverIds,
+          sourceId: 'DISCORD:GUILD_ID:CHANNEL_ID',
+          sourceName: 'DISCORD:GUILD_NAME:CHANNEL_NAME',
+          forwarder: {},
+        },
+      );
+
+      expect(response.status).toBe(400);
+      const rb = response.body;
+
+      expect(rb.message).toContain('property forwarder should not exist');
+    });
+  });
+
+  describe('POST /api/praise/forward - bot trying to forward a praise item', () => {
+    let period: Period;
+
+    beforeEach(async () => {
+      await praiseService.getModel().deleteMany({});
+      await quantificationsService.getModel().deleteMany({});
+      await settingsService.getModel().deleteMany({});
+      await periodsService.getModel().deleteMany({});
+      await periodSettingsService.getModel().deleteMany({});
+
+      period = await periodsSeeder.seedPeriod({
+        endDate: new Date(),
+        status: PeriodStatusType.QUANTIFY,
+      });
+
+      const setting = await settingsSeeder.seedSettings({
+        key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
+        value: '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
+        type: 'StringList',
+      });
+
+      await periodSettingsSeeder.seedPeriodSettings({
+        period: period,
+        setting: setting,
+        value: '0, 1, 3, 5, 8, 13, 21, 34, 55, 89, 144',
+      });
+
+      await settingsSeeder.seedSettings({
+        key: 'SELF_PRAISE_ALLOWED',
+        value: false,
+        type: 'Boolean',
+      });
+
+      await settingsSeeder.seedSettings({
+        key: 'PRAISE_INVALID_RECEIVERS_ERROR',
+        value: 'VALID RECEIVERS NOT MENTIONED',
+        type: 'String',
+      });
+
+      await settingsSeeder.seedSettings({
+        key: 'PRAISE_SUCCESS_MESSAGE',
+        value: 'PRAISE SUCCESSFUL',
+        type: 'String',
+      });
+
+      await settingsSeeder.seedSettings({
+        key: 'FIRST_TIME_PRAISER',
+        value: 'YOU ARE PRAISING FOR THE FIRST TIME. WELCOME TO PRAISE!',
+        type: 'String',
+      });
+    });
+
+    test('200 when praise is forwarded', async () => {
+      const receiverIds = [];
+      for (let i = 0; i < 3; i++) {
+        const user = await userAccountsSeeder.seedUserAccount();
+        receiverIds.push(user.accountId);
+      }
+
+      const giver = await userAccountsSeeder.seedUserAccount();
+      const forwarder = await userAccountsSeeder.seedUserAccount();
+
+      const response = await authorizedPostRequest(
+        `/praise/forward`,
+        app,
+        botUserAccessToken,
+        {
+          reason: 'This is a test reason',
+          reasonRaw: 'This is a test reason',
+          giver: {
+            accountId: giver.accountId,
+            name: giver.name,
+            avatarId: giver.avatarId,
+            platform: giver.platform,
+          },
+          receiverIds: receiverIds,
+          sourceId: 'DISCORD:GUILD_ID:CHANNEL_ID',
+          sourceName: 'DISCORD:GUILD_NAME:CHANNEL_NAME',
+          forwarder: {
+            accountId: forwarder.accountId,
+            name: forwarder.name,
+            avatarId: forwarder.avatarId,
+            platform: forwarder.platform,
+          },
+        },
+      );
+
+      const rb = response.body;
+
+      console.log('rb', rb);
+
+      expect(response.status).toBe(201);
+      expect(rb).toBeInstanceOf(Array);
+      expect(rb).toHaveLength(3);
+
+      expect(rb[0]).toBeValidClass(Praise);
+      expect(rb[0]).toBeProperlySerialized();
+    });
+
+    test('400 when forwarder is not sent', async () => {
+      const receiverIds = [];
+      for (let i = 0; i < 3; i++) {
+        const user = await userAccountsSeeder.seedUserAccount();
+        receiverIds.push(user.accountId);
+      }
+
+      const giver = await userAccountsSeeder.seedUserAccount();
+
+      const response = await authorizedPostRequest(
+        `/praise/forward`,
+        app,
+        botUserAccessToken,
+        {
+          reason: 'This is a test reason',
+          reasonRaw: 'This is a test reason',
+          giver: {
+            accountId: giver.accountId,
+            name: giver.name,
+            avatarId: giver.avatarId,
+            platform: giver.platform,
+          },
+          receiverIds: receiverIds,
+          sourceId: 'DISCORD:GUILD_ID:CHANNEL_ID',
+          sourceName: 'DISCORD:GUILD_NAME:CHANNEL_NAME',
+        },
+      );
+
+      expect(response.status).toBe(400);
+      const rb = response.body;
+
+      expect(rb.message).toContain('forwarder should not be empty');
+    });
+
+    test.only('400 when wrong forwarder data is send', async () => {
+      const receiverIds = [];
+      for (let i = 0; i < 3; i++) {
+        const user = await userAccountsSeeder.seedUserAccount();
+        receiverIds.push(user.accountId);
+      }
+
+      const response = await authorizedPostRequest(
+        `/praise/forward`,
+        app,
+        botUserAccessToken,
+        {
+          reason: 'This is a test reason',
+          reasonRaw: 'This is a test reason',
+          giver: {},
+          forwarder: {},
+          receiverIds: receiverIds,
+          sourceId: 'DISCORD:GUILD_ID:CHANNEL_ID',
+          sourceName: 'DISCORD:GUILD_NAME:CHANNEL_NAME',
+        },
+      );
+
+      expect(response.status).toBe(400);
+      const rb = response.body;
+
+      expect(rb.message).toContain('forwarder.accountId must be a string');
+      expect(rb.message).toContain('forwarder.name must be a string');
+      expect(rb.message).toContain('forwarder.platform must be a string');
     });
   });
 });

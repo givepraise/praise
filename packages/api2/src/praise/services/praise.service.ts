@@ -19,6 +19,7 @@ import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
 import { PraiseCreateInputDto } from '../dto/praise-create-input.dto';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { UserAccountModel } from '@/database/schemas/useraccount/useraccount.schema';
+import { PraiseForwardInputDto } from '../dto/praise-forward-input.dto';
 
 @Injectable()
 export class PraiseService {
@@ -439,16 +440,24 @@ export class PraiseService {
   };
 
   /**
-   * Creates praises with a given receiver and reason
-   *  and returns the created praises
+   * Creates praise items with a given receiver and reason
+   *  and returns the created praise items
    *
    * @param {PraiseCreateInputDto} data
    * @returns {Promise<Praise[]>}
    * @throws {ServiceException}
    */
-  createPraiseItem = async (data: PraiseCreateInputDto): Promise<Praise[]> => {
+  createPraiseItem = async (
+    data: PraiseCreateInputDto | PraiseForwardInputDto,
+  ): Promise<Praise[]> => {
+    let forwarder: UserAccount | undefined;
     const { giver, receiverIds, reason, reasonRaw, sourceId, sourceName } =
       data;
+
+    if ('forwarder' in data) {
+      const { forwarder: forwarderFromDto } = data as PraiseForwardInputDto;
+      forwarder = forwarderFromDto;
+    }
 
     if (!receiverIds || receiverIds.length === 0) {
       throw new ServiceException('No receivers specified');
@@ -461,7 +470,21 @@ export class PraiseService {
     );
 
     if (!giverAccount.user) {
-      throw new ServiceException('This praise account is not activated.');
+      throw new ServiceException('This praise giver account is not activated.');
+    }
+
+    if (forwarder) {
+      const forwarderAccount = await this.userAccountModel.findOneAndUpdate(
+        { accountId: forwarder.accountId },
+        forwarder,
+        { upsert: true, new: true },
+      );
+
+      if (!forwarderAccount.user) {
+        throw new ServiceException(
+          'This praise forwarder account is not activated.',
+        );
+      }
     }
 
     const selfPraiseAllowed = (
@@ -484,6 +507,7 @@ export class PraiseService {
         reason,
         reasonRaw,
         giver: giverAccount._id,
+        forwarder: forwarder ? forwarder._id : undefined,
         sourceId,
         sourceName,
         receiver: receiver._id,

@@ -2,23 +2,21 @@ import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, ValidateNested } from 'class-validator';
-import { Praise } from '../schemas/praise.schema';
+import { PraiseCreateInputDto } from './praise-create-input.dto';
 
-export class PraiseCreateInputDto extends PickType(Praise, [
+export class PraiseForwardInputDto extends PickType(PraiseCreateInputDto, [
   'reasonRaw',
   'reason',
   'sourceId',
   'sourceName',
+  'receiverIds',
+  'giver',
 ]) {
-  @ApiProperty({ required: true })
-  @IsNotEmpty()
-  receiverIds: string[];
-
   @ApiProperty({
     type: UserAccount,
   })
   @ValidateNested()
   @Type(() => UserAccount)
   @IsNotEmpty()
-  giver: UserAccount;
+  forwarder: UserAccount;
 }
