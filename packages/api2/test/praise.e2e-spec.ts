@@ -522,6 +522,8 @@ describe('Praise (E2E)', () => {
         app,
         users[0].accessToken,
         {
+          // We added too big number intentionally to get validation error
+          // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
           score: 100098798798798798796897876897687698768,
         },
       );

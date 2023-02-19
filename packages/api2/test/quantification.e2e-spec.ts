@@ -242,9 +242,9 @@ describe('UserAccountsController (E2E)', () => {
         adminUserAccessToken,
       ).expect(200);
       expect(response.body.length).toBe(1);
-      expect(String(quantifications[2]._id) === response.body[0]._id).toBe(
-        true,
-      );
+      expect(
+        String(quantifications[2]._id) === response.body[0]._id,
+      ).toBeTrue();
     });
 
     test('returns quantifications that matches seeded list in json format, filtered by date', async () => {

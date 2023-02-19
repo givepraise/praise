@@ -26,7 +26,7 @@ interface DatabaseConfig {
  * @returns {Promise<typeof mongoose>}
  */
 const connectDatabase = async (
-  configOverride: DatabaseConfig | {} = {},
+  configOverride?: DatabaseConfig,
 ): Promise<typeof mongoose> => {
   const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_HOST, MONGO_PORT, MONGO_DB } =
     process.env;

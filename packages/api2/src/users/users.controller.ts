@@ -47,10 +47,7 @@ import { exportContentType } from '@/shared/export.shared';
 @UseGuards(PermissionsGuard)
 @UseGuards(AuthGuard(['jwt', 'api-key']))
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly eventLogService: EventLogService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Get('/export')
   @ApiOperation({ summary: 'Export users document to json or csv' })
