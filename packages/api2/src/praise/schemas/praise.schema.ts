@@ -7,6 +7,7 @@ import { ApiResponseProperty } from '@nestjs/swagger';
 import { has } from 'lodash';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 import { ExposeId } from '@/shared/decorators/expose-id.decorator';
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export type PraiseDocument = Praise & Document;
 
@@ -47,24 +48,32 @@ export class Praise {
     example: 'for making edits in the welcome text',
   })
   @Prop({ required: true, maxlength: 280 })
+  @IsString()
+  @MaxLength(280)
   reasonRaw: string;
 
   @ApiResponseProperty({
     example: 'for making edits in the welcome text',
   })
   @Prop({ required: true, maxlength: 280 })
+  @IsString()
+  @MaxLength(280)
   reason: string;
 
   @ApiResponseProperty({
     example: 'DISCORD:666',
   })
   @Prop({ required: true, maxlength: 100 })
+  @IsString()
+  @MaxLength(100)
   sourceId: string;
 
   @ApiResponseProperty({
     example: 'DISCORD',
   })
   @Prop({ required: true, maxlength: 100 })
+  @IsString()
+  @MaxLength(100)
   sourceName: string;
 
   @ApiResponseProperty({
@@ -78,6 +87,7 @@ export class Praise {
   })
   @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
   @Type(() => UserAccount)
+  @IsNotEmpty()
   receiver: UserAccount | Types.ObjectId;
 
   @ApiResponseProperty({
@@ -85,6 +95,7 @@ export class Praise {
   })
   @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
   @Type(() => UserAccount)
+  @IsNotEmpty()
   giver: UserAccount | Types.ObjectId;
 
   @ApiResponseProperty({

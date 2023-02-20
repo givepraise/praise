@@ -22,7 +22,7 @@ export class PeriodsSeeder {
     const Period = await this.periodsService.getModel().create({
       name: faker.random.words(3),
       status: PeriodStatusType.OPEN,
-      endDate: faker.date.recent(),
+      endDate: faker.date.future(),
       createdAt,
       ...PeriodData,
     });

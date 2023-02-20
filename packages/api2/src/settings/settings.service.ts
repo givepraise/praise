@@ -213,7 +213,7 @@ export class SettingsService {
   > {
     let setting;
     if (!periodId) {
-      const setting = await this.settingsModel
+      setting = await this.settingsModel
         .findOne({
           key,
         })
