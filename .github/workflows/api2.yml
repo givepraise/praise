@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'packages/api/**'
+      - 'packages/api2/**'
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -12,14 +12,16 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.13.2'
+          node-version: '18.14.0'
           cache: 'yarn'
       - run: yarn install
-      - run: yarn workspace api lint
-      - run: yarn workspace api build
+      - run: yarn workspace api2 lint
+      - run: yarn workspace api2 build
+      - run: yarn workspace api2 test:debug
+      - run: yarn workspace api2 test:e2e
       - run: echo "${{secrets.ROOT_ENV_TESTING }}" > .env
-      - run: echo "${{secrets.API_ENV_TESTING }}" > packages/api/.env
+      - run: echo "${{secrets.API_ENV_TESTING }}" > packages/api2/.env
       - run: echo "${{secrets.DISCORDBOT_ENV_TESTING }}" > packages/discord-bot/.env
       - run: echo "${{secrets.FRONTEND_ENV_TESTING }}" > packages/frontend/.env
       - run: yarn mongodb:start
-      - run: yarn workspace api test
+      - run: yarn workspace api2 test
