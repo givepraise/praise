@@ -46,14 +46,16 @@ async function bootstrap() {
     origin: '*',
   });
 
+  // Create a logger instance for the app
+  const logger = new Logger('Bootstrap');
+
   // Run database migrations before starting the app
-  await runDbMigrations(app);
+  await runDbMigrations(app, logger);
 
   // Start the app listening on the API port or default to port 3000
   await app.listen(process.env.API_PORT || 3000);
 
   // Log the app version and port to the console
-  const logger = new Logger('Bootstrap');
   logger.log(
     `Praise API v${version} listening on port ${process.env.API_PORT || 3000}`,
   );
