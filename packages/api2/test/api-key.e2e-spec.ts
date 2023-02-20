@@ -38,7 +38,6 @@ describe('EventLog (E2E)', () => {
       providers: [UsersSeeder],
     }).compile();
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,

@@ -49,7 +49,6 @@ describe('Period Settings (E2E)', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,

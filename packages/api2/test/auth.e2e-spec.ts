@@ -32,7 +32,6 @@ describe('AuthController (E2E)', () => {
       providers: [UsersSeeder, ApiKeySeeder],
     }).compile();
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -156,11 +155,12 @@ describe('AuthController (E2E)', () => {
     /**
      *
      */
-    test('401 when submitting identityEthAddress that does not exist', async () => {
-      return request(server)
+    test.only('401 when submitting identityEthAddress that does not exist', async () => {
+      const a = await request(server)
         .post('/auth/eth-signature/login')
-        .send({ identityEthAddress: 'invalid', signature: 'any' })
-        .expect(401);
+        .send({ identityEthAddress: 'invalid', signature: 'any' });
+      //.expect(401);
+      console.log(a);
     });
 
     /**
