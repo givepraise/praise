@@ -846,7 +846,6 @@ describe('Praise (E2E)', () => {
       }
 
       period = await periodsSeeder.seedPeriod({
-        endDate: praise.createdAt,
         status: PeriodStatusType.QUANTIFY,
       });
 
@@ -961,24 +960,14 @@ describe('Praise (E2E)', () => {
 
       const p = response.body as Praise;
       expect(p).toBeDefined();
-      expect(p.quantifications.length).toBe(3);
-      expect(p.score).toBe(76);
-
       expect(p).toBeProperlySerialized();
-      // expect(p).toBeValidClass(Praise);
+      expect(p).toBeValidClass(Praise);
+      expect(p.quantifications.length).toBe(3);
+      expect(p.score).toBe(50.67);
     });
 
     test('Quantifying multiple praise - scores and averages correct - with duplicates and dismissed', async () => {
-      // Seed duplicate praise
-      const praise2 = await praiseSeeder.seedPraise();
-
-      // Seed a quantification for duplicate praise, quantifier 3
-      await quantificationsSeeder.seedQuantification({
-        quantifier: users[2].user._id,
-        praise: praise2._id,
-      });
-
-      // Quantify, quantifier 1
+      // Quantify praise 1, quantifier 1
       await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
@@ -987,7 +976,8 @@ describe('Praise (E2E)', () => {
           score: 8,
         },
       );
-      // Quantify, quantifier 2
+
+      // Quantify praise 1, quantifier 2
       await authorizedPatchRequest(
         `/praise/${praise._id}/quantify`,
         app,
@@ -996,47 +986,87 @@ describe('Praise (E2E)', () => {
           dismissed: true,
         },
       );
-      // Quantify, quantifier 3
-      // Give score to duplicate praise
+      // Quantify praise 1, quantifier 3
       await authorizedPatchRequest(
-        `/praise/${praise2._id}/quantify`,
+        `/praise/${praise._id}/quantify`,
         app,
         users[2].accessToken,
         {
           score: 144,
         },
       );
-      // Mark second quantification as duplicate
+
+      // Seed another praise
+      const praise2 = await praiseSeeder.seedPraise();
+
+      // Seed three quantifications
+      for (let i = 0; i < 3; i++) {
+        await quantificationsSeeder.seedQuantification({
+          quantifier: users[i].user._id,
+          praise: praise2._id,
+        });
+      }
+
+      // Quantify praise 2, quantifier 1
       await authorizedPatchRequest(
-        `/praise/${praise._id}/quantify`,
+        `/praise/${praise2._id}/quantify`,
+        app,
+        users[0].accessToken,
+        {
+          score: 8,
+        },
+      );
+      // Quantify praise 2, quantifier 2
+      await authorizedPatchRequest(
+        `/praise/${praise2._id}/quantify`,
+        app,
+        users[1].accessToken,
+        {
+          score: 13,
+        },
+      );
+      // Quantify praise 2, quantifier 3¨
+      // Mark as duplicate of praise 1
+      await authorizedPatchRequest(
+        `/praise/${praise2._id}/quantify`,
         app,
         users[2].accessToken,
         {
-          duplicatePraiseId: praise2._id.toString(),
+          duplicatePraise: praise._id,
         },
       );
 
-      const response = await authorizedGetRequest(
+      const response1 = await authorizedGetRequest(
         `/praise/${praise._id}`,
         app,
         users[0].accessToken,
       );
 
-      expect(response.status).toBe(200);
-
-      const p = response.body;
-      expect(p).toBeDefined();
-      expect(p.score).toBe(11.2);
-      expect(p.quantifications.length).toBe(3);
-      const duplicateQuant = p.quantifications.find(
-        (q: { duplicatePraise: string }) =>
-          q.duplicatePraise === praise2._id.toString(),
+      const response2 = await authorizedGetRequest(
+        `/praise/${praise2._id}`,
+        app,
+        users[0].accessToken,
       );
-      expect(duplicateQuant).toBeDefined();
-      expect(duplicateQuant.scoreRealized).toBe(14.4);
 
-      expect(p).toBeProperlySerialized();
-      // expect(p).toBeValidClass(Praise);
+      expect(response1.status).toBe(200);
+      expect(response2.status).toBe(200);
+
+      const p1 = response1.body as Praise;
+      const p2 = response2.body as Praise;
+
+      expect(p1).toBeDefined();
+      expect(p1).toBeProperlySerialized();
+      expect(p1).toBeValidClass(Praise);
+      expect(p1.quantifications.length).toBe(3);
+      // (8+0+144)/3
+      expect(p1.score).toBe(50.67);
+
+      expect(p2).toBeDefined();
+      expect(p2).toBeProperlySerialized();
+      expect(p2).toBeValidClass(Praise);
+      expect(p2.quantifications.length).toBe(3);
+      // (8+13+14.4)/3
+      expect(p2.score).toBe(11.8);
     });
   });
 
@@ -1172,7 +1202,7 @@ describe('Praise (E2E)', () => {
       return request(server).post(`/praise`).send().expect(401);
     });
 
-    test('403 when authenticated as user', async () => {
+    test('403 when user has wrong permissions', async () => {
       const response = await authorizedPostRequest(
         `/praise`,
         app,
@@ -1185,7 +1215,7 @@ describe('Praise (E2E)', () => {
       expect(response.status).toBe(403);
     });
 
-    test('400 when authenticated as bot', async () => {
+    test('400 when inputs are invalid', async () => {
       const response = await authorizedPostRequest(
         `/praise`,
         app,
@@ -1234,6 +1264,142 @@ describe('Praise (E2E)', () => {
 
       expect(rb[0]).toBeValidClass(Praise);
       expect(rb[0]).toBeProperlySerialized();
+    });
+
+    // test, API should return 400 when praise reason contains more than 280 characters
+    test('400 when reason is more than 280 characters', async () => {
+      const giver = await userAccountsSeeder.seedUserAccount();
+      const receiver = await userAccountsSeeder.seedUserAccount();
+
+      const reason = faker.lorem.sentence(300);
+      const reasonRaw = faker.lorem.sentence(300);
+
+      const response = await authorizedPostRequest(
+        `/praise`,
+        app,
+        botUserAccessToken,
+        {
+          reason: reason,
+          reasonRaw: reasonRaw,
+          giver: {
+            accountId: giver.accountId,
+            name: giver.name,
+            avatarId: giver.avatarId,
+            platform: giver.platform,
+          },
+          receiverIds: [receiver.accountId],
+          sourceId: 'DISCORD:GUILD_ID:CHANNEL_ID',
+          sourceName: 'DISCORD:GUILD_NAME:CHANNEL_NAME',
+        },
+      );
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toContain(
+        'reason must be shorter than or equal to 280 characters',
+      );
+      expect(response.body.message).toContain(
+        'reasonRaw must be shorter than or equal to 280 characters',
+      );
+    });
+
+    test('400 when sourceId is more than 100 characters', async () => {
+      const giver = await userAccountsSeeder.seedUserAccount();
+      const receiver = await userAccountsSeeder.seedUserAccount();
+
+      const sourceId = faker.lorem.sentence(200);
+
+      const response = await authorizedPostRequest(
+        `/praise`,
+
+        app,
+        botUserAccessToken,
+        {
+          reason: 'This is a test reason',
+          reasonRaw: 'This is a test reason',
+          giver: {
+            accountId: giver.accountId,
+            name: giver.name,
+            avatarId: giver.avatarId,
+            platform: giver.platform,
+          },
+          receiverIds: [receiver.accountId],
+          sourceId: sourceId,
+          sourceName: 'DISCORD:GUILD_NAME:CHANNEL_NAME',
+        },
+      );
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toContain(
+        'sourceId must be shorter than or equal to 100 characters',
+      );
+    });
+
+    test('400 when sourceName is more than 100 characters', async () => {
+      const giver = await userAccountsSeeder.seedUserAccount();
+      const receiver = await userAccountsSeeder.seedUserAccount();
+
+      const sourceName = faker.lorem.sentence(200);
+
+      const response = await authorizedPostRequest(
+        `/praise`,
+        app,
+        botUserAccessToken,
+        {
+          reason: 'This is a test reason',
+          reasonRaw: 'This is a test reason',
+          giver: {
+            accountId: giver.accountId,
+            name: giver.name,
+            avatarId: giver.avatarId,
+            platform: giver.platform,
+          },
+          receiverIds: [receiver.accountId],
+          sourceId: 'DISCORD:GUILD_ID:CHANNEL_ID',
+          sourceName: sourceName,
+        },
+      );
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toContain(
+        'sourceName must be shorter than or equal to 100 characters',
+      );
+    });
+
+    test('400 when giver account is not activated', async () => {
+      const receiverIds = [];
+      for (let i = 0; i < 3; i++) {
+        const user = await userAccountsSeeder.seedUserAccount();
+        receiverIds.push(user.accountId);
+      }
+
+      const giver = await userAccountsSeeder.seedUserAccount({
+        user: null,
+      });
+
+      const response = await authorizedPostRequest(
+        `/praise`,
+        app,
+        botUserAccessToken,
+        {
+          reason: 'This is a test reason',
+          reasonRaw: 'This is a test reason',
+          giver: {
+            accountId: giver.accountId,
+            name: giver.name,
+            avatarId: giver.avatarId,
+            platform: giver.platform,
+            user: null,
+          },
+          receiverIds: receiverIds,
+          sourceId: 'DISCORD:GUILD_ID:CHANNEL_ID',
+          sourceName: 'DISCORD:GUILD_NAME:CHANNEL_NAME',
+        },
+      );
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toContain(
+        'This praise giver account is not activated.',
+      );
     });
 
     test('400 when giver is not activated', async () => {
@@ -1352,7 +1518,7 @@ describe('Praise (E2E)', () => {
       expect(rb.message).toContain('giver.platform must be a string');
     });
 
-    test('400 when forwarder is sent', async () => {
+    test('400 when forwarder is sent without user having forwarder permissions', async () => {
       const giver = await userAccountsSeeder.seedUserAccount();
 
       const receiverIds = [];
@@ -1477,8 +1643,6 @@ describe('Praise (E2E)', () => {
 
       const rb = response.body;
 
-      console.log('rb', rb);
-
       expect(response.status).toBe(201);
       expect(rb).toBeInstanceOf(Array);
       expect(rb).toHaveLength(3);
@@ -1521,7 +1685,7 @@ describe('Praise (E2E)', () => {
       expect(rb.message).toContain('forwarder should not be empty');
     });
 
-    test.only('400 when wrong forwarder data is send', async () => {
+    test('400 when wrong forwarder data is send', async () => {
       const receiverIds = [];
       for (let i = 0; i < 3; i++) {
         const user = await userAccountsSeeder.seedUserAccount();
