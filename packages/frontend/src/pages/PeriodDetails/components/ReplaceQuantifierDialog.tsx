@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/Button';
 
 interface Props {
   onClose(): void;
-  onConfirm(newQuantifierId: string): void;
+  onConfirm(newQuantifierId: string): void | Promise<void>;
   open: boolean;
   selectedUserId: string | undefined;
 }
@@ -97,7 +97,7 @@ export const ReplaceQuantifierDialog = ({
                   onClick={(): void => {
                     if (!replacementUserId) return;
 
-                    onConfirm(replacementUserId);
+                    void onConfirm(replacementUserId);
                     resetAndClose();
                   }}
                 >
