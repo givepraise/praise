@@ -28,7 +28,6 @@ import {
 } from '@nestjs/swagger';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
-import { EventLogService } from '@/event-log/event-log.service';
 import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { UpdateUserRequestDto } from './dto/update-user-request.dto';
@@ -44,10 +43,7 @@ import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-pe
 })
 @EnforceAuthAndPermissions()
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly eventLogService: EventLogService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Get('export')
   @ApiOperation({ summary: 'Export users document to json or csv' })

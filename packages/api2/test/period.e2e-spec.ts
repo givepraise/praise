@@ -1,9 +1,5 @@
 import request from 'supertest';
-import {
-  ConsoleLogger,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
@@ -93,7 +89,6 @@ describe('Period (E2E)', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -372,10 +367,12 @@ describe('Period (E2E)', () => {
       const period2 = p.find((x) => x._id.toString() === period._id);
       expect(period).toBeDefined();
       expect(period2).toBeDefined();
-      expect(period._id).toBe(period2!._id.toString());
-      expect(period.status).toBe(period2!.status);
-      expect(period.endDate).toBe(period2!.endDate.toISOString());
-      expect(period.name).toBe(period2!.name);
+      if (period2) {
+        expect(period._id).toBe(period2._id.toString());
+        expect(period.status).toBe(period2.status);
+        expect(period.endDate).toBe(period2.endDate.toISOString());
+        expect(period.name).toBe(period2.name);
+      }
 
       expect(period).toBeProperlySerialized();
       expect(period).toBeValidClass(Period);

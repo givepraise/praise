@@ -366,10 +366,6 @@ export class PraiseService {
         true,
       );
 
-    const duplicateArray = duplicateQuantifications.filter(
-      (q) => q.praise._id === duplicatePraise,
-    );
-
     const duplicatePraiseItems = await this.praiseModel
       .find({
         _id: {

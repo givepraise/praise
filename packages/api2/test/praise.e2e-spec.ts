@@ -1,9 +1,5 @@
 import request from 'supertest';
-import {
-  ConsoleLogger,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
@@ -101,7 +97,6 @@ describe('Praise (E2E)', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -384,14 +379,16 @@ describe('Praise (E2E)', () => {
       const praise2 = p.find((x) => x._id.toString() === praise._id);
       expect(praise).toBeDefined();
       expect(praise2).toBeDefined();
-      expect(praise._id).toBe(praise2!._id.toString());
-      expect(praise.giver._id).toBe(praise2!.giver.toString());
-      expect(praise.receiver._id).toBe(praise2!.receiver.toString());
-      expect(praise.reason).toBe(praise2!.reason);
-      expect(praise.reasonRaw).toBe(praise2!.reasonRaw);
-      expect(praise.score).toBe(praise2!.score);
-      expect(praise.sourceId).toBe(praise2!.sourceId);
-      expect(praise.sourceName).toBe(praise2!.sourceName);
+      if (praise2) {
+        expect(praise._id).toBe(praise2._id.toString());
+        expect(praise.giver._id).toBe(praise2.giver.toString());
+        expect(praise.receiver._id).toBe(praise2.receiver.toString());
+        expect(praise.reason).toBe(praise2.reason);
+        expect(praise.reasonRaw).toBe(praise2.reasonRaw);
+        expect(praise.score).toBe(praise2.score);
+        expect(praise.sourceId).toBe(praise2.sourceId);
+        expect(praise.sourceName).toBe(praise2.sourceName);
+      }
 
       expect(praise).toBeProperlySerialized();
       expect(praise).toBeValidClass(Praise);
@@ -534,6 +531,8 @@ describe('Praise (E2E)', () => {
         app,
         users[0].accessToken,
         {
+          // We added too big number intentionally to get validation error
+          // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
           score: 100098798798798798796897876897687698768,
         },
       );
