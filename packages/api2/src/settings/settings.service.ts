@@ -10,7 +10,7 @@ import { ExportTransformer } from '@/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { UploadedFile } from 'express-fileupload';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { RequestContext } from 'nestjs-request-context';
@@ -24,6 +24,7 @@ export class SettingsService {
     @InjectModel(Setting.name)
     private settingsModel: Model<Setting>,
     @Inject(forwardRef(() => PeriodSettingsService))
+    private periodSettingsService: PeriodSettingsService,
     private utils: UtilsProvider,
     private eventLogService: EventLogService,
   ) {}
@@ -210,27 +211,41 @@ export class SettingsService {
   ): Promise<
     string | boolean | number | number[] | string[] | object | undefined
   > {
-    // let setting;
-    // if (!periodId) {
-    const setting = await this.settingsModel.findOne({
-      key,
-    });
+    let setting;
+    if (!periodId) {
+      const setting = await this.settingsModel
+        .findOne({
+          key,
+        })
+        .lean();
 
-    if (!setting) {
-      throw new ServiceException(`Setting ${key} does not exist`);
+      if (!setting) {
+        throw new ServiceException(`Setting ${key} does not exist`);
+      }
+    } else {
+      const generalSetting = await this.settingsModel
+        .findOne({
+          key,
+        })
+        .lean();
+
+      if (generalSetting) {
+        setting =
+          await this.periodSettingsService.findOneBySettingIdAndPeriodId(
+            generalSetting._id,
+            periodId,
+          );
+
+        if (!setting) {
+          const periodString = periodId
+            ? `period ${periodId.toString()}`
+            : 'global';
+          throw new ServiceException(
+            `periodsetting ${key} does not exist for ${periodString}`,
+          );
+        }
+      }
     }
-    // } else {
-    //   setting = await this.periodSettingsService.findOne(key, periodId);
-
-    //   if (!setting) {
-    //     const periodString = periodId
-    //       ? `period ${periodId.toString()}`
-    //       : 'global';
-    //     throw new ServiceException(
-    //       `periodsetting ${key} does not exist for ${periodString}`,
-    //     );
-    //   }
-    // }
 
     return setting ? setting.value : undefined;
   }

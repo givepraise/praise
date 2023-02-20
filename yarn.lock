@@ -4021,6 +4021,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@json2csv/formatters@npm:^6.1.2":
+  version: 6.1.2
+  resolution: "@json2csv/formatters@npm:6.1.2"
+  checksum: 058c288c82aaa0dfe2d06abf70ff114f20d8f77ad8bc5c24e6fbd1ba48eaa65837b405c1887caa97300231f50464b2ac3b1f6bfc158f3ccc246c511e408729f7
+  languageName: node
+  linkType: hard
+
+"@json2csv/node@npm:^6.1.2":
+  version: 6.1.2
+  resolution: "@json2csv/node@npm:6.1.2"
+  dependencies:
+    "@json2csv/plainjs": ^6.1.2
+  checksum: 2f793134a4ba32e1da5a077963644c36a5190c72720c373f42fd74bbf48e36635529a9446f27624ad741eabb178569ae5e542aa52bc6e38f280fda81a8b9e854
+  languageName: node
+  linkType: hard
+
+"@json2csv/plainjs@npm:^6.1.2":
+  version: 6.1.2
+  resolution: "@json2csv/plainjs@npm:6.1.2"
+  dependencies:
+    "@json2csv/formatters": ^6.1.2
+    "@streamparser/json": ^0.0.10
+    lodash.get: ^4.4.2
+  checksum: fa6ea262c14204cc4bb43530f5d1ff2cad790818de7a777c68979a1faa99d450074de5b37d9979d4c30169743e3c2a2c669670d6e2e20214d7cc0c50e5474333
+  languageName: node
+  linkType: hard
+
 "@kurkle/color@npm:^0.3.0":
   version: 0.3.2
   resolution: "@kurkle/color@npm:0.3.2"
@@ -4035,7 +4062,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/node-pre-gyp@npm:^1.0.10":
+"@mapbox/node-pre-gyp@npm:^1.0.0, @mapbox/node-pre-gyp@npm:^1.0.10":
   version: 1.0.10
   resolution: "@mapbox/node-pre-gyp@npm:1.0.10"
   dependencies:
@@ -4835,6 +4862,13 @@ __metadata:
     rpc-websockets: ^7.5.0
     superstruct: ^0.14.2
   checksum: 8bd212d3fce35ad4ad4bc2490181c3d18b6abda10b253fde5a7c6b1620cdb27f37f96d5739d3058abeded76e736b35439cae2deddb3dfd4aae8ffcdf7233223c
+  languageName: node
+  linkType: hard
+
+"@streamparser/json@npm:^0.0.10":
+  version: 0.0.10
+  resolution: "@streamparser/json@npm:0.0.10"
+  checksum: 70312a774535ca19124bc7c0071d43e8bea0699c89ef9a322e4a6faddb324a870f0a23f7af51124b0bfebd8c082698df97e58387201fe2ad37ece32308b24641
   languageName: node
   linkType: hard
 
@@ -6928,6 +6962,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api2@workspace:packages/api2"
   dependencies:
+    "@json2csv/node": ^6.1.2
     "@nestjs/cli": ^9.0.0
     "@nestjs/common": ^9.0.0
     "@nestjs/config": ^2.2.0
@@ -6955,6 +6990,7 @@ __metadata:
     bcrypt: ^5.1.0
     class-transformer: ^0.5.1
     class-validator: ^0.13.2
+    duckdb: ^0.6.1
     env-cmd: ^10.1.0
     eslint: ^8.0.1
     eslint-config-prettier: ^8.3.0
@@ -10074,6 +10110,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"duckdb@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "duckdb@npm:0.6.1"
+  dependencies:
+    "@mapbox/node-pre-gyp": ^1.0.0
+    node-addon-api: "*"
+    node-gyp: ^9.3.0
+  checksum: f50443aa21d8eb4d23ce832d2069df7152359d8f205cb4054481ab769d4dec8f1851bd21530ce64955d0ceb2a0d583904435c5489542e971ecb6287071c98c0a
+  languageName: node
+  linkType: hard
+
 "duplexer@npm:^0.1.2":
   version: 0.1.2
   resolution: "duplexer@npm:0.1.2"
@@ -11994,7 +12041,7 @@ __metadata:
 
 "fsevents@patch:fsevents@^2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>":
   version: 2.3.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"
   dependencies:
     node-gyp: latest
   conditions: os=darwin
@@ -16227,21 +16274,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-addon-api@npm:*, node-addon-api@npm:^5.0.0":
+  version: 5.1.0
+  resolution: "node-addon-api@npm:5.1.0"
+  dependencies:
+    node-gyp: latest
+  checksum: 2508bd2d2981945406243a7bd31362fc7af8b70b8b4d65f869c61731800058fb818cc2fd36c8eac714ddd0e568cc85becf5e165cebbdf7b5024d5151bbc75ea1
+  languageName: node
+  linkType: hard
+
 "node-addon-api@npm:^2.0.0":
   version: 2.0.2
   resolution: "node-addon-api@npm:2.0.2"
   dependencies:
     node-gyp: latest
   checksum: 31fb22d674648204f8dd94167eb5aac896c841b84a9210d614bf5d97c74ef059cc6326389cf0c54d2086e35312938401d4cc82e5fcd679202503eb8ac84814f8
-  languageName: node
-  linkType: hard
-
-"node-addon-api@npm:^5.0.0":
-  version: 5.1.0
-  resolution: "node-addon-api@npm:5.1.0"
-  dependencies:
-    node-gyp: latest
-  checksum: 2508bd2d2981945406243a7bd31362fc7af8b70b8b4d65f869c61731800058fb818cc2fd36c8eac714ddd0e568cc85becf5e165cebbdf7b5024d5151bbc75ea1
   languageName: node
   linkType: hard
 
@@ -16300,7 +16347,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp@npm:latest":
+"node-gyp@npm:^9.3.0, node-gyp@npm:latest":
   version: 9.3.1
   resolution: "node-gyp@npm:9.3.1"
   dependencies:
@@ -19155,7 +19202,7 @@ __metadata:
 
 "resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>":
   version: 1.22.1
-  resolution: "resolve@patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"
+  resolution: "resolve@patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"
   dependencies:
     is-core-module: ^2.9.0
     path-parse: ^1.0.7
@@ -19168,7 +19215,7 @@ __metadata:
 
 "resolve@patch:resolve@^2.0.0-next.4#~builtin<compat/resolve>":
   version: 2.0.0-next.4
-  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.4#~builtin<compat/resolve>::version=2.0.0-next.4&hash=c3c19d"
+  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.4#~builtin<compat/resolve>::version=2.0.0-next.4&hash=07638b"
   dependencies:
     is-core-module: ^2.9.0
     path-parse: ^1.0.7
@@ -21342,11 +21389,11 @@ __metadata:
 
 "typescript@patch:typescript@4.9.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.5#~builtin<compat/typescript>, typescript@patch:typescript@^4.7.4#~builtin<compat/typescript>":
   version: 4.9.4
-  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=ad5954"
+  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 1caaea6cb7f813e64345190fddc4e6c924d0b698ab81189b503763c4a18f7f5501c69362979d36e19c042d89d936443e768a78b0675690b35eb663d19e0eae71
+  checksum: 37f6e2c3c5e2aa5934b85b0fddbf32eeac8b1bacf3a5b51d01946936d03f5377fe86255d4e5a4ae628fd0cd553386355ad362c57f13b4635064400f3e8e05b9d
   languageName: node
   linkType: hard
 

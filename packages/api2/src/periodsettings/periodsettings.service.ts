@@ -1,4 +1,4 @@
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -49,7 +49,7 @@ export class PeriodSettingsService {
     return settings.map((setting) => new PeriodSetting(setting));
   }
 
-  async findOneById(
+  async findOneBySettingIdAndPeriodId(
     settingId: Types.ObjectId,
     periodId: Types.ObjectId,
   ): Promise<PeriodSetting> {
@@ -130,7 +130,7 @@ export class PeriodSettingsService {
       }" from "${originalValue || ''}" to "${setting.value || ''}"`,
     });
 
-    return this.findOneById(settingId, periodId);
+    return this.findOneBySettingIdAndPeriodId(settingId, periodId);
   }
 
   /**

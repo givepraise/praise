@@ -39,7 +39,7 @@ const ValueLabelComponent = ({
     <Tooltip
       enterTouchDelay={0}
       placement="top"
-      title={value ? value : ''}
+      title={value === '0' ? '0' : value}
       arrow
     >
       {children}
@@ -129,7 +129,6 @@ export const QuantifySlider = ({
 
   const valueLabelFormat = (value: number): number =>
     allowedScores[marks.findIndex((mark) => mark.value === value)];
-
   const maxMarkValue = (): number =>
     marks.length > 0 ? marks[marks.length - 1].value : 0;
 

@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
+import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
 import { runDbMigrations } from '@/database/migrations';
 import { UsersModule } from '@/users/users.module';
@@ -21,6 +21,9 @@ import { ActivateModule } from '@/activate/activate.module';
 import { EventLogModule } from '@/event-log/event-log.module';
 import { EventLogService } from '@/event-log/__mocks__/event-log.service';
 import { UsersService } from '@/users/users.service';
+import { User } from '@/users/schemas/users.schema';
+import { PeriodsModule } from '@/periods/periods.module';
+import { PraiseModule } from '@/praise/praise.module';
 
 describe('EventLog (E2E)', () => {
   let app: INestApplication;
@@ -39,6 +42,8 @@ describe('EventLog (E2E)', () => {
         UserAccountsModule,
         ActivateModule,
         EventLogModule,
+        PeriodsModule,
+        PraiseModule,
       ],
       providers: [
         UsersSeeder,
@@ -54,6 +59,8 @@ describe('EventLog (E2E)', () => {
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
       }),
     );
     app.useGlobalFilters(new ServiceExceptionFilter());

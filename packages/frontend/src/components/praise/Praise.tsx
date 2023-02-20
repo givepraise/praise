@@ -33,7 +33,7 @@ interface Props {
   usePseudonyms?: boolean;
   className?: string;
   dismissed?: boolean;
-  shortDuplicatePraiseId?: string;
+  shortDuplicatePraise?: string;
   bigGiverAvatar?: boolean;
   showScore?: boolean;
 }
@@ -46,7 +46,7 @@ export const Praise = ({
   usePseudonyms = false,
   className = '',
   dismissed = false,
-  shortDuplicatePraiseId = undefined,
+  shortDuplicatePraise = undefined,
   bigGiverAvatar = true,
   showScore = true,
 }: Props): JSX.Element | null => {
@@ -164,9 +164,9 @@ export const Praise = ({
                 onClose={(): void => void quantify(praise._id, 0, false, null)}
               />
             )}
-            {shortDuplicatePraiseId && (
+            {shortDuplicatePraise && (
               <InlineLabelClosable
-                text={`Duplicate of: #${shortDuplicatePraiseId}`}
+                text={`Duplicate of: #${shortDuplicatePraise}`}
                 className="bg-warm-gray-700"
                 onClose={(): void => void quantify(praise._id, 0, false, null)}
               />
@@ -177,7 +177,7 @@ export const Praise = ({
               }}
               className={classNames(
                 dismissed ? 'line-through' : '',
-                shortDuplicatePraiseId ? 'text-warm-gray-400' : '',
+                shortDuplicatePraise ? 'text-warm-gray-400' : '',
                 'break-words'
               )}
             ></span>

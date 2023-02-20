@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
+import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
@@ -17,6 +17,7 @@ import { EventLogModule } from '@/event-log/event-log.module';
 import { runDbMigrations } from '@/database/migrations';
 import { ApiKeySeeder } from '@/database/seeder/api-key.seeder';
 import { ApiKeyModule } from '@/api-key/api-key.module';
+import { User } from '@/users/schemas/users.schema';
 
 describe('AuthController (E2E)', () => {
   let app: INestApplication;
@@ -99,12 +100,13 @@ describe('AuthController (E2E)', () => {
         })
         .expect(201)
         .then((response) => {
-          expect(response.body).toHaveProperty('nonce');
-          expect(response.body.nonce).not.toBeNull();
-          expect(response.body.nonce).not.toBeUndefined();
-          expect(response.body.nonce).not.toEqual('');
-          expect(response.body).toHaveProperty('identityEthAddress');
-          expect(response.body.identityEthAddress).toEqual(wallet.address);
+          const rb = response.body;
+          expect(rb).toHaveProperty('nonce');
+          expect(rb.nonce).not.toBeNull();
+          expect(rb.nonce).not.toBeUndefined();
+          expect(rb.nonce).not.toEqual('');
+          expect(rb).toHaveProperty('identityEthAddress');
+          expect(rb.identityEthAddress).toEqual(wallet.address);
         });
     });
 
@@ -123,12 +125,13 @@ describe('AuthController (E2E)', () => {
         })
         .expect(201)
         .then((response) => {
-          expect(response.body).toHaveProperty('nonce');
-          expect(response.body.nonce).not.toBeNull();
-          expect(response.body.nonce).not.toBeUndefined();
-          expect(response.body.nonce).not.toEqual('');
-          expect(response.body).toHaveProperty('identityEthAddress');
-          expect(response.body.identityEthAddress).toEqual(wallet.address);
+          const rb = response.body;
+          expect(rb).toHaveProperty('nonce');
+          expect(rb.nonce).not.toBeNull();
+          expect(rb.nonce).not.toBeUndefined();
+          expect(rb.nonce).not.toEqual('');
+          expect(rb).toHaveProperty('identityEthAddress');
+          expect(rb.identityEthAddress).toEqual(wallet.address);
         });
     });
   });

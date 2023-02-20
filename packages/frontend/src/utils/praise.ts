@@ -8,7 +8,7 @@ export const findPraiseQuantification = (
   return praise.quantifications.find((q) => q.quantifier === userId);
 };
 
-export const shortenDuplicatePraiseId = (
+export const shortenDuplicatePraise = (
   praise: PraiseDto,
   userId: string
 ): string => {

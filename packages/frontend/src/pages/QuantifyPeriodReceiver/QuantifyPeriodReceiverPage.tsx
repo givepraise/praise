@@ -71,7 +71,7 @@ const PeriodMessage = (): JSX.Element | null => {
         Items left to quantify:{' '}
         {quantifierReceiverData.count - quantifierReceiverData.done === 0 ? (
           <>
-            0<DoneLabel />
+            <DoneLabel />
           </>
         ) : (
           quantifierReceiverData.count - quantifierReceiverData.done

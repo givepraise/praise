@@ -6,7 +6,7 @@ import { Receiver } from '@/praise/interfaces/receiver.interface';
 import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 import { SettingsService } from '@/settings/settings.service';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { User } from '@/users/schemas/users.schema';
 import { Injectable } from '@nestjs/common';
@@ -25,7 +25,7 @@ import { AssignmentsDto } from '../dto/assignments.dto';
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
 import { PeriodDetailsDto } from '../dto/period-details.dto';
 import { ReplaceQuantifierInputDto } from '../dto/replace-quantifier-input.dto';
-import { ReplaceQuantifierResponseDto } from '../dto/replace-quantifier-reponse.dto';
+import { ReplaceQuantifierResponseDto } from '../dto/replace-quantifier-response.dto';
 import { VerifyQuantifierPoolSizeDto } from '../dto/verify-quantifiers-pool-size.dto';
 import { PeriodStatusType } from '../enums/status-type.enum';
 import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interface';
@@ -60,11 +60,12 @@ export class PeriodAssignmentsService {
   ): Promise<VerifyQuantifierPoolSizeDto> => {
     const period = await this.periodsService.findOneById(_id);
 
-    const PRAISE_QUANTIFIERS_ASSIGN_EVENLY =
+    const PRAISE_QUANTIFIERS_ASSIGN_EVENLY: boolean = JSON.parse(
       (await this.settingsService.settingValue(
         'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
         period._id,
-      )) as boolean;
+      )) as string,
+    );
 
     const quantifierPoolSize = await this.userModel.count({
       roles: AuthRole.QUANTIFIER,
@@ -337,11 +338,12 @@ export class PeriodAssignmentsService {
   ): Promise<AssignmentsDto> => {
     const period = await this.periodsService.findOneById(_id);
 
-    const PRAISE_QUANTIFIERS_ASSIGN_EVENLY =
+    const PRAISE_QUANTIFIERS_ASSIGN_EVENLY: boolean = JSON.parse(
       (await this.settingsService.settingValue(
         'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
         period._id,
-      )) as boolean;
+      )) as string,
+    );
 
     const PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER =
       (await this.settingsService.settingValue(

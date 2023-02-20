@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import {
   Query,
   Body,
@@ -7,29 +8,42 @@ import {
   Patch,
   Post,
   SerializeOptions,
-  UseGuards,
   UseInterceptors,
+  Res,
+  StreamableFile,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiProduces,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { PeriodsService } from './services/periods.service';
 import { Period } from './schemas/periods.schema';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
-import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
 import { PeriodPaginatedResponseDto } from './dto/period-paginated-response.dto';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { CreatePeriodInputDto } from './dto/create-period-input.dto';
 import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
 import { VerifyQuantifierPoolSizeDto } from './dto/verify-quantifiers-pool-size.dto';
 import { PeriodDetailsDto } from './dto/period-details.dto';
 import { ReplaceQuantifierInputDto } from './dto/replace-quantifier-input.dto';
-import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-reponse.dto';
+import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-response.dto';
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
+import { Response } from 'express';
+import { allExportsDirPath } from '@/shared/fs.shared';
+import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
+import { exportContentType } from '@/shared/export.shared';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -43,6 +57,56 @@ export class PeriodsController {
     private readonly periodsService: PeriodsService,
     private readonly periodAssignmentsService: PeriodAssignmentsService,
   ) {}
+
+  @Get('export')
+  @ApiOperation({ summary: 'Export periods document to json or csv' })
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @ApiProduces('application/octet-stream')
+  @ApiProduces('application/json')
+  @Permissions(Permission.PeriodExport)
+  async export(
+    @Query() options: ExportInputFormatOnlyDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<StreamableFile> {
+    const format = options.format || 'csv';
+
+    // Root path for all exports
+    const rootPath = `${allExportsDirPath}/periods`;
+
+    // Directory level 1 is the latest periods id
+    const dirLevel1 = (await this.periodsService.findLatest())._id.toString();
+
+    const dirPath = `${rootPath}/${dirLevel1}`;
+    const filePath = `${dirPath}/periods.${format}`;
+
+    if (!fs.existsSync(filePath)) {
+      // If cached export don't exist
+      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
+        // If the latest periods id folder doesn't exist,
+        // database hase been updated, clear all cached exports
+        fs.rmSync(rootPath, { recursive: true, force: true });
+      }
+
+      // Create directory for new export
+      fs.mkdirSync(dirPath, { recursive: true });
+
+      // Generate new export files
+      await this.periodsService.generateAllExports(dirPath);
+    }
+
+    res.set({
+      'Content-Type': exportContentType(format),
+      'Content-Disposition': `attachment; filename="periods.${format}"`,
+    });
+
+    const file = fs.createReadStream(filePath);
+    return new StreamableFile(file);
+  }
 
   @Get()
   @ApiOperation({ summary: 'List all periods' })

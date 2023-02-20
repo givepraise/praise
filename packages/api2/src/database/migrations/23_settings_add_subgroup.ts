@@ -1,4 +1,7 @@
 import { SettingModel } from '../schemas/settings/23_settings.schema';
+import { MigrationsContext } from '../interfaces/migration-context.interface';
+import { PeriodModel } from '../schemas/period/period.schema';
+import { PeriodSettingsModel } from '../schemas/periodsettings/23_periodsettings.schema';
 
 const settings = [
   {

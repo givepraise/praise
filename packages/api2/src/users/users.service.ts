@@ -1,11 +1,16 @@
+import * as fs from 'fs';
 import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
-import { User, UserDocument } from './schemas/users.schema';
+import {
+  User,
+  UserDocument,
+  UsersExportSqlSchema,
+} from './schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { UpdateUserInputDto } from './dto/update-user-input.dto';
 import { CreateUserInputDto } from './dto/create-user-input.dto';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
@@ -13,6 +18,14 @@ import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { Praise, PraiseDocument } from '@/praise/schemas/praise.schema';
 import { UserStatsDto } from './dto/user-stats.dto';
+import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
+import { Period } from '@/periods/schemas/periods.schema';
+import { PeriodsService } from '@/periods/services/periods.service';
+import { PraiseService } from '@/praise/services/praise.service';
+import {
+  generateParquetExport,
+  writeCsvAndJsonExports,
+} from '@/shared/export.shared';
 
 @Injectable()
 export class UsersService {
@@ -22,6 +35,8 @@ export class UsersService {
     @InjectModel(Praise.name)
     private praiseModel: Model<PraiseDocument>,
     private eventLogService: EventLogService,
+    private periodService: PeriodsService,
+    private praiseService: PraiseService,
   ) {}
 
   getModel(): Model<UserDocument> {
@@ -92,6 +107,19 @@ export class UsersService {
     return this.findOne({ identityEthAddress });
   }
 
+  /**
+   * Find the latest added user
+   */
+  async findLatest(): Promise<User> {
+    const user = await this.userModel
+      .find()
+      .limit(1)
+      .sort({ $natural: -1 })
+      .lean();
+    if (!user[0]) throw new ServiceException('User not found.');
+    return user[0];
+  }
+
   async addRole(
     _id: Types.ObjectId,
     roleChange: UpdateUserRoleInputDto,
@@ -141,21 +169,25 @@ export class UsersService {
     if (roleIndex === -1)
       throw new ServiceException(`User does not have role ${role}`);
 
-    //   // If user is currently assigned to the active quantification round, and role is QUANTIFIER throw error
-    //   const activePeriods: PeriodDocument[] = await findActivePeriods();
+    // If user is currently assigned to the active quantification round, and role is QUANTIFIER throw error
+    const activePeriods: Period[] =
+      await this.periodService.findActivePeriods();
 
-    //   if (role === AuthRole.QUANTIFIER && activePeriods.length > 0) {
-    //     const dateRanges: PeriodDateRange[] = await Promise.all(
-    //       activePeriods.map((period) => getPeriodDateRangeQuery(period))
-    //     );
-    //     const assignedPraiseCount = await countPraiseWithinDateRanges(dateRanges, {
-    //       'quantifications.quantifier': user._id,
-    //     });
-    //     if (assignedPraiseCount > 0)
-    //       throw new PraiseException(
-    //         'Cannot remove quantifier currently assigned to quantification period'
-    //       );
-    //   }
+    if (role === AuthRole.QUANTIFIER && activePeriods.length > 0) {
+      const dateRanges: PeriodDateRangeDto[] = await Promise.all(
+        activePeriods.map((period) =>
+          this.periodService.getPeriodDateRangeQuery(period),
+        ),
+      );
+      const assignedPraiseCount =
+        await this.praiseService.countPraiseWithinDateRanges(dateRanges, {
+          'quantifications.quantifier': _id,
+        });
+      if (assignedPraiseCount > 0)
+        throw new ServiceException(
+          'Cannot remove quantifier currently assigned to quantification period',
+        );
+    }
 
     userDocument.roles.splice(roleIndex, 1);
     const user = await userDocument.save();
@@ -215,4 +247,37 @@ export class UsersService {
     if (userAccount.platform === 'DISCORD') return userAccount.name;
     return null;
   };
+  /**
+   * Generates all export files - csv, json and parquet
+   */
+  async generateAllExports(path: string) {
+    const includeFields = [
+      '_id',
+      'username',
+      'identityEthAddress',
+      'rewardsEthAddress',
+      'roles',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    // Count the number of documents that matches query
+    const count = await this.userModel.countDocuments({});
+
+    // If there are no documents, create empty files and return
+    if (count === 0) {
+      fs.writeFileSync(`${path}/users.csv`, includeFields.join(','));
+      fs.writeFileSync(`${path}/users.json`, '[]');
+      return;
+    }
+
+    // Lookup the periods, create a cursor
+    const users = this.userModel.aggregate([]).cursor();
+
+    // Write the csv and json files
+    await writeCsvAndJsonExports('users', users, path, includeFields);
+
+    // Generate the parquet file
+    await generateParquetExport(path, 'users', UsersExportSqlSchema);
+  }
 }
