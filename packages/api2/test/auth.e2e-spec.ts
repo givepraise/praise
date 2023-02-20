@@ -17,7 +17,6 @@ import { EventLogModule } from '@/event-log/event-log.module';
 import { runDbMigrations } from '@/database/migrations';
 import { ApiKeySeeder } from '@/database/seeder/api-key.seeder';
 import { ApiKeyModule } from '@/api-key/api-key.module';
-import { User } from '@/users/schemas/users.schema';
 
 describe('AuthController (E2E)', () => {
   let app: INestApplication;

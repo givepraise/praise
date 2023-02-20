@@ -1,4 +1,3 @@
-import request from 'supertest';
 import {
   ConsoleLogger,
   INestApplication,
@@ -6,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
 import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
 import { UsersService } from '@/users/users.service';
@@ -25,7 +23,6 @@ import mongoose from 'mongoose';
 
 describe('UserAccountsController (E2E)', () => {
   let app: INestApplication;
-  let server: Server;
   let module: TestingModule;
   let usersSeeder: UsersSeeder;
   let usersService: UsersService;
@@ -45,7 +42,7 @@ describe('UserAccountsController (E2E)', () => {
       }),
     );
     app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
+    app.getHttpServer();
     await app.init();
     await runDbMigrations(app);
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);

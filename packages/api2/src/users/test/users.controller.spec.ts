@@ -60,7 +60,6 @@ describe('UsersController', () => {
 
   type UserRoleMap = keyof typeof AuthRole;
   describe('addRole', () => {
-    let user: User;
     beforeEach(async () => {
       jest.clearAllMocks();
     });
@@ -70,7 +69,7 @@ describe('UsersController', () => {
     };
 
     test('should call usersService', async () => {
-      user = await usersController.addRole(userStub._id, updateUserRoleDto);
+      usersController.addRole(userStub._id, updateUserRoleDto);
       expect(usersService.addRole).toBeCalledWith(
         userStub._id,
         updateUserRoleDto,
@@ -87,7 +86,6 @@ describe('UsersController', () => {
   });
 
   describe('removeRole', () => {
-    let user: User;
     beforeEach(async () => {
       jest.clearAllMocks();
     });
@@ -97,10 +95,7 @@ describe('UsersController', () => {
     };
 
     test('should call usersService', async () => {
-      const userT = await usersController.removeRole(
-        userStub._id,
-        updateUserRoleDto,
-      );
+      await usersController.removeRole(userStub._id, updateUserRoleDto);
       expect(usersService.removeRole).toBeCalledWith(
         userStub._id,
         updateUserRoleDto,

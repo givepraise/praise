@@ -11,7 +11,6 @@ import {
   UseInterceptors,
   Res,
   StreamableFile,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiOkResponse,

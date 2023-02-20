@@ -384,14 +384,16 @@ describe('Praise (E2E)', () => {
       const praise2 = p.find((x) => x._id.toString() === praise._id);
       expect(praise).toBeDefined();
       expect(praise2).toBeDefined();
-      expect(praise._id).toBe(praise2!._id.toString());
-      expect(praise.giver._id).toBe(praise2!.giver.toString());
-      expect(praise.receiver._id).toBe(praise2!.receiver.toString());
-      expect(praise.reason).toBe(praise2!.reason);
-      expect(praise.reasonRaw).toBe(praise2!.reasonRaw);
-      expect(praise.score).toBe(praise2!.score);
-      expect(praise.sourceId).toBe(praise2!.sourceId);
-      expect(praise.sourceName).toBe(praise2!.sourceName);
+      if (praise2) {
+        expect(praise._id).toBe(praise2._id.toString());
+        expect(praise.giver._id).toBe(praise2.giver.toString());
+        expect(praise.receiver._id).toBe(praise2.receiver.toString());
+        expect(praise.reason).toBe(praise2.reason);
+        expect(praise.reasonRaw).toBe(praise2.reasonRaw);
+        expect(praise.score).toBe(praise2.score);
+        expect(praise.sourceId).toBe(praise2.sourceId);
+        expect(praise.sourceName).toBe(praise2.sourceName);
+      }
 
       expect(praise).toBeProperlySerialized();
       expect(praise).toBeValidClass(Praise);

@@ -1,7 +1,6 @@
-import { MigrationsContext } from '../interfaces/migration-context.interface';
 import { UserModel } from '../schemas/user/30_user.schema';
 
-const up = async ({ context }: MigrationsContext): Promise<void> => {
+const up = async (): Promise<void> => {
   const users = await UserModel.find({});
 
   if (users.length === 0) return;

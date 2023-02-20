@@ -372,10 +372,12 @@ describe('Period (E2E)', () => {
       const period2 = p.find((x) => x._id.toString() === period._id);
       expect(period).toBeDefined();
       expect(period2).toBeDefined();
-      expect(period._id).toBe(period2!._id.toString());
-      expect(period.status).toBe(period2!.status);
-      expect(period.endDate).toBe(period2!.endDate.toISOString());
-      expect(period.name).toBe(period2!.name);
+      if (period2) {
+        expect(period._id).toBe(period2._id.toString());
+        expect(period.status).toBe(period2.status);
+        expect(period.endDate).toBe(period2.endDate.toISOString());
+        expect(period.name).toBe(period2.name);
+      }
 
       expect(period).toBeProperlySerialized();
       expect(period).toBeValidClass(Period);

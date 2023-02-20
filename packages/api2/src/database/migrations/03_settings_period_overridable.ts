@@ -1,32 +1,5 @@
-import { SettingGroup } from '../../settings/enums/setting-group.enum';
-import { PeriodModel } from '../schemas/period/period.schema';
 import { PeriodSettingsModel } from '../schemas/periodsettings/01_periodsettings.schema';
 import { SettingModel } from '../schemas/settings/01_settings.schema';
-
-const insertNewPeriodSettings = async (period: any): Promise<void> => {
-  let settings = await SettingModel.find({
-    group: SettingGroup.PERIOD_DEFAULT,
-  });
-  if (settings && !Array.isArray(settings)) settings = [settings];
-
-  const newPeriodSettings = settings.map((setting: any) => {
-    const settingObj = setting.toObject() as any;
-
-    return {
-      // copy original settings
-      ...settingObj,
-
-      // drop unused fields
-      _id: undefined,
-      __v: undefined,
-
-      // set period
-      period: period._id.toString(),
-    } as any;
-  });
-
-  await PeriodSettingsModel.insertMany(newPeriodSettings);
-};
 
 const up = async (): Promise<void> => {
   const overridableSettingKeys = [

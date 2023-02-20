@@ -1,11 +1,7 @@
 import { Type } from 'class-transformer';
 import { SchemaTypes, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import {
-  ApiProperty,
-  ApiPropertyOptional,
-  ApiResponseProperty,
-} from '@nestjs/swagger';
+import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { User } from '@/users/schemas/users.schema';
 import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 import { IsOptional, IsString } from 'class-validator';
