@@ -3,10 +3,8 @@ import {
   Get,
   Query,
   SerializeOptions,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-query.dto';
@@ -14,17 +12,16 @@ import { EventLogService } from './event-log.service';
 import { EventLog } from './schemas/event-log.schema';
 import { EventLogType } from './schemas/event-log-type.schema';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.dto';
 import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
+import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
 
 @Controller('event-log')
 @ApiTags('Event Log')
-@UseGuards(PermissionsGuard)
-@UseGuards(AuthGuard(['jwt', 'api-key']))
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
+@EnforceAuthAndPermissions()
 export class EventLogController {
   constructor(private eventLogService: EventLogService) {}
 
