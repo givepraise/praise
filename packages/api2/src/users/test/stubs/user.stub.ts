@@ -6,7 +6,7 @@ export const userStub: User = {
   username: 'test',
   identityEthAddress: '0x0000000000000000000000000000000000000000',
   rewardsEthAddress: '0x0000000000000000000000000000000000000000',
-  roles: ['user'],
+  roles: ['USER'],
   accounts: [],
   nonce: 'nonce',
   createdAt: new Date(),

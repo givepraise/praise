@@ -36,4 +36,5 @@ lerna-debug.log*
 
 .env
 
-_exports
+# Cache folder for exports
+exports

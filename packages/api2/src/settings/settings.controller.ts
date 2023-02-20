@@ -5,7 +5,6 @@ import {
   Param,
   Patch,
   SerializeOptions,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
@@ -16,10 +15,9 @@ import { Setting } from './schemas/settings.schema';
 import { SettingsService } from './settings.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
-import { AuthGuard } from '@nestjs/passport';
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
+import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
 
 @Controller('settings')
 @ApiTags('Settings')
@@ -27,8 +25,7 @@ import { PermissionsGuard } from '@/auth/guards/permissions.guard';
   excludePrefixes: ['__'],
 })
 @UseInterceptors(MongooseClassSerializerInterceptor(Setting))
-@UseGuards(PermissionsGuard)
-@UseGuards(AuthGuard(['jwt', 'api-key']))
+@EnforceAuthAndPermissions()
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 

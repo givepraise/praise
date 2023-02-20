@@ -19,12 +19,12 @@ services:
       - .env
     build:
       context: ./
-      dockerfile: ./packages/api/Dockerfile
+      dockerfile: ./packages/api2/Dockerfile
     restart: always
     ports:
       - $API_PORT:$API_PORT
     volumes:
-      - './packages/api/uploads/:/usr/src/uploads/'      
+      - './packages/api2/uploads/:/usr/src/uploads/'      
     links:
       - mongodb
 
