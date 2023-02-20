@@ -155,12 +155,11 @@ describe('AuthController (E2E)', () => {
     /**
      *
      */
-    test.only('401 when submitting identityEthAddress that does not exist', async () => {
-      const a = await request(server)
+    test('401 when submitting identityEthAddress that does not exist', async () => {
+      await request(server)
         .post('/auth/eth-signature/login')
-        .send({ identityEthAddress: 'invalid', signature: 'any' });
-      //.expect(401);
-      console.log(a);
+        .send({ identityEthAddress: 'invalid', signature: 'any' })
+        .expect(401);
     });
 
     /**
