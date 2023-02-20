@@ -47,7 +47,6 @@ import { User } from '@/users/schemas/users.schema';
 import { Setting } from '@/settings/schemas/settings.schema';
 import { SettingsService } from '@/settings/settings.service';
 import { faker } from '@faker-js/faker';
-import { seedUser } from '../../api/src/database/seeder/entities';
 
 class LoggedInUser {
   accessToken: string;
