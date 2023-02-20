@@ -37,4 +37,6 @@ export enum Permission {
   // Period Settings
   PeriodSettingsView = 'periodSettings:view',
   PeriodSettingsManage = 'periodSettings:manage',
+  PraiseCreate = 'praise:create',
+  PraiseForward = 'praise:forward',
 }
