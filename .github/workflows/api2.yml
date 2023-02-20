@@ -17,6 +17,8 @@ jobs:
       - run: yarn install
       - run: yarn workspace api2 lint
       - run: yarn workspace api2 build
+      - run: yarn workspace api2 test:debug
+      - run: yarn workspace api2 test:e2e
       - run: echo "${{secrets.ROOT_ENV_TESTING }}" > .env
       - run: echo "${{secrets.API_ENV_TESTING }}" > packages/api2/.env
       - run: echo "${{secrets.DISCORDBOT_ENV_TESTING }}" > packages/discord-bot/.env
