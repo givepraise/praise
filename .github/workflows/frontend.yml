@@ -15,6 +15,5 @@ jobs:
           node-version: '18.14.0'
           cache: 'yarn'
       - run: yarn install
-      - run: yarn workspace api2 build
       - run: yarn workspace frontend lint
       - run: yarn workspace frontend build
