@@ -72,9 +72,7 @@ describe('Praise (E2E)', () => {
   let quantificationsService: QuantificationsService;
   let userAccountsService: UserAccountsService;
   let userAccountsSeeder: UserAccountsSeeder;
-  let adminUser: User;
   let adminUserAccessToken: string;
-  let botUser: User;
   let botUserAccessToken: string;
 
   const users: LoggedInUser[] = [];
@@ -165,7 +163,7 @@ describe('Praise (E2E)', () => {
 
     // Seed and login admin user
     const wallet = Wallet.createRandom();
-    adminUser = await usersSeeder.seedUser({
+    await usersSeeder.seedUser({
       identityEthAddress: wallet.address,
       rewardsAddress: wallet.address,
       roles: [AuthRole.ADMIN],
@@ -176,7 +174,7 @@ describe('Praise (E2E)', () => {
 
     // Seed and login bot user
     const botWallet = Wallet.createRandom();
-    const botUser = await usersSeeder.seedUser({
+    await usersSeeder.seedUser({
       identityEthAddress: botWallet.address,
       rewardsAddress: botWallet.address,
       roles: [AuthRole.DISCORD_BOT],
