@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import {
   Query,
   Body,
@@ -9,16 +10,24 @@ import {
   SerializeOptions,
   UseInterceptors,
   Res,
+  StreamableFile,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiProduces,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { PeriodsService } from './services/periods.service';
 import { Period } from './schemas/periods.schema';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
-import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
 import { PeriodPaginatedResponseDto } from './dto/period-paginated-response.dto';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { CreatePeriodInputDto } from './dto/create-period-input.dto';
@@ -30,16 +39,17 @@ import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-response.
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Response } from 'express';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
+import { allExportsDirPath } from '@/shared/fs.shared';
+import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
+import { exportContentType } from '@/shared/export.shared';
+import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
 
 @Controller('periods')
 @ApiTags('Periods')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseGuards(PermissionsGuard)
-@UseGuards(JwtAuthGuard)
+@EnforceAuthAndPermissions()
 export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,
@@ -48,26 +58,52 @@ export class PeriodsController {
 
   @Get('export')
   @ApiOperation({ summary: 'Export periods document to json or csv' })
-  @ApiResponse({
-    status: 200,
-    description: 'Periods Export',
-    type: [Period],
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
   })
+  @ApiProduces('application/octet-stream')
+  @ApiProduces('application/json')
   @Permissions(Permission.PeriodExport)
-  @ApiParam({ name: 'format', enum: ['json', 'csv'], required: true })
   async export(
-    @Query('format') format: string,
+    @Query() options: ExportInputFormatOnlyDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<Period[] | undefined> {
-    const periods = await this.periodsService.export(format);
+  ): Promise<StreamableFile> {
+    const format = options.format || 'csv';
 
-    if (format === 'json') return periods as Period[];
+    // Root path for all exports
+    const rootPath = `${allExportsDirPath}/periods`;
+
+    // Directory level 1 is the latest periods id
+    const dirLevel1 = (await this.periodsService.findLatest())._id.toString();
+
+    const dirPath = `${rootPath}/${dirLevel1}`;
+    const filePath = `${dirPath}/periods.${format}`;
+
+    if (!fs.existsSync(filePath)) {
+      // If cached export don't exist
+      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
+        // If the latest periods id folder doesn't exist,
+        // database hase been updated, clear all cached exports
+        fs.rmSync(rootPath, { recursive: true, force: true });
+      }
+
+      // Create directory for new export
+      fs.mkdirSync(dirPath, { recursive: true });
+
+      // Generate new export files
+      await this.periodsService.generateAllExports(dirPath);
+    }
 
     res.set({
-      'Content-Type': 'text/csv',
-      'Content-Disposition': 'attachment; filename="periods.csv"',
+      'Content-Type': exportContentType(format),
+      'Content-Disposition': `attachment; filename="periods.${format}"`,
     });
-    res.send(periods);
+
+    const file = fs.createReadStream(filePath);
+    return new StreamableFile(file);
   }
 
   @Get()

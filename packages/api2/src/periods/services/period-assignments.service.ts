@@ -6,7 +6,7 @@ import { Receiver } from '@/praise/interfaces/receiver.interface';
 import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 import { SettingsService } from '@/settings/settings.service';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { User } from '@/users/schemas/users.schema';
 import { Injectable } from '@nestjs/common';
@@ -60,11 +60,12 @@ export class PeriodAssignmentsService {
   ): Promise<VerifyQuantifierPoolSizeDto> => {
     const period = await this.periodsService.findOneById(_id);
 
-    const PRAISE_QUANTIFIERS_ASSIGN_EVENLY =
+    const PRAISE_QUANTIFIERS_ASSIGN_EVENLY: boolean = JSON.parse(
       (await this.settingsService.settingValue(
         'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
         period._id,
-      )) as boolean;
+      )) as string,
+    );
 
     const quantifierPoolSize = await this.userModel.count({
       roles: AuthRole.QUANTIFIER,
@@ -337,11 +338,12 @@ export class PeriodAssignmentsService {
   ): Promise<AssignmentsDto> => {
     const period = await this.periodsService.findOneById(_id);
 
-    const PRAISE_QUANTIFIERS_ASSIGN_EVENLY =
+    const PRAISE_QUANTIFIERS_ASSIGN_EVENLY: boolean = JSON.parse(
       (await this.settingsService.settingValue(
         'PRAISE_QUANTIFIERS_ASSIGN_EVENLY',
         period._id,
-      )) as boolean;
+      )) as string,
+    );
 
     const PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER =
       (await this.settingsService.settingValue(

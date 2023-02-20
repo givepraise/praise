@@ -1,34 +1,32 @@
+import * as fs from 'fs';
 import {
-  Body,
   Controller,
   Get,
-  Param,
-  Patch,
   Query,
   Res,
   SerializeOptions,
-  UseGuards,
-  UseInterceptors,
+  StreamableFile,
 } from '@nestjs/common';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
-import { AuthGuard } from '@nestjs/passport';
-import { Permission } from '@/auth/enums/permission.enum';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
-import { UserAccount } from './schemas/useraccounts.schema';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiProduces,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserAccountsService } from './useraccounts.service';
 import { Response } from 'express';
-
-@Controller('user_accounts')
+import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
+import { allExportsDirPath } from '@/shared/fs.shared';
+import { exportContentType } from '@/shared/export.shared';
+import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
+import { Permission } from '@/auth/enums/permission.enum';
+import { Permissions } from '@/auth/decorators/permissions.decorator';
+@Controller('useraccounts')
 @ApiTags('UserAccounts')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseInterceptors(MongooseClassSerializerInterceptor(UserAccount))
-@UseGuards(PermissionsGuard)
-@UseGuards(AuthGuard(['jwt', 'api-key']))
+@EnforceAuthAndPermissions()
 export class UserAccountsController {
   constructor(private readonly userAccountsService: UserAccountsService) {}
 
@@ -36,25 +34,53 @@ export class UserAccountsController {
   @ApiOperation({
     summary: 'Exports UserAccounts document to json or csv.',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'UserAccounts export',
-    type: [UserAccount],
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
   })
+  @ApiProduces('application/octet-stream')
+  @ApiProduces('application/json')
   @Permissions(Permission.UserAccountsExport)
-  @ApiParam({ name: 'format', enum: ['json', 'csv'], required: true })
   async export(
-    @Query('format') format: string,
+    @Query() options: ExportInputFormatOnlyDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<UserAccount[] | undefined> {
-    const userAccounts = await this.userAccountsService.export(format);
+  ): Promise<StreamableFile> {
+    const format = options.format || 'csv';
 
-    if (format === 'json') return userAccounts as UserAccount[];
+    // Root path for all exports
+    const rootPath = `${allExportsDirPath}/useraccounts`;
+
+    // Directory level 1 is the latest useraccounts id
+    const dirLevel1 = (
+      await this.userAccountsService.findLatest()
+    )._id.toString();
+
+    const dirPath = `${rootPath}/${dirLevel1}`;
+    const filePath = `${dirPath}/useraccounts.${format}`;
+
+    if (!fs.existsSync(filePath)) {
+      // If cached export don't exist
+      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
+        // If the latest useraccounts id folder doesn't exist,
+        // database hase been updated, clear all cached exports
+        fs.rmSync(rootPath, { recursive: true, force: true });
+      }
+
+      // Create directory for new export
+      fs.mkdirSync(dirPath, { recursive: true });
+
+      // Generate new export files
+      await this.userAccountsService.generateAllExports(dirPath);
+    }
 
     res.set({
-      'Content-Type': 'text/csv',
-      'Content-Disposition': 'attachment; filename="useraccounts.csv"',
+      'Content-Type': exportContentType(format),
+      'Content-Disposition': `attachment; filename="useraccounts.${format}"`,
     });
-    res.send(userAccounts);
+
+    const file = fs.createReadStream(filePath);
+    return new StreamableFile(file);
   }
 }

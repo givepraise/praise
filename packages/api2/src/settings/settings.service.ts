@@ -10,7 +10,7 @@ import { ExportTransformer } from '@/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { UtilsProvider } from '@/utils/utils.provider';
 import { UploadedFile } from 'express-fileupload';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { RequestContext } from 'nestjs-request-context';
@@ -213,7 +213,7 @@ export class SettingsService {
   > {
     let setting;
     if (!periodId) {
-      const setting = await this.settingsModel
+      setting = await this.settingsModel
         .findOne({
           key,
         })

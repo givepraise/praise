@@ -1,7 +1,7 @@
-import { MigrationsContext } from '../interfaces/migration-context.interface';
-import { PraiseModel } from '../schemas/praise/28_praise_schema';
+import { Types } from 'mongoose';
+import { PraiseModel } from '../schemas/praise/27_praise_schema';
 
-const up = async ({ context }: MigrationsContext): Promise<void> => {
+const up = async (): Promise<void> => {
   const praises = await PraiseModel.find();
 
   if (praises.length === 0) return;
@@ -9,7 +9,7 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
   const updates = await Promise.all(
     praises.map(async (p: any) => ({
       updateOne: {
-        filter: { _id: p._id },
+        filter: { _id: new Types.ObjectId(p._id) },
         update: {
           $set: {
             reasonRaw: p.reason,
@@ -17,7 +17,6 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
           },
           $unset: { reasonRealized: 1 },
         },
-        upsert: true,
       },
     })) as any,
   );

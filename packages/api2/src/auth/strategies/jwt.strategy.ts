@@ -10,7 +10,7 @@ import { Types } from 'mongoose';
 /**
  * Passport strategy for authenticating users using JWT.
  */
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private readonly usersService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

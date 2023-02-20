@@ -1,4 +1,4 @@
-import { ExposeId } from '@/shared/expose-id.decorator';
+import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { ApiResponseProperty, PickType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';

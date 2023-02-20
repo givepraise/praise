@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
+import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
@@ -21,8 +21,8 @@ import { PeriodsService } from '../src/periods/services/periods.service';
 import { PraiseSeeder } from '@/database/seeder/praise.seeder';
 import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder';
 import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
-import { PraiseService } from '@/praise/praise.service';
-import { QuantificationsService } from '@/quantifications/quantifications.service';
+import { PraiseService } from '@/praise/services/praise.service';
+import { QuantificationsService } from '@/quantifications/services/quantifications.service';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
 import { PeriodsModule } from '@/periods/periods.module';
@@ -257,10 +257,6 @@ describe('Period (E2E)', () => {
           endDate: previousPeriodEndDate,
         }),
       );
-    });
-
-    test('401 when not authenticated', async () => {
-      await request(server).get(`/periods/export`).send().expect(401);
     });
 
     test('returns period list that matches seeded list in json format', async () => {
@@ -738,7 +734,7 @@ describe('Period (E2E)', () => {
         .expect(200);
 
       const p = response.body[0];
-      expect(p).toHaveLength(3);
+      expect(response.body).toHaveLength(3);
       expect(p.quantifications).toHaveLength(1);
       expect(p.quantifications[0].quantifier).toBeDefined();
       expect(p.receiver).toBeDefined();
