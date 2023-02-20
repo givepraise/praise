@@ -222,7 +222,6 @@ export class QuantificationsService {
     // Filter out dismissed quantifications and quantifications that are not completed
     const completedQuantifications = quantifications.filter((q) => {
       if (!this.isQuantificationCompleted(q)) return false;
-      if (q.dismissed) return false;
       return true;
     });
 

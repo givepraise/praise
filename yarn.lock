@@ -3337,7 +3337,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@faker-js/faker@npm:^7.2.0":
+"@faker-js/faker@npm:^7.2.0, @faker-js/faker@npm:^7.6.0":
   version: 7.6.0
   resolution: "@faker-js/faker@npm:7.6.0"
   checksum: 942af6221774e8c98a0eb6bc75265e05fb81a941170377666c3439aab9495dd321d6beedc5406f07e6ad44262b3e43c20961f666d116ad150b78e7437dd1bb2b
@@ -6962,6 +6962,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api2@workspace:packages/api2"
   dependencies:
+    "@faker-js/faker": ^7.6.0
     "@json2csv/node": ^6.1.2
     "@nestjs/cli": ^9.0.0
     "@nestjs/common": ^9.0.0
@@ -6978,8 +6979,10 @@ __metadata:
     "@testing-library/jest-dom": ^5.16.5
     "@types/bcrypt": ^5.0.0
     "@types/express": ^4.17.14
+    "@types/express-fileupload": ^1.2.2
     "@types/jest": 28.1.8
     "@types/lodash": ^4.14.179
+    "@types/mime-types": ^2.1.1
     "@types/multer": ^1.4.7
     "@types/node": ^16.0.0
     "@types/passport-jwt": ^3.0.7
@@ -6987,23 +6990,30 @@ __metadata:
     "@types/supertest": ^2.0.11
     "@typescript-eslint/eslint-plugin": ^5.0.0
     "@typescript-eslint/parser": ^5.0.0
+    axios: ^1.3.2
     bcrypt: ^5.1.0
+    bin-packer: ^1.7.0
     class-transformer: ^0.5.1
     class-validator: ^0.13.2
-    duckdb: ^0.6.1
+    date-fns: ^2.29.3
+    duckdb: ^0.7.0
     env-cmd: ^10.1.0
     eslint: ^8.0.1
     eslint-config-prettier: ^8.3.0
     eslint-plugin-jest-extended: ^2.0.0
     eslint-plugin-prettier: ^4.0.0
     ethers: ^5.7.2
+    express-fileupload: ^1.3.1
+    greedy-number-partitioning: "https://github.com/mattyg/greedy-number-partitioning.git"
     jest: 28.1.3
     jest-extended: ^3.1.0
     lodash: ^4.17.21
+    mime-types: ^2.1.34
     mongoose: ^6.7.0
     mongoose-paginate-ts: ^1.2.7
     nestjs-request-context: ^2.1.0
     passport: ^0.6.0
+    passport-custom: ^1.1.1
     passport-jwt: ^4.0.0
     passport-local: ^1.0.0
     passport-unique-token: ^3.0.0
@@ -7011,6 +7021,7 @@ __metadata:
     reflect-metadata: ^0.1.13
     rimraf: ^3.0.2
     rxjs: ^7.2.0
+    ses-node-json-transform: ^0.1.0
     source-map-support: ^0.5.20
     supertest: ^6.1.3
     ts-jest: 28.0.8
@@ -7019,6 +7030,7 @@ __metadata:
     tsconfig-paths: 4.1.0
     tsconfig-paths-jest: ^0.0.1
     typescript: ^4.7.4
+    umzug: ^3.0.0
   languageName: unknown
   linkType: soft
 
@@ -7445,6 +7457,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:^1.3.2":
+  version: 1.3.2
+  resolution: "axios@npm:1.3.2"
+  dependencies:
+    follow-redirects: ^1.15.0
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: 9791af75a6df137b15ef45d13ad11eb357b3860d2496347ee18778db9d0abc2320362a4452f1e070e3160f1dbcc518fcefdc9e005be097e7db39acb22cf608e5
+  languageName: node
+  linkType: hard
+
 "axobject-query@npm:^3.1.1":
   version: 3.1.1
   resolution: "axobject-query@npm:3.1.1"
@@ -7774,7 +7797,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bin-packer@npm:^1.6.1":
+"bin-packer@npm:^1.6.1, bin-packer@npm:^1.7.0":
   version: 1.7.0
   resolution: "bin-packer@npm:1.7.0"
   checksum: 6438de3e86162beed8b91fccade87f06447a45a18ef57176671dfcae9e3ff928fdc56de3e516cb150f85df38bfc45881ec6c3ea8123e732fd4072750df6baaf8
@@ -9433,7 +9456,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.25.0, date-fns@npm:^2.28.0":
+"date-fns@npm:^2.25.0, date-fns@npm:^2.28.0, date-fns@npm:^2.29.3":
   version: 2.29.3
   resolution: "date-fns@npm:2.29.3"
   checksum: e01cf5b62af04e05dfff921bb9c9933310ed0e1ae9a81eb8653452e64dc841acf7f6e01e1a5ae5644d0337e9a7f936175fd2cb6819dc122fdd9c5e86c56be484
@@ -10110,14 +10133,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"duckdb@npm:^0.6.1":
-  version: 0.6.1
-  resolution: "duckdb@npm:0.6.1"
+"duckdb@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "duckdb@npm:0.7.0"
   dependencies:
     "@mapbox/node-pre-gyp": ^1.0.0
     node-addon-api: "*"
     node-gyp: ^9.3.0
-  checksum: f50443aa21d8eb4d23ce832d2069df7152359d8f205cb4054481ab769d4dec8f1851bd21530ce64955d0ceb2a0d583904435c5489542e971ecb6287071c98c0a
+  checksum: 23cf8372afcb607a6da20773c9eeae2382706ec751dde47def05efea73dcb37a56df8c5b0d4e5a245d85fbc33fc8d0a43f4e4ef5e49f2582071ddbbef09c3b5b
   languageName: node
   linkType: hard
 
@@ -11725,7 +11748,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.4, follow-redirects@npm:^1.14.9":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.4, follow-redirects@npm:^1.14.9, follow-redirects@npm:^1.15.0":
   version: 1.15.2
   resolution: "follow-redirects@npm:1.15.2"
   peerDependenciesMeta:
@@ -17003,6 +17026,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"passport-custom@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "passport-custom@npm:1.1.1"
+  dependencies:
+    passport-strategy: 1.x.x
+  checksum: 245b265491c83186002a19db1c812565bb95fd2a7b842f8e8de58f3e22d669f680178b623db6a4be22aecacecd75097b96fa06f35c2b35fe3ef71e9ec77a538d
+  languageName: node
+  linkType: hard
+
 "passport-jwt@npm:^4.0.0":
   version: 4.0.1
   resolution: "passport-jwt@npm:4.0.1"
@@ -18308,6 +18340,13 @@ __metadata:
     forwarded: 0.2.0
     ipaddr.js: 1.9.1
   checksum: 29c6990ce9364648255454842f06f8c46fcd124d3e6d7c5066df44662de63cdc0bad032e9bf5a3d653ff72141cc7b6019873d685708ac8210c30458ad99f2b74
+  languageName: node
+  linkType: hard
+
+"proxy-from-env@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "proxy-from-env@npm:1.1.0"
+  checksum: ed7fcc2ba0a33404958e34d95d18638249a68c430e30fcb6c478497d72739ba64ce9810a24f53a7d921d0c065e5b78e3822759800698167256b04659366ca4d4
   languageName: node
   linkType: hard
 

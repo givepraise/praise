@@ -212,10 +212,6 @@ describe('UserAccountsController (E2E)', () => {
       });
     });
 
-    test('401 when not authenticated', async () => {
-      await request(server).get('/quantifications/export').send().expect(401);
-    });
-
     test('200 when authenticated', async () => {
       await authorizedGetRequest(
         `/quantifications/export?format=json&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,

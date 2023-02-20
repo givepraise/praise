@@ -859,14 +859,15 @@ export const useReplaceQuantifier = (
 
         if (isResponseOk(response)) {
           const periodReplaceQuantifierDto = response.data;
+
           set(
             SinglePeriod(periodReplaceQuantifierDto.period._id),
             periodReplaceQuantifierDto.period
           );
-          // periodReplaceQuantifierDto.praises.forEach((praise) => {
-          // TODO: UNCOMMENT!
-          //set(SinglePraise(praise._id), praise);
-          // });
+
+          periodReplaceQuantifierDto.praises.forEach((praise) => {
+            set(SinglePraise(praise._id), praise);
+          });
         }
 
         return response;

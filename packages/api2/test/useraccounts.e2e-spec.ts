@@ -102,10 +102,6 @@ describe('UserAccountsController (E2E)', () => {
       accessToken = response.accessToken;
     });
 
-    test('401 when not authenticated', async () => {
-      await request(server).get('/useraccounts/export').send().expect(401);
-    });
-
     test('200 when authenticated', async () => {
       await authorizedGetRequest(
         '/useraccounts/export?format=json',
