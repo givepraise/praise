@@ -788,7 +788,25 @@ describe('Period (E2E)', () => {
       const dayInPeriod = new Date(period.endDate.getTime());
       dayInPeriod.setDate(period.endDate.getDate() - 1);
 
-      const quantifier = await userAccountsSeeder.seedUserAccount();
+      const wallet1 = Wallet.createRandom();
+      const quantifierUser1 = await usersSeeder.seedUser({
+        identityEthAddress: wallet1.address,
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const quantifier1 = await userAccountsSeeder.seedUserAccount({
+        user: quantifierUser1._id,
+      });
+
+      const wallet2 = Wallet.createRandom();
+      const quantifierUser2 = await usersSeeder.seedUser({
+        identityEthAddress: wallet2.address,
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      await userAccountsSeeder.seedUserAccount({
+        user: quantifierUser2._id,
+      });
 
       const praise = await praiseSeeder.seedPraise({
         receiver: receiver1._id,
@@ -797,7 +815,7 @@ describe('Period (E2E)', () => {
 
       await quantificationsSeeder.seedQuantification({
         praise: praise._id,
-        quantifier: quantifier._id,
+        quantifier: quantifier1._id,
       });
 
       await praiseSeeder.seedPraise({
@@ -852,7 +870,7 @@ describe('Period (E2E)', () => {
       await periodSettingsSeeder.seedPeriodSettings({
         period: period._id,
         setting: PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER._id,
-        value: '2',
+        value: 2,
       });
 
       await periodSettingsSeeder.seedPeriodSettings({
@@ -882,6 +900,7 @@ describe('Period (E2E)', () => {
         .expect(200);
 
       const p = response.body;
+
       expect(p._id).toEqual(period._id.toString());
       expect(p.status).toEqual('QUANTIFY');
 
@@ -895,7 +914,7 @@ describe('Period (E2E)', () => {
       expect(p.receivers[2]._id).toEqual(receiversSorted[2]._id.toString());
       expect(p.receivers[2].praiseCount).toEqual(4);
 
-      expect(p.quantifiers).toHaveLength(4);
+      expect(p.quantifiers).toHaveLength(6);
 
       expect(p.quantifiers[0].finishedCount).toEqual(0);
       expect(p.quantifiers[1].finishedCount).toEqual(0);
