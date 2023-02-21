@@ -22,5 +22,6 @@ export enum Permission {
   PeriodSettingsManage = 'periodSettings:manage',
 
   CommunitiesFind = 'communities:find',
+  CommunitiesCreate = 'communities:create',
 
 }

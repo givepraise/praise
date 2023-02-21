@@ -88,10 +88,14 @@ export class CommunityService {
     return this.findOneById(communityDocument._id);
   }
 
-  async create(communityDto: CreateCommunityInputDto): Promise<User> {
-    const createdUser = new this.communityModel(communityDto);
-    await createdUser.save();
-    return createdUser.toObject();
+  async create(creator: string, communityDto: CreateCommunityInputDto): Promise<Community> {
+    const community = new this.communityModel({
+      ...communityDto,
+      isPublic: true,
+      creator,
+    });
+    await community.save();
+    return community.toObject();
   }
 
 }

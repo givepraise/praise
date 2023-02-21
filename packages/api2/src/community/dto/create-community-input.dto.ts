@@ -1,10 +1,5 @@
-import { Types } from 'mongoose';
-import { CommunityStatus } from '../../../dist/src/community/enums/community-status';
+import { Community } from '../schemas/community.schema';
+import { PickType } from '@nestjs/swagger';
 
-export class CreateCommunityInputDto {
-  user?: Types.ObjectId;
-  userAccount?: Types.ObjectId;
-  periodId?: Types.ObjectId;
-  typeKey: CommunityStatus;
-  description: string;
-}
+export class CreateCommunityInputDto extends PickType(Community,
+  ['name', 'creator', 'owners', 'hostname']) {}

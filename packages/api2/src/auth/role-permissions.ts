@@ -19,6 +19,7 @@ const PERMISSIONS_USER = [
   Permission.QuantificationsExport,
   Permission.PraiseExport,
   Permission.UserAccountsExport,
+  Permission.CommunitiesCreate
 ];
 
 /**
@@ -47,6 +48,11 @@ const PERMISSIONS_ADMIN = [
   Permission.PeriodAssign,
 ];
 
+const PERMISSIONS_SUPER_ADMIN = [
+  ...PERMISSIONS_ADMIN,
+  Permission.CommunitiesFind,
+];
+
 /**
  * API keys can be used to access the API. They can be created with different
  * permissions.
@@ -71,6 +77,7 @@ export const RolePermissions: { [key: string]: string[] } = {
   FORWARDER: PERMISSIONS_FORWARDER,
   QUANTIFIER: PERMISSIONS_QUANTIFIER,
   ADMIN: PERMISSIONS_ADMIN,
+  SUPER_ADMIN: PERMISSIONS_SUPER_ADMIN,
   APIKEY_READ: PERMISSION_APIKEY_READ,
   APIKEY_READWRITE: PERMISSION_APIKEY_READWRITE,
 };

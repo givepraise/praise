@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Document, model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-import { IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsString, ValidateNested } from 'class-validator';
 import { CommunityBotStatus } from '../enums/community-bot-status';
 
 export type CommunityDocument = Community & Document;
@@ -32,6 +32,11 @@ export class Community {
   @Prop({ type: String, required: true })
   name: string;
 
+  @ApiProperty({ example: '0x123..', required: true })
+  @IsString()
+  @Prop({ type: String, required: true })
+  creator: string;
+
   @ApiProperty({ example: '[0x123.., 0x345..]', required: true })
   @IsString()
   @Prop({ type: [String], required: true })
@@ -46,6 +51,13 @@ export class Community {
   @IsString()
   @Prop({ type: String })
   discordLinkNonce ?: string;
+
+
+  @ApiProperty({ example: true })
+  @IsBoolean()
+  @Prop({ type: Boolean, default: true })
+  // In this step all communities should be public, but we may allow premium communities be private
+  isPublic : boolean;
 
   @ApiProperty({ example: 'NOT_SET | PENDING | ACTIVE | DEACTIVE' })
   @IsString()
