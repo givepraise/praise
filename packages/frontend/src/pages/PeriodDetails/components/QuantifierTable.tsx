@@ -36,14 +36,20 @@ const QuantifierTable = (): JSX.Element => {
 
   const { replaceQuantifier } = useReplaceQuantifier(periodId);
 
-  const handleReplaceQuantifier = (newQuantifierUserId: string): void => {
+  const handleReplaceQuantifier = async (
+    newQuantifierUserId: string
+  ): Promise<void> => {
     if (!quantifierToReplace) return;
-    const response = replaceQuantifier(
+    toast.loading('Replacing quantifier...');
+
+    const response = await replaceQuantifier(
       quantifierToReplace?._id,
       newQuantifierUserId
     );
+
     if (isResponseOk(response)) {
       toast.success('Replaced quantifier and reset their scores');
+      setTimeout(() => history.go(0), 2000);
     }
   };
 
@@ -201,7 +207,9 @@ const QuantifierTable = (): JSX.Element => {
           setIsReplaceQuantifierDialogOpen(false);
           setQuantifierToReplace(undefined);
         }}
-        onConfirm={handleReplaceQuantifier}
+        onConfirm={async (newQuantifierUserId): Promise<void> =>
+          await handleReplaceQuantifier(newQuantifierUserId)
+        }
       />
     </>
   );

@@ -4,7 +4,6 @@ import {
   IsNotEmpty,
   IsString,
   Validate,
-  ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
@@ -20,11 +19,11 @@ export type ApiKeyDocument = ApiKey & Document;
  */
 @ValidatorConstraint({ name: 'allowedApiKeyRole', async: false })
 export class AllowedApiKeyRole implements ValidatorConstraintInterface {
-  validate(role: string, args: ValidationArguments) {
+  validate(role: string) {
     return AuthRole.APIKEY_READWRITE === role || AuthRole.APIKEY_READ === role;
   }
 
-  defaultMessage(args: ValidationArguments) {
+  defaultMessage() {
     return 'Role ($value) is not allowed. Allowed roles: APIKEY_READWRITE, APIKEY_READ';
   }
 }

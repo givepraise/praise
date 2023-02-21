@@ -26,7 +26,7 @@ interface DatabaseConfig {
  * @returns {Promise<typeof mongoose>}
  */
 const connectDatabase = async (
-  configOverride: DatabaseConfig | {} = {},
+  configOverride?: DatabaseConfig,
 ): Promise<typeof mongoose> => {
   const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_HOST, MONGO_PORT, MONGO_DB } =
     process.env;
@@ -72,12 +72,13 @@ export const closeDatabaseConnection = async (): Promise<void> => {
  *
  * @returns {Umzug}
  */
-export const runDbMigrations = async (app: INestApplication): Promise<void> => {
-  const logger = new Logger();
-
+export const runDbMigrations = async (
+  app: INestApplication,
+  logger?: Logger,
+): Promise<void> => {
   try {
     const db = await connectDatabase();
-    logger.log('Connected to database');
+    logger && logger.log('Connected to database');
 
     const migrator = new Umzug({
       migrations: { glob: 'src/database/migrations/*.ts' },
@@ -96,15 +97,15 @@ export const runDbMigrations = async (app: INestApplication): Promise<void> => {
         utilsProvider: app.get(UtilsProvider),
       },
     });
-    logger.log('Migrator created');
+    logger && logger.log('Migrator created');
 
     require('ts-node/register');
     await migrator.up();
-    logger.log('Migrations run');
+    logger && logger.log('Migrations run');
 
     await closeDatabaseConnection();
-    logger.log('Database connection closed');
+    logger && logger.log('Database connection closed');
   } catch (error) {
-    logger.error(error);
+    logger && logger.error(error);
   }
 };

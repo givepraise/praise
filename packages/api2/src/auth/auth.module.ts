@@ -11,6 +11,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { EventLogModule } from '@/event-log/event-log.module';
 import { ApiKeyStrategy } from './strategies/api-key.strategy';
 import { ApiKeyModule } from '@/api-key/api-key.module';
+import { BypassStrategy } from './strategies/bypass.strategy';
+import { SettingsModule } from '@/settings/settings.module';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { ApiKeyModule } from '@/api-key/api-key.module';
     }),
     EventLogModule,
     ApiKeyModule,
+    SettingsModule,
   ],
   providers: [
     EthSignatureService,
@@ -30,6 +33,7 @@ import { ApiKeyModule } from '@/api-key/api-key.module';
     ApiKeyStrategy,
     UtilsProvider,
     ConstantsProvider,
+    BypassStrategy,
   ],
   controllers: [AuthController],
 })
