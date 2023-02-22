@@ -19,6 +19,8 @@ export enum Permission {
   PraiseView = 'praise:view',
   PraiseQuantify = 'praise:quantify',
   PraiseExport = 'praise:export',
+  PraiseCreate = 'praise:create',
+  PraiseForward = 'praise:forward',
 
   // Period
   PeriodView = 'period:view',
@@ -37,8 +39,6 @@ export enum Permission {
   // Period Settings
   PeriodSettingsView = 'periodSettings:view',
   PeriodSettingsManage = 'periodSettings:manage',
-  PraiseCreate = 'praise:create',
-  PraiseForward = 'praise:forward',
 
   // Community
   CommunitiesFind = 'communities:find',
