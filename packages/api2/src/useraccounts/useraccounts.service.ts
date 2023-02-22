@@ -7,7 +7,9 @@ import {
   UserAccountDocument,
   UserAccountsExportSqlSchema,
 } from './schemas/useraccounts.schema';
-import { UpdateUserAccountInputDto, UpdateUserAccountInputRequestDto } from './dto/update-user-account-input.dto';
+import {
+  UpdateUserAccountInputDto,
+} from './dto/update-user-account-input.dto';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import {
   generateParquetExport,
@@ -41,34 +43,34 @@ export class UserAccountsService {
     createUserAccountDto: CreateUserAccountDto,
   ): Promise<UserAccount> {
     const user = await this.userService.findOneById(
-      new Types.ObjectId(createUserAccountDto.userId)
+      new Types.ObjectId(createUserAccountDto.userId),
     );
 
     if (!user) throw new ServiceException('User not found.');
 
     const userAccount = new this.userAccountModel({
       ...createUserAccountDto,
-      user
+      user,
     });
     await userAccount.save();
 
-    // Add another migration? or is original migration run?
-    // this.eventLogService.logEvent({
-    //   typeKey: EventLogTypeKey.USER_ACCOUNT,
-    //   description: `Created UserAccount id: ${userAccount.accountId}`,
-    // });
+    this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `Created UserAccount id: ${userAccount.accountId}`,
+    });
 
     return userAccount;
   }
 
-  async updateUserAccount(
-    userAccountId: string,
-    updateUserAccountDto: UpdateUserAccountInputRequestDto
+  async updateByUserIdAndAccountId(
+    userId: Types.ObjectId,
+    accountId: string,
+    updateUserAccountDto: UpdateUserAccountInputDto,
   ): Promise<UserAccount> {
     const userAccount = await this.userAccountModel.findOneAndUpdate(
-      { accountId: userAccountId },
+      { user: userId, accountId },
       updateUserAccountDto,
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
 
     if (!userAccount) throw new ServiceException('UserAccount not found.');
@@ -92,12 +94,26 @@ export class UserAccountsService {
   ): Promise<UserAccount | null> {
     const userAccount = await this.userAccountModel
       .findOne({ userAccountId })
-      .select('_id user accountId name avatarId platform createdAt updatedAt')
       .populate('user')
       .lean();
     if (!userAccount) return null;
     return userAccount;
   }
+
+    /**
+   * Returns a user account by user account ID
+   */
+    async findOneByUserIdAndAccountId(
+      userId: Types.ObjectId,
+      accountId: string,
+    ): Promise<UserAccount | null> {
+      const userAccount = await this.userAccountModel
+        .findOne({ user: userId, accountId })
+        .populate('user')
+        .lean();
+      if (!userAccount) return null;
+      return userAccount;
+    }
 
   /**
    * Find the latest added user account
@@ -113,7 +129,7 @@ export class UserAccountsService {
   }
 
   /**
-   * Update a user account
+   * Update a user account by _id
    */
   async update(
     _id: Types.ObjectId,

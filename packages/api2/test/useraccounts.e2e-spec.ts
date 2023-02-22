@@ -6,7 +6,12 @@ import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filte
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { authorizedGetRequest, authorizedPostRequest, authorizedPutRequest, loginUser } from './test.common';
+import {
+  authorizedGetRequest,
+  authorizedPostRequest,
+  authorizedPutRequest,
+  loginUser,
+} from './test.common';
 import { User } from '@/users/schemas/users.schema';
 import { faker } from '@faker-js/faker';
 import { EventLogModule } from '@/event-log/event-log.module';
@@ -119,7 +124,7 @@ describe('UserAccountsController (E2E)', () => {
     });
   });
 
-  describe('PUT /api/useraccounts/:id', () => {
+  describe('PUT /api/useraccounts', () => {
     let wallet;
     let accessToken: string;
     const users: User[] = [];
@@ -160,14 +165,17 @@ describe('UserAccountsController (E2E)', () => {
     });
 
     test('401 when not authenticated', async () => {
-      await request(server).put(`/useraccounts/${userAccounts[0].accountId}`).send().expect(401);
+      await request(server)
+        .put(`/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`)
+        .send()
+        .expect(401);
     });
 
     test('200 and correct put body when authenticated', async () => {
       const accountName = faker.name.firstName();
       const avatarId = faker.internet.url();
       const response = await authorizedPutRequest(
-        `/useraccounts/${userAccounts[0].accountId}`,
+        `/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`,
         app,
         accessToken,
         {
@@ -178,7 +186,9 @@ describe('UserAccountsController (E2E)', () => {
       ).expect(200);
 
       expect(response.body).toBeDefined();
-      expect(response.body.accountId).toEqual(String(userAccounts[0].accountId));
+      expect(response.body.accountId).toEqual(
+        String(userAccounts[0].accountId),
+      );
       expect(response.body.name).toEqual(accountName);
       expect(response.body.platform).toEqual('DISCORD');
       expect(response.body.avatarId).toEqual(avatarId);
@@ -186,7 +196,7 @@ describe('UserAccountsController (E2E)', () => {
     });
   });
 
-  describe('GET /api/useraccounts/:id', () => {
+  describe('GET /api/useraccounts?id=xxxx&accountId=xxx', () => {
     let wallet;
     let accessToken: string;
     const users: User[] = [];
@@ -227,12 +237,15 @@ describe('UserAccountsController (E2E)', () => {
     });
 
     test('401 when not authenticated', async () => {
-      await request(server).get(`/useraccounts/${userAccounts[0].accountId}`).send().expect(401);
+      await request(server)
+        .get(`/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`)
+        .send()
+        .expect(401);
     });
 
     test('200 when authenticated', async () => {
       await authorizedGetRequest(
-        `/useraccounts/${userAccounts[0].accountId}`,
+        `/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`,
         app,
         accessToken,
       ).expect(200);
@@ -240,7 +253,7 @@ describe('UserAccountsController (E2E)', () => {
 
     test('returns the fetched user account by id', async () => {
       const response = await authorizedGetRequest(
-        `/useraccounts/${userAccounts[0].accountId}`,
+        `/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`,
         app,
         accessToken,
       ).expect(200);

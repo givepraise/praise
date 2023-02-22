@@ -21,7 +21,7 @@ const PERMISSIONS_USER = [
   Permission.UserAccountsExport,
   Permission.UserAccountsView,
   Permission.UserAccountsCreate,
-  Permission.UserAccountsUpdate
+  Permission.UserAccountsUpdate,
 ];
 
 /**

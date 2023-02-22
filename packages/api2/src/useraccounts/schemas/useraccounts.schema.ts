@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 import { SchemaTypes, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
@@ -56,6 +56,7 @@ export class UserAccount {
   @IsString()
   platform: string;
 
+  @Exclude({ toPlainOnly: true })
   @Prop({ select: false })
   activateToken: string;
 
