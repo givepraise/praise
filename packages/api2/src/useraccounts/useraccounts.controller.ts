@@ -28,9 +28,7 @@ import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { UserAccount } from './schemas/useraccounts.schema';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import { CreateUserAccountDto } from './dto/create-user-account-input-dto';
-import {
-  UpdateUserAccountInputDto,
-} from './dto/update-user-account-input.dto';
+import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 
@@ -71,12 +69,10 @@ export class UserAccountsController {
   @Permissions(Permission.UserAccountsView)
   async GetOne(
     @Query('id', ObjectIdPipe) id: Types.ObjectId,
-    @Query('accountId') accountId: string
+    @Query('accountId') accountId: string,
   ): Promise<UserAccount> {
-    const userAccount = await this.userAccountsService.findOneByUserIdAndAccountId(
-      id,
-      accountId,
-    );
+    const userAccount =
+      await this.userAccountsService.findOneByUserIdAndAccountId(id, accountId);
     if (!userAccount) throw new ServiceException('UserAccount not found.');
 
     return userAccount;

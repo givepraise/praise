@@ -7,9 +7,7 @@ import {
   UserAccountDocument,
   UserAccountsExportSqlSchema,
 } from './schemas/useraccounts.schema';
-import {
-  UpdateUserAccountInputDto,
-} from './dto/update-user-account-input.dto';
+import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import {
   generateParquetExport,
@@ -100,20 +98,20 @@ export class UserAccountsService {
     return userAccount;
   }
 
-    /**
+  /**
    * Returns a user account by user account ID
    */
-    async findOneByUserIdAndAccountId(
-      userId: Types.ObjectId,
-      accountId: string,
-    ): Promise<UserAccount | null> {
-      const userAccount = await this.userAccountModel
-        .findOne({ user: userId, accountId })
-        .populate('user')
-        .lean();
-      if (!userAccount) return null;
-      return userAccount;
-    }
+  async findOneByUserIdAndAccountId(
+    userId: Types.ObjectId,
+    accountId: string,
+  ): Promise<UserAccount | null> {
+    const userAccount = await this.userAccountModel
+      .findOne({ user: userId, accountId })
+      .populate('user')
+      .lean();
+    if (!userAccount) return null;
+    return userAccount;
+  }
 
   /**
    * Find the latest added user account

@@ -2,6 +2,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Wallet } from 'ethers';
+import request from 'supertest';
 import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
@@ -22,9 +23,11 @@ import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
 import mongoose from 'mongoose';
+import { Server } from 'http';
 
 describe('UserAccountsController (E2E)', () => {
   let app: INestApplication;
+  let server: Server;
   let module: TestingModule;
   let usersSeeder: UsersSeeder;
   let usersService: UsersService;
@@ -43,7 +46,7 @@ describe('UserAccountsController (E2E)', () => {
       }),
     );
     app.useGlobalFilters(new ServiceExceptionFilter());
-    app.getHttpServer();
+    server = app.getHttpServer();
     await app.init();
     await runDbMigrations(app);
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
@@ -166,7 +169,9 @@ describe('UserAccountsController (E2E)', () => {
 
     test('401 when not authenticated', async () => {
       await request(server)
-        .put(`/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`)
+        .put(
+          `/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`,
+        )
         .send()
         .expect(401);
     });
@@ -238,7 +243,9 @@ describe('UserAccountsController (E2E)', () => {
 
     test('401 when not authenticated', async () => {
       await request(server)
-        .get(`/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`)
+        .get(
+          `/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`,
+        )
         .send()
         .expect(401);
     });

@@ -1,5 +1,5 @@
-import { PickType } from "@nestjs/mapped-types";
-import { UserAccount } from "../schemas/useraccounts.schema";
+import { PickType } from '@nestjs/mapped-types';
+import { UserAccount } from '../schemas/useraccounts.schema';
 
 export class CreateUserAccountDto extends PickType(UserAccount, [
   'accountId',
@@ -9,4 +9,4 @@ export class CreateUserAccountDto extends PickType(UserAccount, [
   'activateToken',
 ]) {
   userId: string;
-};
+}
