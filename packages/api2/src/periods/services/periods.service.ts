@@ -200,6 +200,12 @@ export class PeriodsService {
     const period = await this.periodModel.findById(_id);
     if (!period) throw new ServiceException('Period not found');
 
+    // Check if the period has ended
+    const now = Date.now();
+    const periodEnd = new Date(period.endDate).getTime();
+    if (now > periodEnd)
+      throw new ServiceException('Can not close a period that has not ended');
+
     if (period.status === PeriodStatusType.CLOSED)
       throw new ServiceException('Period is already closed');
 

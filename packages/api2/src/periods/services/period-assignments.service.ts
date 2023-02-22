@@ -48,7 +48,7 @@ export class PeriodAssignmentsService {
     private settingsService: SettingsService,
     private eventLogService: EventLogService,
     private periodsService: PeriodsService,
-  ) {}
+  ) { }
 
   /**
    * Return quantifier pool size and needed quantifier pool size
@@ -101,6 +101,14 @@ export class PeriodAssignmentsService {
     _id: Types.ObjectId,
   ): Promise<PeriodDetailsDto> => {
     const period = await this.periodsService.findOneById(_id);
+
+    // Check if the period has ended
+    const now = Date.now();
+    const periodEnd = new Date(period.endDate).getTime();
+    if (now > periodEnd)
+      throw new ServiceException(
+        'Can not assign quantifiers for a period that has not ended',
+      );
 
     if (period.status !== 'OPEN')
       throw new ServiceException(
