@@ -5,7 +5,6 @@ const { Schema, model } = mongoose;
 export const SettingSchema = new Schema({
   key: { type: String, required: true },
   value: { type: String, required: false },
-  defaultValue: { type: String, required: false },
   type: {
     type: String,
     enum: [
