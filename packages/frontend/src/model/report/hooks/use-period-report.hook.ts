@@ -1,16 +1,17 @@
 import 'ses';
-import * as arrow from 'apache-arrow';
 import { Parser } from '@json2csv/plainjs';
-import { ExternalGet } from '@/model/axios';
 import { useDuckDbFiltered } from '@/model/duckdb/hooks/use-duckbd-filtered.hook';
 import { assertAllTablesLoaded } from '@/model/duckdb/utils/all-tables-loaded.util';
 import { AllPeriods } from '@/model/periods/periods';
-import { getPreviousPeriod } from '@/utils/periods';
 import { useRecoilValue } from 'recoil';
 import { Report } from '../interfaces/report.interface';
 import { usePeriodReportInput } from '../types/use-period-report-input.type';
 import { UsePeriodReportReturn } from '../types/use-period-report-return.type';
 import { usePeriodReportRunInput } from '../types/use-period-report-run-input.type';
+import { useCompartment } from './use-compartment.hook';
+import { usePeriodReportRunReturn } from '../types/use-period-report-run-return.type';
+import { getPeriodDatesConfig } from '../util/get-period-dates-config';
+import { ReportManifest } from '../types/report-manifest.type';
 
 //lockdown();
 
@@ -18,62 +19,35 @@ export function usePeriodReport(
   input: usePeriodReportInput
 ): UsePeriodReportReturn {
   const {
-    url: reportSrcUrl,
+    url: reportUrl,
     config: configInput,
     periodId,
     startDate,
     endDate,
   } = input;
   const duckDb = useDuckDbFiltered({ periodId, startDate, endDate });
-  const reportSrcResponse = useRecoilValue(ExternalGet({ url: reportSrcUrl }));
   const periods = useRecoilValue(AllPeriods);
+  const { create: createCompartment } = useCompartment();
 
-  const createReport = (src: string): Report => {
-    const compartment = new Compartment({
-      Math,
-      print: console.log,
-    });
-    return compartment.evaluate(src)();
-  };
+  const manifest = async (): Promise<ReportManifest> => {
+    // Create secure compartment to run report in
+    const compartment = createCompartment();
 
-  const getPeriodDatesConfig = ():
-    | { startDate: string; endDate: string }
-    | undefined => {
-    if (periodId) {
-      if (!periods) {
-        throw new Error('Periods could not be loaded');
-      }
-      const period = periods.find((p) => p._id === periodId);
-      if (!period) {
-        throw new Error('Period not found');
-      }
-      const previousPeriod = getPreviousPeriod(periods, period);
-      if (!previousPeriod) {
-        throw new Error('Previous period not found');
-      }
-      return {
-        startDate: previousPeriod.endDate,
-        endDate: period.endDate,
-      };
-    }
-    if (startDate && endDate) {
-      return {
-        startDate,
-        endDate,
-      };
-    }
-    return undefined;
+    // Import report from url
+    const manifestUrl = `${reportUrl.substring(
+      0,
+      reportUrl.lastIndexOf('/')
+    )}/manifest.js`;
+    const { namespace } = await compartment.import(manifestUrl);
+    return namespace.default as ReportManifest;
   };
 
   const run = async (
     input: usePeriodReportRunInput
-  ): Promise<string | arrow.Table> => {
+  ): Promise<usePeriodReportRunReturn> => {
     const { format } = input;
     if (!duckDb || !duckDb.db) {
       throw new Error('DuckDb has not be loaded');
-    }
-    if (!reportSrcResponse || reportSrcResponse.status !== 200) {
-      throw new Error('Report source could not be loaded');
     }
     if (!assertAllTablesLoaded(duckDb)) {
       throw new Error('Required database tables have not been loaded');
@@ -82,33 +56,48 @@ export function usePeriodReport(
     // Add period dates to config if available
     const config = {
       ...(configInput as object),
-      ...getPeriodDatesConfig(),
+      ...getPeriodDatesConfig(periods, periodId, startDate, endDate),
     };
-
-    // Create report based on remote source
-    const report = createReport(reportSrcResponse.data as string);
-
-    // Let the report validate the config before running it. Report will throw an
-    // error if config is invalid.
-    report.validateConfig(config);
 
     // Connect to database
     const conn = await duckDb.db.connect();
 
-    // Run report using config and database connection
-    const response = await report.run(config, conn);
+    // Create a "mock" db object that can be passed to the report
+    // Response is turned into an array of objects for easier use in the report
+    const db = {
+      query: async (sql: string): Promise<unknown[]> => {
+        const t = await conn.query(sql);
+        return t.toArray();
+      },
+    };
+
+    // Create secure compartment to run report in
+    const compartment = createCompartment();
+
+    // Import report from url
+    const { namespace } = await compartment.import(reportUrl);
+
+    // Create report instance, supplying config and db query object
+    const report = new namespace.default(config, db) as Report;
+
+    // Run report, response is an object with result rows and logging info
+    const response = await report.run();
+
+    // Add an intro message to the log
+    response.log = `Report: ${report.manifest.name} (${report.manifest.version})\n${response.log}\nNumber of response rows: ${response.rows?.length}\n\n🙏`;
 
     // Default report format is json but csv is also supported
-    if (format === 'csv') {
+    let csv: string | undefined;
+    if (format === 'csv' && response.rows) {
       const parser = new Parser();
-      return parser.parse(response.toArray());
+      csv = parser.parse(response.rows);
     }
-
-    return response;
+    return { ...response, csv };
   };
 
   return {
     run,
+    manifest,
     duckDb,
   };
 }

@@ -1,159 +1,92 @@
-import * as arrow from 'apache-arrow';
-import React from 'react';
-import toast from 'react-hot-toast';
-import { useParams } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
 import { SelectInput, SelectInputOption } from '@/components/form/SelectInput';
-import { CustomExportTransformer } from '@/model/app';
 import {
   AllPeriods,
   PeriodPageParams,
   useLoadSinglePeriodDetails,
   SinglePeriod,
-  useExportPraise,
 } from '@/model/periods/periods';
 import { usePeriodReport } from '@/model/report/hooks/use-period-report.hook';
-import { SingleSetting } from '@/model/settings/settings';
 import { saveLocalFile } from '@/utils/file';
 import { Dialog } from '@headlessui/react';
-
+import React from 'react';
+import toast from 'react-hot-toast';
+import { useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 import { PeriodCustomExportDialog } from './CustomExportDialog';
+import { ReportLogDialog } from './ReportLogDialog';
+
+const exportOptions = [
+  { value: '', label: 'Export', disabled: true },
+  { value: 'export-full', label: 'Export (full)' },
+  {
+    value: 'export-summary',
+    label: 'Export (summary)',
+  },
+];
 
 export const ExportDropdown = (): JSX.Element | null => {
+  // Period details
+  const { periodId } = useParams<PeriodPageParams>();
+  const allPeriods = useRecoilValue(AllPeriods);
+  useLoadSinglePeriodDetails(periodId); // Fetch additional period details
+  const period = useRecoilValue(SinglePeriod(periodId));
+
+  // Report Log Dialog
+  const [isReportLogDialogOpen, setIsReportLogDialogOpen] =
+    React.useState(false);
+  const [reportLog, setReportLog] = React.useState<string>('');
+
+  // Custom Export Dialog
   const [isCustomExportDialogOpen, setIsCustomExportDialogOpen] =
     React.useState(false);
 
-  const allPeriods = useRecoilValue(AllPeriods);
-  const { periodId } = useParams<PeriodPageParams>();
-  useLoadSinglePeriodDetails(periodId); // Fetch additional period details
-  const period = useRecoilValue(SinglePeriod(periodId));
-  const { exportPraiseFull, exportPraiseCustom } = useExportPraise();
-  const customExportFormat = useRecoilValue(
-    SingleSetting('CUSTOM_EXPORT_FORMAT')
-  );
-  const exportSummary = usePeriodReport({ periodId, url: '/report.js' });
-
-  const customExportTransformer = useRecoilValue(CustomExportTransformer);
-
-  const customExportDialogRef = React.useRef(null);
+  const summaryReport = usePeriodReport({
+    periodId,
+    url: 'https://raw.githubusercontent.com/givepraise/reports/main/reports/period-receiver-summary/report.js',
+  });
 
   if (!period || !allPeriods) return null;
-
-  const exportOptions = [
-    { value: '', label: 'Export', disabled: true },
-    { value: 'export-full', label: 'Export (full)' },
-    {
-      value: 'export-summary',
-      label: 'Export (summary)',
-    },
-  ];
-
-  customExportTransformer &&
-    exportOptions.push({
-      value: 'export-custom',
-      label:
-        customExportTransformer.name.length > 30
-          ? `${customExportTransformer.name.substring(0, 30)}...`
-          : customExportTransformer.name,
-    });
-
-  const handleExportFull = (): void => {
-    const toastId = 'exportToastFull';
-    void toast.promise(
-      exportPraiseFull(period),
-      {
-        loading: 'Exporting …',
-        success: (exportData: Blob | undefined) => {
-          if (exportData) {
-            saveLocalFile(exportData, 'praise-period-export-full.csv');
-            setTimeout(() => toast.remove(toastId), 2000);
-            return 'Export done';
-          }
-          return 'Empty export returned';
-        },
-        error: 'Export failed',
-      },
-      {
-        id: toastId,
-        position: 'top-center',
-        loading: {
-          duration: 1000,
-        },
-      }
-    );
-  };
 
   const handleExportSummary = (): void => {
     const toastId = 'exportToastSummary';
     void toast.promise(
-      exportSummary.run({ format: 'csv' }),
+      summaryReport.run({ format: 'csv' }),
       {
         loading: 'Exporting …',
-        success: (response: string | arrow.Table) => {
-          if (response) {
-            const fileData = new Blob([response as string]);
-            saveLocalFile(fileData, 'praise-period-export-summary.csv');
-            setTimeout(() => toast.remove(toastId), 2000);
-            return 'Export done';
+        success: (response) => {
+          if (response.csv) {
+            const fileData = new Blob([response.csv]);
+            saveLocalFile(fileData, 'praise-period-receiver-summary.csv');
+            setReportLog(response.log);
+            setIsReportLogDialogOpen(true);
+            toast.remove(toastId);
+            return 'Export completed';
           }
           return 'Empty export returned';
         },
-        error: 'Export failed',
-      },
-      {
-        id: toastId,
-        position: 'top-center',
-        loading: {
-          duration: 1000,
-        },
-      }
-    );
-  };
-
-  const handleExportCustom = (exportContext: string): void => {
-    const toastId = 'exportToastCustom';
-    void toast.promise(
-      exportPraiseCustom(period, exportContext),
-      {
-        loading: 'Distributing …',
-        success: (data: Blob | undefined) => {
-          if (data) {
-            saveLocalFile(
-              data,
-              `praise-period-export-custom.${customExportFormat?.valueRealized}`
-            );
-            setTimeout(() => toast.remove(toastId), 2000);
-            return 'Export done';
-          }
-
-          return 'Empty export returned';
-        },
-        error: (err) => {
-          toast.error(err.message);
-          return 'Export failed';
+        error: (msg: string) => {
+          return `Export failed: ${msg}`;
         },
       },
       {
         id: toastId,
         position: 'top-center',
         loading: {
-          duration: 1000,
+          duration: 2000,
         },
       }
     );
   };
+
+  const handleExportCustom = (exportContext: string): void => {};
 
   const handleSelectExportChange = (option: SelectInputOption): void => {
-    if (option.value === 'export-full') {
-      handleExportFull();
-    } else if (option.value === 'export-summary') {
+    if (option.value === 'export-summary') {
       void handleExportSummary();
     } else if (option.value === 'export-custom') {
       setIsCustomExportDialogOpen(true);
     }
   };
-
-  if (!period) return <div>Period not found.</div>;
 
   return (
     <>
@@ -166,14 +99,26 @@ export const ExportDropdown = (): JSX.Element | null => {
       </div>
 
       <Dialog
+        open={isReportLogDialogOpen}
+        onClose={(): void => setIsReportLogDialogOpen(false)}
+        className="fixed inset-0 z-10 overflow-y-auto"
+      >
+        <div>
+          <ReportLogDialog
+            onClose={(): void => setIsReportLogDialogOpen(false)}
+            log={reportLog}
+          />
+        </div>
+      </Dialog>
+
+      <Dialog
         open={isCustomExportDialogOpen}
         onClose={(): void => setIsCustomExportDialogOpen(false)}
         className="fixed inset-0 z-10 overflow-y-auto"
-        initialFocus={customExportDialogRef}
       >
-        <div ref={customExportDialogRef}>
+        <div>
           <PeriodCustomExportDialog
-            title={customExportTransformer?.name || 'Custom export'}
+            title="Custom export"
             onClose={(): void => setIsCustomExportDialogOpen(false)}
             onExport={(exportContext): void =>
               handleExportCustom(exportContext)

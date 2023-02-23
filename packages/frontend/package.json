@@ -12,6 +12,7 @@
     "@duckdb/duckdb-wasm": "^1.20.0",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
+    "@endo/static-module-record": "^0.7.16",
     "@ethersproject/providers": "^5.5.3",
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
     "@fortawesome/free-brands-svg-icons": "^6.1.1",
