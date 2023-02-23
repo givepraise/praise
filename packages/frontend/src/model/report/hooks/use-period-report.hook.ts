@@ -18,18 +18,13 @@ import { ReportManifest } from '../types/report-manifest.type';
 export function usePeriodReport(
   input: usePeriodReportInput
 ): UsePeriodReportReturn {
-  const {
-    url: reportUrl,
-    config: configInput,
-    periodId,
-    startDate,
-    endDate,
-  } = input;
+  const { url: reportUrl, periodId, startDate, endDate } = input;
   const duckDb = useDuckDbFiltered({ periodId, startDate, endDate });
   const periods = useRecoilValue(AllPeriods);
   const { create: createCompartment } = useCompartment();
 
-  const manifest = async (): Promise<ReportManifest> => {
+  const manifest = async (): Promise<ReportManifest | undefined> => {
+    if (!reportUrl) return;
     // Create secure compartment to run report in
     const compartment = createCompartment();
 
@@ -44,8 +39,9 @@ export function usePeriodReport(
 
   const run = async (
     input: usePeriodReportRunInput
-  ): Promise<usePeriodReportRunReturn> => {
-    const { format } = input;
+  ): Promise<usePeriodReportRunReturn | undefined> => {
+    if (!reportUrl) return;
+    const { format, config: configInput } = input;
     if (!duckDb || !duckDb.db) {
       throw new Error('DuckDb has not be loaded');
     }
@@ -55,8 +51,8 @@ export function usePeriodReport(
 
     // Add period dates to config if available
     const config = {
-      ...(configInput as object),
       ...getPeriodDatesConfig(periods, periodId, startDate, endDate),
+      ...(configInput as object),
     };
 
     // Connect to database
@@ -83,8 +79,13 @@ export function usePeriodReport(
     // Run report, response is an object with result rows and logging info
     const response = await report.run();
 
-    // Add an intro message to the log
-    response.log = `Report: ${report.manifest.name} (${report.manifest.version})\n${response.log}\nNumber of response rows: ${response.rows?.length}\n\n🙏`;
+    // Add an header and footer message to the log
+    let log = `Report: ${report.manifest.name} (${report.manifest.version})\n`;
+    log += `Format: ${format}`;
+    log += response.log ? `\n${response.log}\n` : '\n\n';
+    log += `Number of response rows: ${response.rows?.length}\n\n`;
+    log += '🙏';
+    response.log = log;
 
     // Default report format is json but csv is also supported
     let csv: string | undefined;
@@ -92,10 +93,17 @@ export function usePeriodReport(
       const parser = new Parser();
       csv = parser.parse(response.rows);
     }
-    return { ...response, csv };
+    return { manifest: report.manifest, ...response, csv };
   };
 
   return {
+    ready:
+      !duckDb.loadingWorker &&
+      duckDb.tables.users &&
+      duckDb.tables.useraccounts &&
+      duckDb.tables.periods &&
+      duckDb.tables.praises &&
+      duckDb.tables.quantifications,
     run,
     manifest,
     duckDb,

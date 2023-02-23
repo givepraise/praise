@@ -21,7 +21,7 @@ export const ReportLogDialog = ({
             <FontAwesomeIcon icon={faTimes} size="1x" />
           </Button>
         </div>
-        <div className="px-20">
+        <div className="px-20 mb-9">
           <div className="flex justify-center mb-7">
             <FontAwesomeIcon icon={faFileLines} size="2x" />
           </div>
@@ -31,6 +31,9 @@ export const ReportLogDialog = ({
               {log}
             </pre>
           </div>
+        </div>
+        <div className="flex justify-center">
+          <Button onClick={onClose}>Close</Button>
         </div>
       </div>
     </div>

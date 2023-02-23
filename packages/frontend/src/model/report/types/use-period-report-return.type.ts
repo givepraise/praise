@@ -4,7 +4,10 @@ import { usePeriodReportRunReturn } from './use-period-report-run-return.type';
 import { ReportManifest } from './report-manifest.type';
 
 export type UsePeriodReportReturn = {
-  run: (input: usePeriodReportRunInput) => Promise<usePeriodReportRunReturn>;
-  manifest: () => Promise<ReportManifest>;
+  ready: boolean;
+  run: (
+    input: usePeriodReportRunInput
+  ) => Promise<usePeriodReportRunReturn | undefined>;
+  manifest: () => Promise<ReportManifest | undefined>;
   duckDb: UseDuckDbReturn;
 };
