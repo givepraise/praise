@@ -91,7 +91,7 @@ export const ExportSelect = (): JSX.Element | null => {
         ...defaultExportOptions,
         {
           value: 'export-custom',
-          label: `Export (${manifest.name})`,
+          label: `Export (${manifest.displayName})`,
         },
       ]);
     }
