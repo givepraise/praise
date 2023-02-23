@@ -68,11 +68,13 @@ export class UserAccountsController {
   @ApiProduces('application/json')
   @Permissions(Permission.UserAccountsView)
   async GetOne(
-    @Query('id', ObjectIdPipe) id: Types.ObjectId,
-    @Query('accountId') accountId: string,
+    @Query('id', ObjectIdPipe) id?: Types.ObjectId,
+    @Query('accountId') accountId?: string,
   ): Promise<UserAccount> {
-    const userAccount =
-      await this.userAccountsService.findOneByUserIdAndAccountId(id, accountId);
+    const userAccount = await this.userAccountsService.findOneByIdOrAccountId(
+      id,
+      accountId,
+    );
     if (!userAccount) throw new ServiceException('UserAccount not found.');
 
     return userAccount;
@@ -89,14 +91,14 @@ export class UserAccountsController {
   @ApiProduces('application/json')
   @Permissions(Permission.UserAccountsUpdate)
   async UpdateOne(
-    @Query('id', ObjectIdPipe) id: Types.ObjectId,
-    @Query('accountId') accountId: string,
     @Body() updateUserAccountBody: UpdateUserAccountInputDto,
-  ): Promise<UserAccount> {
-    return this.userAccountsService.updateByUserIdAndAccountId(
+    @Query('id', ObjectIdPipe) id?: Types.ObjectId,
+    @Query('accountId') accountId?: string,
+  ): Promise<UserAccount | null> {
+    return this.userAccountsService.updateByIdOrAccountId(
+      updateUserAccountBody,
       id,
       accountId,
-      updateUserAccountBody,
     );
   }
 

@@ -60,19 +60,41 @@ export class UserAccountsService {
     return userAccount;
   }
 
-  async updateByUserIdAndAccountId(
-    userId: Types.ObjectId,
-    accountId: string,
+  async updateByIdOrAccountId(
+    updateUserAccountDto: UpdateUserAccountInputDto,
+    _id?: Types.ObjectId,
+    accountId?: string,
+  ): Promise<UserAccount | null> {
+    if (_id) return await this.updateUserAccountById(_id, updateUserAccountDto);
+    if (accountId)
+      return await this.updateUserAccountByAccountId(
+        accountId,
+        updateUserAccountDto,
+      );
+
+    throw new ServiceException('No identifier provided.');
+  }
+
+  async updateUserAccountById(
+    _id: Types.ObjectId,
     updateUserAccountDto: UpdateUserAccountInputDto,
   ): Promise<UserAccount> {
-    const userAccount = await this.userAccountModel.findOneAndUpdate(
-      { user: userId, accountId },
+    return await this.userAccountModel.findOneAndUpdate(
+      { _id },
       updateUserAccountDto,
       { upsert: true, new: true },
     );
+  }
 
-    if (!userAccount) throw new ServiceException('UserAccount not found.');
-    return userAccount;
+  async updateUserAccountByAccountId(
+    accountId: string,
+    updateUserAccountDto: UpdateUserAccountInputDto,
+  ): Promise<UserAccount> {
+    return await this.userAccountModel.findOneAndUpdate(
+      { accountId },
+      updateUserAccountDto,
+      { upsert: true, new: true },
+    );
   }
 
   /**
@@ -87,11 +109,9 @@ export class UserAccountsService {
   /**
    * Returns a user account by user account ID
    */
-  async findOneByUserAccountId(
-    userAccountId: string,
-  ): Promise<UserAccount | null> {
+  async findOneByUserAccountId(accountId: string): Promise<UserAccount | null> {
     const userAccount = await this.userAccountModel
-      .findOne({ userAccountId })
+      .findOne({ accountId })
       .populate('user')
       .lean();
     if (!userAccount) return null;
@@ -99,18 +119,29 @@ export class UserAccountsService {
   }
 
   /**
-   * Returns a user account by user account ID
+   * Find the Useraccount by objectId
    */
-  async findOneByUserIdAndAccountId(
-    userId: Types.ObjectId,
-    accountId: string,
-  ): Promise<UserAccount | null> {
+  async findOneById(_id: Types.ObjectId): Promise<UserAccount | null> {
     const userAccount = await this.userAccountModel
-      .findOne({ user: userId, accountId })
+      .findOne({ _id })
       .populate('user')
       .lean();
     if (!userAccount) return null;
+
     return userAccount;
+  }
+
+  /**
+   * Returns a user account by Mongo ID or AccountId
+   */
+  async findOneByIdOrAccountId(
+    _id?: Types.ObjectId,
+    accountId?: string,
+  ): Promise<UserAccount | null> {
+    if (_id) return await this.findOneById(_id);
+    if (accountId) return await this.findOneByUserAccountId(accountId);
+
+    throw new ServiceException('No identifier provided.');
   }
 
   /**
