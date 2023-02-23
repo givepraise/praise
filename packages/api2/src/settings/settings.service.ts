@@ -144,61 +144,6 @@ export class SettingsService {
   }
 
   /**
-   * Find custom export transformer
-   * @returns {Promise<ExportTransformer>}
-   * @throws {ServiceException}
-   *
-   * */
-  async findCustomExportTransformer() {
-    const customExportMapSetting = (await this.settingValue(
-      'CUSTOM_EXPORT_MAP',
-    )) as string;
-
-    if (!customExportMapSetting) {
-      throw new ServiceException('No custom export map specified');
-    }
-
-    try {
-      let response: AxiosResponse | undefined = undefined;
-      try {
-        response = await axios.get(customExportMapSetting);
-      } catch (error) {
-        throw new ServiceException(
-          'Could not fetch custom export transformer.',
-        );
-      }
-
-      if (response) {
-        const transformerDto = response.data as ExportTransformer;
-        try {
-          const transformer: ExportTransformer = {
-            ...transformerDto,
-            map: {
-              item: transformerDto.map.item,
-              operate: transformerDto.map.operate.map(
-                (operateItem: TransformerMapOperateItem) => {
-                  return {
-                    run: operateItem.run,
-                    on: operateItem.on,
-                  };
-                },
-              ),
-              each: transformerDto.map.each,
-            },
-          };
-          return transformer;
-        } catch (error) {
-          throw new Error('Could not parse custom export transformer.');
-        }
-      }
-
-      throw new Error('Unknown error');
-    } catch (error) {
-      throw new ServiceException((error as Error).message);
-    }
-  }
-
-  /**
    * Find one setting value by key
    * @param key
    * @returns {Promise<Setting>}

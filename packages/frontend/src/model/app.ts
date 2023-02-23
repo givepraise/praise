@@ -59,27 +59,3 @@ export const IsHeaderBannerClosed = atomFamily<boolean, string>({
   default: false,
   effects: [persistAtom],
 });
-
-export const CustomExportTransformer = atom<ExportTransformer | undefined>({
-  key: 'CustomExportTransformer',
-  default: undefined,
-  effects: [
-    ({ setSelf, getPromise }): void => {
-      setSelf(
-        getPromise(SingleSetting('CUSTOM_EXPORT_MAP')).then((map) => {
-          if (map && !map.value) return new DefaultValue();
-          return getPromise(
-            ApiAuthGet({
-              url: 'admin/settings/customExportTransformer',
-            })
-          ).then((response) => {
-            if (isResponseOk(response)) {
-              const transformer = response.data as ExportTransformer;
-              return transformer;
-            }
-          });
-        })
-      );
-    },
-  ],
-});
