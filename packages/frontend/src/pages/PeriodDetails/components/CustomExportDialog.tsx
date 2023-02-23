@@ -36,7 +36,9 @@ export const PeriodCustomExportDialog = ({
   // Set local state when default export context has been loaded
   React.useEffect(() => {
     if (!customExportContextSetting) return;
-    setCustomExportContext(customExportContextSetting.value);
+    setCustomExportContext(
+      JSON.stringify(customExportContextSetting.valueRealized, null, 2)
+    );
   }, [customExportContextSetting]);
 
   // How much of the distribution should go to the development team
