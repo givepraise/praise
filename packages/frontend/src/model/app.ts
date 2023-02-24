@@ -1,16 +1,8 @@
-import { ExportTransformer } from '@/shared/interfaces/export-transformer.interface';
 import { AxiosResponse } from 'axios';
-import {
-  atom,
-  atomFamily,
-  DefaultValue,
-  selector,
-  useRecoilValue,
-} from 'recoil';
+import { atomFamily, selector, useRecoilValue } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
-import { ApiAuthGet, isResponseOk } from './api';
+import { isResponseOk } from './api';
 import { ExternalGet } from './axios';
-import { SingleSetting } from './settings/settings';
 
 const { persistAtom } = recoilPersist();
 
@@ -58,28 +50,4 @@ export const IsHeaderBannerClosed = atomFamily<boolean, string>({
   key: 'IsHeaderBannerClosed',
   default: false,
   effects: [persistAtom],
-});
-
-export const CustomExportTransformer = atom<ExportTransformer | undefined>({
-  key: 'CustomExportTransformer',
-  default: undefined,
-  effects: [
-    ({ setSelf, getPromise }): void => {
-      setSelf(
-        getPromise(SingleSetting('CUSTOM_EXPORT_MAP')).then((map) => {
-          if (map && !map.value) return new DefaultValue();
-          return getPromise(
-            ApiAuthGet({
-              url: 'admin/settings/customExportTransformer',
-            })
-          ).then((response) => {
-            if (isResponseOk(response)) {
-              const transformer = response.data as ExportTransformer;
-              return transformer;
-            }
-          });
-        })
-      );
-    },
-  ],
 });

@@ -11,7 +11,7 @@ import { getPreviousPeriod } from '@/utils/periods';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { CloseButton } from './CloseButton';
-import { ExportDropdown } from './ExportDropdown';
+import { ExportSelect } from './ExportSelect';
 import { PeriodDateForm } from './PeriodDateForm';
 import { PeriodNameForm } from './PeriodNameForm';
 import { AssignButton } from './AssignButton';
@@ -71,13 +71,13 @@ export const PeriodDetailsHead = (): JSX.Element | null => {
                   <AssignButton />
                 ) : null}
                 {period.status === 'QUANTIFY' && isAdmin ? (
-                  <ExportDropdown />
+                  <ExportSelect />
                 ) : null}
                 <CloseButton />
               </div>
             ) : null}
 
-            {period.status === 'CLOSED' && isAdmin ? <ExportDropdown /> : null}
+            {period.status === 'CLOSED' && isAdmin ? <ExportSelect /> : null}
           </div>
         </>
       )}
