@@ -48,7 +48,7 @@ export class PeriodAssignmentsService {
     private settingsService: SettingsService,
     private eventLogService: EventLogService,
     private periodsService: PeriodsService,
-  ) { }
+  ) {}
 
   /**
    * Return quantifier pool size and needed quantifier pool size
@@ -105,7 +105,7 @@ export class PeriodAssignmentsService {
     // Check if the period has ended
     const now = Date.now();
     const periodEnd = new Date(period.endDate).getTime();
-    if (now > periodEnd)
+    if (now < periodEnd)
       throw new ServiceException(
         'Can not assign quantifiers for a period that has not ended',
       );
