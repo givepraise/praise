@@ -1,16 +1,8 @@
-import { ExportTransformer } from '@/shared/interfaces/export-transformer.interface';
 import { AxiosResponse } from 'axios';
-import {
-  atom,
-  atomFamily,
-  DefaultValue,
-  selector,
-  useRecoilValue,
-} from 'recoil';
+import { atomFamily, selector, useRecoilValue } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
-import { ApiAuthGet, isResponseOk } from './api';
+import { isResponseOk } from './api';
 import { ExternalGet } from './axios';
-import { SingleSetting } from './settings/settings';
 
 const { persistAtom } = recoilPersist();
 
