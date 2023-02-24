@@ -37,6 +37,7 @@ import { some } from 'lodash';
 import { PeriodDetailsQuantifierDto } from '@/periods/dto/period-details-quantifier.dto';
 import { SettingsService } from '@/settings/settings.service';
 import { Praise } from '@/praise/schemas/praise.schema';
+import { faker } from '@faker-js/faker';
 
 class LoggedInUser {
   accessToken: string;
@@ -652,7 +653,24 @@ describe('Period (E2E)', () => {
         .expect(400);
     });
 
-    test('should return 200 and period details when the request body is valid', async () => {
+    test('should return 400 when the period endDate is in the future', async () => {
+      const period = await periodsSeeder.seedPeriod({
+        status: PeriodStatusType.CLOSED,
+        endDate: faker.date.future(),
+      });
+
+      return request(server)
+        .patch(`/periods/${period._id}/close`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .expect(400);
+    });
+
+    test('should return 200 and period details when the request body is valid adnd endDate is in the past', async () => {
+      const period = await periodsSeeder.seedPeriod({
+        status: PeriodStatusType.OPEN,
+        endDate: faker.date.past(),
+      });
+
       const response = await request(server)
         .patch(`/periods/${period._id}/close`)
         .set('Authorization', `Bearer ${users[0].accessToken}`)
@@ -1148,6 +1166,20 @@ describe('Period (E2E)', () => {
 
     test('400 response if period is not OPEN', async function () {
       const period = await periodsSeeder.seedPeriod({ status: 'QUANTIFY' });
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .send()
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('400 response if period endDate is in the future', async function () {
+      const period = await periodsSeeder.seedPeriod({
+        status: 'QUANTIFY',
+        endDate: faker.date.future(),
+      });
 
       return await request(server)
         .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)

@@ -102,6 +102,14 @@ export class PeriodAssignmentsService {
   ): Promise<PeriodDetailsDto> => {
     const period = await this.periodsService.findOneById(_id);
 
+    // Check if the period has ended
+    const now = Date.now();
+    const periodEnd = new Date(period.endDate).getTime();
+    if (now < periodEnd)
+      throw new ServiceException(
+        'Can not assign quantifiers for a period that has not ended',
+      );
+
     if (period.status !== 'OPEN')
       throw new ServiceException(
         'Quantifiers can only be assigned on OPEN periods.',
