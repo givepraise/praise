@@ -1,4 +1,3 @@
-import { SettingGroup } from '../../../settings/enums/setting-group.enum';
 import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 const { ObjectId } = Schema.Types;

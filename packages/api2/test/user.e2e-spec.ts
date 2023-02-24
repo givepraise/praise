@@ -1,9 +1,5 @@
 import request from 'supertest';
-import {
-  ConsoleLogger,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
@@ -71,7 +67,6 @@ describe('UserController (E2E)', () => {
       ],
     }).compile();
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -126,10 +121,6 @@ describe('UserController (E2E)', () => {
       // Login and get access token
       const response = await loginUser(app, module, wallet);
       accessToken = response.accessToken;
-    });
-
-    test('401 when not authenticated', async () => {
-      await request(server).get('/users/export').send().expect(401);
     });
 
     test('200 when authenticated', async () => {

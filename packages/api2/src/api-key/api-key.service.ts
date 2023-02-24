@@ -9,7 +9,6 @@ import { CreateApiKeyResponseDto } from './dto/create-api-key-response';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { RequestContext } from 'nestjs-request-context';
 
 @Injectable()
 export class ApiKeyService {

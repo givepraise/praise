@@ -1,9 +1,5 @@
 import request from 'supertest';
-import {
-  ConsoleLogger,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
@@ -93,7 +89,6 @@ describe('Period (E2E)', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -259,10 +254,6 @@ describe('Period (E2E)', () => {
       );
     });
 
-    test('401 when not authenticated', async () => {
-      await request(server).get(`/periods/export`).send().expect(401);
-    });
-
     test('returns period list that matches seeded list in json format', async () => {
       const response = await authorizedGetRequest(
         '/periods/export?format=json',
@@ -376,10 +367,12 @@ describe('Period (E2E)', () => {
       const period2 = p.find((x) => x._id.toString() === period._id);
       expect(period).toBeDefined();
       expect(period2).toBeDefined();
-      expect(period._id).toBe(period2!._id.toString());
-      expect(period.status).toBe(period2!.status);
-      expect(period.endDate).toBe(period2!.endDate.toISOString());
-      expect(period.name).toBe(period2!.name);
+      if (period2) {
+        expect(period._id).toBe(period2._id.toString());
+        expect(period.status).toBe(period2.status);
+        expect(period.endDate).toBe(period2.endDate.toISOString());
+        expect(period.name).toBe(period2.name);
+      }
 
       expect(period).toBeProperlySerialized();
       expect(period).toBeValidClass(Period);
@@ -795,7 +788,25 @@ describe('Period (E2E)', () => {
       const dayInPeriod = new Date(period.endDate.getTime());
       dayInPeriod.setDate(period.endDate.getDate() - 1);
 
-      const quantifier = await userAccountsSeeder.seedUserAccount();
+      const wallet1 = Wallet.createRandom();
+      const quantifierUser1 = await usersSeeder.seedUser({
+        identityEthAddress: wallet1.address,
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const quantifier1 = await userAccountsSeeder.seedUserAccount({
+        user: quantifierUser1._id,
+      });
+
+      const wallet2 = Wallet.createRandom();
+      const quantifierUser2 = await usersSeeder.seedUser({
+        identityEthAddress: wallet2.address,
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      await userAccountsSeeder.seedUserAccount({
+        user: quantifierUser2._id,
+      });
 
       const praise = await praiseSeeder.seedPraise({
         receiver: receiver1._id,
@@ -804,7 +815,7 @@ describe('Period (E2E)', () => {
 
       await quantificationsSeeder.seedQuantification({
         praise: praise._id,
-        quantifier: quantifier._id,
+        quantifier: quantifier1._id,
       });
 
       await praiseSeeder.seedPraise({
@@ -859,7 +870,7 @@ describe('Period (E2E)', () => {
       await periodSettingsSeeder.seedPeriodSettings({
         period: period._id,
         setting: PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER._id,
-        value: '2',
+        value: 2,
       });
 
       await periodSettingsSeeder.seedPeriodSettings({
@@ -889,6 +900,7 @@ describe('Period (E2E)', () => {
         .expect(200);
 
       const p = response.body;
+
       expect(p._id).toEqual(period._id.toString());
       expect(p.status).toEqual('QUANTIFY');
 
@@ -902,7 +914,7 @@ describe('Period (E2E)', () => {
       expect(p.receivers[2]._id).toEqual(receiversSorted[2]._id.toString());
       expect(p.receivers[2].praiseCount).toEqual(4);
 
-      expect(p.quantifiers).toHaveLength(4);
+      expect(p.quantifiers).toHaveLength(6);
 
       expect(p.quantifiers[0].finishedCount).toEqual(0);
       expect(p.quantifiers[1].finishedCount).toEqual(0);

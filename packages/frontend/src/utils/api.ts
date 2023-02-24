@@ -26,7 +26,7 @@ const refreshAuthTokenSet = async (err: AxiosError): Promise<void> => {
  *
  * One example: https://jakobzanker.de/blog/inject-environment-variables-into-a-react-app-docker-on-runtime/
  */
-const apiBaseURL =
+export const apiBaseURL =
   process.env.NODE_ENV === 'production'
     ? '/api'
     : `${process.env.REACT_APP_SERVER_URL as string}/api`;

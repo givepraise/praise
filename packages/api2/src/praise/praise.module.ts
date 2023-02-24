@@ -9,11 +9,18 @@ import { EventLogModule } from '@/event-log/event-log.module';
 import { Period, PeriodSchema } from '@/periods/schemas/periods.schema';
 import { PeriodsModule } from '@/periods/periods.module';
 import { PraiseExportService } from './services/praise-export.service';
+import {
+  UserAccount,
+  UserAccountSchema,
+} from '@/useraccounts/schemas/useraccounts.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Praise.name, schema: PraiseSchema }]),
     MongooseModule.forFeature([{ name: Period.name, schema: PeriodSchema }]),
+    MongooseModule.forFeature([
+      { name: UserAccount.name, schema: UserAccountSchema },
+    ]),
     forwardRef(() => PeriodsModule),
     forwardRef(() => QuantificationsModule),
     forwardRef(() => SettingsModule),

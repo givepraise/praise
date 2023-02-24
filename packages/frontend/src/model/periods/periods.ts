@@ -567,81 +567,6 @@ export const usePeriodGiverPraise = (
   return response;
 };
 
-type useExportPraiseReturn = {
-  exportPraiseFull: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
-  exportPraiseSummary: (period: PeriodDetailsDto) => Promise<Blob | undefined>;
-  exportPraiseCustom: (
-    period: PeriodDetailsDto,
-    exportContext: string
-  ) => Promise<Blob | undefined>;
-};
-
-/**
- * Returns function that exports all praise in a period as csv data.
- */
-export const useExportPraise = (): useExportPraiseReturn => {
-  const allPeriods: PeriodDetailsDto[] | undefined = useRecoilValue(AllPeriods);
-  const apiAuthClient = useApiAuthClient();
-
-  const exportPraiseFull = async (
-    period: PeriodDetailsDto
-  ): Promise<Blob | undefined> => {
-    if (!period || !allPeriods) return undefined;
-    const response = await apiAuthClient.get(
-      `/admin/periods/${period._id}/exportFull`,
-      { responseType: 'blob' }
-    );
-
-    // If OK response, add returned period object to local state
-    if (!isResponseOk(response)) {
-      throw new Error();
-    }
-    return response.data as Blob;
-  };
-
-  const exportPraiseSummary = async (
-    period: PeriodDetailsDto
-  ): Promise<Blob | undefined> => {
-    if (!period || !allPeriods) return undefined;
-    const response = await apiAuthClient.get(
-      `/admin/periods/${period._id}/exportSummary`,
-      { responseType: 'blob' }
-    );
-
-    // If OK response, add returned period object to local state
-    if (!isResponseOk(response)) {
-      throw new Error();
-    }
-    return response.data as Blob;
-  };
-
-  const exportPraiseCustom = async (
-    period: PeriodDetailsDto,
-    exportContext: string
-  ): Promise<Blob | undefined> => {
-    if (!period) return undefined;
-
-    try {
-      const context = JSON.parse(exportContext);
-
-      const response = await apiAuthClient.get(
-        `/admin/periods/${period._id}/exportCustom`,
-        { responseType: 'blob', params: context }
-      );
-
-      // If OK response, add returned period object to local state
-      if (!isResponseOk(response)) {
-        throw new Error();
-      }
-      return response.data as Blob;
-    } catch (error) {
-      throw new Error('Invalid export context');
-    }
-  };
-
-  return { exportPraiseFull, exportPraiseSummary, exportPraiseCustom };
-};
-
 /**
  * Params for PeriodQuantifierPraiseQuery
  */
@@ -859,14 +784,15 @@ export const useReplaceQuantifier = (
 
         if (isResponseOk(response)) {
           const periodReplaceQuantifierDto = response.data;
+
           set(
             SinglePeriod(periodReplaceQuantifierDto.period._id),
             periodReplaceQuantifierDto.period
           );
-          // periodReplaceQuantifierDto.praises.forEach((praise) => {
-          // TODO: UNCOMMENT!
-          //set(SinglePraise(praise._id), praise);
-          // });
+
+          periodReplaceQuantifierDto.praises.forEach((praise) => {
+            set(SinglePraise(praise._id), praise);
+          });
         }
 
         return response;

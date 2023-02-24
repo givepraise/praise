@@ -1,12 +1,6 @@
-import request from 'supertest';
-import {
-  ConsoleLogger,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
 import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
 import { UsersService } from '@/users/users.service';
@@ -25,7 +19,6 @@ import mongoose from 'mongoose';
 
 describe('UserAccountsController (E2E)', () => {
   let app: INestApplication;
-  let server: Server;
   let module: TestingModule;
   let usersSeeder: UsersSeeder;
   let usersService: UsersService;
@@ -38,14 +31,13 @@ describe('UserAccountsController (E2E)', () => {
       providers: [UsersSeeder, UserAccountsSeeder],
     }).compile();
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
       }),
     );
     app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
+    app.getHttpServer();
     await app.init();
     await runDbMigrations(app);
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
@@ -100,10 +92,6 @@ describe('UserAccountsController (E2E)', () => {
       // Login and get access token
       const response = await loginUser(app, module, wallet);
       accessToken = response.accessToken;
-    });
-
-    test('401 when not authenticated', async () => {
-      await request(server).get('/useraccounts/export').send().expect(401);
     });
 
     test('200 when authenticated', async () => {

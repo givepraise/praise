@@ -31,10 +31,12 @@ export class EthSignatureStrategy extends PassportStrategy(
    */
   async validate(identityEthAddress: string, signature: string): Promise<any> {
     let user;
-    // Check if user exists
     try {
       user = await this.usersService.findOneByEth(identityEthAddress);
     } catch (e) {
+      // Throw UnauthorizedException instead of BadRequestException since
+      // the user is not authenticated yet Nest.js defaults to that on
+      // other authentication strategt errors
       throw new UnauthorizedException('User not found');
     }
 

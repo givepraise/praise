@@ -1,10 +1,10 @@
+import React from 'react';
 import {
   faPrayingHands,
   faUser,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { ActiveNoticesBoard } from '@/components/periods/ActiveNoticesBoard';
 import { Box } from '@/components/ui/Box';
@@ -19,7 +19,7 @@ const StartPage = (): JSX.Element => {
     myPraiseView: 2,
   };
 
-  const [view, setView] = useState<number>(pageViews.praiseView);
+  const [view, setView] = React.useState<number>(pageViews.praiseView);
 
   return (
     <Page>

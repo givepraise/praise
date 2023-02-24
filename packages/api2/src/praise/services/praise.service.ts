@@ -15,8 +15,12 @@ import { RequestWithAuthContext } from '@/auth/interfaces/request-with-auth-cont
 import { PraisePaginatedResponseDto } from '../dto/praise-paginated-response.dto';
 import { Period, PeriodModel } from '@/periods/schemas/periods.schema';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { PeriodsService } from '@/periods/services/periods.service';
 import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
+import { PraiseCreateInputDto } from '../dto/praise-create-input.dto';
+import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
+import { UserAccountModel } from '@/database/schemas/useraccount/useraccount.schema';
+import { PraiseForwardInputDto } from '../dto/praise-forward-input.dto';
+
 @Injectable()
 export class PraiseService {
   constructor(
@@ -24,8 +28,8 @@ export class PraiseService {
     private praiseModel: typeof PraiseModel,
     @InjectModel(Period.name)
     private periodModel: typeof PeriodModel,
-    @Inject(forwardRef(() => PeriodsService))
-    private periodService: PeriodsService,
+    @InjectModel(UserAccount.name)
+    private userAccountModel: typeof UserAccountModel,
     @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
     @Inject(forwardRef(() => QuantificationsService))
@@ -370,10 +374,6 @@ export class PraiseService {
         true,
       );
 
-    const duplicateArray = duplicateQuantifications.filter(
-      (q) => q.praise._id === duplicatePraise,
-    );
-
     const duplicatePraiseItems = await this.praiseModel
       .find({
         _id: {
@@ -441,5 +441,83 @@ export class PraiseService {
     });
 
     return assignedPraiseCount;
+  };
+
+  /**
+   * Creates praise items with a given receiver and reason
+   *  and returns the created praise items
+   *
+   * @param {PraiseCreateInputDto} data
+   * @returns {Promise<Praise[]>}
+   * @throws {ServiceException}
+   */
+  createPraiseItem = async (
+    data: PraiseCreateInputDto | PraiseForwardInputDto,
+  ): Promise<Praise[]> => {
+    let forwarder: UserAccount | undefined;
+    const { giver, receiverIds, reason, reasonRaw, sourceId, sourceName } =
+      data;
+
+    if ('forwarder' in data) {
+      const { forwarder: forwarderFromDto } = data as PraiseForwardInputDto;
+      forwarder = forwarderFromDto;
+    }
+
+    if (!receiverIds || receiverIds.length === 0) {
+      throw new ServiceException('No receivers specified');
+    }
+
+    const giverAccount = await this.userAccountModel.findOneAndUpdate(
+      { accountId: giver.accountId },
+      giver,
+      { upsert: true, new: true },
+    );
+
+    if (!giverAccount.user) {
+      throw new ServiceException('This praise giver account is not activated.');
+    }
+
+    if (forwarder) {
+      const forwarderAccount = await this.userAccountModel.findOneAndUpdate(
+        { accountId: forwarder.accountId },
+        forwarder,
+        { upsert: true, new: true },
+      );
+
+      if (!forwarderAccount.user) {
+        throw new ServiceException(
+          'This praise forwarder account is not activated.',
+        );
+      }
+    }
+
+    const selfPraiseAllowed = (
+      await this.settingsService.findOneByKey('SELF_PRAISE_ALLOWED')
+    )?.valueRealized;
+
+    if (!selfPraiseAllowed && receiverIds.includes(giverAccount.accountId)) {
+      throw new ServiceException('Self praise is not allowed');
+    }
+
+    const receivers = await this.userAccountModel
+      .find({
+        accountId: { $in: receiverIds },
+      })
+      .populate('user')
+      .lean();
+
+    const insertManyPraiseItems = await this.praiseModel.insertMany(
+      receivers.map((receiver) => ({
+        reason,
+        reasonRaw,
+        giver: giverAccount._id,
+        forwarder: forwarder ? forwarder._id : undefined,
+        sourceId,
+        sourceName,
+        receiver: receiver._id,
+      })),
+    );
+
+    return await Promise.all(insertManyPraiseItems);
   };
 }
