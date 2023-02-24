@@ -165,14 +165,6 @@ export class PraiseService {
     if (!period)
       throw new ServiceException('Praise does not have an associated period');
 
-    // Check if the period has ended
-    const now = Date.now();
-    const periodEnd = new Date(period.endDate).getTime();
-    if (now > periodEnd)
-      throw new ServiceException(
-        'Can not quantify for a period that has not ended',
-      );
-
     // Check if the period is in the QUANTIFY status
     if (period.status !== PeriodStatusType.QUANTIFY)
       throw new ServiceException(
