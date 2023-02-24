@@ -97,13 +97,7 @@ export function usePeriodReport(
   };
 
   return {
-    ready:
-      !duckDb.loadingWorker &&
-      duckDb.tables.users &&
-      duckDb.tables.useraccounts &&
-      duckDb.tables.periods &&
-      duckDb.tables.praises &&
-      duckDb.tables.quantifications,
+    ready: !duckDb.loadingWorker && assertAllTablesLoaded(duckDb),
     run,
     manifest,
     duckDb,
