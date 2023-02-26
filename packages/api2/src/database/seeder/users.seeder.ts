@@ -18,7 +18,7 @@ export class UsersSeeder {
     const user = await this.usersService.getModel().create({
       identityEthAddress: faker.finance.ethereumAddress(),
       rewardsEthAddress: faker.finance.ethereumAddress(),
-      username: faker.internet.userName(),
+      username: faker.internet.userName().substring(0, 15),
       roles: [AuthRole.USER],
       ...(userData as any),
     });

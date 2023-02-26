@@ -28,6 +28,8 @@ import { faker } from '@faker-js/faker';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 import { Period } from '@/periods/schemas/periods.schema';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 
 describe('UserAccountsController (E2E)', () => {
   let app: INestApplication;
@@ -68,6 +70,8 @@ describe('UserAccountsController (E2E)', () => {
         transform: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
     app.getHttpServer();
     await app.init();
