@@ -3,12 +3,12 @@ import { User } from '@/users/schemas/users.schema';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@/users/users.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { UtilsProvider } from '@/utils/utils.provider';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { Types } from 'mongoose';
 import { ServiceException } from '@/shared/exceptions/service-exception';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 /**
@@ -18,7 +18,6 @@ export class EthSignatureService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly utils: UtilsProvider,
     private readonly eventLogService: EventLogService,
   ) {}
 
@@ -30,7 +29,7 @@ export class EthSignatureService {
    */
   async generateUserNonce(identityEthAddress: string): Promise<User> {
     // Generate random nonce used for auth request
-    const nonce = await this.utils.randomString();
+    const nonce = randomBytes(10).toString('hex');
 
     try {
       // Find user by their Ethereum address, update nonce

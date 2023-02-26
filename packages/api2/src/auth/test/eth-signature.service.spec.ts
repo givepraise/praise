@@ -4,7 +4,6 @@ import { EthSignatureService } from '../eth-signature.service';
 import { UsersService } from '@/users/users.service';
 import { userStub } from '@/users/test/stubs/user.stub';
 import { JwtService } from '@nestjs/jwt';
-import { UtilsProvider } from '@/utils/utils.provider';
 import { LoginResponseDto } from '../dto/login-response.dto';
 import { accessTokenStub } from './stubs/access-token';
 import { EventLogService } from '@/event-log/event-log.service';
@@ -28,7 +27,6 @@ describe('EthSignatureService', () => {
       providers: [
         EthSignatureService,
         UsersService,
-        UtilsProvider,
         {
           provide: JwtService,
           useValue: mockJwtService,

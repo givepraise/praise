@@ -5,7 +5,6 @@ import { EthSignatureStrategy } from '../strategies/eth-signature.strategy';
 import { ethers } from 'ethers';
 import { EthSignatureService } from '../eth-signature.service';
 import { JwtModule } from '@nestjs/jwt';
-import { UtilsProvider } from '@/utils/utils.provider';
 import { ConstantsProvider } from '@/constants/constants.provider';
 import { EventLogService } from '@/event-log/event-log.service';
 
@@ -29,7 +28,6 @@ describe('EthSignatureStrategy', () => {
         UsersService,
         EthSignatureStrategy,
         EthSignatureService,
-        UtilsProvider,
         ConstantsProvider,
         EventLogService,
       ],
