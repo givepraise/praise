@@ -8,6 +8,7 @@ import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 import { UserAccountNoUserId } from '@/useraccounts/dto/useraccount-no-user-id.dto';
 import { IsOptional, IsString } from 'class-validator';
 import { IsEthAddress } from '@/shared/validators.shared';
+import { isValidUsername } from '../utils/is-valid-username';
 
 export type UserDocument = User & Document;
 
@@ -49,7 +50,18 @@ export class User {
   })
   @IsOptional()
   @IsString()
-  @Prop({ required: true, unique: true })
+  @Prop({
+    required: true,
+    unique: true,
+    minlength: 4,
+    maxlength: 20,
+    validate: {
+      validator: (username: string) =>
+        Promise.resolve(isValidUsername(username)),
+      message:
+        'Invalid username, only alphanumeric characters, underscores, dots, and hyphens are allowed.',
+    },
+  })
   username: string;
 
   @ApiResponseProperty({
