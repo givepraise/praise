@@ -233,7 +233,7 @@ export class UsersService {
    * - cannot contain two dots, two hyphens, or two underscores in a row
    * - should not already be taken
    */
-  generateValidUsername = async (username: string): Promise<string> => {
+  async generateValidUsername(username: string): Promise<string> {
     let newUsername = username
       .toLowerCase()
       .replace(/\s/g, '_')
@@ -252,7 +252,7 @@ export class UsersService {
     return this.generateValidUsername(
       `${newUsername.substring(0, 15)}${Math.floor(Math.random() * 900 + 100)}`,
     );
-  };
+  }
 
   /**
    * Generate username from user account name
@@ -261,9 +261,9 @@ export class UsersService {
    * @param userAccount
    * @returns {Promise<string>}
    */
-  generateUserNameFromAccount = async (
+  async generateUserNameFromAccount(
     userAccount: UserAccount,
-  ): Promise<string | null> => {
+  ): Promise<string | null> {
     let username;
     if (
       userAccount.platform === 'DISCORD' &&
@@ -275,7 +275,7 @@ export class UsersService {
     }
 
     return this.generateValidUsername(username);
-  };
+  }
   /**
    * Generates all export files - csv, json and parquet
    */

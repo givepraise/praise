@@ -66,7 +66,9 @@ describe('EthSignatureStrategy', () => {
     });
 
     test('identityEthAddress not found', async () => {
-      usersService.findOneByEth = jest.fn().mockResolvedValue(null);
+      usersService.findOneByEth = jest.fn().mockImplementation(() => {
+        throw new Error();
+      });
 
       await expect(
         ethSignatureStrategy.validate(userStub.identityEthAddress, 'signature'),
