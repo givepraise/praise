@@ -4,7 +4,9 @@ import {
   Get,
   Param,
   Patch,
+  Res,
   SerializeOptions,
+  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
@@ -18,6 +20,10 @@ import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoo
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ConstantsProvider } from '@/constants/constants.provider';
+import { Response } from 'express';
+import { upploadStorage } from './utils/upload-storage';
 
 @Controller('settings')
 @ApiTags('Settings')
@@ -27,7 +33,10 @@ import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-pe
 @UseInterceptors(MongooseClassSerializerInterceptor(Setting))
 @EnforceAuthAndPermissions()
 export class SettingsController {
-  constructor(private readonly settingsService: SettingsService) {}
+  constructor(
+    private readonly settingsService: SettingsService,
+    private readonly constants: ConstantsProvider,
+  ) {}
 
   @Get()
   @ApiOperation({
@@ -76,5 +85,41 @@ export class SettingsController {
     @Body() data: SetSettingDto,
   ): Promise<Setting> {
     return this.settingsService.setOne(id, data);
+  }
+
+  @Patch(':id/upload')
+  @ApiOperation({
+    summary: 'Upload a file for a setting',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Updated setting.',
+    type: Setting,
+  })
+  @ApiParam({ name: 'id', type: String })
+  @UseInterceptors(
+    FileInterceptor('value', {
+      storage: upploadStorage,
+    }),
+  )
+  @Permissions(Permission.SettingsManage)
+  async setWithUpload(
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.settingsService.setImageSetting(id, file);
+  }
+
+  @Get('uploads/:file')
+  @ApiOperation({
+    summary: 'Serve an uploaded settings file.',
+  })
+  @ApiParam({ name: 'file', type: String })
+  @Permissions(Permission.SettingsView)
+  async serveUpload(
+    @Param('file') file: string,
+    @Res() res: Response,
+  ): Promise<any> {
+    res.sendFile(file, { root: this.constants.uploadDirectory });
   }
 }
