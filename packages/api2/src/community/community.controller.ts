@@ -2,7 +2,7 @@ import {
   BadRequestException, Body,
   Controller,
   Get,
-  Param, Patch, Post, Query,
+  Param, Patch, Post, Put, Query,
   SerializeOptions,
   UseGuards,
   UseInterceptors
@@ -18,13 +18,14 @@ import { UserWithStatsDto } from '@/users/dto/user-with-stats.dto';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { CommunityPaginatedResponseDto } from './dto/community-pagination-model.dto';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
-import { ObjectId, Schema } from 'mongoose';
+import { ObjectId, Schema, Types } from 'mongoose';
 import { PeriodDetailsDto } from '@/periods/dto/period-details.dto';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { CreatePeriodInputDto } from '@/periods/dto/create-period-input.dto';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
 import { RequestWithAuthContext } from '@/auth/interfaces/request-with-auth-context.interface';
 import { RequestContext } from 'nestjs-request-context';
+import { UpdateCommunityByAdminInputDto } from './dto/update-community-by-admin-input.dto';
 
 
 @Controller('communities')
@@ -53,10 +54,27 @@ export class CommunityController {
   async create(
     @Body() createCommunityInputDto: CreateCommunityInputDto
   ): Promise<Community> {
-    const req: RequestWithAuthContext = RequestContext.currentContext.req;
     return this.communityService.create(
-      req?.user?.identityEthAddress as string,
       createCommunityInputDto);
+  }
+
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update community' })
+  @ApiResponse({
+    status: 200,
+    description: 'Community',
+    type: CreateCommunityInputDto
+  })
+  @Permissions(Permission.CommunitiesUpdate)
+  @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
+  async update(
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Body() updateCommunityInputDto: UpdateCommunityByAdminInputDto
+  ): Promise<Community> {
+    return this.communityService.update(
+      id,
+      updateCommunityInputDto);
   }
 
 
@@ -89,6 +107,6 @@ export class CommunityController {
     return community;
   }
 
-  // TODO Implement webservice activate/deactivate/update  communities
+  // TODO Implement webservice activate/deactivate/update  communities for admin panel usage in future
 
 }

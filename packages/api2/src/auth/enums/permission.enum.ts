@@ -43,5 +43,6 @@ export enum Permission {
   // Community
   CommunitiesFind = 'communities:find',
   CommunitiesCreate = 'communities:create',
+  CommunitiesUpdate = 'communities:update',
 
 }

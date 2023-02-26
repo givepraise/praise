@@ -74,6 +74,18 @@ const PERMISSION_APIKEY_READWRITE = [...PERMISSIONS_USER];
 const PERMISSION_DISCORD_BOT = [
   Permission.PraiseCreate,
   Permission.PraiseForward,
+  Permission.CommunitiesFind,
+];
+
+
+/**
+ * Setup Web  permissions
+ * The setup web is in charge for managing communities
+ */
+const PERMISSION_SETUP_WEB = [
+  Permission.CommunitiesCreate,
+  Permission.CommunitiesFind,
+  Permission.CommunitiesUpdate,
 ];
 
 /**

@@ -6,9 +6,9 @@ import { User } from '@/users/schemas/users.schema';
 import { Community, CommunityModel } from './schemas/community.schema';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { CommunityPaginatedResponseDto } from './dto/community-pagination-model.dto';
-import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
-import { UpdateCommunityBySuperAdminInputDto } from './dto/update-community-by-superAdmin-input.dto';
+import { UpdateCommunityByAdminInputDto } from './dto/update-community-by-admin-input.dto';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
+import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
 
 @Injectable()
 export class CommunityService {
@@ -64,7 +64,7 @@ export class CommunityService {
     return communityPagination;
   }
 
-  async updateByCommunityAdmin(_id: Types.ObjectId, community: UpdateCommunityInputDto): Promise<Community> {
+  async updateByCommunityAdmin(_id: Types.ObjectId, community: UpdateCommunityByAdminInputDto): Promise<Community> {
     // TODO check if admin has access to community
     const communityDocument = await this.communityModel.findById(_id);
     if (!communityDocument) throw new ServiceException('Community not found.');
@@ -76,7 +76,8 @@ export class CommunityService {
     await communityDocument.save();
     return this.findOneById(communityDocument._id);
   }
-  async updateBySuperAdmin(_id: Types.ObjectId, community: UpdateCommunityBySuperAdminInputDto): Promise<Community> {
+
+  async update(_id: Types.ObjectId, community: UpdateCommunityInputDto): Promise<Community> {
     const communityDocument = await this.communityModel.findById(_id);
     if (!communityDocument) throw new ServiceException('Community not found.');
 
@@ -88,11 +89,10 @@ export class CommunityService {
     return this.findOneById(communityDocument._id);
   }
 
-  async create(creator: string, communityDto: CreateCommunityInputDto): Promise<Community> {
+  async create(communityDto: CreateCommunityInputDto): Promise<Community> {
     const community = new this.communityModel({
       ...communityDto,
       isPublic: true,
-      creator,
     });
     await community.save();
     return community.toObject();
