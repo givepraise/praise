@@ -5,7 +5,7 @@ import { SettingsService } from '@/settings/settings.service';
 
 @Injectable()
 /**
- * Passport strategy that bypasses authentication for routesconfigured in the
+ * Passport strategy that bypasses authentication for routes configured in the
  * BYPASS_ROUTE_AUTH setting.
  */
 export class BypassStrategy extends PassportStrategy(Strategy, 'bypass') {
@@ -23,10 +23,12 @@ export class BypassStrategy extends PassportStrategy(Strategy, 'bypass') {
     }
 
     // Check if the current route is in the bypass list
-    const bypassRoutesList = bypassRoutesSetting.valueRealized as string[];
-    if (bypassRoutesList.includes(req.url)) {
-      // If so, return a dummy user with the USER role
-      return { roles: ['USER'] };
+    const bypassRoutesList = bypassRoutesSetting.value.split(',');
+    for (const route of bypassRoutesList) {
+      if (req.url.startsWith(route)) {
+        // If so, return a dummy user with the USER role
+        return { roles: ['USER'] };
+      }
     }
     return null;
   }
