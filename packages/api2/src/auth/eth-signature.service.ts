@@ -40,7 +40,9 @@ export class EthSignatureService {
       return this.usersService.create({
         identityEthAddress,
         rewardsEthAddress: identityEthAddress,
-        username: identityEthAddress,
+        username: await this.usersService.generateValidUsername(
+          identityEthAddress,
+        ),
         nonce,
       });
     }

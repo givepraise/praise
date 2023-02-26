@@ -353,11 +353,11 @@ describe('UserController (E2E)', () => {
         app,
         accessToken,
         {
-          username: 'newUsername',
+          username: 'new_username',
         },
       ).expect(200);
 
-      expect(response.body.username).toBe('newUsername');
+      expect(response.body.username).toBe('new_username');
     });
 
     test('400 response when trying to update not whitelisted fields', async () => {
@@ -469,11 +469,11 @@ describe('UserController (E2E)', () => {
       await usersSeeder.seedUser({
         identityEthAddress: Wallet.createRandom().address,
         rewardsAddress: Wallet.createRandom().address,
-        username: 'alreadyInUse',
+        username: 'already_in_use',
       });
 
       await authorizedPatchRequest(`/users/${user._id}`, app, accessToken, {
-        username: 'alreadyInUse',
+        username: 'already_in_use',
       }).expect(409);
     });
 

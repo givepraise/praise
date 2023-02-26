@@ -291,7 +291,6 @@ describe('EventLog (E2E)', () => {
 
       expect(user.identityEthAddress).toBe(wallet.address);
       expect(user.rewardsEthAddress).toBe(wallet.address);
-      expect(user.username).toBe(ua.name);
     });
   });
 });

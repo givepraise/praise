@@ -15,10 +15,13 @@ export class UsersSeeder {
    * @returns {Promise<UserDocument>}
    */
   seedUser = async (userData?: unknown): Promise<User> => {
+    const username = await this.usersService.generateValidUsername(
+      faker.internet.userName().substring(0, 15),
+    );
     const user = await this.usersService.getModel().create({
       identityEthAddress: faker.finance.ethereumAddress(),
       rewardsEthAddress: faker.finance.ethereumAddress(),
-      username: faker.internet.userName().substring(0, 15),
+      username,
       roles: [AuthRole.USER],
       ...(userData as any),
     });
