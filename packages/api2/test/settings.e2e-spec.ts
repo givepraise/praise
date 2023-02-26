@@ -20,6 +20,8 @@ import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
 import { Setting } from '@/settings/schemas/settings.schema';
 import { SettingsService } from '@/settings/settings.service';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 
 class LoggedInUser {
   accessToken: string;
@@ -52,6 +54,8 @@ describe('Period Settings (E2E)', () => {
         forbidNonWhitelisted: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();

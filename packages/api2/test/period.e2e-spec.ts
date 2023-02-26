@@ -38,6 +38,8 @@ import { PeriodDetailsQuantifierDto } from '@/periods/dto/period-details-quantif
 import { SettingsService } from '@/settings/settings.service';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { faker } from '@faker-js/faker';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 
 class LoggedInUser {
   accessToken: string;
@@ -97,6 +99,8 @@ describe('Period (E2E)', () => {
         forbidNonWhitelisted: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();

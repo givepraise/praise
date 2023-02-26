@@ -96,8 +96,12 @@ export const useSetSetting = (): useSetSettingReturn => {
         setting: SettingDto
       ): Promise<AxiosResponse<SettingDto> | AxiosError | undefined> => {
         if (!instanceOfSetting(setting)) return;
+
+        // If the setting is an image, we need to use a different endpoint.
+        const upload = setting.type === 'Image' ? '/upload' : '';
+
         const response: AxiosResponse<SettingDto> = await apiAuthClient.patch(
-          `/settings/${setting._id}`,
+          `/settings/${setting._id}${upload}`,
           reqData(setting)
         );
         if (isResponseOk(response)) {

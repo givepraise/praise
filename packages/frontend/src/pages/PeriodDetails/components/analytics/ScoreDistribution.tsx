@@ -16,13 +16,7 @@ export const ScoreDistribution = (): JSX.Element | null => {
       periodId,
       key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
     })
-  ) as string;
-
-  const allowedValuesArray = allowedValues.split(',').map((value) => {
-    const parsedValue = parseInt(value, 10);
-    if (isNaN(parsedValue)) return 0;
-    return parsedValue;
-  });
+  ) as number[];
 
   if (!scoreDistribution) return null;
 
@@ -30,7 +24,7 @@ export const ScoreDistribution = (): JSX.Element | null => {
     (a, b) => a[0] - b[0]
   );
   const scoreDistributionOnlyAllowedValues = sortedScoreDistribution.filter(
-    (entry) => allowedValuesArray.includes(entry[0])
+    (entry) => allowedValues.includes(entry[0])
   );
 
   const options: ChartOptions<'bar'> = {

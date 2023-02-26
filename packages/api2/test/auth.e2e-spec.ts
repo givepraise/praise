@@ -13,6 +13,8 @@ import { EventLogModule } from '@/event-log/event-log.module';
 import { runDbMigrations } from '@/database/migrations';
 import { ApiKeySeeder } from '@/database/seeder/api-key.seeder';
 import { ApiKeyModule } from '@/api-key/api-key.module';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 
 describe('AuthController (E2E)', () => {
   let app: INestApplication;
@@ -33,6 +35,8 @@ describe('AuthController (E2E)', () => {
         transform: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();

@@ -223,15 +223,47 @@ export class UsersService {
   }
 
   /**
+   * A valid username is:
+   * - is lowercase
+   * - minimum 3 characters
+   * - maximum 20 characters
+   * - only alphanumeric characters, underscores, dots, and hyphens
+   * - cannot start with a dot or hyphen
+   * - cannot end with a dot or hyphen
+   * - cannot contain two dots, two hyphens, or two underscores in a row
+   * - should not already be taken
+   */
+  async generateValidUsername(username: string): Promise<string> {
+    let newUsername = username
+      .toLowerCase()
+      .replace(/\s/g, '_')
+      .replace(/[^a-z0-9_.-]/g, '')
+      .replace(/[-_.]{2,}/g, '')
+      .replace(/^[.-]/, '')
+      .replace(/[.-]$/, '')
+      .substring(0, 20);
+
+    if (newUsername.length < 4) {
+      newUsername = `${newUsername}${Math.floor(Math.random() * 900 + 100)}`;
+    }
+
+    const exists = await this.userModel.find({ username: newUsername }).lean();
+    if (exists.length === 0) return newUsername;
+    return this.generateValidUsername(
+      `${newUsername.substring(0, 15)}${Math.floor(Math.random() * 900 + 100)}`,
+    );
+  }
+
+  /**
    * Generate username from user account name
    * If username is already taken than create one with discriminator
    *
    * @param userAccount
    * @returns {Promise<string>}
    */
-  generateUserNameFromAccount = async (
+  async generateUserNameFromAccount(
     userAccount: UserAccount,
-  ): Promise<string | null> => {
+  ): Promise<string | null> {
     let username;
     if (
       userAccount.platform === 'DISCORD' &&
@@ -242,11 +274,8 @@ export class UsersService {
       username = userAccount.name;
     }
 
-    const exists = await this.userModel.find({ username }).lean();
-    if (exists.length === 0) return username;
-    if (userAccount.platform === 'DISCORD') return userAccount.name;
-    return null;
-  };
+    return this.generateValidUsername(username);
+  }
   /**
    * Generates all export files - csv, json and parquet
    */
