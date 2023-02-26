@@ -7,7 +7,7 @@ export interface SettingDto {
   description?: string;
   defaultValue?: string;
   value?: string;
-  valueRealized?: string | boolean | number | number[] | string[] | object;
+  valueRealized?: string | string[] | boolean | number | number[] | undefined;
   type: string;
   options?: string;
   group: SettingGroup;
