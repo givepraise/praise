@@ -4,12 +4,11 @@ import {
   IsNotEmpty,
   IsString,
   Validate,
-  ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Document, Types } from 'mongoose';
-import { ExposeId } from '@/shared/expose-id.decorator';
+import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 
 export type ApiKeyDocument = ApiKey & Document;
@@ -20,11 +19,11 @@ export type ApiKeyDocument = ApiKey & Document;
  */
 @ValidatorConstraint({ name: 'allowedApiKeyRole', async: false })
 export class AllowedApiKeyRole implements ValidatorConstraintInterface {
-  validate(role: string, args: ValidationArguments) {
+  validate(role: string) {
     return AuthRole.APIKEY_READWRITE === role || AuthRole.APIKEY_READ === role;
   }
 
-  defaultMessage(args: ValidationArguments) {
+  defaultMessage() {
     return 'Role ($value) is not allowed. Allowed roles: APIKEY_READWRITE, APIKEY_READ';
   }
 }

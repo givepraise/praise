@@ -1,16 +1,12 @@
-import { ServiceException } from '@/shared/service-exception';
-import { UtilsProvider } from '@/utils/utils.provider';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Request } from 'express';
 import { Model, Types } from 'mongoose';
 import { PeriodSetting } from './schemas/periodsettings.schema';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
-import { UploadedFile } from 'express-fileupload';
 import { PeriodsService } from '@/periods/services/periods.service';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 import { EventLogService } from '@/event-log/event-log.service';
-import { RequestContext } from 'nestjs-request-context';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { SettingsService } from '@/settings/settings.service';
 import { validate } from '@/settings/utils/settings.validate';
@@ -25,7 +21,6 @@ export class PeriodSettingsService {
     private periodsService: PeriodsService,
     @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
-    private utils: UtilsProvider,
     private eventLogService: EventLogService,
   ) {}
 
@@ -49,7 +44,7 @@ export class PeriodSettingsService {
     return settings.map((setting) => new PeriodSetting(setting));
   }
 
-  async findOneById(
+  async findOneBySettingIdAndPeriodId(
     settingId: Types.ObjectId,
     periodId: Types.ObjectId,
   ): Promise<PeriodSetting> {
@@ -92,34 +87,10 @@ export class PeriodSettingsService {
 
     const originalValue = periodSetting.value;
 
-    if (setting.type === 'Image') {
-      const req: Request = RequestContext.currentContext.req;
-      const file = req.files;
-      if (!file) {
-        throw new ServiceException('Uploaded file is missing.');
-      }
-
-      const logo: UploadedFile = file['value'] as UploadedFile;
-      if (!this.utils.isImage(logo)) {
-        throw new ServiceException('Uploaded file is not an image.');
-      }
-
-      // Remove previous file
-      try {
-        periodSetting.value &&
-          (await this.utils.removeFile(periodSetting.value));
-      } catch (err) {
-        // Ignore error
-      }
-
-      const savedFilename = await this.utils.saveFile(logo);
-      periodSetting.value = savedFilename;
-    } else {
-      if (typeof data.value === 'undefined') {
-        throw new ServiceException('Value is required field');
-      }
-      periodSetting.value = data.value;
+    if (typeof data.value === 'undefined') {
+      throw new ServiceException('Value is required field');
     }
+    periodSetting.value = data.value;
 
     await periodSetting.save();
 
@@ -130,7 +101,7 @@ export class PeriodSettingsService {
       }" from "${originalValue || ''}" to "${setting.value || ''}"`,
     });
 
-    return this.findOneById(settingId, periodId);
+    return this.findOneBySettingIdAndPeriodId(settingId, periodId);
   }
 
   /**

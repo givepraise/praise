@@ -35,3 +35,9 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 .env
+
+# Cache folder for exports
+exports
+
+# File uploads
+uploads

@@ -25,7 +25,6 @@ import { DuplicateSearchDialog } from './DuplicateSearchDialog';
 import { QuantifyPraiseRow } from './QuantifyPraiseRow';
 import { QuantifyBackNextLink } from './BackNextLink';
 import { DismissDialog } from './DismissDialog';
-import { stringToNumberArray } from '@/utils/numbers';
 
 interface Props {
   periodId: string;
@@ -70,13 +69,7 @@ export const QuantifyTable = ({
       periodId,
       key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
     })
-  ) as string;
-
-  const allowedValuesArray = allowedValues.split(',').map((value) => {
-    const parsedValue = parseInt(value, 10);
-    if (isNaN(parsedValue)) return 0;
-    return parsedValue;
-  });
+  ) as number[];
 
   const filterBySearchValue = React.useCallback(
     (data: PraiseDto[] | undefined): PraiseDto[] => {
@@ -131,7 +124,8 @@ export const QuantifyTable = ({
   ): void => {
     const praiseIds = selectedPraises.map((praise) => praise._id);
 
-    void quantifyMultiple(score, praiseIds);
+    const params = { score };
+    void quantifyMultiple(params, praiseIds);
     setSelectedPraises([]);
   };
 
@@ -251,7 +245,7 @@ export const QuantifyTable = ({
                     praise={praise}
                     periodId={periodId}
                     usePseudonyms={usePseudonyms}
-                    allowedValues={allowedValuesArray}
+                    allowedValues={allowedValues}
                     checked={isChecked(praise)}
                     onToggleCheck={(): void => handleToggleCheckbox(praise)}
                     onSetScore={(score): void => handleSetScore(praise, score)}
@@ -291,7 +285,7 @@ export const QuantifyTable = ({
         open={isQuantifyMultipleDialogOpen}
         onClose={(): void => setIsQuantifyMultipleDialogOpen(false)}
         selectedPraises={selectedPraises}
-        allowedValues={allowedValuesArray}
+        allowedValues={allowedValues}
         onSetScore={(score, selectedPraises): void =>
           handleSetMultipleScore(score, selectedPraises)
         }

@@ -1,5 +1,3 @@
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import {
   BadRequestException,
   Body,
@@ -10,7 +8,6 @@ import {
   Post,
   Put,
   SerializeOptions,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiKeyService } from './api-key.service';
@@ -23,15 +20,15 @@ import { Types } from 'mongoose';
 import { ApiKey } from './schemas/api-key.schema';
 import { UpdateDescriptionInputDto } from './dto/update-description-input.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MongooseClassSerializerInterceptor } from '@/shared/mongoose-class-serializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
+import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
 
 @Controller('api-key')
 @ApiTags('API Key')
-@UseGuards(PermissionsGuard)
-@UseGuards(JwtAuthGuard)
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
+@EnforceAuthAndPermissions()
 export class ApiKeyController {
   constructor(private readonly apiKeyService: ApiKeyService) {}
   @Post()

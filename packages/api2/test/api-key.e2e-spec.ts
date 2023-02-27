@@ -1,14 +1,10 @@
 import request from 'supertest';
-import {
-  ConsoleLogger,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
+import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
   authorizedDeleteRequest,
@@ -22,6 +18,8 @@ import { ApiKeyService } from '@/api-key/api-key.service';
 import { ApiKeyModule } from '@/api-key/api-key.module';
 import { UsersModule } from '@/users/users.module';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 
 describe('EventLog (E2E)', () => {
   let app: INestApplication;
@@ -38,12 +36,15 @@ describe('EventLog (E2E)', () => {
       providers: [UsersSeeder],
     }).compile();
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();

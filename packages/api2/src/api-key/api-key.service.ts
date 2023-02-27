@@ -4,19 +4,17 @@ import { Model, Types } from 'mongoose';
 import { ApiKey, ApiKeyDocument } from './schemas/api-key.schema';
 import * as bcrypt from 'bcrypt';
 import { CreateApiKeyInputDto } from './dto/create-api-key-input.dto';
-import { UtilsProvider } from '@/utils/utils.provider';
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response';
-import { ServiceException } from '@/shared/service-exception';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { RequestContext } from 'nestjs-request-context';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class ApiKeyService {
   constructor(
     @InjectModel(ApiKey.name)
     private readonly apiKeyModel: Model<ApiKeyDocument>,
-    private readonly utils: UtilsProvider,
     private readonly eventLogService: EventLogService,
   ) {}
 
@@ -37,7 +35,7 @@ export class ApiKeyService {
   async createApiKey(
     createApiKeyDto: CreateApiKeyInputDto,
   ): Promise<CreateApiKeyResponseDto> {
-    const key = await this.utils.randomString(32);
+    const key = randomBytes(32).toString('hex');
     const name = key.slice(0, 8);
     const hash = await bcrypt.hash(key, 10);
 

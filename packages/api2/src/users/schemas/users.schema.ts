@@ -1,13 +1,14 @@
 import { Exclude, Type } from 'class-transformer';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { Types, model } from 'mongoose';
+import { Types } from 'mongoose';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
-import { ExposeId } from '@/shared/expose-id.decorator';
+import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 import { UserAccountNoUserId } from '@/useraccounts/dto/useraccount-no-user-id.dto';
 import { IsOptional, IsString } from 'class-validator';
 import { IsEthAddress } from '@/shared/validators.shared';
+import { isValidUsername } from '../utils/is-valid-username';
 
 export type UserDocument = User & Document;
 
@@ -49,7 +50,18 @@ export class User {
   })
   @IsOptional()
   @IsString()
-  @Prop({ required: true, unique: true })
+  @Prop({
+    required: true,
+    unique: true,
+    minlength: 4,
+    maxlength: 20,
+    validate: {
+      validator: (username: string) =>
+        Promise.resolve(isValidUsername(username)),
+      message:
+        'Invalid username, only alphanumeric characters, underscores, dots, and hyphens are allowed.',
+    },
+  })
   username: string;
 
   @ApiResponseProperty({
@@ -93,3 +105,13 @@ UserSchema.virtual('accounts', {
   localField: '_id',
   foreignField: 'user',
 });
+
+export const UsersExportSqlSchema = `
+ _id VARCHAR, 
+ username VARCHAR, 
+ "identityEthAddress" VARCHAR, 
+ "rewardsEthAddress" VARCHAR, 
+ roles VARCHAR, 
+ "createdAt" TIMESTAMP, 
+ "updatedAt" TIMESTAMP
+`;

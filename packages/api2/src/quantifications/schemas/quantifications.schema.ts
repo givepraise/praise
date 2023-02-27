@@ -3,8 +3,8 @@ import { Types } from 'mongoose';
 import { Praise } from '@/praise/schemas/praise.schema';
 import { User } from '@/users/schemas/users.schema';
 import { ApiResponseProperty } from '@nestjs/swagger';
-import { ExposeId } from '@/shared/expose-id.decorator';
 import { Type } from 'class-transformer';
+import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 
 export type QuantificationDocument = Quantification & Document;
 
@@ -40,7 +40,7 @@ export class Quantification {
   })
   dismissed: boolean;
 
-  @Prop({ type: Types.ObjectId, ref: 'Praise' })
+  @Prop({ type: Types.ObjectId, ref: 'Praise', index: true })
   // TODO: This is not working, adding the example here causes a circular dependency error
   // @ApiResponseProperty({
   //   example: '639b178f19296ee0f2d0585d',
@@ -76,3 +76,15 @@ export class Quantification {
 
 const QuantificationsSchema = SchemaFactory.createForClass(Quantification);
 export { QuantificationsSchema };
+
+export const QuantificationsExportSqlSchema = `
+  _id VARCHAR, 
+  praise VARCHAR, 
+  quantifier VARCHAR, 
+  score INTEGER, 
+  "scoreRealized" DOUBLE, 
+  dismissed BOOLEAN, 
+  "duplicatePraise" VARCHAR, 
+  "createdAt" TIMESTAMP, 
+  "updatedAt" TIMESTAMP
+`;

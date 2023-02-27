@@ -2,8 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SettingsController } from '../settings.controller';
 import { SettingsService } from '../settings.service';
 import { settingStub } from './stubs/setting.stub';
+import { ConstantsProvider } from '@/constants/constants.provider';
 
 jest.mock('@/settings/settings.service');
+jest.mock('@/constants/constants.provider');
 
 describe('SettingsController', () => {
   let settingsController: SettingsController;
@@ -12,7 +14,7 @@ describe('SettingsController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       controllers: [SettingsController],
-      providers: [SettingsService],
+      providers: [SettingsService, ConstantsProvider],
     }).compile();
 
     settingsController = module.get<SettingsController>(SettingsController);
@@ -40,7 +42,7 @@ describe('SettingsController', () => {
   describe('PUT /api/settings/:id', () => {
     it('200 response with json body containing a updated setting', async function () {
       const response = await settingsController.set(settingStub._id, {
-        description: 'New Description',
+        value: 'New Description',
       });
       expect(response._id).toEqual(settingStub._id);
     });

@@ -7,12 +7,18 @@ import { Permission } from './enums/permission.enum';
  */
 const PERMISSIONS_USER = [
   Permission.UsersFind,
+  Permission.UserUpdateProfile,
+  Permission.UsersExport,
   Permission.EventLogView,
   Permission.ApiKeyView,
   Permission.PraiseView,
+  Permission.PraiseExport,
   Permission.SettingsView,
   Permission.PeriodSettingsView,
   Permission.PeriodView,
+  Permission.PeriodExport,
+  Permission.QuantificationsExport,
+  Permission.UserAccountsExport,
 ];
 
 /**
@@ -56,6 +62,15 @@ const PERMISSION_APIKEY_READ = [...PERMISSIONS_USER];
 const PERMISSION_APIKEY_READWRITE = [...PERMISSIONS_USER];
 
 /**
+ * Discord bot permissions
+ * The discord bot can only praise users.
+ */
+const PERMISSION_DISCORD_BOT = [
+  Permission.PraiseCreate,
+  Permission.PraiseForward,
+];
+
+/**
  * Defines which permissions are required for each role. This is used by the
  * PermissionsGuard to check if the user has the required permissions to access
  * the route.
@@ -67,4 +82,5 @@ export const RolePermissions: { [key: string]: string[] } = {
   ADMIN: PERMISSIONS_ADMIN,
   APIKEY_READ: PERMISSION_APIKEY_READ,
   APIKEY_READWRITE: PERMISSION_APIKEY_READWRITE,
+  DISCORD_BOT: PERMISSION_DISCORD_BOT,
 };

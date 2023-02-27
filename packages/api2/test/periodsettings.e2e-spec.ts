@@ -1,14 +1,10 @@
 import request from 'supertest';
-import {
-  ConsoleLogger,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/service-exception.filter';
+import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
@@ -33,6 +29,8 @@ import { User } from '@/users/schemas/users.schema';
 import { Setting } from '@/settings/schemas/settings.schema';
 import { SettingsService } from '@/settings/settings.service';
 import { PeriodsService } from '@/periods/services/periods.service';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 
 class LoggedInUser {
   accessToken: string;
@@ -73,12 +71,13 @@ describe('Period Settings (E2E)', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();
@@ -187,6 +186,10 @@ describe('Period Settings (E2E)', () => {
         users[0].accessToken,
       );
       expect(response.status).toBe(200);
+
+      const ps = response.body;
+      expect(ps).toBeProperlySerialized();
+      expect(ps).toBeValidClass(PeriodSetting);
     });
 
     it('should return the all periodSettings for a given period', async () => {
@@ -205,6 +208,10 @@ describe('Period Settings (E2E)', () => {
       expect(response.body[0].period.name).toBe(period.name);
       expect(response.body[0].setting).toBeDefined();
       expect(response.body[0].setting.key).toBe(setting.key);
+
+      const ps = response.body[0];
+      expect(ps).toBeProperlySerialized();
+      expect(ps).toBeValidClass(PeriodSetting);
     });
   });
 
@@ -257,6 +264,9 @@ describe('Period Settings (E2E)', () => {
       expect(ps.period.name).toBe(period.name);
       expect(ps.setting).toBeDefined();
       expect(ps.setting.key).toBe(setting.key);
+
+      expect(ps).toBeProperlySerialized();
+      expect(ps).toBeValidClass(PeriodSetting);
     });
   });
 
@@ -324,8 +334,12 @@ describe('Period Settings (E2E)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toBeDefined();
-      expect(response.body.value).toBe(newValue);
+
+      const ps = response.body;
+      expect(ps).toBeDefined();
+      expect(ps.value).toBe(newValue);
+      expect(ps).toBeProperlySerialized();
+      expect(ps).toBeValidClass(PeriodSetting);
     });
 
     test('Invalid settings value - Integer', async () => {
@@ -354,6 +368,7 @@ describe('Period Settings (E2E)', () => {
 
       expect(response.status).toBe(400);
     });
+
     test('Valid settings value - Integer', async () => {
       const value = 99;
       const s = await settingsSeeder.seedSettings({
@@ -379,8 +394,12 @@ describe('Period Settings (E2E)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toBeDefined();
-      expect(response.body.value).toBe(newValue.toString());
+
+      const ps = response.body;
+      expect(ps).toBeDefined();
+      expect(ps.value).toBe(newValue.toString());
+      expect(ps).toBeProperlySerialized();
+      expect(ps).toBeValidClass(PeriodSetting);
     });
 
     test('Invalid settings value - Float', async () => {
@@ -409,6 +428,7 @@ describe('Period Settings (E2E)', () => {
 
       expect(response.status).toBe(400);
     });
+
     test('Valid settings value - Float', async () => {
       const value = '99.99';
       const s = await settingsSeeder.seedSettings({
@@ -434,8 +454,12 @@ describe('Period Settings (E2E)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toBeDefined();
-      expect(response.body.value).toBe(newValue.toString());
+
+      const ps = response.body;
+      expect(ps).toBeDefined();
+      expect(ps.value).toBe(newValue.toString());
+      expect(ps).toBeProperlySerialized();
+      expect(ps).toBeValidClass(PeriodSetting);
     });
 
     test('Invalid settings value - Boolean', async () => {
@@ -464,6 +488,7 @@ describe('Period Settings (E2E)', () => {
 
       expect(response.status).toBe(400);
     });
+
     test('Valid settings value - Boolean', async () => {
       const value = true;
       const s = await settingsSeeder.seedSettings({
@@ -489,8 +514,12 @@ describe('Period Settings (E2E)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toBeDefined();
-      expect(response.body.value).toBe(newValue.toString());
+
+      const ps = response.body;
+      expect(ps).toBeDefined();
+      expect(ps.value).toBe(newValue.toString());
+      expect(ps).toBeProperlySerialized();
+      expect(ps).toBeValidClass(PeriodSetting);
     });
 
     test('Invalid settings value - IntegerList', async () => {
@@ -519,6 +548,7 @@ describe('Period Settings (E2E)', () => {
 
       expect(response.status).toBe(400);
     });
+
     test('Valid settings value - IntegerList', async () => {
       const value = '1, 2, 3';
       const s = await settingsSeeder.seedSettings({
@@ -544,8 +574,12 @@ describe('Period Settings (E2E)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toBeDefined();
-      expect(response.body.value).toBe(newValue);
+
+      const ps = response.body;
+      expect(ps).toBeDefined();
+      expect(ps.value).toBe(newValue);
+      expect(ps).toBeProperlySerialized();
+      expect(ps).toBeValidClass(PeriodSetting);
     });
 
     test('Invalid settings value - JSON', async () => {
@@ -600,8 +634,12 @@ describe('Period Settings (E2E)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toBeDefined();
-      expect(response.body.value).toBe(newValue);
+
+      const ps = response.body;
+      expect(ps).toBeDefined();
+      expect(ps.value).toBe(newValue);
+      expect(ps).toBeProperlySerialized();
+      expect(ps).toBeValidClass(PeriodSetting);
     });
   });
 });
