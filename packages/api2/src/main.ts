@@ -10,8 +10,12 @@ import { version } from '../package.json';
 import { Logger } from './shared/logger';
 import { MongoValidationErrorFilter } from './shared/filters/mongo-validation-error.filter';
 import { MongoServerErrorFilter } from './shared/filters/mongo-server-error.filter';
+import { envCheck } from './shared/env.shared';
 
 async function bootstrap() {
+  // Check that all required ENV variables are set
+  envCheck();
+
   // Create an instance of the Nest app
   const app = await NestFactory.create(AppModule);
 
