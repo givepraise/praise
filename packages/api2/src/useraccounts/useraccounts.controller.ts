@@ -68,7 +68,7 @@ export class UserAccountsController {
   @ApiProduces('application/json')
   @Permissions(Permission.UserAccountsView)
   async GetOne(
-    @Query('id', ObjectIdPipe) id?: Types.ObjectId,
+    @Query('id') id?: string,
     @Query('accountId') accountId?: string,
   ): Promise<UserAccount> {
     const userAccount = await this.userAccountsService.findOneByIdOrAccountId(
@@ -92,7 +92,7 @@ export class UserAccountsController {
   @Permissions(Permission.UserAccountsUpdate)
   async UpdateOne(
     @Body() updateUserAccountBody: UpdateUserAccountInputDto,
-    @Query('id', ObjectIdPipe) id?: Types.ObjectId,
+    @Query('id') id?: string,
     @Query('accountId') accountId?: string,
   ): Promise<UserAccount | null> {
     return this.userAccountsService.updateByIdOrAccountId(

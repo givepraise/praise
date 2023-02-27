@@ -170,7 +170,7 @@ describe('UserAccountsController (E2E)', () => {
     test('401 when not authenticated', async () => {
       await request(server)
         .put(
-          `/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`,
+          `/useraccounts?id=${userAccounts[0]._id}&accountId=${userAccounts[0].accountId}`,
         )
         .send()
         .expect(401);
@@ -180,7 +180,7 @@ describe('UserAccountsController (E2E)', () => {
       const accountName = faker.name.firstName();
       const avatarId = faker.internet.url();
       const response = await authorizedPutRequest(
-        `/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`,
+        `/useraccounts?id=${userAccounts[0]._id}&accountId=${userAccounts[0].accountId}`,
         app,
         accessToken,
         {
@@ -196,6 +196,30 @@ describe('UserAccountsController (E2E)', () => {
       );
       expect(response.body.name).toEqual(accountName);
       expect(response.body.platform).toEqual('DISCORD');
+      expect(response.body.avatarId).toEqual(avatarId);
+      expect(String(response.body.user)).toEqual(String(userAccounts[0].user));
+    });
+
+    test('200 and correct put body when authenticated', async () => {
+      const accountName = faker.name.firstName();
+      const avatarId = faker.internet.url();
+      const response = await authorizedPutRequest(
+        `/useraccounts?accountId=${userAccounts[0].accountId}`,
+        app,
+        accessToken,
+        {
+          name: accountName,
+          avatarId: avatarId,
+          platform: 'FACEBOOK',
+        },
+      ).expect(200);
+
+      expect(response.body).toBeDefined();
+      expect(response.body.accountId).toEqual(
+        String(userAccounts[0].accountId),
+      );
+      expect(response.body.name).toEqual(accountName);
+      expect(response.body.platform).toEqual('FACEBOOK');
       expect(response.body.avatarId).toEqual(avatarId);
       expect(String(response.body.user)).toEqual(String(userAccounts[0].user));
     });
@@ -244,7 +268,7 @@ describe('UserAccountsController (E2E)', () => {
     test('401 when not authenticated', async () => {
       await request(server)
         .get(
-          `/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`,
+          `/useraccounts?id=${userAccounts[0]._id}&accountId=${userAccounts[0].accountId}`,
         )
         .send()
         .expect(401);
@@ -252,7 +276,7 @@ describe('UserAccountsController (E2E)', () => {
 
     test('200 when authenticated', async () => {
       await authorizedGetRequest(
-        `/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`,
+        `/useraccounts?id=${userAccounts[0]._id}&accountId=${userAccounts[0].accountId}`,
         app,
         accessToken,
       ).expect(200);
@@ -260,7 +284,17 @@ describe('UserAccountsController (E2E)', () => {
 
     test('returns the fetched user account by id', async () => {
       const response = await authorizedGetRequest(
-        `/useraccounts?id=${userAccounts[0].user}&accountId=${userAccounts[0].accountId}`,
+        `/useraccounts?id=${userAccounts[0]._id}`,
+        app,
+        accessToken,
+      ).expect(200);
+      expect(response.body._id).toBe(String(userAccounts[0]._id));
+      expect(response.body.activateToken).toBeUndefined();
+    });
+
+    test('returns the fetched user account by account_id', async () => {
+      const response = await authorizedGetRequest(
+        `/useraccounts?accountId=${userAccounts[0].accountId}`,
         app,
         accessToken,
       ).expect(200);

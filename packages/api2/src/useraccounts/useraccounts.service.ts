@@ -62,10 +62,12 @@ export class UserAccountsService {
 
   async updateByIdOrAccountId(
     updateUserAccountDto: UpdateUserAccountInputDto,
-    _id?: Types.ObjectId,
+    _id?: string,
     accountId?: string,
   ): Promise<UserAccount | null> {
-    if (_id) return await this.updateUserAccountById(_id, updateUserAccountDto);
+    if (_id && Types.ObjectId.isValid(_id)) return await this.updateUserAccountById(
+      new Types.ObjectId(_id), updateUserAccountDto
+    );
     if (accountId)
       return await this.updateUserAccountByAccountId(
         accountId,
@@ -135,10 +137,12 @@ export class UserAccountsService {
    * Returns a user account by Mongo ID or AccountId
    */
   async findOneByIdOrAccountId(
-    _id?: Types.ObjectId,
+    _id?: string,
     accountId?: string,
   ): Promise<UserAccount | null> {
-    if (_id) return await this.findOneById(_id);
+    if (_id && Types.ObjectId.isValid(_id)) return await this.findOneById(
+      new Types.ObjectId(_id)
+    );
     if (accountId) return await this.findOneByUserAccountId(accountId);
 
     throw new ServiceException('No identifier provided.');
