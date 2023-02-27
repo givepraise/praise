@@ -85,10 +85,10 @@ export const SinglePeriodSettingValueRealized = selectorFamily({
   key: 'SinglePeriodSettingValueRealized',
   get:
     (params: SinglePeriodSettingParams) =>
-    ({ get }): string | number | number[] | boolean | File | undefined => {
+    ({ get }): string | string[] | boolean | number | number[] | undefined => {
       const setting = get(SinglePeriodSetting(params));
-      // TODO: Handle typing of setting value
-      return setting && setting.value;
+      if (!setting?.valueRealized) return undefined;
+      return setting.valueRealized;
     },
 });
 

@@ -65,9 +65,11 @@ export class UserAccountsService {
     _id?: string,
     accountId?: string,
   ): Promise<UserAccount | null> {
-    if (_id && Types.ObjectId.isValid(_id)) return await this.updateUserAccountById(
-      new Types.ObjectId(_id), updateUserAccountDto
-    );
+    if (_id && Types.ObjectId.isValid(_id))
+      return await this.updateUserAccountById(
+        new Types.ObjectId(_id),
+        updateUserAccountDto,
+      );
     if (accountId)
       return await this.updateUserAccountByAccountId(
         accountId,
@@ -140,9 +142,8 @@ export class UserAccountsService {
     _id?: string,
     accountId?: string,
   ): Promise<UserAccount | null> {
-    if (_id && Types.ObjectId.isValid(_id)) return await this.findOneById(
-      new Types.ObjectId(_id)
-    );
+    if (_id && Types.ObjectId.isValid(_id))
+      return await this.findOneById(new Types.ObjectId(_id));
     if (accountId) return await this.findOneByUserAccountId(accountId);
 
     throw new ServiceException('No identifier provided.');

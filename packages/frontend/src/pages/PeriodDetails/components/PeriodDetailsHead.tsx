@@ -7,11 +7,11 @@ import {
   SinglePeriod,
 } from '@/model/periods/periods';
 import { formatIsoDateUTC, DATE_FORMAT } from '@/utils/date';
-import { getPreviousPeriod } from '@/utils/periods';
+import { getPreviousPeriod, hasPeriodEnded } from '@/utils/periods';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { CloseButton } from './CloseButton';
-import { ExportDropdown } from './ExportDropdown';
+import { ExportSelect } from './ExportSelect';
 import { PeriodDateForm } from './PeriodDateForm';
 import { PeriodNameForm } from './PeriodNameForm';
 import { AssignButton } from './AssignButton';
@@ -67,17 +67,18 @@ export const PeriodDetailsHead = (): JSX.Element | null => {
               <div className="flex justify-between gap-4">
                 {period.status === 'OPEN' &&
                 period.receivers &&
-                period?.receivers.length > 0 ? (
+                period?.receivers.length > 0 &&
+                hasPeriodEnded(period) ? (
                   <AssignButton />
                 ) : null}
                 {period.status === 'QUANTIFY' && isAdmin ? (
-                  <ExportDropdown />
+                  <ExportSelect />
                 ) : null}
                 <CloseButton />
               </div>
             ) : null}
 
-            {period.status === 'CLOSED' && isAdmin ? <ExportDropdown /> : null}
+            {period.status === 'CLOSED' && isAdmin ? <ExportSelect /> : null}
           </div>
         </>
       )}

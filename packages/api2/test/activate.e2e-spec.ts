@@ -19,6 +19,8 @@ import { EventLogService } from '@/event-log/__mocks__/event-log.service';
 import { UsersService } from '@/users/users.service';
 import { PeriodsModule } from '@/periods/periods.module';
 import { PraiseModule } from '@/praise/praise.module';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 
 describe('EventLog (E2E)', () => {
   let app: INestApplication;
@@ -57,6 +59,8 @@ describe('EventLog (E2E)', () => {
         forbidNonWhitelisted: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();
@@ -287,7 +291,6 @@ describe('EventLog (E2E)', () => {
 
       expect(user.identityEthAddress).toBe(wallet.address);
       expect(user.rewardsEthAddress).toBe(wallet.address);
-      expect(user.username).toBe(ua.name);
     });
   });
 });

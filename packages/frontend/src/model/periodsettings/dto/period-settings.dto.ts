@@ -4,7 +4,7 @@ import { SettingDto } from '@/model/settings/dto/setting.dto';
 export interface PeriodSettingDto {
   _id: string;
   value: string;
-  valueRealized?: string | boolean | number | number[] | string[] | object;
+  valueRealized?: string | string[] | boolean | number | number[] | undefined;
   setting: SettingDto;
   period: PeriodDto;
 }

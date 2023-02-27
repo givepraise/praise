@@ -24,6 +24,8 @@ import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
 import mongoose from 'mongoose';
 import { Server } from 'http';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 
 describe('UserAccountsController (E2E)', () => {
   let app: INestApplication;
@@ -45,6 +47,8 @@ describe('UserAccountsController (E2E)', () => {
         transform: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();

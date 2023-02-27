@@ -5,7 +5,6 @@ import { UsersService } from '@/users/users.service';
 import { PeriodsService } from '@/periods/services/periods.service';
 import { SettingsService } from '@/settings/settings.service';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
-import { UtilsProvider } from '@/utils/utils.provider';
 import { Logger } from '@/shared/logger';
 import { QuantificationsService } from '@/quantifications/services/quantifications.service';
 
@@ -94,7 +93,6 @@ export const runDbMigrations = async (
         settingsService: app.get(SettingsService),
         periodSettingsService: app.get(PeriodSettingsService),
         quantificationsService: app.get(QuantificationsService),
-        utilsProvider: app.get(UtilsProvider),
       },
     });
     logger && logger.log('Migrator created');

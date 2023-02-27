@@ -1,4 +1,4 @@
-import { UtilsProvider } from '@/utils/utils.provider';
+import { FileUtilsProvider } from '@/settings/providers/file-utils.provider';
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConstantsProvider } from '@/constants/constants.provider';
@@ -15,7 +15,7 @@ import { PeriodSettingsModule } from '@/periodsettings/periodsettings.module';
     forwardRef(() => PeriodSettingsModule),
   ],
   controllers: [SettingsController],
-  providers: [SettingsService, UtilsProvider, ConstantsProvider],
+  providers: [SettingsService, FileUtilsProvider, ConstantsProvider],
   exports: [SettingsService],
 })
 export class SettingsModule {}
