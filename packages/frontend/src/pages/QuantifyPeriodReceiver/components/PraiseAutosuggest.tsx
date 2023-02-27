@@ -94,7 +94,7 @@ export const PraiseAutosuggest = ({
         <div {...getComboboxProps()}>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <span className="text-warm-gray-500 sm:text-sm">
+              <span className="text-warm-gray-500 sm:text-sm dark:text-white">
                 <FontAwesomeIcon icon={faPrayingHands} />
               </span>
             </div>
@@ -109,7 +109,7 @@ export const PraiseAutosuggest = ({
         <ul
           className={classNames(
             isOpen && inputItems.length > 0 ? '' : 'hidden',
-            'absolute bg-white border w-80 mt-[1px]'
+            'absolute bg-white border w-80 mt-[1px] dark:bg-slate-600'
           )}
           {...getMenuProps()}
         >
@@ -117,7 +117,9 @@ export const PraiseAutosuggest = ({
             inputItems.map((item, index) => (
               <li
                 className={classNames(
-                  highlightedIndex === index ? 'bg-warm-gray-100' : '',
+                  highlightedIndex === index
+                    ? 'bg-warm-gray-100 dark:bg-slate-500'
+                    : '',
                   'py-2 pl-2 cursor-pointer'
                 )}
                 key={item._id}
