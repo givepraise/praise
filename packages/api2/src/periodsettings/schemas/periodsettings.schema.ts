@@ -40,7 +40,6 @@ export class PeriodSetting {
   setting: Types.ObjectId | Setting;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
   @Prop()
   value: string;
