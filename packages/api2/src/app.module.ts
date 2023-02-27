@@ -13,10 +13,16 @@ import { RequestContextModule } from 'nestjs-request-context';
 import { PeriodsModule } from './periods/periods.module';
 import { ApiKeyModule } from './api-key/api-key.module';
 import { ActivateModule } from './activate/activate.module';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
     MongooseModule.forRoot(praiseDatabaseUri),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
     ActivateModule,
     ApiKeyModule,
     AuthModule,
@@ -29,6 +35,12 @@ import { ActivateModule } from './activate/activate.module';
     SettingsModule,
     UserAccountsModule,
     UsersModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}
