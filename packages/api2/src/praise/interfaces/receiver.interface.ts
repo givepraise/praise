@@ -1,6 +1,8 @@
+import { Types } from 'mongoose';
+
 export interface Receiver {
-  _id: string;
+  _id: Types.ObjectId;
   praiseCount: number;
-  praiseIds: string[];
+  praiseIds: Types.ObjectId[];
   assignedQuantifiers?: number;
 }

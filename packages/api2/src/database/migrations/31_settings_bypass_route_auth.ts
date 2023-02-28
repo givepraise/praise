@@ -5,9 +5,9 @@ const settings = [
   {
     key: 'BYPASS_ROUTE_AUTH',
     defaultValue:
-      '/api/periods/export,/api/users/export,/api/quantifications/export,/api/praise/export,/api/useraccounts/export',
+      '/api/periods/export,/api/users/export,/api/quantifications/export,/api/praise/export,/api/useraccounts/export,/api/settings/uploads',
     value:
-      '/api/periods/export,/api/users/export,/api/quantifications/export,/api/praise/export,/api/useraccounts/export',
+      '/api/periods/export,/api/users/export,/api/quantifications/export,/api/praise/export,/api/useraccounts/export,/api/settings/uploads',
     type: 'StringList',
     label: 'Bypass Route Authentication',
     description: 'The routes listed here will not require authentication.',

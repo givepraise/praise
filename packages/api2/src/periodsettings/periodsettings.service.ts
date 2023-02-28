@@ -9,7 +9,7 @@ import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { SettingsService } from '@/settings/settings.service';
-import { validate } from '@/settings/utils/settings.validate';
+import { validateSetting } from '@/settings/utils/validate-setting';
 import { SettingGroup } from '@/settings/enums/setting-group.enum';
 
 @Injectable()
@@ -66,7 +66,11 @@ export class PeriodSettingsService {
   ): Promise<PeriodSetting> {
     const setting = await this.settingsService.findOneById(settingId);
     if (!setting) throw new ServiceException('Setting not found.');
-    if (!validate(data.value, setting.type)) {
+    const { valid, value: validatedValue } = validateSetting(
+      data.value,
+      setting.type,
+    );
+    if (!valid) {
       throw new ServiceException(
         `Settings value ${data.value} is not valid for type ${setting.type}.`,
       );
@@ -90,7 +94,7 @@ export class PeriodSettingsService {
     if (typeof data.value === 'undefined') {
       throw new ServiceException('Value is required field');
     }
-    periodSetting.value = data.value;
+    periodSetting.value = validatedValue;
 
     await periodSetting.save();
 

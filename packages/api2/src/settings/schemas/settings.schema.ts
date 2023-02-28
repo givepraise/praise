@@ -32,7 +32,6 @@ export class Setting {
   @ApiProperty({
     example: '666',
   })
-  @IsNotEmpty()
   @IsString()
   @Prop()
   value: string;
