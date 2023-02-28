@@ -10,7 +10,6 @@ import {
   invalidReceiverError,
   missingReasonError,
   notActivatedError,
-  praiseSuccess,
   praiseSuccessDM,
   roleMentionWarning,
   undefinedReceiverWarning,
@@ -22,7 +21,7 @@ import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChan
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
-
+import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
 /**
  * Execute command /praise
  *  Creates praises with a given receiver and reason
@@ -143,12 +142,17 @@ export const praiseHandler: CommandHandler = async (
   }
 
   if (Receivers.length !== 0) {
-    await interaction.editReply(
-      await praiseSuccess(
-        praised.map((id) => `<@!${id}>`),
-        reason
-      )
-    );
+    await interaction.editReply('Praise given!');
+    await interaction.followUp({
+      embeds: [
+        await praiseSuccessEmbed(
+          interaction,
+          praised.map((id) => `<@!${id}>`),
+          reason
+        ),
+      ],
+      ephemeral: false,
+    });
   } else if (warnSelfPraise) {
     await interaction.editReply(await selfPraiseWarning());
   } else {

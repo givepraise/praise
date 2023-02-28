@@ -28,6 +28,7 @@ export const praise: Command = {
 
       const msg = await interaction.deferReply({
         fetchReply: true,
+        ephemeral: true,
       });
       if (msg === undefined) return;
       await praiseHandler(

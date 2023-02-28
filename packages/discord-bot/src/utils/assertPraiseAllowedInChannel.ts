@@ -19,21 +19,34 @@ export const assertPraiseAllowedInChannel = async (
   const allowedChannelsList = (await settingValue(
     'PRAISE_ALLOWED_CHANNEL_IDS'
   )) as string[];
-  if (
-    !channel ||
-    (!allowedInAllChannels &&
-      !allowedChannelsList.includes(getChannelId(channel)))
-  ) {
-    await interaction.editReply(
-      allowedChannelsList.every((el) => el === '0')
-        ? '**❌ Praise Restricted**\nPraise not allowed in any channel.'
-        : `**❌ Praise Restricted**\nPraise not allowed in this channel.\nTo praise, use the following channels - ${allowedChannelsList
-            .filter((el) => el !== '0')
-            .map((id) => `<#${id.trim()}>`)
-            .join(', ')}`
-    );
+
+  if (allowedInAllChannels) return true;
+
+  if (!channel) {
+    await interaction.editReply({
+      content: '**❌ Praise Restricted**\nPraise not allowed here.',
+    });
     return false;
-  } else {
-    return true;
   }
+
+  if (!Array.isArray(allowedChannelsList) || allowedChannelsList.length === 0) {
+    await interaction.editReply({
+      content: '**❌ Praise Restricted**\nPraise not allowed in any channel.',
+    });
+
+    return false;
+  }
+
+  if (!allowedChannelsList.includes(getChannelId(channel))) {
+    await interaction.editReply({
+      content: `**❌ Praise Restricted**\nPraise not allowed in this channel.\nTo praise, use the following channels - ${allowedChannelsList
+        .filter((el) => el !== '0')
+        .map((id) => `<#${id.trim()}>`)
+        .join(', ')}`,
+    });
+
+    return false;
+  }
+
+  return true;
 };
