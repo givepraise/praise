@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Document, model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { IsBoolean, IsString, ValidateNested } from 'class-validator';
-import { CommunityBotStatus } from '../enums/community-bot-status';
+import { DiscordLinkState } from '../enums/discord-link-state';
 
 export type CommunityDocument = Community & Document;
 
@@ -63,7 +63,7 @@ export class Community {
   @IsString()
   @Prop({
     type: String,
-    enum: Object.values(CommunityBotStatus)
+    enum: Object.values(DiscordLinkState)
   })
   discordLinkState ?: string;
 

@@ -1,4 +1,4 @@
-export enum CommunityBotStatus {
+export enum DiscordLinkState {
   NOT_SET = 'NOT_SET',
   PENDING = 'PENDING',
   ACTIVE = 'ACTIVE',
