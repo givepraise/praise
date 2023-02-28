@@ -50,7 +50,7 @@ const PERMISSIONS_ADMIN = [
 
 const PERMISSIONS_SUPER_ADMIN = [
   ...PERMISSIONS_ADMIN,
-  Permission.CommunitiesFind,
+  Permission.CommunitiesView,
 ];
 
 /**
@@ -74,7 +74,7 @@ const PERMISSION_APIKEY_READWRITE = [...PERMISSIONS_USER];
 const PERMISSION_DISCORD_BOT = [
   Permission.PraiseCreate,
   Permission.PraiseForward,
-  Permission.CommunitiesFind,
+  Permission.CommunitiesView,
 ];
 
 
@@ -84,7 +84,7 @@ const PERMISSION_DISCORD_BOT = [
  */
 const PERMISSION_SETUP_WEB = [
   Permission.CommunitiesCreate,
-  Permission.CommunitiesFind,
+  Permission.CommunitiesView,
   Permission.CommunitiesUpdate,
 ];
 

@@ -75,7 +75,7 @@ export class CommunityController {
 
 
   @Get()
-  @Permissions(Permission.CommunitiesFind)
+  @Permissions(Permission.CommunitiesView)
   @ApiResponse({
     status: 200,
     description: 'All communities',
@@ -87,7 +87,7 @@ export class CommunityController {
   }
 
   @Get(':id')
-  @Permissions(Permission.CommunitiesFind)
+  @Permissions(Permission.CommunitiesView)
   @ApiResponse({
     status: 200,
     description: 'A single Community',
