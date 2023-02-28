@@ -6,6 +6,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { SingleSetting } from '@/model/settings/settings';
+import toast from 'react-hot-toast';
 
 interface PeriodCloseDialogProps {
   title: string;
@@ -18,24 +19,46 @@ export const PeriodCustomExportDialog = ({
   onClose,
   onExport,
 }: PeriodCloseDialogProps): JSX.Element => {
-  const customExportContextSettings = useRecoilValue(
+  // Get custom export context setting, the default report config values
+  const customExportContextSetting = useRecoilValue(
     SingleSetting('CUSTOM_EXPORT_CONTEXT')
   );
-  const context = customExportContextSettings
-    ? (customExportContextSettings.valueRealized as string)
-    : '';
 
+  // Store local changes to the export context
+  const [customExportContext, setCustomExportContext] =
+    React.useState<string>();
+
+  // Update local state when changes are made to the textarea
+  const handleExportContextChange = (event): void => {
+    setCustomExportContext(event.target.value);
+  };
+
+  // Set local state when default export context has been loaded
+  React.useEffect(() => {
+    if (!customExportContextSetting) return;
+    setCustomExportContext(
+      JSON.stringify(customExportContextSetting.valueRealized, null, 2)
+    );
+  }, [customExportContextSetting]);
+
+  // How much of the distribution should go to the development team
   const csSupportPercentage = useRecoilValue(
     SingleSetting('CS_SUPPORT_PERCENTAGE')
   );
 
-  const [exportContext, setExportContext] = React.useState(
-    customExportContextSettings?.valueRealized
-  );
-
-  const handleExportContextChange = (event): void => {
-    setExportContext(event.target.value);
+  const onButtonClick = (): void => {
+    if (!customExportContext) return;
+    try {
+      const config = JSON.parse(customExportContext);
+      onExport(config);
+      onClose();
+    } catch (error) {
+      toast.error((error as Error).message);
+      return;
+    }
   };
+
+  if (!customExportContext || !csSupportPercentage) return <></>;
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -62,12 +85,12 @@ export const PeriodCustomExportDialog = ({
               autoComplete="off"
               className="block w-full h-32 mt-2 resize-y"
               rows={4}
-              defaultValue={context}
+              value={customExportContext}
               onChange={handleExportContextChange}
             />
           </div>
           {csSupportPercentage?.valueRealized &&
-          csSupportPercentage.valueRealized > 0 ? (
+          (csSupportPercentage.valueRealized as number) > 0 ? (
             <p className="mb-7">
               Thank you for supporting the continued development of Praise!{' '}
               <b>{csSupportPercentage?.valueRealized}%</b> will be added to the
@@ -83,12 +106,7 @@ export const PeriodCustomExportDialog = ({
           )}
 
           <div className="flex justify-center">
-            <Button
-              onClick={(): void => {
-                onExport(exportContext);
-                onClose();
-              }}
-            >
+            <Button onClick={onButtonClick}>
               <FontAwesomeIcon
                 className="mr-2"
                 icon={faFileDownload}

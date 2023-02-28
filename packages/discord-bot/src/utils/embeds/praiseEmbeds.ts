@@ -121,26 +121,30 @@ export const dmError = async (): Promise<string> => {
  * @returns {Promise<string>}
  */
 export const praiseRoleError = async (
-  praiseGiverRole: Role,
+  roles: Role[],
   user: User
 ): Promise<EmbedBuilder> => {
   const msg = (await settingValue(
     'PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR'
   )) as string;
+
+  const roleNames = roles.map((r) => r.name).join(', ');
+  const roleMentions = roles.map((r) => `<@&${r.id}>`).join(', ');
+
   if (msg) {
     return new EmbedBuilder().setColor('#ff0000').setDescription(
       msg
-        .replace('{role}', praiseGiverRole?.name || '...')
+        .replace('{roles}', roleNames)
         .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
-        .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
+        .replace('{@roles}', roleMentions)
         .replace('{@user}', `<@!${user?.id || '...'}>`)
     );
   }
   return new EmbedBuilder().setColor('#ff0000').setDescription(
     'USER DOES NOT HAVE {@role} role (message not set)'
-      .replace('{role}', praiseGiverRole?.name || '...')
+      .replace('{roles}', roleNames)
       .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
-      .replace('{@role}', `<@&${praiseGiverRole?.id}>`)
+      .replace('{@roles}', roleMentions)
       .replace('{@user}', `<@!${user?.id || '...'}>`)
   );
 };

@@ -15,4 +15,6 @@ export const UsersService = jest.fn().mockReturnValue({
   revokeAccess: jest.fn().mockResolvedValue(userStub),
   update: jest.fn().mockResolvedValue(userStub),
   create: jest.fn().mockResolvedValue(userStub),
+  generateUserNameFromAccount: jest.fn().mockResolvedValue(userStub.username),
+  generateValidUsername: jest.fn().mockResolvedValue(userStub.username),
 });

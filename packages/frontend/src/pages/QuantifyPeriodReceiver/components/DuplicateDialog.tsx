@@ -16,7 +16,6 @@ import { PeriodPageParams } from '@/model/periods/periods';
 import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
 
 import { QuantifySlider } from './QuantifySlider';
-import { stringToNumberArray } from '@/utils/numbers';
 
 interface DuplicateDialogProps {
   onClose(): void;
@@ -47,9 +46,7 @@ export const DuplicateDialog = ({
       periodId,
       key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
     })
-  ) as string;
-
-  const allowedValuesArray = stringToNumberArray(allowedValues);
+  ) as number[];
 
   const duplicatePraisePercentage = useRecoilValue(
     SinglePeriodSettingValueRealized({
@@ -93,7 +90,7 @@ export const DuplicateDialog = ({
           />
           <div className="flex justify-center">
             <QuantifySlider
-              allowedScores={allowedValuesArray}
+              allowedScores={allowedValues}
               score={score}
               onChange={(newScore): void => setScore(newScore)}
             />

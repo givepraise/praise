@@ -43,6 +43,8 @@ import { User } from '@/users/schemas/users.schema';
 import { Setting } from '@/settings/schemas/settings.schema';
 import { SettingsService } from '@/settings/settings.service';
 import { faker } from '@faker-js/faker';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 
 class LoggedInUser {
   accessToken: string;
@@ -104,6 +106,8 @@ describe('Praise (E2E)', () => {
         forbidNonWhitelisted: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();

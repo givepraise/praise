@@ -69,12 +69,11 @@ export const requestNonce = async (
 export const requestApiActivate = async (
   params: ActivateRequestBodyDto
 ): Promise<boolean> => {
-  const { identityEthAddress, accountId, message, signature } = params;
+  const { identityEthAddress, accountId, signature } = params;
   const apiClient = makeApiClient();
   const response = await apiClient.post('/activate', {
     identityEthAddress,
     accountId,
-    message,
     signature,
   });
 

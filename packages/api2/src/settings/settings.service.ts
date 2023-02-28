@@ -1,22 +1,15 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Request } from 'express';
 import { Model, Types } from 'mongoose';
 import { Setting } from './schemas/settings.schema';
-import { AxiosResponse } from 'axios';
-import axios from 'axios';
-import { TransformerMapOperateItem } from 'ses-node-json-transform';
-import { ExportTransformer } from '@/shared/types.shared';
 import { SetSettingDto } from './dto/set-setting.dto';
-import { UtilsProvider } from '@/utils/utils.provider';
-import { UploadedFile } from 'express-fileupload';
+import { FileUtilsProvider } from '@/settings/providers/file-utils.provider';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { RequestContext } from 'nestjs-request-context';
 import { SettingGroup } from './enums/setting-group.enum';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
-import { validate } from './utils/settings.validate';
+import { validateSetting } from './utils/validate-setting';
 
 @Injectable()
 export class SettingsService {
@@ -25,7 +18,7 @@ export class SettingsService {
     private settingsModel: Model<Setting>,
     @Inject(forwardRef(() => PeriodSettingsService))
     private periodSettingsService: PeriodSettingsService,
-    private utils: UtilsProvider,
+    private utils: FileUtilsProvider,
     private eventLogService: EventLogService,
   ) {}
 
@@ -97,40 +90,23 @@ export class SettingsService {
       period: { $exists: 0 },
     });
     if (!setting) throw new ServiceException('Settings not found.');
-    if (!validate(data.value, setting.type)) {
+
+    const originalValue = setting.value;
+
+    if (typeof data.value === 'undefined') {
+      throw new ServiceException('Value is required field');
+    }
+
+    const { valid, value: validatedValue } = validateSetting(
+      data.value,
+      setting.type,
+    );
+    if (!valid) {
       throw new ServiceException(
         `Settings value ${data.value} is not valid for type ${setting.type}.`,
       );
     }
-
-    const originalValue = setting.value;
-    if (setting.type === 'Image') {
-      const req: Request = RequestContext.currentContext.req;
-      const file = req.files;
-      if (!file) {
-        throw new ServiceException('Uploaded file is missing.');
-      }
-
-      const logo: UploadedFile = file['value'] as UploadedFile;
-      if (!this.utils.isImage(logo)) {
-        throw new ServiceException('Uploaded file is not an image.');
-      }
-
-      // Remove previous file
-      try {
-        setting.value && (await this.utils.removeFile(setting.value));
-      } catch (err) {
-        // Ignore error
-      }
-
-      const savedFilename = await this.utils.saveFile(logo);
-      setting.value = savedFilename;
-    } else {
-      if (typeof data.value === 'undefined') {
-        throw new ServiceException('Value is required field');
-      }
-      setting.value = data.value;
-    }
+    setting.value = validatedValue;
 
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.SETTING,
@@ -143,59 +119,42 @@ export class SettingsService {
     return this.findOneById(_id);
   }
 
-  /**
-   * Find custom export transformer
-   * @returns {Promise<ExportTransformer>}
-   * @throws {ServiceException}
-   *
-   * */
-  async findCustomExportTransformer() {
-    const customExportMapSetting = (await this.settingValue(
-      'CUSTOM_EXPORT_MAP',
-    )) as string;
+  async setImageSetting(
+    _id: Types.ObjectId,
+    file: Express.Multer.File,
+  ): Promise<Setting> {
+    const setting = await this.settingsModel.findOne({
+      _id,
+      period: { $exists: 0 },
+    });
+    if (!setting) throw new ServiceException('Settings not found.');
 
-    if (!customExportMapSetting) {
-      throw new ServiceException('No custom export map specified');
+    // Only allow image files
+    if (!this.utils.isImage(file)) {
+      await this.utils.removeFile(file.filename);
+      throw new ServiceException('Uploaded file is not an image.');
     }
 
+    const originalValue = setting.value;
+
+    // Remove previous file
     try {
-      let response: AxiosResponse | undefined = undefined;
-      try {
-        response = await axios.get(customExportMapSetting);
-      } catch (error) {
-        throw new ServiceException(
-          'Could not fetch custom export transformer.',
-        );
-      }
-
-      if (response) {
-        const transformerDto = response.data as ExportTransformer;
-        try {
-          const transformer: ExportTransformer = {
-            ...transformerDto,
-            map: {
-              item: transformerDto.map.item,
-              operate: transformerDto.map.operate.map(
-                (operateItem: TransformerMapOperateItem) => {
-                  return {
-                    run: operateItem.run,
-                    on: operateItem.on,
-                  };
-                },
-              ),
-              each: transformerDto.map.each,
-            },
-          };
-          return transformer;
-        } catch (error) {
-          throw new Error('Could not parse custom export transformer.');
-        }
-      }
-
-      throw new Error('Unknown error');
-    } catch (error) {
-      throw new ServiceException((error as Error).message);
+      await this.utils.removeFile(setting.value);
+    } catch (err) {
+      // Ignore error
     }
+
+    setting.value = file.filename;
+
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.SETTING,
+      description: `Updated global setting "${setting.label}" from "${
+        originalValue || ''
+      }" to "${setting.value || ''}"`,
+    });
+
+    await setting.save();
+    return this.findOneById(_id);
   }
 
   /**

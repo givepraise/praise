@@ -10,7 +10,6 @@ import {
   invalidReceiverError,
   missingReasonError,
   notActivatedError,
-  praiseSuccess,
   praiseSuccessDM,
   roleMentionWarning,
   undefinedReceiverWarning,
@@ -22,7 +21,7 @@ import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChan
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
-
+import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
 /**
  * Execute command /praise
  *  Creates praises with a given receiver and reason
@@ -48,14 +47,14 @@ export const praiseHandler: CommandHandler = async (
     return;
   if (!(await assertPraiseAllowedInChannel(interaction))) return;
 
-  const receivers = interaction.options.getString('receivers');
+  const receiverOptions = interaction.options.getString('receivers');
 
-  if (!receivers || receivers.length === 0) {
+  if (!receiverOptions || receiverOptions.length === 0) {
     await interaction.editReply(await invalidReceiverError());
     return;
   }
 
-  const receiverData = getReceiverData(receivers);
+  const receiverData = getReceiverData(receiverOptions);
 
   if (
     !receiverData.validReceiverIds ||
@@ -81,7 +80,7 @@ export const praiseHandler: CommandHandler = async (
     return;
   }
 
-  const praised: string[] = [];
+  const receivers: string[] = [];
   const receiverIds: string[] = [
     ...new Set(
       receiverData.validReceiverIds.map((id: string) => id.replace(/\D/g, ''))
@@ -134,7 +133,7 @@ export const praiseHandler: CommandHandler = async (
           `Can't DM user - ${receiverAccount.name} [${receiverAccount.accountId}]`
         );
       }
-      praised.push(receiverAccount.accountId);
+      receivers.push(receiverAccount.accountId);
     } else {
       logger.error(
         `Praise not registered for [${giverAccount.accountId}] -> [${receiverAccount.accountId}] for [${reason}]`
@@ -143,12 +142,24 @@ export const praiseHandler: CommandHandler = async (
   }
 
   if (Receivers.length !== 0) {
-    await interaction.editReply(
-      await praiseSuccess(
-        praised.map((id) => `<@!${id}>`),
-        reason
-      )
-    );
+    await interaction.editReply('Praise given!');
+    await interaction.followUp({
+      embeds: [
+        await praiseSuccessEmbed(
+          interaction,
+          receivers.map((id) => `<@!${id}>`),
+          reason
+        ),
+      ],
+      ephemeral: false,
+    });
+    // await interaction.followUp({
+    //   content: await praiseSuccess(
+    //     receivers.map((id) => `<@!${id}>`),
+    //     reason
+    //   ),
+    //   ephemeral: false,
+    // });
   } else if (warnSelfPraise) {
     await interaction.editReply(await selfPraiseWarning());
   } else {
@@ -178,7 +189,11 @@ export const praiseHandler: CommandHandler = async (
     await interaction.followUp({ content: warningMsg, ephemeral: true });
   }
 
-  if (receivers.length && receivers.length !== 0 && praiseItemsCount === 0) {
+  if (
+    receiverOptions.length &&
+    receiverOptions.length !== 0 &&
+    praiseItemsCount === 0
+  ) {
     await interaction.followUp({
       content: await firstTimePraiserInfo(),
       ephemeral: true,

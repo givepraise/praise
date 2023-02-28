@@ -8,8 +8,14 @@ import { ServiceExceptionFilter } from './shared/filters/service-exception.filte
 import { runDbMigrations } from './database/migrations';
 import { version } from '../package.json';
 import { Logger } from './shared/logger';
+import { MongoValidationErrorFilter } from './shared/filters/mongo-validation-error.filter';
+import { MongoServerErrorFilter } from './shared/filters/mongo-server-error.filter';
+import { envCheck } from './shared/env.shared';
 
 async function bootstrap() {
+  // Check that all required ENV variables are set
+  envCheck();
+
   // Create an instance of the Nest app
   const app = await NestFactory.create(AppModule);
 
@@ -27,6 +33,8 @@ async function bootstrap() {
 
   // Apply global exception filters to handle errors in the app
   // ServiceExceptions are turned into HTTP 400 Bad Request responses
+  app.useGlobalFilters(new MongoServerErrorFilter());
+  app.useGlobalFilters(new MongoValidationErrorFilter());
   app.useGlobalFilters(new ServiceExceptionFilter());
 
   // Apply dependency injection container to the app

@@ -18,6 +18,8 @@ import { ApiKeyService } from '@/api-key/api-key.service';
 import { ApiKeyModule } from '@/api-key/api-key.module';
 import { UsersModule } from '@/users/users.module';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 
 describe('EventLog (E2E)', () => {
   let app: INestApplication;
@@ -41,6 +43,8 @@ describe('EventLog (E2E)', () => {
         forbidNonWhitelisted: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();

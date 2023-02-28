@@ -102,6 +102,14 @@ export class PeriodAssignmentsService {
   ): Promise<PeriodDetailsDto> => {
     const period = await this.periodsService.findOneById(_id);
 
+    // Check if the period has ended
+    const now = Date.now();
+    const periodEnd = new Date(period.endDate).getTime();
+    if (now < periodEnd)
+      throw new ServiceException(
+        'Can not assign quantifiers for a period that has not ended',
+      );
+
     if (period.status !== 'OPEN')
       throw new ServiceException(
         'Quantifiers can only be assigned on OPEN periods.',
@@ -123,7 +131,7 @@ export class PeriodAssignmentsService {
     }
 
     if (!assignedQuantifiers) {
-      throw new Error('Failed to assign quantifiers.');
+      throw new ServiceException('Failed to assign quantifiers.');
     }
 
     if (assignedQuantifiers.remainingAssignmentsCount > 0) {
@@ -388,17 +396,29 @@ export class PeriodAssignmentsService {
     // Query the list of quantifiers & randomize order
     const quantifierPool = await this.queryQuantifierPoolRandomized();
 
+    // When only one quantifier is available, check if that quantifier is also a receiver. If so, throw an ServiceException.
+    if (quantifierPool.length === 1) {
+      const quantifierIsReceiver = receivers.find((r) =>
+        quantifierPool[0].accounts.find((a) => a._id.equals(r._id)),
+      );
+      if (quantifierIsReceiver) {
+        throw new ServiceException(
+          'One quantifier is available, but they are also a receiver. Unable to assign quantifiers.',
+        );
+      }
+    }
+
     // Check that there are more quantifiers in the pool than redundant praise to be assigned
     //  otherwise a quantifier could be assigned the same praise multiple times
     if (PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER > quantifierPool.length)
-      throw new Error(
+      throw new ServiceException(
         'Unable to assign redundant quantifications without more members in quantifier pool',
       );
 
     // Check that the number of redundant assignments is greater than to the number of receivers
     //    otherwise a quantifier could be assigned the same praise multiple times
     if (PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER > receivers.length)
-      throw new Error(
+      throw new ServiceException(
         'Quantifiers per Receiver is too large for the number of receivers, unable to prevent duplicate assignments',
       );
 
@@ -463,7 +483,7 @@ export class PeriodAssignmentsService {
         range(rotations).forEach(() => {
           const lastElem = receiversShuffledClone.pop();
           if (!lastElem)
-            throw Error(
+            throw new ServiceException(
               'Failed to generate list of redundant shuffled receivers',
             );
 
@@ -572,7 +592,7 @@ export class PeriodAssignmentsService {
     // Convert array of quantifiers to a single object, keyed by _id
     const quantifierPoolById = quantifierPool.reduce<QuantifierPoolById>(
       (poolById, q) => {
-        poolById[q._id] = q;
+        poolById[q._id.toString()] = q;
         return poolById;
       },
       {},
@@ -597,7 +617,7 @@ export class PeriodAssignmentsService {
 
       const q = availableQuantifiers.pop();
 
-      if (!q) throw Error('Failed to generate assignments');
+      if (!q) throw new ServiceException('Failed to generate assignments');
 
       // Generate a unique id to reference this assignment option (bin + quantifier)
       const assignmentBinId: string = flatten(

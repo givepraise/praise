@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import {
   Controller,
   Get,
+  NotFoundException,
   Query,
   Res,
   SerializeOptions,
@@ -80,6 +81,10 @@ export class QuantificationsController {
         dirPath,
         options,
       );
+    }
+
+    if (!fs.existsSync(filePath)) {
+      throw new NotFoundException('Could not create export.');
     }
 
     res.set({
