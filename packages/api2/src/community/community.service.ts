@@ -6,7 +6,6 @@ import { User } from '@/users/schemas/users.schema';
 import { Community, CommunityModel } from './schemas/community.schema';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { CommunityPaginatedResponseDto } from './dto/community-pagination-model.dto';
-import { UpdateCommunityByAdminInputDto } from './dto/update-community-by-admin-input.dto';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
 import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
 
@@ -62,19 +61,6 @@ export class CommunityService {
       throw new ServiceException('Failed to query event logs');
 
     return communityPagination;
-  }
-
-  async updateByCommunityAdmin(_id: Types.ObjectId, community: UpdateCommunityByAdminInputDto): Promise<Community> {
-    // TODO check if admin has access to community
-    const communityDocument = await this.communityModel.findById(_id);
-    if (!communityDocument) throw new ServiceException('Community not found.');
-
-    for (const [k, v] of Object.entries(community)) {
-      communityDocument.set(k, v);
-    }
-
-    await communityDocument.save();
-    return this.findOneById(communityDocument._id);
   }
 
   async update(_id: Types.ObjectId, community: UpdateCommunityInputDto): Promise<Community> {

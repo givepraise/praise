@@ -2,7 +2,7 @@ import {
   BadRequestException, Body,
   Controller,
   Get,
-  Param, Patch, Post, Put, Query,
+  Param, Patch, Post, Query,
   SerializeOptions,
   UseGuards,
   UseInterceptors
@@ -21,12 +21,8 @@ import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { ObjectId, Schema, Types } from 'mongoose';
 import { PeriodDetailsDto } from '@/periods/dto/period-details.dto';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { CreatePeriodInputDto } from '@/periods/dto/create-period-input.dto';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
-import { RequestWithAuthContext } from '@/auth/interfaces/request-with-auth-context.interface';
-import { RequestContext } from 'nestjs-request-context';
-import { UpdateCommunityByAdminInputDto } from './dto/update-community-by-admin-input.dto';
-
+import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
 
 @Controller('communities')
 @ApiTags('Communities')
@@ -70,7 +66,7 @@ export class CommunityController {
   @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async update(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
-    @Body() updateCommunityInputDto: UpdateCommunityByAdminInputDto
+    @Body() updateCommunityInputDto: UpdateCommunityInputDto
   ): Promise<Community> {
     return this.communityService.update(
       id,
