@@ -37,8 +37,5 @@
     "prettier": "^2.5.1",
     "typescript": "^4.5.5"
   },
-  "packageManager": "yarn@3.4.1",
-  "dependencies": {
-    "@nestjs/throttler": "^4.0.0"
-  }
+  "packageManager": "yarn@3.4.1"
 }
