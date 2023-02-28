@@ -23,14 +23,14 @@ import { PeriodDetailsDto } from '@/periods/dto/period-details.dto';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
 import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
+import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
 
 @Controller('communities')
 @ApiTags('Communities')
 @SerializeOptions({
   excludePrefixes: ['__']
 })
-@UseGuards(PermissionsGuard)
-@UseGuards(AuthGuard(['jwt', 'api-key']))
+@EnforceAuthAndPermissions()
 export class CommunityController {
   constructor(
     private readonly communityService: CommunityService
