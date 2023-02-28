@@ -46,7 +46,7 @@ export class CommunityController {
     type: CreateCommunityInputDto
   })
   @Permissions(Permission.CommunitiesCreate)
-  @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
+  @UseInterceptors(MongooseClassSerializerInterceptor(Community))
   async create(
     @Body() createCommunityInputDto: CreateCommunityInputDto
   ): Promise<Community> {
@@ -63,7 +63,7 @@ export class CommunityController {
     type: CreateCommunityInputDto
   })
   @Permissions(Permission.CommunitiesUpdate)
-  @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
+  @UseInterceptors(MongooseClassSerializerInterceptor(Community))
   async update(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() updateCommunityInputDto: UpdateCommunityInputDto
@@ -93,7 +93,7 @@ export class CommunityController {
     description: 'A single Community',
     type: Community
   })
-  @UseInterceptors(MongooseClassSerializerInterceptor(UserWithStatsDto))
+  @UseInterceptors(MongooseClassSerializerInterceptor(Community))
   @ApiParam({ name: 'id', type: String })
   async findOne(
     @Param('id', ObjectIdPipe) id: ObjectId
