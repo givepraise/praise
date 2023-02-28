@@ -1,4 +1,4 @@
-import { CommandInteraction, EmbedBuilder } from 'discord.js';
+import { CommandInteraction, EmbedBuilder, User } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
 
 /**
@@ -7,24 +7,26 @@ import { settingValue } from 'api/dist/shared/settings';
  * @param {UserState} state
  * @returns {EmbedBuilder}
  */
-export const praiseSuccessEmbed = async (
+export const praiseForwardEmbed = async (
   interaction: CommandInteraction,
+  giver: User,
   receivers: string[],
   reason: string
 ): Promise<EmbedBuilder> => {
   const successMessage = (await settingValue(
-    'PRAISE_SUCCESS_MESSAGE'
+    'FORWARD_SUCCESS_MESSAGE'
   )) as string;
   let msg;
   if (successMessage) {
     msg = successMessage
+      ?.replace('{@giver}', `<@!${giver.id}>`)
       .replace('{@receivers}', `${receivers.join(', ')}`)
       .replace('{reason}', reason);
   } else {
     msg = 'PRAISE SUCCESSFUL (message not set)';
   }
-  const { user } = interaction;
 
+  const { user } = interaction;
   const embed = new EmbedBuilder()
     .setColor(0xe6007e)
     .setAuthor({
@@ -35,5 +37,6 @@ export const praiseSuccessEmbed = async (
       url: `${process.env.FRONTEND_URL as string}/users/${user.id}`,
     })
     .setDescription(msg);
+
   return embed;
 };

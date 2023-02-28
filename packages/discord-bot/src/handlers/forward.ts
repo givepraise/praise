@@ -15,7 +15,6 @@ import {
   praiseSuccessDM,
   roleMentionWarning,
   undefinedReceiverWarning,
-  forwardSuccess,
   giverNotActivatedError,
   selfPraiseWarning,
 } from '../utils/embeds/praiseEmbeds';
@@ -23,6 +22,7 @@ import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { createPraise } from '../utils/createPraise';
+import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
 
 /**
  * Execute command /firward
@@ -68,14 +68,14 @@ export const forwardHandler: CommandHandler = async (
 
   if (!(await assertPraiseGiver(praiseGiver, interaction, true))) return;
 
-  const receivers = interaction.options.getString('receivers');
+  const receiverOptions = interaction.options.getString('receivers');
 
-  if (!receivers || receivers.length === 0) {
+  if (!receiverOptions || receiverOptions.length === 0) {
     await interaction.editReply(await invalidReceiverError());
     return;
   }
 
-  const receiverData = getReceiverData(receivers);
+  const receiverData = getReceiverData(receiverOptions);
   if (
     !receiverData.validReceiverIds ||
     receiverData.validReceiverIds?.length === 0
@@ -96,7 +96,7 @@ export const forwardHandler: CommandHandler = async (
     return;
   }
 
-  const praised: string[] = [];
+  const receivers: string[] = [];
   const receiverIds = [
     ...new Set(
       receiverData.validReceiverIds.map((id: string) => id.replace(/\D/g, ''))
@@ -146,7 +146,7 @@ export const forwardHandler: CommandHandler = async (
           `Can't DM user - ${receiverAccount.name} [${receiverAccount.accountId}]`
         );
       }
-      praised.push(receiverAccount.accountId);
+      receivers.push(receiverAccount.accountId);
     } else {
       logger.error(
         `Praise not registered for [${giverAccount.accountId}] -> [${receiverAccount.accountId}] for [${reason}]`
@@ -155,13 +155,26 @@ export const forwardHandler: CommandHandler = async (
   }
 
   if (Receivers.length !== 0) {
-    await interaction.editReply(
-      await forwardSuccess(
-        praiseGiver.user,
-        praised.map((id) => `<@!${id}>`),
-        reason
-      )
-    );
+    await interaction.editReply('Praise forwarded!');
+    await interaction.followUp({
+      embeds: [
+        await praiseForwardEmbed(
+          interaction,
+          praiseGiver.user,
+          receivers.map((id) => `<@!${id}>`),
+          reason
+        ),
+      ],
+      ephemeral: false,
+    });
+    // await interaction.followUp({
+    //   content: await forwardSuccess(
+    //     praiseGiver.user,
+    //     receivers.map((id) => `<@!${id}>`),
+    //     reason
+    //   ),
+    //   ephemeral: false,
+    // });
   } else if (warnSelfPraise) {
     await interaction.editReply(await selfPraiseWarning());
   } else {
