@@ -16,6 +16,7 @@ export class UserAccount {
 
   @ApiResponseProperty({
     example: '63b428f7d9ca4f6ff5370d05',
+    type: 'string',
   })
   @ExposeId()
   _id: Types.ObjectId;
@@ -30,6 +31,7 @@ export class UserAccount {
 
   @ApiResponseProperty({
     example: '098098098098098',
+    type: 'string',
   })
   @Prop({ required: true, unique: true, index: true })
   @IsString()
@@ -37,6 +39,7 @@ export class UserAccount {
 
   @ApiResponseProperty({
     example: 'darth#6755',
+    type: 'string',
   })
   @Prop({ required: true })
   @IsString()
@@ -44,6 +47,7 @@ export class UserAccount {
 
   @ApiResponseProperty({
     example: '098098098087097',
+    type: 'string',
   })
   @Prop({ type: String })
   @IsOptional()
@@ -51,6 +55,7 @@ export class UserAccount {
 
   @ApiResponseProperty({
     example: 'DISCORD',
+    type: 'string',
   })
   @Prop({ type: String, required: true })
   @IsString()
@@ -60,11 +65,11 @@ export class UserAccount {
   @Prop({ select: false })
   activateToken: string;
 
-  @ApiResponseProperty()
+  @ApiResponseProperty({ type: Date })
   @Prop()
   createdAt: Date;
 
-  @ApiResponseProperty()
+  @ApiResponseProperty({ type: Date })
   @Prop()
   updatedAt: Date;
 }

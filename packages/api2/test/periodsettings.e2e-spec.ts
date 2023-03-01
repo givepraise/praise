@@ -577,7 +577,7 @@ describe('Period Settings (E2E)', () => {
 
       const ps = response.body;
       expect(ps).toBeDefined();
-      expect(ps.value).toBe(newValue);
+      expect(ps.value).toBe('4,5,6');
       expect(ps).toBeProperlySerialized();
       expect(ps).toBeValidClass(PeriodSetting);
     });
@@ -637,7 +637,11 @@ describe('Period Settings (E2E)', () => {
 
       const ps = response.body;
       expect(ps).toBeDefined();
-      expect(ps.value).toBe(newValue);
+
+      const newValueObj = JSON.parse(newValue);
+      const responseValueObj = JSON.parse(response.body.value);
+      expect(responseValueObj).toMatchObject(newValueObj);
+
       expect(ps).toBeProperlySerialized();
       expect(ps).toBeValidClass(PeriodSetting);
     });

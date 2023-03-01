@@ -12,10 +12,10 @@ export class EventLogType {
   @Exclude()
   _id: Types.ObjectId;
 
-  @ApiProperty({ required: true, example: 'PERMISSION' })
+  @ApiProperty({ required: true, example: 'PERMISSION', type: 'string' })
   @IsString()
   @Prop({
-    type: String,
+    type: 'string',
     required: true,
     unique: true,
     enum: Object.values(EventLogTypeKey),
@@ -25,18 +25,23 @@ export class EventLogType {
   @ApiProperty({
     required: true,
     example: 'An action that changes user permissions',
+    type: 'string',
   })
   @IsString()
   @Prop({
-    type: String,
+    type: 'string',
     required: true,
   })
   label: string;
 
-  @ApiProperty({ required: true, example: "A user's permissions were changed" })
+  @ApiProperty({
+    required: true,
+    example: "A user's permissions were changed",
+    type: 'string',
+  })
   @IsString()
   @Prop({
-    type: String,
+    type: 'string',
     required: true,
   })
   description: string;

@@ -10,8 +10,13 @@ import { version } from '../package.json';
 import { Logger } from './shared/logger';
 import { MongoValidationErrorFilter } from './shared/filters/mongo-validation-error.filter';
 import { MongoServerErrorFilter } from './shared/filters/mongo-server-error.filter';
+import { envCheck } from './shared/env.shared';
+import * as fs from 'fs';
 
 async function bootstrap() {
+  // Check that all required ENV variables are set
+  envCheck();
+
   // Create an instance of the Nest app
   const app = await NestFactory.create(AppModule);
 
@@ -36,14 +41,20 @@ async function bootstrap() {
   // Apply dependency injection container to the app
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
-  // Create Swagger configuration
-  const config = new DocumentBuilder().setTitle('Praise API').build();
+  // If in development mode, generate and serve OpenAPI documentation
+  if (process.env.NODE_ENV === 'development') {
+    // Create OpenAPI configuration
+    const openApiConfig = new DocumentBuilder().setTitle('Praise API').build();
 
-  // Generate Swagger documentation based on the app modules and controllers
-  const document = SwaggerModule.createDocument(app, config);
+    // Generate OpenAPI documentation
+    const openApiDocument = SwaggerModule.createDocument(app, openApiConfig);
 
-  // Setup Swagger endpoint and documentation
-  SwaggerModule.setup('docs', app, document);
+    // Write OpenAPI documentation to file
+    fs.writeFileSync('./openapi.json', JSON.stringify(openApiDocument));
+
+    // Serve OpenAPI documentation at /docs
+    SwaggerModule.setup('docs', app, openApiDocument);
+  }
 
   // Enable CORS for all origins
   app.enableCors({

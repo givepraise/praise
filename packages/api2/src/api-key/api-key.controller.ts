@@ -19,7 +19,7 @@ import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { Types } from 'mongoose';
 import { ApiKey } from './schemas/api-key.schema';
 import { UpdateDescriptionInputDto } from './dto/update-description-input.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiParam } from '@nestjs/swagger';
 import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
 import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
 
@@ -71,6 +71,7 @@ export class ApiKeyController {
     description: 'An API key',
     type: ApiKey,
   })
+  @ApiParam({ name: 'id', type: 'string' })
   @Permissions(Permission.ApiKeyView)
   @UseInterceptors(MongooseClassSerializerInterceptor(ApiKey))
   async findOne(
@@ -92,6 +93,7 @@ export class ApiKeyController {
     description: 'API key with updated description',
     type: ApiKey,
   })
+  @ApiParam({ name: 'id', type: 'string' })
   @Permissions(Permission.ApiKeyManage)
   @UseInterceptors(MongooseClassSerializerInterceptor(ApiKey))
   async updateApiKeyDescription(
@@ -110,6 +112,7 @@ export class ApiKeyController {
     description: 'Revoked API key',
     type: ApiKey,
   })
+  @ApiParam({ name: 'id', type: 'string' })
   @Permissions(Permission.ApiKeyManage)
   @UseInterceptors(MongooseClassSerializerInterceptor(ApiKey))
   async revokeApiKey(

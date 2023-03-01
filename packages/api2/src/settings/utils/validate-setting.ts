@@ -1,3 +1,5 @@
+import { ServiceException } from '@/shared/exceptions/service-exception';
+
 function isNumeric(value: any) {
   return !isNaN(parseFloat(value)) && isFinite(value);
 }
@@ -5,9 +7,15 @@ function isNumeric(value: any) {
 /**
  * Validate that a setting value is valid given its type.
  */
-export function validate(value: string, type: string) {
+export function validateSetting(
+  value: string,
+  type: string,
+): { valid: boolean; value: string } {
   if (type === 'Float' || type === 'Integer') {
-    return isNumeric(value);
+    return {
+      valid: isNumeric(value),
+      value,
+    };
   }
 
   if (
@@ -16,11 +24,14 @@ export function validate(value: string, type: string) {
     type === 'Image' ||
     type === 'Radio'
   ) {
-    return typeof value === 'string';
+    return { valid: typeof value === 'string', value };
   }
 
   if (type === 'Boolean') {
-    return value.toString() === 'true' || value.toString() === 'false';
+    return {
+      valid: value.toString() === 'true' || value.toString() === 'false',
+      value,
+    };
   }
 
   if (type === 'IntegerList') {
@@ -36,27 +47,31 @@ export function validate(value: string, type: string) {
       previous = parseInt(element);
     });
 
-    return valid;
+    return { valid, value: valueArray.join(',') };
   }
 
   if (type === 'JSON') {
     try {
       const valueData = JSON.parse(value);
-      return typeof valueData === 'object';
+      return {
+        valid: typeof valueData === 'object',
+        value: JSON.stringify(valueData, null, 2),
+      };
     } catch (error) {
-      return false;
+      return { valid: false, value };
     }
   }
 
   if (type === 'StringList') {
+    let valid = true;
     const valueArray = value.split(',').map((item: any) => item.trim());
     valueArray.forEach((element: any) => {
       if (typeof element !== 'string') {
-        return false;
+        valid = false;
       }
     });
-    return true;
+    return { valid, value: valueArray.join(',') };
   }
 
-  return typeof value === type;
+  throw new ServiceException(`Unknown setting type ${type}.`);
 }

@@ -1,4 +1,4 @@
-import { CacheType, CommandInteraction, GuildMember } from 'discord.js';
+import { CacheType, CommandInteraction, GuildMember, Role } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
 import { dmError, praiseRoleError } from './embeds/praiseEmbeds';
 
@@ -19,44 +19,74 @@ export const assertPraiseGiver = async (
   const praiseGiverRoleIDRequired = (await settingValue(
     'PRAISE_GIVER_ROLE_ID_REQUIRED'
   )) as boolean;
-  const praiseGiverRoleID = (await settingValue(
+  const praiseGiverRoleIDList = (await settingValue(
     'PRAISE_GIVER_ROLE_ID'
-  )) as string;
+  )) as string[];
 
   if (!praiseGiverRoleIDRequired) {
     return true;
   }
 
-  if (praiseGiverRoleID === '0') {
-    sendReply &&
-      (await interaction.editReply(
-        '**❌ No Praise Giver Discord Role ID specified.**'
-      ));
+  // Assert that a Praise Giver Role ID has been specified
+  if (
+    !praiseGiverRoleIDList ||
+    (praiseGiverRoleIDList.length === 1 &&
+      (!praiseGiverRoleIDList[0] || praiseGiverRoleIDList[0] === '0'))
+  ) {
+    if (sendReply) {
+      await interaction.editReply({
+        content: '**❌ No Praise Giver Discord Role ID specified.**',
+      });
+    }
     return false;
   }
 
   const { guild } = interaction;
   if (!guild) {
-    sendReply && (await interaction.editReply(await dmError()));
+    if (sendReply) {
+      await interaction.editReply({
+        content: await dmError(),
+      });
+    }
     return false;
   }
 
-  const praiseGiverRole = guild.roles.cache.find(
-    (r) => r.id === praiseGiverRoleID
-  );
-  if (!praiseGiverRole) {
-    sendReply &&
-      (await interaction.editReply(
-        '**❌ Unknown Praise Giver Discord Role ID.**'
-      ));
+  // Assert that the all praise giver roles exist
+  const roles: Role[] = [];
+  let invalidRole = '';
+  for (const roleID of praiseGiverRoleIDList) {
+    const guildRole = guild.roles.cache.find((r) => r.id === roleID);
+    if (!guildRole) {
+      invalidRole = roleID;
+      break;
+    } else {
+      roles.push(guildRole);
+    }
+  }
+
+  if (invalidRole) {
+    if (sendReply) {
+      await interaction.editReply({
+        content: `**❌ Unknown Praise Giver Discord Role ID: "${invalidRole}".**`,
+      });
+    }
     return false;
   }
 
-  if (!praiseGiver.roles.cache.find((r) => r.id === praiseGiverRole.id)) {
-    sendReply &&
-      (await interaction.editReply({
-        embeds: [await praiseRoleError(praiseGiverRole, praiseGiver.user)],
-      }));
+  let isPraiseGiver = false;
+  for (const roleID of praiseGiverRoleIDList) {
+    if (praiseGiver.roles.cache.find((r) => r.id === roleID)) {
+      isPraiseGiver = true;
+      break;
+    }
+  }
+
+  if (!isPraiseGiver) {
+    if (sendReply) {
+      await interaction.editReply({
+        embeds: [await praiseRoleError(roles, praiseGiver.user)],
+      });
+    }
     return false;
   }
 

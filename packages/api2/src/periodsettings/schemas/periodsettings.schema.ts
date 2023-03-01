@@ -21,6 +21,7 @@ export class PeriodSetting {
 
   @ApiResponseProperty({
     example: '62291b7ea8b1619f78818524',
+    type: 'string',
   })
   @ExposeId()
   _id: Types.ObjectId;
@@ -39,14 +40,14 @@ export class PeriodSetting {
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Setting', default: null })
   setting: Types.ObjectId | Setting;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({ type: 'string' })
   @IsString()
   @Prop()
   value: string;
 
   @ApiResponseProperty({
     example: 666,
+    type: 'number',
   })
   valueRealized: string | string[] | boolean | number | number[] | undefined;
 

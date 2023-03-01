@@ -13,7 +13,7 @@ export class PeriodDetailsGiverReceiverDto extends PickType(UserAccount, [
   'updatedAt',
   'platform',
 ]) {
-  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7', type: 'string' })
   @ExposeId()
   user: Types.ObjectId;
 

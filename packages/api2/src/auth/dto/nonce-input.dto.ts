@@ -3,7 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEthAddress } from '@/shared/validators.shared';
 
 export class NonceInputDto {
-  @ApiProperty()
+  @ApiProperty({
+    example: '0xAAB27b150451726EC7738aa1d0A94505c8729bd1',
+    type: 'string',
+  })
   @IsNotEmpty()
   @IsString()
   @IsEthAddress()

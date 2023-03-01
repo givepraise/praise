@@ -9,8 +9,7 @@ import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { SettingGroup } from './enums/setting-group.enum';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
-import { validate } from './utils/settings.validate';
-import { ConstantsProvider } from '@/constants/constants.provider';
+import { validateSetting } from './utils/validate-setting';
 
 @Injectable()
 export class SettingsService {
@@ -97,12 +96,17 @@ export class SettingsService {
     if (typeof data.value === 'undefined') {
       throw new ServiceException('Value is required field');
     }
-    if (!validate(data.value, setting.type)) {
+
+    const { valid, value: validatedValue } = validateSetting(
+      data.value,
+      setting.type,
+    );
+    if (!valid) {
       throw new ServiceException(
         `Settings value ${data.value} is not valid for type ${setting.type}.`,
       );
     }
-    setting.value = data.value;
+    setting.value = validatedValue;
 
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.SETTING,
