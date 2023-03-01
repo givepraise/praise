@@ -10,7 +10,7 @@ export class PraiseCreateInputDto extends PickType(Praise, [
   'sourceId',
   'sourceName',
 ]) {
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: true, type: ['string'] })
   @IsNotEmpty()
   receiverIds: string[];
 

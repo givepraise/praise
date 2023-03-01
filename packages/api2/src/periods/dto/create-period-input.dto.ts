@@ -3,7 +3,7 @@ import { Period } from '../schemas/periods.schema';
 import { IsDateString } from 'class-validator';
 
 export class CreatePeriodInputDto extends PickType(Period, ['name'] as const) {
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   @IsDateString()
   endDate: string;
 }

@@ -131,7 +131,7 @@ export class PraiseController {
   })
   @Permissions(Permission.PraiseView)
   @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<Praise> {
@@ -147,7 +147,7 @@ export class PraiseController {
   })
   @Permissions(Permission.PraiseQuantify)
   @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   async quantify(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() data: QuantifyInputDto,

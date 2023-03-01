@@ -41,12 +41,14 @@ export class ApiKey {
 
   @ApiResponseProperty({
     example: '89f7edbd',
+    type: 'string',
   })
   @Prop({ type: String, required: true })
   name: string;
 
   @ApiProperty({
     example: 'My API Key',
+    type: 'string',
   })
   @IsNotEmpty()
   @IsString()
@@ -55,6 +57,7 @@ export class ApiKey {
 
   @ApiResponseProperty({
     example: '$2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i',
+    type: 'string',
   })
   @Prop({ type: String, required: true })
   hash: string;
@@ -62,6 +65,7 @@ export class ApiKey {
   @ApiProperty({
     example: 'APIKEY_READWRITE',
     required: true,
+    enum: AuthRole,
   })
   @Validate(AllowedApiKeyRole)
   @Prop({ enum: AuthRole, required: true })
