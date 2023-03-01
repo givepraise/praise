@@ -4,26 +4,22 @@ import {
   Get,
   Param, Patch, Post, Query,
   SerializeOptions,
-  UseGuards,
   UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
-import { AuthGuard } from '@nestjs/passport';
 import { CommunityService } from './community.service';
 import { Permission } from '@/auth/enums/permission.enum';
 import { Community } from './schemas/community.schema';
 import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
-import { UserWithStatsDto } from '@/users/dto/user-with-stats.dto';
 import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
 import { CommunityPaginatedResponseDto } from './dto/community-pagination-model.dto';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { ObjectId, Schema, Types } from 'mongoose';
-import { PeriodDetailsDto } from '@/periods/dto/period-details.dto';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
 import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
 import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
+import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
 
 @Controller('communities')
 @ApiTags('Communities')
@@ -43,7 +39,7 @@ export class CommunityController {
   @ApiResponse({
     status: 200,
     description: 'Community',
-    type: CreateCommunityInputDto
+    type: Community
   })
   @Permissions(Permission.CommunitiesCreate)
   @UseInterceptors(MongooseClassSerializerInterceptor(Community))
@@ -60,7 +56,7 @@ export class CommunityController {
   @ApiResponse({
     status: 200,
     description: 'Community',
-    type: CreateCommunityInputDto
+    type: Community
   })
   @Permissions(Permission.CommunitiesUpdate)
   @UseInterceptors(MongooseClassSerializerInterceptor(Community))
@@ -79,7 +75,7 @@ export class CommunityController {
   @ApiResponse({
     status: 200,
     description: 'All communities',
-    type: PaginatedQueryDto
+    type: CommunityPaginatedResponseDto
   })
   @UseInterceptors(MongooseClassSerializerInterceptor(Community))
   async findAll(@Query() options: PaginatedQueryDto): Promise<CommunityPaginatedResponseDto> {
@@ -102,6 +98,26 @@ export class CommunityController {
     if (!community) throw new BadRequestException('Community not found.');
     return community;
   }
+
+  @Patch(':id/discord/link')
+  @ApiOperation({ summary: 'Link discord to community' })
+  @ApiResponse({
+    status: 200,
+    description: 'Community',
+    type: Community
+  })
+  @Permissions(Permission.CommunitiesUpdate)
+  @UseInterceptors(MongooseClassSerializerInterceptor(Community))
+  async linkDiscord(
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Body() linkDiscordBotDto: LinkDiscordBotDto
+  ): Promise<Community> {
+    return this.communityService.linkDiscord(
+      id,
+      linkDiscordBotDto);
+  }
+
+
 
   // TODO Implement webservice activate/deactivate/update  communities for admin panel usage in future
 

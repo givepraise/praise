@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { ServiceException } from '@/shared/exceptions/service-exception';
-import { User } from '@/users/schemas/users.schema';
 import { Community, CommunityModel } from './schemas/community.schema';
 import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
 import { CommunityPaginatedResponseDto } from './dto/community-pagination-model.dto';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
 import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
+import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
+import { ethers } from 'ethers';
+import { DiscordLinkState } from './enums/discord-link-state';
 
 @Injectable()
 export class CommunityService {
@@ -83,5 +85,49 @@ export class CommunityService {
     await community.save();
     return community.toObject();
   }
+
+  async linkDiscord(communityId: Types.ObjectId, linkDiscordBotDto: LinkDiscordBotDto): Promise<Community>{
+    const community =await this.findOneById(communityId)
+    if (!community) throw new ServiceException('Community not found.');
+    if (community.discordLinkState === DiscordLinkState.ACTIVE) throw new ServiceException('Community is already active.');
+    const generatedMsg = this.generateLinkDiscordMessage(
+      {
+        nonce: community.discordLinkNonce as string,
+        guildId: community.discordGuildId as string,
+        communityId: String(communityId)
+      }
+    );
+
+    // Verify signature against generated message
+    // Recover signer and compare against community creator address
+    const signerAddress = ethers.utils.verifyMessage(generatedMsg, linkDiscordBotDto.signedMessage);
+    if (signerAddress?.toLowerCase() !== community.creator.toLowerCase()) {
+      throw new ServiceException('Verification failed');
+    }
+    return this.update(communityId, {
+      discordLinkState: DiscordLinkState.ACTIVE
+    })
+
+
+  }
+
+
+  /**
+   * Generate a link discord message that will be signed by the frontend user, and validated by the api
+   */
+  generateLinkDiscordMessage = (
+    params :{
+      nonce: string,
+      communityId: string,
+      guildId: string
+    }
+  ): string => {
+    return (
+      'SIGN THIS MESSAGE TO LINK THE PRAISE DISCORD BOT TO YOUR COMMUNITY.\n\n' +
+      `DISCORD GUILD ID:\n${params.guildId}\n\n` +
+      `PRAISE COMMUNITY ID:\n${params.communityId}\n\n` +
+      `NONCE:\n${params.nonce}`
+    );
+  };
 
 }
