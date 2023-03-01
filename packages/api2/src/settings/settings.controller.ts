@@ -61,7 +61,7 @@ export class SettingsController {
     description: 'Setting.',
     type: Setting,
   })
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   @Permissions(Permission.SettingsView)
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -78,7 +78,7 @@ export class SettingsController {
     description: 'Updated setting.',
     type: Setting,
   })
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   @Permissions(Permission.SettingsManage)
   async set(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -96,7 +96,7 @@ export class SettingsController {
     description: 'Updated setting.',
     type: Setting,
   })
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   @UseInterceptors(
     FileInterceptor('value', {
       storage: upploadStorage,
@@ -114,7 +114,7 @@ export class SettingsController {
   @ApiOperation({
     summary: 'Serve an uploaded settings file.',
   })
-  @ApiParam({ name: 'file', type: String })
+  @ApiParam({ name: 'file', type: 'string' })
   @Permissions(Permission.SettingsView)
   async serveUpload(
     @Param('file') file: string,

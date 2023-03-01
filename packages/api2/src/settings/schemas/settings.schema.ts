@@ -6,6 +6,7 @@ import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { valueToValueRealized } from '../utils/value-to-value-realized.util';
+import { SettingType } from '../enums/setting-type.enum';
 
 export type SettingDocument = Setting & Document;
 
@@ -19,18 +20,20 @@ export class Setting {
     }
   }
 
-  @ApiResponseProperty({ example: '621f802b813dbdbaddeaf799' })
+  @ApiResponseProperty({ example: '621f802b813dbdbaddeaf799', type: 'string' })
   @ExposeId()
   _id: Types.ObjectId;
 
   @ApiResponseProperty({
     example: 'SETTING_KEY',
+    type: 'string',
   })
   @Prop({ required: true })
   key: string;
 
   @ApiProperty({
     example: '666',
+    type: 'string',
   })
   @IsString()
   @Prop()
@@ -52,44 +55,38 @@ export class Setting {
 
   @ApiResponseProperty({
     example: '555',
+    type: 'string',
   })
   @Prop()
   defaultValue: string;
 
   @ApiResponseProperty({
     example: 'Integer',
+    enum: SettingType,
   })
   @Prop({
     required: true,
-    enum: [
-      'Integer',
-      'Float',
-      'String',
-      'Textarea',
-      'Boolean',
-      'IntegerList',
-      'StringList',
-      'Image',
-      'Radio',
-      'JSON',
-    ],
+    enum: SettingType,
   })
   type: string;
 
   @ApiResponseProperty({
     example: 'Quantifiers Per Praise',
+    type: 'string',
   })
   @Prop({ required: true })
   label: string;
 
   @ApiResponseProperty({
     example: 'How many redundant quantifications are assigned to each praise?',
+    type: 'string',
   })
   @Prop()
   description: string;
 
   @ApiResponseProperty({
-    example: '0',
+    example: 0,
+    type: 'number',
   })
   @Prop({
     required: true,
@@ -98,18 +95,22 @@ export class Setting {
   })
   group: number;
 
-  @ApiResponseProperty()
+  @ApiResponseProperty({
+    type: 'string',
+  })
   @Prop()
   options: string;
 
   @ApiResponseProperty({
-    example: '0',
+    example: 0,
+    type: 'number',
   })
   @Prop()
   subgroup: number;
 
   @ApiResponseProperty({
-    example: 'true',
+    example: true,
+    type: 'boolean',
   })
   @Prop()
   periodOverridable: boolean;

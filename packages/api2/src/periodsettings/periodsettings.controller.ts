@@ -38,7 +38,7 @@ export class PeriodSettingsController {
     type: [PeriodSetting],
   })
   @Permissions(Permission.PeriodSettingsView)
-  @ApiParam({ name: 'periodId', type: String })
+  @ApiParam({ name: 'periodId', type: 'string' })
   async findAll(
     @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
   ): Promise<PeriodSetting[]> {
@@ -53,8 +53,8 @@ export class PeriodSettingsController {
     type: PeriodSetting,
   })
   @Permissions(Permission.PeriodSettingsView)
-  @ApiParam({ name: 'periodId', type: String })
-  @ApiParam({ name: 'settingId', type: String })
+  @ApiParam({ name: 'periodId', type: 'string' })
+  @ApiParam({ name: 'settingId', type: 'string' })
   findOne(
     @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
     @Param('settingId', ObjectIdPipe) settingId: Types.ObjectId,
@@ -73,8 +73,8 @@ export class PeriodSettingsController {
     type: PeriodSetting,
   })
   @Permissions(Permission.PeriodSettingsManage)
-  @ApiParam({ name: 'periodId', type: String })
-  @ApiParam({ name: 'settingId', type: String })
+  @ApiParam({ name: 'periodId', type: 'string' })
+  @ApiParam({ name: 'settingId', type: 'string' })
   async set(
     @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
     @Param('settingId', ObjectIdPipe) settingId: Types.ObjectId,

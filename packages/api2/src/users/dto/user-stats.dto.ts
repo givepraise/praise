@@ -1,15 +1,15 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 
 export class UserStatsDto {
-  @ApiResponseProperty()
+  @ApiResponseProperty({ type: 'number' })
   receivedTotalScore?: number;
 
-  @ApiResponseProperty()
+  @ApiResponseProperty({ type: 'number' })
   receivedTotalCount?: number;
 
-  @ApiResponseProperty()
+  @ApiResponseProperty({ type: 'number' })
   givenTotalScore?: number;
 
-  @ApiResponseProperty()
+  @ApiResponseProperty({ type: 'number' })
   givenTotalCount?: number;
 }

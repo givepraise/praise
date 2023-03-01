@@ -29,7 +29,7 @@ export class ExportInputDto {
   @Transform(({ value }) => parseISO(value))
   endDate?: Date;
 
-  @ApiProperty({ required: false, type: String })
+  @ApiProperty({ required: false, type: 'string' })
   @IsOptional()
   @IsObjectId()
   @Transform(({ value }) =>

@@ -17,17 +17,18 @@ export class Quantification {
 
   @ApiResponseProperty({
     example: '639b178f19296ee0f2d0585d',
+    type: 'string',
   })
   @ExposeId()
   _id: Types.ObjectId;
 
-  @Prop({ default: 0 })
+  @Prop({ default: 0, type: 'number' })
   @ApiResponseProperty({
     example: 144,
   })
   score: number;
 
-  @Prop({ required: true, default: 0 })
+  @Prop({ required: true, default: 0, type: 'number' })
   @ApiResponseProperty({
     example: 144,
   })
@@ -36,38 +37,40 @@ export class Quantification {
   @Prop({ required: true })
   @ApiResponseProperty({
     example: true,
+    type: 'boolean',
   })
   dismissed: boolean;
 
   @Prop({ type: Types.ObjectId, ref: 'Praise', index: true })
-  // TODO: This is not working, adding the example here causes a circular dependency error
-  // @ApiResponseProperty({
-  //   example: '639b178f19296ee0f2d0585d',
-  // })
+  @ApiResponseProperty({
+    example: '639b178f19296ee0f2d0585d',
+    type: 'string',
+  })
   @ExposeId()
   duplicatePraise?: Praise;
 
   @Prop({ type: Types.ObjectId, ref: 'User', index: true })
   @ApiResponseProperty({
     example: '639b178f19296ee0f2d0585d',
+    type: 'string',
   })
   @ExposeId()
   quantifier: User | Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Praise', index: true })
-  // TODO: This is not working, adding the example here causes a circular dependency error
-  // @ApiResponseProperty({
-  //   example: '639b178f19296ee0f2d0585d',
-  // })
+  @ApiResponseProperty({
+    example: '639b178f19296ee0f2d0585d',
+    type: 'string',
+  })
   @ExposeId()
   praise: Praise | Types.ObjectId;
 
   @Prop({ type: Date })
-  @ApiResponseProperty({ example: '2021-06-01T00:00:00.000Z' })
+  @ApiResponseProperty({ example: '2021-06-01T00:00:00.000Z', type: Date })
   createdAt: Date;
 
   @Prop({ type: Date })
-  @ApiResponseProperty({ example: '2021-06-01T00:00:00.000Z' })
+  @ApiResponseProperty({ example: '2021-06-01T00:00:00.000Z', type: Date })
   updatedAt: Date;
 }
 

@@ -27,18 +27,21 @@ export class User {
 
   @ApiResponseProperty({
     example: '5f9f1b9b9b9b9b9b9b9b9b9b',
+    type: 'string',
   })
   @ExposeId()
   _id: Types.ObjectId;
 
   @ApiResponseProperty({
     example: '0xAAB27b150451726EC7738aa1d0A94505c8729bd1',
+    type: 'string',
   })
   @Prop({ required: true, unique: true, index: true })
   identityEthAddress: string;
 
   @ApiProperty({
     example: '0xAAB27b150451726EC7738aa1d0A94505c8729bd1',
+    type: 'string',
   })
   @IsOptional()
   @IsEthAddress()
@@ -47,6 +50,7 @@ export class User {
 
   @ApiProperty({
     example: 'darth',
+    type: 'string',
   })
   @IsOptional()
   @IsString()
@@ -66,6 +70,7 @@ export class User {
 
   @ApiResponseProperty({
     example: '["USER"]',
+    type: 'string',
   })
   @Prop({
     type: [
@@ -89,11 +94,11 @@ export class User {
   @Prop()
   nonce?: string;
 
-  @ApiResponseProperty()
+  @ApiResponseProperty({ type: Date })
   @Prop()
   createdAt: Date;
 
-  @ApiResponseProperty()
+  @ApiResponseProperty({ type: Date })
   @Prop()
   updatedAt: Date;
 }

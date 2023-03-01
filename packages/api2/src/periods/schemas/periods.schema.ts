@@ -16,22 +16,22 @@ export class Period {
       Object.assign(this, partial);
     }
   }
-  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ApiResponseProperty({ example: '621f802b813dbdba9eeaf7d7', type: 'string' })
   @ExposeId()
   _id: Types.ObjectId;
 
   @Prop({ required: true, unique: true, minlength: 3, maxlength: 64 })
-  @ApiProperty({ example: 'June 2021' })
+  @ApiProperty({ example: 'June 2021', type: 'string' })
   @IsString()
   @Length(3, 64)
   name: string;
 
   @Prop({
-    type: String,
+    type: 'string',
     enum: PeriodStatusType,
     default: PeriodStatusType.OPEN,
   })
-  @ApiResponseProperty({ example: 'OPEN' })
+  @ApiResponseProperty({ example: 'OPEN', type: 'string' })
   status: string;
 
   @Prop({

@@ -25,6 +25,7 @@ export class PeriodDetailsDto extends Period {
 
   @ApiResponseProperty({
     example: 543,
+    type: 'number',
   })
   numberOfPraise: number;
 
