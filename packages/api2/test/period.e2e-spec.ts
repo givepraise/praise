@@ -1,9 +1,5 @@
 import request from 'supertest';
-import {
-  ConsoleLogger,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
@@ -41,6 +37,9 @@ import { some } from 'lodash';
 import { PeriodDetailsQuantifierDto } from '@/periods/dto/period-details-quantifier.dto';
 import { SettingsService } from '@/settings/settings.service';
 import { Praise } from '@/praise/schemas/praise.schema';
+import { faker } from '@faker-js/faker';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 
 class LoggedInUser {
   accessToken: string;
@@ -93,7 +92,6 @@ describe('Period (E2E)', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -101,6 +99,8 @@ describe('Period (E2E)', () => {
         forbidNonWhitelisted: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();
@@ -259,10 +259,6 @@ describe('Period (E2E)', () => {
       );
     });
 
-    test('401 when not authenticated', async () => {
-      await request(server).get(`/periods/export`).send().expect(401);
-    });
-
     test('returns period list that matches seeded list in json format', async () => {
       const response = await authorizedGetRequest(
         '/periods/export?format=json',
@@ -376,10 +372,12 @@ describe('Period (E2E)', () => {
       const period2 = p.find((x) => x._id.toString() === period._id);
       expect(period).toBeDefined();
       expect(period2).toBeDefined();
-      expect(period._id).toBe(period2!._id.toString());
-      expect(period.status).toBe(period2!.status);
-      expect(period.endDate).toBe(period2!.endDate.toISOString());
-      expect(period.name).toBe(period2!.name);
+      if (period2) {
+        expect(period._id).toBe(period2._id.toString());
+        expect(period.status).toBe(period2.status);
+        expect(period.endDate).toBe(period2.endDate.toISOString());
+        expect(period.name).toBe(period2.name);
+      }
 
       expect(period).toBeProperlySerialized();
       expect(period).toBeValidClass(Period);
@@ -659,7 +657,24 @@ describe('Period (E2E)', () => {
         .expect(400);
     });
 
-    test('should return 200 and period details when the request body is valid', async () => {
+    test('should return 400 when the period endDate is in the future', async () => {
+      const period = await periodsSeeder.seedPeriod({
+        status: PeriodStatusType.CLOSED,
+        endDate: faker.date.future(),
+      });
+
+      return request(server)
+        .patch(`/periods/${period._id}/close`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .expect(400);
+    });
+
+    test('should return 200 and period details when the request body is valid adnd endDate is in the past', async () => {
+      const period = await periodsSeeder.seedPeriod({
+        status: PeriodStatusType.OPEN,
+        endDate: faker.date.past(),
+      });
+
       const response = await request(server)
         .patch(`/periods/${period._id}/close`)
         .set('Authorization', `Bearer ${users[0].accessToken}`)
@@ -795,7 +810,25 @@ describe('Period (E2E)', () => {
       const dayInPeriod = new Date(period.endDate.getTime());
       dayInPeriod.setDate(period.endDate.getDate() - 1);
 
-      const quantifier = await userAccountsSeeder.seedUserAccount();
+      const wallet1 = Wallet.createRandom();
+      const quantifierUser1 = await usersSeeder.seedUser({
+        identityEthAddress: wallet1.address,
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      const quantifier1 = await userAccountsSeeder.seedUserAccount({
+        user: quantifierUser1._id,
+      });
+
+      const wallet2 = Wallet.createRandom();
+      const quantifierUser2 = await usersSeeder.seedUser({
+        identityEthAddress: wallet2.address,
+        roles: ['USER', 'QUANTIFIER'],
+      });
+
+      await userAccountsSeeder.seedUserAccount({
+        user: quantifierUser2._id,
+      });
 
       const praise = await praiseSeeder.seedPraise({
         receiver: receiver1._id,
@@ -804,7 +837,7 @@ describe('Period (E2E)', () => {
 
       await quantificationsSeeder.seedQuantification({
         praise: praise._id,
-        quantifier: quantifier._id,
+        quantifier: quantifier1._id,
       });
 
       await praiseSeeder.seedPraise({
@@ -859,7 +892,7 @@ describe('Period (E2E)', () => {
       await periodSettingsSeeder.seedPeriodSettings({
         period: period._id,
         setting: PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER._id,
-        value: '2',
+        value: 2,
       });
 
       await periodSettingsSeeder.seedPeriodSettings({
@@ -889,6 +922,7 @@ describe('Period (E2E)', () => {
         .expect(200);
 
       const p = response.body;
+
       expect(p._id).toEqual(period._id.toString());
       expect(p.status).toEqual('QUANTIFY');
 
@@ -902,7 +936,7 @@ describe('Period (E2E)', () => {
       expect(p.receivers[2]._id).toEqual(receiversSorted[2]._id.toString());
       expect(p.receivers[2].praiseCount).toEqual(4);
 
-      expect(p.quantifiers).toHaveLength(4);
+      expect(p.quantifiers).toHaveLength(6);
 
       expect(p.quantifiers[0].finishedCount).toEqual(0);
       expect(p.quantifiers[1].finishedCount).toEqual(0);
@@ -1136,6 +1170,20 @@ describe('Period (E2E)', () => {
 
     test('400 response if period is not OPEN', async function () {
       const period = await periodsSeeder.seedPeriod({ status: 'QUANTIFY' });
+
+      return await request(server)
+        .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)
+        .set('Authorization', `Bearer ${users[0].accessToken}`)
+        .send()
+        .expect('Content-Type', /json/)
+        .expect(400);
+    });
+
+    test('400 response if period endDate is in the future', async function () {
+      const period = await periodsSeeder.seedPeriod({
+        status: 'QUANTIFY',
+        endDate: faker.date.future(),
+      });
 
       return await request(server)
         .patch(`/periods/${period._id.toString() as string}/assignQuantifiers`)

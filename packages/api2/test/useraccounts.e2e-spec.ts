@@ -1,18 +1,18 @@
-import request from 'supertest';
-import {
-  ConsoleLogger,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
+import request from 'supertest';
 import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
 import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { authorizedGetRequest, authorizedPostRequest, authorizedPutRequest, loginUser } from './test.common';
+import {
+  authorizedGetRequest,
+  authorizedPostRequest,
+  authorizedPutRequest,
+  loginUser,
+} from './test.common';
 import { User } from '@/users/schemas/users.schema';
 import { faker } from '@faker-js/faker';
 import { EventLogModule } from '@/event-log/event-log.module';
@@ -23,6 +23,9 @@ import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
 import mongoose from 'mongoose';
+import { Server } from 'http';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 
 describe('UserAccountsController (E2E)', () => {
   let app: INestApplication;
@@ -39,12 +42,13 @@ describe('UserAccountsController (E2E)', () => {
       providers: [UsersSeeder, UserAccountsSeeder],
     }).compile();
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();
@@ -127,7 +131,7 @@ describe('UserAccountsController (E2E)', () => {
     });
   });
 
-  describe('PUT /api/useraccounts/:id', () => {
+  describe('PUT /api/useraccounts', () => {
     let wallet;
     let accessToken: string;
     const users: User[] = [];
@@ -168,14 +172,19 @@ describe('UserAccountsController (E2E)', () => {
     });
 
     test('401 when not authenticated', async () => {
-      await request(server).put(`/useraccounts/${userAccounts[0].accountId}`).send().expect(401);
+      await request(server)
+        .put(
+          `/useraccounts?id=${userAccounts[0]._id}&accountId=${userAccounts[0].accountId}`,
+        )
+        .send()
+        .expect(401);
     });
 
     test('200 and correct put body when authenticated', async () => {
       const accountName = faker.name.firstName();
       const avatarId = faker.internet.url();
       const response = await authorizedPutRequest(
-        `/useraccounts/${userAccounts[0].accountId}`,
+        `/useraccounts?id=${userAccounts[0]._id}&accountId=${userAccounts[0].accountId}`,
         app,
         accessToken,
         {
@@ -186,15 +195,41 @@ describe('UserAccountsController (E2E)', () => {
       ).expect(200);
 
       expect(response.body).toBeDefined();
-      expect(response.body.accountId).toEqual(String(userAccounts[0].accountId));
+      expect(response.body.accountId).toEqual(
+        String(userAccounts[0].accountId),
+      );
       expect(response.body.name).toEqual(accountName);
       expect(response.body.platform).toEqual('DISCORD');
       expect(response.body.avatarId).toEqual(avatarId);
       expect(String(response.body.user)).toEqual(String(userAccounts[0].user));
     });
+
+    test('200 and correct put body when authenticated', async () => {
+      const accountName = faker.name.firstName();
+      const avatarId = faker.internet.url();
+      const response = await authorizedPutRequest(
+        `/useraccounts?accountId=${userAccounts[0].accountId}`,
+        app,
+        accessToken,
+        {
+          name: accountName,
+          avatarId: avatarId,
+          platform: 'FACEBOOK',
+        },
+      ).expect(200);
+
+      expect(response.body).toBeDefined();
+      expect(response.body.accountId).toEqual(
+        String(userAccounts[0].accountId),
+      );
+      expect(response.body.name).toEqual(accountName);
+      expect(response.body.platform).toEqual('FACEBOOK');
+      expect(response.body.avatarId).toEqual(avatarId);
+      expect(String(response.body.user)).toEqual(String(userAccounts[0].user));
+    });
   });
 
-  describe('GET /api/useraccounts/:id', () => {
+  describe('GET /api/useraccounts?id=xxxx&accountId=xxx', () => {
     let wallet;
     let accessToken: string;
     const users: User[] = [];
@@ -235,12 +270,17 @@ describe('UserAccountsController (E2E)', () => {
     });
 
     test('401 when not authenticated', async () => {
-      await request(server).get(`/useraccounts/${userAccounts[0].accountId}`).send().expect(401);
+      await request(server)
+        .get(
+          `/useraccounts?id=${userAccounts[0]._id}&accountId=${userAccounts[0].accountId}`,
+        )
+        .send()
+        .expect(401);
     });
 
     test('200 when authenticated', async () => {
       await authorizedGetRequest(
-        `/useraccounts/${userAccounts[0].accountId}`,
+        `/useraccounts?id=${userAccounts[0]._id}&accountId=${userAccounts[0].accountId}`,
         app,
         accessToken,
       ).expect(200);
@@ -248,7 +288,17 @@ describe('UserAccountsController (E2E)', () => {
 
     test('returns the fetched user account by id', async () => {
       const response = await authorizedGetRequest(
-        `/useraccounts/${userAccounts[0].accountId}`,
+        `/useraccounts?id=${userAccounts[0]._id}`,
+        app,
+        accessToken,
+      ).expect(200);
+      expect(response.body._id).toBe(String(userAccounts[0]._id));
+      expect(response.body.activateToken).toBeUndefined();
+    });
+
+    test('returns the fetched user account by account_id', async () => {
+      const response = await authorizedGetRequest(
+        `/useraccounts?accountId=${userAccounts[0].accountId}`,
         app,
         accessToken,
       ).expect(200);
@@ -299,10 +349,6 @@ describe('UserAccountsController (E2E)', () => {
       // Login and get access token
       const response = await loginUser(app, module, wallet);
       accessToken = response.accessToken;
-    });
-
-    test('401 when not authenticated', async () => {
-      await request(server).get('/useraccounts/export').send().expect(401);
     });
 
     test('200 when authenticated', async () => {

@@ -6,11 +6,11 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Query,
   Res,
   SerializeOptions,
   StreamableFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -28,10 +28,8 @@ import { QuantifyMultipleInputDto } from './dto/quantify-multiple-input.dto';
 import { PraiseService } from './services/praise.service';
 import { Praise } from './schemas/praise.schema';
 import { PraisePaginatedQueryDto } from './dto/praise-paginated-query.dto';
-import { PermissionsGuard } from '@/auth/guards/permissions.guard';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
 import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
 import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
@@ -40,14 +38,16 @@ import { ExportInputDto } from '@/shared/dto/export-input.dto';
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
 import { PraiseExportService } from './services/praise-export.service';
+import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
+import { PraiseCreateInputDto } from './dto/praise-create-input.dto';
+import { PraiseForwardInputDto } from './dto/praise-forward-input.dto';
 
 @Controller('praise')
 @ApiTags('Praise')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@UseGuards(PermissionsGuard)
-@UseGuards(JwtAuthGuard)
+@EnforceAuthAndPermissions()
 export class PraiseController {
   constructor(
     private readonly praiseService: PraiseService,
@@ -79,7 +79,7 @@ export class PraiseController {
   })
   @ApiProduces('application/octet-stream')
   @ApiProduces('application/json')
-  @Permissions(Permission.UsersExport)
+  @Permissions(Permission.PraiseExport)
   async export(
     @Query() options: ExportInputDto,
     @Res({ passthrough: true }) res: Response,
@@ -185,5 +185,31 @@ export class PraiseController {
     );
 
     return praiseItems.flat();
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Create praise item' })
+  @ApiResponse({
+    status: 200,
+    description: 'Praise item',
+    type: Praise,
+  })
+  @Permissions(Permission.PraiseCreate)
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
+  async praise(@Body() data: PraiseCreateInputDto): Promise<Praise[]> {
+    return this.praiseService.createPraiseItem(data);
+  }
+
+  @Post('forward')
+  @ApiOperation({ summary: 'Forward praise item' })
+  @ApiResponse({
+    status: 200,
+    description: 'Praise item',
+    type: Praise,
+  })
+  @Permissions(Permission.PraiseForward)
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
+  async forward(@Body() data: PraiseForwardInputDto): Promise<Praise[]> {
+    return this.praiseService.createPraiseItem(data);
   }
 }

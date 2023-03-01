@@ -7,7 +7,10 @@ import {
   UserAccountDocument,
   UserAccountsExportSqlSchema,
 } from './schemas/useraccounts.schema';
-import { UpdateUserAccountInputDto, UpdateUserAccountInputRequestDto } from './dto/update-user-account-input.dto';
+import {
+  UpdateUserAccountInputDto,
+  UpdateUserAccountInputRequestDto,
+} from './dto/update-user-account-input.dto';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import {
   generateParquetExport,
@@ -41,38 +44,64 @@ export class UserAccountsService {
     createUserAccountDto: CreateUserAccountDto,
   ): Promise<UserAccount> {
     const user = await this.userService.findOneById(
-      new Types.ObjectId(createUserAccountDto.userId)
+      new Types.ObjectId(createUserAccountDto.userId),
     );
 
     if (!user) throw new ServiceException('User not found.');
 
     const userAccount = new this.userAccountModel({
       ...createUserAccountDto,
-      user
+      user,
     });
     await userAccount.save();
 
-    // Add another migration? or is original migration run?
-    // this.eventLogService.logEvent({
-    //   typeKey: EventLogTypeKey.USER_ACCOUNT,
-    //   description: `Created UserAccount id: ${userAccount.accountId}`,
-    // });
+    this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `Created UserAccount id: ${userAccount.accountId}`,
+    });
 
     return userAccount;
   }
 
-  async updateUserAccount(
-    userAccountId: string,
-    updateUserAccountDto: UpdateUserAccountInputRequestDto
-  ): Promise<UserAccount> {
-    const userAccount = await this.userAccountModel.findOneAndUpdate(
-      { accountId: userAccountId },
-      updateUserAccountDto,
-      { upsert: true, new: true }
-    );
+  async updateByIdOrAccountId(
+    updateUserAccountDto: UpdateUserAccountInputDto,
+    _id?: string,
+    accountId?: string,
+  ): Promise<UserAccount | null> {
+    if (_id && Types.ObjectId.isValid(_id))
+      return await this.updateUserAccountById(
+        new Types.ObjectId(_id),
+        updateUserAccountDto,
+      );
+    if (accountId)
+      return await this.updateUserAccountByAccountId(
+        accountId,
+        updateUserAccountDto,
+      );
 
-    if (!userAccount) throw new ServiceException('UserAccount not found.');
-    return userAccount;
+    throw new ServiceException('No identifier provided.');
+  }
+
+  async updateUserAccountById(
+    _id: Types.ObjectId,
+    updateUserAccountDto: UpdateUserAccountInputDto,
+  ): Promise<UserAccount> {
+    return await this.userAccountModel.findOneAndUpdate(
+      { _id },
+      updateUserAccountDto,
+      { upsert: true, new: true },
+    );
+  }
+
+  async updateUserAccountByAccountId(
+    accountId: string,
+    updateUserAccountDto: UpdateUserAccountInputDto,
+  ): Promise<UserAccount> {
+    return await this.userAccountModel.findOneAndUpdate(
+      { accountId },
+      updateUserAccountDto,
+      { upsert: true, new: true },
+    );
   }
 
   /**
@@ -87,16 +116,40 @@ export class UserAccountsService {
   /**
    * Returns a user account by user account ID
    */
-  async findOneByUserAccountId(
-    userAccountId: string,
-  ): Promise<UserAccount | null> {
+  async findOneByUserAccountId(accountId: string): Promise<UserAccount | null> {
     const userAccount = await this.userAccountModel
-      .findOne({ userAccountId })
-      .select('_id user accountId name avatarId platform createdAt updatedAt')
+      .findOne({ accountId })
       .populate('user')
       .lean();
     if (!userAccount) return null;
     return userAccount;
+  }
+
+  /**
+   * Find the Useraccount by objectId
+   */
+  async findOneById(_id: Types.ObjectId): Promise<UserAccount | null> {
+    const userAccount = await this.userAccountModel
+      .findOne({ _id })
+      .populate('user')
+      .lean();
+    if (!userAccount) return null;
+
+    return userAccount;
+  }
+
+  /**
+   * Returns a user account by Mongo ID or AccountId
+   */
+  async findOneByIdOrAccountId(
+    _id?: string,
+    accountId?: string,
+  ): Promise<UserAccount | null> {
+    if (_id && Types.ObjectId.isValid(_id))
+      return await this.findOneById(new Types.ObjectId(_id));
+    if (accountId) return await this.findOneByUserAccountId(accountId);
+
+    throw new ServiceException('No identifier provided.');
   }
 
   /**
@@ -113,7 +166,7 @@ export class UserAccountsService {
   }
 
   /**
-   * Update a user account
+   * Update a user account by _id
    */
   async update(
     _id: Types.ObjectId,

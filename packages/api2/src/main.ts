@@ -8,6 +8,8 @@ import { ServiceExceptionFilter } from './shared/filters/service-exception.filte
 import { runDbMigrations } from './database/migrations';
 import { version } from '../package.json';
 import { Logger } from './shared/logger';
+import { MongoValidationErrorFilter } from './shared/filters/mongo-validation-error.filter';
+import { MongoServerErrorFilter } from './shared/filters/mongo-server-error.filter';
 
 async function bootstrap() {
   // Create an instance of the Nest app
@@ -27,6 +29,8 @@ async function bootstrap() {
 
   // Apply global exception filters to handle errors in the app
   // ServiceExceptions are turned into HTTP 400 Bad Request responses
+  app.useGlobalFilters(new MongoServerErrorFilter());
+  app.useGlobalFilters(new MongoValidationErrorFilter());
   app.useGlobalFilters(new ServiceExceptionFilter());
 
   // Apply dependency injection container to the app
@@ -46,14 +50,16 @@ async function bootstrap() {
     origin: '*',
   });
 
+  // Create a logger instance for the app
+  const logger = new Logger('Bootstrap');
+
   // Run database migrations before starting the app
-  await runDbMigrations(app);
+  await runDbMigrations(app, logger);
 
   // Start the app listening on the API port or default to port 3000
   await app.listen(process.env.API_PORT || 3000);
 
   // Log the app version and port to the console
-  const logger = new Logger('Bootstrap');
   logger.log(
     `Praise API v${version} listening on port ${process.env.API_PORT || 3000}`,
   );

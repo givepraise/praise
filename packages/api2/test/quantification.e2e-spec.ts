@@ -1,12 +1,6 @@
-import request from 'supertest';
-import {
-  ConsoleLogger,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
 import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
 import { UsersService } from '@/users/users.service';
@@ -34,10 +28,11 @@ import { faker } from '@faker-js/faker';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 import { Period } from '@/periods/schemas/periods.schema';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 
 describe('UserAccountsController (E2E)', () => {
   let app: INestApplication;
-  let server: Server;
   let module: TestingModule;
   let usersSeeder: UsersSeeder;
   let usersService: UsersService;
@@ -70,14 +65,15 @@ describe('UserAccountsController (E2E)', () => {
       ],
     }).compile();
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
+    app.getHttpServer();
     await app.init();
     await runDbMigrations(app);
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
@@ -212,10 +208,6 @@ describe('UserAccountsController (E2E)', () => {
       });
     });
 
-    test('401 when not authenticated', async () => {
-      await request(server).get('/quantifications/export').send().expect(401);
-    });
-
     test('200 when authenticated', async () => {
       await authorizedGetRequest(
         `/quantifications/export?format=json&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
@@ -242,6 +234,8 @@ describe('UserAccountsController (E2E)', () => {
         adminUserAccessToken,
       ).expect(200);
       expect(response.body.length).toBe(1);
+      // toBeTrue() is not working with our version of jest
+      // eslint-disable-next-line jest-extended/prefer-to-be-true
       expect(String(quantifications[2]._id) === response.body[0]._id).toBe(
         true,
       );

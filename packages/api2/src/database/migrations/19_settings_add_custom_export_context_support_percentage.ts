@@ -1,5 +1,5 @@
 import { SettingGroup } from '../../settings/enums/setting-group.enum';
-import { SettingModel } from '../schemas/settings/07_settings.schema';
+import { SettingModel } from '../schemas/settings/19_settings.schema';
 
 const settings = [
   {

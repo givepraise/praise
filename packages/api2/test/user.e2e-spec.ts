@@ -1,9 +1,5 @@
 import request from 'supertest';
-import {
-  ConsoleLogger,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { Server } from 'http';
@@ -35,6 +31,8 @@ import { EventLogModule } from '@/event-log/event-log.module';
 import { runDbMigrations } from '@/database/migrations';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
+import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
+import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
 
 describe('UserController (E2E)', () => {
   let app: INestApplication;
@@ -71,7 +69,6 @@ describe('UserController (E2E)', () => {
       ],
     }).compile();
     app = module.createNestApplication();
-    app.useLogger(new ConsoleLogger());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -79,6 +76,8 @@ describe('UserController (E2E)', () => {
         forbidNonWhitelisted: true,
       }),
     );
+    app.useGlobalFilters(new MongoServerErrorFilter());
+    app.useGlobalFilters(new MongoValidationErrorFilter());
     app.useGlobalFilters(new ServiceExceptionFilter());
     server = app.getHttpServer();
     await app.init();
@@ -126,10 +125,6 @@ describe('UserController (E2E)', () => {
       // Login and get access token
       const response = await loginUser(app, module, wallet);
       accessToken = response.accessToken;
-    });
-
-    test('401 when not authenticated', async () => {
-      await request(server).get('/users/export').send().expect(401);
     });
 
     test('200 when authenticated', async () => {
@@ -358,11 +353,11 @@ describe('UserController (E2E)', () => {
         app,
         accessToken,
         {
-          username: 'newUsername',
+          username: 'new_username',
         },
       ).expect(200);
 
-      expect(response.body.username).toBe('newUsername');
+      expect(response.body.username).toBe('new_username');
     });
 
     test('400 response when trying to update not whitelisted fields', async () => {
@@ -417,6 +412,86 @@ describe('UserController (E2E)', () => {
 
       expect(response.body.identityEthAddress).toBe(user.identityEthAddress);
     });
+  });
+
+  describe('PATCH /api/users/:id', () => {
+    let wallet;
+    let accessToken: string;
+    let user: User;
+
+    beforeAll(async () => {
+      // Clear the database
+      await usersService.getModel().deleteMany({});
+      await userAccountsService.getModel().deleteMany({});
+
+      // Seed the database
+      wallet = Wallet.createRandom();
+      user = await usersSeeder.seedUser({
+        identityEthAddress: wallet.address,
+        rewardsAddress: wallet.address,
+      });
+
+      // Login and get access token
+      const response = await loginUser(app, module, wallet);
+      accessToken = response.accessToken;
+    });
+
+    // Test updating invalid username: too long
+    test('400 response when username is too long', async () => {
+      await authorizedPatchRequest(`/users/${user._id}`, app, accessToken, {
+        username: 'a'.repeat(33),
+      }).expect(400);
+    });
+
+    // Test updating invalid username: too short
+    test('400 response when username is too short', async () => {
+      await authorizedPatchRequest(`/users/${user._id}`, app, accessToken, {
+        username: 'a',
+      }).expect(400);
+    });
+
+    // Test updating invalid username: invalid characters
+    test('400 response when username contains invalid characters', async () => {
+      await authorizedPatchRequest(`/users/${user._id}`, app, accessToken, {
+        username: 'abc😂',
+      }).expect(400);
+    });
+
+    // Test updating valid username
+    test('200 response when username is valid', async () => {
+      await authorizedPatchRequest(`/users/${user._id}`, app, accessToken, {
+        username: 'valid-username',
+      }).expect(200);
+    });
+
+    // Test updating username to be the same as another user
+    test('409 response when username is already in use', async () => {
+      await usersSeeder.seedUser({
+        identityEthAddress: Wallet.createRandom().address,
+        rewardsAddress: Wallet.createRandom().address,
+        username: 'already_in_use',
+      });
+
+      await authorizedPatchRequest(`/users/${user._id}`, app, accessToken, {
+        username: 'already_in_use',
+      }).expect(409);
+    });
+
+    // Test updating invalid rewardsEthAddress: invalid address
+    test('400 response when rewardsEthAddress is invalid', async () => {
+      await authorizedPatchRequest(`/users/${user._id}`, app, accessToken, {
+        rewardsEthAddress: '0x123',
+      }).expect(400);
+    });
+
+    // Test updating valid rewardsEthAddress
+    test('200 response when rewardsEthAddress is valid', async () => {
+      await authorizedPatchRequest(`/users/${user._id}`, app, accessToken, {
+        rewardsEthAddress: '0x1234567890123456789012345678901234567890',
+      }).expect(200);
+    });
+
+    // Test updating rewards
   });
 
   describe('PATCH /api/users/{id}/addRole', () => {

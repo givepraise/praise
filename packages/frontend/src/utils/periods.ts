@@ -16,6 +16,9 @@ export const getPreviousPeriod = (
   return undefined;
 };
 
+export const hasPeriodEnded = (period: PeriodDetailsDto): boolean =>
+  new Date(period.endDate).getTime() < Date.now();
+
 export const getQuantifierData = (
   period: PeriodDetailsDto | undefined,
   userId: string | undefined
