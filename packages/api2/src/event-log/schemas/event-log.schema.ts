@@ -4,6 +4,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Document, model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { EventLogType } from './event-log-type.schema';
+import { UserAccountNoUserId } from '@/useraccounts/dto/useraccount-no-user-id.dto';
+
 import { Type } from 'class-transformer';
 import { IsString, ValidateNested } from 'class-validator';
 
@@ -14,6 +16,9 @@ export class EventLog {
   constructor(partial?: Partial<EventLog>) {
     if (partial) {
       Object.assign(this, partial);
+      if (partial.useraccount) {
+        this.useraccount = new UserAccountNoUserId(partial.useraccount);
+      }
     }
   }
 
@@ -35,14 +40,15 @@ export class EventLog {
   })
   user: Types.ObjectId;
 
-  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7', type: 'string' })
-  @ExposeId()
+  @ApiProperty({ type: UserAccountNoUserId })
+  @ValidateNested()
+  @Type(() => UserAccountNoUserId)
   @Prop({
     type: Types.ObjectId,
     ref: 'UserAccount',
     index: true,
   })
-  useraccount: Types.ObjectId;
+  useraccount: Types.ObjectId | UserAccountNoUserId;
 
   @ApiProperty({ example: '621f802b813dbdba9eeaf7d7', type: 'string' })
   @ExposeId()
