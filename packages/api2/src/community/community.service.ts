@@ -27,9 +27,7 @@ export class CommunityService {
   }
 
   async findOne(query: any): Promise<Community> {
-    return  this.communityModel
-      .findOne(query)
-      .lean();
+    return this.communityModel.findOne(query).lean();
   }
 
   async findOneById(_id: Types.ObjectId): Promise<Community> {
@@ -55,17 +53,22 @@ export class CommunityService {
       query,
       limit,
       page,
-      sort
+      sort,
     };
 
-    const communityPagination = await this.communityModel.paginate(paginateQuery);
+    const communityPagination = await this.communityModel.paginate(
+      paginateQuery,
+    );
     if (!communityPagination)
       throw new ServiceException('Failed to query event logs');
 
     return communityPagination;
   }
 
-  async update(_id: Types.ObjectId, community: UpdateCommunityInputDto): Promise<Community> {
+  async update(
+    _id: Types.ObjectId,
+    community: UpdateCommunityInputDto,
+  ): Promise<Community> {
     const communityDocument = await this.communityModel.findById(_id);
     if (!communityDocument) throw new ServiceException('Community not found.');
 
@@ -86,42 +89,42 @@ export class CommunityService {
     return community.toObject();
   }
 
-  async linkDiscord(communityId: Types.ObjectId, linkDiscordBotDto: LinkDiscordBotDto): Promise<Community>{
-    const community =await this.findOneById(communityId)
+  async linkDiscord(
+    communityId: Types.ObjectId,
+    linkDiscordBotDto: LinkDiscordBotDto,
+  ): Promise<Community> {
+    const community = await this.findOneById(communityId);
     if (!community) throw new ServiceException('Community not found.');
-    if (community.discordLinkState === DiscordLinkState.ACTIVE) throw new ServiceException('Community is already active.');
-    const generatedMsg = this.generateLinkDiscordMessage(
-      {
-        nonce: community.discordLinkNonce as string,
-        guildId: community.discordGuildId as string,
-        communityId: String(communityId)
-      }
-    );
+    if (community.discordLinkState === DiscordLinkState.ACTIVE)
+      throw new ServiceException('Community is already active.');
+    const generatedMsg = this.generateLinkDiscordMessage({
+      nonce: community.discordLinkNonce as string,
+      guildId: community.discordGuildId as string,
+      communityId: String(communityId),
+    });
 
     // Verify signature against generated message
     // Recover signer and compare against community creator address
-    const signerAddress = ethers.utils.verifyMessage(generatedMsg, linkDiscordBotDto.signedMessage);
+    const signerAddress = ethers.utils.verifyMessage(
+      generatedMsg,
+      linkDiscordBotDto.signedMessage,
+    );
     if (signerAddress?.toLowerCase() !== community.creator.toLowerCase()) {
       throw new ServiceException('Verification failed');
     }
     return this.update(communityId, {
-      discordLinkState: DiscordLinkState.ACTIVE
-    })
-
-
+      discordLinkState: DiscordLinkState.ACTIVE,
+    });
   }
-
 
   /**
    * Generate a link discord message that will be signed by the frontend user, and validated by the api
    */
-  generateLinkDiscordMessage = (
-    params :{
-      nonce: string,
-      communityId: string,
-      guildId: string
-    }
-  ): string => {
+  generateLinkDiscordMessage = (params: {
+    nonce: string;
+    communityId: string;
+    guildId: string;
+  }): string => {
     return (
       'SIGN THIS MESSAGE TO LINK THE PRAISE DISCORD BOT TO YOUR COMMUNITY.\n\n' +
       `DISCORD GUILD ID:\n${params.guildId}\n\n` +
@@ -129,5 +132,4 @@ export class CommunityService {
       `NONCE:\n${params.nonce}`
     );
   };
-
 }

@@ -19,7 +19,7 @@ const PERMISSIONS_USER = [
   Permission.PeriodExport,
   Permission.QuantificationsExport,
   Permission.UserAccountsExport,
-  Permission.CommunitiesCreate
+  Permission.CommunitiesCreate,
 ];
 
 /**
@@ -76,7 +76,6 @@ const PERMISSION_DISCORD_BOT = [
   Permission.PraiseForward,
   Permission.CommunitiesView,
 ];
-
 
 /**
  * Setup Web  permissions
