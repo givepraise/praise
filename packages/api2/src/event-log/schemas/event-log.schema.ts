@@ -83,6 +83,22 @@ export class EventLog {
   @IsString()
   @Prop({ type: String, required: true })
   description: string;
+
+  @ApiProperty({
+    example: '2023-03-01T22:51:20.012Z',
+    required: true,
+    type: Date,
+  })
+  @Prop({ type: Date })
+  createdAt: Date;
+
+  @ApiProperty({
+    example: '2023-03-01T22:51:20.012Z',
+    required: true,
+    type: Date,
+  })
+  @Prop({ type: Date })
+  updatedAt: Date;
 }
 
 export const EventLogSchema =
