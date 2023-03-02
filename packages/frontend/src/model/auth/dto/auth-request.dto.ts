@@ -1,4 +1,3 @@
-export interface AuthRequestInputDto {
-  identityEthAddress: string;
-  signature: string;
-}
+import { components } from 'api-types';
+
+export type LoginInputDto = components['schemas']['LoginInputDto'];

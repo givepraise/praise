@@ -1,5 +1,3 @@
-export interface ActivateRequestBodyDto {
-  identityEthAddress: string;
-  accountId: string;
-  signature: string;
-}
+import { components } from 'api-types';
+
+export type ActivateInputDto = components['schemas']['ActivateInputDto'];

@@ -1,5 +1,4 @@
-export interface VerifyQuantifierPoolSizeResponseDto {
-  quantifierPoolSize: number;
-  quantifierPoolSizeNeeded: number;
-  quantifierPoolDeficitSize: number;
-}
+import { components } from 'api-types';
+
+export type VerifyQuantifierPoolSizeDto =
+  components['schemas']['VerifyQuantifierPoolSizeDto'];

@@ -3,18 +3,18 @@ import { atom, selectorFamily, useRecoilCallback } from 'recoil';
 import { isEmpty } from 'lodash';
 import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from '../api';
-import { SettingDto } from './dto/setting.dto';
-import { SetInputDto } from './dto/set-input.dto';
+import { Setting } from './dto/setting.dto';
+import { SetSettingDto } from './dto/set-setting.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const instanceOfSetting = (object: any): object is SettingDto => {
+const instanceOfSetting = (object: any): object is Setting => {
   return '_id' in object;
 };
 
 /**
  * Atom that fetches all global settings when initialised.
  */
-export const AllSettings = atom<SettingDto[] | undefined>({
+export const AllSettings = atom<Setting[] | undefined>({
   key: 'AllSettings',
   default: undefined,
   effects: [
@@ -26,7 +26,7 @@ export const AllSettings = atom<SettingDto[] | undefined>({
           })
         ).then((response) => {
           if (isResponseOk(response)) {
-            const periodSettings = response.data as SettingDto[];
+            const periodSettings = response.data as Setting[];
             if (Array.isArray(periodSettings) && periodSettings.length > 0)
               return periodSettings;
           }
@@ -43,7 +43,7 @@ export const SingleSetting = selectorFamily({
   key: 'SingleSetting',
   get:
     (key: string) =>
-    ({ get }): SettingDto | undefined => {
+    ({ get }): Setting | undefined => {
       const allSettings = get(AllSettings);
       if (!allSettings) return;
       return allSettings.find((setting) => setting.key === key);
@@ -63,8 +63,8 @@ export const SingleSetting = selectorFamily({
 
 type useSetSettingReturn = {
   setSetting: (
-    setting: SettingDto
-  ) => Promise<AxiosResponse<SettingDto> | AxiosError | undefined>;
+    setting: Setting
+  ) => Promise<AxiosResponse<Setting> | AxiosError | undefined>;
 };
 
 /**
@@ -73,7 +73,7 @@ type useSetSettingReturn = {
 export const useSetSetting = (): useSetSettingReturn => {
   const apiAuthClient = useApiAuthClient();
 
-  const reqData = (setting: SettingDto): SetInputDto | FormData => {
+  const reqData = (setting: Setting): SetSettingDto | FormData => {
     if (setting.type === 'Image') {
       if (
         setting.value &&
@@ -93,14 +93,14 @@ export const useSetSetting = (): useSetSettingReturn => {
   const setSetting = useRecoilCallback(
     ({ set }) =>
       async (
-        setting: SettingDto
-      ): Promise<AxiosResponse<SettingDto> | AxiosError | undefined> => {
+        setting: Setting
+      ): Promise<AxiosResponse<Setting> | AxiosError | undefined> => {
         if (!instanceOfSetting(setting)) return;
 
         // If the setting is an image, we need to use a different endpoint.
         const upload = setting.type === 'Image' ? '/upload' : '';
 
-        const response: AxiosResponse<SettingDto> = await apiAuthClient.patch(
+        const response: AxiosResponse<Setting> = await apiAuthClient.patch(
           `/settings/${setting._id}${upload}`,
           reqData(setting)
         );

@@ -1,5 +1,5 @@
 import { Receiver } from './receiver.interface';
-import { UserAccount } from './useraccount.interface';
+import { UserAccount } from '../dto/useraccount.dto';
 
 export interface Quantifier {
   _id: string;

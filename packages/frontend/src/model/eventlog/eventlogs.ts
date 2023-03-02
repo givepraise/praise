@@ -1,9 +1,8 @@
 import { selector, selectorFamily } from 'recoil';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ApiAuthGet, isResponseOk } from '../api';
-import { EventLogDto } from './dto/event-log.dto';
-import { EventLogTypeDto } from './dto/event-log-type.dto';
-import { PaginatedResponseBodyDto } from '@/model/shared/dto/paginated-response-body.dto';
+import { EventLogType } from './dto/event-log-type.dto';
+import { EventLogPaginatedResponseDto } from '@/model/shared/dto/paginated-response-body.dto';
 
 export type AllEventLogsQueryParameters = {
   sortColumn: string;
@@ -23,14 +22,12 @@ export const AllEventLogsQuery = selectorFamily({
   key: 'AllEventLogsQuery',
   get:
     (query: AllEventLogsQueryParameters) =>
-    ({
-      get,
-    }): AxiosResponse<PaginatedResponseBodyDto<EventLogDto>> | AxiosError => {
+    ({ get }): AxiosResponse<EventLogPaginatedResponseDto> | AxiosError => {
       const qs = Object.keys(query)
         .map((key) => `${key}=${query[key]}`)
         .join('&');
       return get(ApiAuthGet({ url: `/event-log${qs ? `?${qs}` : ''}` })) as
-        | AxiosResponse<PaginatedResponseBodyDto<EventLogDto>>
+        | AxiosResponse<EventLogPaginatedResponseDto>
         | AxiosError;
     },
 });
@@ -44,7 +41,7 @@ export const AllEventLogs = selectorFamily({
   key: 'AllEventLogs',
   get:
     (query: AllEventLogsQueryParameters) =>
-    ({ get }): PaginatedResponseBodyDto<EventLogDto> | undefined => {
+    ({ get }): EventLogPaginatedResponseDto | undefined => {
       const response = get(AllEventLogsQuery(query));
       if (isResponseOk(response)) {
         return response.data;
@@ -58,12 +55,12 @@ export const AllEventLogs = selectorFamily({
  */
 export const AllEventLogTypesQuery = selector({
   key: 'AllEventLogTypesQuery',
-  get: ({ get }): AxiosResponse<EventLogTypeDto[]> | AxiosError => {
+  get: ({ get }): AxiosResponse<EventLogType[]> | AxiosError => {
     return get(
       ApiAuthGet({
         url: '/event-log/types',
       })
-    ) as AxiosResponse<EventLogTypeDto[]> | AxiosError;
+    ) as AxiosResponse<EventLogType[]> | AxiosError;
   },
 });
 
@@ -72,7 +69,7 @@ export const AllEventLogTypesQuery = selector({
  */
 export const AllEventLogTypes = selector({
   key: 'AllEventLogTypes',
-  get: ({ get }): EventLogTypeDto[] | undefined => {
+  get: ({ get }): EventLogType[] | undefined => {
     const response = get(AllEventLogTypesQuery);
     if (isResponseOk(response)) {
       return response.data;

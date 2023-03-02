@@ -1,13 +1,6 @@
-export interface PaginatedResponseBodyDto<T> {
-  totalDocs?: number;
-  limit?: number;
-  totalPages?: number;
-  page?: number;
-  pagingCounter?: number;
-  hasPrevPage?: Boolean;
-  hasNextPage?: Boolean;
-  prevPage?: number;
-  nextPage?: number;
-  hasMore?: Boolean;
-  docs: T[];
-}
+import { components } from 'api-types';
+
+export type PeriodPaginatedResponseDto =
+  components['schemas']['PeriodPaginatedResponseDto'];
+export type EventLogPaginatedResponseDto =
+  components['schemas']['EventLogPaginatedResponseDto'];

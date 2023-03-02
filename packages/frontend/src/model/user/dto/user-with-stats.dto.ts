@@ -1,8 +1,3 @@
-import { UserDto } from './user.dto';
+import { components } from 'api-types';
 
-export interface UserWithStatsDto extends UserDto {
-  receivedTotalCount: number;
-  receivedTotalScore: number;
-  givenTotalCount: number;
-  givenTotalScore: number;
-}
+export type UserWithStatsDto = components['schemas']['UserWithStatsDto'];

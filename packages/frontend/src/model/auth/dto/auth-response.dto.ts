@@ -1,6 +1,3 @@
-export interface AuthResponseDto {
-  accessToken: string;
-  refreshToken: string;
-  identityEthAddress: string;
-  tokenType: string;
-}
+import { components } from 'api-types';
+
+export type LoginResponseDto = components['schemas']['LoginResponseDto'];

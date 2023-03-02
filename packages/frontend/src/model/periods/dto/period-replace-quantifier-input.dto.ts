@@ -1,7 +1,4 @@
-import { PraiseDto } from '@/model/praise/praise.dto';
-import { PeriodDetailsDto } from './period-details.dto';
+import { components } from 'api-types';
 
-export interface PeriodReplaceQuantifierInputDto {
-  period: PeriodDetailsDto;
-  praises: PraiseDto[];
-}
+export type ReplaceQuantifierResponseDto =
+  components['schemas']['ReplaceQuantifierResponseDto'];

@@ -1,4 +1,4 @@
-export interface UpdateUserProfileDto {
-  username: string;
-  rewardsEthAddress: string;
-}
+import { components } from 'api-types';
+
+export type UpdateUserRequestDto =
+  components['schemas']['UpdateUserRequestDto'];

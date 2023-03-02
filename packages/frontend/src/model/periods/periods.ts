@@ -19,15 +19,16 @@ import { useApiAuthClient } from '@/utils/api';
 import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from '../api';
 import { ActiveUserId } from '../auth/auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from '../praise/praise';
-import { PraiseDto } from '../praise/praise.dto';
-import { UserAccountDto } from '../useraccount/dto/useraccount.dto';
+import { Praise } from '../praise/praise.dto';
+import { UserAccount } from '../useraccount/dto/useraccount.dto';
 import { PeriodDetailsDto } from './dto/period-details.dto';
-import { PeriodCreateInput } from './dto/period-create.dto';
-import { PeriodUpdateInput } from './dto/period-update-input.dto';
+import { PeriodDetailsGiverReceiverDto } from './dto/period-details-giver-receiver.dto';
+import { CreatePeriodInputDto } from './dto/period-create.dto';
+import { UpdatePeriodInputDto } from './dto/period-update-input.dto';
 import { PeriodStatusType } from './enums/period-status-type.enum';
-import { VerifyQuantifierPoolSizeResponseDto } from './dto/verify-quantifier-pool-size-reponse.dto';
-import { PeriodReplaceQuantifierInputDto } from './dto/period-replace-quantifier-input.dto';
-import { PaginatedResponseBodyDto } from '@/model/shared/dto/paginated-response-body.dto';
+import { VerifyQuantifierPoolSizeDto } from './dto/verify-quantifier-pool-size-reponse.dto';
+import { ReplaceQuantifierResponseDto } from './dto/period-replace-quantifier-input.dto';
+import { PeriodPaginatedResponseDto } from '@/model/shared/dto/paginated-response-body.dto';
 import { isDateEqualOrAfter } from '@/utils/date';
 import { PeriodDetailsQuantifierDto } from './dto/period-details-quantifier.dto';
 
@@ -85,7 +86,7 @@ export const AllPeriods = atom<PeriodDetailsDto[]>({
         ).then((response) => {
           if (isResponseOk(response)) {
             const paginatedResponse =
-              response.data as PaginatedResponseBodyDto<PeriodDetailsDto>;
+              response.data as PeriodPaginatedResponseDto;
             const periods = paginatedResponse.docs;
             if (Array.isArray(periods) && periods.length > 0) {
               return periods;
@@ -98,7 +99,7 @@ export const AllPeriods = atom<PeriodDetailsDto[]>({
   ],
 });
 
-export const AllPeriodPraise = atomFamily<PraiseDto[] | undefined, string>({
+export const AllPeriodPraise = atomFamily<Praise[] | undefined, string>({
   key: 'AllPeriodPraise',
   default: undefined,
   effects: (periodId) => [
@@ -110,7 +111,7 @@ export const AllPeriodPraise = atomFamily<PraiseDto[] | undefined, string>({
           })
         ).then((response) => {
           if (isResponseOk(response)) {
-            const praiseDetails = response.data as PraiseDto[];
+            const praiseDetails = response.data as Praise[];
             if (Array.isArray(praiseDetails) && praiseDetails.length > 0)
               return praiseDetails;
           }
@@ -206,8 +207,8 @@ export const useLoadSinglePeriodDetails = (
 
 type useCreatePeriodReturn = {
   createPeriod: (
-    period: PeriodCreateInput
-  ) => Promise<AxiosResponse<PraiseDto> | AxiosError>;
+    period: CreatePeriodInputDto
+  ) => Promise<AxiosResponse<Praise> | AxiosError>;
 };
 
 /**
@@ -216,7 +217,7 @@ type useCreatePeriodReturn = {
 export const useSinglePeriodGiver = (
   periodId: string,
   giverId: string
-): UserAccountDto | undefined => {
+): PeriodDetailsGiverReceiverDto | undefined => {
   useLoadSinglePeriodDetails(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
   if (!period || !period.givers) return undefined;
@@ -229,7 +230,7 @@ export const useSinglePeriodGiver = (
 export const useSinglePeriodReceiver = (
   periodId: string,
   receiverId: string
-): UserAccountDto | undefined => {
+): PeriodDetailsGiverReceiverDto | undefined => {
   useLoadSinglePeriodDetails(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
   if (!period || !period.receivers) return undefined;
@@ -258,8 +259,8 @@ export const useCreatePeriod = (): useCreatePeriodReturn => {
   const createPeriod = useRecoilCallback(
     ({ set }) =>
       async (
-        periodInput: PeriodCreateInput
-      ): Promise<AxiosResponse<PraiseDto> | AxiosError> => {
+        periodInput: CreatePeriodInputDto
+      ): Promise<AxiosResponse<Praise> | AxiosError> => {
         const response = await apiAuthClient.post('/periods', periodInput);
         if (isResponseOk(response)) {
           const period = response.data as PeriodDetailsDto;
@@ -274,8 +275,9 @@ export const useCreatePeriod = (): useCreatePeriodReturn => {
 
 type useUpdatePeriodReturn = {
   updatePeriod: (
-    period: PeriodUpdateInput
-  ) => Promise<AxiosResponse<PraiseDto> | AxiosError>;
+    id: string,
+    period: UpdatePeriodInputDto
+  ) => Promise<AxiosResponse<Praise> | AxiosError>;
 };
 
 /**
@@ -287,10 +289,11 @@ export const useUpdatePeriod = (): useUpdatePeriodReturn => {
   const updatePeriod = useRecoilCallback(
     ({ set }) =>
       async (
-        periodInput: PeriodUpdateInput
-      ): Promise<AxiosResponse<PraiseDto> | AxiosError> => {
+        id: string,
+        periodInput: UpdatePeriodInputDto
+      ): Promise<AxiosResponse<Praise> | AxiosError> => {
         const response = await apiAuthClient.patch(
-          `/periods/${periodInput._id}/update`,
+          `/periods/${id}`,
           periodInput
         );
         if (isResponseOk(response)) {
@@ -345,14 +348,12 @@ export const PeriodPoolRequirementsQuery = selectorFamily({
   key: 'PeriodPoolRequirementsQuery',
   get:
     (periodId: string) =>
-    ({
-      get,
-    }): AxiosResponse<VerifyQuantifierPoolSizeResponseDto> | AxiosError => {
+    ({ get }): AxiosResponse<VerifyQuantifierPoolSizeDto> | AxiosError => {
       return get(
         ApiAuthGet({
           url: `/periods/${periodId}/verifyQuantifierPoolSize`,
         })
-      ) as AxiosResponse<VerifyQuantifierPoolSizeResponseDto> | AxiosError;
+      ) as AxiosResponse<VerifyQuantifierPoolSizeDto> | AxiosError;
     },
 });
 
@@ -365,7 +366,7 @@ export const PeriodPoolRequirements = selectorFamily({
   key: 'PeriodPoolRequirements',
   get:
     (periodId: string) =>
-    ({ get }): VerifyQuantifierPoolSizeResponseDto | undefined => {
+    ({ get }): VerifyQuantifierPoolSizeDto | undefined => {
       const response = get(PeriodPoolRequirementsQuery(periodId));
       if (isResponseOk(response)) {
         return response.data;
@@ -437,14 +438,14 @@ export const AllActiveUserQuantificationPeriods = selector({
 });
 
 const useSaveGiverReceiverPraiseItems = (
-  response: AxiosResponse<PraiseDto[]> | AxiosError,
+  response: AxiosResponse<Praise[]> | AxiosError,
   listKey: string
 ): void => {
   const allPraiseIdList = useRecoilValue(PraiseIdList(listKey));
 
   const saveAllPraiseIdList = useRecoilCallback(
     ({ set }) =>
-      (praiseList: PraiseDto[]) => {
+      (praiseList: Praise[]) => {
         const praiseIdList: string[] = [];
         for (const praise of praiseList) {
           praiseIdList.push(praise._id);
@@ -455,7 +456,7 @@ const useSaveGiverReceiverPraiseItems = (
 
   const saveIndividualPraise = useRecoilCallback(
     ({ set }) =>
-      (praiseList: PraiseDto[]) => {
+      (praiseList: Praise[]) => {
         for (const praise of praiseList) {
           set(SinglePraise(praise._id), praise);
         }
@@ -464,7 +465,7 @@ const useSaveGiverReceiverPraiseItems = (
 
   React.useEffect(() => {
     if (typeof allPraiseIdList === 'undefined' && isResponseOk(response)) {
-      const praiseList: PraiseDto[] = response.data;
+      const praiseList: Praise[] = response.data;
       if (Array.isArray(praiseList) && praiseList.length > 0) {
         saveAllPraiseIdList(praiseList);
         saveIndividualPraise(praiseList);
@@ -488,13 +489,13 @@ const PeriodReceiverPraiseQuery = selectorFamily({
   key: 'PeriodReceiverPraiseQuery',
   get:
     (params: PeriodReceiverPraiseQueryParams) =>
-    ({ get }): AxiosResponse<PraiseDto[]> | AxiosError => {
+    ({ get }): AxiosResponse<Praise[]> | AxiosError => {
       const { periodId, receiverId } = params;
       return get(
         ApiAuthGet({
           url: `/periods/${periodId}/praise/receiver/${receiverId}`,
         })
-      ) as AxiosResponse<PraiseDto[]> | AxiosError;
+      ) as AxiosResponse<Praise[]> | AxiosError;
     },
 });
 
@@ -506,7 +507,7 @@ const PeriodReceiverPraiseQuery = selectorFamily({
 export const usePeriodReceiverPraise = (
   periodId: string,
   receiverId: string
-): AxiosResponse<PraiseDto[]> | AxiosError => {
+): AxiosResponse<Praise[]> | AxiosError => {
   const response = useRecoilValue(
     PeriodReceiverPraiseQuery({
       periodId,
@@ -535,13 +536,13 @@ const PeriodGiverPraiseQuery = selectorFamily({
   key: 'PeriodGiverPraiseQuery',
   get:
     (params: PeriodGiverPraiseQueryParams) =>
-    ({ get }): AxiosResponse<PraiseDto[]> | AxiosError => {
+    ({ get }): AxiosResponse<Praise[]> | AxiosError => {
       const { periodId, giverId } = params;
       return get(
         ApiAuthGet({
           url: `/periods/${periodId}/praise/giver/${giverId}`,
         })
-      ) as AxiosResponse<PraiseDto[]> | AxiosError;
+      ) as AxiosResponse<Praise[]> | AxiosError;
     },
 });
 
@@ -553,7 +554,7 @@ const PeriodGiverPraiseQuery = selectorFamily({
 export const usePeriodGiverPraise = (
   periodId: string,
   giverId: string
-): AxiosResponse<PraiseDto[]> | AxiosError => {
+): AxiosResponse<Praise[]> | AxiosError => {
   const response = useRecoilValue(
     PeriodGiverPraiseQuery({
       periodId,
@@ -582,14 +583,14 @@ const PeriodQuantifierPraiseQuery = selectorFamily({
   key: 'PeriodQuantifierPraiseQuery',
   get:
     (params: PeriodQuantifierPraiseQueryParams) =>
-    ({ get }): AxiosResponse<PraiseDto[]> | AxiosError | undefined => {
+    ({ get }): AxiosResponse<Praise[]> | AxiosError | undefined => {
       const { periodId, quantifierId } = params;
       if (!periodId || !quantifierId) return undefined;
       return get(
         ApiAuthGet({
           url: `/periods/${periodId}/praise/quantifier/${quantifierId}`,
         })
-      ) as AxiosResponse<PraiseDto[]> | AxiosError;
+      ) as AxiosResponse<Praise[]> | AxiosError;
     },
 });
 
@@ -601,7 +602,7 @@ const PeriodQuantifierPraiseQuery = selectorFamily({
 export const usePeriodQuantifierPraise = (
   periodId: string,
   quantifierId: string
-): AxiosResponse<PraiseDto[]> | AxiosError | undefined => {
+): AxiosResponse<Praise[]> | AxiosError | undefined => {
   const response = useRecoilValue(
     PeriodQuantifierPraiseQuery({
       periodId,
@@ -613,7 +614,7 @@ export const usePeriodQuantifierPraise = (
 
   const saveAllPraiseIdList = useRecoilCallback(
     ({ set }) =>
-      (praiseList: PraiseDto[]) => {
+      (praiseList: Praise[]) => {
         const praiseIdList: string[] = [];
         for (const praise of praiseList) {
           praiseIdList.push(praise._id);
@@ -624,7 +625,7 @@ export const usePeriodQuantifierPraise = (
 
   const saveIndividualPraise = useRecoilCallback(
     ({ set }) =>
-      (praiseList: PraiseDto[]) => {
+      (praiseList: Praise[]) => {
         for (const praise of praiseList) {
           set(SinglePraise(praise._id), praise);
         }
@@ -633,7 +634,7 @@ export const usePeriodQuantifierPraise = (
 
   React.useEffect(() => {
     if (typeof allPraiseIdList === 'undefined' && isResponseOk(response)) {
-      const praiseList: PraiseDto[] = response.data;
+      const praiseList: Praise[] = response.data;
       if (Array.isArray(praiseList) && praiseList.length > 0) {
         saveAllPraiseIdList(praiseList);
         saveIndividualPraise(praiseList);
@@ -656,7 +657,7 @@ type PeriodQuantifierReceiversParams = {
  */
 export interface QuantifierReceiverData {
   periodId: string;
-  receiver: UserAccountDto;
+  receiver: UserAccount;
   count: number;
   done: number;
 }
@@ -734,7 +735,7 @@ export const PeriodQuantifierReceiverPraise = selectorFamily({
   key: 'PeriodQuantifierReceiverPraise',
   get:
     (params: PeriodQuantifierReceiverPraiseParams) =>
-    ({ get }): PraiseDto[] | undefined => {
+    ({ get }): Praise[] | undefined => {
       const { periodId, receiverId } = params;
       const userId = get(ActiveUserId);
       const listKey = periodQuantifierPraiseListKey(periodId, userId || '');
@@ -757,7 +758,7 @@ type useReplaceQuantifierReturn = {
   replaceQuantifier: (
     currentQuantifierId: string,
     newQuantifierId: string
-  ) => Promise<AxiosResponse<PeriodReplaceQuantifierInputDto> | AxiosError>;
+  ) => Promise<AxiosResponse<ReplaceQuantifierResponseDto> | AxiosError>;
 };
 
 /**
@@ -773,10 +774,8 @@ export const useReplaceQuantifier = (
       async (
         currentQuantifierId: string,
         newQuantifierId: string
-      ): Promise<
-        AxiosResponse<PeriodReplaceQuantifierInputDto> | AxiosError
-      > => {
-        const response: AxiosResponse<PeriodReplaceQuantifierInputDto> =
+      ): Promise<AxiosResponse<ReplaceQuantifierResponseDto> | AxiosError> => {
+        const response: AxiosResponse<ReplaceQuantifierResponseDto> =
           await apiAuthClient.patch(`/periods/${periodId}/replaceQuantifier`, {
             currentQuantifierId,
             newQuantifierId,

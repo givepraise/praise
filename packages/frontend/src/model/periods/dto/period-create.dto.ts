@@ -1,4 +1,4 @@
-export interface PeriodCreateInput {
-  name: string;
-  endDate: string;
-}
+import { components } from 'api-types';
+
+export type CreatePeriodInputDto =
+  components['schemas']['CreatePeriodInputDto'];
