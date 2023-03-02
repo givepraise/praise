@@ -3,13 +3,13 @@ import {
   Body,
   Controller,
   Get,
-  Param,
+  Patch,
   Post,
-  Put,
   Query,
   Res,
   SerializeOptions,
   StreamableFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -27,10 +27,12 @@ import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { UserAccount } from './schemas/useraccounts.schema';
 import { ServiceException } from '@/shared/exceptions/service-exception';
-import { CreateUserAccountDto } from './dto/create-user-account-input-dto';
+import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
+import { FindUserAccountQueryDto } from './dto/find-user-account-query.dto';
+import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
+import { CreateUserAccountInputDto } from './dto/create-user-account-input.dto';
 import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
-import { Types } from 'mongoose';
-import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
+import { UpdateUserAccountResponseDto } from './dto/update-user-account-response.dto';
 
 @Controller('useraccounts')
 @ApiTags('UserAccounts')
@@ -43,63 +45,48 @@ export class UserAccountsController {
 
   @Post()
   @ApiOperation({
-    summary: 'Creates the userAccount allowing setting activateToken',
+    summary: 'Create a UserAccount',
   })
-  @ApiOkResponse({
-    description: 'Created User Account',
-    type: UserAccount,
-  })
-  @ApiProduces('application/json')
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(CreateUserAccountResponseDto),
+  )
   @Permissions(Permission.UserAccountsCreate)
   async create(
-    @Body() createUserAccountBody: CreateUserAccountDto,
-  ): Promise<UserAccount> {
-    return this.userAccountsService.createUserAccount(createUserAccountBody);
+    @Body() createUserAccountBody: CreateUserAccountInputDto,
+  ): Promise<CreateUserAccountResponseDto> {
+    return this.userAccountsService.create(createUserAccountBody);
   }
 
   @Get()
   @ApiOperation({
-    summary: 'Fetch User Account by UserId and AccountId',
+    summary: 'Get UserAccount by UserId our AccountId.',
   })
-  @ApiOkResponse({
-    description: 'Fetch a User Account by UserId and Account Id',
-    type: UserAccount,
-  })
-  @ApiProduces('application/json')
+  @UseInterceptors(MongooseClassSerializerInterceptor(UserAccount))
   @Permissions(Permission.UserAccountsView)
-  async GetOne(
-    @Query('id') id?: string,
-    @Query('accountId') accountId?: string,
+  async findOne(
+    @Query() search?: FindUserAccountQueryDto,
   ): Promise<UserAccount> {
-    const userAccount = await this.userAccountsService.findOneByIdOrAccountId(
-      id,
-      accountId,
-    );
-    if (!userAccount) throw new ServiceException('UserAccount not found.');
-
-    return userAccount;
+    if (!search)
+      throw new ServiceException('Search paramaters must be specified.');
+    return this.userAccountsService.findOneByIdOrAccountId(search);
   }
 
-  @Put()
+  @Patch()
   @ApiOperation({
-    summary: 'Update a UserAccount by UserId and AccountId',
+    summary: 'Update UserAccount by UserId or AccountId',
   })
-  @ApiOkResponse({
-    description: 'Fetch a UserAccount by UserId and AccountId',
-    type: UserAccount,
-  })
-  @ApiProduces('application/json')
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(UpdateUserAccountResponseDto),
+  )
   @Permissions(Permission.UserAccountsUpdate)
-  async UpdateOne(
-    @Body() updateUserAccountBody: UpdateUserAccountInputDto,
-    @Query('id') id?: string,
-    @Query('accountId') accountId?: string,
-  ): Promise<UserAccount | null> {
-    return this.userAccountsService.updateByIdOrAccountId(
-      updateUserAccountBody,
-      id,
-      accountId,
-    );
+  async update(
+    @Body() updateUserAccountInputDto: UpdateUserAccountInputDto,
+    @Query() search?: FindUserAccountQueryDto,
+  ): Promise<UpdateUserAccountResponseDto> {
+    if (!search)
+      throw new ServiceException('Search paramaters must be specified.');
+    const user = await this.userAccountsService.findOneByIdOrAccountId(search);
+    return this.userAccountsService.update(user._id, updateUserAccountInputDto);
   }
 
   @Get('export')
@@ -154,44 +141,5 @@ export class UserAccountsController {
 
     const file = fs.createReadStream(filePath);
     return new StreamableFile(file);
-  }
-
-  @Get('/:id')
-  @ApiOperation({
-    summary: 'Fetch User Account',
-  })
-  @ApiOkResponse({
-    description: 'Fetch a User Account by Account Id',
-    type: UserAccount,
-  })
-  @ApiProduces('application/json')
-  @Permissions(Permission.UserAccountsView)
-  async GetOne(@Param('id') id: string): Promise<UserAccount> {
-    const userAccount = await this.userAccountsService.findOneByUserAccountId(
-      id,
-    );
-    if (!userAccount) throw new ServiceException('UserAccount not found.');
-
-    return userAccount;
-  }
-
-  @Put('/:id')
-  @ApiOperation({
-    summary: 'Update a UserAccount by AccountId',
-  })
-  @ApiOkResponse({
-    description: 'Fetch a UserAccount by AccountId',
-    type: UserAccount,
-  })
-  @ApiProduces('application/json')
-  @Permissions(Permission.UserAccountsUpdate)
-  async UpdateOne(
-    @Param('id') id: string,
-    @Body() updateUserAccountBody: UpdateUserAccountInputRequestDto,
-  ): Promise<UserAccount> {
-    return this.userAccountsService.updateUserAccount(
-      id,
-      updateUserAccountBody,
-    );
   }
 }

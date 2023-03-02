@@ -7,26 +7,24 @@ import {
   UserAccountDocument,
   UserAccountsExportSqlSchema,
 } from './schemas/useraccounts.schema';
-import {
-  UpdateUserAccountInputDto,
-  UpdateUserAccountInputRequestDto,
-} from './dto/update-user-account-input.dto';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import {
   generateParquetExport,
   writeCsvAndJsonExports,
 } from '@/shared/export.shared';
-import { CreateUserAccountDto } from './dto/create-user-account-input-dto';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { UsersService } from '@/users/users.service';
+import { FindUserAccountQueryDto } from './dto/find-user-account-query.dto';
+import { randomBytes } from 'crypto';
+import { CreateUserAccountInputDto } from './dto/create-user-account-input.dto';
+import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
+import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
 
 @Injectable()
 export class UserAccountsService {
   constructor(
     @InjectModel(UserAccount.name)
     private userAccountModel: Model<UserAccountDocument>,
-    private userService: UsersService,
     private readonly eventLogService: EventLogService,
   ) {}
 
@@ -35,23 +33,17 @@ export class UserAccountsService {
   }
 
   /**
-   * Creates a new UserAccount key.
-   * @param {CreateUserAccountDto} createUserAccountDto - The request payload containing the UserAccount Details
+   * Creates a new UserAccount.
+   * @param {CreateUserAccountInputDto} createUserAccountInputDto - The request payload containing the UserAccount Details
    * @returns {Promise<UserAccount>} A promise that resolves to the response containing the created UserAccount.
-   * @throws {ServiceException}, If there is an error while creating the UserAccount key.
+   * @throws {ServiceException}, If there is an error while creating the UserAccount.
    */
-  async createUserAccount(
-    createUserAccountDto: CreateUserAccountDto,
-  ): Promise<UserAccount> {
-    const user = await this.userService.findOneById(
-      new Types.ObjectId(createUserAccountDto.userId),
-    );
-
-    if (!user) throw new ServiceException('User not found.');
-
+  async create(
+    createUserAccountInputDto: CreateUserAccountInputDto,
+  ): Promise<CreateUserAccountResponseDto> {
     const userAccount = new this.userAccountModel({
-      ...createUserAccountDto,
-      user,
+      ...createUserAccountInputDto,
+      activateToken: randomBytes(10).toString('hex'), // Generate a random activation token
     });
     await userAccount.save();
 
@@ -63,78 +55,23 @@ export class UserAccountsService {
     return userAccount;
   }
 
-  async updateByIdOrAccountId(
-    updateUserAccountDto: UpdateUserAccountInputDto,
-    _id?: string,
-    accountId?: string,
-  ): Promise<UserAccount | null> {
-    if (_id && Types.ObjectId.isValid(_id))
-      return await this.updateUserAccountById(
-        new Types.ObjectId(_id),
-        updateUserAccountDto,
-      );
-    if (accountId)
-      return await this.updateUserAccountByAccountId(
-        accountId,
-        updateUserAccountDto,
-      );
-
-    throw new ServiceException('No identifier provided.');
-  }
-
-  async updateUserAccountById(
-    _id: Types.ObjectId,
-    updateUserAccountDto: UpdateUserAccountInputDto,
-  ): Promise<UserAccount> {
-    return await this.userAccountModel.findOneAndUpdate(
-      { _id },
-      updateUserAccountDto,
-      { upsert: true, new: true },
-    );
-  }
-
-  async updateUserAccountByAccountId(
-    accountId: string,
-    updateUserAccountDto: UpdateUserAccountInputDto,
-  ): Promise<UserAccount> {
-    return await this.userAccountModel.findOneAndUpdate(
-      { accountId },
-      updateUserAccountDto,
-      { upsert: true, new: true },
-    );
-  }
-
-  /**
-   * Returns a user account by user ID
-   */
-  async findOneByUserId(userId: Types.ObjectId): Promise<UserAccount | null> {
-    const userAccount = await this.userAccountModel.findOne({ userId }).lean();
-    if (!userAccount) return null;
-    return userAccount;
-  }
-
   /**
    * Returns a user account by user account ID
    */
-  async findOneByUserAccountId(accountId: string): Promise<UserAccount | null> {
+  async findOneByUserAccountId(accountId: string): Promise<UserAccount> {
     const userAccount = await this.userAccountModel
       .findOne({ accountId })
-      .populate('user')
       .lean();
-    if (!userAccount) return null;
+    if (!userAccount) throw new ServiceException('UserAccount not found.');
     return userAccount;
   }
 
   /**
    * Find the Useraccount by objectId
    */
-  async findOneById(_id: Types.ObjectId): Promise<UserAccount | null> {
-    const userAccount = await this.userAccountModel
-      .findOne({ _id })
-      .populate('user')
-      .lean();
-    if (!userAccount) return null;
-
+  async findOneById(_id: Types.ObjectId): Promise<UserAccount> {
+    const userAccount = await this.userAccountModel.findOne({ _id }).lean();
+    if (!userAccount) throw new ServiceException('UserAccount not found.');
     return userAccount;
   }
 
@@ -142,13 +79,15 @@ export class UserAccountsService {
    * Returns a user account by Mongo ID or AccountId
    */
   async findOneByIdOrAccountId(
-    _id?: string,
-    accountId?: string,
-  ): Promise<UserAccount | null> {
-    if (_id && Types.ObjectId.isValid(_id))
-      return await this.findOneById(new Types.ObjectId(_id));
-    if (accountId) return await this.findOneByUserAccountId(accountId);
-
+    search: FindUserAccountQueryDto,
+  ): Promise<UserAccount> {
+    const { _id, accountId } = search;
+    if (_id) {
+      return await this.findOneById(_id);
+    }
+    if (accountId) {
+      return await this.findOneByUserAccountId(accountId);
+    }
     throw new ServiceException('No identifier provided.');
   }
 

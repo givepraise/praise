@@ -1,5 +1,4 @@
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { MigrationsContext } from '../interfaces/migration-context.interface';
+import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
 import { EventLogTypeModel } from '../schemas/event-log-type/event-log-type.schema';
 
 const eventLogTypes = [
@@ -10,7 +9,7 @@ const eventLogTypes = [
   },
 ];
 
-const up = async ({ context }: MigrationsContext): Promise<void> => {
+const up = async (): Promise<void> => {
   const upsertQueries = eventLogTypes.map((s) => ({
     updateOne: {
       filter: { key: s.key },

@@ -4,7 +4,7 @@ import { Types } from 'mongoose';
 import { SettingGroup } from '../enums/setting-group.enum';
 import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 import { valueToValueRealized } from '../utils/value-to-value-realized.util';
 import { SettingType } from '../enums/setting-type.enum';
 

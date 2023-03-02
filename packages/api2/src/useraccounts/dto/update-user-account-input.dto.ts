@@ -1,10 +1,14 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 import { UserAccount } from '../schemas/useraccounts.schema';
 
-export class UpdateUserAccountInputRequestDto {
-  name?: string;
-  avatarId?: string;
-  platform?: string;
+export class UpdateUserAccountInputDto extends PartialType(UserAccount) {
+  @ApiProperty({
+    required: false,
+    type: 'string',
+    example: '63b428f7d9ca4f6ff5370d05',
+  })
+  @IsOptional()
+  @IsString()
+  activateToken?: string;
 }
-
-export class UpdateUserAccountInputDto extends PartialType(UserAccount) {}

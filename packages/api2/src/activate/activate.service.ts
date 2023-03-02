@@ -93,7 +93,7 @@ export class ActivateService {
     // Link user account with user
     await this.userAccountsService.update(userAccount._id, {
       user: user._id,
-      activateToken: undefined,
+      activateToken: '',
     });
 
     user = await this.usersService.findOneById(user._id);
