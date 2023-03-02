@@ -19,6 +19,7 @@ const PERMISSIONS_USER = [
   Permission.PeriodExport,
   Permission.QuantificationsExport,
   Permission.UserAccountsExport,
+  Permission.CommunitiesCreate,
 ];
 
 /**
@@ -47,6 +48,11 @@ const PERMISSIONS_ADMIN = [
   Permission.PeriodAssign,
 ];
 
+const PERMISSIONS_SUPER_ADMIN = [
+  ...PERMISSIONS_ADMIN,
+  Permission.CommunitiesView,
+];
+
 /**
  * API keys can be used to access the API. They can be created with different
  * permissions.
@@ -68,6 +74,17 @@ const PERMISSION_APIKEY_READWRITE = [...PERMISSIONS_USER];
 const PERMISSION_DISCORD_BOT = [
   Permission.PraiseCreate,
   Permission.PraiseForward,
+  Permission.CommunitiesView,
+];
+
+/**
+ * Setup Web  permissions
+ * The setup web is in charge for managing communities
+ */
+const PERMISSION_SETUP_WEB = [
+  Permission.CommunitiesCreate,
+  Permission.CommunitiesView,
+  Permission.CommunitiesUpdate,
 ];
 
 /**
@@ -83,4 +100,5 @@ export const RolePermissions: { [key: string]: string[] } = {
   APIKEY_READ: PERMISSION_APIKEY_READ,
   APIKEY_READWRITE: PERMISSION_APIKEY_READWRITE,
   DISCORD_BOT: PERMISSION_DISCORD_BOT,
+  SETUP_WEB: PERMISSION_SETUP_WEB,
 };
