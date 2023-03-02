@@ -7,18 +7,25 @@ import {
   UserAccountDocument,
   UserAccountsExportSqlSchema,
 } from './schemas/useraccounts.schema';
-import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import {
   generateParquetExport,
   writeCsvAndJsonExports,
 } from '@/shared/export.shared';
+import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { FindUserAccountQueryDto } from './dto/find-user-account-query.dto';
+import { randomBytes } from 'crypto';
+import { CreateUserAccountInputDto } from './dto/create-user-account-input.dto';
+import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
+import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
 
 @Injectable()
 export class UserAccountsService {
   constructor(
     @InjectModel(UserAccount.name)
     private userAccountModel: Model<UserAccountDocument>,
+    private readonly eventLogService: EventLogService,
   ) {}
 
   getModel(): Model<UserAccountDocument> {
@@ -26,25 +33,62 @@ export class UserAccountsService {
   }
 
   /**
-   * Returns a user account by user ID
+   * Creates a new UserAccount.
+   * @param {CreateUserAccountInputDto} createUserAccountInputDto - The request payload containing the UserAccount Details
+   * @returns {Promise<UserAccount>} A promise that resolves to the response containing the created UserAccount.
+   * @throws {ServiceException}, If there is an error while creating the UserAccount.
    */
-  async findOneByUserId(userId: Types.ObjectId): Promise<UserAccount | null> {
-    const userAccount = await this.userAccountModel.findOne({ userId }).lean();
-    if (!userAccount) return null;
+  async create(
+    createUserAccountInputDto: CreateUserAccountInputDto,
+  ): Promise<CreateUserAccountResponseDto> {
+    const userAccount = new this.userAccountModel({
+      ...createUserAccountInputDto,
+      activateToken: randomBytes(10).toString('hex'), // Generate a random activation token
+    });
+    await userAccount.save();
+
+    this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `Created UserAccount id: ${userAccount.accountId}`,
+    });
+
     return userAccount;
   }
 
   /**
    * Returns a user account by user account ID
    */
-  async findOneByUserAccountId(
-    userAccountId: string,
-  ): Promise<UserAccount | null> {
+  async findOneByUserAccountId(accountId: string): Promise<UserAccount> {
     const userAccount = await this.userAccountModel
-      .findOne({ userAccountId })
+      .findOne({ accountId })
       .lean();
-    if (!userAccount) return null;
+    if (!userAccount) throw new ServiceException('UserAccount not found.');
     return userAccount;
+  }
+
+  /**
+   * Find the Useraccount by objectId
+   */
+  async findOneById(_id: Types.ObjectId): Promise<UserAccount> {
+    const userAccount = await this.userAccountModel.findOne({ _id }).lean();
+    if (!userAccount) throw new ServiceException('UserAccount not found.');
+    return userAccount;
+  }
+
+  /**
+   * Returns a user account by Mongo ID or AccountId
+   */
+  async findOneByIdOrAccountId(
+    search: FindUserAccountQueryDto,
+  ): Promise<UserAccount> {
+    const { _id, accountId } = search;
+    if (_id) {
+      return await this.findOneById(_id);
+    }
+    if (accountId) {
+      return await this.findOneByUserAccountId(accountId);
+    }
+    throw new ServiceException('No identifier provided.');
   }
 
   /**
@@ -61,7 +105,7 @@ export class UserAccountsService {
   }
 
   /**
-   * Update a user account
+   * Update a user account by _id
    */
   async update(
     _id: Types.ObjectId,

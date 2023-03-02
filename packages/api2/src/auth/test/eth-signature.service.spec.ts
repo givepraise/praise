@@ -17,7 +17,6 @@ const mockJwtService = {
 
 describe('EthSignatureService', () => {
   let ethSignatureService: EthSignatureService;
-  let usersService: UsersService;
   let jwtService: JwtService;
 
   beforeEach(async () => {
@@ -35,7 +34,6 @@ describe('EthSignatureService', () => {
     }).compile();
 
     ethSignatureService = module.get<EthSignatureService>(EthSignatureService);
-    usersService = module.get<UsersService>(UsersService);
     jwtService = module.get<JwtService>(JwtService);
   });
 

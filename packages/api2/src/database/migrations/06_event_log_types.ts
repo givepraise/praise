@@ -7,6 +7,7 @@ enum EventLogTypeKey {
   PRAISE = 'PRAISE',
   QUANTIFICATION = 'QUANTIFICATION',
   SETTING = 'SETTING',
+  USER_ACCOUNT = 'USER_ACCOUNT',
 }
 
 const eventLogTypes = [
@@ -39,6 +40,11 @@ const eventLogTypes = [
     key: EventLogTypeKey.QUANTIFICATION,
     label: 'Quantification',
     description: 'An action to quantify praise',
+  },
+  {
+    key: EventLogTypeKey.USER_ACCOUNT,
+    label: 'UserAccount',
+    description: 'An action to UserAccounts',
   },
 ];
 

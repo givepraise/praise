@@ -1,4 +1,4 @@
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { EventLogTypeKey } from '../../../event-log/enums/event-log-type-key';
 import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 
