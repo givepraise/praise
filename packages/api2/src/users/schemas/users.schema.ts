@@ -69,8 +69,8 @@ export class User {
   username: string;
 
   @ApiResponseProperty({
-    example: '["USER"]',
-    type: 'string',
+    example: ['USER'],
+    type: ['string'],
   })
   @Prop({
     type: [
