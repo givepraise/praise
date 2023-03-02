@@ -115,7 +115,7 @@ export class UsersController {
     type: UserWithStatsDto,
   })
   @UseInterceptors(MongooseClassSerializerInterceptor(UserWithStatsDto))
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<UserWithStatsDto> {
@@ -135,7 +135,7 @@ export class UsersController {
     type: UpdateUserRequestDto,
   })
   @UseInterceptors(MongooseClassSerializerInterceptor(UserWithStatsDto))
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   async update(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() updateUserInputDto: UpdateUserRequestDto,
@@ -151,7 +151,7 @@ export class UsersController {
     type: UserWithStatsDto,
   })
   @UseInterceptors(MongooseClassSerializerInterceptor(UserWithStatsDto))
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   async addRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() roleChange: UpdateUserRoleInputDto,
@@ -167,7 +167,7 @@ export class UsersController {
     type: UserWithStatsDto,
   })
   @UseInterceptors(MongooseClassSerializerInterceptor(UserWithStatsDto))
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   async removeRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() roleChange: UpdateUserRoleInputDto,

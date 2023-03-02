@@ -17,12 +17,16 @@ export class EventLog {
     }
   }
 
-  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7', required: true })
+  @ApiProperty({
+    example: '621f802b813dbdba9eeaf7d7',
+    required: true,
+    type: 'string',
+  })
   @IsString()
   @ExposeId()
   _id: Types.ObjectId;
 
-  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7', type: 'string' })
   @ExposeId()
   @Prop({
     type: Types.ObjectId,
@@ -31,7 +35,7 @@ export class EventLog {
   })
   user: Types.ObjectId;
 
-  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7', type: 'string' })
   @ExposeId()
   @Prop({
     type: Types.ObjectId,
@@ -40,7 +44,7 @@ export class EventLog {
   })
   useraccount: Types.ObjectId;
 
-  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7', type: 'string' })
   @ExposeId()
   @Prop({
     type: Types.ObjectId,
@@ -51,7 +55,7 @@ export class EventLog {
 
   // "Related Period" of an eventlog - only used for quantification events
   //    which are restricted to ADMIN users when period is active
-  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7' })
+  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7', type: 'string' })
   @ExposeId()
   @Prop({
     type: Types.ObjectId,
@@ -71,7 +75,11 @@ export class EventLog {
   })
   type: Types.ObjectId | EventLogType;
 
-  @ApiProperty({ example: 'A description of teh event ', required: true })
+  @ApiProperty({
+    example: 'A description of teh event ',
+    required: true,
+    type: 'string',
+  })
   @IsString()
   @Prop({ type: String, required: true })
   description: string;

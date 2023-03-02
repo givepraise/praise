@@ -4,12 +4,12 @@ import { Transform, Type } from 'class-transformer';
 import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class EventLogFindPaginatedQueryDto extends PaginatedQueryDto {
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, type: 'string' })
   @IsOptional()
   @IsString()
   search: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, type: ['string'] })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })

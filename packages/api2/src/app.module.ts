@@ -22,7 +22,7 @@ import { CommunityModule } from './community/community.module';
     MongooseModule.forRoot(praiseDatabaseUri),
     ThrottlerModule.forRoot({
       ttl: 60,
-      limit: 10,
+      limit: process.env.NODE_ENV === 'testing' ? 1000 : 10, // 10 requests per minute, except in development
     }),
     ActivateModule,
     ApiKeyModule,

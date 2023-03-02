@@ -128,7 +128,7 @@ export class PeriodsController {
     type: PeriodDetailsDto,
   })
   @Permissions(Permission.PeriodView)
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -159,7 +159,7 @@ export class PeriodsController {
     type: PeriodDetailsDto,
   })
   @Permissions(Permission.PeriodUpdate)
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async update(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -176,7 +176,7 @@ export class PeriodsController {
     type: PeriodDetailsDto,
   })
   @Permissions(Permission.PeriodUpdate)
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async close(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -192,7 +192,7 @@ export class PeriodsController {
     type: [PraiseWithUserAccountsWithUserRefDto],
   })
   @Permissions(Permission.PeriodView)
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   @UseInterceptors(
     MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
   )
@@ -212,8 +212,8 @@ export class PeriodsController {
     type: [PraiseWithUserAccountsWithUserRefDto],
   })
   @Permissions(Permission.PeriodView)
-  @ApiParam({ name: 'periodId', type: String })
-  @ApiParam({ name: 'receiverId', type: String })
+  @ApiParam({ name: 'periodId', type: 'string' })
+  @ApiParam({ name: 'receiverId', type: 'string' })
   @UseInterceptors(
     MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
   )
@@ -234,8 +234,8 @@ export class PeriodsController {
     type: [PraiseWithUserAccountsWithUserRefDto],
   })
   @Permissions(Permission.PeriodView)
-  @ApiParam({ name: 'periodId', type: String })
-  @ApiParam({ name: 'giverId', type: String })
+  @ApiParam({ name: 'periodId', type: 'string' })
+  @ApiParam({ name: 'giverId', type: 'string' })
   @UseInterceptors(
     MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
   )
@@ -256,8 +256,8 @@ export class PeriodsController {
     type: [PraiseWithUserAccountsWithUserRefDto],
   })
   @Permissions(Permission.PeriodView)
-  @ApiParam({ name: 'periodId', type: String })
-  @ApiParam({ name: 'quantifierId', type: String })
+  @ApiParam({ name: 'periodId', type: 'string' })
+  @ApiParam({ name: 'quantifierId', type: 'string' })
   @UseInterceptors(
     MongooseClassSerializerInterceptor(PraiseWithUserAccountsWithUserRefDto),
   )
@@ -279,7 +279,7 @@ export class PeriodsController {
     type: VerifyQuantifierPoolSizeDto,
   })
   @Permissions(Permission.PeriodAssign)
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   async verifyQuantifierPoolSize(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<VerifyQuantifierPoolSizeDto> {
@@ -294,7 +294,7 @@ export class PeriodsController {
     type: PeriodDetailsDto,
   })
   @Permissions(Permission.PeriodAssign)
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async assignQuantifiers(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -310,7 +310,7 @@ export class PeriodsController {
     type: ReplaceQuantifierResponseDto,
   })
   @Permissions(Permission.PeriodAssign)
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string' })
   async replaceQuantifier(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() replaceQuantifierDto: ReplaceQuantifierInputDto,
