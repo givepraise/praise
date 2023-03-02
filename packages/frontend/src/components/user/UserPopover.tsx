@@ -5,13 +5,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useHistory } from 'react-router-dom';
 import { classNames } from '@/utils/index';
 import { UserAvatar } from './UserAvatar';
-import { UserDto } from '@/model/user/dto/user.dto';
-import { UserAccountDto } from '@/model/useraccount/dto/useraccount.dto';
+import { User } from '@/model/user/dto/user.dto';
+import { UserAccount } from '@/model/useraccount/dto/useraccount.dto';
 import { shortenEthAddress } from '@/utils/string';
 
 interface UserPopoverProps {
-  user?: UserDto;
-  userAccount?: UserAccountDto;
+  user?: User;
+  userAccount?: UserAccount;
   children: JSX.Element;
   className?: string;
   usePseudonym?: boolean;

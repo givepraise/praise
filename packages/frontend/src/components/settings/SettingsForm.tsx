@@ -12,16 +12,16 @@ import { ImageFileInput } from '@/components/form/ImageFileInput';
 import { Notice } from '@/components/ui/Notice';
 import { SubmitButton } from '../form/SubmitButton';
 import { RadioInput } from '../form/RadioInput';
-import { SettingDto } from '@/model/settings/dto/setting.dto';
-import { PeriodSettingDto } from '@/model/periodsettings/dto/period-settings.dto';
+import { Setting } from '@/model/settings/dto/setting.dto';
+import { PeriodSetting } from '@/model/periodsettings/dto/period-settings.dto';
 
 interface SettingsFormProps {
-  settings: SettingDto[] | undefined;
+  settings: Setting[] | undefined;
   parentOnSubmit(
-    setting: SettingDto
+    setting: Setting
   ): Promise<
-    | AxiosResponse<SettingDto>
-    | AxiosResponse<PeriodSettingDto>
+    | AxiosResponse<Setting>
+    | AxiosResponse<PeriodSetting>
     | AxiosError
     | undefined
   >;
@@ -29,7 +29,7 @@ interface SettingsFormProps {
 }
 
 const FormFields = (
-  settings: SettingDto[] | PeriodSettingDto[],
+  settings: Setting[] | PeriodSetting[],
   apiResponse,
   setValue: (key: string, value: string) => void,
   disabled?: boolean

@@ -1,8 +1,8 @@
-import { PraiseDto } from '@/model/praise/praise.dto';
+import { Praise } from '@/model/praise/praise.dto';
 import { useHistory } from 'react-router-dom';
 
 interface PraiseRowProps {
-  praise: PraiseDto;
+  praise: Praise;
   children: JSX.Element;
 }
 
@@ -13,7 +13,7 @@ export const PraiseRow = ({
   const history = useHistory();
 
   const handleClick =
-    (data: PraiseDto) => (event: React.MouseEvent<HTMLTableRowElement>) => {
+    (data: Praise) => (event: React.MouseEvent<HTMLTableRowElement>) => {
       event.stopPropagation();
       const element = event.target as HTMLElement;
 
