@@ -15,6 +15,7 @@ import { ApiKeyModule } from './api-key/api-key.module';
 import { ActivateModule } from './activate/activate.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { CommunityModule } from './community/community.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { APP_GUARD } from '@nestjs/core';
     ActivateModule,
     ApiKeyModule,
     AuthModule,
+    CommunityModule,
     EventLogModule,
     PeriodsModule,
     PeriodSettingsModule,
