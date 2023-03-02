@@ -3,11 +3,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Document, model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-import { IsBoolean, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { DiscordLinkState } from '../enums/discord-link-state';
 
 export type CommunityDocument = Community & Document;
-
 
 @Schema({ timestamps: true })
 export class Community {
@@ -42,31 +41,30 @@ export class Community {
   @Prop({ type: [String], required: true })
   owners: string;
 
-  @ApiProperty({ example: '0980987846534' })
+  @ApiProperty({ example: '0980987846534', required: false })
+  @IsOptional()
   @IsString()
   @Prop({ type: String })
-  discordGuildId ?: string;
+  discordGuildId?: string;
 
   @ApiProperty({ example: 'oiujoiuoo8u' })
   @IsString()
   @Prop({ type: String })
-  discordLinkNonce ?: string;
-
+  discordLinkNonce?: string;
 
   @ApiProperty({ example: true })
   @IsBoolean()
   @Prop({ type: Boolean, default: true })
   // In this step all communities should be public, but we may allow premium communities be private
-  isPublic : boolean;
+  isPublic: boolean;
 
   @ApiProperty({ example: 'NOT_SET | PENDING | ACTIVE | DEACTIVE' })
   @IsString()
   @Prop({
     type: String,
-    enum: Object.values(DiscordLinkState)
+    enum: Object.values(DiscordLinkState),
   })
-  discordLinkState ?: string;
-
+  discordLinkState?: string;
 }
 
 export const CommunitySchema =
@@ -74,5 +72,5 @@ export const CommunitySchema =
 
 export const CommunityModel = model<Community, Pagination<Community>>(
   'Community',
-  CommunitySchema
+  CommunitySchema,
 );
