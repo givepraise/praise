@@ -9,8 +9,8 @@ import {
 } from '@/model/periodsettings/periodsettings';
 import { isResponseOk } from '@/model/api';
 import { PeriodPoolRequirementsQuery } from '@/model/periods/periods';
-import { SettingDto } from '@/model/settings/dto/setting.dto';
-import { PeriodSettingDto } from '@/model/periodsettings/dto/period-settings.dto';
+import { Setting } from '@/model/settings/dto/setting.dto';
+import { PeriodSetting } from '@/model/periodsettings/dto/period-settings.dto';
 
 interface Params {
   periodId: string;
@@ -29,8 +29,8 @@ const PeriodSettingsForm = ({
   const { setSetting } = useSetPeriodSetting(periodId);
 
   const onSubmit = async (
-    setting: SettingDto
-  ): Promise<AxiosResponse<PeriodSettingDto> | AxiosError | undefined> => {
+    setting: Setting
+  ): Promise<AxiosResponse<PeriodSetting> | AxiosError | undefined> => {
     try {
       const response = await setSetting(setting);
       if (isResponseOk(response)) {

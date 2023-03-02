@@ -1,6 +1,6 @@
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from '@/model/praise/praise.dto';
+import { Praise } from '@/model/praise/praise.dto';
 import { useCombobox } from 'downshift';
 import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
@@ -18,7 +18,7 @@ import { idLabel } from '@/model/praise/praise.utils';
 interface PraiseAutosuggestProps {
   onClose(): void;
   onSelect(id: string): void;
-  praise: PraiseDto;
+  praise: Praise;
 }
 
 export const PraiseAutosuggest = ({
@@ -84,7 +84,7 @@ export const PraiseAutosuggest = ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onSelectedItemChange: (data: any): void => {
         if (!data) return;
-        const selectedItem = data.selectedItem as PraiseDto;
+        const selectedItem = data.selectedItem as Praise;
         onSelect(selectedItem._id);
         onClose();
       },

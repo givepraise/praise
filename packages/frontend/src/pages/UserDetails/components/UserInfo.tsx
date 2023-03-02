@@ -17,7 +17,7 @@ import { ActiveUserId, HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserWithStatsDto } from '@/model/user/dto/user-with-stats.dto';
 import { UserRole } from '@/model/user/enums/user-role.enum';
-import { UserDto } from '@/model/user/dto/user.dto';
+import { User } from '@/model/user/dto/user.dto';
 import { shortenEthAddress } from '@/utils/string';
 
 interface Params {
@@ -40,7 +40,10 @@ export const UserInfo = ({
 
   const discordAccount = user.accounts?.find((a) => a.platform === 'DISCORD');
 
-  const handleRole = async (role: UserRole, user: UserDto): Promise<void> => {
+  const handleRole = async (
+    role: UserRole,
+    user: UserWithStatsDto
+  ): Promise<void> => {
     let resp;
     const isRemove = user.roles.includes(role);
     if (isRemove) {
@@ -109,7 +112,7 @@ export const UserInfo = ({
               User roles:{' '}
               {user.roles.map(
                 (r, index, array) =>
-                  `${r}${array.length > index + 1 ? ', ' : ''}`
+                  `${r}${array.length > (index as number) + 1 ? ', ' : ''}`
               )}
             </div>
           )}

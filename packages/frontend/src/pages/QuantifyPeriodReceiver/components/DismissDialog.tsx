@@ -4,7 +4,7 @@ import {
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from '@/model/praise/praise.dto';
+import { Praise } from '@/model/praise/praise.dto';
 
 import { Button } from '@/components/ui/Button';
 import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
@@ -14,7 +14,7 @@ interface DismissDialogProps {
   open: boolean;
   onClose(): void;
   onConfirm(): void;
-  praises: PraiseDto[] | undefined;
+  praises: Praise[] | undefined;
 }
 
 export const DismissDialog = ({

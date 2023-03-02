@@ -11,9 +11,9 @@ import {
   AllUsers,
 } from '@/model/user/users';
 import { Button } from '@/components/ui/Button';
-import { UserDto } from '@/model/user/dto/user.dto';
+import { User } from '@/model/user/dto/user.dto';
 
-interface DownloadUserDto extends Omit<UserDto, 'accounts'> {
+interface DownloadUser extends Omit<User, 'accounts'> {
   discordName?: string;
   discordAccountId?: string;
   telegramName?: string;
@@ -26,7 +26,7 @@ export const UsersStatistics = (): JSX.Element => {
   const allForwarderUsers = useRecoilValue(AllForwarderUsers);
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
   const allUsers = useRecoilValue(AllUsers);
-  const [downloadData, setDownloadData] = useState<DownloadUserDto[]>([]);
+  const [downloadData, setDownloadData] = useState<DownloadUser[]>([]);
 
   const filterData = (): boolean => {
     if (!allUsers) {

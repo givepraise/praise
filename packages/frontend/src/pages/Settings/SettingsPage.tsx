@@ -15,7 +15,7 @@ import { CustomExportSettings } from './components/CustomExportSettings';
 import { PeriodDefaultsSettings } from './components/PeriodDefaultsSettings';
 import { ApplicationSettings } from './components/ApplicationSettings';
 import { SettingGroup } from '@/model/settings/enums/setting-group.enum';
-import { SettingDto } from '@/model/settings/dto/setting.dto';
+import { Setting } from '@/model/settings/dto/setting.dto';
 
 const SettingsPage = (): JSX.Element | null => {
   const settings = useRecoilValue(AllSettings);
@@ -38,8 +38,8 @@ const SettingsPage = (): JSX.Element | null => {
   );
 
   const onSubmit = async (
-    setting: SettingDto
-  ): Promise<AxiosResponse<SettingDto> | AxiosError | undefined> => {
+    setting: Setting
+  ): Promise<AxiosResponse<Setting> | AxiosError | undefined> => {
     const response = await setSetting(setting);
     if (isResponseOk(response)) {
       const setting = response.data;

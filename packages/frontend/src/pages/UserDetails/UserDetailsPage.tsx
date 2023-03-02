@@ -27,7 +27,7 @@ import {
   ReceivedGivenPraiseTable,
 } from './components/ReceivedGivenPraiseTable';
 import { EditProfileDialog } from './components/EditProfileDialog';
-import { UpdateUserProfileDto } from '@/model/user/dto/update-user-profile.dto';
+import { UpdateUserRequestDto } from '@/model/user/dto/update-user-profile.dto';
 
 const UserDetailsPage = (): JSX.Element | null => {
   const dialogRef = React.useRef(null);
@@ -49,7 +49,7 @@ const UserDetailsPage = (): JSX.Element | null => {
   if (!user) return null;
 
   const handleSaveUserProfile = async (
-    values: UpdateUserProfileDto
+    values: UpdateUserRequestDto
   ): Promise<void> => {
     const { username, rewardsEthAddress } = values;
     const response = await update(user._id, username, rewardsEthAddress);
