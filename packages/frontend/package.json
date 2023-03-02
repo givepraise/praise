@@ -28,6 +28,7 @@
     "@typescript-eslint/eslint-plugin": "^5.18.0",
     "@typescript-eslint/parser": "^5.18.0",
     "@ukstv/jazzicon-react": "^1.0.0",
+    "api-types": "0.1.0",
     "autoprefixer": "^10.4.7",
     "axios": "^0.22.0",
     "axios-auth-refresh": "^3.2.2",
