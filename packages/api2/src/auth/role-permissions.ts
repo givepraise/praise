@@ -83,6 +83,9 @@ const PERMISSION_API_KEY_READWRITE = [...PERMISSIONS_ADMIN];
  * The discord bot can only praise users.
  */
 const PERMISSION_API_KEY_DISCORD_BOT = [
+  Permission.UserAccountsView,
+  Permission.UserAccountsCreate,
+  Permission.UserAccountsUpdate,
   Permission.PraiseCreate,
   Permission.PraiseForward,
   Permission.CommunitiesView,
