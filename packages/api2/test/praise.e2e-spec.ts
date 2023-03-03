@@ -176,7 +176,7 @@ describe('Praise (E2E)', () => {
     await usersSeeder.seedUser({
       identityEthAddress: botWallet.address,
       rewardsAddress: botWallet.address,
-      roles: [AuthRole.DISCORD_BOT],
+      roles: [AuthRole.API_KEY_DISCORD_BOT],
     });
 
     const responseBot = await loginUser(app, module, botWallet);

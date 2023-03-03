@@ -87,7 +87,7 @@ describe('EventLog (E2E)', () => {
 
       await authorizedPostRequest('/api-key', app, accessToken2, {
         description: 'test key',
-        role: AuthRole.APIKEY_READ,
+        role: AuthRole.API_KEY_READ,
       }).expect(403);
     });
 
@@ -101,13 +101,13 @@ describe('EventLog (E2E)', () => {
         accessToken,
         {
           description: 'test API key',
-          role: AuthRole.APIKEY_READ,
+          role: AuthRole.API_KEY_READ,
         },
       ).expect(201);
 
       expect(response.body).toBeDefined();
       expect(response.body.description).toEqual('test API key');
-      expect(response.body.role).toEqual(AuthRole.APIKEY_READ);
+      expect(response.body.role).toEqual(AuthRole.API_KEY_READ);
       expect(response.body.key).toBeDefined();
       expect(response.body.key).toHaveLength(64);
       expect(response.body.name).toEqual(response.body.key.slice(0, 8));
@@ -125,15 +125,15 @@ describe('EventLog (E2E)', () => {
 
       await authorizedPostRequest('/api-key', app, accessToken, {
         description: 'test API key',
-        role: AuthRole.APIKEY_READ,
+        role: AuthRole.API_KEY_READ,
       });
       await authorizedPostRequest('/api-key', app, accessToken, {
         description: 'test API key 2',
-        role: AuthRole.APIKEY_READ,
+        role: AuthRole.API_KEY_READ,
       });
       await authorizedPostRequest('/api-key', app, accessToken, {
         description: 'test API key 3',
-        role: AuthRole.APIKEY_READ,
+        role: AuthRole.API_KEY_READ,
       });
 
       const response = await authorizedGetRequest(
@@ -161,7 +161,7 @@ describe('EventLog (E2E)', () => {
         accessToken,
         {
           description: 'test API key',
-          role: AuthRole.APIKEY_READ,
+          role: AuthRole.API_KEY_READ,
         },
       ).expect(201);
 
@@ -187,7 +187,7 @@ describe('EventLog (E2E)', () => {
         accessToken,
         {
           description: 'test API key',
-          role: AuthRole.APIKEY_READ,
+          role: AuthRole.API_KEY_READ,
         },
       ).expect(201);
 
@@ -217,7 +217,7 @@ describe('EventLog (E2E)', () => {
         accessToken,
         {
           description: 'test API key',
-          role: AuthRole.APIKEY_READ,
+          role: AuthRole.API_KEY_READ,
         },
       ).expect(201);
 
