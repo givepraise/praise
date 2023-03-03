@@ -14,17 +14,19 @@ import { AuthRole } from '@/auth/enums/auth-role.enum';
 export type ApiKeyDocument = ApiKey & Document;
 
 /**
- * Allowed roles for API keys: APIKEY_READWRITE, APIKEY_READ
+ * Allowed roles for API keys: API_KEY_READWRITE, API_KEY_READ
  * @see AuthRole
  */
 @ValidatorConstraint({ name: 'allowedApiKeyRole', async: false })
 export class AllowedApiKeyRole implements ValidatorConstraintInterface {
   validate(role: string) {
-    return AuthRole.APIKEY_READWRITE === role || AuthRole.APIKEY_READ === role;
+    return (
+      AuthRole.API_KEY_READWRITE === role || AuthRole.API_KEY_READ === role
+    );
   }
 
   defaultMessage() {
-    return 'Role ($value) is not allowed. Allowed roles: APIKEY_READWRITE, APIKEY_READ';
+    return 'Role ($value) is not allowed. Allowed roles: API_KEY_READWRITE, API_KEY_READ';
   }
 }
 
@@ -63,7 +65,7 @@ export class ApiKey {
   hash: string;
 
   @ApiProperty({
-    example: 'APIKEY_READWRITE',
+    example: 'API_KEY_READWRITE',
     required: true,
     enum: AuthRole,
   })

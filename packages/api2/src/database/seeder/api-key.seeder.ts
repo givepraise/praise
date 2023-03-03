@@ -14,7 +14,7 @@ export class ApiKeySeeder {
   seedApiKey = async (): Promise<CreateApiKeyResponseDto> => {
     const apiKey = await this.apiKeyService.createApiKey({
       description: faker.lorem.lines(1),
-      role: AuthRole.APIKEY_READWRITE,
+      role: AuthRole.API_KEY_READWRITE,
     });
     return apiKey;
   };
