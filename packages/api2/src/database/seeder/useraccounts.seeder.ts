@@ -23,7 +23,7 @@ export class UserAccountsSeeder {
     const userAccount = await this.userAccountsService.getModel().create({
       user: randomUser._id,
       accountId: faker.datatype.uuid(),
-      name: faker.name.firstName(),
+      name: faker.internet.userName().substring(0, 10),
       avatarId: faker.datatype.uuid(),
       platform: 'DISCORD',
       activateToken: faker.datatype.string(),

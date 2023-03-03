@@ -108,7 +108,7 @@ describe('UserAccountsController (E2E)', () => {
     });
 
     test('201 and correct body when authenticated', async () => {
-      const accountName = faker.internet.userName();
+      const accountName = faker.internet.userName().substring(0, 10);
       const avatarId = faker.internet.url();
       const response = await authorizedPostRequest(
         '/useraccounts',
@@ -136,14 +136,14 @@ describe('UserAccountsController (E2E)', () => {
     test('409 when account already exists', async () => {
       await authorizedPostRequest('/useraccounts', app, accessToken, {
         accountId: String(users[0]._id),
-        name: faker.internet.userName(),
+        name: faker.internet.userName().substring(0, 10),
         avatarId: faker.internet.url(),
         platform: 'DISCORD',
         user: String(users[0]._id),
       });
       await authorizedPostRequest('/useraccounts', app, accessToken, {
         accountId: String(users[0]._id),
-        name: faker.internet.userName(),
+        name: faker.internet.userName().substring(0, 10),
         avatarId: faker.internet.url(),
         platform: 'DISCORD',
         user: String(users[0]._id),
@@ -161,7 +161,7 @@ describe('UserAccountsController (E2E)', () => {
     test('400 when invalid fields', async () => {
       await authorizedPostRequest('/useraccounts', app, accessToken, {
         accountId: String(users[0]._id),
-        name: faker.internet.userName(),
+        name: faker.internet.userName().substring(0, 10),
         avatarId: faker.internet.url(),
         platform: 'DISCORD',
         user: String(users[0]._id),
@@ -173,14 +173,14 @@ describe('UserAccountsController (E2E)', () => {
     test('409 when user account already exists for platform and user', async () => {
       await authorizedPostRequest('/useraccounts', app, accessToken, {
         accountId: '123456123456',
-        name: faker.internet.userName(),
+        name: faker.internet.userName().substring(0, 10),
         avatarId: faker.internet.url(),
         platform: 'DISCORD',
         user: String(users[0]._id),
       });
       await authorizedPostRequest('/useraccounts', app, accessToken, {
         accountId: '456779456779',
-        name: faker.internet.userName(),
+        name: faker.internet.userName().substring(0, 10),
         avatarId: faker.internet.url(),
         platform: 'DISCORD',
         user: String(users[0]._id), // Same user, same platform not allowed
@@ -239,7 +239,7 @@ describe('UserAccountsController (E2E)', () => {
         app,
         accessToken,
         {
-          name: faker.internet.userName(),
+          name: faker.internet.userName().substring(0, 10),
           avatarId: faker.internet.url(),
           platform: 'DISCORD',
         },
@@ -254,7 +254,7 @@ describe('UserAccountsController (E2E)', () => {
     });
 
     test('200 and correct pat body when authenticated - use _id', async () => {
-      const accountName = faker.internet.userName();
+      const accountName = faker.internet.userName().substring(0, 10);
       const avatarId = faker.internet.url();
       const response = await authorizedPatchRequest(
         `/useraccounts?_id=${userAccounts[0]._id}`,
@@ -279,7 +279,7 @@ describe('UserAccountsController (E2E)', () => {
     });
 
     test('200 and correct patch body when authenticated - use accountId', async () => {
-      const accountName = faker.internet.userName();
+      const accountName = faker.internet.userName().substring(0, 10);
       const avatarId = faker.internet.url();
       const response = await authorizedPatchRequest(
         `/useraccounts?accountId=${userAccounts[0].accountId}`,
@@ -334,7 +334,7 @@ describe('UserAccountsController (E2E)', () => {
         accessToken,
         {
           accountId: '123456123456',
-          name: faker.internet.userName(),
+          name: faker.internet.userName().substring(0, 10),
           avatarId: faker.internet.url(),
           platform: 'OTHERPLATFORM',
           user: String(users[0]._id),
@@ -358,7 +358,7 @@ describe('UserAccountsController (E2E)', () => {
         accessToken,
         {
           accountId: '123123123123',
-          name: faker.internet.userName(),
+          name: faker.internet.userName().substring(0, 10),
           avatarId: faker.internet.url(),
           platform: 'OTHERPLATFORM',
           user: String(users[0]._id),

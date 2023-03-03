@@ -41,6 +41,7 @@ export class ApiKeyController {
     type: CreateApiKeyResponseDto,
   })
   @Permissions(Permission.ApiKeyManage)
+  @UseInterceptors(MongooseClassSerializerInterceptor(ApiKey))
   createApiKey(
     @Body() createApiKeyRequest: CreateApiKeyInputDto,
   ): Promise<CreateApiKeyResponseDto> {
@@ -77,11 +78,7 @@ export class ApiKeyController {
   async findOne(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<ApiKey> {
-    const apiKey = await this.apiKeyService.findOne(id);
-    if (!apiKey) {
-      throw new BadRequestException('Invalid API key ID');
-    }
-    return apiKey;
+    return this.apiKeyService.findOne(id);
   }
 
   @Put(':id')
@@ -118,11 +115,6 @@ export class ApiKeyController {
   async revokeApiKey(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<ApiKey> {
-    const apiKey = await this.apiKeyService.findOne(id);
-    if (!apiKey) {
-      throw new BadRequestException('Invalid API key ID');
-    }
-    await this.apiKeyService.revoke(id);
-    return apiKey;
+    return this.apiKeyService.revoke(id);
   }
 }

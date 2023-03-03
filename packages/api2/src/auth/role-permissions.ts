@@ -26,6 +26,8 @@ const PERMISSIONS_USER = [
 
 /**
  * A forwarder is a user that is allowed to forward praises on behalf of other users.
+ * Currently forwarding does not requiere any special permissions, check is instead
+ * done by the praise service.
  */
 const PERMISSIONS_FORWARDER = [...PERMISSIONS_USER];
 
@@ -50,9 +52,15 @@ const PERMISSIONS_ADMIN = [
   Permission.PeriodAssign,
 ];
 
-const PERMISSIONS_SUPER_ADMIN = [
+/**
+ * Root users are users that are allowed to manage the system.
+ * In addition to the admin permissions, they can also manage communities.
+ */
+const PERMISSIONS_ROOT = [
   ...PERMISSIONS_ADMIN,
+  Permission.CommunitiesCreate,
   Permission.CommunitiesView,
+  Permission.CommunitiesUpdate,
 ];
 
 /**
@@ -62,18 +70,22 @@ const PERMISSIONS_SUPER_ADMIN = [
 /**
  * API keys with read permissions can only read data from the API.
  */
-const PERMISSION_APIKEY_READ = [...PERMISSIONS_USER];
+const PERMISSION_API_KEY_READ = [...PERMISSIONS_USER];
 
 /**
  * API keys with read/write permissions can read and write data to the API.
+ * Currrently this set of permissions is the same as the admin permissions.
  */
-const PERMISSION_APIKEY_READWRITE = [...PERMISSIONS_USER];
+const PERMISSION_API_KEY_READWRITE = [...PERMISSIONS_ADMIN];
 
 /**
  * Discord bot permissions
  * The discord bot can only praise users.
  */
-const PERMISSION_DISCORD_BOT = [
+const PERMISSION_API_KEY_DISCORD_BOT = [
+  Permission.UserAccountsView,
+  Permission.UserAccountsCreate,
+  Permission.UserAccountsUpdate,
   Permission.PraiseCreate,
   Permission.PraiseForward,
   Permission.CommunitiesView,
@@ -83,7 +95,7 @@ const PERMISSION_DISCORD_BOT = [
  * Setup Web  permissions
  * The setup web is in charge for managing communities
  */
-const PERMISSION_SETUP_WEB = [
+const PERMISSION_API_KEY_SETUP_WEB = [
   Permission.CommunitiesCreate,
   Permission.CommunitiesView,
   Permission.CommunitiesUpdate,
@@ -99,8 +111,9 @@ export const RolePermissions: { [key: string]: string[] } = {
   FORWARDER: PERMISSIONS_FORWARDER,
   QUANTIFIER: PERMISSIONS_QUANTIFIER,
   ADMIN: PERMISSIONS_ADMIN,
-  APIKEY_READ: PERMISSION_APIKEY_READ,
-  APIKEY_READWRITE: PERMISSION_APIKEY_READWRITE,
-  DISCORD_BOT: PERMISSION_DISCORD_BOT,
-  SETUP_WEB: PERMISSION_SETUP_WEB,
+  ROOT: PERMISSIONS_ROOT,
+  API_KEY_READ: PERMISSION_API_KEY_READ,
+  API_KEY_READWRITE: PERMISSION_API_KEY_READWRITE,
+  API_KEY_DISCORD_BOT: PERMISSION_API_KEY_DISCORD_BOT,
+  API_KEY_SETUP_WEB: PERMISSION_API_KEY_SETUP_WEB,
 };
