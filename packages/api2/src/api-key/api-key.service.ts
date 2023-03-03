@@ -62,9 +62,12 @@ export class ApiKeyService {
    * @param {Types.ObjectId} id - The ID of the API key to find.
    * @returns {Promise<ApiKey|null>} A promise that resolves to the found API key, or null if no API key is found with the given ID.
    */
-  async findOne(id: Types.ObjectId): Promise<ApiKey | null> {
+  async findOne(id: Types.ObjectId): Promise<ApiKey> {
     const apiKey = await this.apiKeyModel.findById(id).lean();
-    return apiKey || null;
+    if (!apiKey) {
+      throw new ServiceException('API key not found');
+    }
+    return apiKey;
   }
 
   /**
@@ -72,13 +75,12 @@ export class ApiKeyService {
    * @param {string} key - The key of the API key to find.
    * @returns {Promise<ApiKey|null>} A promise that resolves to the found API key, or null if no API key is found with the given key.
    */
-  async findOneByKey(key: string): Promise<ApiKey | null> {
-    const apiKey = await this.apiKeyModel
-      .findOne({
-        key,
-      })
-      .lean();
-    return apiKey || null;
+  async findOneByKey(key: string): Promise<ApiKey> {
+    const apiKey = await this.apiKeyModel.findById(key).lean();
+    if (!apiKey) {
+      throw new ServiceException('API key not found');
+    }
+    return apiKey;
   }
 
   /**
@@ -117,10 +119,7 @@ export class ApiKeyService {
    * @throws {ServiceException} If there is an error while revoking the API key.
    */
   async revoke(id: Types.ObjectId): Promise<ApiKey> {
-    const apiKey = await this.apiKeyModel.findById(id);
-    if (!apiKey) {
-      throw new ServiceException('Invalid API key ID');
-    }
+    const apiKey = await this.findOne(id);
     await this.apiKeyModel.deleteOne({ _id: id });
 
     this.eventLogService.logEvent({
@@ -128,6 +127,6 @@ export class ApiKeyService {
       description: `Revoked API key: ${apiKey.name}`,
     });
 
-    return apiKey.toObject();
+    return apiKey;
   }
 }
