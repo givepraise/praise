@@ -272,7 +272,7 @@ describe('AuthController (E2E)', () => {
     });
   });
 
-  describe('API KEY authentication, GET /api/users', () => {
+  describe('Database API KEY authentication, GET /api/users', () => {
     test('401 when missing api key', async () => {
       return request(server).get('/users').expect(401);
     });
@@ -293,6 +293,36 @@ describe('AuthController (E2E)', () => {
         .get('/users')
         .set('x-api-key', apiKey.key)
         .expect(200);
+    });
+  });
+
+  describe('.env API KEY authentication, GET /api/users', () => {
+    /**
+     *
+     */
+    test('403 when accessing disallowed endpoint /api/users', async () => {
+      const apiKey = process.env.DISCORD_BOT_API_KEY;
+      expect(apiKey).not.toBeUndefined();
+      if (apiKey) {
+        return request(server)
+          .get('/users')
+          .set('x-api-key', apiKey)
+          .expect(403);
+      }
+    });
+
+    /**
+     *
+     */
+    test('200 when accessing allowed endpoint /api/communities', async () => {
+      const apiKey = process.env.DISCORD_BOT_API_KEY;
+      expect(apiKey).not.toBeUndefined();
+      if (apiKey) {
+        return request(server)
+          .get('/communities')
+          .set('x-api-key', apiKey)
+          .expect(200);
+      }
     });
   });
 });

@@ -23,7 +23,7 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, 'api-key') {
   async validate(apiKey: any): Promise<AuthContext | null> {
     // Check if the API key has been configured in the environment variables.
     const index = this.constantsProvider.apiKeys.indexOf(apiKey);
-    if (index >= -1) {
+    if (index > -1) {
       const key = this.constantsProvider.apiKeys[index];
       const role = this.constantsProvider.apiKeyRoles[index];
       return {
