@@ -140,6 +140,14 @@ export interface paths {
     /** Exports quantifications document to json or csv. */
     get: operations['QuantificationsController_export'];
   };
+  '/api/useraccounts': {
+    /** Get UserAccount by UserId our AccountId. */
+    get: operations['UserAccountsController_findOne'];
+    /** Create a UserAccount */
+    post: operations['UserAccountsController_create'];
+    /** Update UserAccount by UserId or AccountId */
+    patch: operations['UserAccountsController_update'];
+  };
   '/api/useraccounts/export': {
     /** Exports UserAccounts document to json or csv. */
     get: operations['UserAccountsController_export'];
@@ -184,7 +192,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
-      user: string | components['schemas']['User'];
+      user: string;
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -207,12 +215,8 @@ export interface components {
       rewardsEthAddress: string;
       /** @example darth */
       username: string;
-      /**
-       * @example [
-       *   "USER"
-       * ]
-       */
-      roles: readonly string[];
+      /** @example ["USER"] */
+      roles: string;
       accounts: readonly components['schemas']['UserAccountNoUserId'][];
       /** Format: date-time */
       createdAt: string;
@@ -228,12 +232,8 @@ export interface components {
       rewardsEthAddress: string;
       /** @example darth */
       username: string;
-      /**
-       * @example [
-       *   "USER"
-       * ]
-       */
-      roles: readonly string[];
+      /** @example ["USER"] */
+      roles: string;
       accounts: readonly components['schemas']['UserAccountNoUserId'][];
       /** Format: date-time */
       createdAt: string;
@@ -277,23 +277,23 @@ export interface components {
     };
     PeriodPaginatedResponseDto: {
       /** @example 1200 */
-      totalDocs: Record<string, never>;
+      totalDocs: number;
       /** @example 10 */
-      limit: Record<string, never>;
+      limit: number;
       /** @example 12 */
-      totalPages: Record<string, never>;
+      totalPages: number;
       /** @example 2 */
-      page: Record<string, never>;
+      page: number;
       /** @example 1 */
-      pagingCounter: Record<string, never>;
+      pagingCounter: number;
       /** @example false */
       hasPrevPage: Record<string, never>;
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: Record<string, never>;
+      prevPage: number;
       /** @example 3 */
-      nextPage: Record<string, never>;
+      nextPage: number;
       docs: readonly components['schemas']['Period'][];
     };
     Quantification: {
@@ -394,7 +394,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
       /** @example 621f802b813dbdba9eeaf7d7 */
-      user: string | components['schemas']['User'];
+      user: string;
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -454,7 +454,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
-      user: string | components['schemas']['User'];
+      user: string;
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -507,7 +507,8 @@ export interface components {
       _id: string;
       /** @example 621f802b813dbdba9eeaf7d7 */
       user: string;
-      useraccount: components['schemas']['UserAccountNoUserId'];
+      /** @example 621f802b813dbdba9eeaf7d7 */
+      useraccount: string;
       /** @example 621f802b813dbdba9eeaf7d7 */
       apiKey: string;
       /** @example 621f802b813dbdba9eeaf7d7 */
@@ -515,36 +516,26 @@ export interface components {
       type: components['schemas']['EventLogType'];
       /** @example A description of teh event */
       description: string;
-      /**
-       * Format: date-time
-       * @example 2023-03-01T22:51:20.012Z
-       */
-      createdAt: string;
-      /**
-       * Format: date-time
-       * @example 2023-03-01T22:51:20.012Z
-       */
-      updatedAt: string;
     };
     EventLogPaginatedResponseDto: {
       /** @example 1200 */
-      totalDocs: Record<string, never>;
+      totalDocs: number;
       /** @example 10 */
-      limit: Record<string, never>;
+      limit: number;
       /** @example 12 */
-      totalPages: Record<string, never>;
+      totalPages: number;
       /** @example 2 */
-      page: Record<string, never>;
+      page: number;
       /** @example 1 */
-      pagingCounter: Record<string, never>;
+      pagingCounter: number;
       /** @example false */
       hasPrevPage: Record<string, never>;
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: Record<string, never>;
+      prevPage: number;
       /** @example 3 */
-      nextPage: Record<string, never>;
+      nextPage: number;
       docs: readonly components['schemas']['EventLog'][];
     };
     Setting: {
@@ -555,7 +546,7 @@ export interface components {
       /** @example 666 */
       value: string;
       /** @example 666 */
-      valueRealized: string | string[] | boolean | number | number[];
+      valueRealized: Record<string, never>;
       /** @example 555 */
       defaultValue: string;
       /**
@@ -596,30 +587,30 @@ export interface components {
       setting: readonly components['schemas']['Setting'][];
       value: string;
       /** @example 666 */
-      valueRealized: string | string[] | boolean | number | number[];
+      valueRealized: number;
     };
     SetPeriodSettingDto: {
       value: string;
     };
     PraisePaginatedResponseDto: {
       /** @example 1200 */
-      totalDocs: Record<string, never>;
+      totalDocs: number;
       /** @example 10 */
-      limit: Record<string, never>;
+      limit: number;
       /** @example 12 */
-      totalPages: Record<string, never>;
+      totalPages: number;
       /** @example 2 */
-      page: Record<string, never>;
+      page: number;
       /** @example 1 */
-      pagingCounter: Record<string, never>;
+      pagingCounter: number;
       /** @example false */
       hasPrevPage: Record<string, never>;
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: Record<string, never>;
+      prevPage: number;
       /** @example 3 */
-      nextPage: Record<string, never>;
+      nextPage: number;
       docs: readonly components['schemas']['Praise'][];
     };
     QuantifyInputDto: {
@@ -663,6 +654,78 @@ export interface components {
       receiverIds: string[];
       giver: components['schemas']['UserAccount'];
       forwarder: components['schemas']['UserAccount'];
+    };
+    CreateUserAccountInputDto: {
+      /** @example 098098098098098 */
+      accountId: string;
+      /** @example darth#6755 */
+      name: string;
+      /** @example 098098098087097 */
+      avatarId: string;
+      /** @example DISCORD */
+      platform: string;
+      /** @example 63b428f7d9ca4f6ff5370d05 */
+      user?: string;
+    };
+    CreateUserAccountResponseDto: {
+      /** @example 63b428f7d9ca4f6ff5370d05 */
+      _id: string;
+      /** @example 63b428f7d9ca4f6ff5370d05 */
+      user: string;
+      /** @example 098098098098098 */
+      accountId: string;
+      /** @example darth#6755 */
+      name: string;
+      /** @example 098098098087097 */
+      avatarId: string;
+      /** @example DISCORD */
+      platform: string;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+      /** @example jkhvuygi643jh35g53 */
+      activateToken: string;
+    };
+    UpdateUserAccountInputDto: {
+      /** @example 63b428f7d9ca4f6ff5370d05 */
+      _id?: string;
+      /** @example 63b428f7d9ca4f6ff5370d05 */
+      user?: string;
+      /** @example 098098098098098 */
+      accountId?: string;
+      /** @example darth#6755 */
+      name?: string;
+      /** @example 098098098087097 */
+      avatarId?: string;
+      /** @example DISCORD */
+      platform?: string;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      updatedAt?: string;
+      /** @example 63b428f7d9ca4f6ff5370d05 */
+      activateToken?: string;
+    };
+    UpdateUserAccountResponseDto: {
+      /** @example 63b428f7d9ca4f6ff5370d05 */
+      _id: string;
+      /** @example 63b428f7d9ca4f6ff5370d05 */
+      user: string;
+      /** @example 098098098098098 */
+      accountId: string;
+      /** @example darth#6755 */
+      name: string;
+      /** @example 098098098087097 */
+      avatarId: string;
+      /** @example DISCORD */
+      platform: string;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+      /** @example jkhvuygi643jh35g53 */
+      activateToken: string;
     };
     CreateApiKeyInputDto: {
       /** @example My API Key */
@@ -1442,6 +1505,58 @@ export interface operations {
         content: {
           'application/json': string;
           'application/octet-stream': string;
+        };
+      };
+    };
+  };
+  UserAccountsController_findOne: {
+    /** Get UserAccount by UserId our AccountId. */
+    parameters: {
+      query: {
+        _id?: string;
+        accountId?: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          'application/json': components['schemas']['UserAccount'];
+        };
+      };
+    };
+  };
+  UserAccountsController_create: {
+    /** Create a UserAccount */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateUserAccountInputDto'];
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          'application/json': components['schemas']['CreateUserAccountResponseDto'];
+        };
+      };
+    };
+  };
+  UserAccountsController_update: {
+    /** Update UserAccount by UserId or AccountId */
+    parameters: {
+      query: {
+        _id?: string;
+        accountId?: string;
+      };
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateUserAccountInputDto'];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          'application/json': components['schemas']['UpdateUserAccountResponseDto'];
         };
       };
     };
