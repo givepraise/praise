@@ -9,8 +9,9 @@ import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
+  authorizedPatchRequest,
   authorizedPostRequest,
-  loginUser,
+  loginUser
 } from './test.common';
 import { runDbMigrations } from '@/database/migrations';
 import { Praise } from '@/praise/schemas/praise.schema';
@@ -20,6 +21,11 @@ import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filt
 import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 import { CommunityService } from '../src/community/community.service';
 import { CommunityModule } from '../src/community/community.module';
+import { Community } from '../src/community/schemas/community.schema';
+import { CommunitiesSeeder } from '@/database/seeder/communities.seeder';
+import { DiscordLinkState } from '../src/community/enums/discord-link-state';
+import { ObjectId } from 'mongoose';
+import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 
 class LoggedInUser {
   accessToken: string;
@@ -33,6 +39,7 @@ describe('Communities (E2E)', () => {
   let module: TestingModule;
   let usersSeeder: UsersSeeder;
   let usersService: UsersService;
+  let communitiesSeeder: CommunitiesSeeder;
   let communityService: CommunityService;
   let setupWebUserAccessToken: string;
 
@@ -47,6 +54,7 @@ describe('Communities (E2E)', () => {
       ],
       providers: [
         UsersSeeder,
+        CommunitiesSeeder
       ],
     }).compile();
 
@@ -66,6 +74,7 @@ describe('Communities (E2E)', () => {
     await runDbMigrations(app);
 
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
+    communitiesSeeder = module.get<CommunitiesSeeder>(CommunitiesSeeder);
     usersService = module.get<UsersService>(UsersService);
     communityService = module.get<CommunityService>(CommunityService)
 
@@ -143,7 +152,7 @@ describe('Communities (E2E)', () => {
       expect(response.status).toBe(400);
     });
 
-    test('200 when authenticated as setupWeb and correct data is sent', async () => {
+    test('201 when authenticated as setupWeb and correct data is sent', async () => {
       const response = await authorizedPostRequest(
         `/communities`,
         app,
@@ -163,6 +172,153 @@ describe('Communities (E2E)', () => {
       expect(rb.name).toBe('test');
       expect(rb.email).toBe('test@praise.io');
       expect(rb.isPublic).toBe(true);
+
+    });
+
+  });
+  describe('PATCH /api/communities/:id/discord/link', () => {
+    let community : Community
+
+    beforeEach(async () => {
+      await communityService.getModel().deleteMany({});
+      community =await communitiesSeeder.seedCommunity(
+        {
+          name:'test',
+          creator:users[0].user.identityEthAddress,
+          owners:[users[0].user.identityEthAddress, users[1].user.identityEthAddress ],
+          hostname:'test.praise.io',
+          discordGuildId:'kldakdsal',
+          discordLinkNonce: '223',
+          email:'test@praise.io',
+        }
+      )
+    });
+
+    test('401 when not authenticated', async () => {
+      return request(server).patch(`/communities/${community._id}/discord/link`).send().expect(401);
+    });
+
+    test('403 when user has wrong permissions', async () => {
+      const response = await authorizedPatchRequest(
+        `/communities/${community._id}/discord/link`,
+        app,
+        users[0].accessToken,
+        {
+          name: 'test',
+        },
+      );
+
+      expect(response.status).toBe(403);
+    });
+
+    test('400 when inputs are invalid', async () => {
+      const response = await authorizedPatchRequest(
+        `/communities/${community._id}/discord/link`,
+        app,
+        setupWebUserAccessToken,
+        {
+          wrongField: 'test',
+        },
+      );
+
+      expect(response.status).toBe(400);
+    });
+
+    test('200 when authenticated as setupWeb and correct data is sent for linking dicord bot to community', async () => {
+      const signedMessage =  await users[0].wallet.signMessage(communityService.generateLinkDiscordMessage({
+        communityId: String(community._id),
+        guildId: community.discordGuildId as string,
+        nonce: community.discordLinkNonce as string,
+
+      }))
+      const response = await authorizedPatchRequest(
+        `/communities/${community._id}/discord/link`,
+        app,
+        setupWebUserAccessToken,
+        {
+          signedMessage
+        },
+      );
+
+      const rb = response.body;
+      expect(response.status).toBe(200);
+      expect(rb.name).toBe('test');
+      expect(rb.email).toBe('test@praise.io');
+      expect(rb.discordLinkState).toBe(DiscordLinkState.ACTIVE);
+      expect(rb.isPublic).toBe(true);
+
+    });
+
+    test('400 when someone else wants to link discord to community instead of creator', async () => {
+      const signedMessage =  await users[2].wallet.signMessage(communityService.generateLinkDiscordMessage({
+        communityId: String(community._id),
+        guildId: community.discordGuildId as string,
+        nonce: community.discordLinkNonce as string,
+
+      }))
+      const response = await authorizedPatchRequest(
+        `/communities/${community._id}/discord/link`,
+        app,
+        setupWebUserAccessToken,
+        {
+          signedMessage
+        },
+      );
+
+      const rb = response.body;
+      console.log('**link discord to community someone else**', rb)
+      expect(response.status).toBe(400);
+      expect(rb.message).toBe('Verification failed');
+
+    });
+
+    test('400 when someone wants to link discord to active community', async () => {
+      await communityService.getModel().updateOne(
+        { _id: community._id },
+        { $set: { discordLinkState: DiscordLinkState.ACTIVE } },
+      )
+      const signedMessage =  await users[0].wallet.signMessage(communityService.generateLinkDiscordMessage({
+        communityId: String(community._id),
+        guildId: community.discordGuildId as string,
+        nonce: community.discordLinkNonce as string,
+
+      }))
+      const response = await authorizedPatchRequest(
+        `/communities/${community._id}/discord/link`,
+        app,
+        setupWebUserAccessToken,
+        {
+          signedMessage
+        },
+      );
+
+      const rb = response.body;
+      console.log('**link discord to community someone else**', rb)
+      expect(response.status).toBe(400);
+      expect(rb.message).toBe('Community is already active.');
+
+    });
+
+    test('400 when community not found', async () => {
+      const signedMessage =  await users[0].wallet.signMessage(communityService.generateLinkDiscordMessage({
+        communityId: String(community._id),
+        guildId: community.discordGuildId as string,
+        nonce: community.discordLinkNonce as string,
+
+      }))
+      const response = await authorizedPatchRequest(
+        `/communities/${users[0].user._id}/discord/link`,
+        app,
+        setupWebUserAccessToken,
+        {
+          signedMessage
+        },
+      );
+
+      const rb = response.body;
+      console.log('**link discord to community someone else**', rb)
+      expect(response.status).toBe(400);
+      expect(rb.message).toBe('Community not found.');
 
     });
 
