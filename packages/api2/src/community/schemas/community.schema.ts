@@ -31,6 +31,11 @@ export class Community {
   @Prop({ type: String, required: true })
   name: string;
 
+  @ApiProperty({ example: 'john.smith@banklessDao.com', required: true })
+  @IsString()
+  @Prop({ type: String, required: true })
+  email: string;
+
   @ApiProperty({ example: '0x123..', required: true })
   @IsString()
   @Prop({ type: String, required: true })
@@ -39,7 +44,7 @@ export class Community {
   @ApiProperty({ example: '[0x123.., 0x345..]', required: true })
   @IsString()
   @Prop({ type: [String], required: true })
-  owners: string;
+  owners: string[];
 
   @ApiProperty({ example: '0980987846534', required: false })
   @IsOptional()

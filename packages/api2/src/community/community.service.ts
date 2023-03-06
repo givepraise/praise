@@ -19,7 +19,7 @@ export class CommunityService {
   ) {}
 
   /**
-   * Convenience method to get the EventLog Model
+   * Convenience method to get the Community Model
    * @returns
    */
   getModel(): typeof CommunityModel {
@@ -35,7 +35,7 @@ export class CommunityService {
   }
 
   /**
-   * Find all event logs. Paginated.
+   * Find all communities. Paginated.
    * @param options
    * @returns
    */
@@ -60,7 +60,7 @@ export class CommunityService {
       paginateQuery,
     );
     if (!communityPagination)
-      throw new ServiceException('Failed to query event logs');
+      throw new ServiceException('Failed to query communities');
 
     return communityPagination;
   }
