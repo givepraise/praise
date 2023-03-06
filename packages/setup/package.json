@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@types/inquirer": "^8.2.1",
+    "bcrypt": "^5.1.0",
     "dotenv": "^16.0.0",
     "env-cmd": "^10.1.0",
     "inquirer": "^8.2.4"
