@@ -9,6 +9,7 @@ import { ServiceException } from '@/shared/exceptions/service-exception';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { randomBytes } from 'crypto';
+import { ConstantsProvider } from '@/constants/constants.provider';
 
 @Injectable()
 export class ApiKeyService {
@@ -16,6 +17,7 @@ export class ApiKeyService {
     @InjectModel(ApiKey.name)
     private readonly apiKeyModel: Model<ApiKeyDocument>,
     private readonly eventLogService: EventLogService,
+    private readonly constantsProvider: ConstantsProvider,
   ) {}
 
   /**
@@ -37,7 +39,7 @@ export class ApiKeyService {
   ): Promise<CreateApiKeyResponseDto> {
     const key = randomBytes(32).toString('hex');
     const name = key.slice(0, 8);
-    const hash = await bcrypt.hash(key, 10);
+    const hash = await bcrypt.hash(key, this.constantsProvider.apiKeySalt);
 
     const apiKey = new this.apiKeyModel({
       ...createApiKeyDto,
@@ -50,6 +52,8 @@ export class ApiKeyService {
       typeKey: EventLogTypeKey.AUTHENTICATION,
       description: `Created API key: ${apiKey.name}`,
     });
+
+    console.log(`Created API key: ${key}`);
 
     return {
       ...apiKey.toObject(),
@@ -71,12 +75,12 @@ export class ApiKeyService {
   }
 
   /**
-   * Finds an API key by key.
-   * @param {string} key - The key of the API key to find.
+   * Finds an API key by hash.
+   * @param {string} hash - The hash of the API key to find.
    * @returns {Promise<ApiKey|null>} A promise that resolves to the found API key, or null if no API key is found with the given key.
    */
-  async findOneByKey(key: string): Promise<ApiKey> {
-    const apiKey = await this.apiKeyModel.findById(key).lean();
+  async findOneByHash(hash: string): Promise<ApiKey> {
+    const apiKey = await this.apiKeyModel.findOne({ hash }).lean();
     if (!apiKey) {
       throw new ServiceException('API key not found');
     }
