@@ -71,7 +71,7 @@ export const PeriodStatsSelector = selectorFamily({
       return {
         totalPraise: praise.length,
         totalPraiseScoreRealized: praise.reduce(
-          (acc, curr) => (acc as number) + (curr.score as number),
+          (acc, curr) => acc + curr.score,
           0
         ),
       };
