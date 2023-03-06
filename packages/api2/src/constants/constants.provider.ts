@@ -10,9 +10,12 @@ export const apiKeyRoles = process.env.API_KEY_ROLES
   ? process.env.API_KEY_ROLES.split(',')
   : [];
 
+export const apiKeySalt = process.env.API_KEY_SALT || 'salt';
+
 @Injectable()
 export class ConstantsProvider {
   public uploadDirectory = uploadDirectory;
   public apiKeys = apiKeys;
   public apiKeyRoles = apiKeyRoles;
+  public apiKeySalt = apiKeySalt;
 }
