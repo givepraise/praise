@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Document, model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
 import { DiscordLinkState } from '../enums/discord-link-state';
 
 export type CommunityDocument = Community & Document;
@@ -41,8 +41,8 @@ export class Community {
   @Prop({ type: String, required: true })
   creator: string;
 
-  @ApiProperty({ example: '[0x123.., 0x345..]', required: true })
-  @IsString()
+  @ApiProperty({ example: ['0x123..', '0x345..'],type: ['string'], required: true })
+  @IsArray()
   @Prop({ type: [String], required: true })
   owners: string[];
 

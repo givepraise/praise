@@ -67,6 +67,7 @@ describe('Communities (E2E)', () => {
 
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
     usersService = module.get<UsersService>(UsersService);
+    communityService = module.get<CommunityService>(CommunityService)
 
     // Clear the database
     await usersService.getModel().deleteMany({});
@@ -95,7 +96,7 @@ describe('Communities (E2E)', () => {
     await usersSeeder.seedUser({
       identityEthAddress: setupWebWallet.address,
       rewardsAddress: setupWebWallet.address,
-      roles: [AuthRole.API_KEY_DISCORD_BOT],
+      roles: [AuthRole.API_KEY_SETUP_WEB],
     });
 
     const response = await loginUser(app, module, setupWebWallet);
@@ -106,19 +107,19 @@ describe('Communities (E2E)', () => {
     await app.close();
   });
 
-  describe('POST /api/community', () => {
+  describe('POST /api/communities', () => {
 
     beforeEach(async () => {
 
     });
 
     test('401 when not authenticated', async () => {
-      return request(server).post(`/community`).send().expect(401);
+      return request(server).post(`/communities`).send().expect(401);
     });
 
     test('403 when user has wrong permissions', async () => {
       const response = await authorizedPostRequest(
-        `/community`,
+        `/communities`,
         app,
         users[0].accessToken,
         {
@@ -131,7 +132,7 @@ describe('Communities (E2E)', () => {
 
     test('400 when inputs are invalid', async () => {
       const response = await authorizedPostRequest(
-        `/community`,
+        `/communities`,
         app,
         setupWebUserAccessToken,
         {
@@ -144,13 +145,13 @@ describe('Communities (E2E)', () => {
 
     test('200 when authenticated as setupWeb and correct data is sent', async () => {
       const response = await authorizedPostRequest(
-        `/community`,
+        `/communities`,
         app,
         setupWebUserAccessToken,
         {
           name:'test',
-          creator:users[0].wallet,
-          owners:[users[0].wallet,users[1].wallet ],
+          creator:users[0].user.identityEthAddress,
+          owners:[users[0].user.identityEthAddress, users[1].user.identityEthAddress ],
           hostname:'test.praise.io',
           discordGuildId:'kldakdsal',
           email:'test@praise.io',
@@ -158,7 +159,6 @@ describe('Communities (E2E)', () => {
       );
 
       const rb = response.body;
-
       expect(response.status).toBe(201);
       expect(rb.name).toBe('test');
       expect(rb.email).toBe('test@praise.io');
