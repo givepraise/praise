@@ -5,6 +5,7 @@ import { ApiKeyService } from '@/api-key/api-key.service';
 import { AuthContext } from '../auth-context';
 import { ConstantsProvider } from '@/constants/constants.provider';
 import { AuthRole } from '../enums/auth-role.enum';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 /**
@@ -32,8 +33,11 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, 'api-key') {
       };
     }
 
+    // Hash the API key as it is stored in the database as a hash.
+    const hash = await bcrypt.hash(apiKey, this.constantsProvider.apiKeySalt);
+
     // Check if the API key has been configured in the database.
-    const key = await this.apiKeyService.findOneByKey(apiKey);
+    const key = await this.apiKeyService.findOneByHash(hash);
     if (key) {
       return {
         roles: [key.role],
