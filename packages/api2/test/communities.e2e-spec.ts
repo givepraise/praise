@@ -9,6 +9,7 @@ import { UsersService } from '@/users/users.service';
 import { UsersModule } from '@/users/users.module';
 import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
+  authorizedGetRequest,
   authorizedPatchRequest,
   authorizedPostRequest,
   loginUser
@@ -24,8 +25,6 @@ import { CommunityModule } from '../src/community/community.module';
 import { Community } from '../src/community/schemas/community.schema';
 import { CommunitiesSeeder } from '@/database/seeder/communities.seeder';
 import { DiscordLinkState } from '../src/community/enums/discord-link-state';
-import { ObjectId } from 'mongoose';
-import { PeriodStatusType } from '@/periods/enums/status-type.enum';
 
 class LoggedInUser {
   accessToken: string;
@@ -319,6 +318,57 @@ describe('Communities (E2E)', () => {
       console.log('**link discord to community someone else**', rb)
       expect(response.status).toBe(400);
       expect(rb.message).toBe('Community not found.');
+
+    });
+
+  });
+  describe('GET /api/communities/:id', () => {
+    let community : Community
+
+    beforeEach(async () => {
+      await communityService.getModel().deleteMany({});
+      community =await communitiesSeeder.seedCommunity(
+        {
+          name:'test',
+          creator:users[0].user.identityEthAddress,
+          owners:[users[0].user.identityEthAddress, users[1].user.identityEthAddress ],
+          hostname:'test.praise.io',
+          discordGuildId:'kldakdsal',
+          discordLinkNonce: '223',
+          email:'test@praise.io',
+        }
+      )
+    });
+
+    test('401 when not authenticated', async () => {
+      return request(server).get(`/communities/${community._id}`).send().expect(401);
+    });
+
+    test('403 when user has wrong permissions', async () => {
+      const response = await authorizedPatchRequest(
+        `/communities/${community._id}`,
+        app,
+        users[0].accessToken,
+        {
+          name: 'test',
+        },
+      );
+
+      expect(response.status).toBe(403);
+    });
+
+
+    test('200 get community successfully', async () => {
+      const response = await authorizedGetRequest(
+        `/communities/${community._id}`,
+        app,
+        setupWebUserAccessToken,
+      );
+
+      const rb = response.body;
+      expect(response.status).toBe(200);
+      expect(rb.name).toBe(community.name);
+      expect(rb.email).toBe(community.email);
 
     });
 
