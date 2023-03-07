@@ -5,6 +5,7 @@ import { exit } from 'process';
 import os from 'os';
 import { isDocker } from './isDocker';
 import path from 'path';
+import * as bcrypt from 'bcrypt';
 
 interface Answers {
   NODE_ENV: string;
@@ -159,6 +160,7 @@ const run = async (): Promise<void> => {
     API_PORT: process.env.API_PORT,
     API_KEYS: process.env.API_KEYS || apiKeys,
     API_KEY_ROLES: process.env.API_KEY_ROLES || apiKeyRoles,
+    API_KEY_SALT: process.env.API_KEY_SALT || (await bcrypt.genSalt(10)),
     ADMINS: answers.ADMINS,
     JWT_SECRET: process.env.JWT_SECRET || randomString(),
     JWT_ACCESS_EXP: process.env.JWT_ACCESS_EXP,
