@@ -12,7 +12,7 @@ import {
   authorizedGetRequest,
   authorizedPatchRequest,
   authorizedPostRequest,
-  loginUser
+  loginUser,
 } from './test.common';
 import { runDbMigrations } from '@/database/migrations';
 import { Praise } from '@/praise/schemas/praise.schema';
@@ -46,15 +46,8 @@ describe('Communities (E2E)', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        UsersModule,
-        CommunityModule
-      ],
-      providers: [
-        UsersSeeder,
-        CommunitiesSeeder
-      ],
+      imports: [AppModule, UsersModule, CommunityModule],
+      providers: [UsersSeeder, CommunitiesSeeder],
     }).compile();
 
     app = module.createNestApplication();
@@ -75,13 +68,11 @@ describe('Communities (E2E)', () => {
     usersSeeder = module.get<UsersSeeder>(UsersSeeder);
     communitiesSeeder = module.get<CommunitiesSeeder>(CommunitiesSeeder);
     usersService = module.get<UsersService>(UsersService);
-    communityService = module.get<CommunityService>(CommunityService)
+    communityService = module.get<CommunityService>(CommunityService);
 
     // Clear the database
     await usersService.getModel().deleteMany({});
     await communityService.getModel().deleteMany({});
-
-
 
     // Seed and login 3 users
     for (let i = 0; i < 3; i++) {
@@ -116,10 +107,7 @@ describe('Communities (E2E)', () => {
   });
 
   describe('POST /api/communities', () => {
-
-    beforeEach(async () => {
-
-    });
+    beforeEach(async () => {});
 
     test('401 when not authenticated', async () => {
       return request(server).post(`/communities`).send().expect(401);
@@ -151,50 +139,134 @@ describe('Communities (E2E)', () => {
       expect(response.status).toBe(400);
     });
 
-    test('201 when authenticated as setupWeb and correct data is sent', async () => {
-      const response = await authorizedPostRequest(
+    const createValidCommunity = async (override?: any) => {
+      const validCommunity = {
+        name: 'test',
+        creator: users[0].user.identityEthAddress,
+        owners: [
+          users[0].user.identityEthAddress,
+          users[1].user.identityEthAddress,
+        ],
+        hostname: 'test.praise.io',
+        discordGuildId: 'kldakdsal',
+        email: 'test@praise.io',
+      };
+
+      return authorizedPostRequest(
         `/communities`,
         app,
         setupWebUserAccessToken,
         {
-          name:'test',
-          creator:users[0].user.identityEthAddress,
-          owners:[users[0].user.identityEthAddress, users[1].user.identityEthAddress ],
-          hostname:'test.praise.io',
-          discordGuildId:'kldakdsal',
-          email:'test@praise.io',
+          ...validCommunity,
+          ...override,
         },
       );
+    };
 
+    test('400 when creator is not a valid eth address', async () => {
+      const response = await createValidCommunity({ creator: 'invalid' });
+      expect(response.status).toBe(400);
+    });
+
+    // Name can only contain only alphanumeric characters, underscores, dots, and hyphen
+    test('400 when name contains invalid characters, is not allowed to contain spaces', async () => {
+      const response = await createValidCommunity({ name: 'invalid name' });
+      expect(response.status).toBe(400);
+    });
+
+    test('400 when name is too short', async () => {
+      const response = await createValidCommunity({ name: 'a' });
+      expect(response.status).toBe(400);
+    });
+
+    test('400 when user name is too long', async () => {
+      const response = await createValidCommunity({
+        name: 'a'.repeat(200),
+      });
+      expect(response.status).toBe(400);
+    });
+
+    test('400 when name already exists', async () => {
+      await createValidCommunity({ name: 'test' });
+      const response = await createValidCommunity({ name: 'test' });
+      expect(response.status).toBe(400);
+    });
+
+    test('400 when hostname is not a valid hostname', async () => {
+      const response = await createValidCommunity({ hostname: 'inva  lid' });
+      expect(response.status).toBe(400);
+    });
+
+    test('400 when email is not a valid email', async () => {
+      const response = await createValidCommunity({ email: 'invalid' });
+      expect(response.status).toBe(400);
+    });
+
+    test('400 when owners contains an invalid eth address', async () => {
+      const response = await createValidCommunity({
+        owners: ['invalid', users[1].user.identityEthAddress],
+      });
+      expect(response.status).toBe(400);
+    });
+
+    test('400 when owners contains a duplicate eth address', async () => {
+      const response = await createValidCommunity({
+        owners: [
+          users[0].user.identityEthAddress,
+          users[0].user.identityEthAddress,
+        ],
+      });
+      expect(response.status).toBe(400);
+    });
+
+    test('400 when creator is not in owners', async () => {
+      const response = await createValidCommunity({
+        owners: [users[1].user.identityEthAddress],
+      });
+      expect(response.status).toBe(400);
+    });
+
+    test('400 when owners contain invalid address', async () => {
+      const response = await createValidCommunity({
+        owners: ['invalid', users[1].user.identityEthAddress],
+      });
+      expect(response.status).toBe(400);
+    });
+
+    test('201 when authenticated as setupWeb and correct data is sent', async () => {
+      const response = await createValidCommunity();
       const rb = response.body;
       expect(response.status).toBe(201);
       expect(rb.name).toBe('test');
       expect(rb.email).toBe('test@praise.io');
       expect(rb.isPublic).toBe(true);
-
     });
-
   });
+
   describe('PATCH /api/communities/:id/discord/link', () => {
-    let community : Community
+    let community: Community;
 
     beforeEach(async () => {
       await communityService.getModel().deleteMany({});
-      community =await communitiesSeeder.seedCommunity(
-        {
-          name:'test',
-          creator:users[0].user.identityEthAddress,
-          owners:[users[0].user.identityEthAddress, users[1].user.identityEthAddress ],
-          hostname:'test.praise.io',
-          discordGuildId:'kldakdsal',
-          discordLinkNonce: '223',
-          email:'test@praise.io',
-        }
-      )
+      community = await communitiesSeeder.seedCommunity({
+        name: 'test',
+        creator: users[0].user.identityEthAddress,
+        owners: [
+          users[0].user.identityEthAddress,
+          users[1].user.identityEthAddress,
+        ],
+        hostname: 'test.praise.io',
+        discordGuildId: 'kldakdsal',
+        discordLinkNonce: '223',
+        email: 'test@praise.io',
+      });
     });
 
     test('401 when not authenticated', async () => {
-      return request(server).patch(`/communities/${community._id}/discord/link`).send().expect(401);
+      return request(server)
+        .patch(`/communities/${community._id}/discord/link`)
+        .send()
+        .expect(401);
     });
 
     test('403 when user has wrong permissions', async () => {
@@ -224,18 +296,19 @@ describe('Communities (E2E)', () => {
     });
 
     test('200 when authenticated as setupWeb and correct data is sent for linking dicord bot to community', async () => {
-      const signedMessage =  await users[0].wallet.signMessage(communityService.generateLinkDiscordMessage({
-        communityId: String(community._id),
-        guildId: community.discordGuildId as string,
-        nonce: community.discordLinkNonce as string,
-
-      }))
+      const signedMessage = await users[0].wallet.signMessage(
+        communityService.generateLinkDiscordMessage({
+          communityId: String(community._id),
+          guildId: community.discordGuildId as string,
+          nonce: community.discordLinkNonce as string,
+        }),
+      );
       const response = await authorizedPatchRequest(
         `/communities/${community._id}/discord/link`,
         app,
         setupWebUserAccessToken,
         {
-          signedMessage
+          signedMessage,
         },
       );
 
@@ -245,103 +318,104 @@ describe('Communities (E2E)', () => {
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkState).toBe(DiscordLinkState.ACTIVE);
       expect(rb.isPublic).toBe(true);
-
     });
 
     test('400 when someone else wants to link discord to community instead of creator', async () => {
-      const signedMessage =  await users[2].wallet.signMessage(communityService.generateLinkDiscordMessage({
-        communityId: String(community._id),
-        guildId: community.discordGuildId as string,
-        nonce: community.discordLinkNonce as string,
-
-      }))
+      const signedMessage = await users[2].wallet.signMessage(
+        communityService.generateLinkDiscordMessage({
+          communityId: String(community._id),
+          guildId: community.discordGuildId as string,
+          nonce: community.discordLinkNonce as string,
+        }),
+      );
       const response = await authorizedPatchRequest(
         `/communities/${community._id}/discord/link`,
         app,
         setupWebUserAccessToken,
         {
-          signedMessage
+          signedMessage,
         },
       );
 
       const rb = response.body;
-      console.log('**link discord to community someone else**', rb)
       expect(response.status).toBe(400);
       expect(rb.message).toBe('Verification failed');
-
     });
 
     test('400 when someone wants to link discord to active community', async () => {
-      await communityService.getModel().updateOne(
-        { _id: community._id },
-        { $set: { discordLinkState: DiscordLinkState.ACTIVE } },
-      )
-      const signedMessage =  await users[0].wallet.signMessage(communityService.generateLinkDiscordMessage({
-        communityId: String(community._id),
-        guildId: community.discordGuildId as string,
-        nonce: community.discordLinkNonce as string,
-
-      }))
+      await communityService
+        .getModel()
+        .updateOne(
+          { _id: community._id },
+          { $set: { discordLinkState: DiscordLinkState.ACTIVE } },
+        );
+      const signedMessage = await users[0].wallet.signMessage(
+        communityService.generateLinkDiscordMessage({
+          communityId: String(community._id),
+          guildId: community.discordGuildId as string,
+          nonce: community.discordLinkNonce as string,
+        }),
+      );
       const response = await authorizedPatchRequest(
         `/communities/${community._id}/discord/link`,
         app,
         setupWebUserAccessToken,
         {
-          signedMessage
+          signedMessage,
         },
       );
 
       const rb = response.body;
-      console.log('**link discord to community someone else**', rb)
       expect(response.status).toBe(400);
       expect(rb.message).toBe('Community is already active.');
-
     });
 
     test('400 when community not found', async () => {
-      const signedMessage =  await users[0].wallet.signMessage(communityService.generateLinkDiscordMessage({
-        communityId: String(community._id),
-        guildId: community.discordGuildId as string,
-        nonce: community.discordLinkNonce as string,
-
-      }))
+      const signedMessage = await users[0].wallet.signMessage(
+        communityService.generateLinkDiscordMessage({
+          communityId: String(community._id),
+          guildId: community.discordGuildId as string,
+          nonce: community.discordLinkNonce as string,
+        }),
+      );
       const response = await authorizedPatchRequest(
         `/communities/${users[0].user._id}/discord/link`,
         app,
         setupWebUserAccessToken,
         {
-          signedMessage
+          signedMessage,
         },
       );
 
       const rb = response.body;
-      console.log('**link discord to community someone else**', rb)
       expect(response.status).toBe(400);
       expect(rb.message).toBe('Community not found.');
-
     });
-
   });
   describe('GET /api/communities/:id', () => {
-    let community : Community
+    let community: Community;
 
     beforeEach(async () => {
       await communityService.getModel().deleteMany({});
-      community =await communitiesSeeder.seedCommunity(
-        {
-          name:'test',
-          creator:users[0].user.identityEthAddress,
-          owners:[users[0].user.identityEthAddress, users[1].user.identityEthAddress ],
-          hostname:'test.praise.io',
-          discordGuildId:'kldakdsal',
-          discordLinkNonce: '223',
-          email:'test@praise.io',
-        }
-      )
+      community = await communitiesSeeder.seedCommunity({
+        name: 'test',
+        creator: users[0].user.identityEthAddress,
+        owners: [
+          users[0].user.identityEthAddress,
+          users[1].user.identityEthAddress,
+        ],
+        hostname: 'test.praise.io',
+        discordGuildId: 'kldakdsal',
+        discordLinkNonce: '223',
+        email: 'test@praise.io',
+      });
     });
 
     test('401 when not authenticated', async () => {
-      return request(server).get(`/communities/${community._id}`).send().expect(401);
+      return request(server)
+        .get(`/communities/${community._id}`)
+        .send()
+        .expect(401);
     });
 
     test('403 when user has wrong permissions', async () => {
@@ -357,7 +431,6 @@ describe('Communities (E2E)', () => {
       expect(response.status).toBe(403);
     });
 
-
     test('200 get community successfully', async () => {
       const response = await authorizedGetRequest(
         `/communities/${community._id}`,
@@ -369,9 +442,6 @@ describe('Communities (E2E)', () => {
       expect(response.status).toBe(200);
       expect(rb.name).toBe(community.name);
       expect(rb.email).toBe(community.email);
-
     });
-
   });
-
 });
