@@ -53,8 +53,6 @@ export class ApiKeyService {
       description: `Created API key: ${apiKey.name}`,
     });
 
-    console.log(`Created API key: ${key}`);
-
     return {
       ...apiKey.toObject(),
       key,
