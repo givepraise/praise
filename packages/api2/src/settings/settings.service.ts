@@ -10,6 +10,7 @@ import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { SettingGroup } from './enums/setting-group.enum';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { validateSetting } from './utils/validate-setting';
+import { SettingsFilterDto } from './dto/settings-filter.dto';
 
 @Injectable()
 export class SettingsService {
@@ -36,8 +37,9 @@ export class SettingsService {
    * @throws {ServiceException}
    *
    * */
-  async findAll(): Promise<Setting[]> {
-    return await this.settingsModel.find().lean();
+  async findAll(filter?: SettingsFilterDto): Promise<Setting[]> {
+    const query = filter || {};
+    return await this.settingsModel.find(query).lean();
   }
 
   /**
