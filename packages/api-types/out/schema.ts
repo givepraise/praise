@@ -174,6 +174,20 @@ export interface paths {
     /** Verifies a user's signature and returns a JWT token */
     post: operations['AuthController_login'];
   };
+  '/api/communities': {
+    get: operations['CommunityController_findAll'];
+    /** Create a new community */
+    post: operations['CommunityController_create'];
+  };
+  '/api/communities/{id}': {
+    get: operations['CommunityController_findOne'];
+    /** Update community */
+    patch: operations['CommunityController_update'];
+  };
+  '/api/communities/{id}/discord/link': {
+    /** Link discord to community */
+    patch: operations['CommunityController_linkDiscord'];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -253,13 +267,15 @@ export interface components {
     UpdateUserRoleInputDto: {
       /** @enum {string} */
       role:
-        | 'ADMIN'
         | 'USER'
         | 'QUANTIFIER'
         | 'FORWARDER'
-        | 'APIKEY_READWRITE'
-        | 'APIKEY_READ'
-        | 'DISCORD_BOT';
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB';
     };
     Period: {
       /** @example 621f802b813dbdba9eeaf7d7 */
@@ -296,32 +312,6 @@ export interface components {
       nextPage: number;
       docs: readonly components['schemas']['Period'][];
     };
-    Quantification: {
-      /** @example 639b178f19296ee0f2d0585d */
-      _id: string;
-      /** @example 144 */
-      score: number;
-      /** @example 144 */
-      scoreRealized: number;
-      /** @example true */
-      dismissed: boolean;
-      /** @example 639b178f19296ee0f2d0585d */
-      duplicatePraise: string;
-      /** @example 639b178f19296ee0f2d0585d */
-      quantifier: string;
-      /** @example 639b178f19296ee0f2d0585d */
-      praise: string;
-      /**
-       * Format: date-time
-       * @example 2021-06-01T00:00:00.000Z
-       */
-      createdAt: string;
-      /**
-       * Format: date-time
-       * @example 2021-06-01T00:00:00.000Z
-       */
-      updatedAt: string;
-    };
     PeriodDetailsQuantifierDto: {
       /** @example 5f9f1b9b9b9b9b9b9b9b9b9b */
       _id: string;
@@ -337,7 +327,6 @@ export interface components {
       finishedCount: number;
       /** @example 1 */
       praiseCount: number;
-      quantifications: components['schemas']['Quantification'][];
     };
     PeriodDetailsGiverReceiverDto: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
@@ -406,6 +395,32 @@ export interface components {
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
+      updatedAt: string;
+    };
+    Quantification: {
+      /** @example 639b178f19296ee0f2d0585d */
+      _id: string;
+      /** @example 144 */
+      score: number;
+      /** @example 144 */
+      scoreRealized: number;
+      /** @example true */
+      dismissed: boolean;
+      /** @example 639b178f19296ee0f2d0585d */
+      duplicatePraise: string;
+      /** @example 639b178f19296ee0f2d0585d */
+      quantifier: string;
+      /** @example 639b178f19296ee0f2d0585d */
+      praise: string;
+      /**
+       * Format: date-time
+       * @example 2021-06-01T00:00:00.000Z
+       */
+      createdAt: string;
+      /**
+       * Format: date-time
+       * @example 2021-06-01T00:00:00.000Z
+       */
       updatedAt: string;
     };
     PraiseWithUserAccountsWithUserRefDto: {
@@ -731,17 +746,19 @@ export interface components {
       /** @example My API Key */
       description: string;
       /**
-       * @example APIKEY_READWRITE
+       * @example API_KEY_READWRITE
        * @enum {string}
        */
       role:
-        | 'ADMIN'
         | 'USER'
         | 'QUANTIFIER'
         | 'FORWARDER'
-        | 'APIKEY_READWRITE'
-        | 'APIKEY_READ'
-        | 'DISCORD_BOT';
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB';
     };
     CreateApiKeyResponseDto: {
       /** @example 89f7edbd */
@@ -751,17 +768,19 @@ export interface components {
       /** @example $2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i */
       hash: string;
       /**
-       * @example APIKEY_READWRITE
+       * @example API_KEY_READWRITE
        * @enum {string}
        */
       role:
-        | 'ADMIN'
         | 'USER'
         | 'QUANTIFIER'
         | 'FORWARDER'
-        | 'APIKEY_READWRITE'
-        | 'APIKEY_READ'
-        | 'DISCORD_BOT';
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB';
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -777,17 +796,19 @@ export interface components {
       /** @example $2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i */
       hash: string;
       /**
-       * @example APIKEY_READWRITE
+       * @example API_KEY_READWRITE
        * @enum {string}
        */
       role:
-        | 'ADMIN'
         | 'USER'
         | 'QUANTIFIER'
         | 'FORWARDER'
-        | 'APIKEY_READWRITE'
-        | 'APIKEY_READ'
-        | 'DISCORD_BOT';
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB';
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -819,6 +840,84 @@ export interface components {
       identityEthAddress: string;
       /** @example bearer */
       tokenType: string;
+    };
+    CreateCommunityInputDto: {
+      /** @example banklessdao.givepraise.xyz */
+      hostname: string;
+      /** @example BanklessDAO */
+      name: string;
+      /** @example 0x123.. */
+      creator: string;
+      /** @example [0x123.., 0x345..] */
+      owners: string;
+      /** @example 0980987846534 */
+      discordGuildId?: string;
+    };
+    ObjectId: Record<string, never>;
+    Community: {
+      /** @example 621f802b813dbdba9eeaf7b4 */
+      _id: components['schemas']['ObjectId'];
+      /** @example banklessdao.givepraise.xyz */
+      hostname: string;
+      /** @example BanklessDAO */
+      name: string;
+      /** @example 0x123.. */
+      creator: string;
+      /** @example [0x123.., 0x345..] */
+      owners: string;
+      /** @example 0980987846534 */
+      discordGuildId?: string;
+      /** @example oiujoiuoo8u */
+      discordLinkNonce: string;
+      /** @example true */
+      isPublic: boolean;
+      /** @example NOT_SET | PENDING | ACTIVE | DEACTIVE */
+      discordLinkState: string;
+    };
+    UpdateCommunityInputDto: {
+      /** @example 621f802b813dbdba9eeaf7b4 */
+      _id?: components['schemas']['ObjectId'];
+      /** @example banklessdao.givepraise.xyz */
+      hostname?: string;
+      /** @example BanklessDAO */
+      name?: string;
+      /** @example 0x123.. */
+      creator?: string;
+      /** @example [0x123.., 0x345..] */
+      owners?: string;
+      /** @example 0980987846534 */
+      discordGuildId?: string;
+      /** @example oiujoiuoo8u */
+      discordLinkNonce?: string;
+      /** @example true */
+      isPublic?: boolean;
+      /** @example NOT_SET | PENDING | ACTIVE | DEACTIVE */
+      discordLinkState?: string;
+    };
+    CommunityPaginatedResponseDto: {
+      /** @example 1200 */
+      totalDocs: number;
+      /** @example 10 */
+      limit: number;
+      /** @example 12 */
+      totalPages: number;
+      /** @example 2 */
+      page: number;
+      /** @example 1 */
+      pagingCounter: number;
+      /** @example false */
+      hasPrevPage: Record<string, never>;
+      /** @example true */
+      hasNextPage: Record<string, never>;
+      /** @example 1 */
+      prevPage: number;
+      /** @example 3 */
+      nextPage: number;
+      docs: readonly components['schemas']['Community'][];
+    };
+    LinkDiscordBotDto: {
+      /** @example 0xdb4bb91357b23083ec2a36dc1fe23e59b71434fc020542da7e983df206ed06611e275eb30e239508f9758c0608dca6cef5619c41b50a48f22bdb36a8dabc2d201c */
+      signedMessage: string;
     };
   };
   responses: never;
@@ -1221,6 +1320,28 @@ export interface operations {
   };
   SettingsController_findAll: {
     /** List all settings. */
+    parameters: {
+      /** @example SETTING_KEY */
+      /** @example Integer */
+      /** @example 0 */
+      /** @example 0 */
+      query: {
+        key?: string;
+        type?:
+          | 'Integer'
+          | 'Float'
+          | 'String'
+          | 'Textarea'
+          | 'Boolean'
+          | 'IntegerList'
+          | 'StringList'
+          | 'Image'
+          | 'Radio'
+          | 'JSON';
+        group?: number;
+        subgroup?: number;
+      };
+    };
     responses: {
       /** @description All settings. */
       200: {
@@ -1701,6 +1822,94 @@ export interface operations {
       201: {
         content: {
           'application/json': components['schemas']['LoginResponseDto'];
+        };
+      };
+    };
+  };
+  CommunityController_findAll: {
+    parameters: {
+      /** @example 10 */
+      /** @example 1 */
+      query: {
+        limit: number;
+        page: number;
+        sortColumn?: string;
+        sortType?: 'asc' | 'desc';
+      };
+    };
+    responses: {
+      /** @description All communities */
+      200: {
+        content: {
+          'application/json': components['schemas']['CommunityPaginatedResponseDto'];
+        };
+      };
+    };
+  };
+  CommunityController_create: {
+    /** Create a new community */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateCommunityInputDto'];
+      };
+    };
+    responses: {
+      /** @description Community */
+      200: {
+        content: {
+          'application/json': components['schemas']['Community'];
+        };
+      };
+      201: {
+        content: {
+          'application/json': components['schemas']['Community'];
+        };
+      };
+    };
+  };
+  CommunityController_findOne: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description A single Community */
+      200: {
+        content: {
+          'application/json': components['schemas']['Community'];
+        };
+      };
+    };
+  };
+  CommunityController_update: {
+    /** Update community */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateCommunityInputDto'];
+      };
+    };
+    responses: {
+      /** @description Community */
+      200: {
+        content: {
+          'application/json': components['schemas']['Community'];
+        };
+      };
+    };
+  };
+  CommunityController_linkDiscord: {
+    /** Link discord to community */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LinkDiscordBotDto'];
+      };
+    };
+    responses: {
+      /** @description Community */
+      200: {
+        content: {
+          'application/json': components['schemas']['Community'];
         };
       };
     };
