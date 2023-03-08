@@ -23,7 +23,7 @@ import { UserAvatarAndName } from '../user/UserAvatarAndName';
 import { InlineLabelClosable } from '../ui/InlineLabelClosable';
 import { Praise as PraiseDto } from '@/model/praise/praise.dto';
 import { idLabel } from '@/model/praise/praise.utils';
-import { UserAccount } from '@/model/useraccount/dto/useraccount.dto';
+import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
 
 interface Props {
   praise: PraiseDto;

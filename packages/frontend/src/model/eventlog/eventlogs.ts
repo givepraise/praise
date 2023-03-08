@@ -2,7 +2,7 @@ import { selector, selectorFamily } from 'recoil';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ApiAuthGet, isResponseOk } from '../api';
 import { EventLogType } from './dto/event-log-type.dto';
-import { EventLogPaginatedResponseDto } from '@/model/shared/dto/paginated-response-body.dto';
+import { EventLogPaginatedResponseDto } from '@/model/eventlog/dto/event-log-paginated-response.dto';
 
 export type AllEventLogsQueryParameters = {
   sortColumn: string;

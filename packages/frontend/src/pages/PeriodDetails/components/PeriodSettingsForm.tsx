@@ -10,7 +10,7 @@ import {
 import { isResponseOk } from '@/model/api';
 import { PeriodPoolRequirementsQuery } from '@/model/periods/periods';
 import { Setting } from '@/model/settings/dto/setting.dto';
-import { PeriodSetting } from '@/model/periodsettings/dto/period-settings.dto';
+import { PeriodSetting } from '@/model/periodsettings/dto/period-setting.dto';
 
 interface Params {
   periodId: string;

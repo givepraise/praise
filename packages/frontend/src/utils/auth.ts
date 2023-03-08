@@ -2,10 +2,10 @@ import { getRecoil, setRecoil } from 'recoil-nexus';
 import { ActiveTokenSet } from '@/model/auth/auth';
 import { AccountActivated } from '@/model/activate/activate';
 import { makeApiClient } from './api';
-import { LoginInputDto } from '@/model/auth/dto/auth-request.dto';
-import { ActivateInputDto } from '@/model/activate/dto/activate-request-body.dto';
+import { LoginInputDto } from '@/model/auth/dto/login-input.dto';
+import { ActivateInputDto } from '@/model/activate/dto/activate-input.dto';
 import { TokenSet } from '@/model/auth/interfaces/token-set.interface';
-import { LoginResponseDto } from '@/model/auth/dto/auth-response.dto';
+import { LoginResponseDto } from '@/model/auth/dto/login-response.dto';
 import { NonceResponseDto } from '@/model/auth/dto/nonce-response.dto';
 
 export const requestApiAuth = async (

@@ -13,7 +13,7 @@ import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { Notice } from '@/components/ui/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
-import { UserAccount } from '@/model/useraccount/dto/useraccount.dto';
+import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
 
 type GiverReceiverType = 'giver' | 'receiver';
 

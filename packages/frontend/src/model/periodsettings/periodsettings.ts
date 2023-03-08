@@ -2,7 +2,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { atomFamily, selectorFamily, useRecoilCallback } from 'recoil';
 import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from '../api';
-import { PeriodSetting } from './dto/period-settings.dto';
+import { PeriodSetting } from './dto/period-setting.dto';
 import { Setting } from '../settings/dto/setting.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

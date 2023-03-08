@@ -13,7 +13,7 @@ import { Notice } from '@/components/ui/Notice';
 import { SubmitButton } from '../form/SubmitButton';
 import { RadioInput } from '../form/RadioInput';
 import { Setting } from '@/model/settings/dto/setting.dto';
-import { PeriodSetting } from '@/model/periodsettings/dto/period-settings.dto';
+import { PeriodSetting } from '@/model/periodsettings/dto/period-setting.dto';
 
 interface SettingsFormProps {
   settings: Setting[] | undefined;

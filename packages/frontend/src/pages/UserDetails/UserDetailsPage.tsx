@@ -27,7 +27,7 @@ import {
   ReceivedGivenPraiseTable,
 } from './components/ReceivedGivenPraiseTable';
 import { EditProfileDialog } from './components/EditProfileDialog';
-import { UpdateUserRequestDto } from '@/model/user/dto/update-user-profile.dto';
+import { UpdateUserRequestDto } from '@/model/user/dto/update-user-request.dto';
 
 const UserDetailsPage = (): JSX.Element | null => {
   const dialogRef = React.useRef(null);

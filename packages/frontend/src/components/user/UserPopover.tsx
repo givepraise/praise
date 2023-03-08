@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { classNames } from '@/utils/index';
 import { UserAvatar } from './UserAvatar';
 import { User } from '@/model/user/dto/user.dto';
-import { UserAccount } from '@/model/useraccount/dto/useraccount.dto';
+import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
 import { shortenEthAddress } from '@/utils/string';
 
 interface UserPopoverProps {
