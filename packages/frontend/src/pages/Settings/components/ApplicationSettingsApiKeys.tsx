@@ -1,4 +1,11 @@
+import { useRecoilValue } from 'recoil';
+import { ApiKeysListQuery } from '@/model/apikeys/apikeys';
+
 const ApplicationSettingsApiKeys = (): JSX.Element => {
+  const apiKeys = useRecoilValue(ApiKeysListQuery);
+
+  console.log(apiKeys);
+
   return (
     <>
       <div className="mb-2">
