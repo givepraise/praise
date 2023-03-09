@@ -2,54 +2,26 @@ import { getRecoil, setRecoil } from 'recoil-nexus';
 import { ActiveTokenSet } from '@/model/auth/auth';
 import { AccountActivated } from '@/model/activate/activate';
 import { makeApiClient } from './api';
-import { AuthRequestInputDto } from '@/model/auth/dto/auth-request.dto';
-import { ActivateRequestBodyDto } from '@/model/activate/dto/activate-request-body.dto';
+import { LoginInputDto } from '@/model/auth/dto/login-input.dto';
+import { ActivateInputDto } from '@/model/activate/dto/activate-input.dto';
 import { TokenSet } from '@/model/auth/interfaces/token-set.interface';
-import { AuthResponseDto } from '@/model/auth/dto/auth-response.dto';
+import { LoginResponseDto } from '@/model/auth/dto/login-response.dto';
 import { NonceResponseDto } from '@/model/auth/dto/nonce-response.dto';
 
 export const requestApiAuth = async (
-  params: AuthRequestInputDto
+  params: LoginInputDto
 ): Promise<TokenSet | undefined> => {
   const apiClient = makeApiClient();
   const response = await apiClient.post('/auth/eth-signature/login', params);
   if (!response) throw Error('Failed to request authorization');
 
-  const { accessToken, refreshToken } =
-    response.data as unknown as AuthResponseDto;
+  const { accessToken } = response.data as unknown as LoginResponseDto;
 
   setRecoil(ActiveTokenSet, {
     accessToken,
-    refreshToken,
   });
 
   return getRecoil(ActiveTokenSet);
-};
-
-export const requestApiAuthRefresh = async (): Promise<
-  TokenSet | undefined
-> => {
-  const tokenSet = getRecoil(ActiveTokenSet);
-
-  try {
-    const apiClient = makeApiClient();
-    const response = await apiClient.post('/auth/refresh', {
-      refreshToken: tokenSet?.refreshToken,
-    });
-    const { accessToken, refreshToken: newRefreshToken } =
-      response.data as AuthResponseDto;
-
-    const newTokenSet = {
-      accessToken,
-      refreshToken: newRefreshToken,
-    };
-    setRecoil(ActiveTokenSet, newTokenSet);
-
-    return newTokenSet;
-  } catch (err) {
-    setRecoil(ActiveTokenSet, undefined);
-    throw Error('Refresh token has expired');
-  }
 };
 
 export const requestNonce = async (
@@ -67,7 +39,7 @@ export const requestNonce = async (
 };
 
 export const requestApiActivate = async (
-  params: ActivateRequestBodyDto
+  params: ActivateInputDto
 ): Promise<boolean> => {
   const { identityEthAddress, accountId, signature } = params;
   const apiClient = makeApiClient();

@@ -54,7 +54,8 @@ export const ActiveUserRoles = selector<string[]>({
   key: 'ActiveUserRoles',
   get: ({ get }): string[] => {
     const user = get(SingleUser(get(ActiveUserId)));
-    if (user) return user.roles;
+    const userRoles = (user?.roles as string[]) ?? [];
+    if (user) return userRoles;
 
     const activeTokenSet = get(ActiveTokenSet);
     if (!activeTokenSet) return [];

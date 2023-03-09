@@ -1,12 +1,3 @@
-import { UserAccountDto } from '@/model/useraccount/dto/useraccount.dto';
-import { EventLogTypeDto } from './event-log-type.dto';
+import { components } from 'api-types';
 
-export interface EventLogDto {
-  user?: string;
-  useraccount?: UserAccountDto;
-  type: EventLogTypeDto;
-  description: string;
-  hidden: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+export type EventLog = components['schemas']['EventLog'];

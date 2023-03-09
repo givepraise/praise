@@ -1,4 +1,4 @@
-import { User } from '@/model/user/interfaces/user.interface';
+import { User } from '@/model/user/dto/user.dto';
 
 export interface UserAccount {
   user?: User;

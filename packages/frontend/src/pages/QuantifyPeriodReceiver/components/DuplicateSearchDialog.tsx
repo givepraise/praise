@@ -1,6 +1,6 @@
 import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from '@/model/praise/praise.dto';
+import { Praise } from '@/model/praise/praise.dto';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
@@ -15,7 +15,7 @@ interface Props {
   onClose(): void;
   onConfirm(duplicatePraise: string): void;
   open: boolean;
-  selectedPraise: PraiseDto | undefined;
+  selectedPraise: Praise | undefined;
 }
 
 export const DuplicateSearchDialog = ({

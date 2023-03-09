@@ -1,5 +1,5 @@
 import { Exclude, Type } from 'class-transformer';
-import { Types } from 'mongoose';
+import { Types, SchemaTypes } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { User } from '@/users/schemas/users.schema';
@@ -26,9 +26,11 @@ export class UserAccount {
   @ExposeId()
   _id: Types.ObjectId;
 
-  @ApiProperty({ type: String, example: '63b428f7d9ca4f6ff5370d05' })
-  @ExposeId()
-  @Prop({ type: Types.ObjectId, ref: 'User', default: null, index: true })
+  @ApiProperty({
+    example: '63b428f7d9ca4f6ff5370d05',
+    oneOf: [{ type: 'string' }, { $ref: '#/components/schemas/User' }],
+  })
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', default: null, index: true })
   @Type(() => User)
   @IsOptional()
   @IsObjectId()

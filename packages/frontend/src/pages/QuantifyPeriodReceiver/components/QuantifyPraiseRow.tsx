@@ -1,4 +1,4 @@
-import { PraiseDto } from '@/model/praise/praise.dto';
+import { Praise as PraiseDto } from '@/model/praise/praise.dto';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';

@@ -2,19 +2,20 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { atomFamily, selectorFamily, useRecoilCallback } from 'recoil';
 import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from '../api';
-import { PeriodSettingDto } from './dto/period-settings.dto';
-import { SettingDto } from '../settings/dto/setting.dto';
+import { PeriodSetting } from './dto/period-setting.dto';
+import { Setting } from '../settings/dto/setting.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const instanceOfSetting = (object: any): object is SettingDto => {
+const instanceOfSetting = (object: any): object is Setting => {
   return '_id' in object;
 };
 
 export const periodSettingToSetting = (
-  periodSetting: PeriodSettingDto
-): SettingDto => {
+  periodSetting: PeriodSetting,
+  index = 0
+): Setting => {
   return {
-    ...periodSetting.setting,
+    ...periodSetting[index].setting,
     value: periodSetting.value,
     valueRealized: periodSetting.valueRealized,
   };
@@ -23,7 +24,7 @@ export const periodSettingToSetting = (
 /**
  * Atom that fetches all period settings when initialised.
  */
-export const AllPeriodSettings = atomFamily<SettingDto[] | undefined, string>({
+export const AllPeriodSettings = atomFamily<Setting[] | undefined, string>({
   key: 'AllPeriodSettings',
   default: undefined,
   effects: (periodId) => [
@@ -35,7 +36,7 @@ export const AllPeriodSettings = atomFamily<SettingDto[] | undefined, string>({
           })
         ).then((response) => {
           if (isResponseOk(response)) {
-            const periodSettings = response.data as PeriodSettingDto[];
+            const periodSettings = response.data as PeriodSetting[];
             if (Array.isArray(periodSettings) && periodSettings.length > 0) {
               return periodSettings.map((setting) =>
                 periodSettingToSetting(setting)
@@ -60,7 +61,7 @@ export const SinglePeriodSetting = selectorFamily({
   key: 'SinglePeriodSetting',
   get:
     (params: SinglePeriodSettingParams) =>
-    ({ get }): SettingDto | undefined => {
+    ({ get }): Setting | undefined => {
       const allPeriodSettings = get(AllPeriodSettings(params.periodId));
       if (!allPeriodSettings) return;
       return allPeriodSettings.find((setting) => setting.key === params.key);
@@ -94,8 +95,8 @@ export const SinglePeriodSettingValueRealized = selectorFamily({
 
 export type useSetSettingReturn = {
   setSetting: (
-    setting: SettingDto
-  ) => Promise<AxiosResponse<PeriodSettingDto> | AxiosError | undefined>;
+    setting: Setting
+  ) => Promise<AxiosResponse<PeriodSetting> | AxiosError | undefined>;
 };
 
 /**
@@ -105,7 +106,7 @@ export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
   const apiAuthClient = useApiAuthClient();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const reqData = (setting: SettingDto): any => {
+  const reqData = (setting: Setting): any => {
     if (setting.type === 'Image') {
       if (!setting.value) {
         throw new Error('Image setting value is undefined');
@@ -121,10 +122,10 @@ export const useSetPeriodSetting = (periodId: string): useSetSettingReturn => {
   const setSetting = useRecoilCallback(
     ({ set }) =>
       async (
-        setting: SettingDto
-      ): Promise<AxiosResponse<PeriodSettingDto> | AxiosError | undefined> => {
+        setting: Setting
+      ): Promise<AxiosResponse<PeriodSetting> | AxiosError | undefined> => {
         if (!instanceOfSetting(setting)) return;
-        const response: AxiosResponse<PeriodSettingDto> =
+        const response: AxiosResponse<PeriodSetting> =
           await apiAuthClient.patch(
             `/periods/${periodId}/settings/${setting._id}`,
             reqData(setting)

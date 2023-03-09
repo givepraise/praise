@@ -45,9 +45,17 @@ export class PeriodSetting {
   @Prop()
   value: string;
 
-  @ApiResponseProperty({
+  @ApiProperty({
     example: 666,
-    type: 'number',
+    oneOf: [
+      {
+        type: 'string',
+      },
+      { type: 'array', items: { type: 'string' } },
+      { type: 'boolean' },
+      { type: 'number' },
+      { type: 'array', items: { type: 'number' } },
+    ],
   })
   valueRealized: string | string[] | boolean | number | number[] | undefined;
 

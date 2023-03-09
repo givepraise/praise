@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
 import { selectorFamily } from 'recoil';
 import { AllPeriodPraise } from './periods';
-import { PraiseDto } from '../praise/praise.dto';
-import { QuantificationDto } from '../quantification/quantification.dto';
+import { Praise } from '../praise/praise.dto';
+import { Quantification } from '../quantification/quantification.dto';
 
 export const PeriodPraiseSortedByScore = selectorFamily({
   key: 'PeriodPraiseSortedByScore',
   get:
     (periodId: string | undefined) =>
-    ({ get }): PraiseDto[] | undefined => {
+    ({ get }): Praise[] | undefined => {
       if (!periodId) return undefined;
       const praise = get(AllPeriodPraise(periodId));
       if (!praise) return undefined;
@@ -19,7 +20,7 @@ export const PeriodTop10Praise = selectorFamily({
   key: 'PeriodTop10Praise',
   get:
     (periodId: string | undefined) =>
-    ({ get }): PraiseDto[] | undefined => {
+    ({ get }): Praise[] | undefined => {
       if (!periodId) return undefined;
       const praise = get(PeriodPraiseSortedByScore(periodId));
       if (!praise) return undefined;
@@ -27,7 +28,7 @@ export const PeriodTop10Praise = selectorFamily({
     },
 });
 
-export interface PraiseDetailsStats extends PraiseDto {
+export interface PraiseDetailsStats extends Praise {
   maxScore: number;
   minScore: number;
   scoreSpread: number;
@@ -82,11 +83,11 @@ export const AllPeriodQuantifications = selectorFamily({
   key: 'AllPeriodQuantifications',
   get:
     (periodId: string | undefined) =>
-    ({ get }): QuantificationDto[] | undefined => {
+    ({ get }): Quantification[] | undefined => {
       if (!periodId) return undefined;
       const praise = get(AllPeriodPraise(periodId));
       if (!praise) return undefined;
-      return praise.reduce((acc: QuantificationDto[], curr) => {
+      return praise.reduce((acc: Quantification[], curr) => {
         for (const q of curr.quantifications) {
           acc.push(q);
         }
@@ -99,12 +100,12 @@ export const AllPeriodQuantificationsGroupedByQuantifier = selectorFamily({
   key: 'AllPeriodQuantificationsGroupedByQuantifier',
   get:
     (periodId: string | undefined) =>
-    ({ get }): Map<string, QuantificationDto[]> | undefined => {
+    ({ get }): Map<string, Quantification[]> | undefined => {
       if (!periodId) return undefined;
       const quantifications = get(AllPeriodQuantifications(periodId));
       if (!quantifications) return undefined;
       return quantifications.reduce(
-        (acc: Map<string, QuantificationDto[]>, curr) => {
+        (acc: Map<string, Quantification[]>, curr) => {
           const quantifier = curr.quantifier;
           if (!acc.has(quantifier)) {
             acc.set(quantifier, []);
@@ -112,7 +113,7 @@ export const AllPeriodQuantificationsGroupedByQuantifier = selectorFamily({
           acc.get(quantifier)?.push(curr);
           return acc;
         },
-        new Map<string, QuantificationDto[]>()
+        new Map<string, Quantification[]>()
       );
     },
 });

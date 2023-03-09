@@ -11,7 +11,7 @@ import { SearchInput } from '@/components/form/SearchInput';
 import { SelectInput } from '@/components/form/SelectInput';
 import { UsersTableRow } from './UsersTableRow';
 import { UsersTablePagination } from './UsersTablePagination';
-import { UserDto } from '@/model/user/dto/user.dto';
+import { User } from '@/model/user/dto/user.dto';
 import { UserRole } from '@/model/user/enums/user-role.enum';
 
 const USERS_PER_PAGE = 10;
@@ -27,7 +27,7 @@ export const UsersTable = (): JSX.Element => {
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
   const allUsers = useRecoilValue(AllUsers);
 
-  const UsersTableData = atom<UserDto[] | undefined>({
+  const UsersTableData = atom<User[] | undefined>({
     key: 'UsersTableData',
     default: undefined,
   });
@@ -61,9 +61,9 @@ export const UsersTable = (): JSX.Element => {
   const [lastPage, setLastPage] = useRecoilState(UsersTableLastPage);
 
   const applyFilter = React.useCallback(
-    (data: UserDto[] | undefined): UserDto[] => {
+    (data: User[] | undefined): User[] => {
       if (!data) return [];
-      const filteredData = data.filter((user: UserDto) => {
+      const filteredData = data.filter((user: User) => {
         const userAddress = user.identityEthAddress?.toLowerCase();
         const filterData = filter.toLocaleLowerCase();
 
