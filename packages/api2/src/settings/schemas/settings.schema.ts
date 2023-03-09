@@ -39,8 +39,17 @@ export class Setting {
   @Prop()
   value: string;
 
-  @ApiResponseProperty({
+  @ApiProperty({
     example: 666,
+    oneOf: [
+      {
+        type: 'string',
+      },
+      { type: 'array', items: { type: 'string' } },
+      { type: 'boolean' },
+      { type: 'number' },
+      { type: 'array', items: { type: 'number' } },
+    ],
   })
   @Expose()
   get valueRealized():

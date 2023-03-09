@@ -15,7 +15,7 @@ import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
 import { SubmitButton } from './components/SubmitButton';
-import { PeriodCreateInput } from '@/model/periods/dto/period-create.dto';
+import { CreatePeriodInputDto } from '@/model/periods/dto/create-period-input.dto';
 import { ApiErrorResponseData } from 'shared/interfaces/api-error-reponse-data.interface';
 
 const validate = (
@@ -56,7 +56,7 @@ const PeriodsForm = (): JSX.Element => {
   const onSubmit = async (
     values: Record<string, string>
   ): Promise<SubmissionErrors> => {
-    const newPeriod: PeriodCreateInput = {
+    const newPeriod: CreatePeriodInputDto = {
       name: values.name,
 
       // Ensures the creator user see's a matching 'End Date' to the day they selected:

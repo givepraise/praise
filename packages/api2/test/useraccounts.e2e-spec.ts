@@ -22,7 +22,7 @@ import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
 import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { Server } from 'http';
 import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
 import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
@@ -92,6 +92,14 @@ describe('UserAccountsController (E2E)', () => {
           roles: [AuthRole.ADMIN],
         }),
       );
+      const wallet2 = Wallet.createRandom();
+      users.push(
+        await usersSeeder.seedUser({
+          identityEthAddress: wallet2.address,
+          rewardsAddress: wallet2.address,
+          roles: [AuthRole.USER],
+        }),
+      );
 
       // Login and get access token
       const response = await loginUser(app, module, wallet);
@@ -121,8 +129,7 @@ describe('UserAccountsController (E2E)', () => {
           platform: 'DISCORD',
           user: String(users[0]._id),
         },
-      );
-      //.expect(201);
+      ).expect(201);
 
       expect(response.body).toBeDefined();
       expect(response.body.accountId).toEqual(String(users[0]._id));
@@ -132,23 +139,19 @@ describe('UserAccountsController (E2E)', () => {
       expect(String(response.body.user)).toEqual(String(users[0]._id));
     });
 
-    // Test for duplicate account
-    test('409 when account already exists', async () => {
-      await authorizedPostRequest('/useraccounts', app, accessToken, {
-        accountId: String(users[0]._id),
+    const createUser = (override?: any) => {
+      const defaultAccount = {
+        accountId: faker.internet.mac(),
         name: faker.internet.userName().substring(0, 10),
         avatarId: faker.internet.url(),
         platform: 'DISCORD',
         user: String(users[0]._id),
+      };
+      return authorizedPostRequest('/useraccounts', app, accessToken, {
+        ...defaultAccount,
+        ...override,
       });
-      await authorizedPostRequest('/useraccounts', app, accessToken, {
-        accountId: String(users[0]._id),
-        name: faker.internet.userName().substring(0, 10),
-        avatarId: faker.internet.url(),
-        platform: 'DISCORD',
-        user: String(users[0]._id),
-      }).expect(409);
-    });
+    };
 
     // Test with missing fields
     test('400 when missing fields', async () => {
@@ -157,34 +160,83 @@ describe('UserAccountsController (E2E)', () => {
       }).expect(400);
     });
 
-    // Test with invalid fields
-    test('400 when invalid fields', async () => {
-      await authorizedPostRequest('/useraccounts', app, accessToken, {
-        accountId: String(users[0]._id),
-        name: faker.internet.userName().substring(0, 10),
-        avatarId: faker.internet.url(),
-        platform: 'DISCORD',
-        user: String(users[0]._id),
-        invalidField: 'invalid',
-      }).expect(400);
+    // Test for duplicate account
+    test('400 when account already exists', async () => {
+      await createUser();
+      await createUser().expect(400);
     });
 
-    // One user account per platform and user
-    test('409 when user account already exists for platform and user', async () => {
-      await authorizedPostRequest('/useraccounts', app, accessToken, {
-        accountId: '123456123456',
-        name: faker.internet.userName().substring(0, 10),
-        avatarId: faker.internet.url(),
-        platform: 'DISCORD',
-        user: String(users[0]._id),
-      });
-      await authorizedPostRequest('/useraccounts', app, accessToken, {
-        accountId: '456779456779',
-        name: faker.internet.userName().substring(0, 10),
-        avatarId: faker.internet.url(),
-        platform: 'DISCORD',
-        user: String(users[0]._id), // Same user, same platform not allowed
-      }).expect(409);
+    // Test for duplicate account
+    test('201 when same account details and different platform', async () => {
+      await createUser();
+      await createUser({ platform: 'OTHER' }).expect(201);
+    });
+
+    // Test with invalid fields
+    test('400 when invalid fields', async () => {
+      await createUser({ invalidField: 'invalid' }).expect(400);
+    });
+
+    // Fail if platform and accountId already exists
+    test('400 when user account already exists for platform and account id', async () => {
+      await createUser({ accountId: '123456123456' });
+      await createUser({ accountId: '123456123456' }).expect(400);
+    });
+
+    // Fail if platform and name already exists
+    test('400 when user account already exists for platform and name', async () => {
+      await createUser({ name: 'samename' });
+      await createUser({ name: 'samename' }).expect(400);
+    });
+
+    // Fail when user is not found
+    test('400 when user is not found', async () => {
+      createUser({ user: new Types.ObjectId().toString() }).expect(400);
+    });
+
+    // Fail when user is invalid ObjectId
+    test('400 when user is invalid ObjectId', async () => {
+      createUser({ user: 'invalid' }).expect(400);
+    });
+
+    // Fail when accountId is too short
+    test('400 when accountId is too short', async () => {
+      await createUser({ accountId: '0' }).expect(400);
+    });
+
+    // Fail when accountId is too long
+    test('400 when accountId is too long', async () => {
+      await createUser({ accountId: '0'.repeat(300) }).expect(400);
+    });
+
+    // Fail when name is too short
+    test('400 when name is too short', async () => {
+      await createUser({ name: 'a' }).expect(400);
+    });
+
+    // Fail when name is too long
+    test('400 when name is too long', async () => {
+      await createUser({ name: 'a'.repeat(30) }).expect(400);
+    });
+
+    // Fail when avatarId is too short
+    test('400 when avatarId is too short', async () => {
+      await createUser({ avatarId: 'a' }).expect(400);
+    });
+
+    // Fail when avatarId is too long
+    test('400 when avatarId is too long', async () => {
+      await createUser({ avatarId: 'a'.repeat(300) }).expect(400);
+    });
+
+    // Fail when platform is too short
+    test('400 when platform is too short', async () => {
+      await createUser({ platform: 'a' }).expect(400);
+    });
+
+    // Fail when platform is too long
+    test('400 when platform is too long', async () => {
+      await createUser({ platform: 'a'.repeat(300) }).expect(400);
     });
   });
 
@@ -232,32 +284,18 @@ describe('UserAccountsController (E2E)', () => {
       });
     });
 
-    // Should not allow both accountId and _id to be passed
-    test('400 when both accountId and _id are passed', async () => {
-      await authorizedPatchRequest(
-        `/useraccounts?_id=${userAccounts[0]._id}&accountId=${userAccounts[0].accountId}`,
-        app,
-        accessToken,
-        {
-          name: faker.internet.userName().substring(0, 10),
-          avatarId: faker.internet.url(),
-          platform: 'DISCORD',
-        },
-      ).expect(400);
-    });
-
     test('401 when not authenticated', async () => {
       await request(server)
-        .patch(`/useraccounts?_id=${userAccounts[0]._id}`)
+        .patch(`/useraccounts/${userAccounts[0]._id}`)
         .send()
         .expect(401);
     });
 
-    test('200 and correct pat body when authenticated - use _id', async () => {
+    test('200 and correct path body when authenticated', async () => {
       const accountName = faker.internet.userName().substring(0, 10);
       const avatarId = faker.internet.url();
       const response = await authorizedPatchRequest(
-        `/useraccounts?_id=${userAccounts[0]._id}`,
+        `/useraccounts/${userAccounts[0]._id}`,
         app,
         accessToken,
         {
@@ -265,8 +303,7 @@ describe('UserAccountsController (E2E)', () => {
           avatarId: avatarId,
           platform: 'DISCORD',
         },
-      );
-      // .expect(200);
+      ).expect(200);
 
       expect(response.body).toBeDefined();
       expect(response.body.accountId).toEqual(
@@ -278,34 +315,10 @@ describe('UserAccountsController (E2E)', () => {
       expect(String(response.body.user)).toEqual(String(userAccounts[0].user));
     });
 
-    test('200 and correct patch body when authenticated - use accountId', async () => {
-      const accountName = faker.internet.userName().substring(0, 10);
-      const avatarId = faker.internet.url();
-      const response = await authorizedPatchRequest(
-        `/useraccounts?accountId=${userAccounts[0].accountId}`,
-        app,
-        accessToken,
-        {
-          name: accountName,
-          avatarId: avatarId,
-          platform: 'FACEBOOK',
-        },
-      ).expect(200);
-
-      expect(response.body).toBeDefined();
-      expect(response.body.accountId).toEqual(
-        String(userAccounts[0].accountId),
-      );
-      expect(response.body.name).toEqual(accountName);
-      expect(response.body.platform).toEqual('FACEBOOK');
-      expect(response.body.avatarId).toEqual(avatarId);
-      expect(String(response.body.user)).toEqual(String(userAccounts[0].user));
-    });
-
     // Should not be allowed to delete a required field
     test('400 when deleting a required field', async () => {
       await authorizedPatchRequest(
-        `/useraccounts?_id=${userAccounts[0]._id}`,
+        `/useraccounts/${userAccounts[0]._id}`,
         app,
         accessToken,
         {
@@ -317,7 +330,7 @@ describe('UserAccountsController (E2E)', () => {
     // Should not be allowed to update a field to an invalid value
     test('400 when updating a field to an invalid value', async () => {
       await authorizedPatchRequest(
-        `/useraccounts?_id=${userAccounts[0]._id}`,
+        `/useraccounts/${userAccounts[0]._id}`,
         app,
         accessToken,
         {
@@ -326,56 +339,47 @@ describe('UserAccountsController (E2E)', () => {
       ).expect(400);
     });
 
-    // Should not be allowed to change accountId to an existing one
-    test('409 when updating accountId to an existing one', async () => {
-      const newAccount = await authorizedPostRequest(
-        '/useraccounts',
-        app,
-        accessToken,
-        {
-          accountId: '123456123456',
-          name: faker.internet.userName().substring(0, 10),
-          avatarId: faker.internet.url(),
-          platform: 'OTHERPLATFORM',
-          user: String(users[0]._id),
-        },
-      );
+    // Same platform and user should not be allowed
+    test('400 when updating user to an existing one on the same platform', async () => {
+      const ua = await userAccountsSeeder.seedUserAccount();
       await authorizedPatchRequest(
-        `/useraccounts?_id=${userAccounts[0]._id}`,
+        `/useraccounts/${ua._id}`,
         app,
         accessToken,
         {
-          accountId: newAccount.body.accountId,
+          user: users[0]._id.toString(),
         },
-      ).expect(409);
+      ).expect(400);
     });
 
-    // Should not be allowed to change platform to an existing one for a user that already has an account for that platform
-    test('409 when updating platform to an existing one', async () => {
-      const newAccount = await authorizedPostRequest(
-        '/useraccounts',
-        app,
-        accessToken,
-        {
-          accountId: '123123123123',
-          name: faker.internet.userName().substring(0, 10),
-          avatarId: faker.internet.url(),
-          platform: 'OTHERPLATFORM',
-          user: String(users[0]._id),
-        },
-      );
+    // Same platform and account id should not be allowed
+    test('400 when updating accountId to an existing one on the same platform', async () => {
+      const ua = await userAccountsSeeder.seedUserAccount();
       await authorizedPatchRequest(
-        `/useraccounts?_id=${newAccount.body._id}`,
+        `/useraccounts/${ua._id}`,
         app,
         accessToken,
         {
-          platform: 'DISCORD',
+          accountId: userAccounts[0].accountId,
         },
-      ).expect(409);
+      ).expect(400);
+    });
+
+    // Same platform and account id should not be allowed
+    test('400 when updating accountId to an existing one on the same platform', async () => {
+      const ua = await userAccountsSeeder.seedUserAccount();
+      await authorizedPatchRequest(
+        `/useraccounts/${ua._id}`,
+        app,
+        accessToken,
+        {
+          name: userAccounts[0].name,
+        },
+      ).expect(400);
     });
   });
 
-  describe('GET /api/useraccounts?_id=xxxx&accountId=xxx', () => {
+  describe('GET /api/useraccounts', () => {
     let wallet;
     let accessToken: string;
     const users: User[] = [];
@@ -424,30 +428,37 @@ describe('UserAccountsController (E2E)', () => {
 
     test('200 when authenticated', async () => {
       await authorizedGetRequest(
-        `/useraccounts?_id=${userAccounts[0]._id}`,
+        `/useraccounts/${userAccounts[0]._id}`,
         app,
         accessToken,
       ).expect(200);
     });
 
-    test('returns the fetched user account by id', async () => {
-      const response = await authorizedGetRequest(
-        `/useraccounts?_id=${userAccounts[0]._id}`,
-        app,
-        accessToken,
-      ).expect(200);
-      expect(response.body._id).toBe(String(userAccounts[0]._id));
-      expect(response.body.activateToken).toBeUndefined();
-    });
-
-    test('returns the fetched user account by account_id', async () => {
+    test('find  user account by accountId', async () => {
       const response = await authorizedGetRequest(
         `/useraccounts?accountId=${userAccounts[0].accountId}`,
         app,
         accessToken,
       ).expect(200);
-      expect(response.body._id).toBe(String(userAccounts[0]._id));
-      expect(response.body.activateToken).toBeUndefined();
+      expect(response.body[0]._id).toBe(String(userAccounts[0]._id));
+      expect(response.body[0].activateToken).toBeUndefined();
+    });
+
+    test('200 and correct count when fetching multiple user accounts', async () => {
+      await userAccountsSeeder.seedUserAccount({
+        user: users[0]._id,
+        platform: 'TWITTER',
+      });
+      await userAccountsSeeder.seedUserAccount({
+        user: users[0]._id,
+        platform: 'SLACK',
+      });
+      const response = await authorizedGetRequest(
+        `/useraccounts?user=${users[0]._id}`,
+        app,
+        accessToken,
+      ).expect(200);
+      expect(response.body.length).toBe(3);
     });
   });
 

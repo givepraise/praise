@@ -106,6 +106,9 @@ export class EventLogService {
         {
           path: 'type',
         },
+        {
+          path: 'useraccount',
+        },
       ],
     };
 

@@ -2,13 +2,13 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { SettingsForm } from '@/components/settings/SettingsForm';
 import { Box } from '@/components/ui/Box';
 import { SettingsSubgroup } from './SettingsSubgroup';
-import { SettingDto } from '@/model/settings/dto/setting.dto';
+import { Setting } from '@/model/settings/dto/setting.dto';
 
 interface Params {
-  settings: SettingDto[] | undefined;
+  settings: Setting[] | undefined;
   parentOnSubmit(
-    setting: SettingDto
-  ): Promise<AxiosResponse<SettingDto> | AxiosError | undefined>;
+    setting: Setting
+  ): Promise<AxiosResponse<Setting> | AxiosError | undefined>;
 }
 
 export const PeriodDefaultsSettings = ({

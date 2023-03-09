@@ -1,202 +1,44 @@
 import './utils/polyfills';
+import './styles/globals.css';
+// eslint-disable-next-line import/no-unresolved
+import '@rainbow-me/rainbowkit/styles.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { RecoilRoot, useRecoilValue } from 'recoil';
+import { RecoilRoot } from 'recoil';
 import RecoilNexus from 'recoil-nexus';
-import { useErrorBoundary } from 'use-error-boundary';
-// eslint-disable-next-line import/no-unresolved
-import '@rainbow-me/rainbowkit/styles.css';
-import {
-  Chain,
-  connectorsForWallets,
-  RainbowKitProvider,
-  lightTheme,
-  Theme as RainbowTheme,
-  darkTheme,
-} from '@rainbow-me/rainbowkit';
-import {
-  injectedWallet,
-  rainbowWallet,
-  metaMaskWallet,
-  coinbaseWallet,
-  walletConnectWallet,
-  trustWallet,
-  ledgerWallet,
-  imTokenWallet,
-} from '@rainbow-me/rainbowkit/wallets';
-import merge from 'lodash/merge';
-import { configureChains, createClient, WagmiConfig, chain } from 'wagmi';
-import { publicProvider } from 'wagmi/providers/public';
 import { LoadScreen } from '@/components/ui/LoadScreen';
-import { Theme } from '@/model/theme';
 import { Routes } from '@/navigation/Routes';
-import ErrorPage from './pages/ErrorPage';
-import './styles/globals.css';
-
-const LOAD_DELAY = 500;
-
-const gnosisChain: Chain = {
-  id: 100,
-  name: 'Gnosis Chain',
-  network: 'Gnosis Chain',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'xDAI',
-    symbol: 'xDAI',
-  },
-  rpcUrls: {
-    default: 'https://rpc.gnosischain.com',
-  },
-  blockExplorers: {
-    default: {
-      name: 'BlockScout',
-      url: 'https://blockscout.com/xdai/mainnet/',
-    },
-    blockscout: {
-      name: 'BlockScout',
-      url: 'https://blockscout.com/xdai/mainnet/',
-    },
-  },
-  testnet: false,
-};
-
-const { chains, provider } = configureChains(
-  [chain.mainnet, gnosisChain],
-  [publicProvider()]
-);
-
-const needsInjectedWalletFallback =
-  typeof window !== 'undefined' &&
-  window.ethereum &&
-  !window.ethereum.isMetaMask &&
-  !window.ethereum.isCoinbaseWallet;
-
-const connectors = connectorsForWallets([
-  {
-    groupName: 'Recommended',
-    wallets: [
-      metaMaskWallet({ chains }),
-      ledgerWallet({ chains }),
-      coinbaseWallet({ appName: 'Praise', chains }),
-      trustWallet({ chains }),
-      imTokenWallet({ chains }),
-      walletConnectWallet({ chains }),
-      rainbowWallet({ chains }),
-      ...(needsInjectedWalletFallback ? [injectedWallet({ chains })] : []),
-    ],
-  },
-]);
-
-const wagmiClient = createClient({
-  autoConnect: true,
-  connectors,
-  provider,
-});
-
-const customRainbowkitTheme = merge(lightTheme(), {
-  colors: {
-    accentColor: '#2d3748', // tailwind color gray-800
-  },
-  radii: {
-    connectButton: '0.25rem', // tailwind radius 'rounded'
-    modal: '0.25rem',
-  },
-} as RainbowTheme);
-
-interface DelayedLoadingProps {
-  children: JSX.Element;
-}
-/**
- * Load delay waiting for metamask/eth
- */
-const AwaitMetamaskInit = ({
-  children,
-}: DelayedLoadingProps): JSX.Element | null => {
-  const [delay, setDelay] = React.useState<boolean>(true);
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      setDelay(false);
-    }, LOAD_DELAY);
-  }, []);
-
-  if (delay) return null;
-  return children;
-};
-
-interface LightDarkThemeProps {
-  children: JSX.Element;
-}
-
-const LightDarkTheme = ({
-  children,
-}: LightDarkThemeProps): JSX.Element | null => {
-  const theme = useRecoilValue(Theme);
-
-  React.useEffect(() => {
-    const root = document.documentElement;
-    if (theme !== 'Light') {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'Dark');
-    } else {
-      localStorage.setItem('theme', 'Light');
-      root.classList.remove('dark');
-    }
-  }, [theme]);
-
-  return children;
-};
-
-interface ErrorBoundaryProps {
-  children: JSX.Element;
-}
-const ErrorBoundary = ({ children }: ErrorBoundaryProps): JSX.Element => {
-  const { ErrorBoundary } = useErrorBoundary();
-
-  return (
-    <ErrorBoundary
-      render={(): JSX.Element => children}
-      renderError={({ error }): JSX.Element => <ErrorPage error={error} />}
-    />
-  );
-};
-
-const getRainbowTheme = (): RainbowTheme => {
-  const currentMode = localStorage.getItem('theme');
-  if (currentMode === 'Dark') {
-    return darkTheme();
-  }
-  return customRainbowkitTheme;
-};
+import { Web3Provider } from './providers/Web3Provider';
+import { AwaitMetamaskInit } from './components/AwaitMetaMaskInit';
+import { LightDarkTheme } from './components/LightDarkTheme';
+import { ErrorBoundaryTopLevel } from './components/ErrorBoundaryTopLevel';
 
 ReactDOM.render(
   <React.StrictMode>
     <RecoilRoot>
       <RecoilNexus />
-      <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains} theme={getRainbowTheme()}>
-          <Router>
-            <main>
-              <AwaitMetamaskInit>
-                <LightDarkTheme>
-                  <React.Suspense fallback={<LoadScreen />}>
-                    <ErrorBoundary>
-                      <Routes />
-                    </ErrorBoundary>
-                  </React.Suspense>
-                </LightDarkTheme>
-              </AwaitMetamaskInit>
-              <Toaster
-                position="bottom-right"
-                reverseOrder={false}
-                toastOptions={{ duration: 3000 }}
-              />
-            </main>
-          </Router>
-        </RainbowKitProvider>
-      </WagmiConfig>
+      <Web3Provider>
+        <Router>
+          <main>
+            <AwaitMetamaskInit>
+              <LightDarkTheme>
+                <React.Suspense fallback={<LoadScreen />}>
+                  <ErrorBoundaryTopLevel>
+                    <Routes />
+                  </ErrorBoundaryTopLevel>
+                </React.Suspense>
+              </LightDarkTheme>
+            </AwaitMetamaskInit>
+            <Toaster
+              position="bottom-right"
+              reverseOrder={false}
+              toastOptions={{ duration: 3000 }}
+            />
+          </main>
+        </Router>
+      </Web3Provider>
     </RecoilRoot>
   </React.StrictMode>,
 

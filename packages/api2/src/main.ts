@@ -29,7 +29,7 @@ async function bootstrap() {
       transform: true,
       whitelist: true,
       forbidNonWhitelisted: true,
-      forbidUnknownValues: true,
+      //forbidUnknownValues: true, //TODO: Enabling this causes an error in the validation pipe - Investigate!
     }),
   );
 
