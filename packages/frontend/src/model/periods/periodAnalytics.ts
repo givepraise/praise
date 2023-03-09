@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
 import { selectorFamily } from 'recoil';
 import { AllPeriodPraise } from './periods';
 import { Praise } from '../praise/praise.dto';

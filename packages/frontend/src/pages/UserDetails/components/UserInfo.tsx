@@ -110,7 +110,7 @@ export const UserInfo = ({
               <FontAwesomeIcon icon={faUserLock} className="mr-2" size="1x" />
               User roles:{' '}
               {user.roles.map(
-                (r, index, array) =>
+                (r, index: number, array) =>
                   `${r}${array.length > index + 1 ? ', ' : ''}`
               )}
             </div>
