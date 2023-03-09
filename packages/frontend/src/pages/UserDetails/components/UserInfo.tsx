@@ -17,7 +17,6 @@ import { ActiveUserId, HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserWithStatsDto } from '@/model/user/dto/user-with-stats.dto';
 import { UserRole } from '@/model/user/enums/user-role.enum';
-import { User } from '@/model/user/dto/user.dto';
 import { shortenEthAddress } from '@/utils/string';
 
 interface Params {
@@ -112,7 +111,7 @@ export const UserInfo = ({
               User roles:{' '}
               {user.roles.map(
                 (r, index, array) =>
-                  `${r}${array.length > (index as number) + 1 ? ', ' : ''}`
+                  `${r}${array.length > index + 1 ? ', ' : ''}`
               )}
             </div>
           )}

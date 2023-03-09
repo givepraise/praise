@@ -206,7 +206,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
-      user: string;
+      user: string | components['schemas']['User'];
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -229,8 +229,12 @@ export interface components {
       rewardsEthAddress: string;
       /** @example darth */
       username: string;
-      /** @example ["USER"] */
-      roles: string;
+      /**
+       * @example [
+       *   "USER"
+       * ]
+       */
+      roles: readonly string[];
       accounts: readonly components['schemas']['UserAccountNoUserId'][];
       /** Format: date-time */
       createdAt: string;
@@ -246,8 +250,12 @@ export interface components {
       rewardsEthAddress: string;
       /** @example darth */
       username: string;
-      /** @example ["USER"] */
-      roles: string;
+      /**
+       * @example [
+       *   "USER"
+       * ]
+       */
+      roles: readonly string[];
       accounts: readonly components['schemas']['UserAccountNoUserId'][];
       /** Format: date-time */
       createdAt: string;
@@ -293,24 +301,50 @@ export interface components {
     };
     PeriodPaginatedResponseDto: {
       /** @example 1200 */
-      totalDocs: number;
+      totalDocs: Record<string, never>;
       /** @example 10 */
-      limit: number;
+      limit: Record<string, never>;
       /** @example 12 */
-      totalPages: number;
+      totalPages: Record<string, never>;
       /** @example 2 */
-      page: number;
+      page: Record<string, never>;
       /** @example 1 */
-      pagingCounter: number;
+      pagingCounter: Record<string, never>;
       /** @example false */
       hasPrevPage: Record<string, never>;
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: number;
+      prevPage: Record<string, never>;
       /** @example 3 */
-      nextPage: number;
+      nextPage: Record<string, never>;
       docs: readonly components['schemas']['Period'][];
+    };
+    Quantification: {
+      /** @example 639b178f19296ee0f2d0585d */
+      _id: string;
+      /** @example 144 */
+      score: number;
+      /** @example 144 */
+      scoreRealized: number;
+      /** @example true */
+      dismissed: boolean;
+      /** @example 639b178f19296ee0f2d0585d */
+      duplicatePraise: string;
+      /** @example 639b178f19296ee0f2d0585d */
+      quantifier: string;
+      /** @example 639b178f19296ee0f2d0585d */
+      praise: string;
+      /**
+       * Format: date-time
+       * @example 2021-06-01T00:00:00.000Z
+       */
+      createdAt: string;
+      /**
+       * Format: date-time
+       * @example 2021-06-01T00:00:00.000Z
+       */
+      updatedAt: string;
     };
     PeriodDetailsQuantifierDto: {
       /** @example 5f9f1b9b9b9b9b9b9b9b9b9b */
@@ -327,6 +361,7 @@ export interface components {
       finishedCount: number;
       /** @example 1 */
       praiseCount: number;
+      quantifications: components['schemas']['Quantification'][];
     };
     PeriodDetailsGiverReceiverDto: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
@@ -383,7 +418,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
       /** @example 621f802b813dbdba9eeaf7d7 */
-      user: string;
+      user: string | components['schemas']['User'];
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -395,32 +430,6 @@ export interface components {
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
-      updatedAt: string;
-    };
-    Quantification: {
-      /** @example 639b178f19296ee0f2d0585d */
-      _id: string;
-      /** @example 144 */
-      score: number;
-      /** @example 144 */
-      scoreRealized: number;
-      /** @example true */
-      dismissed: boolean;
-      /** @example 639b178f19296ee0f2d0585d */
-      duplicatePraise: string;
-      /** @example 639b178f19296ee0f2d0585d */
-      quantifier: string;
-      /** @example 639b178f19296ee0f2d0585d */
-      praise: string;
-      /**
-       * Format: date-time
-       * @example 2021-06-01T00:00:00.000Z
-       */
-      createdAt: string;
-      /**
-       * Format: date-time
-       * @example 2021-06-01T00:00:00.000Z
-       */
       updatedAt: string;
     };
     PraiseWithUserAccountsWithUserRefDto: {
@@ -469,7 +478,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
-      user: string;
+      user: string | components['schemas']['User'];
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -522,8 +531,7 @@ export interface components {
       _id: string;
       /** @example 621f802b813dbdba9eeaf7d7 */
       user: string;
-      /** @example 621f802b813dbdba9eeaf7d7 */
-      useraccount: string;
+      useraccount: components['schemas']['UserAccountNoUserId'];
       /** @example 621f802b813dbdba9eeaf7d7 */
       apiKey: string;
       /** @example 621f802b813dbdba9eeaf7d7 */
@@ -531,26 +539,36 @@ export interface components {
       type: components['schemas']['EventLogType'];
       /** @example A description of teh event */
       description: string;
+      /**
+       * Format: date-time
+       * @example 2023-03-01T22:51:20.012Z
+       */
+      createdAt: string;
+      /**
+       * Format: date-time
+       * @example 2023-03-01T22:51:20.012Z
+       */
+      updatedAt: string;
     };
     EventLogPaginatedResponseDto: {
       /** @example 1200 */
-      totalDocs: number;
+      totalDocs: Record<string, never>;
       /** @example 10 */
-      limit: number;
+      limit: Record<string, never>;
       /** @example 12 */
-      totalPages: number;
+      totalPages: Record<string, never>;
       /** @example 2 */
-      page: number;
+      page: Record<string, never>;
       /** @example 1 */
-      pagingCounter: number;
+      pagingCounter: Record<string, never>;
       /** @example false */
       hasPrevPage: Record<string, never>;
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: number;
+      prevPage: Record<string, never>;
       /** @example 3 */
-      nextPage: number;
+      nextPage: Record<string, never>;
       docs: readonly components['schemas']['EventLog'][];
     };
     Setting: {
@@ -561,7 +579,7 @@ export interface components {
       /** @example 666 */
       value: string;
       /** @example 666 */
-      valueRealized: Record<string, never>;
+      valueRealized: string | string[] | boolean | number | number[];
       /** @example 555 */
       defaultValue: string;
       /**
@@ -602,30 +620,30 @@ export interface components {
       setting: readonly components['schemas']['Setting'][];
       value: string;
       /** @example 666 */
-      valueRealized: number;
+      valueRealized: string | string[] | boolean | number | number[];
     };
     SetPeriodSettingDto: {
       value: string;
     };
     PraisePaginatedResponseDto: {
       /** @example 1200 */
-      totalDocs: number;
+      totalDocs: Record<string, never>;
       /** @example 10 */
-      limit: number;
+      limit: Record<string, never>;
       /** @example 12 */
-      totalPages: number;
+      totalPages: Record<string, never>;
       /** @example 2 */
-      page: number;
+      page: Record<string, never>;
       /** @example 1 */
-      pagingCounter: number;
+      pagingCounter: Record<string, never>;
       /** @example false */
       hasPrevPage: Record<string, never>;
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: number;
+      prevPage: Record<string, never>;
       /** @example 3 */
-      nextPage: number;
+      nextPage: Record<string, never>;
       docs: readonly components['schemas']['Praise'][];
     };
     QuantifyInputDto: {
@@ -686,7 +704,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
-      user: string;
+      user: string | components['schemas']['User'];
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -706,7 +724,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id?: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
-      user?: string;
+      user?: string | components['schemas']['User'];
       /** @example 098098098098098 */
       accountId?: string;
       /** @example darth#6755 */
@@ -726,7 +744,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
-      user: string;
+      user: string | components['schemas']['User'];
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -896,23 +914,23 @@ export interface components {
     };
     CommunityPaginatedResponseDto: {
       /** @example 1200 */
-      totalDocs: number;
+      totalDocs: Record<string, never>;
       /** @example 10 */
-      limit: number;
+      limit: Record<string, never>;
       /** @example 12 */
-      totalPages: number;
+      totalPages: Record<string, never>;
       /** @example 2 */
-      page: number;
+      page: Record<string, never>;
       /** @example 1 */
-      pagingCounter: number;
+      pagingCounter: Record<string, never>;
       /** @example false */
       hasPrevPage: Record<string, never>;
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: number;
+      prevPage: Record<string, never>;
       /** @example 3 */
-      nextPage: number;
+      nextPage: Record<string, never>;
       docs: readonly components['schemas']['Community'][];
     };
     LinkDiscordBotDto: {
