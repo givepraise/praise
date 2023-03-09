@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Patch,
   Post,
   Query,
@@ -14,7 +15,9 @@ import {
 import {
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiProduces,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { UserAccountsService } from './useraccounts.service';
@@ -26,13 +29,14 @@ import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-pe
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { UserAccount } from './schemas/useraccounts.schema';
-import { ServiceException } from '@/shared/exceptions/service-exception';
 import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
-import { FindUserAccountQueryDto } from './dto/find-user-account-query.dto';
 import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
 import { CreateUserAccountInputDto } from './dto/create-user-account-input.dto';
 import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { UpdateUserAccountResponseDto } from './dto/update-user-account-response.dto';
+import { FindUserAccountFilterDto } from './dto/find-user-account-filter.dto';
+import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
+import { Types } from 'mongoose';
 
 @Controller('useraccounts')
 @ApiTags('UserAccounts')
@@ -59,34 +63,14 @@ export class UserAccountsController {
 
   @Get()
   @ApiOperation({
-    summary: 'Get UserAccount by UserId our AccountId.',
+    summary: 'UserAccount list',
   })
   @UseInterceptors(MongooseClassSerializerInterceptor(UserAccount))
   @Permissions(Permission.UserAccountsView)
-  async findOne(
-    @Query() search?: FindUserAccountQueryDto,
+  async findAll(
+    @Query() filter?: FindUserAccountFilterDto,
   ): Promise<UserAccount> {
-    if (!search)
-      throw new ServiceException('Search paramaters must be specified.');
-    return this.userAccountsService.findOneByIdOrAccountId(search);
-  }
-
-  @Patch()
-  @ApiOperation({
-    summary: 'Update UserAccount by UserId or AccountId',
-  })
-  @UseInterceptors(
-    MongooseClassSerializerInterceptor(UpdateUserAccountResponseDto),
-  )
-  @Permissions(Permission.UserAccountsUpdate)
-  async update(
-    @Body() updateUserAccountInputDto: UpdateUserAccountInputDto,
-    @Query() search?: FindUserAccountQueryDto,
-  ): Promise<UpdateUserAccountResponseDto> {
-    if (!search)
-      throw new ServiceException('Search paramaters must be specified.');
-    const user = await this.userAccountsService.findOneByIdOrAccountId(search);
-    return this.userAccountsService.update(user._id, updateUserAccountInputDto);
+    return this.userAccountsService.findAll(filter);
   }
 
   @Get('export')
@@ -141,5 +125,37 @@ export class UserAccountsController {
 
     const file = fs.createReadStream(filePath);
     return new StreamableFile(file);
+  }
+
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Get a UserAccount.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'UserAccount',
+    type: UserAccount,
+  })
+  @ApiParam({ name: 'id', type: 'string' })
+  @Permissions(Permission.UserAccountsView)
+  async findOne(
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+  ): Promise<UserAccount> {
+    return this.userAccountsService.findOneById(id);
+  }
+
+  @Patch(':id')
+  @ApiOperation({
+    summary: 'Update UserAccount',
+  })
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(UpdateUserAccountResponseDto),
+  )
+  @Permissions(Permission.UserAccountsUpdate)
+  async update(
+    @Body() updateUserAccountInputDto: UpdateUserAccountInputDto,
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+  ): Promise<UpdateUserAccountResponseDto> {
+    return this.userAccountsService.update(id, updateUserAccountInputDto);
   }
 }
