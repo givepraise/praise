@@ -30,17 +30,17 @@ export class PermissionsGuard implements CanActivate {
       return true;
     }
 
-    const { user } = context.switchToHttp().getRequest();
+    const { user: authContext } = context.switchToHttp().getRequest();
 
-    if (!user) {
+    if (!authContext) {
       this.logger.error(
-        "No user found in request. Make sure you're using the JwtAuthGuard before the PermissionsGuard.",
+        "No AuthContext found in request. Make sure you're running auth strategies before the PermissionsGuard.",
       );
       return false;
     }
 
     // Check if the user has any of the required permissions.
-    for (const role of user.roles) {
+    for (const role of authContext.roles) {
       const rolePermissions = RolePermissions[role];
       if (
         requiredPermissions.some((permission) =>
