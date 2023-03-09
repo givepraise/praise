@@ -44,7 +44,6 @@ export class UserAccount {
   })
   @Prop({
     required: true,
-    unique: true,
     index: true,
     minlength: 10,
     maxlength: 255,

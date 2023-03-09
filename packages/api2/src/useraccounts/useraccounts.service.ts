@@ -14,11 +14,11 @@ import {
 } from '@/shared/export.shared';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { FindUserAccountQueryDto } from './dto/find-user-account-query.dto';
 import { randomBytes } from 'crypto';
 import { CreateUserAccountInputDto } from './dto/create-user-account-input.dto';
 import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
+import { FindUserAccountFilterDto } from './dto/find-user-account-filter.dto';
 
 @Injectable()
 export class UserAccountsService {
@@ -35,12 +35,24 @@ export class UserAccountsService {
   /**
    * Creates a new UserAccount.
    * @param {CreateUserAccountInputDto} createUserAccountInputDto - The request payload containing the UserAccount Details
-   * @returns {Promise<UserAccount>} A promise that resolves to the response containing the created UserAccount.
+   * @returns A promise that resolves to the response containing the created UserAccount.
    * @throws {ServiceException}, If there is an error while creating the UserAccount.
    */
   async create(
     createUserAccountInputDto: CreateUserAccountInputDto,
   ): Promise<CreateUserAccountResponseDto> {
+    const { user, name, accountId, platform } = createUserAccountInputDto;
+
+    // Check if a UserAccount with same info already exists
+    const existingUserAccount = await this.userAccountModel.findOne({
+      $and: [{ platform }, { $or: [{ accountId }, { name }, { user }] }],
+    });
+    if (existingUserAccount) {
+      throw new ServiceException(
+        'UserAccount with platform and accountId, name or user already exists.',
+      );
+    }
+
     const userAccount = new this.userAccountModel({
       ...createUserAccountInputDto,
       activateToken: randomBytes(10).toString('hex'), // Generate a random activation token
@@ -56,17 +68,6 @@ export class UserAccountsService {
   }
 
   /**
-   * Returns a user account by user account ID
-   */
-  async findOneByUserAccountId(accountId: string): Promise<UserAccount> {
-    const userAccount = await this.userAccountModel
-      .findOne({ accountId })
-      .lean();
-    if (!userAccount) throw new ServiceException('UserAccount not found.');
-    return userAccount;
-  }
-
-  /**
    * Find the Useraccount by objectId
    */
   async findOneById(_id: Types.ObjectId): Promise<UserAccount> {
@@ -76,19 +77,11 @@ export class UserAccountsService {
   }
 
   /**
-   * Returns a user account by Mongo ID or AccountId
+   * Find all user accounts. Filter by user, accountId, name.
    */
-  async findOneByIdOrAccountId(
-    search: FindUserAccountQueryDto,
-  ): Promise<UserAccount> {
-    const { _id, accountId } = search;
-    if (_id) {
-      return await this.findOneById(_id);
-    }
-    if (accountId) {
-      return await this.findOneByUserAccountId(accountId);
-    }
-    throw new ServiceException('No identifier provided.');
+  async findAll(filter?: FindUserAccountFilterDto): Promise<UserAccount> {
+    const query = filter || {};
+    return await this.getModel().find(query).lean();
   }
 
   /**
@@ -105,22 +98,55 @@ export class UserAccountsService {
   }
 
   /**
-   * Update a user account by _id
+   * Update a user account
    */
   async update(
     _id: Types.ObjectId,
     updateUserAccountDto: UpdateUserAccountInputDto,
   ): Promise<UserAccount> {
-    const userAccountDocument = await this.userAccountModel.findById(_id);
-    if (!userAccountDocument)
-      throw new ServiceException('UserAccount not found.');
+    const { accountId, name, user } = updateUserAccountDto;
+    const userAccount = await this.userAccountModel.findById(_id);
+    if (!userAccount) throw new ServiceException('UserAccount not found.');
 
-    for (const [k, v] of Object.entries(updateUserAccountDto)) {
-      userAccountDocument.set(k, v);
+    // Only one UserAccount per platform and user
+    if (user) {
+      const existingUserAccount = await this.userAccountModel.findOne({
+        $and: [{ userAccount: userAccount.platform }, { user }],
+      });
+      if (existingUserAccount && !existingUserAccount._id.equals(_id)) {
+        throw new ServiceException(
+          'UserAccount with platform and user already exists.',
+        );
+      }
     }
 
-    await userAccountDocument.save();
-    return userAccountDocument.toObject();
+    // Check if a UserAccount with same info already exists
+    if (accountId || name || user) {
+      const existingUserAccount = await this.userAccountModel.findOne({
+        $and: [
+          { platform: userAccount.platform },
+          { $or: [{ accountId }, { name }, { user }] },
+        ],
+      });
+      if (existingUserAccount) {
+        throw new ServiceException(
+          'UserAccount with platform and accountId, name or user already exists.',
+        );
+      }
+    }
+
+    for (const [k, v] of Object.entries(updateUserAccountDto)) {
+      userAccount.set(k, v);
+    }
+
+    await userAccount.save();
+
+    this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `Created UserAccount id: ${userAccount.accountId}`,
+    });
+
+    return userAccount.toObject();
   }
 
   /**
