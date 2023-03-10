@@ -9,10 +9,9 @@ import { UserAvatar } from '@/components/user/UserAvatar';
 import { SingleUser } from '@/model/user/users';
 import { classNames } from '@/utils/index';
 import { InlineLabel } from '../../../components/ui/InlineLabel';
-import { Notice } from '../../../components/ui/Notice';
 import { UserName } from '../../../components/user/UserName';
 import { UserPopover } from '../../../components/user/UserPopover';
-import { EventLogDto } from '@/model/eventlog/dto/event-log.dto';
+import { EventLog as EventLogDto } from '@/model/eventlog/dto/event-log.dto';
 import { EventLogTypeKey } from '@/model/eventlog/enum/event-log-type-key.enum';
 
 const eventLogTypeColors = {
@@ -79,16 +78,6 @@ export const EventLog = ({
             title={eventlog.type.description}
             className={eventLogTypeColors[eventlog.type.key]}
           />
-
-          {eventlog.hidden ? (
-            <div className="w-full mt-1">
-              <Notice type="danger">
-                <>Praise scores are not visible during quantification.</>
-              </Notice>
-            </div>
-          ) : (
-            eventlog.description
-          )}
         </div>
       </div>
     </div>

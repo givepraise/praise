@@ -7,7 +7,7 @@ import { PeriodPageParams } from '@/model/periods/periods';
 import { AllPeriodQuantificationsGroupedByQuantifier } from '@/model/periods/periodAnalytics';
 import { ManyUsers } from '@/model/user/users';
 import { BoxPlot } from './Boxplot';
-import { QuantificationDto } from '@/model/quantification/quantification.dto';
+import { Quantification } from '@/model/quantification/quantification.dto';
 
 export const QuantifierScoringDistribution = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -51,8 +51,8 @@ export const QuantifierScoringDistribution = (): JSX.Element | null => {
         borderColor: 'rgb(225, 0, 127,1)',
         borderWidth: 1,
         itemRadius: 0,
-        data: [...quantifierQuants.values()].map((q: QuantificationDto[]) =>
-          q.map((q: QuantificationDto) => q.score)
+        data: [...quantifierQuants.values()].map((q: Quantification[]) =>
+          q.map((q: Quantification) => q.score)
         ),
       },
     ],

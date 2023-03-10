@@ -13,13 +13,12 @@ import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
 import { useApiAuthClient } from '@/utils/api';
 import { isResponseOk, ApiAuthGet } from '../api';
 import { AllPeriods } from '../periods/periods';
-import { UserDto } from './dto/user.dto';
+import { User } from './dto/user.dto';
 import { UserRole } from './enums/user-role.enum';
-import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { isDateEqualOrAfter } from '@/utils/date';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const instanceOfUser = (object: any): object is UserDto => {
+const instanceOfUser = (object: any): object is User => {
   return 'identityEthAddress' in object;
 };
 
@@ -30,7 +29,7 @@ export const roleOptions = [
   { label: 'Quantifiers', value: UserRole.QUANTIFIER },
 ];
 
-export const AllUsers = atom<UserDto[] | undefined>({
+export const AllUsers = atom<User[] | undefined>({
   key: 'AllUsers',
   default: undefined,
   effects: [
@@ -42,7 +41,7 @@ export const AllUsers = atom<UserDto[] | undefined>({
           })
         ).then((response) => {
           if (isResponseOk(response)) {
-            const users = response.data as UserDto[];
+            const users = response.data as User[];
             if (Array.isArray(users) && users.length > 0) return users;
           }
         })
@@ -126,12 +125,10 @@ export const SingleUser = selectorFamily({
   key: 'SingleUser',
   get:
     (userId: string | undefined) =>
-    ({ get }): UserWithStatsDto | undefined => {
+    ({ get }): User | undefined => {
       const allUsers = get(AllUsers);
       if (!allUsers || !userId) return undefined;
-      return allUsers.filter(
-        (user) => user._id === userId
-      )[0] as UserWithStatsDto;
+      return allUsers.filter((user) => user._id === userId)[0];
     },
   set:
     (userId: string | undefined) =>
@@ -160,7 +157,7 @@ export const SingleUserByUsername = selectorFamily({
   key: 'SingleUserByUsername',
   get:
     (username: string | undefined) =>
-    ({ get }): UserDto | undefined => {
+    ({ get }): User | undefined => {
       const allUsers = get(AllUsers);
       if (!allUsers || !username) return undefined;
       return allUsers.filter((user) => user.username === username)[0];
@@ -171,7 +168,7 @@ export const ManyUsers = selectorFamily({
   key: 'ManyUsers',
   get:
     (userIds: string[] | undefined) =>
-    ({ get }): (UserDto | undefined)[] | undefined => {
+    ({ get }): (User | undefined)[] | undefined => {
       const allUsers = get(AllUsers);
       if (!allUsers || !userIds) return undefined;
       return userIds.map((userId) =>
@@ -184,11 +181,11 @@ type useAdminUsersReturns = {
   addRole: (
     userId: string,
     role: UserRole
-  ) => Promise<AxiosResponse<UserDto> | AxiosError>;
+  ) => Promise<AxiosResponse<User> | AxiosError>;
   removeRole: (
     userId: string,
     role: UserRole
-  ) => Promise<AxiosResponse<UserDto> | AxiosError>;
+  ) => Promise<AxiosResponse<User> | AxiosError>;
 };
 
 /**
@@ -202,8 +199,8 @@ export const useAdminUsers = (): useAdminUsersReturns => {
     endpoint: 'addRole' | 'removeRole',
     userId: string,
     role: UserRole
-  ): Promise<AxiosResponse<UserDto> | AxiosError> => {
-    const response: AxiosResponse<UserDto> = await apiAuthClient.patch(
+  ): Promise<AxiosResponse<User> | AxiosError> => {
+    const response: AxiosResponse<User> = await apiAuthClient.patch(
       `/users/${userId}/${endpoint}`,
       {
         role,
@@ -223,14 +220,14 @@ export const useAdminUsers = (): useAdminUsersReturns => {
   const addRole = async (
     userId: string,
     role: UserRole
-  ): Promise<AxiosResponse<UserDto> | AxiosError> => {
+  ): Promise<AxiosResponse<User> | AxiosError> => {
     return patchRole('addRole', userId, role);
   };
 
   const removeRole = async (
     userId: string,
     role: UserRole
-  ): Promise<AxiosResponse<UserDto> | AxiosError> => {
+  ): Promise<AxiosResponse<User> | AxiosError> => {
     return patchRole('removeRole', userId, role);
   };
 
@@ -242,7 +239,7 @@ type useUserProfileReturn = {
     userId: string,
     username: string,
     rewardsEthAddress: string
-  ) => Promise<AxiosResponse<UserDto>>;
+  ) => Promise<AxiosResponse<User>>;
 };
 /**
  * Edit a user's profile.
@@ -256,12 +253,14 @@ export const useUserProfile = (): useUserProfileReturn => {
         userId: string,
         username: string,
         rewardsEthAddress: string
-      ): Promise<AxiosResponse<UserWithStatsDto>> => {
-        const response: AxiosResponse<UserWithStatsDto> =
-          await apiAuthClient.patch(`/users/${userId}`, {
+      ): Promise<AxiosResponse<User>> => {
+        const response: AxiosResponse<User> = await apiAuthClient.patch(
+          `/users/${userId}`,
+          {
             username,
             rewardsEthAddress,
-          });
+          }
+        );
 
         if (isResponseOk(response)) {
           const user = response.data;
@@ -282,12 +281,12 @@ const DetailedSingleUserQuery = selectorFamily({
   key: 'DetailedSingleUserQuery',
   get:
     (userId: string) =>
-    ({ get }): AxiosResponse<UserWithStatsDto> | AxiosError => {
+    ({ get }): AxiosResponse<User> | AxiosError => {
       return get(
         ApiAuthGet({
           url: `/users/${userId}`,
         })
-      ) as AxiosResponse<UserWithStatsDto> | AxiosError;
+      ) as AxiosResponse<User> | AxiosError;
     },
 });
 
@@ -297,7 +296,7 @@ const DetailedSingleUserQuery = selectorFamily({
  */
 export const useLoadSingleUserDetails = (
   userId: string
-): AxiosResponse<UserWithStatsDto> | AxiosError => {
+): AxiosResponse<User> | AxiosError => {
   const response = useRecoilValue(DetailedSingleUserQuery(userId));
   const user = useRecoilValue(SingleUser(userId));
   const setUser = useSetRecoilState(SingleUser(userId));

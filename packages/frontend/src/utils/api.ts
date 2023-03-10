@@ -1,23 +1,7 @@
-import axios, { AxiosError, AxiosInstance } from 'axios';
-import createAuthRefreshInterceptor from 'axios-auth-refresh';
+import axios, { AxiosInstance } from 'axios';
 import { useRecoilValue } from 'recoil';
 import { AccessToken } from '@/model/auth/auth';
-import { requestApiAuthRefresh } from './auth';
 import { handleErrors } from './axios';
-
-/**
- * Attempt to refresh auth token and retry request
- */
-const refreshAuthTokenSet = async (err: AxiosError): Promise<void> => {
-  if (!err?.response?.config?.headers)
-    throw Error('Error response has no headers');
-  const tokenSet = await requestApiAuthRefresh();
-  if (!tokenSet) return;
-
-  err.response.config.headers[
-    'Authorization'
-  ] = `Bearer ${tokenSet.accessToken}`;
-};
 
 /**
  * We assume the API to be running on the same domain in production currently.
@@ -60,9 +44,6 @@ export const makeApiAuthClient = (accessToken: string): AxiosInstance => {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
-  });
-  createAuthRefreshInterceptor(apiAuthClient, refreshAuthTokenSet, {
-    statusCodes: [401],
   });
   apiAuthClient.interceptors.response.use(
     (res) => res,

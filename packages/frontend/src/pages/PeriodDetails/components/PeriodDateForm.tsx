@@ -47,7 +47,7 @@ export const PeriodDateForm = (): JSX.Element | null => {
     const newPeriod = { ...period };
     newPeriod.endDate = `${values.endDate}T23:59:59.999Z`;
 
-    const response = await updatePeriod(newPeriod);
+    const response = await updatePeriod(newPeriod._id, newPeriod);
     if (response) {
       if (isResponseOk(response)) {
         toast.success('Period date saved');

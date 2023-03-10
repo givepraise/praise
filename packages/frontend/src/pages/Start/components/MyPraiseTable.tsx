@@ -7,11 +7,11 @@ import { PraiseRow } from '@/components/praise/PraiseRow';
 import { ActiveUserId } from '@/model/auth/auth';
 import { SingleUser } from '@/model/user/users';
 import { PraisePageLoader } from '@/components/praise/PraisePageLoader';
-import { UserDto } from '@/model/user/dto/user.dto';
+import { User } from '@/model/user/dto/user.dto';
 
 const PRAISE_LIST_KEY = 'MY_PRAISE';
 
-const getReceiverId = (user: UserDto | undefined): string | undefined => {
+const getReceiverId = (user: User | undefined): string | undefined => {
   const accounts = user?.accounts;
   return Array.isArray(accounts) && accounts.length > 0
     ? accounts[0]._id

@@ -21,9 +21,9 @@ import { useQuantifyPraise } from '@/model/praise/praise';
 import { SourceName } from './SourceName';
 import { UserAvatarAndName } from '../user/UserAvatarAndName';
 import { InlineLabelClosable } from '../ui/InlineLabelClosable';
-import { PraiseDto } from '@/model/praise/praise.dto';
+import { Praise as PraiseDto } from '@/model/praise/praise.dto';
 import { idLabel } from '@/model/praise/praise.utils';
-import { UserAccountDto } from '@/model/useraccount/dto/useraccount.dto';
+import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
 
 interface Props {
   praise: PraiseDto;
@@ -56,7 +56,7 @@ export const Praise = ({
   const history = useHistory();
 
   const handleUserClick =
-    (userAccount: UserAccountDto | undefined) =>
+    (userAccount: UserAccount | undefined) =>
     (event: React.MouseEvent<HTMLTableRowElement>) => {
       event.stopPropagation();
 

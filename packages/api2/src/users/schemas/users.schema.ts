@@ -69,18 +69,13 @@ export class User {
   username: string;
 
   @ApiResponseProperty({
-    example: '["USER"]',
-    type: 'string',
+    example: ['USER'],
+    type: ['string'],
   })
   @Prop({
-    type: [
-      {
-        type: String,
-        enum: [AuthRole],
-      },
-    ],
-    default: [AuthRole.USER],
+    type: [String],
     enum: [AuthRole],
+    default: [AuthRole.USER],
   })
   roles: string[];
 
