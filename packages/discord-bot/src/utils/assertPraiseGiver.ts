@@ -1,7 +1,8 @@
 import { CacheType, CommandInteraction, GuildMember, Role } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
 import { dmError, praiseRoleError } from './embeds/praiseEmbeds';
-
+import { apiClient } from './api';
+import { Setting } from './api-schema';
 /**
  * Check if user has discord role PRAISE_GIVER_ROLE_ID if required,
  *  if not: reply with an error message
@@ -16,12 +17,17 @@ export const assertPraiseGiver = async (
   interaction: CommandInteraction<CacheType>,
   sendReply: boolean
 ): Promise<boolean> => {
-  const praiseGiverRoleIDRequired = (await settingValue(
-    'PRAISE_GIVER_ROLE_ID_REQUIRED'
-  )) as boolean;
-  const praiseGiverRoleIDList = (await settingValue(
-    'PRAISE_GIVER_ROLE_ID'
-  )) as string[];
+  const praiseGiverRoleIDRequired = await apiClient(
+    '/settings?key=PRAISE_GIVER_ROLE_ID_REQUIRED'
+  )
+    .then((res) => (res.data as Setting).value == 'true')
+    .catch(() => false);
+
+  const praiseGiverRoleIDList = await apiClient(
+    '/settings?key=PRAISE_GIVER_ROLE_ID'
+  )
+    .then((res) => (res.data as Setting).value.split(','))
+    .catch(() => null);
 
   if (!praiseGiverRoleIDRequired) {
     return true;

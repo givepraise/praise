@@ -35,7 +35,7 @@ export const getStateEmbed = (state: UserState): EmbedBuilder => {
   if (state.activated) {
     embed.addFields({
       name: 'User Roles',
-      value: state.praiseRoles?.join(' | ') || 'No Roles assigned to user.',
+      value: state?.praiseRoles || 'No Roles assigned to user.',
     });
     embed.addFields({
       name: 'Ethereum Address',
@@ -50,8 +50,10 @@ export const getStateEmbed = (state: UserState): EmbedBuilder => {
               `> ${account.platform}\n> Account: ${
                 account.user
               }\n> Date of Activation: ${formatDate(
-                account.activationDate
-              )}\n> Last Active: ${formatDate(account.latestUsageDate)}`
+                new Date(account.activationDate)
+              )}\n> Last Active: ${formatDate(
+                new Date(account.latestUsageDate)
+              )}`
           )
           .join('\n\n') ||
         'No activated useraccounts associated with this User.',

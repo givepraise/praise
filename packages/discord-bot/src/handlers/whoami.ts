@@ -1,12 +1,12 @@
-import { UserModel } from 'api/dist/user/entities';
-import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { ChatInputCommandInteraction, GuildMember } from 'discord.js';
 import { UserState } from '../interfaces/UserState';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getStateEmbed } from '../utils/embeds/stateEmbed';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { dmError } from '../utils/embeds/praiseEmbeds';
-
+import { getUser } from 'src/utils/getUser';
+import { apiClient } from 'src/utils/api';
+import { UserAccount } from 'src/utils/api-schema';
 /**
  * Execute command /whoami
  *  Gives the user information about their account and activation status
@@ -15,7 +15,7 @@ import { dmError } from '../utils/embeds/praiseEmbeds';
  * @returns {Promise<void>}
  */
 export const whoamiHandler = async (
-  interaction: CommandInteraction
+  interaction: ChatInputCommandInteraction
 ): Promise<void> => {
   const { member, guild } = interaction;
   if (!guild || !member) {
@@ -38,25 +38,26 @@ export const whoamiHandler = async (
     false
   );
 
-  const User = await UserModel.findOne({ _id: ua.user });
-  state.praiseRoles = User?.roles || [];
+  const User = await getUser(ua.user);
+  state.praiseRoles = User?.roles || '';
   state.address = User?.identityEthAddress || '';
   state.avatar = ua.avatarId;
 
-  const activatedAccounts = await UserAccountModel.find({ user: ua.user });
-  if (activatedAccounts) {
-    state.activations = [];
-    for (const account of activatedAccounts) {
-      state.activations.push({
-        platform: account.platform,
-        user: account.name,
-        activationDate: account.createdAt,
-        latestUsageDate: account.updatedAt,
-      });
-    }
-  }
+  // const activatedAccount: UserAccount = await apiClient(
+  //   `useraccounts?_id=${ua.user}`
+  // ).then((res) => res.data);
+  // if (activatedAccount) {
+  //   state.activations = [];
+  //   state.activations.push({
+  //     platform: activatedAccount.platform,
+  //     user: activatedAccount.name,
+  //     activationDate: activatedAccount.createdAt,
+  //     latestUsageDate: activatedAccount.updatedAt,
+  //   });
+  // }
 
-  await interaction.editReply({
-    embeds: [getStateEmbed(state)],
-  });
+  // await interaction.editReply({
+  //   embeds: [getStateEmbed(state)],
+  // });
+  await interaction.editReply('...');
 };

@@ -1,27 +1,44 @@
-import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount, UserAccountDocument } from 'api/dist/useraccount/types';
 import { GuildMember } from 'discord.js';
+import { UserAccount } from './api-schema';
+import { apiClient } from './api';
 
 /**
- * Fetch UserAccount from database associated with Discord user
+ * Fetch UserAccount associated with Discord user from api
  *
  * @param {GuildMember} member
- * @returns {Promise<UserAccountDocument>}
+ * @returns {Promise<UserAccount>}
  */
 export const getUserAccount = async (
   member: GuildMember
-): Promise<UserAccountDocument> => {
-  const ua = {
-    accountId: member.user.id,
-    name: member.user.username + '#' + member.user.discriminator,
-    avatarId: member.user.avatar,
-    platform: 'DISCORD',
-  } as UserAccount;
+): Promise<UserAccount> => {
+  const userAccount: UserAccount = await apiClient
+    .get(`/useraccounts?accountId=${member.user.id}`)
+    .then(async (res) => {
+      const data = res.data;
+      if (
+        data.name != member.user.username + '#' + member.user.discriminator ||
+        data.avatarId != member.user.avatar
+      ) {
+        data.name = member.user.username + '#' + member.user.discriminator;
+        data.avatarId = member.user.avatar;
 
-  const userAccount = await UserAccountModel.findOneAndUpdate(
-    { accountId: ua.accountId },
-    ua,
-    { upsert: true, new: true }
-  );
+        await apiClient.patch(
+          `/useraccounts?accountId=${member.user.id}`,
+          data
+        );
+      }
+      return res.data;
+    })
+    .catch(async () => {
+      return await apiClient
+        .post(`/useraccounts`, {
+          accountId: member.user.id,
+          name: member.user.username + '#' + member.user.discriminator,
+          avatarId: member.user.avatar,
+          platform: 'DISCORD',
+        })
+        .then((res) => res.data);
+    });
+
   return userAccount;
 };

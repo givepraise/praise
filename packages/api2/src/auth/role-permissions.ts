@@ -89,6 +89,7 @@ const PERMISSION_API_KEY_DISCORD_BOT = [
   Permission.PraiseCreate,
   Permission.PraiseForward,
   Permission.CommunitiesView,
+  Permission.SettingsView,
 ];
 
 /**
