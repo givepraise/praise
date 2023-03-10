@@ -73,14 +73,9 @@ export class User {
     type: ['string'],
   })
   @Prop({
-    type: [
-      {
-        type: [String],
-        enum: [AuthRole],
-      },
-    ],
-    default: [AuthRole.USER],
+    type: [String],
     enum: [AuthRole],
+    default: [AuthRole.USER],
   })
   roles: string[];
 
