@@ -15,6 +15,6 @@ export interface UserState {
   activated: boolean;
   avatar?: string;
   address?: string;
-  praiseRoles?: string;
+  praiseRoles?: string[];
   activations?: ActivatedAccount[];
 }

@@ -1,15 +1,16 @@
-import { ChatInputCommandInteraction, GuildMember } from 'discord.js';
+import { ChatInputCommandInteraction, Guild, GuildMember } from 'discord.js';
 import { UserState } from '../interfaces/UserState';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getStateEmbed } from '../utils/embeds/stateEmbed';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { dmError } from '../utils/embeds/praiseEmbeds';
-import { getUser } from 'src/utils/getUser';
-import { apiClient } from 'src/utils/api';
-import { UserAccount } from 'src/utils/api-schema';
+import { getUser } from '../utils/getUser';
+import { UserAccount } from '../utils/api-schema';
+import { apiClient } from '../utils/api';
+
 /**
  * Execute command /whoami
- *  Gives the user information about their account and activation status
+ * Gives the user information about their account and activation status
  *
  * @param {CommandInteraction} interaction
  * @returns {Promise<void>}
@@ -23,7 +24,7 @@ export const whoamiHandler = async (
     return;
   }
 
-  const ua = await getUserAccount(member as GuildMember);
+  const ua = await getUserAccount((member as GuildMember).user);
 
   const state: UserState = {
     id: ua.accountId,
@@ -38,26 +39,42 @@ export const whoamiHandler = async (
     false
   );
 
-  const User = await getUser(ua.user);
-  state.praiseRoles = User?.roles || '';
-  state.address = User?.identityEthAddress || '';
+  const user =
+    ua.user == null
+      ? undefined
+      : await getUser(typeof ua.user === 'string' ? ua.user : ua.user._id);
+
+  state.praiseRoles = user?.roles || undefined;
+  state.address = user?.identityEthAddress || '';
   state.avatar = ua.avatarId;
+  state.activations = [];
 
-  // const activatedAccount: UserAccount = await apiClient(
-  //   `useraccounts?_id=${ua.user}`
-  // ).then((res) => res.data);
-  // if (activatedAccount) {
-  //   state.activations = [];
-  //   state.activations.push({
-  //     platform: activatedAccount.platform,
-  //     user: activatedAccount.name,
-  //     activationDate: activatedAccount.createdAt,
-  //     latestUsageDate: activatedAccount.updatedAt,
-  //   });
-  // }
+  if (ua.user != null) {
+    const activatedAccounts = await apiClient
+      .get<UserAccount[]>(
+        `useraccounts?user=${
+          typeof ua.user === 'string' ? ua.user : ua.user._id
+        }`
+      )
+      .then((res) => res.data);
+    for (const account of activatedAccounts) {
+      state.activations.push({
+        platform: account.platform,
+        user: account.name,
+        activationDate: account.createdAt,
+        latestUsageDate: account.updatedAt,
+      });
+    }
+  } else {
+    state.activations.push({
+      platform: 'DISCORD',
+      user: ua.name,
+      activationDate: ua.createdAt,
+      latestUsageDate: ua.updatedAt,
+    });
+  }
 
-  // await interaction.editReply({
-  //   embeds: [getStateEmbed(state)],
-  // });
-  await interaction.editReply('...');
+  await interaction.editReply({
+    embeds: [getStateEmbed(state)],
+  });
 };
