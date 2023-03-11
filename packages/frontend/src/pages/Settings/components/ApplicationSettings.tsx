@@ -3,7 +3,7 @@ import { SettingsForm } from '@/components/settings/SettingsForm';
 import { Box } from '@/components/ui/Box';
 import { SettingsSubgroup } from './SettingsSubgroup';
 import ApplicationSettingsApiKeys from './ApplicationSettingsApiKeys';
-import { SettingDto } from '@/model/settings/dto/setting.dto';
+import { Setting as SettingDto } from '@/model/settings/dto/setting.dto';
 
 interface Params {
   settings: SettingDto[] | undefined;

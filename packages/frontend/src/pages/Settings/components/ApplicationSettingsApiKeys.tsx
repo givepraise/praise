@@ -1,10 +1,18 @@
 import { useRecoilValue } from 'recoil';
 import { ApiKeysListQuery } from '@/model/apikeys/apikeys';
+import { Button } from '@/components/ui/Button';
+import { useState } from 'react';
+import ApplicationSettingsApiKeyForm from './ApplicationSettingsApiKeyForm';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const ApplicationSettingsApiKeys = (): JSX.Element => {
+  const [openApiKeyModal, setOpenApiKeyModal] = useState(false);
   const apiKeys = useRecoilValue(ApiKeysListQuery);
 
-  console.log(apiKeys);
+  const handleCloseApiKeyModal = (): void => {
+    setOpenApiKeyModal(false);
+  };
 
   return (
     <>
@@ -23,6 +31,14 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
         <h3 className="text-lg font-bold">Keys</h3>
         <h3 className="text-lg font-bold">Access</h3>
       </div>
+      <Button onClick={(): void => setOpenApiKeyModal(true)} className="mt-4">
+        <FontAwesomeIcon icon={faPlus} size="1x" className="mr-2" />
+        Add key
+      </Button>
+      <ApplicationSettingsApiKeyForm
+        open={openApiKeyModal}
+        close={handleCloseApiKeyModal}
+      />
     </>
   );
 };
