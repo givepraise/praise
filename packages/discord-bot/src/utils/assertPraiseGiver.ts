@@ -1,5 +1,4 @@
 import { CacheType, CommandInteraction, GuildMember, Role } from 'discord.js';
-import { settingValue } from 'api/dist/shared/settings';
 import { dmError, praiseRoleError } from './embeds/praiseEmbeds';
 import { apiClient } from './api';
 import { Setting } from './api-schema';

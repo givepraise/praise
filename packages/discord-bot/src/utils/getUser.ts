@@ -1,17 +1,15 @@
-import { GuildMember } from 'discord.js';
-import { User } from './api-schema';
 import { apiClient } from './api';
+import { User } from './api-schema';
 
 /**
- * Fetch UserAccount associated with Discord user from api
+ * Fetch User by id
  *
  * @param {string} id
  * @returns {Promise<User>}
  */
-export const getUser = async (id: string): Promise<User | null> => {
-  const user: User = await apiClient
-    .get(`/users?id=${id}`)
-    .then((res) => res.data.catch(null));
-
-  return user;
+export const getUser = async (id: string): Promise<User | undefined> => {
+  return await apiClient
+    .get<User>(`/users/${id}`)
+    .then((res) => res.data)
+    .catch(() => undefined);
 };

@@ -35,7 +35,7 @@ export const getStateEmbed = (state: UserState): EmbedBuilder => {
   if (state.activated) {
     embed.addFields({
       name: 'User Roles',
-      value: state?.praiseRoles || 'No Roles assigned to user.',
+      value: state?.praiseRoles?.join(', ') || 'No Roles assigned to user.',
     });
     embed.addFields({
       name: 'Ethereum Address',

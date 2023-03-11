@@ -1,5 +1,7 @@
 import { CommandInteraction, EmbedBuilder } from 'discord.js';
 import { settingValue } from 'api/dist/shared/settings';
+import { apiClient } from '../api';
+import { Setting } from '../api-schema';
 
 /**
  * Generate message outlining user's current activation status
@@ -15,14 +17,15 @@ export const praiseSuccessEmbed = async (
   const successMessage = (await settingValue(
     'PRAISE_SUCCESS_MESSAGE'
   )) as string;
-  let msg;
-  if (successMessage) {
-    msg = successMessage
-      .replace('{@receivers}', `${receivers.join(', ')}`)
-      .replace('{reason}', reason);
-  } else {
-    msg = 'PRAISE SUCCESSFUL (message not set)';
-  }
+  const msg = await apiClient
+    .get('/settings?key=PRAISE_SUCCESS_MESSAGE')
+    .then((res) =>
+      (res.data as Setting).value
+        .replace('{@receivers}', `${receivers.join(', ')}`)
+        .replace('{reason}', reason)
+    )
+    .catch(() => 'PRAISE SUCCESSFUL (message not set)');
+
   const { user } = interaction;
 
   const embed = new EmbedBuilder()
