@@ -6,10 +6,13 @@ import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import {
   ArrayMinSize,
   IsArray,
-  IsBoolean, IsEmail,
+  IsBoolean,
+  IsEmail,
   IsEnum,
   IsOptional,
-  IsString, Validate, ValidateNested
+  IsString,
+  Validate,
+  ValidateNested,
 } from 'class-validator';
 import { DiscordLinkState } from '../enums/discord-link-state';
 import { IsEthAddress } from '@/shared/validators.shared';
@@ -50,7 +53,6 @@ export class Community {
     required: true,
     minLength: 4,
     maxLength: 20,
-
   })
   @IsString()
   @Prop({
@@ -60,8 +62,7 @@ export class Community {
     maxlength: 20,
     unique: true,
     validate: {
-      validator: (name: string) =>
-        Promise.resolve(isValidCommunityName(name)),
+      validator: (name: string) => Promise.resolve(isValidCommunityName(name)),
       message:
         'Invalid name, only alphanumeric characters, underscores, dots, and hyphens are allowed.',
     },
@@ -93,10 +94,12 @@ export class Community {
   // owners should contain creator so it has at least one owner
   @ArrayMinSize(1)
   //TODO: Validate that all addresses are valid ethereum addresses
-  @Prop({ type: [String], required: true, length: 42,
+  @Prop({
+    type: [String],
+    required: true,
+    length: 42,
     validate: {
-      validator: (owners: string[]) =>
-        Promise.resolve(isValidOwners(owners)),
+      validator: (owners: string[]) => Promise.resolve(isValidOwners(owners)),
       message:
         'Invalid username, only alphanumeric characters, underscores, dots, and hyphens are allowed.',
     },

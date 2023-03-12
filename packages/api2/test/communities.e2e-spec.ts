@@ -167,7 +167,9 @@ describe('Communities (E2E)', () => {
     test('400 when creator is not a valid eth address', async () => {
       const response = await createValidCommunity({ creator: 'invalid' });
       expect(response.status).toBe(400);
-      expect(response.body.message[0]).toBe("(invalid) is not a valid Ethereum address.");
+      expect(response.body.message[0]).toBe(
+        '(invalid) is not a valid Ethereum address.',
+      );
     });
 
     // Name can only contain only alphanumeric characters, underscores, dots, and hyphen
@@ -195,7 +197,7 @@ describe('Communities (E2E)', () => {
       await createValidCommunity({ name: 'test' });
       const response = await createValidCommunity({ name: 'test' });
       expect(response.status).toBe(409);
-      expect(response.body.message).toBe('name \'test \'already exists.');
+      expect(response.body.message).toBe("name 'test 'already exists.");
     });
 
     test('400 when hostname is not a valid hostname', async () => {
@@ -207,7 +209,7 @@ describe('Communities (E2E)', () => {
     test('400 when email is not a valid email', async () => {
       const response = await createValidCommunity({ email: 'invalid' });
       expect(response.status).toBe(400);
-      expect(response.body.message[0]).toBe("email must be an email");
+      expect(response.body.message[0]).toBe('email must be an email');
     });
 
     test('400 when owners contains an invalid eth address', async () => {
@@ -233,7 +235,7 @@ describe('Communities (E2E)', () => {
       const response = await createValidCommunity({
         owners: [users[1].user.identityEthAddress],
       });
-      console.log('**response.body**', response.body)
+      console.log('**response.body**', response.body);
       expect(response.status).toBe(500);
     });
 
@@ -248,7 +250,10 @@ describe('Communities (E2E)', () => {
     test('201 when authenticated as setupWeb and correct data is sent', async () => {
       const response = await createValidCommunity();
       const rb = response.body;
-      console.log('Create community success response', JSON.stringify(rb, null, 2))
+      console.log(
+        'Create community success response',
+        JSON.stringify(rb, null, 2),
+      );
       expect(response.status).toBe(201);
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkNonce.length).toBe(10);

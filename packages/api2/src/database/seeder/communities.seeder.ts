@@ -4,8 +4,7 @@ import { Community } from '../../community/schemas/community.schema';
 
 @Injectable()
 export class CommunitiesSeeder {
-  constructor(private readonly communityService: CommunityService,
-) {}
+  constructor(private readonly communityService: CommunityService) {}
 
   /**
    * Generate and save a fake User
