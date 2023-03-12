@@ -232,7 +232,6 @@ describe('Communities (E2E)', () => {
       const response = await createValidCommunity({
         owners: [users[1].user.identityEthAddress],
       });
-      console.log('**response.body**', response.body);
       expect(response.status).toBe(500);
     });
 
@@ -247,14 +246,10 @@ describe('Communities (E2E)', () => {
     test('201 when authenticated as setupWeb and correct data is sent', async () => {
       const response = await createValidCommunity();
       const rb = response.body;
-      console.log(
-        'Create community success response',
-        JSON.stringify(rb, null, 2),
-      );
       expect(response.status).toBe(201);
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkNonce.length).toBe(10);
-      expect(rb.isPublic).toBeTrue();
+      expect(rb.isPublic).toBe(true);
     });
   });
 
@@ -332,7 +327,7 @@ describe('Communities (E2E)', () => {
       expect(rb.name).toBe('test');
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkState).toBe(DiscordLinkState.ACTIVE);
-      expect(rb.isPublic).toBeTrue();
+      expect(rb.isPublic).toBe(true);
     });
 
     test('400 when someone else wants to link discord to community instead of creator', async () => {
@@ -457,6 +452,164 @@ describe('Communities (E2E)', () => {
       expect(response.status).toBe(200);
       expect(rb.name).toBe(community.name);
       expect(rb.email).toBe(community.email);
+    });
+  });
+
+  describe('PATCH /api/communities/:id', () => {
+    let community: Community;
+
+    beforeEach(async () => {
+      await communityService.getModel().deleteMany({});
+      community = await communitiesSeeder.seedCommunity({
+        name: randomBytes(10).toString('hex'),
+        creator: users[0].user.identityEthAddress,
+        owners: [
+          users[0].user.identityEthAddress,
+          users[1].user.identityEthAddress,
+        ],
+        hostname: 'test.praise.io',
+        discordGuildId: 'kldakdsal',
+        discordLinkNonce: randomBytes(10).toString('hex'),
+        email: 'test@praise.io',
+      });
+    });
+    // generate invalid mongo id
+    const invalidCommunityId = '5f7f7f7f7f7f7f7f7f7f7f7f';
+    const updateValidCommunity = async (override?: any) => {
+      return authorizedPatchRequest(
+        `/communities/${community._id}`,
+        app,
+        setupWebUserAccessToken,
+        override,
+      );
+    };
+
+    test('401 when not authenticated', async () => {
+      return request(server)
+        .patch(`/communities/${community._id}`)
+        .send()
+        .expect(401);
+    });
+
+    test('403 when user has wrong permissions', async () => {
+      const response = await authorizedPatchRequest(
+        `/communities/${community._id}`,
+        app,
+        users[0].accessToken,
+        {
+          name: 'test',
+        },
+      );
+
+      expect(response.status).toBe(403);
+    });
+
+    test('400 when inputs are invalid', async () => {
+      const response = await authorizedPatchRequest(
+        `/communities/${community._id}`,
+        app,
+        setupWebUserAccessToken,
+        {
+          invalidField: 'test',
+        },
+      );
+
+      expect(response.status).toBe(400);
+    });
+
+    // Name can only contain only alphanumeric characters, underscores, dots, and hyphen
+    test('400 when name contains invalid characters, is not allowed to contain spaces', async () => {
+      const response = await updateValidCommunity({ name: 'invalid name' });
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Validation failed');
+    });
+
+    test('400 when name is too short', async () => {
+      const response = await updateValidCommunity({ name: 'a' });
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Validation failed');
+    });
+
+    test('400 when name is too long', async () => {
+      const response = await updateValidCommunity({
+        name: 'a'.repeat(200),
+      });
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Validation failed');
+    });
+
+    test('400 when name already exists', async () => {
+      const newCommunity = await communitiesSeeder.seedCommunity({
+        name: randomBytes(10).toString('hex'),
+        creator: users[0].user.identityEthAddress,
+        owners: [
+          users[0].user.identityEthAddress,
+          users[1].user.identityEthAddress,
+        ],
+        hostname: 'test.praise.io',
+        discordGuildId: 'kldakdsal',
+        discordLinkNonce: randomBytes(10).toString('hex'),
+        email: 'test@praise.io',
+      });
+      const response = await updateValidCommunity({ name: newCommunity.name });
+      expect(response.status).toBe(409);
+      expect(response.body.message).toBe(
+        `name '${newCommunity.name} 'already exists.`,
+      );
+    });
+
+    test('400 when hostname is not a valid hostname', async () => {
+      const response = await updateValidCommunity({ hostname: 'inva  lid' });
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Validation failed');
+    });
+
+    test('400 when email is not a valid email', async () => {
+      const response = await updateValidCommunity({ email: 'invalid' });
+      expect(response.status).toBe(400);
+      expect(response.body.message[0]).toBe('email must be an email');
+    });
+
+    test('400 when owners contains an invalid eth address', async () => {
+      const response = await updateValidCommunity({
+        owners: ['invalid', users[0].user.identityEthAddress],
+      });
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Validation failed');
+    });
+
+    test('400 when owners contains a duplicate eth address', async () => {
+      const response = await updateValidCommunity({
+        owners: [
+          users[0].user.identityEthAddress,
+          users[0].user.identityEthAddress,
+        ],
+      });
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Validation failed');
+    });
+
+    test('400 when creator is not in owners', async () => {
+      const response = await updateValidCommunity({
+        owners: [users[1].user.identityEthAddress],
+      });
+      expect(response.status).toBe(500);
+    });
+
+    test('400 when owners contain invalid address', async () => {
+      const response = await updateValidCommunity({
+        owners: ['invalid', users[0].user.identityEthAddress],
+      });
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Validation failed');
+    });
+
+    test('200 when authenticated as setupWeb and correct data is sent', async () => {
+      const newEmail = 'test1234@praise.io';
+      const response = await updateValidCommunity({ email: newEmail });
+      const rb = response.body;
+      expect(response.status).toBe(200);
+      expect(rb.email).toBe(newEmail);
     });
   });
 });
