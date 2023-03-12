@@ -4,14 +4,18 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Document, model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import {
+  ArrayMinSize,
   IsArray,
-  IsBoolean,
+  IsBoolean, IsEmail,
   IsEnum,
   IsOptional,
-  IsString,
+  IsString, Validate, ValidateNested
 } from 'class-validator';
 import { DiscordLinkState } from '../enums/discord-link-state';
 import { IsEthAddress } from '@/shared/validators.shared';
+import { isValidUsername } from '@/users/utils/is-valid-username';
+import { isValidCommunityName } from '../utils/isValidCommunityName';
+import { isValidOwners } from '../utils/isValidOwners';
 
 export type CommunityDocument = Community & Document;
 
@@ -46,9 +50,22 @@ export class Community {
     required: true,
     minLength: 4,
     maxLength: 20,
+
   })
   @IsString()
-  @Prop({ type: String, required: true, minlength: 4, maxlength: 20 })
+  @Prop({
+    type: String,
+    required: true,
+    minlength: 4,
+    maxlength: 20,
+    unique: true,
+    validate: {
+      validator: (name: string) =>
+        Promise.resolve(isValidCommunityName(name)),
+      message:
+        'Invalid name, only alphanumeric characters, underscores, dots, and hyphens are allowed.',
+    },
+  })
   name: string;
 
   @ApiProperty({
@@ -57,6 +74,7 @@ export class Community {
     maxLength: 256,
   })
   @IsString()
+  @IsEmail()
   @Prop({ type: String, required: true, minlength: 8, maxlength: 256 })
   email: string;
 
@@ -72,8 +90,17 @@ export class Community {
     required: true,
   })
   @IsArray()
+  // owners should contain creator so it has at least one owner
+  @ArrayMinSize(1)
   //TODO: Validate that all addresses are valid ethereum addresses
-  @Prop({ type: [String], required: true, length: 42 })
+  @Prop({ type: [String], required: true, length: 42,
+    validate: {
+      validator: (owners: string[]) =>
+        Promise.resolve(isValidOwners(owners)),
+      message:
+        'Invalid username, only alphanumeric characters, underscores, dots, and hyphens are allowed.',
+    },
+  })
   owners: string[];
 
   @ApiProperty({ example: '0980987846534', required: false, maxLength: 32 })
@@ -84,7 +111,7 @@ export class Community {
 
   @ApiProperty({ example: 'oiujoiuoo8u', maxLength: 16 })
   @IsString()
-  @Prop({ type: String, maxlength: 16 })
+  @Prop({ type: String, length: 10 })
   discordLinkNonce?: string;
 
   @ApiProperty({ example: true })

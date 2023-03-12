@@ -10,13 +10,16 @@ import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
 import { ethers } from 'ethers';
 import { DiscordLinkState } from './enums/discord-link-state';
+import { randomBytes } from 'crypto';
+import { doesOwnerIncludesCreator } from './utils/doesOwnerIncludesCreator';
 
 @Injectable()
 export class CommunityService {
   constructor(
     @InjectModel(Community.name)
-    private communityModel: typeof CommunityModel,
-  ) {}
+    private communityModel: typeof CommunityModel
+  ) {
+  }
 
   /**
    * Convenience method to get the Community Model
@@ -40,7 +43,7 @@ export class CommunityService {
    * @returns
    */
   async findAllPaginated(
-    options: PaginatedQueryDto,
+    options: PaginatedQueryDto
   ): Promise<CommunityPaginatedResponseDto> {
     const { page, limit, sortColumn, sortType } = options;
     const query = {} as any;
@@ -53,11 +56,11 @@ export class CommunityService {
       query,
       limit,
       page,
-      sort,
+      sort
     };
 
     const communityPagination = await this.communityModel.paginate(
-      paginateQuery,
+      paginateQuery
     );
     if (!communityPagination)
       throw new ServiceException('Failed to query communities');
@@ -67,10 +70,13 @@ export class CommunityService {
 
   async update(
     _id: Types.ObjectId,
-    community: UpdateCommunityInputDto,
+    community: UpdateCommunityInputDto
   ): Promise<Community> {
     const communityDocument = await this.communityModel.findById(_id);
     if (!communityDocument) throw new ServiceException('Community not found.');
+    if (community.owners) {
+      doesOwnerIncludesCreator(community.owners, communityDocument.creator);
+    }
 
     for (const [k, v] of Object.entries(community)) {
       communityDocument.set(k, v);
@@ -81,9 +87,13 @@ export class CommunityService {
   }
 
   async create(communityDto: CreateCommunityInputDto): Promise<Community> {
+    doesOwnerIncludesCreator(communityDto.owners, communityDto.creator);
     const community = new this.communityModel({
       ...communityDto,
       isPublic: true,
+
+      // it produces a random string of 10 characters
+      discordLinkNonce: randomBytes(5).toString('hex')
     });
     await community.save();
     return community.toObject();
@@ -91,7 +101,7 @@ export class CommunityService {
 
   async linkDiscord(
     communityId: Types.ObjectId,
-    linkDiscordBotDto: LinkDiscordBotDto,
+    linkDiscordBotDto: LinkDiscordBotDto
   ): Promise<Community> {
     const community = await this.findOneById(communityId);
     if (!community) throw new ServiceException('Community not found.');
@@ -100,20 +110,20 @@ export class CommunityService {
     const generatedMsg = this.generateLinkDiscordMessage({
       nonce: community.discordLinkNonce as string,
       guildId: community.discordGuildId as string,
-      communityId: String(communityId),
+      communityId: String(communityId)
     });
 
     // Verify signature against generated message
     // Recover signer and compare against community creator address
     const signerAddress = ethers.utils.verifyMessage(
       generatedMsg,
-      linkDiscordBotDto.signedMessage,
+      linkDiscordBotDto.signedMessage
     );
     if (signerAddress?.toLowerCase() !== community.creator.toLowerCase()) {
       throw new ServiceException('Verification failed');
     }
     return this.update(communityId, {
-      discordLinkState: DiscordLinkState.ACTIVE,
+      discordLinkState: DiscordLinkState.ACTIVE
     });
   }
 
