@@ -11,12 +11,9 @@ import {
   IsEnum,
   IsOptional,
   IsString,
-  Validate,
-  ValidateNested,
 } from 'class-validator';
 import { DiscordLinkState } from '../enums/discord-link-state';
 import { IsEthAddress } from '@/shared/validators.shared';
-import { isValidUsername } from '@/users/utils/is-valid-username';
 import { isValidCommunityName } from '../utils/isValidCommunityName';
 import { isValidOwners } from '../utils/isValidOwners';
 

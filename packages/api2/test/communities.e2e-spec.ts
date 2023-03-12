@@ -15,7 +15,6 @@ import {
   loginUser,
 } from './test.common';
 import { runDbMigrations } from '@/database/migrations';
-import { Praise } from '@/praise/schemas/praise.schema';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
 import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
@@ -108,8 +107,6 @@ describe('Communities (E2E)', () => {
   });
 
   describe('POST /api/communities', () => {
-    beforeEach(async () => {});
-
     test('401 when not authenticated', async () => {
       return request(server).post(`/communities`).send().expect(401);
     });
@@ -257,7 +254,7 @@ describe('Communities (E2E)', () => {
       expect(response.status).toBe(201);
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkNonce.length).toBe(10);
-      expect(rb.isPublic).toBe(true);
+      expect(rb.isPublic).toBeTrue();
     });
   });
 
@@ -335,7 +332,7 @@ describe('Communities (E2E)', () => {
       expect(rb.name).toBe('test');
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkState).toBe(DiscordLinkState.ACTIVE);
-      expect(rb.isPublic).toBe(true);
+      expect(rb.isPublic).toBeTrue();
     });
 
     test('400 when someone else wants to link discord to community instead of creator', async () => {
