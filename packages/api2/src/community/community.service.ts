@@ -10,6 +10,8 @@ import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
 import { ethers } from 'ethers';
 import { DiscordLinkState } from './enums/discord-link-state';
+import { randomBytes } from 'crypto';
+import { assertOwnersIncludeCreator } from './utils/assert-owners-include-creator';
 
 @Injectable()
 export class CommunityService {
@@ -19,7 +21,7 @@ export class CommunityService {
   ) {}
 
   /**
-   * Convenience method to get the EventLog Model
+   * Convenience method to get the Community Model
    * @returns
    */
   getModel(): typeof CommunityModel {
@@ -35,7 +37,7 @@ export class CommunityService {
   }
 
   /**
-   * Find all event logs. Paginated.
+   * Find all communities. Paginated.
    * @param options
    * @returns
    */
@@ -60,7 +62,7 @@ export class CommunityService {
       paginateQuery,
     );
     if (!communityPagination)
-      throw new ServiceException('Failed to query event logs');
+      throw new ServiceException('Failed to query communities');
 
     return communityPagination;
   }
@@ -71,6 +73,9 @@ export class CommunityService {
   ): Promise<Community> {
     const communityDocument = await this.communityModel.findById(_id);
     if (!communityDocument) throw new ServiceException('Community not found.');
+    if (community.owners) {
+      assertOwnersIncludeCreator(community.owners, communityDocument.creator);
+    }
 
     for (const [k, v] of Object.entries(community)) {
       communityDocument.set(k, v);
@@ -81,9 +86,12 @@ export class CommunityService {
   }
 
   async create(communityDto: CreateCommunityInputDto): Promise<Community> {
+    assertOwnersIncludeCreator(communityDto.owners, communityDto.creator);
     const community = new this.communityModel({
       ...communityDto,
       isPublic: true,
+      // it produces a random string of 5 characters
+      discordLinkNonce: randomBytes(5).toString('hex'),
     });
     await community.save();
     return community.toObject();
@@ -93,10 +101,12 @@ export class CommunityService {
     communityId: Types.ObjectId,
     linkDiscordBotDto: LinkDiscordBotDto,
   ): Promise<Community> {
-    const community = await this.findOneById(communityId);
+    const community = await this.getModel().findById(communityId);
     if (!community) throw new ServiceException('Community not found.');
     if (community.discordLinkState === DiscordLinkState.ACTIVE)
       throw new ServiceException('Community is already active.');
+
+    // Generate message to be signed
     const generatedMsg = this.generateLinkDiscordMessage({
       nonce: community.discordLinkNonce as string,
       guildId: community.discordGuildId as string,
@@ -112,9 +122,10 @@ export class CommunityService {
     if (signerAddress?.toLowerCase() !== community.creator.toLowerCase()) {
       throw new ServiceException('Verification failed');
     }
-    return this.update(communityId, {
-      discordLinkState: DiscordLinkState.ACTIVE,
-    });
+
+    community.discordLinkState = DiscordLinkState.ACTIVE;
+    await community.save();
+    return community;
   }
 
   /**
