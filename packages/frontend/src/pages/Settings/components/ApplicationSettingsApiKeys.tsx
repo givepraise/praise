@@ -1,10 +1,12 @@
 import { useRecoilValue } from 'recoil';
-import { ApiKeysListQuery } from '@/model/apikeys/apikeys';
+import { ApiKeysListQuery, useApiKeyPeriod } from '@/model/apikeys/apikeys';
 import { Button } from '@/components/ui/Button';
 import { useState } from 'react';
 import ApplicationSettingsApiKeyForm from './ApplicationSettingsApiKeyForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { CreateApiKeyInputDto } from '@/model/apikeys/dto/create-api-key-input.dto';
+import { isResponseOk } from '@/model/api';
 
 const ApplicationSettingsApiKeys = (): JSX.Element => {
   const [openApiKeyModal, setOpenApiKeyModal] = useState(false);
@@ -13,6 +15,33 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
   const handleCloseApiKeyModal = (): void => {
     setOpenApiKeyModal(false);
   };
+
+  /**
+   * Handle adding a new API key
+   *
+   * @param data
+   */
+  const handleAddApiKey = async (data: CreateApiKeyInputDto): Promise<void> => {
+    setOpenApiKeyModal(false);
+
+    const response = await useApiKeyPeriod(data);
+    console.log();
+    if (isResponseOk(response)) {
+      // const setting = response.data;
+      // toast.success(`Saved setting "${setting.label}"`);
+    }
+  };
+
+  // const onSubmit = async (
+  //   setting: Setting
+  // ): Promise<AxiosResponse<Setting> | AxiosError | undefined> => {
+  //   const response = await setSetting(setting);
+  //   if (isResponseOk(response)) {
+  //     const setting = response.data;
+  //     toast.success(`Saved setting "${setting.label}"`);
+  //   }
+  //   return response;
+  // };
 
   return (
     <>
@@ -38,6 +67,7 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
       <ApplicationSettingsApiKeyForm
         open={openApiKeyModal}
         close={handleCloseApiKeyModal}
+        onsubmit={handleAddApiKey}
       />
     </>
   );
