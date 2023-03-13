@@ -1,8 +1,8 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -24,6 +24,7 @@ import { CreateCommunityInputDto } from './dto/create-community-input.dto';
 import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
 import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Controller('communities')
 @ApiTags('Communities')
@@ -90,7 +91,8 @@ export class CommunityController {
   @ApiParam({ name: 'id', type: String })
   async findOne(@Param('id', ObjectIdPipe) id: ObjectId): Promise<Community> {
     const community = await this.communityService.findOne(id);
-    if (!community) throw new BadRequestException('Community not found.');
+    if (!community)
+      throw new NotFoundException(errorMessages.communityNotFound.message);
     return community;
   }
 

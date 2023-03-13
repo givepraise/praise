@@ -1,4 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { ServiceException } from '@/shared/exceptions/service-exception';
@@ -10,6 +13,7 @@ import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
 import { ethers } from 'ethers';
 import { DiscordLinkState } from './enums/discord-link-state';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Injectable()
 export class CommunityService {
@@ -70,7 +74,8 @@ export class CommunityService {
     community: UpdateCommunityInputDto,
   ): Promise<Community> {
     const communityDocument = await this.communityModel.findById(_id);
-    if (!communityDocument) throw new ServiceException('Community not found.');
+    if (!communityDocument)
+      throw new NotFoundException(errorMessages.communityNotFound.message);
 
     for (const [k, v] of Object.entries(community)) {
       communityDocument.set(k, v);
@@ -94,7 +99,8 @@ export class CommunityService {
     linkDiscordBotDto: LinkDiscordBotDto,
   ): Promise<Community> {
     const community = await this.findOneById(communityId);
-    if (!community) throw new ServiceException('Community not found.');
+    if (!community)
+      throw new NotFoundException(errorMessages.communityNotFound.message);
     if (community.discordLinkState === DiscordLinkState.ACTIVE)
       throw new ServiceException('Community is already active.');
     const generatedMsg = this.generateLinkDiscordMessage({
