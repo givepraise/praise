@@ -7220,7 +7220,8 @@ __metadata:
     jest-extended: ^3.1.0
     lodash: ^4.17.21
     mime-types: ^2.1.34
-    mongoose: ^6.7.0
+    mongodb: ^4.14.0
+    mongoose: ^6.10.2
     mongoose-paginate-ts: ^1.2.7
     nestjs-request-context: ^2.1.0
     passport: ^0.6.0
@@ -10064,7 +10065,7 @@ __metadata:
     discord.js: ^14.5.0
     env-cmd: ^10.1.0
     eslint: ^8.18.0
-    mongoose: ^6.6.5
+    mongoose: ^6.10.2
     nodemon: ^2.0.20
     randomstring: ^1.2.2
     ts-node: ^10.5.0
@@ -16206,6 +16207,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mongodb@npm:4.14.0, mongodb@npm:^4.14.0":
+  version: 4.14.0
+  resolution: "mongodb@npm:4.14.0"
+  dependencies:
+    "@aws-sdk/credential-providers": ^3.186.0
+    bson: ^4.7.0
+    mongodb-connection-string-url: ^2.5.4
+    saslprep: ^1.0.3
+    socks: ^2.7.1
+  dependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    saslprep:
+      optional: true
+  checksum: ab3b8f27e99fab4ea0c163067158ad360a161edf9ebf74368b9b561da7b75d23c09282d530cb4e2fac32ea30eae29620e861d837d334ddbdfa50d57240c1bd8e
+  languageName: node
+  linkType: hard
+
 "mongodb@workspace:packages/mongodb":
   version: 0.0.0-use.local
   resolution: "mongodb@workspace:packages/mongodb"
@@ -16221,7 +16240,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose@npm:^6.4.4, mongoose@npm:^6.6.5, mongoose@npm:^6.7.0":
+"mongoose@npm:^6.10.2, mongoose@npm:^6.6.5":
+  version: 6.10.2
+  resolution: "mongoose@npm:6.10.2"
+  dependencies:
+    bson: ^4.7.0
+    kareem: 2.5.1
+    mongodb: 4.14.0
+    mpath: 0.9.0
+    mquery: 4.0.3
+    ms: 2.1.3
+    sift: 16.0.1
+  checksum: b90f0c9552ae0d638fe54c2d6c066862123209fbc18dcd05966761e760edffa9a5ab20c0f91af3cfbecf263d241ed0c0fa3ec25f6d674ade856a05151f36f4d9
+  languageName: node
+  linkType: hard
+
+"mongoose@npm:^6.4.4":
   version: 6.8.4
   resolution: "mongoose@npm:6.8.4"
   dependencies:
@@ -19936,6 +19970,7 @@ __metadata:
     dotenv: ^16.0.0
     env-cmd: ^10.1.0
     inquirer: ^8.2.4
+    mongoose: ^6.10.2
     ts-node: ^10.4.0
     typescript: ^4.5.4
   languageName: unknown
