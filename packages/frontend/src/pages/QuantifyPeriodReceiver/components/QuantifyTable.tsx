@@ -1,4 +1,4 @@
-import { PraiseDto } from '@/model/praise/praise.dto';
+import { Praise } from '@/model/praise/praise.dto';
 import getWeek from 'date-fns/getWeek';
 import parseISO from 'date-fns/parseISO';
 import groupBy from 'lodash/groupBy';
@@ -59,8 +59,8 @@ export const QuantifyTable = ({
   const [isQuantifyMultipleDialogOpen, setIsQuantifyMultipleDialogOpen] =
     React.useState(false);
   const [duplicateSearchDialogPraise, setDuplicateSearchDialogPraise] =
-    React.useState<PraiseDto | undefined>(undefined);
-  const [selectedPraises, setSelectedPraises] = React.useState<PraiseDto[]>([]);
+    React.useState<Praise | undefined>(undefined);
+  const [selectedPraises, setSelectedPraises] = React.useState<Praise[]>([]);
   const [selectAllChecked, setSelectAllChecked] =
     React.useState<boolean>(false);
 
@@ -72,11 +72,11 @@ export const QuantifyTable = ({
   ) as number[];
 
   const filterBySearchValue = React.useCallback(
-    (data: PraiseDto[] | undefined): PraiseDto[] => {
+    (data: Praise[] | undefined): Praise[] => {
       if (!data) return [];
       if (!searchValue) return data;
 
-      const filteredData = data.filter((praise: PraiseDto) => {
+      const filteredData = data.filter((praise: Praise) => {
         const searchString = searchValue.toLowerCase();
         const reason = praise.reason.toLowerCase();
         const giver = praise.giver.name.toLowerCase();
@@ -93,7 +93,7 @@ export const QuantifyTable = ({
 
   const handleDismiss = (): void => {
     if (selectedPraises.length > 0) {
-      selectedPraises.forEach((praise: PraiseDto) => {
+      selectedPraises.forEach((praise: Praise) => {
         void quantify(praise._id, 0, true, null);
       });
 
@@ -106,7 +106,7 @@ export const QuantifyTable = ({
       const originalPraise = selectedPraises[0];
       void quantify(originalPraise._id, originalScore, false, null);
 
-      selectedPraises.slice(1).forEach((praise: PraiseDto) => {
+      selectedPraises.slice(1).forEach((praise: Praise) => {
         void quantify(praise._id, 0, false, originalPraise._id);
       });
 
@@ -114,13 +114,13 @@ export const QuantifyTable = ({
     }
   };
 
-  const handleSetScore = (praise: PraiseDto, score: number): void => {
+  const handleSetScore = (praise: Praise, score: number): void => {
     void quantify(praise._id, score, false, null);
   };
 
   const handleSetMultipleScore = (
     score: number,
-    selectedPraises: PraiseDto[]
+    selectedPraises: Praise[]
   ): void => {
     const praiseIds = selectedPraises.map((praise) => praise._id);
 
@@ -136,7 +136,7 @@ export const QuantifyTable = ({
     setDuplicateSearchDialogPraise(undefined);
   };
 
-  const handleToggleCheckbox = (praise: PraiseDto): void => {
+  const handleToggleCheckbox = (praise: Praise): void => {
     setSelectAllChecked(false);
 
     if (selectedPraises.includes(praise)) {
@@ -169,13 +169,13 @@ export const QuantifyTable = ({
 
   const weeklyData = groupBy(
     sortBy(filterBySearchValue(data), (p) => p.createdAt),
-    (praise: PraiseDto) => {
+    (praise: Praise) => {
       if (!praise) return 0;
       return getWeek(parseISO(praise.createdAt), { weekStartsOn: 1 });
     }
   );
 
-  const isChecked = (praise: PraiseDto): boolean => {
+  const isChecked = (praise: Praise): boolean => {
     return selectedPraises.map((p) => p._id).includes(praise._id);
   };
 

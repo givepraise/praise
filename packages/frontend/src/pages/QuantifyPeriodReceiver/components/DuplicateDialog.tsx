@@ -4,7 +4,7 @@ import {
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from '@/model/praise/praise.dto';
+import { Praise as PraiseDto } from '@/model/praise/praise.dto';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';

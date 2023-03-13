@@ -1,10 +1,10 @@
-import { PraiseDto } from '@/model/praise/praise.dto';
+import { Praise } from '@/model/praise/praise.dto';
 import { faForward } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Tooltip } from '@mui/material';
 
 interface ForwarderTooltipProps {
-  praise: PraiseDto;
+  praise: Praise;
 }
 export const ForwarderTooltip = ({
   praise,

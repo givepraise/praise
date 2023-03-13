@@ -1,4 +1,4 @@
-import { PraiseDto } from '@/model/praise/praise.dto';
+import { Praise } from '@/model/praise/praise.dto';
 import { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import {
@@ -39,7 +39,7 @@ export const PraiseTableSelectedSortOption = atom<sortOptionsProps>({
 /**
  * Atom that stores individual Praise items linked to one or more @PraiseIdList
  */
-export const SinglePraise = atomFamily<PraiseDto | undefined, string>({
+export const SinglePraise = atomFamily<Praise | undefined, string>({
   key: 'SinglePraise',
   default: undefined,
 });
@@ -52,9 +52,9 @@ const SinglePraiseDetailsQuery = selectorFamily({
   key: 'SinglePraiseDetailsQuery',
   get:
     (praiseId: string) =>
-    ({ get }): AxiosResponse<PraiseDto> | AxiosError => {
+    ({ get }): AxiosResponse<Praise> | AxiosError => {
       return get(ApiAuthGet({ url: `/praise/${praiseId}` })) as
-        | AxiosResponse<PraiseDto>
+        | AxiosResponse<Praise>
         | AxiosError;
     },
 });
@@ -64,7 +64,7 @@ const SinglePraiseDetailsQuery = selectorFamily({
  */
 export const useLoadSinglePraiseDetails = (
   praiseId: string
-): AxiosResponse<PraiseDto> | AxiosError => {
+): AxiosResponse<Praise> | AxiosError => {
   const response = useRecoilValue(SinglePraiseDetailsQuery(praiseId));
   const setPraise = useSetRecoilState(SinglePraise(praiseId));
   React.useEffect(() => {
@@ -91,9 +91,9 @@ export const AllPraiseList = selectorFamily({
   key: 'AllPraiseList',
   get:
     (listKey: string) =>
-    ({ get }): PraiseDto[] | undefined => {
+    ({ get }): Praise[] | undefined => {
       const praiseIdList = get(PraiseIdList(listKey));
-      const allPraiseList: PraiseDto[] = [];
+      const allPraiseList: Praise[] = [];
       if (!praiseIdList) return undefined;
       for (const praiseId of praiseIdList) {
         const praise = get(SinglePraise(praiseId));
@@ -120,20 +120,20 @@ export type AllPraiseQueryParameters = {
  * @param query Sorting, filtering and pagination.
  */
 const AllPraiseQuery = selectorFamily<
-  AxiosResponse<PaginatedResponseBody<PraiseDto>> | AxiosError,
+  AxiosResponse<PaginatedResponseBody<Praise>> | AxiosError,
   AllPraiseQueryParameters
 >({
   key: 'AllPraiseQuery',
   get:
     (query: AllPraiseQueryParameters) =>
-    ({ get }): AxiosResponse<PaginatedResponseBody<PraiseDto>> | AxiosError => {
+    ({ get }): AxiosResponse<PaginatedResponseBody<Praise>> | AxiosError => {
       if (!query) throw new Error('Invalid query');
       const qs = Object.keys(query)
         .map((key) => `${key}=${query[key]}`)
         .join('&');
       const response = get(ApiAuthGet({ url: `/praise${qs ? `?${qs}` : ''}` }));
       return response as
-        | AxiosResponse<PaginatedResponseBody<PraiseDto>>
+        | AxiosResponse<PaginatedResponseBody<Praise>>
         | AxiosError;
     },
 });
@@ -165,7 +165,7 @@ export const AllPraiseQueryPagination = atomFamily<
 export const useAllPraise = (
   queryParams: AllPraiseQueryParameters,
   listKey: string
-): AxiosResponse<PaginatedResponseBody<PraiseDto>> | AxiosError => {
+): AxiosResponse<PaginatedResponseBody<Praise>> | AxiosError => {
   const allPraiseQueryResponse = useRecoilValue(AllPraiseQuery(queryParams));
 
   const [praisePagination, setPraisePagination] = useRecoilState(
@@ -175,7 +175,7 @@ export const useAllPraise = (
 
   const saveAllPraiseIdList = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (praiseList: PraiseDto[]) => {
+      async (praiseList: Praise[]) => {
         const allPraiseIdList = await snapshot.getPromise(
           PraiseIdList(listKey)
         );
@@ -193,7 +193,7 @@ export const useAllPraise = (
 
   const saveIndividualPraise = useRecoilCallback(
     ({ set }) =>
-      (praiseList: PraiseDto[]) => {
+      (praiseList: Praise[]) => {
         for (const praise of praiseList) {
           set(SinglePraise(praise._id), praise);
         }
@@ -262,7 +262,7 @@ export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
         dismissed: boolean,
         duplicatePraise: string | null
       ): Promise<void> => {
-        const response: AxiosResponse<PraiseDto[]> = await apiAuthClient.patch(
+        const response: AxiosResponse<Praise[]> = await apiAuthClient.patch(
           `/praise/${praiseId}/quantify`,
           {
             score,
@@ -306,11 +306,13 @@ export const useQuantifyMultiplePraise =
           params: quantifyMultipleParams,
           praiseIds: string[]
         ): Promise<void> => {
-          const response: AxiosResponse<PraiseDto[]> =
-            await apiAuthClient.patch('/praise/quantify', {
+          const response: AxiosResponse<Praise[]> = await apiAuthClient.patch(
+            '/praise/quantify',
+            {
               params,
               praiseIds,
-            });
+            }
+          );
           if (isResponseOk(response)) {
             response.data.forEach((praise) => {
               set(SinglePraise(praise._id), praise);

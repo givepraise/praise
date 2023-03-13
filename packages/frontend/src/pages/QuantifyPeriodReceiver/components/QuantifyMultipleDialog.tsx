@@ -4,7 +4,7 @@ import {
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from '@/model/praise/praise.dto';
+import { Praise } from '@/model/praise/praise.dto';
 import { useState } from 'react';
 import { QuantifySlider } from '@/pages/QuantifyPeriodReceiver/components/QuantifySlider';
 import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
@@ -13,9 +13,9 @@ import { Button } from '@/components/ui/Button';
 interface QuantifyMultipleDialogProps {
   open: boolean;
   onClose(): void;
-  selectedPraises: PraiseDto[];
+  selectedPraises: Praise[];
   allowedValues: number[];
-  onSetScore(newScore: number, selectedPraises: PraiseDto[]);
+  onSetScore(newScore: number, selectedPraises: Praise[]);
 }
 
 export const QuantifyMultipleDialog = ({

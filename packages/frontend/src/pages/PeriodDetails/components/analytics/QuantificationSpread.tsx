@@ -6,7 +6,7 @@ import { PeriodPageParams } from '@/model/periods/periods';
 import { PeriodPraiseOutliers } from '@/model/periods/periodAnalytics';
 import { BoxPlot } from './Boxplot';
 import { Pagination } from './Pagination';
-import { QuantificationDto } from '@/model/quantification/quantification.dto';
+import { Quantification } from '@/model/quantification/quantification.dto';
 
 const QuantificationSpreadPagination = atom<number>({
   key: 'QuantificationSpreadPagination',
@@ -71,7 +71,7 @@ export const QuantificationSpread = (): JSX.Element | null => {
         borderWidth: 1,
         itemRadius: 0,
         data: data.map((p) =>
-          p.quantifications.map((q: QuantificationDto) => q.score)
+          p.quantifications.map((q: Quantification) => q.score)
         ),
       },
     ],

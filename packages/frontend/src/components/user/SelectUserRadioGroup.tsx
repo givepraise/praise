@@ -3,10 +3,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { RadioGroup } from '@headlessui/react';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from './UserAvatarAndName';
-import { UserDto } from '@/model/user/dto/user.dto';
+import { User } from '@/model/user/dto/user.dto';
 
 interface Props {
-  users?: UserDto[];
+  users?: User[];
   value?: string;
   onSelect(userId: string): void;
 }

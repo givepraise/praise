@@ -114,6 +114,15 @@ describe('Period Settings (E2E)', () => {
         key: 'PRAISE_SUCCESS_MESSAGE',
         value: '✅ Praise {@receivers} {reason}',
         type: 'String',
+        group: 1,
+        subgroup: 1,
+      });
+      await settingsSeeder.seedSettings({
+        key: 'ANOTHER_SETTING',
+        value: '32',
+        type: 'Integer',
+        group: 1,
+        subgroup: 2,
       });
     });
 
@@ -129,7 +138,7 @@ describe('Period Settings (E2E)', () => {
       ).expect(200);
 
       expect(response.body).toBeDefined();
-      expect(response.body.length).toBe(1);
+      expect(response.body.length).toBe(2);
 
       const s = response.body[0];
       expect(s).toBeDefined();
@@ -137,6 +146,58 @@ describe('Period Settings (E2E)', () => {
       expect(s.value).toBe(setting.value);
       expect(s).toBeProperlySerialized();
       expect(s).toBeValidClass(Setting);
+    });
+
+    test('200 and correct body when filtering on key', async () => {
+      const response = await authorizedGetRequest(
+        `/settings?key=PRAISE_SUCCESS_MESSAGE`,
+        app,
+        users[0].accessToken,
+      ).expect(200);
+
+      const s = response.body[0];
+      expect(s).toBeValidClass(Setting);
+      expect(s).toBeProperlySerialized();
+      expect(s._id).toBe(setting._id.toString());
+    });
+
+    test('200 and correct body when filtering on type', async () => {
+      const response = await authorizedGetRequest(
+        `/settings?type=String`,
+        app,
+        users[0].accessToken,
+      ).expect(200);
+
+      const s = response.body[0];
+      expect(s).toBeValidClass(Setting);
+      expect(s).toBeProperlySerialized();
+      expect(s._id).toBe(setting._id.toString());
+    });
+
+    test('200 and correct body when filtering on group', async () => {
+      const response = await authorizedGetRequest(
+        `/settings?group=1`,
+        app,
+        users[0].accessToken,
+      ).expect(200);
+
+      expect(response.body).toBeDefined();
+      expect(response.body.length).toBe(2);
+    });
+
+    test('200 and correct body when filtering on subgroup', async () => {
+      const response = await authorizedGetRequest(
+        `/settings?subgroup=2`,
+        app,
+        users[0].accessToken,
+      ).expect(200);
+
+      expect(response.body).toBeDefined();
+      expect(response.body.length).toBe(1);
+      const s = response.body[0];
+      expect(s).toBeValidClass(Setting);
+      expect(s).toBeProperlySerialized();
+      expect(s.key).toBe('ANOTHER_SETTING');
     });
   });
 

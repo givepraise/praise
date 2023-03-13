@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Patch,
+  Query,
   Res,
   SerializeOptions,
   UploadedFile,
@@ -24,6 +25,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ConstantsProvider } from '@/constants/constants.provider';
 import { Response } from 'express';
 import { upploadStorage } from './utils/upload-storage';
+import { SettingsFilterDto } from './dto/settings-filter.dto';
 
 @Controller('settings')
 @ApiTags('Settings')
@@ -48,8 +50,8 @@ export class SettingsController {
     type: [Setting],
   })
   @Permissions(Permission.SettingsView)
-  async findAll(): Promise<Setting[]> {
-    return this.settingsService.findAll();
+  async findAll(@Query() filter?: SettingsFilterDto): Promise<Setting[]> {
+    return this.settingsService.findAll(filter);
   }
 
   @Get(':id')

@@ -35,7 +35,7 @@ export const PeriodDetailsHead = (): JSX.Element | null => {
       <div className={'float-right'}>
         {' '}
         <InlineLabel
-          text={period?.status as string}
+          text={period?.status}
           className={
             period?.status === 'OPEN'
               ? 'bg-themecolor-alt-1/50'

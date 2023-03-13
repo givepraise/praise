@@ -46,9 +46,8 @@ export const PeriodNameForm = (): JSX.Element | null => {
     values: Record<string, string>
   ): Promise<SubmissionErrors> => {
     if (!period || period.name === values.name) return; // Only save if name has changed
-    const periodUpdates = { _id: period._id, name: values.name };
 
-    const response = await updatePeriod(periodUpdates);
+    const response = await updatePeriod(period._id, { name: values.name });
     if (isResponseOk(response)) {
       toast.success('Period name saved');
       return {};
