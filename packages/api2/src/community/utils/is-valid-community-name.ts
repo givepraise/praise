@@ -1,6 +1,6 @@
 /**
- * A valid owners is:
- * - is lowercase
+ * A valid community name is:
+ * - lowercase
  * - minimum 4 characters
  * - maximum 20 characters
  * - only alphanumeric characters, underscores, dots, and hyphens

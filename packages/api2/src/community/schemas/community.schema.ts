@@ -14,8 +14,9 @@ import {
 } from 'class-validator';
 import { DiscordLinkState } from '../enums/discord-link-state';
 import { IsEthAddress } from '@/shared/validators.shared';
-import { isValidCommunityName } from '../utils/isValidCommunityName';
-import { isValidOwners } from '../utils/isValidOwners';
+import { isValidCommunityName } from '../utils/is-valid-community-name';
+import { isValidOwners } from '../utils/is-valid-owners';
+import { isValidHostname } from '../utils/is-valid-hostname';
 
 export type CommunityDocument = Community & Document;
 
@@ -32,19 +33,25 @@ export class Community {
   @ExposeId()
   _id: Types.ObjectId;
 
-  // TODO: Add a validator to check if the hostname is valid
   @ApiProperty({
     example: 'banklessdao.givepraise.xyz',
     required: true,
-    minLength: 10,
+    minLength: 6,
     maxLength: 64,
   })
   @IsString()
-  @Prop({ type: String, required: true, minlength: 10, maxlength: 64 })
+  @Prop({
+    type: String,
+    required: true,
+    minlength: 6,
+    maxlength: 64,
+    validate: {
+      validator: (name: string) => Promise.resolve(isValidHostname(name)),
+      message: 'Invalid hostname.',
+    },
+  })
   hostname: string;
 
-  // TODO: Add a validator to check if the name is valid
-  // only alphanumeric characters, underscores, dots, and hyphens are allowed.
   @ApiProperty({
     example: 'BanklessDAO',
     required: true,
@@ -90,15 +97,12 @@ export class Community {
   @IsArray()
   // owners should contain creator so it has at least one owner
   @ArrayMinSize(1)
-  //TODO: Validate that all addresses are valid ethereum addresses
   @Prop({
     type: [String],
     required: true,
     length: 42,
     validate: {
       validator: (owners: string[]) => Promise.resolve(isValidOwners(owners)),
-      message:
-        'Invalid username, only alphanumeric characters, underscores, dots, and hyphens are allowed.',
     },
   })
   owners: string[];

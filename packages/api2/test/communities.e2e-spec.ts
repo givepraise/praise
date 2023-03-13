@@ -203,6 +203,14 @@ describe('Communities (E2E)', () => {
       expect(response.body.message).toBe('Validation failed');
     });
 
+    test('400 when hostname is not a valid hostname', async () => {
+      const response = await createValidCommunity({
+        hostname: 'praise.hostname..com',
+      });
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Validation failed');
+    });
+
     test('400 when email is not a valid email', async () => {
       const response = await createValidCommunity({ email: 'invalid' });
       expect(response.status).toBe(400);
@@ -232,7 +240,7 @@ describe('Communities (E2E)', () => {
       const response = await createValidCommunity({
         owners: [users[1].user.identityEthAddress],
       });
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(400);
     });
 
     test('400 when owners contain invalid address', async () => {
@@ -593,7 +601,7 @@ describe('Communities (E2E)', () => {
       const response = await updateValidCommunity({
         owners: [users[1].user.identityEthAddress],
       });
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(400);
     });
 
     test('400 when owners contain invalid address', async () => {

@@ -11,7 +11,7 @@ import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
 import { ethers } from 'ethers';
 import { DiscordLinkState } from './enums/discord-link-state';
 import { randomBytes } from 'crypto';
-import { doesOwnerIncludesCreator } from './utils/doesOwnerIncludesCreator';
+import { assertOwnersIncludeCreator } from './utils/assert-owners-include-creator';
 
 @Injectable()
 export class CommunityService {
@@ -74,7 +74,7 @@ export class CommunityService {
     const communityDocument = await this.communityModel.findById(_id);
     if (!communityDocument) throw new ServiceException('Community not found.');
     if (community.owners) {
-      doesOwnerIncludesCreator(community.owners, communityDocument.creator);
+      assertOwnersIncludeCreator(community.owners, communityDocument.creator);
     }
 
     for (const [k, v] of Object.entries(community)) {
@@ -86,12 +86,11 @@ export class CommunityService {
   }
 
   async create(communityDto: CreateCommunityInputDto): Promise<Community> {
-    doesOwnerIncludesCreator(communityDto.owners, communityDto.creator);
+    assertOwnersIncludeCreator(communityDto.owners, communityDto.creator);
     const community = new this.communityModel({
       ...communityDto,
       isPublic: true,
-
-      // it produces a random string of 10 characters
+      // it produces a random string of 5 characters
       discordLinkNonce: randomBytes(5).toString('hex'),
     });
     await community.save();
@@ -102,10 +101,12 @@ export class CommunityService {
     communityId: Types.ObjectId,
     linkDiscordBotDto: LinkDiscordBotDto,
   ): Promise<Community> {
-    const community = await this.findOneById(communityId);
+    const community = await this.getModel().findById(communityId);
     if (!community) throw new ServiceException('Community not found.');
     if (community.discordLinkState === DiscordLinkState.ACTIVE)
       throw new ServiceException('Community is already active.');
+
+    // Generate message to be signed
     const generatedMsg = this.generateLinkDiscordMessage({
       nonce: community.discordLinkNonce as string,
       guildId: community.discordGuildId as string,
@@ -121,9 +122,10 @@ export class CommunityService {
     if (signerAddress?.toLowerCase() !== community.creator.toLowerCase()) {
       throw new ServiceException('Verification failed');
     }
-    return this.update(communityId, {
-      discordLinkState: DiscordLinkState.ACTIVE,
-    });
+
+    community.discordLinkState = DiscordLinkState.ACTIVE;
+    await community.save();
+    return community;
   }
 
   /**
