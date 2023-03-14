@@ -5,7 +5,7 @@ import { randomBytes } from 'crypto';
 
 const dbUrl = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME!}:${process
   .env.MONGO_INITDB_ROOT_PASSWORD!}@${process.env.MONGO_HOST!}:${process.env
-  .MONGO_PORT!}`;
+  .MONGO_PORT!}?authSource=admin&appname=PraiseApiMigrations`;
 
 const up = async (): Promise<void> => {
   const communities = await CommunityModel.find({});
@@ -29,11 +29,12 @@ const up = async (): Promise<void> => {
     discordLinkState: 'ACTIVE',
   };
   const community = await CommunityModel.create(communityData);
+  const communityDbName = community._id.toString();
 
   try {
     const client = new MongoClient(dbUrl);
     const dbFrom = client.db('praise_db');
-    const dbTo = client.db(community._id.toString());
+    const dbTo = client.db(communityDbName);
 
     const collections = await dbFrom.listCollections().toArray();
     for (const collection of collections) {
@@ -69,6 +70,14 @@ const up = async (): Promise<void> => {
       // Drop old collection
       await dbFrom.collection(collectionName).drop();
     }
+
+    // Grant readwrite permissions to new database
+    const dbAdmin = client.db().admin();
+    await dbAdmin.command({
+      grantRolesToUser: process.env.MONGO_USERNAME,
+      roles: [{ role: 'readWrite', db: communityDbName }],
+    });
+
     await client.close();
   } catch (error) {
     console.error(error);
