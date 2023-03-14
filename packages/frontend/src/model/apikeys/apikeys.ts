@@ -7,7 +7,10 @@ import {
 import { AxiosResponse, AxiosError } from 'axios';
 import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from '../api';
 import { ApiKey } from './dto/apikeys.dto';
-import { CreateApiKeyResponseDto } from './dto/create-api-key-input.dto';
+import {
+  CreateApiKeyInputDto,
+  CreateApiKeyResponseDto,
+} from './dto/create-api-key-input.dto';
 import { useApiAuthClient } from '@/utils/api';
 
 /**
@@ -23,15 +26,9 @@ export const ApiKeysListQuery = selector<ApiKey[]>({
   },
 });
 
-// type useSetApiKeyReturn = {
-//   setApiKey: (
-//     createdApiKey: CreateApiKeyResponseDto
-//   ) => Promise<AxiosResponse<CreateApiKeyResponseDto> | AxiosError | undefined>;
-// };
-
 type useSetApiKeyReturn = {
   setApiKey: (
-    createdApiKey: CreateApiKeyResponseDto
+    data: CreateApiKeyInputDto
   ) => Promise<AxiosResponse<CreateApiKeyResponseDto> | AxiosError | undefined>;
 };
 
@@ -45,7 +42,9 @@ export const useSetApiKey = (): useSetApiKeyReturn => {
     ({ set }) =>
       async (
         data
-      ): Promise<AxiosResponse<CreateApiKeyResponseDto> | AxiosError> => {
+      ): Promise<
+        AxiosResponse<CreateApiKeyResponseDto> | AxiosError | undefined
+      > => {
         const response = await apiAuthClient.post('/api-key', data);
         if (isResponseOk(response)) {
           const createdApiKey = response.data as CreateApiKeyResponseDto;
@@ -56,3 +55,23 @@ export const useSetApiKey = (): useSetApiKeyReturn => {
   );
   return { setApiKey };
 };
+
+// export const useCreatePeriod = (): useCreatePeriodReturn => {
+//   const apiAuthClient = useApiAuthClient();
+
+//   const createPeriod = useRecoilCallback(
+//     ({ set }) =>
+//       async (
+//         periodInput: CreatePeriodInputDto
+//       ): Promise<AxiosResponse<Praise> | AxiosError> => {
+//         const response = await apiAuthClient.post('/periods', periodInput);
+//         if (isResponseOk(response)) {
+//           const period = response.data as PeriodDetailsDto;
+//           set(SinglePeriod(period._id), period);
+//         }
+//         return response as AxiosResponse | AxiosError;
+//       }
+//   );
+
+//   return { createPeriod };
+// };

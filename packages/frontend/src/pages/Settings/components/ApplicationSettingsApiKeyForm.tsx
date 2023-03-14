@@ -5,7 +5,7 @@ import { Dialog } from '@headlessui/react';
 import { Button } from '@/components/ui/Button';
 import { Form } from 'react-final-form';
 import { StringInput } from '@/components/form/StringInput';
-import { RadioInput } from '@/components/form/RadioInput';
+import { RadioInputKeys } from '@/components/form/RadioInputKeys';
 import { CreateApiKeyInputDto } from '@/model/apikeys/dto/create-api-key-input.dto';
 
 type ApplicationSettingsApiKeyFormProps = {
@@ -60,7 +60,7 @@ const ApplicationSettingsApiKeyForm = ({
                 <Form
                   onSubmit={onSubmit}
                   encType="multipart/form-data"
-                  initialValues={{ option: 'API_KEY_READ' }}
+                  initialValues={{ description: '', role: 'API_KEY_READ' }}
                   render={({ handleSubmit }): JSX.Element => {
                     return (
                       <>
@@ -84,10 +84,13 @@ const ApplicationSettingsApiKeyForm = ({
                               <label className="block font-bold group">
                                 Access
                               </label>
-                              <RadioInput
+                              <RadioInputKeys
                                 name="role"
                                 apiResponse={null}
-                                values={['Read', 'Read/Write']}
+                                values={{
+                                  API_KEY_READ: 'Read',
+                                  API_KEY_READWRITE: 'Read/Write',
+                                }}
                                 dbValue={'API_KEY_READ'}
                               />
                             </div>

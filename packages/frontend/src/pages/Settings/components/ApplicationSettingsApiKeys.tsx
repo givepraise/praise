@@ -26,11 +26,15 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
   const handleAddApiKey = async (data: CreateApiKeyInputDto): Promise<void> => {
     setOpenApiKeyModal(false);
 
+    // const TESTVARIABLE: CreateApiKeyInputDto = {
+    //   description: 'test api key',
+    //   role: 'API_KEY_READWRITE',
+    // };
+
     const response = await setApiKey(data);
     console.log(data);
     if (isResponseOk(response)) {
-      // const setting = response.data;
-      // toast.success(`Saved setting "${setting.label}"`);
+      console.log(response.data);
     }
   };
 

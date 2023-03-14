@@ -7,11 +7,11 @@ interface RadioInputParams {
   name: string;
   apiResponse: AxiosResponse<unknown> | AxiosError | null;
   dbValue: string;
-  values: string[];
+  values: Record<string, string>;
   disabled?: boolean;
 }
 
-export const RadioInput = ({
+export const RadioInputKeys = ({
   name,
   apiResponse,
   dbValue,
@@ -20,14 +20,12 @@ export const RadioInput = ({
 }: RadioInputParams): JSX.Element => {
   const [currentValue, setCurrentValue] = useState<string>(dbValue);
 
-  console.log(dbValue);
-
   return (
     <Field name={name} key={name} type="radio">
       {({ input }): JSX.Element => {
         return (
           <div>
-            {values.map((value) => {
+            {Object.entries(values).map(([value, label]) => {
               return (
                 <div key={value}>
                   <label>
@@ -40,7 +38,7 @@ export const RadioInput = ({
                       checked={value === currentValue}
                       onClick={(): void => setCurrentValue(value)}
                     />
-                    <span className="ml-2">{value}</span>
+                    <span className="ml-2">{label}</span>
                   </label>
                   {apiResponse && (
                     <FieldErrorMessage name="name" apiResponse={apiResponse} />
