@@ -12,10 +12,15 @@ import { MongoValidationErrorFilter } from './shared/filters/mongo-validation-er
 import { MongoServerErrorFilter } from './shared/filters/mongo-server-error.filter';
 import { envCheck } from './shared/env.shared';
 import * as fs from 'fs';
+import { AppMigrationsModule } from './database/app.migrations.module';
 
 async function bootstrap() {
   // Check that all required ENV variables are set
   envCheck();
+
+  // Run database migrations before starting the app
+  const appMigrations = await NestFactory.create(AppMigrationsModule);
+  await runDbMigrations(appMigrations, new Logger('Migrations'));
 
   // Create an instance of the Nest app
   const app = await NestFactory.create(AppModule);
@@ -64,9 +69,6 @@ async function bootstrap() {
 
   // Create a logger instance for the app
   const logger = new Logger('Bootstrap');
-
-  // Run database migrations before starting the app
-  await runDbMigrations(app, logger);
 
   // Start the app listening on the API port or default to port 3000
   await app.listen(process.env.API_PORT || 3000);
