@@ -72,7 +72,7 @@ export class CommunityService {
   ): Promise<Community> {
     const communityDocument = await this.communityModel.findById(_id);
     if (!communityDocument)
-      throw new NotFoundException(errorMessages.communityNotFound.message);
+      throw new ServiceException(errorMessages.communityNotFound);
 
     for (const [k, v] of Object.entries(community)) {
       communityDocument.set(k, v);
@@ -97,9 +97,9 @@ export class CommunityService {
   ): Promise<Community> {
     const community = await this.findOneById(communityId);
     if (!community)
-      throw new NotFoundException(errorMessages.communityNotFound.message);
+      throw new ServiceException(errorMessages.communityNotFound);
     if (community.discordLinkState === DiscordLinkState.ACTIVE)
-      throw new ServiceException('Community is already active.');
+      throw new ServiceException(errorMessages.COMMUNITY_IS_ALREADY_ACTIVE);
     const generatedMsg = this.generateLinkDiscordMessage({
       nonce: community.discordLinkNonce as string,
       guildId: community.discordGuildId as string,

@@ -12,4 +12,9 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     httpStatusCode: 404,
     code: 1001,
   },
+  COMMUNITY_IS_ALREADY_ACTIVE :{
+    message: 'Community is already active',
+    httpStatusCode: 400,
+    code:1002,
+  }
 };
