@@ -1,7 +1,7 @@
 import { ApiProperty, PartialType, PickType } from '@nestjs/swagger';
 import { UserAccount } from '../schemas/useraccounts.schema';
 import { IsOptional } from 'class-validator';
-import { IsObjectId } from '@/shared/validators.shared';
+import { IsObjectId } from '@/shared/validators/is-object-id.validator';
 import { Transform } from 'class-transformer';
 import { Types } from 'mongoose';
 

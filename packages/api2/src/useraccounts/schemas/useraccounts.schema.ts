@@ -6,7 +6,7 @@ import { User } from '@/users/schemas/users.schema';
 import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 import { IsOptional, IsString } from 'class-validator';
 import { has } from 'lodash';
-import { IsObjectId } from '@/shared/validators.shared';
+import { IsObjectId } from '@/shared/validators/is-object-id.validator';
 
 export type UserAccountDocument = UserAccount & Document;
 

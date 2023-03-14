@@ -7,7 +7,7 @@ import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 import { UserAccountNoUserId } from '@/useraccounts/dto/useraccount-no-user-id.dto';
 import { IsOptional, IsString } from 'class-validator';
-import { IsEthAddress } from '@/shared/validators.shared';
+import { IsEthAddress } from '@/shared/validators/is-eth-address.validator';
 import { isValidUsername } from '../utils/is-valid-username';
 
 export type UserDocument = User & Document;
