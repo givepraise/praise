@@ -82,6 +82,28 @@ export interface paths {
     /** List event log types */
     get: operations['EventLogController_types'];
   };
+  '/api/auth/eth-signature/nonce': {
+    /** Generates a nonce for the user and returns it */
+    post: operations['AuthController_nonce'];
+  };
+  '/api/auth/eth-signature/login': {
+    /** Verifies a user's signature and returns a JWT token */
+    post: operations['AuthController_login'];
+  };
+  '/api/api-key': {
+    /** List all API keys */
+    get: operations['ApiKeyController_findAll'];
+    /** Create API key */
+    post: operations['ApiKeyController_createApiKey'];
+  };
+  '/api/api-key/{id}': {
+    /** Get API key by ID */
+    get: operations['ApiKeyController_findOne'];
+    /** Update API key description */
+    put: operations['ApiKeyController_updateApiKeyDescription'];
+    /** Revoke API key */
+    delete: operations['ApiKeyController_revokeApiKey'];
+  };
   '/api/settings': {
     /** List all settings. */
     get: operations['SettingsController_findAll'];
@@ -155,28 +177,6 @@ export interface paths {
     get: operations['UserAccountsController_findOne'];
     /** Update UserAccount */
     patch: operations['UserAccountsController_update'];
-  };
-  '/api/api-key': {
-    /** List all API keys */
-    get: operations['ApiKeyController_findAll'];
-    /** Create API key */
-    post: operations['ApiKeyController_createApiKey'];
-  };
-  '/api/api-key/{id}': {
-    /** Get API key by ID */
-    get: operations['ApiKeyController_findOne'];
-    /** Update API key description */
-    put: operations['ApiKeyController_updateApiKeyDescription'];
-    /** Revoke API key */
-    delete: operations['ApiKeyController_revokeApiKey'];
-  };
-  '/api/auth/eth-signature/nonce': {
-    /** Generates a nonce for the user and returns it */
-    post: operations['AuthController_nonce'];
-  };
-  '/api/auth/eth-signature/login': {
-    /** Verifies a user's signature and returns a JWT token */
-    post: operations['AuthController_login'];
   };
   '/api/communities': {
     get: operations['CommunityController_findAll'];
@@ -573,6 +573,105 @@ export interface components {
       nextPage: number;
       docs: readonly components['schemas']['EventLog'][];
     };
+    NonceInputDto: {
+      /** @example 0xAAB27b150451726EC7738aa1d0A94505c8729bd1 */
+      identityEthAddress: string;
+    };
+    NonceResponseDto: {
+      /** @example 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 */
+      identityEthAddress: string;
+      /** @example uh9h998u98uj09noj */
+      nonce: string;
+    };
+    LoginInputDto: {
+      /** @example 0xAAB27b150451726EC7738aa1d0A94505c8729bd1 */
+      identityEthAddress: string;
+      signature: string;
+    };
+    LoginResponseDto: {
+      /** @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmIwNmY3NjU1ODA0YjE2MjllODQxNTkiLCJpZGVudGl0eUV0aEFkZHJlc3MiOiIweGEzMmFFQ2RhNzUyY0Y0RUY4OTk1NmU4M2Q2MEMwNDgzNWQ0RkE4NjciLCJyb2xlcyI6WyJVU0VSIiwiQURNSU4iXSwiaXNSZWZyZXNoIjpmYWxzZSwiaWF0IjoxNjcwMzE1OTk4LCJleHAiOjE2NzAzMTk1OTh9.qKvucMZLVbz_1TnsxaSqYX1i5CSpver6fFJTf3pABVA */
+      accessToken: string;
+      /** @example 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 */
+      identityEthAddress: string;
+      /** @example bearer */
+      tokenType: string;
+    };
+    CreateApiKeyInputDto: {
+      /** @example My API Key */
+      description: string;
+      /**
+       * @example API_KEY_READWRITE
+       * @enum {string}
+       */
+      role:
+        | 'USER'
+        | 'QUANTIFIER'
+        | 'FORWARDER'
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB';
+    };
+    CreateApiKeyResponseDto: {
+      /** @example 89f7edbd */
+      name: string;
+      /** @example My API Key */
+      description: string;
+      /** @example $2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i */
+      hash: string;
+      /**
+       * @example API_KEY_READWRITE
+       * @enum {string}
+       */
+      role:
+        | 'USER'
+        | 'QUANTIFIER'
+        | 'FORWARDER'
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB';
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+      /** @example 1834a97caed67b244dd11fa5ef53aa74f13781ad0aea8148b8607d861d9f7535 */
+      key: string;
+    };
+    ApiKey: {
+      /** @example 89f7edbd */
+      name: string;
+      /** @example My API Key */
+      description: string;
+      /** @example $2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i */
+      hash: string;
+      /**
+       * @example API_KEY_READWRITE
+       * @enum {string}
+       */
+      role:
+        | 'USER'
+        | 'QUANTIFIER'
+        | 'FORWARDER'
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB';
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+    };
+    UpdateDescriptionInputDto: {
+      /** @example My API Key */
+      description: string;
+    };
     Setting: {
       /** @example 621f802b813dbdbaddeaf799 */
       _id: string;
@@ -753,105 +852,6 @@ export interface components {
       updatedAt: string;
       /** @example jkhvuygi643jh35g53 */
       activateToken: string;
-    };
-    CreateApiKeyInputDto: {
-      /** @example My API Key */
-      description: string;
-      /**
-       * @example API_KEY_READWRITE
-       * @enum {string}
-       */
-      role:
-        | 'USER'
-        | 'QUANTIFIER'
-        | 'FORWARDER'
-        | 'ADMIN'
-        | 'ROOT'
-        | 'API_KEY_READWRITE'
-        | 'API_KEY_READ'
-        | 'API_KEY_DISCORD_BOT'
-        | 'API_KEY_SETUP_WEB';
-    };
-    CreateApiKeyResponseDto: {
-      /** @example 89f7edbd */
-      name: string;
-      /** @example My API Key */
-      description: string;
-      /** @example $2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i */
-      hash: string;
-      /**
-       * @example API_KEY_READWRITE
-       * @enum {string}
-       */
-      role:
-        | 'USER'
-        | 'QUANTIFIER'
-        | 'FORWARDER'
-        | 'ADMIN'
-        | 'ROOT'
-        | 'API_KEY_READWRITE'
-        | 'API_KEY_READ'
-        | 'API_KEY_DISCORD_BOT'
-        | 'API_KEY_SETUP_WEB';
-      /** Format: date-time */
-      createdAt: string;
-      /** Format: date-time */
-      updatedAt: string;
-      /** @example 1834a97caed67b244dd11fa5ef53aa74f13781ad0aea8148b8607d861d9f7535 */
-      key: string;
-    };
-    ApiKey: {
-      /** @example 89f7edbd */
-      name: string;
-      /** @example My API Key */
-      description: string;
-      /** @example $2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i */
-      hash: string;
-      /**
-       * @example API_KEY_READWRITE
-       * @enum {string}
-       */
-      role:
-        | 'USER'
-        | 'QUANTIFIER'
-        | 'FORWARDER'
-        | 'ADMIN'
-        | 'ROOT'
-        | 'API_KEY_READWRITE'
-        | 'API_KEY_READ'
-        | 'API_KEY_DISCORD_BOT'
-        | 'API_KEY_SETUP_WEB';
-      /** Format: date-time */
-      createdAt: string;
-      /** Format: date-time */
-      updatedAt: string;
-    };
-    UpdateDescriptionInputDto: {
-      /** @example My API Key */
-      description: string;
-    };
-    NonceInputDto: {
-      /** @example 0xAAB27b150451726EC7738aa1d0A94505c8729bd1 */
-      identityEthAddress: string;
-    };
-    NonceResponseDto: {
-      /** @example 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 */
-      identityEthAddress: string;
-      /** @example uh9h998u98uj09noj */
-      nonce: string;
-    };
-    LoginInputDto: {
-      /** @example 0xAAB27b150451726EC7738aa1d0A94505c8729bd1 */
-      identityEthAddress: string;
-      signature: string;
-    };
-    LoginResponseDto: {
-      /** @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmIwNmY3NjU1ODA0YjE2MjllODQxNTkiLCJpZGVudGl0eUV0aEFkZHJlc3MiOiIweGEzMmFFQ2RhNzUyY0Y0RUY4OTk1NmU4M2Q2MEMwNDgzNWQ0RkE4NjciLCJyb2xlcyI6WyJVU0VSIiwiQURNSU4iXSwiaXNSZWZyZXNoIjpmYWxzZSwiaWF0IjoxNjcwMzE1OTk4LCJleHAiOjE2NzAzMTk1OTh9.qKvucMZLVbz_1TnsxaSqYX1i5CSpver6fFJTf3pABVA */
-      accessToken: string;
-      /** @example 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 */
-      identityEthAddress: string;
-      /** @example bearer */
-      tokenType: string;
     };
     CreateCommunityInputDto: {
       /** @example banklessdao.givepraise.xyz */
@@ -1342,6 +1342,134 @@ export interface operations {
       };
     };
   };
+  AuthController_nonce: {
+    /** Generates a nonce for the user and returns it */
+    /** @description A request containing the user identityEthAddress */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['NonceInputDto'];
+      };
+    };
+    responses: {
+      /** @description Nonce generated successfully */
+      201: {
+        content: {
+          'application/json': components['schemas']['NonceResponseDto'];
+        };
+      };
+    };
+  };
+  AuthController_login: {
+    /** Verifies a user's signature and returns a JWT token */
+    /**
+     * @description A request containing the user identityEthAddress and signedlogin message. The signed message should be structured as follows:
+     *
+     * ```SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\nADDRESS:\n[identityEthAddress]\n\nNONCE:\n[nonce]```
+     */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LoginInputDto'];
+      };
+    };
+    responses: {
+      /** @description User authenticated successfully */
+      201: {
+        content: {
+          'application/json': components['schemas']['LoginResponseDto'];
+        };
+      };
+    };
+  };
+  ApiKeyController_findAll: {
+    /** List all API keys */
+    responses: {
+      /** @description Array of API keys */
+      200: {
+        content: {
+          'application/json': components['schemas']['ApiKey'][];
+        };
+      };
+    };
+  };
+  ApiKeyController_createApiKey: {
+    /** Create API key */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateApiKeyInputDto'];
+      };
+    };
+    responses: {
+      /** @description API key created */
+      201: {
+        content: {
+          'application/json': components['schemas']['CreateApiKeyResponseDto'];
+        };
+      };
+    };
+  };
+  ApiKeyController_findOne: {
+    /** Get API key by ID */
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description An API key */
+      200: {
+        content: {
+          'application/json': components['schemas']['ApiKey'];
+        };
+      };
+    };
+  };
+  ApiKeyController_updateApiKeyDescription: {
+    /** Update API key description */
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateDescriptionInputDto'];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          'application/json': components['schemas']['ApiKey'];
+        };
+      };
+      /** @description API key with updated description */
+      201: {
+        content: {
+          'application/json': components['schemas']['ApiKey'];
+        };
+      };
+    };
+  };
+  ApiKeyController_revokeApiKey: {
+    /** Revoke API key */
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          'application/json': components['schemas']['ApiKey'];
+        };
+      };
+      /** @description Revoked API key */
+      201: {
+        content: {
+          'application/json': components['schemas']['ApiKey'];
+        };
+      };
+    };
+  };
   SettingsController_findAll: {
     /** List all settings. */
     parameters: {
@@ -1732,134 +1860,6 @@ export interface operations {
       200: {
         content: {
           'application/json': components['schemas']['UpdateUserAccountResponseDto'];
-        };
-      };
-    };
-  };
-  ApiKeyController_findAll: {
-    /** List all API keys */
-    responses: {
-      /** @description Array of API keys */
-      200: {
-        content: {
-          'application/json': components['schemas']['ApiKey'][];
-        };
-      };
-    };
-  };
-  ApiKeyController_createApiKey: {
-    /** Create API key */
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateApiKeyInputDto'];
-      };
-    };
-    responses: {
-      /** @description API key created */
-      201: {
-        content: {
-          'application/json': components['schemas']['CreateApiKeyResponseDto'];
-        };
-      };
-    };
-  };
-  ApiKeyController_findOne: {
-    /** Get API key by ID */
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description An API key */
-      200: {
-        content: {
-          'application/json': components['schemas']['ApiKey'];
-        };
-      };
-    };
-  };
-  ApiKeyController_updateApiKeyDescription: {
-    /** Update API key description */
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateDescriptionInputDto'];
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          'application/json': components['schemas']['ApiKey'];
-        };
-      };
-      /** @description API key with updated description */
-      201: {
-        content: {
-          'application/json': components['schemas']['ApiKey'];
-        };
-      };
-    };
-  };
-  ApiKeyController_revokeApiKey: {
-    /** Revoke API key */
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          'application/json': components['schemas']['ApiKey'];
-        };
-      };
-      /** @description Revoked API key */
-      201: {
-        content: {
-          'application/json': components['schemas']['ApiKey'];
-        };
-      };
-    };
-  };
-  AuthController_nonce: {
-    /** Generates a nonce for the user and returns it */
-    /** @description A request containing the user identityEthAddress */
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['NonceInputDto'];
-      };
-    };
-    responses: {
-      /** @description Nonce generated successfully */
-      201: {
-        content: {
-          'application/json': components['schemas']['NonceResponseDto'];
-        };
-      };
-    };
-  };
-  AuthController_login: {
-    /** Verifies a user's signature and returns a JWT token */
-    /**
-     * @description A request containing the user identityEthAddress and signedlogin message. The signed message should be structured as follows:
-     *
-     * ```SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\nADDRESS:\n[identityEthAddress]\n\nNONCE:\n[nonce]```
-     */
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['LoginInputDto'];
-      };
-    };
-    responses: {
-      /** @description User authenticated successfully */
-      201: {
-        content: {
-          'application/json': components['schemas']['LoginResponseDto'];
         };
       };
     };
