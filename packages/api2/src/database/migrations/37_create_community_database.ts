@@ -33,7 +33,7 @@ const up = async (): Promise<void> => {
 
   try {
     const client = new MongoClient(dbUrl);
-    const dbFrom = client.db('praise_db');
+    const dbFrom = client.db(process.env.MONGO_DB!);
     const dbTo = client.db(communityDbName);
 
     const collections = await dbFrom.listCollections().toArray();

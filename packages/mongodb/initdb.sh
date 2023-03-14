@@ -9,12 +9,12 @@ fi
   
 sleep 10
 
-# Make sure the MONGO_USERNAME is set up in the admin database and not in the praise_db database
-# MONGO_USERNAME should have readWrite access to the praise_db database as well as the praise_db_testing_tmp database
+# Make sure the MONGO_USERNAME is set up in the admin database and not in the $MONGO_DB database
+# MONGO_USERNAME should have readWrite access to the $MONGO_DB database as well as the praise_db_testing_tmp database
 
 mongo -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD<<EOF
 
-use praise_db;
+use $MONGO_DB;
 
 if (db.getUser('$MONGO_USERNAME') !== null) {  
   db.runCommand({
@@ -30,12 +30,12 @@ if (db.getUser('$MONGO_USERNAME') === null) {
     pwd: '$MONGO_PASSWORD',
     roles: [{
       role: 'readWrite',
-      db: 'praise_db'
+      db: '$MONGO_DB'
     }]
   });
 }
 
-db.getSiblingDB("admin").grantRolesToUser( "$MONGO_USERNAME", [ { role: "readWrite", db: "praise_db" } ] )
+db.getSiblingDB("admin").grantRolesToUser( "$MONGO_USERNAME", [ { role: "readWrite", db: "$MONGO_DB" } ] )
 db.getSiblingDB("admin").grantRolesToUser( "$MONGO_USERNAME", [ { role: "readWrite", db: "praise_db_testing_tmp" } ] )
 
 EOF
