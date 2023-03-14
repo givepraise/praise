@@ -1,8 +1,14 @@
-import { selector, useRecoilValue } from 'recoil';
+import {
+  selector,
+  selectorFamily,
+  useRecoilCallback,
+  useRecoilValue,
+} from 'recoil';
 import { AxiosResponse, AxiosError } from 'axios';
 import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from '../api';
 import { ApiKey } from './dto/apikeys.dto';
 import { CreateApiKeyResponseDto } from './dto/create-api-key-input.dto';
+import { useApiAuthClient } from '@/utils/api';
 
 /**
  * Query to get the list of api keys
@@ -17,32 +23,36 @@ export const ApiKeysListQuery = selector<ApiKey[]>({
   },
 });
 
+// type useSetApiKeyReturn = {
+//   setApiKey: (
+//     createdApiKey: CreateApiKeyResponseDto
+//   ) => Promise<AxiosResponse<CreateApiKeyResponseDto> | AxiosError | undefined>;
+// };
+
+type useSetApiKeyReturn = {
+  setApiKey: (
+    createdApiKey: CreateApiKeyResponseDto
+  ) => Promise<AxiosResponse<CreateApiKeyResponseDto> | AxiosError | undefined>;
+};
+
 /**
  * Returns function used to create a api key.
  */
-export const useApiKeyPeriod = (): CreateApiKeyResponseDto => {
-  const createdApiKey = {
-    name: '89f7edbd',
-    description: 'My API Key',
-    hash: '$2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i',
-    role: 'API_KEY_READWRITE',
-    createdAt: '2023-03-13T17:24:40.220Z',
-    updatedAt: '2023-03-13T17:24:40.220Z',
-    key: '1834a97caed67b244dd11fa5ef53aa74f13781ad0aea8148b8607d861d9f7535',
-  };
-  // const apiAuthClient = useApiAuthClient();
-  // const createPeriod = useRecoilCallback(
-  //   ({ set }) =>
-  //     async (
-  //       periodInput: CreatePeriodInputDto
-  //     ): Promise<AxiosResponse<Praise> | AxiosError> => {
-  //       const response = await apiAuthClient.post('/periods', periodInput);
-  //       if (isResponseOk(response)) {
-  //         const period = response.data as PeriodDetailsDto;
-  //         set(SinglePeriod(period._id), period);
-  //       }
-  //       return response as AxiosResponse | AxiosError;
-  //     }
-  // );
-  return createdApiKey;
+export const useSetApiKey = (): useSetApiKeyReturn => {
+  const apiAuthClient = useApiAuthClient();
+
+  const setApiKey = useRecoilCallback(
+    ({ set }) =>
+      async (
+        data
+      ): Promise<AxiosResponse<CreateApiKeyResponseDto> | AxiosError> => {
+        const response = await apiAuthClient.post('/api-key', data);
+        if (isResponseOk(response)) {
+          const createdApiKey = response.data as CreateApiKeyResponseDto;
+          return createdApiKey;
+        }
+        return response as AxiosResponse | AxiosError;
+      }
+  );
+  return { setApiKey };
 };

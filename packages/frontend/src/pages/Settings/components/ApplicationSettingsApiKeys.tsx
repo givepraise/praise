@@ -1,5 +1,5 @@
 import { useRecoilValue } from 'recoil';
-import { ApiKeysListQuery, useApiKeyPeriod } from '@/model/apikeys/apikeys';
+import { ApiKeysListQuery, useSetApiKey } from '@/model/apikeys/apikeys';
 import { Button } from '@/components/ui/Button';
 import { useState } from 'react';
 import ApplicationSettingsApiKeyForm from './ApplicationSettingsApiKeyForm';
@@ -11,6 +11,8 @@ import { isResponseOk } from '@/model/api';
 const ApplicationSettingsApiKeys = (): JSX.Element => {
   const [openApiKeyModal, setOpenApiKeyModal] = useState(false);
   const apiKeys = useRecoilValue(ApiKeysListQuery);
+
+  const { setApiKey } = useSetApiKey();
 
   const handleCloseApiKeyModal = (): void => {
     setOpenApiKeyModal(false);
@@ -24,8 +26,8 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
   const handleAddApiKey = async (data: CreateApiKeyInputDto): Promise<void> => {
     setOpenApiKeyModal(false);
 
-    const response = await useApiKeyPeriod(data);
-    console.log();
+    const response = await setApiKey(data);
+    console.log(data);
     if (isResponseOk(response)) {
       // const setting = response.data;
       // toast.success(`Saved setting "${setting.label}"`);

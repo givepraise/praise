@@ -6,16 +6,17 @@ import { Button } from '@/components/ui/Button';
 import { Form } from 'react-final-form';
 import { StringInput } from '@/components/form/StringInput';
 import { RadioInput } from '@/components/form/RadioInput';
+import { CreateApiKeyInputDto } from '@/model/apikeys/dto/create-api-key-input.dto';
 
 type ApplicationSettingsApiKeyFormProps = {
   open: boolean;
   close: () => void;
-  onsubmit: (data: { label: string; option: string }) => void;
+  onsubmit: (data: CreateApiKeyInputDto) => void;
 };
 
 interface FormData {
   description: string;
-  role: string;
+  role: 'API_KEY_READWRITE' | 'API_KEY_READ';
 }
 
 const ApplicationSettingsApiKeyForm = ({
@@ -29,7 +30,7 @@ const ApplicationSettingsApiKeyForm = ({
     if (!values.description) {
       errorDescription = 'Label is required';
     } else {
-      onsubmit({ label: values.description, option: values.role });
+      onsubmit({ description: values.description, role: values.role });
     }
   };
   return (
@@ -86,7 +87,7 @@ const ApplicationSettingsApiKeyForm = ({
                               <RadioInput
                                 name="role"
                                 apiResponse={null}
-                                values={['API_KEY_READ', 'API_KEY_READWRITE']}
+                                values={['Read', 'Read/Write']}
                                 dbValue={'API_KEY_READ'}
                               />
                             </div>
