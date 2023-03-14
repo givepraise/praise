@@ -13,7 +13,7 @@ import {
   IsString,
 } from 'class-validator';
 import { DiscordLinkState } from '../enums/discord-link-state';
-import { IsEthAddress } from '@/shared/validators.shared';
+import { IsEthAddress } from '@/shared/validators/is-eth-address.validator';
 import { isValidCommunityName } from '../utils/is-valid-community-name';
 import { isValidOwners } from '../utils/is-valid-owners';
 import { isValidHostname } from '../utils/is-valid-hostname';

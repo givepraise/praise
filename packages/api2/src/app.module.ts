@@ -15,13 +15,12 @@ import { ActivateModule } from './activate/activate.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CommunityModule } from './community/community.module';
-import { MongooseConfigService } from './database/services/a';
+import { MultiTenantConnectionService } from './database/services/multi-tenant-connection-service';
 
 @Module({
   imports: [
-    //MongooseModule.forRoot(praiseDatabaseUri),
     MongooseModule.forRootAsync({
-      useClass: MongooseConfigService,
+      useClass: MultiTenantConnectionService,
     }),
     ThrottlerModule.forRoot({
       ttl: 60,
