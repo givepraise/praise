@@ -141,16 +141,20 @@ export interface paths {
     get: operations['QuantificationsController_export'];
   };
   '/api/useraccounts': {
-    /** Get UserAccount by UserId our AccountId. */
-    get: operations['UserAccountsController_findOne'];
+    /** UserAccount list */
+    get: operations['UserAccountsController_findAll'];
     /** Create a UserAccount */
     post: operations['UserAccountsController_create'];
-    /** Update UserAccount by UserId or AccountId */
-    patch: operations['UserAccountsController_update'];
   };
   '/api/useraccounts/export': {
     /** Exports UserAccounts document to json or csv. */
     get: operations['UserAccountsController_export'];
+  };
+  '/api/useraccounts/{id}': {
+    /** Get a UserAccount. */
+    get: operations['UserAccountsController_findOne'];
+    /** Update UserAccount */
+    patch: operations['UserAccountsController_update'];
   };
   '/api/api-key': {
     /** List all API keys */
@@ -301,23 +305,23 @@ export interface components {
     };
     PeriodPaginatedResponseDto: {
       /** @example 1200 */
-      totalDocs: Record<string, never>;
+      totalDocs: number;
       /** @example 10 */
-      limit: Record<string, never>;
+      limit: number;
       /** @example 12 */
-      totalPages: Record<string, never>;
+      totalPages: number;
       /** @example 2 */
-      page: Record<string, never>;
+      page: number;
       /** @example 1 */
-      pagingCounter: Record<string, never>;
+      pagingCounter: number;
       /** @example false */
       hasPrevPage: Record<string, never>;
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: Record<string, never>;
+      prevPage: number;
       /** @example 3 */
-      nextPage: Record<string, never>;
+      nextPage: number;
       docs: readonly components['schemas']['Period'][];
     };
     Quantification: {
@@ -552,23 +556,23 @@ export interface components {
     };
     EventLogPaginatedResponseDto: {
       /** @example 1200 */
-      totalDocs: Record<string, never>;
+      totalDocs: number;
       /** @example 10 */
-      limit: Record<string, never>;
+      limit: number;
       /** @example 12 */
-      totalPages: Record<string, never>;
+      totalPages: number;
       /** @example 2 */
-      page: Record<string, never>;
+      page: number;
       /** @example 1 */
-      pagingCounter: Record<string, never>;
+      pagingCounter: number;
       /** @example false */
       hasPrevPage: Record<string, never>;
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: Record<string, never>;
+      prevPage: number;
       /** @example 3 */
-      nextPage: Record<string, never>;
+      nextPage: number;
       docs: readonly components['schemas']['EventLog'][];
     };
     Setting: {
@@ -627,23 +631,23 @@ export interface components {
     };
     PraisePaginatedResponseDto: {
       /** @example 1200 */
-      totalDocs: Record<string, never>;
+      totalDocs: number;
       /** @example 10 */
-      limit: Record<string, never>;
+      limit: number;
       /** @example 12 */
-      totalPages: Record<string, never>;
+      totalPages: number;
       /** @example 2 */
-      page: Record<string, never>;
+      page: number;
       /** @example 1 */
-      pagingCounter: Record<string, never>;
+      pagingCounter: number;
       /** @example false */
       hasPrevPage: Record<string, never>;
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: Record<string, never>;
+      prevPage: number;
       /** @example 3 */
-      nextPage: Record<string, never>;
+      nextPage: number;
       docs: readonly components['schemas']['Praise'][];
     };
     QuantifyInputDto: {
@@ -721,10 +725,6 @@ export interface components {
       activateToken: string;
     };
     UpdateUserAccountInputDto: {
-      /** @example 63b428f7d9ca4f6ff5370d05 */
-      _id?: string;
-      /** @example 63b428f7d9ca4f6ff5370d05 */
-      user?: string | components['schemas']['User'];
       /** @example 098098098098098 */
       accountId?: string;
       /** @example darth#6755 */
@@ -733,12 +733,8 @@ export interface components {
       avatarId?: string;
       /** @example DISCORD */
       platform?: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
-      activateToken?: string;
+      user?: string;
     };
     UpdateUserAccountResponseDto: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
@@ -864,10 +860,17 @@ export interface components {
       hostname: string;
       /** @example BanklessDAO */
       name: string;
+      /** @example john.smith@banklessDao.com */
+      email: string;
       /** @example 0x123.. */
       creator: string;
-      /** @example [0x123.., 0x345..] */
-      owners: string;
+      /**
+       * @example [
+       *   "0x123..",
+       *   "0x345.."
+       * ]
+       */
+      owners: string[];
       /** @example 0980987846534 */
       discordGuildId?: string;
     };
@@ -879,58 +882,63 @@ export interface components {
       hostname: string;
       /** @example BanklessDAO */
       name: string;
+      /** @example john.smith@banklessDao.com */
+      email: string;
       /** @example 0x123.. */
       creator: string;
-      /** @example [0x123.., 0x345..] */
-      owners: string;
+      /**
+       * @example [
+       *   "0x123..",
+       *   "0x345.."
+       * ]
+       */
+      owners: string[];
       /** @example 0980987846534 */
       discordGuildId?: string;
       /** @example oiujoiuoo8u */
       discordLinkNonce: string;
       /** @example true */
       isPublic: boolean;
-      /** @example NOT_SET | PENDING | ACTIVE | DEACTIVE */
-      discordLinkState: string;
+      /**
+       * @example NOT_SET | PENDING | ACTIVE | DEACTIVE
+       * @enum {string}
+       */
+      discordLinkState: 'NOT_SET' | 'PENDING' | 'ACTIVE' | 'DEACTIVE';
     };
     UpdateCommunityInputDto: {
-      /** @example 621f802b813dbdba9eeaf7b4 */
-      _id?: components['schemas']['ObjectId'];
       /** @example banklessdao.givepraise.xyz */
       hostname?: string;
       /** @example BanklessDAO */
       name?: string;
-      /** @example 0x123.. */
-      creator?: string;
-      /** @example [0x123.., 0x345..] */
-      owners?: string;
-      /** @example 0980987846534 */
-      discordGuildId?: string;
-      /** @example oiujoiuoo8u */
-      discordLinkNonce?: string;
-      /** @example true */
-      isPublic?: boolean;
-      /** @example NOT_SET | PENDING | ACTIVE | DEACTIVE */
-      discordLinkState?: string;
+      /** @example john.smith@banklessDao.com */
+      email?: string;
+      /**
+       * @example [
+       *   "0x123..",
+       *   "0x345.."
+       * ]
+       */
+      owners?: string[];
     };
     CommunityPaginatedResponseDto: {
       /** @example 1200 */
-      totalDocs: Record<string, never>;
+      totalDocs: number;
       /** @example 10 */
-      limit: Record<string, never>;
+      limit: number;
       /** @example 12 */
-      totalPages: Record<string, never>;
+      totalPages: number;
       /** @example 2 */
-      page: Record<string, never>;
+      page: number;
       /** @example 1 */
-      pagingCounter: Record<string, never>;
+      pagingCounter: number;
       /** @example false */
       hasPrevPage: Record<string, never>;
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: Record<string, never>;
+      prevPage: number;
       /** @example 3 */
-      nextPage: Record<string, never>;
+      nextPage: number;
       docs: readonly components['schemas']['Community'][];
     };
     LinkDiscordBotDto: {
@@ -1648,12 +1656,16 @@ export interface operations {
       };
     };
   };
-  UserAccountsController_findOne: {
-    /** Get UserAccount by UserId our AccountId. */
+  UserAccountsController_findAll: {
+    /** UserAccount list */
     parameters: {
+      /** @example 098098098098098 */
+      /** @example darth#6755 */
+      /** @example 63b428f7d9ca4f6ff5370d05 */
       query: {
-        _id?: string;
         accountId?: string;
+        name?: string;
+        user?: string;
       };
     };
     responses: {
@@ -1679,27 +1691,6 @@ export interface operations {
       };
     };
   };
-  UserAccountsController_update: {
-    /** Update UserAccount by UserId or AccountId */
-    parameters: {
-      query: {
-        _id?: string;
-        accountId?: string;
-      };
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateUserAccountInputDto'];
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          'application/json': components['schemas']['UpdateUserAccountResponseDto'];
-        };
-      };
-    };
-  };
   UserAccountsController_export: {
     /** Exports UserAccounts document to json or csv. */
     parameters: {
@@ -1712,6 +1703,37 @@ export interface operations {
         content: {
           'application/json': string;
           'application/octet-stream': string;
+        };
+      };
+    };
+  };
+  UserAccountsController_findOne: {
+    /** Get a UserAccount. */
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description UserAccount */
+      200: {
+        content: {
+          'application/json': components['schemas']['UserAccount'];
+        };
+      };
+    };
+  };
+  UserAccountsController_update: {
+    /** Update UserAccount */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateUserAccountInputDto'];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          'application/json': components['schemas']['UpdateUserAccountResponseDto'];
         };
       };
     };
