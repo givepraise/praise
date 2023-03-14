@@ -17,6 +17,9 @@ import { PeriodAssignmentsService } from './services/period-assignments.service'
 import { PeriodsService } from './services/periods.service';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
 import { QuantificationSchema } from '@/database/schemas/quantification/quantification.schema';
+import { ApiKeyModule } from '@/api-key/api-key.module';
+import { AuthModule } from '@/auth/auth.module';
+import { ConstantsProvider } from '@/constants/constants.provider';
 
 @Module({
   imports: [
@@ -34,9 +37,11 @@ import { QuantificationSchema } from '@/database/schemas/quantification/quantifi
     forwardRef(() => PeriodSettingsModule),
     forwardRef(() => PraiseModule),
     forwardRef(() => QuantificationsModule),
+    forwardRef(() => AuthModule),
+    ApiKeyModule,
   ],
   controllers: [PeriodsController],
-  providers: [PeriodsService, PeriodAssignmentsService],
+  providers: [PeriodsService, PeriodAssignmentsService, ConstantsProvider],
   exports: [
     PeriodsService,
     MongooseModule.forFeature([{ name: Period.name, schema: PeriodSchema }]),

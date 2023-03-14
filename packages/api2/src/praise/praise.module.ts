@@ -13,6 +13,9 @@ import {
   UserAccount,
   UserAccountSchema,
 } from '@/useraccounts/schemas/useraccounts.schema';
+import { ApiKeyModule } from '@/api-key/api-key.module';
+import { AuthModule } from '@/auth/auth.module';
+import { ConstantsProvider } from '@/constants/constants.provider';
 
 @Module({
   imports: [
@@ -25,9 +28,11 @@ import {
     forwardRef(() => QuantificationsModule),
     forwardRef(() => SettingsModule),
     EventLogModule,
+    forwardRef(() => AuthModule),
+    ApiKeyModule,
   ],
   controllers: [PraiseController],
-  providers: [PraiseService, PraiseExportService],
+  providers: [PraiseService, PraiseExportService, ConstantsProvider],
   exports: [
     PraiseService,
     MongooseModule.forFeature([{ name: Praise.name, schema: PraiseSchema }]),

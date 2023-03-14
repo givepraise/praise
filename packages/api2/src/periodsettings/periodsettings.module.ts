@@ -10,6 +10,8 @@ import { PeriodsModule } from '@/periods/periods.module';
 import { ConstantsProvider } from '@/constants/constants.provider';
 import { EventLogModule } from '@/event-log/event-log.module';
 import { SettingsModule } from '@/settings/settings.module';
+import { ApiKeyModule } from '@/api-key/api-key.module';
+import { AuthModule } from '@/auth/auth.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { SettingsModule } from '@/settings/settings.module';
     EventLogModule,
     forwardRef(() => PeriodsModule),
     forwardRef(() => SettingsModule),
+    forwardRef(() => AuthModule),
+    ApiKeyModule,
   ],
   controllers: [PeriodSettingsController],
   providers: [PeriodSettingsService, ConstantsProvider],

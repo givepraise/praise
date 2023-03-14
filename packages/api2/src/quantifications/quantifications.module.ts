@@ -12,6 +12,9 @@ import { PeriodsModule } from '@/periods/periods.module';
 import { Module, forwardRef } from '@nestjs/common';
 import { QuantificationsController } from './quantitifcations.controller';
 import { QuantificationsExportService } from './services/quantifications-export.service';
+import { AuthModule } from '@/auth/auth.module';
+import { ApiKeyModule } from '@/api-key/api-key.module';
+import { ConstantsProvider } from '@/constants/constants.provider';
 
 @Module({
   imports: [
@@ -23,9 +26,15 @@ import { QuantificationsExportService } from './services/quantifications-export.
     forwardRef(() => PeriodsModule),
     forwardRef(() => UsersModule),
     UserAccountsModule,
+    forwardRef(() => AuthModule),
+    ApiKeyModule,
   ],
   controllers: [QuantificationsController],
-  providers: [QuantificationsService, QuantificationsExportService],
+  providers: [
+    QuantificationsService,
+    QuantificationsExportService,
+    ConstantsProvider,
+  ],
   exports: [
     QuantificationsService,
     MongooseModule.forFeature([
