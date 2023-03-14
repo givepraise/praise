@@ -11,7 +11,7 @@ import { Types } from 'mongoose';
  * Passport strategy for authenticating users using JWT.
  */
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private readonly usersService: UsersService) {
+  constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
