@@ -43,7 +43,7 @@ const connectDatabase = async (
     ...configOverride,
   } as DatabaseConfig;
 
-  const uri = `mongodb://${config.MONGO_USERNAME}:${config.MONGO_PASSWORD}@${config.MONGO_HOST}:${config.MONGO_PORT}/${config.MONGO_DB}`;
+  const uri = `mongodb://${config.MONGO_USERNAME}:${config.MONGO_PASSWORD}@${config.MONGO_HOST}:${config.MONGO_PORT}/${config.MONGO_DB}?authSource=admin`;
 
   try {
     const db = await mongoose.connect(uri, {
@@ -105,5 +105,6 @@ export const runDbMigrations = async (
     logger && logger.log('Database connection closed');
   } catch (error) {
     logger && logger.error(error);
+    throw error;
   }
 };
