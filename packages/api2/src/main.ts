@@ -20,6 +20,9 @@ async function bootstrap() {
   // Create an instance of the Nest app
   const app = await NestFactory.create(AppModule);
 
+  // Apply dependency injection container to the app
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+
   // Set the global prefix for all routes in the app
   app.setGlobalPrefix('api/');
 
@@ -29,7 +32,8 @@ async function bootstrap() {
       transform: true,
       whitelist: true,
       forbidNonWhitelisted: true,
-      //forbidUnknownValues: true, //TODO: Enabling this causes an error in the validation pipe - Investigate!
+      forbidUnknownValues: true,
+      skipMissingProperties: false,
     }),
   );
 
@@ -38,9 +42,6 @@ async function bootstrap() {
   app.useGlobalFilters(new MongoServerErrorFilter());
   app.useGlobalFilters(new MongoValidationErrorFilter());
   app.useGlobalFilters(new ServiceExceptionFilter());
-
-  // Apply dependency injection container to the app
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   // If in development mode, generate and serve OpenAPI documentation
   if (process.env.NODE_ENV === 'development') {

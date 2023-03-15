@@ -7,6 +7,7 @@ import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 import { IsOptional, IsString } from 'class-validator';
 import { has } from 'lodash';
 import { IsObjectId } from '@/shared/validators.shared';
+import { MinLengthAllowEmpty } from '@/shared/decorators/min-length-allow-empty.decorator';
 
 export type UserAccountDocument = UserAccount & Document;
 
@@ -83,9 +84,10 @@ export class UserAccount {
   platform: string;
 
   @Exclude({ toPlainOnly: true })
-  @Prop({ type: String, minlength: 10, maxlength: 25 })
+  @Prop({ type: String, maxlength: 25 })
   @IsOptional()
   @IsString()
+  @MinLengthAllowEmpty(10)
   activateToken: string;
 
   @ApiResponseProperty({ type: Date })
