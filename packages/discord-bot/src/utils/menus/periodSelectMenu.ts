@@ -1,3 +1,4 @@
+/* TODO - replace db access with api2 calls */
 import { StringSelectMenuBuilder } from 'discord.js';
 import { PeriodDocument } from 'api/dist/period/types';
 

@@ -1,15 +1,14 @@
-import { PraiseModel } from 'api/dist/praise/entities';
-import { EventLogTypeKey } from 'api/dist/eventlog/types';
-import { logEvent } from 'api/dist/eventlog/utils';
+// import { EventLogTypeKey } from 'api/dist/eventlog/types';
+// import { logEvent } from 'api/dist/eventlog/utils';
 import { logger } from 'api/dist/shared/logger';
 import { GuildMember, User } from 'discord.js';
-import { settingValue } from 'api/dist/shared/settings';
 import { getReceiverData } from '../utils/getReceiverData';
 import {
   dmError,
   invalidReceiverError,
   missingReasonError,
   notActivatedError,
+  praiseSuccess,
   praiseSuccessDM,
   roleMentionWarning,
   undefinedReceiverWarning,
@@ -22,6 +21,9 @@ import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
 import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
+import { Types } from 'mongoose';
+import { apiClient } from 'src/utils/api';
+
 /**
  * Execute command /praise
  *  Creates praises with a given receiver and reason
@@ -38,6 +40,7 @@ export const praiseHandler: CommandHandler = async (
   if (!responseUrl) return;
 
   const { guild, channel, member } = interaction;
+
   if (!guild || !member || !channel) {
     await interaction.editReply(await dmError());
     return;
@@ -50,7 +53,7 @@ export const praiseHandler: CommandHandler = async (
   const receiverOptions = interaction.options.getString('receivers');
 
   if (!receiverOptions || receiverOptions.length === 0) {
-    await interaction.editReply(await invalidReceiverError());
+    await interaction.editReply(await invalidReceiverError(guild.id));
     return;
   }
 
@@ -60,23 +63,27 @@ export const praiseHandler: CommandHandler = async (
     !receiverData.validReceiverIds ||
     receiverData.validReceiverIds?.length === 0
   ) {
-    await interaction.editReply(await invalidReceiverError());
+    await interaction.editReply(await invalidReceiverError(guild.id));
     return;
   }
 
   const reason = interaction.options.getString('reason', true);
   if (!reason || reason.length === 0) {
-    await interaction.editReply(await missingReasonError());
+    await interaction.editReply(await missingReasonError(guild.id));
     return;
   }
 
-  const giverAccount = await getUserAccount(member as GuildMember);
-  const praiseItemsCount = await PraiseModel.countDocuments({
-    giver: giverAccount._id,
-  });
+  const giverAccount = await getUserAccount(
+    (member as GuildMember).user,
+    guild.id
+  );
+
+  const praiseItemsCount = await apiClient
+    .get(`/api/praise?limit=1&giver=${giverAccount._id}`)
+    .catch((res) => res.data.totalPages);
 
   if (!giverAccount.user) {
-    await interaction.editReply(await notActivatedError());
+    await interaction.editReply(await notActivatedError(guild.id));
     return;
   }
 
@@ -87,21 +94,23 @@ export const praiseHandler: CommandHandler = async (
     ),
   ];
 
-  const selfPraiseAllowed = (await settingValue(
-    'SELF_PRAISE_ALLOWED'
-  )) as boolean;
+  const selfPraiseAllowed = await apiClient
+    .get('/settings?key=SELF_PRAISE_ALLOWED')
+    .then((res) => res.data)
+    .catch(() => false);
 
   let warnSelfPraise = false;
   if (!selfPraiseAllowed && receiverIds.includes(giverAccount.accountId)) {
     warnSelfPraise = true;
     receiverIds.splice(receiverIds.indexOf(giverAccount.accountId), 1);
   }
+
   const Receivers = (await guild.members.fetch({ user: receiverIds })).map(
     (u) => u
   );
 
   for (const receiver of Receivers) {
-    const receiverAccount = await getUserAccount(receiver);
+    const receiverAccount = await getUserAccount(receiver.user, guild.id);
 
     const praiseObj = await createPraise(
       interaction,
@@ -111,20 +120,21 @@ export const praiseHandler: CommandHandler = async (
     );
 
     if (praiseObj) {
-      await logEvent(
-        EventLogTypeKey.PRAISE,
-        'Created a new praise from discord',
-        {
-          userAccountId: giverAccount._id,
-        }
-      );
+      // await logEvent(
+      //   EventLogTypeKey.PRAISE,
+      //   'Created a new praise from discord',
+      //   {
+      //     userAccountId: new Types.ObjectId(giverAccount._id),
+      //   }
+      // );
 
       try {
         await receiver.send({
           embeds: [
             await praiseSuccessDM(
               responseUrl,
-              receiverAccount.user ? true : false
+              receiverAccount.user ? true : false,
+              guild.id
             ),
           ],
         });
@@ -148,22 +158,24 @@ export const praiseHandler: CommandHandler = async (
         await praiseSuccessEmbed(
           interaction,
           receivers.map((id) => `<@!${id}>`),
-          reason
+          reason,
+          guild.id
         ),
       ],
       ephemeral: false,
     });
-    // await interaction.followUp({
-    //   content: await praiseSuccess(
-    //     receivers.map((id) => `<@!${id}>`),
-    //     reason
-    //   ),
-    //   ephemeral: false,
-    // });
+    await interaction.followUp({
+      content: await praiseSuccess(
+        receivers.map((id) => `<@!${id}>`),
+        reason,
+        guild.id
+      ),
+      ephemeral: false,
+    });
   } else if (warnSelfPraise) {
-    await interaction.editReply(await selfPraiseWarning());
+    await interaction.editReply(await selfPraiseWarning(guild.id));
   } else {
-    await interaction.editReply(await invalidReceiverError());
+    await interaction.editReply(await invalidReceiverError(guild.id));
   }
 
   const warningMsg =
@@ -172,17 +184,19 @@ export const praiseHandler: CommandHandler = async (
           receiverData.undefinedReceivers
             .map((id) => id.replace(/[<>]/, ''))
             .join(', '),
-          member.user as User
+          member.user as User,
+          guild.id
         )) + '\n'
       : '') +
     (receiverData.roleMentions
       ? (await roleMentionWarning(
           receiverData.roleMentions.join(', '),
-          member.user as User
+          member.user as User,
+          guild.id
         )) + '\n'
       : '') +
     (Receivers.length !== 0 && warnSelfPraise
-      ? (await selfPraiseWarning()) + '\n'
+      ? (await selfPraiseWarning(guild.id)) + '\n'
       : '');
 
   if (warningMsg && warningMsg.length !== 0) {
@@ -195,7 +209,7 @@ export const praiseHandler: CommandHandler = async (
     praiseItemsCount === 0
   ) {
     await interaction.followUp({
-      content: await firstTimePraiserInfo(),
+      content: await firstTimePraiserInfo(guild.id),
       ephemeral: true,
     });
   }

@@ -24,7 +24,7 @@ export const whoamiHandler = async (
     return;
   }
 
-  const ua = await getUserAccount((member as GuildMember).user);
+  const ua = await getUserAccount((member as GuildMember).user, guild.id);
 
   const state: UserState = {
     id: ua.accountId,
@@ -42,7 +42,10 @@ export const whoamiHandler = async (
   const user =
     ua.user == null
       ? undefined
-      : await getUser(typeof ua.user === 'string' ? ua.user : ua.user._id);
+      : await getUser(
+          typeof ua.user === 'string' ? ua.user : ua.user._id,
+          guild.id
+        );
 
   state.praiseRoles = user?.roles || undefined;
   state.address = user?.identityEthAddress || '';
@@ -54,7 +57,10 @@ export const whoamiHandler = async (
       .get<UserAccount[]>(
         `useraccounts?user=${
           typeof ua.user === 'string' ? ua.user : ua.user._id
-        }`
+        }`,
+        {
+          headers: { 'x-discord-guild-id': guild.id },
+        }
       )
       .then((res) => res.data);
     for (const account of activatedAccounts) {

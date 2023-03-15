@@ -11,10 +11,13 @@ import { Setting } from '../api-schema';
 //  */
 export const praiseSuccess = async (
   praised: string[],
-  reason: string
+  reason: string,
+  guildId: string
 ): Promise<string> => {
   const msg = await apiClient
-    .get('/settings?key=PRAISE_SUCCESS_MESSAGE')
+    .get('/settings?key=PRAISE_SUCCESS_MESSAGE', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) =>
       (res.data as Setting).value
         .replace('{@receivers}', `${praised.join(', ')}`)
@@ -36,10 +39,13 @@ export const praiseSuccess = async (
 export const forwardSuccess = async (
   giver: User,
   receivers: string[],
-  reason: string
+  reason: string,
+  guildId: string
 ): Promise<string> => {
   const msg = await apiClient
-    .get('/settings?key=FORWARD_SUCCESS_MESSAGE')
+    .get('/settings?key=FORWARD_SUCCESS_MESSAGE', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) =>
       (res.data as Setting).value
         .replace('{@giver}', `<@!${giver.id}>`)
@@ -56,9 +62,11 @@ export const forwardSuccess = async (
 //  *
 //  * @returns {Promise<string>}
 //  */
-export const notActivatedError = async (): Promise<string> => {
+export const notActivatedError = async (guildId: string): Promise<string> => {
   const msg = await apiClient
-    .get('/settings?key=PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR')
+    .get('/settings?key=PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) => (res.data as Setting).value)
     .catch(() => 'PRAISE ACCOUNT NOT ACTIVATED (message not set)');
   return msg;
@@ -70,10 +78,13 @@ export const notActivatedError = async (): Promise<string> => {
 //  * @returns {Promise<string>}
 //  */
 export const giverNotActivatedError = async (
-  praiseGiver: User
+  praiseGiver: User,
+  guildId: string
 ): Promise<string> => {
   const msg = await apiClient
-    .get('/settings?key=FORWARD_FROM_UNACTIVATED_GIVER_ERROR')
+    .get('/settings?key=FORWARD_FROM_UNACTIVATED_GIVER_ERROR', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) =>
       (res.data as Setting).value
         .replace(
@@ -108,10 +119,13 @@ export const dmError = async (): Promise<string> => {
  */
 export const praiseRoleError = async (
   roles: Role[],
-  user: User
+  user: User,
+  guildId: string
 ): Promise<EmbedBuilder> => {
   const msg = await apiClient
-    .get('/settings?key=PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR')
+    .get('/settings?key=PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) => (res.data as Setting).value)
     .catch(() => 'USER DOES NOT HAVE THE PRAISE GIVER ROLE');
 
@@ -141,9 +155,13 @@ export const praiseRoleError = async (
  *
  * @returns {Promise<string>}
  */
-export const alreadyActivatedError = async (): Promise<string> => {
+export const alreadyActivatedError = async (
+  guildId: string
+): Promise<string> => {
   const msg = await apiClient
-    .get('/settings?key=PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR')
+    .get('/settings?key=PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) => (res.data as Setting).value)
     .catch(() => 'PRAISE ACCOUNT ALREADY ACTIVATED (message not set)');
   return msg;
@@ -154,9 +172,13 @@ export const alreadyActivatedError = async (): Promise<string> => {
  *
  * @returns {Promise<string>}
  */
-export const invalidReceiverError = async (): Promise<string> => {
+export const invalidReceiverError = async (
+  guildId: string
+): Promise<string> => {
   const msg = await apiClient
-    .get('/settings?key=PRAISE_INVALID_RECEIVERS_ERROR')
+    .get('/settings?key=PRAISE_INVALID_RECEIVERS_ERROR', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) => (res.data as Setting).value)
     .catch(() => 'VALID RECEIVERS NOT MENTIONED (message not set)');
   return msg;
@@ -167,9 +189,11 @@ export const invalidReceiverError = async (): Promise<string> => {
  *
  * @returns {Promise<string>}
  */
-export const missingReasonError = async (): Promise<string> => {
+export const missingReasonError = async (guildId: string): Promise<string> => {
   const msg = await apiClient
-    .get('/settings?key=PRAISE_REASON_MISSING_ERROR')
+    .get('/settings?key=PRAISE_REASON_MISSING_ERROR', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) => (res.data as Setting).value)
     .catch(() => 'REASON NOT MENTIONED (message not set)');
   return msg;
@@ -182,10 +206,13 @@ export const missingReasonError = async (): Promise<string> => {
  */
 export const undefinedReceiverWarning = async (
   receivers: string,
-  user: User
+  user: User,
+  guildId: string
 ): Promise<string> => {
   const msg = await apiClient
-    .get('/settings?key=PRAISE_UNDEFINED_RECEIVERS_WARNING')
+    .get('/settings?key=PRAISE_UNDEFINED_RECEIVERS_WARNING', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) =>
       (res.data as Setting).value
         .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
@@ -206,10 +233,13 @@ export const undefinedReceiverWarning = async (
  */
 export const roleMentionWarning = async (
   receivers: string,
-  user: User
+  user: User,
+  guildId: string
 ): Promise<string> => {
   const msg = await apiClient
-    .get('/settings?key=PRAISE_TO_ROLE_WARNING')
+    .get('/settings?key=PRAISE_TO_ROLE_WARNING', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) =>
       (res.data as Setting).value
         .replace('{@receivers}', receivers)
@@ -230,16 +260,21 @@ export const roleMentionWarning = async (
  */
 export const praiseSuccessDM = async (
   msgUrl: string,
-  isActivated = true
+  isActivated = true,
+  guildId: string
 ): Promise<EmbedBuilder> => {
   const msg = await apiClient
-    .get('/settings?key=PRAISE_SUCCESS_DM')
+    .get('/settings?key=PRAISE_SUCCESS_DM', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) => (res.data as Setting).value.replace('{praiseURL}', msgUrl))
     .catch(() => `[YOU HAVE BEEN PRAISED!!!](${msgUrl}) (message not set)`);
   const embed = new EmbedBuilder().setColor('#696969');
   if (!isActivated) {
     const notActivatedMsg = await apiClient
-      .get('/settings?key=PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM')
+      .get('/settings?key=PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM', {
+        headers: { 'x-discord-guild-id': guildId },
+      })
       .then((res) => (res.data as Setting).value)
       .catch(
         () =>
@@ -261,9 +296,11 @@ export const praiseSuccessDM = async (
  *
  * @returns {Promise<string>}
  */
-export const selfPraiseWarning = async (): Promise<string> => {
+export const selfPraiseWarning = async (guildId: string): Promise<string> => {
   const msg = await apiClient
-    .get('/settings?key=SELF_PRAISE_WARNING')
+    .get('/settings?key=SELF_PRAISE_WARNING', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) => (res.data as Setting).value)
     .catch(
       () =>
@@ -277,9 +314,13 @@ export const selfPraiseWarning = async (): Promise<string> => {
  *
  * @returns {Promise<string>}
  */
-export const firstTimePraiserInfo = async (): Promise<string> => {
+export const firstTimePraiserInfo = async (
+  guildId: string
+): Promise<string> => {
   const msg = await apiClient
-    .get('/settings?key=FIRST_TIME_PRAISER')
+    .get('/settings?key=FIRST_TIME_PRAISER', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) => (res.data as Setting).value)
     .catch(
       () =>

@@ -31,14 +31,15 @@ export const praise: Command = {
         ephemeral: true,
       });
       if (msg === undefined) return;
-      await praiseHandler(
-        interaction,
-        getMsgLink(
-          interaction.guildId || '',
-          interaction.channelId || '',
-          msg.id
-        )
-      );
+      // await praiseHandler(
+      //   interaction,
+      //   getMsgLink(
+      //     interaction.guildId || '',
+      //     interaction.channelId || '',
+      //     msg.id
+      //   )
+      // );
+      await interaction.editReply('...');
     } catch (err) {
       logger.error(err);
     }

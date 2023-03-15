@@ -16,14 +16,27 @@ export const assertPraiseGiver = async (
   interaction: CommandInteraction<CacheType>,
   sendReply: boolean
 ): Promise<boolean> => {
+  const { guild } = interaction;
+
+  if (!guild) {
+    if (sendReply) {
+      await interaction.editReply({
+        content: await dmError(),
+      });
+    }
+    return false;
+  }
+
   const praiseGiverRoleIDRequired = await apiClient(
-    '/settings?key=PRAISE_GIVER_ROLE_ID_REQUIRED'
+    '/settings?key=PRAISE_GIVER_ROLE_ID_REQUIRED',
+    { headers: { 'x-discord-guild-id': guild.id } }
   )
     .then((res) => (res.data as Setting).value == 'true')
     .catch(() => false);
 
   const praiseGiverRoleIDList = await apiClient(
-    '/settings?key=PRAISE_GIVER_ROLE_ID'
+    '/settings?key=PRAISE_GIVER_ROLE_ID',
+    { headers: { 'x-discord-guild-id': guild.id } }
   )
     .then((res) => (res.data as Setting).value.split(','))
     .catch(() => null);
@@ -41,16 +54,6 @@ export const assertPraiseGiver = async (
     if (sendReply) {
       await interaction.editReply({
         content: '**❌ No Praise Giver Discord Role ID specified.**',
-      });
-    }
-    return false;
-  }
-
-  const { guild } = interaction;
-  if (!guild) {
-    if (sendReply) {
-      await interaction.editReply({
-        content: await dmError(),
       });
     }
     return false;
@@ -89,7 +92,7 @@ export const assertPraiseGiver = async (
   if (!isPraiseGiver) {
     if (sendReply) {
       await interaction.editReply({
-        embeds: [await praiseRoleError(roles, praiseGiver.user)],
+        embeds: [await praiseRoleError(roles, praiseGiver.user, guild.id)],
       });
     }
     return false;

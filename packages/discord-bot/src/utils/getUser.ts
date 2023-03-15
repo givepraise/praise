@@ -7,9 +7,14 @@ import { User } from './api-schema';
  * @param {string} id
  * @returns {Promise<User>}
  */
-export const getUser = async (id: string): Promise<User | undefined> => {
+export const getUser = async (
+  id: string,
+  guildId: string
+): Promise<User | undefined> => {
   return await apiClient
-    .get<User>(`/users/${id}`)
+    .get<User>(`/users/${id}`, {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) => res.data)
     .catch(() => undefined);
 };

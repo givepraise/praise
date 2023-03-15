@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { logger } from 'api/dist/shared/logger';
-import { forwardHandler } from '../handlers/forward';
+// import { forwardHandler } from '../handlers/forward';
 import { Command } from '../interfaces/Command';
 import { getMsgLink } from '../utils/format';
 
@@ -37,14 +37,15 @@ export const forward: Command = {
         ephemeral: true,
       });
       if (msg === undefined) return;
-      await forwardHandler(
-        interaction,
-        getMsgLink(
-          interaction.guildId || '',
-          interaction.channelId || '',
-          msg.id
-        )
-      );
+      // await forwardHandler(
+      //   interaction,
+      //   getMsgLink(
+      //     interaction.guildId || '',
+      //     interaction.channelId || '',
+      //     msg.id
+      //   )
+      // );
+      await interaction.editReply("Forwarding isn't functional currently...");
     } catch (err) {
       logger.error(err);
     }

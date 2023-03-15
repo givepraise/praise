@@ -1,5 +1,4 @@
 import { CommandInteraction, EmbedBuilder } from 'discord.js';
-import { settingValue } from 'api/dist/shared/settings';
 import { apiClient } from '../api';
 import { Setting } from '../api-schema';
 
@@ -12,13 +11,13 @@ import { Setting } from '../api-schema';
 export const praiseSuccessEmbed = async (
   interaction: CommandInteraction,
   receivers: string[],
-  reason: string
+  reason: string,
+  guildId: string
 ): Promise<EmbedBuilder> => {
-  const successMessage = (await settingValue(
-    'PRAISE_SUCCESS_MESSAGE'
-  )) as string;
   const msg = await apiClient
-    .get('/settings?key=PRAISE_SUCCESS_MESSAGE')
+    .get('/settings?key=PRAISE_SUCCESS_MESSAGE', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) =>
       (res.data as Setting).value
         .replace('{@receivers}', `${receivers.join(', ')}`)

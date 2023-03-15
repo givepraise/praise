@@ -1,14 +1,13 @@
-//import { UserAccountModel } from 'api/dist/useraccount/entities';
 //import { EventLogTypeKey } from 'api/dist/eventlog/types';
 //import { logEvent } from 'api/dist/eventlog/utils';
-import randomstring from 'randomstring';
+//import { Types } from 'mongoose';
+
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { alreadyActivatedError } from '../utils/embeds/praiseEmbeds';
 import { getUserAccount } from '../utils/getUserAccount';
-//import { Types } from 'mongoose';
-import { apiClient } from '../utils/api';
 import { dmError } from '../utils/embeds/praiseEmbeds';
 import { GuildMember } from 'discord.js';
+import { getActivateToken } from '../utils/getActivateToken';
 
 /**
  * Executes command /activate
@@ -26,7 +25,10 @@ export const activationHandler: CommandHandler = async (interaction) => {
   }
 
   try {
-    const userAccount = await getUserAccount((member as GuildMember).user);
+    const userAccount = await getUserAccount(
+      (member as GuildMember).user,
+      guild.id
+    );
 
     if (
       userAccount.user &&
@@ -34,20 +36,11 @@ export const activationHandler: CommandHandler = async (interaction) => {
       userAccount.user != ''
     ) {
       await interaction.reply({
-        content: await alreadyActivatedError(),
+        content: await alreadyActivatedError(guild.id),
         ephemeral: true,
       });
       return;
     }
-
-    const ua = {
-      accountId: member.user.id,
-      name: member.user.username + '#' + member.user.discriminator,
-      avatarId: member.user.avatar,
-      activateToken: randomstring.generate(),
-    };
-
-    await apiClient.patch(`/useraccounts/${userAccount._id}`, ua);
 
     // await logEvent(
     //   EventLogTypeKey.AUTHENTICATION,
@@ -57,33 +50,21 @@ export const activationHandler: CommandHandler = async (interaction) => {
     //   }
     // );
 
-    const getActivationURL = (
-      accountId: string,
-      uname: string,
-      hash: string,
-      token: string
-    ): string =>
-      `${
-        process.env.FRONTEND_URL as string
-      }/activate?accountId=${accountId}&accountName=${encodeURIComponent(
-        `${uname}#${hash}`
-      )}&platform=DISCORD&token=${token}`;
+    const activateToken = await getActivateToken(userAccount, guild.id);
 
-    const activationURL = getActivationURL(
-      member.user.id,
-      member.user.username,
-      member.user.discriminator,
-      ua.activateToken
-    );
+    const activationURL = `${
+      process.env.FRONTEND_URL as string
+    }/activate?accountId=${
+      member.user.id
+    }&platform=DISCORD&token=${activateToken}`;
 
     await interaction.reply({
       content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${activationURL})`,
       ephemeral: true,
     });
   } catch (error) {
-    console.log(error);
     await interaction.reply({
-      content: 'Unable to create user account.',
+      content: 'Unable to activate user account.',
       ephemeral: true,
     });
   }

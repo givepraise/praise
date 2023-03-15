@@ -11,10 +11,13 @@ export const praiseForwardEmbed = async (
   interaction: CommandInteraction,
   giver: User,
   receivers: string[],
-  reason: string
+  reason: string,
+  guildId: string
 ): Promise<EmbedBuilder> => {
   const msg = await apiClient
-    .get('/settings?key=FORWARD_SUCCESS_MESSAGE')
+    .get('/settings?key=FORWARD_SUCCESS_MESSAGE', {
+      headers: { 'x-discord-guild-id': guildId },
+    })
     .then((res) =>
       (res.data as Setting).value
         .replace('{@giver}', `<@!${giver.id}>`)

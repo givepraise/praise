@@ -1,3 +1,6 @@
+/* TODO - Replace db access with api2 calls */
+
+/*
 import { GuildMember } from 'discord.js';
 import { UserModel } from 'api/dist/user/entities';
 import { EventLogTypeKey } from 'api/dist/eventlog/types';
@@ -23,6 +26,7 @@ import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChan
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { createPraise } from '../utils/createPraise';
 import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
+/*
 
 /**
  * Execute command /firward
@@ -32,6 +36,7 @@ import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
  * @param  responseUrl
  * @returns
  */
+/*
 export const forwardHandler: CommandHandler = async (
   interaction,
   responseUrl
@@ -202,3 +207,5 @@ export const forwardHandler: CommandHandler = async (
     await interaction.followUp({ content: warningMsg, ephemeral: true });
   }
 };
+
+*/

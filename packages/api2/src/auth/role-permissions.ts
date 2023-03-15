@@ -86,6 +86,7 @@ const PERMISSION_API_KEY_DISCORD_BOT = [
   Permission.UserAccountsView,
   Permission.UserAccountsCreate,
   Permission.UserAccountsUpdate,
+  Permission.PraiseView,
   Permission.PraiseCreate,
   Permission.PraiseForward,
   Permission.CommunitiesView,

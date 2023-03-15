@@ -1,3 +1,5 @@
+/*TODO - Replace db interactions with calls to api2 */
+
 import { PeriodModel } from 'api/dist/period/entities';
 import { UserModel } from 'api/dist/user/entities';
 import { UserRole, UserDocument } from 'api/dist/user/types';

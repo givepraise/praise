@@ -64,22 +64,6 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
 
 // Connect to database
 void (async (): Promise<void> => {
-  logger.info('Connecting to database…');
-  const host = process.env.MONGO_HOST || '';
-  const port = process.env.MONGO_PORT || '';
-  const dbName = process.env.MONGO_DB || '';
-  const username = process.env.MONGO_USERNAME || '';
-  const password = process.env.MONGO_PASSWORD || '';
-
-  try {
-    const db = `mongodb://${username}:${password}@${host}:${port}/${dbName}`;
-    await mongoose.connect(db, {
-      useNewUrlParser: true,
-    } as ConnectOptions);
-    logger.info('Connected to database.');
-  } catch (error) {
-    logger.error('Could not connect to database.');
-  }
   // Login to Discord with your client's token
   await discordClient.login(token);
 })();
