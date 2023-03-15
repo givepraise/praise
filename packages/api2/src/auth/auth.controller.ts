@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   UseGuards,
   Request,
+  Headers,
 } from '@nestjs/common';
 import { EthSignatureService } from './eth-signature.service';
 import { NonceResponseDto } from './dto/nonce-response.dto';
@@ -67,7 +68,10 @@ export class AuthController {
     description: 'User authenticated successfully',
     type: LoginResponseDto,
   })
-  async login(@Request() req: RequestWithUser): Promise<LoginResponseDto> {
-    return this.ethSignatureService.login(req.user._id);
+  async login(
+    @Request() req: RequestWithUser,
+    @Headers('host') hostname: string,
+  ): Promise<LoginResponseDto> {
+    return this.ethSignatureService.login(req.user._id, hostname);
   }
 }
