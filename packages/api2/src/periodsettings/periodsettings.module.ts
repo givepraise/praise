@@ -18,7 +18,7 @@ import { AuthModule } from '@/auth/auth.module';
     MongooseModule.forFeature([
       { name: PeriodSetting.name, schema: PeriodSettingsSchema },
     ]),
-    EventLogModule,
+    forwardRef(() => EventLogModule),
     forwardRef(() => PeriodsModule),
     forwardRef(() => SettingsModule),
     forwardRef(() => AuthModule),

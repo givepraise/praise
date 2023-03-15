@@ -15,14 +15,10 @@ import { ActivateModule } from './activate/activate.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CommunityModule } from './community/community.module';
-import { JwtModule } from '@nestjs/jwt';
 import { MultiTenantConnectionService } from './database/services/multi-tenant-connection-service';
 
 @Module({
   imports: [
-    // MongooseModule.forRoot(
-    //   `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/praise_db?authSource=admin&appname=PraiseApi`,
-    // ),
     MongooseModule.forRootAsync({
       useClass: MultiTenantConnectionService,
     }),

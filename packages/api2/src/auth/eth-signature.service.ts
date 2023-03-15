@@ -9,6 +9,7 @@ import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { Types } from 'mongoose';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import { randomBytes } from 'crypto';
+import { CommunityService } from '@/community/community.service';
 
 @Injectable()
 /**
@@ -85,6 +86,7 @@ export class EthSignatureService {
     // Sign payload to create access token
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: '7d',
+      secret: process.env.JWT_SECRET,
     });
 
     await this.eventLogService.logEvent({

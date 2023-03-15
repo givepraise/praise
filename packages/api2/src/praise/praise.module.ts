@@ -27,7 +27,7 @@ import { ConstantsProvider } from '@/constants/constants.provider';
     forwardRef(() => PeriodsModule),
     forwardRef(() => QuantificationsModule),
     forwardRef(() => SettingsModule),
-    EventLogModule,
+    forwardRef(() => EventLogModule),
     forwardRef(() => AuthModule),
     ApiKeyModule,
   ],

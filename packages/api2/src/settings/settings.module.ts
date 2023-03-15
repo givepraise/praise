@@ -13,7 +13,7 @@ import { ApiKeyModule } from '@/api-key/api-key.module';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Setting.name, schema: SettingSchema }]),
-    EventLogModule,
+    forwardRef(() => EventLogModule),
     forwardRef(() => PeriodSettingsModule),
     forwardRef(() => AuthModule),
     ApiKeyModule,

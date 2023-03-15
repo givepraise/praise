@@ -16,7 +16,7 @@ import { assertOwnersIncludeCreator } from './utils/assert-owners-include-creato
 @Injectable()
 export class CommunityService {
   constructor(
-    @InjectModel(Community.name)
+    @InjectModel(Community.name, 'praise')
     private communityModel: typeof CommunityModel,
   ) {}
 

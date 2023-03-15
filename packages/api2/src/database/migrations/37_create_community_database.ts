@@ -16,11 +16,14 @@ const up = async (): Promise<void> => {
     return;
   }
 
+  const hostname =
+    process.env.NODE_ENV === 'testing' ? 'test-community' : process.env.HOST;
+
   // Create community based on env variables
   const admins = process.env.ADMINS || '';
   const communityData = {
-    hostname: process.env.HOST,
-    name: process.env.HOST,
+    hostname,
+    name: hostname,
     creator: admins.split(',')[0],
     owners: admins.split(','),
     discordGuildId: process.env.DISCORD_GUILD_ID,
@@ -28,12 +31,12 @@ const up = async (): Promise<void> => {
     discordLinkNonce: randomBytes(10).toString('hex'),
     discordLinkState: 'ACTIVE',
   };
-  const community = await CommunityModel.create(communityData);
-  const communityDbName = community._id.toString();
+  await CommunityModel.create(communityData);
 
   try {
     const client = new MongoClient(dbUrl);
     const dbFrom = client.db(process.env.MONGO_DB!);
+    const communityDbName = hostname;
     const dbTo = client.db(communityDbName);
 
     const collections = await dbFrom.listCollections().toArray();

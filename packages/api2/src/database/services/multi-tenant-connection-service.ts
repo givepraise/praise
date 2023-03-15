@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import {
@@ -5,14 +6,19 @@ import {
   MongooseOptionsFactory,
 } from '@nestjs/mongoose';
 
+const dbUri = (db: string) => ({
+  uri: `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${db}?authSource=admin&appname=PraiseApi`,
+});
+
 @Injectable({ scope: Scope.REQUEST })
 export class MultiTenantConnectionService implements MongooseOptionsFactory {
   constructor(@Inject(REQUEST) private readonly request: any) {}
 
-  createMongooseOptions(): MongooseModuleOptions {
-    const communityId = this.request.headers['x-community-id'];
-    return {
-      uri: `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${communityId}?authSource=admin&appname=PraiseApi`,
-    };
+  async createMongooseOptions(): Promise<MongooseModuleOptions> {
+    const host =
+      process.env.NODE_ENV === 'testing'
+        ? 'test-community'
+        : this.request.headers['host'].split(':')[0];
+    return dbUri(host);
   }
 }

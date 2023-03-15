@@ -32,7 +32,7 @@ import { ConstantsProvider } from '@/constants/constants.provider';
     MongooseModule.forFeature([
       { name: Quantification.name, schema: QuantificationSchema },
     ]),
-    EventLogModule,
+    forwardRef(() => EventLogModule),
     forwardRef(() => SettingsModule),
     forwardRef(() => PeriodSettingsModule),
     forwardRef(() => PraiseModule),

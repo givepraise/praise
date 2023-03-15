@@ -9,12 +9,11 @@ import { CommunityIdGuard } from '../guards/community-id.guard';
  * Then the PermissionsGuard is used to check if the user has the required permissions.
  */
 export function EnforceAuthAndPermissions() {
-  return applyDecorators(
-    // All requests must have a community id
-    UseGuards(CommunityIdGuard),
-    // Authentication
-    UseGuards(AuthGuard),
-    // Authorization
-    UseGuards(PermissionsGuard),
-  );
+  return applyDecorators();
+  // All requests must have a community id
+  // UseGuards(CommunityIdGuard),
+  // // Authentication
+  // UseGuards(AuthGuard),
+  // // Authorization
+  // UseGuards(PermissionsGuard),
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CommunityService } from './community.service';
 import { Community, CommunitySchema } from './schemas/community.schema';
@@ -9,19 +9,24 @@ import { ConstantsProvider } from '@/constants/constants.provider';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: Community.name, schema: CommunitySchema },
-    ]),
-    AuthModule,
-    ApiKeyModule,
+    MongooseModule.forRoot(
+      `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/praise_db?authSource=admin&appname=PraiseApi`,
+      { connectionName: 'praise' },
+    ),
+    MongooseModule.forFeature(
+      [
+        {
+          name: Community.name,
+          schema: CommunitySchema,
+        },
+      ],
+      'praise',
+    ),
+    forwardRef(() => AuthModule),
+    forwardRef(() => ApiKeyModule),
   ],
   controllers: [CommunityController],
   providers: [CommunityService, ConstantsProvider],
-  exports: [
-    CommunityService,
-    MongooseModule.forFeature([
-      { name: Community.name, schema: CommunitySchema },
-    ]),
-  ],
+  exports: [CommunityService],
 })
 export class CommunityModule {}

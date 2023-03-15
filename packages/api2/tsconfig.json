@@ -24,6 +24,7 @@
       "@/api-key/*": ["src/api-key/*"],
       "@/auth/*": ["src/auth/*"],
       "@/constants/*": ["src/constants/*"],
+      "@/community/*": ["src/community/*"],
       "@/database/*": ["src/database/*"],
       "@/event-log/*": ["src/event-log/*"],
       "@/periods/*": ["src/periods/*"],

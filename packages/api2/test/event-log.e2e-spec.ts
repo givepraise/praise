@@ -17,6 +17,20 @@ import { EventLogType } from '@/event-log/schemas/event-log-type.schema';
 import { EventLog } from '@/event-log/schemas/event-log.schema';
 import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
 import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
+import { ActivateModule } from '@/activate/activate.module';
+import { ApiKeyModule } from '@/api-key/api-key.module';
+import { AuthModule } from '@/auth/auth.module';
+import { PeriodsModule } from '@/periods/periods.module';
+import { PeriodSettingsModule } from '@/periodsettings/periodsettings.module';
+import { PraiseModule } from '@/praise/praise.module';
+import { QuantificationsModule } from '@/quantifications/quantifications.module';
+import { SettingsModule } from '@/settings/settings.module';
+import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { RequestContextModule } from 'nestjs-request-context';
+import { CommunityModule } from '@/community/community.module';
+import { JwtService } from '@nestjs/jwt';
+import { MultiTenantConnectionService } from '@/database/services/multi-tenant-connection-service';
 
 describe('EventLog (E2E)', () => {
   let app: INestApplication;
@@ -31,7 +45,24 @@ describe('EventLog (E2E)', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule, EventLogModule],
+      imports: [
+        MongooseModule.forRootAsync({
+          useClass: MultiTenantConnectionService,
+        }),
+        ActivateModule,
+        ApiKeyModule,
+        AuthModule,
+        CommunityModule,
+        EventLogModule,
+        PeriodsModule,
+        PeriodSettingsModule,
+        PraiseModule,
+        QuantificationsModule,
+        RequestContextModule,
+        SettingsModule,
+        UserAccountsModule,
+        UsersModule,
+      ],
       providers: [UsersSeeder, EventLogSeeder],
     }).compile();
     app = module.createNestApplication();
@@ -53,15 +84,12 @@ describe('EventLog (E2E)', () => {
     eventLogSeeder = module.get<EventLogSeeder>(EventLogSeeder);
     eventLogService = module.get<EventLogService>(EventLogService);
 
-    // Clear the database
-    await usersService.getModel().deleteMany({});
-
     // Seed the database
     wallet = Wallet.createRandom();
-    await usersSeeder.seedUser({
-      identityEthAddress: wallet.address,
-      rewardsAddress: wallet.address,
-    });
+    // await usersSeeder.seedUser({
+    //   identityEthAddress: wallet.address,
+    //   rewardsAddress: wallet.address,
+    // });
 
     // Login and get access token
     const response = await loginUser(app, module, wallet);

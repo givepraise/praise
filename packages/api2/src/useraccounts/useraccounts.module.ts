@@ -14,7 +14,7 @@ import { ConstantsProvider } from '@/constants/constants.provider';
     MongooseModule.forFeature([
       { name: UserAccount.name, schema: UserAccountSchema },
     ]),
-    EventLogModule,
+    forwardRef(() => EventLogModule),
     forwardRef(() => UsersModule),
     forwardRef(() => AuthModule),
     ApiKeyModule,
