@@ -1,122 +1,51 @@
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersService } from '@/users/users.service';
-import { UsersModule } from '@/users/users.module';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
 import { authorizedGetRequest, loginUser } from './test.common';
-import { EventLogSeeder } from '@/database/seeder/event-log.seeder';
-import { EventLogModule } from '@/event-log/event-log.module';
-import { EventLogService } from '@/event-log/event-log.service';
-import { runDbMigrations } from '@/database/migrations';
 import { EventLogType } from '@/event-log/schemas/event-log-type.schema';
 import { EventLog } from '@/event-log/schemas/event-log.schema';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
-import { ActivateModule } from '@/activate/activate.module';
-import { ApiKeyModule } from '@/api-key/api-key.module';
-import { AuthModule } from '@/auth/auth.module';
-import { PeriodsModule } from '@/periods/periods.module';
-import { PeriodSettingsModule } from '@/periodsettings/periodsettings.module';
-import { PraiseModule } from '@/praise/praise.module';
-import { QuantificationsModule } from '@/quantifications/quantifications.module';
-import { SettingsModule } from '@/settings/settings.module';
-import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
-import { MongooseModule } from '@nestjs/mongoose';
-import { RequestContextModule } from 'nestjs-request-context';
-import { CommunityModule } from '@/community/community.module';
-import { JwtService } from '@nestjs/jwt';
-import { MultiTenantConnectionService } from '@/database/services/multi-tenant-connection-service';
+import { StartNestReturn, startNest } from './shared/start-nest';
 
 describe('EventLog (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let usersService: UsersService;
-  let eventLogSeeder: EventLogSeeder;
-  let eventLogService: EventLogService;
   let wallet;
   let accessToken: string;
+  let nest: StartNestReturn;
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        MongooseModule.forRootAsync({
-          useClass: MultiTenantConnectionService,
-        }),
-        ActivateModule,
-        ApiKeyModule,
-        AuthModule,
-        CommunityModule,
-        EventLogModule,
-        PeriodsModule,
-        PeriodSettingsModule,
-        PraiseModule,
-        QuantificationsModule,
-        RequestContextModule,
-        SettingsModule,
-        UserAccountsModule,
-        UsersModule,
-      ],
-      providers: [UsersSeeder, EventLogSeeder],
-    }).compile();
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    usersService = module.get<UsersService>(UsersService);
-    eventLogSeeder = module.get<EventLogSeeder>(EventLogSeeder);
-    eventLogService = module.get<EventLogService>(EventLogService);
+    nest = await startNest();
 
     // Seed the database
     wallet = Wallet.createRandom();
-    // await usersSeeder.seedUser({
-    //   identityEthAddress: wallet.address,
-    //   rewardsAddress: wallet.address,
-    // });
+    await nest.usersSeeder.seedUser({
+      identityEthAddress: wallet.address,
+      rewardsAddress: wallet.address,
+    });
 
     // Login and get access token
-    const response = await loginUser(app, module, wallet);
+    const response = await loginUser(nest.app, nest.module, wallet);
     accessToken = response.accessToken;
   });
 
   afterAll(async () => {
-    await app.close();
+    await nest.app.close();
   });
 
   describe('GET /api/event-log', () => {
     test('401 when not authenticated', async () => {
-      return request(server).get('/event-log').send().expect(401);
+      return request(nest.server).get('/event-log').send().expect(401);
     });
 
     test('200 and correct body when authenticated', async () => {
       //Clear the database
-      await eventLogService.getModel().deleteMany({});
+      await nest.eventLogService.getModel().deleteMany({});
 
       // Seed the database with 12 event logs
       for (let i = 0; i < 12; i++) {
-        await eventLogSeeder.seedEventLog();
+        await nest.eventLogSeeder.seedEventLog();
       }
 
       const response = await authorizedGetRequest(
         '/event-log?limit=10&page=1&sortColumn=createdAt&sortType=desc',
-        app,
+        nest.app,
         accessToken,
       ).expect(200);
 
@@ -136,13 +65,13 @@ describe('EventLog (E2E)', () => {
 
   describe('GET /api/event-log/types', () => {
     test('401 when not authenticated', async () => {
-      return request(server).get('/event-log/types').send().expect(401);
+      return request(nest.server).get('/event-log/types').send().expect(401);
     });
 
     test('200 and correct body when authenticated', async () => {
       const response = await authorizedGetRequest(
         '/event-log/types',
-        app,
+        nest.app,
         accessToken,
       ).expect(200);
 
