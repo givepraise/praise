@@ -132,6 +132,20 @@ export interface paths {
     /** Set value for a period setting. */
     patch: operations['PeriodSettingsController_set'];
   };
+  '/api/communities': {
+    get: operations['CommunityController_findAll'];
+    /** Create a new community */
+    post: operations['CommunityController_create'];
+  };
+  '/api/communities/{id}': {
+    get: operations['CommunityController_findOne'];
+    /** Update community */
+    patch: operations['CommunityController_update'];
+  };
+  '/api/communities/{id}/discord/link': {
+    /** Link discord to community */
+    patch: operations['CommunityController_linkDiscord'];
+  };
   '/api/praise': {
     /** List praise items, paginated results */
     get: operations['PraiseController_findAllPaginated'];
@@ -177,20 +191,6 @@ export interface paths {
     get: operations['UserAccountsController_findOne'];
     /** Update UserAccount */
     patch: operations['UserAccountsController_update'];
-  };
-  '/api/communities': {
-    get: operations['CommunityController_findAll'];
-    /** Create a new community */
-    post: operations['CommunityController_create'];
-  };
-  '/api/communities/{id}': {
-    get: operations['CommunityController_findOne'];
-    /** Update community */
-    patch: operations['CommunityController_update'];
-  };
-  '/api/communities/{id}/discord/link': {
-    /** Link discord to community */
-    patch: operations['CommunityController_linkDiscord'];
   };
 }
 
@@ -726,6 +726,96 @@ export interface components {
     SetPeriodSettingDto: {
       value: string;
     };
+    CreateCommunityInputDto: {
+      /** @example banklessdao.givepraise.xyz */
+      hostname: string;
+      /** @example BanklessDAO */
+      name: string;
+      /** @example john.smith@banklessDao.com */
+      email: string;
+      /** @example 0x123.. */
+      creator: string;
+      /**
+       * @example [
+       *   "0x123..",
+       *   "0x345.."
+       * ]
+       */
+      owners: string[];
+      /** @example 0980987846534 */
+      discordGuildId?: string;
+    };
+    ObjectId: Record<string, never>;
+    Community: {
+      /** @example 621f802b813dbdba9eeaf7b4 */
+      _id: components['schemas']['ObjectId'];
+      /** @example banklessdao.givepraise.xyz */
+      hostname: string;
+      /** @example BanklessDAO */
+      name: string;
+      /** @example john.smith@banklessDao.com */
+      email: string;
+      /** @example 0x123.. */
+      creator: string;
+      /**
+       * @example [
+       *   "0x123..",
+       *   "0x345.."
+       * ]
+       */
+      owners: string[];
+      /** @example 0980987846534 */
+      discordGuildId?: string;
+      /** @example oiujoiuoo8u */
+      discordLinkNonce: string;
+      /** @example true */
+      isPublic: boolean;
+      /**
+       * @example NOT_SET | PENDING | ACTIVE | DEACTIVE
+       * @enum {string}
+       */
+      discordLinkState: 'NOT_SET' | 'PENDING' | 'ACTIVE' | 'DEACTIVE';
+    };
+    UpdateCommunityInputDto: {
+      /** @example banklessdao.givepraise.xyz */
+      hostname?: string;
+      /** @example BanklessDAO */
+      name?: string;
+      /** @example john.smith@banklessDao.com */
+      email?: string;
+      /**
+       * @example [
+       *   "0x123..",
+       *   "0x345.."
+       * ]
+       */
+      owners?: string[];
+    };
+    CommunityPaginatedResponseDto: {
+      /** @example 1200 */
+      totalDocs: number;
+      /** @example 10 */
+      limit: number;
+      /** @example 12 */
+      totalPages: number;
+      /** @example 2 */
+      page: number;
+      /** @example 1 */
+      pagingCounter: number;
+      /** @example false */
+      hasPrevPage: Record<string, never>;
+      /** @example true */
+      hasNextPage: Record<string, never>;
+      /** @example 1 */
+      prevPage: number;
+      /** @example 3 */
+      nextPage: number;
+      docs: readonly components['schemas']['Community'][];
+    };
+    LinkDiscordBotDto: {
+      /** @example 0xdb4bb91357b23083ec2a36dc1fe23e59b71434fc020542da7e983df206ed06611e275eb30e239508f9758c0608dca6cef5619c41b50a48f22bdb36a8dabc2d201c */
+      signedMessage: string;
+    };
     PraisePaginatedResponseDto: {
       /** @example 1200 */
       totalDocs: number;
@@ -852,96 +942,6 @@ export interface components {
       updatedAt: string;
       /** @example jkhvuygi643jh35g53 */
       activateToken: string;
-    };
-    CreateCommunityInputDto: {
-      /** @example banklessdao.givepraise.xyz */
-      hostname: string;
-      /** @example BanklessDAO */
-      name: string;
-      /** @example john.smith@banklessDao.com */
-      email: string;
-      /** @example 0x123.. */
-      creator: string;
-      /**
-       * @example [
-       *   "0x123..",
-       *   "0x345.."
-       * ]
-       */
-      owners: string[];
-      /** @example 0980987846534 */
-      discordGuildId?: string;
-    };
-    ObjectId: Record<string, never>;
-    Community: {
-      /** @example 621f802b813dbdba9eeaf7b4 */
-      _id: components['schemas']['ObjectId'];
-      /** @example banklessdao.givepraise.xyz */
-      hostname: string;
-      /** @example BanklessDAO */
-      name: string;
-      /** @example john.smith@banklessDao.com */
-      email: string;
-      /** @example 0x123.. */
-      creator: string;
-      /**
-       * @example [
-       *   "0x123..",
-       *   "0x345.."
-       * ]
-       */
-      owners: string[];
-      /** @example 0980987846534 */
-      discordGuildId?: string;
-      /** @example oiujoiuoo8u */
-      discordLinkNonce: string;
-      /** @example true */
-      isPublic: boolean;
-      /**
-       * @example NOT_SET | PENDING | ACTIVE | DEACTIVE
-       * @enum {string}
-       */
-      discordLinkState: 'NOT_SET' | 'PENDING' | 'ACTIVE' | 'DEACTIVE';
-    };
-    UpdateCommunityInputDto: {
-      /** @example banklessdao.givepraise.xyz */
-      hostname?: string;
-      /** @example BanklessDAO */
-      name?: string;
-      /** @example john.smith@banklessDao.com */
-      email?: string;
-      /**
-       * @example [
-       *   "0x123..",
-       *   "0x345.."
-       * ]
-       */
-      owners?: string[];
-    };
-    CommunityPaginatedResponseDto: {
-      /** @example 1200 */
-      totalDocs: number;
-      /** @example 10 */
-      limit: number;
-      /** @example 12 */
-      totalPages: number;
-      /** @example 2 */
-      page: number;
-      /** @example 1 */
-      pagingCounter: number;
-      /** @example false */
-      hasPrevPage: Record<string, never>;
-      /** @example true */
-      hasNextPage: Record<string, never>;
-      /** @example 1 */
-      prevPage: number;
-      /** @example 3 */
-      nextPage: number;
-      docs: readonly components['schemas']['Community'][];
-    };
-    LinkDiscordBotDto: {
-      /** @example 0xdb4bb91357b23083ec2a36dc1fe23e59b71434fc020542da7e983df206ed06611e275eb30e239508f9758c0608dca6cef5619c41b50a48f22bdb36a8dabc2d201c */
-      signedMessage: string;
     };
   };
   responses: never;
@@ -1626,6 +1626,94 @@ export interface operations {
       };
     };
   };
+  CommunityController_findAll: {
+    parameters: {
+      /** @example 10 */
+      /** @example 1 */
+      query: {
+        limit: number;
+        page: number;
+        sortColumn?: string;
+        sortType?: 'asc' | 'desc';
+      };
+    };
+    responses: {
+      /** @description All communities */
+      200: {
+        content: {
+          'application/json': components['schemas']['CommunityPaginatedResponseDto'];
+        };
+      };
+    };
+  };
+  CommunityController_create: {
+    /** Create a new community */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateCommunityInputDto'];
+      };
+    };
+    responses: {
+      /** @description Community */
+      200: {
+        content: {
+          'application/json': components['schemas']['Community'];
+        };
+      };
+      201: {
+        content: {
+          'application/json': components['schemas']['Community'];
+        };
+      };
+    };
+  };
+  CommunityController_findOne: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description A single Community */
+      200: {
+        content: {
+          'application/json': components['schemas']['Community'];
+        };
+      };
+    };
+  };
+  CommunityController_update: {
+    /** Update community */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateCommunityInputDto'];
+      };
+    };
+    responses: {
+      /** @description Community */
+      200: {
+        content: {
+          'application/json': components['schemas']['Community'];
+        };
+      };
+    };
+  };
+  CommunityController_linkDiscord: {
+    /** Link discord to community */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LinkDiscordBotDto'];
+      };
+    };
+    responses: {
+      /** @description Community */
+      200: {
+        content: {
+          'application/json': components['schemas']['Community'];
+        };
+      };
+    };
+  };
   PraiseController_findAllPaginated: {
     /** List praise items, paginated results */
     parameters: {
@@ -1860,94 +1948,6 @@ export interface operations {
       200: {
         content: {
           'application/json': components['schemas']['UpdateUserAccountResponseDto'];
-        };
-      };
-    };
-  };
-  CommunityController_findAll: {
-    parameters: {
-      /** @example 10 */
-      /** @example 1 */
-      query: {
-        limit: number;
-        page: number;
-        sortColumn?: string;
-        sortType?: 'asc' | 'desc';
-      };
-    };
-    responses: {
-      /** @description All communities */
-      200: {
-        content: {
-          'application/json': components['schemas']['CommunityPaginatedResponseDto'];
-        };
-      };
-    };
-  };
-  CommunityController_create: {
-    /** Create a new community */
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateCommunityInputDto'];
-      };
-    };
-    responses: {
-      /** @description Community */
-      200: {
-        content: {
-          'application/json': components['schemas']['Community'];
-        };
-      };
-      201: {
-        content: {
-          'application/json': components['schemas']['Community'];
-        };
-      };
-    };
-  };
-  CommunityController_findOne: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description A single Community */
-      200: {
-        content: {
-          'application/json': components['schemas']['Community'];
-        };
-      };
-    };
-  };
-  CommunityController_update: {
-    /** Update community */
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateCommunityInputDto'];
-      };
-    };
-    responses: {
-      /** @description Community */
-      200: {
-        content: {
-          'application/json': components['schemas']['Community'];
-        };
-      };
-    };
-  };
-  CommunityController_linkDiscord: {
-    /** Link discord to community */
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['LinkDiscordBotDto'];
-      };
-    };
-    responses: {
-      /** @description Community */
-      200: {
-        content: {
-          'application/json': components['schemas']['Community'];
         };
       };
     };
