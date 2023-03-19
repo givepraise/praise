@@ -397,4 +397,11 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
       httpStatusCode: 400,
       code: 1083,
     },
+  FAILED_TO_QUERY_COMMUNITIES:
+    {
+      message:
+        "Failed to query communities",
+      httpStatusCode: 500,
+      code: 1084,
+    },
 };
