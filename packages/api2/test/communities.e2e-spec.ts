@@ -257,7 +257,7 @@ describe('Communities (E2E)', () => {
       expect(response.status).toBe(201);
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkNonce.length).toBe(10);
-      expect(rb.isPublic).toBeTrue();
+      expect(rb.isPublic).toBe(true);
     });
   });
 
@@ -335,7 +335,7 @@ describe('Communities (E2E)', () => {
       expect(rb.name).toBe('test');
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkState).toBe(DiscordLinkState.ACTIVE);
-      expect(rb.isPublic).toBeTrue();
+      expect(rb.isPublic).toBe(true);
     });
 
     test('400 when someone else wants to link discord to community instead of creator', async () => {
@@ -356,7 +356,7 @@ describe('Communities (E2E)', () => {
       );
 
       const rb = response.body;
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(403);
       expect(rb.message).toBe('Verification failed');
     });
 
@@ -385,10 +385,10 @@ describe('Communities (E2E)', () => {
 
       const rb = response.body;
       expect(response.status).toBe(400);
-      expect(rb.message).toBe('Community is already active.');
+      expect(rb.message).toBe('Community is already active');
     });
 
-    test('400 when community not found', async () => {
+    test('404 when community not found', async () => {
       const signedMessage = await users[0].wallet.signMessage(
         communityService.generateLinkDiscordMessage({
           communityId: String(community._id),
@@ -406,8 +406,8 @@ describe('Communities (E2E)', () => {
       );
 
       const rb = response.body;
-      expect(response.status).toBe(400);
-      expect(rb.message).toBe('Community not found.');
+      expect(response.status).toBe(404);
+      expect(rb.message).toBe('Community not found');
     });
   });
   describe('GET /api/communities/:id', () => {

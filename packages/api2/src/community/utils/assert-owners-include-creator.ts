@@ -1,4 +1,5 @@
 import { ServiceException } from '@/shared/exceptions/service-exception';
+import { errorMessages } from '@/utils/errorMessages';
 
 /**
  * - owners should contain creator
@@ -6,7 +7,7 @@ import { ServiceException } from '@/shared/exceptions/service-exception';
 export function assertOwnersIncludeCreator(owners: string[], creator: string) {
   if (!owners.includes(creator)) {
     throw new ServiceException(
-      'Invalid owners, creator must be included in the owners.',
+      errorMessages.INVALID_OWNERS_CREATOR_MUST_BE_INCLUDED_IN_THE_OWNERS,
     );
   }
   return true;

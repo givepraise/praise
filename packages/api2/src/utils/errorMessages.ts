@@ -39,7 +39,7 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
   },
   VERIFICATION_FAILED: {
     message: 'Verification failed',
-    httpStatusCode: 401,
+    httpStatusCode: 403,
     code: 1007,
   },
   USER_NOT_FOUND_AFTER_UPDATE: {
@@ -421,5 +421,23 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     message: 'Value is not a valid ObjectId',
     httpStatusCode: 400,
     code: 1088,
+  },
+  INVALID_DATE_FILTERING_PASSING_PROJECT_ID_START_DATE_AND_END_DATE_TOGETHER: {
+    message:
+      'Invalid date filtering option. When periodId is set, startDate andCommunity is already active endDate should not be set.',
+    httpStatusCode: 400,
+    code: 1089,
+  },
+  INVALID_DATE_FILTERING_SHOULD_PATH_DATES_WHEN_PROJECT_ID_IS_NOT_SET: {
+    message:
+      'Invalid date filtering option. When periodId is not set, both startDate and endDate should be set.',
+    httpStatusCode: 400,
+    code: 1090,
+  },
+  INVALID_OWNERS_CREATOR_MUST_BE_INCLUDED_IN_THE_OWNERS: {
+    message:
+      'Invalid owners, creator must be included in the owners.',
+    httpStatusCode: 400,
+    code: 1091,
   },
 };
