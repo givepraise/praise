@@ -179,7 +179,7 @@ export class PraiseService {
 
     const quantification =
       await this.quantificationsService.findOneByQuantifierAndPraise(
-        userId,
+        new Types.ObjectId(userId),
         praise._id,
       );
     if (!quantification) {
@@ -192,7 +192,7 @@ export class PraiseService {
     const affectedPraises: Praise[] = [praise];
     const praisesDuplicateOfThis = await this.findDuplicatePraiseItems(
       praise._id,
-      userId,
+      new Types.ObjectId(userId),
     );
     if (praisesDuplicateOfThis?.length > 0)
       affectedPraises.push(...praisesDuplicateOfThis);
@@ -216,7 +216,7 @@ export class PraiseService {
       const praisesDuplicateOfAnotherDuplicate =
         await this.findPraisesDuplicateOfAnotherDuplicate(
           new Types.ObjectId(duplicatePraise),
-          userId,
+          new Types.ObjectId(userId),
         );
       if (praisesDuplicateOfAnotherDuplicate?.length > 0)
         throw new ServiceException(
