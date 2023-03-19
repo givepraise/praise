@@ -1,11 +1,5 @@
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
   authorizedDeleteRequest,
   authorizedGetRequest,
@@ -13,88 +7,62 @@ import {
   authorizedPutRequest,
   loginUser,
 } from './test.common';
-import { runDbMigrations } from '@/database/migrations';
-import { ApiKeyService } from '@/api-key/api-key.service';
-import { ApiKeyModule } from '@/api-key/api-key.module';
-import { UsersModule } from '@/users/users.module';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
 import { ApiKey } from '@/api-key/schemas/api-key.schema';
+import { StartNestReturn, startNest } from './shared/start-nest';
 
 describe('EventLog (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let apiKeyService: ApiKeyService;
   let adminWallet;
   let adminToken: string;
   let userWallet;
   let userToken: string;
 
+  let nest: StartNestReturn;
+
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule, ApiKeyModule],
-      providers: [UsersSeeder],
-    }).compile();
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    apiKeyService = module.get<ApiKeyService>(ApiKeyService);
+    nest = await startNest();
 
     // Seed an admin user
     adminWallet = Wallet.createRandom();
-    await usersSeeder.seedUser({
+    await nest.usersSeeder.seedUser({
       identityEthAddress: adminWallet.address,
       rewardsAddress: adminWallet.address,
       roles: [AuthRole.ADMIN],
     });
 
     // Login and get access token
-    let response = await loginUser(app, module, adminWallet);
+    let response = await loginUser(nest.app, nest.module, adminWallet);
     adminToken = response.accessToken;
 
     // Seed a user
     userWallet = Wallet.createRandom();
-    await usersSeeder.seedUser({
+    await nest.usersSeeder.seedUser({
       identityEthAddress: userWallet.address,
       rewardsAddress: userWallet.address,
       roles: [AuthRole.USER],
     });
 
-    response = await loginUser(app, module, userWallet);
+    // Login and get access token
+    response = await loginUser(nest.app, nest.module, userWallet);
     userToken = response.accessToken;
   });
 
   afterAll(async () => {
-    await app.close();
+    await nest.app.close();
   });
 
   describe('POST /api/api-key - create API key', () => {
     beforeEach(async () => {
       //Clear the database
-      await apiKeyService.getModel().deleteMany({});
+      await nest.apiKeyService.getModel().deleteMany({});
     });
 
     test('401 when not authenticated', async () => {
-      return request(server).post('/api-key').send().expect(401);
+      return request(nest.server).post('/api-key').send().expect(401);
     });
 
     test('401 when wrong authentication', async () => {
-      await authorizedPostRequest('/api-key', app, userToken, {
+      await authorizedPostRequest('/api-key', nest.app, userToken, {
         description: 'test key',
         role: AuthRole.API_KEY_READ,
       }).expect(403);
@@ -103,7 +71,7 @@ describe('EventLog (E2E)', () => {
     test('200 and correct body when authenticated', async () => {
       const response = await authorizedPostRequest(
         '/api-key',
-        app,
+        nest.app,
         adminToken,
         {
           description: 'test API key',
@@ -121,7 +89,7 @@ describe('EventLog (E2E)', () => {
     });
 
     test('400 when creating key with unallowed AuthRole', async () => {
-      await authorizedPostRequest('/api-key', app, adminToken, {
+      await authorizedPostRequest('/api-key', nest.app, adminToken, {
         description: 'test API key',
         role: AuthRole.ROOT,
       }).expect(400);
@@ -131,30 +99,30 @@ describe('EventLog (E2E)', () => {
   describe('GET /api/api-key - List all API keys', () => {
     beforeEach(async () => {
       //Clear the database
-      await apiKeyService.getModel().deleteMany({});
+      await nest.apiKeyService.getModel().deleteMany({});
     });
 
     test('401 when not authenticated', async () => {
-      return request(server).get('/api-key').send().expect(401);
+      return request(nest.server).get('/api-key').send().expect(401);
     });
 
     test('200 and correct body when authenticated', async () => {
-      await authorizedPostRequest('/api-key', app, adminToken, {
+      await authorizedPostRequest('/api-key', nest.app, adminToken, {
         description: 'test API key',
         role: AuthRole.API_KEY_READ,
       });
-      await authorizedPostRequest('/api-key', app, adminToken, {
+      await authorizedPostRequest('/api-key', nest.app, adminToken, {
         description: 'test API key 2',
         role: AuthRole.API_KEY_READ,
       });
-      await authorizedPostRequest('/api-key', app, adminToken, {
+      await authorizedPostRequest('/api-key', nest.app, adminToken, {
         description: 'test API key 3',
         role: AuthRole.API_KEY_READ,
       });
 
       const response = await authorizedGetRequest(
         '/api-key',
-        app,
+        nest.app,
         adminToken,
       ).expect(200);
 
@@ -171,13 +139,13 @@ describe('EventLog (E2E)', () => {
   describe('GET /api/api-key/{id} - Get one API key', () => {
     beforeEach(async () => {
       //Clear the database
-      await apiKeyService.getModel().deleteMany({});
+      await nest.apiKeyService.getModel().deleteMany({});
     });
 
     test('200 and correct body when authenticated', async () => {
       const createResponse = await authorizedPostRequest(
         '/api-key',
-        app,
+        nest.app,
         adminToken,
         {
           description: 'test API key',
@@ -187,7 +155,7 @@ describe('EventLog (E2E)', () => {
 
       const response = await authorizedGetRequest(
         `/api-key/${createResponse.body._id}`,
-        app,
+        nest.app,
         adminToken,
       ).expect(200);
 
@@ -199,13 +167,13 @@ describe('EventLog (E2E)', () => {
   describe('PUT /api/api-key/{id}', () => {
     beforeEach(async () => {
       //Clear the database
-      await apiKeyService.getModel().deleteMany({});
+      await nest.apiKeyService.getModel().deleteMany({});
     });
 
     test('200 and correct body when changing description', async () => {
       const createResponse = await authorizedPostRequest(
         '/api-key',
-        app,
+        nest.app,
         adminToken,
         {
           description: 'test API key',
@@ -215,7 +183,7 @@ describe('EventLog (E2E)', () => {
 
       const response = await authorizedPutRequest(
         `/api-key/${createResponse.body._id}`,
-        app,
+        nest.app,
         adminToken,
         {
           description: 'updated description',
@@ -230,7 +198,7 @@ describe('EventLog (E2E)', () => {
     test('400 when attempting to change AuthRole to unallowed role', async () => {
       const createResponse = await authorizedPostRequest(
         '/api-key',
-        app,
+        nest.app,
         adminToken,
         {
           description: 'test API key',
@@ -240,7 +208,7 @@ describe('EventLog (E2E)', () => {
 
       await authorizedPutRequest(
         `/api-key/${createResponse.body._id}`,
-        app,
+        nest.app,
         adminToken,
         {
           role: AuthRole.ROOT,
@@ -252,13 +220,13 @@ describe('EventLog (E2E)', () => {
   describe('DELETE /api/api-key/{id} - Revoke API key', () => {
     beforeEach(async () => {
       //Clear the database
-      await apiKeyService.getModel().deleteMany({});
+      await nest.apiKeyService.getModel().deleteMany({});
     });
 
     test('200 and correct body when authenticated', async () => {
       const createResponse = await authorizedPostRequest(
         '/api-key',
-        app,
+        nest.app,
         adminToken,
         {
           description: 'test API key',
@@ -268,7 +236,7 @@ describe('EventLog (E2E)', () => {
 
       const response = await authorizedDeleteRequest(
         `/api-key/${createResponse.body._id}`,
-        app,
+        nest.app,
         adminToken,
       );
 
@@ -277,7 +245,7 @@ describe('EventLog (E2E)', () => {
 
       const getResponse = await authorizedGetRequest(
         `/api-key/${createResponse.body._id}`,
-        app,
+        nest.app,
         adminToken,
       ).expect(400);
 
@@ -286,16 +254,18 @@ describe('EventLog (E2E)', () => {
     });
 
     test('400 when attempting to delete non-existing key', async () => {
-      await authorizedDeleteRequest(`/api-key/123`, app, adminToken).expect(
-        400,
-      );
+      await authorizedDeleteRequest(
+        `/api-key/123`,
+        nest.app,
+        adminToken,
+      ).expect(400);
     });
 
     // Test that the key is actually revoked
     test('401 when using revoked key', async () => {
       const createResponse = await authorizedPostRequest(
         '/api-key',
-        app,
+        nest.app,
         adminToken,
         {
           description: 'test API key',
@@ -305,11 +275,11 @@ describe('EventLog (E2E)', () => {
 
       await authorizedDeleteRequest(
         `/api-key/${createResponse.body._id}`,
-        app,
+        nest.app,
         adminToken,
       ).expect(200);
 
-      const response = await request(server)
+      const response = await request(nest.server)
         .get('/api-key')
         .set('Authorization', `Bearer ${createResponse.body.key}`)
         .send()
@@ -323,7 +293,7 @@ describe('EventLog (E2E)', () => {
     test('401 when attempting to delete key without proper authentication', async () => {
       const createResponse = await authorizedPostRequest(
         '/api-key',
-        app,
+        nest.app,
         adminToken,
         {
           description: 'test API key',
@@ -333,7 +303,7 @@ describe('EventLog (E2E)', () => {
 
       await authorizedDeleteRequest(
         `/api-key/${createResponse.body._id}`,
-        app,
+        nest.app,
         userToken,
       ).expect(403);
     });

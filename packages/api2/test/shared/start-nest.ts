@@ -26,6 +26,7 @@ import { Server } from 'http';
 import { ActivateService } from '@/activate/activate.service';
 import { UserAccountsService } from '@/useraccounts/useraccounts.service';
 import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
+import { ApiKeyService } from '@/api-key/api-key.service';
 
 export type StartNestReturn = {
   module: TestingModule;
@@ -38,6 +39,7 @@ export type StartNestReturn = {
   userAccountsService: UserAccountsService;
   eventLogSeeder: EventLogSeeder;
   eventLogService: EventLogService;
+  apiKeyService: ApiKeyService;
 };
 
 export async function startNest(): Promise<StartNestReturn> {
@@ -88,6 +90,7 @@ export async function startNest(): Promise<StartNestReturn> {
   const activateService = module.get<ActivateService>(ActivateService);
   const userAccountsService =
     module.get<UserAccountsService>(UserAccountsService);
+  const apiKeyService = module.get<ApiKeyService>(ApiKeyService);
 
   const userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
   return {
@@ -101,5 +104,6 @@ export async function startNest(): Promise<StartNestReturn> {
     eventLogService,
     userAccountsSeeder,
     userAccountsService,
+    apiKeyService,
   };
 }
