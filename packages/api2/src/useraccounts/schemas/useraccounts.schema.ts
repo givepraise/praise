@@ -83,7 +83,7 @@ export class UserAccount {
   platform: string;
 
   @Exclude({ toPlainOnly: true })
-  @Prop({ type: String, minlength: 10, maxlength: 25 })
+  @Prop({ type: String, maxlength: 25 })
   @IsOptional()
   @IsString()
   activateToken: string;
