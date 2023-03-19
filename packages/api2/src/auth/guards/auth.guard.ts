@@ -4,6 +4,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRole } from '../enums/auth-role.enum';
 import * as bcrypt from 'bcrypt';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -63,7 +64,20 @@ export class AuthGuard implements CanActivate {
       return false;
     }
     try {
-      const payload = await this.jwtService.verify(token);
+      const payload = await this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+
+      // Hostname in JWT payload must match hostname in request
+      const expectedHostname =
+        process.env.NODE_ENV === 'testing'
+          ? 'test-community'
+          : request.hostname;
+
+      if (expectedHostname !== payload.hostname) {
+        return false;
+      }
+
       request.user = payload;
     } catch (e) {
       return false;
@@ -77,9 +91,13 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    return (
+    if (
       (await this.canActivateApiKey(request)) ||
       (await this.canActivateJwt(request))
-    );
+    ) {
+      return true;
+    }
+    //TODO Make sure this generates a 401
+    throw new ServiceException('Unauthorized');
   }
 }

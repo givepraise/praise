@@ -70,7 +70,10 @@ export class EthSignatureService {
    * @param user User object with information about the user
    * @returns LoginResponse
    */
-  async login(userId: Types.ObjectId): Promise<LoginResponseDto> {
+  async login(
+    userId: Types.ObjectId,
+    hostname: string,
+  ): Promise<LoginResponseDto> {
     const user = await this.usersService.findOneById(userId);
     if (!user) throw new ServiceException('User not found');
 
@@ -81,6 +84,8 @@ export class EthSignatureService {
       userId: userId.toString(),
       identityEthAddress,
       roles,
+      hostname:
+        process.env.NODE_ENV === 'testing' ? 'test-community' : hostname,
     } as JwtPayload;
 
     // Sign payload to create access token
