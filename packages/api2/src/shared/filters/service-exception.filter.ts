@@ -11,7 +11,7 @@ export class ServiceExceptionFilter implements ExceptionFilter {
 
     response.status(status).json({
       statusCode: status,
-      message: exception.message,
+      message: exception?.description || exception.message,
       code: exception.code,
       error: 'Bad Request',
     });

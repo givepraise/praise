@@ -19,6 +19,8 @@ import { QuantificationsExportService } from './services/quantifications-export.
 import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
 import { Permission } from '@/auth/enums/permission.enum';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { errorMessages } from '@/utils/errorMessages';
+import { ServiceException } from '@/shared/exceptions/service-exception';
 
 @Controller('quantifications')
 @ApiTags('Quantifications')
@@ -84,7 +86,7 @@ export class QuantificationsController {
     }
 
     if (!fs.existsSync(filePath)) {
-      throw new NotFoundException('Could not create export.');
+      throw new ServiceException(errorMessages.COULD_NOT_CREATE_EXPORT);
     }
 
     res.set({

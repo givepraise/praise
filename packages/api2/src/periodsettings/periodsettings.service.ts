@@ -11,6 +11,7 @@ import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { SettingsService } from '@/settings/settings.service';
 import { validateSetting } from '@/settings/utils/validate-setting';
 import { SettingGroup } from '@/settings/enums/setting-group.enum';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Injectable()
 export class PeriodSettingsService {
@@ -55,7 +56,8 @@ export class PeriodSettingsService {
       .populate('setting')
       .exec();
 
-    if (!periodSetting) throw new ServiceException('PeriodSetting not found.');
+    if (!periodSetting)
+      throw new ServiceException(errorMessages.PERIOD_SETTING_NOT_FOUND);
     return new PeriodSetting(periodSetting);
   }
 
@@ -65,34 +67,36 @@ export class PeriodSettingsService {
     data: SetPeriodSettingDto,
   ): Promise<PeriodSetting> {
     const setting = await this.settingsService.findOneById(settingId);
-    if (!setting) throw new ServiceException('Setting not found.');
+    if (!setting) throw new ServiceException(errorMessages.SETTING_NOT_FOUND);
     const { valid, value: validatedValue } = validateSetting(
       data.value,
       setting.type,
     );
     if (!valid) {
       throw new ServiceException(
+        errorMessages.INVALID_SETTING_VALUE,
         `Settings value ${data.value} is not valid for type ${setting.type}.`,
       );
     }
 
     const period = await this.periodsService.findOneById(periodId);
-    if (!period) throw new ServiceException('Period not found.');
+    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
     if (period.status !== PeriodStatusType.OPEN)
       throw new ServiceException(
-        'Period settings can only be changed when period status is OPEN.',
+        errorMessages.PERIOD_SETTING_CAN_BE_CHANGED__WHEN_ITS_OPEN,
       );
 
     const periodSetting = await this.periodSettingsModel.findOne({
       setting: settingId,
       period: periodId,
     });
-    if (!periodSetting) throw new ServiceException('Period setting not found.');
+    if (!periodSetting)
+      throw new ServiceException(errorMessages.PERIOD_SETTING_NOT_FOUND);
 
     const originalValue = periodSetting.value;
 
     if (typeof data.value === 'undefined') {
-      throw new ServiceException('Value is required field');
+      throw new ServiceException(errorMessages.VALUE_IS_REQUIRED_FIELD);
     }
     periodSetting.value = validatedValue;
 
@@ -116,7 +120,7 @@ export class PeriodSettingsService {
     const settingsAllreadyExist = await this.findAll(periodId);
     if (settingsAllreadyExist.length > 0) {
       throw new ServiceException(
-        'Period settings already exist for this period.',
+        errorMessages.PERIOD_SETTINGS_ALREADY_EXIST_FOR_THIS_PERIOD,
       );
     }
 

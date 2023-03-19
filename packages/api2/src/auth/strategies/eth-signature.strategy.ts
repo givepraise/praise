@@ -37,7 +37,7 @@ export class EthSignatureStrategy extends PassportStrategy(
       // Throw UnauthorizedException instead of BadRequestException since
       // the user is not authenticated yet Nest.js defaults to that on
       // other authentication strategt errors
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException();
     }
 
     // Check if user has previously generated a nonce

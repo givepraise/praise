@@ -92,8 +92,7 @@ export class CommunityController {
   @ApiParam({ name: 'id', type: String })
   async findOne(@Param('id', ObjectIdPipe) id: ObjectId): Promise<Community> {
     const community = await this.communityService.findOne(id);
-    if (!community)
-      throw new ServiceException(errorMessages.communityNotFound);
+    if (!community) throw new ServiceException(errorMessages.communityNotFound);
     return community;
   }
 

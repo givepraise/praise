@@ -61,7 +61,7 @@ export class CommunityService {
       paginateQuery,
     );
     if (!communityPagination)
-      throw new ServiceException('Failed to query event logs');
+      throw new ServiceException(errorMessages.FAILED_TO_QUERY_EVENT_LOGS);
 
     return communityPagination;
   }
@@ -96,8 +96,7 @@ export class CommunityService {
     linkDiscordBotDto: LinkDiscordBotDto,
   ): Promise<Community> {
     const community = await this.findOneById(communityId);
-    if (!community)
-      throw new ServiceException(errorMessages.communityNotFound);
+    if (!community) throw new ServiceException(errorMessages.communityNotFound);
     if (community.discordLinkState === DiscordLinkState.ACTIVE)
       throw new ServiceException(errorMessages.COMMUNITY_IS_ALREADY_ACTIVE);
     const generatedMsg = this.generateLinkDiscordMessage({
@@ -113,7 +112,7 @@ export class CommunityService {
       linkDiscordBotDto.signedMessage,
     );
     if (signerAddress?.toLowerCase() !== community.creator.toLowerCase()) {
-      throw new ServiceException('Verification failed');
+      throw new ServiceException(errorMessages.VERIFICATION_FAILED);
     }
     return this.update(communityId, {
       discordLinkState: DiscordLinkState.ACTIVE,

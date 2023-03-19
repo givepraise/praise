@@ -10,11 +10,13 @@ import { ErrorMessage } from '@/utils/errorMessages';
 export class ServiceException extends Error {
   httpsStatusCode: number;
   code: number;
+  description?: string;
 
-  constructor(errorMessage: ErrorMessage ) {
+  constructor(errorMessage: ErrorMessage, description?: string) {
     super(errorMessage.message);
     this.name = 'PraiseException';
-    this.httpsStatusCode = errorMessage.httpStatusCode
-    this.code = errorMessage.code
+    this.httpsStatusCode = errorMessage.httpStatusCode;
+    this.code = errorMessage.code;
+    this.description = description;
   }
 }
