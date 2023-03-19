@@ -23,13 +23,19 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { RequestContextModule } from 'nestjs-request-context';
 import { CommunityModule } from '@/community/community.module';
 import { Server } from 'http';
+import { ActivateService } from '@/activate/activate.service';
+import { UserAccountsService } from '@/useraccounts/useraccounts.service';
+import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
 
 export type StartNestReturn = {
   module: TestingModule;
   app: INestApplication;
   server: Server;
+  activateService: ActivateService;
   usersSeeder: UsersSeeder;
   usersService: UsersService;
+  userAccountsSeeder: UserAccountsSeeder;
+  userAccountsService: UserAccountsService;
   eventLogSeeder: EventLogSeeder;
   eventLogService: EventLogService;
 };
@@ -54,7 +60,7 @@ export async function startNest(): Promise<StartNestReturn> {
       UserAccountsModule,
       UsersModule,
     ],
-    providers: [UsersSeeder, EventLogSeeder],
+    providers: [UsersSeeder, EventLogSeeder, UserAccountsSeeder],
   }).compile();
 
   const app = module.createNestApplication();
@@ -79,14 +85,21 @@ export async function startNest(): Promise<StartNestReturn> {
   const usersService = module.get<UsersService>(UsersService);
   const eventLogSeeder = module.get<EventLogSeeder>(EventLogSeeder);
   const eventLogService = module.get<EventLogService>(EventLogService);
+  const activateService = module.get<ActivateService>(ActivateService);
+  const userAccountsService =
+    module.get<UserAccountsService>(UserAccountsService);
 
+  const userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
   return {
     module,
     app,
     server,
+    activateService,
     usersSeeder,
     usersService,
     eventLogSeeder,
     eventLogService,
+    userAccountsSeeder,
+    userAccountsService,
   };
 }
