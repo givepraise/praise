@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
 import { UsersService } from './users.service';
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,

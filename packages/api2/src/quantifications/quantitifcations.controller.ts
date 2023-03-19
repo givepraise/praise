@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import {
   Controller,
   Get,
-  NotFoundException,
   Query,
   Res,
   SerializeOptions,
