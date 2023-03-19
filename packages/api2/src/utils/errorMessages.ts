@@ -397,11 +397,29 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
       httpStatusCode: 400,
       code: 1083,
     },
-  FAILED_TO_QUERY_COMMUNITIES:
-    {
-      message:
-        "Failed to query communities",
-      httpStatusCode: 500,
-      code: 1084,
-    },
+  FAILED_TO_QUERY_COMMUNITIES: {
+    message: 'Failed to query communities',
+    httpStatusCode: 500,
+    code: 1084,
+  },
+  NONCE_NOT_FOUND: {
+    message: 'Nonce not found',
+    httpStatusCode: 404,
+    code: 1085,
+  },
+  PRAISE_IDS_MUST_BE_ARRAY: {
+    message: 'praiseIds must be an array',
+    httpStatusCode: 400,
+    code: 1086,
+  },
+  UNKNOWN_SETTING_TYPE: {
+    message: 'Unknown setting type',
+    httpStatusCode: 400,
+    code: 1087,
+  },
+  VALUE_IS_NOT_A_VALID_OBJECT_ID: {
+    message: 'Value is not a valid ObjectId',
+    httpStatusCode: 400,
+    code: 1088,
+  },
 };

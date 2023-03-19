@@ -4,6 +4,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '@/users/users.service';
 import { ethers } from 'ethers';
 import { EthSignatureService } from '../eth-signature.service';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Injectable()
 /**
@@ -42,7 +43,7 @@ export class EthSignatureStrategy extends PassportStrategy(
 
     // Check if user has previously generated a nonce
     if (!user.nonce) {
-      throw new UnauthorizedException('Nonce not found');
+      throw new UnauthorizedException(errorMessages.NONCE_NOT_FOUND);
     }
 
     // Generate expected message

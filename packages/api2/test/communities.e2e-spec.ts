@@ -257,7 +257,7 @@ describe('Communities (E2E)', () => {
       expect(response.status).toBe(201);
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkNonce.length).toBe(10);
-      expect(rb.isPublic).toBe(true);
+      expect(rb.isPublic).toBeTrue();
     });
   });
 
@@ -335,7 +335,7 @@ describe('Communities (E2E)', () => {
       expect(rb.name).toBe('test');
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkState).toBe(DiscordLinkState.ACTIVE);
-      expect(rb.isPublic).toBe(true);
+      expect(rb.isPublic).toBeTrue();
     });
 
     test('400 when someone else wants to link discord to community instead of creator', async () => {
@@ -481,8 +481,6 @@ describe('Communities (E2E)', () => {
         email: 'test@praise.io',
       });
     });
-    // generate invalid mongo id
-    const invalidCommunityId = '5f7f7f7f7f7f7f7f7f7f7f7f';
     const updateValidCommunity = async (override?: any) => {
       return authorizedPatchRequest(
         `/communities/${community._id}`,
