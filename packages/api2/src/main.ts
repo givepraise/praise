@@ -7,7 +7,7 @@ import { useContainer } from 'class-validator';
 import { ServiceExceptionFilter } from './shared/filters/service-exception.filter';
 import { runDbMigrations } from './database/migrations';
 import { version } from '../package.json';
-import { Logger } from './shared/logger';
+import { logger } from './shared/logger';
 import { MongoValidationErrorFilter } from './shared/filters/mongo-validation-error.filter';
 import { MongoServerErrorFilter } from './shared/filters/mongo-server-error.filter';
 import { envCheck } from './shared/env.shared';
@@ -67,7 +67,7 @@ async function bootstrap() {
   });
 
   // Create a logger instance for the app
-  const logger = new Logger('Bootstrap');
+  // const logger = new Logger('Bootstrap');
 
   // Run database migrations before starting the app
   await runDbMigrations(app, logger);
@@ -76,7 +76,7 @@ async function bootstrap() {
   await app.listen(process.env.API_PORT || 3000);
 
   // Log the app version and port to the console
-  logger.log(
+  logger.info(
     `Praise API v${version} listening on port ${process.env.API_PORT || 3000}`,
   );
 }

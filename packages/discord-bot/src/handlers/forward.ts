@@ -4,7 +4,6 @@ import { EventLogTypeKey } from 'api/dist/eventlog/types';
 import { logEvent } from 'api/dist/eventlog/utils';
 import { UserRole } from 'api/dist/user/types';
 import { settingValue } from 'api/dist/shared/settings';
-import { logger } from 'api/dist/shared/logger';
 import { getReceiverData } from '../utils/getReceiverData';
 import { getUserAccount } from '../utils/getUserAccount';
 import {
@@ -23,6 +22,7 @@ import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChan
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { createPraise } from '../utils/createPraise';
 import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
+import { logger } from 'src/utils/logger';
 
 /**
  * Execute command /firward

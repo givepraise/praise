@@ -10072,6 +10072,8 @@ __metadata:
     randomstring: ^1.2.2
     ts-node: ^10.5.0
     typescript: ^4.5.5
+    winston: ^3.8.2
+    winston-daily-rotate-file: ^4.7.1
   languageName: unknown
   linkType: soft
 

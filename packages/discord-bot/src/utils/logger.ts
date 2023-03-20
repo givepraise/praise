@@ -30,14 +30,14 @@ const format = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.printf(
     (info: LogEntry) =>
-      `${info.timestamp as string} ${info.level}: ${info.message}`,
-  ),
+      `${info.timestamp as string} ${info.level}: ${info.message}`
+  )
 );
 
 const consoleOptions = {
   format: winston.format.combine(
     winston.format.colorize({ all: true }),
-    format,
+    format
   ),
 };
 
@@ -48,11 +48,9 @@ const dailyRotateTransport: DailyRotateFile = new DailyRotateFile({
   zippedArchive: false,
   maxSize: '10m',
   maxFiles: '7d',
-  level: level(),
-  format,
 });
 
-export const transports = [
+const transports = [
   new winston.transports.Console(consoleOptions),
   dailyRotateTransport,
 ];
