@@ -28,12 +28,13 @@ export class UserAccount {
 
   @ApiProperty({
     example: '63b428f7d9ca4f6ff5370d05',
-    oneOf: [{ type: 'string' }, { $ref: '#/components/schemas/User' }],
+    type: 'string',
   })
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', default: null, index: true })
+  @ExposeId()
   @Type(() => User)
   @IsOptional()
   @IsObjectId()
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', default: null, index: true })
   user?: User | Types.ObjectId;
 
   @ApiProperty({
