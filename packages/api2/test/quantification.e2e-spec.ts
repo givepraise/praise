@@ -1,95 +1,41 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersService } from '@/users/users.service';
-import { UsersModule } from '@/users/users.module';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { authorizedGetRequest, loginUser } from './test.common';
+// Import modules related to authentication and users
 import { User } from '@/users/schemas/users.schema';
-import { runDbMigrations } from '@/database/migrations';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
-import { UserAccountsService } from '@/useraccounts/useraccounts.service';
-import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
-import mongoose from 'mongoose';
-import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder';
-import { QuantificationsService } from '@/quantifications/services/quantifications.service';
-import { PeriodsService } from '@/periods/services/periods.service';
-import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
-import { PraiseSeeder } from '@/database/seeder/praise.seeder';
-import { PraiseService } from '@/praise/services/praise.service';
-import { PraiseModule } from '@/praise/praise.module';
-import { PeriodsModule } from '@/periods/periods.module';
-import { QuantificationsModule } from '@/quantifications/quantifications.module';
+import { authorizedGetRequest, loginUser } from './shared/request';
+
+// Import modules related to praise and quantifications
 import { Praise } from '@/praise/schemas/praise.schema';
-import { faker } from '@faker-js/faker';
 import { Quantification } from '@/quantifications/schemas/quantifications.schema';
-import { PeriodStatusType } from '@/periods/enums/status-type.enum';
+
+// Import modules related to periods and status types
 import { Period } from '@/periods/schemas/periods.schema';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
+import { PeriodStatusType } from '@/periods/enums/status-type.enum';
+
+// Import Ethereum wallet related module
+import { Wallet } from 'ethers';
+
+// Import faker module
+import { faker } from '@faker-js/faker';
+
+import {
+  app,
+  testingModule,
+  usersService,
+  usersSeeder,
+  praiseService,
+  periodsSeeder,
+  praiseSeeder,
+  quantificationsSeeder,
+  quantificationsService,
+  userAccountsService,
+  periodsService,
+} from './shared/nest';
 
 describe('UserAccountsController (E2E)', () => {
-  let app: INestApplication;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let usersService: UsersService;
-  let userAccountsService: UserAccountsService;
-  let quantificationsSeeder: QuantificationsSeeder;
-  let quantificationsService: QuantificationsService;
-  let periodsService: PeriodsService;
-  let periodsSeeder: PeriodsSeeder;
-  let praiseSeeder: PraiseSeeder;
-  let praiseService: PraiseService;
   let adminUser: User;
   let adminUserAccessToken: string;
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        UsersModule,
-        PraiseModule,
-        QuantificationsModule,
-        UserAccountsModule,
-        PeriodsModule,
-      ],
-      providers: [
-        UsersSeeder,
-        PraiseSeeder,
-        QuantificationsSeeder,
-        UserAccountsSeeder,
-        PeriodsSeeder,
-      ],
-    }).compile();
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    usersService = module.get<UsersService>(UsersService);
-    userAccountsService = module.get<UserAccountsService>(UserAccountsService);
-    praiseSeeder = module.get<PraiseSeeder>(PraiseSeeder);
-    praiseService = module.get<PraiseService>(PraiseService);
-    periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
-    periodsService = module.get<PeriodsService>(PeriodsService);
-    quantificationsSeeder = module.get<QuantificationsSeeder>(
-      QuantificationsSeeder,
-    );
-    quantificationsService = module.get<QuantificationsService>(
-      QuantificationsService,
-    );
-
     // Clear the database
     await usersService.getModel().deleteMany({});
     await praiseService.getModel().deleteMany({});
@@ -103,12 +49,8 @@ describe('UserAccountsController (E2E)', () => {
       rewardsAddress: wallet.address,
       roles: [AuthRole.ADMIN],
     });
-    const response = await loginUser(app, module, wallet);
+    const response = await loginUser(app, testingModule, wallet);
     adminUserAccessToken = response.accessToken;
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 
   describe('GET /api/quantifications/export', () => {
@@ -119,16 +61,6 @@ describe('UserAccountsController (E2E)', () => {
     let dateBetween: Date;
     const quantifications: Quantification[] = [];
     let period: Period;
-
-    beforeAll((done) => {
-      done();
-    });
-
-    afterAll((done) => {
-      // Closing the DB connection allows Jest to exit successfully.
-      mongoose.connection.close();
-      done();
-    });
 
     beforeAll(async () => {
       // Clear the database

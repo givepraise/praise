@@ -1,60 +1,13 @@
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersService } from '@/users/users.service';
-import { UsersModule } from '@/users/users.module';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { EthSignatureService } from '@/auth/eth-signature.service';
-import { EventLogModule } from '@/event-log/event-log.module';
-import { runDbMigrations } from '@/database/migrations';
-import { ApiKeySeeder } from '@/database/seeder/api-key.seeder';
-import { ApiKeyModule } from '@/api-key/api-key.module';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
+import {
+  apiKeySeeder,
+  server,
+  usersSeeder,
+  ethSignatureService,
+} from './shared/nest';
 
 describe('AuthController (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let usersService: UsersService;
-  let ethSignatureService: EthSignatureService;
-  let apiKeySeeder: ApiKeySeeder;
-  beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule, EventLogModule, ApiKeyModule],
-      providers: [UsersSeeder, ApiKeySeeder],
-    }).compile();
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    usersService = module.get<UsersService>(UsersService);
-    ethSignatureService = module.get<EthSignatureService>(EthSignatureService);
-    apiKeySeeder = module.get<ApiKeySeeder>(ApiKeySeeder);
-  });
-
-  beforeEach(async () => {
-    await usersService.getModel().deleteMany({});
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-
   describe('POST /api/auth/eth-signature/nonce', () => {
     /**
      *

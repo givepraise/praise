@@ -1,30 +1,27 @@
+/* eslint-disable jest-extended/prefer-to-be-true */
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersService } from '@/users/users.service';
-import { UsersModule } from '@/users/users.module';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
   authorizedGetRequest,
   authorizedPatchRequest,
   authorizedPostRequest,
   loginUser,
-} from './test.common';
-import { runDbMigrations } from '@/database/migrations';
+} from './shared/request';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
-import { CommunityService } from '../src/community/community.service';
-import { CommunityModule } from '../src/community/community.module';
 import { Community } from '../src/community/schemas/community.schema';
-import { CommunitiesSeeder } from '@/database/seeder/communities.seeder';
 import { DiscordLinkState } from '../src/community/enums/discord-link-state';
 import { randomBytes } from 'crypto';
+
+import {
+  app,
+  testingModule,
+  server,
+  usersService,
+  usersSeeder,
+  communityService,
+  communitiesSeeder,
+} from './shared/nest';
 
 class LoggedInUser {
   accessToken: string;
@@ -33,43 +30,10 @@ class LoggedInUser {
 }
 
 describe('Communities (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let usersService: UsersService;
-  let communitiesSeeder: CommunitiesSeeder;
-  let communityService: CommunityService;
   let setupWebUserAccessToken: string;
-
   const users: LoggedInUser[] = [];
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule, CommunityModule],
-      providers: [UsersSeeder, CommunitiesSeeder],
-    }).compile();
-
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    communitiesSeeder = module.get<CommunitiesSeeder>(CommunitiesSeeder);
-    usersService = module.get<UsersService>(UsersService);
-    communityService = module.get<CommunityService>(CommunityService);
-
     // Clear the database
     await usersService.getModel().deleteMany({});
     await communityService.getModel().deleteMany({});
@@ -82,7 +46,7 @@ describe('Communities (E2E)', () => {
         rewardsAddress: wallet.address,
         roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       users.push({
         accessToken: response.accessToken,
         user,
@@ -98,12 +62,8 @@ describe('Communities (E2E)', () => {
       roles: [AuthRole.API_KEY_SETUP_WEB],
     });
 
-    const response = await loginUser(app, module, setupWebWallet);
+    const response = await loginUser(app, testingModule, setupWebWallet);
     setupWebUserAccessToken = response.accessToken;
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 
   describe('POST /api/communities', () => {
@@ -481,8 +441,6 @@ describe('Communities (E2E)', () => {
         email: 'test@praise.io',
       });
     });
-    // generate invalid mongo id
-    const invalidCommunityId = '5f7f7f7f7f7f7f7f7f7f7f7f';
     const updateValidCommunity = async (override?: any) => {
       return authorizedPatchRequest(
         `/communities/${community._id}`,

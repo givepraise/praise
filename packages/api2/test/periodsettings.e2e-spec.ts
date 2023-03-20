@@ -1,36 +1,30 @@
+import './shared/jest';
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersService } from '@/users/users.service';
-import { UsersModule } from '@/users/users.module';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
   authorizedGetRequest,
   authorizedPatchRequest,
   loginUser,
-} from './test.common';
-import { runDbMigrations } from '@/database/migrations';
-import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
-import { PeriodsModule } from '@/periods/periods.module';
+} from './shared/request';
 import { Period } from '@/periods/schemas/periods.schema';
 import { PeriodStatusType } from '@/periods/enums/status-type.enum';
-import { PeriodSettingsModule } from '@/periodsettings/periodsettings.module';
-import { PeriodSettingsSeeder } from '@/database/seeder/periodsettings.seeder';
-import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
-import { SettingsSeeder } from '@/database/seeder/settings.seeder';
-import { SettingsModule } from '@/settings/settings.module';
 import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
 import { Setting } from '@/settings/schemas/settings.schema';
-import { SettingsService } from '@/settings/settings.service';
-import { PeriodsService } from '@/periods/services/periods.service';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
+import {
+  app,
+  testingModule,
+  server,
+  usersService,
+  usersSeeder,
+  periodsSeeder,
+  settingsSeeder,
+  periodSettingsService,
+  periodsService,
+  settingsService,
+  periodSettingsSeeder,
+} from './shared/nest';
 
 class LoggedInUser {
   accessToken: string;
@@ -39,62 +33,9 @@ class LoggedInUser {
 }
 
 describe('Period Settings (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let usersService: UsersService;
-  let periodsService: PeriodsService;
-  let periodsSeeder: PeriodsSeeder;
-  let settingsService: SettingsService;
-  let settingsSeeder: SettingsSeeder;
-  let periodSettingsService: PeriodSettingsService;
-  let periodSettingsSeeder: PeriodSettingsSeeder;
-
   const users: LoggedInUser[] = [];
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        UsersModule,
-        PeriodsModule,
-        PeriodSettingsModule,
-        SettingsModule,
-      ],
-      providers: [
-        UsersSeeder,
-        PeriodsSeeder,
-        PeriodSettingsSeeder,
-        SettingsSeeder,
-      ],
-    }).compile();
-
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    usersService = module.get<UsersService>(UsersService);
-    settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder);
-    settingsService = module.get<SettingsService>(SettingsService);
-    periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
-    periodsService = module.get<PeriodsService>(PeriodsService);
-    periodSettingsSeeder =
-      module.get<PeriodSettingsSeeder>(PeriodSettingsSeeder);
-    periodSettingsService = module.get<PeriodSettingsService>(
-      PeriodSettingsService,
-    );
-
     // Clear the database
     await settingsService.getModel().deleteMany({});
     await usersService.getModel().deleteMany({});
@@ -109,7 +50,7 @@ describe('Period Settings (E2E)', () => {
         rewardsAddress: wallet.address,
         roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       users.push({
         accessToken: response.accessToken,
         user,
@@ -124,16 +65,12 @@ describe('Period Settings (E2E)', () => {
       rewardsAddress: wallet.address,
       roles: [AuthRole.ADMIN],
     });
-    const response = await loginUser(app, module, wallet);
+    const response = await loginUser(app, testingModule, wallet);
     users.push({
       accessToken: response.accessToken,
       user,
       wallet,
     });
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 
   describe('GET /api/periods/{periodId}/settings', () => {

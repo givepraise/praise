@@ -1,27 +1,24 @@
+import './shared/jest';
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersService } from '@/users/users.service';
-import { UsersModule } from '@/users/users.module';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
   authorizedGetRequest,
   authorizedPatchRequest,
   loginUser,
-} from './test.common';
-import { runDbMigrations } from '@/database/migrations';
-import { SettingsSeeder } from '@/database/seeder/settings.seeder';
-import { SettingsModule } from '@/settings/settings.module';
+} from './shared/request';
 import { AuthRole } from '@/auth/enums/auth-role.enum';
 import { User } from '@/users/schemas/users.schema';
 import { Setting } from '@/settings/schemas/settings.schema';
-import { SettingsService } from '@/settings/settings.service';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
+
+import {
+  app,
+  testingModule,
+  server,
+  usersService,
+  usersSeeder,
+  settingsSeeder,
+  settingsService,
+} from './shared/nest';
 
 class LoggedInUser {
   accessToken: string;
@@ -30,42 +27,9 @@ class LoggedInUser {
 }
 
 describe('Period Settings (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let usersService: UsersService;
-  let settingsService: SettingsService;
-  let settingsSeeder: SettingsSeeder;
-
   const users: LoggedInUser[] = [];
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule, SettingsModule],
-      providers: [UsersSeeder, SettingsSeeder],
-    }).compile();
-
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    usersService = module.get<UsersService>(UsersService);
-    settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder);
-    settingsService = module.get<SettingsService>(SettingsService);
-
     // Clear the database
     await settingsService.getModel().deleteMany({});
     await usersService.getModel().deleteMany({});
@@ -78,7 +42,7 @@ describe('Period Settings (E2E)', () => {
         rewardsAddress: wallet.address,
         roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       users.push({
         accessToken: response.accessToken,
         user,
@@ -93,16 +57,12 @@ describe('Period Settings (E2E)', () => {
       rewardsAddress: wallet.address,
       roles: [AuthRole.ADMIN],
     });
-    const response = await loginUser(app, module, wallet);
+    const response = await loginUser(app, testingModule, wallet);
     users.push({
       accessToken: response.accessToken,
       user,
       wallet,
     });
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 
   describe('GET /api/settings', () => {
