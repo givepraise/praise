@@ -1,15 +1,11 @@
 /* TODO - Replace db access with api2 calls */
 
-/*
-import { GuildMember } from 'discord.js';
-import { UserModel } from 'api/dist/user/entities';
-import { EventLogTypeKey } from 'api/dist/eventlog/types';
-import { logEvent } from 'api/dist/eventlog/utils';
-import { UserRole } from 'api/dist/user/types';
-import { settingValue } from 'api/dist/shared/settings';
+import { Guild, GuildMember } from 'discord.js';
+// import { logEvent } from 'api/dist/eventlog/utils';
 import { logger } from 'api/dist/shared/logger';
 import { getReceiverData } from '../utils/getReceiverData';
 import { getUserAccount } from '../utils/getUserAccount';
+import { getUser } from '../utils/getUser';
 import {
   dmError,
   invalidReceiverError,
@@ -24,9 +20,10 @@ import {
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
-import { createPraise } from '../utils/createPraise';
 import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
-/*
+import { createForward } from '../utils/createForward';
+import { apiClient } from '../utils/api';
+import { forwardSuccess } from '../utils/embeds/praiseEmbeds';
 
 /**
  * Execute command /firward
@@ -36,7 +33,6 @@ import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
  * @param  responseUrl
  * @returns
  */
-/*
 export const forwardHandler: CommandHandler = async (
   interaction,
   responseUrl
@@ -49,14 +45,20 @@ export const forwardHandler: CommandHandler = async (
     return;
   }
 
-  const forwarderAccount = await getUserAccount(member as GuildMember);
+  const forwarderAccount = await getUserAccount(
+    (member as GuildMember).user,
+    guild.id
+  );
   if (!forwarderAccount.user) {
-    await interaction.editReply(await notActivatedError());
+    await interaction.editReply(await notActivatedError(guild.id));
     return;
   }
 
-  const forwarderUser = await UserModel.findOne({ _id: forwarderAccount.user });
-  if (!forwarderUser?.roles.includes(UserRole.FORWARDER)) {
+  const forwarderUser = await getUser(
+    forwarderAccount.user as string,
+    guild.id
+  );
+  if (!forwarderUser?.roles.includes('FORWARDER')) {
     await interaction.editReply(
       "**❌ You don't have the permission to use this command.**"
     );
@@ -76,7 +78,7 @@ export const forwardHandler: CommandHandler = async (
   const receiverOptions = interaction.options.getString('receivers');
 
   if (!receiverOptions || receiverOptions.length === 0) {
-    await interaction.editReply(await invalidReceiverError());
+    await interaction.editReply(await invalidReceiverError(guild.id));
     return;
   }
 
@@ -85,19 +87,21 @@ export const forwardHandler: CommandHandler = async (
     !receiverData.validReceiverIds ||
     receiverData.validReceiverIds?.length === 0
   ) {
-    await interaction.editReply(await invalidReceiverError());
+    await interaction.editReply(await invalidReceiverError(guild.id));
     return;
   }
 
   const reason = interaction.options.getString('reason');
   if (!reason || reason.length === 0) {
-    await interaction.editReply(await missingReasonError());
+    await interaction.editReply(await missingReasonError(guild.id));
     return;
   }
 
-  const giverAccount = await getUserAccount(praiseGiver);
+  const giverAccount = await getUserAccount(praiseGiver.user, guild.id);
   if (!giverAccount.user) {
-    await interaction.editReply(await giverNotActivatedError(praiseGiver.user));
+    await interaction.editReply(
+      await giverNotActivatedError(praiseGiver.user, guild.id)
+    );
     return;
   }
 
@@ -108,9 +112,10 @@ export const forwardHandler: CommandHandler = async (
     ),
   ];
 
-  const selfPraiseAllowed = (await settingValue(
-    'SELF_PRAISE_ALLOWED'
-  )) as boolean;
+  const selfPraiseAllowed = await apiClient
+    .get('/settings?key=SELF_PRAISE_ALLOWED')
+    .then((res) => res.data)
+    .catch(() => false);
 
   let warnSelfPraise = false;
   if (!selfPraiseAllowed && receiverIds.includes(giverAccount.accountId)) {
@@ -122,29 +127,31 @@ export const forwardHandler: CommandHandler = async (
   );
 
   for (const receiver of Receivers) {
-    const receiverAccount = await getUserAccount(receiver);
+    const receiverAccount = await getUserAccount(receiver.user, guild.id);
 
-    const praiseObj = await createPraise(
+    const praiseObj = await createForward(
       interaction,
       giverAccount,
       receiverAccount,
-      reason,
-      forwarderAccount
+      forwarderAccount,
+      reason
     );
 
-    await logEvent(
-      EventLogTypeKey.PRAISE,
-      'Created a new forwarded praise from discord',
-      {
-        userAccountId: forwarderAccount._id,
-        userId: forwarderUser._id,
-      }
-    );
+    // await logEvent(
+    //   EventLogTypeKey.PRAISE,
+    //   'Created a new forwarded praise from discord',
+    //   {
+    //     userAccountId: forwarderAccount._id,
+    //     userId: forwarderUser._id,
+    //   }
+    // );
 
     if (praiseObj) {
       try {
         await receiver.send({
-          embeds: [await praiseSuccessDM(responseUrl, !receiverAccount.user)],
+          embeds: [
+            await praiseSuccessDM(responseUrl, !receiverAccount.user, guild.id),
+          ],
         });
       } catch (err) {
         logger.warn(
@@ -167,45 +174,47 @@ export const forwardHandler: CommandHandler = async (
           interaction,
           praiseGiver.user,
           receivers.map((id) => `<@!${id}>`),
-          reason
+          reason,
+          guild.id
         ),
       ],
       ephemeral: false,
     });
-    // await interaction.followUp({
-    //   content: await forwardSuccess(
-    //     praiseGiver.user,
-    //     receivers.map((id) => `<@!${id}>`),
-    //     reason
-    //   ),
-    //   ephemeral: false,
-    // });
+    await interaction.followUp({
+      content: await forwardSuccess(
+        praiseGiver.user,
+        receivers.map((id) => `<@!${id}>`),
+        reason,
+        guild.id
+      ),
+      ephemeral: false,
+    });
   } else if (warnSelfPraise) {
-    await interaction.editReply(await selfPraiseWarning());
+    await interaction.editReply(await selfPraiseWarning(guild.id));
   } else {
-    await interaction.editReply(await invalidReceiverError());
+    await interaction.editReply(await invalidReceiverError(guild.id));
   }
 
   const warningMsg =
     (receiverData.undefinedReceivers
       ? (await undefinedReceiverWarning(
           receiverData.undefinedReceivers.join(', '),
-          praiseGiver.user
+          praiseGiver.user,
+          guild.id
         )) + '\n'
       : '') +
     (receiverData.roleMentions
       ? (await roleMentionWarning(
           receiverData.roleMentions.join(', '),
-          praiseGiver.user
+          praiseGiver.user,
+          guild.id
         )) + '\n'
       : '') +
     (Receivers.length !== 0 && warnSelfPraise
-      ? (await selfPraiseWarning()) + '\n'
+      ? (await selfPraiseWarning(guild.id)) + '\n'
       : '');
 
   if (warningMsg && warningMsg.length !== 0) {
     await interaction.followUp({ content: warningMsg, ephemeral: true });
   }
 };
-
-*/

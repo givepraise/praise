@@ -1,16 +1,19 @@
+/* TODO - fix forwards */
+
 import {
   ChannelType,
   ChatInputCommandInteraction,
   cleanContent,
 } from 'discord.js';
 
-import { UserAccount, Praise } from './api-schema';
+import { UserAccount } from './api-schema';
 import { apiClient } from './api';
 
-export const createPraise = async (
+export const createForward = async (
   interaction: ChatInputCommandInteraction,
   giverAccount: UserAccount,
   receiverAccount: UserAccount,
+  forwarderAccount: UserAccount,
   reason: string
 ): Promise<boolean> => {
   const { channel, guild } = interaction;

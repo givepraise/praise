@@ -1,13 +1,13 @@
-/* TODO - Replace db access with api2 calls */
+// /* TODO - Replace db access with api2 calls */
 
 // import { UserAccountModel } from 'api/dist/useraccount/entities';
 // import { UserAccount } from 'api/dist/useraccount/types';
 // import { UserModel } from 'api/dist/user/entities';
 // import {
-//   SelectMenuInteraction,
+//   StringSelectMenuInteraction,
 //   ActionRowBuilder,
 //   ButtonBuilder,
-//   SelectMenuBuilder,
+//   StringSelectMenuBuilder,
 // } from 'discord.js';
 // import { UserRole } from 'api/dist/user/types';
 // import { PeriodModel } from 'api/dist/period/entities';
@@ -42,7 +42,7 @@
 //     { upsert: true, new: true }
 //   );
 //   if (!userAccount.user) {
-//     await interaction.editReply(await notActivatedError());
+//     await interaction.editReply(await notActivatedError(guild.id));
 //     return;
 //   }
 //   const currentUser = await UserModel.findOne({ _id: userAccount.user });
@@ -53,7 +53,7 @@
 //     const userSelectionMsg = await interaction.editReply({
 //       content: 'Which users do you want to send the message to?',
 //       components: [
-//         new ActionRowBuilder<SelectMenuBuilder>().addComponents([dmTargetMenu]),
+//         new ActionRowBuilder<StringSelectMenuBuilder>().addComponents([dmTargetMenu]),
 //       ],
 //     });
 
@@ -68,7 +68,7 @@
 //       switch (click.customId) {
 //         case 'dm-menu': {
 //           if (!click.isSelectMenu()) break;
-//           const menu: SelectMenuInteraction = click;
+//           const menu: StringSelectMenuInteraction = click;
 //           selectedUserType = menu.values[0];
 //           if (
 //             selectedUserType === 'ASSIGNED-QUANTIFIERS' ||
@@ -85,7 +85,7 @@
 //             await interaction.editReply({
 //               content: 'Which period are you referring to?',
 //               components: [
-//                 new ActionRowBuilder<SelectMenuBuilder>().addComponents([
+//                 new ActionRowBuilder<StringSelectMenuBuilder>().addComponents([
 //                   periodSelectMenu(openPeriods),
 //                 ]),
 //               ],
