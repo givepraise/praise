@@ -10,6 +10,7 @@ import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { randomBytes } from 'crypto';
 import { ConstantsProvider } from '@/constants/constants.provider';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Injectable()
 export class ApiKeyService {
@@ -67,7 +68,7 @@ export class ApiKeyService {
   async findOne(id: Types.ObjectId): Promise<ApiKey> {
     const apiKey = await this.apiKeyModel.findById(id).lean();
     if (!apiKey) {
-      throw new ServiceException('API key not found');
+      throw new ServiceException(errorMessages.API_KEY_NOT_FOUND);
     }
     return apiKey;
   }
@@ -80,7 +81,7 @@ export class ApiKeyService {
   async findOneByHash(hash: string): Promise<ApiKey> {
     const apiKey = await this.apiKeyModel.findOne({ hash }).lean();
     if (!apiKey) {
-      throw new ServiceException('API key not found');
+      throw new ServiceException(errorMessages.API_KEY_NOT_FOUND);
     }
     return apiKey;
   }
@@ -107,7 +108,7 @@ export class ApiKeyService {
   ): Promise<ApiKey> {
     const apiKey = await this.apiKeyModel.findById(id);
     if (!apiKey) {
-      throw new ServiceException('Invalid API key ID');
+      throw new ServiceException(errorMessages.API_KEY_NOT_FOUND);
     }
     apiKey.description = description;
     apiKey.save();

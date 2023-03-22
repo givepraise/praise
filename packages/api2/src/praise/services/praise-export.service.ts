@@ -13,6 +13,8 @@ import {
   generateParquetExport,
   writeCsvAndJsonExports,
 } from '@/shared/export.shared';
+import { errorMessages } from '@/utils/errorMessages';
+
 @Injectable()
 export class PraiseExportService {
   constructor(
@@ -45,9 +47,7 @@ export class PraiseExportService {
     if (periodId) {
       if (startDate || endDate) {
         // If periodId is set, startDate and endDate should not be set
-        throw new ServiceException(
-          'Invalid date filtering option. When periodId is set, startDate and endDate should not be set.',
-        );
+        throw new ServiceException(errorMessages.INVALID_DATE_FILTERING_OPTION);
       }
       const period = await this.periodService.findOneById(periodId);
       query.createdAt = await this.periodService.getPeriodDateRangeQuery(
@@ -63,7 +63,7 @@ export class PraiseExportService {
       } else if (startDate || endDate) {
         // If periodId is not set and only one of startDate and endDate is set, throw an error
         throw new ServiceException(
-          'Invalid date filtering option. When periodId is not set, both startDate and endDate should be set.',
+          errorMessages.INVALID_DATE_FILTERING_OPTION_WHEN_PERIOD_IS_NOT_SET,
         );
       }
     }
