@@ -13,11 +13,12 @@ import { PeriodsModule } from '../periods/periods.module';
 import { ApiKeyModule } from '../api-key/api-key.module';
 import { ActivateModule } from '../activate/activate.module';
 import { CommunityModule } from '../community/community.module';
+import { PRAISE_DB_NAME } from '@/constants/constants.provider';
 
 @Module({
   imports: [
     MongooseModule.forRoot(
-      `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?authSource=admin&appname=Migrations`,
+      `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${PRAISE_DB_NAME}?authSource=admin&appname=Migrations`,
     ),
     ActivateModule,
     ApiKeyModule,

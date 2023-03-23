@@ -9,6 +9,7 @@ import { Logger } from '@/shared/logger';
 import { QuantificationsService } from '@/quantifications/services/quantifications.service';
 
 import mongoose, { ConnectOptions } from 'mongoose';
+import { PRAISE_DB_NAME } from '@/constants/constants.provider';
 
 interface DatabaseConfig {
   MONGO_USERNAME: string;
@@ -27,7 +28,7 @@ interface DatabaseConfig {
 const connectDatabase = async (
   configOverride?: DatabaseConfig,
 ): Promise<typeof mongoose> => {
-  const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_HOST, MONGO_PORT, MONGO_DB } =
+  const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_HOST, MONGO_PORT } =
     process.env;
 
   const configEnv = {
@@ -35,7 +36,7 @@ const connectDatabase = async (
     MONGO_PASSWORD,
     MONGO_HOST,
     MONGO_PORT,
-    MONGO_DB,
+    MONGO_DB: PRAISE_DB_NAME,
   } as DatabaseConfig;
 
   const config = {

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { TEST_COMMUNITY_DB_NAME } from '@/constants/constants.provider';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import {
@@ -17,7 +18,7 @@ export class MultiTenantConnectionService implements MongooseOptionsFactory {
   async createMongooseOptions(): Promise<MongooseModuleOptions> {
     const host =
       process.env.NODE_ENV === 'testing'
-        ? 'test-community'
+        ? TEST_COMMUNITY_DB_NAME
         : this.request.headers['host'].split(':')[0];
     return dbUri(host);
   }

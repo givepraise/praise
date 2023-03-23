@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
+export const TEST_PRAISE_DB_NAME = '_test-praise';
+export const TEST_COMMUNITY_DB_NAME = '_test-community';
+
+export const PRAISE_DB_NAME =
+  process.env.NODE_ENV === 'testing' ? TEST_PRAISE_DB_NAME : 'praise';
+
 export const uploadDirectory =
   process.env.NODE_ENV === 'production' ? '/usr/src/uploads/' : 'uploads/';
 

@@ -10,6 +10,7 @@ import { Types } from 'mongoose';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import { randomBytes } from 'crypto';
 import { errorMessages } from '@/utils/errorMessages';
+import { TEST_COMMUNITY_DB_NAME } from '@/constants/constants.provider';
 
 @Injectable()
 /**
@@ -85,7 +86,7 @@ export class EthSignatureService {
       identityEthAddress,
       roles,
       hostname:
-        process.env.NODE_ENV === 'testing' ? 'test-community' : hostname,
+        process.env.NODE_ENV === 'testing' ? TEST_COMMUNITY_DB_NAME : hostname,
     } as JwtPayload;
 
     // Sign payload to create access token
