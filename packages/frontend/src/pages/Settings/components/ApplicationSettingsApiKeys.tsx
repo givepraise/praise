@@ -7,15 +7,25 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { CreateApiKeyInputDto } from '@/model/apikeys/dto/create-api-key-input.dto';
 import { isResponseOk } from '@/model/api';
+import ApplicationSettingsApiKeyPreview from './ApplicationSettingsApiKeyPreview';
 
 const ApplicationSettingsApiKeys = (): JSX.Element => {
   const [openApiKeyModal, setOpenApiKeyModal] = useState(false);
+  const [openApiKeyModalPreview, setOpenApiKeyModalPreview] = useState(true);
+  const [apiKeyData, setApiKeyData] = useState();
+  const [loading, setLoading] = useState(false);
   const apiKeys = useRecoilValue(ApiKeysListQuery);
+
+  console.log(apiKeys);
 
   const { setApiKey } = useSetApiKey();
 
   const handleCloseApiKeyModal = (): void => {
     setOpenApiKeyModal(false);
+  };
+
+  const handleCloseApiKeyModalPreview = (): void => {
+    setOpenApiKeyModalPreview(false);
   };
 
   /**
@@ -25,29 +35,15 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
    */
   const handleAddApiKey = async (data: CreateApiKeyInputDto): Promise<void> => {
     setOpenApiKeyModal(false);
-
-    // const TESTVARIABLE: CreateApiKeyInputDto = {
-    //   description: 'test api key',
-    //   role: 'API_KEY_READWRITE',
-    // };
-
+    setLoading(true);
     const response = await setApiKey(data);
     console.log(data);
     if (isResponseOk(response)) {
-      console.log(response.data);
+      setApiKeyData(response.data);
+      setOpenApiKeyModalPreview(true);
     }
+    setLoading(false);
   };
-
-  // const onSubmit = async (
-  //   setting: Setting
-  // ): Promise<AxiosResponse<Setting> | AxiosError | undefined> => {
-  //   const response = await setSetting(setting);
-  //   if (isResponseOk(response)) {
-  //     const setting = response.data;
-  //     toast.success(`Saved setting "${setting.label}"`);
-  //   }
-  //   return response;
-  // };
 
   return (
     <>
@@ -74,6 +70,12 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
         open={openApiKeyModal}
         close={handleCloseApiKeyModal}
         onsubmit={handleAddApiKey}
+        loading={loading}
+      />
+      <ApplicationSettingsApiKeyPreview
+        open={openApiKeyModalPreview}
+        close={handleCloseApiKeyModalPreview}
+        apiKeyData={apiKeyData}
       />
     </>
   );

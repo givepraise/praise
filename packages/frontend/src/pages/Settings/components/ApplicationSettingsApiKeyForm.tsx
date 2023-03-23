@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { faKey, faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
+import {
+  faSpinner,
+  faKey,
+  faTimes,
+  faCheck,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
 import { Button } from '@/components/ui/Button';
@@ -12,6 +17,7 @@ type ApplicationSettingsApiKeyFormProps = {
   open: boolean;
   close: () => void;
   onsubmit: (data: CreateApiKeyInputDto) => void;
+  loading: boolean;
 };
 
 interface FormData {
@@ -23,6 +29,7 @@ const ApplicationSettingsApiKeyForm = ({
   open,
   close,
   onsubmit,
+  loading,
 }: ApplicationSettingsApiKeyFormProps): JSX.Element => {
   let errorDescription = '';
 
@@ -95,13 +102,17 @@ const ApplicationSettingsApiKeyForm = ({
                               />
                             </div>
                             <div className="flex justify-center">
-                              <Button className="mt-4 bg-red-600" type="submit">
+                              <Button
+                                className="mt-4 bg-red-600"
+                                type="submit"
+                                disabled={loading}
+                              >
                                 <FontAwesomeIcon
                                   className="mr-2"
-                                  icon={faCheck}
+                                  icon={loading ? faSpinner : faCheck}
                                   size="1x"
                                 />
-                                Save
+                                {loading ? 'Saving' : 'Save'}
                               </Button>
                             </div>
                           </div>
