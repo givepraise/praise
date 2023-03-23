@@ -39,7 +39,7 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
   },
   VERIFICATION_FAILED: {
     message: 'Verification failed',
-    httpStatusCode: 403,
+    httpStatusCode: 400,
     code: 1007,
   },
   USER_NOT_FOUND_AFTER_UPDATE: {

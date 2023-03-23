@@ -70,8 +70,13 @@ export class ActivateService {
 
     // Verify signature against generated message
     // Recover signer and compare against query address
-    const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
-    if (signerAddress !== identityEthAddress) {
+    let signerAddress;
+    try {
+      signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
+      if (signerAddress !== identityEthAddress) {
+        throw new ServiceException(errorMessages.VERIFICATION_FAILED);
+      }
+    } catch (e) {
       throw new ServiceException(errorMessages.VERIFICATION_FAILED);
     }
 

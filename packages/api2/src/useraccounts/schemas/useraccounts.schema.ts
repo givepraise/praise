@@ -1,7 +1,7 @@
 import { Exclude, Type } from 'class-transformer';
 import { Types, SchemaTypes } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiResponseProperty, OmitType } from '@nestjs/swagger';
 import { User } from '@/users/schemas/users.schema';
 import { ExposeId } from '@/shared/decorators/expose-id.decorator';
 import { IsOptional, IsString } from 'class-validator';
@@ -110,3 +110,10 @@ export const UserAccountsExportSqlSchema = `
   "createdAt" TIMESTAMP, 
   "updatedAt" TIMESTAMP
 `;
+
+// Importing this class from another file causes the error:
+// TypeError: Cannot read properties of undefined (reading 'prototype')
+// TODO: Figure out why this is happening
+export class UserAccountNoUserId extends OmitType(UserAccount, [
+  'user',
+] as const) {}
