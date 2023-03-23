@@ -35,6 +35,7 @@ export class UserAccount {
   @Type(() => User)
   @IsOptional()
   @IsObjectId()
+  @ExposeId()
   user?: User | Types.ObjectId;
 
   @ApiProperty({

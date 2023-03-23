@@ -45,6 +45,8 @@ describe('UserAccountsController (E2E)', () => {
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
       }),
     );
     app.useGlobalFilters(new MongoServerErrorFilter());
@@ -136,7 +138,7 @@ describe('UserAccountsController (E2E)', () => {
       expect(response.body.name).toEqual(accountName);
       expect(response.body.platform).toEqual('DISCORD');
       expect(response.body.avatarId).toEqual(avatarId);
-      // expect(String(response.body.user)).toEqual(String(users[0]._id));
+      expect(String(response.body.user)).toEqual(String(users[0]._id));
     });
 
     const createUser = (override?: any) => {
@@ -173,7 +175,7 @@ describe('UserAccountsController (E2E)', () => {
     });
 
     // Test with invalid fields
-    test.only('400 when invalid fields', async () => {
+    test('400 when invalid fields', async () => {
       const response = await authorizedPostRequest(
         `/useraccounts`,
         app,
@@ -188,7 +190,6 @@ describe('UserAccountsController (E2E)', () => {
         },
       );
 
-      console.log('RESPONSE: ', response.body);
       expect(response.status).toBe(400);
     });
 
