@@ -19,6 +19,7 @@ import { CreateUserAccountInputDto } from './dto/create-user-account-input.dto';
 import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
 import { FindUserAccountFilterDto } from './dto/find-user-account-filter.dto';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Injectable()
 export class UserAccountsService {
@@ -49,7 +50,7 @@ export class UserAccountsService {
     });
     if (existingUserAccount) {
       throw new ServiceException(
-        'UserAccount with platform and accountId, name or user already exists.',
+        errorMessages.USER_ACCOUNT_WITH_PLATFORM_NAME__OR_USERNAME_ALREADY_EXITS,
       );
     }
 
@@ -72,7 +73,8 @@ export class UserAccountsService {
    */
   async findOneById(_id: Types.ObjectId): Promise<UserAccount> {
     const userAccount = await this.userAccountModel.findOne({ _id }).lean();
-    if (!userAccount) throw new ServiceException('UserAccount not found.');
+    if (!userAccount)
+      throw new ServiceException(errorMessages.USER_ACCOUNT_NOT_FOUND);
     return userAccount;
   }
 
@@ -93,7 +95,8 @@ export class UserAccountsService {
       .limit(1)
       .sort({ $natural: -1 })
       .lean();
-    if (!userAccount[0]) throw new ServiceException('UserAccount not found.');
+    if (!userAccount[0])
+      throw new ServiceException(errorMessages.USER_ACCOUNT_NOT_FOUND);
     return userAccount[0];
   }
 
@@ -106,7 +109,8 @@ export class UserAccountsService {
   ): Promise<UserAccount> {
     const { accountId, name, user } = updateUserAccountDto;
     const userAccount = await this.userAccountModel.findById(_id);
-    if (!userAccount) throw new ServiceException('UserAccount not found.');
+    if (!userAccount)
+      throw new ServiceException(errorMessages.USER_ACCOUNT_NOT_FOUND);
 
     // Only one UserAccount per platform and user
     if (user) {
@@ -115,7 +119,7 @@ export class UserAccountsService {
       });
       if (existingUserAccount && !existingUserAccount._id.equals(_id)) {
         throw new ServiceException(
-          'UserAccount with platform and user already exists.',
+          errorMessages.USER_ACCOUNT_WITH_PLATFORM_AND_USER_ALREADY_EXIST,
         );
       }
     }
@@ -130,7 +134,7 @@ export class UserAccountsService {
       });
       if (existingUserAccount) {
         throw new ServiceException(
-          'UserAccount with platform and accountId, name or user already exists.',
+          errorMessages.USER_ACCOUNT_WITH_PLATFORM_NAME__OR_USERNAME_ALREADY_EXITS,
         );
       }
     }

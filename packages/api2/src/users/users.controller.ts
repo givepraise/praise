@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
 import { UsersService } from './users.service';
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -35,6 +34,8 @@ import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only'
 import { allExportsDirPath } from '@/shared/fs.shared';
 import { exportContentType } from '@/shared/export.shared';
 import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
+import { ServiceException } from '@/shared/exceptions/service-exception';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Controller('users')
 @ApiTags('Users')
@@ -120,7 +121,7 @@ export class UsersController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<UserWithStatsDto> {
     const user = await this.usersService.findOneById(id);
-    if (!user) throw new BadRequestException('User not found.');
+    if (!user) throw new ServiceException(errorMessages.USER_NOT_FOUND);
     return user;
   }
 

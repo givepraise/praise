@@ -31,6 +31,7 @@ import {
   generateParquetExport,
   writeCsvAndJsonExports,
 } from '@/shared/export.shared';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Injectable()
 export class PeriodsService {
@@ -70,7 +71,7 @@ export class PeriodsService {
     });
 
     if (!periodPagination)
-      throw new ServiceException('Failed to paginate period data');
+      throw new ServiceException(errorMessages.FAILED_TO_PAGINATE_PERIOD_DATA);
 
     return periodPagination;
   }
@@ -83,7 +84,7 @@ export class PeriodsService {
    */
   async findOneById(_id: Types.ObjectId): Promise<Period> {
     const period = await this.periodModel.findById(_id).lean();
-    if (!period) throw new ServiceException('Period not found.');
+    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
     return period;
   }
 
@@ -96,7 +97,7 @@ export class PeriodsService {
       .limit(1)
       .sort({ $natural: -1 })
       .lean();
-    if (!period[0]) throw new ServiceException('Period not found.');
+    if (!period[0]) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
     return period[0];
   }
 
@@ -112,7 +113,7 @@ export class PeriodsService {
       const earliestDate = add(latestPeriod.endDate, { days: 7 });
       if (compareAsc(earliestDate, endDate) === 1) {
         throw new ServiceException(
-          'End date must be at least 7 days after the latest end date',
+          errorMessages.INVALID_END_DATE_FOR_CREATE_PERIOD,
         );
       }
     }
@@ -140,13 +141,13 @@ export class PeriodsService {
     data: UpdatePeriodInputDto,
   ): Promise<PeriodDetailsDto> => {
     const period = await this.periodModel.findById(_id);
-    if (!period) throw new ServiceException('Period not found.');
+    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
 
     const { name, endDate } = data;
 
     if (!name && !endDate)
       throw new ServiceException(
-        'Updated name or endDate to must be specified',
+        errorMessages.UPDATE_PERIOD_NAME_OR_END_DATE_MUST_BE_SPECIFIED,
       );
 
     const eventLogMessages = [];
@@ -163,11 +164,13 @@ export class PeriodsService {
       const latest = await this.isPeriodLatest(period);
       if (!latest)
         throw new ServiceException(
-          'Date change only allowed on latest period.',
+          errorMessages.UPDATE_PERIOD_DATE_CHANGE_ONLY_ALLOWED_ON_LATEST_PERIOD,
         );
 
       if (period.status !== PeriodStatusType.OPEN)
-        throw new ServiceException('Date change only allowed on open periods.');
+        throw new ServiceException(
+          errorMessages.DATE_CHANGE_IS_ONLY_ALLOWED_ON_OPEN_PERIODS,
+        );
 
       const newEndDate = parseISO(endDate);
 
@@ -198,16 +201,16 @@ export class PeriodsService {
    **/
   close = async (_id: Types.ObjectId): Promise<PeriodDetailsDto> => {
     const period = await this.periodModel.findById(_id);
-    if (!period) throw new ServiceException('Period not found');
+    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
 
     // Check if the period has ended
     const now = Date.now();
     const periodEnd = new Date(period.endDate).getTime();
     if (now < periodEnd)
-      throw new ServiceException('Can not close a period that has not ended');
+      throw new ServiceException(errorMessages.CANT_CLOSE_NOT_ENDED_PERIOD);
 
     if (period.status === PeriodStatusType.CLOSED)
-      throw new ServiceException('Period is already closed');
+      throw new ServiceException(errorMessages.PERIOD_IS_ALREADY_CLOSED);
 
     period.status = PeriodStatusType.CLOSED;
     await period.save();
@@ -227,7 +230,7 @@ export class PeriodsService {
     periodId: Types.ObjectId,
   ): Promise<PraiseWithUserAccountsWithUserRefDto[]> => {
     const period = await this.periodModel.findById(periodId);
-    if (!period) throw new ServiceException('Period not found');
+    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
 
     const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
 
@@ -249,7 +252,7 @@ export class PeriodsService {
     receiverId: Types.ObjectId,
   ): Promise<PraiseWithUserAccountsWithUserRefDto[]> => {
     const period = await this.periodModel.findById(periodId);
-    if (!period) throw new ServiceException('Period not found');
+    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
 
     const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
 
@@ -272,7 +275,7 @@ export class PeriodsService {
     giverId: Types.ObjectId,
   ): Promise<PraiseWithUserAccountsWithUserRefDto[]> => {
     const period = await this.periodModel.findById(periodId);
-    if (!period) throw new ServiceException('Period not found');
+    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
 
     const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
 
@@ -295,7 +298,7 @@ export class PeriodsService {
     quantifierId: Types.ObjectId,
   ): Promise<PraiseWithUserAccountsWithUserRefDto[]> => {
     const period = await this.periodModel.findById(periodId);
-    if (!period) throw new ServiceException('Period not found');
+    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
 
     const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
 

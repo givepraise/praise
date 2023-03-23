@@ -26,6 +26,7 @@ import {
   generateParquetExport,
   writeCsvAndJsonExports,
 } from '@/shared/export.shared';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Injectable()
 export class UsersService {
@@ -94,7 +95,7 @@ export class UsersService {
       .findOne(query)
       .populate('accounts')
       .lean();
-    if (!user) throw new ServiceException('User not found.');
+    if (!user) throw new ServiceException(errorMessages.USER_NOT_FOUND);
     const userStats = await this.getUserStats(user);
     return { ...user, ...userStats };
   }
@@ -116,7 +117,7 @@ export class UsersService {
       .limit(1)
       .sort({ $natural: -1 })
       .lean();
-    if (!user[0]) throw new ServiceException('User not found.');
+    if (!user[0]) throw new ServiceException(errorMessages.USER_NOT_FOUND);
     return user[0];
   }
 
@@ -125,10 +126,13 @@ export class UsersService {
     roleChange: UpdateUserRoleInputDto,
   ): Promise<UserWithStatsDto> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new ServiceException('User not found.');
+    if (!userDocument) throw new ServiceException(errorMessages.USER_NOT_FOUND);
 
     if (userDocument.roles.includes(roleChange.role))
-      throw new ServiceException(`User already has role ${roleChange.role}`);
+      throw new ServiceException(
+        errorMessages.INVALID_ROLE,
+        `User already has role ${roleChange.role}`,
+      );
 
     userDocument.roles.push(roleChange.role);
     const user = await userDocument.save();
@@ -148,7 +152,7 @@ export class UsersService {
     roleChange: UpdateUserRoleInputDto,
   ): Promise<UserWithStatsDto> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new ServiceException('User not found.');
+    if (!userDocument) throw new ServiceException(errorMessages.USER_NOT_FOUND);
 
     const role = roleChange.role;
     const roleIndex = userDocument.roles.indexOf(role);
@@ -160,14 +164,17 @@ export class UsersService {
       });
       if (allAdmins.length <= 1) {
         throw new ServiceException(
-          'It is not allowed to remove the last admin!',
+          errorMessages.ITS_NOT_ALLOWED_TO_REMOVE_THE_LAST_ADMIN,
         );
       }
     }
 
     // Verify user has role before removing
     if (roleIndex === -1)
-      throw new ServiceException(`User does not have role ${role}`);
+      throw new ServiceException(
+        errorMessages.INVALID_ROLE,
+        `User does not have role ${role}`,
+      );
 
     // If user is currently assigned to the active quantification round, and role is QUANTIFIER throw error
     const activePeriods: Period[] =
@@ -184,9 +191,7 @@ export class UsersService {
           'quantifications.quantifier': _id,
         });
       if (assignedPraiseCount > 0)
-        throw new ServiceException(
-          'Cannot remove quantifier currently assigned to quantification period',
-        );
+        throw new ServiceException(errorMessages.CAN_NOT_REMOVE_QUANTIFIER);
     }
 
     userDocument.roles.splice(roleIndex, 1);
@@ -204,7 +209,7 @@ export class UsersService {
 
   async update(_id: Types.ObjectId, user: UpdateUserInputDto): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new ServiceException('User not found.');
+    if (!userDocument) throw new ServiceException(errorMessages.USER_NOT_FOUND);
 
     for (const [k, v] of Object.entries(user)) {
       userDocument.set(k, v);

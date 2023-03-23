@@ -10,6 +10,7 @@ import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
 import { ethers } from 'ethers';
 import { DiscordLinkState } from './enums/discord-link-state';
+import { errorMessages } from '@/utils/errorMessages';
 import { randomBytes } from 'crypto';
 import { assertOwnersIncludeCreator } from './utils/assert-owners-include-creator';
 
@@ -62,7 +63,7 @@ export class CommunityService {
       paginateQuery,
     );
     if (!communityPagination)
-      throw new ServiceException('Failed to query communities');
+      throw new ServiceException(errorMessages.FAILED_TO_QUERY_COMMUNITIES);
 
     return communityPagination;
   }
@@ -72,7 +73,8 @@ export class CommunityService {
     community: UpdateCommunityInputDto,
   ): Promise<Community> {
     const communityDocument = await this.communityModel.findById(_id);
-    if (!communityDocument) throw new ServiceException('Community not found.');
+    if (!communityDocument)
+      throw new ServiceException(errorMessages.communityNotFound);
     if (community.owners) {
       assertOwnersIncludeCreator(community.owners, communityDocument.creator);
     }
@@ -102,9 +104,9 @@ export class CommunityService {
     linkDiscordBotDto: LinkDiscordBotDto,
   ): Promise<Community> {
     const community = await this.getModel().findById(communityId);
-    if (!community) throw new ServiceException('Community not found.');
+    if (!community) throw new ServiceException(errorMessages.communityNotFound);
     if (community.discordLinkState === DiscordLinkState.ACTIVE)
-      throw new ServiceException('Community is already active.');
+      throw new ServiceException(errorMessages.COMMUNITY_IS_ALREADY_ACTIVE);
 
     // Generate message to be signed
     const generatedMsg = this.generateLinkDiscordMessage({
@@ -120,7 +122,7 @@ export class CommunityService {
       linkDiscordBotDto.signedMessage,
     );
     if (signerAddress?.toLowerCase() !== community.creator.toLowerCase()) {
-      throw new ServiceException('Verification failed');
+      throw new ServiceException(errorMessages.VERIFICATION_FAILED);
     }
 
     community.discordLinkState = DiscordLinkState.ACTIVE;

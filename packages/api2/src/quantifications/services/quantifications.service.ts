@@ -8,6 +8,7 @@ import { ServiceException } from '@/shared/exceptions/service-exception';
 import { PraiseService } from '@/praise/services/praise.service';
 import { Inject, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '@/periods/services/periods.service';
+import { errorMessages } from '@/utils/errorMessages';
 
 export class QuantificationsService {
   constructor(
@@ -45,7 +46,7 @@ export class QuantificationsService {
     const quantification = await this.quantificationModel.findById(_id).lean();
 
     if (!quantification)
-      throw new ServiceException('Quantification item not found.');
+      throw new ServiceException(errorMessages.QUANTIFICATION_NOT_FOUND);
 
     return quantification;
   }
@@ -59,7 +60,8 @@ export class QuantificationsService {
       .limit(1)
       .sort({ $natural: -1 })
       .lean();
-    if (!quantifications[0]) throw new ServiceException('Praise not found.');
+    if (!quantifications[0])
+      throw new ServiceException(errorMessages.PRAISE_NOT_FOUND);
     return quantifications[0];
   }
 
@@ -107,7 +109,7 @@ export class QuantificationsService {
     ]);
 
     if (!Array.isArray(quantification) || quantification.length === 0)
-      throw new ServiceException('Quantification not found.');
+      throw new ServiceException(errorMessages.QUANTIFICATION_NOT_FOUND);
 
     return quantification[0];
   }
@@ -168,6 +170,7 @@ export class QuantificationsService {
 
     if (!quantifications) {
       throw new ServiceException(
+        errorMessages.QUANTIFICATION_NOT_FOUND,
         `Quantifications for praise ${praiseId} not found`,
       );
     }
@@ -303,7 +306,9 @@ export class QuantificationsService {
     // Find the period associated with the current praise item
     const period = await this.praiseService.getPraisePeriod(praise);
     if (!period) {
-      throw new ServiceException('Quantification has no associated period');
+      throw new ServiceException(
+        errorMessages.QUANTIFICATION_HAS_NO_ASSOCIATED_PERIOD,
+      );
     }
 
     // Calculate the duplicate score based on the original quantification and the period
@@ -334,7 +339,7 @@ export class QuantificationsService {
     )) as number;
     if (!duplicatePraisePercentage)
       throw new ServiceException(
-        "Invalid setting 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE'",
+        errorMessages.INVALID_SETTING_PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE,
       );
 
     const score = +(
@@ -382,6 +387,7 @@ export class QuantificationsService {
 
     if (!updatedQuantification) {
       throw new ServiceException(
+        errorMessages.QUANTIFICATION_NOT_FOUND,
         `Quantification ${quantification._id} not found`,
       );
     }
