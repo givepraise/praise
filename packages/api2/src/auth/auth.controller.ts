@@ -1,4 +1,11 @@
-import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+  Headers,
+} from '@nestjs/common';
 import { EthSignatureService } from './eth-signature.service';
 import { NonceResponseDto } from './dto/nonce-response.dto';
 import { LoginResponseDto } from './dto/login-response.dto';

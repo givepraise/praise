@@ -435,9 +435,13 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     code: 1090,
   },
   INVALID_OWNERS_CREATOR_MUST_BE_INCLUDED_IN_THE_OWNERS: {
-    message:
-      'Invalid owners, creator must be included in the owners.',
+    message: 'Invalid owners, creator must be included in the owners.',
     httpStatusCode: 400,
     code: 1091,
+  },
+  AUTH_FAILED: {
+    message: 'Authentication failed. JWT token or API key is required.',
+    httpStatusCode: 401,
+    code: 1092,
   },
 };

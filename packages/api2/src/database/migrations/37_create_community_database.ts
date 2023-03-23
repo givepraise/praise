@@ -5,7 +5,7 @@ import { randomBytes } from 'crypto';
 import {
   PRAISE_DB_NAME,
   TEST_COMMUNITY_DB_NAME,
-} from '@/constants/constants.provider';
+} from '../../constants/constants.provider';
 
 const dbUrl = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME!}:${process
   .env.MONGO_INITDB_ROOT_PASSWORD!}@${process.env.MONGO_HOST!}:${process.env
@@ -20,7 +20,7 @@ const up = async (): Promise<void> => {
     return;
   }
 
-  const hostname = process.env.HOSTNAME;
+  const hostname = process.env.HOST;
 
   // Create community based on env variables
   const admins = process.env.ADMINS || '';
@@ -48,8 +48,10 @@ const up = async (): Promise<void> => {
     const collections = await dbFrom.listCollections().toArray();
     for (const collection of collections) {
       const collectionName = collection.name;
-      if (collectionName === 'communities') {
-        // Skip communities collection
+      const skipCollections = ['communities', 'migrations'];
+      if (skipCollections.includes(collectionName)) {
+        // Skip communities and migrations collections
+        // They will remain in the main praise database
         continue;
       }
 
@@ -62,10 +64,6 @@ const up = async (): Promise<void> => {
       if (collectionData.length === 0) {
         // Skip empty collections
         await dbFrom.collection(collectionName).drop();
-        continue;
-      }
-      if (collectionName === 'migrations') {
-        // Skip migrations collection
         continue;
       }
       await newCollection.insertMany(collectionData);

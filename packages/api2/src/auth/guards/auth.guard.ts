@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthRole } from '../enums/auth-role.enum';
 import * as bcrypt from 'bcrypt';
 import { ServiceException } from '@/shared/exceptions/service-exception';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -100,7 +101,6 @@ export class AuthGuard implements CanActivate {
     ) {
       return true;
     }
-    //TODO Make sure this generates a 401
-    throw new ServiceException('Unauthorized');
+    throw new ServiceException(errorMessages.AUTH_FAILED);
   }
 }
