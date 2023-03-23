@@ -359,12 +359,12 @@ describe('Praise (E2E)', () => {
       // expect(p).toBeValidClass(Praise);
     });
 
-    test('400 when praise does not exist', async () => {
+    test('404 when praise does not exist', async () => {
       return authorizedGetRequest(
         `/praise/${new Types.ObjectId()}`,
         app,
         users[0].accessToken,
-      ).expect(400);
+      ).expect(404);
     });
   });
 
@@ -516,7 +516,7 @@ describe('Praise (E2E)', () => {
       expect(response.body.error).toBe('Bad Request');
     });
 
-    test('400 when praise does not exist', async () => {
+    test('404 when praise does not exist', async () => {
       return authorizedPatchRequest(
         `/praise/${new Types.ObjectId()}/quantify`,
         app,
@@ -524,7 +524,7 @@ describe('Praise (E2E)', () => {
         {
           score: 144,
         },
-      ).expect(400);
+      ).expect(404);
     });
 
     test('400 when praise is not in quantify period', async () => {

@@ -5,9 +5,18 @@
  * `HttpExceptionFilter` handle it. Unexpected errors will be returned to the
  * client as a `500 Internal Server Error`.
  */
+import { ErrorMessage } from '@/utils/errorMessages';
+
 export class ServiceException extends Error {
-  constructor(message: string) {
-    super(message);
+  httpsStatusCode: number;
+  code: number;
+  description?: string;
+
+  constructor(errorMessage: ErrorMessage, description?: string) {
+    super(errorMessage.message);
     this.name = 'PraiseException';
+    this.httpsStatusCode = errorMessage.httpStatusCode;
+    this.code = errorMessage.code;
+    this.description = description;
   }
 }

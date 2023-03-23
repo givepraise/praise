@@ -10,6 +10,7 @@ import {
   generateParquetExport,
   writeCsvAndJsonExports,
 } from '@/shared/export.shared';
+import { errorMessages } from '@/utils/errorMessages';
 
 export class QuantificationsExportService {
   constructor(
@@ -42,7 +43,7 @@ export class QuantificationsExportService {
       if (startDate || endDate) {
         // If periodId is set, startDate and endDate should not be set
         throw new ServiceException(
-          'Invalid date filtering option. When periodId is set, startDate and endDate should not be set.',
+          errorMessages.INVALID_PROJECT_ID_FILTERING_PASSING_PROJECT_ID_START_DATE_AND_END_DATE_TOGETHER,
         );
       }
       const period = await this.periodService.findOneById(periodId);
@@ -59,7 +60,7 @@ export class QuantificationsExportService {
       } else if (startDate || endDate) {
         // If periodId is not set and only one of startDate and endDate is set, throw an error
         throw new ServiceException(
-          'Invalid date filtering option. When periodId is not set, both startDate and endDate should be set.',
+          errorMessages.INVALID_DATE_FILTERING_SHOULD_PATH_DATES_WHEN_PROJECT_ID_IS_NOT_SET,
         );
       }
     }

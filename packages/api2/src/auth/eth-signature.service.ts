@@ -9,7 +9,7 @@ import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { Types } from 'mongoose';
 import { ServiceException } from '@/shared/exceptions/service-exception';
 import { randomBytes } from 'crypto';
-import { CommunityService } from '@/community/community.service';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Injectable()
 /**
@@ -75,7 +75,7 @@ export class EthSignatureService {
     hostname: string,
   ): Promise<LoginResponseDto> {
     const user = await this.usersService.findOneById(userId);
-    if (!user) throw new ServiceException('User not found');
+    if (!user) throw new ServiceException(errorMessages.USER_NOT_FOUND);
 
     const { identityEthAddress, roles } = user;
 

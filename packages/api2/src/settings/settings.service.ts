@@ -11,6 +11,7 @@ import { SettingGroup } from './enums/setting-group.enum';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
 import { validateSetting } from './utils/validate-setting';
 import { SettingsFilterDto } from './dto/settings-filter.dto';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Injectable()
 export class SettingsService {
@@ -57,7 +58,7 @@ export class SettingsService {
       })
       .lean();
 
-    if (!setting) throw new ServiceException('Settings not found.');
+    if (!setting) throw new ServiceException(errorMessages.SETTING_NOT_FOUND);
     return setting;
   }
 
@@ -91,12 +92,14 @@ export class SettingsService {
       _id,
       period: { $exists: 0 },
     });
-    if (!setting) throw new ServiceException('Settings not found.');
+    if (!setting) throw new ServiceException(errorMessages.SETTING_NOT_FOUND);
 
     const originalValue = setting.value;
 
     if (typeof data.value === 'undefined') {
-      throw new ServiceException('Value is required field');
+      throw new ServiceException(
+        errorMessages.VALUE_IS_REQUIRED_FIELD_FOR_SETTING,
+      );
     }
 
     const { valid, value: validatedValue } = validateSetting(
@@ -104,9 +107,7 @@ export class SettingsService {
       setting.type,
     );
     if (!valid) {
-      throw new ServiceException(
-        `Settings value ${data.value} is not valid for type ${setting.type}.`,
-      );
+      throw new ServiceException(errorMessages.INVALID_VALUE_FIELD_FOR_SETTING);
     }
     setting.value = validatedValue;
 
@@ -129,12 +130,12 @@ export class SettingsService {
       _id,
       period: { $exists: 0 },
     });
-    if (!setting) throw new ServiceException('Settings not found.');
+    if (!setting) throw new ServiceException(errorMessages.SETTING_NOT_FOUND);
 
     // Only allow image files
     if (!this.utils.isImage(file)) {
       await this.utils.removeFile(file.filename);
-      throw new ServiceException('Uploaded file is not an image.');
+      throw new ServiceException(errorMessages.UPLOADED_FILE_IS_NOT_AN_IMAGE);
     }
 
     const originalValue = setting.value;
@@ -181,7 +182,7 @@ export class SettingsService {
         .lean();
 
       if (!setting) {
-        throw new ServiceException(`Setting ${key} does not exist`);
+        throw new ServiceException(errorMessages.SETTING_NOT_FOUND);
       }
     } else {
       const generalSetting = await this.settingsModel
@@ -198,12 +199,7 @@ export class SettingsService {
           );
 
         if (!setting) {
-          const periodString = periodId
-            ? `period ${periodId.toString()}`
-            : 'global';
-          throw new ServiceException(
-            `periodsetting ${key} does not exist for ${periodString}`,
-          );
+          throw new ServiceException(errorMessages.SETTING_NOT_FOUND);
         }
       }
     }

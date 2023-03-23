@@ -1,4 +1,5 @@
 import { ServiceException } from '@/shared/exceptions/service-exception';
+import { errorMessages } from '@/utils/errorMessages';
 
 function isNumeric(value: any) {
   return !isNaN(parseFloat(value)) && isFinite(value);
@@ -73,5 +74,8 @@ export function validateSetting(
     return { valid, value: valueArray.join(',') };
   }
 
-  throw new ServiceException(`Unknown setting type ${type}.`);
+  throw new ServiceException(
+    errorMessages.UNKNOWN_SETTING_TYPE,
+    `Unknown setting type ${type}.`,
+  );
 }

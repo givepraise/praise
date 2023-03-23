@@ -7,11 +7,12 @@ export class ServiceExceptionFilter implements ExceptionFilter {
   catch(exception: ServiceException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const status = 400; // Bad Request
+    const status = exception.httpsStatusCode || 400; // Bad Request
 
     response.status(status).json({
-      statusCode: status, // Bad Request
-      message: exception.message,
+      statusCode: status,
+      message: exception?.description || exception.message,
+      code: exception.code,
       error: 'Bad Request',
     });
   }
