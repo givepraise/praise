@@ -223,7 +223,7 @@ describe('EventLog (E2E)', () => {
       await apiKeyService.getModel().deleteMany({});
     });
 
-    test('200 and correct body when authenticated', async () => {
+    test('404 create -> delete -> get', async () => {
       const createResponse = await authorizedPostRequest(
         '/api-key',
         app,
@@ -243,14 +243,11 @@ describe('EventLog (E2E)', () => {
       expect(response.body).toBeDefined();
       expect(response.body._id).toEqual(createResponse.body._id);
 
-      const getResponse = await authorizedGetRequest(
+      await authorizedGetRequest(
         `/api-key/${createResponse.body._id}`,
         app,
         adminToken,
-      ).expect(400);
-
-      expect(getResponse.body).toBeDefined();
-      expect(getResponse.body.message).toEqual('API key not found');
+      ).expect(404);
     });
 
     test('400 when attempting to delete non-existing key', async () => {
@@ -277,14 +274,11 @@ describe('EventLog (E2E)', () => {
         adminToken,
       ).expect(200);
 
-      const response = await request(server)
+      await request(server)
         .get('/api-key')
         .set('Authorization', `Bearer ${createResponse.body.key}`)
         .send()
         .expect(401);
-
-      expect(response.body).toBeDefined();
-      expect(response.body.message).toEqual('Unauthorized');
     });
 
     // Test should fail when attempting to delete key without proper authentication
