@@ -13,7 +13,7 @@ import { PeriodsModule } from '../periods/periods.module';
 import { ApiKeyModule } from '../api-key/api-key.module';
 import { ActivateModule } from '../activate/activate.module';
 import { CommunityModule } from '../community/community.module';
-import { PRAISE_DB_NAME } from '@/constants/constants.provider';
+import { PRAISE_DB_NAME } from '../constants/constants.provider';
 
 @Module({
   imports: [

@@ -36,6 +36,6 @@ if (db.getUser('$MONGO_USERNAME') === null) {
 }
 
 db.getSiblingDB("admin").grantRolesToUser( "$MONGO_USERNAME", [ { role: "readWrite", db: "$MONGO_DB" } ] )
-db.getSiblingDB("admin").grantRolesToUser( "$MONGO_USERNAME", [ { role: "readWrite", db: "praise_db_testing_tmp" } ] )
+db.getSiblingDB("admin").grantRolesToUser( "$MONGO_USERNAME", [ { role: "readWrite", db: "_test-praise" } ] )
 
 EOF

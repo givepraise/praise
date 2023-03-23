@@ -123,6 +123,8 @@ async function startNest(): Promise<void> {
       transform: true,
       whitelist: true,
       forbidNonWhitelisted: true,
+      forbidUnknownValues: true,
+      skipMissingProperties: false,
     }),
   );
   app.useGlobalFilters(new MongoServerErrorFilter());

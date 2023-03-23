@@ -28,69 +28,6 @@ import {
 } from './shared/nest';
 
 describe('UserController (E2E)', () => {
-  // let app: INestApplication;
-  // let server: Server;
-  // let testingModule: TestingModule;
-  // let usersSeeder: UsersSeeder;
-  // let usersService: UsersService;
-  // let userAccountsSeeder: UserAccountsSeeder;
-  // let userAccountsService: UserAccountsService;
-  // let praiseSeeder: PraiseSeeder;
-  // let praiseService: PraiseService;
-  // let periodsSeeder: PeriodsSeeder;
-  // let periodsService: PeriodsService;
-  // let quantificationsSeeder: QuantificationsSeeder;
-  // let quantificationsService: QuantificationsService;
-
-  beforeAll(async () => {
-    // testingModule = await Test.createTestingModule({
-    //   imports: [
-    //     AppModule,
-    //     UsersModule,
-    //     EventLogModule,
-    //     UserAccountsModule,
-    //     PraiseModule,
-    //     QuantificationsModule,
-    //     PeriodsModule,
-    //   ],
-    //   providers: [
-    //     UsersSeeder,
-    //     UserAccountsSeeder,
-    //     PraiseSeeder,
-    //     QuantificationsSeeder,
-    //     PeriodsSeeder,
-    //   ],
-    // }).compile();
-    // app = testingModule.createNestApplication();
-    // app.useGlobalPipes(
-    //   new ValidationPipe({
-    //     transform: true,
-    //     whitelist: true,
-    //     forbidNonWhitelisted: true,
-    //   }),
-    // );
-    // app.useGlobalFilters(new MongoServerErrorFilter());
-    // app.useGlobalFilters(new MongoValidationErrorFilter());
-    // app.useGlobalFilters(new ServiceExceptionFilter());
-    // server = app.getHttpServer();
-    // await app.init();
-    // await runDbMigrations(app);
-    // usersSeeder = testingModule.get<UsersSeeder>(UsersSeeder);
-    // usersService = testingModule.get<UsersService>(UsersService);
-    // userAccountsSeeder = testingModule.get<UserAccountsSeeder>(UserAccountsSeeder);
-    // userAccountsService = testingModule.get<UserAccountsService>(UserAccountsService);
-    // praiseSeeder = testingModule.get<PraiseSeeder>(PraiseSeeder);
-    // praiseService = testingModule.get<PraiseService>(PraiseService);
-    // quantificationsSeeder = testingModule.get<QuantificationsSeeder>(
-    //   QuantificationsSeeder,
-    // );
-    // quantificationsService = testingModule.get<QuantificationsService>(
-    //   QuantificationsService,
-    // );
-    // periodsSeeder = testingModule.get<PeriodsSeeder>(PeriodsSeeder);
-    // periodsService = testingModule.get<PeriodsService>(PeriodsService);
-  });
-
   describe('GET /api/users/export', () => {
     let wallet;
     let accessToken: string;

@@ -28,8 +28,8 @@ export const loginUser = async (
     .send({
       identityEthAddress: wallet.address,
       signature,
-    });
-  // .expect(201);
+    })
+    .expect(201);
   return loginResponse.body;
 };
 
