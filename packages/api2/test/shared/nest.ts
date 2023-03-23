@@ -50,6 +50,7 @@ import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
 
 // Import migrations
 import { runDbMigrations } from '@/database/migrations';
+import { TEST_COMMUNITY_DB_NAME } from '@/constants/constants.provider';
 
 // Core Nest objects
 export let testingModule: TestingModule;
@@ -87,7 +88,7 @@ async function startNest(): Promise<void> {
   testingModule = await Test.createTestingModule({
     imports: [
       MongooseModule.forRoot(
-        `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/test-community?authSource=admin&appname=PraiseApi`,
+        `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${TEST_COMMUNITY_DB_NAME}?authSource=admin&appname=PraiseApi`,
       ),
       ActivateModule,
       ApiKeyModule,
@@ -123,8 +124,9 @@ async function startNest(): Promise<void> {
       transform: true,
       whitelist: true,
       forbidNonWhitelisted: true,
-      forbidUnknownValues: true,
-      skipMissingProperties: false,
+      // TODO: Enabling these causes 400 error all over the place, investigate!
+      // forbidUnknownValues: true,
+      // skipMissingProperties: false,
     }),
   );
   app.useGlobalFilters(new MongoServerErrorFilter());

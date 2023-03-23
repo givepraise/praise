@@ -154,9 +154,7 @@ describe('UserAccountsController (E2E)', () => {
         app,
         adminUserAccessToken,
       ).expect(400);
-      expect(response.body.message).toBe(
-        'Invalid date filtering option. When periodId is set, startDate and endDate should not be set.',
-      );
+      expect(response.body.code).toBe(1094);
     });
 
     test('returns quantification filtered by latest periodId', async () => {

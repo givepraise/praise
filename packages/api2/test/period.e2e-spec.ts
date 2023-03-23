@@ -653,7 +653,7 @@ describe('Period (E2E)', () => {
         .set('Authorization', `Bearer ${users[0].accessToken}`)
         .expect(404);
 
-      expect(response.body.message).toBe('Period not found');
+      expect(response.body.code).toBe(1009);
     });
 
     test('should return 200 and list of praise items', async () => {

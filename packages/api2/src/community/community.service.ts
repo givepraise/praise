@@ -104,7 +104,8 @@ export class CommunityService {
     linkDiscordBotDto: LinkDiscordBotDto,
   ): Promise<Community> {
     const community = await this.getModel().findById(communityId);
-    if (!community) throw new ServiceException(errorMessages.communityNotFound);
+    if (!community)
+      throw new ServiceException(errorMessages.COMMUNITY_NOT_FOUND);
     if (community.discordLinkState === DiscordLinkState.ACTIVE)
       throw new ServiceException(errorMessages.COMMUNITY_IS_ALREADY_ACTIVE);
 
@@ -122,7 +123,7 @@ export class CommunityService {
       linkDiscordBotDto.signedMessage,
     );
     if (signerAddress?.toLowerCase() !== community.creator.toLowerCase()) {
-      throw new ServiceException(errorMessages.VERIFICATION_FAILED);
+      throw new ServiceException(errorMessages.COMMUNITY_NOT_ALLOWED_SIGNER);
     }
 
     community.discordLinkState = DiscordLinkState.ACTIVE;

@@ -317,7 +317,7 @@ describe('Communities (E2E)', () => {
 
       const rb = response.body;
       expect(response.status).toBe(403);
-      expect(rb.message).toBe('Verification failed');
+      expect(rb.code).toBe(1093);
     });
 
     test('400 when someone wants to link discord to active community', async () => {

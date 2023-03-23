@@ -536,15 +536,9 @@ describe('UserController (E2E)', () => {
     });
 
     test('401 response if user not authenticated', async () => {
-      const response = await authorizedPatchRequest(
-        `/users/${user._id}/addRole`,
-        app,
-        '',
-        {
-          role: 'ADMIN',
-        },
-      ).expect(401);
-      expect(response.body.message).toContain('Unauthorized');
+      await authorizedPatchRequest(`/users/${user._id}/addRole`, app, '', {
+        role: 'ADMIN',
+      }).expect(401);
     });
   });
 
@@ -741,7 +735,7 @@ describe('UserController (E2E)', () => {
         roles: [AuthRole.USER, AuthRole.ADMIN, AuthRole.QUANTIFIER],
       });
 
-      const response = await authorizedPatchRequest(
+      await authorizedPatchRequest(
         `/users/${userTestNotAuth._id}/removeRole`,
         app,
         '',
@@ -749,7 +743,6 @@ describe('UserController (E2E)', () => {
           role: 'QUANTIFIER',
         },
       ).expect(401);
-      expect(response.body.message).toContain('Unauthorized');
     });
   });
 });

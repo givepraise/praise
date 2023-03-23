@@ -21,6 +21,7 @@ import {
   userAccountsService,
   testingModule,
 } from './shared/nest';
+import { Types } from 'mongoose';
 
 describe('UserAccountsController (E2E)', () => {
   describe('POST /api/useraccounts', () => {

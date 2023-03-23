@@ -542,7 +542,7 @@ describe('Praise (E2E)', () => {
         {
           score: 144,
         },
-      ).expect(400);
+      ).expect(404);
     });
 
     test('400 when period in not in status QUANTIFY', async () => {
