@@ -1,7 +1,6 @@
 const requiredEnvVariables = [
   'API_PORT',
   'ADMINS',
-  'MONGO_DB',
   'MONGO_HOST',
   'MONGO_PORT',
   'MONGO_USERNAME',

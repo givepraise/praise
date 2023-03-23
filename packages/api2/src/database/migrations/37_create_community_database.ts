@@ -2,7 +2,10 @@
 import { MongoClient } from 'mongodb';
 import { CommunityModel } from '../schemas/communities/37_community.schema';
 import { randomBytes } from 'crypto';
-import { TEST_COMMUNITY_DB_NAME } from '@/constants/constants.provider';
+import {
+  PRAISE_DB_NAME,
+  TEST_COMMUNITY_DB_NAME,
+} from '@/constants/constants.provider';
 
 const dbUrl = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME!}:${process
   .env.MONGO_INITDB_ROOT_PASSWORD!}@${process.env.MONGO_HOST!}:${process.env
@@ -17,10 +20,7 @@ const up = async (): Promise<void> => {
     return;
   }
 
-  const hostname =
-    process.env.NODE_ENV === 'testing'
-      ? TEST_COMMUNITY_DB_NAME
-      : process.env.HOST;
+  const hostname = process.env.HOSTNAME;
 
   // Create community based on env variables
   const admins = process.env.ADMINS || '';
@@ -38,8 +38,11 @@ const up = async (): Promise<void> => {
 
   try {
     const client = new MongoClient(dbUrl);
-    const dbFrom = client.db(process.env.MONGO_DB!);
-    const communityDbName = hostname;
+    const dbFrom = client.db(PRAISE_DB_NAME);
+    const communityDbName =
+      process.env.NODE_ENV === 'testing'
+        ? TEST_COMMUNITY_DB_NAME
+        : process.env.HOST;
     const dbTo = client.db(communityDbName);
 
     const collections = await dbFrom.listCollections().toArray();
