@@ -420,7 +420,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
       /** @example 621f802b813dbdba9eeaf7d7 */
-      user: string | components['schemas']['User'];
+      user: string;
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -480,7 +480,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
-      user: string | components['schemas']['User'];
+      user: string;
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -895,7 +895,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
-      user: string | components['schemas']['User'];
+      user: string;
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -927,7 +927,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
-      user: string | components['schemas']['User'];
+      user: string;
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -1361,6 +1361,11 @@ export interface operations {
   };
   AuthController_login: {
     /** Verifies a user's signature and returns a JWT token */
+    parameters: {
+      header: {
+        host: string;
+      };
+    };
     /**
      * @description A request containing the user identityEthAddress and signedlogin message. The signed message should be structured as follows:
      *
