@@ -3,6 +3,7 @@ const requiredEnvVariables = [
   'ADMINS',
   'MONGO_HOST',
   'MONGO_PORT',
+  'MONGO_DB',
   'MONGO_USERNAME',
   'MONGO_PASSWORD',
   'JWT_SECRET',
