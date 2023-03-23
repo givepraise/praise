@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  InternalServerErrorException,
-  UseGuards,
-  Request,
-} from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { EthSignatureService } from './eth-signature.service';
 import { NonceResponseDto } from './dto/nonce-response.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
@@ -15,6 +8,8 @@ import { RequestWithUser } from './interfaces/request-with-user.interface';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginInputDto } from './dto/login-input.dto';
 import { EventLogService } from '@/event-log/event-log.service';
+import { ServiceException } from '@/shared/exceptions/service-exception';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Controller('auth')
 @ApiTags('Authentication')
@@ -50,7 +45,7 @@ export class AuthController {
         nonce: user.nonce,
       };
     }
-    throw new InternalServerErrorException('Failed to generate nonce.');
+    throw new ServiceException(errorMessages.FAILED_TO_GENERATE_NONCE);
   }
 
   @UseGuards(AuthGuard('eth-signature'))

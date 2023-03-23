@@ -31,6 +31,7 @@ import { PeriodStatusType } from '../enums/status-type.enum';
 import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interface';
 import { Period, PeriodModel } from '../schemas/periods.schema';
 import { PeriodsService } from './periods.service';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Injectable()
 export class PeriodAssignmentsService {
@@ -107,18 +108,18 @@ export class PeriodAssignmentsService {
     const periodEnd = new Date(period.endDate).getTime();
     if (now < periodEnd)
       throw new ServiceException(
-        'Can not assign quantifiers for a period that has not ended',
+        errorMessages.CANT_ASSIGN_QUANTIFIERS_FOR_A_PERIOD_THAT_HAS_NOT_ENDED,
       );
 
     if (period.status !== 'OPEN')
       throw new ServiceException(
-        'Quantifiers can only be assigned on OPEN periods.',
+        errorMessages.QUANTIFIERS_CAN_ONLY_BE_ASSIGNED_ON_OPEN_PERIODS,
       );
 
     const anyPraiseAssigned = await this.isAnyPraiseAssigned(period);
     if (anyPraiseAssigned)
       throw new ServiceException(
-        'Some praise has already been assigned for this period',
+        errorMessages.SOME_PERIODS_HAS_ALREADY_BEEN_ASSIGNED_FOR_THIS_PERIOD,
       );
 
     // Make five attempts at assigning quantifiers
@@ -131,11 +132,12 @@ export class PeriodAssignmentsService {
     }
 
     if (!assignedQuantifiers) {
-      throw new ServiceException('Failed to assign quantifiers.');
+      throw new ServiceException(errorMessages.FAILED_TO_ASSIGN_QUANTIFIERS);
     }
 
     if (assignedQuantifiers.remainingAssignmentsCount > 0) {
       throw new ServiceException(
+        errorMessages.FAILED_TO_ASSIGN_COLLECTION_OF_PRAISE_TO_QUANTIFIERS,
         `Failed to assign ${assignedQuantifiers.remainingAssignmentsCount} collection of praise to a quantifier`,
       );
     }
@@ -194,30 +196,34 @@ export class PeriodAssignmentsService {
 
     if (period.status !== 'QUANTIFY')
       throw new ServiceException(
-        'Quantifiers can only be replaced on periods with status QUANTIFY.',
+        errorMessages.QUANTIFIERS_CAN_ONLY_BE_REPLACED_ON_PERIODS_WITH_STATUS_QUANTIFY,
       );
 
     if (!currentQuantifierId || !newQuantifierId)
       throw new ServiceException(
-        'Both currentQuantifierId and newQuantifierId must be specified',
+        errorMessages.BOTH_CURRENT_QUANTIFIER_ID_AND_NEW_QUANTIFIER_ID_MUST_BE_SPECIFIED,
       );
 
     if (currentQuantifierId === newQuantifierId)
-      throw new ServiceException('Cannot replace a quantifier with themselves');
+      throw new ServiceException(
+        errorMessages.CANT_REPLACE_A_QUANTIFIER_WITH_THEMSELVES,
+      );
 
     const currentQuantifier = await this.userModel.findById(
       currentQuantifierId,
     );
     if (!currentQuantifier)
-      throw new ServiceException('Current quantifier does not exist');
+      throw new ServiceException(errorMessages.CURRENT_QUANTIFIER_DOESNT_EXIST);
 
     const newQuantifier = await this.userModel.findById(newQuantifierId);
     if (!newQuantifier)
-      throw new ServiceException('Replacement quantifier does not exist');
+      throw new ServiceException(
+        errorMessages.REPLACEMENT_QUANTIFIER_DOESNT_EXIST,
+      );
 
     if (!newQuantifier.roles.includes(AuthRole.QUANTIFIER))
       throw new ServiceException(
-        'Replacement quantifier does not have role QUANTIFIER',
+        errorMessages.REPLACEMENT_QUANTIFIER_DOESNT_HAVE_ROLE_QUANTIFIER,
       );
 
     const dateRangeQuery = await this.getPeriodDateRangeQuery(period);
@@ -235,7 +241,7 @@ export class PeriodAssignmentsService {
 
     if (praiseQuantificationsAlreadyAssignedToNewQuantifier?.length > 0)
       throw new ServiceException(
-        "Replacement quantifier is already assigned to some of the original quantifier's praise",
+        errorMessages.REPLACEMENT_QUANTIFIER_IS_ALREADY_ASSIGNED_TO_SOME_OF_THE_ORIGINAL_QUANTIFIER,
       );
 
     const originalQuantifierQuantifications = await this.quantificationModel
@@ -269,7 +275,7 @@ export class PeriodAssignmentsService {
            */
           if (ua._id.equals(p.receiver as Types.ObjectId)) {
             throw new ServiceException(
-              'Replacement quantifier cannot be assigned to quantify their own received praise.',
+              errorMessages.QUANTIFIERS_CANT_BE_ASSIGNED_TO_QUANTIFY_THEIR_PRAISE,
             );
           }
         }
@@ -403,7 +409,7 @@ export class PeriodAssignmentsService {
       );
       if (quantifierIsReceiver) {
         throw new ServiceException(
-          'One quantifier is available, but they are also a receiver. Unable to assign quantifiers.',
+          errorMessages.THERE_IS_JUST_ONE_QUANTIFIER_THAT_IS_ALSO_RECEIVER,
         );
       }
     }
@@ -412,14 +418,14 @@ export class PeriodAssignmentsService {
     //  otherwise a quantifier could be assigned the same praise multiple times
     if (PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER > quantifierPool.length)
       throw new ServiceException(
-        'Unable to assign redundant quantifications without more members in quantifier pool',
+        errorMessages.UNABLE_TO_ASSIGN_REDUNDANT_QUANTIFICATION_WITHOUT_MORE_MEMBERS_IN_QUANTIFIER_POOL,
       );
 
     // Check that the number of redundant assignments is greater than to the number of receivers
     //    otherwise a quantifier could be assigned the same praise multiple times
     if (PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER > receivers.length)
       throw new ServiceException(
-        'Quantifiers per Receiver is too large for the number of receivers, unable to prevent duplicate assignments',
+        errorMessages.QUANTIFIERS_PER_RECEIVER_IS_TOO_LARGE_FOR_THE_NUMBER_OF_RECEIVERS,
       );
 
     // Run "Greedy number partitioning" algorithm:
@@ -484,7 +490,7 @@ export class PeriodAssignmentsService {
           const lastElem = receiversShuffledClone.pop();
           if (!lastElem)
             throw new ServiceException(
-              'Failed to generate list of redundant shuffled receivers',
+              errorMessages.FAILED_TO_GENERATE_LIST_OF_REDUNDANT_SHUFFLED_RECEIVERS,
             );
 
           receiversShuffledClone.unshift(lastElem);
@@ -617,7 +623,10 @@ export class PeriodAssignmentsService {
 
       const q = availableQuantifiers.pop();
 
-      if (!q) throw new ServiceException('Failed to generate assignments');
+      if (!q)
+        throw new ServiceException(
+          errorMessages.FAILED_TO_GENERATE_ASSIGNMENTS,
+        );
 
       // Generate a unique id to reference this assignment option (bin + quantifier)
       const assignmentBinId: string = flatten(
@@ -716,6 +725,7 @@ export class PeriodAssignmentsService {
       });
     } else {
       throw new ServiceException(
+        errorMessages.NOT_ALL_REDUNDANT_PRAISE_ASSIGNMENTS_ACCOUNTED,
         `Not all redundant praise assignments accounted for: ${accountedPraiseCount} / ${expectedAccountedPraiseCount} expected in period`,
       );
     }
@@ -733,7 +743,7 @@ export class PeriodAssignmentsService {
       });
     } else {
       throw new ServiceException(
-        'Some redundant praise are assigned to the same quantifier multiple times',
+        errorMessages.SOME_REDUNDANT_PRAISE_ARE_ASSIGNED_TO_THE_SAME_QUANTIFIER_MULTIPLE_TIMES,
       );
     }
   };
