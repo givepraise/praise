@@ -1,16 +1,8 @@
-import {
-  Controller,
-  Post,
-  Body,
-  UseGuards,
-  Request,
-  Headers,
-} from '@nestjs/common';
+import { Controller, Post, Body, Request, Headers } from '@nestjs/common';
 import { EthSignatureService } from './eth-signature.service';
 import { NonceResponseDto } from './dto/nonce-response.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { NonceInputDto } from './dto/nonce-input.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginInputDto } from './dto/login-input.dto';
@@ -51,7 +43,6 @@ export class AuthController {
     throw new ServiceException(errorMessages.FAILED_TO_GENERATE_NONCE);
   }
 
-  @UseGuards(AuthGuard('eth-signature'))
   @Post('eth-signature/login')
   @ApiOperation({
     summary: "Verifies a user's signature and returns a JWT token",
@@ -71,8 +62,13 @@ export class AuthController {
   })
   async login(
     @Request() req: RequestWithUser,
-    @Headers('host') hostname: string,
+    @Headers('host') host: string,
+    @Body() loginInputDto: LoginInputDto,
   ): Promise<LoginResponseDto> {
-    return this.ethSignatureService.login(req.user._id, hostname);
+    return this.ethSignatureService.login(
+      loginInputDto.identityEthAddress,
+      loginInputDto.signature,
+      host.split(':')[0],
+    );
   }
 }

@@ -456,4 +456,9 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
       httpStatusCode: 400,
       code: 1094,
     },
+  UNAUTHORIZED: {
+    message: 'Unauthorized',
+    httpStatusCode: 401,
+    code: 1095,
+  },
 };
