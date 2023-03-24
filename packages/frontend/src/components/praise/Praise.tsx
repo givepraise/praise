@@ -60,13 +60,8 @@ export const Praise = ({
     (event: React.MouseEvent<HTMLTableRowElement>) => {
       event.stopPropagation();
 
-      const userId =
-        userAccount && typeof userAccount.user === 'object'
-          ? userAccount.user._id
-          : (userAccount?.user as string);
-
-      if (userId) {
-        history.push(`/users/${userId}`);
+      if (userAccount && userAccount.user) {
+        history.push(`/users/${userAccount.user}`);
       }
     };
 
