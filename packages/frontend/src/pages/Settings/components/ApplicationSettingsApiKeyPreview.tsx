@@ -16,11 +16,13 @@ import { CreateApiKeyResponseDto } from '@/model/apikeys/dto/create-api-key-inpu
 type ApplicationSettingsApiKeyPrevieProps = {
   open: boolean;
   apiKeyData: CreateApiKeyResponseDto | null;
+  close: () => void;
 };
 
 const ApplicationSettingsApiKeyPreview = ({
   open,
   apiKeyData,
+  close,
 }: ApplicationSettingsApiKeyPrevieProps): JSX.Element => {
   console.log({ open });
   return (

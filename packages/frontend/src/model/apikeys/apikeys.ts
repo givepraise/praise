@@ -1,11 +1,6 @@
-import {
-  selector,
-  selectorFamily,
-  useRecoilCallback,
-  useRecoilValue,
-} from 'recoil';
+import { selector, useRecoilCallback } from 'recoil';
 import { AxiosResponse, AxiosError } from 'axios';
-import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from '../api';
+import { ApiAuthGet, isResponseOk } from '../api';
 import { ApiKey } from './dto/apikeys.dto';
 import {
   CreateApiKeyInputDto,
@@ -47,7 +42,9 @@ export const useSetApiKey = (): useSetApiKeyReturn => {
       > => {
         const response = await apiAuthClient.post('/api-key', data);
         if (isResponseOk(response)) {
-          const createdApiKey = response.data as CreateApiKeyResponseDto;
+          // const createdApiKey = response.data as CreateApiKeyResponseDto;
+          const createdApiKey =
+            response.data as AxiosResponse<CreateApiKeyResponseDto>;
           return createdApiKey;
         }
         return response as AxiosResponse | AxiosError;
