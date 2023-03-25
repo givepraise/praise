@@ -26,7 +26,7 @@ export class UserAccountsSeeder {
       name: faker.internet.userName().substring(0, 10),
       avatarId: faker.datatype.uuid(),
       platform: 'DISCORD',
-      activateToken: faker.datatype.string(),
+      activateToken: faker.datatype.string(11),
       ...(userAccountData as any),
     });
 
