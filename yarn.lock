@@ -7223,6 +7223,7 @@ __metadata:
     mongodb: ^4.14.0
     mongoose: ^6.10.2
     mongoose-paginate-ts: ^1.2.7
+    nest-winston: ^1.9.1
     nestjs-request-context: ^2.1.0
     passport: ^0.6.0
     passport-custom: ^1.1.1
@@ -7243,6 +7244,8 @@ __metadata:
     tsconfig-paths-jest: ^0.0.1
     typescript: ^4.7.4
     umzug: ^3.0.0
+    winston: ^3.8.2
+    winston-daily-rotate-file: ^4.7.1
   languageName: unknown
   linkType: soft
 
@@ -10070,6 +10073,8 @@ __metadata:
     randomstring: ^1.2.2
     ts-node: ^10.5.0
     typescript: ^4.5.5
+    winston: ^3.8.2
+    winston-daily-rotate-file: ^4.7.1
   languageName: unknown
   linkType: soft
 
@@ -16416,6 +16421,18 @@ __metadata:
   version: 2.6.2
   resolution: "neo-async@npm:2.6.2"
   checksum: deac9f8d00eda7b2e5cd1b2549e26e10a0faa70adaa6fdadca701cc55f49ee9018e427f424bac0c790b7c7e2d3068db97f3093f1093975f2acb8f8818b936ed9
+  languageName: node
+  linkType: hard
+
+"nest-winston@npm:^1.9.1":
+  version: 1.9.1
+  resolution: "nest-winston@npm:1.9.1"
+  dependencies:
+    fast-safe-stringify: ^2.1.1
+  peerDependencies:
+    "@nestjs/common": ^5.0.0 || ^6.6.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
+    winston: ^3.0.0
+  checksum: 811afd4a750971e67b2000d30aa87fb4f91b91e9d90fcf89925a58b01911cf8d301cdbe0de3f8ca8a91f5c01db3e0504393ea705134c549711ce2063404e03d8
   languageName: node
   linkType: hard
 

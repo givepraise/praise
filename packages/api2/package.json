@@ -48,6 +48,7 @@
     "mongodb": "^4.14.0",
     "mongoose": "^6.10.2",
     "mongoose-paginate-ts": "^1.2.7",
+    "nest-winston": "^1.9.1",
     "nestjs-request-context": "^2.1.0",
     "passport": "^0.6.0",
     "passport-custom": "^1.1.1",
@@ -58,7 +59,9 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "ses-node-json-transform": "^0.1.0",
-    "umzug": "^3.0.0"
+    "umzug": "^3.0.0",
+    "winston": "^3.8.2",
+    "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

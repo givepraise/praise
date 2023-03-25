@@ -5,10 +5,11 @@ import { UsersService } from '@/users/users.service';
 import { PeriodsService } from '@/periods/services/periods.service';
 import { SettingsService } from '@/settings/settings.service';
 import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
-import { Logger } from '@/shared/logger';
+import { logger } from '@/shared/logger';
 import { QuantificationsService } from '@/quantifications/services/quantifications.service';
 
 import mongoose, { ConnectOptions } from 'mongoose';
+import { Logger } from 'winston';
 
 interface DatabaseConfig {
   MONGO_USERNAME: string;
@@ -77,7 +78,7 @@ export const runDbMigrations = async (
 ): Promise<void> => {
   try {
     const db = await connectDatabase();
-    logger && logger.log('Connected to database');
+    logger && logger.info('Connected to database');
 
     const migrator = new Umzug({
       migrations: { glob: 'src/database/migrations/*.ts' },
@@ -95,14 +96,14 @@ export const runDbMigrations = async (
         quantificationsService: app.get(QuantificationsService),
       },
     });
-    logger && logger.log('Migrator created');
+    logger && logger.info('Migrator created');
 
     require('ts-node/register');
     await migrator.up();
-    logger && logger.log('Migrations run');
+    logger && logger.info('Migrations run');
 
     await closeDatabaseConnection();
-    logger && logger.log('Database connection closed');
+    logger && logger.info('Database connection closed');
   } catch (error) {
     logger && logger.error(error);
   }
