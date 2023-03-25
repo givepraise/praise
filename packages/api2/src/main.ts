@@ -20,10 +20,9 @@ async function bootstrap() {
   envCheck();
 
   // Run database migrations before starting the app
-  //TODO: Run migrations in a separate process
-  // const appMigrations = await NestFactory.create(AppMigrationsModule);
-  // await runDbMigrations(appMigrations, new Logger('Migrations'));
-  // appMigrations.close();
+  const appMigrations = await NestFactory.create(AppMigrationsModule);
+  await runDbMigrations(appMigrations, logger);
+  await appMigrations.close();
 
   // Create an instance of the Nest app
   const app = await NestFactory.create(AppModule, AppConfig);

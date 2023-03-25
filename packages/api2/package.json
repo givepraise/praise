@@ -5,7 +5,7 @@
   "description": "The Praise REST API running on Nest.js, using MongoDB for storage.",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build",
+    "build": "yarn run prebuild && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "load-env": "env-cmd --silent --no-override -f ../../.env env-cmd --silent --no-override",
     "start": "yarn run load-env nest start",
@@ -16,8 +16,7 @@
     "test": "yarn run load-env jest --watchAll --config ./jest.config.js",
     "test:watch": "yarn run load-env jest --watch",
     "test:cov": "yarn run load-env jest --coverage",
-    "test:e2e": "NODE_ENV=testing && MONGO_DB=_test-praise yarn run load-env jest --config ./jest-e2e.config.js --runInBand --silent=false",
-    "migrator": "yarn run load-env ts-node -r tsconfig-paths/register src/scripts/umzug-cli.ts"
+    "test:e2e": "NODE_ENV=testing && MONGO_DB=_test-praise yarn run load-env jest --config ./jest-e2e.config.js --runInBand --silent=false"
   },
   "dependencies": {
     "@faker-js/faker": "^7.6.0",
