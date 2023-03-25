@@ -6,9 +6,9 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
-import { ServiceException } from '../shared/exceptions/service-exception';
+import { ApiException } from '../shared/exceptions/api-exception';
 import { randomBytes } from 'crypto';
-import { errorMessages } from '../utils/errorMessages';
+import { errorMessages } from '../shared/exceptions/error-messages';
 import { TEST_COMMUNITY_DB_NAME } from '../constants/constants.provider';
 import { ethers } from 'ethers';
 
@@ -83,12 +83,12 @@ export class EthSignatureService {
       // Throw UnauthorizedException instead of BadRequestException since
       // the user is not authenticated yet Nest.js defaults to that on
       // other authentication strategt errors
-      throw new ServiceException(errorMessages.UNAUTHORIZED);
+      throw new ApiException(errorMessages.UNAUTHORIZED);
     }
 
     // Check if user has previously generated a nonce
     if (!user.nonce) {
-      throw new ServiceException(errorMessages.NONCE_NOT_FOUND);
+      throw new ApiException(errorMessages.NONCE_NOT_FOUND);
     }
 
     // Generate expected message

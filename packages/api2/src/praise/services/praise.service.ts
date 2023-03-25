@@ -1,7 +1,7 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { PraiseModel, Praise, PraiseDocument } from '../schemas/praise.schema';
-import { ServiceException } from '../../shared/exceptions/service-exception';
+import { ApiException } from '../../shared/exceptions/api-exception';
 import { PeriodStatusType } from '../../periods/enums/status-type.enum';
 import { SettingsService } from '../../settings/settings.service';
 import { QuantificationsService } from '../../quantifications/services/quantifications.service';
@@ -20,7 +20,7 @@ import { PraiseCreateInputDto } from '../dto/praise-create-input.dto';
 import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
 import { UserAccountModel } from '../../database/schemas/useraccount/useraccount.schema';
 import { PraiseForwardInputDto } from '../dto/praise-forward-input.dto';
-import { errorMessages } from '../../utils/errorMessages';
+import { errorMessages } from '../../shared/exceptions/error-messages';
 
 @Injectable()
 export class PraiseService {
@@ -89,7 +89,7 @@ export class PraiseService {
     });
 
     if (!praisePagination)
-      throw new ServiceException(errorMessages.FAILED_TO_PAGINATE_PRAISE_DATA);
+      throw new ApiException(errorMessages.FAILED_TO_PAGINATE_PRAISE_DATA);
 
     return praisePagination;
   }
@@ -121,7 +121,7 @@ export class PraiseService {
       ])
       .lean();
 
-    if (!praise) throw new ServiceException(errorMessages.PRAISE_NOT_FOUND);
+    if (!praise) throw new ApiException(errorMessages.PRAISE_NOT_FOUND);
 
     return praise;
   }
@@ -135,7 +135,7 @@ export class PraiseService {
       .limit(1)
       .sort({ $natural: -1 })
       .lean();
-    if (!praise[0]) throw new ServiceException(errorMessages.PRAISE_NOT_FOUND);
+    if (!praise[0]) throw new ApiException(errorMessages.PRAISE_NOT_FOUND);
     return praise[0];
   }
 
@@ -159,18 +159,18 @@ export class PraiseService {
       .findById(id)
       .populate('giver receiver forwarder')
       .lean();
-    if (!praise) throw new ServiceException(errorMessages.PRAISE_NOT_FOUND);
+    if (!praise) throw new ApiException(errorMessages.PRAISE_NOT_FOUND);
 
     // Get the period associated with the praise item
     const period = await this.getPraisePeriod(praise);
     if (!period)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.PRAISE_DOESNT_HAVE__AN_ASSOCIATED_PERIOD,
       );
 
     // Check if the period is in the QUANTIFY status
     if (period.status !== PeriodStatusType.QUANTIFY)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.PRAISE_ASSOCIATED_WITH_PRAISE_IS_NOT_QUANTIFY,
       );
 
@@ -178,9 +178,7 @@ export class PraiseService {
     const req: RequestWithAuthContext = RequestContext.currentContext.req;
     const userId = req.user?.userId;
     if (!userId)
-      throw new ServiceException(
-        errorMessages.USER_NOT_FOUND_IN_CONTEXT_REQUEST,
-      );
+      throw new ApiException(errorMessages.USER_NOT_FOUND_IN_CONTEXT_REQUEST);
 
     const quantification =
       await this.quantificationsService.findOneByQuantifierAndPraise(
@@ -188,7 +186,7 @@ export class PraiseService {
         praise._id,
       );
     if (!quantification) {
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.USER_NOT_ASSIGNED_AS_QUANTIFIER_FOR_PRAISE,
       );
     }
@@ -207,20 +205,18 @@ export class PraiseService {
     if (duplicatePraise) {
       // Check that the duplicatePraise is not the same as the praise item
       if (praise._id.equals(duplicatePraise))
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.PRAISE_CANT_BE_DUPLICATE_OF_ITSELF,
         );
 
       // Find the original praise item
       const dp = await this.praiseModel.findById(duplicatePraise).lean();
       if (!dp)
-        throw new ServiceException(
-          errorMessages.DUPLICATE_PRAISE_ITEM_NOT_FOUND,
-        );
+        throw new ApiException(errorMessages.DUPLICATE_PRAISE_ITEM_NOT_FOUND);
 
       // Check that this praise item is not already the original of another duplicate
       if (praisesDuplicateOfThis?.length > 0)
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.ORIGINAL_PRAISE_CANT_BE_MARKED_AS_DUPLICATE,
         );
 
@@ -231,7 +227,7 @@ export class PraiseService {
           new Types.ObjectId(userId),
         );
       if (praisesDuplicateOfAnotherDuplicate?.length > 0)
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.PRAISE_CANT_BE_MARKED_DUPLICATE_OF_ANOTHER_DUPLICATE,
         );
 
@@ -256,7 +252,7 @@ export class PraiseService {
       ).toString()}"`;
     } else {
       if (score === undefined || score === null) {
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.SCORE_DISMISSED_OR_DUPLICATE_PRAISE_IS_REQUIRED,
         );
       }
@@ -270,7 +266,7 @@ export class PraiseService {
       const allowedScore = settingAllowedScores.split(',').map(Number);
 
       if (!allowedScore.includes(score)) {
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.SCORE_IS_NOT_ALLOWED,
           `Score ${score} is not allowed. Allowed scores are: ${allowedScore.join(
             ', ',
@@ -469,7 +465,7 @@ export class PraiseService {
     }
 
     if (!receiverIds || receiverIds.length === 0) {
-      throw new ServiceException(errorMessages.NO_RECEIVER_SPECIFIED);
+      throw new ApiException(errorMessages.NO_RECEIVER_SPECIFIED);
     }
 
     const giverAccount = await this.userAccountModel.findOneAndUpdate(
@@ -479,7 +475,7 @@ export class PraiseService {
     );
 
     if (!giverAccount.user) {
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.PRAISE_GIVER_ACCOUNT_IS_NOT_ACTIVATED,
       );
     }
@@ -492,9 +488,7 @@ export class PraiseService {
       );
 
       if (!forwarderAccount.user) {
-        throw new ServiceException(
-          errorMessages.PRAISE_FORWARDED_IS_NOT_ACTIVATED,
-        );
+        throw new ApiException(errorMessages.PRAISE_FORWARDED_IS_NOT_ACTIVATED);
       }
     }
 
@@ -503,7 +497,7 @@ export class PraiseService {
     )?.valueRealized;
 
     if (!selfPraiseAllowed && receiverIds.includes(giverAccount.accountId)) {
-      throw new ServiceException(errorMessages.SELF_PRAISE_IS_NOT_ALLOWED);
+      throw new ApiException(errorMessages.SELF_PRAISE_IS_NOT_ALLOWED);
     }
 
     const receivers = await this.userAccountModel

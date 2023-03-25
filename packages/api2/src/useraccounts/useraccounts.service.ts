@@ -7,7 +7,7 @@ import {
   UserAccountDocument,
   UserAccountsExportSqlSchema,
 } from './schemas/useraccounts.schema';
-import { ServiceException } from '../shared/exceptions/service-exception';
+import { ApiException } from '../shared/exceptions/api-exception';
 import {
   generateParquetExport,
   writeCsvAndJsonExports,
@@ -19,7 +19,7 @@ import { CreateUserAccountInputDto } from './dto/create-user-account-input.dto';
 import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
 import { FindUserAccountFilterDto } from './dto/find-user-account-filter.dto';
-import { errorMessages } from '../utils/errorMessages';
+import { errorMessages } from '../shared/exceptions/error-messages';
 
 @Injectable()
 export class UserAccountsService {
@@ -49,7 +49,7 @@ export class UserAccountsService {
       $and: [{ platform }, { $or: [{ accountId }, { name }, { user }] }],
     });
     if (existingUserAccount) {
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.USER_ACCOUNT_WITH_PLATFORM_NAME__OR_USERNAME_ALREADY_EXITS,
       );
     }
@@ -74,7 +74,7 @@ export class UserAccountsService {
   async findOneById(_id: Types.ObjectId): Promise<UserAccount> {
     const userAccount = await this.userAccountModel.findOne({ _id }).lean();
     if (!userAccount)
-      throw new ServiceException(errorMessages.USER_ACCOUNT_NOT_FOUND);
+      throw new ApiException(errorMessages.USER_ACCOUNT_NOT_FOUND);
     return userAccount;
   }
 
@@ -96,7 +96,7 @@ export class UserAccountsService {
       .sort({ $natural: -1 })
       .lean();
     if (!userAccount[0])
-      throw new ServiceException(errorMessages.USER_ACCOUNT_NOT_FOUND);
+      throw new ApiException(errorMessages.USER_ACCOUNT_NOT_FOUND);
     return userAccount[0];
   }
 
@@ -110,7 +110,7 @@ export class UserAccountsService {
     const { accountId, name, user } = updateUserAccountDto;
     const userAccount = await this.userAccountModel.findById(_id);
     if (!userAccount)
-      throw new ServiceException(errorMessages.USER_ACCOUNT_NOT_FOUND);
+      throw new ApiException(errorMessages.USER_ACCOUNT_NOT_FOUND);
 
     // Only one UserAccount per platform and user
     if (user) {
@@ -118,7 +118,7 @@ export class UserAccountsService {
         $and: [{ userAccount: userAccount.platform }, { user }],
       });
       if (existingUserAccount && !existingUserAccount._id.equals(_id)) {
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.USER_ACCOUNT_WITH_PLATFORM_AND_USER_ALREADY_EXIST,
         );
       }
@@ -133,7 +133,7 @@ export class UserAccountsService {
         ],
       });
       if (existingUserAccount) {
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.USER_ACCOUNT_WITH_PLATFORM_NAME__OR_USERNAME_ALREADY_EXITS,
         );
       }

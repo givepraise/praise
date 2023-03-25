@@ -7,8 +7,8 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRole } from '../enums/auth-role.enum';
 import * as bcrypt from 'bcrypt';
-import { ServiceException } from '../../shared/exceptions/service-exception';
-import { errorMessages } from '../../utils/errorMessages';
+import { ApiException } from '../../shared/exceptions/api-exception';
+import { errorMessages } from '../../shared/exceptions/error-messages';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -101,6 +101,6 @@ export class AuthGuard implements CanActivate {
     ) {
       return true;
     }
-    throw new ServiceException(errorMessages.AUTH_FAILED);
+    throw new ApiException(errorMessages.AUTH_FAILED);
   }
 }

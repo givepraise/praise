@@ -23,8 +23,8 @@ import { CreateCommunityInputDto } from './dto/create-community-input.dto';
 import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
-import { errorMessages } from '../utils/errorMessages';
-import { ServiceException } from '../shared/exceptions/service-exception';
+import { errorMessages } from '../shared/exceptions/error-messages';
+import { ApiException } from '../shared/exceptions/api-exception';
 
 @Controller('communities')
 @ApiTags('Communities')
@@ -91,7 +91,7 @@ export class CommunityController {
   @ApiParam({ name: 'id', type: String })
   async findOne(@Param('id', ObjectIdPipe) id: ObjectId): Promise<Community> {
     const community = await this.communityService.findOne(id);
-    if (!community) throw new ServiceException(errorMessages.communityNotFound);
+    if (!community) throw new ApiException(errorMessages.communityNotFound);
     return community;
   }
 

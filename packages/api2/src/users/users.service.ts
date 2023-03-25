@@ -10,7 +10,7 @@ import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { UpdateUserInputDto } from './dto/update-user-input.dto';
 import { CreateUserInputDto } from './dto/create-user-input.dto';
-import { ServiceException } from '../shared/exceptions/service-exception';
+import { ApiException } from '../shared/exceptions/api-exception';
 import { UserAccount } from '../useraccounts/schemas/useraccounts.schema';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
@@ -26,7 +26,7 @@ import {
   generateParquetExport,
   writeCsvAndJsonExports,
 } from '../shared/export.shared';
-import { errorMessages } from '../utils/errorMessages';
+import { errorMessages } from '../shared/exceptions/error-messages';
 
 @Injectable()
 export class UsersService {
@@ -95,7 +95,7 @@ export class UsersService {
       .findOne(query)
       .populate('accounts')
       .lean();
-    if (!user) throw new ServiceException(errorMessages.USER_NOT_FOUND);
+    if (!user) throw new ApiException(errorMessages.USER_NOT_FOUND);
     const userStats = await this.getUserStats(user);
     return { ...user, ...userStats };
   }
@@ -117,7 +117,7 @@ export class UsersService {
       .limit(1)
       .sort({ $natural: -1 })
       .lean();
-    if (!user[0]) throw new ServiceException(errorMessages.USER_NOT_FOUND);
+    if (!user[0]) throw new ApiException(errorMessages.USER_NOT_FOUND);
     return user[0];
   }
 
@@ -126,10 +126,10 @@ export class UsersService {
     roleChange: UpdateUserRoleInputDto,
   ): Promise<UserWithStatsDto> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new ServiceException(errorMessages.USER_NOT_FOUND);
+    if (!userDocument) throw new ApiException(errorMessages.USER_NOT_FOUND);
 
     if (userDocument.roles.includes(roleChange.role))
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.INVALID_ROLE,
         `User already has role ${roleChange.role}`,
       );
@@ -152,7 +152,7 @@ export class UsersService {
     roleChange: UpdateUserRoleInputDto,
   ): Promise<UserWithStatsDto> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new ServiceException(errorMessages.USER_NOT_FOUND);
+    if (!userDocument) throw new ApiException(errorMessages.USER_NOT_FOUND);
 
     const role = roleChange.role;
     const roleIndex = userDocument.roles.indexOf(role);
@@ -163,7 +163,7 @@ export class UsersService {
         roles: { $in: [`${AuthRole.ADMIN}`] },
       });
       if (allAdmins.length <= 1) {
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.ITS_NOT_ALLOWED_TO_REMOVE_THE_LAST_ADMIN,
         );
       }
@@ -171,7 +171,7 @@ export class UsersService {
 
     // Verify user has role before removing
     if (roleIndex === -1)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.INVALID_ROLE,
         `User does not have role ${role}`,
       );
@@ -191,7 +191,7 @@ export class UsersService {
           'quantifications.quantifier': _id,
         });
       if (assignedPraiseCount > 0)
-        throw new ServiceException(errorMessages.CAN_NOT_REMOVE_QUANTIFIER);
+        throw new ApiException(errorMessages.CAN_NOT_REMOVE_QUANTIFIER);
     }
 
     userDocument.roles.splice(roleIndex, 1);
@@ -209,7 +209,7 @@ export class UsersService {
 
   async update(_id: Types.ObjectId, user: UpdateUserInputDto): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new ServiceException(errorMessages.USER_NOT_FOUND);
+    if (!userDocument) throw new ApiException(errorMessages.USER_NOT_FOUND);
 
     for (const [k, v] of Object.entries(user)) {
       userDocument.set(k, v);

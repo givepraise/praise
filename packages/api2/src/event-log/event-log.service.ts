@@ -8,13 +8,13 @@ import {
 import { EventLog, EventLogModel } from './schemas/event-log.schema';
 import mongoose from 'mongoose';
 import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-query.dto';
-import { ServiceException } from '../shared/exceptions/service-exception';
+import { ApiException } from '../shared/exceptions/api-exception';
 import { CreateEventLogInputDto } from './dto/create-event-log-input.dto';
 import { RequestContext } from 'nestjs-request-context';
 import { has } from 'lodash';
 import { User } from '../users/schemas/users.schema';
 import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.dto';
-import { errorMessages } from '../utils/errorMessages';
+import { errorMessages } from '../shared/exceptions/error-messages';
 
 @Injectable()
 export class EventLogService {
@@ -116,7 +116,7 @@ export class EventLogService {
     const eventLogPagination = await this.eventLogModel.paginate(paginateQuery);
 
     if (!eventLogPagination)
-      throw new ServiceException(errorMessages.FAILED_TO_QUERY_EVENT_LOGS);
+      throw new ApiException(errorMessages.FAILED_TO_QUERY_EVENT_LOGS);
 
     return eventLogPagination;
   }

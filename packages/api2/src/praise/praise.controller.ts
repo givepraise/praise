@@ -40,8 +40,8 @@ import { PraiseExportService } from './services/praise-export.service';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { PraiseCreateInputDto } from './dto/praise-create-input.dto';
 import { PraiseForwardInputDto } from './dto/praise-forward-input.dto';
-import { ServiceException } from '../shared/exceptions/service-exception';
-import { errorMessages } from '../utils/errorMessages';
+import { ApiException } from '../shared/exceptions/api-exception';
+import { errorMessages } from '../shared/exceptions/error-messages';
 
 @Controller('praise')
 @ApiTags('Praise')
@@ -171,7 +171,7 @@ export class PraiseController {
     const { praiseIds, params } = data;
 
     if (!isArray(praiseIds)) {
-      throw new ServiceException(errorMessages.PRAISE_IDS_MUST_BE_ARRAY);
+      throw new ApiException(errorMessages.PRAISE_IDS_MUST_BE_ARRAY);
     }
 
     const praiseItems = await Promise.all(

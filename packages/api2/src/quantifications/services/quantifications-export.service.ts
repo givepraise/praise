@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { QuantificationsExportSqlSchema } from '../schemas/quantifications.schema';
-import { ServiceException } from '../../shared/exceptions/service-exception';
+import { ApiException } from '../../shared/exceptions/api-exception';
 import { PraiseService } from '../../praise/services/praise.service';
 import { Inject, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '../../periods/services/periods.service';
@@ -10,7 +10,7 @@ import {
   generateParquetExport,
   writeCsvAndJsonExports,
 } from '../../shared/export.shared';
-import { errorMessages } from '../../utils/errorMessages';
+import { errorMessages } from '../../shared/exceptions/error-messages';
 
 export class QuantificationsExportService {
   constructor(
@@ -42,7 +42,7 @@ export class QuantificationsExportService {
     if (periodId) {
       if (startDate || endDate) {
         // If periodId is set, startDate and endDate should not be set
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.INVALID_PROJECT_ID_FILTERING_PASSING_PROJECT_ID_START_DATE_AND_END_DATE_TOGETHER,
         );
       }
@@ -59,7 +59,7 @@ export class QuantificationsExportService {
         };
       } else if (startDate || endDate) {
         // If periodId is not set and only one of startDate and endDate is set, throw an error
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.INVALID_DATE_FILTERING_SHOULD_PATH_DATES_WHEN_PROJECT_ID_IS_NOT_SET,
         );
       }

@@ -18,8 +18,8 @@ import { QuantificationsExportService } from './services/quantifications-export.
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { Permission } from '../auth/enums/permission.enum';
 import { Permissions } from '../auth/decorators/permissions.decorator';
-import { errorMessages } from '../utils/errorMessages';
-import { ServiceException } from '../shared/exceptions/service-exception';
+import { errorMessages } from '../shared/exceptions/error-messages';
+import { ApiException } from '../shared/exceptions/api-exception';
 
 @Controller('quantifications')
 @ApiTags('Quantifications')
@@ -85,7 +85,7 @@ export class QuantificationsController {
     }
 
     if (!fs.existsSync(filePath)) {
-      throw new ServiceException(errorMessages.COULD_NOT_CREATE_EXPORT);
+      throw new ApiException(errorMessages.COULD_NOT_CREATE_EXPORT);
     }
 
     res.set({

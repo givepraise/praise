@@ -4,14 +4,14 @@ import { Model, Types } from 'mongoose';
 import { Setting } from './schemas/settings.schema';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { FileUtilsProvider } from '../settings/providers/file-utils.provider';
-import { ServiceException } from '../shared/exceptions/service-exception';
+import { ApiException } from '../shared/exceptions/api-exception';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { SettingGroup } from './enums/setting-group.enum';
 import { PeriodSettingsService } from '../periodsettings/periodsettings.service';
 import { validateSetting } from './utils/validate-setting';
 import { SettingsFilterDto } from './dto/settings-filter.dto';
-import { errorMessages } from '../utils/errorMessages';
+import { errorMessages } from '../shared/exceptions/error-messages';
 
 @Injectable()
 export class SettingsService {
@@ -58,7 +58,7 @@ export class SettingsService {
       })
       .lean();
 
-    if (!setting) throw new ServiceException(errorMessages.SETTING_NOT_FOUND);
+    if (!setting) throw new ApiException(errorMessages.SETTING_NOT_FOUND);
     return setting;
   }
 
@@ -92,14 +92,12 @@ export class SettingsService {
       _id,
       period: { $exists: 0 },
     });
-    if (!setting) throw new ServiceException(errorMessages.SETTING_NOT_FOUND);
+    if (!setting) throw new ApiException(errorMessages.SETTING_NOT_FOUND);
 
     const originalValue = setting.value;
 
     if (typeof data.value === 'undefined') {
-      throw new ServiceException(
-        errorMessages.VALUE_IS_REQUIRED_FIELD_FOR_SETTING,
-      );
+      throw new ApiException(errorMessages.VALUE_IS_REQUIRED_FIELD_FOR_SETTING);
     }
 
     const { valid, value: validatedValue } = validateSetting(
@@ -107,7 +105,7 @@ export class SettingsService {
       setting.type,
     );
     if (!valid) {
-      throw new ServiceException(errorMessages.INVALID_VALUE_FIELD_FOR_SETTING);
+      throw new ApiException(errorMessages.INVALID_VALUE_FIELD_FOR_SETTING);
     }
     setting.value = validatedValue;
 
@@ -130,12 +128,12 @@ export class SettingsService {
       _id,
       period: { $exists: 0 },
     });
-    if (!setting) throw new ServiceException(errorMessages.SETTING_NOT_FOUND);
+    if (!setting) throw new ApiException(errorMessages.SETTING_NOT_FOUND);
 
     // Only allow image files
     if (!this.utils.isImage(file)) {
       await this.utils.removeFile(file.filename);
-      throw new ServiceException(errorMessages.UPLOADED_FILE_IS_NOT_AN_IMAGE);
+      throw new ApiException(errorMessages.UPLOADED_FILE_IS_NOT_AN_IMAGE);
     }
 
     const originalValue = setting.value;
@@ -182,7 +180,7 @@ export class SettingsService {
         .lean();
 
       if (!setting) {
-        throw new ServiceException(errorMessages.SETTING_NOT_FOUND);
+        throw new ApiException(errorMessages.SETTING_NOT_FOUND);
       }
     } else {
       const generalSetting = await this.settingsModel
@@ -199,7 +197,7 @@ export class SettingsService {
           );
 
         if (!setting) {
-          throw new ServiceException(errorMessages.SETTING_NOT_FOUND);
+          throw new ApiException(errorMessages.SETTING_NOT_FOUND);
         }
       }
     }

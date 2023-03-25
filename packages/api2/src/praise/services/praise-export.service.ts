@@ -5,7 +5,7 @@ import {
   Praise,
   PraiseExportSqlSchema,
 } from '../schemas/praise.schema';
-import { ServiceException } from '../../shared/exceptions/service-exception';
+import { ApiException } from '../../shared/exceptions/api-exception';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '../../periods/services/periods.service';
 import { ExportInputDto } from '../../shared/dto/export-input.dto';
@@ -13,7 +13,7 @@ import {
   generateParquetExport,
   writeCsvAndJsonExports,
 } from '../../shared/export.shared';
-import { errorMessages } from '../../utils/errorMessages';
+import { errorMessages } from '../../shared/exceptions/error-messages';
 
 @Injectable()
 export class PraiseExportService {
@@ -47,7 +47,7 @@ export class PraiseExportService {
     if (periodId) {
       if (startDate || endDate) {
         // If periodId is set, startDate and endDate should not be set
-        throw new ServiceException(errorMessages.INVALID_DATE_FILTERING_OPTION);
+        throw new ApiException(errorMessages.INVALID_DATE_FILTERING_OPTION);
       }
       const period = await this.periodService.findOneById(periodId);
       query.createdAt = await this.periodService.getPeriodDateRangeQuery(
@@ -62,7 +62,7 @@ export class PraiseExportService {
         };
       } else if (startDate || endDate) {
         // If periodId is not set and only one of startDate and endDate is set, throw an error
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.INVALID_DATE_FILTERING_OPTION_WHEN_PERIOD_IS_NOT_SET,
         );
       }

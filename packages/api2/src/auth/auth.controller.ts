@@ -6,8 +6,8 @@ import { NonceInputDto } from './dto/nonce-input.dto';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginInputDto } from './dto/login-input.dto';
-import { ServiceException } from '../shared/exceptions/service-exception';
-import { errorMessages } from '../utils/errorMessages';
+import { ApiException } from '../shared/exceptions/api-exception';
+import { errorMessages } from '../shared/exceptions/error-messages';
 
 @Controller('auth')
 @ApiTags('Authentication')
@@ -40,7 +40,7 @@ export class AuthController {
         nonce: user.nonce,
       };
     }
-    throw new ServiceException(errorMessages.FAILED_TO_GENERATE_NONCE);
+    throw new ApiException(errorMessages.FAILED_TO_GENERATE_NONCE);
   }
 
   @Post('eth-signature/login')

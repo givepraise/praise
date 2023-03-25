@@ -1,10 +1,10 @@
 import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
 import { Response } from 'express';
-import { ServiceException } from '../../shared/exceptions/service-exception';
+import { ApiException } from '../exceptions/api-exception';
 
-@Catch(ServiceException)
+@Catch(ApiException)
 export class ServiceExceptionFilter implements ExceptionFilter {
-  catch(exception: ServiceException, host: ArgumentsHost) {
+  catch(exception: ApiException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = exception.httpsStatusCode || 400; // Bad Request

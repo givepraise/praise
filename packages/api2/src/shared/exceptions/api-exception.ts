@@ -5,9 +5,9 @@
  * `HttpExceptionFilter` handle it. Unexpected errors will be returned to the
  * client as a `500 Internal Server Error`.
  */
-import { ErrorMessage } from '../../utils/errorMessages';
+import { ErrorMessage } from './error-messages';
 
-export class ServiceException extends Error {
+export class ApiException extends Error {
   httpsStatusCode: number;
   code: number;
   description?: string;

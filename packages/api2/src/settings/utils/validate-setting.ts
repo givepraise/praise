@@ -1,5 +1,5 @@
-import { ServiceException } from '../../shared/exceptions/service-exception';
-import { errorMessages } from '../../utils/errorMessages';
+import { ApiException } from '../../shared/exceptions/api-exception';
+import { errorMessages } from '../../shared/exceptions/error-messages';
 
 function isNumeric(value: any) {
   return !isNaN(parseFloat(value)) && isFinite(value);
@@ -74,7 +74,7 @@ export function validateSetting(
     return { valid, value: valueArray.join(',') };
   }
 
-  throw new ServiceException(
+  throw new ApiException(
     errorMessages.UNKNOWN_SETTING_TYPE,
     `Unknown setting type ${type}.`,
   );

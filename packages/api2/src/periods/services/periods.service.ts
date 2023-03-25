@@ -4,7 +4,7 @@ import {
   generateParquetExport,
   writeCsvAndJsonExports,
 } from '../../shared/export.shared';
-import { errorMessages } from '../../utils/errorMessages';
+import { errorMessages } from '../../shared/exceptions/error-messages';
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -19,7 +19,7 @@ import { PraiseWithUserAccountsWithUserRefDto } from '../../praise/dto/praise-wi
 import { Praise, PraiseModel } from '../../praise/schemas/praise.schema';
 import { QuantificationsService } from '../../quantifications/services/quantifications.service';
 import { PaginatedQueryDto } from '../../shared/dto/pagination-query.dto';
-import { ServiceException } from '../../shared/exceptions/service-exception';
+import { ApiException } from '../../shared/exceptions/api-exception';
 import { CreatePeriodInputDto } from '../dto/create-period-input.dto';
 import { PeriodDetailsGiverReceiverDto } from '../dto/period-details-giver-receiver.dto';
 import { PeriodDetailsQuantifierDto } from '../dto/period-details-quantifier.dto';
@@ -72,7 +72,7 @@ export class PeriodsService {
     });
 
     if (!periodPagination)
-      throw new ServiceException(errorMessages.FAILED_TO_PAGINATE_PERIOD_DATA);
+      throw new ApiException(errorMessages.FAILED_TO_PAGINATE_PERIOD_DATA);
 
     return periodPagination;
   }
@@ -85,7 +85,7 @@ export class PeriodsService {
    */
   async findOneById(_id: Types.ObjectId): Promise<Period> {
     const period = await this.periodModel.findById(_id).lean();
-    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
+    if (!period) throw new ApiException(errorMessages.PERIOD_NOT_FOUND);
     return period;
   }
 
@@ -98,7 +98,7 @@ export class PeriodsService {
       .limit(1)
       .sort({ $natural: -1 })
       .lean();
-    if (!period[0]) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
+    if (!period[0]) throw new ApiException(errorMessages.PERIOD_NOT_FOUND);
     return period[0];
   }
 
@@ -113,7 +113,7 @@ export class PeriodsService {
     if (latestPeriod) {
       const earliestDate = add(latestPeriod.endDate, { days: 7 });
       if (compareAsc(earliestDate, endDate) === 1) {
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.INVALID_END_DATE_FOR_CREATE_PERIOD,
         );
       }
@@ -142,12 +142,12 @@ export class PeriodsService {
     data: UpdatePeriodInputDto,
   ): Promise<PeriodDetailsDto> => {
     const period = await this.periodModel.findById(_id);
-    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
+    if (!period) throw new ApiException(errorMessages.PERIOD_NOT_FOUND);
 
     const { name, endDate } = data;
 
     if (!name && !endDate)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.UPDATE_PERIOD_NAME_OR_END_DATE_MUST_BE_SPECIFIED,
       );
 
@@ -164,12 +164,12 @@ export class PeriodsService {
     if (isString(endDate)) {
       const latest = await this.isPeriodLatest(period);
       if (!latest)
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.UPDATE_PERIOD_DATE_CHANGE_ONLY_ALLOWED_ON_LATEST_PERIOD,
         );
 
       if (period.status !== PeriodStatusType.OPEN)
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.DATE_CHANGE_IS_ONLY_ALLOWED_ON_OPEN_PERIODS,
         );
 
@@ -202,16 +202,16 @@ export class PeriodsService {
    **/
   close = async (_id: Types.ObjectId): Promise<PeriodDetailsDto> => {
     const period = await this.periodModel.findById(_id);
-    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
+    if (!period) throw new ApiException(errorMessages.PERIOD_NOT_FOUND);
 
     // Check if the period has ended
     const now = Date.now();
     const periodEnd = new Date(period.endDate).getTime();
     if (now < periodEnd)
-      throw new ServiceException(errorMessages.CANT_CLOSE_NOT_ENDED_PERIOD);
+      throw new ApiException(errorMessages.CANT_CLOSE_NOT_ENDED_PERIOD);
 
     if (period.status === PeriodStatusType.CLOSED)
-      throw new ServiceException(errorMessages.PERIOD_IS_ALREADY_CLOSED);
+      throw new ApiException(errorMessages.PERIOD_IS_ALREADY_CLOSED);
 
     period.status = PeriodStatusType.CLOSED;
     await period.save();
@@ -231,7 +231,7 @@ export class PeriodsService {
     periodId: Types.ObjectId,
   ): Promise<PraiseWithUserAccountsWithUserRefDto[]> => {
     const period = await this.periodModel.findById(periodId);
-    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
+    if (!period) throw new ApiException(errorMessages.PERIOD_NOT_FOUND);
 
     const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
 
@@ -253,7 +253,7 @@ export class PeriodsService {
     receiverId: Types.ObjectId,
   ): Promise<PraiseWithUserAccountsWithUserRefDto[]> => {
     const period = await this.periodModel.findById(periodId);
-    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
+    if (!period) throw new ApiException(errorMessages.PERIOD_NOT_FOUND);
 
     const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
 
@@ -276,7 +276,7 @@ export class PeriodsService {
     giverId: Types.ObjectId,
   ): Promise<PraiseWithUserAccountsWithUserRefDto[]> => {
     const period = await this.periodModel.findById(periodId);
-    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
+    if (!period) throw new ApiException(errorMessages.PERIOD_NOT_FOUND);
 
     const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
 
@@ -299,7 +299,7 @@ export class PeriodsService {
     quantifierId: Types.ObjectId,
   ): Promise<PraiseWithUserAccountsWithUserRefDto[]> => {
     const period = await this.periodModel.findById(periodId);
-    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
+    if (!period) throw new ApiException(errorMessages.PERIOD_NOT_FOUND);
 
     const previousPeriodEndDate = await this.getPreviousPeriodEndDate(period);
 
