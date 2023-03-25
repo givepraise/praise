@@ -1,7 +1,6 @@
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import '@testing-library/jest-dom';
-import supertest from 'supertest';
 
 expect.extend({
   /**
