@@ -3,7 +3,6 @@ import { EthSignatureService } from './eth-signature.service';
 import { Module, forwardRef } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from '@/users/users.module';
-import { EthSignatureStrategy } from './strategies/eth-signature.strategy';
 import { EventLogModule } from '@/event-log/event-log.module';
 import { ApiKeyModule } from '@/api-key/api-key.module';
 import { SettingsModule } from '@/settings/settings.module';
@@ -24,12 +23,7 @@ import { CommunityModule } from '@/community/community.module';
     SettingsModule,
     forwardRef(() => CommunityModule),
   ],
-  providers: [
-    JwtService,
-    EthSignatureService,
-    EthSignatureStrategy,
-    ConstantsProvider,
-  ],
+  providers: [JwtService, EthSignatureService, ConstantsProvider],
   exports: [JwtService],
   controllers: [AuthController],
 })

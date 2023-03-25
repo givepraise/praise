@@ -88,31 +88,31 @@ describe('AuthController (E2E)', () => {
   });
 
   describe('POST /api/auth/eth-signature/login', () => {
-    test('401 when missing identityEthAddress', async () => {
-      return request(server)
+    test('responds with 400 error when missing identityEthAddress', async () => {
+      const response = await request(server)
         .post('/auth/eth-signature/login')
-        .send({ signature: 'any' })
-        .expect(401);
+        .send({ signature: 'any' });
+      expect(response.statusCode).toBe(400);
     });
 
     /**
      *
      */
-    test('401 when missing signature', async () => {
-      return request(server)
+    test('responds with 400 error when missing signature', async () => {
+      const response = await request(server)
         .post('/auth/eth-signature/login')
-        .send({ identityEthAddress: 'any' })
-        .expect(401);
+        .send({ identityEthAddress: 'any' });
+      expect(response.statusCode).toBe(400);
     });
 
     /**
      *
      */
-    test('401 when submitting identityEthAddress that does not exist', async () => {
-      await request(server)
+    test('responds with 400 error when submitting identityEthAddress that does not exist', async () => {
+      const response = await request(server)
         .post('/auth/eth-signature/login')
-        .send({ identityEthAddress: 'invalid', signature: 'any' })
-        .expect(401);
+        .send({ identityEthAddress: 'invalid', signature: 'any' });
+      expect(response.statusCode).toBe(400);
     });
 
     /**
