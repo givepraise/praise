@@ -528,21 +528,19 @@ describe('Praise (E2E)', () => {
     });
 
     test('400 when praise is not in quantify period', async () => {
-      const praiseItem = await praiseSeeder.seedPraise();
-
-      await periodsSeeder.seedPeriod({
-        endDate: praise.createdAt.getDate() - 1,
-        status: PeriodStatusType.QUANTIFY,
+      const praiseItem = await praiseSeeder.seedPraise({
+        createdAt: faker.date.future(),
       });
 
-      return authorizedPatchRequest(
+      const response = await authorizedPatchRequest(
         `/praise/${praiseItem._id}/quantify`,
         app,
         users[0].accessToken,
         {
           score: 144,
         },
-      ).expect(404);
+      );
+      expect(response.statusCode).toBe(400);
     });
 
     test('400 when period in not in status QUANTIFY', async () => {
