@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from 'src/utils/logger';
+import { logger } from '../utils/logger';
 import { activationHandler } from '../handlers/activate';
 import { Command } from '../interfaces/Command';
 

@@ -2,7 +2,7 @@ import {
   SlashCommandBuilder,
   SlashCommandSubcommandBuilder,
 } from '@discordjs/builders';
-import { logger } from 'src/utils/logger';
+import { logger } from '../utils/logger';
 import { announcementHandler } from '../handlers/announce';
 import { Command } from '../interfaces/Command';
 

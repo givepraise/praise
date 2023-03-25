@@ -22,7 +22,7 @@ import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChan
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { createPraise } from '../utils/createPraise';
 import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
-import { logger } from 'src/utils/logger';
+import { logger } from '../utils/logger';
 
 /**
  * Execute command /firward

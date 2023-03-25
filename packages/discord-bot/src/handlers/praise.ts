@@ -21,7 +21,7 @@ import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
 import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
-import { logger } from 'src/utils/logger';
+import { logger } from '../utils/logger';
 /**
  * Execute command /praise
  *  Creates praises with a given receiver and reason

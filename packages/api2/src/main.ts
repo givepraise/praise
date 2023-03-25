@@ -21,9 +21,6 @@ async function bootstrap() {
   // Create an instance of the Nest app
   const app = await NestFactory.create(AppModule, AppConfig);
 
-  // Global interceptors are used across the whole application, for every controller and every route handler.
-  // app.useGlobalInterceptors(new LoggingInterceptor());
-
   // Set the global prefix for all routes in the app
   app.setGlobalPrefix('api/');
 
@@ -65,9 +62,6 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
   });
-
-  // Create a logger instance for the app
-  // const logger = new Logger('Bootstrap');
 
   // Run database migrations before starting the app
   await runDbMigrations(app, logger);
