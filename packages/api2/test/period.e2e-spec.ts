@@ -226,11 +226,11 @@ describe('Period (E2E)', () => {
       expect(p).toBeValidClass(Period);
     });
 
-    test('should return 400 when the period does not exist', async () => {
+    test('should return 404 when the period does not exist', async () => {
       return request(server)
         .get(`/periods/5f5d5f5d5f5d5f5d5f5d5f5d`)
         .set('Authorization', `Bearer ${users[0].accessToken}`)
-        .expect(400);
+        .expect(404);
     });
   });
 
@@ -510,11 +510,11 @@ describe('Period (E2E)', () => {
         .expect(403);
     });
 
-    test('should return 400 when the period does not exist', async () => {
+    test('should return 404 when the period does not exist', async () => {
       return request(server)
         .patch(`/periods/5f5d5f5d5f5d5f5d5f5d5f5d`)
         .set('Authorization', `Bearer ${users[0].accessToken}`)
-        .expect(400);
+        .expect(404);
     });
 
     test('should return 400 when the request body is invalid', async () => {
@@ -638,11 +638,11 @@ describe('Period (E2E)', () => {
         .expect(403);
     });
 
-    test('should return 400 when the period does not exist', async () => {
+    test('should return 404 when the period does not exist', async () => {
       return request(server)
         .patch(`/periods/5f5d5f5d5f5d5f5d5f5d5f5d/close`)
         .set('Authorization', `Bearer ${users[0].accessToken}`)
-        .expect(400);
+        .expect(404);
     });
 
     test('should return 400 when the period is not open', async () => {
@@ -735,13 +735,13 @@ describe('Period (E2E)', () => {
         .expect(401);
     });
 
-    test('should return 400 when the period does not exist', async () => {
+    test('should return 404 when the period does not exist', async () => {
       await praiseService.getModel().deleteMany({});
 
       const response = await request(server)
         .get(`/periods/5f5d5f5d5f5d5f5d5f5d5f5d/praise`)
         .set('Authorization', `Bearer ${users[0].accessToken}`)
-        .expect(400);
+        .expect(404);
 
       expect(response.body.message).toBe('Period not found');
     });
@@ -1552,13 +1552,13 @@ describe('Period (E2E)', () => {
       expect(p).toBeValidClass(Period);
     });
 
-    test('400 response if periodId does not exist', async function () {
+    test('404 response if periodId does not exist', async function () {
       return await request(server)
         .patch(`/periods/5f5d5f5d5f5d5f5d5f5d5f5d/assignQuantifiers`)
         .set('Authorization', `Bearer ${users[0].accessToken}`)
         .send()
         .expect('Content-Type', /json/)
-        .expect(400);
+        .expect(404);
     });
 
     test('400 response if period is not OPEN', async function () {
@@ -1733,7 +1733,7 @@ describe('Period (E2E)', () => {
       ).toBeFalsy;
     });
 
-    test('400 response if periodId does not exist', async function () {
+    test('404 response if periodId does not exist', async function () {
       const originalQuantifier = await usersSeeder.seedUser({
         roles: ['USER', 'QUANTIFIER'],
       });
@@ -1752,7 +1752,7 @@ describe('Period (E2E)', () => {
         .set('Accept', 'application/json')
         .send(FORM_DATA)
         .expect('Content-Type', /json/)
-        .expect(400);
+        .expect(404);
     });
 
     test('400 response if period is not QUANTIFY', async function () {

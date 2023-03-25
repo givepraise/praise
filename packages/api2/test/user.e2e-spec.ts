@@ -263,12 +263,12 @@ describe('UserController (E2E)', () => {
       return request(server).get(`/users/${user._id}`).send().expect(401);
     });
 
-    test('400 when user not found', async () => {
+    test('404 when user not found', async () => {
       await authorizedGetRequest(
         '/users/5f9f1c1b9b9b9b9b9b9b9b9b',
         app,
         accessToken,
-      ).expect(400);
+      ).expect(404);
     });
 
     test('200 when authenticated', async () => {

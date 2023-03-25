@@ -356,7 +356,7 @@ describe('Communities (E2E)', () => {
       );
 
       const rb = response.body;
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(403);
       expect(rb.message).toBe('Verification failed');
     });
 
@@ -385,10 +385,10 @@ describe('Communities (E2E)', () => {
 
       const rb = response.body;
       expect(response.status).toBe(400);
-      expect(rb.message).toBe('Community is already active.');
+      expect(rb.message).toBe('Community is already active');
     });
 
-    test('400 when community not found', async () => {
+    test('404 when community not found', async () => {
       const signedMessage = await users[0].wallet.signMessage(
         communityService.generateLinkDiscordMessage({
           communityId: String(community._id),
@@ -406,8 +406,8 @@ describe('Communities (E2E)', () => {
       );
 
       const rb = response.body;
-      expect(response.status).toBe(400);
-      expect(rb.message).toBe('Community not found.');
+      expect(response.status).toBe(404);
+      expect(rb.message).toBe('Community not found');
     });
   });
   describe('GET /api/communities/:id', () => {
@@ -481,8 +481,6 @@ describe('Communities (E2E)', () => {
         email: 'test@praise.io',
       });
     });
-    // generate invalid mongo id
-    const invalidCommunityId = '5f7f7f7f7f7f7f7f7f7f7f7f';
     const updateValidCommunity = async (override?: any) => {
       return authorizedPatchRequest(
         `/communities/${community._id}`,

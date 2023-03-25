@@ -7,6 +7,7 @@ import { UsersService } from '@/users/users.service';
 import { EventLogService } from '@/event-log/event-log.service';
 import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
 import { User } from '@/users/schemas/users.schema';
+import { errorMessages } from '@/utils/errorMessages';
 
 @Injectable()
 export class ActivateService {
@@ -40,9 +41,7 @@ export class ActivateService {
     const { identityEthAddress, signature, accountId } = activateInputDto;
 
     if (!identityEthAddress || !signature || !accountId)
-      throw new ServiceException(
-        'identityEthAddress, signature, and accountId required',
-      );
+      throw new ServiceException(errorMessages.INVALID_DATA_FOR_ACTIVATION);
 
     const userAccountModel = this.userAccountsService.getModel();
 
@@ -51,13 +50,16 @@ export class ActivateService {
       .select('_id user name activateToken')
       .exec();
 
-    if (!userAccount) throw new ServiceException('UserAccount not found');
+    if (!userAccount)
+      throw new ServiceException(errorMessages.USER_ACCOUNT_NOT_FOUND);
 
     if (!userAccount.activateToken)
-      throw new ServiceException('Activation token not found');
+      throw new ServiceException(errorMessages.ACTIVATION_TOKEN_NOT_FOUND);
 
     if (userAccount.user)
-      throw new ServiceException('User account already activated');
+      throw new ServiceException(
+        errorMessages.USER_ACCOUNT_IS_ALREADY_ACTIVATED,
+      );
 
     // Generate expected message, token included.
     const generatedMsg = this.generateActivateMessage(
@@ -70,7 +72,7 @@ export class ActivateService {
     // Recover signer and compare against query address
     const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
     if (signerAddress !== identityEthAddress) {
-      throw new ServiceException('Verification failed');
+      throw new ServiceException(errorMessages.VERIFICATION_FAILED);
     }
 
     // Generate username
@@ -98,7 +100,7 @@ export class ActivateService {
 
     user = await this.usersService.findOneById(user._id);
     if (!user) {
-      throw new ServiceException('User not found after update');
+      throw new ServiceException(errorMessages.USER_NOT_FOUND_AFTER_UPDATE);
     }
 
     // Log event

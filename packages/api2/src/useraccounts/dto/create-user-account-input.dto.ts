@@ -1,10 +1,10 @@
-import { PickType } from '@nestjs/swagger';
-import { UserAccount } from '../schemas/useraccounts.schema';
 import { IsObjectId } from '@/shared/validators.shared';
+import { PickType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsOptional } from 'class-validator';
 import { Types } from 'mongoose';
+import { UserAccount } from '../schemas/useraccounts.schema';
 
 export class CreateUserAccountInputDto extends PickType(UserAccount, [
   'accountId',
