@@ -1,7 +1,7 @@
-import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogService } from '../../event-log/event-log.service';
 import { faker } from '@faker-js/faker';
 import { Injectable } from '@nestjs/common';
-import { EventLogDocument } from '@/event-log/schemas/event-log.schema';
+import { EventLogDocument } from '../../event-log/schemas/event-log.schema';
 import { UsersSeeder } from './users.seeder';
 
 @Injectable()

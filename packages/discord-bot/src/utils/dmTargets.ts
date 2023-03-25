@@ -11,7 +11,7 @@ import {
 import { CommandInteraction, DiscordAPIError } from 'discord.js';
 import { PraiseModel } from 'api/dist/praise/entities';
 import { Buffer } from 'node:buffer';
-import { FailedToDmUsersList } from 'src/interfaces/FailedToDmUsersList';
+import { FailedToDmUsersList } from '../interfaces/FailedToDmUsersList';
 
 /**
  * Send a custom direct message to a list of users

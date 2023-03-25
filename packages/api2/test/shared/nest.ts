@@ -5,52 +5,52 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { RequestContextModule } from 'nestjs-request-context';
 
 // Import modules and services
-import { ActivateModule } from '@/activate/activate.module';
-import { ActivateService } from '@/activate/activate.service';
-import { ApiKeyModule } from '@/api-key/api-key.module';
-import { ApiKeyService } from '@/api-key/api-key.service';
-import { AuthModule } from '@/auth/auth.module';
-import { EthSignatureService } from '@/auth/eth-signature.service';
-import { CommunityModule } from '@/community/community.module';
-import { CommunityService } from '@/community/community.service';
-import { EventLogModule } from '@/event-log/event-log.module';
-import { EventLogService } from '@/event-log/event-log.service';
-import { PeriodsModule } from '@/periods/periods.module';
-import { PeriodsService } from '@/periods/services/periods.service';
-import { PeriodAssignmentsService } from '@/periods/services/period-assignments.service';
-import { PeriodSettingsModule } from '@/periodsettings/periodsettings.module';
-import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
-import { PraiseModule } from '@/praise/praise.module';
-import { PraiseService } from '@/praise/services/praise.service';
-import { QuantificationsModule } from '@/quantifications/quantifications.module';
-import { QuantificationsService } from '@/quantifications/services/quantifications.service';
-import { SettingsModule } from '@/settings/settings.module';
-import { SettingsService } from '@/settings/settings.service';
-import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
-import { UserAccountsService } from '@/useraccounts/useraccounts.service';
-import { UsersModule } from '@/users/users.module';
-import { UsersService } from '@/users/users.service';
+import { ActivateModule } from '../../src/activate/activate.module';
+import { ActivateService } from '../../src/activate/activate.service';
+import { ApiKeyModule } from '../../src/api-key/api-key.module';
+import { ApiKeyService } from '../../src/api-key/api-key.service';
+import { AuthModule } from '../../src/auth/auth.module';
+import { EthSignatureService } from '../../src/auth/eth-signature.service';
+import { CommunityModule } from '../../src/community/community.module';
+import { CommunityService } from '../../src/community/community.service';
+import { EventLogModule } from '../../src/event-log/event-log.module';
+import { EventLogService } from '../../src/event-log/event-log.service';
+import { PeriodsModule } from '../../src/periods/periods.module';
+import { PeriodsService } from '../../src/periods/services/periods.service';
+import { PeriodAssignmentsService } from '../../src/periods/services/period-assignments.service';
+import { PeriodSettingsModule } from '../../src/periodsettings/periodsettings.module';
+import { PeriodSettingsService } from '../../src/periodsettings/periodsettings.service';
+import { PraiseModule } from '../../src/praise/praise.module';
+import { PraiseService } from '../../src/praise/services/praise.service';
+import { QuantificationsModule } from '../../src/quantifications/quantifications.module';
+import { QuantificationsService } from '../../src/quantifications/services/quantifications.service';
+import { SettingsModule } from '../../src/settings/settings.module';
+import { SettingsService } from '../../src/settings/settings.service';
+import { UserAccountsModule } from '../../src/useraccounts/useraccounts.module';
+import { UserAccountsService } from '../../src/useraccounts/useraccounts.service';
+import { UsersModule } from '../../src/users/users.module';
+import { UsersService } from '../../src/users/users.service';
 
 // Import filters
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
+import { ServiceExceptionFilter } from '../../src/shared/filters/service-exception.filter';
+import { MongoServerErrorFilter } from '../../src/shared/filters/mongo-server-error.filter';
+import { MongoValidationErrorFilter } from '../../src/shared/filters/mongo-validation-error.filter';
 
 // Import seeders
-import { ApiKeySeeder } from '@/database/seeder/api-key.seeder';
-import { CommunitiesSeeder } from '@/database/seeder/communities.seeder';
-import { EventLogSeeder } from '@/database/seeder/event-log.seeder';
-import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
-import { PeriodSettingsSeeder } from '@/database/seeder/periodsettings.seeder';
-import { PraiseSeeder } from '@/database/seeder/praise.seeder';
-import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder';
-import { SettingsSeeder } from '@/database/seeder/settings.seeder';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
+import { ApiKeySeeder } from '../../src/database/seeder/api-key.seeder';
+import { CommunitiesSeeder } from '../../src/database/seeder/communities.seeder';
+import { EventLogSeeder } from '../../src/database/seeder/event-log.seeder';
+import { PeriodsSeeder } from '../../src/database/seeder/periods.seeder';
+import { PeriodSettingsSeeder } from '../../src/database/seeder/periodsettings.seeder';
+import { PraiseSeeder } from '../../src/database/seeder/praise.seeder';
+import { QuantificationsSeeder } from '../../src/database/seeder/quantifications.seeder';
+import { SettingsSeeder } from '../../src/database/seeder/settings.seeder';
+import { UsersSeeder } from '../../src/database/seeder/users.seeder';
+import { UserAccountsSeeder } from '../../src/database/seeder/useraccounts.seeder';
 
 // Import migrations
-import { runDbMigrations } from '@/database/migrations';
-import { TEST_COMMUNITY_DB_NAME } from '@/constants/constants.provider';
+import { runDbMigrations } from '../../src/database/migrations';
+import { TEST_COMMUNITY_DB_NAME } from '../../src/constants/constants.provider';
 
 // Core Nest objects
 export let testingModule: TestingModule;
@@ -84,7 +84,7 @@ export let settingsSeeder: SettingsSeeder;
 export let usersSeeder: UsersSeeder;
 export let userAccountsSeeder: UserAccountsSeeder;
 
-async function startNest(): Promise<void> {
+export async function startNest(): Promise<void> {
   testingModule = await Test.createTestingModule({
     imports: [
       MongooseModule.forRoot(
@@ -180,8 +180,9 @@ async function startNest(): Promise<void> {
 
 beforeAll(async () => {
   await startNest();
+  await new Promise((resolve) => setTimeout(resolve, 1000)); // await for 1 second for the server to start and connect to the database
 });
 
-afterAll(() => {
-  app.close();
+afterAll(async () => {
+  await app.close();
 });

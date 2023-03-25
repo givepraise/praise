@@ -8,13 +8,13 @@ import {
 import { EventLog, EventLogModel } from './schemas/event-log.schema';
 import mongoose from 'mongoose';
 import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-query.dto';
-import { ServiceException } from '@/shared/exceptions/service-exception';
+import { ServiceException } from '../shared/exceptions/service-exception';
 import { CreateEventLogInputDto } from './dto/create-event-log-input.dto';
 import { RequestContext } from 'nestjs-request-context';
 import { has } from 'lodash';
-import { User } from '@/users/schemas/users.schema';
+import { User } from '../users/schemas/users.schema';
 import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.dto';
-import { errorMessages } from '@/utils/errorMessages';
+import { errorMessages } from '../utils/errorMessages';
 
 @Injectable()
 export class EventLogService {

@@ -1,15 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { User } from '@/users/schemas/users.schema';
+import { User } from '../users/schemas/users.schema';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '@/users/users.service';
+import { UsersService } from '../users/users.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { LoginResponseDto } from './dto/login-response.dto';
-import { EventLogService } from '@/event-log/event-log.service';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { ServiceException } from '@/shared/exceptions/service-exception';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { ServiceException } from '../shared/exceptions/service-exception';
 import { randomBytes } from 'crypto';
-import { errorMessages } from '@/utils/errorMessages';
-import { TEST_COMMUNITY_DB_NAME } from '@/constants/constants.provider';
+import { errorMessages } from '../utils/errorMessages';
+import { TEST_COMMUNITY_DB_NAME } from '../constants/constants.provider';
 import { ethers } from 'ethers';
 
 @Injectable()

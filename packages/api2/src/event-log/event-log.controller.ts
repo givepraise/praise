@@ -5,16 +5,16 @@ import {
   SerializeOptions,
   UseInterceptors,
 } from '@nestjs/common';
-import { Permission } from '@/auth/enums/permission.enum';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { Permission } from '../auth/enums/permission.enum';
+import { Permissions } from '../auth/decorators/permissions.decorator';
 import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-query.dto';
 import { EventLogService } from './event-log.service';
 import { EventLog } from './schemas/event-log.schema';
 import { EventLogType } from './schemas/event-log-type.schema';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.dto';
-import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
-import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
+import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
+import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 
 @Controller('event-log')
 @ApiTags('Event Log')

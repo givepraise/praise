@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { TEST_COMMUNITY_DB_NAME } from '@/constants/constants.provider';
+import { TEST_COMMUNITY_DB_NAME } from '../../constants/constants.provider';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import {

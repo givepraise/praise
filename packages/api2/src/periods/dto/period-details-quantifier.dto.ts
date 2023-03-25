@@ -1,5 +1,5 @@
-import { Quantification } from '@/quantifications/schemas/quantifications.schema';
-import { User } from '@/users/schemas/users.schema';
+import { Quantification } from '../../quantifications/schemas/quantifications.schema';
+import { User } from '../../users/schemas/users.schema';
 import { ApiResponseProperty, PickType } from '@nestjs/swagger';
 
 export class PeriodDetailsQuantifierDto extends PickType(User, [

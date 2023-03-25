@@ -18,24 +18,6 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "paths": {
-      "@/activate/*": ["src/activate/*"],
-      "@/api-key/*": ["src/api-key/*"],
-      "@/auth/*": ["src/auth/*"],
-      "@/constants/*": ["src/constants/*"],
-      "@/community/*": ["src/community/*"],
-      "@/database/*": ["src/database/*"],
-      "@/event-log/*": ["src/event-log/*"],
-      "@/periods/*": ["src/periods/*"],
-      "@/periodsettings/*": ["src/periodsettings/*"],
-      "@/praise/*": ["src/praise/*"],
-      "@/quantifications/*": ["src/quantifications/*"],
-      "@/settings/*": ["src/settings/*"],
-      "@/shared/*": ["src/shared/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/users/*": ["src/users/*"],
-      "@/useraccounts/*": ["src/useraccounts/*"]
-    }
+    "resolveJsonModule": true
   }
 }

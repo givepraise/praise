@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { Injectable } from '@nestjs/common';
-import { Period } from '@/periods/schemas/periods.schema';
-import { PeriodStatusType } from '@/periods/enums/status-type.enum';
-import { PeriodsService } from '@/periods/services/periods.service';
+import { Period } from '../../periods/schemas/periods.schema';
+import { PeriodStatusType } from '../../periods/enums/status-type.enum';
+import { PeriodsService } from '../../periods/services/periods.service';
 
 @Injectable()
 export class PeriodsSeeder {

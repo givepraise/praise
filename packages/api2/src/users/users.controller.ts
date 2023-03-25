@@ -25,17 +25,17 @@ import {
   ApiTags,
   ApiProduces,
 } from '@nestjs/swagger';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { Permission } from '@/auth/enums/permission.enum';
-import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
+import { Permissions } from '../auth/decorators/permissions.decorator';
+import { Permission } from '../auth/enums/permission.enum';
+import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { UpdateUserRequestDto } from './dto/update-user-request.dto';
-import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
-import { allExportsDirPath } from '@/shared/fs.shared';
-import { exportContentType } from '@/shared/export.shared';
-import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { errorMessages } from '@/utils/errorMessages';
+import { ExportInputFormatOnlyDto } from '../shared/dto/export-input-format-only';
+import { allExportsDirPath } from '../shared/fs.shared';
+import { exportContentType } from '../shared/export.shared';
+import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
+import { ServiceException } from '../shared/exceptions/service-exception';
+import { errorMessages } from '../utils/errorMessages';
 
 @Controller('users')
 @ApiTags('Users')

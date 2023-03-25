@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { ServiceException } from '@/shared/exceptions/service-exception';
+import { ServiceException } from '../shared/exceptions/service-exception';
 import { Community, CommunityModel } from './schemas/community.schema';
-import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
+import { PaginatedQueryDto } from '../shared/dto/pagination-query.dto';
 import { CommunityPaginatedResponseDto } from './dto/community-pagination-model.dto';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
 import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
 import { ethers } from 'ethers';
 import { DiscordLinkState } from './enums/discord-link-state';
-import { errorMessages } from '@/utils/errorMessages';
+import { errorMessages } from '../utils/errorMessages';
 import { randomBytes } from 'crypto';
 import { assertOwnersIncludeCreator } from './utils/assert-owners-include-creator';
 

@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { Praise } from '@/praise/schemas/praise.schema';
-import { User } from '@/users/schemas/users.schema';
+import { Praise } from '../../praise/schemas/praise.schema';
+import { User } from '../../users/schemas/users.schema';
 import { ApiResponseProperty } from '@nestjs/swagger';
-import { ExposeId } from '@/shared/decorators/expose-id.decorator';
+import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 
 export type QuantificationDocument = Quantification & Document;
 

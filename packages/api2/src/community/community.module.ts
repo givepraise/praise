@@ -3,12 +3,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CommunityService } from './community.service';
 import { Community, CommunitySchema } from './schemas/community.schema';
 import { CommunityController } from './community.controller';
-import { AuthModule } from '@/auth/auth.module';
-import { ApiKeyModule } from '@/api-key/api-key.module';
+import { AuthModule } from '../auth/auth.module';
+import { ApiKeyModule } from '../api-key/api-key.module';
 import {
   ConstantsProvider,
   PRAISE_DB_NAME,
-} from '@/constants/constants.provider';
+} from '../constants/constants.provider';
 
 @Module({
   imports: [

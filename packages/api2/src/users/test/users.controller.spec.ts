@@ -4,7 +4,7 @@ import { UsersController } from '../users.controller';
 import { UsersService } from '../users.service';
 import { userStub } from './stubs/user.stub';
 import { UpdateUserRoleInputDto } from '../dto/update-user-role-input.dto';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
+import { AuthRole } from '../auth/enums/auth-role.enum';
 
 jest.mock('@/users/users.service');
 

@@ -3,15 +3,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Setting } from './schemas/settings.schema';
 import { SetSettingDto } from './dto/set-setting.dto';
-import { FileUtilsProvider } from '@/settings/providers/file-utils.provider';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { EventLogService } from '@/event-log/event-log.service';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { FileUtilsProvider } from '../settings/providers/file-utils.provider';
+import { ServiceException } from '../shared/exceptions/service-exception';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { SettingGroup } from './enums/setting-group.enum';
-import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
+import { PeriodSettingsService } from '../periodsettings/periodsettings.service';
 import { validateSetting } from './utils/validate-setting';
 import { SettingsFilterDto } from './dto/settings-filter.dto';
-import { errorMessages } from '@/utils/errorMessages';
+import { errorMessages } from '../utils/errorMessages';
 
 @Injectable()
 export class SettingsService {

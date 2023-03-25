@@ -1,4 +1,4 @@
-import { Praise } from '@/praise/schemas/praise.schema';
+import { Praise } from '../../praise/schemas/praise.schema';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { PeriodDetailsDto } from './period-details.dto';
 

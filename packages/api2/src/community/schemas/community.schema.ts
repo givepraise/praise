@@ -1,4 +1,4 @@
-import { ExposeId } from '@/shared/decorators/expose-id.decorator';
+import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Document, model, Types } from 'mongoose';
@@ -13,7 +13,7 @@ import {
   IsString,
 } from 'class-validator';
 import { DiscordLinkState } from '../enums/discord-link-state';
-import { IsEthAddress } from '@/shared/validators/is-eth-address.validator';
+import { IsEthAddress } from '../../shared/validators/is-eth-address.validator';
 import { isValidCommunityName } from '../utils/is-valid-community-name';
 import { isValidOwners } from '../utils/is-valid-owners';
 import { isValidHostname } from '../utils/is-valid-hostname';

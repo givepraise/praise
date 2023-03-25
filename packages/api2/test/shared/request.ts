@@ -2,7 +2,7 @@ import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Wallet } from 'ethers';
 import { TestingModule } from '@nestjs/testing';
-import { EthSignatureService } from '@/auth/eth-signature.service';
+import { EthSignatureService } from '../../src/auth/eth-signature.service';
 
 export const loginUser = async (
   app: INestApplication,

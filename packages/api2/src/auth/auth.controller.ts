@@ -6,8 +6,8 @@ import { NonceInputDto } from './dto/nonce-input.dto';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginInputDto } from './dto/login-input.dto';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { errorMessages } from '@/utils/errorMessages';
+import { ServiceException } from '../shared/exceptions/service-exception';
+import { errorMessages } from '../utils/errorMessages';
 
 @Controller('auth')
 @ApiTags('Authentication')

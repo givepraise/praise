@@ -22,26 +22,26 @@ import {
 } from '@nestjs/swagger';
 import { isArray } from 'class-validator';
 import { Types } from 'mongoose';
-import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
+import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { QuantifyMultipleInputDto } from './dto/quantify-multiple-input.dto';
 import { PraiseService } from './services/praise.service';
 import { Praise } from './schemas/praise.schema';
 import { PraisePaginatedQueryDto } from './dto/praise-paginated-query.dto';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { Permission } from '@/auth/enums/permission.enum';
-import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
-import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
+import { Permissions } from '../auth/decorators/permissions.decorator';
+import { Permission } from '../auth/enums/permission.enum';
+import { QuantifyInputDto } from '../praise/dto/quantify-input.dto';
+import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
 import { Response } from 'express';
-import { ExportInputDto } from '@/shared/dto/export-input.dto';
-import { allExportsDirPath } from '@/shared/fs.shared';
-import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
+import { ExportInputDto } from '../shared/dto/export-input.dto';
+import { allExportsDirPath } from '../shared/fs.shared';
+import { exportContentType, exportOptionsHash } from '../shared/export.shared';
 import { PraiseExportService } from './services/praise-export.service';
-import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
+import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { PraiseCreateInputDto } from './dto/praise-create-input.dto';
 import { PraiseForwardInputDto } from './dto/praise-forward-input.dto';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { errorMessages } from '@/utils/errorMessages';
+import { ServiceException } from '../shared/exceptions/service-exception';
+import { errorMessages } from '../utils/errorMessages';
 
 @Controller('praise')
 @ApiTags('Praise')

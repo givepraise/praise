@@ -8,8 +8,8 @@ import {
   authorizedPutRequest,
   loginUser,
 } from './shared/request';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { ApiKey } from '@/api-key/schemas/api-key.schema';
+import { AuthRole } from '../src/auth/enums/auth-role.enum';
+import { ApiKey } from '../src/api-key/schemas/api-key.schema';
 
 import {
   app,
@@ -19,7 +19,7 @@ import {
   apiKeyService,
 } from './shared/nest';
 
-describe('EventLog (E2E)', () => {
+describe('ApiKey (E2E)', () => {
   let adminWallet;
   let adminToken: string;
   let userWallet;

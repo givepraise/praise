@@ -1,15 +1,15 @@
 import './shared/jest';
 import request from 'supertest';
 import { Wallet } from 'ethers';
-import { Praise } from '@/praise/schemas/praise.schema';
+import { Praise } from '../src/praise/schemas/praise.schema';
 import {
   authorizedGetRequest,
   authorizedPatchRequest,
   loginUser,
 } from './shared/request';
-import { User } from '@/users/schemas/users.schema';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { PeriodStatusType } from '@/periods/enums/status-type.enum';
+import { User } from '../src/users/schemas/users.schema';
+import { AuthRole } from '../src/auth/enums/auth-role.enum';
+import { PeriodStatusType } from '../src/periods/enums/status-type.enum';
 
 import {
   app,

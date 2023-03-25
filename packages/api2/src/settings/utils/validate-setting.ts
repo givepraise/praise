@@ -1,5 +1,5 @@
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { errorMessages } from '@/utils/errorMessages';
+import { ServiceException } from '../../shared/exceptions/service-exception';
+import { errorMessages } from '../../utils/errorMessages';
 
 function isNumeric(value: any) {
   return !isNaN(parseFloat(value)) && isFinite(value);

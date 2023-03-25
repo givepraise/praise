@@ -1,5 +1,5 @@
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
-import { userStub } from '@/users/test/stubs/user.stub';
+import { UserAccount } from '../../schemas/useraccounts.schema';
+import { userStub } from '../../../users/test/stubs/user.stub';
 import { Types } from 'mongoose';
 
 export const userAccountStub: UserAccount = {

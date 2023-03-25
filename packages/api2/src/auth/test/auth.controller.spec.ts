@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../auth.controller';
 import { EthSignatureService } from '../eth-signature.service';
-import { UsersService } from '@/users/users.service';
+import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogService } from '../event-log/event-log.service';
 
 jest.mock('@/users/users.service');
 jest.mock('@/auth/eth-signature.service');

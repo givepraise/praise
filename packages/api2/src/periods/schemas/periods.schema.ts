@@ -3,7 +3,7 @@ import { Types, model } from 'mongoose';
 import { PeriodStatusType } from '../enums/status-type.enum';
 import { mongoosePagination } from 'mongoose-paginate-ts';
 import { PaginatedPeriodModel } from '../interfaces/paginated-period.interface';
-import { ExposeId } from '@/shared/decorators/expose-id.decorator';
+import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { IsString, Length } from 'class-validator';
 

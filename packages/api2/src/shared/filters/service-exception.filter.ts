@@ -1,6 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
 import { Response } from 'express';
-import { ServiceException } from '@/shared/exceptions/service-exception';
+import { ServiceException } from '../../shared/exceptions/service-exception';
 
 @Catch(ServiceException)
 export class ServiceExceptionFilter implements ExceptionFilter {

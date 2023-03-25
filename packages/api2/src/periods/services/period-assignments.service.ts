@@ -1,14 +1,14 @@
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { EventLogService } from '@/event-log/event-log.service';
-import { Quantifier } from '@/praise/interfaces/quantifier.interface';
-import { Receiver } from '@/praise/interfaces/receiver.interface';
-import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
-import { Quantification } from '@/quantifications/schemas/quantifications.schema';
-import { SettingsService } from '@/settings/settings.service';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
-import { User } from '@/users/schemas/users.schema';
+import { AuthRole } from '../../auth/enums/auth-role.enum';
+import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
+import { EventLogService } from '../../event-log/event-log.service';
+import { Quantifier } from '../../praise/interfaces/quantifier.interface';
+import { Receiver } from '../../praise/interfaces/receiver.interface';
+import { Praise, PraiseModel } from '../../praise/schemas/praise.schema';
+import { Quantification } from '../../quantifications/schemas/quantifications.schema';
+import { SettingsService } from '../../settings/settings.service';
+import { ServiceException } from '../../shared/exceptions/service-exception';
+import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
+import { User } from '../../users/schemas/users.schema';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -31,7 +31,7 @@ import { PeriodStatusType } from '../enums/status-type.enum';
 import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interface';
 import { Period, PeriodModel } from '../schemas/periods.schema';
 import { PeriodsService } from './periods.service';
-import { errorMessages } from '@/utils/errorMessages';
+import { errorMessages } from '../../utils/errorMessages';
 
 @Injectable()
 export class PeriodAssignmentsService {

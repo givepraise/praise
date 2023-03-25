@@ -7,15 +7,15 @@ import {
   authorizedPostRequest,
   loginUser,
 } from './shared/request';
-import { Praise } from '@/praise/schemas/praise.schema';
-import { Period } from '@/periods/schemas/periods.schema';
-import { PeriodStatusType } from '@/periods/enums/status-type.enum';
-import { PeriodSetting } from '@/periodsettings/schemas/periodsettings.schema';
-import { PraisePaginatedQueryDto } from '@/praise/dto/praise-paginated-query.dto';
+import { Praise } from '../src/praise/schemas/praise.schema';
+import { Period } from '../src/periods/schemas/periods.schema';
+import { PeriodStatusType } from '../src/periods/enums/status-type.enum';
+import { PeriodSetting } from '../src/periodsettings/schemas/periodsettings.schema';
+import { PraisePaginatedQueryDto } from '../src/praise/dto/praise-paginated-query.dto';
 import { Types } from 'mongoose';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { User } from '@/users/schemas/users.schema';
-import { Setting } from '@/settings/schemas/settings.schema';
+import { AuthRole } from '../src/auth/enums/auth-role.enum';
+import { User } from '../src/users/schemas/users.schema';
+import { Setting } from '../src/settings/schemas/settings.schema';
 import { faker } from '@faker-js/faker';
 
 import {

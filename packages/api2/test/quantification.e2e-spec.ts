@@ -1,15 +1,15 @@
 // Import modules related to authentication and users
-import { User } from '@/users/schemas/users.schema';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
+import { User } from '../src/users/schemas/users.schema';
+import { AuthRole } from '../src/auth/enums/auth-role.enum';
 import { authorizedGetRequest, loginUser } from './shared/request';
 
 // Import modules related to praise and quantifications
-import { Praise } from '@/praise/schemas/praise.schema';
-import { Quantification } from '@/quantifications/schemas/quantifications.schema';
+import { Praise } from '../src/praise/schemas/praise.schema';
+import { Quantification } from '../src/quantifications/schemas/quantifications.schema';
 
 // Import modules related to periods and status types
-import { Period } from '@/periods/schemas/periods.schema';
-import { PeriodStatusType } from '@/periods/enums/status-type.enum';
+import { Period } from '../src/periods/schemas/periods.schema';
+import { PeriodStatusType } from '../src/periods/enums/status-type.enum';
 
 // Import Ethereum wallet related module
 import { Wallet } from 'ethers';

@@ -21,14 +21,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Types } from 'mongoose';
-import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
+import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { PeriodsService } from './services/periods.service';
 import { Period } from './schemas/periods.schema';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { Permission } from '@/auth/enums/permission.enum';
-import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
+import { Permissions } from '../auth/decorators/permissions.decorator';
+import { Permission } from '../auth/enums/permission.enum';
+import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { PeriodPaginatedResponseDto } from './dto/period-paginated-response.dto';
-import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
+import { PaginatedQueryDto } from '../shared/dto/pagination-query.dto';
 import { CreatePeriodInputDto } from './dto/create-period-input.dto';
 import { UpdatePeriodInputDto } from './dto/update-period-input.dto';
 import { VerifyQuantifierPoolSizeDto } from './dto/verify-quantifiers-pool-size.dto';
@@ -36,12 +36,12 @@ import { PeriodDetailsDto } from './dto/period-details.dto';
 import { ReplaceQuantifierInputDto } from './dto/replace-quantifier-input.dto';
 import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-response.dto';
 import { PeriodAssignmentsService } from './services/period-assignments.service';
-import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
+import { PraiseWithUserAccountsWithUserRefDto } from '../praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Response } from 'express';
-import { allExportsDirPath } from '@/shared/fs.shared';
-import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
-import { exportContentType } from '@/shared/export.shared';
-import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
+import { allExportsDirPath } from '../shared/fs.shared';
+import { ExportInputFormatOnlyDto } from '../shared/dto/export-input-format-only';
+import { exportContentType } from '../shared/export.shared';
+import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 
 @Controller('periods')
 @ApiTags('Periods')

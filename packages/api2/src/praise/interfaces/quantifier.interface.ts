@@ -1,4 +1,4 @@
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
+import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
 import { Receiver } from './receiver.interface';
 import { Types } from 'mongoose';
 

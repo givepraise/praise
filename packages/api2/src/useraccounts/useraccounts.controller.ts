@@ -22,20 +22,20 @@ import {
 } from '@nestjs/swagger';
 import { UserAccountsService } from './useraccounts.service';
 import { Response } from 'express';
-import { ExportInputFormatOnlyDto } from '@/shared/dto/export-input-format-only';
-import { allExportsDirPath } from '@/shared/fs.shared';
-import { exportContentType } from '@/shared/export.shared';
-import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
-import { Permission } from '@/auth/enums/permission.enum';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { ExportInputFormatOnlyDto } from '../shared/dto/export-input-format-only';
+import { allExportsDirPath } from '../shared/fs.shared';
+import { exportContentType } from '../shared/export.shared';
+import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
+import { Permission } from '../auth/enums/permission.enum';
+import { Permissions } from '../auth/decorators/permissions.decorator';
 import { UserAccount } from './schemas/useraccounts.schema';
-import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
 import { CreateUserAccountInputDto } from './dto/create-user-account-input.dto';
 import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { UpdateUserAccountResponseDto } from './dto/update-user-account-response.dto';
 import { FindUserAccountFilterDto } from './dto/find-user-account-filter.dto';
-import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
+import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { Types } from 'mongoose';
 
 @Controller('useraccounts')

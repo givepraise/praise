@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { unlink } from 'fs/promises';
-import { ConstantsProvider } from '@/constants/constants.provider';
+import { ConstantsProvider } from '../../constants/constants.provider';
 import * as fs from 'fs';
 
 @Injectable()

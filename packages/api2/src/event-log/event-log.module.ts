@@ -7,9 +7,9 @@ import {
   EventLogTypeSchema,
 } from './schemas/event-log-type.schema';
 import { EventLogService } from './event-log.service';
-import { AuthModule } from '@/auth/auth.module';
-import { ApiKeyModule } from '@/api-key/api-key.module';
-import { ConstantsProvider } from '@/constants/constants.provider';
+import { AuthModule } from '../auth/auth.module';
+import { ApiKeyModule } from '../api-key/api-key.module';
+import { ConstantsProvider } from '../constants/constants.provider';
 
 @Module({
   imports: [

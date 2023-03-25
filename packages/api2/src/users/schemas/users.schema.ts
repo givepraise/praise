@@ -2,13 +2,13 @@ import { Exclude, Type } from 'class-transformer';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Types } from 'mongoose';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
+import { AuthRole } from '../../auth/enums/auth-role.enum';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
-import { ExposeId } from '@/shared/decorators/expose-id.decorator';
+import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { IsOptional, IsString } from 'class-validator';
-import { IsEthAddress } from '@/shared/validators/is-eth-address.validator';
+import { IsEthAddress } from '../../shared/validators/is-eth-address.validator';
 import { isValidUsername } from '../utils/is-valid-username';
-import { UserAccountNoUserId } from '@/useraccounts/schemas/useraccounts.schema';
+import { UserAccountNoUserId } from '../../useraccounts/schemas/useraccounts.schema';
 
 export type UserDocument = User & Document;
 

@@ -2,12 +2,12 @@ import { Exclude, Type } from 'class-transformer';
 import { Types, SchemaTypes } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiResponseProperty, OmitType } from '@nestjs/swagger';
-import { User } from '@/users/schemas/users.schema';
-import { ExposeId } from '@/shared/decorators/expose-id.decorator';
+import { User } from '../../users/schemas/users.schema';
+import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { IsOptional, IsString } from 'class-validator';
 import { has } from 'lodash';
-import { IsObjectId } from '@/shared/validators/is-object-id.validator';
-import { MinLengthAllowEmpty } from '@/shared/decorators/min-length-allow-empty.decorator';
+import { IsObjectId } from '../../shared/validators/is-object-id.validator';
+import { MinLengthAllowEmpty } from '../../shared/decorators/min-length-allow-empty.decorator';
 
 export type UserAccountDocument = UserAccount & Document;
 

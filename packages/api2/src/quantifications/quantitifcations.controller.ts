@@ -11,15 +11,15 @@ import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { ApiOperation } from '@nestjs/swagger';
 import { QuantificationsService } from './services/quantifications.service';
 import { Response } from 'express';
-import { ExportInputDto } from '@/shared/dto/export-input.dto';
-import { allExportsDirPath } from '@/shared/fs.shared';
-import { exportContentType, exportOptionsHash } from '@/shared/export.shared';
+import { ExportInputDto } from '../shared/dto/export-input.dto';
+import { allExportsDirPath } from '../shared/fs.shared';
+import { exportContentType, exportOptionsHash } from '../shared/export.shared';
 import { QuantificationsExportService } from './services/quantifications-export.service';
-import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
-import { Permission } from '@/auth/enums/permission.enum';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { errorMessages } from '@/utils/errorMessages';
-import { ServiceException } from '@/shared/exceptions/service-exception';
+import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
+import { Permission } from '../auth/enums/permission.enum';
+import { Permissions } from '../auth/decorators/permissions.decorator';
+import { errorMessages } from '../utils/errorMessages';
+import { ServiceException } from '../shared/exceptions/service-exception';
 
 @Controller('quantifications')
 @ApiTags('Quantifications')

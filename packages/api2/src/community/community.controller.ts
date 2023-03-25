@@ -11,20 +11,20 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommunityService } from './community.service';
-import { Permission } from '@/auth/enums/permission.enum';
+import { Permission } from '../auth/enums/permission.enum';
 import { Community } from './schemas/community.schema';
-import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
-import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
+import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
+import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { CommunityPaginatedResponseDto } from './dto/community-pagination-model.dto';
-import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
+import { PaginatedQueryDto } from '../shared/dto/pagination-query.dto';
 import { ObjectId, Types } from 'mongoose';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { Permissions } from '../auth/decorators/permissions.decorator';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
 import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
-import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
+import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
-import { errorMessages } from '@/utils/errorMessages';
-import { ServiceException } from '@/shared/exceptions/service-exception';
+import { errorMessages } from '../utils/errorMessages';
+import { ServiceException } from '../shared/exceptions/service-exception';
 
 @Controller('communities')
 @ApiTags('Communities')

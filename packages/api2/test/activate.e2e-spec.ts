@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { Wallet } from 'ethers';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
+import { UserAccount } from '../src/useraccounts/schemas/useraccounts.schema';
 import {
   server,
   activateService,

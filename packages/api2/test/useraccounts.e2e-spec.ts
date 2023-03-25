@@ -7,10 +7,10 @@ import {
   authorizedPatchRequest,
   loginUser,
 } from './shared/request';
-import { User } from '@/users/schemas/users.schema';
+import { User } from '../src/users/schemas/users.schema';
 import { faker } from '@faker-js/faker';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
+import { AuthRole } from '../src/auth/enums/auth-role.enum';
+import { UserAccount } from '../src/useraccounts/schemas/useraccounts.schema';
 
 import {
   app,

@@ -10,23 +10,23 @@ import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { UpdateUserInputDto } from './dto/update-user-input.dto';
 import { CreateUserInputDto } from './dto/create-user-input.dto';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
-import { EventLogService } from '@/event-log/event-log.service';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
+import { ServiceException } from '../shared/exceptions/service-exception';
+import { UserAccount } from '../useraccounts/schemas/useraccounts.schema';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { AuthRole } from '../auth/enums/auth-role.enum';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
-import { Praise, PraiseDocument } from '@/praise/schemas/praise.schema';
+import { Praise, PraiseDocument } from '../praise/schemas/praise.schema';
 import { UserStatsDto } from './dto/user-stats.dto';
-import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
-import { Period } from '@/periods/schemas/periods.schema';
-import { PeriodsService } from '@/periods/services/periods.service';
-import { PraiseService } from '@/praise/services/praise.service';
+import { PeriodDateRangeDto } from '../periods/dto/period-date-range.dto';
+import { Period } from '../periods/schemas/periods.schema';
+import { PeriodsService } from '../periods/services/periods.service';
+import { PraiseService } from '../praise/services/praise.service';
 import {
   generateParquetExport,
   writeCsvAndJsonExports,
-} from '@/shared/export.shared';
-import { errorMessages } from '@/utils/errorMessages';
+} from '../shared/export.shared';
+import { errorMessages } from '../utils/errorMessages';
 
 @Injectable()
 export class UsersService {

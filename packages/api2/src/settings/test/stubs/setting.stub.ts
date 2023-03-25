@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
-import { SettingGroup } from '@/settings/enums/setting-group.enum';
-import { Setting } from '@/settings/schemas/settings.schema';
+import { SettingGroup } from '../../enums/setting-group.enum';
+import { Setting } from '../../schemas/settings.schema';
 
 export const settingStub: Setting = {
   _id: new Types.ObjectId('5f9f1c1b9b9b9b9b9b9b9b9b'),

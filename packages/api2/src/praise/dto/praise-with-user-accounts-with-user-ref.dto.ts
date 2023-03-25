@@ -1,4 +1,4 @@
-import { UserAccountWithUserRefDto } from '@/useraccounts/dto/useraccount-with-user-ref.dto';
+import { UserAccountWithUserRefDto } from '../../useraccounts/dto/useraccount-with-user-ref.dto';
 import { Praise } from '../schemas/praise.schema';
 import { Types } from 'mongoose';
 import { ApiResponseProperty } from '@nestjs/swagger';

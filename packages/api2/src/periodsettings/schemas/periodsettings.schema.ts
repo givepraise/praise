@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { SchemaTypes, Types } from 'mongoose';
-import { ExposeId } from '@/shared/decorators/expose-id.decorator';
+import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
-import { Period } from '@/periods/schemas/periods.schema';
+import { Period } from '../../periods/schemas/periods.schema';
 import { Type } from 'class-transformer';
-import { Setting } from '@/settings/schemas/settings.schema';
+import { Setting } from '../../settings/schemas/settings.schema';
 import { IsString } from 'class-validator';
 
 export type PeriodSettingDocument = PeriodSetting & Document;

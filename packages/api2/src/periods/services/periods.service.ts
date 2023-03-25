@@ -1,37 +1,38 @@
 import * as fs from 'fs';
-import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
-import { InjectModel } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+
 import {
-  Period,
-  PeriodDocument,
-  PeriodExportSqlSchema,
-  PeriodModel,
-} from '../schemas/periods.schema';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
-import { Pagination } from 'mongoose-paginate-ts';
-import { CreatePeriodInputDto } from '../dto/create-period-input.dto';
-import { add, compareAsc, parseISO } from 'date-fns';
-import { EventLogService } from '@/event-log/event-log.service';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
-import { QuantificationsService } from '@/quantifications/services/quantifications.service';
+  generateParquetExport,
+  writeCsvAndJsonExports,
+} from '../../shared/export.shared';
+import { errorMessages } from '../../utils/errorMessages';
+import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { isString } from 'class-validator';
+import { parseISO, add, compareAsc } from 'date-fns';
+import { Types } from 'mongoose';
+import { Pagination } from 'mongoose-paginate-ts';
+import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
+import { EventLogService } from '../../event-log/event-log.service';
+import { PeriodSettingsService } from '../../periodsettings/periodsettings.service';
+import { PraiseWithUserAccountsWithUserRefDto } from '../../praise/dto/praise-with-user-accounts-with-user-ref.dto';
+import { Praise, PraiseModel } from '../../praise/schemas/praise.schema';
+import { QuantificationsService } from '../../quantifications/services/quantifications.service';
+import { PaginatedQueryDto } from '../../shared/dto/pagination-query.dto';
+import { ServiceException } from '../../shared/exceptions/service-exception';
+import { CreatePeriodInputDto } from '../dto/create-period-input.dto';
+import { PeriodDetailsGiverReceiverDto } from '../dto/period-details-giver-receiver.dto';
 import { PeriodDetailsQuantifierDto } from '../dto/period-details-quantifier.dto';
 import { PeriodDetailsDto } from '../dto/period-details.dto';
 import { PeriodPaginatedResponseDto } from '../dto/period-paginated-response.dto';
 import { UpdatePeriodInputDto } from '../dto/update-period-input.dto';
 import { PeriodStatusType } from '../enums/status-type.enum';
-import { PeriodDetailsGiverReceiverDto } from '../dto/period-details-giver-receiver.dto';
-import { PraiseWithUserAccountsWithUserRefDto } from '@/praise/dto/praise-with-user-accounts-with-user-ref.dto';
-import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
 import {
-  generateParquetExport,
-  writeCsvAndJsonExports,
-} from '@/shared/export.shared';
-import { errorMessages } from '@/utils/errorMessages';
+  Period,
+  PeriodModel,
+  PeriodDocument,
+  PeriodExportSqlSchema,
+} from '../schemas/periods.schema';
 
 @Injectable()
 export class PeriodsService {

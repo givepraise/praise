@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ActivateInputDto } from './dto/activate-input.dto';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { UserAccountsService } from '@/useraccounts/useraccounts.service';
+import { ServiceException } from '../shared/exceptions/service-exception';
+import { UserAccountsService } from '../useraccounts/useraccounts.service';
 import { ethers } from 'ethers';
-import { UsersService } from '@/users/users.service';
-import { EventLogService } from '@/event-log/event-log.service';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { User } from '@/users/schemas/users.schema';
-import { errorMessages } from '@/utils/errorMessages';
+import { UsersService } from '../users/users.service';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { User } from '../users/schemas/users.schema';
+import { errorMessages } from '../utils/errorMessages';
 
 @Injectable()
 export class ActivateService {

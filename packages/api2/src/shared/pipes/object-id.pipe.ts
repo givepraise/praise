@@ -1,7 +1,7 @@
 import { Types, isObjectIdOrHexString } from 'mongoose';
 import { Injectable, PipeTransform } from '@nestjs/common';
-import { errorMessages } from '@/utils/errorMessages';
-import { ServiceException } from '@/shared/exceptions/service-exception';
+import { errorMessages } from '../../utils/errorMessages';
+import { ServiceException } from '../../shared/exceptions/service-exception';
 
 /*
  * This pipe is used to transform a string to a mongoose ObjectId.

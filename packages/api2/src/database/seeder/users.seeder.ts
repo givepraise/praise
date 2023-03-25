@@ -1,6 +1,6 @@
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { User } from '@/users/schemas/users.schema';
-import { UsersService } from '@/users/users.service';
+import { AuthRole } from '../../auth/enums/auth-role.enum';
+import { User } from '../../users/schemas/users.schema';
+import { UsersService } from '../../users/users.service';
 import { faker } from '@faker-js/faker';
 import { Injectable } from '@nestjs/common';
 

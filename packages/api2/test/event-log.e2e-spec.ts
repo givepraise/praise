@@ -2,8 +2,8 @@ import './shared/jest';
 import request from 'supertest';
 import { Wallet } from 'ethers';
 import { authorizedGetRequest, loginUser } from './shared/request';
-import { EventLogType } from '@/event-log/schemas/event-log-type.schema';
-import { EventLog } from '@/event-log/schemas/event-log.schema';
+import { EventLogType } from '../src/event-log/schemas/event-log-type.schema';
+import { EventLog } from '../src/event-log/schemas/event-log.schema';
 
 import {
   app,
@@ -19,6 +19,7 @@ describe('EventLog (E2E)', () => {
   let accessToken: string;
 
   beforeAll(async () => {
+    console.log('beforeAll');
     // Seed the database
     wallet = Wallet.createRandom();
     await usersSeeder.seedUser({
@@ -29,6 +30,7 @@ describe('EventLog (E2E)', () => {
     // Login and get access token
     const response = await loginUser(app, testingModule, wallet);
     accessToken = response.accessToken;
+    console.log('beforeAll done');
   });
 
   describe('GET /api/event-log', () => {

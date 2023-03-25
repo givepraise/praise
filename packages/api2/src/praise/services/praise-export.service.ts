@@ -5,15 +5,15 @@ import {
   Praise,
   PraiseExportSqlSchema,
 } from '../schemas/praise.schema';
-import { ServiceException } from '@/shared/exceptions/service-exception';
+import { ServiceException } from '../../shared/exceptions/service-exception';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { PeriodsService } from '@/periods/services/periods.service';
-import { ExportInputDto } from '@/shared/dto/export-input.dto';
+import { PeriodsService } from '../../periods/services/periods.service';
+import { ExportInputDto } from '../../shared/dto/export-input.dto';
 import {
   generateParquetExport,
   writeCsvAndJsonExports,
-} from '@/shared/export.shared';
-import { errorMessages } from '@/utils/errorMessages';
+} from '../../shared/export.shared';
+import { errorMessages } from '../../utils/errorMessages';
 
 @Injectable()
 export class PraiseExportService {

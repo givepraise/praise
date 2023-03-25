@@ -1,4 +1,4 @@
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
+import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, ValidateNested } from 'class-validator';

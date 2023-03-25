@@ -1,26 +1,26 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { PraiseModel, Praise, PraiseDocument } from '../schemas/praise.schema';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { PeriodStatusType } from '@/periods/enums/status-type.enum';
-import { SettingsService } from '@/settings/settings.service';
-import { QuantificationsService } from '@/quantifications/services/quantifications.service';
+import { ServiceException } from '../../shared/exceptions/service-exception';
+import { PeriodStatusType } from '../../periods/enums/status-type.enum';
+import { SettingsService } from '../../settings/settings.service';
+import { QuantificationsService } from '../../quantifications/services/quantifications.service';
 import { PraisePaginatedQueryDto } from '../dto/praise-paginated-query.dto';
 import { Pagination } from 'mongoose-paginate-ts';
 import { EventLogService } from '../../event-log/event-log.service';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
+import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
+import { QuantifyInputDto } from '../../praise/dto/quantify-input.dto';
 import { RequestContext } from 'nestjs-request-context';
-import { RequestWithAuthContext } from '@/auth/interfaces/request-with-auth-context.interface';
+import { RequestWithAuthContext } from '../../auth/interfaces/request-with-auth-context.interface';
 import { PraisePaginatedResponseDto } from '../dto/praise-paginated-response.dto';
-import { Period, PeriodModel } from '@/periods/schemas/periods.schema';
+import { Period, PeriodModel } from '../../periods/schemas/periods.schema';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
+import { PeriodDateRangeDto } from '../../periods/dto/period-date-range.dto';
 import { PraiseCreateInputDto } from '../dto/praise-create-input.dto';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
-import { UserAccountModel } from '@/database/schemas/useraccount/useraccount.schema';
+import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
+import { UserAccountModel } from '../../database/schemas/useraccount/useraccount.schema';
 import { PraiseForwardInputDto } from '../dto/praise-forward-input.dto';
-import { errorMessages } from '@/utils/errorMessages';
+import { errorMessages } from '../../utils/errorMessages';
 
 @Injectable()
 export class PraiseService {

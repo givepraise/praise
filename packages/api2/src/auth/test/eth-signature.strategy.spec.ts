@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from '@/users/users.service';
-import { userStub } from '@/users/test/stubs/user.stub';
+import { UsersService } from '../users/users.service';
+import { userStub } from '../users/test/stubs/user.stub';
 import { EthSignatureStrategy } from '../strategies/eth-signature.strategy';
 import { ethers } from 'ethers';
 import { EthSignatureService } from '../eth-signature.service';
 import { JwtModule } from '@nestjs/jwt';
-import { ConstantsProvider } from '@/constants/constants.provider';
-import { EventLogService } from '@/event-log/event-log.service';
+import { ConstantsProvider } from '../constants/constants.provider';
+import { EventLogService } from '../event-log/event-log.service';
 
 jest.mock('@/users/users.service');
 jest.mock('@/event-log/event-log.service');

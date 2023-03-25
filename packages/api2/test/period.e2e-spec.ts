@@ -2,15 +2,15 @@ import './shared/jest';
 import request from 'supertest';
 import { Wallet } from 'ethers';
 import { authorizedGetRequest, loginUser } from './shared/request';
-import { Period } from '@/periods/schemas/periods.schema';
-import { PeriodStatusType } from '@/periods/enums/status-type.enum';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { User } from '@/users/schemas/users.schema';
-import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
-import { Setting } from '@/settings/schemas/settings.schema';
+import { Period } from '../src/periods/schemas/periods.schema';
+import { PeriodStatusType } from '../src/periods/enums/status-type.enum';
+import { AuthRole } from '../src/auth/enums/auth-role.enum';
+import { User } from '../src/users/schemas/users.schema';
+import { PaginatedQueryDto } from '../src/shared/dto/pagination-query.dto';
+import { Setting } from '../src/settings/schemas/settings.schema';
 import { some } from 'lodash';
-import { PeriodDetailsQuantifierDto } from '@/periods/dto/period-details-quantifier.dto';
-import { Praise } from '@/praise/schemas/praise.schema';
+import { PeriodDetailsQuantifierDto } from '../src/periods/dto/period-details-quantifier.dto';
+import { Praise } from '../src/praise/schemas/praise.schema';
 import { faker } from '@faker-js/faker';
 
 import {

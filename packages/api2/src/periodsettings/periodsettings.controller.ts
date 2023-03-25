@@ -1,4 +1,4 @@
-import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
+import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -14,10 +14,10 @@ import { Types } from 'mongoose';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { PeriodSettingsService } from './periodsettings.service';
 import { PeriodSetting } from './schemas/periodsettings.schema';
-import { Permission } from '@/auth/enums/permission.enum';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { Permission } from '../auth/enums/permission.enum';
+import { Permissions } from '../auth/decorators/permissions.decorator';
 import { ValueRealizedInterceptor } from './interceptors/value-realized.interceptor';
-import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
+import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 
 @Controller('periods')
 @ApiTags('Periods')

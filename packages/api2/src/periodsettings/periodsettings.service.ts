@@ -1,17 +1,17 @@
-import { ServiceException } from '@/shared/exceptions/service-exception';
+import { ServiceException } from '../shared/exceptions/service-exception';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { PeriodSetting } from './schemas/periodsettings.schema';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
-import { PeriodsService } from '@/periods/services/periods.service';
-import { PeriodStatusType } from '@/periods/enums/status-type.enum';
-import { EventLogService } from '@/event-log/event-log.service';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { SettingsService } from '@/settings/settings.service';
-import { validateSetting } from '@/settings/utils/validate-setting';
-import { SettingGroup } from '@/settings/enums/setting-group.enum';
-import { errorMessages } from '@/utils/errorMessages';
+import { PeriodsService } from '../periods/services/periods.service';
+import { PeriodStatusType } from '../periods/enums/status-type.enum';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { SettingsService } from '../settings/settings.service';
+import { validateSetting } from '../settings/utils/validate-setting';
+import { SettingGroup } from '../settings/enums/setting-group.enum';
+import { errorMessages } from '../utils/errorMessages';
 
 @Injectable()
 export class PeriodSettingsService {

@@ -1,14 +1,14 @@
-import { ApiKeyService } from '@/api-key/api-key.service';
+import { ApiKeyService } from '../../api-key/api-key.service';
 import {
   ConstantsProvider,
   TEST_COMMUNITY_DB_NAME,
-} from '@/constants/constants.provider';
+} from '../../constants/constants.provider';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRole } from '../enums/auth-role.enum';
 import * as bcrypt from 'bcrypt';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { errorMessages } from '@/utils/errorMessages';
+import { ServiceException } from '../../shared/exceptions/service-exception';
+import { errorMessages } from '../../utils/errorMessages';
 
 @Injectable()
 export class AuthGuard implements CanActivate {

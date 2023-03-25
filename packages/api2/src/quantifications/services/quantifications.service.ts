@@ -1,14 +1,14 @@
-import { SettingsService } from '@/settings/settings.service';
+import { SettingsService } from '../../settings/settings.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Quantification } from '../schemas/quantifications.schema';
 import { sum, has } from 'lodash';
-import { Praise } from '@/praise/schemas/praise.schema';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { PraiseService } from '@/praise/services/praise.service';
+import { Praise } from '../../praise/schemas/praise.schema';
+import { ServiceException } from '../../shared/exceptions/service-exception';
+import { PraiseService } from '../../praise/services/praise.service';
 import { Inject, forwardRef } from '@nestjs/common';
-import { PeriodsService } from '@/periods/services/periods.service';
-import { errorMessages } from '@/utils/errorMessages';
+import { PeriodsService } from '../../periods/services/periods.service';
+import { errorMessages } from '../../utils/errorMessages';
 
 export class QuantificationsService {
   constructor(

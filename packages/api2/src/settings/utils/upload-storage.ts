@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 import multer from 'multer';
-import { uploadDirectory } from '@/constants/constants.provider';
+import { uploadDirectory } from '../../constants/constants.provider';
 
 export const upploadStorage = multer.diskStorage({
   destination: function (req, file, cb) {

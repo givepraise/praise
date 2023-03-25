@@ -1,14 +1,14 @@
 import { Umzug, MongoDBStorage } from 'umzug';
 import { INestApplication } from '@nestjs/common';
-import { PraiseService } from '@/praise/services/praise.service';
-import { UsersService } from '@/users/users.service';
-import { PeriodsService } from '@/periods/services/periods.service';
-import { SettingsService } from '@/settings/settings.service';
-import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
-import { QuantificationsService } from '@/quantifications/services/quantifications.service';
+import { PraiseService } from '../praise/services/praise.service';
+import { UsersService } from '../users/users.service';
+import { PeriodsService } from '../periods/services/periods.service';
+import { SettingsService } from '../settings/settings.service';
+import { PeriodSettingsService } from '../periodsettings/periodsettings.service';
+import { QuantificationsService } from '../quantifications/services/quantifications.service';
 
 import mongoose, { ConnectOptions } from 'mongoose';
-import { PRAISE_DB_NAME } from '@/constants/constants.provider';
+import { PRAISE_DB_NAME } from '../constants/constants.provider';
 import { Logger } from 'winston';
 
 interface DatabaseConfig {

@@ -5,12 +5,12 @@ import { ApiKey, ApiKeyDocument } from './schemas/api-key.schema';
 import * as bcrypt from 'bcrypt';
 import { CreateApiKeyInputDto } from './dto/create-api-key-input.dto';
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { EventLogService } from '@/event-log/event-log.service';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
+import { ServiceException } from '../shared/exceptions/service-exception';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { randomBytes } from 'crypto';
-import { ConstantsProvider } from '@/constants/constants.provider';
-import { errorMessages } from '@/utils/errorMessages';
+import { ConstantsProvider } from '../constants/constants.provider';
+import { errorMessages } from '../utils/errorMessages';
 
 @Injectable()
 export class ApiKeyService {

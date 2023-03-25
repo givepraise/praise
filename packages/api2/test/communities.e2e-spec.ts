@@ -7,8 +7,8 @@ import {
   authorizedPostRequest,
   loginUser,
 } from './shared/request';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { User } from '@/users/schemas/users.schema';
+import { AuthRole } from '../src/auth/enums/auth-role.enum';
+import { User } from '../src/users/schemas/users.schema';
 import { Community } from '../src/community/schemas/community.schema';
 import { DiscordLinkState } from '../src/community/enums/discord-link-state';
 import { randomBytes } from 'crypto';
