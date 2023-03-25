@@ -172,7 +172,6 @@ const run = async (): Promise<void> => {
     DISCORD_TOKEN: answers.DISCORD_TOKEN,
     DISCORD_CLIENT_ID: answers.DISCORD_CLIENT_ID,
     DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,
-    DISCORD_BOT_API_KEY: process.env.DISCORD_BOT_API_KEY || discordBotApiKey,
   };
 
   setupAndWriteEnv(rootEnvTemplatePath, rootEnvPath, rootEnv);

@@ -249,12 +249,12 @@ describe('AuthController (E2E)', () => {
     });
   });
 
-  describe('.env API KEY authentication, GET /api/users', () => {
+  describe('.env API KEY authentication, GET various endpoints', () => {
     /**
      *
      */
     test('403 when accessing disallowed endpoint /api/users', async () => {
-      const apiKey = process.env.DISCORD_BOT_API_KEY;
+      const apiKey = process.env.API_KEYS?.split(',')[0]; // Usee first api key for testing purposes
       expect(apiKey).not.toBeUndefined();
       if (apiKey) {
         return request(server)
@@ -268,7 +268,7 @@ describe('AuthController (E2E)', () => {
      *
      */
     test('200 when accessing allowed endpoint /api/communities', async () => {
-      const apiKey = process.env.DISCORD_BOT_API_KEY;
+      const apiKey = process.env.API_KEYS?.split(',')[0]; // Usee first api key for testing purposes
       expect(apiKey).not.toBeUndefined();
       if (apiKey) {
         return request(server)
