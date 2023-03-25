@@ -7,12 +7,13 @@ import { useContainer } from 'class-validator';
 import { ServiceExceptionFilter } from './shared/filters/service-exception.filter';
 import { runDbMigrations } from './database/migrations';
 import { version } from '../package.json';
-import { Logger } from './shared/logger';
+import { logger } from './shared/logger';
 import { MongoValidationErrorFilter } from './shared/filters/mongo-validation-error.filter';
 import { MongoServerErrorFilter } from './shared/filters/mongo-server-error.filter';
 import { envCheck } from './shared/env.shared';
 import * as fs from 'fs';
 import { AppMigrationsModule } from './database/app.migrations.module';
+import { AppConfig } from './shared/appConfig.shared';
 
 async function bootstrap() {
   // Check that all required ENV variables are set
@@ -25,7 +26,10 @@ async function bootstrap() {
   // appMigrations.close();
 
   // Create an instance of the Nest app
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, AppConfig);
+
+  // Apply dependency injection container to the app
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   // Set the global prefix for all routes in the app
   app.setGlobalPrefix('api/');
@@ -47,9 +51,6 @@ async function bootstrap() {
   app.useGlobalFilters(new MongoValidationErrorFilter());
   app.useGlobalFilters(new ServiceExceptionFilter());
 
-  // Apply dependency injection container to the app
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
-
   // If in development mode, generate and serve OpenAPI documentation
   if (process.env.NODE_ENV === 'development') {
     // Create OpenAPI configuration
@@ -70,14 +71,11 @@ async function bootstrap() {
     origin: '*',
   });
 
-  // Create a logger instance for the app
-  const logger = new Logger('Bootstrap');
-
   // Start the app listening on the API port or default to port 3000
   await app.listen(process.env.API_PORT || 3000);
 
   // Log the app version and port to the console
-  logger.log(
+  logger.info(
     `Praise API v${version} listening on port ${process.env.API_PORT || 3000}`,
   );
 }

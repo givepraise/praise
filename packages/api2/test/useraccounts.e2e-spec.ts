@@ -125,7 +125,21 @@ describe('UserAccountsController (E2E)', () => {
 
     // Test with invalid fields
     test('400 when invalid fields', async () => {
-      await createUser({ invalidField: 'invalid' }).expect(400);
+      const response = await authorizedPostRequest(
+        `/useraccounts`,
+        app,
+        accessToken,
+        {
+          accountId: faker.internet.mac(),
+          name: faker.internet.userName().substring(0, 10),
+          avatarId: faker.internet.url(),
+          platform: 'DISCORD',
+          user: String(users[0]._id),
+          invalidAttribute: 'invalid',
+        },
+      );
+
+      expect(response.status).toBe(400);
     });
 
     // Fail if platform and accountId already exists

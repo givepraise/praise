@@ -1,5 +1,5 @@
 import { AuthModule } from './auth/auth.module';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccountsModule } from './useraccounts/useraccounts.module';
 import { UsersModule } from './users/users.module';
@@ -16,6 +16,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CommunityModule } from './community/community.module';
 import { MultiTenantConnectionService } from './database/services/multi-tenant-connection-service';
+import { RequestLoggerMiddleware } from './shared/middlewares/request-logger.middleware';
 
 @Module({
   imports: [
@@ -47,4 +48,9 @@ import { MultiTenantConnectionService } from './database/services/multi-tenant-c
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  // Add a middleware on all routes
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+  }
+}

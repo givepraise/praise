@@ -13,6 +13,7 @@ const requiredEnvVariables = [
   'API_URL',
   'DISCORD_TOKEN',
   'DISCORD_GUILD_ID',
+  'LOGGER_LEVEL',
 ];
 
 /**
