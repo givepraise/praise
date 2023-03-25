@@ -39,8 +39,8 @@ async function bootstrap() {
       transform: true,
       whitelist: true,
       forbidNonWhitelisted: true,
-      forbidUnknownValues: true,
-      skipMissingProperties: false,
+      // forbidUnknownValues: true,
+      // skipMissingProperties: false,
     }),
   );
 

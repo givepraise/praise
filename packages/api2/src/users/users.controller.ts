@@ -105,7 +105,8 @@ export class UsersController {
   })
   @UseInterceptors(MongooseClassSerializerInterceptor(User))
   async findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+    const users = await this.usersService.findAll();
+    return users;
   }
 
   @Get(':id')
