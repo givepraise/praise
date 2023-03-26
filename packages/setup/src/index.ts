@@ -155,6 +155,7 @@ const run = async (): Promise<void> => {
       process.env.MONGO_INITDB_ROOT_PASSWORD || randomString(),
     MONGO_USERNAME: process.env.MONGO_USERNAME,
     MONGO_PASSWORD: process.env.MONGO_PASSWORD || randomString(),
+    MONGO_DB: process.env.MONGO_DB,
     HOST: answers.HOST,
     API_URL: serverUrl(answers),
     API_PORT: process.env.API_PORT,
