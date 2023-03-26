@@ -15,7 +15,7 @@ export function MinLengthAllowEmpty(
       propertyName: propertyName,
       options: validationOptions,
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: any) {
           if (value === '') {
             return true; // Empty string is allowed
           }

@@ -10,7 +10,9 @@ services:
     restart: unless-stopped
     volumes:
       - mongodb_data:/data/db
-      - './packages/mongodb/users_init.sh:/docker-entrypoint-initdb.d/users_init.sh:ro'
+      - './packages/mongodb/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh:ro'
+      - './packages/mongodb/entrypoint.sh:/entrypoint.sh:ro'
+    entrypoint: /entrypoint.sh
 
   api:
     container_name: api-praise

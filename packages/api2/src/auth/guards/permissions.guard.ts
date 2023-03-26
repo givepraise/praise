@@ -34,7 +34,7 @@ export class PermissionsGuard implements CanActivate {
 
     if (!authContext) {
       this.logger.error(
-        "No AuthContext found in request. Make sure you're running auth strategies before the PermissionsGuard.",
+        "No AuthContext found in request. Make sure you're running auth guards before the PermissionsGuard.",
       );
       return false;
     }

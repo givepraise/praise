@@ -1,10 +1,9 @@
-import { Types } from 'mongoose';
 import { AuthRole } from './enums/auth-role.enum';
 
 export class AuthContext {
-  userId?: Types.ObjectId;
+  userId?: string;
   identityEthAddress?: string;
   apiKey?: string;
-  apiKeyId?: Types.ObjectId;
+  apiKeyId?: string;
   roles: AuthRole[];
 }

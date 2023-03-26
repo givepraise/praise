@@ -1,14 +1,14 @@
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { EventLogService } from '@/event-log/event-log.service';
-import { Quantifier } from '@/praise/interfaces/quantifier.interface';
-import { Receiver } from '@/praise/interfaces/receiver.interface';
-import { Praise, PraiseModel } from '@/praise/schemas/praise.schema';
-import { Quantification } from '@/quantifications/schemas/quantifications.schema';
-import { SettingsService } from '@/settings/settings.service';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
-import { User } from '@/users/schemas/users.schema';
+import { AuthRole } from '../../auth/enums/auth-role.enum';
+import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
+import { EventLogService } from '../../event-log/event-log.service';
+import { Quantifier } from '../../praise/interfaces/quantifier.interface';
+import { Receiver } from '../../praise/interfaces/receiver.interface';
+import { Praise, PraiseModel } from '../../praise/schemas/praise.schema';
+import { Quantification } from '../../quantifications/schemas/quantifications.schema';
+import { SettingsService } from '../../settings/settings.service';
+import { ApiException } from '../../shared/exceptions/api-exception';
+import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
+import { User } from '../../users/schemas/users.schema';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -31,7 +31,7 @@ import { PeriodStatusType } from '../enums/status-type.enum';
 import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interface';
 import { Period, PeriodModel } from '../schemas/periods.schema';
 import { PeriodsService } from './periods.service';
-import { errorMessages } from '@/utils/errorMessages';
+import { errorMessages } from '../../shared/exceptions/error-messages';
 
 @Injectable()
 export class PeriodAssignmentsService {
@@ -107,18 +107,18 @@ export class PeriodAssignmentsService {
     const now = Date.now();
     const periodEnd = new Date(period.endDate).getTime();
     if (now < periodEnd)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.CANT_ASSIGN_QUANTIFIERS_FOR_A_PERIOD_THAT_HAS_NOT_ENDED,
       );
 
     if (period.status !== 'OPEN')
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.QUANTIFIERS_CAN_ONLY_BE_ASSIGNED_ON_OPEN_PERIODS,
       );
 
     const anyPraiseAssigned = await this.isAnyPraiseAssigned(period);
     if (anyPraiseAssigned)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.SOME_PERIODS_HAS_ALREADY_BEEN_ASSIGNED_FOR_THIS_PERIOD,
       );
 
@@ -132,11 +132,11 @@ export class PeriodAssignmentsService {
     }
 
     if (!assignedQuantifiers) {
-      throw new ServiceException(errorMessages.FAILED_TO_ASSIGN_QUANTIFIERS);
+      throw new ApiException(errorMessages.FAILED_TO_ASSIGN_QUANTIFIERS);
     }
 
     if (assignedQuantifiers.remainingAssignmentsCount > 0) {
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.FAILED_TO_ASSIGN_COLLECTION_OF_PRAISE_TO_QUANTIFIERS,
         `Failed to assign ${assignedQuantifiers.remainingAssignmentsCount} collection of praise to a quantifier`,
       );
@@ -195,17 +195,17 @@ export class PeriodAssignmentsService {
     const period = await this.periodsService.findOneById(_id);
 
     if (period.status !== 'QUANTIFY')
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.QUANTIFIERS_CAN_ONLY_BE_REPLACED_ON_PERIODS_WITH_STATUS_QUANTIFY,
       );
 
     if (!currentQuantifierId || !newQuantifierId)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.BOTH_CURRENT_QUANTIFIER_ID_AND_NEW_QUANTIFIER_ID_MUST_BE_SPECIFIED,
       );
 
     if (currentQuantifierId === newQuantifierId)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.CANT_REPLACE_A_QUANTIFIER_WITH_THEMSELVES,
       );
 
@@ -213,16 +213,14 @@ export class PeriodAssignmentsService {
       currentQuantifierId,
     );
     if (!currentQuantifier)
-      throw new ServiceException(errorMessages.CURRENT_QUANTIFIER_DOESNT_EXIST);
+      throw new ApiException(errorMessages.CURRENT_QUANTIFIER_DOESNT_EXIST);
 
     const newQuantifier = await this.userModel.findById(newQuantifierId);
     if (!newQuantifier)
-      throw new ServiceException(
-        errorMessages.REPLACEMENT_QUANTIFIER_DOESNT_EXIST,
-      );
+      throw new ApiException(errorMessages.REPLACEMENT_QUANTIFIER_DOESNT_EXIST);
 
     if (!newQuantifier.roles.includes(AuthRole.QUANTIFIER))
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.REPLACEMENT_QUANTIFIER_DOESNT_HAVE_ROLE_QUANTIFIER,
       );
 
@@ -240,7 +238,7 @@ export class PeriodAssignmentsService {
       });
 
     if (praiseQuantificationsAlreadyAssignedToNewQuantifier?.length > 0)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.REPLACEMENT_QUANTIFIER_IS_ALREADY_ASSIGNED_TO_SOME_OF_THE_ORIGINAL_QUANTIFIER,
       );
 
@@ -274,7 +272,7 @@ export class PeriodAssignmentsService {
            * TODO: Test if receiver is always ObjectId
            */
           if (ua._id.equals(p.receiver as Types.ObjectId)) {
-            throw new ServiceException(
+            throw new ApiException(
               errorMessages.QUANTIFIERS_CANT_BE_ASSIGNED_TO_QUANTIFY_THEIR_PRAISE,
             );
           }
@@ -408,7 +406,7 @@ export class PeriodAssignmentsService {
         quantifierPool[0].accounts.find((a) => a._id.equals(r._id)),
       );
       if (quantifierIsReceiver) {
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.THERE_IS_JUST_ONE_QUANTIFIER_THAT_IS_ALSO_RECEIVER,
         );
       }
@@ -417,14 +415,14 @@ export class PeriodAssignmentsService {
     // Check that there are more quantifiers in the pool than redundant praise to be assigned
     //  otherwise a quantifier could be assigned the same praise multiple times
     if (PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER > quantifierPool.length)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.UNABLE_TO_ASSIGN_REDUNDANT_QUANTIFICATION_WITHOUT_MORE_MEMBERS_IN_QUANTIFIER_POOL,
       );
 
     // Check that the number of redundant assignments is greater than to the number of receivers
     //    otherwise a quantifier could be assigned the same praise multiple times
     if (PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER > receivers.length)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.QUANTIFIERS_PER_RECEIVER_IS_TOO_LARGE_FOR_THE_NUMBER_OF_RECEIVERS,
       );
 
@@ -489,7 +487,7 @@ export class PeriodAssignmentsService {
         range(rotations).forEach(() => {
           const lastElem = receiversShuffledClone.pop();
           if (!lastElem)
-            throw new ServiceException(
+            throw new ApiException(
               errorMessages.FAILED_TO_GENERATE_LIST_OF_REDUNDANT_SHUFFLED_RECEIVERS,
             );
 
@@ -624,9 +622,7 @@ export class PeriodAssignmentsService {
       const q = availableQuantifiers.pop();
 
       if (!q)
-        throw new ServiceException(
-          errorMessages.FAILED_TO_GENERATE_ASSIGNMENTS,
-        );
+        throw new ApiException(errorMessages.FAILED_TO_GENERATE_ASSIGNMENTS);
 
       // Generate a unique id to reference this assignment option (bin + quantifier)
       const assignmentBinId: string = flatten(
@@ -724,7 +720,7 @@ export class PeriodAssignmentsService {
         description: `All redundant praise assignments accounted for: ${accountedPraiseCount} / ${expectedAccountedPraiseCount} expected in period`,
       });
     } else {
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.NOT_ALL_REDUNDANT_PRAISE_ASSIGNMENTS_ACCOUNTED,
         `Not all redundant praise assignments accounted for: ${accountedPraiseCount} / ${expectedAccountedPraiseCount} expected in period`,
       );
@@ -742,7 +738,7 @@ export class PeriodAssignmentsService {
         description: `All redundant praise are assigned to unique quantifiers`,
       });
     } else {
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.SOME_REDUNDANT_PRAISE_ARE_ASSIGNED_TO_THE_SAME_QUANTIFIER_MULTIPLE_TIMES,
       );
     }

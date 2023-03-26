@@ -10,23 +10,24 @@ import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { UpdateUserInputDto } from './dto/update-user-input.dto';
 import { CreateUserInputDto } from './dto/create-user-input.dto';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
-import { EventLogService } from '@/event-log/event-log.service';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
+import { ApiException } from '../shared/exceptions/api-exception';
+import { UserAccount } from '../useraccounts/schemas/useraccounts.schema';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { AuthRole } from '../auth/enums/auth-role.enum';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
-import { Praise, PraiseDocument } from '@/praise/schemas/praise.schema';
+import { Praise, PraiseDocument } from '../praise/schemas/praise.schema';
 import { UserStatsDto } from './dto/user-stats.dto';
-import { PeriodDateRangeDto } from '@/periods/dto/period-date-range.dto';
-import { Period } from '@/periods/schemas/periods.schema';
-import { PeriodsService } from '@/periods/services/periods.service';
-import { PraiseService } from '@/praise/services/praise.service';
+import { PeriodDateRangeDto } from '../periods/dto/period-date-range.dto';
+import { Period } from '../periods/schemas/periods.schema';
+import { PeriodsService } from '../periods/services/periods.service';
+import { PraiseService } from '../praise/services/praise.service';
 import {
   generateParquetExport,
   writeCsvAndJsonExports,
-} from '@/shared/export.shared';
-import { errorMessages } from '@/utils/errorMessages';
+} from '../shared/export.shared';
+import { errorMessages } from '../shared/exceptions/error-messages';
+import { logger } from '../shared/logger';
 
 @Injectable()
 export class UsersService {
@@ -95,7 +96,7 @@ export class UsersService {
       .findOne(query)
       .populate('accounts')
       .lean();
-    if (!user) throw new ServiceException(errorMessages.USER_NOT_FOUND);
+    if (!user) throw new ApiException(errorMessages.USER_NOT_FOUND);
     const userStats = await this.getUserStats(user);
     return { ...user, ...userStats };
   }
@@ -117,7 +118,7 @@ export class UsersService {
       .limit(1)
       .sort({ $natural: -1 })
       .lean();
-    if (!user[0]) throw new ServiceException(errorMessages.USER_NOT_FOUND);
+    if (!user[0]) throw new ApiException(errorMessages.USER_NOT_FOUND);
     return user[0];
   }
 
@@ -126,10 +127,10 @@ export class UsersService {
     roleChange: UpdateUserRoleInputDto,
   ): Promise<UserWithStatsDto> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new ServiceException(errorMessages.USER_NOT_FOUND);
+    if (!userDocument) throw new ApiException(errorMessages.USER_NOT_FOUND);
 
     if (userDocument.roles.includes(roleChange.role))
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.INVALID_ROLE,
         `User already has role ${roleChange.role}`,
       );
@@ -152,7 +153,7 @@ export class UsersService {
     roleChange: UpdateUserRoleInputDto,
   ): Promise<UserWithStatsDto> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new ServiceException(errorMessages.USER_NOT_FOUND);
+    if (!userDocument) throw new ApiException(errorMessages.USER_NOT_FOUND);
 
     const role = roleChange.role;
     const roleIndex = userDocument.roles.indexOf(role);
@@ -163,7 +164,7 @@ export class UsersService {
         roles: { $in: [`${AuthRole.ADMIN}`] },
       });
       if (allAdmins.length <= 1) {
-        throw new ServiceException(
+        throw new ApiException(
           errorMessages.ITS_NOT_ALLOWED_TO_REMOVE_THE_LAST_ADMIN,
         );
       }
@@ -171,7 +172,7 @@ export class UsersService {
 
     // Verify user has role before removing
     if (roleIndex === -1)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.INVALID_ROLE,
         `User does not have role ${role}`,
       );
@@ -191,7 +192,7 @@ export class UsersService {
           'quantifications.quantifier': _id,
         });
       if (assignedPraiseCount > 0)
-        throw new ServiceException(errorMessages.CAN_NOT_REMOVE_QUANTIFIER);
+        throw new ApiException(errorMessages.CAN_NOT_REMOVE_QUANTIFIER);
     }
 
     userDocument.roles.splice(roleIndex, 1);
@@ -209,7 +210,7 @@ export class UsersService {
 
   async update(_id: Types.ObjectId, user: UpdateUserInputDto): Promise<User> {
     const userDocument = await this.userModel.findById(_id);
-    if (!userDocument) throw new ServiceException(errorMessages.USER_NOT_FOUND);
+    if (!userDocument) throw new ApiException(errorMessages.USER_NOT_FOUND);
 
     for (const [k, v] of Object.entries(user)) {
       userDocument.set(k, v);
@@ -314,4 +315,50 @@ export class UsersService {
     // Generate the parquet file
     await generateParquetExport(path, 'users', UsersExportSqlSchema);
   }
+
+  /**
+   * Seed users into database with USER and ADMIN roles,
+   *  as defined in env variable ADMINS
+   *
+   * @returns Promise
+   */
+  setEnvAdminUsers = async (): Promise<void> => {
+    const admins = process.env.ADMINS as string;
+    const ethAddresses = admins
+      .split(',')
+      .filter(Boolean)
+      .map((item) => {
+        return item.trim();
+      });
+
+    const users: User[] = [];
+    for (const eth of ethAddresses) {
+      let user = await this.userModel.findOne({ identityEthAddress: eth });
+
+      if (user) {
+        logger.info(`Setting admin role for user ${eth}`);
+        if (!user.roles.includes(AuthRole.ADMIN)) {
+          user.roles.push(AuthRole.ADMIN);
+          await user.save();
+        }
+        if (!user.roles.includes(AuthRole.USER)) {
+          user.roles.push(AuthRole.USER);
+          await user.save();
+        }
+      } else {
+        logger.info(`Creating admin user ${eth}`);
+
+        user = new this.userModel({
+          identityEthAddress: eth,
+          rewardsEthAddress: eth,
+          username: 'legalname',
+          //username: eth.substring(0, 20),
+          roles: [AuthRole.ADMIN, AuthRole.USER],
+        });
+        await user.save();
+        await user.populate('accounts');
+        users.push(user.toObject());
+      }
+    }
+  };
 }

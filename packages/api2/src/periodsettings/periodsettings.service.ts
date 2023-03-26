@@ -1,17 +1,17 @@
-import { ServiceException } from '@/shared/exceptions/service-exception';
+import { ApiException } from '../shared/exceptions/api-exception';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { PeriodSetting } from './schemas/periodsettings.schema';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
-import { PeriodsService } from '@/periods/services/periods.service';
-import { PeriodStatusType } from '@/periods/enums/status-type.enum';
-import { EventLogService } from '@/event-log/event-log.service';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { SettingsService } from '@/settings/settings.service';
-import { validateSetting } from '@/settings/utils/validate-setting';
-import { SettingGroup } from '@/settings/enums/setting-group.enum';
-import { errorMessages } from '@/utils/errorMessages';
+import { PeriodsService } from '../periods/services/periods.service';
+import { PeriodStatusType } from '../periods/enums/status-type.enum';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { SettingsService } from '../settings/settings.service';
+import { validateSetting } from '../settings/utils/validate-setting';
+import { SettingGroup } from '../settings/enums/setting-group.enum';
+import { errorMessages } from '../shared/exceptions/error-messages';
 
 @Injectable()
 export class PeriodSettingsService {
@@ -57,7 +57,7 @@ export class PeriodSettingsService {
       .exec();
 
     if (!periodSetting)
-      throw new ServiceException(errorMessages.PERIOD_SETTING_NOT_FOUND);
+      throw new ApiException(errorMessages.PERIOD_SETTING_NOT_FOUND);
     return new PeriodSetting(periodSetting);
   }
 
@@ -67,22 +67,22 @@ export class PeriodSettingsService {
     data: SetPeriodSettingDto,
   ): Promise<PeriodSetting> {
     const setting = await this.settingsService.findOneById(settingId);
-    if (!setting) throw new ServiceException(errorMessages.SETTING_NOT_FOUND);
+    if (!setting) throw new ApiException(errorMessages.SETTING_NOT_FOUND);
     const { valid, value: validatedValue } = validateSetting(
       data.value,
       setting.type,
     );
     if (!valid) {
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.INVALID_SETTING_VALUE,
         `Settings value ${data.value} is not valid for type ${setting.type}.`,
       );
     }
 
     const period = await this.periodsService.findOneById(periodId);
-    if (!period) throw new ServiceException(errorMessages.PERIOD_NOT_FOUND);
+    if (!period) throw new ApiException(errorMessages.PERIOD_NOT_FOUND);
     if (period.status !== PeriodStatusType.OPEN)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.PERIOD_SETTING_CAN_BE_CHANGED__WHEN_ITS_OPEN,
       );
 
@@ -91,12 +91,12 @@ export class PeriodSettingsService {
       period: periodId,
     });
     if (!periodSetting)
-      throw new ServiceException(errorMessages.PERIOD_SETTING_NOT_FOUND);
+      throw new ApiException(errorMessages.PERIOD_SETTING_NOT_FOUND);
 
     const originalValue = periodSetting.value;
 
     if (typeof data.value === 'undefined') {
-      throw new ServiceException(errorMessages.VALUE_IS_REQUIRED_FIELD);
+      throw new ApiException(errorMessages.VALUE_IS_REQUIRED_FIELD);
     }
     periodSetting.value = validatedValue;
 
@@ -119,7 +119,7 @@ export class PeriodSettingsService {
   async createSettingsForPeriod(periodId: Types.ObjectId) {
     const settingsAllreadyExist = await this.findAll(periodId);
     if (settingsAllreadyExist.length > 0) {
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.PERIOD_SETTINGS_ALREADY_EXIST_FOR_THIS_PERIOD,
       );
     }

@@ -1,4 +1,4 @@
-import { User } from '@/users/schemas/users.schema';
+import { User } from '../../schemas/users.schema';
 import { Types } from 'mongoose';
 
 export const userStub: User = {

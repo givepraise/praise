@@ -9,7 +9,6 @@ describe('EventLogService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule, EventLogModule],
-      // TODO: AppModule is imported to get the database connection, should instead use a mock database
     }).compile();
 
     service = module.get<EventLogService>(EventLogService);

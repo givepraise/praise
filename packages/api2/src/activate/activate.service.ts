@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ActivateInputDto } from './dto/activate-input.dto';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { UserAccountsService } from '@/useraccounts/useraccounts.service';
+import { ApiException } from '../shared/exceptions/api-exception';
+import { UserAccountsService } from '../useraccounts/useraccounts.service';
 import { ethers } from 'ethers';
-import { UsersService } from '@/users/users.service';
-import { EventLogService } from '@/event-log/event-log.service';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { User } from '@/users/schemas/users.schema';
-import { errorMessages } from '@/utils/errorMessages';
+import { UsersService } from '../users/users.service';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { User } from '../users/schemas/users.schema';
+import { errorMessages } from '../shared/exceptions/error-messages';
 
 @Injectable()
 export class ActivateService {
@@ -41,7 +41,7 @@ export class ActivateService {
     const { identityEthAddress, signature, accountId } = activateInputDto;
 
     if (!identityEthAddress || !signature || !accountId)
-      throw new ServiceException(errorMessages.INVALID_DATA_FOR_ACTIVATION);
+      throw new ApiException(errorMessages.INVALID_DATA_FOR_ACTIVATION);
 
     const userAccountModel = this.userAccountsService.getModel();
 
@@ -51,15 +51,13 @@ export class ActivateService {
       .exec();
 
     if (!userAccount)
-      throw new ServiceException(errorMessages.USER_ACCOUNT_NOT_FOUND);
+      throw new ApiException(errorMessages.USER_ACCOUNT_NOT_FOUND);
 
     if (!userAccount.activateToken)
-      throw new ServiceException(errorMessages.ACTIVATION_TOKEN_NOT_FOUND);
+      throw new ApiException(errorMessages.ACTIVATION_TOKEN_NOT_FOUND);
 
     if (userAccount.user)
-      throw new ServiceException(
-        errorMessages.USER_ACCOUNT_IS_ALREADY_ACTIVATED,
-      );
+      throw new ApiException(errorMessages.USER_ACCOUNT_IS_ALREADY_ACTIVATED);
 
     // Generate expected message, token included.
     const generatedMsg = this.generateActivateMessage(
@@ -70,9 +68,14 @@ export class ActivateService {
 
     // Verify signature against generated message
     // Recover signer and compare against query address
-    const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
-    if (signerAddress !== identityEthAddress) {
-      throw new ServiceException(errorMessages.VERIFICATION_FAILED);
+    let signerAddress;
+    try {
+      signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
+      if (signerAddress !== identityEthAddress) {
+        throw new ApiException(errorMessages.VERIFICATION_FAILED);
+      }
+    } catch (e) {
+      throw new ApiException(errorMessages.VERIFICATION_FAILED);
     }
 
     // Generate username
@@ -100,7 +103,7 @@ export class ActivateService {
 
     user = await this.usersService.findOneById(user._id);
     if (!user) {
-      throw new ServiceException(errorMessages.USER_NOT_FOUND_AFTER_UPDATE);
+      throw new ApiException(errorMessages.USER_NOT_FOUND_AFTER_UPDATE);
     }
 
     // Log event

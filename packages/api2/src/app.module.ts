@@ -4,7 +4,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccountsModule } from './useraccounts/useraccounts.module';
 import { UsersModule } from './users/users.module';
 import { EventLogModule } from './event-log/event-log.module';
-import { praiseDatabaseUri } from './shared/database.shared';
 import { SettingsModule } from './settings/settings.module';
 import { PeriodSettingsModule } from './periodsettings/periodsettings.module';
 import { PraiseModule } from './praise/praise.module';
@@ -16,11 +15,14 @@ import { ActivateModule } from './activate/activate.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CommunityModule } from './community/community.module';
+import { MultiTenantConnectionService } from './database/services/multi-tenant-connection-service';
 import { RequestLoggerMiddleware } from './shared/middlewares/request-logger.middleware';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(praiseDatabaseUri),
+    MongooseModule.forRootAsync({
+      useClass: MultiTenantConnectionService,
+    }),
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: process.env.NODE_ENV === 'testing' ? 1000 : 10, // 10 requests per minute, except in development

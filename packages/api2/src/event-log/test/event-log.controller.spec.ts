@@ -10,7 +10,6 @@ describe('EventLogController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule, EventLogModule],
-      // TODO: AppModule is imported to get the database connection, should instead use a mock database
       controllers: [EventLogController],
       providers: [EventLogService],
     }).compile();

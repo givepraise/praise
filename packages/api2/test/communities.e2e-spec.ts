@@ -1,30 +1,27 @@
+/* eslint-disable jest-extended/prefer-to-be-true */
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersService } from '@/users/users.service';
-import { UsersModule } from '@/users/users.module';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
   authorizedGetRequest,
   authorizedPatchRequest,
   authorizedPostRequest,
   loginUser,
-} from './test.common';
-import { runDbMigrations } from '@/database/migrations';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { User } from '@/users/schemas/users.schema';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
-import { CommunityService } from '../src/community/community.service';
-import { CommunityModule } from '../src/community/community.module';
+} from './shared/request';
+import { AuthRole } from '../src/auth/enums/auth-role.enum';
+import { User } from '../src/users/schemas/users.schema';
 import { Community } from '../src/community/schemas/community.schema';
-import { CommunitiesSeeder } from '@/database/seeder/communities.seeder';
 import { DiscordLinkState } from '../src/community/enums/discord-link-state';
 import { randomBytes } from 'crypto';
+
+import {
+  app,
+  testingModule,
+  server,
+  usersService,
+  usersSeeder,
+  communityService,
+  communitiesSeeder,
+} from './shared/nest';
 
 class LoggedInUser {
   accessToken: string;
@@ -33,43 +30,10 @@ class LoggedInUser {
 }
 
 describe('Communities (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let usersService: UsersService;
-  let communitiesSeeder: CommunitiesSeeder;
-  let communityService: CommunityService;
   let setupWebUserAccessToken: string;
-
   const users: LoggedInUser[] = [];
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule, CommunityModule],
-      providers: [UsersSeeder, CommunitiesSeeder],
-    }).compile();
-
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    communitiesSeeder = module.get<CommunitiesSeeder>(CommunitiesSeeder);
-    usersService = module.get<UsersService>(UsersService);
-    communityService = module.get<CommunityService>(CommunityService);
-
     // Clear the database
     await usersService.getModel().deleteMany({});
     await communityService.getModel().deleteMany({});
@@ -82,7 +46,7 @@ describe('Communities (E2E)', () => {
         rewardsAddress: wallet.address,
         roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       users.push({
         accessToken: response.accessToken,
         user,
@@ -98,15 +62,15 @@ describe('Communities (E2E)', () => {
       roles: [AuthRole.API_KEY_SETUP_WEB],
     });
 
-    const response = await loginUser(app, module, setupWebWallet);
+    const response = await loginUser(app, testingModule, setupWebWallet);
     setupWebUserAccessToken = response.accessToken;
   });
 
-  afterAll(async () => {
-    await app.close();
-  });
-
   describe('POST /api/communities', () => {
+    beforeEach(async () => {
+      await communityService.getModel().deleteMany({});
+    });
+
     test('401 when not authenticated', async () => {
       return request(server).post(`/communities`).send().expect(401);
     });
@@ -140,12 +104,12 @@ describe('Communities (E2E)', () => {
     const createValidCommunity = async (override?: any) => {
       const validCommunity = {
         name: randomBytes(10).toString('hex'),
+        hostname: 'test-community.givepraise.xyz',
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
           users[1].user.identityEthAddress,
         ],
-        hostname: 'test.praise.io',
         discordGuildId: 'kldakdsal',
         email: 'test@praise.io',
       };
@@ -190,9 +154,12 @@ describe('Communities (E2E)', () => {
       expect(response.body.message).toBe('Validation failed');
     });
 
-    test('400 when name already exists', async () => {
+    test('409 when name already exists', async () => {
       await createValidCommunity({ name: 'test' });
-      const response = await createValidCommunity({ name: 'test' });
+      const response = await createValidCommunity({
+        name: 'test',
+        hostname: 'other.com',
+      });
       expect(response.status).toBe(409);
       expect(response.body.message).toBe("name 'test 'already exists.");
     });
@@ -209,6 +176,15 @@ describe('Communities (E2E)', () => {
       });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Validation failed');
+    });
+
+    test('400 when hostname already exists', async () => {
+      await createValidCommunity({ hostname: 'test.test.se' });
+      const response = await createValidCommunity({
+        hostname: 'test.test.se',
+      });
+      expect(response.status).toBe(409);
+      expect(response.body.error).toBe('Duplicate key');
     });
 
     test('400 when email is not a valid email', async () => {
@@ -251,6 +227,16 @@ describe('Communities (E2E)', () => {
       expect(response.body.message).toBe('Validation failed');
     });
 
+    test('400 when database is added on creation', async () => {
+      const response = await createValidCommunity({
+        database: 'test',
+      });
+      expect(response.status).toBe(400);
+      expect(response.body.message[0]).toBe(
+        'property database should not exist',
+      );
+    });
+
     test('201 when authenticated as setupWeb and correct data is sent', async () => {
       const response = await createValidCommunity();
       const rb = response.body;
@@ -267,13 +253,14 @@ describe('Communities (E2E)', () => {
     beforeEach(async () => {
       await communityService.getModel().deleteMany({});
       community = await communitiesSeeder.seedCommunity({
-        name: 'test',
+        name: 'test-community',
+        hostname: 'test-community.givepraise.xyz',
+        database: 'test-community-givepraise-xyz',
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
           users[1].user.identityEthAddress,
         ],
-        hostname: 'test.praise.io',
         discordGuildId: 'kldakdsal',
         discordLinkNonce: '223',
         email: 'test@praise.io',
@@ -332,7 +319,7 @@ describe('Communities (E2E)', () => {
 
       const rb = response.body;
       expect(response.status).toBe(200);
-      expect(rb.name).toBe('test');
+      expect(rb.name).toBe('test-community');
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkState).toBe(DiscordLinkState.ACTIVE);
       expect(rb.isPublic).toBe(true);
@@ -357,7 +344,7 @@ describe('Communities (E2E)', () => {
 
       const rb = response.body;
       expect(response.status).toBe(403);
-      expect(rb.message).toBe('Verification failed');
+      expect(rb.code).toBe(1093);
     });
 
     test('400 when someone wants to link discord to active community', async () => {
@@ -417,12 +404,13 @@ describe('Communities (E2E)', () => {
       await communityService.getModel().deleteMany({});
       community = await communitiesSeeder.seedCommunity({
         name: randomBytes(10).toString('hex'),
+        hostname: 'test-community.givepraise.xyz',
+        database: 'test-community-givepraise-xyz',
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
           users[1].user.identityEthAddress,
         ],
-        hostname: 'test.praise.io',
         discordGuildId: 'kldakdsal',
         discordLinkNonce: randomBytes(10).toString('hex'),
         email: 'test@praise.io',
@@ -470,12 +458,13 @@ describe('Communities (E2E)', () => {
       await communityService.getModel().deleteMany({});
       community = await communitiesSeeder.seedCommunity({
         name: randomBytes(10).toString('hex'),
+        hostname: 'test-community.givepraise.xyz',
+        database: 'test-community-givepraise-xyz',
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
           users[1].user.identityEthAddress,
         ],
-        hostname: 'test.praise.io',
         discordGuildId: 'kldakdsal',
         discordLinkNonce: randomBytes(10).toString('hex'),
         email: 'test@praise.io',
@@ -546,13 +535,14 @@ describe('Communities (E2E)', () => {
 
     test('400 when name already exists', async () => {
       const newCommunity = await communitiesSeeder.seedCommunity({
-        name: randomBytes(10).toString('hex'),
+        name: 'somename',
+        hostname: 'some-community.givepraise.xyz',
+        database: 'some-community-givepraise-xyz',
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
           users[1].user.identityEthAddress,
         ],
-        hostname: 'test.praise.io',
         discordGuildId: 'kldakdsal',
         discordLinkNonce: randomBytes(10).toString('hex'),
         email: 'test@praise.io',
@@ -568,6 +558,33 @@ describe('Communities (E2E)', () => {
       const response = await updateValidCommunity({ hostname: 'inva  lid' });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Validation failed');
+    });
+
+    test('400 when hostname already exists', async () => {
+      await communitiesSeeder.seedCommunity({
+        name: 'beefy',
+        hostname: 'beefy.xyz',
+        database: 'test-community-givepraise-xyz',
+        creator: users[0].user.identityEthAddress,
+        owners: [
+          users[0].user.identityEthAddress,
+          users[1].user.identityEthAddress,
+        ],
+        discordGuildId: 'kldakdsal',
+        discordLinkNonce: '223',
+        email: 'test@praise.io',
+      });
+      const response = await updateValidCommunity({ hostname: 'beefy.xyz' });
+      expect(response.status).toBe(409);
+      expect(response.body.error).toBe('Duplicate key');
+    });
+
+    test('400 when attempting to change database', async () => {
+      const response = await updateValidCommunity({ database: 'notallowed' });
+      expect(response.status).toBe(400);
+      expect(response.body.message[0]).toBe(
+        'property database should not exist',
+      );
     });
 
     test('400 when email is not a valid email', async () => {

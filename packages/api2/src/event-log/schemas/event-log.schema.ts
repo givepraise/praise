@@ -1,13 +1,13 @@
-import { ExposeId } from '@/shared/decorators/expose-id.decorator';
+import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Document, model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
 import { EventLogType } from './event-log-type.schema';
-import { UserAccountNoUserId } from '@/useraccounts/dto/useraccount-no-user-id.dto';
 
 import { Type } from 'class-transformer';
 import { IsString, ValidateNested } from 'class-validator';
+import { UserAccountNoUserId } from '../../useraccounts/schemas/useraccounts.schema';
 
 export type EventLogDocument = EventLog & Document;
 

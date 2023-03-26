@@ -1,5 +1,5 @@
-import { QuantificationsService } from '@/quantifications/services/quantifications.service';
-import { Quantification } from '@/quantifications/schemas/quantifications.schema';
+import { QuantificationsService } from '../../quantifications/services/quantifications.service';
+import { Quantification } from '../../quantifications/schemas/quantifications.schema';
 import { faker } from '@faker-js/faker';
 import { Injectable } from '@nestjs/common';
 

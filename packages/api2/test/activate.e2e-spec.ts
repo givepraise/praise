@@ -1,81 +1,22 @@
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { runDbMigrations } from '@/database/migrations';
-import { UsersModule } from '@/users/users.module';
-import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
-import { UserAccountsService } from '@/useraccounts/useraccounts.service';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
-import { ActivateService } from '@/activate/activate.service';
-import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
-import { ActivateModule } from '@/activate/activate.module';
-import { EventLogModule } from '@/event-log/event-log.module';
-import { EventLogService } from '@/event-log/__mocks__/event-log.service';
-import { UsersService } from '@/users/users.service';
-import { PeriodsModule } from '@/periods/periods.module';
-import { PraiseModule } from '@/praise/praise.module';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
+import { UserAccount } from '../src/useraccounts/schemas/useraccounts.schema';
+import {
+  server,
+  activateService,
+  usersService,
+  userAccountsService,
+  userAccountsSeeder,
+} from './shared/nest';
 
 describe('EventLog (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersService: UsersService;
-  let userAccountsService: UserAccountsService;
-  let userAccountsSeeder: UserAccountsSeeder;
-  let activateService: ActivateService;
-
-  beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        UsersModule,
-        UserAccountsModule,
-        ActivateModule,
-        EventLogModule,
-        PeriodsModule,
-        PraiseModule,
-      ],
-      providers: [
-        UsersSeeder,
-        UsersService,
-        UserAccountsSeeder,
-        UserAccountsService,
-        ActivateService,
-        EventLogService,
-      ],
-    }).compile();
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-    usersService = module.get<UsersService>(UsersService);
-    userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
-    userAccountsService = module.get<UserAccountsService>(UserAccountsService);
-    activateService = module.get<ActivateService>(ActivateService);
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-
   describe('POST /api/activate - Activate user account', () => {
+    beforeEach(async () => {
+      //Clear the database
+      await userAccountsService.getModel().deleteMany({});
+      await usersService.getModel().deleteMany({});
+    });
+
     test('400 when no accountId', async () => {
       await request(server)
         .post('/activate')
@@ -96,7 +37,7 @@ describe('EventLog (E2E)', () => {
         .expect(400);
     });
 
-    test('400 when no signature', async () => {
+    test('404 account not found', async () => {
       await request(server)
         .post('/activate')
         .send({
@@ -107,66 +48,47 @@ describe('EventLog (E2E)', () => {
     });
 
     test('400 when invalid signature', async () => {
-      await request(server)
-        .post('/activate')
-        .send({
-          accountId: '0x123',
-          identityEthAddress: '0x123',
-          signature: '0x123',
-        })
-        .expect(400);
-    });
-
-    test('400 when account not found', async () => {
-      const wallet = Wallet.createRandom();
-      const signature = await wallet.signMessage(
-        activateService.generateActivateMessage(
-          wallet.address,
-          wallet.address,
-          '0x123',
-        ),
-      );
-
-      await request(server)
-        .post('/activate')
-        .send({
-          accountId: wallet.address,
-          identityEthAddress: wallet.address,
-          signature,
-        })
-        .expect(400);
-    });
-
-    test('400 when user account not found', async () => {
-      //Clear the database
-      await userAccountsService.getModel().deleteMany({});
-      await usersService.getModel().deleteMany({});
-
-      const wallet = Wallet.createRandom();
-      const signature = await wallet.signMessage(
-        activateService.generateActivateMessage(
-          wallet.address,
-          wallet.address,
-          '0x123',
-        ),
-      );
-
-      await request(server)
-        .post('/activate')
-        .send({
-          accountId: wallet.address,
-          identityEthAddress: wallet.address,
-          signature,
-        })
-        .expect(400);
-    });
-
-    test('400 activation token not found', async () => {
-      // Seed the database
       const wallet = Wallet.createRandom();
       const ua: UserAccount = await userAccountsSeeder.seedUserAccount({
         user: undefined,
-        identityEthAddress: wallet.address,
+      });
+
+      await request(server)
+        .post('/activate')
+        .send({
+          accountId: ua.accountId,
+          identityEthAddress: wallet.address,
+          signature: 'invalid',
+        })
+        .expect(400);
+    });
+
+    test('404 when user account not found', async () => {
+      const wallet = Wallet.createRandom();
+
+      const signature = await wallet.signMessage(
+        activateService.generateActivateMessage(
+          'invalid account id',
+          wallet.address,
+          'invalid activate token',
+        ),
+      );
+
+      await request(server)
+        .post('/activate')
+        .send({
+          accountId: 'invalid account id',
+          identityEthAddress: wallet.address,
+          signature,
+        })
+        .expect(404);
+    });
+
+    test('400 activation token not found', async () => {
+      const wallet = Wallet.createRandom();
+      // Seed the database
+      const ua: UserAccount = await userAccountsSeeder.seedUserAccount({
+        user: undefined,
         activationToken: undefined,
       });
 
@@ -182,22 +104,16 @@ describe('EventLog (E2E)', () => {
         .post('/activate')
         .send({
           accountId: ua.accountId,
-          identityEthAddress: wallet.address,
           signature,
         })
         .expect(400);
     });
 
     test('400 when account already activated', async () => {
-      //Clear the database
-      await userAccountsService.getModel().deleteMany({});
-      await usersService.getModel().deleteMany({});
-
       // Seed the database
       const wallet = Wallet.createRandom();
       const ua: UserAccount = await userAccountsSeeder.seedUserAccount({
         user: undefined,
-        identityEthAddress: wallet.address,
       });
 
       const signature = await wallet.signMessage(
@@ -217,14 +133,15 @@ describe('EventLog (E2E)', () => {
         })
         .expect(201);
 
-      await request(server)
+      const response = await request(server)
         .post('/activate')
         .send({
           accountId: ua.accountId,
           identityEthAddress: wallet.address,
           signature,
         })
-        .expect(400);
+        .expect(404);
+      expect(response.body.code).toBe(1004); //Activation token not found
     });
 
     test('400 when signing using wrong wallet', async () => {
@@ -236,7 +153,6 @@ describe('EventLog (E2E)', () => {
       const wallet = Wallet.createRandom();
       const ua: UserAccount = await userAccountsSeeder.seedUserAccount({
         user: undefined,
-        identityEthAddress: wallet.address,
       });
 
       const wallet2 = Wallet.createRandom();
@@ -259,15 +175,9 @@ describe('EventLog (E2E)', () => {
     });
 
     test('201 and correct body when activating', async () => {
-      //Clear the database
-      await userAccountsService.getModel().deleteMany({});
-      await usersService.getModel().deleteMany({});
-
-      // Seed the database
       const wallet = Wallet.createRandom();
       const ua: UserAccount = await userAccountsSeeder.seedUserAccount({
         user: undefined,
-        identityEthAddress: wallet.address,
       });
 
       const signature = await wallet.signMessage(

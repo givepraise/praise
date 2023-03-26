@@ -1,4 +1,4 @@
-import { QuantifyInputDto } from '@/praise/dto/quantify-input.dto';
+import { QuantifyInputDto } from '../../praise/dto/quantify-input.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 import { Types } from 'mongoose';

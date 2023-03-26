@@ -3,8 +3,8 @@ import { UserAccount } from 'api/dist/useraccount/types';
 import { EventLogTypeKey } from 'api/dist/eventlog/types';
 import { logEvent } from 'api/dist/eventlog/utils';
 import randomstring from 'randomstring';
-import { CommandHandler } from 'src/interfaces/CommandHandler';
 import { alreadyActivatedError } from '../utils/embeds/praiseEmbeds';
+import { CommandHandler } from '../interfaces/CommandHandler';
 
 /**
  * Executes command /activate

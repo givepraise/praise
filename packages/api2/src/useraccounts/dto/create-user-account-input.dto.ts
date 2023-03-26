@@ -1,5 +1,5 @@
-import { IsObjectId } from '@/shared/validators.shared';
-import { PickType } from '@nestjs/mapped-types';
+import { PickType } from '@nestjs/swagger';
+import { IsObjectId } from '../../shared/validators/is-object-id.validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsOptional } from 'class-validator';

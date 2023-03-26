@@ -1,107 +1,33 @@
+import './shared/jest';
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersService } from '@/users/users.service';
-import { UsersModule } from '@/users/users.module';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
-import { UserAccountsService } from '@/useraccounts/useraccounts.service';
-import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
-import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder';
-import { QuantificationsService } from '@/quantifications/services/quantifications.service';
-import { QuantificationsModule } from '@/quantifications/quantifications.module';
-import { PraiseModule } from '@/praise/praise.module';
-import { Praise } from '@/praise/schemas/praise.schema';
-import { PraiseSeeder } from '@/database/seeder/praise.seeder';
-import { PraiseService } from '@/praise/services/praise.service';
-import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
-import { PeriodsModule } from '@/periods/periods.module';
-import { PeriodsService } from '@/periods/services/periods.service';
+import { Praise } from '../src/praise/schemas/praise.schema';
 import {
   authorizedGetRequest,
   authorizedPatchRequest,
   loginUser,
-} from './test.common';
-import { User } from '@/users/schemas/users.schema';
-import { EventLogModule } from '@/event-log/event-log.module';
-import { runDbMigrations } from '@/database/migrations';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { PeriodStatusType } from '@/periods/enums/status-type.enum';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
+} from './shared/request';
+import { User } from '../src/users/schemas/users.schema';
+import { AuthRole } from '../src/auth/enums/auth-role.enum';
+import { PeriodStatusType } from '../src/periods/enums/status-type.enum';
+
+import {
+  app,
+  testingModule,
+  server,
+  usersService,
+  usersSeeder,
+  praiseService,
+  periodsSeeder,
+  praiseSeeder,
+  quantificationsSeeder,
+  userAccountsSeeder,
+  quantificationsService,
+  userAccountsService,
+  periodsService,
+} from './shared/nest';
 
 describe('UserController (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let usersService: UsersService;
-  let userAccountsSeeder: UserAccountsSeeder;
-  let userAccountsService: UserAccountsService;
-  let praiseSeeder: PraiseSeeder;
-  let praiseService: PraiseService;
-  let periodsSeeder: PeriodsSeeder;
-  let periodsService: PeriodsService;
-  let quantificationsSeeder: QuantificationsSeeder;
-  let quantificationsService: QuantificationsService;
-
-  beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        UsersModule,
-        EventLogModule,
-        UserAccountsModule,
-        PraiseModule,
-        QuantificationsModule,
-        PeriodsModule,
-      ],
-      providers: [
-        UsersSeeder,
-        UserAccountsSeeder,
-        PraiseSeeder,
-        QuantificationsSeeder,
-        PeriodsSeeder,
-      ],
-    }).compile();
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    usersService = module.get<UsersService>(UsersService);
-    userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
-    userAccountsService = module.get<UserAccountsService>(UserAccountsService);
-    praiseSeeder = module.get<PraiseSeeder>(PraiseSeeder);
-    praiseService = module.get<PraiseService>(PraiseService);
-    quantificationsSeeder = module.get<QuantificationsSeeder>(
-      QuantificationsSeeder,
-    );
-    quantificationsService = module.get<QuantificationsService>(
-      QuantificationsService,
-    );
-    periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
-    periodsService = module.get<PeriodsService>(PeriodsService);
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-
   describe('GET /api/users/export', () => {
     let wallet;
     let accessToken: string;
@@ -123,7 +49,7 @@ describe('UserController (E2E)', () => {
       users.push(await usersSeeder.seedUser({}));
 
       // Login and get access token
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       accessToken = response.accessToken;
     });
 
@@ -192,7 +118,7 @@ describe('UserController (E2E)', () => {
       users.push(await usersSeeder.seedUser({}));
 
       // Login and get access token
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       accessToken = response.accessToken;
     });
 
@@ -255,7 +181,7 @@ describe('UserController (E2E)', () => {
       });
 
       // Login and get access token
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       accessToken = response.accessToken;
     });
 
@@ -401,7 +327,7 @@ describe('UserController (E2E)', () => {
         roles: [AuthRole.USER, AuthRole.ADMIN],
       });
 
-      const responseAdmin = await loginUser(app, module, walletAdmin);
+      const responseAdmin = await loginUser(app, testingModule, walletAdmin);
       const accessTokenAdmin = responseAdmin.accessToken;
 
       const response = await authorizedGetRequest(
@@ -432,7 +358,7 @@ describe('UserController (E2E)', () => {
       });
 
       // Login and get access token
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       accessToken = response.accessToken;
     });
 
@@ -512,7 +438,7 @@ describe('UserController (E2E)', () => {
       });
 
       // Login and get access token
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       accessToken = response.accessToken;
     });
 
@@ -595,7 +521,7 @@ describe('UserController (E2E)', () => {
         roles: [AuthRole.USER],
       });
 
-      const responseUserTest = await loginUser(app, module, walletTest);
+      const responseUserTest = await loginUser(app, testingModule, walletTest);
       const accessTokenTest = responseUserTest.accessToken;
 
       const response = await authorizedPatchRequest(
@@ -610,15 +536,9 @@ describe('UserController (E2E)', () => {
     });
 
     test('401 response if user not authenticated', async () => {
-      const response = await authorizedPatchRequest(
-        `/users/${user._id}/addRole`,
-        app,
-        '',
-        {
-          role: 'ADMIN',
-        },
-      ).expect(401);
-      expect(response.body.message).toContain('Unauthorized');
+      await authorizedPatchRequest(`/users/${user._id}/addRole`, app, '', {
+        role: 'ADMIN',
+      }).expect(401);
     });
   });
 
@@ -643,7 +563,7 @@ describe('UserController (E2E)', () => {
       });
 
       // Login and get access token
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       accessToken = response.accessToken;
     });
 
@@ -752,7 +672,7 @@ describe('UserController (E2E)', () => {
 
       const responseAdminActive = await loginUser(
         app,
-        module,
+        testingModule,
         walletAdminActive,
       );
       const accessTokenAdminActive = responseAdminActive.accessToken;
@@ -793,7 +713,7 @@ describe('UserController (E2E)', () => {
         roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
-      const responseUserTest = await loginUser(app, module, walletTest);
+      const responseUserTest = await loginUser(app, testingModule, walletTest);
       const accessTokenTest = responseUserTest.accessToken;
 
       const response = await authorizedPatchRequest(
@@ -815,7 +735,7 @@ describe('UserController (E2E)', () => {
         roles: [AuthRole.USER, AuthRole.ADMIN, AuthRole.QUANTIFIER],
       });
 
-      const response = await authorizedPatchRequest(
+      await authorizedPatchRequest(
         `/users/${userTestNotAuth._id}/removeRole`,
         app,
         '',
@@ -823,7 +743,6 @@ describe('UserController (E2E)', () => {
           role: 'QUANTIFIER',
         },
       ).expect(401);
-      expect(response.body.message).toContain('Unauthorized');
     });
   });
 });

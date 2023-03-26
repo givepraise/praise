@@ -1,14 +1,14 @@
-import { SettingsService } from '@/settings/settings.service';
+import { SettingsService } from '../../settings/settings.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Quantification } from '../schemas/quantifications.schema';
 import { sum, has } from 'lodash';
-import { Praise } from '@/praise/schemas/praise.schema';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { PraiseService } from '@/praise/services/praise.service';
+import { Praise } from '../../praise/schemas/praise.schema';
+import { ApiException } from '../../shared/exceptions/api-exception';
+import { PraiseService } from '../../praise/services/praise.service';
 import { Inject, forwardRef } from '@nestjs/common';
-import { PeriodsService } from '@/periods/services/periods.service';
-import { errorMessages } from '@/utils/errorMessages';
+import { PeriodsService } from '../../periods/services/periods.service';
+import { errorMessages } from '../../shared/exceptions/error-messages';
 
 export class QuantificationsService {
   constructor(
@@ -46,7 +46,7 @@ export class QuantificationsService {
     const quantification = await this.quantificationModel.findById(_id).lean();
 
     if (!quantification)
-      throw new ServiceException(errorMessages.QUANTIFICATION_NOT_FOUND);
+      throw new ApiException(errorMessages.QUANTIFICATION_NOT_FOUND);
 
     return quantification;
   }
@@ -61,7 +61,7 @@ export class QuantificationsService {
       .sort({ $natural: -1 })
       .lean();
     if (!quantifications[0])
-      throw new ServiceException(errorMessages.PRAISE_NOT_FOUND);
+      throw new ApiException(errorMessages.PRAISE_NOT_FOUND);
     return quantifications[0];
   }
 
@@ -109,7 +109,7 @@ export class QuantificationsService {
     ]);
 
     if (!Array.isArray(quantification) || quantification.length === 0)
-      throw new ServiceException(errorMessages.QUANTIFICATION_NOT_FOUND);
+      throw new ApiException(errorMessages.QUANTIFICATION_NOT_FOUND);
 
     return quantification[0];
   }
@@ -169,7 +169,7 @@ export class QuantificationsService {
       .lean();
 
     if (!quantifications) {
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.QUANTIFICATION_NOT_FOUND,
         `Quantifications for praise ${praiseId} not found`,
       );
@@ -306,7 +306,7 @@ export class QuantificationsService {
     // Find the period associated with the current praise item
     const period = await this.praiseService.getPraisePeriod(praise);
     if (!period) {
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.QUANTIFICATION_HAS_NO_ASSOCIATED_PERIOD,
       );
     }
@@ -338,7 +338,7 @@ export class QuantificationsService {
       periodId,
     )) as number;
     if (!duplicatePraisePercentage)
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.INVALID_SETTING_PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE,
       );
 
@@ -386,7 +386,7 @@ export class QuantificationsService {
       .lean();
 
     if (!updatedQuantification) {
-      throw new ServiceException(
+      throw new ApiException(
         errorMessages.QUANTIFICATION_NOT_FOUND,
         `Quantification ${quantification._id} not found`,
       );

@@ -1,23 +1,18 @@
-import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, Request, Headers } from '@nestjs/common';
 import { EthSignatureService } from './eth-signature.service';
 import { NonceResponseDto } from './dto/nonce-response.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { NonceInputDto } from './dto/nonce-input.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginInputDto } from './dto/login-input.dto';
-import { EventLogService } from '@/event-log/event-log.service';
-import { ServiceException } from '@/shared/exceptions/service-exception';
-import { errorMessages } from '@/utils/errorMessages';
+import { ApiException } from '../shared/exceptions/api-exception';
+import { errorMessages } from '../shared/exceptions/error-messages';
 
 @Controller('auth')
 @ApiTags('Authentication')
 export class AuthController {
-  constructor(
-    private readonly ethSignatureService: EthSignatureService,
-    private readonly eventLogService: EventLogService,
-  ) {}
+  constructor(private readonly ethSignatureService: EthSignatureService) {}
 
   @Post('eth-signature/nonce')
   @ApiOperation({
@@ -45,10 +40,9 @@ export class AuthController {
         nonce: user.nonce,
       };
     }
-    throw new ServiceException(errorMessages.FAILED_TO_GENERATE_NONCE);
+    throw new ApiException(errorMessages.FAILED_TO_GENERATE_NONCE);
   }
 
-  @UseGuards(AuthGuard('eth-signature'))
   @Post('eth-signature/login')
   @ApiOperation({
     summary: "Verifies a user's signature and returns a JWT token",
@@ -66,7 +60,15 @@ export class AuthController {
     description: 'User authenticated successfully',
     type: LoginResponseDto,
   })
-  async login(@Request() req: RequestWithUser): Promise<LoginResponseDto> {
-    return this.ethSignatureService.login(req.user._id);
+  async login(
+    @Request() req: RequestWithUser,
+    @Headers('host') host: string,
+    @Body() loginInputDto: LoginInputDto,
+  ): Promise<LoginResponseDto> {
+    return this.ethSignatureService.login(
+      loginInputDto.identityEthAddress,
+      loginInputDto.signature,
+      host.split(':')[0],
+    );
   }
 }

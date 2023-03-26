@@ -1,60 +1,13 @@
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersService } from '@/users/users.service';
-import { UsersModule } from '@/users/users.module';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { EthSignatureService } from '@/auth/eth-signature.service';
-import { EventLogModule } from '@/event-log/event-log.module';
-import { runDbMigrations } from '@/database/migrations';
-import { ApiKeySeeder } from '@/database/seeder/api-key.seeder';
-import { ApiKeyModule } from '@/api-key/api-key.module';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
+import {
+  apiKeySeeder,
+  server,
+  usersSeeder,
+  ethSignatureService,
+} from './shared/nest';
 
 describe('AuthController (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let usersService: UsersService;
-  let ethSignatureService: EthSignatureService;
-  let apiKeySeeder: ApiKeySeeder;
-  beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule, EventLogModule, ApiKeyModule],
-      providers: [UsersSeeder, ApiKeySeeder],
-    }).compile();
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    usersService = module.get<UsersService>(UsersService);
-    ethSignatureService = module.get<EthSignatureService>(EthSignatureService);
-    apiKeySeeder = module.get<ApiKeySeeder>(ApiKeySeeder);
-  });
-
-  beforeEach(async () => {
-    await usersService.getModel().deleteMany({});
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-
   describe('POST /api/auth/eth-signature/nonce', () => {
     /**
      *
@@ -135,31 +88,31 @@ describe('AuthController (E2E)', () => {
   });
 
   describe('POST /api/auth/eth-signature/login', () => {
-    test('401 when missing identityEthAddress', async () => {
-      return request(server)
+    test('responds with 400 error when missing identityEthAddress', async () => {
+      const response = await request(server)
         .post('/auth/eth-signature/login')
-        .send({ signature: 'any' })
-        .expect(401);
+        .send({ signature: 'any' });
+      expect(response.statusCode).toBe(400);
     });
 
     /**
      *
      */
-    test('401 when missing signature', async () => {
-      return request(server)
+    test('responds with 400 error when missing signature', async () => {
+      const response = await request(server)
         .post('/auth/eth-signature/login')
-        .send({ identityEthAddress: 'any' })
-        .expect(401);
+        .send({ identityEthAddress: 'any' });
+      expect(response.statusCode).toBe(400);
     });
 
     /**
      *
      */
-    test('401 when submitting identityEthAddress that does not exist', async () => {
-      await request(server)
+    test('responds with 400 error when submitting identityEthAddress that does not exist', async () => {
+      const response = await request(server)
         .post('/auth/eth-signature/login')
-        .send({ identityEthAddress: 'invalid', signature: 'any' })
-        .expect(401);
+        .send({ identityEthAddress: 'invalid', signature: 'any' });
+      expect(response.statusCode).toBe(400);
     });
 
     /**
@@ -296,12 +249,12 @@ describe('AuthController (E2E)', () => {
     });
   });
 
-  describe('.env API KEY authentication, GET /api/users', () => {
+  describe('.env API KEY authentication, GET various endpoints', () => {
     /**
      *
      */
     test('403 when accessing disallowed endpoint /api/users', async () => {
-      const apiKey = process.env.DISCORD_BOT_API_KEY;
+      const apiKey = process.env.API_KEYS?.split(',')[0]; // Usee first api key for testing purposes
       expect(apiKey).not.toBeUndefined();
       if (apiKey) {
         return request(server)
@@ -315,7 +268,7 @@ describe('AuthController (E2E)', () => {
      *
      */
     test('200 when accessing allowed endpoint /api/communities', async () => {
-      const apiKey = process.env.DISCORD_BOT_API_KEY;
+      const apiKey = process.env.API_KEYS?.split(',')[0]; // Usee first api key for testing purposes
       expect(apiKey).not.toBeUndefined();
       if (apiKey) {
         return request(server)

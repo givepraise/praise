@@ -5,7 +5,6 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import { ServiceExceptionFilter } from './shared/filters/service-exception.filter';
-import { runDbMigrations } from './database/migrations';
 import { version } from '../package.json';
 import { logger } from './shared/logger';
 import { MongoValidationErrorFilter } from './shared/filters/mongo-validation-error.filter';
@@ -13,10 +12,24 @@ import { MongoServerErrorFilter } from './shared/filters/mongo-server-error.filt
 import { envCheck } from './shared/env.shared';
 import * as fs from 'fs';
 import { AppConfig } from './shared/appConfig.shared';
+import { MultiTenancyManager } from './database/multi-tenancy-manager';
+import { MigrationsManager } from './database/migrations-manager';
 
 async function bootstrap() {
   // Check that all required ENV variables are set
   envCheck();
+
+  // The multi-tenancy manager makes sure that every community has a database
+  // and that the database has the correct collections and indexes. If Praise
+  // is upgraded from a single-tenant version, the multi-tenancy manager will
+  // also migrate the data from the single database to the multi-tenant setup.
+  const multiTenancyManager = new MultiTenancyManager();
+  await multiTenancyManager.run();
+
+  // The migrations manager runs the database migrations for each community
+  // database.
+  const migrationsManager = new MigrationsManager();
+  await migrationsManager.run();
 
   // Create an instance of the Nest app
   const app = await NestFactory.create(AppModule, AppConfig);
@@ -33,8 +46,8 @@ async function bootstrap() {
       transform: true,
       whitelist: true,
       forbidNonWhitelisted: true,
-      forbidUnknownValues: true,
-      skipMissingProperties: false,
+      // forbidUnknownValues: true,
+      // skipMissingProperties: false,
     }),
   );
 
@@ -63,9 +76,6 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
   });
-
-  // Run database migrations before starting the app
-  await runDbMigrations(app, logger);
 
   // Start the app listening on the API port or default to port 3000
   await app.listen(process.env.API_PORT || 3000);

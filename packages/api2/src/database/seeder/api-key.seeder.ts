@@ -1,6 +1,6 @@
-import { ApiKeyService } from '@/api-key/api-key.service';
-import { CreateApiKeyResponseDto } from '@/api-key/dto/create-api-key-response';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
+import { ApiKeyService } from '../../api-key/api-key.service';
+import { CreateApiKeyResponseDto } from '../../api-key/dto/create-api-key-response';
+import { AuthRole } from '../../auth/enums/auth-role.enum';
 import { faker } from '@faker-js/faker';
 import { Injectable } from '@nestjs/common';
 

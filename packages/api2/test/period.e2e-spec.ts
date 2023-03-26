@@ -1,45 +1,37 @@
+import './shared/jest';
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersService } from '@/users/users.service';
-import { UsersModule } from '@/users/users.module';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { authorizedGetRequest, loginUser } from './test.common';
-import { runDbMigrations } from '@/database/migrations';
-import { PraiseModule } from '@/praise/praise.module';
-import { QuantificationsModule } from '@/quantifications/quantifications.module';
-import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
-import { PeriodsService } from '../src/periods/services/periods.service';
-import { PraiseSeeder } from '@/database/seeder/praise.seeder';
-import { QuantificationsSeeder } from '@/database/seeder/quantifications.seeder';
-import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
-import { PraiseService } from '@/praise/services/praise.service';
-import { QuantificationsService } from '@/quantifications/services/quantifications.service';
-import { UserAccountsService } from '@/useraccounts/useraccounts.service';
-import { PeriodsSeeder } from '@/database/seeder/periods.seeder';
-import { PeriodsModule } from '@/periods/periods.module';
-import { Period } from '@/periods/schemas/periods.schema';
-import { PeriodStatusType } from '@/periods/enums/status-type.enum';
-import { PeriodSettingsModule } from '@/periodsettings/periodsettings.module';
-import { PeriodSettingsSeeder } from '@/database/seeder/periodsettings.seeder';
-import { PeriodSettingsService } from '@/periodsettings/periodsettings.service';
-import { SettingsSeeder } from '@/database/seeder/settings.seeder';
-import { SettingsModule } from '@/settings/settings.module';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { User } from '@/users/schemas/users.schema';
-import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
-import { Setting } from '@/settings/schemas/settings.schema';
+import { authorizedGetRequest, loginUser } from './shared/request';
+import { Period } from '../src/periods/schemas/periods.schema';
+import { PeriodStatusType } from '../src/periods/enums/status-type.enum';
+import { AuthRole } from '../src/auth/enums/auth-role.enum';
+import { User } from '../src/users/schemas/users.schema';
+import { PaginatedQueryDto } from '../src/shared/dto/pagination-query.dto';
+import { Setting } from '../src/settings/schemas/settings.schema';
 import { some } from 'lodash';
-import { PeriodDetailsQuantifierDto } from '@/periods/dto/period-details-quantifier.dto';
-import { SettingsService } from '@/settings/settings.service';
-import { Praise } from '@/praise/schemas/praise.schema';
+import { PeriodDetailsQuantifierDto } from '../src/periods/dto/period-details-quantifier.dto';
+import { Praise } from '../src/praise/schemas/praise.schema';
 import { faker } from '@faker-js/faker';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
+
+import {
+  app,
+  testingModule,
+  server,
+  usersService,
+  usersSeeder,
+  praiseService,
+  periodsSeeder,
+  praiseSeeder,
+  quantificationsSeeder,
+  userAccountsSeeder,
+  settingsSeeder,
+  quantificationsService,
+  userAccountsService,
+  periodSettingsService,
+  periodsService,
+  settingsService,
+  periodSettingsSeeder,
+} from './shared/nest';
 
 class LoggedInUser {
   accessToken: string;
@@ -48,87 +40,9 @@ class LoggedInUser {
 }
 
 describe('Period (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let usersService: UsersService;
-  let praiseSeeder: PraiseSeeder;
-  let praiseService: PraiseService;
-  let periodsService: PeriodsService;
-  let periodsSeeder: PeriodsSeeder;
-  let periodSettingsService: PeriodSettingsService;
-  let quantificationsSeeder: QuantificationsSeeder;
-  let quantificationsService: QuantificationsService;
-  let userAccountsService: UserAccountsService;
-  let userAccountsSeeder: UserAccountsSeeder;
-  let settingsSeeder: SettingsSeeder;
-  let periodSettingsSeeder: PeriodSettingsSeeder;
-  let settingsService: SettingsService;
-
   const users: LoggedInUser[] = [];
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        UsersModule,
-        PraiseModule,
-        QuantificationsModule,
-        UserAccountsModule,
-        PeriodsModule,
-        PeriodSettingsModule,
-        SettingsModule,
-      ],
-      providers: [
-        UsersSeeder,
-        PraiseSeeder,
-        QuantificationsSeeder,
-        UserAccountsSeeder,
-        PeriodsSeeder,
-        PeriodSettingsSeeder,
-        SettingsSeeder,
-      ],
-    }).compile();
-
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    usersService = module.get<UsersService>(UsersService);
-    praiseSeeder = module.get<PraiseSeeder>(PraiseSeeder);
-    praiseService = module.get<PraiseService>(PraiseService);
-    quantificationsSeeder = module.get<QuantificationsSeeder>(
-      QuantificationsSeeder,
-    );
-    quantificationsService = module.get<QuantificationsService>(
-      QuantificationsService,
-    );
-    userAccountsService = module.get<UserAccountsService>(UserAccountsService);
-    periodsSeeder = module.get<PeriodsSeeder>(PeriodsSeeder);
-    periodsService = module.get<PeriodsService>(PeriodsService);
-    periodSettingsService = module.get<PeriodSettingsService>(
-      PeriodSettingsService,
-    );
-    userAccountsService = module.get<UserAccountsService>(UserAccountsService);
-    userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
-    settingsSeeder = module.get<SettingsSeeder>(SettingsSeeder);
-    settingsService = module.get<SettingsService>(SettingsService);
-    periodSettingsSeeder =
-      module.get<PeriodSettingsSeeder>(PeriodSettingsSeeder);
-
     // Clear the database
     await usersService.getModel().deleteMany({});
     await praiseService.getModel().deleteMany({});
@@ -153,17 +67,13 @@ describe('Period (E2E)', () => {
         rewardsAddress: wallet.address,
         roles,
       });
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       users.push({
         accessToken: response.accessToken,
         user,
         wallet,
       });
     }
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 
   describe('GET /periods/{id}', () => {
@@ -743,7 +653,7 @@ describe('Period (E2E)', () => {
         .set('Authorization', `Bearer ${users[0].accessToken}`)
         .expect(404);
 
-      expect(response.body.message).toBe('Period not found');
+      expect(response.body.code).toBe(1009);
     });
 
     test('should return 200 and list of praise items', async () => {

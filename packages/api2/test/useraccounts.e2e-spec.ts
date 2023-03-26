@@ -1,84 +1,33 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
+import './shared/jest';
 import { Wallet } from 'ethers';
 import request from 'supertest';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersService } from '@/users/users.service';
-import { UsersModule } from '@/users/users.module';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
   authorizedGetRequest,
   authorizedPostRequest,
   authorizedPatchRequest,
   loginUser,
-} from './test.common';
-import { User } from '@/users/schemas/users.schema';
+} from './shared/request';
+import { User } from '../src/users/schemas/users.schema';
 import { faker } from '@faker-js/faker';
-import { EventLogModule } from '@/event-log/event-log.module';
-import { runDbMigrations } from '@/database/migrations';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { UserAccountsSeeder } from '@/database/seeder/useraccounts.seeder';
-import { UserAccountsService } from '@/useraccounts/useraccounts.service';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
-import { UserAccountsModule } from '@/useraccounts/useraccounts.module';
-import mongoose, { Types } from 'mongoose';
-import { Server } from 'http';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
+import { AuthRole } from '../src/auth/enums/auth-role.enum';
+import { UserAccount } from '../src/useraccounts/schemas/useraccounts.schema';
+
+import {
+  app,
+  server,
+  usersService,
+  usersSeeder,
+  userAccountsSeeder,
+  userAccountsService,
+  testingModule,
+} from './shared/nest';
+import { Types } from 'mongoose';
 
 describe('UserAccountsController (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let usersService: UsersService;
-  let userAccountsSeeder: UserAccountsSeeder;
-  let userAccountsService: UserAccountsService;
-
-  beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule, EventLogModule, UserAccountsModule],
-      providers: [UsersSeeder, UserAccountsSeeder],
-    }).compile();
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    usersService = module.get<UsersService>(UsersService);
-    userAccountsSeeder = module.get<UserAccountsSeeder>(UserAccountsSeeder);
-    userAccountsService = module.get<UserAccountsService>(UserAccountsService);
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-
   describe('POST /api/useraccounts', () => {
     let wallet;
     let accessToken: string;
     const users: User[] = [];
-
-    beforeAll((done) => {
-      done();
-    });
-
-    afterAll((done) => {
-      // Closing the DB connection allows Jest to exit successfully.
-      mongoose.connection.close();
-      done();
-    });
 
     beforeAll(async () => {
       // Clear the database
@@ -104,7 +53,7 @@ describe('UserAccountsController (E2E)', () => {
       );
 
       // Login and get access token
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       accessToken = response.accessToken;
     });
 
@@ -262,16 +211,6 @@ describe('UserAccountsController (E2E)', () => {
     const users: User[] = [];
     const userAccounts: UserAccount[] = [];
 
-    beforeAll((done) => {
-      done();
-    });
-
-    afterAll((done) => {
-      // Closing the DB connection allows Jest to exit successfully.
-      mongoose.connection.close();
-      done();
-    });
-
     beforeAll(async () => {
       // Clear the database
       await usersService.getModel().deleteMany({});
@@ -288,7 +227,7 @@ describe('UserAccountsController (E2E)', () => {
       );
 
       // Login and get access token
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       accessToken = response.accessToken;
     });
 
@@ -401,16 +340,6 @@ describe('UserAccountsController (E2E)', () => {
     const users: User[] = [];
     const userAccounts: UserAccount[] = [];
 
-    beforeAll((done) => {
-      done();
-    });
-
-    afterAll((done) => {
-      // Closing the DB connection allows Jest to exit successfully.
-      mongoose.connection.close();
-      done();
-    });
-
     beforeAll(async () => {
       // Clear the database
       await usersService.getModel().deleteMany({});
@@ -431,7 +360,7 @@ describe('UserAccountsController (E2E)', () => {
       );
 
       // Login and get access token
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       accessToken = response.accessToken;
     });
 
@@ -484,16 +413,6 @@ describe('UserAccountsController (E2E)', () => {
     const users: User[] = [];
     const userAccounts: UserAccount[] = [];
 
-    beforeAll((done) => {
-      done();
-    });
-
-    afterAll((done) => {
-      // Closing the DB connection allows Jest to exit successfully.
-      mongoose.connection.close();
-      done();
-    });
-
     beforeAll(async () => {
       // Clear the database
       await usersService.getModel().deleteMany({});
@@ -518,7 +437,7 @@ describe('UserAccountsController (E2E)', () => {
       );
 
       // Login and get access token
-      const response = await loginUser(app, module, wallet);
+      const response = await loginUser(app, testingModule, wallet);
       accessToken = response.accessToken;
     });
 

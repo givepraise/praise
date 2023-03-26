@@ -2,11 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Type } from 'class-transformer';
 import { model, Types } from 'mongoose';
 import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
+import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { has } from 'lodash';
-import { Quantification } from '@/quantifications/schemas/quantifications.schema';
-import { ExposeId } from '@/shared/decorators/expose-id.decorator';
+import { Quantification } from '../../quantifications/schemas/quantifications.schema';
+import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
 export type PraiseDocument = Praise & Document;

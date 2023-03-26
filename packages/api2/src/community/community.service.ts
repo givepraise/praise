@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { ServiceException } from '@/shared/exceptions/service-exception';
+import { ApiException } from '../shared/exceptions/api-exception';
 import { Community, CommunityModel } from './schemas/community.schema';
-import { PaginatedQueryDto } from '@/shared/dto/pagination-query.dto';
+import { PaginatedQueryDto } from '../shared/dto/pagination-query.dto';
 import { CommunityPaginatedResponseDto } from './dto/community-pagination-model.dto';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
 import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
 import { ethers } from 'ethers';
 import { DiscordLinkState } from './enums/discord-link-state';
-import { errorMessages } from '@/utils/errorMessages';
+import { errorMessages } from '../shared/exceptions/error-messages';
 import { randomBytes } from 'crypto';
 import { assertOwnersIncludeCreator } from './utils/assert-owners-include-creator';
 
 @Injectable()
 export class CommunityService {
   constructor(
-    @InjectModel(Community.name)
+    @InjectModel(Community.name, 'praise')
     private communityModel: typeof CommunityModel,
   ) {}
 
@@ -63,7 +63,7 @@ export class CommunityService {
       paginateQuery,
     );
     if (!communityPagination)
-      throw new ServiceException(errorMessages.FAILED_TO_QUERY_COMMUNITIES);
+      throw new ApiException(errorMessages.FAILED_TO_QUERY_COMMUNITIES);
 
     return communityPagination;
   }
@@ -74,7 +74,7 @@ export class CommunityService {
   ): Promise<Community> {
     const communityDocument = await this.communityModel.findById(_id);
     if (!communityDocument)
-      throw new ServiceException(errorMessages.communityNotFound);
+      throw new ApiException(errorMessages.communityNotFound);
     if (community.owners) {
       assertOwnersIncludeCreator(community.owners, communityDocument.creator);
     }
@@ -94,6 +94,7 @@ export class CommunityService {
       isPublic: true,
       // it produces a random string of 5 characters
       discordLinkNonce: randomBytes(5).toString('hex'),
+      database: communityDto.hostname.replace(/\./g, '-'),
     });
     await community.save();
     return community.toObject();
@@ -104,9 +105,9 @@ export class CommunityService {
     linkDiscordBotDto: LinkDiscordBotDto,
   ): Promise<Community> {
     const community = await this.getModel().findById(communityId);
-    if (!community) throw new ServiceException(errorMessages.communityNotFound);
+    if (!community) throw new ApiException(errorMessages.COMMUNITY_NOT_FOUND);
     if (community.discordLinkState === DiscordLinkState.ACTIVE)
-      throw new ServiceException(errorMessages.COMMUNITY_IS_ALREADY_ACTIVE);
+      throw new ApiException(errorMessages.COMMUNITY_IS_ALREADY_ACTIVE);
 
     // Generate message to be signed
     const generatedMsg = this.generateLinkDiscordMessage({
@@ -122,7 +123,7 @@ export class CommunityService {
       linkDiscordBotDto.signedMessage,
     );
     if (signerAddress?.toLowerCase() !== community.creator.toLowerCase()) {
-      throw new ServiceException(errorMessages.VERIFICATION_FAILED);
+      throw new ApiException(errorMessages.COMMUNITY_NOT_ALLOWED_SIGNER);
     }
 
     community.discordLinkState = DiscordLinkState.ACTIVE;

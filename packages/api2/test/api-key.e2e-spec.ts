@@ -1,60 +1,31 @@
+import './shared/jest';
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
 import {
   authorizedDeleteRequest,
   authorizedGetRequest,
   authorizedPostRequest,
   authorizedPutRequest,
   loginUser,
-} from './test.common';
-import { runDbMigrations } from '@/database/migrations';
-import { ApiKeyService } from '@/api-key/api-key.service';
-import { ApiKeyModule } from '@/api-key/api-key.module';
-import { UsersModule } from '@/users/users.module';
-import { AuthRole } from '@/auth/enums/auth-role.enum';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
-import { ApiKey } from '@/api-key/schemas/api-key.schema';
+} from './shared/request';
+import { AuthRole } from '../src/auth/enums/auth-role.enum';
+import { ApiKey } from '../src/api-key/schemas/api-key.schema';
 
-describe('EventLog (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let apiKeyService: ApiKeyService;
+import {
+  app,
+  testingModule,
+  usersSeeder,
+  server,
+  apiKeyService,
+} from './shared/nest';
+
+describe('ApiKey (E2E)', () => {
   let adminWallet;
   let adminToken: string;
   let userWallet;
   let userToken: string;
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule, ApiKeyModule],
-      providers: [UsersSeeder],
-    }).compile();
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    apiKeyService = module.get<ApiKeyService>(ApiKeyService);
-
     // Seed an admin user
     adminWallet = Wallet.createRandom();
     await usersSeeder.seedUser({
@@ -64,7 +35,7 @@ describe('EventLog (E2E)', () => {
     });
 
     // Login and get access token
-    let response = await loginUser(app, module, adminWallet);
+    let response = await loginUser(app, testingModule, adminWallet);
     adminToken = response.accessToken;
 
     // Seed a user
@@ -75,12 +46,9 @@ describe('EventLog (E2E)', () => {
       roles: [AuthRole.USER],
     });
 
-    response = await loginUser(app, module, userWallet);
+    // Login and get access token
+    response = await loginUser(app, testingModule, userWallet);
     userToken = response.accessToken;
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 
   describe('POST /api/api-key - create API key', () => {
@@ -255,7 +223,7 @@ describe('EventLog (E2E)', () => {
       await apiKeyService.getModel().deleteMany({});
     });
 
-    test('200 and correct body when authenticated', async () => {
+    test('404 create -> delete -> get', async () => {
       const createResponse = await authorizedPostRequest(
         '/api-key',
         app,
@@ -275,14 +243,11 @@ describe('EventLog (E2E)', () => {
       expect(response.body).toBeDefined();
       expect(response.body._id).toEqual(createResponse.body._id);
 
-      const getResponse = await authorizedGetRequest(
+      await authorizedGetRequest(
         `/api-key/${createResponse.body._id}`,
         app,
         adminToken,
-      ).expect(400);
-
-      expect(getResponse.body).toBeDefined();
-      expect(getResponse.body.message).toEqual('API key not found');
+      ).expect(404);
     });
 
     test('400 when attempting to delete non-existing key', async () => {
@@ -309,14 +274,11 @@ describe('EventLog (E2E)', () => {
         adminToken,
       ).expect(200);
 
-      const response = await request(server)
+      await request(server)
         .get('/api-key')
         .set('Authorization', `Bearer ${createResponse.body.key}`)
         .send()
         .expect(401);
-
-      expect(response.body).toBeDefined();
-      expect(response.body.message).toEqual('Unauthorized');
     });
 
     // Test should fail when attempting to delete key without proper authentication

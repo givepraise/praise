@@ -1,15 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { User } from '@/users/schemas/users.schema';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { User } from '../users/schemas/users.schema';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '@/users/users.service';
+import { UsersService } from '../users/users.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { LoginResponseDto } from './dto/login-response.dto';
-import { EventLogService } from '@/event-log/event-log.service';
-import { EventLogTypeKey } from '@/event-log/enums/event-log-type-key';
-import { Types } from 'mongoose';
-import { ServiceException } from '@/shared/exceptions/service-exception';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { ApiException } from '../shared/exceptions/api-exception';
 import { randomBytes } from 'crypto';
-import { errorMessages } from '@/utils/errorMessages';
+import { errorMessages } from '../shared/exceptions/error-messages';
+import { HOSTNAME_TEST } from '../constants/constants.provider';
+import { ethers } from 'ethers';
 
 @Injectable()
 /**
@@ -70,22 +71,52 @@ export class EthSignatureService {
    * @param user User object with information about the user
    * @returns LoginResponse
    */
-  async login(userId: Types.ObjectId): Promise<LoginResponseDto> {
-    const user = await this.usersService.findOneById(userId);
-    if (!user) throw new ServiceException(errorMessages.USER_NOT_FOUND);
+  async login(
+    identityEthAddress: string,
+    signature: string,
+    hostname: string,
+  ): Promise<LoginResponseDto> {
+    let user;
+    try {
+      user = await this.usersService.findOneByEth(identityEthAddress);
+    } catch (e) {
+      // Throw UnauthorizedException instead of BadRequestException since
+      // the user is not authenticated yet Nest.js defaults to that on
+      // other authentication strategt errors
+      throw new ApiException(errorMessages.UNAUTHORIZED);
+    }
 
-    const { identityEthAddress, roles } = user;
+    // Check if user has previously generated a nonce
+    if (!user.nonce) {
+      throw new ApiException(errorMessages.NONCE_NOT_FOUND);
+    }
+
+    // Generate expected message
+    const message = this.generateLoginMessage(identityEthAddress, user.nonce);
+
+    // Verify signature
+    try {
+      // Recovered signer address must match identityEthAddress
+      const signerAddress = ethers.utils.verifyMessage(message, signature);
+      if (signerAddress !== identityEthAddress) throw new Error();
+    } catch (e) {
+      throw new UnauthorizedException('Signature verification failed');
+    }
+
+    const { roles } = user;
 
     // Create payload for the JWT token
     const payload: JwtPayload = {
-      userId: userId.toString(),
+      userId: user._id.toString(),
       identityEthAddress,
       roles,
+      hostname: process.env.NODE_ENV === 'testing' ? HOSTNAME_TEST : hostname,
     } as JwtPayload;
 
     // Sign payload to create access token
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: '7d',
+      secret: process.env.JWT_SECRET,
     });
 
     await this.eventLogService.logEvent({

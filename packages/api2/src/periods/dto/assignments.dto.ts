@@ -1,4 +1,4 @@
-import { Quantifier } from '@/praise/interfaces/quantifier.interface';
+import { Quantifier } from '../../praise/interfaces/quantifier.interface';
 
 export interface AssignmentsDto {
   poolAssignments: Quantifier[];

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SettingsController } from '../settings.controller';
 import { SettingsService } from '../settings.service';
 import { settingStub } from './stubs/setting.stub';
-import { ConstantsProvider } from '@/constants/constants.provider';
+import { ConstantsProvider } from '../constants/constants.provider';
 
 jest.mock('@/settings/settings.service');
 jest.mock('@/constants/constants.provider');

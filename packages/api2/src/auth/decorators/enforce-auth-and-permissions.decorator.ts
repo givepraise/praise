@@ -1,6 +1,6 @@
 import { UseGuards, applyDecorators } from '@nestjs/common';
 import { PermissionsGuard } from '../guards/permissions.guard';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from '../guards/auth.guard';
 
 /**
  * The EnforceAuthAndPermissions decorator joins the BypassGuard, JwtGuard, ApiKeyGuard and PermissionsGuard
@@ -9,9 +9,8 @@ import { AuthGuard } from '@nestjs/passport';
  */
 export function EnforceAuthAndPermissions() {
   return applyDecorators(
-    // Authentication guards
-    UseGuards(AuthGuard(['jwt', 'api-key', 'bypass'])),
-    // Authorization guards
+    UseGuards(AuthGuard),
+    // Authorization
     UseGuards(PermissionsGuard),
   );
 }

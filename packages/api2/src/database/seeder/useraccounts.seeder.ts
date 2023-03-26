@@ -1,4 +1,4 @@
-import { UserAccount } from '@/useraccounts/schemas/useraccounts.schema';
+import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
 import { faker } from '@faker-js/faker';
 import { Injectable } from '@nestjs/common';
 import { UserAccountsService } from '../../useraccounts/useraccounts.service';

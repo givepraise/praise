@@ -1,5 +1,5 @@
-import { Praise } from '@/praise/schemas/praise.schema';
-import { userAccountStub } from '@/useraccounts/test/stubs/useraccount.stub';
+import { Praise } from '../../schemas/praise.schema';
+import { userAccountStub } from '../../../useraccounts/test/stubs/useraccount.stub';
 import { Types } from 'mongoose';
 
 export const praiseStub: Praise = {

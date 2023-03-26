@@ -17,8 +17,13 @@ export class MongoServerErrorFilter implements ExceptionFilter {
         } 'already exists.`,
       });
     }
-
-    console.error(exception);
+    if (exception.code === 13) {
+      return response.status(403).json({
+        statusCode: 403,
+        error: 'Forbidden',
+        message: 'You do not have permission to perform this action.',
+      });
+    }
 
     return response.status(500).json({
       statusCode: 500,

@@ -1,61 +1,24 @@
+import './shared/jest';
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { Server } from 'http';
 import { Wallet } from 'ethers';
-import { ServiceExceptionFilter } from '@/shared/filters/service-exception.filter';
-import { UsersService } from '@/users/users.service';
-import { UsersModule } from '@/users/users.module';
-import { UsersSeeder } from '@/database/seeder/users.seeder';
-import { authorizedGetRequest, loginUser } from './test.common';
-import { EventLogSeeder } from '@/database/seeder/event-log.seeder';
-import { EventLogModule } from '@/event-log/event-log.module';
-import { EventLogService } from '@/event-log/event-log.service';
-import { runDbMigrations } from '@/database/migrations';
-import { EventLogType } from '@/event-log/schemas/event-log-type.schema';
-import { EventLog } from '@/event-log/schemas/event-log.schema';
-import { MongoServerErrorFilter } from '@/shared/filters/mongo-server-error.filter';
-import { MongoValidationErrorFilter } from '@/shared/filters/mongo-validation-error.filter';
+import { authorizedGetRequest, loginUser } from './shared/request';
+import { EventLogType } from '../src/event-log/schemas/event-log-type.schema';
+import { EventLog } from '../src/event-log/schemas/event-log.schema';
+
+import {
+  app,
+  testingModule,
+  server,
+  usersSeeder,
+  eventLogService,
+  eventLogSeeder,
+} from './shared/nest';
 
 describe('EventLog (E2E)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let module: TestingModule;
-  let usersSeeder: UsersSeeder;
-  let usersService: UsersService;
-  let eventLogSeeder: EventLogSeeder;
-  let eventLogService: EventLogService;
   let wallet;
   let accessToken: string;
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule, EventLogModule],
-      providers: [UsersSeeder, EventLogSeeder],
-    }).compile();
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    app.useGlobalFilters(new MongoServerErrorFilter());
-    app.useGlobalFilters(new MongoValidationErrorFilter());
-    app.useGlobalFilters(new ServiceExceptionFilter());
-    server = app.getHttpServer();
-    await app.init();
-    await runDbMigrations(app);
-    usersSeeder = module.get<UsersSeeder>(UsersSeeder);
-    usersService = module.get<UsersService>(UsersService);
-    eventLogSeeder = module.get<EventLogSeeder>(EventLogSeeder);
-    eventLogService = module.get<EventLogService>(EventLogService);
-
-    // Clear the database
-    await usersService.getModel().deleteMany({});
-
     // Seed the database
     wallet = Wallet.createRandom();
     await usersSeeder.seedUser({
@@ -64,12 +27,8 @@ describe('EventLog (E2E)', () => {
     });
 
     // Login and get access token
-    const response = await loginUser(app, module, wallet);
+    const response = await loginUser(app, testingModule, wallet);
     accessToken = response.accessToken;
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 
   describe('GET /api/event-log', () => {

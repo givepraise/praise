@@ -1,13 +1,13 @@
 import { Exclude, Type } from 'class-transformer';
 import { Types, SchemaTypes } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
-import { User } from '@/users/schemas/users.schema';
-import { ExposeId } from '@/shared/decorators/expose-id.decorator';
+import { ApiProperty, ApiResponseProperty, OmitType } from '@nestjs/swagger';
+import { User } from '../../users/schemas/users.schema';
+import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { IsOptional, IsString } from 'class-validator';
 import { has } from 'lodash';
-import { IsObjectId } from '@/shared/validators.shared';
-import { MinLengthAllowEmpty } from '@/shared/decorators/min-length-allow-empty.decorator';
+import { IsObjectId } from '../../shared/validators/is-object-id.validator';
+import { MinLengthAllowEmpty } from '../../shared/decorators/min-length-allow-empty.decorator';
 
 export type UserAccountDocument = UserAccount & Document;
 
@@ -29,13 +29,14 @@ export class UserAccount {
 
   @ApiProperty({
     example: '63b428f7d9ca4f6ff5370d05',
-    oneOf: [{ type: 'string' }, { $ref: '#/components/schemas/User' }],
+    type: 'string',
+    required: false,
   })
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', default: null, index: true })
+  @ExposeId()
   @Type(() => User)
   @IsOptional()
   @IsObjectId()
-  @ExposeId()
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', default: null, index: true })
   user?: User | Types.ObjectId;
 
   @ApiProperty({
@@ -112,3 +113,10 @@ export const UserAccountsExportSqlSchema = `
   "createdAt" TIMESTAMP, 
   "updatedAt" TIMESTAMP
 `;
+
+// Importing this class from another file causes the error:
+// TypeError: Cannot read properties of undefined (reading 'prototype')
+// TODO: Figure out why this is happening
+export class UserAccountNoUserId extends OmitType(UserAccount, [
+  'user',
+] as const) {}

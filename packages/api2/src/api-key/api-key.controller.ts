@@ -11,16 +11,16 @@ import {
 } from '@nestjs/common';
 import { ApiKeyService } from './api-key.service';
 import { CreateApiKeyInputDto } from './dto/create-api-key-input.dto';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { Permission } from '@/auth/enums/permission.enum';
+import { Permissions } from '../auth/decorators/permissions.decorator';
+import { Permission } from '../auth/enums/permission.enum';
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response';
-import { ObjectIdPipe } from '@/shared/pipes/object-id.pipe';
+import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { Types } from 'mongoose';
 import { ApiKey } from './schemas/api-key.schema';
 import { UpdateDescriptionInputDto } from './dto/update-description-input.dto';
 import { ApiOperation, ApiResponse, ApiTags, ApiParam } from '@nestjs/swagger';
-import { MongooseClassSerializerInterceptor } from '@/shared/interceptors/mongoose-class-serializer.interceptor';
-import { EnforceAuthAndPermissions } from '@/auth/decorators/enforce-auth-and-permissions.decorator';
+import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
+import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 
 @Controller('api-key')
 @ApiTags('API Key')

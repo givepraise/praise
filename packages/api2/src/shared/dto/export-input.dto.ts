@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsDate, IsIn, IsOptional, IsString } from 'class-validator';
 import { Types } from 'mongoose';
-import { IsObjectId } from '../validators.shared';
+import { IsObjectId } from '../../shared/validators/is-object-id.validator';
 import parseISO from 'date-fns/parseISO';
 
 export class ExportInputDto {

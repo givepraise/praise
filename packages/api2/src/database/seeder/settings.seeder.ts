@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { Injectable } from '@nestjs/common';
-import { SettingGroup } from '@/settings/enums/setting-group.enum';
-import { SettingsService } from '@/settings/settings.service';
-import { Setting } from '@/settings/schemas/settings.schema';
+import { SettingGroup } from '../../settings/enums/setting-group.enum';
+import { SettingsService } from '../../settings/settings.service';
+import { Setting } from '../../settings/schemas/settings.schema';
 
 @Injectable()
 export class SettingsSeeder {

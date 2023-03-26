@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { EthSignatureService } from '../eth-signature.service';
-import { UsersService } from '@/users/users.service';
-import { userStub } from '@/users/test/stubs/user.stub';
+import { UsersService } from '../users/users.service';
+import { userStub } from '../users/test/stubs/user.stub';
 import { JwtService } from '@nestjs/jwt';
 import { LoginResponseDto } from '../dto/login-response.dto';
 import { accessTokenStub } from './stubs/access-token';
-import { EventLogService } from '@/event-log/event-log.service';
+import { EventLogService } from '../event-log/event-log.service';
 
 jest.mock('@/users/users.service');
 jest.mock('@/event-log/event-log.service');
