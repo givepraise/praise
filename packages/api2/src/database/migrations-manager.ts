@@ -2,11 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { MongoClient } from 'mongodb';
 import { MongoDBStorage, Umzug } from 'umzug';
 import { Community } from '../community/schemas/community.schema';
-import {
-  DB_URL_ROOT,
-  DB_NAME_MAIN,
-  DB_URL_MAIN_DB,
-} from '../constants/constants.provider';
+import { DB_URL_ROOT, DB_NAME_MAIN } from '../constants/constants.provider';
 import { PeriodsService } from '../periods/services/periods.service';
 import { PeriodSettingsService } from '../periodsettings/periodsettings.service';
 import { PraiseService } from '../praise/services/praise.service';
