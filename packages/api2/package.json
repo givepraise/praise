@@ -16,7 +16,7 @@
     "test": "yarn run load-env jest --watchAll --config ./jest.config.js",
     "test:watch": "yarn run load-env jest --watch",
     "test:cov": "yarn run load-env jest --coverage",
-    "test:e2e": "NODE_ENV=testing && MONGO_DB=_test-praise yarn run load-env jest --config ./jest-e2e.config.js --runInBand --silent=false"
+    "test:e2e": "NODE_ENV=testing && MONGO_DB=praise-test yarn run load-env jest --config ./jest-e2e.config.js --runInBand --silent=false"
   },
   "dependencies": {
     "@faker-js/faker": "^7.6.0",

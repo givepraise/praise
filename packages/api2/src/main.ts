@@ -25,7 +25,6 @@ async function bootstrap() {
   // also migrate the data from the single database to the multi-tenant setup.
   const multiTenancyManager = new MultiTenancyManager();
   await multiTenancyManager.run();
-  await multiTenancyManager.close();
 
   // The migrations manager runs the database migrations for each community
   // database.

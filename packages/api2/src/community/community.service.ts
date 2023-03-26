@@ -94,6 +94,7 @@ export class CommunityService {
       isPublic: true,
       // it produces a random string of 5 characters
       discordLinkNonce: randomBytes(5).toString('hex'),
+      database: communityDto.hostname.replace(/\./g, '-'),
     });
     await community.save();
     return community.toObject();

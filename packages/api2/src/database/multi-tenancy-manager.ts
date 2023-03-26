@@ -4,28 +4,26 @@ import { MongoClient } from 'mongodb';
 import { AuthRole } from '../auth/enums/auth-role.enum';
 import { CommunityModel } from '../community/schemas/community.schema';
 import {
-  adminDbUrl,
-  MAIN_DB_NAME,
-  TEST_COMMUNITY_DB_NAME,
+  DB_URL_ROOT,
+  DB_NAME_MAIN,
+  HOSTNAME_TEST,
+  DB_URL_MAIN_DB,
 } from '../constants/constants.provider';
 import { databaseExists } from './utils/database-exists';
-import { mongooseConnect } from './utils/mongoose-connect';
+import mongoose, { ConnectOptions } from 'mongoose';
+import { dbNameCommunity } from './utils/community-db-name';
 
 export class MultiTenancyManager {
   private mongodb: MongoClient;
 
-  private singleSetupCommunityDbName: string =
-    process.env.NODE_ENV === 'testing'
-      ? TEST_COMMUNITY_DB_NAME
-      : process.env.HOST || '';
+  private readonly singleSetupHostname: string =
+    process.env.NODE_ENV === 'testing' ? HOSTNAME_TEST : process.env.HOST || '';
 
-  constructor() {
-    this.mongodb = new MongoClient(adminDbUrl);
-  }
-
-  async close() {
-    await this.mongodb.close();
-  }
+  private singleSetupCommunityDbName: string = (process.env.NODE_ENV ===
+  'testing'
+    ? HOSTNAME_TEST
+    : process.env.HOST || ''
+  ).replace(/\./g, '-');
 
   /**
    * Create initial community based on env variables. Take the .env
@@ -36,11 +34,14 @@ export class MultiTenancyManager {
    */
   async createInitialCommunity() {
     // Create community based on env variables
-    logger.info('Creating initial community based on env variables');
+    logger.info(
+      `${DB_NAME_MAIN}: Creating initial community based on env variables`,
+    );
     const admins = process.env.ADMINS || '';
     const communityData = {
-      hostname: process.env.HOST,
+      hostname: this.singleSetupHostname,
       name: process.env.HOST,
+      database: this.singleSetupCommunityDbName,
       creator: admins.split(',')[0],
       owners: admins.split(','),
       discordGuildId: process.env.DISCORD_GUILD_ID,
@@ -59,9 +60,11 @@ export class MultiTenancyManager {
    * community service.
    */
   async setupInitialCommunityDb() {
-    logger.info('Setting up initial community database');
+    logger.info(
+      `Setting up initial community database: ${this.singleSetupCommunityDbName}`,
+    );
     try {
-      const dbFrom = this.mongodb.db(MAIN_DB_NAME);
+      const dbFrom = this.mongodb.db(DB_NAME_MAIN);
 
       // Community database name = host name defined in .env. Test community
       // database has a predefined name.
@@ -87,7 +90,11 @@ export class MultiTenancyManager {
         const newCollection = dbTo.collection(collectionName);
         if (collectionData.length === 0) {
           // Skip empty collections
-          await dbFrom.collection(collectionName).drop();
+          try {
+            await dbFrom.collection(collectionName).drop();
+          } catch (error) {
+            logger.error(error.message);
+          }
           continue;
         }
         await newCollection.insertMany(collectionData);
@@ -127,7 +134,7 @@ export class MultiTenancyManager {
       for (const community of communities) {
         await dbAdmin.command({
           grantRolesToUser: process.env.MONGO_USERNAME,
-          roles: [{ role: 'readWrite', db: community.hostname }],
+          roles: [{ role: 'readWrite', db: dbNameCommunity(community) }],
         });
       }
     } catch (error) {
@@ -142,14 +149,14 @@ export class MultiTenancyManager {
    */
   async crudOwnersOnAllDatabases() {
     logger.info(
-      'Creating admin users for all communities based on settings in Community collection',
+      `Syncronizing admin users for all communities based on settings in Community collection`,
     );
     try {
       const communities = await CommunityModel.find();
 
       // Loop through all communities
       for (const community of communities) {
-        const db = this.mongodb.db(community.hostname);
+        const db = this.mongodb.db(dbNameCommunity(community));
 
         // Create or get users collection
         let users = db.collection('users');
@@ -166,7 +173,9 @@ export class MultiTenancyManager {
           }
           if (user) {
             logger.info(
-              `${community.hostname}: Setting admin and user role for ${eth}`,
+              `${dbNameCommunity(
+                community,
+              )}: Setting admin and user role for ${eth}`,
             );
             if (!user.roles.includes(AuthRole.ADMIN)) {
               await users.updateOne(
@@ -181,7 +190,9 @@ export class MultiTenancyManager {
               );
             }
           } else {
-            logger.info(`Creating admin user ${eth}`);
+            logger.info(
+              `${dbNameCommunity(community)}: Creating admin user ${eth}`,
+            );
             await users.insertOne({
               identityEthAddress: eth,
               rewardsEthAddress: eth,
@@ -212,27 +223,37 @@ export class MultiTenancyManager {
   async run() {
     logger.info('Running multi-tenancy manager...');
 
-    // Create db connection. Leaving out the db name will connect to the
-    // default database, specified in the .env file.
-    const mongoose = await mongooseConnect();
+    try {
+      // Create db connection to admin database
+      this.mongodb = new MongoClient(DB_URL_ROOT);
 
-    // if there is no community migrated to the multi-tenant setup yet,
-    // assume that the current community is the first one and perform the initial
-    // migration.
-    if (
-      !(await databaseExists(this.singleSetupCommunityDbName, this.mongodb))
-    ) {
-      await this.createInitialCommunity();
-      await this.setupInitialCommunityDb();
+      // Create db connection. Leaving out the db name will connect to the
+      // default database, specified in the .env file.
+      const mongooseConn = await mongoose.connect(DB_URL_MAIN_DB, {
+        useNewUrlParser: true,
+      } as ConnectOptions);
+
+      // if there is no community migrated to the multi-tenant setup yet,
+      // assume that the current community is the first one and perform the initial
+      // migration.
+      if (
+        !(await databaseExists(this.singleSetupCommunityDbName, this.mongodb))
+      ) {
+        await this.createInitialCommunity();
+        await this.setupInitialCommunityDb();
+      }
+
+      // Grant readwrite permissions to all databases
+      await this.grantAccessToAllDatabases();
+
+      // Create or update users with admin role
+      await this.crudOwnersOnAllDatabases();
+
+      // Cleanup
+      await mongooseConn.disconnect();
+      await this.mongodb.close();
+    } catch (error) {
+      logger.error(error.message);
     }
-
-    // Grant readwrite permissions to all databases
-    await this.grantAccessToAllDatabases();
-
-    // Create or update users with admin role
-    await this.crudOwnersOnAllDatabases();
-
-    // Close db connection
-    mongoose.disconnect();
   }
 }

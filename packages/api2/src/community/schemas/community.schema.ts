@@ -17,6 +17,7 @@ import { IsEthAddress } from '../../shared/validators/is-eth-address.validator';
 import { isValidCommunityName } from '../utils/is-valid-community-name';
 import { isValidOwners } from '../utils/is-valid-owners';
 import { isValidHostname } from '../utils/is-valid-hostname';
+import { Exclude } from 'class-transformer';
 
 export type CommunityDocument = Community & Document;
 
@@ -36,15 +37,14 @@ export class Community {
   @ApiProperty({
     example: 'banklessdao.givepraise.xyz',
     required: true,
-    minLength: 6,
-    maxLength: 64,
+    maxLength: 255,
   })
   @IsString()
   @Prop({
     type: String,
     required: true,
-    minlength: 6,
-    maxlength: 64,
+    maxlength: 255,
+    unique: true,
     validate: {
       validator: (name: string) => Promise.resolve(isValidHostname(name)),
       message: 'Invalid hostname.',
@@ -76,7 +76,7 @@ export class Community {
   @ApiProperty({
     example: 'john.smith@banklessDao.com',
     required: true,
-    maxLength: 256,
+    maxLength: 255,
   })
   @IsString()
   @IsEmail()
@@ -110,10 +110,10 @@ export class Community {
   @ApiProperty({ example: '0980987846534', required: false, maxLength: 32 })
   @IsOptional()
   @IsString()
-  @Prop({ type: String, required: false, maxlength: 32 })
+  @Prop({ type: String, required: false, maxlength: 255 })
   discordGuildId?: string;
 
-  @ApiProperty({ example: 'oiujoiuoo8u', maxLength: 16 })
+  @ApiProperty({ example: 'oiujoiuoo8u', maxLength: 255 })
   @IsString()
   @Prop({ type: String, length: 10 })
   discordLinkNonce?: string;

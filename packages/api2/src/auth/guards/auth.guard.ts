@@ -1,7 +1,7 @@
 import { ApiKeyService } from '../../api-key/api-key.service';
 import {
   ConstantsProvider,
-  TEST_COMMUNITY_DB_NAME,
+  HOSTNAME_TEST,
 } from '../../constants/constants.provider';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -74,9 +74,7 @@ export class AuthGuard implements CanActivate {
 
       // Hostname in JWT payload must match hostname in request
       const expectedHostname =
-        process.env.NODE_ENV === 'testing'
-          ? TEST_COMMUNITY_DB_NAME
-          : request.hostname;
+        process.env.NODE_ENV === 'testing' ? HOSTNAME_TEST : request.hostname;
 
       if (expectedHostname !== payload.hostname) {
         return false;

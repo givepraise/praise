@@ -9,7 +9,7 @@ import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { randomBytes } from 'crypto';
 import { errorMessages } from '../shared/exceptions/error-messages';
-import { TEST_COMMUNITY_DB_NAME } from '../constants/constants.provider';
+import { HOSTNAME_TEST } from '../constants/constants.provider';
 import { ethers } from 'ethers';
 
 @Injectable()
@@ -110,8 +110,7 @@ export class EthSignatureService {
       userId: user._id.toString(),
       identityEthAddress,
       roles,
-      hostname:
-        process.env.NODE_ENV === 'testing' ? TEST_COMMUNITY_DB_NAME : hostname,
+      hostname: process.env.NODE_ENV === 'testing' ? HOSTNAME_TEST : hostname,
     } as JwtPayload;
 
     // Sign payload to create access token

@@ -49,8 +49,9 @@ import { UsersSeeder } from '../../src/database/seeder/users.seeder';
 import { UserAccountsSeeder } from '../../src/database/seeder/useraccounts.seeder';
 
 // Import migrations
-import { runDbMigrations } from '../../src/database/migrations';
-import { TEST_COMMUNITY_DB_NAME } from '../../src/constants/constants.provider';
+import { HOSTNAME_TEST } from '../../src/constants/constants.provider';
+import { MultiTenancyManager } from '../../src/database/multi-tenancy-manager';
+import { MigrationsManager } from '../../src/database/migrations-manager';
 
 // Core Nest objects
 export let testingModule: TestingModule;
@@ -85,10 +86,20 @@ export let usersSeeder: UsersSeeder;
 export let userAccountsSeeder: UserAccountsSeeder;
 
 export async function startNest(): Promise<void> {
+  // Make sure the database is setup for multi-tenancy
+  const multiTenancyManager = new MultiTenancyManager();
+  await multiTenancyManager.run();
+
+  // Migrate the database to latest format
+  const migrationsManager = new MigrationsManager();
+  await migrationsManager.run();
+
+  const testDbName = HOSTNAME_TEST.replace(/\./g, '-');
+
   testingModule = await Test.createTestingModule({
     imports: [
       MongooseModule.forRoot(
-        `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${TEST_COMMUNITY_DB_NAME}?authSource=admin&appname=PraiseApi`,
+        `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${testDbName}?authSource=admin&appname=PraiseApi`,
       ),
       ActivateModule,
       ApiKeyModule,
@@ -134,9 +145,6 @@ export async function startNest(): Promise<void> {
   app.useGlobalFilters(new ServiceExceptionFilter());
   server = app.getHttpServer();
   await app.init();
-
-  // Run DB migrations
-  await runDbMigrations(app);
 
   // Services
   activateService = testingModule.get<ActivateService>(ActivateService);
