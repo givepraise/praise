@@ -7,7 +7,11 @@ import {
 } from './schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  OnApplicationBootstrap,
+  OnModuleInit,
+} from '@nestjs/common';
 import { UpdateUserInputDto } from './dto/update-user-input.dto';
 import { CreateUserInputDto } from './dto/create-user-input.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
@@ -27,9 +31,10 @@ import {
   writeCsvAndJsonExports,
 } from '../shared/export.shared';
 import { errorMessages } from '../shared/exceptions/error-messages';
+import { logger } from '../shared/logger';
 
 @Injectable()
-export class UsersService {
+export class UsersService implements OnModuleInit, OnApplicationBootstrap {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
@@ -39,6 +44,14 @@ export class UsersService {
     private periodService: PeriodsService,
     private praiseService: PraiseService,
   ) {}
+  onApplicationBootstrap() {
+    console.log('\n\nonApplicationBootstrap\n\n\n\n');
+    this.setEnvAdminUsers();
+  }
+  onModuleInit() {
+    console.log('\n\n\nUsersService.onModuleInit\n\n\n\n');
+    this.setEnvAdminUsers();
+  }
 
   getModel(): Model<UserDocument> {
     return this.userModel;
@@ -314,4 +327,50 @@ export class UsersService {
     // Generate the parquet file
     await generateParquetExport(path, 'users', UsersExportSqlSchema);
   }
+
+  /**
+   * Seed users into database with USER and ADMIN roles,
+   *  as defined in env variable ADMINS
+   *
+   * @returns Promise
+   */
+  setEnvAdminUsers = async (): Promise<void> => {
+    const admins = process.env.ADMINS as string;
+    const ethAddresses = admins
+      .split(',')
+      .filter(Boolean)
+      .map((item) => {
+        return item.trim();
+      });
+
+    const users: User[] = [];
+    for (const eth of ethAddresses) {
+      let user = await this.userModel.findOne({ identityEthAddress: eth });
+
+      if (user) {
+        logger.info(`Setting admin role for user ${eth}`);
+        if (!user.roles.includes(AuthRole.ADMIN)) {
+          user.roles.push(AuthRole.ADMIN);
+          await user.save();
+        }
+        if (!user.roles.includes(AuthRole.USER)) {
+          user.roles.push(AuthRole.USER);
+          await user.save();
+        }
+      } else {
+        logger.info(`Creating admin user ${eth}`);
+
+        user = new this.userModel({
+          identityEthAddress: eth,
+          rewardsEthAddress: eth,
+          username: 'legalname',
+          //username: eth.substring(0, 20),
+          roles: [AuthRole.ADMIN, AuthRole.USER],
+        });
+        await user.save();
+        await user.populate('accounts');
+        users.push(user.toObject());
+      }
+    }
+  };
 }

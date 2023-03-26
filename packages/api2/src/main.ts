@@ -14,15 +14,25 @@ import { envCheck } from './shared/env.shared';
 import * as fs from 'fs';
 import { AppMigrationsModule } from './database/app.migrations.module';
 import { AppConfig } from './shared/appConfig.shared';
+import { MultiTenancyManager } from './database/multi-tenancy-manager';
+import { MigrationsManager } from './database/migrations-manager';
 
 async function bootstrap() {
   // Check that all required ENV variables are set
   envCheck();
 
+  const multiTenancyManager = new MultiTenancyManager();
+  await multiTenancyManager.run();
+  await multiTenancyManager.close();
+
   // Run database migrations before starting the app
-  const appMigrations = await NestFactory.create(AppMigrationsModule);
-  await runDbMigrations(appMigrations, logger);
-  await appMigrations.close();
+  // const appMigrations = await NestFactory.create(AppMigrationsModule);
+  // await runDbMigrations(appMigrations, logger);
+  // await appMigrations.close();
+
+  const migrationsManager = new MigrationsManager();
+  await migrationsManager.run();
+  await migrationsManager.close();
 
   // Create an instance of the Nest app
   const app = await NestFactory.create(AppModule, AppConfig);

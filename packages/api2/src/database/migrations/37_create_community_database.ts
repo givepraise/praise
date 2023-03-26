@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb';
 import { CommunityModel } from '../schemas/communities/37_community.schema';
 import { randomBytes } from 'crypto';
 import {
-  PRAISE_DB_NAME,
+  MAIN_DB_NAME,
   TEST_COMMUNITY_DB_NAME,
 } from '../../constants/constants.provider';
 
@@ -38,7 +38,7 @@ const up = async (): Promise<void> => {
 
   try {
     const client = new MongoClient(dbUrl);
-    const dbFrom = client.db(PRAISE_DB_NAME);
+    const dbFrom = client.db(MAIN_DB_NAME);
     const communityDbName =
       process.env.NODE_ENV === 'testing'
         ? TEST_COMMUNITY_DB_NAME
@@ -48,7 +48,7 @@ const up = async (): Promise<void> => {
     const collections = await dbFrom.listCollections().toArray();
     for (const collection of collections) {
       const collectionName = collection.name;
-      const skipCollections = ['communities', 'migrations'];
+      const skipCollections = ['communities'];
       if (skipCollections.includes(collectionName)) {
         // Skip communities and migrations collections
         // They will remain in the main praise database
@@ -83,6 +83,11 @@ const up = async (): Promise<void> => {
     await dbAdmin.command({
       grantRolesToUser: process.env.MONGO_USERNAME,
       roles: [{ role: 'readWrite', db: communityDbName }],
+    });
+
+    // Manually add migration to new database so it doesn't run again
+    dbTo.collection('migrations').insertOne({
+      migrationName: '37_create_community_database.ts',
     });
 
     await client.close();

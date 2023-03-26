@@ -8,8 +8,9 @@ import { PeriodSettingsService } from '../periodsettings/periodsettings.service'
 import { QuantificationsService } from '../quantifications/services/quantifications.service';
 
 import mongoose, { ConnectOptions } from 'mongoose';
-import { PRAISE_DB_NAME } from '../constants/constants.provider';
+import { MAIN_DB_NAME } from '../constants/constants.provider';
 import { Logger } from 'winston';
+import { MongoClient } from 'mongodb';
 
 interface DatabaseConfig {
   MONGO_USERNAME: string;
@@ -17,6 +18,36 @@ interface DatabaseConfig {
   MONGO_HOST: string;
   MONGO_PORT: string;
   MONGO_DB: string;
+}
+
+/**
+ * Check if a database exists. Returns true if it does, false if it doesn't. Uses the admin database to check.
+ */
+async function checkDatabaseExists(databaseName: string) {
+  const dbAdminUrl = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}?authSource=admin&appname=PraiseApiMigrations`;
+  const client = new MongoClient(dbAdminUrl);
+
+  try {
+    // Connect to the MongoDB server
+    await client.connect();
+
+    // Get the list of databases
+    const databasesList = await client.db().admin().listDatabases();
+
+    // Check if the database exists in the list
+    const databaseExists = databasesList.databases.some(
+      (db) => db.name === databaseName,
+    );
+
+    return databaseExists;
+  } catch (error) {
+    // Close the connection to the MongoDB server
+    await client.close();
+    throw new Error(error);
+  } finally {
+    // Close the connection to the MongoDB server
+    await client.close();
+  }
 }
 
 /**
@@ -36,7 +67,7 @@ const connectDatabase = async (
     MONGO_PASSWORD,
     MONGO_HOST,
     MONGO_PORT,
-    MONGO_DB: PRAISE_DB_NAME,
+    MONGO_DB: MAIN_DB_NAME,
   } as DatabaseConfig;
 
   const config = {
@@ -44,12 +75,20 @@ const connectDatabase = async (
     ...configOverride,
   } as DatabaseConfig;
 
-  const uri = `mongodb://${config.MONGO_USERNAME}:${config.MONGO_PASSWORD}@${config.MONGO_HOST}:${config.MONGO_PORT}/${config.MONGO_DB}?authSource=admin`;
-
   try {
-    const db = await mongoose.connect(uri, {
-      useNewUrlParser: true,
-    } as ConnectOptions);
+    const uri = (dbName: string) =>
+      `mongodb://${config.MONGO_USERNAME}:${config.MONGO_PASSWORD}@${config.MONGO_HOST}:${config.MONGO_PORT}/${dbName}?authSource=admin`;
+
+    let db: typeof mongoose;
+    if (await checkDatabaseExists(process.env.HOST || '')) {
+      db = await mongoose.connect(uri(process.env.HOST || ''), {
+        useNewUrlParser: true,
+      } as ConnectOptions);
+    } else {
+      db = await mongoose.connect(uri(process.env.MONGO_DB || ''), {
+        useNewUrlParser: true,
+      } as ConnectOptions);
+    }
 
     return db;
   } catch (error) {
@@ -98,14 +137,29 @@ export const runDbMigrations = async (
     });
     logger && logger.info('Migrator created');
 
+    /**
+     * Register ts-node to be able to run typescript migrations
+     */
     require('ts-node/register');
+
+    /**
+     * Run migrations
+     */
     await migrator.up();
     logger && logger.info('Migrations run');
+
+    /**
+     * Make sure that users defined in env variables are set as admin
+     * This is done after migrations to make sure that the user exists
+     * in the database
+     */
+    //TODO: Loop through all Communities and set admin users
+    await app.get(UsersService).setEnvAdminUsers();
 
     await closeDatabaseConnection();
     logger && logger.info('Database connection closed');
   } catch (error) {
-    logger && logger.error(error);
+    logger && logger.error(error.message);
     throw error;
   }
 };

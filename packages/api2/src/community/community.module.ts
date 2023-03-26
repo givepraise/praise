@@ -7,13 +7,13 @@ import { AuthModule } from '../auth/auth.module';
 import { ApiKeyModule } from '../api-key/api-key.module';
 import {
   ConstantsProvider,
-  PRAISE_DB_NAME,
+  MAIN_DB_NAME,
 } from '../constants/constants.provider';
 
 @Module({
   imports: [
     MongooseModule.forRoot(
-      `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${PRAISE_DB_NAME}?authSource=admin&appname=PraiseApi`,
+      `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${MAIN_DB_NAME}?authSource=admin&appname=PraiseApi`,
       { connectionName: 'praise' },
     ),
     MongooseModule.forFeature(
