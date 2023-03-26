@@ -7,11 +7,7 @@ import {
 } from './schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import {
-  Injectable,
-  OnApplicationBootstrap,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UpdateUserInputDto } from './dto/update-user-input.dto';
 import { CreateUserInputDto } from './dto/create-user-input.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
@@ -34,7 +30,7 @@ import { errorMessages } from '../shared/exceptions/error-messages';
 import { logger } from '../shared/logger';
 
 @Injectable()
-export class UsersService implements OnModuleInit, OnApplicationBootstrap {
+export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
@@ -44,14 +40,6 @@ export class UsersService implements OnModuleInit, OnApplicationBootstrap {
     private periodService: PeriodsService,
     private praiseService: PraiseService,
   ) {}
-  onApplicationBootstrap() {
-    console.log('\n\nonApplicationBootstrap\n\n\n\n');
-    this.setEnvAdminUsers();
-  }
-  onModuleInit() {
-    console.log('\n\n\nUsersService.onModuleInit\n\n\n\n');
-    this.setEnvAdminUsers();
-  }
 
   getModel(): Model<UserDocument> {
     return this.userModel;

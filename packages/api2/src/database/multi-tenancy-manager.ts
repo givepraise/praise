@@ -118,7 +118,7 @@ export class MultiTenancyManager {
    */
   async grantAccessToAllDatabases() {
     logger.info(
-      'Granting access to default db user to all commmunity databases',
+      'Granting access to default db user to all community databases',
     );
     try {
       const communities = await CommunityModel.find();

@@ -1,11 +1,11 @@
 import mongoose, { ConnectOptions } from 'mongoose';
 
 interface DatabaseConfig {
-  MONGO_USERNAME: string;
-  MONGO_PASSWORD: string;
-  MONGO_HOST: string;
-  MONGO_PORT: string;
-  MONGO_DB: string;
+  MONGO_USERNAME?: string;
+  MONGO_PASSWORD?: string;
+  MONGO_HOST?: string;
+  MONGO_PORT?: string;
+  MONGO_DB?: string;
 }
 
 /**
