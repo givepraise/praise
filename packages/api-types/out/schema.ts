@@ -243,31 +243,7 @@ export interface components {
       /** Format: date-time */
       updatedAt: string;
     };
-    UserWithStatsDto: {
-      /** @example 5f9f1b9b9b9b9b9b9b9b9b9b */
-      _id: string;
-      /** @example 0xAAB27b150451726EC7738aa1d0A94505c8729bd1 */
-      identityEthAddress: string;
-      /** @example 0xAAB27b150451726EC7738aa1d0A94505c8729bd1 */
-      rewardsEthAddress: string;
-      /** @example darth */
-      username: string;
-      /**
-       * @example [
-       *   "USER"
-       * ]
-       */
-      roles: readonly string[];
-      accounts: readonly components['schemas']['UserAccountNoUserId'][];
-      /** Format: date-time */
-      createdAt: string;
-      /** Format: date-time */
-      updatedAt: string;
-      receivedTotalScore?: number;
-      receivedTotalCount?: number;
-      givenTotalScore?: number;
-      givenTotalCount?: number;
-    };
+    UserWithStatsDto: Record<string, never>;
     UpdateUserRequestDto: {
       /** @example 0xAAB27b150451726EC7738aa1d0A94505c8729bd1 */
       rewardsEthAddress: string;
@@ -685,19 +661,9 @@ export interface components {
       defaultValue: string;
       /**
        * @example Integer
-       * @enum {string}
+       * @enum {number}
        */
-      type:
-        | 'Integer'
-        | 'Float'
-        | 'String'
-        | 'Textarea'
-        | 'Boolean'
-        | 'IntegerList'
-        | 'StringList'
-        | 'Image'
-        | 'Radio'
-        | 'JSON';
+      type: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
       /** @example Quantifiers Per Praise */
       label: string;
       /** @example How many redundant quantifications are assigned to each praise? */
@@ -1484,17 +1450,7 @@ export interface operations {
       /** @example 0 */
       query: {
         key?: string;
-        type?:
-          | 'Integer'
-          | 'Float'
-          | 'String'
-          | 'Textarea'
-          | 'Boolean'
-          | 'IntegerList'
-          | 'StringList'
-          | 'Image'
-          | 'Radio'
-          | 'JSON';
+        type?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
         group?: number;
         subgroup?: number;
       };
