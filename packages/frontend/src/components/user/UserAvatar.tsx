@@ -1,16 +1,16 @@
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { UserDto } from 'api/dist/user/types';
-import { UserAccountDto } from 'api/dist/useraccount/types';
 import React from 'react';
+import { UserWithStatsDto } from '@/model/user/dto/user-with-stats.dto';
+import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
 
-const discordAvatarUrl = (account: UserAccountDto): string => {
+const discordAvatarUrl = (account: UserAccount): string => {
   return `https://cdn.discordapp.com/avatars/${account.accountId}/${account.avatarId}.webp?size=128`;
 };
 
 interface UserAvatarProps {
-  user?: UserDto;
-  userAccount?: UserAccountDto;
+  user?: UserWithStatsDto;
+  userAccount?: UserAccount;
   usePseudonym?: boolean;
 }
 const WrappedUserAvatar = ({

@@ -1,11 +1,9 @@
-import { UserDetailsDto, UserDto, UserRole } from 'api/dist/user/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCalendarAlt,
   faScaleBalanced,
   faUserLock,
 } from '@fortawesome/free-solid-svg-icons';
-import { shortenEthAddress } from 'api/dist/user/utils/core';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { toast } from 'react-hot-toast';
 import { Jazzicon } from '@ukstv/jazzicon-react';
@@ -14,12 +12,15 @@ import { Box } from '@/components/ui/Box';
 import { formatIsoDateUTC, DATE_FORMAT } from '@/utils/date';
 import { classNames } from '@/utils/index';
 import { Button } from '@/components/ui/Button';
-import { useAdminUsers } from '@/model/users';
-import { ActiveUserId, HasRole, ROLE_ADMIN } from '@/model/auth';
+import { useAdminUsers } from '@/model/user/users';
+import { ActiveUserId, HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { UserAvatar } from '@/components/user/UserAvatar';
+import { UserWithStatsDto } from '@/model/user/dto/user-with-stats.dto';
+import { UserRole } from '@/model/user/enums/user-role.enum';
+import { shortenEthAddress } from '@/utils/string';
 
 interface Params {
-  user: UserDetailsDto;
+  user: UserWithStatsDto;
   isDialogOpen: (value) => void;
 }
 
@@ -38,7 +39,10 @@ export const UserInfo = ({
 
   const discordAccount = user.accounts?.find((a) => a.platform === 'DISCORD');
 
-  const handleRole = async (role: UserRole, user: UserDto): Promise<void> => {
+  const handleRole = async (
+    role: UserRole,
+    user: UserWithStatsDto
+  ): Promise<void> => {
     let resp;
     const isRemove = user.roles.includes(role);
     if (isRemove) {
@@ -106,7 +110,7 @@ export const UserInfo = ({
               <FontAwesomeIcon icon={faUserLock} className="mr-2" size="1x" />
               User roles:{' '}
               {user.roles.map(
-                (r, index, array) =>
+                (r, index: number, array) =>
                   `${r}${array.length > index + 1 ? ', ' : ''}`
               )}
             </div>

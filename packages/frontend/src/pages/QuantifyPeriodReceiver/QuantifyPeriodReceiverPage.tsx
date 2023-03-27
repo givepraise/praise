@@ -14,13 +14,13 @@ import {
   PeriodQuantifierReceivers,
   SinglePeriod,
   usePeriodQuantifierPraise,
-} from '@/model/periods';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+} from '@/model/periods/periods';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
 import { getQuantificationReceiverStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
-import { ActiveUserId } from '@/model/auth';
+import { ActiveUserId } from '@/model/auth/auth';
 import { QuantifyTable } from './components/QuantifyTable';
 
 const PeriodBreadCrumb = (): JSX.Element | null => {
@@ -71,7 +71,7 @@ const PeriodMessage = (): JSX.Element | null => {
         Items left to quantify:{' '}
         {quantifierReceiverData.count - quantifierReceiverData.done === 0 ? (
           <>
-            0<DoneLabel />
+            <DoneLabel />
           </>
         ) : (
           quantifierReceiverData.count - quantifierReceiverData.done

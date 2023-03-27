@@ -1,0 +1,20 @@
+{
+  "name": "api-types",
+  "version": "0.1.0",
+  "description": "",
+  "main": "out/schema",
+  "scripts": {
+    "build": "openapi-typescript ../api/openapi.json --output out/schema.ts",
+    "lint": "eslint --ext .ts . --fix"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "api": "0.13.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.35.0",
+    "openapi-typescript": "^6.1.1"
+  }
+}

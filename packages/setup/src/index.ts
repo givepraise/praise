@@ -1,9 +1,11 @@
 import inquirer from 'inquirer';
 import * as dotenv from 'dotenv';
-import { logger } from 'api/src/shared/logger';
-import { unlinkSync, existsSync, readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { exit } from 'process';
 import os from 'os';
+import { isDocker } from './isDocker';
+import path from 'path';
+import * as bcrypt from 'bcrypt';
 
 interface Answers {
   NODE_ENV: string;
@@ -18,34 +20,16 @@ interface Answers {
  * Load ENV, templates first, then override with actual ENV values
  * if there are any.
  */
-const rootEnvPath = '/usr/praise/.env';
-const rootEnvTemplatePath = '/usr/praise/.env.template';
-
-const frontendEnvPath = '/usr/praise/packages/frontend/.env';
-const frontendTemplateEnvPath = '/usr/praise/packages/frontend/.env.template';
-
-const apiEnvPath = '/usr/praise/packages/api/.env';
-const apiTemplateEnvPath = '/usr/praise/packages/api/.env.template';
-
-const discordBotEnvPath = '/usr/praise/packages/discord-bot/.env';
-const discordBotTemplateEnvPath =
-  '/usr/praise/packages/discord-bot/.env.template';
+const rootEnvPath = isDocker()
+  ? '/usr/praise/.env'
+  : path.resolve(__dirname, '../../../.env');
+const rootEnvTemplatePath = isDocker()
+  ? '/usr/praise/.env.template'
+  : path.resolve(__dirname, '../../../.env.template');
 
 // Top level
 dotenv.config({ path: rootEnvTemplatePath, override: true });
 dotenv.config({ path: rootEnvPath, override: true });
-
-// Discord Bot
-dotenv.config({ path: discordBotTemplateEnvPath, override: true });
-dotenv.config({ path: discordBotEnvPath, override: true });
-
-// API
-dotenv.config({ path: apiTemplateEnvPath, override: true });
-dotenv.config({ path: apiEnvPath, override: true });
-
-// Frontend
-dotenv.config({ path: frontendTemplateEnvPath, override: true });
-dotenv.config({ path: frontendEnvPath, override: true });
 
 /**
  * Welcome message
@@ -155,31 +139,10 @@ const frontendUrl = (answers: Answers): string => {
   return baseServerUrl(answers);
 };
 
-const deleteOldEnvFiles = (): void => {
-  // Discord Bot
-  if (existsSync(discordBotTemplateEnvPath)) {
-    unlinkSync(discordBotTemplateEnvPath);
-  }
-  if (existsSync(discordBotEnvPath)) {
-    unlinkSync(discordBotEnvPath);
-  }
+const discordBotApiKey = randomString();
 
-  // API
-  if (existsSync(apiTemplateEnvPath)) {
-    unlinkSync(apiTemplateEnvPath);
-  }
-  if (existsSync(apiEnvPath)) {
-    unlinkSync(apiEnvPath);
-  }
-
-  // Frontend
-  if (existsSync(frontendTemplateEnvPath)) {
-    unlinkSync(frontendTemplateEnvPath);
-  }
-  if (existsSync(frontendEnvPath)) {
-    unlinkSync(frontendEnvPath);
-  }
-};
+const apiKeys = discordBotApiKey;
+const apiKeyRoles = 'API_KEY_DISCORD_BOT';
 
 const run = async (): Promise<void> => {
   const answers = await inquirer.prompt(questions);
@@ -192,9 +155,13 @@ const run = async (): Promise<void> => {
       process.env.MONGO_INITDB_ROOT_PASSWORD || randomString(),
     MONGO_USERNAME: process.env.MONGO_USERNAME,
     MONGO_PASSWORD: process.env.MONGO_PASSWORD || randomString(),
+    MONGO_DB: process.env.MONGO_DB,
     HOST: answers.HOST,
     API_URL: serverUrl(answers),
     API_PORT: process.env.API_PORT,
+    API_KEYS: process.env.API_KEYS || apiKeys,
+    API_KEY_ROLES: process.env.API_KEY_ROLES || apiKeyRoles,
+    API_KEY_SALT: process.env.API_KEY_SALT || (await bcrypt.genSalt(10)),
     ADMINS: answers.ADMINS,
     JWT_SECRET: process.env.JWT_SECRET || randomString(),
     JWT_ACCESS_EXP: process.env.JWT_ACCESS_EXP,
@@ -209,7 +176,6 @@ const run = async (): Promise<void> => {
   };
 
   setupAndWriteEnv(rootEnvTemplatePath, rootEnvPath, rootEnv);
-  deleteOldEnvFiles();
 
   console.log('\n');
   console.log('🙏 ENV file has been created.');

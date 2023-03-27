@@ -1,10 +1,8 @@
-import { PraiseDto } from 'api/dist/praise/types';
 import { Tooltip } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { useRecoilValue } from 'recoil';
 import { useHistory } from 'react-router-dom';
-import { UserAccountDto } from 'api/dist/useraccount/types';
 import { getMarkdownText } from '@/utils/parser';
 import { ForwarderTooltip } from '@/components/praise/ForwarderTooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
@@ -15,14 +13,17 @@ import {
   localizeAndFormatIsoDateRelative,
   DATE_FORMAT_LONG_NAME,
 } from '@/utils/date';
-import { SinglePeriodByDate } from '@/model/periods';
-import { HasRole, ROLE_ADMIN } from '@/model/auth';
+import { SinglePeriodByDate } from '@/model/periods/periods';
+import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { UserPopover } from '@/components/user/UserPopover';
 import { UserName } from '@/components/user/UserName';
-import { useQuantifyPraise } from '@/model/praise';
+import { useQuantifyPraise } from '@/model/praise/praise';
 import { SourceName } from './SourceName';
 import { UserAvatarAndName } from '../user/UserAvatarAndName';
 import { InlineLabelClosable } from '../ui/InlineLabelClosable';
+import { Praise as PraiseDto } from '@/model/praise/praise.dto';
+import { idLabel } from '@/model/praise/praise.utils';
+import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
 
 interface Props {
   praise: PraiseDto;
@@ -32,7 +33,7 @@ interface Props {
   usePseudonyms?: boolean;
   className?: string;
   dismissed?: boolean;
-  shortDuplicatePraiseId?: string;
+  shortDuplicatePraise?: string;
   bigGiverAvatar?: boolean;
   showScore?: boolean;
 }
@@ -45,7 +46,7 @@ export const Praise = ({
   usePseudonyms = false,
   className = '',
   dismissed = false,
-  shortDuplicatePraiseId = undefined,
+  shortDuplicatePraise = undefined,
   bigGiverAvatar = true,
   showScore = true,
 }: Props): JSX.Element | null => {
@@ -55,7 +56,7 @@ export const Praise = ({
   const history = useHistory();
 
   const handleUserClick =
-    (userAccount: UserAccountDto | undefined) =>
+    (userAccount: UserAccount | undefined) =>
     (event: React.MouseEvent<HTMLTableRowElement>) => {
       event.stopPropagation();
 
@@ -147,7 +148,7 @@ export const Praise = ({
           <div className="w-full pb-2 cursor-pointer">
             {showIdPrefix && (
               <InlineLabel
-                text={praise._idLabelRealized}
+                text={idLabel(praise._id)}
                 className="bg-warm-gray-400"
               />
             )}
@@ -158,20 +159,20 @@ export const Praise = ({
                 onClose={(): void => void quantify(praise._id, 0, false, null)}
               />
             )}
-            {shortDuplicatePraiseId && (
+            {shortDuplicatePraise && (
               <InlineLabelClosable
-                text={`Duplicate of: #${shortDuplicatePraiseId}`}
+                text={`Duplicate of: #${shortDuplicatePraise}`}
                 className="bg-warm-gray-700"
                 onClose={(): void => void quantify(praise._id, 0, false, null)}
               />
             )}
             <span
               dangerouslySetInnerHTML={{
-                __html: getMarkdownText(praise.reasonRealized),
+                __html: getMarkdownText(praise.reason),
               }}
               className={classNames(
                 dismissed ? 'line-through' : '',
-                shortDuplicatePraiseId ? 'text-warm-gray-400' : '',
+                shortDuplicatePraise ? 'text-warm-gray-400' : '',
                 'break-words'
               )}
             ></span>
@@ -188,7 +189,7 @@ export const Praise = ({
                   className="mr-1 text-yellow-400"
                   color=""
                 />
-                {praise.scoreRealized}
+                {praise.score}
                 {' • '}
               </>
             )}

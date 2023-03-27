@@ -1,13 +1,13 @@
 import { faCalculator, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from 'api/dist/praise/types';
+import { Praise } from '@/model/praise/praise.dto';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 import { Button } from '@/components/ui/Button';
 import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
-import { PeriodPageParams } from '@/model/periods';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+import { PeriodPageParams } from '@/model/periods/periods';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
 
 import { PraiseAutosuggest } from './PraiseAutosuggest';
 
@@ -15,7 +15,7 @@ interface Props {
   onClose(): void;
   onConfirm(duplicatePraise: string): void;
   open: boolean;
-  selectedPraise: PraiseDto | undefined;
+  selectedPraise: Praise | undefined;
 }
 
 export const DuplicateSearchDialog = ({

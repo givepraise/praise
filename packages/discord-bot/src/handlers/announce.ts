@@ -9,7 +9,6 @@ import {
 } from 'discord.js';
 import { UserRole } from 'api/dist/user/types';
 import { PeriodModel } from 'api/dist/period/entities';
-import { CommandHandler } from 'src/interfaces/CommandHandler';
 import {
   continueButton,
   cancelButton,
@@ -18,6 +17,7 @@ import { dmTargetMenu } from '../utils/menus/dmTargetmenu';
 import { selectTargets } from '../utils/dmTargets';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
 import { notActivatedError } from '../utils/embeds/praiseEmbeds';
+import { CommandHandler } from '../interfaces/CommandHandler';
 
 /**
  * Executes command /announce

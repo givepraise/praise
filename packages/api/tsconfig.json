@@ -1,36 +1,23 @@
 {
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
-    "baseUrl": "./",
-    "target": "ES2015",
     "module": "commonjs",
-    "strict": true,
-    "esModuleInterop": true,
     "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true, 
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "incremental": true,
     "skipLibCheck": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": true,
-    "composite": true,
-    "paths": {
-      "@/activate/*": ["src/activate/*"],
-      "@/auth/*": ["src/auth/*"],
-      "@/error/*": ["src/error/*"],
-      "@/middleware/*": ["src/middleware/*"],
-      "@/database/*": ["src/database/*"],
-      "@/period/*": ["src/period/*"],
-      "@/praise/*": ["src/praise/*"],
-      "@/settings/*": ["src/settings/*"],
-      "@/periodsettings/*": ["src/periodsettings/*"],
-      "@/shared/*": ["src/shared/*"],
-      "@/user/*": ["src/user/*"],
-      "@/useraccount/*": ["src/useraccount/*"],
-      "@/eventlog/*": ["src/eventlog/*"],
-      "@/server": ["src/server"]
-    }
-  },
-  "include": ["src/**/*.ts", "test/**/*.ts"],
-  "references": [],
-  "ts-node": {
-    "files": true
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   }
 }

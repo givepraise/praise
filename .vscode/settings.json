@@ -12,5 +12,6 @@
       "directory": "./packages/frontend",
       "changeProcessCWD": true
     }
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

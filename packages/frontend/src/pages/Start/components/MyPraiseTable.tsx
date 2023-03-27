@@ -1,17 +1,17 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { UserDto } from 'api/dist/user/types';
 import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
-import { AllPraiseList } from '@/model/praise';
+import { AllPraiseList } from '@/model/praise/praise';
 import { Praise } from '@/components/praise/Praise';
 import { PraiseRow } from '@/components/praise/PraiseRow';
-import { ActiveUserId } from '@/model/auth';
-import { SingleUser } from '@/model/users';
+import { ActiveUserId } from '@/model/auth/auth';
+import { SingleUser } from '@/model/user/users';
 import { PraisePageLoader } from '@/components/praise/PraisePageLoader';
+import { User } from '@/model/user/dto/user.dto';
 
 const PRAISE_LIST_KEY = 'MY_PRAISE';
 
-const getReceiverId = (user: UserDto | undefined): string | undefined => {
+const getReceiverId = (user: User | undefined): string | undefined => {
   const accounts = user?.accounts;
   return Array.isArray(accounts) && accounts.length > 0
     ? accounts[0]._id

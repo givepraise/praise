@@ -1,14 +1,15 @@
-import { PraiseDto, QuantificationDto } from 'api/dist/praise/types';
+import { Praise } from '@/model/praise/praise.dto';
+import { Quantification } from '@/model/quantification/quantification.dto';
 
 export const findPraiseQuantification = (
-  praise: PraiseDto,
+  praise: Praise,
   userId: string
-): QuantificationDto | undefined => {
+): Quantification | undefined => {
   return praise.quantifications.find((q) => q.quantifier === userId);
 };
 
-export const shortenDuplicatePraiseId = (
-  praise: PraiseDto,
+export const shortenDuplicatePraise = (
+  praise: Praise,
   userId: string
 ): string => {
   const q = findPraiseQuantification(praise, userId);

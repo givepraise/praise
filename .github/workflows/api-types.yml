@@ -1,0 +1,40 @@
+name: Build OpenAPI schemma
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/api/**'
+jobs:
+  check-openapi-schema-changed:
+    runs-on: ubuntu-latest
+    outputs:
+      run_rest_jobs: ${{ steps.filter.outputs.openapi }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check if openapi.json has changed
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            openapi:
+              - 'packages/api/openapi.json'
+
+  build-openapi-schema:
+    needs: check-openapi-schema-changed
+    if: needs.check-openapi-schema-changed.outputs.run_rest_jobs == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.14.0'
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn workspace api-types build
+      - run: yarn workspace api-types lint
+      - name: Commit & Push changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'Build openapi schema'

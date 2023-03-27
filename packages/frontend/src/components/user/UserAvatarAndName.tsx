@@ -1,17 +1,17 @@
-import { UserDto } from 'api/dist/user/types';
-import { UserAccountDto } from 'api/dist/useraccount/types';
 import { useRecoilValue } from 'recoil';
 import React from 'react';
-import { SingleUser } from '@/model/users';
+import { SingleUser } from '@/model/user/users';
 import { classNames } from '@/utils/index';
 import { UserAvatar } from './UserAvatar';
 import { UserName } from './UserName';
 import { UserPopover } from './UserPopover';
+import { User } from '@/model/user/dto/user.dto';
+import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
 
 interface UserNameProps {
-  user?: UserDto;
+  user?: User;
   userId?: string | undefined;
-  userAccount?: UserAccountDto;
+  userAccount?: UserAccount;
   usePseudonym?: boolean;
   periodId?: string;
   avatarClassName?: string;
@@ -27,7 +27,12 @@ const WrappedUserAvatarAndName = ({
   avatarClassName,
   nameClassName,
 }: UserNameProps): JSX.Element | null => {
-  const userFromGlobalState = useRecoilValue(SingleUser(userId));
+  const mergedUserId =
+    userAccount?.user && typeof userAccount.user === 'string'
+      ? userAccount.user
+      : userId;
+
+  const userFromGlobalState = useRecoilValue(SingleUser(mergedUserId));
 
   if ((!user && !userId && !userAccount) || (usePseudonym && !periodId))
     return null;

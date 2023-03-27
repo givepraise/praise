@@ -4,7 +4,7 @@ import {
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from 'api/dist/praise/types';
+import { Praise as PraiseDto } from '@/model/praise/praise.dto';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
@@ -12,8 +12,8 @@ import { useRecoilValue } from 'recoil';
 import { Praise } from '@/components/praise/Praise';
 import { Button } from '@/components/ui/Button';
 import { ScrollableDialog } from '@/components/ui/ScrollableDialog';
-import { PeriodPageParams } from '@/model/periods';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+import { PeriodPageParams } from '@/model/periods/periods';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
 
 import { QuantifySlider } from './QuantifySlider';
 
@@ -36,10 +36,10 @@ export const DuplicateDialog = ({
   const [score, setScore] = useState<number>(0);
 
   useEffect(() => {
-    if (!originalPraise?.scoreRealized) return;
+    if (!originalPraise?.score) return;
 
-    setScore(originalPraise.scoreRealized);
-  }, [originalPraise?.scoreRealized]);
+    setScore(originalPraise.score);
+  }, [originalPraise?.score]);
 
   const allowedValues = useRecoilValue(
     SinglePeriodSettingValueRealized({

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { UserDetailsDto } from 'api/dist/user/types';
 import {
   faArrowDownWideShort,
   faHandHoldingHeart,
@@ -12,14 +11,15 @@ import {
   AllPraiseList,
   praiseSortOptions,
   PraiseTableSelectedSortOption,
-} from '@/model/praise';
+} from '@/model/praise/praise';
 import { Praise } from '@/components/praise/Praise';
 import { PraiseRow } from '@/components/praise/PraiseRow';
 import { PraisePageLoader } from '@/components/praise/PraisePageLoader';
 import { SelectInput } from '@/components/form/SelectInput';
+import { UserWithStatsDto } from '@/model/user/dto/user-with-stats.dto';
 
 const getUseAccountId = (
-  user: UserDetailsDto | undefined
+  user: UserWithStatsDto | undefined
 ): string | undefined => {
   const accounts = user?.accounts;
   return Array.isArray(accounts) && accounts.length > 0
@@ -31,7 +31,7 @@ export type userAccountTypeNumber = 1 | 2;
 
 interface Props {
   userAccountType: userAccountTypeNumber;
-  user: UserDetailsDto;
+  user: UserWithStatsDto;
 }
 
 export const ReceivedGivenPraiseTable = ({

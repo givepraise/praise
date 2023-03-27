@@ -16,11 +16,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { Link } from 'react-router-dom';
-import { SingleSetting } from '@/model/settings';
+import { SingleSetting } from '@/model/settings/settings';
 import { EthAccount } from '@/components/account/EthAccount';
 import { AdminOnly } from '@/components/auth/AdminOnly';
 import { Theme } from '@/model/theme';
-import { ActiveUserId } from '@/model/auth';
+import { ActiveUserId } from '@/model/auth/auth';
 import { NavItem } from './NavItem';
 
 const NavLogo = (): JSX.Element => {

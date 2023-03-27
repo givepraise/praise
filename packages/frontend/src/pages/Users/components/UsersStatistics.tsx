@@ -1,6 +1,5 @@
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type { UserDto } from 'api/dist/user/types';
 import { useState } from 'react';
 import { CSVLink } from 'react-csv';
 import { useRecoilValue } from 'recoil';
@@ -10,10 +9,11 @@ import {
   AllForwarderUsers,
   AllQuantifierUsers,
   AllUsers,
-} from '@/model/users';
+} from '@/model/user/users';
 import { Button } from '@/components/ui/Button';
+import { User } from '@/model/user/dto/user.dto';
 
-interface DownloadUserDto extends Omit<UserDto, 'accounts'> {
+interface DownloadUser extends Omit<User, 'accounts'> {
   discordName?: string;
   discordAccountId?: string;
   telegramName?: string;
@@ -26,7 +26,7 @@ export const UsersStatistics = (): JSX.Element => {
   const allForwarderUsers = useRecoilValue(AllForwarderUsers);
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
   const allUsers = useRecoilValue(AllUsers);
-  const [downloadData, setDownloadData] = useState<DownloadUserDto[]>([]);
+  const [downloadData, setDownloadData] = useState<DownloadUser[]>([]);
 
   const filterData = (): boolean => {
     if (!allUsers) {

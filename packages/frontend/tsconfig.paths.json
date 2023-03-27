@@ -10,7 +10,8 @@
       "@/model/*": ["model/*"],
       "@/navigation/*": ["navigation/*"],
       "@/svg/*": ["svg/*"],
-      "@/utils/*": ["utils/*"]
+      "@/utils/*": ["utils/*"],
+      "@/shared/*": ["shared/*"]
     }
   }
 }

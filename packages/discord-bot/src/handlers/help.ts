@@ -3,7 +3,7 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
-import { Command } from 'src/interfaces/Command';
+import { Command } from '../interfaces/Command';
 
 /**
  * Executes command /help

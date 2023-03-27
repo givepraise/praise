@@ -1,20 +1,14 @@
-import { PeriodSettingDto } from 'api/dist/periodsettings/types';
-import { SettingDto } from 'api/dist/settings/types';
 import { AxiosError, AxiosResponse } from 'axios';
 import { SettingsForm } from '@/components/settings/SettingsForm';
 import { Box } from '@/components/ui/Box';
 import { SettingsSubgroup } from './SettingsSubgroup';
+import { Setting } from '@/model/settings/dto/setting.dto';
 
 interface Params {
-  settings: SettingDto[] | undefined;
+  settings: Setting[] | undefined;
   parentOnSubmit(
-    setting: SettingDto | PeriodSettingDto
-  ): Promise<
-    | AxiosResponse<SettingDto>
-    | AxiosResponse<PeriodSettingDto>
-    | AxiosError
-    | undefined
-  >;
+    setting: Setting
+  ): Promise<AxiosResponse<Setting> | AxiosError | undefined>;
 }
 
 export const CustomExportSettings = ({

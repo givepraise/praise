@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Form } from 'react-final-form';
-import { PeriodSettingDto } from 'api/src/periodsettings/types';
-import { SettingDto } from 'api/dist/settings/types';
 import { useState } from 'react';
 import { AxiosError, AxiosResponse } from 'axios';
 import { faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -14,14 +12,16 @@ import { ImageFileInput } from '@/components/form/ImageFileInput';
 import { Notice } from '@/components/ui/Notice';
 import { SubmitButton } from '../form/SubmitButton';
 import { RadioInput } from '../form/RadioInput';
+import { Setting } from '@/model/settings/dto/setting.dto';
+import { PeriodSetting } from '@/model/periodsettings/dto/period-setting.dto';
 
 interface SettingsFormProps {
-  settings: SettingDto[] | PeriodSettingDto[] | undefined;
+  settings: Setting[] | undefined;
   parentOnSubmit(
-    setting: SettingDto | PeriodSettingDto
+    setting: Setting
   ): Promise<
-    | AxiosResponse<SettingDto>
-    | AxiosResponse<PeriodSettingDto>
+    | AxiosResponse<Setting>
+    | AxiosResponse<PeriodSetting>
     | AxiosError
     | undefined
   >;
@@ -29,7 +29,7 @@ interface SettingsFormProps {
 }
 
 const FormFields = (
-  settings: SettingDto[] | PeriodSettingDto[],
+  settings: Setting[] | PeriodSetting[],
   apiResponse,
   setValue: (key: string, value: string) => void,
   disabled?: boolean

@@ -1,23 +1,24 @@
 import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { PraiseDto } from 'api/dist/praise/types';
+import { Praise } from '@/model/praise/praise.dto';
 import { useCombobox } from 'downshift';
 import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { classNames } from '@/utils/index';
-import { SinglePeriodSettingValueRealized } from '@/model/periodsettings';
+import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
 import {
   PeriodAndReceiverPageParams,
   PeriodQuantifierReceiverPraise,
-} from '@/model/periods';
-import { ActiveUserId } from '@/model/auth';
+} from '@/model/periods/periods';
+import { ActiveUserId } from '@/model/auth/auth';
 import { UserPseudonym } from '@/components/user/UserPseudonym';
+import { idLabel } from '@/model/praise/praise.utils';
 
 interface PraiseAutosuggestProps {
   onClose(): void;
   onSelect(id: string): void;
-  praise: PraiseDto;
+  praise: Praise;
 }
 
 export const PraiseAutosuggest = ({
@@ -75,7 +76,7 @@ export const PraiseAutosuggest = ({
         if (filteredData) {
           setInputItems(
             filteredData.filter((praise) =>
-              praise?._idLabelRealized.includes(search)
+              idLabel(praise?._id).includes(search)
             )
           );
         }
@@ -83,7 +84,7 @@ export const PraiseAutosuggest = ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onSelectedItemChange: (data: any): void => {
         if (!data) return;
-        const selectedItem = data.selectedItem as PraiseDto;
+        const selectedItem = data.selectedItem as Praise;
         onSelect(selectedItem._id);
         onClose();
       },
@@ -93,7 +94,7 @@ export const PraiseAutosuggest = ({
         <div {...getComboboxProps()}>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <span className="text-warm-gray-500 sm:text-sm">
+              <span className="text-warm-gray-500 sm:text-sm dark:text-white">
                 <FontAwesomeIcon icon={faPrayingHands} />
               </span>
             </div>
@@ -108,7 +109,7 @@ export const PraiseAutosuggest = ({
         <ul
           className={classNames(
             isOpen && inputItems.length > 0 ? '' : 'hidden',
-            'absolute bg-white border w-80 mt-[1px]'
+            'absolute bg-white border w-80 mt-[1px] dark:bg-slate-600'
           )}
           {...getMenuProps()}
         >
@@ -116,13 +117,15 @@ export const PraiseAutosuggest = ({
             inputItems.map((item, index) => (
               <li
                 className={classNames(
-                  highlightedIndex === index ? 'bg-warm-gray-100' : '',
+                  highlightedIndex === index
+                    ? 'bg-warm-gray-100 dark:bg-slate-500'
+                    : '',
                   'py-2 pl-2 cursor-pointer'
                 )}
                 key={item._id}
                 {...getItemProps({ item, index })}
               >
-                {item._idLabelRealized} -{' '}
+                {idLabel(item._id)} -{' '}
                 {usePseudonyms ? (
                   <UserPseudonym userId={item.giver._id} periodId={periodId} />
                 ) : (

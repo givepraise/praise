@@ -8,12 +8,12 @@ import {
   PeriodQuantifierReceivers,
   SinglePeriod,
   usePeriodQuantifierPraise,
-} from '@/model/periods';
+} from '@/model/periods/periods';
 import { getQuantificationStats } from '@/utils/periods';
 import { BackLink } from '@/navigation/BackLink';
 import { Box } from '@/components/ui/Box';
 import { Page } from '@/components/ui/Page';
-import { ActiveUserId } from '@/model/auth';
+import { ActiveUserId } from '@/model/auth/auth';
 import { QuantifyPeriodTable } from './components/QuantifyPeriodTable';
 
 const PeriodMessage = (): JSX.Element => {

@@ -7,7 +7,6 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
 import { useParams } from 'react-router-dom';
-import { UpdateUserProfileInput } from 'api/dist/user/types';
 import { toast } from 'react-hot-toast';
 import { Dialog } from '@headlessui/react';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
@@ -19,7 +18,7 @@ import {
   SingleUserParams,
   useLoadSingleUserDetails,
   useUserProfile,
-} from '@/model/users';
+} from '@/model/user/users';
 import { BackLink } from '@/navigation/BackLink';
 import { isResponseOk } from '@/model/api';
 import { UserInfo } from './components/UserInfo';
@@ -28,6 +27,7 @@ import {
   ReceivedGivenPraiseTable,
 } from './components/ReceivedGivenPraiseTable';
 import { EditProfileDialog } from './components/EditProfileDialog';
+import { UpdateUserRequestDto } from '@/model/user/dto/update-user-request.dto';
 
 const UserDetailsPage = (): JSX.Element | null => {
   const dialogRef = React.useRef(null);
@@ -49,10 +49,10 @@ const UserDetailsPage = (): JSX.Element | null => {
   if (!user) return null;
 
   const handleSaveUserProfile = async (
-    values: UpdateUserProfileInput
+    values: UpdateUserRequestDto
   ): Promise<void> => {
     const { username, rewardsEthAddress } = values;
-    const response = await update(username, rewardsEthAddress);
+    const response = await update(user._id, username, rewardsEthAddress);
 
     if (isResponseOk(response)) {
       toast.success('User profile saved');

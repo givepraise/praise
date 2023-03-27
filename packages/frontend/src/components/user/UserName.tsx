@@ -1,12 +1,12 @@
-import { UserDto } from 'api/dist/user/types';
-import { shortenEthAddress } from 'api/dist/user/utils/core';
-import { UserAccountDto } from 'api/dist/useraccount/types';
 import React from 'react';
 import { UserPseudonym } from './UserPseudonym';
+import { User } from '@/model/user/dto/user.dto';
+import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
+import { shortenEthAddress } from '@/utils/string';
 
 interface UserNameProps {
-  user?: UserDto;
-  userAccount?: UserAccountDto;
+  user?: User;
+  userAccount?: UserAccount;
   usePseudonym?: boolean;
   periodId?: string;
   className?: string;
@@ -24,21 +24,25 @@ const WrappedUserName = ({
   if ((!user && !userAccount) || (usePseudonym && !periodId))
     name = 'Unknown username';
 
-  if (user) {
+  const localUser =
+    user ||
+    (typeof userAccount?.user === 'object' ? userAccount?.user : undefined);
+
+  if (localUser) {
     if (usePseudonym && periodId) {
-      name = <UserPseudonym userId={user._id} periodId={periodId} />;
+      name = <UserPseudonym userId={localUser._id} periodId={periodId} />;
     } else {
       name =
-        user.username.length === 42 && user.username.startsWith('0x')
-          ? shortenEthAddress(user.username)
-          : user.username;
+        localUser.username.length === 42 && localUser.username.startsWith('0x')
+          ? shortenEthAddress(localUser.username)
+          : localUser.username;
     }
   } else {
     if (userAccount) {
       if (usePseudonym && periodId) {
         name = <UserPseudonym userId={userAccount._id} periodId={periodId} />;
       } else {
-        name = userAccount.nameRealized;
+        name = userAccount.name;
       }
     }
   }

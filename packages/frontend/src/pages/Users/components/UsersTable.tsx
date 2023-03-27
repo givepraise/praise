@@ -1,30 +1,56 @@
 import React from 'react';
-import { useRecoilValue, useRecoilState } from 'recoil';
-import { UserDto, UserRole } from 'api/dist/user/types';
+import { useRecoilValue, useRecoilState, atom } from 'recoil';
 import {
   AllAdminUsers,
   AllForwarderUsers,
   AllQuantifierUsers,
   AllUsers,
-  UsersTableData,
-  UsersTableSelectedRole,
-  UsersTableFilter,
-  UsersTablePage,
-  UsersTableLastPage,
   roleOptions,
-} from '@/model/users';
+} from '@/model/user/users';
 import { SearchInput } from '@/components/form/SearchInput';
 import { SelectInput } from '@/components/form/SelectInput';
 import { UsersTableRow } from './UsersTableRow';
 import { UsersTablePagination } from './UsersTablePagination';
+import { User } from '@/model/user/dto/user.dto';
+import { UserRole } from '@/model/user/enums/user-role.enum';
 
 const USERS_PER_PAGE = 10;
+
+interface roleOptionsProps {
+  value: string;
+  label: string;
+}
 
 export const UsersTable = (): JSX.Element => {
   const allAdminUsers = useRecoilValue(AllAdminUsers);
   const allForwarderUsers = useRecoilValue(AllForwarderUsers);
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
   const allUsers = useRecoilValue(AllUsers);
+
+  const UsersTableData = atom<User[] | undefined>({
+    key: 'UsersTableData',
+    default: undefined,
+  });
+
+  const UsersTableSelectedRole = atom<roleOptionsProps>({
+    key: 'UsersTableSelectedRole',
+    default: roleOptions[0],
+  });
+
+  const UsersTableFilter = atom<string>({
+    key: 'UsersTableFilter',
+    default: '',
+  });
+
+  const UsersTablePage = atom<number>({
+    key: 'UsersTablePage',
+    default: 1,
+  });
+
+  const UsersTableLastPage = atom<number>({
+    key: 'UsersTableLastPage',
+    default: 0,
+  });
 
   const [tableData, setTableData] = useRecoilState(UsersTableData);
   const [selectedRole, setSelectedRole] = useRecoilState(
@@ -35,9 +61,9 @@ export const UsersTable = (): JSX.Element => {
   const [lastPage, setLastPage] = useRecoilState(UsersTableLastPage);
 
   const applyFilter = React.useCallback(
-    (data: UserDto[] | undefined): UserDto[] => {
+    (data: User[] | undefined): User[] => {
       if (!data) return [];
-      const filteredData = data.filter((user: UserDto) => {
+      const filteredData = data.filter((user: User) => {
         const userAddress = user.identityEthAddress?.toLowerCase();
         const filterData = filter.toLocaleLowerCase();
 

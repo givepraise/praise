@@ -1,13 +1,13 @@
-import { PraiseDto } from 'api/dist/praise/types';
+import { Praise as PraiseDto } from '@/model/praise/praise.dto';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
 import { Notice } from '@/components/ui/Notice';
 import { Praise } from '@/components/praise/Praise';
-import { ActiveUserId } from '@/model/auth';
+import { ActiveUserId } from '@/model/auth/auth';
 import {
   findPraiseQuantification,
-  shortenDuplicatePraiseId,
+  shortenDuplicatePraise,
 } from '@/utils/praise';
 import { classNames } from '@/utils/index';
 import { QuantifySlider } from './QuantifySlider';
@@ -60,7 +60,7 @@ export const QuantifyPraiseRow = ({
           periodId={periodId}
           usePseudonyms={usePseudonyms}
           dismissed={dismissed}
-          shortDuplicatePraiseId={shortenDuplicatePraiseId(praise, userId)}
+          shortDuplicatePraise={shortenDuplicatePraise(praise, userId)}
           bigGiverAvatar={false}
           showScore={false}
         />

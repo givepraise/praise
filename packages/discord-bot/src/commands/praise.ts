@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from 'api/dist/shared/logger';
+import { logger } from '../utils/logger';
 import { praiseHandler } from '../handlers/praise';
 import { Command } from '../interfaces/Command';
 import { getMsgLink } from '../utils/format';
@@ -28,6 +28,7 @@ export const praise: Command = {
 
       const msg = await interaction.deferReply({
         fetchReply: true,
+        ephemeral: true,
       });
       if (msg === undefined) return;
       await praiseHandler(

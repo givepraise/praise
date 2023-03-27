@@ -1,7 +1,7 @@
-import { PraiseDto } from 'api/dist/praise/types';
 import { Praise } from '@/components/praise/Praise';
 import { PraiseRow } from '@/components/praise/PraiseRow';
 import { Box } from '@/components/ui/Box';
+import { Praise as PraiseDto } from '@/model/praise/praise.dto';
 
 interface Props {
   praiseList: PraiseDto[];
