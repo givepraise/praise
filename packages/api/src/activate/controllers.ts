@@ -11,6 +11,7 @@ import { logEvent } from '@/eventlog/utils';
 import { TypedRequestBody } from '@/shared/types';
 import { UserModel } from '@/user/entities';
 import { UserAccountModel } from '@/useraccount/entities';
+import { generateUserNameFromAccount } from '@/user/utils/entity';
 import { ActivateRequestBody } from './types';
 import { generateActivateMessage } from './utils';
 
@@ -27,23 +28,28 @@ const activate = async (
 ): Promise<void> => {
   const { identityEthAddress, signature, accountId } = req.body;
 
-  if (!identityEthAddress || !signature || !accountId)
+  if (!identityEthAddress || !signature || !accountId) {
     throw new BadRequestError(
       'identityEthAddress, signature, and accountId required'
     );
+  }
 
   // Find previously generated token
   const userAccount = await UserAccountModel.findOne({ accountId })
-    .select('_id user activateToken')
+    .select('_id user activateToken name platform')
     .exec();
 
-  if (!userAccount) throw new NotFoundError('UserAccount');
-  if (!userAccount.activateToken)
+  if (!userAccount) {
+    throw new NotFoundError('UserAccount');
+  }
+  if (!userAccount.activateToken) {
     throw new InternalServerError('Activation token not found.');
+  }
 
   // You are only allowed to activate once
-  if (userAccount.user)
+  if (userAccount.user) {
     throw new BadRequestError('User account already activated.');
+  }
 
   // Generate expected message, token included.
   const generatedMsg = generateActivateMessage(
@@ -55,15 +61,34 @@ const activate = async (
   // Verify signature against generated message
   // Recover signer and compare against query address
   const signerAddress = ethers.utils.verifyMessage(generatedMsg, signature);
-  if (signerAddress !== identityEthAddress)
+  if (signerAddress !== identityEthAddress) {
     throw new UnauthorizedError('Verification failed.');
+  }
 
   // Find existing user or create new
   const user = await UserModel.findOneAndUpdate(
     { identityEthAddress },
     { upsert: true, new: true }
   );
-  if (!user) throw new NotFoundError('User');
+  if (!user) {
+    throw new NotFoundError('User');
+  }
+
+  // Set rewardsEthAddress if not set
+  if (!user.rewardsEthAddress) {
+    user.rewardsEthAddress = identityEthAddress;
+  }
+
+  // Set username if not set
+  if (!user.username || user.username === identityEthAddress) {
+    const generatedUserName = await generateUserNameFromAccount(userAccount);
+    if (generatedUserName) {
+      user.username = generatedUserName;
+    }
+  }
+
+  // Save user changes
+  await user.save();
 
   // Link user account with user
   userAccount.user = user;

@@ -1,20 +1,24 @@
 ![Praise Banner](/media/banner.png)
 
-### Recognize and reward community contributions, foster a culture of giving and gratitude. 
+### Unlock the full potential of your community with reputation scores, rewards and deep insights.
 
-Some of the communities using Praise:
+Praise is a community intelligence system that promotes active participation and collaboration through peer recognition and rewards. We help communities become more intelligent, productive and inclusive by providing a simple way for community members to acknowledge, praise and reward each other’s contributions.
+
+## How does it work
+
+```
+/praise @vitalik.eth for "inventing Ethereum"
+```
+
+Community members interact with a Discord Praise bot to acknowledge each other's contributions. This bottom-up approach to value recognition keeps the community engaged and invested. Praise can recognize any contribution, big or small, and even those made outside of any platform. This improves cooperation and promotes a more positive and productive community.
+
+## Who uses Praise?
+
 - [Token Engineering Commons](https://praise.tecommons.org)
 - [Commons Stack](https://praise.commonsstack.org)
 - [Giveth](https://praise.giveth.io)
 - [Gnosis](https://praisegnosisdao.com)
 
-### 🔗 Full documentation available at [givepraise.xyz](https://givepraise.xyz)
-
-As decentralized organizations grow in size, it becomes difficult to involve the community in determining what contributions to value. Praise encourages communities to cultivate a culture of giving and gratitude by recognizing and rewarding contributions.
-
-By listening to what the community values and involving members every step of the way, praise allows bottom-up value systems to emerge. This bottom-up approach to value creation is essential for ensuring that the community remains invested and engaged.
-
-Praise is used to recognize the full range of value created, from minor to major contributions. Contributions made outside of any platform can also be recognized. This promotes a more positive and productive community as a whole.
 
 ## Run Praise on a server
 
@@ -95,16 +99,15 @@ Please see [CONTRIBUTING](CONTRIBUTING.md)
 
 ## Contact
 
-Praise is an open source system developed by Commons Stack. To learn more about how Praise could be used in your community please reach out to us!
+Praise is an open source system developed by [General Magic](https://generalmagic.io). To learn more about how Praise could be used in your community please reach out to us!
 
 **Commons Stack**
 
-- [Discord](http://discord.link/commonsstack)
-- [Twitter](https://twitter.com/commonsstack)
+
+- [Discord](https://discord.gg/72HUmabwEs)
+- [Twitter](https://twitter.com/Generalmagicio)
 
 **Kristofer Lund, PM Praise**
 
 - Telegram: @kristoferkristofer
 - Discord: kristofer#1475
-
-![Commons Stack](/media/cs.png)
