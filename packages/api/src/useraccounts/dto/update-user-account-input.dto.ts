@@ -1,19 +1,24 @@
 import { ApiProperty, PartialType, PickType } from '@nestjs/swagger';
 import { UserAccount } from '../schemas/useraccounts.schema';
-import { IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { IsObjectId } from '../../shared/validators/is-object-id.validator';
 import { Transform } from 'class-transformer';
 import { Types } from 'mongoose';
+import { MinLengthAllowEmpty } from '../../shared/decorators/min-length-allow-empty.decorator';
 
 export class UpdateUserAccountInputDto extends PartialType(
-  PickType(UserAccount, [
-    'accountId',
-    'avatarId',
-    'name',
-    'platform',
-    'activateToken',
-  ] as const),
+  PickType(UserAccount, ['accountId', 'avatarId', 'name', 'platform'] as const),
 ) {
+  @ApiProperty({
+    required: false,
+    type: 'string',
+    example: 'jkhvuygi643jh35g53',
+  })
+  @IsOptional()
+  @IsString()
+  @MinLengthAllowEmpty(10)
+  activateToken: string;
+
   @ApiProperty({
     required: false,
     type: 'string',

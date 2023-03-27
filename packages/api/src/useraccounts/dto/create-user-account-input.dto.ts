@@ -2,9 +2,10 @@ import { PickType } from '@nestjs/swagger';
 import { IsObjectId } from '../../shared/validators/is-object-id.validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { Types } from 'mongoose';
 import { UserAccount } from '../schemas/useraccounts.schema';
+import { MinLengthAllowEmpty } from '../../shared/decorators/min-length-allow-empty.decorator';
 
 export class CreateUserAccountInputDto extends PickType(UserAccount, [
   'accountId',
@@ -12,6 +13,16 @@ export class CreateUserAccountInputDto extends PickType(UserAccount, [
   'avatarId',
   'platform',
 ] as const) {
+  @ApiProperty({
+    required: false,
+    type: 'string',
+    example: 'jkhvuygi643jh35g53',
+  })
+  @IsOptional()
+  @IsString()
+  @MinLengthAllowEmpty(10)
+  activateToken: string;
+
   @ApiProperty({
     required: false,
     type: 'string',

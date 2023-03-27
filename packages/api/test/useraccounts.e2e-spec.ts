@@ -79,6 +79,7 @@ describe('UserAccountsController (E2E)', () => {
           avatarId: avatarId,
           platform: 'DISCORD',
           user: String(users[0]._id),
+          activateToken: 'token1234567890',
         },
       ).expect(201);
 
@@ -87,6 +88,7 @@ describe('UserAccountsController (E2E)', () => {
       expect(response.body.name).toEqual(accountName);
       expect(response.body.platform).toEqual('DISCORD');
       expect(response.body.avatarId).toEqual(avatarId);
+      expect(response.body.activateToken).toEqual('token1234567890');
       expect(String(response.body.user)).toEqual(String(users[0]._id));
     });
 
@@ -257,6 +259,7 @@ describe('UserAccountsController (E2E)', () => {
           name: accountName,
           avatarId: avatarId,
           platform: 'DISCORD',
+          activateToken: 'token09876token',
         },
       ).expect(200);
 
@@ -267,6 +270,7 @@ describe('UserAccountsController (E2E)', () => {
       expect(response.body.name).toEqual(accountName);
       expect(response.body.platform).toEqual('DISCORD');
       expect(response.body.avatarId).toEqual(avatarId);
+      expect(response.body.activateToken).toEqual('token09876token');
       expect(String(response.body.user)).toEqual(String(userAccounts[0].user));
     });
 
@@ -372,11 +376,22 @@ describe('UserAccountsController (E2E)', () => {
     });
 
     test('200 when authenticated', async () => {
-      await authorizedGetRequest(
+      const response = await authorizedGetRequest(
         `/useraccounts/${userAccounts[0]._id}`,
         app,
         accessToken,
       ).expect(200);
+      expect(response.body).toBeDefined();
+      expect(response.body._id).toEqual(String(userAccounts[0]._id));
+      expect(response.body.accountId).toEqual(
+        String(userAccounts[0].accountId),
+      );
+      expect(response.body.name).toEqual(userAccounts[0].name);
+      expect(response.body.platform).toEqual(userAccounts[0].platform);
+      expect(response.body.avatarId).toEqual(userAccounts[0].avatarId);
+      expect(response.body.activateToken).toBeUndefined();
+      expect(response.body).toBeProperlySerialized();
+      expect(response.body).toBeValidClass(UserAccount);
     });
 
     test('find  user account by accountId', async () => {
@@ -404,6 +419,11 @@ describe('UserAccountsController (E2E)', () => {
         accessToken,
       ).expect(200);
       expect(response.body.length).toBe(3);
+      for (const ua of response.body) {
+        expect(ua).toBeProperlySerialized();
+        expect(ua).toBeValidClass(UserAccount);
+        expect(ua.activateToken).toBeUndefined();
+      }
     });
   });
 

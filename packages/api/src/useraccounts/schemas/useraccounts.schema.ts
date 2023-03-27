@@ -45,13 +45,13 @@ export class UserAccount {
     minLength: 10,
     maxLength: 255,
   })
+  @IsString()
   @Prop({
     required: true,
     index: true,
     minlength: 10,
     maxlength: 255,
   })
-  @IsString()
   accountId: string;
 
   @ApiProperty({
@@ -60,8 +60,8 @@ export class UserAccount {
     minLength: 4,
     maxLength: 20,
   })
-  @Prop({ required: true, minlength: 4, maxlength: 20 })
   @IsString()
+  @Prop({ required: true, minlength: 4, maxlength: 20 })
   name: string;
 
   @ApiProperty({
@@ -70,9 +70,9 @@ export class UserAccount {
     minLength: 10,
     maxLength: 255,
   })
-  @Prop({ type: String, required: false, minlength: 10, maxlength: 255 })
   @IsOptional()
   @IsString()
+  @Prop({ type: String, required: false, minlength: 10, maxlength: 255 })
   avatarId?: string;
 
   @ApiProperty({
@@ -85,11 +85,8 @@ export class UserAccount {
   @IsString()
   platform: string;
 
-  @Exclude({ toPlainOnly: true })
-  @Prop({ type: String, maxlength: 25 })
-  @IsOptional()
-  @IsString()
-  @MinLengthAllowEmpty(10)
+  @Exclude()
+  @Prop({ type: String, maxlength: 255 })
   activateToken: string;
 
   @ApiResponseProperty({ type: Date })

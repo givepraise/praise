@@ -854,6 +854,8 @@ export interface components {
       avatarId: string;
       /** @example DISCORD */
       platform: string;
+      /** @example jkhvuygi643jh35g53 */
+      activateToken?: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
       user?: string;
     };
@@ -886,6 +888,8 @@ export interface components {
       avatarId?: string;
       /** @example DISCORD */
       platform?: string;
+      /** @example jkhvuygi643jh35g53 */
+      activateToken?: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
       user?: string;
     };
