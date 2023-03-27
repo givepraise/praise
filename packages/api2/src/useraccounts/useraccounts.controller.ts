@@ -131,6 +131,7 @@ export class UserAccountsController {
   @ApiOperation({
     summary: 'Get a UserAccount.',
   })
+  @UseInterceptors(MongooseClassSerializerInterceptor(UserAccount))
   @ApiResponse({
     status: 200,
     description: 'UserAccount',

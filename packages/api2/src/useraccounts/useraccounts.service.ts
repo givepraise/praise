@@ -54,10 +54,7 @@ export class UserAccountsService {
       );
     }
 
-    const userAccount = new this.userAccountModel({
-      ...createUserAccountInputDto,
-      activateToken: randomBytes(10).toString('hex'), // Generate a random activation token
-    });
+    const userAccount = new this.userAccountModel(createUserAccountInputDto);
     await userAccount.save();
 
     this.eventLogService.logEvent({
@@ -147,7 +144,7 @@ export class UserAccountsService {
 
     this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.USER_ACCOUNT,
-      description: `Created UserAccount id: ${userAccount.accountId}`,
+      description: `Updated UserAccount id: ${userAccount.accountId}`,
     });
 
     return userAccount.toObject();
