@@ -1,5 +1,5 @@
 {
-  "name": "api2",
+  "name": "api",
   "version": "0.13.0",
   "license": "GPL-3.0-or-later",
   "description": "The Praise REST API running on Nest.js, using MongoDB for storage.",

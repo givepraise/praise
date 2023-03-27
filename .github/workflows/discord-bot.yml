@@ -15,6 +15,6 @@ jobs:
           node-version: '18.14.0'
           cache: 'yarn'
       - run: yarn install
-      - run: yarn workspace api2 build
+      - run: yarn workspace api build
       - run: yarn workspace discord-bot lint
       - run: yarn workspace discord-bot build

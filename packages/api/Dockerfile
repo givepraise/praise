@@ -10,7 +10,7 @@ COPY ./yarn.lock .
 COPY ./.yarn ./.yarn
 
 # Copy packages
-COPY ./packages/api2 ./packages/api2
+COPY ./packages/api ./packages/api
 
 # Install dependencies for packages
 RUN yarn set version berry

@@ -26,7 +26,7 @@ services:
     ports:
       - $API_PORT:$API_PORT
     volumes:
-      - './packages/api2/uploads/:/usr/src/uploads/'
+      - './packages/api/uploads/:/usr/src/uploads/'
     links:
       - mongodb
 

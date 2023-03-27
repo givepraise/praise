@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'packages/api2/**'
+      - 'packages/api/**'
 jobs:
   check-openapi-schema-changed:
     runs-on: ubuntu-latest
@@ -17,7 +17,7 @@ jobs:
         with:
           filters: |
             openapi:
-              - 'packages/api2/openapi.json'
+              - 'packages/api/openapi.json'
 
   build-openapi-schema:
     needs: check-openapi-schema-changed
