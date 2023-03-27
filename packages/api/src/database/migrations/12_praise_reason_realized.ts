@@ -1,4 +1,4 @@
-import { PraiseModel } from '@/praise/entities';
+import { PraiseModel } from '../schemas/praise/12_praise.schema';
 
 const up = async (): Promise<void> => {
   const praises = await PraiseModel.find({
@@ -12,7 +12,7 @@ const up = async (): Promise<void> => {
       filter: { _id: s._id },
       update: { $set: { reasonRealized: s.reason } },
     },
-  }));
+  })) as any;
 
   await PraiseModel.bulkWrite(updates);
 };
@@ -24,7 +24,7 @@ const down = async (): Promise<void> => {
     },
     {
       $unset: { reasonRealized: 1 },
-    }
+    },
   );
 };
 

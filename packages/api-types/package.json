@@ -4,14 +4,14 @@
   "description": "",
   "main": "out/schema",
   "scripts": {
-    "build": "openapi-typescript ../api2/openapi.json --output out/schema.ts",
+    "build": "openapi-typescript ../api/openapi.json --output out/schema.ts",
     "lint": "eslint --ext .ts . --fix"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "api2": "0.13.0"
+    "api": "0.13.0"
   },
   "devDependencies": {
     "eslint": "^8.35.0",

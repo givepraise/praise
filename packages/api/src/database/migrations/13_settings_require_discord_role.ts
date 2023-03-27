@@ -1,5 +1,5 @@
-import { SettingGroup } from '@/settings/types';
-import { SettingsModel } from '../../settings/entities';
+import { SettingGroup } from '../../settings/enums/setting-group.enum';
+import { SettingModel } from '../schemas/settings/07_settings.schema';
 
 const newSetting = [
   {
@@ -37,8 +37,9 @@ const up = async (): Promise<void> => {
       update: { $setOnInsert: { ...s } },
       upsert: true,
     },
-  }));
-  await SettingsModel.bulkWrite(ns);
+  })) as any;
+
+  await SettingModel.bulkWrite(ns);
 
   const us = updatedSetting.map((s) => ({
     updateOne: {
@@ -46,12 +47,13 @@ const up = async (): Promise<void> => {
       update: { $set: { description: s.description } },
     },
   }));
-  await SettingsModel.bulkWrite(us);
+
+  await SettingModel.bulkWrite(us);
 };
 
 const down = async (): Promise<void> => {
   const allKeys = newSetting.map((s) => s.key);
-  await SettingsModel.deleteMany({ key: { $in: allKeys } });
+  await SettingModel.deleteMany({ key: { $in: allKeys } });
 
   const os = oldSetting.map((s) => ({
     updateOne: {
@@ -59,7 +61,7 @@ const down = async (): Promise<void> => {
       update: { $set: { description: s.description } },
     },
   }));
-  await SettingsModel.bulkWrite(os);
+  await SettingModel.bulkWrite(os);
 };
 
 export { up, down };

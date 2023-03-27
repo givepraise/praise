@@ -7,4 +7,4 @@ export $(grep -v '^#' .env | xargs)
 docker compose -f ./docker-compose.production.yml down mongodb
 docker volume rm praise_mongodb_data
 docker compose -f ./docker-compose.production.yml up mongodb -d --remove-orphans
-docker exec -i mongodb-praise sh -c 'mongorestore --authenticationDatabase admin --nsInclude=$MONGO_DB.* --uri="mongodb://$MONGO_INITDB_ROOT_USERNAME:$MONGO_INITDB_ROOT_PASSWORD@mongodb:27017/?authSource=admin" --drop --preserveUUID --archive' < $1
+docker exec -i mongodb-praise sh -c 'mongorestore --authenticationDatabase admin --nsInclude=$MONGO_DB.* --uri="mongodb://$MONGO_INITDB_ROOT_USERNAME:$MONGO_INITDB_ROOT_PASSWORD@mongodb:$MONGO_PORT/?authSource=admin" --drop --preserveUUID --archive' < $1

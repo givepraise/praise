@@ -15,7 +15,7 @@
       "smartStep": false
     },
     {
-      "name": "Launch API2",
+      "name": "Launch API",
       "type": "node-terminal",
       "request": "launch",
       "command": "yarn workspace api2 start:debug",

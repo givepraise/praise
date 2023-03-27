@@ -1,5 +1,5 @@
-import { SettingGroup } from '@/settings/types';
-import { SettingsModel } from '@/settings/entities';
+import { SettingGroup } from '../../settings/enums/setting-group.enum';
+import { SettingModel } from '../schemas/settings/07_settings.schema';
 
 const deleteSettings = [
   {
@@ -24,11 +24,11 @@ const deleteSettings = [
 const up = async (): Promise<void> => {
   const deleteSettingKeys = deleteSettings.map((s) => s.key);
 
-  await SettingsModel.deleteMany({ key: { $in: deleteSettingKeys } });
+  await SettingModel.deleteMany({ key: { $in: deleteSettingKeys } });
 };
 
 const down = async (): Promise<void> => {
-  await SettingsModel.insertMany(deleteSettings);
+  await SettingModel.insertMany(deleteSettings);
 };
 
 export { up, down };
