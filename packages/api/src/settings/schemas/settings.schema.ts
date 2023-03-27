@@ -4,7 +4,7 @@ import { Types } from 'mongoose';
 import { SettingGroup } from '../enums/setting-group.enum';
 import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 import { valueToValueRealized } from '../utils/value-to-value-realized.util';
 import { SettingType } from '../enums/setting-type.enum';
 
@@ -70,14 +70,14 @@ export class Setting {
   defaultValue: string;
 
   @ApiResponseProperty({
-    example: 'Integer',
     enum: SettingType,
   })
+  @IsEnum(SettingType)
   @Prop({
     required: true,
     enum: SettingType,
   })
-  type: string;
+  type: SettingType;
 
   @ApiResponseProperty({
     example: 'Quantifiers Per Praise',

@@ -659,11 +659,18 @@ export interface components {
       valueRealized: string | string[] | boolean | number | number[];
       /** @example 555 */
       defaultValue: string;
-      /**
-       * @example Integer
-       * @enum {number}
-       */
-      type: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+      /** @enum {string} */
+      type:
+        | 'Integer'
+        | 'Float'
+        | 'String'
+        | 'Textarea'
+        | 'Boolean'
+        | 'IntegerList'
+        | 'StringList'
+        | 'Image'
+        | 'Radio'
+        | 'JSON';
       /** @example Quantifiers Per Praise */
       label: string;
       /** @example How many redundant quantifications are assigned to each praise? */
@@ -924,8 +931,8 @@ export interface components {
 export type external = Record<string, never>;
 
 export interface operations {
+  /** Activate a user account in order to be able to give praise and receive rewards. Activation a user account creates a new User object or adds user account to User if it already exists. */
   ActivateController_activate: {
-    /** Activate a user account in order to be able to give praise and receive rewards. Activation a user account creates a new User object or adds user account to User if it already exists. */
     requestBody: {
       content: {
         'application/json': components['schemas']['ActivateInputDto'];
@@ -945,8 +952,8 @@ export interface operations {
       };
     };
   };
+  /** Export users document to json or csv */
   UsersController_export: {
-    /** Export users document to json or csv */
     parameters: {
       query: {
         format?: 'csv' | 'json' | 'parquet';
@@ -986,8 +993,8 @@ export interface operations {
       };
     };
   };
+  /** Updates a user */
   UsersController_update: {
-    /** Updates a user */
     parameters: {
       path: {
         id: string;
@@ -1047,8 +1054,8 @@ export interface operations {
       };
     };
   };
+  /** Export periods document to json or csv */
   PeriodsController_export: {
-    /** Export periods document to json or csv */
     parameters: {
       query: {
         format?: 'csv' | 'json' | 'parquet';
@@ -1063,13 +1070,13 @@ export interface operations {
       };
     };
   };
+  /** List all periods */
   PeriodsController_findAllPaginated: {
-    /** List all periods */
     parameters: {
-      /** @example 10 */
-      /** @example 1 */
       query: {
+        /** @example 10 */
         limit: number;
+        /** @example 1 */
         page: number;
         sortColumn?: string;
         sortType?: 'asc' | 'desc';
@@ -1084,8 +1091,8 @@ export interface operations {
       };
     };
   };
+  /** Create a new period */
   PeriodsController_create: {
-    /** Create a new period */
     requestBody: {
       content: {
         'application/json': components['schemas']['CreatePeriodInputDto'];
@@ -1105,8 +1112,8 @@ export interface operations {
       };
     };
   };
+  /** Find period by id */
   PeriodsController_findOne: {
-    /** Find period by id */
     parameters: {
       path: {
         id: string;
@@ -1121,8 +1128,8 @@ export interface operations {
       };
     };
   };
+  /** Update a period */
   PeriodsController_update: {
-    /** Update a period */
     parameters: {
       path: {
         id: string;
@@ -1142,8 +1149,8 @@ export interface operations {
       };
     };
   };
+  /** Close a period */
   PeriodsController_close: {
-    /** Close a period */
     parameters: {
       path: {
         id: string;
@@ -1158,8 +1165,8 @@ export interface operations {
       };
     };
   };
+  /** Fetch all Praise in a period */
   PeriodsController_praise: {
-    /** Fetch all Praise in a period */
     parameters: {
       path: {
         id: string;
@@ -1174,8 +1181,8 @@ export interface operations {
       };
     };
   };
+  /** Fetch all Praise in a period for a given receiver */
   PeriodsController_praiseByReceiver: {
-    /** Fetch all Praise in a period for a given receiver */
     parameters: {
       path: {
         periodId: string;
@@ -1191,8 +1198,8 @@ export interface operations {
       };
     };
   };
+  /** Fetch all Praise in a period for a given giver */
   PeriodsController_praiseByGiver: {
-    /** Fetch all Praise in a period for a given giver */
     parameters: {
       path: {
         periodId: string;
@@ -1208,8 +1215,8 @@ export interface operations {
       };
     };
   };
+  /** Fetch all Praise in a period for a given quantifier */
   PeriodsController_praiseByQuantifier: {
-    /** Fetch all Praise in a period for a given quantifier */
     parameters: {
       path: {
         periodId: string;
@@ -1225,8 +1232,8 @@ export interface operations {
       };
     };
   };
+  /** Verify quantifier pool size */
   PeriodsController_verifyQuantifierPoolSize: {
-    /** Verify quantifier pool size */
     parameters: {
       path: {
         id: string;
@@ -1241,8 +1248,8 @@ export interface operations {
       };
     };
   };
+  /** Assign quantifiers to period */
   PeriodsController_assignQuantifiers: {
-    /** Assign quantifiers to period */
     parameters: {
       path: {
         id: string;
@@ -1257,8 +1264,8 @@ export interface operations {
       };
     };
   };
+  /** Replace quantifier in period */
   PeriodsController_replaceQuantifier: {
-    /** Replace quantifier in period */
     parameters: {
       path: {
         id: string;
@@ -1278,13 +1285,13 @@ export interface operations {
       };
     };
   };
+  /** List event logs, paginated results */
   EventLogController_findAllPaginated: {
-    /** List event logs, paginated results */
     parameters: {
-      /** @example 10 */
-      /** @example 1 */
       query: {
+        /** @example 10 */
         limit: number;
+        /** @example 1 */
         page: number;
         sortColumn?: string;
         sortType?: 'asc' | 'desc';
@@ -1301,8 +1308,8 @@ export interface operations {
       };
     };
   };
+  /** List event log types */
   EventLogController_types: {
-    /** List event log types */
     responses: {
       /** @description Event log types */
       200: {
@@ -1312,8 +1319,8 @@ export interface operations {
       };
     };
   };
+  /** Generates a nonce for the user and returns it */
   AuthController_nonce: {
-    /** Generates a nonce for the user and returns it */
     /** @description A request containing the user identityEthAddress */
     requestBody: {
       content: {
@@ -1329,8 +1336,8 @@ export interface operations {
       };
     };
   };
+  /** Verifies a user's signature and returns a JWT token */
   AuthController_login: {
-    /** Verifies a user's signature and returns a JWT token */
     parameters: {
       header: {
         host: string;
@@ -1355,8 +1362,8 @@ export interface operations {
       };
     };
   };
+  /** List all API keys */
   ApiKeyController_findAll: {
-    /** List all API keys */
     responses: {
       /** @description Array of API keys */
       200: {
@@ -1366,8 +1373,8 @@ export interface operations {
       };
     };
   };
+  /** Create API key */
   ApiKeyController_createApiKey: {
-    /** Create API key */
     requestBody: {
       content: {
         'application/json': components['schemas']['CreateApiKeyInputDto'];
@@ -1382,8 +1389,8 @@ export interface operations {
       };
     };
   };
+  /** Get API key by ID */
   ApiKeyController_findOne: {
-    /** Get API key by ID */
     parameters: {
       path: {
         id: string;
@@ -1398,8 +1405,8 @@ export interface operations {
       };
     };
   };
+  /** Update API key description */
   ApiKeyController_updateApiKeyDescription: {
-    /** Update API key description */
     parameters: {
       path: {
         id: string;
@@ -1424,8 +1431,8 @@ export interface operations {
       };
     };
   };
+  /** Revoke API key */
   ApiKeyController_revokeApiKey: {
-    /** Revoke API key */
     parameters: {
       path: {
         id: string;
@@ -1445,17 +1452,26 @@ export interface operations {
       };
     };
   };
+  /** List all settings. */
   SettingsController_findAll: {
-    /** List all settings. */
     parameters: {
-      /** @example SETTING_KEY */
-      /** @example Integer */
-      /** @example 0 */
-      /** @example 0 */
       query: {
+        /** @example SETTING_KEY */
         key?: string;
-        type?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+        type?:
+          | 'Integer'
+          | 'Float'
+          | 'String'
+          | 'Textarea'
+          | 'Boolean'
+          | 'IntegerList'
+          | 'StringList'
+          | 'Image'
+          | 'Radio'
+          | 'JSON';
+        /** @example 0 */
         group?: number;
+        /** @example 0 */
         subgroup?: number;
       };
     };
@@ -1468,8 +1484,8 @@ export interface operations {
       };
     };
   };
+  /** Get a setting. */
   SettingsController_findOne: {
-    /** Get a setting. */
     parameters: {
       path: {
         id: string;
@@ -1484,8 +1500,8 @@ export interface operations {
       };
     };
   };
+  /** Set a value for a setting. */
   SettingsController_set: {
-    /** Set a value for a setting. */
     parameters: {
       path: {
         id: string;
@@ -1505,8 +1521,8 @@ export interface operations {
       };
     };
   };
+  /** Upload a file for a setting */
   SettingsController_setWithUpload: {
-    /** Upload a file for a setting */
     parameters: {
       path: {
         id: string;
@@ -1521,8 +1537,8 @@ export interface operations {
       };
     };
   };
+  /** Serve an uploaded settings file. */
   SettingsController_serveUpload: {
-    /** Serve an uploaded settings file. */
     parameters: {
       path: {
         file: string;
@@ -1536,8 +1552,8 @@ export interface operations {
       };
     };
   };
+  /** List all period settings. */
   PeriodSettingsController_findAll: {
-    /** List all period settings. */
     parameters: {
       path: {
         periodId: string;
@@ -1552,8 +1568,8 @@ export interface operations {
       };
     };
   };
+  /** Get a period setting. */
   PeriodSettingsController_findOne: {
-    /** Get a period setting. */
     parameters: {
       path: {
         periodId: string;
@@ -1569,8 +1585,8 @@ export interface operations {
       };
     };
   };
+  /** Set value for a period setting. */
   PeriodSettingsController_set: {
-    /** Set value for a period setting. */
     parameters: {
       path: {
         periodId: string;
@@ -1593,10 +1609,10 @@ export interface operations {
   };
   CommunityController_findAll: {
     parameters: {
-      /** @example 10 */
-      /** @example 1 */
       query: {
+        /** @example 10 */
         limit: number;
+        /** @example 1 */
         page: number;
         sortColumn?: string;
         sortType?: 'asc' | 'desc';
@@ -1611,8 +1627,8 @@ export interface operations {
       };
     };
   };
+  /** Create a new community */
   CommunityController_create: {
-    /** Create a new community */
     requestBody: {
       content: {
         'application/json': components['schemas']['CreateCommunityInputDto'];
@@ -1647,8 +1663,8 @@ export interface operations {
       };
     };
   };
+  /** Update community */
   CommunityController_update: {
-    /** Update community */
     requestBody: {
       content: {
         'application/json': components['schemas']['UpdateCommunityInputDto'];
@@ -1663,8 +1679,8 @@ export interface operations {
       };
     };
   };
+  /** Link discord to community */
   CommunityController_linkDiscord: {
-    /** Link discord to community */
     requestBody: {
       content: {
         'application/json': components['schemas']['LinkDiscordBotDto'];
@@ -1679,13 +1695,13 @@ export interface operations {
       };
     };
   };
+  /** List praise items, paginated results */
   PraiseController_findAllPaginated: {
-    /** List praise items, paginated results */
     parameters: {
-      /** @example 10 */
-      /** @example 1 */
       query: {
+        /** @example 10 */
         limit: number;
+        /** @example 1 */
         page: number;
         sortColumn?: string;
         sortType?: 'asc' | 'desc';
@@ -1702,8 +1718,8 @@ export interface operations {
       };
     };
   };
+  /** Create praise item */
   PraiseController_praise: {
-    /** Create praise item */
     requestBody: {
       content: {
         'application/json': components['schemas']['PraiseCreateInputDto'];
@@ -1723,8 +1739,8 @@ export interface operations {
       };
     };
   };
+  /** Export Praises document to json or csv */
   PraiseController_export: {
-    /** Export Praises document to json or csv */
     parameters: {
       query: {
         format?: 'csv' | 'json' | 'parquet';
@@ -1742,8 +1758,8 @@ export interface operations {
       };
     };
   };
+  /** Find praise item by id */
   PraiseController_findOne: {
-    /** Find praise item by id */
     parameters: {
       path: {
         id: string;
@@ -1758,8 +1774,8 @@ export interface operations {
       };
     };
   };
+  /** Quantify praise item by id */
   PraiseController_quantify: {
-    /** Quantify praise item by id */
     parameters: {
       path: {
         id: string;
@@ -1779,8 +1795,8 @@ export interface operations {
       };
     };
   };
+  /** Quantify multiple praise items */
   PraiseController_quantifyMultiple: {
-    /** Quantify multiple praise items */
     requestBody: {
       content: {
         'application/json': components['schemas']['QuantifyMultipleInputDto'];
@@ -1795,8 +1811,8 @@ export interface operations {
       };
     };
   };
+  /** Forward praise item */
   PraiseController_forward: {
-    /** Forward praise item */
     requestBody: {
       content: {
         'application/json': components['schemas']['PraiseForwardInputDto'];
@@ -1816,8 +1832,8 @@ export interface operations {
       };
     };
   };
+  /** Exports quantifications document to json or csv. */
   QuantificationsController_export: {
-    /** Exports quantifications document to json or csv. */
     parameters: {
       query: {
         format?: 'csv' | 'json' | 'parquet';
@@ -1835,15 +1851,15 @@ export interface operations {
       };
     };
   };
+  /** UserAccount list */
   UserAccountsController_findAll: {
-    /** UserAccount list */
     parameters: {
-      /** @example 098098098098098 */
-      /** @example darth#6755 */
-      /** @example 63b428f7d9ca4f6ff5370d05 */
       query: {
+        /** @example 098098098098098 */
         accountId?: string;
+        /** @example darth#6755 */
         name?: string;
+        /** @example 63b428f7d9ca4f6ff5370d05 */
         user?: string;
       };
     };
@@ -1855,8 +1871,8 @@ export interface operations {
       };
     };
   };
+  /** Create a UserAccount */
   UserAccountsController_create: {
-    /** Create a UserAccount */
     requestBody: {
       content: {
         'application/json': components['schemas']['CreateUserAccountInputDto'];
@@ -1870,8 +1886,8 @@ export interface operations {
       };
     };
   };
+  /** Exports UserAccounts document to json or csv. */
   UserAccountsController_export: {
-    /** Exports UserAccounts document to json or csv. */
     parameters: {
       query: {
         format?: 'csv' | 'json' | 'parquet';
@@ -1886,8 +1902,8 @@ export interface operations {
       };
     };
   };
+  /** Get a UserAccount. */
   UserAccountsController_findOne: {
-    /** Get a UserAccount. */
     parameters: {
       path: {
         id: string;
@@ -1902,8 +1918,8 @@ export interface operations {
       };
     };
   };
+  /** Update UserAccount */
   UserAccountsController_update: {
-    /** Update UserAccount */
     requestBody: {
       content: {
         'application/json': components['schemas']['UpdateUserAccountInputDto'];

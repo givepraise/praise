@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import { SettingGroup } from '../../enums/setting-group.enum';
+import { SettingType } from '../../enums/setting-type.enum';
 import { Setting } from '../../schemas/settings.schema';
 
 export const settingStub: Setting = {
@@ -8,7 +9,7 @@ export const settingStub: Setting = {
   value: 'Test Value',
   valueRealized: 'Test Value',
   defaultValue: '',
-  type: 'String',
+  type: SettingType.STRING,
   label: 'Test Label',
   description: 'Test Description',
   group: SettingGroup.APPLICATION,

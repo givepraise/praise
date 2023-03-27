@@ -1,5 +1,6 @@
 import { ApiException } from '../../shared/exceptions/api-exception';
 import { errorMessages } from '../../shared/exceptions/error-messages';
+import { SettingType } from '../enums/setting-type.enum';
 
 function isNumeric(value: any) {
   return !isNaN(parseFloat(value)) && isFinite(value);
@@ -10,9 +11,9 @@ function isNumeric(value: any) {
  */
 export function validateSetting(
   value: string,
-  type: string,
+  type: SettingType,
 ): { valid: boolean; value: string } {
-  if (type === 'Float' || type === 'Integer') {
+  if (type === SettingType.FLOAT || type === SettingType.INTEGER) {
     return {
       valid: isNumeric(value),
       value,
@@ -20,22 +21,22 @@ export function validateSetting(
   }
 
   if (
-    type === 'String' ||
-    type === 'Textarea' ||
-    type === 'Image' ||
-    type === 'Radio'
+    type === SettingType.STRING ||
+    type === SettingType.TEXTAREA ||
+    type === SettingType.IMAGE ||
+    type === SettingType.RADIO
   ) {
     return { valid: typeof value === 'string', value };
   }
 
-  if (type === 'Boolean') {
+  if (type === SettingType.BOOLEAN) {
     return {
       valid: value.toString() === 'true' || value.toString() === 'false',
       value,
     };
   }
 
-  if (type === 'IntegerList') {
+  if (type === SettingType.INTEGERLIST) {
     let valid = true;
     let previous = 0;
     const valueArray = value.split(',').map((item: any) => item.trim());
@@ -51,7 +52,7 @@ export function validateSetting(
     return { valid, value: valueArray.join(',') };
   }
 
-  if (type === 'JSON') {
+  if (type === SettingType.JSON) {
     try {
       const valueData = JSON.parse(value);
       return {
@@ -63,7 +64,7 @@ export function validateSetting(
     }
   }
 
-  if (type === 'StringList') {
+  if (type === SettingType.STRINGLIST) {
     let valid = true;
     const valueArray = value.split(',').map((item: any) => item.trim());
     valueArray.forEach((element: any) => {
