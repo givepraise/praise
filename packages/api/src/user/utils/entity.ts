@@ -24,9 +24,20 @@ export const generateUserNameFromAccount = async (
     username = userAccount.name;
   }
 
-  const exists = await UserModel.find({ username }).lean();
-  if (exists.length === 0) return username;
-  if (userAccount.platform === 'DISCORD') return userAccount.name;
+  // Return username if it is not taken
+  let exists = await UserModel.find({ username }).lean();
+  if (exists.length === 0) {
+    return username;
+  }
+
+  // If username is taken then try to create one with the Discord discriminator
+  if (userAccount.platform === 'DISCORD') {
+    exists = await UserModel.find({ username: userAccount.name }).lean();
+    if (exists.length === 0) return userAccount.name;
+    return userAccount.name;
+  }
+
+  // Unable to generate username
   return null;
 };
 

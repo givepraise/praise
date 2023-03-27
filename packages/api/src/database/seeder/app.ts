@@ -109,7 +109,7 @@ export const seedAdminUsers = async (): Promise<void> => {
       await UserModel.create({
         identityEthAddress: e,
         rewardsEthAddress: e,
-        username: faker.internet.userName(),
+        username: e,
         roles: [UserRole.ADMIN, UserRole.USER],
       });
     }

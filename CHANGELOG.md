@@ -13,6 +13,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
+## [0.13.1] - 2023-01-20
+
+### Fixed
+
+- **API:** Fixed bug that prevented user activation and gave new users wrong usernames
+- **Frontend:** Clicking on user popover should take you to the user page #686
+- **API:** Fixing some export issues due to changes in how the export transformer work because of the change to ses-node-json-transform for evalutaing untrusted code. #685
+- **Frontend**: Praise sort should be dark in dark mode #688
+- **Frontend**: Export dropdown gets squeezed when "close period" button is visible #684 #687
+
+### Changed
+
+- **Frontend**: Better handling of relative dates #720
+- **Devops**: Added docker-compose installation script and modified scripts #754
+- **Devops**: Allow mongodb port number to be configurable in .env #760
+- **Devops**: Enhanced the multi-setup scripts #761
+
 ## [0.13.0] - 2022-11-18
 
 ### Added

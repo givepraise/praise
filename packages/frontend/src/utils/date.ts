@@ -1,5 +1,5 @@
-import { parse, parseISO, formatRelative, compareAsc } from 'date-fns';
-import { enUS } from 'date-fns/esm/locale';
+import { parse, parseISO, formatRelative, formatDistance } from 'date-fns';
+import { enGB } from 'date-fns/esm/locale';
 import { utcToZonedTime, format } from 'date-fns-tz';
 import jstz from 'jstz';
 
@@ -23,23 +23,41 @@ const utcDateToLocal = (dateUtc: Date): Date => {
 
 export const localizeAndFormatIsoDateRelative = (dateIso: string): string => {
   const formatRelativeLocale = {
-    lastWeek: "'last' eeee p",
-    yesterday: "'yesterday' p",
-    today: "'today' p",
+    lastWeek: 'eeee',
+    yesterday: "'yesterday', p",
+    today: 'p',
     tomorrow: "'tomorrow' p",
     nextWeek: 'eeee p',
     other: DATE_FORMAT,
   };
 
   const locale = {
-    ...enUS,
+    ...enGB,
     formatRelative: (token) => formatRelativeLocale[token],
   };
 
   const dateUtc = parseISO(dateIso);
   const dateLocal = utcDateToLocal(dateUtc);
 
-  return formatRelative(dateLocal, new Date(), { locale });
+  const localDate = new Date(dateLocal);
+  const currentDate = new Date();
+
+  const differenceInDays = Math.round(
+    (currentDate.getTime() - localDate.getTime()) / 86400000
+  );
+  const isMoreThanAWeekAgo = differenceInDays >= 8;
+  const isMoreThanTwoDaysAgo = differenceInDays > 2;
+
+  let dateSuffix = '';
+  if (!isMoreThanAWeekAgo && isMoreThanTwoDaysAgo) {
+    dateSuffix =
+      ', ' +
+      formatDistance(localDate, currentDate, {
+        addSuffix: true,
+      });
+  }
+
+  return formatRelative(dateLocal, new Date(), { locale }) + dateSuffix;
 };
 
 export const localizeAndFormatIsoDate = (
