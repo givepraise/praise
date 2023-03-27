@@ -15,13 +15,6 @@
       "smartStep": false
     },
     {
-      "name": "Launch API",
-      "type": "node-terminal",
-      "request": "launch",
-      "command": "yarn workspace api2 start:debug",
-      "smartStep": false
-    },
-    {
       "name": "Launch DISCORD BOT",
       "type": "node-terminal",
       "request": "launch",
