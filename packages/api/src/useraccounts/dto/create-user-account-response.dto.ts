@@ -8,5 +8,5 @@ export class CreateUserAccountResponseDto extends OmitType(UserAccount, [
     example: 'jkhvuygi643jh35g53',
     type: 'string',
   })
-  activateToken: string;
+  activateToken?: string;
 }

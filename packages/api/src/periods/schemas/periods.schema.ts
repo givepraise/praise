@@ -20,34 +20,34 @@ export class Period {
   @ExposeId()
   _id: Types.ObjectId;
 
-  @Prop({ required: true, unique: true, minlength: 3, maxlength: 64 })
   @ApiProperty({ example: 'June 2021', type: 'string' })
   @IsString()
   @Length(3, 64)
+  @Prop({ required: true, unique: true, minlength: 3, maxlength: 64 })
   name: string;
 
+  @ApiResponseProperty({ enum: PeriodStatusType })
   @Prop({
     type: 'string',
     enum: PeriodStatusType,
     default: PeriodStatusType.OPEN,
+    required: true,
   })
-  @ApiResponseProperty({ example: 'OPEN', type: 'string' })
-  status: string;
+  status: PeriodStatusType;
 
+  @ApiResponseProperty()
   @Prop({
     required: true,
     type: Date,
-    /** TODO validator */
   })
-  @ApiResponseProperty()
   endDate: Date;
 
   @Prop({ type: Date })
   @ApiResponseProperty()
   createdAt: Date;
 
-  @Prop({ type: Date })
   @ApiResponseProperty()
+  @Prop({ type: Date })
   updatedAt: Date;
 }
 

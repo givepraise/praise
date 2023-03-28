@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import { SortType } from '../enums/sort-type.enum';
 
 export class PaginatedQueryDto {
   @ApiProperty({
@@ -24,9 +25,8 @@ export class PaginatedQueryDto {
   @IsOptional()
   sortColumn?: string;
 
-  @ApiProperty({ enum: ['asc', 'desc'], default: 'desc', required: false })
-  @IsString()
+  @ApiProperty({ enum: SortType, default: SortType.desc, required: false })
   @IsOptional()
-  @IsIn(['asc', 'desc'])
+  @IsEnum(SortType)
   sortType?: string;
 }

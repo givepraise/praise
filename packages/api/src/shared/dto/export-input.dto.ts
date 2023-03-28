@@ -1,21 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
-import { IsDate, IsIn, IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsDate, IsEnum, IsOptional } from 'class-validator';
 import { Types } from 'mongoose';
 import { IsObjectId } from '../../shared/validators/is-object-id.validator';
 import parseISO from 'date-fns/parseISO';
+import { ExportFormat } from '../enums/export-format.enum';
 
 export class ExportInputDto {
   @ApiProperty({
-    enum: ['csv', 'json', 'parquet'],
-    default: 'csv',
+    enum: ExportFormat,
+    default: ExportFormat.CSV,
     required: false,
   })
   @IsOptional()
-  @IsString()
-  @IsIn(['csv', 'json', 'parquet'])
-  @Type(() => String)
-  format?: string;
+  @IsEnum(ExportFormat)
+  format?: ExportFormat;
 
   @ApiProperty({ required: false })
   @IsOptional()

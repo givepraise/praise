@@ -7,7 +7,6 @@ import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { IsOptional, IsString } from 'class-validator';
 import { has } from 'lodash';
 import { IsObjectId } from '../../shared/validators/is-object-id.validator';
-import { MinLengthAllowEmpty } from '../../shared/decorators/min-length-allow-empty.decorator';
 
 export type UserAccountDocument = UserAccount & Document;
 
@@ -36,7 +35,13 @@ export class UserAccount {
   @Type(() => User)
   @IsOptional()
   @IsObjectId()
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', default: null, index: true })
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    ref: 'User',
+    default: null,
+    index: true,
+    required: false,
+  })
   user?: User | Types.ObjectId;
 
   @ApiProperty({
@@ -86,8 +91,8 @@ export class UserAccount {
   platform: string;
 
   @Exclude()
-  @Prop({ type: String, maxlength: 255 })
-  activateToken: string;
+  @Prop({ type: String, maxlength: 255, required: false })
+  activateToken?: string;
 
   @ApiResponseProperty({ type: Date })
   @Prop()

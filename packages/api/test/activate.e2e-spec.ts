@@ -120,7 +120,8 @@ describe('EventLog (E2E)', () => {
         activateService.generateActivateMessage(
           ua.accountId,
           wallet.address,
-          ua.activateToken,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          ua.activateToken!,
         ),
       );
 
@@ -160,7 +161,8 @@ describe('EventLog (E2E)', () => {
         activateService.generateActivateMessage(
           ua.accountId,
           wallet.address,
-          ua.activateToken,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          ua.activateToken!,
         ),
       );
 
@@ -184,7 +186,8 @@ describe('EventLog (E2E)', () => {
         activateService.generateActivateMessage(
           ua.accountId,
           wallet.address,
-          ua.activateToken,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          ua.activateToken!,
         ),
       );
 

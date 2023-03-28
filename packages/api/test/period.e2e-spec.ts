@@ -704,7 +704,7 @@ describe('Period (E2E)', () => {
       const wallet = Wallet.createRandom();
       await usersSeeder.seedUser({
         identityEthAddress: wallet.address,
-        roles: ['USER', 'ADMIN'],
+        roles: [AuthRole.USER, AuthRole.ADMIN],
       });
 
       const receiver1 = await userAccountsSeeder.seedUserAccount();
@@ -723,7 +723,7 @@ describe('Period (E2E)', () => {
       const wallet1 = Wallet.createRandom();
       const quantifierUser1 = await usersSeeder.seedUser({
         identityEthAddress: wallet1.address,
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const quantifier1 = await userAccountsSeeder.seedUserAccount({
@@ -733,7 +733,7 @@ describe('Period (E2E)', () => {
       const wallet2 = Wallet.createRandom();
       const quantifierUser2 = await usersSeeder.seedUser({
         identityEthAddress: wallet2.address,
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       await userAccountsSeeder.seedUserAccount({
@@ -812,16 +812,16 @@ describe('Period (E2E)', () => {
       });
 
       await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
       await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
       await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
       await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const response = await request(server)
@@ -859,7 +859,7 @@ describe('Period (E2E)', () => {
       const wallet = Wallet.createRandom();
       await usersSeeder.seedUser({
         identityEthAddress: wallet.address,
-        roles: ['USER', 'ADMIN'],
+        roles: [AuthRole.USER, AuthRole.ADMIN],
       });
 
       const receiver1 = await userAccountsSeeder.seedUserAccount();
@@ -949,7 +949,7 @@ describe('Period (E2E)', () => {
       });
 
       await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const response = await request(server)
@@ -987,7 +987,7 @@ describe('Period (E2E)', () => {
       const wallet = Wallet.createRandom();
       await usersSeeder.seedUser({
         identityEthAddress: wallet.address,
-        roles: ['USER', 'ADMIN'],
+        roles: [AuthRole.USER, AuthRole.ADMIN],
       });
 
       const receiver1 = await userAccountsSeeder.seedUserAccount();
@@ -1077,11 +1077,11 @@ describe('Period (E2E)', () => {
       });
 
       await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const response = await request(server)
@@ -1120,7 +1120,7 @@ describe('Period (E2E)', () => {
       const wallet = Wallet.createRandom();
       await usersSeeder.seedUser({
         identityEthAddress: wallet.address,
-        roles: ['USER', 'ADMIN'],
+        roles: [AuthRole.USER, AuthRole.ADMIN],
       });
 
       const receiver1 = await userAccountsSeeder.seedUserAccount();
@@ -1210,11 +1210,11 @@ describe('Period (E2E)', () => {
       });
 
       await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const response = await request(server)
@@ -1252,7 +1252,7 @@ describe('Period (E2E)', () => {
       const wallet = Wallet.createRandom();
       await usersSeeder.seedUser({
         identityEthAddress: wallet.address,
-        roles: ['USER', 'ADMIN'],
+        roles: [AuthRole.USER, AuthRole.ADMIN],
       });
 
       const receiver1 = await userAccountsSeeder.seedUserAccount();
@@ -1342,16 +1342,16 @@ describe('Period (E2E)', () => {
       });
 
       await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
       await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
       await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
       await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const response = await request(server)
@@ -1394,7 +1394,7 @@ describe('Period (E2E)', () => {
       const wallet = Wallet.createRandom();
       await usersSeeder.seedUser({
         identityEthAddress: wallet.address,
-        roles: ['USER', 'ADMIN'],
+        roles: [AuthRole.USER, AuthRole.ADMIN],
       });
 
       const period = await periodsSeeder.seedPeriod();
@@ -1422,13 +1422,13 @@ describe('Period (E2E)', () => {
       // create 3 quantifiers
       for (let i = 0; i < 3; i++) {
         await usersSeeder.seedUser({
-          roles: ['USER', 'QUANTIFIER'],
+          roles: [AuthRole.USER, AuthRole.QUANTIFIER],
         });
       }
 
       const quantifiers = await usersService
         .getModel()
-        .find({ roles: 'QUANTIFIER' })
+        .find({ roles: AuthRole.QUANTIFIER })
         .lean();
 
       await periodSettingsSeeder.seedPeriodSettings({
@@ -1567,10 +1567,10 @@ describe('Period (E2E)', () => {
       });
 
       const originalQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
       const newQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       await quantificationsSeeder.seedQuantification({
@@ -1645,10 +1645,10 @@ describe('Period (E2E)', () => {
 
     test('404 response if periodId does not exist', async function () {
       const originalQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
       const newQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const FORM_DATA = {
@@ -1668,10 +1668,10 @@ describe('Period (E2E)', () => {
     test('400 response if period is not QUANTIFY', async function () {
       const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
       const originalQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
       const newQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const FORM_DATA = {
@@ -1691,7 +1691,7 @@ describe('Period (E2E)', () => {
     test('400 response if missing currentQuantifierId', async function () {
       const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
       const newQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const FORM_DATA = {
@@ -1710,7 +1710,7 @@ describe('Period (E2E)', () => {
     test('400 response if missing newQuantifierId', async function () {
       const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
       const originalQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const FORM_DATA = {
@@ -1729,7 +1729,7 @@ describe('Period (E2E)', () => {
     test('400 response currentQuantifierId is same as newQuantifierId', async function () {
       const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
       const originalQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const FORM_DATA = {
@@ -1749,7 +1749,7 @@ describe('Period (E2E)', () => {
     test('400 response if original user does not exist', async function () {
       const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
       const newQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const FORM_DATA = {
@@ -1769,7 +1769,7 @@ describe('Period (E2E)', () => {
     test('400 response if replacement user does not exist', async function () {
       const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
       const originalQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const FORM_DATA = {
@@ -1789,10 +1789,10 @@ describe('Period (E2E)', () => {
     test('400 response if replacement user is not a QUANTIFIER', async function () {
       const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
       const originalQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
       const newQuantifier = await usersSeeder.seedUser({
-        roles: ['USER'],
+        roles: [AuthRole.USER],
       });
 
       const FORM_DATA = {
@@ -1812,10 +1812,10 @@ describe('Period (E2E)', () => {
     test('400 response if replacement user is already assigned to some of the same praise as original', async function () {
       const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
       const originalQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
       const newQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const previousDay = new Date(period.endDate.getTime());
@@ -1870,10 +1870,10 @@ describe('Period (E2E)', () => {
     test('403 response if user is not ADMIN', async function () {
       const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
       const originalQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
       const newQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const FORM_DATA = {
@@ -1893,10 +1893,10 @@ describe('Period (E2E)', () => {
     test('401 response if user is not authenticated', async function () {
       const period = await periodsSeeder.seedPeriod({ status: 'OPEN' });
       const originalQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
       const newQuantifier = await usersSeeder.seedUser({
-        roles: ['USER', 'QUANTIFIER'],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
       });
 
       const FORM_DATA = {

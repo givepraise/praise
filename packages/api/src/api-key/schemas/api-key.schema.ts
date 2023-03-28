@@ -45,7 +45,7 @@ export class ApiKey {
     example: '89f7edbd',
     type: 'string',
   })
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, minlength: 3, maxlength: 255 })
   name: string;
 
   @ApiProperty({
@@ -61,16 +61,15 @@ export class ApiKey {
     example: '$2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i',
     type: 'string',
   })
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, maxlength: 255 })
   hash: string;
 
   @ApiProperty({
-    example: 'API_KEY_READWRITE',
     required: true,
     enum: AuthRole,
   })
   @Validate(AllowedApiKeyRole)
-  @Prop({ enum: AuthRole, required: true })
+  @Prop({ enum: AuthRole, required: true, type: String })
   role: AuthRole;
 
   @ApiResponseProperty()

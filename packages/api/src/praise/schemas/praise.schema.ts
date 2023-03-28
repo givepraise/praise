@@ -69,9 +69,9 @@ export class Praise {
     example: 'DISCORD:810180621930070088:810180622336262195',
     type: 'string',
   })
-  @Prop({ required: true, maxlength: 100 })
+  @Prop({ required: true, maxlength: 255 })
   @IsString()
-  @MaxLength(100)
+  @MaxLength(255)
   sourceId: string;
 
   @ApiResponseProperty({
@@ -79,9 +79,9 @@ export class Praise {
       'DISCORD:Token%20Engineering%20Commons:%F0%9F%99%8F%EF%BD%9Cpraise',
     type: 'string',
   })
-  @Prop({ required: true, maxlength: 100 })
+  @Prop({ required: true, maxlength: 255 })
   @IsString()
-  @MaxLength(100)
+  @MaxLength(255)
   sourceName: string;
 
   @ApiResponseProperty({
@@ -94,25 +94,40 @@ export class Praise {
   @ApiResponseProperty({
     type: UserAccount,
   })
-  @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
   @Type(() => UserAccount)
   @IsNotEmpty()
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'UserAccount',
+    index: true,
+    required: true,
+  })
   receiver: UserAccount | Types.ObjectId;
 
   @ApiResponseProperty({
     type: UserAccount,
   })
-  @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
   @Type(() => UserAccount)
   @IsNotEmpty()
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'UserAccount',
+    index: true,
+    required: true,
+  })
   giver: UserAccount | Types.ObjectId;
 
   @ApiResponseProperty({
     type: UserAccount,
   })
-  @Prop({ type: Types.ObjectId, ref: 'UserAccount', index: true })
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'UserAccount',
+    index: true,
+    required: false,
+  })
   @Type(() => UserAccount)
-  forwarder: UserAccount | Types.ObjectId;
+  forwarder?: UserAccount | Types.ObjectId;
 
   @ApiResponseProperty({
     type: [Quantification],

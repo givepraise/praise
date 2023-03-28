@@ -22,7 +22,7 @@ export class Quantification {
   @ExposeId()
   _id: Types.ObjectId;
 
-  @Prop({ default: 0, type: 'number' })
+  @Prop({ default: 0, type: 'number', required: true })
   @ApiResponseProperty({
     example: 144,
   })
@@ -41,7 +41,7 @@ export class Quantification {
   })
   dismissed: boolean;
 
-  @Prop({ type: Types.ObjectId, ref: 'Praise', index: true })
+  @Prop({ type: Types.ObjectId, ref: 'Praise', index: true, required: false })
   @ApiResponseProperty({
     example: '639b178f19296ee0f2d0585d',
     type: 'string',
@@ -49,7 +49,7 @@ export class Quantification {
   @ExposeId()
   duplicatePraise?: Praise;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', index: true })
+  @Prop({ type: Types.ObjectId, ref: 'User', index: true, required: true })
   @ApiResponseProperty({
     example: '639b178f19296ee0f2d0585d',
     type: 'string',
@@ -57,7 +57,7 @@ export class Quantification {
   @ExposeId()
   quantifier: User | Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Praise', index: true })
+  @Prop({ type: Types.ObjectId, ref: 'Praise', index: true, required: true })
   @ApiResponseProperty({
     example: '639b178f19296ee0f2d0585d',
     type: 'string',

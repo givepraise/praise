@@ -37,8 +37,9 @@ export class EventLog {
     type: Types.ObjectId,
     ref: 'User',
     index: true,
+    required: false,
   })
-  user: Types.ObjectId;
+  user?: Types.ObjectId;
 
   @ApiProperty({ type: UserAccountNoUserId })
   @ValidateNested()
@@ -47,8 +48,9 @@ export class EventLog {
     type: Types.ObjectId,
     ref: 'UserAccount',
     index: true,
+    required: false,
   })
-  useraccount: Types.ObjectId | UserAccountNoUserId;
+  useraccount?: Types.ObjectId | UserAccountNoUserId;
 
   @ApiProperty({ example: '621f802b813dbdba9eeaf7d7', type: 'string' })
   @ExposeId()
@@ -56,8 +58,9 @@ export class EventLog {
     type: Types.ObjectId,
     ref: 'ApiKey',
     index: true,
+    required: false,
   })
-  apiKey: Types.ObjectId;
+  apiKey?: Types.ObjectId;
 
   // "Related Period" of an eventlog - only used for quantification events
   //    which are restricted to ADMIN users when period is active
@@ -67,8 +70,9 @@ export class EventLog {
     type: Types.ObjectId,
     ref: 'Period',
     index: true,
+    required: false,
   })
-  period: Types.ObjectId;
+  period?: Types.ObjectId;
 
   @ApiProperty({ type: EventLogType, required: true })
   @ValidateNested()
@@ -85,9 +89,10 @@ export class EventLog {
     example: 'A description of teh event ',
     required: true,
     type: 'string',
+    maxLength: 255,
   })
   @IsString()
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, maxlength: 255 })
   description: string;
 
   @ApiProperty({
