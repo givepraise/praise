@@ -5,14 +5,17 @@ import ApplicationSettingsApiKeyForm from './ApplicationSettingsApiKeyForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { CreateApiKeyInputDto } from '@/model/apikeys/dto/create-api-key-input.dto';
-import { isResponseOk } from '@/model/api';
+import { isApiResponseValidationError, isResponseOk } from '@/model/api';
 import ApplicationSettingsApiKeyPreview from './ApplicationSettingsApiKeyPreview';
 import { ApplicationSettingsApiKeyTable } from './ApplicationSettingsApiKeyTable';
+import { toast } from 'react-hot-toast';
+import { ApiErrorResponseData } from 'shared/interfaces/api-error-reponse-data.interface';
+import { FORM_ERROR, SubmissionErrors } from 'final-form';
 
 const ApplicationSettingsApiKeys = (): JSX.Element => {
   const [openApiKeyModal, setOpenApiKeyModal] = useState(false);
   const [openApiKeyModalPreview, setOpenApiKeyModalPreview] = useState(false);
-  const [apiKeyData, setApiKeyData] = useState();
+  const [apiKeyData, setApiKeyData] = useState<CreateApiKeyInputDto>();
   const [loading, setLoading] = useState(false);
 
   const { setApiKey } = useSetApiKey();
@@ -30,16 +33,29 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
    *
    * @param data
    */
-  const handleAddApiKey = async (data: CreateApiKeyInputDto): Promise<void> => {
+  const handleAddApiKey = async (
+    data: CreateApiKeyInputDto
+  ): Promise<SubmissionErrors> => {
     setOpenApiKeyModal(false);
     setLoading(true);
+
     const response = await setApiKey(data);
-    console.log(data);
+
     if (isResponseOk(response)) {
-      setApiKeyData(response.data);
+      toast.success('Period created');
       setOpenApiKeyModalPreview(true);
+      setApiKeyData(response.data);
+      return {};
     }
+
     setLoading(false);
+
+    if (isApiResponseValidationError(response) && response.response) {
+      return (response.response.data as ApiErrorResponseData).errors;
+    }
+
+    toast.error('Api Key create failed');
+    return { [FORM_ERROR]: 'Api Key create failed' };
   };
 
   return (
@@ -66,9 +82,9 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
         onsubmit={handleAddApiKey}
         loading={loading}
       />
-      {apiKeyData && (
+      {apiKeyData && openApiKeyModalPreview && (
         <ApplicationSettingsApiKeyPreview
-          open={true}
+          open={openApiKeyModalPreview}
           apiKeyData={apiKeyData}
           close={handleCloseApiKeyModalPreview}
         />

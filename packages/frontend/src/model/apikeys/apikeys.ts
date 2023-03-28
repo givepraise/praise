@@ -1,4 +1,4 @@
-import { selector, useRecoilCallback } from 'recoil';
+import { selector, selectorFamily, useRecoilCallback } from 'recoil';
 import { AxiosResponse, AxiosError } from 'axios';
 import { ApiAuthGet, isResponseOk } from '../api';
 import { ApiKey } from './dto/apikeys.dto';
@@ -7,6 +7,11 @@ import {
   CreateApiKeyResponseDto,
 } from './dto/create-api-key-input.dto';
 import { useApiAuthClient } from '@/utils/api';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const instanceOfApiKey = (object: any): object is ApiKey => {
+  return '_id' in object;
+};
 
 /**
  * Query to get the list of api keys
@@ -19,6 +24,29 @@ export const ApiKeysListQuery = selector<ApiKey[]>({
     >;
     return response.data;
   },
+});
+
+/**
+ * Selector that returns one individual Api Key.
+ */
+export const SingleApiKey = selectorFamily({
+  key: 'SingleApiKey',
+  get:
+    (apikeyId: string | undefined) =>
+    ({ get }): ApiKey | undefined => {
+      const allApiKeys = get(ApiKeysListQuery);
+      if (!allApiKeys || !apikeyId) return undefined;
+      return allApiKeys.filter((apikey) => apikey._id === apikeyId)[0];
+    },
+  set:
+    (apikeyId: string | undefined) =>
+    ({ get, set }, apikey): void => {
+      const allApiKeys = get(ApiKeysListQuery);
+      if (!apikeyId || !apikey || !instanceOfApiKey(apikey) || !allApiKeys)
+        return;
+      // Add new Api key to the list of all Api keys
+      set(ApiKeysListQuery, [...allApiKeys, apikey]);
+    },
 });
 
 type useSetApiKeyReturn = {
@@ -42,9 +70,8 @@ export const useSetApiKey = (): useSetApiKeyReturn => {
       > => {
         const response = await apiAuthClient.post('/api-key', data);
         if (isResponseOk(response)) {
-          // const createdApiKey = response.data as CreateApiKeyResponseDto;
-          const createdApiKey =
-            response.data as AxiosResponse<CreateApiKeyResponseDto>;
+          const createdApiKey = response.data as CreateApiKeyResponseDto;
+          set(SingleApiKey(createdApiKey._id), createdApiKey);
           return createdApiKey;
         }
         return response as AxiosResponse | AxiosError;
@@ -52,23 +79,3 @@ export const useSetApiKey = (): useSetApiKeyReturn => {
   );
   return { setApiKey };
 };
-
-// export const useCreatePeriod = (): useCreatePeriodReturn => {
-//   const apiAuthClient = useApiAuthClient();
-
-//   const createPeriod = useRecoilCallback(
-//     ({ set }) =>
-//       async (
-//         periodInput: CreatePeriodInputDto
-//       ): Promise<AxiosResponse<Praise> | AxiosError> => {
-//         const response = await apiAuthClient.post('/periods', periodInput);
-//         if (isResponseOk(response)) {
-//           const period = response.data as PeriodDetailsDto;
-//           set(SinglePeriod(period._id), period);
-//         }
-//         return response as AxiosResponse | AxiosError;
-//       }
-//   );
-
-//   return { createPeriod };
-// };

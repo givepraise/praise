@@ -38,6 +38,10 @@ export class ApiKey {
     }
   }
 
+  @ApiResponseProperty({
+    example: '639b178f19296ee0f2d0585d',
+    type: 'string',
+  })
   @ExposeId()
   _id: Types.ObjectId;
 
