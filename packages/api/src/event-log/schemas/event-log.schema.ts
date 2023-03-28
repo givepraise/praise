@@ -86,13 +86,12 @@ export class EventLog {
   type: Types.ObjectId | EventLogType;
 
   @ApiProperty({
-    example: 'A description of teh event ',
+    example: 'A description of the event ',
     required: true,
     type: 'string',
-    maxLength: 255,
   })
   @IsString()
-  @Prop({ type: String, required: true, maxlength: 255 })
+  @Prop({ type: String, required: true })
   description: string;
 
   @ApiProperty({
