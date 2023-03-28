@@ -1,4 +1,4 @@
-import { atom, selector, selectorFamily, useRecoilCallback } from 'recoil';
+import { atom, selectorFamily, useRecoilCallback } from 'recoil';
 import { AxiosResponse, AxiosError } from 'axios';
 import { ApiAuthGet, isResponseOk } from '../api';
 import { ApiKey } from './dto/apikeys.dto';
@@ -16,7 +16,6 @@ const instanceOfApiKey = (object: any): object is ApiKey => {
 /**
  * Query to get the list of api keys
  */
-
 export const AllApiKeys = atom<ApiKey[]>({
   key: 'AllApiKeys',
   default: [],
@@ -41,16 +40,6 @@ export const AllApiKeys = atom<ApiKey[]>({
   ],
 });
 
-// export const ApiKeysListQuery = selector<ApiKey[]>({
-//   key: 'ApiKeysListQuery',
-//   get: ({ get }) => {
-//     const response = get(ApiAuthGet({ url: '/api-key' })) as AxiosResponse<
-//       ApiKey[]
-//     >;
-//     return response.data;
-//   },
-// });
-
 /**
  * Selector that returns one individual Api Key.
  */
@@ -59,18 +48,18 @@ export const SingleApiKey = selectorFamily({
   get:
     (apikeyId: string | undefined) =>
     ({ get }): ApiKey | undefined => {
-      const allApiKeys = get(ApiKeysListQuery);
+      const allApiKeys = get(AllApiKeys);
       if (!allApiKeys || !apikeyId) return undefined;
       return allApiKeys.filter((apikey) => apikey._id === apikeyId)[0];
     },
   set:
     (apikeyId: string | undefined) =>
     ({ get, set }, apikey): void => {
-      const allApiKeys = get(ApiKeysListQuery);
+      const allApiKeys = get(AllApiKeys);
       if (!apikeyId || !apikey || !instanceOfApiKey(apikey) || !allApiKeys)
         return;
       // Add new Api key to the list of all Api keys
-      set(ApiKeysListQuery, [...allApiKeys, apikey]);
+      set(AllApiKeys, [...allApiKeys, apikey]);
     },
 });
 
@@ -97,7 +86,6 @@ export const useSetApiKey = (): useSetApiKeyReturn => {
         if (isResponseOk(response)) {
           const createdApiKey = response.data as CreateApiKeyResponseDto;
           set(SingleApiKey(createdApiKey._id), createdApiKey);
-          return createdApiKey;
         }
         return response as AxiosResponse | AxiosError;
       }

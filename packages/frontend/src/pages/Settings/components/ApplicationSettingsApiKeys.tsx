@@ -42,9 +42,10 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
     const response = await setApiKey(data);
 
     if (isResponseOk(response)) {
-      toast.success('Period created');
+      toast.success('API Key created');
       setOpenApiKeyModalPreview(true);
       setApiKeyData(response.data);
+      setLoading(false);
       return {};
     }
 
@@ -61,7 +62,7 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
   return (
     <>
       <div className="mb-2">
-        Generated keys to give external applicaitons access to the Praise API.
+        Generated keys to give external applications access to the Praise API.
         For details on the permission levels, see documentation:{' '}
         <a
           href="https://givepraise.xyz/docs/category/configuring-praise"

@@ -4,14 +4,14 @@ import { TableOptions, useSortBy, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import { classNames } from '@/utils/index';
 import { DATE_FORMAT, formatIsoDateUTC } from '@/utils/date';
-import { ApiKeysListQuery } from '@/model/apikeys/apikeys';
+import { AllApiKeys } from '@/model/apikeys/apikeys';
 import { InlineLabel } from '@/components/ui/InlineLabel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBackspace } from '@fortawesome/free-solid-svg-icons';
 import Button from '@mui/material/Button';
 
 export const ApplicationSettingsApiKeyTable = (): JSX.Element => {
-  const apiKeys = useRecoilValue(ApiKeysListQuery);
+  const apiKeys = useRecoilValue(AllApiKeys);
 
   const columns = React.useMemo(
     () => [
