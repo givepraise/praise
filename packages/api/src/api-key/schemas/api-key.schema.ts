@@ -65,12 +65,11 @@ export class ApiKey {
   hash: string;
 
   @ApiProperty({
-    example: 'API_KEY_READWRITE',
     required: true,
     enum: AuthRole,
   })
   @Validate(AllowedApiKeyRole)
-  @Prop({ enum: AuthRole, required: true })
+  @Prop({ enum: AuthRole, required: true, type: String })
   role: AuthRole;
 
   @ApiResponseProperty()

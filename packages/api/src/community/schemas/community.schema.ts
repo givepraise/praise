@@ -125,7 +125,6 @@ export class Community {
 
   @ApiProperty({
     enum: DiscordLinkState,
-    example: 'NOT_SET | PENDING | ACTIVE | DEACTIVE',
   })
   @IsEnum(DiscordLinkState)
   @Prop({

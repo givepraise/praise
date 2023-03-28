@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Document, Types } from 'mongoose';
 import { EventLogTypeKey } from '../enums/event-log-type-key';
 import { Exclude } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 
 export type EventLogTypeDocument = EventLogTypeKey & Document;
 
@@ -12,13 +12,13 @@ export class EventLogType {
   @Exclude()
   _id: Types.ObjectId;
 
-  @ApiProperty({ required: true, example: 'PERMISSION', type: 'string' })
-  @IsString()
+  @ApiProperty({ required: true, enum: EventLogTypeKey })
+  @IsEnum(EventLogTypeKey)
   @Prop({
     type: 'string',
     required: true,
     unique: true,
-    enum: Object.values(EventLogTypeKey),
+    enum: EventLogTypeKey,
   })
   key: string;
 

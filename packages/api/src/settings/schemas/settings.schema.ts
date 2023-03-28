@@ -103,7 +103,7 @@ export class Setting {
     enum: SettingGroup,
     type: Number,
   })
-  group: number;
+  group: SettingGroup;
 
   @ApiResponseProperty({
     type: 'string',

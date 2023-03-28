@@ -49,8 +49,9 @@ describe('EventLog (E2E)', () => {
         '/event-log?limit=10&page=1&sortColumn=createdAt&sortType=desc',
         app,
         accessToken,
-      ).expect(200);
+      );
 
+      expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
       expect(response.body.docs).toBeDefined();
       expect(response.body.docs.length).toBe(10);

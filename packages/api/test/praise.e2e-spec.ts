@@ -281,8 +281,9 @@ describe('Praise (E2E)', () => {
         `/praise?${urlParams}`,
         app,
         users[0].accessToken,
-      ).expect(200);
+      );
 
+      expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
       expect(response.body.docs).toBeDefined();
       expect(response.body.docs.length).toBe(10);

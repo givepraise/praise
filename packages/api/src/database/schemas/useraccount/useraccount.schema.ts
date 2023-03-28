@@ -19,7 +19,6 @@ export const UserAccountSchema = new Schema(
     avatarId: { type: String },
     platform: {
       type: String,
-      enum: ['DISCORD', 'TELEGRAM'],
       required: true,
     },
     activateToken: { type: String, select: false },
