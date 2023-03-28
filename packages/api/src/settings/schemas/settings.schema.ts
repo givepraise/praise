@@ -28,15 +28,16 @@ export class Setting {
     example: 'SETTING_KEY',
     type: 'string',
   })
-  @Prop({ required: true })
+  @Prop({ required: true, maxlength: 255 })
   key: string;
 
   @ApiProperty({
     example: '666',
     type: 'string',
+    maxLength: 512,
   })
   @IsString()
-  @Prop()
+  @Prop({ required: true, maxlength: 512 })
   value: string;
 
   @ApiProperty({
@@ -66,8 +67,8 @@ export class Setting {
     example: '555',
     type: 'string',
   })
-  @Prop()
-  defaultValue: string;
+  @Prop({ maxlength: 512, required: false })
+  defaultValue?: string;
 
   @ApiResponseProperty({
     enum: SettingType,
@@ -83,15 +84,15 @@ export class Setting {
     example: 'Quantifiers Per Praise',
     type: 'string',
   })
-  @Prop({ required: true })
-  label: string;
+  @Prop({ maxlength: 255, required: false })
+  label?: string;
 
   @ApiResponseProperty({
     example: 'How many redundant quantifications are assigned to each praise?',
     type: 'string',
   })
-  @Prop()
-  description: string;
+  @Prop({ maxlength: 255, required: false })
+  description?: string;
 
   @ApiResponseProperty({
     example: 0,
@@ -107,21 +108,21 @@ export class Setting {
   @ApiResponseProperty({
     type: 'string',
   })
-  @Prop()
-  options: string;
+  @Prop({ maxlength: 255, required: false })
+  options?: string;
 
   @ApiResponseProperty({
     example: 0,
     type: 'number',
   })
-  @Prop()
-  subgroup: number;
+  @Prop({ required: false })
+  subgroup?: number;
 
   @ApiResponseProperty({
     example: true,
     type: 'boolean',
   })
-  @Prop()
+  @Prop({ required: true, default: false })
   periodOverridable: boolean;
 }
 

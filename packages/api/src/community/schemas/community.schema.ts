@@ -17,7 +17,6 @@ import { IsEthAddress } from '../../shared/validators/is-eth-address.validator';
 import { isValidCommunityName } from '../utils/is-valid-community-name';
 import { isValidOwners } from '../utils/is-valid-owners';
 import { isValidHostname } from '../utils/is-valid-hostname';
-import { Exclude } from 'class-transformer';
 
 export type CommunityDocument = Community & Document;
 
@@ -115,12 +114,12 @@ export class Community {
 
   @ApiProperty({ example: 'oiujoiuoo8u', maxLength: 255 })
   @IsString()
-  @Prop({ type: String, length: 10 })
+  @Prop({ type: String, length: 10, required: false })
   discordLinkNonce?: string;
 
   @ApiProperty({ example: true })
   @IsBoolean()
-  @Prop({ type: Boolean, default: true })
+  @Prop({ type: Boolean, default: true, required: true })
   // In this step all communities should be public, but we may allow premium communities be private
   isPublic: boolean;
 
@@ -132,8 +131,10 @@ export class Community {
   @Prop({
     type: String,
     enum: Object.values(DiscordLinkState),
+    default: DiscordLinkState.NOT_SET,
+    required: true,
   })
-  discordLinkState?: string;
+  discordLinkState: string;
 }
 
 export const CommunitySchema =

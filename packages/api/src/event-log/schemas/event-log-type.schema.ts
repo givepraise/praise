@@ -26,11 +26,13 @@ export class EventLogType {
     required: true,
     example: 'An action that changes user permissions',
     type: 'string',
+    maxLength: 255,
   })
   @IsString()
   @Prop({
     type: 'string',
     required: true,
+    maxlength: 255,
   })
   label: string;
 
@@ -38,11 +40,13 @@ export class EventLogType {
     required: true,
     example: "A user's permissions were changed",
     type: 'string',
+    maxLength: 255,
   })
   @IsString()
   @Prop({
     type: 'string',
     required: true,
+    maxlength: 255,
   })
   description: string;
 

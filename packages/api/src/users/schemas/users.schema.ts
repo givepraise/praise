@@ -36,21 +36,24 @@ export class User {
     example: '0xAAB27b150451726EC7738aa1d0A94505c8729bd1',
     type: 'string',
   })
-  @Prop({ required: true, unique: true, index: true })
+  @IsEthAddress()
+  @Prop({ required: true, unique: true, index: true, length: 42 })
   identityEthAddress: string;
 
   @ApiProperty({
     example: '0xAAB27b150451726EC7738aa1d0A94505c8729bd1',
     type: 'string',
+    maxLength: 42,
   })
   @IsOptional()
   @IsEthAddress()
-  @Prop({ required: true })
+  @Prop({ required: true, length: 42 })
   rewardsEthAddress: string;
 
   @ApiProperty({
     example: 'darth',
     type: 'string',
+    maxLength: 20,
   })
   @IsOptional()
   @IsString()
@@ -70,23 +73,23 @@ export class User {
 
   @ApiResponseProperty({
     example: ['USER'],
-    type: ['string'],
+    type: [AuthRole],
   })
   @Prop({
     type: [String],
     enum: [AuthRole],
     default: [AuthRole.USER],
   })
-  roles: string[];
+  roles: AuthRole[];
 
   @ApiResponseProperty({
     type: [UserAccountNoUserId],
   })
   @Type(() => UserAccountNoUserId)
-  accounts: UserAccountNoUserId[];
+  accounts?: UserAccountNoUserId[];
 
   @Exclude()
-  @Prop()
+  @Prop({ maxlength: 255, required: false })
   nonce?: string;
 
   @ApiResponseProperty({ type: Date })

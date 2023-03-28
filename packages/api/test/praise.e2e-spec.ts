@@ -1211,7 +1211,7 @@ describe('Praise (E2E)', () => {
       );
     });
 
-    test('400 when sourceId is more than 100 characters', async () => {
+    test('400 when sourceId is more than 255 characters', async () => {
       const giver = await userAccountsSeeder.seedUserAccount();
       const receiver = await userAccountsSeeder.seedUserAccount();
 
@@ -1239,11 +1239,11 @@ describe('Praise (E2E)', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.message).toContain(
-        'sourceId must be shorter than or equal to 100 characters',
+        'sourceId must be shorter than or equal to 255 characters',
       );
     });
 
-    test('400 when sourceName is more than 100 characters', async () => {
+    test('400 when sourceName is more than 255 characters', async () => {
       const giver = await userAccountsSeeder.seedUserAccount();
       const receiver = await userAccountsSeeder.seedUserAccount();
 
@@ -1270,7 +1270,7 @@ describe('Praise (E2E)', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.message).toContain(
-        'sourceName must be shorter than or equal to 100 characters',
+        'sourceName must be shorter than or equal to 255 characters',
       );
     });
 

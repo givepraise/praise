@@ -17,7 +17,7 @@ export class UpdateUserAccountInputDto extends PartialType(
   @IsOptional()
   @IsString()
   @MinLengthAllowEmpty(10)
-  activateToken: string;
+  activateToken?: string;
 
   @ApiProperty({
     required: false,
