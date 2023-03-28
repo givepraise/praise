@@ -197,7 +197,7 @@ export class MultiTenancyManager {
             await users.insertOne({
               identityEthAddress: eth,
               rewardsEthAddress: eth,
-              username: eth.substring(0, 20),
+              username: eth.substring(0, 20).toLowerCase(),
               roles: [AuthRole.ADMIN, AuthRole.USER],
             });
           }
