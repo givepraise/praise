@@ -50,6 +50,7 @@ export class MultiTenancyManager {
       discordLinkState: 'ACTIVE',
       email: 'unknown@email.com',
     };
+
     await CommunityModel.create(communityData);
   }
 
