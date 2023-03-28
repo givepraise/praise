@@ -1,4 +1,4 @@
-import { selector, selectorFamily, useRecoilCallback } from 'recoil';
+import { atom, selector, selectorFamily, useRecoilCallback } from 'recoil';
 import { AxiosResponse, AxiosError } from 'axios';
 import { ApiAuthGet, isResponseOk } from '../api';
 import { ApiKey } from './dto/apikeys.dto';
@@ -16,15 +16,40 @@ const instanceOfApiKey = (object: any): object is ApiKey => {
 /**
  * Query to get the list of api keys
  */
-export const ApiKeysListQuery = selector<ApiKey[]>({
-  key: 'ApiKeysListQuery',
-  get: ({ get }) => {
-    const response = get(ApiAuthGet({ url: '/api-key' })) as AxiosResponse<
-      ApiKey[]
-    >;
-    return response.data;
-  },
+
+export const AllApiKeys = atom<ApiKey[]>({
+  key: 'AllApiKeys',
+  default: [],
+  effects: [
+    ({ setSelf, getPromise }): void => {
+      setSelf(
+        getPromise(
+          ApiAuthGet({
+            url: '/api-key',
+          })
+        ).then((response) => {
+          if (isResponseOk(response)) {
+            const apiKeys = response.data as ApiKey[];
+            if (Array.isArray(apiKeys)) {
+              return apiKeys;
+            }
+          }
+          return [];
+        })
+      );
+    },
+  ],
 });
+
+// export const ApiKeysListQuery = selector<ApiKey[]>({
+//   key: 'ApiKeysListQuery',
+//   get: ({ get }) => {
+//     const response = get(ApiAuthGet({ url: '/api-key' })) as AxiosResponse<
+//       ApiKey[]
+//     >;
+//     return response.data;
+//   },
+// });
 
 /**
  * Selector that returns one individual Api Key.

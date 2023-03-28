@@ -1,0 +1,3 @@
+"_id","username","identityEthAddress","rewardsEthAddress","roles","createdAt","updatedAt"
+"6422c3dd6b11586377a42129","myrna.buckridge","0xf298e2aa63C88668623362bA899d4dD29cf4C6B7","0x9c6c2378b5cbf290aec896d4de52d5fbcffd9ba1","[""ADMIN""]","2023-03-28T10:39:25.676Z","2023-03-28T10:39:25.729Z"
+"6422c3dd6b11586377a4212c","marco52","0x83dd3bba22ba6c6ac6d64b5be118b5cdaec9a5df","0xca87a2c706672f1a5f9e5fc51be6e12ab92cbf9a","[""USER""]","2023-03-28T10:39:25.694Z","2023-03-28T10:39:25.694Z"
