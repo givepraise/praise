@@ -13,13 +13,21 @@ import { DiscordLinkState } from './enums/discord-link-state';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { randomBytes } from 'crypto';
 import { assertOwnersIncludeCreator } from './utils/assert-owners-include-creator';
+import { logger } from '../shared/logger';
+import { DB_URL_ROOT } from '../constants/constants.provider';
+import { MongoClient } from 'mongodb';
+import { MigrationsManager } from '../database/migrations-manager';
 
 @Injectable()
 export class CommunityService {
+  private mongodb: MongoClient;
+
   constructor(
     @InjectModel(Community.name, 'praise')
     private communityModel: typeof CommunityModel,
-  ) {}
+  ) {
+    this.mongodb = new MongoClient(DB_URL_ROOT);
+  }
 
   /**
    * Convenience method to get the Community Model
@@ -97,6 +105,10 @@ export class CommunityService {
       database: communityDto.hostname.replace(/\./g, '-'),
     });
     await community.save();
+
+    // Dont we need to do it later, for instance when praise admin approve a community?
+    // I afraid if someone call this endpoint lots of time and we create lots of DB it might can affect our DB performance
+    await this.createDbForCommunity({ community });
     return community.toObject();
   }
 
@@ -145,5 +157,28 @@ export class CommunityService {
       `PRAISE COMMUNITY ID:\n${params.communityId}\n\n` +
       `NONCE:\n${params.nonce}`
     );
+  };
+
+  createDbForCommunity = async (params: { community: Community }) => {
+    const { community } = params;
+    logger.info(`Setting up community database for `, community);
+    try {
+      const communityDbName = community.hostname;
+      this.mongodb.db(communityDbName);
+
+      // Grant readwrite permissions to new database
+      const dbAdmin = this.mongodb.db().admin();
+      await dbAdmin.command({
+        grantRolesToUser: process.env.MONGO_USERNAME,
+        roles: [{ role: 'readWrite', db: communityDbName }],
+      });
+
+      // Run migrations on new DB
+      const migrationsManager = new MigrationsManager();
+      await migrationsManager.migrate(community);
+    } catch (error) {
+      logger.error('createDbForCommunity error', error.message);
+      throw error;
+    }
   };
 }
