@@ -1,6 +1,6 @@
 import { CommandInteraction, EmbedBuilder, User } from 'discord.js';
-import { apiClient } from '../api';
-import { Setting } from '../api-schema';
+import { getSetting } from '../settingsUtil';
+
 /**
  * Generate message outlining user's current activation status
  *
@@ -14,17 +14,10 @@ export const praiseForwardEmbed = async (
   reason: string,
   guildId: string
 ): Promise<EmbedBuilder> => {
-  const msg = await apiClient
-    .get('/settings?key=FORWARD_SUCCESS_MESSAGE', {
-      headers: { 'x-discord-guild-id': guildId },
-    })
-    .then((res) =>
-      (res.data as Setting).value
-        .replace('{@giver}', `<@!${giver.id}>`)
-        .replace('{@receivers}', `${receivers.join(', ')}`)
-        .replace('{reason}', reason)
-    )
-    .catch(() => 'PRAISE SUCCESSFUL (message not set)');
+  const msg = ((await getSetting('FORWARD_SUCCESS_MESSAGE', guildId)) as string)
+    .replace('{@giver}', `<@!${giver.id}>`)
+    .replace('{@receivers}', `${receivers.join(', ')}`)
+    .replace('{reason}', reason);
 
   const { user } = interaction;
   const embed = new EmbedBuilder()

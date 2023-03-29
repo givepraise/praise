@@ -815,10 +815,17 @@ export interface components {
       hostname: string;
       /** @example BanklessDAO */
       name: string;
+      /** @example john.smith@banklessDao.com */
+      email: string;
       /** @example 0x123.. */
       creator: string;
-      /** @example [0x123.., 0x345..] */
-      owners: string;
+      /**
+       * @example [
+       *   "0x123..",
+       *   "0x345.."
+       * ]
+       */
+      owners: (string)[];
       /** @example 0980987846534 */
       discordGuildId?: string;
     };
@@ -830,38 +837,43 @@ export interface components {
       hostname: string;
       /** @example BanklessDAO */
       name: string;
+      /** @example john.smith@banklessDao.com */
+      email: string;
       /** @example 0x123.. */
       creator: string;
-      /** @example [0x123.., 0x345..] */
-      owners: string;
+      /**
+       * @example [
+       *   "0x123..",
+       *   "0x345.."
+       * ]
+       */
+      owners: (string)[];
       /** @example 0980987846534 */
       discordGuildId?: string;
       /** @example oiujoiuoo8u */
       discordLinkNonce: string;
       /** @example true */
       isPublic: boolean;
-      /** @example NOT_SET | PENDING | ACTIVE | DEACTIVE */
-      discordLinkState: string;
+      /**
+       * @example NOT_SET | PENDING | ACTIVE | DEACTIVE 
+       * @enum {string}
+       */
+      discordLinkState: "NOT_SET" | "PENDING" | "ACTIVE" | "DEACTIVE";
     };
     UpdateCommunityInputDto: {
-      /** @example 621f802b813dbdba9eeaf7b4 */
-      _id?: components["schemas"]["ObjectId"];
       /** @example banklessdao.givepraise.xyz */
       hostname?: string;
       /** @example BanklessDAO */
       name?: string;
-      /** @example 0x123.. */
-      creator?: string;
-      /** @example [0x123.., 0x345..] */
-      owners?: string;
-      /** @example 0980987846534 */
-      discordGuildId?: string;
-      /** @example oiujoiuoo8u */
-      discordLinkNonce?: string;
-      /** @example true */
-      isPublic?: boolean;
-      /** @example NOT_SET | PENDING | ACTIVE | DEACTIVE */
-      discordLinkState?: string;
+      /** @example john.smith@banklessDao.com */
+      email?: string;
+      /**
+       * @example [
+       *   "0x123..",
+       *   "0x345.."
+       * ]
+       */
+      owners?: (string)[];
     };
     CommunityPaginatedResponseDto: {
       /** @example 1200 */

@@ -15,8 +15,8 @@ export const activate: Command = {
       if (!interaction.isCommand() || interaction.commandName !== 'activate')
         return;
       await activationHandler(interaction);
-    } catch (err) {
-      logger.error(err);
+    } catch (err: any) {
+      logger.error(err.message);
     }
   },
 

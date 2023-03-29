@@ -4,7 +4,7 @@ import {
   cleanContent,
 } from 'discord.js';
 
-import { UserAccount, Praise } from './api-schema';
+import { UserAccount } from './api-schema';
 import { apiClient } from './api';
 
 export const createPraise = async (

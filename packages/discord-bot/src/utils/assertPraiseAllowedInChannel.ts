@@ -1,6 +1,5 @@
 import { ChannelType, CommandInteraction, TextBasedChannel } from 'discord.js';
-import { Setting } from './api-schema';
-import { apiClient } from './api';
+import { getSetting } from './settingsUtil';
 
 const getChannelId = (channel: TextBasedChannel): string => {
   return channel.type === ChannelType.PublicThread ||
@@ -17,21 +16,17 @@ export const assertPraiseAllowedInChannel = async (
 
   if (!channel || !guild) return false;
 
-  const allowedInAllChannels = await apiClient
-    .get('/settings?key=PRAISE_ALLOWED_IN_ALL_CHANNELS', {
-      headers: { 'x-discord-guild-id': guild.id },
-    })
-    .then((res) => (res.data as Setting).value === 'true')
-    .catch(() => true);
-
-  const allowedChannelsList = await apiClient
-    .get('/settings?key=PRAISE_ALLOWED_CHANNEL_IDS', {
-      headers: { 'x-discord-guild-id': guild.id },
-    })
-    .then((res) => (res.data as Setting).value.split(','))
-    .catch(() => undefined);
+  const allowedInAllChannels = (await getSetting(
+    'PRAISE_ALLOWED_IN_ALL_CHANNELS',
+    guild.id
+  )) as boolean;
 
   if (allowedInAllChannels) return true;
+
+  const allowedChannelsList = (await getSetting(
+    'PRAISE_ALLOWED_CHANNEL_IDS',
+    guild.id
+  )) as string[];
 
   if (!channel) {
     await interaction.editReply({
@@ -39,7 +34,6 @@ export const assertPraiseAllowedInChannel = async (
     });
     return false;
   }
-
   if (!Array.isArray(allowedChannelsList) || allowedChannelsList.length === 0) {
     await interaction.editReply({
       content: '**❌ Praise Restricted**\nPraise not allowed in any channel.',

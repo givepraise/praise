@@ -27,8 +27,8 @@ export const help: HelpCommandBuilder = (commands) => {
           });
           if (msg === undefined) return;
           await helpHandler(interaction, commands);
-        } catch (err) {
-          logger.error(err);
+        } catch (err: any) {
+          logger.error(err.message);
         }
       },
     } as Command,

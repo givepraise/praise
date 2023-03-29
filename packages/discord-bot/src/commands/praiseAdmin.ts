@@ -41,8 +41,8 @@ export const praiseAdmin: Command = {
           break;
         }
       }
-    } catch (err) {
-      logger.error(err);
+    } catch (err: any) {
+      logger.error(err.message);
     }
   },
 

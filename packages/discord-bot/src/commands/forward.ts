@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { logger } from 'api/dist/shared/logger';
-// import { forwardHandler } from '../handlers/forward';
+import { forwardHandler } from '../handlers/forward';
 import { Command } from '../interfaces/Command';
 import { getMsgLink } from '../utils/format';
 
@@ -45,9 +45,9 @@ export const forward: Command = {
       //     msg.id
       //   )
       // );
-      await interaction.editReply("Forwarding isn't functional currently...");
-    } catch (err) {
-      logger.error(err);
+      await interaction.editReply('...');
+    } catch (err: any) {
+      logger.error(err.message);
     }
   },
   help: {

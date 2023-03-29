@@ -15,6 +15,7 @@ const requiredEnvVariables = [
   'API_URL',
   'DISCORD_TOKEN',
   'DISCORD_GUILD_ID',
+  'DISCORD_BOT_API_KEY',
 ];
 
 export { requiredEnvVariables };

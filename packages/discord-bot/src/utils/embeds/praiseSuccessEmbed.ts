@@ -1,6 +1,5 @@
-import { CommandInteraction, EmbedBuilder } from 'discord.js';
-import { apiClient } from '../api';
-import { Setting } from '../api-schema';
+import { User, EmbedBuilder } from 'discord.js';
+import { getSetting } from '../settingsUtil';
 
 /**
  * Generate message outlining user's current activation status
@@ -9,23 +8,14 @@ import { Setting } from '../api-schema';
  * @returns {EmbedBuilder}
  */
 export const praiseSuccessEmbed = async (
-  interaction: CommandInteraction,
+  user: User,
   receivers: string[],
   reason: string,
   guildId: string
 ): Promise<EmbedBuilder> => {
-  const msg = await apiClient
-    .get('/settings?key=PRAISE_SUCCESS_MESSAGE', {
-      headers: { 'x-discord-guild-id': guildId },
-    })
-    .then((res) =>
-      (res.data as Setting).value
-        .replace('{@receivers}', `${receivers.join(', ')}`)
-        .replace('{reason}', reason)
-    )
-    .catch(() => 'PRAISE SUCCESSFUL (message not set)');
-
-  const { user } = interaction;
+  const msg = ((await getSetting('PRAISE_SUCCESS_MESSAGE', guildId)) as string)
+    .replace('{@receivers}', `${receivers.join(', ')}`)
+    .replace('{reason}', reason);
 
   const embed = new EmbedBuilder()
     .setColor(0xe6007e)

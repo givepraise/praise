@@ -21,8 +21,11 @@ import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
 import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
-import { Types } from 'mongoose';
-import { apiClient } from 'src/utils/api';
+// import { Types } from 'mongoose';
+import { apiClient } from '../utils/api';
+import { PraiseItem } from '../utils/api-schema';
+import { Setting } from '../utils/api-schema';
+import { settingValueRealized } from '../utils/settingsUtil';
 
 /**
  * Execute command /praise
@@ -78,15 +81,17 @@ export const praiseHandler: CommandHandler = async (
     guild.id
   );
 
-  const praiseItemsCount = await apiClient
-    .get(`/api/praise?limit=1&giver=${giverAccount._id}`)
-    .catch((res) => res.data.totalPages);
-
-  if (!giverAccount.user) {
+  if (!giverAccount.user || giverAccount.user == null) {
     await interaction.editReply(await notActivatedError(guild.id));
     return;
   }
 
+  const praiseItemsCount = await apiClient
+    .get(`/api/praise?limit=1&giver=${giverAccount._id}`)
+    .then((res) => (res.data as PraiseItem).totalPages)
+    .catch(() => 0);
+
+  console.log(praiseItemsCount);
   const receivers: string[] = [];
   const receiverIds: string[] = [
     ...new Set(
@@ -96,7 +101,7 @@ export const praiseHandler: CommandHandler = async (
 
   const selfPraiseAllowed = await apiClient
     .get('/settings?key=SELF_PRAISE_ALLOWED')
-    .then((res) => res.data)
+    .then((res) => settingValueRealized(res.data as Setting[]) as boolean)
     .catch(() => false);
 
   let warnSelfPraise = false;
@@ -156,7 +161,7 @@ export const praiseHandler: CommandHandler = async (
     await interaction.followUp({
       embeds: [
         await praiseSuccessEmbed(
-          interaction,
+          interaction.user,
           receivers.map((id) => `<@!${id}>`),
           reason,
           guild.id

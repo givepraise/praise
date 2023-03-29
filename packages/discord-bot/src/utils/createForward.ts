@@ -31,6 +31,7 @@ export const createForward = async (
     reason: reason,
     reasonRaw: cleanContent(reason, channel),
     giver: giverAccount,
+    forwarderAccount: forwarderAccount,
     sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
     sourceName: `DISCORD:${encodeURIComponent(guild.name)}:${encodeURIComponent(
       channelName
@@ -39,7 +40,7 @@ export const createForward = async (
   };
 
   const response = await apiClient
-    .post(`/praise`, praiseData, {
+    .post(`/praise/forward`, praiseData, {
       headers: { 'x-discord-guild-id': guild.id },
     })
     .then((res) => res.status === 200)

@@ -60,8 +60,9 @@ export const registerCommands = async (
     });
 
     return true;
-  } catch (error) {
-    logger.error(error);
+  } catch (error: any) {
+    console.log(error);
+    logger.error(error.message);
     return false;
   }
 };

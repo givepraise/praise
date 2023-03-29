@@ -43,6 +43,17 @@ export interface UserAccountWithActivateToken {
   activateToken: string;
 }
 
+export interface PraiseItem {
+  limit: string;
+  hasPrevPage: boolean;
+  hasNextPage: boolean;
+  hasMore: boolean;
+  totalDocs: number;
+  totalPages: number;
+  page: number;
+  pageCounter: number;
+}
+
 export interface Setting {
   _id: string;
   key: string;

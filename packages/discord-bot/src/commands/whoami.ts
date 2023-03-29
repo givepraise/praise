@@ -13,8 +13,8 @@ export const whoami: Command = {
         return;
       await interaction.deferReply({ ephemeral: true });
       await whoamiHandler(interaction);
-    } catch (err) {
-      logger.error(err);
+    } catch (err: any) {
+      logger.error(err.message);
     }
   },
 };

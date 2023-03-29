@@ -1,6 +1,5 @@
 import { Client, GatewayIntentBits } from 'discord.js';
 import { logger } from 'api/dist/shared/logger';
-import mongoose, { ConnectOptions } from 'mongoose';
 import { envCheck } from 'api/dist/pre-start/envCheck';
 import { DiscordClient } from './interfaces/DiscordClient';
 import { registerCommands } from './utils/registerCommands';
@@ -8,9 +7,6 @@ import { requiredEnvVariables } from './pre-start/env-required';
 
 // Check for required ENV variables
 envCheck(requiredEnvVariables);
-
-// Start Discord bot
-const token = process.env.DISCORD_TOKEN;
 
 // Create a new client instance
 const discordClient = new Client({
@@ -40,8 +36,8 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
   if (!command) return;
   try {
     await command.execute(interaction);
-  } catch (error) {
-    logger.error(error);
+  } catch (error: any) {
+    logger.error(error.message);
     await interaction.reply({
       content: 'There was an error while executing this command!',
       ephemeral: true,
@@ -62,8 +58,7 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
   }
 });
 
-// Connect to database
 void (async (): Promise<void> => {
   // Login to Discord with your client's token
-  await discordClient.login(token);
+  await discordClient.login(process.env.DISCORD_TOKEN);
 })();

@@ -1,6 +1,6 @@
 /* TODO - Replace db access with api2 calls */
 
-import { Guild, GuildMember } from 'discord.js';
+import { GuildMember } from 'discord.js';
 // import { logEvent } from 'api/dist/eventlog/utils';
 import { logger } from 'api/dist/shared/logger';
 import { getReceiverData } from '../utils/getReceiverData';
