@@ -12,11 +12,8 @@ import { Form } from 'react-final-form';
 import { StringInput } from '@/components/form/StringInput';
 import { RadioInputKeys } from '@/components/form/RadioInputKeys';
 import { CreateApiKeyInputDto } from '@/model/apikeys/dto/create-api-key-input.dto';
-<<<<<<< Updated upstream
 import { SubmissionErrors } from 'final-form';
-=======
 import { useState } from 'react';
->>>>>>> Stashed changes
 
 type ApplicationSettingsApiKeyFormProps = {
   open: boolean;
@@ -42,12 +39,8 @@ const ApplicationSettingsApiKeyForm = ({
     if (!values.description) {
       setErrorDescription('Label is required');
     } else {
-<<<<<<< Updated upstream
-      return onsubmit({ description: values.description, role: values.role });
-=======
-      onsubmit({ description: values.description, role: values.role });
       setErrorDescription('');
->>>>>>> Stashed changes
+      return onsubmit({ description: values.description, role: values.role });
     }
   };
   return (
