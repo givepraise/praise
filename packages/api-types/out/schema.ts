@@ -556,7 +556,7 @@ export interface components {
       /** @example 621f802b813dbdba9eeaf7d7 */
       period: string;
       type: components['schemas']['EventLogType'];
-      /** @example A description of teh event */
+      /** @example A description of the event */
       description: string;
       /**
        * Format: date-time
