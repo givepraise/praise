@@ -4,7 +4,10 @@ import { useState } from 'react';
 import ApplicationSettingsApiKeyForm from './ApplicationSettingsApiKeyForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { CreateApiKeyInputDto } from '@/model/apikeys/dto/create-api-key-input.dto';
+import {
+  CreateApiKeyInputDto,
+  CreateApiKeyResponseDto,
+} from '@/model/apikeys/dto/create-api-key-input.dto';
 import { isApiResponseValidationError, isResponseOk } from '@/model/api';
 import ApplicationSettingsApiKeyPreview from './ApplicationSettingsApiKeyPreview';
 import { ApplicationSettingsApiKeyTable } from './ApplicationSettingsApiKeyTable';
@@ -15,7 +18,7 @@ import { FORM_ERROR, SubmissionErrors } from 'final-form';
 const ApplicationSettingsApiKeys = (): JSX.Element => {
   const [openApiKeyModal, setOpenApiKeyModal] = useState(false);
   const [openApiKeyModalPreview, setOpenApiKeyModalPreview] = useState(false);
-  const [apiKeyData, setApiKeyData] = useState<CreateApiKeyInputDto>();
+  const [apiKeyData, setApiKeyData] = useState<CreateApiKeyResponseDto>();
   const [loading, setLoading] = useState(false);
 
   const { setApiKey } = useSetApiKey();
@@ -40,16 +43,14 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
     setLoading(true);
 
     const response = await setApiKey(data);
+    setLoading(false);
 
     if (isResponseOk(response)) {
       toast.success('API Key created');
       setOpenApiKeyModalPreview(true);
       setApiKeyData(response.data);
-      setLoading(false);
       return {};
     }
-
-    setLoading(false);
 
     if (isApiResponseValidationError(response) && response.response) {
       return (response.response.data as ApiErrorResponseData).errors;

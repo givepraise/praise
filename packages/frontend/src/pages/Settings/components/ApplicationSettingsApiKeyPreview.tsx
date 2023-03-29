@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast';
 
 type ApplicationSettingsApiKeyPrevieProps = {
   open: boolean;
-  apiKeyData: CreateApiKeyResponseDto | null;
+  apiKeyData: CreateApiKeyResponseDto | undefined;
   close: () => void;
 };
 
