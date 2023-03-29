@@ -13,7 +13,7 @@
     "mongodb:clean": "yarn workspace api drop-database",
     "mongodb:stop": "docker compose -f ./docker-compose.local.yml down",
     "api:build-docker": "docker compose -f ./docker-compose.local.yml build api --no-cache",
-    "api:start": "yarn workspace api2 run load-env nest start",
+    "api:start": "yarn workspace api run load-env nest start",
     "discord-bot:build-docker": "docker compose -f ./docker-compose.local.yml build discord-bot --no-cache",
     "discord-bot:start": "yarn workspace discord-bot start",
     "frontend:build-docker": "docker compose -f ./docker-compose.local.yml build frontend --no-cache",
