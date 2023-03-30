@@ -6,7 +6,7 @@ import {
 } from '../../shared/export.shared';
 import { errorMessages } from '../../shared/exceptions/error-messages';
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isString } from 'class-validator';
 import { parseISO, add, compareAsc } from 'date-fns';
@@ -14,7 +14,6 @@ import { Types } from 'mongoose';
 import { Pagination } from 'mongoose-paginate-ts';
 import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
 import { EventLogService } from '../../event-log/event-log.service';
-import { PeriodSettingsService } from '../../periodsettings/periodsettings.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '../../praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Praise, PraiseModel } from '../../praise/schemas/praise.schema';
 import { QuantificationsService } from '../../quantifications/services/quantifications.service';
@@ -33,6 +32,7 @@ import {
   PeriodDocument,
   PeriodExportSqlSchema,
 } from '../schemas/periods.schema';
+import { SettingsService } from '../../settings/settings.service';
 
 @Injectable()
 export class PeriodsService {
@@ -42,9 +42,7 @@ export class PeriodsService {
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
     private eventLogService: EventLogService,
-    @Inject(forwardRef(() => PeriodSettingsService))
-    private periodSettingsService: PeriodSettingsService,
-    @Inject(forwardRef(() => QuantificationsService))
+    private settingsService: SettingsService,
     private quantificationsService: QuantificationsService,
   ) {}
 
@@ -122,7 +120,7 @@ export class PeriodsService {
     const period = await this.periodModel.create({ name, endDate });
 
     // Create period settings
-    await this.periodSettingsService.createSettingsForPeriod(period._id);
+    await this.settingsService.createSettingsForPeriod(period._id);
 
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.PERIOD,

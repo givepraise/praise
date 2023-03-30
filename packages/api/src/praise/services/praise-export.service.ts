@@ -6,7 +6,7 @@ import {
   PraiseExportSqlSchema,
 } from '../schemas/praise.schema';
 import { ApiException } from '../../shared/exceptions/api-exception';
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PeriodsService } from '../../periods/services/periods.service';
 import { ExportInputDto } from '../../shared/dto/export-input.dto';
 import {
@@ -20,7 +20,6 @@ export class PraiseExportService {
   constructor(
     @InjectModel(Praise.name)
     private praiseModel: typeof PraiseModel,
-    @Inject(forwardRef(() => PeriodsService))
     private periodService: PeriodsService,
   ) {}
 

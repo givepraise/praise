@@ -6,7 +6,6 @@ import { sum, has } from 'lodash';
 import { Praise } from '../../praise/schemas/praise.schema';
 import { ApiException } from '../../shared/exceptions/api-exception';
 import { PraiseService } from '../../praise/services/praise.service';
-import { Inject, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '../../periods/services/periods.service';
 import { errorMessages } from '../../shared/exceptions/error-messages';
 
@@ -14,11 +13,8 @@ export class QuantificationsService {
   constructor(
     @InjectModel(Quantification.name)
     private quantificationModel: Model<Quantification>,
-    @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
-    @Inject(forwardRef(() => PraiseService))
     private praiseService: PraiseService,
-    @Inject(forwardRef(() => PeriodsService))
     private periodService: PeriodsService,
   ) {}
 

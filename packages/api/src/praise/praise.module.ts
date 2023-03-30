@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PraiseController } from './praise.controller';
 import { PraiseService } from './services/praise.service';
@@ -13,8 +13,6 @@ import {
   UserAccount,
   UserAccountSchema,
 } from '../useraccounts/schemas/useraccounts.schema';
-import { ApiKeyModule } from '../api-key/api-key.module';
-import { AuthModule } from '../auth/auth.module';
 import { ConstantsProvider } from '../constants/constants.provider';
 
 @Module({
@@ -24,18 +22,13 @@ import { ConstantsProvider } from '../constants/constants.provider';
     MongooseModule.forFeature([
       { name: UserAccount.name, schema: UserAccountSchema },
     ]),
-    forwardRef(() => PeriodsModule),
-    forwardRef(() => QuantificationsModule),
-    forwardRef(() => SettingsModule),
-    forwardRef(() => EventLogModule),
-    forwardRef(() => AuthModule),
-    ApiKeyModule,
+    PeriodsModule,
+    QuantificationsModule,
+    SettingsModule,
+    EventLogModule,
   ],
   controllers: [PraiseController],
   providers: [PraiseService, PraiseExportService, ConstantsProvider],
-  exports: [
-    PraiseService,
-    MongooseModule.forFeature([{ name: Praise.name, schema: PraiseSchema }]),
-  ],
+  exports: [PraiseService],
 })
 export class PraiseModule {}

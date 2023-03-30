@@ -8,7 +8,7 @@ import {
 } from './shared/request';
 import { Period } from '../src/periods/schemas/periods.schema';
 import { PeriodStatusType } from '../src/periods/enums/status-type.enum';
-import { PeriodSetting } from '../src/periodsettings/schemas/periodsettings.schema';
+import { PeriodSetting } from '../src/settings/schemas/periodsettings.schema';
 import { AuthRole } from '../src/auth/enums/auth-role.enum';
 import { User } from '../src/users/schemas/users.schema';
 import { Setting } from '../src/settings/schemas/settings.schema';
@@ -37,7 +37,7 @@ describe('Period Settings (E2E)', () => {
 
   beforeAll(async () => {
     // Clear the database
-    await settingsService.getModel().deleteMany({});
+    await settingsService.getSettingsModel().deleteMany({});
     await usersService.getModel().deleteMany({});
     await periodsService.getModel().deleteMany({});
     await periodSettingsService.getModel().deleteMany({});

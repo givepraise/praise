@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { valueToValueRealized } from '../../settings/utils/value-to-value-realized.util';
+import { valueToValueRealized } from '../utils/value-to-value-realized.util';
 
 @Injectable()
 export class ValueRealizedInterceptor implements NestInterceptor {

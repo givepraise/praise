@@ -1,10 +1,9 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PeriodsController } from './periods.controller';
 import { Period, PeriodSchema } from './schemas/periods.schema';
 import { EventLogModule } from '../event-log/event-log.module';
 import { QuantificationsModule } from '../quantifications/quantifications.module';
-import { PeriodSettingsModule } from '../periodsettings/periodsettings.module';
 import { PraiseModule } from '../praise/praise.module';
 import { Praise, PraiseSchema } from '../praise/schemas/praise.schema';
 import { SettingsModule } from '../settings/settings.module';
@@ -17,8 +16,6 @@ import { PeriodAssignmentsService } from './services/period-assignments.service'
 import { PeriodsService } from './services/periods.service';
 import { Quantification } from '../quantifications/schemas/quantifications.schema';
 import { QuantificationSchema } from '../database/schemas/quantification/quantification.schema';
-import { ApiKeyModule } from '../api-key/api-key.module';
-import { AuthModule } from '../auth/auth.module';
 import { ConstantsProvider } from '../constants/constants.provider';
 
 @Module({
@@ -32,19 +29,13 @@ import { ConstantsProvider } from '../constants/constants.provider';
     MongooseModule.forFeature([
       { name: Quantification.name, schema: QuantificationSchema },
     ]),
-    forwardRef(() => EventLogModule),
-    forwardRef(() => SettingsModule),
-    forwardRef(() => PeriodSettingsModule),
-    forwardRef(() => PraiseModule),
-    forwardRef(() => QuantificationsModule),
-    forwardRef(() => AuthModule),
-    ApiKeyModule,
+    EventLogModule,
+    SettingsModule,
+    PraiseModule,
+    QuantificationsModule,
   ],
   controllers: [PeriodsController],
   providers: [PeriodsService, PeriodAssignmentsService, ConstantsProvider],
-  exports: [
-    PeriodsService,
-    MongooseModule.forFeature([{ name: Period.name, schema: PeriodSchema }]),
-  ],
+  exports: [PeriodsService],
 })
 export class PeriodsModule {}

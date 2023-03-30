@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CommunityService } from './community.service';
 import { Community, CommunitySchema } from './schemas/community.schema';
@@ -22,8 +22,8 @@ import {
       ],
       'praise',
     ),
-    forwardRef(() => AuthModule),
-    forwardRef(() => ApiKeyModule),
+    AuthModule,
+    ApiKeyModule,
   ],
   controllers: [CommunityController],
   providers: [CommunityService, ConstantsProvider],

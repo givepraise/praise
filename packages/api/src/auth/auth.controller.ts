@@ -8,11 +8,15 @@ import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginInputDto } from './dto/login-input.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { errorMessages } from '../shared/exceptions/error-messages';
+import { UsersService } from '../users/users.service';
 
 @Controller('auth')
 @ApiTags('Authentication')
 export class AuthController {
-  constructor(private readonly ethSignatureService: EthSignatureService) {}
+  constructor(
+    private readonly ethSignatureService: EthSignatureService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Post('eth-signature/nonce')
   @ApiOperation({
@@ -31,9 +35,7 @@ export class AuthController {
     @Body() nonceRquestDto: NonceInputDto,
   ): Promise<NonceResponseDto> {
     const { identityEthAddress } = nonceRquestDto;
-    const user = await this.ethSignatureService.generateUserNonce(
-      identityEthAddress,
-    );
+    const user = await this.usersService.generateNonce(identityEthAddress);
     if (user && user.nonce) {
       return {
         identityEthAddress,

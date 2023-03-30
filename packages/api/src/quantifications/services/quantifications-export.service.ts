@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import { QuantificationsExportSqlSchema } from '../schemas/quantifications.schema';
 import { ApiException } from '../../shared/exceptions/api-exception';
 import { PraiseService } from '../../praise/services/praise.service';
-import { Inject, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '../../periods/services/periods.service';
 import { ExportInputDto } from '../../shared/dto/export-input.dto';
 import { Cursor } from 'mongoose';
@@ -14,9 +13,7 @@ import { errorMessages } from '../../shared/exceptions/error-messages';
 
 export class QuantificationsExportService {
   constructor(
-    @Inject(forwardRef(() => PraiseService))
     private praiseService: PraiseService,
-    @Inject(forwardRef(() => PeriodsService))
     private periodService: PeriodsService,
   ) {}
 

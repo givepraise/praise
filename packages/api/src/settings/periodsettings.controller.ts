@@ -12,12 +12,12 @@ import {
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
-import { PeriodSettingsService } from './periodsettings.service';
 import { PeriodSetting } from './schemas/periodsettings.schema';
 import { Permission } from '../auth/enums/permission.enum';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 import { ValueRealizedInterceptor } from './interceptors/value-realized.interceptor';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
+import { SettingsService } from './settings.service';
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -28,7 +28,7 @@ import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-p
 })
 @EnforceAuthAndPermissions()
 export class PeriodSettingsController {
-  constructor(private readonly periodsettingsService: PeriodSettingsService) {}
+  constructor(private readonly settingsService: SettingsService) {}
 
   @Get(':periodId/settings')
   @ApiOperation({ summary: 'List all period settings.' })
@@ -42,7 +42,7 @@ export class PeriodSettingsController {
   async findAll(
     @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
   ): Promise<PeriodSetting[]> {
-    return this.periodsettingsService.findAll(periodId);
+    return this.settingsService.findAllPeriodSettings(periodId);
   }
 
   @Get('/:periodId/settings/:settingId')
@@ -59,7 +59,7 @@ export class PeriodSettingsController {
     @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
     @Param('settingId', ObjectIdPipe) settingId: Types.ObjectId,
   ) {
-    return this.periodsettingsService.findOneBySettingIdAndPeriodId(
+    return this.settingsService.findOneBySettingIdAndPeriodId(
       settingId,
       periodId,
     );
@@ -80,6 +80,6 @@ export class PeriodSettingsController {
     @Param('settingId', ObjectIdPipe) settingId: Types.ObjectId,
     @Body() data: SetPeriodSettingDto,
   ): Promise<PeriodSetting> {
-    return this.periodsettingsService.setOne(settingId, periodId, data);
+    return this.settingsService.setOnePeriodSetting(settingId, periodId, data);
   }
 }

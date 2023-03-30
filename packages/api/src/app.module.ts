@@ -5,7 +5,6 @@ import { UserAccountsModule } from './useraccounts/useraccounts.module';
 import { UsersModule } from './users/users.module';
 import { EventLogModule } from './event-log/event-log.module';
 import { SettingsModule } from './settings/settings.module';
-import { PeriodSettingsModule } from './periodsettings/periodsettings.module';
 import { PraiseModule } from './praise/praise.module';
 import { QuantificationsModule } from './quantifications/quantifications.module';
 import { RequestContextModule } from 'nestjs-request-context';
@@ -33,7 +32,6 @@ import { RequestLoggerMiddleware } from './shared/middlewares/request-logger.mid
     CommunityModule,
     EventLogModule,
     PeriodsModule,
-    PeriodSettingsModule,
     PraiseModule,
     QuantificationsModule,
     RequestContextModule,
@@ -47,6 +45,7 @@ import { RequestLoggerMiddleware } from './shared/middlewares/request-logger.mid
       useClass: ThrottlerGuard,
     },
   ],
+  exports: [ApiKeyModule, AuthModule],
 })
 export class AppModule {
   // Add a middleware on all routes

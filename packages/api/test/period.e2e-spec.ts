@@ -51,7 +51,7 @@ describe('Period (E2E)', () => {
     await periodsService.getModel().deleteMany({});
     await periodSettingsService.getModel().deleteMany({});
     await userAccountsService.getModel().deleteMany({});
-    await settingsService.getModel().deleteMany({});
+    await settingsService.getSettingsModel().deleteMany({});
 
     // Seed and login 3 users
     for (let i = 0; i < 3; i++) {
@@ -684,7 +684,7 @@ describe('Period (E2E)', () => {
       await userAccountsService.getModel().deleteMany({});
       await periodSettingsService.getModel().deleteMany({});
       await quantificationsService.getModel().deleteMany({});
-      await settingsService.getModel().deleteMany({});
+      await settingsService.getSettingsModel().deleteMany({});
 
       PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER =
         await settingsSeeder.seedSettings({

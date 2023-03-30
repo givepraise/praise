@@ -10,7 +10,7 @@ import {
 import { Praise } from '../src/praise/schemas/praise.schema';
 import { Period } from '../src/periods/schemas/periods.schema';
 import { PeriodStatusType } from '../src/periods/enums/status-type.enum';
-import { PeriodSetting } from '../src/periodsettings/schemas/periodsettings.schema';
+import { PeriodSetting } from '../src/settings/schemas/periodsettings.schema';
 import { PraisePaginatedQueryDto } from '../src/praise/dto/praise-paginated-query.dto';
 import { Types } from 'mongoose';
 import { AuthRole } from '../src/auth/enums/auth-role.enum';
@@ -58,7 +58,7 @@ describe('Praise (E2E)', () => {
     await userAccountsService.getModel().deleteMany({});
     await periodsService.getModel().deleteMany({});
     await periodSettingsService.getModel().deleteMany({});
-    await settingsService.getModel().deleteMany({});
+    await settingsService.getSettingsModel().deleteMany({});
 
     // Seed and login 3 users
     for (let i = 0; i < 3; i++) {
@@ -378,7 +378,7 @@ describe('Praise (E2E)', () => {
     beforeEach(async () => {
       await praiseService.getModel().deleteMany({});
       await quantificationsService.getModel().deleteMany({});
-      await settingsService.getModel().deleteMany({});
+      await settingsService.getSettingsModel().deleteMany({});
       await periodsService.getModel().deleteMany({});
       await periodSettingsService.getModel().deleteMany({});
 
@@ -741,7 +741,7 @@ describe('Praise (E2E)', () => {
     beforeEach(async () => {
       await praiseService.getModel().deleteMany({});
       await quantificationsService.getModel().deleteMany({});
-      await settingsService.getModel().deleteMany({});
+      await settingsService.getSettingsModel().deleteMany({});
       await periodsService.getModel().deleteMany({});
       await periodSettingsService.getModel().deleteMany({});
 
@@ -987,7 +987,7 @@ describe('Praise (E2E)', () => {
     beforeEach(async () => {
       await praiseService.getModel().deleteMany({});
       await quantificationsService.getModel().deleteMany({});
-      await settingsService.getModel().deleteMany({});
+      await settingsService.getSettingsModel().deleteMany({});
       await periodsService.getModel().deleteMany({});
       await periodSettingsService.getModel().deleteMany({});
 
@@ -1062,7 +1062,7 @@ describe('Praise (E2E)', () => {
     beforeEach(async () => {
       await praiseService.getModel().deleteMany({});
       await quantificationsService.getModel().deleteMany({});
-      await settingsService.getModel().deleteMany({});
+      await settingsService.getSettingsModel().deleteMany({});
       await periodsService.getModel().deleteMany({});
       await periodSettingsService.getModel().deleteMany({});
 
@@ -1470,7 +1470,7 @@ describe('Praise (E2E)', () => {
     beforeEach(async () => {
       await praiseService.getModel().deleteMany({});
       await quantificationsService.getModel().deleteMany({});
-      await settingsService.getModel().deleteMany({});
+      await settingsService.getSettingsModel().deleteMany({});
       await periodsService.getModel().deleteMany({});
       await periodSettingsService.getModel().deleteMany({});
 

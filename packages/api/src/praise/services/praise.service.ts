@@ -14,7 +14,7 @@ import { RequestContext } from 'nestjs-request-context';
 import { RequestWithAuthContext } from '../../auth/interfaces/request-with-auth-context.interface';
 import { PraisePaginatedResponseDto } from '../dto/praise-paginated-response.dto';
 import { Period, PeriodModel } from '../../periods/schemas/periods.schema';
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PeriodDateRangeDto } from '../../periods/dto/period-date-range.dto';
 import { PraiseCreateInputDto } from '../dto/praise-create-input.dto';
 import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
@@ -31,9 +31,7 @@ export class PraiseService {
     private periodModel: typeof PeriodModel,
     @InjectModel(UserAccount.name)
     private userAccountModel: typeof UserAccountModel,
-    @Inject(forwardRef(() => SettingsService))
     private settingsService: SettingsService,
-    @Inject(forwardRef(() => QuantificationsService))
     private quantificationsService: QuantificationsService,
     private eventLogService: EventLogService,
   ) {}

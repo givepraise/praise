@@ -1,12 +1,9 @@
 import { AuthController } from './auth.controller';
 import { EthSignatureService } from './eth-signature.service';
-import { Module, forwardRef } from '@nestjs/common';
-import { UsersModule } from '../users/users.module';
+import { Module } from '@nestjs/common';
 import { EventLogModule } from '../event-log/event-log.module';
-import { ApiKeyModule } from '../api-key/api-key.module';
 import { SettingsModule } from '../settings/settings.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { ConstantsProvider } from '../constants/constants.provider';
 import { CommunityModule } from '../community/community.module';
 
 @Module({
@@ -15,13 +12,11 @@ import { CommunityModule } from '../community/community.module';
       secret: `${process.env.JWT_SECRET}`,
       signOptions: { expiresIn: process.env.JWT_ACCESS_EXP },
     }),
-    forwardRef(() => UsersModule),
-    forwardRef(() => EventLogModule),
-    ApiKeyModule,
+    EventLogModule,
     SettingsModule,
-    forwardRef(() => CommunityModule),
+    CommunityModule,
   ],
-  providers: [JwtService, EthSignatureService, ConstantsProvider],
+  providers: [JwtService, EthSignatureService],
   exports: [JwtService],
   controllers: [AuthController],
 })
