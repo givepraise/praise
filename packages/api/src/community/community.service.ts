@@ -17,6 +17,8 @@ import { logger } from '../shared/logger';
 import { DB_URL_ROOT } from '../constants/constants.provider';
 import { MongoClient } from 'mongodb';
 import { MigrationsManager } from '../database/migrations-manager';
+import { databaseExists } from '../database/utils/database-exists';
+import { dbNameCommunity } from '../database/utils/community-db-name';
 
 @Injectable()
 export class CommunityService {
@@ -86,12 +88,17 @@ export class CommunityService {
     if (community.owners) {
       assertOwnersIncludeCreator(community.owners, communityDocument.creator);
     }
+    const oldDbName = dbNameCommunity(communityDocument)
 
     for (const [k, v] of Object.entries(community)) {
       communityDocument.set(k, v);
     }
 
     await communityDocument.save();
+    const newDbName = dbNameCommunity(communityDocument)
+    if ( oldDbName !== newDbName){
+      await this.renameDbOfCommunityIfExists({oldDbName, newDbName})
+    }
     return this.findOneById(communityDocument._id);
   }
 
@@ -105,10 +112,6 @@ export class CommunityService {
       database: communityDto.hostname.replace(/\./g, '-'),
     });
     await community.save();
-
-    // Dont we need to do it later, for instance when praise admin approve a community?
-    // I afraid if someone call this endpoint lots of time and we create lots of DB it might can affect our DB performance
-    await this.createDbForCommunity({ community });
     return community.toObject();
   }
 
@@ -140,6 +143,7 @@ export class CommunityService {
 
     community.discordLinkState = DiscordLinkState.ACTIVE;
     await community.save();
+    await this.createDbForCommunity({ community });
     return community;
   }
 
@@ -161,9 +165,9 @@ export class CommunityService {
 
   createDbForCommunity = async (params: { community: Community }) => {
     const { community } = params;
-    logger.info(`Setting up community database for `, community);
     try {
-      const communityDbName = community.hostname;
+      const communityDbName =dbNameCommunity(community);
+      logger.info(`Setting up community database for ${communityDbName}`);
       this.mongodb.db(communityDbName);
 
       // Grant readwrite permissions to new database
@@ -173,9 +177,63 @@ export class CommunityService {
         roles: [{ role: 'readWrite', db: communityDbName }],
       });
 
+      logger.info(`New db has been created for community, dbName:${communityDbName}`)
+
       // Run migrations on new DB
       const migrationsManager = new MigrationsManager();
       await migrationsManager.migrate(community);
+
+    } catch (error) {
+      logger.error('createDbForCommunity error', error.message);
+      throw error;
+    }
+  };
+
+  renameDbOfCommunityIfExists = async (params: { oldDbName: string, newDbName:string }) :Promise<void>=> {
+    const { oldDbName, newDbName } = params;
+    logger.info(`Setting up community database for `, params);
+    try {
+      const dbFrom = this.mongodb.db(oldDbName);
+      if (!await databaseExists(oldDbName, this.mongodb)){
+        // There is no db for this community yet, so we dont need to anything
+        return ;
+      }
+
+      // Grant readwrite permissions to new database
+      const dbAdmin = this.mongodb.db().admin();
+      await dbAdmin.command({
+        grantRolesToUser: process.env.MONGO_USERNAME,
+        roles: [{ role: 'readWrite', db: newDbName}],
+      });
+      const dbTo = this.mongodb.db(newDbName)
+
+      const collections = await dbFrom.listCollections().toArray();
+      for (const collection of collections) {
+        const collectionName = collection.name;
+
+        // Copy collection data
+        const collectionData = await dbFrom
+          .collection(collectionName)
+          .find()
+          .toArray();
+        const newCollection = dbTo.collection(collectionName);
+        if (collectionData.length === 0) {
+          // Skip empty collections
+          continue;
+        }
+        await newCollection.insertMany(collectionData);
+
+        // Copy indexes
+        const indexes = await dbFrom.collection(collectionName).indexes();
+        for (const index of indexes) {
+          await newCollection.createIndex(index.key, index);
+        }
+
+        // Drop old database
+        await this.mongodb.db().dropDatabase({dbName: oldDbName})
+      }
+
+
     } catch (error) {
       logger.error('createDbForCommunity error', error.message);
       throw error;

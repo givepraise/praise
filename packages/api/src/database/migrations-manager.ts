@@ -23,10 +23,18 @@ export class MigrationsManager {
     try {
       logger.info(`🆙 Starting migrations for: ${community.hostname}`);
 
-      // Connect to the community db
-      const mongooseConn = await mongoose.connect(dbUrlCommunity(community), {
-        useNewUrlParser: true,
-      } as ConnectOptions);
+      let mongooseConn
+      try {
+        // Connect to the community db https://stackoverflow.com/a/65205700/4650625
+        mongooseConn = await mongoose.connect(dbUrlCommunity(community), {
+          useNewUrlParser: true
+        } as ConnectOptions);
+      } catch (e) {
+        logger.error(`connect mongoose error ${e.message}`)
+        mongooseConn = await mongoose.createConnection(dbUrlCommunity(community), {
+          useNewUrlParser: true
+        } as ConnectOptions);
+      }
 
       // Create a dynamic app module for the community
       const app = await NestFactory.createApplicationContext(
@@ -40,7 +48,7 @@ export class MigrationsManager {
       const migrator = new Umzug({
         migrations: { glob: 'src/database/migrations/*.ts' },
         storage: new MongoDBStorage({
-          connection: mongoose.connection,
+          connection: mongooseConn,
         }),
         logger,
         context: {
@@ -58,9 +66,6 @@ export class MigrationsManager {
 
       // Close the app
       await app.close();
-
-      // Close the db connection
-      await mongooseConn.disconnect();
 
       logger.info(`✅ Migrations completed for: ${community.hostname}`);
     } catch (error) {
