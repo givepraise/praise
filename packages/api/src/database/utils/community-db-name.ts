@@ -1,2 +1,2 @@
-export const dbNameCommunity = (community :{hostname: string}) =>
+export const dbNameCommunity = (community: { hostname: string }) =>
   community.hostname.replace(/\./g, '-');

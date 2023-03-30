@@ -23,17 +23,20 @@ export class MigrationsManager {
     try {
       logger.info(`🆙 Starting migrations for: ${community.hostname}`);
 
-      let mongooseConn
+      let mongooseConn;
       try {
         // Connect to the community db https://stackoverflow.com/a/65205700/4650625
         mongooseConn = await mongoose.connect(dbUrlCommunity(community), {
-          useNewUrlParser: true
+          useNewUrlParser: true,
         } as ConnectOptions);
       } catch (e) {
-        logger.error(`connect mongoose error ${e.message}`)
-        mongooseConn = await mongoose.createConnection(dbUrlCommunity(community), {
-          useNewUrlParser: true
-        } as ConnectOptions);
+        logger.error(`connect mongoose error ${e.message}`);
+        mongooseConn = await mongoose.createConnection(
+          dbUrlCommunity(community),
+          {
+            useNewUrlParser: true,
+          } as ConnectOptions,
+        );
       }
 
       // Create a dynamic app module for the community

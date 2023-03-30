@@ -88,16 +88,16 @@ export class CommunityService {
     if (community.owners) {
       assertOwnersIncludeCreator(community.owners, communityDocument.creator);
     }
-    const oldDbName = dbNameCommunity(communityDocument)
+    const oldDbName = dbNameCommunity(communityDocument);
 
     for (const [k, v] of Object.entries(community)) {
       communityDocument.set(k, v);
     }
 
     await communityDocument.save();
-    const newDbName = dbNameCommunity(communityDocument)
-    if ( oldDbName !== newDbName){
-      await this.renameDbOfCommunityIfExists({oldDbName, newDbName})
+    const newDbName = dbNameCommunity(communityDocument);
+    if (oldDbName !== newDbName) {
+      await this.renameDbOfCommunityIfExists({ oldDbName, newDbName });
     }
     return this.findOneById(communityDocument._id);
   }
@@ -166,7 +166,7 @@ export class CommunityService {
   createDbForCommunity = async (params: { community: Community }) => {
     const { community } = params;
     try {
-      const communityDbName =dbNameCommunity(community);
+      const communityDbName = dbNameCommunity(community);
       logger.info(`Setting up community database for ${communityDbName}`);
       this.mongodb.db(communityDbName);
 
@@ -177,35 +177,39 @@ export class CommunityService {
         roles: [{ role: 'readWrite', db: communityDbName }],
       });
 
-      logger.info(`New db has been created for community, dbName:${communityDbName}`)
+      logger.info(
+        `New db has been created for community, dbName:${communityDbName}`,
+      );
 
       // Run migrations on new DB
       const migrationsManager = new MigrationsManager();
       await migrationsManager.migrate(community);
-
     } catch (error) {
       logger.error('createDbForCommunity error', error.message);
       throw error;
     }
   };
 
-  renameDbOfCommunityIfExists = async (params: { oldDbName: string, newDbName:string }) :Promise<void>=> {
+  renameDbOfCommunityIfExists = async (params: {
+    oldDbName: string;
+    newDbName: string;
+  }): Promise<void> => {
     const { oldDbName, newDbName } = params;
     logger.info(`Setting up community database for `, params);
     try {
       const dbFrom = this.mongodb.db(oldDbName);
-      if (!await databaseExists(oldDbName, this.mongodb)){
+      if (!(await databaseExists(oldDbName, this.mongodb))) {
         // There is no db for this community yet, so we dont need to anything
-        return ;
+        return;
       }
 
       // Grant readwrite permissions to new database
       const dbAdmin = this.mongodb.db().admin();
       await dbAdmin.command({
         grantRolesToUser: process.env.MONGO_USERNAME,
-        roles: [{ role: 'readWrite', db: newDbName}],
+        roles: [{ role: 'readWrite', db: newDbName }],
       });
-      const dbTo = this.mongodb.db(newDbName)
+      const dbTo = this.mongodb.db(newDbName);
 
       const collections = await dbFrom.listCollections().toArray();
       for (const collection of collections) {
@@ -230,10 +234,8 @@ export class CommunityService {
         }
 
         // Drop old database
-        await this.mongodb.db().dropDatabase({dbName: oldDbName})
+        await this.mongodb.db().dropDatabase({ dbName: oldDbName });
       }
-
-
     } catch (error) {
       logger.error('createDbForCommunity error', error.message);
       throw error;

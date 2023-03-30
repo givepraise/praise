@@ -8,13 +8,12 @@ export async function databaseExists(
   databaseName: string,
   client: MongoClient,
 ) {
-
   try {
     // As mongo client just can connect to DB one time, we put it in try-catch because for next times it would return error
     // Connect to the MongoDB server
     await client.connect();
-  }catch (e){
-    logger.error(`databaseExists mongo client connect error ${e.message}`)
+  } catch (e) {
+    logger.error(`databaseExists mongo client connect error ${e.message}`);
   }
 
   // Get the list of databases

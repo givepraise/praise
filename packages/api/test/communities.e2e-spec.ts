@@ -255,15 +255,15 @@ describe('Communities (E2E)', () => {
     let community: Community;
 
     beforeEach(async () => {
-      const hostname = `test.patch.community`
-      const dbName = dbNameCommunity({hostname})
+      const hostname = `test.patch.community`;
+      const dbName = dbNameCommunity({ hostname });
       await communityService.getModel().deleteMany({});
-      const mongodb = new MongoClient(DB_URL_ROOT)
-      if( await databaseExists(dbName, mongodb)){
+      const mongodb = new MongoClient(DB_URL_ROOT);
+      if (await databaseExists(dbName, mongodb)) {
         // Delete community db if exists (We create db after linking discord to community)
         await mongodb.db().dropDatabase({
-          dbName
-        })
+          dbName,
+        });
       }
       community = await communitiesSeeder.seedCommunity({
         name: 'test-community',
@@ -338,11 +338,11 @@ describe('Communities (E2E)', () => {
     });
 
     test('200 should create new db for community, after link it to discord', async () => {
-      let mongodb = new MongoClient(DB_URL_ROOT)
-      const dbName = dbNameCommunity(community)
+      const mongodb = new MongoClient(DB_URL_ROOT);
+      const dbName = dbNameCommunity(community);
 
       // Before linking Discord to community there is no DB for that community
-      expect(await databaseExists(dbName, mongodb)).toBe(false)
+      expect(await databaseExists(dbName, mongodb)).toBeFalse();
 
       const signedMessage = await users[0].wallet.signMessage(
         communityService.generateLinkDiscordMessage({
@@ -362,14 +362,15 @@ describe('Communities (E2E)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(await databaseExists(dbName, mongodb)).toBe(true)
+      expect(await databaseExists(dbName, mongodb)).toBe(true);
 
-      const communityDb = mongodb.db(dbName)
-      const migrationDocuments = await communityDb.collection('migrations').countDocuments();
+      const communityDb = mongodb.db(dbName);
+      const migrationDocuments = await communityDb
+        .collection('migrations')
+        .countDocuments();
 
       // To make sure all migrations has been executed successfully
-      expect(migrationDocuments).toBeGreaterThan(0)
-
+      expect(migrationDocuments).toBeGreaterThan(0);
     });
 
     test('400 when someone else wants to link discord to community instead of creator', async () => {
