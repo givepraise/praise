@@ -722,8 +722,8 @@ export interface components {
     PeriodSetting: {
       /** @example 62291b7ea8b1619f78818524 */
       _id: string;
-      period: readonly components['schemas']['Period'][];
-      setting: readonly components['schemas']['Setting'][];
+      period: components['schemas']['Period'];
+      setting: components['schemas']['Setting'];
       value: string;
       /** @example 666 */
       valueRealized: string | string[] | boolean | number | number[];
