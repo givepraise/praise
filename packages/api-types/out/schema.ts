@@ -233,7 +233,7 @@ export interface components {
       /** @example darth */
       username: string;
       /** @enum {number} */
-      roles: [object Object];
+      roles: [object]
       accounts: readonly (components["schemas"]["UserAccountNoUserId"])[];
       /** Format: date-time */
       createdAt: string;
@@ -302,12 +302,12 @@ export interface components {
       /** @example 639b178f19296ee0f2d0585d */
       praise: string;
       /**
-       * Format: date-time 
+       * Format: date-time
        * @example 2021-06-01T00:00:00.000Z
        */
       createdAt: string;
       /**
-       * Format: date-time 
+       * Format: date-time
        * @example 2021-06-01T00:00:00.000Z
        */
       updatedAt: string;
@@ -422,12 +422,12 @@ export interface components {
     };
     VerifyQuantifierPoolSizeDto: {
       /**
-       * @description The number of quantifiers in the pool 
+       * @description The number of quantifiers in the pool
        * @example 10
        */
       quantifierPoolSize: number;
       /**
-       * @description The number of quantifiers needed in the pool 
+       * @description The number of quantifiers needed in the pool
        * @example 10
        */
       quantifierPoolSizeNeeded: number;
@@ -506,12 +506,12 @@ export interface components {
       /** @example A description of teh event */
       description: string;
       /**
-       * Format: date-time 
+       * Format: date-time
        * @example 2023-03-01T22:51:20.012Z
        */
       createdAt: string;
       /**
-       * Format: date-time 
+       * Format: date-time
        * @example 2023-03-01T22:51:20.012Z
        */
       updatedAt: string;
@@ -1284,8 +1284,8 @@ export interface operations {
       };
     };
     /**
-     * @description A request containing the user identityEthAddress and signedlogin message. The signed message should be structured as follows: 
-     * 
+     * @description A request containing the user identityEthAddress and signedlogin message. The signed message should be structured as follows:
+     *
      * ```SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\nADDRESS:\n[identityEthAddress]\n\nNONCE:\n[nonce]```
      */
     requestBody: {
