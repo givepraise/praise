@@ -10,13 +10,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isString } from 'class-validator';
 import { parseISO, add, compareAsc } from 'date-fns';
-import { Types } from 'mongoose';
-import { Pagination } from 'mongoose-paginate-ts';
+import { Model, Types } from 'mongoose';
 import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
 import { EventLogService } from '../../event-log/event-log.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '../../praise/dto/praise-with-user-accounts-with-user-ref.dto';
-import { Praise, PraiseModel } from '../../praise/schemas/praise.schema';
-import { QuantificationsService } from '../../quantifications/services/quantifications.service';
+import { Praise } from '../../praise/schemas/praise.schema';
 import { PaginatedQueryDto } from '../../shared/dto/pagination-query.dto';
 import { ApiException } from '../../shared/exceptions/api-exception';
 import { CreatePeriodInputDto } from '../dto/create-period-input.dto';
@@ -26,30 +24,26 @@ import { PeriodDetailsDto } from '../dto/period-details.dto';
 import { PeriodPaginatedResponseDto } from '../dto/period-paginated-response.dto';
 import { UpdatePeriodInputDto } from '../dto/update-period-input.dto';
 import { PeriodStatusType } from '../enums/status-type.enum';
-import {
-  Period,
-  PeriodModel,
-  PeriodDocument,
-  PeriodExportSqlSchema,
-} from '../schemas/periods.schema';
+import { Period, PeriodExportSqlSchema } from '../schemas/periods.schema';
 import { SettingsService } from '../../settings/settings.service';
+import { isQuantificationCompleted } from '../../quantifications/utils/is-quantification-completed';
+import { PaginateModel } from '../../shared/interfaces/paginate-model.interface';
 
 @Injectable()
 export class PeriodsService {
   constructor(
     @InjectModel(Period.name)
-    private periodModel: typeof PeriodModel,
+    private periodModel: PaginateModel<Period>,
     @InjectModel(Praise.name)
-    private praiseModel: typeof PraiseModel,
+    private praiseModel: Model<Praise>,
     private eventLogService: EventLogService,
     private settingsService: SettingsService,
-    private quantificationsService: QuantificationsService,
   ) {}
 
   /**
    * Convenience method to get the Period Model
    */
-  getModel(): Pagination<PeriodDocument> {
+  getModel(): PaginateModel<Period> {
     return this.periodModel;
   }
 
@@ -62,10 +56,9 @@ export class PeriodsService {
     const { sortColumn, sortType, page, limit } = options;
     const query = {} as any;
 
-    const periodPagination = await this.periodModel.paginate({
+    const periodPagination = await this.periodModel.paginate(query, {
       page,
       limit,
-      query,
       sort: sortColumn && sortType ? { [sortColumn]: sortType } : undefined,
     });
 
@@ -105,7 +98,7 @@ export class PeriodsService {
    * */
   create = async (data: CreatePeriodInputDto): Promise<PeriodDetailsDto> => {
     const { name, endDate: endDateInput } = data;
-    const latestPeriod = await this.periodModel.getLatest();
+    const latestPeriod = await this.findLatest();
     const endDate = parseISO(endDateInput);
 
     if (latestPeriod) {
@@ -435,7 +428,7 @@ export class PeriodsService {
   ): PeriodDetailsQuantifierDto[] =>
     quantifiers.map((q) => {
       const finishedCount = q.quantifications.filter((quantification) =>
-        this.quantificationsService.isQuantificationCompleted(quantification),
+        isQuantificationCompleted(quantification),
       ).length;
 
       return new PeriodDetailsQuantifierDto({
@@ -690,4 +683,36 @@ export class PeriodsService {
     // Generate the parquet file
     await generateParquetExport(path, 'periods', PeriodExportSqlSchema);
   }
+
+  /**
+   * Fetch the period associated with a praise instance,
+   *  (as they are currently not related in database)
+   *
+   * Determines the associated period by:
+   *  finding the period with the lowest endDate, that is greater than the praise.createdAt date
+   *
+   * @param {Praise} praise
+   * @returns {(Promise<Period | undefined>)}
+   */
+  getPraisePeriod = async (praise: Praise): Promise<Period | undefined> => {
+    const period = await this.periodModel
+      .find(
+        // only periods ending after praise created
+        {
+          endDate: { $gte: praise.createdAt },
+        },
+        null,
+        // sort periods by ending date ascending
+        {
+          sort: { endDate: 1 },
+        },
+
+        // select the period with the earliest ending date
+      )
+      .limit(1);
+
+    if (!period || period.length === 0) return undefined;
+
+    return period[0];
+  };
 }

@@ -8,16 +8,20 @@ import {
 } from './schemas/event-log-type.schema';
 import { EventLogService } from './event-log.service';
 import { ConstantsProvider } from '../constants/constants.provider';
-import { JwtService } from '@nestjs/jwt';
+import {
+  UserAccount,
+  UserAccountSchema,
+} from '../useraccounts/schemas/useraccounts.schema';
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: EventLog.name, schema: EventLogSchema },
       { name: EventLogType.name, schema: EventLogTypeSchema },
+      { name: UserAccount.name, schema: UserAccountSchema },
     ]),
   ],
   controllers: [EventLogController],
-  providers: [EventLogService, ConstantsProvider, JwtService],
+  providers: [EventLogService, ConstantsProvider],
   exports: [EventLogService],
 })
 export class EventLogModule {}

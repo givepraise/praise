@@ -12,7 +12,7 @@ import { UsersService } from '../users/users.service';
 
 @Controller('auth')
 @ApiTags('Authentication')
-export class AuthController {
+export class EthSignatureController {
   constructor(
     private readonly ethSignatureService: EthSignatureService,
     private readonly usersService: UsersService,

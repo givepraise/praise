@@ -1,11 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types, model } from 'mongoose';
+import { Types } from 'mongoose';
 import { PeriodStatusType } from '../enums/status-type.enum';
-import { mongoosePagination } from 'mongoose-paginate-ts';
-import { PaginatedPeriodModel } from '../interfaces/paginated-period.interface';
 import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { IsString, Length } from 'class-validator';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 export type PeriodDocument = Period & Document;
 
@@ -51,17 +50,9 @@ export class Period {
   updatedAt: Date;
 }
 
-export const PeriodSchema =
-  SchemaFactory.createForClass(Period).plugin(mongoosePagination);
+export const PeriodSchema = SchemaFactory.createForClass(Period);
 
-PeriodSchema.statics.getLatest = function (): PeriodDocument {
-  return this.findOne({}).sort({ endDate: -1 });
-};
-
-export const PeriodModel = model<PeriodDocument, PaginatedPeriodModel>(
-  'Period',
-  PeriodSchema,
-);
+PeriodSchema.plugin(mongoosePaginate);
 
 export const PeriodExportSqlSchema = `
   _id VARCHAR, 

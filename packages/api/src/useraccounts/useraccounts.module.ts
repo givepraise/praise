@@ -17,11 +17,6 @@ import { ConstantsProvider } from '../constants/constants.provider';
   ],
   controllers: [UserAccountsController],
   providers: [UserAccountsService, ConstantsProvider],
-  exports: [
-    MongooseModule.forFeature([
-      { name: UserAccount.name, schema: UserAccountSchema },
-    ]),
-    UserAccountsService,
-  ],
+  exports: [UserAccountsService],
 })
 export class UserAccountsModule {}

@@ -5,7 +5,7 @@ import {
   EventLogType,
   EventLogTypeDocument,
 } from './schemas/event-log-type.schema';
-import { EventLog, EventLogModel } from './schemas/event-log.schema';
+import { EventLog } from './schemas/event-log.schema';
 import mongoose from 'mongoose';
 import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-query.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
@@ -15,21 +15,25 @@ import { has } from 'lodash';
 import { User } from '../users/schemas/users.schema';
 import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.dto';
 import { errorMessages } from '../shared/exceptions/error-messages';
+import { PaginateModel } from '../shared/interfaces/paginate-model.interface';
+import { UserAccount } from '../useraccounts/schemas/useraccounts.schema';
 
 @Injectable()
 export class EventLogService {
   constructor(
     @InjectModel(EventLog.name)
-    private eventLogModel: typeof EventLogModel,
+    private eventLogModel: PaginateModel<EventLog>,
     @InjectModel(EventLogType.name)
     private eventLogTypeModel: Model<EventLogTypeDocument>,
+    @InjectModel(UserAccount.name)
+    private userAccountModel: Model<EventLogTypeDocument>,
   ) {}
 
   /**
    * Convenience method to get the EventLog Model
    * @returns
    */
-  getModel(): typeof EventLogModel {
+  getModel(): PaginateModel<EventLog> {
     return this.eventLogModel;
   }
 
@@ -98,8 +102,7 @@ export class EventLogService {
     const sort =
       sortColumn && sortType ? { [sortColumn]: sortType } : undefined;
 
-    const paginateQuery = {
-      query,
+    const eventLogPagination = await this.eventLogModel.paginate(query, {
       limit,
       page,
       sort,
@@ -109,11 +112,10 @@ export class EventLogService {
         },
         {
           path: 'useraccount',
+          model: this.userAccountModel,
         },
       ],
-    };
-
-    const eventLogPagination = await this.eventLogModel.paginate(paginateQuery);
+    });
 
     if (!eventLogPagination)
       throw new ApiException(errorMessages.FAILED_TO_QUERY_EVENT_LOGS);

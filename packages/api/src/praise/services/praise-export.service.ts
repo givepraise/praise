@@ -1,26 +1,19 @@
 import * as fs from 'fs';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  PraiseModel,
-  Praise,
-  PraiseExportSqlSchema,
-} from '../schemas/praise.schema';
-import { ApiException } from '../../shared/exceptions/api-exception';
+import { Praise, PraiseExportSqlSchema } from '../schemas/praise.schema';
 import { Injectable } from '@nestjs/common';
-import { PeriodsService } from '../../periods/services/periods.service';
 import { ExportInputDto } from '../../shared/dto/export-input.dto';
 import {
   generateParquetExport,
   writeCsvAndJsonExports,
 } from '../../shared/export.shared';
-import { errorMessages } from '../../shared/exceptions/error-messages';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class PraiseExportService {
   constructor(
     @InjectModel(Praise.name)
-    private praiseModel: typeof PraiseModel,
-    private periodService: PeriodsService,
+    private praiseModel: Model<Praise>,
   ) {}
 
   includeFields = [
@@ -41,31 +34,13 @@ export class PraiseExportService {
    * Converts the ExportInputDto to a query that can be used to filter the praise
    */
   private async exportInputToQuery(options: ExportInputDto) {
-    const { periodId, startDate, endDate } = options;
-    const query: any = {};
-    if (periodId) {
-      if (startDate || endDate) {
-        // If periodId is set, startDate and endDate should not be set
-        throw new ApiException(errorMessages.INVALID_DATE_FILTERING_OPTION);
-      }
-      const period = await this.periodService.findOneById(periodId);
-      query.createdAt = await this.periodService.getPeriodDateRangeQuery(
-        period,
-      );
-    } else {
-      if (startDate && endDate) {
-        // If periodId is not set but startDate and endDate are set, use them to filter
-        query.createdAt = {
-          $gte: startDate,
-          $lte: endDate,
-        };
-      } else if (startDate || endDate) {
-        // If periodId is not set and only one of startDate and endDate is set, throw an error
-        throw new ApiException(
-          errorMessages.INVALID_DATE_FILTERING_OPTION_WHEN_PERIOD_IS_NOT_SET,
-        );
-      }
-    }
+    const { startDate, endDate } = options;
+    const query: any = {
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    };
     return query;
   }
 

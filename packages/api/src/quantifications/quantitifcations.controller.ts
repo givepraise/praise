@@ -6,9 +6,14 @@ import {
   Res,
   SerializeOptions,
   StreamableFile,
+  Patch,
+  Param,
+  Body,
+  UseInterceptors,
+  Request,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOkResponse, ApiParam, ApiProduces, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { QuantificationsService } from './services/quantifications.service';
 import { Response } from 'express';
 import { ExportInputDto } from '../shared/dto/export-input.dto';
@@ -20,6 +25,14 @@ import { Permission } from '../auth/enums/permission.enum';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { ApiException } from '../shared/exceptions/api-exception';
+import { Praise } from '../praise/schemas/praise.schema';
+import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
+import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
+import { QuantifyInputDto } from '../praise/dto/quantify-input.dto';
+import { QuantifyMultipleInputDto } from '../praise/dto/quantify-multiple-input.dto';
+import { PraiseService } from '../praise/services/praise.service';
+import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
+import { Types } from 'mongoose';
 
 @Controller('quantifications')
 @ApiTags('Quantifications')
@@ -31,6 +44,7 @@ export class QuantificationsController {
   constructor(
     private readonly quantificationsService: QuantificationsService,
     private readonly quantificationsExportService: QuantificationsExportService,
+    private readonly praiseService: PraiseService,
   ) {}
 
   @Get('export')
@@ -95,5 +109,68 @@ export class QuantificationsController {
 
     const file = fs.createReadStream(filePath);
     return new StreamableFile(file);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Quantify praise item by id' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Praise /Applications/Visual Studio Code.app/Contents/Resources/app/out/vs/code/electron-sandbox/workbench/workbench.htmlitems',
+    type: [Praise],
+  })
+  @Permissions(Permission.PraiseQuantify)
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
+  @ApiParam({ name: 'id', type: 'string' })
+  async quantify(
+    @Param('id', ObjectIdPipe) praiseId: Types.ObjectId,
+    @Body() data: QuantifyInputDto,
+    @Request() request: RequestWithAuthContext,
+  ): Promise<Praise[]> {
+    const userId = new Types.ObjectId(request.user?.userId);
+    if (!userId) {
+      throw new ApiException(errorMessages.USER_NOT_FOUND);
+    }
+    return this.quantificationsService.quantifyPraise(userId, praiseId, data);
+  }
+
+  @Patch('multiple')
+  @ApiOperation({ summary: 'Quantify multiple praise items' })
+  @ApiResponse({
+    status: 200,
+    description: 'Praise items',
+    type: [Praise],
+  })
+  @Permissions(Permission.PraiseQuantify)
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
+  async quantifyMultiple(
+    @Body() data: QuantifyMultipleInputDto,
+    @Request() request: RequestWithAuthContext,
+  ): Promise<Praise[]> {
+    const { praiseIds, params } = data;
+
+    const userId = new Types.ObjectId(request.user?.userId);
+    if (!userId) {
+      throw new ApiException(errorMessages.USER_NOT_FOUND);
+    }
+
+    if (!Array.isArray(praiseIds)) {
+      throw new ApiException(errorMessages.PRAISE_IDS_MUST_BE_ARRAY);
+    }
+
+    const praiseItems = await Promise.all(
+      praiseIds.map(async (praiseId) => {
+        const affectedPraises =
+          await this.quantificationsService.quantifyPraise(
+            userId,
+            praiseId,
+            params,
+          );
+
+        return affectedPraises;
+      }),
+    );
+
+    return praiseItems.flat();
   }
 }

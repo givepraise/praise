@@ -9,7 +9,7 @@ import { ActivateModule } from '../../src/activate/activate.module';
 import { ActivateService } from '../../src/activate/activate.service';
 import { ApiKeyModule } from '../../src/api-key/api-key.module';
 import { ApiKeyService } from '../../src/api-key/api-key.service';
-import { AuthModule } from '../../src/auth/auth.module';
+import { EthSignatureModule } from '../../src/auth/eth-signature.module';
 import { EthSignatureService } from '../../src/auth/eth-signature.service';
 import { CommunityModule } from '../../src/community/community.module';
 import { CommunityService } from '../../src/community/community.service';
@@ -103,7 +103,7 @@ export async function startNest(): Promise<void> {
       ),
       ActivateModule,
       ApiKeyModule,
-      AuthModule,
+      EthSignatureModule,
       CommunityModule,
       EventLogModule,
       PeriodsModule,
