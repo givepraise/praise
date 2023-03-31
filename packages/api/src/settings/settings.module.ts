@@ -11,6 +11,7 @@ import {
   PeriodSetting,
   PeriodSettingsSchema,
 } from './schemas/periodsettings.schema';
+import { PeriodSettingsController } from './periodsettings.controller';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import {
     ]),
     EventLogModule,
   ],
-  controllers: [SettingsController],
+  controllers: [SettingsController, PeriodSettingsController],
   providers: [SettingsService, FileUtilsProvider, ConstantsProvider],
   exports: [SettingsService],
 })

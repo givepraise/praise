@@ -1,10 +1,12 @@
-import { QuantifyInputDto } from '../../praise/dto/quantify-input.dto';
+import { QuantifyInputDto } from './quantify-input.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
-import { Types } from 'mongoose';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, ValidateNested } from 'class-validator';
 
 export class QuantifyMultipleInputDto {
   @ApiProperty({ type: QuantifyInputDto })
+  @ValidateNested()
+  @Type(() => QuantifyInputDto)
   @IsNotEmpty()
   params: QuantifyInputDto;
 
@@ -17,5 +19,5 @@ export class QuantifyMultipleInputDto {
     type: ['string'],
   })
   @IsNotEmpty()
-  praiseIds: Types.ObjectId[];
+  praiseIds: string[];
 }

@@ -8,7 +8,7 @@ import { ApiException } from '../../shared/exceptions/api-exception';
 import { PraiseService } from '../../praise/services/praise.service';
 import { PeriodsService } from '../../periods/services/periods.service';
 import { errorMessages } from '../../shared/exceptions/error-messages';
-import { QuantifyInputDto } from '../../praise/dto/quantify-input.dto';
+import { QuantifyInputDto } from '../dto/quantify-input.dto';
 import { PeriodStatusType } from '../../periods/enums/status-type.enum';
 import { isQuantificationCompleted } from '../utils/is-quantification-completed';
 import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';

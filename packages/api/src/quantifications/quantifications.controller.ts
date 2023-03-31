@@ -28,10 +28,10 @@ import { ApiException } from '../shared/exceptions/api-exception';
 import { Praise } from '../praise/schemas/praise.schema';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
-import { QuantifyInputDto } from '../praise/dto/quantify-input.dto';
-import { QuantifyMultipleInputDto } from '../praise/dto/quantify-multiple-input.dto';
+import { QuantifyInputDto } from './dto/quantify-input.dto';
 import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
 import { Types } from 'mongoose';
+import { QuantifyMultipleInputDto } from './dto/quantify-multiple-input.dto';
 
 @Controller('quantifications')
 @ApiTags('Quantifications')
@@ -161,7 +161,7 @@ export class QuantificationsController {
         const affectedPraises =
           await this.quantificationsService.quantifyPraise(
             userId,
-            praiseId,
+            new Types.ObjectId(praiseId),
             params,
           );
 

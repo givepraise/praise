@@ -8,7 +8,7 @@ import {
 import { PraiseModule } from '../praise/praise.module';
 import { PeriodsModule } from '../periods/periods.module';
 import { Module } from '@nestjs/common';
-import { QuantificationsController } from './quantitifcations.controller';
+import { QuantificationsController } from './quantifications.controller';
 import { QuantificationsExportService } from './services/quantifications-export.service';
 import { ConstantsProvider } from '../constants/constants.provider';
 import { Praise, PraiseSchema } from '../praise/schemas/praise.schema';
