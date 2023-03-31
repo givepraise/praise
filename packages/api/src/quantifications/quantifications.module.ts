@@ -13,6 +13,8 @@ import { QuantificationsExportService } from './services/quantifications-export.
 import { ConstantsProvider } from '../constants/constants.provider';
 import { Praise, PraiseSchema } from '../praise/schemas/praise.schema';
 import { EventLogModule } from '../event-log/event-log.module';
+import { PeriodsService } from '../periods/services/periods.service';
+import { PraiseService } from '../praise/services/praise.service';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { EventLogModule } from '../event-log/event-log.module';
     QuantificationsService,
     QuantificationsExportService,
     ConstantsProvider,
+    PraiseService,
+    PeriodsService,
   ],
   exports: [QuantificationsService],
 })

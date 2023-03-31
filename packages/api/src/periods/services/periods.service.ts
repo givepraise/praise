@@ -53,7 +53,12 @@ export class PeriodsService {
   async findAllPaginated(
     options: PaginatedQueryDto,
   ): Promise<PeriodPaginatedResponseDto> {
-    const { sortColumn, sortType, page, limit } = options;
+    const {
+      sortColumn = 'createdAt',
+      sortType = 'desc',
+      page = 1,
+      limit = 100,
+    } = options;
     const query = {} as any;
 
     const periodPagination = await this.periodModel.paginate(query, {
@@ -83,14 +88,20 @@ export class PeriodsService {
   /**
    * Find the latest added period
    */
-  async findLatest(): Promise<Period> {
-    const period = await this.periodModel
+  async findLatestAdded(): Promise<Period | null> {
+    const periods = await this.periodModel
       .find()
       .limit(1)
       .sort({ $natural: -1 })
       .lean();
-    if (!period[0]) throw new ApiException(errorMessages.PERIOD_NOT_FOUND);
-    return period[0];
+    return periods[0];
+  }
+
+  /**
+   *  Find latest period based on `endDate`
+   */
+  async findLatest(): Promise<Period | null> {
+    return this.periodModel.findOne({}).sort({ endDate: 'desc' }).exec();
   }
 
   /**

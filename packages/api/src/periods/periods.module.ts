@@ -34,6 +34,9 @@ import { ConstantsProvider } from '../constants/constants.provider';
   ],
   controllers: [PeriodsController],
   providers: [PeriodsService, PeriodAssignmentsService, ConstantsProvider],
-  exports: [PeriodsService],
+  exports: [
+    PeriodsService,
+    MongooseModule.forFeature([{ name: Period.name, schema: PeriodSchema }]),
+  ],
 })
 export class PeriodsModule {}

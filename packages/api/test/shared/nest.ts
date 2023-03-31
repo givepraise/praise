@@ -18,8 +18,6 @@ import { EventLogService } from '../../src/event-log/event-log.service';
 import { PeriodsModule } from '../../src/periods/periods.module';
 import { PeriodsService } from '../../src/periods/services/periods.service';
 import { PeriodAssignmentsService } from '../../src/periods/services/period-assignments.service';
-import { PeriodSettingsModule } from '../../src/periodsettings/periodsettings.module';
-import { PeriodSettingsService } from '../../src/periodsettings/periodsettings.service';
 import { PraiseModule } from '../../src/praise/praise.module';
 import { PraiseService } from '../../src/praise/services/praise.service';
 import { QuantificationsModule } from '../../src/quantifications/quantifications.module';
@@ -66,7 +64,6 @@ export let eventLogService: EventLogService;
 export let ethSignatureService: EthSignatureService;
 export let periodsService: PeriodsService;
 export let periodsAssignmentService: PeriodAssignmentsService;
-export let periodSettingsService: PeriodSettingsService;
 export let praiseService: PraiseService;
 export let quantificationsService: QuantificationsService;
 export let settingsService: SettingsService;
@@ -107,7 +104,6 @@ export async function startNest(): Promise<void> {
       CommunityModule,
       EventLogModule,
       PeriodsModule,
-      PeriodSettingsModule,
       PraiseModule,
       QuantificationsModule,
       RequestContextModule,
@@ -156,9 +152,6 @@ export async function startNest(): Promise<void> {
   periodsService = testingModule.get<PeriodsService>(PeriodsService);
   periodsAssignmentService = testingModule.get<PeriodAssignmentsService>(
     PeriodAssignmentsService,
-  );
-  periodSettingsService = testingModule.get<PeriodSettingsService>(
-    PeriodSettingsService,
   );
   praiseService = testingModule.get<PraiseService>(PraiseService);
   quantificationsService = testingModule.get<QuantificationsService>(

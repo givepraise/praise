@@ -1,18 +1,18 @@
 import * as fs from 'fs';
 import { QuantificationsExportSqlSchema } from '../schemas/quantifications.schema';
-import { PraiseService } from '../../praise/services/praise.service';
-import { PeriodsService } from '../../periods/services/periods.service';
 import { ExportInputDto } from '../../shared/dto/export-input.dto';
-import { Cursor } from 'mongoose';
+import { Cursor, Model } from 'mongoose';
 import {
   generateParquetExport,
   writeCsvAndJsonExports,
 } from '../../shared/export.shared';
+import { InjectModel } from '@nestjs/mongoose';
+import { Praise } from '../../praise/schemas/praise.schema';
 
 export class QuantificationsExportService {
   constructor(
-    private praiseService: PraiseService,
-    private periodService: PeriodsService,
+    @InjectModel(Praise.name)
+    private praiseModel: Model<Praise>,
   ) {}
 
   // Fields to include in the csv
@@ -46,7 +46,7 @@ export class QuantificationsExportService {
    * Counts the number of quantifications that match the given query
    */
   private async countQuantifications(query: any): Promise<number> {
-    const count = await this.praiseService.getModel().aggregate([
+    const count = await this.praiseModel.aggregate([
       {
         $match: query,
       },
@@ -70,8 +70,7 @@ export class QuantificationsExportService {
   private async createQuantificationsCursor(
     query: any,
   ): Promise<Cursor<any, never>> {
-    return this.praiseService
-      .getModel()
+    return this.praiseModel
       .aggregate([
         {
           $match: query,

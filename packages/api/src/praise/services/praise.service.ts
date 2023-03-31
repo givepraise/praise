@@ -31,7 +31,6 @@ export class PraiseService {
     @InjectModel(User.name)
     private userModel: Model<User>,
     private settingsService: SettingsService,
-    private eventLogService: EventLogService,
   ) {}
 
   /**

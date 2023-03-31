@@ -30,7 +30,6 @@ import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongo
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { QuantifyInputDto } from '../praise/dto/quantify-input.dto';
 import { QuantifyMultipleInputDto } from '../praise/dto/quantify-multiple-input.dto';
-import { PraiseService } from '../praise/services/praise.service';
 import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
 import { Types } from 'mongoose';
 
@@ -44,7 +43,6 @@ export class QuantificationsController {
   constructor(
     private readonly quantificationsService: QuantificationsService,
     private readonly quantificationsExportService: QuantificationsExportService,
-    private readonly praiseService: PraiseService,
   ) {}
 
   @Get('export')

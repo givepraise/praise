@@ -148,29 +148,6 @@ describe('UserAccountsController (E2E)', () => {
       ).expect(200);
     });
 
-    test('400 when filtering by periodId and date range', async () => {
-      const response = await authorizedGetRequest(
-        `/quantifications/export?format=json&periodId=6348acd2e1a47ca32e79f46f&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
-        app,
-        adminUserAccessToken,
-      ).expect(400);
-      expect(response.body.code).toBe(1094);
-    });
-
-    test('returns quantification filtered by latest periodId', async () => {
-      const response = await authorizedGetRequest(
-        `/quantifications/export?format=json&periodId=${period._id}`,
-        app,
-        adminUserAccessToken,
-      ).expect(200);
-      expect(response.body.length).toBe(1);
-      // toBeTrue() is not working with our version of jest
-      // eslint-disable-next-line jest-extended/prefer-to-be-true
-      expect(String(quantifications[2]._id) === response.body[0]._id).toBe(
-        true,
-      );
-    });
-
     test('returns quantifications that matches seeded list in json format, filtered by date', async () => {
       const response = await authorizedGetRequest(
         `/quantifications/export?format=json&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,

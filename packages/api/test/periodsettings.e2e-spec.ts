@@ -20,7 +20,6 @@ import {
   usersSeeder,
   periodsSeeder,
   settingsSeeder,
-  periodSettingsService,
   periodsService,
   settingsService,
   periodSettingsSeeder,
@@ -38,9 +37,9 @@ describe('Period Settings (E2E)', () => {
   beforeAll(async () => {
     // Clear the database
     await settingsService.getSettingsModel().deleteMany({});
+    await settingsService.getPeriodSettingsModel().deleteMany({});
     await usersService.getModel().deleteMany({});
     await periodsService.getModel().deleteMany({});
-    await periodSettingsService.getModel().deleteMany({});
 
     // Seed and login 2 users
     for (let i = 0; i < 2; i++) {

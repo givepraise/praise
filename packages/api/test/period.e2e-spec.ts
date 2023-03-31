@@ -27,7 +27,6 @@ import {
   settingsSeeder,
   quantificationsService,
   userAccountsService,
-  periodSettingsService,
   periodsService,
   settingsService,
   periodSettingsSeeder,
@@ -49,9 +48,9 @@ describe('Period (E2E)', () => {
     await quantificationsService.getModel().deleteMany({});
     await userAccountsService.getModel().deleteMany({});
     await periodsService.getModel().deleteMany({});
-    await periodSettingsService.getModel().deleteMany({});
     await userAccountsService.getModel().deleteMany({});
     await settingsService.getSettingsModel().deleteMany({});
+    await settingsService.getPeriodSettingsModel().deleteMany({});
 
     // Seed and login 3 users
     for (let i = 0; i < 3; i++) {
@@ -682,7 +681,7 @@ describe('Period (E2E)', () => {
       await praiseService.getModel().deleteMany({});
       await usersService.getModel().deleteMany({});
       await userAccountsService.getModel().deleteMany({});
-      await periodSettingsService.getModel().deleteMany({});
+      await settingsService.getPeriodSettingsModel().deleteMany({});
       await quantificationsService.getModel().deleteMany({});
       await settingsService.getSettingsModel().deleteMany({});
 
