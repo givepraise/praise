@@ -109,29 +109,6 @@ export class QuantificationsController {
     return new StreamableFile(file);
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Quantify praise item by id' })
-  @ApiResponse({
-    status: 200,
-    description:
-      'Praise /Applications/Visual Studio Code.app/Contents/Resources/app/out/vs/code/electron-sandbox/workbench/workbench.htmlitems',
-    type: [Praise],
-  })
-  @Permissions(Permission.PraiseQuantify)
-  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
-  @ApiParam({ name: 'id', type: 'string' })
-  async quantify(
-    @Param('id', ObjectIdPipe) praiseId: Types.ObjectId,
-    @Body() data: QuantifyInputDto,
-    @Request() request: RequestWithAuthContext,
-  ): Promise<Praise[]> {
-    const userId = new Types.ObjectId(request.user?.userId);
-    if (!userId) {
-      throw new ApiException(errorMessages.USER_NOT_FOUND);
-    }
-    return this.quantificationsService.quantifyPraise(userId, praiseId, data);
-  }
-
   @Patch('multiple')
   @ApiOperation({ summary: 'Quantify multiple praise items' })
   @ApiResponse({
@@ -170,5 +147,28 @@ export class QuantificationsController {
     );
 
     return praiseItems.flat();
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Quantify praise item by id' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Praise /Applications/Visual Studio Code.app/Contents/Resources/app/out/vs/code/electron-sandbox/workbench/workbench.htmlitems',
+    type: [Praise],
+  })
+  @Permissions(Permission.PraiseQuantify)
+  @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
+  @ApiParam({ name: 'id', type: 'string' })
+  async quantify(
+    @Param('id', ObjectIdPipe) praiseId: Types.ObjectId,
+    @Body() data: QuantifyInputDto,
+    @Request() request: RequestWithAuthContext,
+  ): Promise<Praise[]> {
+    const userId = new Types.ObjectId(request.user?.userId);
+    if (!userId) {
+      throw new ApiException(errorMessages.USER_NOT_FOUND);
+    }
+    return this.quantificationsService.quantifyPraise(userId, praiseId, data);
   }
 }
