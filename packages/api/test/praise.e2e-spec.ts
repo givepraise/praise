@@ -3,19 +3,16 @@ import request from 'supertest';
 import { Wallet } from 'ethers';
 import {
   authorizedGetRequest,
-  authorizedPatchRequest,
   authorizedPostRequest,
   loginUser,
 } from './shared/request';
 import { Praise } from '../src/praise/schemas/praise.schema';
 import { Period } from '../src/periods/schemas/periods.schema';
 import { PeriodStatusType } from '../src/periods/enums/status-type.enum';
-import { PeriodSetting } from '../src/settings/schemas/periodsettings.schema';
 import { PraisePaginatedQueryDto } from '../src/praise/dto/praise-paginated-query.dto';
 import { Types } from 'mongoose';
 import { AuthRole } from '../src/auth/enums/auth-role.enum';
 import { User } from '../src/users/schemas/users.schema';
-import { Setting } from '../src/settings/schemas/settings.schema';
 import { faker } from '@faker-js/faker';
 
 import {

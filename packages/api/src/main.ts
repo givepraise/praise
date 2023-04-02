@@ -1,17 +1,18 @@
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as fs from 'fs';
 
-import { AppModule } from './app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
-import { ServiceExceptionFilter } from './shared/filters/service-exception.filter';
 import { version } from '../package.json';
+
+import { AppModule } from './app.module';
+import { AppConfig } from './shared/appConfig.shared';
+import { envCheck } from './shared/env.shared';
 import { logger } from './shared/logger';
+import { ServiceExceptionFilter } from './shared/filters/service-exception.filter';
 import { MongoValidationErrorFilter } from './shared/filters/mongo-validation-error.filter';
 import { MongoServerErrorFilter } from './shared/filters/mongo-server-error.filter';
-import { envCheck } from './shared/env.shared';
-import * as fs from 'fs';
-import { AppConfig } from './shared/appConfig.shared';
 import { MultiTenancyManager } from './database/multi-tenancy-manager';
 import { MigrationsManager } from './database/migrations-manager';
 
