@@ -31,7 +31,7 @@ describe('Period Settings (E2E)', () => {
 
   beforeAll(async () => {
     // Clear the database
-    await settingsService.getModel().deleteMany({});
+    await settingsService.getSettingsModel().deleteMany({});
     await usersService.getModel().deleteMany({});
 
     // Seed and login 2 users
@@ -69,7 +69,7 @@ describe('Period Settings (E2E)', () => {
     let setting: Setting;
 
     beforeEach(async () => {
-      await settingsService.getModel().deleteMany({});
+      await settingsService.getSettingsModel().deleteMany({});
       setting = await settingsSeeder.seedSettings({
         key: 'PRAISE_SUCCESS_MESSAGE',
         value: '✅ Praise {@receivers} {reason}',
@@ -165,7 +165,7 @@ describe('Period Settings (E2E)', () => {
     let setting: Setting;
 
     beforeEach(async () => {
-      await settingsService.getModel().deleteMany({});
+      await settingsService.getSettingsModel().deleteMany({});
       setting = await settingsSeeder.seedSettings({
         key: 'PRAISE_SUCCESS_MESSAGE',
         value: '✅ Praise {@receivers} {reason}',
@@ -200,7 +200,7 @@ describe('Period Settings (E2E)', () => {
     let setting: Setting;
 
     beforeEach(async () => {
-      await settingsService.getModel().deleteMany({});
+      await settingsService.getSettingsModel().deleteMany({});
       setting = await settingsSeeder.seedSettings({
         key: 'PRAISE_SUCCESS_MESSAGE',
         value: '✅ Praise {@receivers} {reason}',

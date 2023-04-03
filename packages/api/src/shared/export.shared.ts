@@ -11,10 +11,10 @@ import { exec } from './duckdb.shared';
  *  Create a hashed id based on the export options excluding export format
  */
 export function exportOptionsHash(options: ExportInputDto): string {
-  const { periodId, startDate, endDate } = options;
+  const { startDate, endDate } = options;
   return crypto
     .createHash('shake256', { outputLength: 5 })
-    .update(JSON.stringify({ periodId, startDate, endDate }))
+    .update(JSON.stringify({ startDate, endDate }))
     .digest('hex');
 }
 

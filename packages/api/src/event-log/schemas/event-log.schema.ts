@@ -1,13 +1,13 @@
 import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Document, model, Types } from 'mongoose';
-import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
+import { Document, Types } from 'mongoose';
 import { EventLogType } from './event-log-type.schema';
 
 import { Type } from 'class-transformer';
 import { IsString, ValidateNested } from 'class-validator';
 import { UserAccountNoUserId } from '../../useraccounts/schemas/useraccounts.schema';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 export type EventLogDocument = EventLog & Document;
 
@@ -111,10 +111,6 @@ export class EventLog {
   updatedAt: Date;
 }
 
-export const EventLogSchema =
-  SchemaFactory.createForClass(EventLog).plugin(mongoosePagination);
+export const EventLogSchema = SchemaFactory.createForClass(EventLog);
 
-export const EventLogModel = model<EventLog, Pagination<EventLog>>(
-  'EventLog',
-  EventLogSchema,
-);
+EventLogSchema.plugin(mongoosePaginate);

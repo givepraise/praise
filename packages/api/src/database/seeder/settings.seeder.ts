@@ -17,7 +17,7 @@ export class SettingsSeeder {
   seedSettings = async (
     SettingsData: Record<string, unknown> = {},
   ): Promise<Setting> => {
-    const Setting = await this.settingsService.getModel().create({
+    const Setting = await this.settingsService.getSettingsModel().create({
       key: SettingsData.key || faker.random.word(),
       value: SettingsData.value || faker.random.word(),
       type: SettingsData.type || faker.random.word(),

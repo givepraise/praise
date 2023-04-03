@@ -19,7 +19,7 @@ export class PaginatedResponseDto {
   @ApiResponseProperty({
     example: 2,
   })
-  page: number | undefined;
+  page?: number | undefined;
 
   @ApiResponseProperty({
     example: 1,
@@ -41,10 +41,12 @@ export class PaginatedResponseDto {
   @ApiResponseProperty({
     example: 1,
   })
-  prevPage: number | undefined;
+  prevPage?: number | null | undefined;
 
   @ApiResponseProperty({
     example: 3,
   })
-  nextPage: number | undefined;
+  nextPage?: number | null | undefined;
+
+  meta?: any;
 }

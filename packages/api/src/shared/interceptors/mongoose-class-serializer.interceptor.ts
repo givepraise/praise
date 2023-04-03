@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ClassTransformOptions, plainToClass } from 'class-transformer';
 import { Document } from 'mongoose';
-import { PaginationModel } from 'mongoose-paginate-ts';
+import { implementsPagination } from '../pagination.shared';
 
 /**
  * This interceptor is used to transform service responses to class instances. Service responses
@@ -26,7 +26,7 @@ export function MongooseClassSerializerInterceptor(
     private prepareResponse(
       response: PlainLiteralObject | PlainLiteralObject[],
     ) {
-      if (response instanceof PaginationModel) {
+      if (implementsPagination(response)) {
         return {
           ...response,
           docs: response.docs.map(this.changePlainObjectToClass),

@@ -42,6 +42,8 @@ import { allExportsDirPath } from '../shared/fs.shared';
 import { ExportInputFormatOnlyDto } from '../shared/dto/export-input-format-only';
 import { exportContentType } from '../shared/export.shared';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
+import { ApiException } from '../shared/exceptions/api-exception';
+import { errorMessages } from '../shared/exceptions/error-messages';
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -76,8 +78,12 @@ export class PeriodsController {
     const rootPath = `${allExportsDirPath}/periods`;
 
     // Directory level 1 is the latest periods id
-    const dirLevel1 = (await this.periodsService.findLatest())._id.toString();
+    const latestPeriod = await this.periodsService.findLatestAdded();
+    if (!latestPeriod) {
+      throw new ApiException(errorMessages.NO_PERIODS_TO_EXPORT);
+    }
 
+    const dirLevel1 = latestPeriod._id.toString();
     const dirPath = `${rootPath}/${dirLevel1}`;
     const filePath = `${dirPath}/periods.${format}`;
 

@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { Injectable } from '@nestjs/common';
-import { PeriodSettingsService } from '../../periodsettings/periodsettings.service';
-import { PeriodSetting } from '../../periodsettings/schemas/periodsettings.schema';
+import { PeriodSetting } from '../../settings/schemas/periodsettings.schema';
+import { SettingsService } from '../../settings/settings.service';
 
 @Injectable()
 export class PeriodSettingsSeeder {
-  constructor(private readonly periodSettingsService: PeriodSettingsService) {}
+  constructor(private readonly settingsService: SettingsService) {}
 
   /**
    * Generate and save a fake PeriodSettings
@@ -16,11 +16,13 @@ export class PeriodSettingsSeeder {
   seedPeriodSettings = async (
     PeriodSettingsData: Record<string, unknown> = {},
   ): Promise<PeriodSetting> => {
-    const PeriodSetting = await this.periodSettingsService.getModel().create({
-      period: PeriodSettingsData.period || null,
-      setting: PeriodSettingsData.setting || null,
-      value: PeriodSettingsData.value || faker.random.word(),
-    });
+    const PeriodSetting = await this.settingsService
+      .getPeriodSettingsModel()
+      .create({
+        period: PeriodSettingsData.period || null,
+        setting: PeriodSettingsData.setting || null,
+        value: PeriodSettingsData.value || faker.random.word(),
+      });
 
     return PeriodSetting;
   };
