@@ -1,13 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Type } from 'class-transformer';
-import { model, Types } from 'mongoose';
-import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
+import { Types } from 'mongoose';
 import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { has } from 'lodash';
 import { Quantification } from '../../quantifications/schemas/quantifications.schema';
 import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 export type PraiseDocument = Praise & Document;
 
@@ -144,19 +144,15 @@ export class Praise {
   updatedAt: Date;
 }
 
-export const PraiseSchema =
-  SchemaFactory.createForClass(Praise).plugin(mongoosePagination);
+export const PraiseSchema = SchemaFactory.createForClass(Praise);
+
+PraiseSchema.plugin(mongoosePaginate);
 
 PraiseSchema.virtual('quantifications', {
   ref: 'Quantification',
   localField: '_id',
   foreignField: 'praise',
 });
-
-export const PraiseModel = model<PraiseDocument, Pagination<PraiseDocument>>(
-  'Praise',
-  PraiseSchema,
-);
 
 export const PraiseExportSqlSchema = `
   _id VARCHAR, 

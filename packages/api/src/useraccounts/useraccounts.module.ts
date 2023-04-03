@@ -1,12 +1,10 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccount, UserAccountSchema } from './schemas/useraccounts.schema';
 import { UserAccountsService } from './useraccounts.service';
 import { UserAccountsController } from './useraccounts.controller';
 import { EventLogModule } from '../event-log/event-log.module';
 import { UsersModule } from '../users/users.module';
-import { AuthModule } from '../auth/auth.module';
-import { ApiKeyModule } from '../api-key/api-key.module';
 import { ConstantsProvider } from '../constants/constants.provider';
 
 @Module({
@@ -14,18 +12,11 @@ import { ConstantsProvider } from '../constants/constants.provider';
     MongooseModule.forFeature([
       { name: UserAccount.name, schema: UserAccountSchema },
     ]),
-    forwardRef(() => EventLogModule),
-    forwardRef(() => UsersModule),
-    forwardRef(() => AuthModule),
-    ApiKeyModule,
+    EventLogModule,
+    UsersModule,
   ],
   controllers: [UserAccountsController],
   providers: [UserAccountsService, ConstantsProvider],
-  exports: [
-    MongooseModule.forFeature([
-      { name: UserAccount.name, schema: UserAccountSchema },
-    ]),
-    UserAccountsService,
-  ],
+  exports: [UserAccountsService],
 })
 export class UserAccountsModule {}

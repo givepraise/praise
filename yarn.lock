@@ -4421,15 +4421,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/jwt@npm:^10.0.2":
-  version: 10.0.2
-  resolution: "@nestjs/jwt@npm:10.0.2"
+"@nestjs/jwt@npm:^10.0.3":
+  version: 10.0.3
+  resolution: "@nestjs/jwt@npm:10.0.3"
   dependencies:
     "@types/jsonwebtoken": 9.0.1
     jsonwebtoken: 9.0.0
   peerDependencies:
     "@nestjs/common": ^8.0.0 || ^9.0.0
-  checksum: e5b993c900c69112666f0e13ef0dcef0c7435f26eadcf964f0ae95d3b8bb335aedc0312d731f7505a4a5554903b9baa9d58ffccd212a3d160c882869c687cdae
+  checksum: 8c0f8184b7985adb56fba4181a390570343747a9ed740a5f282d9ad7e6c593a3351d5f507c66b38d4ef48c181feeb7344abe7067ce6fcaaecec2ec30fdf3b17c
   languageName: node
   linkType: hard
 
@@ -5549,6 +5549,15 @@ __metadata:
   version: 3.0.1
   resolution: "@types/mime@npm:3.0.1"
   checksum: 4040fac73fd0cea2460e29b348c1a6173da747f3a87da0dbce80dd7a9355a3d0e51d6d9a401654f3e5550620e3718b5a899b2ec1debf18424e298a2c605346e7
+  languageName: node
+  linkType: hard
+
+"@types/mongoose-paginate-v2@npm:^1.6.5":
+  version: 1.6.5
+  resolution: "@types/mongoose-paginate-v2@npm:1.6.5"
+  dependencies:
+    mongoose-paginate-v2: "*"
+  checksum: b8b3d9cd5470543d88021618c86ebc8019523abec59b185e127a5570a32b9211da287a93b445ee2754d98a4d127ceadf63672b989f88ae47523485b5b4c5409e
   languageName: node
   linkType: hard
 
@@ -6968,7 +6977,7 @@ __metadata:
     "@nestjs/common": ^9.3.12
     "@nestjs/config": ^2.3.1
     "@nestjs/core": ^9.3.12
-    "@nestjs/jwt": ^10.0.2
+    "@nestjs/jwt": ^10.0.3
     "@nestjs/mapped-types": "*"
     "@nestjs/mongoose": ^9.2.2
     "@nestjs/platform-express": ^9.3.12
@@ -6983,6 +6992,7 @@ __metadata:
     "@types/jest": 29.5.0
     "@types/lodash": ^4.14.179
     "@types/mime-types": ^2.1.1
+    "@types/mongoose-paginate-v2": ^1.6.5
     "@types/multer": ^1.4.7
     "@types/node": ^18.14.0
     "@types/supertest": ^2.0.11
@@ -7009,7 +7019,7 @@ __metadata:
     mime-types: ^2.1.34
     mongodb: ^4.14.0
     mongoose: ^6.10.2
-    mongoose-paginate-ts: ^1.3.0
+    mongoose-paginate-v2: ^1.7.1
     nest-winston: ^1.9.1
     nestjs-request-context: ^2.1.0
     prettier: ^2.3.2
@@ -14925,16 +14935,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"mongoose-paginate-ts@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "mongoose-paginate-ts@npm:1.3.0"
-  dependencies:
-    mongoose: ^6.9.1
-  checksum: be4bf21099297a700d99e528e61d652e8233fb0ff704141259c49ede4184371b0dd43d3c95873dbf87c6fbad99b1a1b95a5980a5184be695714084f81f66ec23
+"mongoose-paginate-v2@npm:*, mongoose-paginate-v2@npm:^1.7.1":
+  version: 1.7.1
+  resolution: "mongoose-paginate-v2@npm:1.7.1"
+  checksum: dc293997b46986a5c8aa4852e1db16a5fa7f5bc298405513389a1bf3148f8eefa10385d62fca7eb4c75a0c1da517cf81f219b49aa874181656cec006294f5e66
   languageName: node
   linkType: hard
 
-"mongoose@npm:^6.10.2, mongoose@npm:^6.9.1":
+"mongoose@npm:^6.10.2":
   version: 6.10.4
   resolution: "mongoose@npm:6.10.4"
   dependencies:

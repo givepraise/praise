@@ -34,7 +34,7 @@ export class Quantification {
   })
   scoreRealized: number;
 
-  @Prop({ required: true })
+  @Prop({ required: true, default: false, type: 'boolean' })
   @ApiResponseProperty({
     example: true,
     type: 'boolean',
