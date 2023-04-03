@@ -5,10 +5,10 @@ import { Types } from 'mongoose';
 import { AuthRole } from '../../auth/enums/auth-role.enum';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { ExposeId } from '../../shared/decorators/expose-id.decorator';
-import { IsOptional, IsString, IsEnum, isArray } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { IsEthAddress } from '../../shared/validators/is-eth-address.validator';
 import { isValidUsername } from '../utils/is-valid-username';
-import { UserAccountNoUserId } from '../../useraccounts/schemas/useraccounts.schema';
+import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
 
 export type UserDocument = User & Document;
 
@@ -19,7 +19,7 @@ export class User {
       Object.assign(this, partial);
       if (partial.accounts) {
         this.accounts = partial.accounts.map(
-          (account) => new UserAccountNoUserId(account),
+          (account) => new UserAccount(account),
         );
       }
     }
@@ -80,10 +80,10 @@ export class User {
   roles: AuthRole[];
 
   @ApiResponseProperty({
-    type: [UserAccountNoUserId],
+    type: () => [UserAccount],
   })
-  @Type(() => UserAccountNoUserId)
-  accounts?: UserAccountNoUserId[];
+  @Type(() => UserAccount)
+  accounts: UserAccount[];
 
   @Exclude()
   @Prop({ maxlength: 255, required: false })
