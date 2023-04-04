@@ -28,7 +28,7 @@ export const EventLogsList = ({
         {data.docs.map((eventlog, i) => (
           <EventLog
             eventlog={eventlog}
-            className={'md:p-7 hover:bg-warm-gray-100 dark:hover:bg-slate-500'}
+            className={'p-7 hover:bg-warm-gray-100 dark:hover:bg-slate-500'}
             key={i}
           />
         ))}
