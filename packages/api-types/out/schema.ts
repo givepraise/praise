@@ -514,13 +514,12 @@ export interface components {
     EventLog: {
       /** @example 621f802b813dbdba9eeaf7d7 */
       _id: string;
+      user?: components["schemas"]["User"];
+      useraccount?: components["schemas"]["UserAccountNoUserId"];
       /** @example 621f802b813dbdba9eeaf7d7 */
-      user: string;
-      useraccount: components["schemas"]["UserAccountNoUserId"];
+      apiKey?: string;
       /** @example 621f802b813dbdba9eeaf7d7 */
-      apiKey: string;
-      /** @example 621f802b813dbdba9eeaf7d7 */
-      period: string;
+      period?: string;
       type: components["schemas"]["EventLogType"];
       /** @example A description of the event */
       description: string;
