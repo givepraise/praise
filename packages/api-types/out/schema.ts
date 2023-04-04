@@ -207,11 +207,25 @@ export interface components {
       /** @example 0xdb4bb91357b23083ec2a36dc1fe23e59b71434fc020542da7e983df206ed06611e275eb30e239508f9758c0608dca6cef5619c41b50a48f22bdb36a8dabc2d201c */
       signature: string;
     };
+    UserNoUserAccountsDto: {
+      /** @example 5f9f1b9b9b9b9b9b9b9b9b9b */
+      _id: string;
+      /** @example 0xAAB27b150451726EC7738aa1d0A94505c8729bd1 */
+      identityEthAddress: string;
+      /** @example 0xAAB27b150451726EC7738aa1d0A94505c8729bd1 */
+      rewardsEthAddress: string;
+      /** @example darth */
+      username: string;
+      roles: readonly ("USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB")[];
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+    };
     UserAccount: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
-      /** @example 63b428f7d9ca4f6ff5370d05 */
-      user?: string;
+      user?: components["schemas"]["UserNoUserAccountsDto"];
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -661,8 +675,7 @@ export interface components {
     CreateUserAccountResponseDto: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
-      /** @example 63b428f7d9ca4f6ff5370d05 */
-      user?: string;
+      user?: components["schemas"]["UserNoUserAccountsDto"];
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -695,8 +708,7 @@ export interface components {
     UpdateUserAccountResponseDto: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
-      /** @example 63b428f7d9ca4f6ff5370d05 */
-      user?: string;
+      user?: components["schemas"]["UserNoUserAccountsDto"];
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
