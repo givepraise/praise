@@ -4,7 +4,6 @@ import { Praise } from '../schemas/praise.schema';
 import { ApiException } from '../../shared/exceptions/api-exception';
 import { SettingsService } from '../../settings/settings.service';
 import { PraisePaginatedQueryDto } from '../dto/praise-paginated-query.dto';
-import { EventLogService } from '../../event-log/event-log.service';
 import { PraisePaginatedResponseDto } from '../dto/praise-paginated-response.dto';
 import { Period } from '../../periods/schemas/periods.schema';
 import { Injectable } from '@nestjs/common';

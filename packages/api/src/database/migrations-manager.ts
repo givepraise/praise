@@ -11,7 +11,7 @@ import { logger } from '../shared/logger';
 import { UsersService } from '../users/users.service';
 import { AppMigrationsModule } from './modules/app-migrations.module';
 import { dbUrlCommunity } from './utils/community-db-url';
-import mongoose, { ConnectOptions } from 'mongoose';
+import mongoose, { Connection, ConnectOptions } from 'mongoose';
 
 export class MigrationsManager {
   /**
@@ -22,12 +22,16 @@ export class MigrationsManager {
     try {
       logger.info(`🆙 Starting migrations for: ${community.hostname}`);
 
-      let mongooseConn;
+      let mongooseConn: Connection;
       try {
         // Connect to the community db https://stackoverflow.com/a/65205700/4650625
-        mongooseConn = await mongoose.connect(dbUrlCommunity(community), {
-          useNewUrlParser: true,
-        } as ConnectOptions);
+        const mongooseInstance = await mongoose.connect(
+          dbUrlCommunity(community),
+          {
+            useNewUrlParser: true,
+          } as ConnectOptions,
+        );
+        mongooseConn = mongooseInstance.connection;
       } catch (e) {
         logger.error(`connect mongoose error ${e.message}`);
         mongooseConn = await mongoose.createConnection(
