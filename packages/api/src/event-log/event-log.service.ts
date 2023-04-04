@@ -27,6 +27,8 @@ export class EventLogService {
     private eventLogTypeModel: Model<EventLogTypeDocument>,
     @InjectModel(UserAccount.name)
     private userAccountModel: Model<EventLogTypeDocument>,
+    @InjectModel(User.name)
+    private userModel: Model<EventLogTypeDocument>,
   ) {}
 
   /**
@@ -109,6 +111,10 @@ export class EventLogService {
       populate: [
         {
           path: 'type',
+        },
+        {
+          path: 'user',
+          model: this.userModel,
         },
         {
           path: 'useraccount',

@@ -8,6 +8,7 @@ import { Type } from 'class-transformer';
 import { IsString, ValidateNested } from 'class-validator';
 import { UserAccountNoUserId } from '../../useraccounts/schemas/useraccounts.schema';
 import mongoosePaginate from 'mongoose-paginate-v2';
+import { User } from '../../users/schemas/users.schema';
 
 export type EventLogDocument = EventLog & Document;
 
@@ -24,25 +25,22 @@ export class EventLog {
 
   @ApiProperty({
     example: '621f802b813dbdba9eeaf7d7',
-    required: true,
     type: 'string',
   })
-  @IsString()
   @ExposeId()
   _id: Types.ObjectId;
 
-  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7', type: 'string' })
-  @ExposeId()
+  @ApiProperty({ type: User, required: false })
+  @Type(() => User)
   @Prop({
     type: Types.ObjectId,
     ref: 'User',
     index: true,
     required: false,
   })
-  user?: Types.ObjectId;
+  user?: Types.ObjectId | User;
 
-  @ApiProperty({ type: UserAccountNoUserId })
-  @ValidateNested()
+  @ApiProperty({ type: UserAccountNoUserId, required: false })
   @Type(() => UserAccountNoUserId)
   @Prop({
     type: Types.ObjectId,
@@ -52,7 +50,11 @@ export class EventLog {
   })
   useraccount?: Types.ObjectId | UserAccountNoUserId;
 
-  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7', type: 'string' })
+  @ApiProperty({
+    example: '621f802b813dbdba9eeaf7d7',
+    type: 'string',
+    required: false,
+  })
   @ExposeId()
   @Prop({
     type: Types.ObjectId,
@@ -64,7 +66,11 @@ export class EventLog {
 
   // "Related Period" of an eventlog - only used for quantification events
   //    which are restricted to ADMIN users when period is active
-  @ApiProperty({ example: '621f802b813dbdba9eeaf7d7', type: 'string' })
+  @ApiProperty({
+    example: '621f802b813dbdba9eeaf7d7',
+    type: 'string',
+    required: false,
+  })
   @ExposeId()
   @Prop({
     type: Types.ObjectId,
@@ -74,7 +80,7 @@ export class EventLog {
   })
   period?: Types.ObjectId;
 
-  @ApiProperty({ type: EventLogType, required: true })
+  @ApiProperty({ type: EventLogType })
   @ValidateNested()
   @Type(() => EventLogType)
   @Prop({
@@ -87,7 +93,6 @@ export class EventLog {
 
   @ApiProperty({
     example: 'A description of the event ',
-    required: true,
     type: 'string',
   })
   @IsString()
@@ -96,7 +101,6 @@ export class EventLog {
 
   @ApiProperty({
     example: '2023-03-01T22:51:20.012Z',
-    required: true,
     type: Date,
   })
   @Prop({ type: Date })
@@ -104,7 +108,6 @@ export class EventLog {
 
   @ApiProperty({
     example: '2023-03-01T22:51:20.012Z',
-    required: true,
     type: Date,
   })
   @Prop({ type: Date })
