@@ -20,6 +20,7 @@ export const EventLog = ({
   eventlog,
   className = '',
 }: Params): JSX.Element | null => {
+  console.log('eventlog', eventlog);
   return (
     <div className={classNames('flex items-center w-full', className)}>
       {(eventlog.user || eventlog.useraccount) && (
