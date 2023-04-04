@@ -61,7 +61,7 @@ export const Praise = ({
       event.stopPropagation();
 
       if (userAccount && userAccount.user) {
-        history.push(`/users/${userAccount.user}`);
+        history.push(`/users/${userAccount.user._id}`);
       }
     };
 

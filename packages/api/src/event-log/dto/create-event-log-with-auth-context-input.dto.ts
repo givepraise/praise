@@ -1,10 +1,9 @@
 import { Types } from 'mongoose';
 import { EventLogTypeKey } from '../enums/event-log-type-key';
+import { AuthContext } from '../../auth/auth-context';
 
-export class CreateEventLogInputDto {
-  user?: Types.ObjectId | undefined;
-  userAccount?: Types.ObjectId | undefined;
-  apiKey?: Types.ObjectId | undefined;
+export class CreateEventLogWithAuthContextInputDto {
+  authContext: AuthContext;
   period?: Types.ObjectId;
   typeKey: EventLogTypeKey;
   description: string;

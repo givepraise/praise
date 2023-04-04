@@ -17,6 +17,7 @@ import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.d
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { PaginateModel } from '../shared/interfaces/paginate-model.interface';
 import { UserAccount } from '../useraccounts/schemas/useraccounts.schema';
+import { CreateEventLogWithAuthContextInputDto } from './dto/create-event-log-with-auth-context-input.dto';
 
 @Injectable()
 export class EventLogService {
@@ -54,23 +55,22 @@ export class EventLogService {
       .lean()
       .orFail();
 
-    const req = RequestContext.currentContext?.req;
-
-    // Try to get user id from either RequestWithAuthContext or from RequestWithUserContext
-    const userId = has(req, 'user._id')
-      ? (req.user as User)._id // RequestWithUserContext
-      : req?.user?.userId; // RequestWithAuthContext
-
-    const eventLogData = {
-      user: userId,
-      apiKey: req?.user?.apiKeyId, // RequestWithAuthContext
+    return new this.eventLogModel({
       ...createEventLogDto,
       type: type._id,
-    };
+    }).save();
+  }
 
-    const eventLog = new this.eventLogModel(eventLogData);
-    const eventLogDocument = await eventLog.save();
-    return new EventLog(eventLogDocument);
+  async logEventWithAuthContext(input: CreateEventLogWithAuthContextInputDto) {
+    const { authContext, typeKey, description } = input;
+    const { userId, apiKeyId } = authContext;
+
+    return this.logEvent({
+      user: userId ? new mongoose.Types.ObjectId(userId) : undefined,
+      apiKey: apiKeyId ? new mongoose.Types.ObjectId(apiKeyId) : undefined,
+      typeKey,
+      description,
+    });
   }
 
   /**

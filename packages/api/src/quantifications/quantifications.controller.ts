@@ -124,7 +124,7 @@ export class QuantificationsController {
   ): Promise<Praise[]> {
     const { praiseIds, params } = data;
 
-    const userId = new Types.ObjectId(request.user?.userId);
+    const userId = new Types.ObjectId(request.authContext?.userId);
     if (!userId) {
       throw new ApiException(errorMessages.USER_NOT_FOUND);
     }
@@ -165,7 +165,7 @@ export class QuantificationsController {
     @Body() data: QuantifyInputDto,
     @Request() request: RequestWithAuthContext,
   ): Promise<Praise[]> {
-    const userId = new Types.ObjectId(request.user?.userId);
+    const userId = new Types.ObjectId(request.authContext?.userId);
     if (!userId) {
       throw new ApiException(errorMessages.USER_NOT_FOUND);
     }

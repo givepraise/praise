@@ -3,7 +3,6 @@ import { EthSignatureService } from './eth-signature.service';
 import { NonceResponseDto } from './dto/nonce-response.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { NonceInputDto } from './dto/nonce-input.dto';
-import { RequestWithUser } from './interfaces/request-with-user.interface';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginInputDto } from './dto/login-input.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
@@ -63,7 +62,6 @@ export class EthSignatureController {
     type: LoginResponseDto,
   })
   async login(
-    @Request() req: RequestWithUser,
     @Headers('host') host: string,
     @Body() loginInputDto: LoginInputDto,
   ): Promise<LoginResponseDto> {
