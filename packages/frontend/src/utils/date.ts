@@ -1,4 +1,10 @@
-import { parse, parseISO, formatRelative, formatDistance } from 'date-fns';
+import {
+  parse,
+  parseISO,
+  formatRelative,
+  formatDistance,
+  compareAsc,
+} from 'date-fns';
 import { enGB } from 'date-fns/esm/locale';
 import { utcToZonedTime, format } from 'date-fns-tz';
 import jstz from 'jstz';

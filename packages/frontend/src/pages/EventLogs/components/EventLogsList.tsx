@@ -24,14 +24,11 @@ export const EventLogsList = ({
 
   return (
     <div className="w-full">
-      <div className="w-full space-y-4">
+      <div className="w-full">
         {data.docs.map((eventlog, i) => (
           <EventLog
             eventlog={eventlog}
-            className={classNames(
-              i % 2 === 0 ? 'bg-warm-gray-100 dark:bg-slate-500' : undefined,
-              'px-5'
-            )}
+            className={'p-7 hover:bg-warm-gray-100 dark:hover:bg-slate-500'}
             key={i}
           />
         ))}

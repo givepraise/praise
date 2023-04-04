@@ -96,6 +96,7 @@ export class EthSignatureService {
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.AUTHENTICATION,
       description: 'Logged in',
+      user: user._id,
     });
 
     // Return login response with access token

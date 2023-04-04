@@ -8,7 +8,10 @@ import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { IsOptional, IsString } from 'class-validator';
 import { IsEthAddress } from '../../shared/validators/is-eth-address.validator';
 import { isValidUsername } from '../utils/is-valid-username';
-import { UserAccountNoUserId } from '../../useraccounts/schemas/useraccounts.schema';
+import {
+  UserAccount,
+  UserAccountNoUserId,
+} from '../../useraccounts/schemas/useraccounts.schema';
 
 export type UserDocument = User & Document;
 
@@ -19,7 +22,7 @@ export class User {
       Object.assign(this, partial);
       if (partial.accounts) {
         this.accounts = partial.accounts.map(
-          (account) => new UserAccountNoUserId(account),
+          (account) => new UserAccount(account),
         );
       }
     }
@@ -71,20 +74,19 @@ export class User {
   })
   username: string;
 
-  @ApiResponseProperty({
-    enum: [AuthRole],
-  })
+  @ApiResponseProperty({ type: [AuthRole], enum: AuthRole })
   @Prop({
     type: [String],
-    enum: [AuthRole],
+    enum: AuthRole,
+    required: true,
   })
   roles: AuthRole[];
 
   @ApiResponseProperty({
-    type: [UserAccountNoUserId],
+    type: () => [UserAccount],
   })
   @Type(() => UserAccountNoUserId)
-  accounts?: UserAccountNoUserId[];
+  accounts: UserAccountNoUserId[];
 
   @Exclude()
   @Prop({ maxlength: 255, required: false })

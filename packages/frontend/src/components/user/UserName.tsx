@@ -28,14 +28,11 @@ const WrappedUserName = ({
     user ||
     (typeof userAccount?.user === 'object' ? userAccount?.user : undefined);
 
-  if (localUser) {
+  if (localUser?.username) {
     if (usePseudonym && periodId) {
       name = <UserPseudonym userId={localUser._id} periodId={periodId} />;
     } else {
-      name =
-        localUser.username.length === 42 && localUser.username.startsWith('0x')
-          ? shortenEthAddress(localUser.username)
-          : localUser.username;
+      name = localUser.username;
     }
   } else {
     if (userAccount) {

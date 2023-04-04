@@ -562,7 +562,7 @@ export class QuantificationsService {
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.PERMISSION,
       description: eventLogMessage,
-      periodId: period._id,
+      period: period._id,
     });
 
     return docs;

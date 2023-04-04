@@ -11,11 +11,10 @@ const instanceOfSetting = (object: any): object is Setting => {
 };
 
 export const periodSettingToSetting = (
-  periodSetting: PeriodSetting,
-  index = 0
+  periodSetting: PeriodSetting
 ): Setting => {
   return {
-    ...periodSetting[index].setting,
+    ...periodSetting.setting,
     value: periodSetting.value,
     valueRealized: periodSetting.valueRealized,
   };

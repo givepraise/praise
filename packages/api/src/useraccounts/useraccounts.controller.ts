@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   Res,
+  Request,
   SerializeOptions,
   StreamableFile,
   UseInterceptors,
@@ -37,6 +38,9 @@ import { UpdateUserAccountResponseDto } from './dto/update-user-account-response
 import { FindUserAccountFilterDto } from './dto/find-user-account-filter.dto';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { Types } from 'mongoose';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
 
 @Controller('useraccounts')
 @ApiTags('UserAccounts')
@@ -45,7 +49,10 @@ import { Types } from 'mongoose';
 })
 @EnforceAuthAndPermissions()
 export class UserAccountsController {
-  constructor(private readonly userAccountsService: UserAccountsService) {}
+  constructor(
+    private readonly userAccountsService: UserAccountsService,
+    private readonly eventLogService: EventLogService,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -56,9 +63,20 @@ export class UserAccountsController {
   )
   @Permissions(Permission.UserAccountsCreate)
   async create(
-    @Body() createUserAccountBody: CreateUserAccountInputDto,
+    @Body() createUserAccountInputDto: CreateUserAccountInputDto,
+    @Request() req: RequestWithAuthContext,
   ): Promise<CreateUserAccountResponseDto> {
-    return this.userAccountsService.create(createUserAccountBody);
+    const userAccount = await this.userAccountsService.create(
+      createUserAccountInputDto,
+    );
+
+    this.eventLogService.logEventWithAuthContext({
+      authContext: req.authContext,
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `Created UserAccount id: ${userAccount.accountId}`,
+    });
+
+    return userAccount;
   }
 
   @Get()
@@ -156,7 +174,19 @@ export class UserAccountsController {
   async update(
     @Body() updateUserAccountInputDto: UpdateUserAccountInputDto,
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Request() req: RequestWithAuthContext,
   ): Promise<UpdateUserAccountResponseDto> {
-    return this.userAccountsService.update(id, updateUserAccountInputDto);
+    const userAccount = await this.userAccountsService.update(
+      id,
+      updateUserAccountInputDto,
+    );
+
+    this.eventLogService.logEventWithAuthContext({
+      authContext: req.authContext,
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `Updated UserAccount id: ${userAccount.accountId}`,
+    });
+
+    return userAccount;
   }
 }

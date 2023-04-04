@@ -134,7 +134,7 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'Updated user',
-    type: UpdateUserRequestDto,
+    type: UserWithStatsDto,
   })
   @UseInterceptors(MongooseClassSerializerInterceptor(UserWithStatsDto))
   @ApiParam({ name: 'id', type: 'string' })

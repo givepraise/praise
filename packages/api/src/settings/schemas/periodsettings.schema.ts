@@ -27,7 +27,7 @@ export class PeriodSetting {
   _id: Types.ObjectId;
 
   @ApiResponseProperty({
-    type: [Period],
+    type: Period,
   })
   @Type(() => Period)
   @Prop({
@@ -38,7 +38,7 @@ export class PeriodSetting {
   period: Types.ObjectId | Period;
 
   @ApiResponseProperty({
-    type: [Setting],
+    type: Setting,
   })
   @Type(() => Setting)
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Setting', required: true })

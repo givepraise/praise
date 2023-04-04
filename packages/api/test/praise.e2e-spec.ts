@@ -595,44 +595,7 @@ describe('Praise (E2E)', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.message).toContain(
-        'giver.() is not a valid ObjectId.',
-      );
-    });
-
-    test('400 when giver is not activated', async () => {
-      const receiverIds = [];
-      for (let i = 0; i < 3; i++) {
-        const user = await userAccountsSeeder.seedUserAccount();
-        receiverIds.push(user.accountId);
-      }
-
-      const giver = await userAccountsSeeder.seedUserAccount({
-        user: null,
-      });
-
-      const response = await authorizedPostRequest(
-        `/praise`,
-        app,
-        botUserAccessToken,
-        {
-          reason: 'This is a test reason',
-          reasonRaw: 'This is a test reason',
-          giver: {
-            accountId: giver.accountId,
-            name: giver.name,
-            avatarId: giver.avatarId,
-            platform: giver.platform,
-            user: null,
-          },
-          receiverIds: receiverIds,
-          sourceId: 'DISCORD:GUILD_ID:CHANNEL_ID',
-          sourceName: 'DISCORD:GUILD_NAME:CHANNEL_NAME',
-        },
-      );
-
-      expect(response.status).toBe(400);
-      expect(response.body.message[0]).toBe(
-        'giver.() is not a valid ObjectId.',
+        'This praise giver account is not activated.',
       );
     });
 
