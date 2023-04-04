@@ -14,12 +14,15 @@ import { ApplicationSettingsApiKeyTable } from './ApplicationSettingsApiKeyTable
 import { toast } from 'react-hot-toast';
 import { ApiErrorResponseData } from 'shared/interfaces/api-error-reponse-data.interface';
 import { FORM_ERROR, SubmissionErrors } from 'final-form';
+import ApplicationSettingsApiKeyDelete from './ApplicationSettingsApiKeyDelete';
 
 const ApplicationSettingsApiKeys = (): JSX.Element => {
   const [openApiKeyModal, setOpenApiKeyModal] = useState(false);
   const [openApiKeyModalPreview, setOpenApiKeyModalPreview] = useState(false);
+  const [openApiKeyModalDelete, setOpenApiKeyModalDelete] = useState(false);
   const [apiKeyData, setApiKeyData] = useState<CreateApiKeyResponseDto>();
   const [loading, setLoading] = useState(false);
+  const [deleteKeyID, setDeleteKeyID] = useState(null);
 
   const { setApiKey } = useSetApiKey();
 
@@ -29,6 +32,16 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
 
   const handleCloseApiKeyModalPreview = (): void => {
     setOpenApiKeyModalPreview(false);
+  };
+
+  const handleOpenApiKeyModalDelete = (id: string): void => {
+    setOpenApiKeyModalDelete(true);
+    setDeleteKeyID(id);
+  };
+
+  const handleCloseApiKeyModalDelete = (): void => {
+    setOpenApiKeyModalDelete(false);
+    setDeleteKeyID(null);
   };
 
   /**
@@ -73,7 +86,9 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
           API Keys
         </a>
       </div>
-      <ApplicationSettingsApiKeyTable />
+      <ApplicationSettingsApiKeyTable
+        handleDelete={handleOpenApiKeyModalDelete}
+      />
       <Button onClick={(): void => setOpenApiKeyModal(true)} className="mt-4">
         <FontAwesomeIcon icon={faPlus} size="1x" className="mr-2" />
         Add key
@@ -89,6 +104,13 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
           open={openApiKeyModalPreview}
           apiKeyData={apiKeyData}
           close={handleCloseApiKeyModalPreview}
+        />
+      )}
+      {deleteKeyID && openApiKeyModalDelete && (
+        <ApplicationSettingsApiKeyDelete
+          open={openApiKeyModalDelete}
+          deleteKeyID={deleteKeyID}
+          close={handleCloseApiKeyModalDelete}
         />
       )}
     </>

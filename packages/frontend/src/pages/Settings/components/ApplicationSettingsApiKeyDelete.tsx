@@ -8,15 +8,16 @@ import { toast } from 'react-hot-toast';
 
 type ApplicationSettingsApiKeyPrevieProps = {
   open: boolean;
-  apiKeyData: CreateApiKeyResponseDto | undefined;
+  apiKeyI: CreateApiKeyResponseDto | undefined;
   close: () => void;
 };
 
-const ApplicationSettingsApiKeyPreview = ({
+const ApplicationSettingsApiKeyDelete = ({
   open,
-  apiKeyData,
+  deleteKeyID,
   close,
 }: ApplicationSettingsApiKeyPrevieProps): JSX.Element => {
+  console.log({ open });
   return (
     <>
       <Dialog
@@ -38,7 +39,7 @@ const ApplicationSettingsApiKeyPreview = ({
                 <FontAwesomeIcon icon={faKey} size="2x" />
               </div>
               <Dialog.Title className="text-center mb-7">
-                API Key added
+                API Key added DELETE!!!!
               </Dialog.Title>
               <Dialog.Description className="text-center mb-7">
                 Copy the API key and save it to a safe place, the key is only
@@ -85,4 +86,4 @@ const ApplicationSettingsApiKeyPreview = ({
   );
 };
 
-export default ApplicationSettingsApiKeyPreview;
+export default ApplicationSettingsApiKeyDelete;

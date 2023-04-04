@@ -10,7 +10,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBackspace } from '@fortawesome/free-solid-svg-icons';
 import Button from '@mui/material/Button';
 
-export const ApplicationSettingsApiKeyTable = (): JSX.Element => {
+export const ApplicationSettingsApiKeyTable = ({
+  handleDelete,
+}): JSX.Element => {
   const apiKeys = useRecoilValue(AllApiKeys);
 
   const columns = React.useMemo(
@@ -58,9 +60,9 @@ export const ApplicationSettingsApiKeyTable = (): JSX.Element => {
         Header: '',
         accessor: 'delete',
         className: 'pl-5 text-left',
-        Cell: (): JSX.Element => {
+        Cell: (data: any): JSX.Element => {
           return (
-            <Button>
+            <Button onClick={handleDelete(data._id)}>
               <FontAwesomeIcon
                 icon={faBackspace}
                 className="w-5 h-4 text-gray-500"
