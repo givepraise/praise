@@ -1,4 +1,3 @@
-import { useRecoilValue } from 'recoil';
 import { Tooltip } from '@mui/material';
 import {
   formatIsoDateUTC,
@@ -6,22 +5,11 @@ import {
   localizeAndFormatIsoDate,
 } from '@/utils/date';
 import { UserAvatar } from '@/components/user/UserAvatar';
-import { SingleUser } from '@/model/user/users';
 import { classNames } from '@/utils/index';
 import { InlineLabel } from '../../../components/ui/InlineLabel';
 import { UserName } from '../../../components/user/UserName';
 import { UserPopover } from '../../../components/user/UserPopover';
 import { EventLog as EventLogDto } from '@/model/eventlog/dto/event-log.dto';
-import { EventLogTypeKey } from '@/model/eventlog/enum/event-log-type-key.enum';
-
-const eventLogTypeColors = {
-  [EventLogTypeKey.PERMISSION]: 'bg-orange-400',
-  [EventLogTypeKey.AUTHENTICATION]: 'bg-red-400',
-  [EventLogTypeKey.PERIOD]: 'bg-blue-400',
-  [EventLogTypeKey.PRAISE]: 'bg-yellow-400',
-  [EventLogTypeKey.QUANTIFICATION]: 'bg-green-400',
-  [EventLogTypeKey.SETTING]: 'bg-indigo-400',
-};
 
 interface Params {
   eventlog: EventLogDto;
@@ -32,52 +20,58 @@ export const EventLog = ({
   eventlog,
   className = '',
 }: Params): JSX.Element | null => {
-  const user = useRecoilValue(SingleUser(eventlog.user));
-
   return (
     <div className={classNames('flex items-center w-full', className)}>
-      <div className="flex items-center text-2xl">
-        <UserPopover
-          user={user}
-          userAccount={eventlog.useraccount}
-          className="w-8"
-        >
-          <UserAvatar userAccount={eventlog.useraccount} user={user} />
-        </UserPopover>
-      </div>
-      <div className="flex-grow p-3 overflow-hidden">
-        <div>
+      {(eventlog.user || eventlog.useraccount) && (
+        <div className="flex items-center text-2xl">
           <UserPopover
-            user={user}
+            user={eventlog.user}
             userAccount={eventlog.useraccount}
-            className="inline-block"
+            className="w-8"
           >
-            <UserName
-              user={user}
+            <UserAvatar
               userAccount={eventlog.useraccount}
-              className="font-bold"
+              user={eventlog.user}
             />
           </UserPopover>
-          <Tooltip
-            placement="right-end"
-            title={`${formatIsoDateUTC(
-              eventlog.createdAt,
-              DATE_FORMAT_LONG
-            )} UTC`}
-            arrow
-          >
-            <span className="ml-2 text-xs text-warm-gray-300">
-              {localizeAndFormatIsoDate(eventlog.createdAt)}
-            </span>
-          </Tooltip>
         </div>
+      )}
+
+      <div className="flex-grow p-3 overflow-hidden">
+        {(eventlog.user || eventlog.useraccount) && (
+          <div>
+            <UserPopover
+              user={eventlog.user}
+              userAccount={eventlog.useraccount}
+              className="inline-block"
+            >
+              <UserName
+                user={eventlog.user}
+                userAccount={eventlog.useraccount}
+                className="font-bold"
+              />
+            </UserPopover>
+            <Tooltip
+              placement="right-end"
+              title={`${formatIsoDateUTC(
+                eventlog.createdAt,
+                DATE_FORMAT_LONG
+              )} UTC`}
+              arrow
+            >
+              <span className="ml-2 text-xs text-warm-gray-300">
+                {localizeAndFormatIsoDate(eventlog.createdAt)}
+              </span>
+            </Tooltip>
+          </div>
+        )}
 
         <div className="w-full">
           <InlineLabel
             text={eventlog.type.label}
             title={eventlog.type.description}
-            className={eventLogTypeColors[eventlog.type.key]}
           />
+          {eventlog.description}
         </div>
       </div>
     </div>
