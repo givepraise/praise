@@ -1,11 +1,10 @@
-import { AuthModule } from './auth/auth.module';
+import { EthSignatureModule } from './auth/eth-signature.module';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccountsModule } from './useraccounts/useraccounts.module';
 import { UsersModule } from './users/users.module';
 import { EventLogModule } from './event-log/event-log.module';
 import { SettingsModule } from './settings/settings.module';
-import { PeriodSettingsModule } from './periodsettings/periodsettings.module';
 import { PraiseModule } from './praise/praise.module';
 import { QuantificationsModule } from './quantifications/quantifications.module';
 import { RequestContextModule } from 'nestjs-request-context';
@@ -17,6 +16,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { CommunityModule } from './community/community.module';
 import { MultiTenantConnectionService } from './database/services/multi-tenant-connection-service';
 import { RequestLoggerMiddleware } from './shared/middlewares/request-logger.middleware';
+import { AuthGuardModule } from './auth/auth-guard.module';
 
 @Module({
   imports: [
@@ -29,11 +29,11 @@ import { RequestLoggerMiddleware } from './shared/middlewares/request-logger.mid
     }),
     ActivateModule,
     ApiKeyModule,
-    AuthModule,
+    AuthGuardModule,
+    EthSignatureModule,
     CommunityModule,
     EventLogModule,
     PeriodsModule,
-    PeriodSettingsModule,
     PraiseModule,
     QuantificationsModule,
     RequestContextModule,

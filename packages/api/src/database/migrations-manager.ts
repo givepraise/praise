@@ -4,7 +4,6 @@ import { MongoDBStorage, Umzug } from 'umzug';
 import { Community } from '../community/schemas/community.schema';
 import { DB_URL_ROOT, DB_NAME_MAIN } from '../constants/constants.provider';
 import { PeriodsService } from '../periods/services/periods.service';
-import { PeriodSettingsService } from '../periodsettings/periodsettings.service';
 import { PraiseService } from '../praise/services/praise.service';
 import { QuantificationsService } from '../quantifications/services/quantifications.service';
 import { SettingsService } from '../settings/settings.service';
@@ -59,7 +58,6 @@ export class MigrationsManager {
           usersService: app.get(UsersService),
           periodsService: app.get(PeriodsService),
           settingsService: app.get(SettingsService),
-          periodSettingsService: app.get(PeriodSettingsService),
           quantificationsService: app.get(QuantificationsService),
         },
       });

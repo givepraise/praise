@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { ApiException } from '../shared/exceptions/api-exception';
-import { Community, CommunityModel } from './schemas/community.schema';
+import { Community } from './schemas/community.schema';
 import { PaginatedQueryDto } from '../shared/dto/pagination-query.dto';
 import { CommunityPaginatedResponseDto } from './dto/community-pagination-model.dto';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
@@ -19,6 +19,7 @@ import { MongoClient } from 'mongodb';
 import { MigrationsManager } from '../database/migrations-manager';
 import { databaseExists } from '../database/utils/database-exists';
 import { dbNameCommunity } from '../database/utils/community-db-name';
+import { PaginateModel } from '../shared/interfaces/paginate-model.interface';
 
 @Injectable()
 export class CommunityService {
@@ -26,7 +27,7 @@ export class CommunityService {
 
   constructor(
     @InjectModel(Community.name, 'praise')
-    private communityModel: typeof CommunityModel,
+    private communityModel: PaginateModel<Community>,
   ) {
     this.mongodb = new MongoClient(DB_URL_ROOT);
   }
@@ -35,7 +36,7 @@ export class CommunityService {
    * Convenience method to get the Community Model
    * @returns
    */
-  getModel(): typeof CommunityModel {
+  getModel(): PaginateModel<Community> {
     return this.communityModel;
   }
 
@@ -55,23 +56,18 @@ export class CommunityService {
   async findAllPaginated(
     options: PaginatedQueryDto,
   ): Promise<CommunityPaginatedResponseDto> {
-    const { page, limit, sortColumn, sortType } = options;
+    const { sortColumn, sortType } = options;
     const query = {} as any;
 
     // Sorting - defaults to descending
     const sort =
       sortColumn && sortType ? { [sortColumn]: sortType } : undefined;
 
-    const paginateQuery = {
-      query,
-      limit,
-      page,
+    const communityPagination = await this.communityModel.paginate(query, {
+      ...options,
       sort,
-    };
+    });
 
-    const communityPagination = await this.communityModel.paginate(
-      paginateQuery,
-    );
     if (!communityPagination)
       throw new ApiException(errorMessages.FAILED_TO_QUERY_COMMUNITIES);
 

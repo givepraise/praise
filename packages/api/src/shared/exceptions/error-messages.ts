@@ -461,4 +461,9 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     httpStatusCode: 401,
     code: 1095,
   },
+  NO_PERIODS_TO_EXPORT: {
+    message: 'Therer are no periods to export.',
+    httpStatusCode: 404,
+    code: 1096,
+  },
 };
