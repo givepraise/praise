@@ -1,14 +1,13 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CommunityService } from './community.service';
 import { Community, CommunitySchema } from './schemas/community.schema';
 import { CommunityController } from './community.controller';
-import { AuthModule } from '../auth/auth.module';
-import { ApiKeyModule } from '../api-key/api-key.module';
 import {
   ConstantsProvider,
   DB_URL_MAIN_DB,
 } from '../constants/constants.provider';
+import { AuthGuardModule } from '../auth/auth-guard.module';
 
 @Module({
   imports: [
@@ -22,8 +21,7 @@ import {
       ],
       'praise',
     ),
-    forwardRef(() => AuthModule),
-    forwardRef(() => ApiKeyModule),
+    AuthGuardModule,
   ],
   controllers: [CommunityController],
   providers: [CommunityService, ConstantsProvider],

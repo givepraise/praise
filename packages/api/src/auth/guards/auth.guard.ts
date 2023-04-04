@@ -1,4 +1,3 @@
-import { ApiKeyService } from '../../api-key/api-key.service';
 import {
   ConstantsProvider,
   HOSTNAME_TEST,
@@ -9,6 +8,7 @@ import { AuthRole } from '../enums/auth-role.enum';
 import * as bcrypt from 'bcrypt';
 import { ApiException } from '../../shared/exceptions/api-exception';
 import { errorMessages } from '../../shared/exceptions/error-messages';
+import { ApiKeyService } from '../../api-key/api-key.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {

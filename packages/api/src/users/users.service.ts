@@ -28,6 +28,7 @@ import {
 } from '../shared/export.shared';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { logger } from '../shared/logger';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class UsersService {
@@ -361,4 +362,29 @@ export class UsersService {
       }
     }
   };
+
+  /**
+   * Generates a nonce for the user and returns it.
+   *
+   * @param identityEthAddress Ethereum address of the user
+   * @returns User with updated nonce
+   */
+  async generateNonce(identityEthAddress: string): Promise<User> {
+    // Generate random nonce used for auth request
+    const nonce = randomBytes(10).toString('hex');
+
+    try {
+      // Find user by their Ethereum address, update nonce
+      const user = await this.findOneByEth(identityEthAddress);
+      return this.update(user._id, { nonce });
+    } catch (e) {
+      // No user found, create a new user
+      return this.create({
+        identityEthAddress,
+        rewardsEthAddress: identityEthAddress,
+        username: await this.generateValidUsername(identityEthAddress),
+        nonce,
+      });
+    }
+  }
 }

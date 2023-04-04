@@ -1,6 +1,12 @@
 import * as fs from 'fs';
-import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
-import { UsersService } from './users.service';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+  ApiProduces,
+} from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -15,16 +21,10 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Types } from 'mongoose';
-import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { User } from './schemas/users.schema';
-import {
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-  ApiProduces,
-} from '@nestjs/swagger';
+import { UsersService } from './users.service';
+import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
+import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 import { Permission } from '../auth/enums/permission.enum';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';

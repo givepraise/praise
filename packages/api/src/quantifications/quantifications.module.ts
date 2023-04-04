@@ -5,41 +5,36 @@ import {
   Quantification,
   QuantificationsSchema,
 } from './schemas/quantifications.schema';
-import { UserAccountsModule } from '../useraccounts/useraccounts.module';
-import { UsersModule } from '../users/users.module';
 import { PraiseModule } from '../praise/praise.module';
 import { PeriodsModule } from '../periods/periods.module';
-import { Module, forwardRef } from '@nestjs/common';
-import { QuantificationsController } from './quantitifcations.controller';
+import { Module } from '@nestjs/common';
+import { QuantificationsController } from './quantifications.controller';
 import { QuantificationsExportService } from './services/quantifications-export.service';
-import { AuthModule } from '../auth/auth.module';
-import { ApiKeyModule } from '../api-key/api-key.module';
 import { ConstantsProvider } from '../constants/constants.provider';
+import { Praise, PraiseSchema } from '../praise/schemas/praise.schema';
+import { EventLogModule } from '../event-log/event-log.module';
+import { PeriodsService } from '../periods/services/periods.service';
+import { PraiseService } from '../praise/services/praise.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Quantification.name, schema: QuantificationsSchema },
+      { name: Praise.name, schema: PraiseSchema },
     ]),
-    forwardRef(() => PraiseModule),
-    forwardRef(() => SettingsModule),
-    forwardRef(() => PeriodsModule),
-    forwardRef(() => UsersModule),
-    UserAccountsModule,
-    forwardRef(() => AuthModule),
-    ApiKeyModule,
+    PraiseModule,
+    SettingsModule,
+    PeriodsModule,
+    EventLogModule,
   ],
   controllers: [QuantificationsController],
   providers: [
     QuantificationsService,
     QuantificationsExportService,
     ConstantsProvider,
+    PraiseService,
+    PeriodsService,
   ],
-  exports: [
-    QuantificationsService,
-    MongooseModule.forFeature([
-      { name: Quantification.name, schema: QuantificationsSchema },
-    ]),
-  ],
+  exports: [QuantificationsService],
 })
 export class QuantificationsModule {}

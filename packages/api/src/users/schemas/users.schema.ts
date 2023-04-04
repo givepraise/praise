@@ -5,7 +5,7 @@ import { Types } from 'mongoose';
 import { AuthRole } from '../../auth/enums/auth-role.enum';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { ExposeId } from '../../shared/decorators/expose-id.decorator';
-import { IsOptional, IsString, IsEnum, isArray } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { IsEthAddress } from '../../shared/validators/is-eth-address.validator';
 import { isValidUsername } from '../utils/is-valid-username';
 import { UserAccountNoUserId } from '../../useraccounts/schemas/useraccounts.schema';
@@ -83,7 +83,7 @@ export class User {
     type: [UserAccountNoUserId],
   })
   @Type(() => UserAccountNoUserId)
-  accounts?: UserAccountNoUserId[];
+  accounts: UserAccountNoUserId[];
 
   @Exclude()
   @Prop({ maxlength: 255, required: false })

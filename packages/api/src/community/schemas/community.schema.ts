@@ -1,8 +1,7 @@
 import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Document, model, Types } from 'mongoose';
-import { mongoosePagination, Pagination } from 'mongoose-paginate-ts';
+import { Document, Types } from 'mongoose';
 import {
   ArrayMinSize,
   IsArray,
@@ -17,6 +16,7 @@ import { IsEthAddress } from '../../shared/validators/is-eth-address.validator';
 import { isValidCommunityName } from '../utils/is-valid-community-name';
 import { isValidOwners } from '../utils/is-valid-owners';
 import { isValidHostname } from '../utils/is-valid-hostname';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 export type CommunityDocument = Community & Document;
 
@@ -136,10 +136,6 @@ export class Community {
   discordLinkState: string;
 }
 
-export const CommunitySchema =
-  SchemaFactory.createForClass(Community).plugin(mongoosePagination);
+export const CommunitySchema = SchemaFactory.createForClass(Community);
 
-export const CommunityModel = model<Community, Pagination<Community>>(
-  'Community',
-  CommunitySchema,
-);
+CommunitySchema.plugin(mongoosePaginate);

@@ -2,7 +2,6 @@ import { logger } from '../shared/logger';
 import { randomBytes } from 'crypto';
 import { MongoClient } from 'mongodb';
 import { AuthRole } from '../auth/enums/auth-role.enum';
-import { CommunityModel } from '../community/schemas/community.schema';
 import {
   DB_URL_ROOT,
   DB_NAME_MAIN,
@@ -12,6 +11,10 @@ import {
 import { databaseExists } from './utils/database-exists';
 import mongoose, { ConnectOptions } from 'mongoose';
 import { dbNameCommunity } from './utils/community-db-name';
+import {
+  Community,
+  CommunitySchema,
+} from '../community/schemas/community.schema';
 
 export class MultiTenancyManager {
   private mongodb: MongoClient;
@@ -24,6 +27,8 @@ export class MultiTenancyManager {
     ? HOSTNAME_TEST
     : process.env.HOST || ''
   ).replace(/\./g, '-');
+
+  private communityModel: mongoose.Model<Community>;
 
   /**
    * Create initial community based on env variables. Take the .env
@@ -51,7 +56,7 @@ export class MultiTenancyManager {
       email: 'unknown@email.com',
     };
 
-    await CommunityModel.create(communityData);
+    await this.communityModel.create(communityData);
   }
 
   /**
@@ -129,7 +134,7 @@ export class MultiTenancyManager {
       'Granting access to default db user to all community databases',
     );
     try {
-      const communities = await CommunityModel.find();
+      const communities = await this.communityModel.find();
       const dbAdmin = this.mongodb.db().admin();
 
       for (const community of communities) {
@@ -153,7 +158,7 @@ export class MultiTenancyManager {
       `Syncronizing admin users for all communities based on settings in Community collection`,
     );
     try {
-      const communities = await CommunityModel.find();
+      const communities = await this.communityModel.find();
 
       // Loop through all communities
       for (const community of communities) {
@@ -233,6 +238,8 @@ export class MultiTenancyManager {
       const mongooseConn = await mongoose.connect(DB_URL_MAIN_DB, {
         useNewUrlParser: true,
       } as ConnectOptions);
+
+      this.communityModel = mongoose.model('Community', CommunitySchema);
 
       // if there is no community migrated to the multi-tenant setup yet,
       // assume that the current community is the first one and perform the initial

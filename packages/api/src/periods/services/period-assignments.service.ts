@@ -3,7 +3,7 @@ import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
 import { EventLogService } from '../../event-log/event-log.service';
 import { Quantifier } from '../../praise/interfaces/quantifier.interface';
 import { Receiver } from '../../praise/interfaces/receiver.interface';
-import { Praise, PraiseModel } from '../../praise/schemas/praise.schema';
+import { Praise } from '../../praise/schemas/praise.schema';
 import { Quantification } from '../../quantifications/schemas/quantifications.schema';
 import { SettingsService } from '../../settings/settings.service';
 import { ApiException } from '../../shared/exceptions/api-exception';
@@ -29,7 +29,7 @@ import { ReplaceQuantifierResponseDto } from '../dto/replace-quantifier-response
 import { VerifyQuantifierPoolSizeDto } from '../dto/verify-quantifiers-pool-size.dto';
 import { PeriodStatusType } from '../enums/status-type.enum';
 import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interface';
-import { Period, PeriodModel } from '../schemas/periods.schema';
+import { Period } from '../schemas/periods.schema';
 import { PeriodsService } from './periods.service';
 import { errorMessages } from '../../shared/exceptions/error-messages';
 
@@ -37,13 +37,13 @@ import { errorMessages } from '../../shared/exceptions/error-messages';
 export class PeriodAssignmentsService {
   constructor(
     @InjectModel(Period.name)
-    private periodModel: typeof PeriodModel,
+    private periodModel: typeof Model<Period>,
     @InjectModel(Praise.name)
-    private praiseModel: typeof PraiseModel,
+    private praiseModel: Model<Praise>,
     @InjectModel(User.name)
     private userModel: Model<User>,
     @InjectModel(UserAccount.name)
-    private userAccountModel: typeof Model<UserAccount>,
+    private userAccountModel: Model<UserAccount>,
     @InjectModel(Quantification.name)
     private quantificationModel: Model<Quantification>,
     private settingsService: SettingsService,

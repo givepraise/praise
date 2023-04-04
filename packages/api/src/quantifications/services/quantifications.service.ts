@@ -6,20 +6,24 @@ import { sum, has } from 'lodash';
 import { Praise } from '../../praise/schemas/praise.schema';
 import { ApiException } from '../../shared/exceptions/api-exception';
 import { PraiseService } from '../../praise/services/praise.service';
-import { Inject, forwardRef } from '@nestjs/common';
 import { PeriodsService } from '../../periods/services/periods.service';
 import { errorMessages } from '../../shared/exceptions/error-messages';
+import { QuantifyInputDto } from '../dto/quantify-input.dto';
+import { PeriodStatusType } from '../../periods/enums/status-type.enum';
+import { isQuantificationCompleted } from '../utils/is-quantification-completed';
+import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
+import { EventLogService } from '../../event-log/event-log.service';
 
 export class QuantificationsService {
   constructor(
     @InjectModel(Quantification.name)
     private quantificationModel: Model<Quantification>,
-    @Inject(forwardRef(() => SettingsService))
+    @InjectModel(Praise.name)
+    private praiseModel: Model<Praise>,
     private settingsService: SettingsService,
-    @Inject(forwardRef(() => PraiseService))
     private praiseService: PraiseService,
-    @Inject(forwardRef(() => PeriodsService))
     private periodService: PeriodsService,
+    private eventLogService: EventLogService,
   ) {}
 
   /**
@@ -179,20 +183,6 @@ export class QuantificationsService {
   };
 
   /**
-   * Check if Quantification was completed
-   *
-   * @param {Quantification} quantification
-   * @returns {boolean}
-   */
-  isQuantificationCompleted = (quantification: Quantification): boolean => {
-    return (
-      quantification.dismissed ||
-      quantification.duplicatePraise !== undefined ||
-      quantification.score > 0
-    );
-  };
-
-  /**
    * Calculates a single "composite" score from a list of quantifications (of the same praise)
    *
    * @param {Quantification[]} quantifications
@@ -224,7 +214,7 @@ export class QuantificationsService {
 
     // Filter out dismissed quantifications and quantifications that are not completed
     const completedQuantifications = quantifications.filter((q) => {
-      if (!this.isQuantificationCompleted(q)) return false;
+      if (!isQuantificationCompleted(q)) return false;
       return true;
     });
 
@@ -393,5 +383,239 @@ export class QuantificationsService {
     }
 
     return updatedQuantification;
+  };
+
+  /**
+   * Quantify praise item
+   *
+   * @param praiseId {string}
+   * @param bodyParams {QuantifyInputDto}
+   * @returns An array of all affected praise items
+   * @throws {ServiceException}
+   *
+   **/
+  quantifyPraise = async (
+    userId: Types.ObjectId,
+    praiseId: Types.ObjectId,
+    params: QuantifyInputDto,
+  ): Promise<Praise[]> => {
+    const { score, dismissed, duplicatePraise } = params;
+
+    // Get the praise item in question
+    const praise = await this.praiseModel
+      .findById(praiseId)
+      .populate('giver receiver forwarder')
+      .lean();
+    if (!praise) throw new ApiException(errorMessages.PRAISE_NOT_FOUND);
+
+    // Get the period associated with the praise item
+    const period = await this.periodService.getPraisePeriod(praise);
+    if (!period)
+      throw new ApiException(
+        errorMessages.PRAISE_DOESNT_HAVE__AN_ASSOCIATED_PERIOD,
+      );
+
+    // Check if the period is in the QUANTIFY status
+    if (period.status !== PeriodStatusType.QUANTIFY)
+      throw new ApiException(
+        errorMessages.PRAISE_ASSOCIATED_WITH_PRAISE_IS_NOT_QUANTIFY,
+      );
+
+    const quantification = await this.findOneByQuantifierAndPraise(
+      new Types.ObjectId(userId),
+      praise._id,
+    );
+    if (!quantification) {
+      throw new ApiException(
+        errorMessages.USER_NOT_ASSIGNED_AS_QUANTIFIER_FOR_PRAISE,
+      );
+    }
+
+    let eventLogMessage = '';
+
+    // Collect all affected praises (i.e. any praises whose score will change as a result of this change)
+    const affectedPraises: Praise[] = [praise];
+    const praisesDuplicateOfThis = await this.findDuplicatePraiseItems(
+      praise._id,
+      new Types.ObjectId(userId),
+    );
+    if (praisesDuplicateOfThis?.length > 0)
+      affectedPraises.push(...praisesDuplicateOfThis);
+
+    if (duplicatePraise) {
+      // Check that the duplicatePraise is not the same as the praise item
+      if (praise._id.equals(duplicatePraise))
+        throw new ApiException(
+          errorMessages.PRAISE_CANT_BE_DUPLICATE_OF_ITSELF,
+        );
+
+      // Find the original praise item
+      const dp = await this.praiseModel.findById(duplicatePraise).lean();
+      if (!dp)
+        throw new ApiException(errorMessages.DUPLICATE_PRAISE_ITEM_NOT_FOUND);
+
+      // Check that this praise item is not already the original of another duplicate
+      if (praisesDuplicateOfThis?.length > 0)
+        throw new ApiException(
+          errorMessages.ORIGINAL_PRAISE_CANT_BE_MARKED_AS_DUPLICATE,
+        );
+
+      // Check that this praise item does not become the duplicate of another duplicate
+      const praisesDuplicateOfAnotherDuplicate =
+        await this.findPraisesDuplicateOfAnotherDuplicate(
+          new Types.ObjectId(duplicatePraise),
+          new Types.ObjectId(userId),
+        );
+      if (praisesDuplicateOfAnotherDuplicate?.length > 0)
+        throw new ApiException(
+          errorMessages.PRAISE_CANT_BE_MARKED_DUPLICATE_OF_ANOTHER_DUPLICATE,
+        );
+
+      // When marking a praise as duplicate, the score is set to 0 and the dismissed flag is cleared
+      quantification.score = 0;
+      quantification.dismissed = false;
+      quantification.duplicatePraise = dp;
+
+      eventLogMessage = `Marked the praise with id "${(
+        praise._id as Types.ObjectId
+      ).toString()}" as duplicate of the praise with id "${(
+        dp._id as Types.ObjectId
+      ).toString()}"`;
+    } else if (dismissed) {
+      // When dismissing a praise, the score is set to 0, any duplicatePraise is cleared and the dismissed flag is set
+      quantification.score = 0;
+      quantification.dismissed = true;
+      quantification.duplicatePraise = undefined;
+
+      eventLogMessage = `Dismissed the praise with id "${(
+        praise._id as Types.ObjectId
+      ).toString()}"`;
+    } else {
+      if (score === undefined || score === null) {
+        throw new ApiException(
+          errorMessages.SCORE_DISMISSED_OR_DUPLICATE_PRAISE_IS_REQUIRED,
+        );
+      }
+
+      // Check if the score is allowed
+      const settingAllowedScores = (await this.settingsService.settingValue(
+        'PRAISE_QUANTIFY_ALLOWED_VALUES',
+        period._id,
+      )) as string;
+
+      const allowedScore = settingAllowedScores.split(',').map(Number);
+
+      if (!allowedScore.includes(score)) {
+        throw new ApiException(
+          errorMessages.SCORE_IS_NOT_ALLOWED,
+          `Score ${score} is not allowed. Allowed scores are: ${allowedScore.join(
+            ', ',
+          )}`,
+        );
+      }
+
+      // When quantifying a praise, the score is set, any duplicatePraise is cleared and the dismissed flag is cleared
+      quantification.score = score;
+      quantification.dismissed = false;
+      quantification.duplicatePraise = undefined;
+
+      eventLogMessage = `Gave a score of ${
+        quantification.score
+      } to the praise with id "${(praise._id as Types.ObjectId).toString()}"`;
+    }
+
+    // Save updated quantification
+    await this.updateQuantification(quantification);
+
+    const docs: Praise[] = [];
+
+    // Update the score of the praise item and all duplicates
+    for (const p of affectedPraises) {
+      const score = await this.calculateQuantificationsCompositeScore(p);
+
+      const praiseWithScore: Praise = await this.praiseModel
+        .findByIdAndUpdate(
+          p._id,
+          {
+            score,
+          },
+          { new: true },
+        )
+        .populate('forwarder quantifications')
+        .populate({
+          path: 'receiver',
+          populate: {
+            path: 'user',
+          },
+        })
+        .populate({
+          path: 'giver',
+          populate: {
+            path: 'user',
+          },
+        })
+        .lean();
+
+      docs.push(praiseWithScore);
+    }
+
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.PERMISSION,
+      description: eventLogMessage,
+      periodId: period._id,
+    });
+
+    return docs;
+  };
+
+  /**
+   * Find all praises that are duplicates of the given praise
+   * @param {Types.ObjectId} praiseId
+   * @param {Types.ObjectId} quantifierId
+   * @returns {Promise<Praise[]>}
+   *
+   */
+  findDuplicatePraiseItems = async (
+    praiseId: Types.ObjectId,
+    quantifierId: Types.ObjectId,
+  ): Promise<Praise[]> => {
+    const duplicateQuantifications =
+      await this.findByQuantifierAndDuplicatePraise(quantifierId, praiseId);
+
+    const duplicatePraiseItems = await this.praiseModel
+      .find({
+        _id: { $in: duplicateQuantifications.map((q) => q.praise) },
+      })
+      .populate('giver receiver forwarder')
+      .lean();
+
+    return duplicatePraiseItems;
+  };
+
+  /**
+   * Find all praises that are duplicates of the given duplicate praise
+   * @param {Types.ObjectId} duplicatePraise
+   * @param {Types.ObjectId} quantifierId
+   * @returns {Promise<Praise[]>}
+   *
+   **/
+  findPraisesDuplicateOfAnotherDuplicate = async (
+    duplicatePraise: Types.ObjectId,
+    quantifierId: Types.ObjectId,
+  ): Promise<Praise[]> => {
+    const duplicateQuantifications =
+      await this.findByQuantifierAndDuplicatePraiseExist(quantifierId, true);
+
+    const duplicatePraiseItems = await this.praiseModel
+      .find({
+        _id: {
+          $in: duplicateQuantifications.filter(
+            (q) => q.praise === duplicatePraise,
+          ),
+        },
+      })
+      .lean();
+
+    return duplicatePraiseItems;
   };
 }
