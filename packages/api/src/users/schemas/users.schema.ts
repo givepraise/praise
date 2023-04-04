@@ -8,7 +8,10 @@ import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { IsOptional, IsString } from 'class-validator';
 import { IsEthAddress } from '../../shared/validators/is-eth-address.validator';
 import { isValidUsername } from '../utils/is-valid-username';
-import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
+import {
+  UserAccount,
+  UserAccountNoUserId,
+} from '../../useraccounts/schemas/useraccounts.schema';
 
 export type UserDocument = User & Document;
 
@@ -82,8 +85,8 @@ export class User {
   @ApiResponseProperty({
     type: () => [UserAccount],
   })
-  @Type(() => UserAccount)
-  accounts: UserAccount[];
+  @Type(() => UserAccountNoUserId)
+  accounts: UserAccountNoUserId[];
 
   @Exclude()
   @Prop({ maxlength: 255, required: false })
