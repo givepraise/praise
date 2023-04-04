@@ -83,11 +83,7 @@ export interface paths {
     /** List event log types */
     get: operations["EventLogController_types"];
   };
-<<<<<<< HEAD
   "/api/settings": {
-=======
-  '/api/settings': {
->>>>>>> 1a6001510834128c6e57f0120649af53e5fb6a17
     /** List all settings. */
     get: operations["SettingsController_findAll"];
   };
@@ -115,11 +111,7 @@ export interface paths {
     /** Set value for a period setting. */
     patch: operations["PeriodSettingsController_set"];
   };
-<<<<<<< HEAD
   "/api/praise": {
-=======
-  '/api/praise': {
->>>>>>> 1a6001510834128c6e57f0120649af53e5fb6a17
     /** List praise items, paginated results */
     get: operations["PraiseController_findAllPaginated"];
     /** Create praise item */
@@ -133,19 +125,11 @@ export interface paths {
     /** Find praise item by id */
     get: operations["PraiseController_findOne"];
   };
-<<<<<<< HEAD
   "/api/praise/forward": {
-=======
-  '/api/praise/forward': {
->>>>>>> 1a6001510834128c6e57f0120649af53e5fb6a17
     /** Forward praise item */
     post: operations["PraiseController_forward"];
   };
-<<<<<<< HEAD
   "/api/useraccounts": {
-=======
-  '/api/useraccounts': {
->>>>>>> 1a6001510834128c6e57f0120649af53e5fb6a17
     /** UserAccount list */
     get: operations["UserAccountsController_findAll"];
     /** Create a UserAccount */
@@ -161,57 +145,49 @@ export interface paths {
     /** Update UserAccount */
     patch: operations["UserAccountsController_update"];
   };
-  '/api/api-key': {
+  "/api/api-key": {
     /** List all API keys */
-    get: operations['ApiKeyController_findAll'];
+    get: operations["ApiKeyController_findAll"];
     /** Create API key */
-    post: operations['ApiKeyController_createApiKey'];
+    post: operations["ApiKeyController_createApiKey"];
   };
-  '/api/api-key/{id}': {
+  "/api/api-key/{id}": {
     /** Get API key by ID */
-    get: operations['ApiKeyController_findOne'];
+    get: operations["ApiKeyController_findOne"];
     /** Update API key description */
-    put: operations['ApiKeyController_updateApiKeyDescription'];
+    put: operations["ApiKeyController_updateApiKeyDescription"];
     /** Revoke API key */
-    delete: operations['ApiKeyController_revokeApiKey'];
+    delete: operations["ApiKeyController_revokeApiKey"];
   };
-  '/api/auth/eth-signature/nonce': {
+  "/api/auth/eth-signature/nonce": {
     /** Generates a nonce for the user and returns it */
-    post: operations['EthSignatureController_nonce'];
+    post: operations["EthSignatureController_nonce"];
   };
-  '/api/auth/eth-signature/login': {
+  "/api/auth/eth-signature/login": {
     /** Verifies a user's signature and returns a JWT token */
-    post: operations['EthSignatureController_login'];
+    post: operations["EthSignatureController_login"];
   };
-  '/api/communities': {
-    get: operations['CommunityController_findAll'];
+  "/api/communities": {
+    get: operations["CommunityController_findAll"];
     /** Create a new community */
-    post: operations['CommunityController_create'];
+    post: operations["CommunityController_create"];
   };
-  '/api/communities/{id}': {
-    get: operations['CommunityController_findOne'];
+  "/api/communities/{id}": {
+    get: operations["CommunityController_findOne"];
     /** Update community */
-    patch: operations['CommunityController_update'];
+    patch: operations["CommunityController_update"];
   };
-  '/api/communities/{id}/discord/link': {
+  "/api/communities/{id}/discord/link": {
     /** Link discord to community */
-    patch: operations['CommunityController_linkDiscord'];
+    patch: operations["CommunityController_linkDiscord"];
   };
-  '/api/quantifications/export': {
+  "/api/quantifications/export": {
     /** Exports quantifications document to json or csv. */
-    get: operations['QuantificationsController_export'];
+    get: operations["QuantificationsController_export"];
   };
-<<<<<<< HEAD
   "/api/quantifications/multiple": {
-=======
-  '/api/quantifications/multiple': {
->>>>>>> 1a6001510834128c6e57f0120649af53e5fb6a17
     /** Quantify multiple praise items */
-    patch: operations['QuantificationsController_quantifyMultiple'];
-  };
-  '/api/quantifications/{id}': {
-    /** Quantify praise item by id */
-    patch: operations['QuantificationsController_quantify'];
+    patch: operations["QuantificationsController_quantifyMultiple"];
   };
   "/api/quantifications/{id}": {
     /** Quantify praise item by id */
@@ -272,23 +248,8 @@ export interface components {
       rewardsEthAddress: string;
       /** @example darth */
       username: string;
-<<<<<<< HEAD
       roles: readonly ("USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB")[];
       accounts: readonly (components["schemas"]["UserAccount"])[];
-=======
-      roles: readonly (
-        | 'USER'
-        | 'QUANTIFIER'
-        | 'FORWARDER'
-        | 'ADMIN'
-        | 'ROOT'
-        | 'API_KEY_READWRITE'
-        | 'API_KEY_READ'
-        | 'API_KEY_DISCORD_BOT'
-        | 'API_KEY_SETUP_WEB'
-      )[];
-      accounts: readonly unknown[][];
->>>>>>> 1a6001510834128c6e57f0120649af53e5fb6a17
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -303,23 +264,8 @@ export interface components {
       rewardsEthAddress: string;
       /** @example darth */
       username: string;
-<<<<<<< HEAD
       roles: readonly ("USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB")[];
       accounts: readonly (components["schemas"]["UserAccount"])[];
-=======
-      roles: readonly (
-        | 'USER'
-        | 'QUANTIFIER'
-        | 'FORWARDER'
-        | 'ADMIN'
-        | 'ROOT'
-        | 'API_KEY_READWRITE'
-        | 'API_KEY_READ'
-        | 'API_KEY_DISCORD_BOT'
-        | 'API_KEY_SETUP_WEB'
-      )[];
-      accounts: readonly unknown[][];
->>>>>>> 1a6001510834128c6e57f0120649af53e5fb6a17
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -372,7 +318,7 @@ export interface components {
       prevPage?: Record<string, never>;
       /** @example 3 */
       nextPage?: Record<string, never>;
-      docs: readonly components['schemas']['Period'][];
+      docs: readonly (components["schemas"]["Period"])[];
       meta?: Record<string, never>;
     };
     Quantification: {
@@ -621,7 +567,7 @@ export interface components {
       prevPage?: Record<string, never>;
       /** @example 3 */
       nextPage?: Record<string, never>;
-      docs: readonly components['schemas']['EventLog'][];
+      docs: readonly (components["schemas"]["EventLog"])[];
       meta?: Record<string, never>;
     };
     Setting: {
@@ -684,7 +630,7 @@ export interface components {
       prevPage?: Record<string, never>;
       /** @example 3 */
       nextPage?: Record<string, never>;
-      docs: readonly components['schemas']['Praise'][];
+      docs: readonly (components["schemas"]["Praise"])[];
       meta?: Record<string, never>;
     };
     PraiseCreateInputDto: {
@@ -782,16 +728,7 @@ export interface components {
       /** @example My API Key */
       description: string;
       /** @enum {string} */
-      role:
-        | 'USER'
-        | 'QUANTIFIER'
-        | 'FORWARDER'
-        | 'ADMIN'
-        | 'ROOT'
-        | 'API_KEY_READWRITE'
-        | 'API_KEY_READ'
-        | 'API_KEY_DISCORD_BOT'
-        | 'API_KEY_SETUP_WEB';
+      role: "USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB";
     };
     CreateApiKeyResponseDto: {
       /** @example 89f7edbd */
@@ -801,16 +738,7 @@ export interface components {
       /** @example $2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i */
       hash: string;
       /** @enum {string} */
-      role:
-        | 'USER'
-        | 'QUANTIFIER'
-        | 'FORWARDER'
-        | 'ADMIN'
-        | 'ROOT'
-        | 'API_KEY_READWRITE'
-        | 'API_KEY_READ'
-        | 'API_KEY_DISCORD_BOT'
-        | 'API_KEY_SETUP_WEB';
+      role: "USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB";
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -826,16 +754,7 @@ export interface components {
       /** @example $2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i */
       hash: string;
       /** @enum {string} */
-      role:
-        | 'USER'
-        | 'QUANTIFIER'
-        | 'FORWARDER'
-        | 'ADMIN'
-        | 'ROOT'
-        | 'API_KEY_READWRITE'
-        | 'API_KEY_READ'
-        | 'API_KEY_DISCORD_BOT'
-        | 'API_KEY_SETUP_WEB';
+      role: "USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB";
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -883,14 +802,14 @@ export interface components {
        *   "0x345.."
        * ]
        */
-      owners: string[];
+      owners: (string)[];
       /** @example 0980987846534 */
       discordGuildId?: string;
     };
     ObjectId: Record<string, never>;
     Community: {
       /** @example 621f802b813dbdba9eeaf7b4 */
-      _id: components['schemas']['ObjectId'];
+      _id: components["schemas"]["ObjectId"];
       /** @example banklessdao.givepraise.xyz */
       hostname: string;
       /** @example BanklessDAO */
@@ -905,7 +824,7 @@ export interface components {
        *   "0x345.."
        * ]
        */
-      owners: string[];
+      owners: (string)[];
       /** @example 0980987846534 */
       discordGuildId?: string;
       /** @example oiujoiuoo8u */
@@ -913,7 +832,7 @@ export interface components {
       /** @example true */
       isPublic: boolean;
       /** @enum {string} */
-      discordLinkState: 'NOT_SET' | 'PENDING' | 'ACTIVE' | 'DEACTIVE';
+      discordLinkState: "NOT_SET" | "PENDING" | "ACTIVE" | "DEACTIVE";
     };
     UpdateCommunityInputDto: {
       /** @example banklessdao.givepraise.xyz */
@@ -928,7 +847,7 @@ export interface components {
        *   "0x345.."
        * ]
        */
-      owners?: string[];
+      owners?: (string)[];
     };
     CommunityPaginatedResponseDto: {
       /** @example 1200 */
@@ -949,7 +868,7 @@ export interface components {
       prevPage?: Record<string, never>;
       /** @example 3 */
       nextPage?: Record<string, never>;
-      docs: readonly components['schemas']['Community'][];
+      docs: readonly (components["schemas"]["Community"])[];
       meta?: Record<string, never>;
     };
     LinkDiscordBotDto: {
@@ -963,7 +882,7 @@ export interface components {
       duplicatePraise?: string;
     };
     QuantifyMultipleInputDto: {
-      params: components['schemas']['QuantifyInputDto'];
+      params: components["schemas"]["QuantifyInputDto"];
       /**
        * @example [
        *   "639b178f19296ee0f2d0585d",
@@ -971,7 +890,7 @@ export interface components {
        *   "639b178f19296ee0f2d0585f"
        * ]
        */
-      praiseIds: string[];
+      praiseIds: (string)[];
     };
   };
   responses: never;
@@ -1527,7 +1446,7 @@ export interface operations {
         /** @example 1 */
         page: number;
         sortColumn?: string;
-        sortType?: 'asc' | 'desc';
+        sortType?: "asc" | "desc";
         giver?: string;
         receiver?: string;
       };
@@ -1536,7 +1455,7 @@ export interface operations {
       /** @description Paginated praise items */
       200: {
         content: {
-          'application/json': components['schemas']['PraisePaginatedResponseDto'];
+          "application/json": components["schemas"]["PraisePaginatedResponseDto"];
         };
       };
     };
@@ -1545,19 +1464,19 @@ export interface operations {
   PraiseController_praise: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['PraiseCreateInputDto'];
+        "application/json": components["schemas"]["PraiseCreateInputDto"];
       };
     };
     responses: {
       /** @description Praise item */
       200: {
         content: {
-          'application/json': components['schemas']['Praise'];
+          "application/json": components["schemas"]["Praise"];
         };
       };
       201: {
         content: {
-          'application/json': components['schemas']['Praise'][];
+          "application/json": (components["schemas"]["Praise"])[];
         };
       };
     };
@@ -1566,7 +1485,7 @@ export interface operations {
   PraiseController_export: {
     parameters: {
       query: {
-        format?: 'csv' | 'json' | 'parquet';
+        format?: "csv" | "json" | "parquet";
         startDate?: string;
         endDate?: string;
       };
@@ -1574,8 +1493,8 @@ export interface operations {
     responses: {
       200: {
         content: {
-          'application/json': string;
-          'application/octet-stream': string;
+          "application/json": string;
+          "application/octet-stream": string;
         };
       };
     };
@@ -1591,7 +1510,7 @@ export interface operations {
       /** @description Praise item */
       200: {
         content: {
-          'application/json': components['schemas']['Praise'];
+          "application/json": components["schemas"]["Praise"];
         };
       };
     };
@@ -1600,19 +1519,19 @@ export interface operations {
   PraiseController_forward: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['PraiseForwardInputDto'];
+        "application/json": components["schemas"]["PraiseForwardInputDto"];
       };
     };
     responses: {
       /** @description Praise item */
       200: {
         content: {
-          'application/json': components['schemas']['Praise'];
+          "application/json": components["schemas"]["Praise"];
         };
       };
       201: {
         content: {
-          'application/json': components['schemas']['Praise'][];
+          "application/json": (components["schemas"]["Praise"])[];
         };
       };
     };
@@ -1632,7 +1551,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          'application/json': components['schemas']['UserAccount'];
+          "application/json": components["schemas"]["UserAccount"];
         };
       };
     };
@@ -1641,13 +1560,13 @@ export interface operations {
   UserAccountsController_create: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['CreateUserAccountInputDto'];
+        "application/json": components["schemas"]["CreateUserAccountInputDto"];
       };
     };
     responses: {
       201: {
         content: {
-          'application/json': components['schemas']['CreateUserAccountResponseDto'];
+          "application/json": components["schemas"]["CreateUserAccountResponseDto"];
         };
       };
     };
@@ -1656,14 +1575,14 @@ export interface operations {
   UserAccountsController_export: {
     parameters: {
       query: {
-        format?: 'csv' | 'json' | 'parquet';
+        format?: "csv" | "json" | "parquet";
       };
     };
     responses: {
       200: {
         content: {
-          'application/json': string;
-          'application/octet-stream': string;
+          "application/json": string;
+          "application/octet-stream": string;
         };
       };
     };
@@ -1679,7 +1598,7 @@ export interface operations {
       /** @description UserAccount */
       200: {
         content: {
-          'application/json': components['schemas']['UserAccount'];
+          "application/json": components["schemas"]["UserAccount"];
         };
       };
     };
@@ -1688,13 +1607,13 @@ export interface operations {
   UserAccountsController_update: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdateUserAccountInputDto'];
+        "application/json": components["schemas"]["UpdateUserAccountInputDto"];
       };
     };
     responses: {
       200: {
         content: {
-          'application/json': components['schemas']['UpdateUserAccountResponseDto'];
+          "application/json": components["schemas"]["UpdateUserAccountResponseDto"];
         };
       };
     };
@@ -1705,7 +1624,7 @@ export interface operations {
       /** @description Array of API keys */
       200: {
         content: {
-          'application/json': components['schemas']['ApiKey'][];
+          "application/json": (components["schemas"]["ApiKey"])[];
         };
       };
     };
@@ -1714,14 +1633,14 @@ export interface operations {
   ApiKeyController_createApiKey: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['CreateApiKeyInputDto'];
+        "application/json": components["schemas"]["CreateApiKeyInputDto"];
       };
     };
     responses: {
       /** @description API key created */
       201: {
         content: {
-          'application/json': components['schemas']['CreateApiKeyResponseDto'];
+          "application/json": components["schemas"]["CreateApiKeyResponseDto"];
         };
       };
     };
@@ -1737,7 +1656,7 @@ export interface operations {
       /** @description An API key */
       200: {
         content: {
-          'application/json': components['schemas']['ApiKey'];
+          "application/json": components["schemas"]["ApiKey"];
         };
       };
     };
@@ -1751,19 +1670,19 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdateDescriptionInputDto'];
+        "application/json": components["schemas"]["UpdateDescriptionInputDto"];
       };
     };
     responses: {
       200: {
         content: {
-          'application/json': components['schemas']['ApiKey'];
+          "application/json": components["schemas"]["ApiKey"];
         };
       };
       /** @description API key with updated description */
       201: {
         content: {
-          'application/json': components['schemas']['ApiKey'];
+          "application/json": components["schemas"]["ApiKey"];
         };
       };
     };
@@ -1778,13 +1697,13 @@ export interface operations {
     responses: {
       200: {
         content: {
-          'application/json': components['schemas']['ApiKey'];
+          "application/json": components["schemas"]["ApiKey"];
         };
       };
       /** @description Revoked API key */
       201: {
         content: {
-          'application/json': components['schemas']['ApiKey'];
+          "application/json": components["schemas"]["ApiKey"];
         };
       };
     };
@@ -1794,14 +1713,14 @@ export interface operations {
     /** @description A request containing the user identityEthAddress */
     requestBody: {
       content: {
-        'application/json': components['schemas']['NonceInputDto'];
+        "application/json": components["schemas"]["NonceInputDto"];
       };
     };
     responses: {
       /** @description Nonce generated successfully */
       201: {
         content: {
-          'application/json': components['schemas']['NonceResponseDto'];
+          "application/json": components["schemas"]["NonceResponseDto"];
         };
       };
     };
@@ -1814,20 +1733,20 @@ export interface operations {
       };
     };
     /**
-     * @description A request containing the user identityEthAddress and signedlogin message. The signed message should be structured as follows:
-     *
+     * @description A request containing the user identityEthAddress and signedlogin message. The signed message should be structured as follows: 
+     * 
      * ```SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\nADDRESS:\n[identityEthAddress]\n\nNONCE:\n[nonce]```
      */
     requestBody: {
       content: {
-        'application/json': components['schemas']['LoginInputDto'];
+        "application/json": components["schemas"]["LoginInputDto"];
       };
     };
     responses: {
       /** @description User authenticated successfully */
       201: {
         content: {
-          'application/json': components['schemas']['LoginResponseDto'];
+          "application/json": components["schemas"]["LoginResponseDto"];
         };
       };
     };
@@ -1942,22 +1861,14 @@ export interface operations {
   QuantificationsController_quantifyMultiple: {
     requestBody: {
       content: {
-<<<<<<< HEAD
         "application/json": components["schemas"]["QuantifyMultipleInputDto"];
-=======
-        'application/json': components['schemas']['QuantifyMultipleInputDto'];
->>>>>>> 1a6001510834128c6e57f0120649af53e5fb6a17
       };
     };
     responses: {
       /** @description Praise items */
       200: {
         content: {
-<<<<<<< HEAD
           "application/json": (components["schemas"]["Praise"])[];
-=======
-          'application/json': components['schemas']['Praise'][];
->>>>>>> 1a6001510834128c6e57f0120649af53e5fb6a17
         };
       };
     };
