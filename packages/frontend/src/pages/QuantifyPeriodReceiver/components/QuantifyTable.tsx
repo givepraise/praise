@@ -10,10 +10,7 @@ import {
   faMinusCircle,
   faScaleUnbalanced,
 } from '@fortawesome/free-solid-svg-icons';
-import {
-  useQuantifyMultiplePraise,
-  useQuantifyPraise,
-} from '@/model/praise/praise';
+
 import { SinglePeriodSettingValueRealized } from '@/model/periodsettings/periodsettings';
 import { PeriodQuantifierReceiverPraise } from '@/model/periods/periods';
 import { SearchInput } from '@/components/form/SearchInput';
@@ -25,6 +22,10 @@ import { DuplicateSearchDialog } from './DuplicateSearchDialog';
 import { QuantifyPraiseRow } from './QuantifyPraiseRow';
 import { QuantifyBackNextLink } from './BackNextLink';
 import { DismissDialog } from './DismissDialog';
+import {
+  useQuantifyMultiplePraise,
+  useQuantifyPraise,
+} from '../../../model/quantification/quantification';
 
 interface Props {
   periodId: string;
