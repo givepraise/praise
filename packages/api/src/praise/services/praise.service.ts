@@ -4,7 +4,6 @@ import { Praise } from '../schemas/praise.schema';
 import { ApiException } from '../../shared/exceptions/api-exception';
 import { SettingsService } from '../../settings/settings.service';
 import { PraisePaginatedQueryDto } from '../dto/praise-paginated-query.dto';
-import { EventLogService } from '../../event-log/event-log.service';
 import { PraisePaginatedResponseDto } from '../dto/praise-paginated-response.dto';
 import { Period } from '../../periods/schemas/periods.schema';
 import { Injectable } from '@nestjs/common';
@@ -96,28 +95,65 @@ export class PraiseService {
    *
    **/
   async findOneById(_id: Types.ObjectId): Promise<Praise> {
-    const praise = await this.praiseModel
-      .findById(_id)
-      .populate([
-        {
-          path: 'giver',
-          populate: { path: 'user' },
+    const praise = await this.praiseModel.aggregate([
+      {
+        $match: {
+          _id,
         },
-        {
-          path: 'receiver',
-          populate: { path: 'user' },
+      },
+      {
+        $lookup: {
+          from: 'useraccounts',
+          localField: 'giver',
+          foreignField: '_id',
+          as: 'giver',
         },
-        {
-          path: 'forwarder',
-          populate: { path: 'user' },
+      },
+      {
+        $unwind: {
+          path: '$giver',
         },
-        'quantifications',
-      ])
-      .lean();
+      },
+      {
+        $lookup: {
+          from: 'useraccounts',
+          localField: 'receiver',
+          foreignField: '_id',
+          as: 'receiver',
+        },
+      },
+      {
+        $unwind: {
+          path: '$receiver',
+        },
+      },
+      {
+        $lookup: {
+          from: 'useraccounts',
+          localField: 'forwarder',
+          foreignField: '_id',
+          as: 'forwarder',
+        },
+      },
+      {
+        $unwind: {
+          path: '$forwarder',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'quantifications',
+          localField: '_id',
+          foreignField: 'praise',
+          as: 'quantifications',
+        },
+      },
+    ]);
 
-    if (!praise) throw new ApiException(errorMessages.PRAISE_NOT_FOUND);
+    if (!praise[0]) throw new ApiException(errorMessages.PRAISE_NOT_FOUND);
 
-    return praise;
+    return praise[0];
   }
 
   /**

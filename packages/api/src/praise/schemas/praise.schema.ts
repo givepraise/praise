@@ -148,12 +148,6 @@ export const PraiseSchema = SchemaFactory.createForClass(Praise);
 
 PraiseSchema.plugin(mongoosePaginate);
 
-PraiseSchema.virtual('quantifications', {
-  ref: 'Quantification',
-  localField: '_id',
-  foreignField: 'praise',
-});
-
 export const PraiseExportSqlSchema = `
   _id VARCHAR, 
   giver VARCHAR, 
