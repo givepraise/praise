@@ -19,28 +19,18 @@ export class MigrationsManager {
    * A dynamic module is created for the community db and the context is passed to the migrations.
    */
   async migrate(community: Community) {
+    let mongooseConn;
     try {
       logger.info(`🆙 Starting migrations for: ${community.hostname}`);
 
-      let mongooseConn: Connection;
       try {
-        // Connect to the community db https://stackoverflow.com/a/65205700/4650625
-        const mongooseInstance = await mongoose.connect(
-          dbUrlCommunity(community),
-          {
-            useNewUrlParser: true,
-          } as ConnectOptions,
-        );
-        mongooseConn = mongooseInstance.connection;
-      } catch (e) {
-        logger.error(`connect mongoose error ${e.message}`);
-        mongooseConn = await mongoose.createConnection(
-          dbUrlCommunity(community),
-          {
-            useNewUrlParser: true,
-          } as ConnectOptions,
-        );
+        await mongoose.connect(dbUrlCommunity(community), {
+          useNewUrlParser: true,
+        } as ConnectOptions);
+      } catch (err) {
+        // do nothing
       }
+      mongooseConn = mongoose.connection;
 
       // Create a dynamic app module for the community
       const app = await NestFactory.createApplicationContext(
@@ -72,9 +62,17 @@ export class MigrationsManager {
       // Close the app
       await app.close();
 
+      // Cleanup
+      mongoose.connection.close();
+
       logger.info(`✅ Migrations completed for: ${community.hostname}`);
     } catch (error) {
       logger.error(error.message);
+    } finally {
+      if (mongooseConn) {
+        await mongooseConn.close();
+      }
+      mongoose.connection.close();
     }
   }
 
