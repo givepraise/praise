@@ -22,6 +22,7 @@ jobs:
       - run: echo "${{secrets.DISCORDBOT_ENV_TESTING }}" > .env
       - run: echo "${{secrets.FRONTEND_ENV_TESTING }}" > .env
       - run: yarn mongodb:start
+      # We should first run mongo and after that run tests
       - run: yarn workspace api test
       - run: yarn workspace api test:e2e
 
