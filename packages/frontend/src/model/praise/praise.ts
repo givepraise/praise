@@ -10,7 +10,6 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil';
-import { useApiAuthClient } from '@/utils/api';
 import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from '../api';
 import { PaginatedResponseBody } from 'shared/interfaces/paginated-response-body.interface';
 

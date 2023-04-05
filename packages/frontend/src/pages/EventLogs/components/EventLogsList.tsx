@@ -7,7 +7,6 @@ import {
   AllEventLogs,
   AllEventLogsQueryParameters,
 } from '@/model/eventlog/eventlogs';
-import { classNames } from '@/utils/index';
 
 interface EventLogsTableProps {
   queryParameters: AllEventLogsQueryParameters;
