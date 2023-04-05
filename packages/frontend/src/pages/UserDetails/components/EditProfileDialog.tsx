@@ -21,11 +21,16 @@ const validate = (
 
   // username validation
   if (values.username) {
-    if (values.username.length < 3) {
-      errors.username = 'Min 3 characters';
-    }
-    if (values.username.length > 64) {
-      errors.username = 'Max 64 characters';
+    if (values.username.length < 4) {
+      errors.username = 'Min 4 characters';
+    } else if (values.username.length > 20) {
+      errors.username = 'Max 20 characters';
+    } else {
+      const pattern = /^[a-z0-9][a-z0-9_.-]{1,18}[a-z0-9]$/;
+      if (!pattern.test(values.username)) {
+        errors.username =
+          'Usernames can only contain letters, numbers, dots, dashes and underscores';
+      }
     }
   } else {
     errors.username = 'Required';
@@ -33,11 +38,9 @@ const validate = (
 
   // rewardsEthAddress validation
   if (values.rewardsEthAddress) {
-    if (values.rewardsEthAddress.length < 3) {
-      errors.rewardsEthAddress = 'Min 3 characters';
-    }
-    if (values.rewardsEthAddress.length > 64) {
-      errors.rewardsEthAddress = 'Max 64 characters';
+    if (values.rewardsEthAddress.length !== 42) {
+      errors.rewardsEthAddress =
+        'Enter a valid ETH address, 42 characters. ENS names are not supported yet.';
     }
   } else {
     errors.rewardsEthAddress = 'Required';
