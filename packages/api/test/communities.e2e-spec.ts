@@ -36,8 +36,10 @@ class LoggedInUser {
 describe('Communities (E2E)', () => {
   let setupWebUserAccessToken: string;
   const users: LoggedInUser[] = [];
-
+  let mongodb: MongoClient;
   beforeAll(async () => {
+    mongodb = new MongoClient(DB_URL_ROOT);
+
     // Clear the database
     await usersService.getModel().deleteMany({});
     await communityService.getModel().deleteMany({});
@@ -68,6 +70,10 @@ describe('Communities (E2E)', () => {
 
     const response = await loginUser(app, testingModule, setupWebWallet);
     setupWebUserAccessToken = response.accessToken;
+  });
+
+  afterAll(async () => {
+    await mongodb.close();
   });
 
   describe('POST /api/communities', () => {
@@ -258,7 +264,6 @@ describe('Communities (E2E)', () => {
       const hostname = `test.patch.community`;
       const dbName = dbNameCommunity({ hostname });
       await communityService.getModel().deleteMany({});
-      const mongodb = new MongoClient(DB_URL_ROOT);
       if (await databaseExists(dbName, mongodb)) {
         // Delete community db if exists (We create db after linking discord to community)
         await mongodb.db().dropDatabase({
@@ -338,11 +343,11 @@ describe('Communities (E2E)', () => {
     });
 
     test('200 should create new db for community, after link it to discord', async () => {
-      const mongodb = new MongoClient(DB_URL_ROOT);
       const dbName = dbNameCommunity(community);
 
       // Before linking Discord to community there is no DB for that community
-      expect(await databaseExists(dbName, mongodb)).toBeFalse();
+      // eslint-disable-next-line jest-extended/prefer-to-be-false
+      expect(await databaseExists(dbName, mongodb)).toBe(false);
 
       const signedMessage = await users[0].wallet.signMessage(
         communityService.generateLinkDiscordMessage({
