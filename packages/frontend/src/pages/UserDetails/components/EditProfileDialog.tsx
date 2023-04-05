@@ -71,10 +71,6 @@ export const EditProfileDialog = ({
             <Dialog.Title className="text-center mb-7">
               Edit Profile
             </Dialog.Title>
-            <Dialog.Description className="text-center mb-7">
-              Closing a period means no more quantifications can be performed. A
-              closed period cannot be re-opened.
-            </Dialog.Description>
             <Form
               onSubmit={onSave}
               validate={validate}
