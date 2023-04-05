@@ -64,7 +64,6 @@ async function bootstrap() {
   app.useGlobalFilters(new ServiceExceptionFilter());
 
   // Serve static files from the upload folder
-  console.log(join(__dirname, '../../uploads'));
   app.useStaticAssets(join(__dirname, '../../uploads'), {
     prefix: '/uploads',
   });
