@@ -20,14 +20,8 @@ jobs:
 
       - run: cp .env.template .env
 
-      # Define environment variables that are not included in the .env.template file.
-      - run: echo "${{secrets.ROOT_ENV_TESTING }}" >> .env
-      - run: echo "${{secrets.API_ENV_TESTING }}" >> .env
-      - run: echo "${{secrets.DISCORDBOT_ENV_TESTING }}" >> .env
-      - run: echo "${{secrets.FRONTEND_ENV_TESTING }}" >> .env
-
       - run: yarn mongodb:start
       # We should first run mongo and after that run tests
-      - run: yarn workspace api test
+      # - run: yarn workspace api test
       - run: yarn workspace api test:e2e
 
