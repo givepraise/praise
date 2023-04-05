@@ -58,6 +58,7 @@ async function bootstrap() {
   app.useGlobalFilters(new MongoValidationErrorFilter());
   app.useGlobalFilters(new ServiceExceptionFilter());
 
+
   // If in development mode, generate and serve OpenAPI documentation
   if (process.env.NODE_ENV === 'development') {
     // Create OpenAPI configuration
