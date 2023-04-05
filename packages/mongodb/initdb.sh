@@ -24,18 +24,23 @@ if (db.getUser('$MONGO_USERNAME') !== null) {
 
 use admin;
 
+// Default user has readWrite access to the all databases
+
 if (db.getUser('$MONGO_USERNAME') === null) {  
   db.createUser({
     user:  '$MONGO_USERNAME',
     pwd: '$MONGO_PASSWORD',
     roles: [{
-      role: 'readWrite',
-      db: '$MONGO_DB'
+      role: 'readWriteAnyDatabase',
+      db: 'admin'
     }]
   });
 }
 
-db.getSiblingDB("admin").grantRolesToUser( "$MONGO_USERNAME", [ { role: "readWrite", db: "$MONGO_DB" } ] )
-db.getSiblingDB("admin").grantRolesToUser( "$MONGO_USERNAME", [ { role: "readWrite", db: "praise-test" } ] )
+// Except for the admin database
+
+db.revokeRolesFromUser('$MONGO_USERNAME', [
+  { role: "readWrite", db: "admin" },
+]);
 
 EOF
