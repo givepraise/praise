@@ -17,13 +17,13 @@ import { SinglePeriodByDate } from '@/model/periods/periods';
 import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { UserPopover } from '@/components/user/UserPopover';
 import { UserName } from '@/components/user/UserName';
-import { useQuantifyPraise } from '@/model/praise/praise';
 import { SourceName } from './SourceName';
 import { UserAvatarAndName } from '../user/UserAvatarAndName';
 import { InlineLabelClosable } from '../ui/InlineLabelClosable';
 import { Praise as PraiseDto } from '@/model/praise/praise.dto';
 import { idLabel } from '@/model/praise/praise.utils';
 import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
+import { useQuantifyPraise } from '../../model/quantification/quantification';
 
 interface Props {
   praise: PraiseDto;

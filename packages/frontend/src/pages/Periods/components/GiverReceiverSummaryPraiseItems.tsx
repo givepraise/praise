@@ -11,7 +11,7 @@ export const GiverReceiverSummaryPraiseItems = ({
   praiseList,
 }: Props): JSX.Element => {
   return (
-    <Box className="p-0">
+    <Box className="!p-0">
       <ul>
         {praiseList?.map((praise) => (
           <PraiseRow praise={praise} key={praise?._id}>

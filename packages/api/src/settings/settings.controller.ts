@@ -6,6 +6,7 @@ import {
   Patch,
   Query,
   Res,
+  Request,
   SerializeOptions,
   UploadedFile,
   UseInterceptors,
@@ -26,6 +27,9 @@ import { ConstantsProvider } from '../constants/constants.provider';
 import { Response } from 'express';
 import { upploadStorage } from './utils/upload-storage';
 import { SettingsFilterDto } from './dto/settings-filter.dto';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
 
 @Controller('settings')
 @ApiTags('Settings')
@@ -38,6 +42,7 @@ export class SettingsController {
   constructor(
     private readonly settingsService: SettingsService,
     private readonly constants: ConstantsProvider,
+    private readonly eventLogService: EventLogService,
   ) {}
 
   @Get()
@@ -85,8 +90,19 @@ export class SettingsController {
   async set(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() data: SetSettingDto,
+    @Request() request: RequestWithAuthContext,
   ): Promise<Setting> {
-    return this.settingsService.setOne(id, data);
+    const setting = await this.settingsService.setOne(id, data);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.SETTING,
+      description: `Updated global setting "${setting.label}" to "${
+        setting.value || ''
+      }"`,
+    });
+
+    return setting;
   }
 
   @Patch(':id/upload')
