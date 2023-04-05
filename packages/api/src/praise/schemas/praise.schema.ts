@@ -11,7 +11,9 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 
 export type PraiseDocument = Praise & Document;
 
-@Schema({ timestamps: true })
+@Schema({
+  timestamps: true,
+})
 export class Praise {
   constructor(partial?: Partial<Praise>) {
     if (partial) {

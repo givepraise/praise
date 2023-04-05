@@ -11,7 +11,7 @@ export const FieldErrorMessage = ({
 }: FieldErrorMessageProps): JSX.Element | null => {
   // Subscribe to error messsages concerning specified field
   const {
-    meta: { active, touched, error, submitError, dirtySinceLastSubmit },
+    meta: { touched, error, submitError },
   } = useField(name, {
     subscription: {
       touched: true,
@@ -22,12 +22,9 @@ export const FieldErrorMessage = ({
     },
   });
 
-  return !active &&
-    !dirtySinceLastSubmit &&
-    touched &&
-    (error || submitError) ? (
-    <span className="text-red-500">
+  return touched && (error || submitError) ? (
+    <div className="mt-3 leading-normal text-red-500">
       {submitError ? submitError.message : error}
-    </span>
+    </div>
   ) : null;
 };

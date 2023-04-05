@@ -15,6 +15,8 @@ import { MongoValidationErrorFilter } from './shared/filters/mongo-validation-er
 import { MongoServerErrorFilter } from './shared/filters/mongo-server-error.filter';
 import { MultiTenancyManager } from './database/multi-tenancy-manager';
 import { MigrationsManager } from './database/migrations-manager';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   // Check that all required ENV variables are set
@@ -33,7 +35,10 @@ async function bootstrap() {
   await migrationsManager.run();
 
   // Create an instance of the Nest app
-  const app = await NestFactory.create(AppModule, AppConfig);
+  const app = await NestFactory.create<NestExpressApplication>(
+    AppModule,
+    AppConfig,
+  );
 
   // Apply dependency injection container to the app
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
@@ -57,6 +62,11 @@ async function bootstrap() {
   app.useGlobalFilters(new MongoServerErrorFilter());
   app.useGlobalFilters(new MongoValidationErrorFilter());
   app.useGlobalFilters(new ServiceExceptionFilter());
+
+  // Serve static files from the upload folder
+  app.useStaticAssets(join(__dirname, '../../uploads'), {
+    prefix: '/uploads',
+  });
 
   // If in development mode, generate and serve OpenAPI documentation
   if (process.env.NODE_ENV === 'development') {

@@ -19,7 +19,7 @@ export const QuantifierSummaryTable = (): JSX.Element | null => {
 
   if (!praiseList) return null;
   return (
-    <Box className="p-0">
+    <Box className="!p-0">
       <ul>
         {praiseList?.map((praise) => (
           <PraiseRow praise={praise} key={praise?._id}>

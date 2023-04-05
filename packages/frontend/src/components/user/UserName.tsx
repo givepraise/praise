@@ -2,7 +2,6 @@ import React from 'react';
 import { UserPseudonym } from './UserPseudonym';
 import { User } from '@/model/user/dto/user.dto';
 import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
-import { shortenEthAddress } from '@/utils/string';
 
 interface UserNameProps {
   user?: User;
