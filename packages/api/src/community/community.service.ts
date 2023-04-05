@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { Connection, Types } from 'mongoose';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { Community } from './schemas/community.schema';
 import { PaginatedQueryDto } from '../shared/dto/pagination-query.dto';
@@ -14,7 +14,6 @@ import { errorMessages } from '../shared/exceptions/error-messages';
 import { randomBytes } from 'crypto';
 import { assertOwnersIncludeCreator } from './utils/assert-owners-include-creator';
 import { logger } from '../shared/logger';
-import { DB_URL_ROOT } from '../constants/constants.provider';
 import { MongoClient } from 'mongodb';
 import { MigrationsManager } from '../database/migrations-manager';
 import { databaseExists } from '../database/utils/database-exists';
@@ -28,8 +27,10 @@ export class CommunityService {
   constructor(
     @InjectModel(Community.name, 'praise')
     private communityModel: PaginateModel<Community>,
+    @InjectConnection('praise')
+    private readonly connection: Connection,
   ) {
-    this.mongodb = new MongoClient(DB_URL_ROOT);
+    this.mongodb = connection.getClient();
   }
 
   /**
@@ -139,7 +140,8 @@ export class CommunityService {
 
     community.discordLinkState = DiscordLinkState.ACTIVE;
     await community.save();
-    await this.createDbForCommunity({ community });
+    const migrationsManager = new MigrationsManager();
+    await migrationsManager.migrate(community);
     return community;
   }
 
@@ -159,33 +161,6 @@ export class CommunityService {
     );
   };
 
-  createDbForCommunity = async (params: { community: Community }) => {
-    const { community } = params;
-    try {
-      const communityDbName = dbNameCommunity(community);
-      logger.info(`Setting up community database for ${communityDbName}`);
-      this.mongodb.db(communityDbName);
-
-      // Grant readwrite permissions to new database
-      const dbAdmin = this.mongodb.db().admin();
-      await dbAdmin.command({
-        grantRolesToUser: process.env.MONGO_USERNAME,
-        roles: [{ role: 'readWrite', db: communityDbName }],
-      });
-
-      logger.info(
-        `New db has been created for community, dbName:${communityDbName}`,
-      );
-
-      // Run migrations on new DB
-      const migrationsManager = new MigrationsManager();
-      await migrationsManager.migrate(community);
-    } catch (error) {
-      logger.error('createDbForCommunity error', error.message);
-      throw error;
-    }
-  };
-
   renameDbOfCommunityIfExists = async (params: {
     oldDbName: string;
     newDbName: string;
@@ -199,12 +174,6 @@ export class CommunityService {
         return;
       }
 
-      // Grant readwrite permissions to new database
-      const dbAdmin = this.mongodb.db().admin();
-      await dbAdmin.command({
-        grantRolesToUser: process.env.MONGO_USERNAME,
-        roles: [{ role: 'readWrite', db: newDbName }],
-      });
       const dbTo = this.mongodb.db(newDbName);
 
       const collections = await dbFrom.listCollections().toArray();
