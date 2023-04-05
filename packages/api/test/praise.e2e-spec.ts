@@ -101,7 +101,6 @@ describe('Praise (E2E)', () => {
     let startDate: Date;
     let endDate: Date;
     let dateBetween: Date;
-    let period: Period;
 
     beforeAll(async () => {
       // Clear the database
@@ -136,11 +135,6 @@ describe('Praise (E2E)', () => {
 
       await periodsSeeder.seedPeriod({
         endDate: praises[1].createdAt,
-        status: PeriodStatusType.QUANTIFY,
-      });
-
-      period = await periodsSeeder.seedPeriod({
-        endDate: praises[2].createdAt,
         status: PeriodStatusType.QUANTIFY,
       });
     });

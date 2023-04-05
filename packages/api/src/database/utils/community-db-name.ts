@@ -1,4 +1,2 @@
-import { Community } from '../../community/schemas/community.schema';
-
-export const dbNameCommunity = (community: Community) =>
+export const dbNameCommunity = (community: { hostname: string }) =>
   community.hostname.replace(/\./g, '-');

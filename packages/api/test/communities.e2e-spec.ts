@@ -22,6 +22,10 @@ import {
   communityService,
   communitiesSeeder,
 } from './shared/nest';
+import { databaseExists } from '../src/database/utils/database-exists';
+import { MongoClient } from 'mongodb';
+import { DB_URL_ROOT } from '../src/constants/constants.provider';
+import { dbNameCommunity } from '../src/database/utils/community-db-name';
 
 class LoggedInUser {
   accessToken: string;
@@ -32,8 +36,10 @@ class LoggedInUser {
 describe('Communities (E2E)', () => {
   let setupWebUserAccessToken: string;
   const users: LoggedInUser[] = [];
-
+  let mongodb: MongoClient;
   beforeAll(async () => {
+    mongodb = new MongoClient(DB_URL_ROOT);
+
     // Clear the database
     await usersService.getModel().deleteMany({});
     await communityService.getModel().deleteMany({});
@@ -64,6 +70,10 @@ describe('Communities (E2E)', () => {
 
     const response = await loginUser(app, testingModule, setupWebWallet);
     setupWebUserAccessToken = response.accessToken;
+  });
+
+  afterAll(async () => {
+    await mongodb.close();
   });
 
   describe('POST /api/communities', () => {
@@ -251,11 +261,18 @@ describe('Communities (E2E)', () => {
     let community: Community;
 
     beforeEach(async () => {
+      const hostname = `test.patch.community`;
+      const dbName = dbNameCommunity({ hostname });
       await communityService.getModel().deleteMany({});
+      if (await databaseExists(dbName, mongodb)) {
+        // Delete community db if exists (We create db after linking discord to community)
+        await mongodb.db().dropDatabase({
+          dbName,
+        });
+      }
       community = await communitiesSeeder.seedCommunity({
         name: 'test-community',
-        hostname: 'test-community.givepraise.xyz',
-        database: 'test-community-givepraise-xyz',
+        hostname,
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
@@ -300,7 +317,7 @@ describe('Communities (E2E)', () => {
       expect(response.status).toBe(400);
     });
 
-    test('200 when authenticated as setupWeb and correct data is sent for linking dicord bot to community', async () => {
+    test('200 when authenticated as setupWeb and correct data is sent for linking discord bot to community', async () => {
       const signedMessage = await users[0].wallet.signMessage(
         communityService.generateLinkDiscordMessage({
           communityId: String(community._id),
@@ -323,6 +340,42 @@ describe('Communities (E2E)', () => {
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkState).toBe(DiscordLinkState.ACTIVE);
       expect(rb.isPublic).toBe(true);
+    });
+
+    test('200 should create new db for community, after link it to discord', async () => {
+      const dbName = dbNameCommunity(community);
+
+      // Before linking Discord to community there is no DB for that community
+      // eslint-disable-next-line jest-extended/prefer-to-be-false
+      expect(await databaseExists(dbName, mongodb)).toBe(false);
+
+      const signedMessage = await users[0].wallet.signMessage(
+        communityService.generateLinkDiscordMessage({
+          communityId: String(community._id),
+          guildId: community.discordGuildId as string,
+          nonce: community.discordLinkNonce as string,
+        }),
+      );
+
+      const response = await authorizedPatchRequest(
+        `/communities/${community._id}/discord/link`,
+        app,
+        setupWebUserAccessToken,
+        {
+          signedMessage,
+        },
+      );
+
+      expect(response.status).toBe(200);
+      expect(await databaseExists(dbName, mongodb)).toBe(true);
+
+      const communityDb = mongodb.db(dbName);
+      const migrationDocuments = await communityDb
+        .collection('migrations')
+        .countDocuments();
+
+      // To make sure all migrations has been executed successfully
+      expect(migrationDocuments).toBeGreaterThan(0);
     });
 
     test('400 when someone else wants to link discord to community instead of creator', async () => {
@@ -458,8 +511,7 @@ describe('Communities (E2E)', () => {
       await communityService.getModel().deleteMany({});
       community = await communitiesSeeder.seedCommunity({
         name: randomBytes(10).toString('hex'),
-        hostname: 'test-community.givepraise.xyz',
-        database: 'test-community-givepraise-xyz',
+        hostname: 'test-community',
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
@@ -536,8 +588,7 @@ describe('Communities (E2E)', () => {
     test('400 when name already exists', async () => {
       const newCommunity = await communitiesSeeder.seedCommunity({
         name: 'somename',
-        hostname: 'some-community.givepraise.xyz',
-        database: 'some-community-givepraise-xyz',
+        hostname: 'some-community-givepraise-xyz',
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
@@ -564,7 +615,6 @@ describe('Communities (E2E)', () => {
       await communitiesSeeder.seedCommunity({
         name: 'beefy',
         hostname: 'beefy.xyz',
-        database: 'test-community-givepraise-xyz',
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,

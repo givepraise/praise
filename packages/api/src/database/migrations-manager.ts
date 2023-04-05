@@ -11,7 +11,7 @@ import { logger } from '../shared/logger';
 import { UsersService } from '../users/users.service';
 import { AppMigrationsModule } from './modules/app-migrations.module';
 import { dbUrlCommunity } from './utils/community-db-url';
-import mongoose, { ConnectOptions } from 'mongoose';
+import mongoose, { Connection, ConnectOptions } from 'mongoose';
 
 export class MigrationsManager {
   /**
@@ -19,13 +19,18 @@ export class MigrationsManager {
    * A dynamic module is created for the community db and the context is passed to the migrations.
    */
   async migrate(community: Community) {
+    let mongooseConn;
     try {
       logger.info(`🆙 Starting migrations for: ${community.hostname}`);
 
-      // Connect to the community db
-      const mongooseConn = await mongoose.connect(dbUrlCommunity(community), {
-        useNewUrlParser: true,
-      } as ConnectOptions);
+      try {
+        await mongoose.connect(dbUrlCommunity(community), {
+          useNewUrlParser: true,
+        } as ConnectOptions);
+      } catch (err) {
+        // do nothing
+      }
+      mongooseConn = mongoose.connection;
 
       // Create a dynamic app module for the community
       const app = await NestFactory.createApplicationContext(
@@ -39,7 +44,7 @@ export class MigrationsManager {
       const migrator = new Umzug({
         migrations: { glob: 'src/database/migrations/*.ts' },
         storage: new MongoDBStorage({
-          connection: mongoose.connection,
+          connection: mongooseConn,
         }),
         logger,
         context: {
@@ -57,12 +62,17 @@ export class MigrationsManager {
       // Close the app
       await app.close();
 
-      // Close the db connection
-      await mongooseConn.disconnect();
+      // Cleanup
+      mongoose.connection.close();
 
       logger.info(`✅ Migrations completed for: ${community.hostname}`);
     } catch (error) {
       logger.error(error.message);
+    } finally {
+      if (mongooseConn) {
+        await mongooseConn.close();
+      }
+      mongoose.connection.close();
     }
   }
 

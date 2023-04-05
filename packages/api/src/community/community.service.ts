@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { Connection, Types } from 'mongoose';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { Community } from './schemas/community.schema';
 import { PaginatedQueryDto } from '../shared/dto/pagination-query.dto';
@@ -13,14 +13,25 @@ import { DiscordLinkState } from './enums/discord-link-state';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { randomBytes } from 'crypto';
 import { assertOwnersIncludeCreator } from './utils/assert-owners-include-creator';
+import { logger } from '../shared/logger';
+import { MongoClient } from 'mongodb';
+import { MigrationsManager } from '../database/migrations-manager';
+import { databaseExists } from '../database/utils/database-exists';
+import { dbNameCommunity } from '../database/utils/community-db-name';
 import { PaginateModel } from '../shared/interfaces/paginate-model.interface';
 
 @Injectable()
 export class CommunityService {
+  private mongodb: MongoClient;
+
   constructor(
     @InjectModel(Community.name, 'praise')
     private communityModel: PaginateModel<Community>,
-  ) {}
+    @InjectConnection('praise')
+    private readonly connection: Connection,
+  ) {
+    this.mongodb = connection.getClient();
+  }
 
   /**
    * Convenience method to get the Community Model
@@ -74,12 +85,17 @@ export class CommunityService {
     if (community.owners) {
       assertOwnersIncludeCreator(community.owners, communityDocument.creator);
     }
+    const oldDbName = dbNameCommunity(communityDocument);
 
     for (const [k, v] of Object.entries(community)) {
       communityDocument.set(k, v);
     }
 
     await communityDocument.save();
+    const newDbName = dbNameCommunity(communityDocument);
+    if (oldDbName !== newDbName) {
+      await this.renameDbOfCommunityIfExists({ oldDbName, newDbName });
+    }
     return this.findOneById(communityDocument._id);
   }
 
@@ -124,6 +140,8 @@ export class CommunityService {
 
     community.discordLinkState = DiscordLinkState.ACTIVE;
     await community.save();
+    const migrationsManager = new MigrationsManager();
+    await migrationsManager.migrate(community);
     return community;
   }
 
@@ -141,5 +159,51 @@ export class CommunityService {
       `PRAISE COMMUNITY ID:\n${params.communityId}\n\n` +
       `NONCE:\n${params.nonce}`
     );
+  };
+
+  renameDbOfCommunityIfExists = async (params: {
+    oldDbName: string;
+    newDbName: string;
+  }): Promise<void> => {
+    const { oldDbName, newDbName } = params;
+    logger.info(`Setting up community database for `, params);
+    try {
+      const dbFrom = this.mongodb.db(oldDbName);
+      if (!(await databaseExists(oldDbName, this.mongodb))) {
+        // There is no db for this community yet, so we dont need to anything
+        return;
+      }
+
+      const dbTo = this.mongodb.db(newDbName);
+
+      const collections = await dbFrom.listCollections().toArray();
+      for (const collection of collections) {
+        const collectionName = collection.name;
+
+        // Copy collection data
+        const collectionData = await dbFrom
+          .collection(collectionName)
+          .find()
+          .toArray();
+        const newCollection = dbTo.collection(collectionName);
+        if (collectionData.length === 0) {
+          // Skip empty collections
+          continue;
+        }
+        await newCollection.insertMany(collectionData);
+
+        // Copy indexes
+        const indexes = await dbFrom.collection(collectionName).indexes();
+        for (const index of indexes) {
+          await newCollection.createIndex(index.key, index);
+        }
+
+        // Drop old database
+        await this.mongodb.db().dropDatabase({ dbName: oldDbName });
+      }
+    } catch (error) {
+      logger.error('createDbForCommunity error', error.message);
+      throw error;
+    }
   };
 }

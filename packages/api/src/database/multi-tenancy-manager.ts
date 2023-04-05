@@ -22,11 +22,9 @@ export class MultiTenancyManager {
   private readonly singleSetupHostname: string =
     process.env.NODE_ENV === 'testing' ? HOSTNAME_TEST : process.env.HOST || '';
 
-  private singleSetupCommunityDbName: string = (process.env.NODE_ENV ===
-  'testing'
-    ? HOSTNAME_TEST
-    : process.env.HOST || ''
-  ).replace(/\./g, '-');
+  private singleSetupCommunityDbName: string = dbNameCommunity({
+    hostname: this.singleSetupHostname,
+  });
 
   private communityModel: mongoose.Model<Community>;
 
@@ -114,13 +112,6 @@ export class MultiTenancyManager {
         // Drop old collection
         await dbFrom.collection(collectionName).drop();
       }
-
-      // Grant readwrite permissions to new database
-      const dbAdmin = this.mongodb.db().admin();
-      await dbAdmin.command({
-        grantRolesToUser: process.env.MONGO_USERNAME,
-        roles: [{ role: 'readWrite', db: this.singleSetupCommunityDbName }],
-      });
     } catch (error) {
       logger.error(error.message);
     }
@@ -200,6 +191,7 @@ export class MultiTenancyManager {
               `${dbNameCommunity(community)}: Creating admin user ${eth}`,
             );
             await users.insertOne({
+              ethereumAddress: eth, // For backwards compatibility
               identityEthAddress: eth,
               rewardsEthAddress: eth,
               username: eth.substring(0, 20).toLowerCase(),
@@ -212,6 +204,7 @@ export class MultiTenancyManager {
       logger.error(error.message);
     }
   }
+
   /**
    * Run the multi-tenancy manager.
    *
@@ -229,13 +222,16 @@ export class MultiTenancyManager {
   async run() {
     logger.info('Running multi-tenancy manager...');
 
+    let mongooseConn;
+
     try {
       // Create db connection to admin database
       this.mongodb = new MongoClient(DB_URL_ROOT);
+      await this.mongodb.connect(); // Connect the MongoClient instance
 
       // Create db connection. Leaving out the db name will connect to the
       // default database, specified in the .env file.
-      const mongooseConn = await mongoose.connect(DB_URL_MAIN_DB, {
+      mongooseConn = await mongoose.connect(DB_URL_MAIN_DB, {
         useNewUrlParser: true,
       } as ConnectOptions);
 
@@ -256,12 +252,16 @@ export class MultiTenancyManager {
 
       // Create or update users with admin role
       await this.crudOwnersOnAllDatabases();
-
-      // Cleanup
-      await mongooseConn.disconnect();
-      await this.mongodb.close();
     } catch (error) {
       logger.error(error.message);
+    } finally {
+      // Cleanup
+      if (mongooseConn) {
+        await mongooseConn.disconnect();
+      }
+      if (this.mongodb) {
+        await this.mongodb.close();
+      }
     }
   }
 }
