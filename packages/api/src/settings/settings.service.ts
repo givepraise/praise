@@ -107,8 +107,6 @@ export class SettingsService {
     });
     if (!setting) throw new ApiException(errorMessages.SETTING_NOT_FOUND);
 
-    const originalValue = setting.value;
-
     if (typeof data.value === 'undefined') {
       throw new ApiException(errorMessages.VALUE_IS_REQUIRED_FIELD_FOR_SETTING);
     }
@@ -121,13 +119,6 @@ export class SettingsService {
       throw new ApiException(errorMessages.INVALID_VALUE_FIELD_FOR_SETTING);
     }
     setting.value = validatedValue;
-
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.SETTING,
-      description: `Updated global setting "${setting.label}" from "${
-        originalValue || ''
-      }" to "${setting.value || ''}"`,
-    });
 
     await setting.save();
     return this.findOneById(_id);
