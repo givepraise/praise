@@ -1,8 +1,5 @@
-import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
+import { faHeartCrack } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useSetRecoilState } from 'recoil';
-import { useHistory } from 'react-router-dom';
-import { ActiveTokenSet } from '@/model/auth/auth';
 import { Button } from '@/components/ui/Button';
 
 interface NotFoundProps {
@@ -11,27 +8,21 @@ interface NotFoundProps {
 }
 
 const ErrorPage = ({ error }: NotFoundProps): JSX.Element => {
-  const history = useHistory();
-  const setActiveTokenSet = useSetRecoilState(ActiveTokenSet);
-
-  const logout = (): void => {
-    setActiveTokenSet(undefined);
-    history.replace('/');
-  };
-
   return (
     <div className="flex h-screen">
       <div className="m-auto text-center">
-        <FontAwesomeIcon icon={faPrayingHands} size="2x" />
-        <br />
-        <h2 className="mt-3">{error.response?.statusText}</h2>
+        <FontAwesomeIcon icon={faHeartCrack} size="2x" />
+        <h2 className="mt-3 text-xl font-semibold">
+          Something is broken:
+          {error.response?.statusText}
+        </h2>
         {error.response?.data?.message ? (
           <div className="mt-3">{error.response.data.message}</div>
         ) : error.message ? (
           <div className="mt-3">{error.message}</div>
         ) : null}
-        <Button className="mt-5" onClick={logout}>
-          Login
+        <Button className="mt-5" onClick={(): void => window.location.reload()}>
+          Start over
         </Button>
       </div>
     </div>

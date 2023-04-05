@@ -20,7 +20,7 @@ export const ReceiverSummaryHead = (): JSX.Element | null => {
   return (
     <Box className="mb-5">
       <h2>
-        <UserAvatarAndName userAccount={receiver} />
+        <UserAvatarAndName userId={receiver.user} />
       </h2>
       <div className="mt-5">
         Period: {periodDetails.name}

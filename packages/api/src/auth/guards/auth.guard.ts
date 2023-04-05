@@ -9,6 +9,8 @@ import * as bcrypt from 'bcrypt';
 import { ApiException } from '../../shared/exceptions/api-exception';
 import { errorMessages } from '../../shared/exceptions/error-messages';
 import { ApiKeyService } from '../../api-key/api-key.service';
+import { AuthContext } from '../auth-context';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -32,10 +34,10 @@ export class AuthGuard implements CanActivate {
     if (index > -1) {
       const key = this.constantsProvider.apiKeys[index];
       const role = this.constantsProvider.apiKeyRoles[index];
-      request.user = {
+      request.authContext = {
         roles: [AuthRole[role as keyof typeof AuthRole]],
         apiKey: key,
-      };
+      } as AuthContext;
       return true;
     }
 
@@ -45,11 +47,10 @@ export class AuthGuard implements CanActivate {
     // Check if the API key has been configured in the database.
     const key = await this.apiKeyService.findOneByHash(hash);
     if (key) {
-      request.user = {
+      request.authContext = {
         roles: [key.role],
-        apiKey: key.hash,
         apiKeyId: key._id,
-      };
+      } as AuthContext;
       return true;
     }
     return false;
@@ -80,7 +81,11 @@ export class AuthGuard implements CanActivate {
         return false;
       }
 
-      request.user = payload;
+      request.authContext = {
+        userId: new Types.ObjectId(payload.userId),
+        identityEthAddress: payload.identityEthAddress,
+        roles: payload.roles,
+      } as AuthContext;
     } catch (e) {
       return false;
     }

@@ -12,12 +12,14 @@ import {
   UserAccount,
   UserAccountSchema,
 } from '../useraccounts/schemas/useraccounts.schema';
+import { User, UserSchema } from '../users/schemas/users.schema';
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: EventLog.name, schema: EventLogSchema },
       { name: EventLogType.name, schema: EventLogTypeSchema },
       { name: UserAccount.name, schema: UserAccountSchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [EventLogController],

@@ -20,7 +20,7 @@ export const GiverSummaryHead = (): JSX.Element | null => {
   return (
     <Box className="mb-5">
       <h2>
-        <UserAvatarAndName userAccount={giver} />
+        <UserAvatarAndName userId={giver.user} />
       </h2>
       <div className="mt-5">
         Period: {periodDetails.name}

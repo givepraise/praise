@@ -53,7 +53,7 @@ const StartPage = (): JSX.Element => {
         </Button>
       </div>
 
-      <Box className="p-0">
+      <Box className="!p-0">
         {view === pageViews.praiseView ? <PraiseTable /> : <MyPraiseTable />}
       </Box>
     </Page>

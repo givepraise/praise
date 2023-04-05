@@ -55,20 +55,18 @@ export class UserAccountsService {
 
     const userAccount = new this.userAccountModel(createUserAccountInputDto);
     await userAccount.save();
-
-    this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.USER_ACCOUNT,
-      description: `Created UserAccount id: ${userAccount.accountId}`,
-    });
-
-    return userAccount;
+    await userAccount.populate('user');
+    return userAccount.toObject();
   }
 
   /**
    * Find the Useraccount by objectId
    */
   async findOneById(_id: Types.ObjectId): Promise<UserAccount> {
-    const userAccount = await this.userAccountModel.findOne({ _id }).lean();
+    const userAccount = await this.userAccountModel
+      .findOne({ _id })
+      .populate('user')
+      .lean();
     if (!userAccount)
       throw new ApiException(errorMessages.USER_ACCOUNT_NOT_FOUND);
     return userAccount;
@@ -79,7 +77,7 @@ export class UserAccountsService {
    */
   async findAll(filter?: FindUserAccountFilterDto): Promise<UserAccount> {
     const query = filter || {};
-    return await this.getModel().find(query).lean();
+    return await this.getModel().find(query).populate('user').lean();
   }
 
   /**
@@ -88,6 +86,7 @@ export class UserAccountsService {
   async findLatest(): Promise<UserAccount> {
     const userAccount = await this.userAccountModel
       .find()
+      .populate('user')
       .limit(1)
       .sort({ $natural: -1 })
       .lean();
@@ -140,12 +139,7 @@ export class UserAccountsService {
     }
 
     await userAccount.save();
-
-    this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.USER_ACCOUNT,
-      description: `Updated UserAccount id: ${userAccount.accountId}`,
-    });
-
+    await userAccount.populate('user');
     return userAccount.toObject();
   }
 

@@ -7,6 +7,7 @@ import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { IsOptional, IsString } from 'class-validator';
 import { has } from 'lodash';
 import { IsObjectId } from '../../shared/validators/is-object-id.validator';
+import { UserNoUserAccountsDto } from '../../users/dto/user-no-user-accounts.dto';
 
 export type UserAccountDocument = UserAccount & Document;
 
@@ -26,15 +27,9 @@ export class UserAccount {
   @ExposeId()
   _id: Types.ObjectId;
 
-  @ApiProperty({
-    example: '63b428f7d9ca4f6ff5370d05',
-    type: 'string',
-    required: false,
-  })
-  @ExposeId()
+  @ApiProperty({ type: UserNoUserAccountsDto, required: false })
   @Type(() => User)
   @IsOptional()
-  @IsObjectId()
   @Prop({
     type: SchemaTypes.ObjectId,
     ref: 'User',

@@ -89,10 +89,11 @@ describe('UserAccountsController (E2E)', () => {
       expect(response.body.platform).toEqual('DISCORD');
       expect(response.body.avatarId).toEqual(avatarId);
       expect(response.body.activateToken).toEqual('token1234567890');
-      expect(String(response.body.user)).toEqual(String(users[0]._id));
+      expect(response.body.user).toBeValidClass(User);
+      expect(String(response.body.user._id)).toEqual(String(users[0]._id));
     });
 
-    const createUser = (override?: any) => {
+    const createUserAccount = (override?: any) => {
       const defaultAccount = {
         accountId: faker.internet.mac(),
         name: faker.internet.userName().substring(0, 10),
@@ -108,21 +109,27 @@ describe('UserAccountsController (E2E)', () => {
 
     // Test with missing fields
     test('400 when missing fields', async () => {
-      await authorizedPostRequest('/useraccounts', app, accessToken, {
-        accountId: String(users[0]._id),
-      }).expect(400);
+      const response = await authorizedPostRequest(
+        '/useraccounts',
+        app,
+        accessToken,
+        {
+          accountId: String(users[0]._id),
+        },
+      );
+      expect(response.status).toBe(400);
     });
 
     // Test for duplicate account
     test('400 when account already exists', async () => {
-      await createUser();
-      await createUser().expect(400);
+      await createUserAccount();
+      await createUserAccount().expect(400);
     });
 
     // Test for duplicate account
     test('201 when same account details and different platform', async () => {
-      await createUser();
-      await createUser({ platform: 'OTHER' }).expect(201);
+      await createUserAccount();
+      await createUserAccount({ platform: 'OTHER' }).expect(201);
     });
 
     // Test with invalid fields
@@ -146,64 +153,64 @@ describe('UserAccountsController (E2E)', () => {
 
     // Fail if platform and accountId already exists
     test('400 when user account already exists for platform and account id', async () => {
-      await createUser({ accountId: '123456123456' });
-      await createUser({ accountId: '123456123456' }).expect(400);
+      await createUserAccount({ accountId: '123456123456' });
+      await createUserAccount({ accountId: '123456123456' }).expect(400);
     });
 
     // Fail if platform and name already exists
     test('400 when user account already exists for platform and name', async () => {
-      await createUser({ name: 'samename' });
-      await createUser({ name: 'samename' }).expect(400);
+      await createUserAccount({ name: 'samename' });
+      await createUserAccount({ name: 'samename' }).expect(400);
     });
 
     // Fail when user is not found
     test('400 when user is not found', async () => {
-      createUser({ user: new Types.ObjectId().toString() }).expect(400);
+      createUserAccount({ user: new Types.ObjectId().toString() }).expect(400);
     });
 
     // Fail when user is invalid ObjectId
     test('400 when user is invalid ObjectId', async () => {
-      createUser({ user: 'invalid' }).expect(400);
+      createUserAccount({ user: 'invalid' }).expect(400);
     });
 
     // Fail when accountId is too short
     test('400 when accountId is too short', async () => {
-      await createUser({ accountId: '0' }).expect(400);
+      await createUserAccount({ accountId: '0' }).expect(400);
     });
 
     // Fail when accountId is too long
     test('400 when accountId is too long', async () => {
-      await createUser({ accountId: '0'.repeat(300) }).expect(400);
+      await createUserAccount({ accountId: '0'.repeat(300) }).expect(400);
     });
 
     // Fail when name is too short
     test('400 when name is too short', async () => {
-      await createUser({ name: 'a' }).expect(400);
+      await createUserAccount({ name: 'a' }).expect(400);
     });
 
     // Fail when name is too long
     test('400 when name is too long', async () => {
-      await createUser({ name: 'a'.repeat(30) }).expect(400);
+      await createUserAccount({ name: 'a'.repeat(30) }).expect(400);
     });
 
     // Fail when avatarId is too short
     test('400 when avatarId is too short', async () => {
-      await createUser({ avatarId: 'a' }).expect(400);
+      await createUserAccount({ avatarId: 'a' }).expect(400);
     });
 
     // Fail when avatarId is too long
     test('400 when avatarId is too long', async () => {
-      await createUser({ avatarId: 'a'.repeat(300) }).expect(400);
+      await createUserAccount({ avatarId: 'a'.repeat(300) }).expect(400);
     });
 
     // Fail when platform is too short
     test('400 when platform is too short', async () => {
-      await createUser({ platform: 'a' }).expect(400);
+      await createUserAccount({ platform: 'a' }).expect(400);
     });
 
     // Fail when platform is too long
     test('400 when platform is too long', async () => {
-      await createUser({ platform: 'a'.repeat(300) }).expect(400);
+      await createUserAccount({ platform: 'a'.repeat(300) }).expect(400);
     });
   });
 
@@ -271,7 +278,7 @@ describe('UserAccountsController (E2E)', () => {
       expect(response.body.platform).toEqual('DISCORD');
       expect(response.body.avatarId).toEqual(avatarId);
       expect(response.body.activateToken).toEqual('token09876token');
-      expect(String(response.body.user)).toEqual(String(userAccounts[0].user));
+      expect(response.body.user).toBeValidClass(User);
     });
 
     // Should not be allowed to delete a required field
@@ -394,12 +401,13 @@ describe('UserAccountsController (E2E)', () => {
       expect(response.body).toBeValidClass(UserAccount);
     });
 
-    test('find  user account by accountId', async () => {
+    test('200 find user account by accountId', async () => {
       const response = await authorizedGetRequest(
         `/useraccounts?accountId=${userAccounts[0].accountId}`,
         app,
         accessToken,
-      ).expect(200);
+      );
+      expect(response.status).toBe(200);
       expect(response.body[0]._id).toBe(String(userAccounts[0]._id));
       expect(response.body[0].activateToken).toBeUndefined();
     });
