@@ -34,7 +34,8 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
     setOpenApiKeyModalPreview(false);
   };
 
-  const handleOpenApiKeyModalDelete = (id: string): void => {
+  const handleOpenApiKeyModalDelete = (id: string | null): void => {
+    console.log(id);
     setOpenApiKeyModalDelete(true);
     setDeleteKeyID(id);
   };

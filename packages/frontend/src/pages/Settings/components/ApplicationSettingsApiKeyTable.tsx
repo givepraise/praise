@@ -10,9 +10,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBackspace } from '@fortawesome/free-solid-svg-icons';
 import Button from '@mui/material/Button';
 
+type ApiKeyTableProps = {
+  handleDelete: (deleteKeyID: string) => void;
+};
+
 export const ApplicationSettingsApiKeyTable = ({
   handleDelete,
-}): JSX.Element => {
+}: ApiKeyTableProps): JSX.Element => {
   const apiKeys = useRecoilValue(AllApiKeys);
 
   const columns = React.useMemo(
@@ -58,11 +62,17 @@ export const ApplicationSettingsApiKeyTable = ({
       },
       {
         Header: '',
-        accessor: 'delete',
+        accessor: '_id',
         className: 'pl-5 text-left',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => {
           return (
-            <Button onClick={handleDelete(data._id)}>
+            <Button
+              onClick={(event): void => {
+                event.stopPropagation();
+                handleDelete(data.value);
+              }}
+            >
               <FontAwesomeIcon
                 icon={faBackspace}
                 className="w-5 h-4 text-gray-500"
