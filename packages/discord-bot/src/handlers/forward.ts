@@ -1,12 +1,6 @@
 /* TODO - Replace db access with api2 calls */
 
 import { GuildMember } from 'discord.js';
-// import { logEvent } from 'api/dist/eventlog/utils';
-import { UserModel } from 'api/dist/user/entities';
-import { EventLogTypeKey } from 'api/dist/eventlog/types';
-import { logEvent } from 'api/dist/eventlog/utils';
-import { UserRole } from 'api/dist/user/types';
-import { settingValue } from 'api/dist/shared/settings';
 import { getReceiverData } from '../utils/getReceiverData';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getUser } from '../utils/getUser';
@@ -25,13 +19,10 @@ import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
-<<<<<<< HEAD
 import { createForward } from '../utils/createForward';
 import { apiClient } from '../utils/api';
 import { forwardSuccess } from '../utils/embeds/praiseEmbeds';
-=======
 import { logger } from '../utils/logger';
->>>>>>> origin/main
 
 /**
  * Execute command /firward

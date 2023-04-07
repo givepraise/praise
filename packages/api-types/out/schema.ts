@@ -225,12 +225,7 @@ export interface components {
     UserAccount: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
-<<<<<<< HEAD
-      /** @example 63b428f7d9ca4f6ff5370d05 */
-      user: string | components["schemas"]["User"];
-=======
       user?: components["schemas"]["UserNoUserAccountsDto"];
->>>>>>> origin/main
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */

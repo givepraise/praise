@@ -1,9 +1,3 @@
-// import { EventLogTypeKey } from 'api/dist/eventlog/types';
-// import { logEvent } from 'api/dist/eventlog/utils';
-import { PraiseModel } from 'api/dist/praise/entities';
-import { EventLogTypeKey } from 'api/dist/eventlog/types';
-import { logEvent } from 'api/dist/eventlog/utils';
->>>>>>> origin/main
 import { GuildMember, User } from 'discord.js';
 import { getReceiverData } from '../utils/getReceiverData';
 import {
@@ -24,7 +18,6 @@ import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
 import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
-<<<<<<< HEAD
 import { apiClient } from '../utils/api';
 import { PraiseItem } from '../utils/api-schema';
 import { Setting } from '../utils/api-schema';
