@@ -95,7 +95,7 @@ const EventLogsPage = (): JSX.Element => {
         <p>A log of all user actions that change the database state.</p>
       </Box>
 
-      <Box className="p-0 ">
+      <Box className="!p-0">
         <div className="flex mb-8">
           {/* Filter */}
           <div className="w-3/12 mt-5 mb-5 ml-5 mr-4">

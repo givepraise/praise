@@ -1,9 +1,9 @@
 import { Client, GatewayIntentBits } from 'discord.js';
-import { logger } from 'api/dist/shared/logger';
 import { envCheck } from 'api/dist/pre-start/envCheck';
 import { DiscordClient } from './interfaces/DiscordClient';
 import { registerCommands } from './utils/registerCommands';
 import { requiredEnvVariables } from './pre-start/env-required';
+import { logger } from './utils/logger';
 
 // Check for required ENV variables
 envCheck(requiredEnvVariables);

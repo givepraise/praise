@@ -1,6 +1,6 @@
 {
   "name": "discord-bot",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "license": "GPL-3.0-or-later",
   "description": "The Praise Discord bot is the main way for users to interact with the Praise system.",
   "dependencies": {
@@ -14,7 +14,9 @@
     "env-cmd": "^10.1.0",
     "mongoose": "^6.10.2",
     "randomstring": "^1.2.2",
-    "ts-node": "^10.5.0"
+    "ts-node": "^10.5.0",
+    "winston": "^3.8.2",
+    "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
     "@types/randomstring": "^1.1.8",

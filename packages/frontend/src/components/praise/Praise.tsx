@@ -17,13 +17,13 @@ import { SinglePeriodByDate } from '@/model/periods/periods';
 import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { UserPopover } from '@/components/user/UserPopover';
 import { UserName } from '@/components/user/UserName';
-import { useQuantifyPraise } from '@/model/praise/praise';
 import { SourceName } from './SourceName';
 import { UserAvatarAndName } from '../user/UserAvatarAndName';
 import { InlineLabelClosable } from '../ui/InlineLabelClosable';
 import { Praise as PraiseDto } from '@/model/praise/praise.dto';
 import { idLabel } from '@/model/praise/praise.utils';
 import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
+import { useQuantifyPraise } from '../../model/quantification/quantification';
 
 interface Props {
   praise: PraiseDto;
@@ -60,13 +60,8 @@ export const Praise = ({
     (event: React.MouseEvent<HTMLTableRowElement>) => {
       event.stopPropagation();
 
-      const userId =
-        userAccount && typeof userAccount.user === 'object'
-          ? userAccount.user._id
-          : (userAccount?.user as string);
-
-      if (userId) {
-        history.push(`/users/${userId}`);
+      if (userAccount && userAccount.user) {
+        history.push(`/users/${userAccount.user._id}`);
       }
     };
 

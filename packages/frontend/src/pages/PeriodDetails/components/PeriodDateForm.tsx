@@ -44,10 +44,12 @@ export const PeriodDateForm = (): JSX.Element | null => {
   // Is only called if validate is successful
   const onSubmit = async (values: Record<string, string>): Promise<void> => {
     if (!period) return; // Only save if endDate has changed
-    const newPeriod = { ...period };
-    newPeriod.endDate = `${values.endDate}T23:59:59.999Z`;
+    const updates = {
+      name: period.name,
+      endDate: `${values.endDate}T23:59:59.999Z`,
+    };
 
-    const response = await updatePeriod(newPeriod._id, newPeriod);
+    const response = await updatePeriod(period._id, updates);
     if (response) {
       if (isResponseOk(response)) {
         toast.success('Period date saved');

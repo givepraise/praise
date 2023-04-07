@@ -2,7 +2,6 @@ import React from 'react';
 import { UserPseudonym } from './UserPseudonym';
 import { User } from '@/model/user/dto/user.dto';
 import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
-import { shortenEthAddress } from '@/utils/string';
 
 interface UserNameProps {
   user?: User;
@@ -28,14 +27,11 @@ const WrappedUserName = ({
     user ||
     (typeof userAccount?.user === 'object' ? userAccount?.user : undefined);
 
-  if (localUser) {
+  if (localUser?.username) {
     if (usePseudonym && periodId) {
       name = <UserPseudonym userId={localUser._id} periodId={periodId} />;
     } else {
-      name =
-        localUser.username.length === 42 && localUser.username.startsWith('0x')
-          ? shortenEthAddress(localUser.username)
-          : localUser.username;
+      name = localUser.username;
     }
   } else {
     if (userAccount) {

@@ -13,7 +13,7 @@ export interface GithubResponse {
 export const GithubVersionQuery = selector({
   key: 'GithubVersionQuery',
   get: ({ get }): AxiosResponse<GithubResponse> => {
-    const repoOwner = 'commons-stack';
+    const repoOwner = 'givepraise';
     const repoName = 'praise';
 
     return get(
@@ -32,7 +32,7 @@ interface PraiseAppVersion {
 
 export const usePraiseAppVersion = (): PraiseAppVersion => {
   const appVersion: PraiseAppVersion = {
-    current: '0.13.0', //TODO: get this from package.json
+    current: '0.13.1', //TODO: get this from package.json
     latest: undefined,
     newVersionAvailable: false,
   };

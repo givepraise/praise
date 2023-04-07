@@ -1,6 +1,9 @@
 // import { EventLogTypeKey } from 'api/dist/eventlog/types';
 // import { logEvent } from 'api/dist/eventlog/utils';
-import { logger } from 'api/dist/shared/logger';
+import { PraiseModel } from 'api/dist/praise/entities';
+import { EventLogTypeKey } from 'api/dist/eventlog/types';
+import { logEvent } from 'api/dist/eventlog/utils';
+>>>>>>> origin/main
 import { GuildMember, User } from 'discord.js';
 import { getReceiverData } from '../utils/getReceiverData';
 import {
@@ -21,12 +24,13 @@ import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
 import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
-// import { Types } from 'mongoose';
+<<<<<<< HEAD
 import { apiClient } from '../utils/api';
 import { PraiseItem } from '../utils/api-schema';
 import { Setting } from '../utils/api-schema';
 import { settingValueRealized } from '../utils/settingsUtil';
 
+import { logger } from '../utils/logger';
 /**
  * Execute command /praise
  *  Creates praises with a given receiver and reason

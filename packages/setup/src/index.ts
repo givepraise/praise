@@ -155,6 +155,7 @@ const run = async (): Promise<void> => {
       process.env.MONGO_INITDB_ROOT_PASSWORD || randomString(),
     MONGO_USERNAME: process.env.MONGO_USERNAME,
     MONGO_PASSWORD: process.env.MONGO_PASSWORD || randomString(),
+    MONGO_DB: process.env.MONGO_DB,
     HOST: answers.HOST,
     API_URL: serverUrl(answers),
     API_PORT: process.env.API_PORT,
@@ -172,7 +173,6 @@ const run = async (): Promise<void> => {
     DISCORD_TOKEN: answers.DISCORD_TOKEN,
     DISCORD_CLIENT_ID: answers.DISCORD_CLIENT_ID,
     DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,
-    DISCORD_BOT_API_KEY: process.env.DISCORD_BOT_API_KEY || discordBotApiKey,
   };
 
   setupAndWriteEnv(rootEnvTemplatePath, rootEnvPath, rootEnv);

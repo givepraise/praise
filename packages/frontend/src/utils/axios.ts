@@ -10,9 +10,14 @@ const isJsonBlob = (data): data is Blob =>
  * @param err
  */
 export const handleErrors = (err: AxiosError): AxiosError => {
-  // Any HTTP Code which is not 2xx will be considered as error
-
   if (err?.response) {
+    if (err.response.status === 401) {
+      // If the response is 401, it means the user is not logged in
+      // Redirect to login page
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
     // If the response is a json blob, parse it and display the error message
     if (isJsonBlob(err.response.data)) {
       void (err.response.data as Blob).text().then((text) => {

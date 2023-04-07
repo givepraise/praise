@@ -125,21 +125,9 @@ export interface paths {
     /** Find praise item by id */
     get: operations["PraiseController_findOne"];
   };
-  "/api/praise/{id}/quantify": {
-    /** Quantify praise item by id */
-    patch: operations["PraiseController_quantify"];
-  };
-  "/api/praise/quantify": {
-    /** Quantify multiple praise items */
-    patch: operations["PraiseController_quantifyMultiple"];
-  };
   "/api/praise/forward": {
     /** Forward praise item */
     post: operations["PraiseController_forward"];
-  };
-  "/api/quantifications/export": {
-    /** Exports quantifications document to json or csv. */
-    get: operations["QuantificationsController_export"];
   };
   "/api/useraccounts": {
     /** UserAccount list */
@@ -173,11 +161,11 @@ export interface paths {
   };
   "/api/auth/eth-signature/nonce": {
     /** Generates a nonce for the user and returns it */
-    post: operations["AuthController_nonce"];
+    post: operations["EthSignatureController_nonce"];
   };
   "/api/auth/eth-signature/login": {
     /** Verifies a user's signature and returns a JWT token */
-    post: operations["AuthController_login"];
+    post: operations["EthSignatureController_login"];
   };
   "/api/communities": {
     get: operations["CommunityController_findAll"];
@@ -193,6 +181,18 @@ export interface paths {
     /** Link discord to community */
     patch: operations["CommunityController_linkDiscord"];
   };
+  "/api/quantifications/export": {
+    /** Exports quantifications document to json or csv. */
+    get: operations["QuantificationsController_export"];
+  };
+  "/api/quantifications/multiple": {
+    /** Quantify multiple praise items */
+    patch: operations["QuantificationsController_quantifyMultiple"];
+  };
+  "/api/quantifications/{id}": {
+    /** Quantify praise item by id */
+    patch: operations["QuantificationsController_quantify"];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -207,11 +207,30 @@ export interface components {
       /** @example 0xdb4bb91357b23083ec2a36dc1fe23e59b71434fc020542da7e983df206ed06611e275eb30e239508f9758c0608dca6cef5619c41b50a48f22bdb36a8dabc2d201c */
       signature: string;
     };
-    UserAccountNoUserId: {
+    UserNoUserAccountsDto: {
+      /** @example 5f9f1b9b9b9b9b9b9b9b9b9b */
+      _id: string;
+      /** @example 0xAAB27b150451726EC7738aa1d0A94505c8729bd1 */
+      identityEthAddress: string;
+      /** @example 0xAAB27b150451726EC7738aa1d0A94505c8729bd1 */
+      rewardsEthAddress: string;
+      /** @example darth */
+      username: string;
+      roles: readonly ("USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB")[];
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+    };
+    UserAccount: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
+<<<<<<< HEAD
       /** @example 63b428f7d9ca4f6ff5370d05 */
       user: string | components["schemas"]["User"];
+=======
+      user?: components["schemas"]["UserNoUserAccountsDto"];
+>>>>>>> origin/main
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -234,13 +253,8 @@ export interface components {
       rewardsEthAddress: string;
       /** @example darth */
       username: string;
-      /**
-       * @example [
-       *   "USER"
-       * ]
-       */
-      roles: readonly (string)[];
-      accounts: readonly (components["schemas"]["UserAccountNoUserId"])[];
+      roles: readonly ("USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB")[];
+      accounts: readonly (components["schemas"]["UserAccount"])[];
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -255,13 +269,8 @@ export interface components {
       rewardsEthAddress: string;
       /** @example darth */
       username: string;
-      /**
-       * @example [
-       *   "USER"
-       * ]
-       */
-      roles: readonly (string)[];
-      accounts: readonly (components["schemas"]["UserAccountNoUserId"])[];
+      roles: readonly ("USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB")[];
+      accounts: readonly (components["schemas"]["UserAccount"])[];
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -286,8 +295,8 @@ export interface components {
       _id: string;
       /** @example June 2021 */
       name: string;
-      /** @example OPEN */
-      status: string;
+      /** @enum {string} */
+      status: "OPEN" | "QUANTIFY" | "CLOSED";
       /** Format: date-time */
       endDate: string;
       /** Format: date-time */
@@ -303,7 +312,7 @@ export interface components {
       /** @example 12 */
       totalPages: number;
       /** @example 2 */
-      page: number;
+      page?: number;
       /** @example 1 */
       pagingCounter: number;
       /** @example false */
@@ -311,10 +320,11 @@ export interface components {
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: number;
+      prevPage?: Record<string, never>;
       /** @example 3 */
-      nextPage: number;
+      nextPage?: Record<string, never>;
       docs: readonly (components["schemas"]["Period"])[];
+      meta?: Record<string, never>;
     };
     Quantification: {
       /** @example 639b178f19296ee0f2d0585d */
@@ -386,8 +396,8 @@ export interface components {
       _id: string;
       /** @example June 2021 */
       name: string;
-      /** @example OPEN */
-      status: string;
+      /** @enum {string} */
+      status: "OPEN" | "QUANTIFY" | "CLOSED";
       /** Format: date-time */
       endDate: string;
       /** Format: date-time */
@@ -414,7 +424,7 @@ export interface components {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
       /** @example 621f802b813dbdba9eeaf7d7 */
-      user: string | components["schemas"]["User"];
+      user?: string;
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -470,24 +480,6 @@ export interface components {
       /** @example 639b178f19296ee0f2d05666 */
       newQuantifierId: string;
     };
-    UserAccount: {
-      /** @example 63b428f7d9ca4f6ff5370d05 */
-      _id: string;
-      /** @example 63b428f7d9ca4f6ff5370d05 */
-      user: string | components["schemas"]["User"];
-      /** @example 098098098098098 */
-      accountId: string;
-      /** @example darth#6755 */
-      name: string;
-      /** @example 098098098087097 */
-      avatarId: string;
-      /** @example DISCORD */
-      platform: string;
-      /** Format: date-time */
-      createdAt: string;
-      /** Format: date-time */
-      updatedAt: string;
-    };
     Praise: {
       /** @example 639b178f19296ee0f2d0585d */
       _id: string;
@@ -514,9 +506,25 @@ export interface components {
       praises: readonly (components["schemas"]["Praise"])[];
       period: components["schemas"]["PeriodDetailsDto"];
     };
+    UserAccountNoUserId: {
+      /** @example 63b428f7d9ca4f6ff5370d05 */
+      _id: string;
+      /** @example 098098098098098 */
+      accountId: string;
+      /** @example darth#6755 */
+      name: string;
+      /** @example 098098098087097 */
+      avatarId: string;
+      /** @example DISCORD */
+      platform: string;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+    };
     EventLogType: {
-      /** @example PERMISSION */
-      key: string;
+      /** @enum {string} */
+      key: "PERMISSION" | "AUTHENTICATION" | "PERIOD" | "PRAISE" | "QUANTIFICATION" | "SETTING" | "USER_ACCOUNT";
       /** @example An action that changes user permissions */
       label: string;
       /** @example A user's permissions were changed */
@@ -525,15 +533,14 @@ export interface components {
     EventLog: {
       /** @example 621f802b813dbdba9eeaf7d7 */
       _id: string;
+      user?: components["schemas"]["User"];
+      useraccount?: components["schemas"]["UserAccountNoUserId"];
       /** @example 621f802b813dbdba9eeaf7d7 */
-      user: string;
-      useraccount: components["schemas"]["UserAccountNoUserId"];
+      apiKey?: string;
       /** @example 621f802b813dbdba9eeaf7d7 */
-      apiKey: string;
-      /** @example 621f802b813dbdba9eeaf7d7 */
-      period: string;
+      period?: string;
       type: components["schemas"]["EventLogType"];
-      /** @example A description of teh event */
+      /** @example A description of the event */
       description: string;
       /**
        * Format: date-time 
@@ -554,7 +561,7 @@ export interface components {
       /** @example 12 */
       totalPages: number;
       /** @example 2 */
-      page: number;
+      page?: number;
       /** @example 1 */
       pagingCounter: number;
       /** @example false */
@@ -562,10 +569,11 @@ export interface components {
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: number;
+      prevPage?: Record<string, never>;
       /** @example 3 */
-      nextPage: number;
+      nextPage?: Record<string, never>;
       docs: readonly (components["schemas"]["EventLog"])[];
+      meta?: Record<string, never>;
     };
     Setting: {
       /** @example 621f802b813dbdbaddeaf799 */
@@ -578,10 +586,7 @@ export interface components {
       valueRealized: string | (string)[] | boolean | number | (number)[];
       /** @example 555 */
       defaultValue: string;
-      /**
-       * @example Integer 
-       * @enum {string}
-       */
+      /** @enum {string} */
       type: "Integer" | "Float" | "String" | "Textarea" | "Boolean" | "IntegerList" | "StringList" | "Image" | "Radio" | "JSON";
       /** @example Quantifiers Per Praise */
       label: string;
@@ -602,8 +607,8 @@ export interface components {
     PeriodSetting: {
       /** @example 62291b7ea8b1619f78818524 */
       _id: string;
-      period: readonly (components["schemas"]["Period"])[];
-      setting: readonly (components["schemas"]["Setting"])[];
+      period: components["schemas"]["Period"];
+      setting: components["schemas"]["Setting"];
       value: string;
       /** @example 666 */
       valueRealized: string | (string)[] | boolean | number | (number)[];
@@ -619,7 +624,7 @@ export interface components {
       /** @example 12 */
       totalPages: number;
       /** @example 2 */
-      page: number;
+      page?: number;
       /** @example 1 */
       pagingCounter: number;
       /** @example false */
@@ -627,27 +632,11 @@ export interface components {
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: number;
+      prevPage?: Record<string, never>;
       /** @example 3 */
-      nextPage: number;
+      nextPage?: Record<string, never>;
       docs: readonly (components["schemas"]["Praise"])[];
-    };
-    QuantifyInputDto: {
-      score?: number;
-      dismissed?: boolean;
-      /** @example 639b178f19296ee0f2d0585d */
-      duplicatePraise?: string;
-    };
-    QuantifyMultipleInputDto: {
-      params: components["schemas"]["QuantifyInputDto"];
-      /**
-       * @example [
-       *   "639b178f19296ee0f2d0585d",
-       *   "639b178f19296ee0f2d0585e",
-       *   "639b178f19296ee0f2d0585f"
-       * ]
-       */
-      praiseIds: (string)[];
+      meta?: Record<string, never>;
     };
     PraiseCreateInputDto: {
       /** @example for making edits in the welcome text */
@@ -683,14 +672,15 @@ export interface components {
       avatarId: string;
       /** @example DISCORD */
       platform: string;
+      /** @example jkhvuygi643jh35g53 */
+      activateToken?: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
       user?: string;
     };
     CreateUserAccountResponseDto: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
-      /** @example 63b428f7d9ca4f6ff5370d05 */
-      user: string | components["schemas"]["User"];
+      user?: components["schemas"]["UserNoUserAccountsDto"];
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -704,7 +694,7 @@ export interface components {
       /** Format: date-time */
       updatedAt: string;
       /** @example jkhvuygi643jh35g53 */
-      activateToken: string;
+      activateToken?: string;
     };
     UpdateUserAccountInputDto: {
       /** @example 098098098098098 */
@@ -715,14 +705,15 @@ export interface components {
       avatarId?: string;
       /** @example DISCORD */
       platform?: string;
+      /** @example jkhvuygi643jh35g53 */
+      activateToken?: string;
       /** @example 63b428f7d9ca4f6ff5370d05 */
       user?: string;
     };
     UpdateUserAccountResponseDto: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
-      /** @example 63b428f7d9ca4f6ff5370d05 */
-      user: string | components["schemas"]["User"];
+      user?: components["schemas"]["UserNoUserAccountsDto"];
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -736,15 +727,12 @@ export interface components {
       /** Format: date-time */
       updatedAt: string;
       /** @example jkhvuygi643jh35g53 */
-      activateToken: string;
+      activateToken?: string;
     };
     CreateApiKeyInputDto: {
       /** @example My API Key */
       description: string;
-      /**
-       * @example API_KEY_READWRITE 
-       * @enum {string}
-       */
+      /** @enum {string} */
       role: "USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB";
     };
     CreateApiKeyResponseDto: {
@@ -754,10 +742,7 @@ export interface components {
       description: string;
       /** @example $2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i */
       hash: string;
-      /**
-       * @example API_KEY_READWRITE 
-       * @enum {string}
-       */
+      /** @enum {string} */
       role: "USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB";
       /** Format: date-time */
       createdAt: string;
@@ -773,10 +758,7 @@ export interface components {
       description: string;
       /** @example $2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i */
       hash: string;
-      /**
-       * @example API_KEY_READWRITE 
-       * @enum {string}
-       */
+      /** @enum {string} */
       role: "USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB";
       /** Format: date-time */
       createdAt: string;
@@ -854,10 +836,7 @@ export interface components {
       discordLinkNonce: string;
       /** @example true */
       isPublic: boolean;
-      /**
-       * @example NOT_SET | PENDING | ACTIVE | DEACTIVE 
-       * @enum {string}
-       */
+      /** @enum {string} */
       discordLinkState: "NOT_SET" | "PENDING" | "ACTIVE" | "DEACTIVE";
     };
     UpdateCommunityInputDto: {
@@ -883,7 +862,7 @@ export interface components {
       /** @example 12 */
       totalPages: number;
       /** @example 2 */
-      page: number;
+      page?: number;
       /** @example 1 */
       pagingCounter: number;
       /** @example false */
@@ -891,14 +870,32 @@ export interface components {
       /** @example true */
       hasNextPage: Record<string, never>;
       /** @example 1 */
-      prevPage: number;
+      prevPage?: Record<string, never>;
       /** @example 3 */
-      nextPage: number;
+      nextPage?: Record<string, never>;
       docs: readonly (components["schemas"]["Community"])[];
+      meta?: Record<string, never>;
     };
     LinkDiscordBotDto: {
       /** @example 0xdb4bb91357b23083ec2a36dc1fe23e59b71434fc020542da7e983df206ed06611e275eb30e239508f9758c0608dca6cef5619c41b50a48f22bdb36a8dabc2d201c */
       signedMessage: string;
+    };
+    QuantifyInputDto: {
+      score?: number;
+      dismissed?: boolean;
+      /** @example 639b178f19296ee0f2d0585d */
+      duplicatePraise?: string;
+    };
+    QuantifyMultipleInputDto: {
+      params: components["schemas"]["QuantifyInputDto"];
+      /**
+       * @example [
+       *   "639b178f19296ee0f2d0585d",
+       *   "639b178f19296ee0f2d0585e",
+       *   "639b178f19296ee0f2d0585f"
+       * ]
+       */
+      praiseIds: (string)[];
     };
   };
   responses: never;
@@ -912,8 +909,8 @@ export type external = Record<string, never>;
 
 export interface operations {
 
+  /** Activate a user account in order to be able to give praise and receive rewards. Activation a user account creates a new User object or adds user account to User if it already exists. */
   ActivateController_activate: {
-    /** Activate a user account in order to be able to give praise and receive rewards. Activation a user account creates a new User object or adds user account to User if it already exists. */
     requestBody: {
       content: {
         "application/json": components["schemas"]["ActivateInputDto"];
@@ -933,8 +930,8 @@ export interface operations {
       };
     };
   };
+  /** Export users document to json or csv */
   UsersController_export: {
-    /** Export users document to json or csv */
     parameters: {
       query: {
         format?: "csv" | "json" | "parquet";
@@ -974,8 +971,8 @@ export interface operations {
       };
     };
   };
+  /** Updates a user */
   UsersController_update: {
-    /** Updates a user */
     parameters: {
       path: {
         id: string;
@@ -990,7 +987,7 @@ export interface operations {
       /** @description Updated user */
       200: {
         content: {
-          "application/json": components["schemas"]["UpdateUserRequestDto"];
+          "application/json": components["schemas"]["UserWithStatsDto"];
         };
       };
     };
@@ -1035,8 +1032,8 @@ export interface operations {
       };
     };
   };
+  /** Export periods document to json or csv */
   PeriodsController_export: {
-    /** Export periods document to json or csv */
     parameters: {
       query: {
         format?: "csv" | "json" | "parquet";
@@ -1051,13 +1048,13 @@ export interface operations {
       };
     };
   };
+  /** List all periods */
   PeriodsController_findAllPaginated: {
-    /** List all periods */
     parameters: {
-        /** @example 10 */
-        /** @example 1 */
       query: {
+        /** @example 10 */
         limit: number;
+        /** @example 1 */
         page: number;
         sortColumn?: string;
         sortType?: "asc" | "desc";
@@ -1072,8 +1069,8 @@ export interface operations {
       };
     };
   };
+  /** Create a new period */
   PeriodsController_create: {
-    /** Create a new period */
     requestBody: {
       content: {
         "application/json": components["schemas"]["CreatePeriodInputDto"];
@@ -1093,8 +1090,8 @@ export interface operations {
       };
     };
   };
+  /** Find period by id */
   PeriodsController_findOne: {
-    /** Find period by id */
     parameters: {
       path: {
         id: string;
@@ -1109,8 +1106,8 @@ export interface operations {
       };
     };
   };
+  /** Update a period */
   PeriodsController_update: {
-    /** Update a period */
     parameters: {
       path: {
         id: string;
@@ -1130,8 +1127,8 @@ export interface operations {
       };
     };
   };
+  /** Close a period */
   PeriodsController_close: {
-    /** Close a period */
     parameters: {
       path: {
         id: string;
@@ -1146,8 +1143,8 @@ export interface operations {
       };
     };
   };
+  /** Fetch all Praise in a period */
   PeriodsController_praise: {
-    /** Fetch all Praise in a period */
     parameters: {
       path: {
         id: string;
@@ -1162,8 +1159,8 @@ export interface operations {
       };
     };
   };
+  /** Fetch all Praise in a period for a given receiver */
   PeriodsController_praiseByReceiver: {
-    /** Fetch all Praise in a period for a given receiver */
     parameters: {
       path: {
         periodId: string;
@@ -1179,8 +1176,8 @@ export interface operations {
       };
     };
   };
+  /** Fetch all Praise in a period for a given giver */
   PeriodsController_praiseByGiver: {
-    /** Fetch all Praise in a period for a given giver */
     parameters: {
       path: {
         periodId: string;
@@ -1196,8 +1193,8 @@ export interface operations {
       };
     };
   };
+  /** Fetch all Praise in a period for a given quantifier */
   PeriodsController_praiseByQuantifier: {
-    /** Fetch all Praise in a period for a given quantifier */
     parameters: {
       path: {
         periodId: string;
@@ -1213,8 +1210,8 @@ export interface operations {
       };
     };
   };
+  /** Verify quantifier pool size */
   PeriodsController_verifyQuantifierPoolSize: {
-    /** Verify quantifier pool size */
     parameters: {
       path: {
         id: string;
@@ -1229,8 +1226,8 @@ export interface operations {
       };
     };
   };
+  /** Assign quantifiers to period */
   PeriodsController_assignQuantifiers: {
-    /** Assign quantifiers to period */
     parameters: {
       path: {
         id: string;
@@ -1245,8 +1242,8 @@ export interface operations {
       };
     };
   };
+  /** Replace quantifier in period */
   PeriodsController_replaceQuantifier: {
-    /** Replace quantifier in period */
     parameters: {
       path: {
         id: string;
@@ -1266,13 +1263,13 @@ export interface operations {
       };
     };
   };
+  /** List event logs, paginated results */
   EventLogController_findAllPaginated: {
-    /** List event logs, paginated results */
     parameters: {
-        /** @example 10 */
-        /** @example 1 */
       query: {
+        /** @example 10 */
         limit: number;
+        /** @example 1 */
         page: number;
         sortColumn?: string;
         sortType?: "asc" | "desc";
@@ -1289,8 +1286,8 @@ export interface operations {
       };
     };
   };
+  /** List event log types */
   EventLogController_types: {
-    /** List event log types */
     responses: {
       /** @description Event log types */
       200: {
@@ -1300,17 +1297,16 @@ export interface operations {
       };
     };
   };
+  /** List all settings. */
   SettingsController_findAll: {
-    /** List all settings. */
     parameters: {
-        /** @example SETTING_KEY */
-        /** @example Integer */
-        /** @example 0 */
-        /** @example 0 */
       query: {
+        /** @example SETTING_KEY */
         key?: string;
         type?: "Integer" | "Float" | "String" | "Textarea" | "Boolean" | "IntegerList" | "StringList" | "Image" | "Radio" | "JSON";
+        /** @example 0 */
         group?: number;
+        /** @example 0 */
         subgroup?: number;
       };
     };
@@ -1323,8 +1319,8 @@ export interface operations {
       };
     };
   };
+  /** Get a setting. */
   SettingsController_findOne: {
-    /** Get a setting. */
     parameters: {
       path: {
         id: string;
@@ -1339,8 +1335,8 @@ export interface operations {
       };
     };
   };
+  /** Set a value for a setting. */
   SettingsController_set: {
-    /** Set a value for a setting. */
     parameters: {
       path: {
         id: string;
@@ -1360,8 +1356,8 @@ export interface operations {
       };
     };
   };
+  /** Upload a file for a setting */
   SettingsController_setWithUpload: {
-    /** Upload a file for a setting */
     parameters: {
       path: {
         id: string;
@@ -1376,8 +1372,8 @@ export interface operations {
       };
     };
   };
+  /** Serve an uploaded settings file. */
   SettingsController_serveUpload: {
-    /** Serve an uploaded settings file. */
     parameters: {
       path: {
         file: string;
@@ -1391,8 +1387,8 @@ export interface operations {
       };
     };
   };
+  /** List all period settings. */
   PeriodSettingsController_findAll: {
-    /** List all period settings. */
     parameters: {
       path: {
         periodId: string;
@@ -1407,8 +1403,8 @@ export interface operations {
       };
     };
   };
+  /** Get a period setting. */
   PeriodSettingsController_findOne: {
-    /** Get a period setting. */
     parameters: {
       path: {
         periodId: string;
@@ -1424,8 +1420,8 @@ export interface operations {
       };
     };
   };
+  /** Set value for a period setting. */
   PeriodSettingsController_set: {
-    /** Set value for a period setting. */
     parameters: {
       path: {
         periodId: string;
@@ -1446,13 +1442,13 @@ export interface operations {
       };
     };
   };
+  /** List praise items, paginated results */
   PraiseController_findAllPaginated: {
-    /** List praise items, paginated results */
     parameters: {
-        /** @example 10 */
-        /** @example 1 */
       query: {
+        /** @example 10 */
         limit: number;
+        /** @example 1 */
         page: number;
         sortColumn?: string;
         sortType?: "asc" | "desc";
@@ -1469,8 +1465,8 @@ export interface operations {
       };
     };
   };
+  /** Create praise item */
   PraiseController_praise: {
-    /** Create praise item */
     requestBody: {
       content: {
         "application/json": components["schemas"]["PraiseCreateInputDto"];
@@ -1490,14 +1486,13 @@ export interface operations {
       };
     };
   };
+  /** Export Praises document to json or csv */
   PraiseController_export: {
-    /** Export Praises document to json or csv */
     parameters: {
       query: {
         format?: "csv" | "json" | "parquet";
         startDate?: string;
         endDate?: string;
-        periodId?: string;
       };
     };
     responses: {
@@ -1509,8 +1504,8 @@ export interface operations {
       };
     };
   };
+  /** Find praise item by id */
   PraiseController_findOne: {
-    /** Find praise item by id */
     parameters: {
       path: {
         id: string;
@@ -1525,45 +1520,8 @@ export interface operations {
       };
     };
   };
-  PraiseController_quantify: {
-    /** Quantify praise item by id */
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["QuantifyInputDto"];
-      };
-    };
-    responses: {
-      /** @description Praise items */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["Praise"])[];
-        };
-      };
-    };
-  };
-  PraiseController_quantifyMultiple: {
-    /** Quantify multiple praise items */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["QuantifyMultipleInputDto"];
-      };
-    };
-    responses: {
-      /** @description Praise items */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["Praise"])[];
-        };
-      };
-    };
-  };
+  /** Forward praise item */
   PraiseController_forward: {
-    /** Forward praise item */
     requestBody: {
       content: {
         "application/json": components["schemas"]["PraiseForwardInputDto"];
@@ -1583,34 +1541,15 @@ export interface operations {
       };
     };
   };
-  QuantificationsController_export: {
-    /** Exports quantifications document to json or csv. */
-    parameters: {
-      query: {
-        format?: "csv" | "json" | "parquet";
-        startDate?: string;
-        endDate?: string;
-        periodId?: string;
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          "application/json": string;
-          "application/octet-stream": string;
-        };
-      };
-    };
-  };
+  /** UserAccount list */
   UserAccountsController_findAll: {
-    /** UserAccount list */
     parameters: {
-        /** @example 098098098098098 */
-        /** @example darth#6755 */
-        /** @example 63b428f7d9ca4f6ff5370d05 */
       query: {
+        /** @example 098098098098098 */
         accountId?: string;
+        /** @example darth#6755 */
         name?: string;
+        /** @example 63b428f7d9ca4f6ff5370d05 */
         user?: string;
       };
     };
@@ -1622,8 +1561,8 @@ export interface operations {
       };
     };
   };
+  /** Create a UserAccount */
   UserAccountsController_create: {
-    /** Create a UserAccount */
     requestBody: {
       content: {
         "application/json": components["schemas"]["CreateUserAccountInputDto"];
@@ -1637,8 +1576,8 @@ export interface operations {
       };
     };
   };
+  /** Exports UserAccounts document to json or csv. */
   UserAccountsController_export: {
-    /** Exports UserAccounts document to json or csv. */
     parameters: {
       query: {
         format?: "csv" | "json" | "parquet";
@@ -1653,8 +1592,8 @@ export interface operations {
       };
     };
   };
+  /** Get a UserAccount. */
   UserAccountsController_findOne: {
-    /** Get a UserAccount. */
     parameters: {
       path: {
         id: string;
@@ -1669,8 +1608,8 @@ export interface operations {
       };
     };
   };
+  /** Update UserAccount */
   UserAccountsController_update: {
-    /** Update UserAccount */
     requestBody: {
       content: {
         "application/json": components["schemas"]["UpdateUserAccountInputDto"];
@@ -1684,8 +1623,8 @@ export interface operations {
       };
     };
   };
+  /** List all API keys */
   ApiKeyController_findAll: {
-    /** List all API keys */
     responses: {
       /** @description Array of API keys */
       200: {
@@ -1695,8 +1634,8 @@ export interface operations {
       };
     };
   };
+  /** Create API key */
   ApiKeyController_createApiKey: {
-    /** Create API key */
     requestBody: {
       content: {
         "application/json": components["schemas"]["CreateApiKeyInputDto"];
@@ -1711,8 +1650,8 @@ export interface operations {
       };
     };
   };
+  /** Get API key by ID */
   ApiKeyController_findOne: {
-    /** Get API key by ID */
     parameters: {
       path: {
         id: string;
@@ -1727,8 +1666,8 @@ export interface operations {
       };
     };
   };
+  /** Update API key description */
   ApiKeyController_updateApiKeyDescription: {
-    /** Update API key description */
     parameters: {
       path: {
         id: string;
@@ -1753,8 +1692,8 @@ export interface operations {
       };
     };
   };
+  /** Revoke API key */
   ApiKeyController_revokeApiKey: {
-    /** Revoke API key */
     parameters: {
       path: {
         id: string;
@@ -1774,8 +1713,8 @@ export interface operations {
       };
     };
   };
-  AuthController_nonce: {
-    /** Generates a nonce for the user and returns it */
+  /** Generates a nonce for the user and returns it */
+  EthSignatureController_nonce: {
     /** @description A request containing the user identityEthAddress */
     requestBody: {
       content: {
@@ -1791,8 +1730,13 @@ export interface operations {
       };
     };
   };
-  AuthController_login: {
-    /** Verifies a user's signature and returns a JWT token */
+  /** Verifies a user's signature and returns a JWT token */
+  EthSignatureController_login: {
+    parameters: {
+      header: {
+        host: string;
+      };
+    };
     /**
      * @description A request containing the user identityEthAddress and signedlogin message. The signed message should be structured as follows: 
      * 
@@ -1814,10 +1758,10 @@ export interface operations {
   };
   CommunityController_findAll: {
     parameters: {
-        /** @example 10 */
-        /** @example 1 */
       query: {
+        /** @example 10 */
         limit: number;
+        /** @example 1 */
         page: number;
         sortColumn?: string;
         sortType?: "asc" | "desc";
@@ -1832,8 +1776,8 @@ export interface operations {
       };
     };
   };
+  /** Create a new community */
   CommunityController_create: {
-    /** Create a new community */
     requestBody: {
       content: {
         "application/json": components["schemas"]["CreateCommunityInputDto"];
@@ -1868,8 +1812,8 @@ export interface operations {
       };
     };
   };
+  /** Update community */
   CommunityController_update: {
-    /** Update community */
     requestBody: {
       content: {
         "application/json": components["schemas"]["UpdateCommunityInputDto"];
@@ -1884,8 +1828,8 @@ export interface operations {
       };
     };
   };
+  /** Link discord to community */
   CommunityController_linkDiscord: {
-    /** Link discord to community */
     requestBody: {
       content: {
         "application/json": components["schemas"]["LinkDiscordBotDto"];
@@ -1896,6 +1840,61 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Community"];
+        };
+      };
+    };
+  };
+  /** Exports quantifications document to json or csv. */
+  QuantificationsController_export: {
+    parameters: {
+      query: {
+        format?: "csv" | "json" | "parquet";
+        startDate?: string;
+        endDate?: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": string;
+          "application/octet-stream": string;
+        };
+      };
+    };
+  };
+  /** Quantify multiple praise items */
+  QuantificationsController_quantifyMultiple: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["QuantifyMultipleInputDto"];
+      };
+    };
+    responses: {
+      /** @description Praise items */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["Praise"])[];
+        };
+      };
+    };
+  };
+  /** Quantify praise item by id */
+  QuantificationsController_quantify: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["QuantifyInputDto"];
+      };
+    };
+    responses: {
+      /** @description Praise /Applications/Visual Studio Code.app/Contents/Resources/app/out/vs/code/electron-sandbox/workbench/workbench.htmlitems */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["Praise"])[];
         };
       };
     };

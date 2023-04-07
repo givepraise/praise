@@ -10,7 +10,6 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil';
-import { useApiAuthClient } from '@/utils/api';
 import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from '../api';
 import { PaginatedResponseBody } from 'shared/interfaces/paginated-response-body.interface';
 
@@ -238,87 +237,3 @@ export const useAllPraise = (
 
   return allPraiseQueryResponse;
 };
-
-type useQuantifyPraiseReturn = {
-  quantify: (
-    praiseId: string,
-    score: number,
-    dismissed: boolean,
-    duplicatePraise: string | null
-  ) => Promise<void>;
-};
-
-/**
- * Returns a function used to for close a period
- */
-export const useQuantifyPraise = (): useQuantifyPraiseReturn => {
-  const apiAuthClient = useApiAuthClient();
-
-  const quantify = useRecoilCallback(
-    ({ set }) =>
-      async (
-        praiseId: string,
-        score: number,
-        dismissed: boolean,
-        duplicatePraise: string | null
-      ): Promise<void> => {
-        const response: AxiosResponse<Praise[]> = await apiAuthClient.patch(
-          `/praise/${praiseId}/quantify`,
-          {
-            score,
-            dismissed,
-            duplicatePraise,
-          }
-        );
-        if (isResponseOk(response)) {
-          response.data.forEach((praise) => {
-            set(SinglePraise(praise._id), praise);
-          });
-        }
-      }
-  );
-  return { quantify };
-};
-
-type quantifyMultipleParams = {
-  score: number;
-  duplicatePraise?: string | null;
-  dismissed?: boolean;
-};
-
-type useQuantifyMultiplePraiseReturn = {
-  quantifyMultiple: (
-    params: quantifyMultipleParams,
-    praiseIds: string[]
-  ) => Promise<void>;
-};
-
-/**
- * Returns a function used to quantify multiple praise.
- */
-export const useQuantifyMultiplePraise =
-  (): useQuantifyMultiplePraiseReturn => {
-    const apiAuthClient = useApiAuthClient();
-
-    const quantifyMultiple = useRecoilCallback(
-      ({ set }) =>
-        async (
-          params: quantifyMultipleParams,
-          praiseIds: string[]
-        ): Promise<void> => {
-          const response: AxiosResponse<Praise[]> = await apiAuthClient.patch(
-            '/praise/quantify',
-            {
-              params,
-              praiseIds,
-            }
-          );
-          if (isResponseOk(response)) {
-            response.data.forEach((praise) => {
-              set(SinglePraise(praise._id), praise);
-            });
-          }
-        }
-    );
-    return { quantifyMultiple };
-  };

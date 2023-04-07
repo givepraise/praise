@@ -116,7 +116,7 @@ export const Nav = (): JSX.Element => {
             <NavItem
               icon={faFire}
               description="Latest changes"
-              to="https://github.com/commons-stack/praise/releases"
+              to="https://github.com/givepraise/praise/releases"
               iconClassName="text-themecolor-3"
             />
             <NavItem
