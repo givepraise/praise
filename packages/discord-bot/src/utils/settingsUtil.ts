@@ -82,7 +82,7 @@ export const getSetting = async (
 ): Promise<string | string[] | boolean | number | number[] | undefined> => {
   const setting = await apiClient
     .get(`/settings?key=${key}`, {
-      headers: guildId ? { 'x-discord-guild-id': guildId } : {},
+      headers: guildId ? { host: guildId } : {},
     })
     .then((res) => settingValueRealized(res.data as Setting[]))
     .catch(() => getDefaultSetting(key));

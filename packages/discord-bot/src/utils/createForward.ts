@@ -41,7 +41,7 @@ export const createForward = async (
 
   const response = await apiClient
     .post(`/praise/forward`, praiseData, {
-      headers: { 'x-discord-guild-id': guild.id },
+      headers: { host: guild.id },
     })
     .then((res) => res.status === 200)
     .catch(() => false);

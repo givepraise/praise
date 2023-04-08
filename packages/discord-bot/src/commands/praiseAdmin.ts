@@ -2,7 +2,9 @@ import {
   SlashCommandBuilder,
   SlashCommandSubcommandBuilder,
 } from '@discordjs/builders';
-import { logger } from 'api/dist/shared/logger';
+
+import { logger } from '../utils/logger';
+
 // import { announcementHandler } from '../handlers/announce';
 import { Command } from '../interfaces/Command';
 
@@ -24,7 +26,7 @@ export const praiseAdmin: Command = {
         )
     ),
 
-  async execute(interaction) {
+  async execute(client, interaction) {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'admin')
         return;
@@ -34,7 +36,7 @@ export const praiseAdmin: Command = {
       await interaction.deferReply({ ephemeral: true });
       switch (subCommand) {
         case 'announce': {
-          // await announcementHandler(interaction);
+          // await announcementHandler(client, interaction);
           await interaction.editReply(
             'announcement command currently unavailable'
           );

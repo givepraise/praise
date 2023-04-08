@@ -8,6 +8,7 @@ import { getUserAccount } from '../utils/getUserAccount';
 import { dmError } from '../utils/embeds/praiseEmbeds';
 import { GuildMember } from 'discord.js';
 import { getActivateToken } from '../utils/getActivateToken';
+import { getHost } from '../utils/getHost';
 
 /**
  * Executes command /activate
@@ -17,7 +18,10 @@ import { getActivateToken } from '../utils/getActivateToken';
  * @param  interaction
  * @returns
  */
-export const activationHandler: CommandHandler = async (interaction) => {
+export const activationHandler: CommandHandler = async (
+  client,
+  interaction
+) => {
   const { member, guild } = interaction;
   if (!guild || !member) {
     await interaction.editReply(await dmError());
@@ -25,18 +29,27 @@ export const activationHandler: CommandHandler = async (interaction) => {
   }
 
   try {
+    const host = await getHost(client.communityCache, guild.id);
+
+    if (host === undefined) {
+      await interaction.editReply(
+        'This community is not registered for praise.'
+      );
+      return;
+    }
+
     const userAccount = await getUserAccount(
       (member as GuildMember).user,
-      guild.id
+      host
     );
-
+    console.log(userAccount);
     if (
       userAccount.user &&
       userAccount.user != null &&
       userAccount.user != ''
     ) {
       await interaction.reply({
-        content: await alreadyActivatedError(guild.id),
+        content: await alreadyActivatedError(host),
         ephemeral: true,
       });
       return;
@@ -50,7 +63,8 @@ export const activationHandler: CommandHandler = async (interaction) => {
     //   }
     // );
 
-    const activateToken = await getActivateToken(userAccount, guild.id);
+    const activateToken = await getActivateToken(userAccount, host);
+    console.log(activateToken);
 
     const activationURL = `${
       process.env.FRONTEND_URL as string

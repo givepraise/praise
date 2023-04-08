@@ -27,7 +27,7 @@ export const forward: Command = {
         .setRequired(true)
     ),
 
-  async execute(interaction) {
+  async execute(client, interaction) {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'forward')
         return;
@@ -38,6 +38,7 @@ export const forward: Command = {
       });
       if (msg === undefined) return;
       // await forwardHandler(
+      //
       //   interaction,
       //   getMsgLink(
       //     interaction.guildId || '',

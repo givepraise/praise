@@ -29,6 +29,7 @@ export interface UserAccount {
   platform: string;
   createdAt: string;
   updatedAt: string;
+  activateToken?: string;
 }
 
 export interface UserAccountWithActivateToken {
@@ -98,4 +99,23 @@ export enum UserRole {
   USER = 'USER',
   QUANTIFIER = 'QUANTIFIER',
   FORWARDER = 'FORWARDER',
+}
+
+export interface Community {
+  _id: string;
+  name: string;
+  discordGuildId: string;
+  discordLinkNonce: string;
+  isPublic: boolean;
+  discordLinkState: string;
+}
+
+export interface PaginatedCommunities {
+  docs: Community[];
+  totalDocs: number;
+  limit: number;
+  totalPages: number;
+  page: number;
+  hasPrevPage: boolean;
+  hasNextPage: boolean;
 }

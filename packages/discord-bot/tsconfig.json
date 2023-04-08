@@ -15,7 +15,7 @@
   ],
   "references": [
     {
-      "path": "../api"
+      "path": "../api-types"
     }
   ]
 }

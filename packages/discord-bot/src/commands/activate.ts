@@ -10,11 +10,11 @@ export const activate: Command = {
       'Activate your Praise account by linking your eth address.'
     ),
 
-  async execute(interaction) {
+  async execute(client, interaction) {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'activate')
         return;
-      await activationHandler(interaction);
+      await activationHandler(client, interaction);
     } catch (err: any) {
       logger.error(err.message);
     }

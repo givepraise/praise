@@ -1,12 +1,10 @@
 import { Client, GatewayIntentBits } from 'discord.js';
-import { envCheck } from 'api/dist/pre-start/envCheck';
 import { DiscordClient } from './interfaces/DiscordClient';
 import { registerCommands } from './utils/registerCommands';
 import { requiredEnvVariables } from './pre-start/env-required';
 import { logger } from './utils/logger';
-
-// Check for required ENV variables
-envCheck(requiredEnvVariables);
+import { cacheHosts } from './utils/getHost';
+import Keyv from 'keyv';
 
 // Create a new client instance
 const discordClient = new Client({
@@ -26,8 +24,10 @@ void (async (): Promise<void> => {
   }
 })();
 
-discordClient.once('ready', () => {
+discordClient.once('ready', async () => {
   logger.info('Discord client is ready!');
+  discordClient.communityCache = new Keyv();
+  await cacheHosts(discordClient.communityCache);
 });
 
 discordClient.on('interactionCreate', async (interaction): Promise<void> => {
@@ -35,7 +35,7 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
   const command = discordClient.commands.get(interaction.commandName);
   if (!command) return;
   try {
-    await command.execute(interaction);
+    await command.execute(discordClient, interaction);
   } catch (error: any) {
     logger.error(error.message);
     await interaction.reply({

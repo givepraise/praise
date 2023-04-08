@@ -34,6 +34,7 @@ import { logger } from '../utils/logger';
  * @returns
  */
 export const praiseHandler: CommandHandler = async (
+  client,
   interaction,
   responseUrl
 ) => {

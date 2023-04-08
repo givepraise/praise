@@ -17,7 +17,7 @@ export const help: HelpCommandBuilder = (commands) => {
             .setRequired(false)
         ),
 
-      async execute(interaction) {
+      async execute(client, interaction) {
         try {
           if (!interaction.isCommand() || interaction.commandName !== 'help')
             return;

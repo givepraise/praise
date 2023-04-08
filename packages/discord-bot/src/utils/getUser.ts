@@ -13,7 +13,7 @@ export const getUser = async (
 ): Promise<User | undefined> => {
   return await apiClient
     .get<User>(`/users/${id}`, {
-      headers: { 'x-discord-guild-id': guildId },
+      headers: { host: guildId },
     })
     .then((res) => res.data)
     .catch(() => undefined);

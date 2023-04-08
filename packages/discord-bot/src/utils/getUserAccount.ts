@@ -4,7 +4,7 @@ import { apiClient } from './api';
 
 const createUserAccount = async (
   user: User,
-  guildId: string
+  host: string
 ): Promise<UserAccount[]> => {
   await apiClient.post(
     `/useraccounts`,
@@ -15,13 +15,13 @@ const createUserAccount = async (
       platform: 'DISCORD',
     },
     {
-      headers: { 'x-discord-guild-id': guildId },
+      headers: { host: host },
     }
   );
   const response = await apiClient.get<UserAccount[]>(
     `/useraccounts/?accountId=${user.id}`,
     {
-      headers: { 'x-discord-guild-id': guildId },
+      headers: { host: host },
     }
   );
   return response.data.filter((acc) => acc.platform === 'DISCORD');
@@ -30,7 +30,7 @@ const createUserAccount = async (
 const updateUserAccount = async (
   ua: UserAccount,
   user: User,
-  guildId: string
+  host: string
 ): Promise<UserAccount[]> => {
   if (
     ua.name != user.username + '#' + user.discriminator ||
@@ -40,13 +40,13 @@ const updateUserAccount = async (
     ua.avatarId = user?.avatar || '';
 
     await apiClient.patch<UserAccount>(`/useraccounts/${ua._id}`, ua, {
-      headers: { 'x-discord-guild-id': guildId },
+      headers: { host: host },
     });
 
     return [
       (
         await apiClient.get<UserAccount>(`/useraccounts/${ua._id}`, {
-          headers: { 'x-discord-guild-id': guildId },
+          headers: { host: host },
         })
       ).data,
     ];
@@ -63,20 +63,20 @@ const updateUserAccount = async (
  */
 export const getUserAccount = async (
   user: User,
-  guildId: string
+  host: string
 ): Promise<UserAccount> => {
   const response = await apiClient.get<UserAccount[]>(
     `/useraccounts/?accountId=${user.id}`,
     {
-      headers: { 'x-discord-guild-id': guildId },
+      headers: { host: host },
     }
   );
   let data = response.data.filter((acc) => acc.platform === 'DISCORD');
 
   if (!data.length) {
-    data = await createUserAccount(user, guildId);
+    data = await createUserAccount(user, host);
   } else {
-    data = await updateUserAccount(data[0], user, guildId);
+    data = await updateUserAccount(data[0], user, host);
   }
   return data[0];
 };

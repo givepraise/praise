@@ -7,6 +7,7 @@ import { dmError } from '../utils/embeds/praiseEmbeds';
 import { getUser } from '../utils/getUser';
 import { UserAccount } from '../utils/api-schema';
 import { apiClient } from '../utils/api';
+import { CommandHandler } from 'src/interfaces/CommandHandler';
 
 /**
  * Execute command /whoami
@@ -15,8 +16,9 @@ import { apiClient } from '../utils/api';
  * @param {CommandInteraction} interaction
  * @returns {Promise<void>}
  */
-export const whoamiHandler = async (
-  interaction: ChatInputCommandInteraction
+export const whoamiHandler: CommandHandler = async (
+  client,
+  interaction
 ): Promise<void> => {
   const { member, guild } = interaction;
   if (!guild || !member) {
@@ -59,7 +61,7 @@ export const whoamiHandler = async (
           typeof ua.user === 'string' ? ua.user : ua.user._id
         }`,
         {
-          headers: { 'x-discord-guild-id': guild.id },
+          headers: { host: guild.id },
         }
       )
       .then((res) => res.data);

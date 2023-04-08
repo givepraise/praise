@@ -23,6 +23,7 @@ import { createForward } from '../utils/createForward';
 import { apiClient } from '../utils/api';
 import { forwardSuccess } from '../utils/embeds/praiseEmbeds';
 import { logger } from '../utils/logger';
+import { getHost } from '../utils/getHost';
 
 /**
  * Execute command /firward
@@ -33,6 +34,7 @@ import { logger } from '../utils/logger';
  * @returns
  */
 export const forwardHandler: CommandHandler = async (
+  client,
   interaction,
   responseUrl
 ) => {
@@ -44,19 +46,23 @@ export const forwardHandler: CommandHandler = async (
     return;
   }
 
-  const forwarderAccount = await getUserAccount(
-    (member as GuildMember).user,
-    guild.id
-  );
-  if (!forwarderAccount.user) {
-    await interaction.editReply(await notActivatedError(guild.id));
+  const host = await getHost(client.communityCache, guild.id);
+
+  if (host === undefined) {
+    await interaction.editReply('This community is not registered for praise.');
     return;
   }
 
-  const forwarderUser = await getUser(
-    forwarderAccount.user as string,
-    guild.id
+  const forwarderAccount = await getUserAccount(
+    (member as GuildMember).user,
+    host
   );
+  if (!forwarderAccount.user) {
+    await interaction.editReply(await notActivatedError(host));
+    return;
+  }
+
+  const forwarderUser = await getUser(forwarderAccount.user as string, host);
   if (!forwarderUser?.roles.includes('FORWARDER')) {
     await interaction.editReply(
       "**❌ You don't have the permission to use this command.**"
@@ -77,7 +83,7 @@ export const forwardHandler: CommandHandler = async (
   const receiverOptions = interaction.options.getString('receivers');
 
   if (!receiverOptions || receiverOptions.length === 0) {
-    await interaction.editReply(await invalidReceiverError(guild.id));
+    await interaction.editReply(await invalidReceiverError(host));
     return;
   }
 
@@ -86,20 +92,20 @@ export const forwardHandler: CommandHandler = async (
     !receiverData.validReceiverIds ||
     receiverData.validReceiverIds?.length === 0
   ) {
-    await interaction.editReply(await invalidReceiverError(guild.id));
+    await interaction.editReply(await invalidReceiverError(host));
     return;
   }
 
   const reason = interaction.options.getString('reason');
   if (!reason || reason.length === 0) {
-    await interaction.editReply(await missingReasonError(guild.id));
+    await interaction.editReply(await missingReasonError(host));
     return;
   }
 
-  const giverAccount = await getUserAccount(praiseGiver.user, guild.id);
+  const giverAccount = await getUserAccount(praiseGiver.user, host);
   if (!giverAccount.user) {
     await interaction.editReply(
-      await giverNotActivatedError(praiseGiver.user, guild.id)
+      await giverNotActivatedError(praiseGiver.user, host)
     );
     return;
   }
@@ -126,7 +132,7 @@ export const forwardHandler: CommandHandler = async (
   );
 
   for (const receiver of Receivers) {
-    const receiverAccount = await getUserAccount(receiver.user, guild.id);
+    const receiverAccount = await getUserAccount(receiver.user, host);
 
     const praiseObj = await createForward(
       interaction,
@@ -149,7 +155,7 @@ export const forwardHandler: CommandHandler = async (
       try {
         await receiver.send({
           embeds: [
-            await praiseSuccessDM(responseUrl, !receiverAccount.user, guild.id),
+            await praiseSuccessDM(responseUrl, !receiverAccount.user, host),
           ],
         });
       } catch (err) {
@@ -174,7 +180,7 @@ export const forwardHandler: CommandHandler = async (
           praiseGiver.user,
           receivers.map((id) => `<@!${id}>`),
           reason,
-          guild.id
+          host
         ),
       ],
       ephemeral: false,
@@ -184,14 +190,14 @@ export const forwardHandler: CommandHandler = async (
         praiseGiver.user,
         receivers.map((id) => `<@!${id}>`),
         reason,
-        guild.id
+        host
       ),
       ephemeral: false,
     });
   } else if (warnSelfPraise) {
-    await interaction.editReply(await selfPraiseWarning(guild.id));
+    await interaction.editReply(await selfPraiseWarning(host));
   } else {
-    await interaction.editReply(await invalidReceiverError(guild.id));
+    await interaction.editReply(await invalidReceiverError(host));
   }
 
   const warningMsg =
@@ -199,18 +205,18 @@ export const forwardHandler: CommandHandler = async (
       ? (await undefinedReceiverWarning(
           receiverData.undefinedReceivers.join(', '),
           praiseGiver.user,
-          guild.id
+          host
         )) + '\n'
       : '') +
     (receiverData.roleMentions
       ? (await roleMentionWarning(
           receiverData.roleMentions.join(', '),
           praiseGiver.user,
-          guild.id
+          host
         )) + '\n'
       : '') +
     (Receivers.length !== 0 && warnSelfPraise
-      ? (await selfPraiseWarning(guild.id)) + '\n'
+      ? (await selfPraiseWarning(host)) + '\n'
       : '');
 
   if (warningMsg && warningMsg.length !== 0) {

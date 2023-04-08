@@ -134,7 +134,7 @@ const serverUrl = (answers: Answers): string => {
 
 const frontendUrl = (answers: Answers): string => {
   if (answers.NODE_ENV === 'development') {
-    return `http://${answers.HOST}:${process.env.PORT as string}`;
+    return `http://${answers.HOST}:${process.env.FRONTEND_PORT as string}`;
   }
   return baseServerUrl(answers);
 };

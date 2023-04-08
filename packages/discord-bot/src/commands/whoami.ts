@@ -7,12 +7,12 @@ export const whoami: Command = {
   data: new SlashCommandBuilder()
     .setName('whoami')
     .setDescription('Find praise info about yourself'),
-  async execute(interaction) {
+  async execute(client, interaction) {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'whoami')
         return;
       await interaction.deferReply({ ephemeral: true });
-      await whoamiHandler(interaction);
+      await whoamiHandler(client, interaction);
     } catch (err: any) {
       logger.error(err.message);
     }
