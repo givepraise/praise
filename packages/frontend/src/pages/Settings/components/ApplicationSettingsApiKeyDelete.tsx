@@ -3,22 +3,28 @@ import { faBackspace, faKey, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Dialog } from '@headlessui/react';
 import { Button } from '@/components/ui/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { toast } from 'react-hot-toast';
 import { SingleApiKey } from '@/model/apikeys/apikeys';
 import { useRecoilValue } from 'recoil';
+import { SubmissionErrors } from 'final-form';
 
 type ApiKeyDeleteProps = {
   open: boolean;
   deleteKeyID: string;
   close: () => void;
+  deleteHandle: (id: string) => Promise<SubmissionErrors>;
 };
 
 const ApplicationSettingsApiKeyDelete = ({
   open,
   deleteKeyID,
   close,
+  deleteHandle,
 }: ApiKeyDeleteProps): JSX.Element => {
   const apiKey = useRecoilValue(SingleApiKey(deleteKeyID));
+
+  const handleDelete = async (): Promise<SubmissionErrors> => {
+    return await deleteHandle(deleteKeyID);
+  };
 
   return (
     <>
@@ -44,15 +50,13 @@ const ApplicationSettingsApiKeyDelete = ({
                 Delete API Key
               </Dialog.Title>
               <Dialog.Description className="text-center mb-7">
-                {apiKey?.hash.slice(0, 8)}
+                {apiKey?.hash.slice(-8)}
               </Dialog.Description>
               <div className="mb-2">
                 <div className="flex justify-center">
                   <Button
                     type="button"
-                    onClick={async (): Promise<void> => {
-                      toast.success('API Key deleted');
-                    }}
+                    onClick={handleDelete}
                     className="mt-4 bg-red-600"
                   >
                     <FontAwesomeIcon

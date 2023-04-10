@@ -1,4 +1,4 @@
-import { useSetApiKey } from '@/model/apikeys/apikeys';
+import { useDeleteApiKey, useSetApiKey } from '@/model/apikeys/apikeys';
 import { Button } from '@/components/ui/Button';
 import { useState } from 'react';
 import ApplicationSettingsApiKeyForm from './ApplicationSettingsApiKeyForm';
@@ -22,9 +22,10 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
   const [openApiKeyModalDelete, setOpenApiKeyModalDelete] = useState(false);
   const [apiKeyData, setApiKeyData] = useState<CreateApiKeyResponseDto>();
   const [loading, setLoading] = useState(false);
-  const [deleteKeyID, setDeleteKeyID] = useState(null);
+  const [deleteKeyID, setDeleteKeyID] = useState<string | null>(null);
 
   const { setApiKey } = useSetApiKey();
+  const { deleteApiKey } = useDeleteApiKey();
 
   const handleCloseApiKeyModal = (): void => {
     setOpenApiKeyModal(false);
@@ -35,7 +36,6 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
   };
 
   const handleOpenApiKeyModalDelete = (id: string | null): void => {
-    console.log(id);
     setOpenApiKeyModalDelete(true);
     setDeleteKeyID(id);
   };
@@ -72,6 +72,31 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
 
     toast.error('Api Key create failed');
     return { [FORM_ERROR]: 'Api Key create failed' };
+  };
+
+  /**
+   * Handle deleting a API key
+   *
+   * @param data
+   */
+  const handleDeleteApiKey = async (id: string): Promise<SubmissionErrors> => {
+    setOpenApiKeyModalDelete(false);
+    setDeleteKeyID(null);
+
+    const response = await deleteApiKey(id);
+    setLoading(false);
+
+    if (isResponseOk(response)) {
+      toast.success('API Key deleted');
+      return {};
+    }
+
+    if (isApiResponseValidationError(response) && response.response) {
+      return (response.response.data as ApiErrorResponseData).errors;
+    }
+
+    toast.error('Api Key delete failed');
+    return { [FORM_ERROR]: 'Api Key delete failed' };
   };
 
   return (
@@ -112,6 +137,7 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
           open={openApiKeyModalDelete}
           deleteKeyID={deleteKeyID}
           close={handleCloseApiKeyModalDelete}
+          deleteHandle={handleDeleteApiKey}
         />
       )}
     </>

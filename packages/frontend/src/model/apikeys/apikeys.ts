@@ -1,4 +1,9 @@
-import { atom, selectorFamily, useRecoilCallback } from 'recoil';
+import {
+  atom,
+  selectorFamily,
+  useRecoilCallback,
+  useRecoilValue,
+} from 'recoil';
 import { AxiosResponse, AxiosError } from 'axios';
 import { ApiAuthGet, isResponseOk } from '../api';
 import { ApiKey } from './dto/apikeys.dto';
@@ -90,5 +95,40 @@ export const useSetApiKey = (): useSetApiKeyReturn => {
         return response as AxiosResponse | AxiosError;
       }
   );
+
   return { setApiKey };
+};
+
+type useDeleteApiKeyReturn = {
+  deleteApiKey: (
+    id: string
+  ) => Promise<AxiosResponse<ApiKey> | AxiosError | undefined>;
+};
+
+/**
+ * Returns function used to delete a api key.
+ */
+export const useDeleteApiKey = (): useDeleteApiKeyReturn => {
+  const allApiKeys = useRecoilValue(AllApiKeys);
+  const apiAuthClient = useApiAuthClient();
+
+  const deleteApiKey = useRecoilCallback(
+    ({ set }) =>
+      async (
+        id: string
+      ): Promise<AxiosResponse<ApiKey> | AxiosError | undefined> => {
+        const response = await apiAuthClient.delete('/api-key/' + id);
+
+        if (isResponseOk(response)) {
+          const updatedApiKeys = allApiKeys.filter(
+            (apiKey) => apiKey._id !== id
+          );
+          set(AllApiKeys, updatedApiKeys);
+        }
+
+        return response as AxiosResponse | AxiosError;
+      }
+  );
+
+  return { deleteApiKey };
 };

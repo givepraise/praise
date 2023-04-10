@@ -32,7 +32,7 @@ export const ApplicationSettingsApiKeyTable = ({
         className: 'pl-5 text-left',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): string => {
-          return data.value.slice(0, 8);
+          return data.value.slice(-8);
         },
       },
       {
