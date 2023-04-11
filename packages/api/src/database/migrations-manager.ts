@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { MongoClient } from 'mongodb';
 import { MongoDBStorage, Umzug } from 'umzug';
 import { Community } from '../community/schemas/community.schema';
-import { DB_URL_ROOT, DB_NAME_MAIN } from '../constants/constants.provider';
+import { MONGODB_MAIN_DB } from '../constants/constants.provider';
 import { PeriodsService } from '../periods/services/periods.service';
 import { PraiseService } from '../praise/services/praise.service';
 import { QuantificationsService } from '../quantifications/services/quantifications.service';
@@ -10,8 +10,8 @@ import { SettingsService } from '../settings/settings.service';
 import { logger } from '../shared/logger';
 import { UsersService } from '../users/users.service';
 import { AppMigrationsModule } from './modules/app-migrations.module';
-import { dbUrlCommunity } from './utils/community-db-url';
-import mongoose, { Connection, ConnectOptions } from 'mongoose';
+import { dbUrlCommunity } from './utils/db-url-community';
+import mongoose, { ConnectOptions } from 'mongoose';
 
 export class MigrationsManager {
   /**
@@ -81,14 +81,18 @@ export class MigrationsManager {
    */
   async run(): Promise<void> {
     try {
+      if (!process.env.MONGO_ADMIN_URI) {
+        throw new Error('MONGO_ADMIN_URI not set');
+      }
+
       // Connect to the main db to access community list
-      const mongodb = new MongoClient(DB_URL_ROOT);
+      const mongodb = new MongoClient(process.env.MONGO_ADMIN_URI);
 
       // Register ts-node to be able to run typescript migrations
       require('ts-node/register');
 
       // List all communities
-      const dbMain = mongodb.db(DB_NAME_MAIN);
+      const dbMain = mongodb.db(MONGODB_MAIN_DB);
       const communities = await dbMain
         .collection('communities')
         .find()
