@@ -352,8 +352,7 @@ export class UsersService {
         user = new this.userModel({
           identityEthAddress: eth,
           rewardsEthAddress: eth,
-          username: 'legalname',
-          //username: eth.substring(0, 20),
+          username: eth,
           roles: [AuthRole.ADMIN, AuthRole.USER],
         });
         await user.save();
