@@ -233,7 +233,7 @@ export class UsersService {
    * A valid username is:
    * - is lowercase
    * - minimum 3 characters
-   * - maximum 20 characters
+   * - maximum 50 characters
    * - only alphanumeric characters, underscores, dots, and hyphens
    * - cannot start with a dot or hyphen
    * - cannot end with a dot or hyphen
@@ -248,7 +248,7 @@ export class UsersService {
       .replace(/[-_.]{2,}/g, '')
       .replace(/^[.-]/, '')
       .replace(/[.-]$/, '')
-      .substring(0, 20);
+      .substring(0, 50);
 
     if (newUsername.length < 4) {
       newUsername = `${newUsername}${Math.floor(Math.random() * 900 + 100)}`;
