@@ -3,15 +3,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CommunityService } from './community.service';
 import { Community, CommunitySchema } from './schemas/community.schema';
 import { CommunityController } from './community.controller';
-import {
-  ConstantsProvider,
-  DB_URL_MAIN_DB,
-} from '../constants/constants.provider';
+import { ConstantsProvider } from '../constants/constants.provider';
 import { AuthGuardModule } from '../auth/auth-guard.module';
+import { dbUrlMain } from '../database/utils/db-url-main';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(DB_URL_MAIN_DB, { connectionName: 'praise' }),
+    MongooseModule.forRoot(dbUrlMain(), { connectionName: 'praise' }),
     MongooseModule.forFeature(
       [
         {
