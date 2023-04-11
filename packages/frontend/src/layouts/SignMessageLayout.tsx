@@ -29,7 +29,7 @@ export const SignMessageLayout = ({
         <div className="w-full p-5 text-2xl font-bold">
           <FontAwesomeIcon icon={faPrayingHands} size="1x" className="m-2" />
         </div>
-        <div className="p-8 py-8 m-auto space-y-8 border-none rounded-none shadow-none md:p-4 md:border md:border-solid md:rounded-lg md:shadow-sm bg-none md:bg-warm-gray-50 w-96 dark:bg-slate-900">
+        <div className="p-12 py-12 m-auto space-y-8 border-none rounded-none shadow-none md:p-10 md:border md:border-solid md:rounded-lg md:shadow-sm bg-none md:bg-warm-gray-50 w-96 dark:bg-slate-900">
           {children}
 
           {isConnecting && !address && !message ? (
@@ -49,17 +49,19 @@ export const SignMessageLayout = ({
             </div>
           )}
 
-          <div className="flex items-center justify-center w-full">
-            {address && message && (
-              <SignMessageButton
-                text={buttonText}
-                message={message}
-                onSignSuccess={onSignSuccess}
-                onSignError={(): void => void toast.error('Login denied')}
-              />
-            )}
-            {!message && <Button disabled>Initializing…</Button>}
-          </div>
+          {address && (
+            <div className="flex items-center justify-center w-full">
+              {message && (
+                <SignMessageButton
+                  text={buttonText}
+                  message={message}
+                  onSignSuccess={onSignSuccess}
+                  onSignError={(): void => void toast.error('Login denied')}
+                />
+              )}
+              {!message && <LoaderSpinner />}
+            </div>
+          )}
         </div>
       </div>
     </div>
