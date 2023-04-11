@@ -171,8 +171,10 @@ export class MultiTenancyManager {
               ethereumAddress: eth, // For backwards compatibility
               identityEthAddress: eth,
               rewardsEthAddress: eth,
-              username: eth.substring(0, 20).toLowerCase(),
+              username: eth,
               roles: [AuthRole.ADMIN, AuthRole.USER],
+              createdAt: new Date(),
+              updatedAt: new Date(),
             });
           }
         }

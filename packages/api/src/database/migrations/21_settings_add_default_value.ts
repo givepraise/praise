@@ -1,4 +1,4 @@
-import { SettingModel } from '../schemas/settings/07_settings.schema';
+import { SettingModel } from '../schemas/settings/21_settings.schema';
 
 const settings = [
   {
@@ -11,7 +11,7 @@ const settings = [
   },
   {
     key: 'PRAISE_QUANTIFY_DUPLICATE_PRAISE_PERCENTAGE',
-    defaultValue: 0.1,
+    defaultValue: '0.1',
   },
   {
     key: 'PRAISE_QUANTIFY_ALLOWED_VALUES',
@@ -97,7 +97,7 @@ const settings = [
   },
   {
     key: 'PRAISE_ALLOWED_CHANNEL_IDS',
-    defaultValue: null,
+    defaultValue: undefined,
   },
   {
     key: 'CUSTOM_EXPORT_MAP',
