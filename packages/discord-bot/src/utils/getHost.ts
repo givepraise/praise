@@ -1,6 +1,7 @@
 import { apiClient } from './api';
 import Keyv from 'keyv';
 import { PaginatedCommunities } from './api-schema';
+import { DiscordClient } from '../interfaces/DiscordClient';
 
 /**
  * Cache host after fetching communities from API
@@ -8,19 +9,24 @@ import { PaginatedCommunities } from './api-schema';
  * @param {string} guildId
  * @returns {Promise<string | undefined>}
  */
-export const cacheHosts = async (cache: Keyv): Promise<void> => {
+export const cacheHosts = async (
+  hostCache: Keyv,
+  urlCache: Keyv
+): Promise<void> => {
   let currPage = 1;
-  while (true) {
+  let nextPage = true;
+  while (nextPage) {
     const communityList = await apiClient
       .get(`/communities?page=${currPage}`)
       .then<PaginatedCommunities>((res) => res.data);
 
     for (const community of communityList.docs) {
-      await cache.set(community.discordGuildId, community._id);
+      await hostCache.set(community.discordGuildId, community._id);
+      await urlCache.set(community.discordGuildId, community.hostname);
     }
 
-    if (communityList.hasNextPage) currPage++;
-    else break;
+    currPage++;
+    nextPage = communityList.hasNextPage;
   }
 };
 
@@ -31,14 +37,14 @@ export const cacheHosts = async (cache: Keyv): Promise<void> => {
  * @returns {Promise<string | undefined>}
  */
 export const getHost = async (
-  cache: Keyv,
+  client: DiscordClient,
   guildId: string
 ): Promise<string | undefined> => {
-  let host = await cache.get(guildId);
+  let host = await client.hostCache.get(guildId);
 
   if (host === undefined) {
-    cacheHosts(cache);
-    host = await cache.get(guildId);
+    await cacheHosts(client.hostCache, client.urlCache);
+    host = await client.hostCache.get(guildId);
   }
 
   return host;

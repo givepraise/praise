@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Guild, GuildMember } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { UserState } from '../interfaces/UserState';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getStateEmbed } from '../utils/embeds/stateEmbed';
@@ -42,7 +42,7 @@ export const whoamiHandler: CommandHandler = async (
   );
 
   const user =
-    ua.user == null
+    ua.user === null
       ? undefined
       : await getUser(
           typeof ua.user === 'string' ? ua.user : ua.user._id,
@@ -54,7 +54,7 @@ export const whoamiHandler: CommandHandler = async (
   state.avatar = ua.avatarId;
   state.activations = [];
 
-  if (ua.user != null) {
+  if (ua.user !== null) {
     const activatedAccounts = await apiClient
       .get<UserAccount[]>(
         `useraccounts?user=${

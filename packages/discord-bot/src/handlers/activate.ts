@@ -3,9 +3,8 @@
 //import { Types } from 'mongoose';
 
 import { CommandHandler } from '../interfaces/CommandHandler';
-import { alreadyActivatedError } from '../utils/embeds/praiseEmbeds';
+import { alreadyActivatedError, dmError } from '../utils/embeds/praiseEmbeds';
 import { getUserAccount } from '../utils/getUserAccount';
-import { dmError } from '../utils/embeds/praiseEmbeds';
 import { GuildMember } from 'discord.js';
 import { getActivateToken } from '../utils/getActivateToken';
 import { getHost } from '../utils/getHost';
@@ -15,7 +14,8 @@ import { getHost } from '../utils/getHost';
  *  Creates a one-time link on the Praise frontend linking to the activate page
  *  where the user can associate their Discord user with a UserAccount
  *
- * @param  interaction
+ * @param client
+ * @param interaction
  * @returns
  */
 export const activationHandler: CommandHandler = async (
@@ -29,7 +29,7 @@ export const activationHandler: CommandHandler = async (
   }
 
   try {
-    const host = await getHost(client.communityCache, guild.id);
+    const host = await getHost(client, guild.id);
 
     if (host === undefined) {
       await interaction.editReply(
@@ -45,8 +45,8 @@ export const activationHandler: CommandHandler = async (
     console.log(userAccount);
     if (
       userAccount.user &&
-      userAccount.user != null &&
-      userAccount.user != ''
+      userAccount.user !== null &&
+      userAccount.user !== ''
     ) {
       await interaction.reply({
         content: await alreadyActivatedError(host),
@@ -66,9 +66,20 @@ export const activationHandler: CommandHandler = async (
     const activateToken = await getActivateToken(userAccount, host);
     console.log(activateToken);
 
-    const activationURL = `${
-      process.env.FRONTEND_URL as string
-    }/activate?accountId=${
+    if (!activateToken) {
+      await interaction.reply({
+        content: 'Unable to activate user account.',
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const hostUrl =
+      process.env.NODE_ENV === 'development'
+        ? process.env.FRONTEND_URL
+        : `https://${(await client.urlCache.get(guild.id)) as string}`;
+
+    const activationURL = `${hostUrl || 'undefined:/'}/activate?accountId=${
       member.user.id
     }&platform=DISCORD&token=${activateToken}`;
 

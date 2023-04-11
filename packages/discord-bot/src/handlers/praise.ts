@@ -19,8 +19,7 @@ import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
 import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
 import { apiClient } from '../utils/api';
-import { PraiseItem } from '../utils/api-schema';
-import { Setting } from '../utils/api-schema';
+import { PraiseItem, Setting } from '../utils/api-schema';
 import { settingValueRealized } from '../utils/settingsUtil';
 
 import { logger } from '../utils/logger';
@@ -79,7 +78,7 @@ export const praiseHandler: CommandHandler = async (
     guild.id
   );
 
-  if (!giverAccount.user || giverAccount.user == null) {
+  if (!giverAccount.user || giverAccount.user === null) {
     await interaction.editReply(await notActivatedError(guild.id));
     return;
   }

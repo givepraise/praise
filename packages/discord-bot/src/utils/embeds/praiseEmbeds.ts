@@ -201,7 +201,7 @@ export const praiseSuccessDM = async (
   const msg = (
     (await getSetting('PRAISE_SUCCESS_DM', guildId)) as string
   ).replace('{praiseURL}', msgUrl);
-  const embed = new EmbedBuilder().setColor('#696969');
+  const embed = new EmbedBuilder().setColor('#696969').setDescription(msg);
   if (!isActivated) {
     const notActivatedMsg = (await getSetting(
       'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM',
@@ -244,7 +244,5 @@ export const renderMessage = async (
   guildId: string
 ): Promise<string> => {
   const msg = (await getSetting(key, guildId)) as string;
-  switch (key) {
-  }
   return msg;
 };

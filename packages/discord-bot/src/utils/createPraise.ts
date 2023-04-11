@@ -36,7 +36,7 @@ export const createPraise = async (
   };
 
   const response = await apiClient
-    .post(`/praise`, praiseData, {
+    .post('/praise', praiseData, {
       headers: { host: guild.id },
     })
     .then((res) => res.status === 200)

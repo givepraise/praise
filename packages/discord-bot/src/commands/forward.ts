@@ -1,8 +1,8 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { logger } from '../utils/logger';
-import { forwardHandler } from '../handlers/forward';
+// import { forwardHandler } from '../handlers/forward';
 import { Command } from '../interfaces/Command';
-import { getMsgLink } from '../utils/format';
+// import { getMsgLink } from '../utils/format';
 
 export const forward: Command = {
   data: new SlashCommandBuilder()

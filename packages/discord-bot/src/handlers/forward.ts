@@ -14,6 +14,7 @@ import {
   undefinedReceiverWarning,
   giverNotActivatedError,
   selfPraiseWarning,
+  forwardSuccess,
 } from '../utils/embeds/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
@@ -21,7 +22,6 @@ import { CommandHandler } from '../interfaces/CommandHandler';
 import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
 import { createForward } from '../utils/createForward';
 import { apiClient } from '../utils/api';
-import { forwardSuccess } from '../utils/embeds/praiseEmbeds';
 import { logger } from '../utils/logger';
 import { getHost } from '../utils/getHost';
 
@@ -46,7 +46,7 @@ export const forwardHandler: CommandHandler = async (
     return;
   }
 
-  const host = await getHost(client.communityCache, guild.id);
+  const host = await getHost(client, guild.id);
 
   if (host === undefined) {
     await interaction.editReply('This community is not registered for praise.');

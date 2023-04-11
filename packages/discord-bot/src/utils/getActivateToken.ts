@@ -1,4 +1,4 @@
-import { UserAccount, UserAccountWithActivateToken } from './api-schema';
+import { UserAccount } from './api-schema';
 import { apiClient } from './api';
 import { randomBytes } from 'crypto';
 

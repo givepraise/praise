@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits } from 'discord.js';
 import { DiscordClient } from './interfaces/DiscordClient';
 import { registerCommands } from './utils/registerCommands';
-import { requiredEnvVariables } from './pre-start/env-required';
+// import { requiredEnvVariables } from './pre-start/env-required';
 import { logger } from './utils/logger';
 import { cacheHosts } from './utils/getHost';
 import Keyv from 'keyv';
@@ -26,8 +26,9 @@ void (async (): Promise<void> => {
 
 discordClient.once('ready', async () => {
   logger.info('Discord client is ready!');
-  discordClient.communityCache = new Keyv();
-  await cacheHosts(discordClient.communityCache);
+  discordClient.hostCache = new Keyv();
+  discordClient.urlCache = new Keyv();
+  await cacheHosts(discordClient.hostCache, discordClient.urlCache);
 });
 
 discordClient.on('interactionCreate', async (interaction): Promise<void> => {

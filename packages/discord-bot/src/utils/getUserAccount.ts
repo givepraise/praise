@@ -7,7 +7,7 @@ const createUserAccount = async (
   host: string
 ): Promise<UserAccount[]> => {
   await apiClient.post(
-    `/useraccounts`,
+    '/useraccounts',
     {
       accountId: user.id,
       name: user.username + '#' + user.discriminator,
@@ -33,8 +33,8 @@ const updateUserAccount = async (
   host: string
 ): Promise<UserAccount[]> => {
   if (
-    ua.name != user.username + '#' + user.discriminator ||
-    ua.avatarId != user.avatar
+    ua.name !== user.username + '#' + user.discriminator ||
+    ua.avatarId !== user.avatar
   ) {
     ua.name = user.username + '#' + user.discriminator;
     ua.avatarId = user?.avatar || '';

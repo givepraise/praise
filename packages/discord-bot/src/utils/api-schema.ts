@@ -108,6 +108,7 @@ export interface Community {
   discordLinkNonce: string;
   isPublic: boolean;
   discordLinkState: string;
+  hostname: string;
 }
 
 export interface PaginatedCommunities {

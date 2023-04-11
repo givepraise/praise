@@ -17,7 +17,7 @@ export function settingValueRealized(
     case 'IntegerList':
       return value.split(',').map((v: string) => Number.parseInt(v.trim()));
     case 'StringList':
-      return value.split(',').map((v: string) => v.trim()) as string[];
+      return value.split(',').map((v: string) => v.trim());
     case 'Image':
       return `${process.env.API_URL as string}:${
         process.env.API_PORT as string
@@ -29,9 +29,9 @@ export function settingValueRealized(
   }
 }
 
-export const getDefaultSetting = async (
+export const getDefaultSetting = (
   key: string
-): Promise<string | string[] | boolean | number | number[] | undefined> => {
+): string | string[] | boolean | number | number[] | undefined => {
   switch (key) {
     case 'PRAISE_SUCCESS_MESSAGE':
       return 'PRAISE SUCCESSFUL (message not set)';
