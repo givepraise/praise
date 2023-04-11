@@ -383,6 +383,7 @@ export class UsersService {
         identityEthAddress,
         rewardsEthAddress: identityEthAddress,
         username: await this.generateValidUsername(identityEthAddress),
+        roles: [AuthRole.USER],
         nonce,
       });
     }
