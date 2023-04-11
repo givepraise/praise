@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 
 export const HOSTNAME_TEST = 'test-community.givepraise.xyz';
 
-export const DB_NAME_MAIN_TEST = 'praise-test';
-export const DB_NAME_MAIN =
-  process.env.NODE_ENV === 'testing' ? DB_NAME_MAIN_TEST : process.env.MONGO_DB;
-
-export const DB_URL_ROOT = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@${process.env.MONGO_HOST}?authSource=admin&appname=PraiseApi`;
-export const DB_URL_MAIN_DB = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${DB_NAME_MAIN}?authSource=admin&appname=PraiseApi`;
+export const MONGODB_MAIN_DB_TEST = 'praise-test';
+export const MONGODB_MAIN_DB =
+  process.env.NODE_ENV === 'testing'
+    ? MONGODB_MAIN_DB_TEST
+    : process.env.MONGO_DB;
 
 export const API_KEYS = process.env.API_KEYS
   ? process.env.API_KEYS.split(',')
