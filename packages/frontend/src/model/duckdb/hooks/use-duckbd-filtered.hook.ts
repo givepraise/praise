@@ -10,7 +10,9 @@ export function useDuckDbFiltered(
       return `&periodId=${filter.periodId}`;
     }
     if (filter.startDate && filter.endDate) {
-      return `&startDate=${filter.startDate}&endDate=${filter.endDate}`;
+      return `&startDate=${encodeURIComponent(
+        filter.startDate
+      )}&endDate=${encodeURIComponent(filter.endDate)}`;
     }
     return '';
   };

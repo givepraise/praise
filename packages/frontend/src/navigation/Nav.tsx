@@ -11,6 +11,7 @@ import {
   faFire,
   faFileLines,
   faUser,
+  faChartBar,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
@@ -92,6 +93,12 @@ export const Nav = (): JSX.Element => {
               icon={faUserFriends}
               description="Users"
               to="/users"
+              exact={true}
+            />
+            <NavItem
+              icon={faChartBar}
+              description="Analytics"
+              to="/analytics"
               exact={true}
             />
             <NavItem icon={faBook} description="Logs" to="/eventlogs" />

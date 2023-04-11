@@ -10,6 +10,10 @@ const UserDetailsPage = React.lazy(
 );
 const UsersPage = React.lazy(() => import('@/pages/Users/UsersPage'));
 
+const AnalyticsPage = React.lazy(
+  () => import('@/pages/Analytics/AnalyticsPage')
+);
+
 const PeriodsPage = React.lazy(() => import('@/pages/Periods/PeriodsPage'));
 const PeriodsCreateUpdatePage = React.lazy(
   () => import('@/pages/PeriodCreate/PeriodCreatePage')
@@ -89,6 +93,10 @@ export const AuthenticatedRoutes = ({
 }: Props): JSX.Element | null => {
   return (
     <Switch>
+      <Route exact path={'/analytics'}>
+        <AnalyticsPage />
+      </Route>
+
       <Route exact path={'/users'}>
         <UsersPage />
       </Route>

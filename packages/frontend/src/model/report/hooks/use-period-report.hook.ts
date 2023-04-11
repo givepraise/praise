@@ -77,7 +77,7 @@ export function usePeriodReport(
     const report = new namespace.default(config, db) as Report;
 
     // Run report, response is an object with result rows and logging info
-    const response = await report.run();
+    let response = await report.run();
 
     // Add an header and footer message to the log
     let log = `Report: ${report.manifest.name} (${report.manifest.version})\n`;
@@ -92,6 +92,12 @@ export function usePeriodReport(
     if (format === 'csv' && response.rows) {
       const parser = new Parser();
       csv = parser.parse(response.rows);
+    }
+    if (format === 'json' && response.rows) {
+      response = {
+        ...response,
+        rows: response.rows.map((r) => (r as any).toJSON()),
+      };
     }
     return { manifest: report.manifest, ...response, csv };
   };

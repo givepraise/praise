@@ -17,6 +17,8 @@ import { ReportLogDialog } from './ReportLogDialog';
 import { SingleSetting } from '@/model/settings/settings';
 import { ReportManifest } from '@/model/report/types/report-manifest.type';
 import { UsePeriodReportReturn } from '@/model/report/types/use-period-report-return.type';
+import { getPreviousPeriod } from '../../../utils/periods';
+import { PeriodDetailsDto } from '../../../model/periods/dto/period-details.dto';
 
 const defaultExportOptions = [
   { value: '', label: 'Export', disabled: true },
@@ -32,10 +34,23 @@ export const ExportSelect = (): JSX.Element | null => {
   const allPeriods = useRecoilValue(AllPeriods);
   useLoadSinglePeriodDetails(periodId); // Fetch additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
+  const [previousPeriod, setPreviousPeriod] =
+    React.useState<PeriodDetailsDto>();
+
+  // Start date = end date of previous period
+  React.useEffect(() => {
+    if (period) {
+      const previousPeriod = getPreviousPeriod(allPeriods, period);
+      if (previousPeriod) {
+        setPreviousPeriod(previousPeriod);
+      }
+    }
+  }, [period, allPeriods]);
 
   // Load summary report
   const summaryReport = usePeriodReport({
-    periodId,
+    startDate: previousPeriod?.endDate,
+    endDate: period?.endDate,
     url: 'https://raw.githubusercontent.com/givepraise/reports/main/reports/period-receiver-summary/report.js',
   });
 

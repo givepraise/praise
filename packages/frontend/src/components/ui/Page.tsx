@@ -1,6 +1,6 @@
 import { classNames } from '../../utils/';
 
-type PageVariant = '' | 'wide';
+type PageVariant = '' | 'wide' | 'full';
 
 interface PageProps {
   variant?: PageVariant;
@@ -20,11 +20,16 @@ export const Page = ({
   ref,
   children,
 }: PageProps): JSX.Element => {
-  const defaultClass = 'w-full px-0 py-5 md:px-5';
-  const regularClass = `md:w-[750px] ${defaultClass}`;
-  const wideClass = `md:w-[750px] xl:w-[1000px] ${defaultClass}`;
+  const fullClass = 'w-full px-0 py-5 md:px-5';
+  const regularClass = `md:w-[750px] ${fullClass}`;
+  const wideClass = `md:w-[750px] xl:w-[1000px] ${fullClass}`;
 
-  const variantClass = variant === '' || !variant ? regularClass : wideClass;
+  let variantClass = regularClass;
+  if (variant === 'full') {
+    variantClass = fullClass;
+  } else if (variant === 'wide') {
+    variantClass = wideClass;
+  }
 
   return (
     <div className={classNames(variantClass, className)} ref={ref}>
