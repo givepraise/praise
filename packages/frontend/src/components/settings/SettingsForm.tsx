@@ -150,6 +150,8 @@ export const SettingsForm = ({
   >(undefined);
   if (!Array.isArray(settings) || settings.length === 0) return null;
 
+  console.log('settings', settings);
+
   // Is only called if validate is successful
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: Record<string, any>): Promise<void> => {

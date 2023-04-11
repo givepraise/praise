@@ -8,6 +8,7 @@ import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { User } from '../users/schemas/users.schema';
 import { errorMessages } from '../shared/exceptions/error-messages';
+import { AuthRole } from '../auth/enums/auth-role.enum';
 
 @Injectable()
 export class ActivateService {
@@ -87,10 +88,17 @@ export class ActivateService {
     let user;
     try {
       user = await this.usersService.findOneByEth(identityEthAddress);
+      if (user.username === user.identityEthAddress) {
+        // Update username
+        await this.usersService.update(user._id, {
+          username,
+        });
+      }
     } catch (e) {
       user = await this.usersService.create({
         identityEthAddress,
         rewardsEthAddress: identityEthAddress,
+        roles: [AuthRole.USER],
         username,
       });
     }

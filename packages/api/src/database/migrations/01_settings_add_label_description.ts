@@ -1,15 +1,15 @@
-import { SettingModel } from '../schemas/settings/00_settings.schema';
+import { SettingModel } from '../schemas/settings/01_settings.schema';
 
 const settings = [
   {
     key: 'NAME',
     label: 'App Name',
-    description: null,
+    description: undefined,
   },
   {
     key: 'DESCRIPTION',
     label: 'App Description',
-    description: null,
+    description: undefined,
   },
   {
     key: 'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
@@ -97,7 +97,7 @@ const settings = [
   {
     key: 'LOGO',
     label: 'App Logo',
-    description: null,
+    description: undefined,
   },
 ];
 

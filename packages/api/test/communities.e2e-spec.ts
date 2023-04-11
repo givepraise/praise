@@ -24,8 +24,7 @@ import {
 } from './shared/nest';
 import { databaseExists } from '../src/database/utils/database-exists';
 import { MongoClient } from 'mongodb';
-import { DB_URL_ROOT } from '../src/constants/constants.provider';
-import { dbNameCommunity } from '../src/database/utils/community-db-name';
+import { dbNameCommunity } from '../src/database/utils/db-name-community';
 
 class LoggedInUser {
   accessToken: string;
@@ -38,7 +37,11 @@ describe('Communities (E2E)', () => {
   const users: LoggedInUser[] = [];
   let mongodb: MongoClient;
   beforeAll(async () => {
-    mongodb = new MongoClient(DB_URL_ROOT);
+    if (!process.env.MONGO_ADMIN_URI) {
+      throw new Error('MONGO_ADMIN_URI not set');
+    }
+
+    mongodb = new MongoClient(process.env.MONGO_ADMIN_URI);
 
     // Clear the database
     await usersService.getModel().deleteMany({});

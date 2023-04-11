@@ -21,36 +21,36 @@ interface roleOptionsProps {
   label: string;
 }
 
+const UsersTableData = atom<User[] | undefined>({
+  key: 'UsersTableData',
+  default: undefined,
+});
+
+const UsersTableSelectedRole = atom<roleOptionsProps>({
+  key: 'UsersTableSelectedRole',
+  default: roleOptions[0],
+});
+
+const UsersTableFilter = atom<string>({
+  key: 'UsersTableFilter',
+  default: '',
+});
+
+const UsersTablePage = atom<number>({
+  key: 'UsersTablePage',
+  default: 1,
+});
+
+const UsersTableLastPage = atom<number>({
+  key: 'UsersTableLastPage',
+  default: 0,
+});
+
 export const UsersTable = (): JSX.Element => {
   const allAdminUsers = useRecoilValue(AllAdminUsers);
   const allForwarderUsers = useRecoilValue(AllForwarderUsers);
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
   const allUsers = useRecoilValue(AllUsers);
-
-  const UsersTableData = atom<User[] | undefined>({
-    key: 'UsersTableData',
-    default: undefined,
-  });
-
-  const UsersTableSelectedRole = atom<roleOptionsProps>({
-    key: 'UsersTableSelectedRole',
-    default: roleOptions[0],
-  });
-
-  const UsersTableFilter = atom<string>({
-    key: 'UsersTableFilter',
-    default: '',
-  });
-
-  const UsersTablePage = atom<number>({
-    key: 'UsersTablePage',
-    default: 1,
-  });
-
-  const UsersTableLastPage = atom<number>({
-    key: 'UsersTableLastPage',
-    default: 0,
-  });
 
   const [tableData, setTableData] = useRecoilState(UsersTableData);
   const [selectedRole, setSelectedRole] = useRecoilState(
