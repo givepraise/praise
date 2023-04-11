@@ -7,6 +7,7 @@ import { User } from '@/model/user/dto/user.dto';
 import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
 import { shortenEthAddress } from '@/utils/string';
 import { UserAccountPlatformIcon } from './UserAccountPlatformIcon';
+import { UserName } from './UserName';
 
 interface UserPopoverProps {
   user?: User;
@@ -74,6 +75,9 @@ const WrappedUserPopover = ({
           <div className="p-5 text-sm font-normal text-gray-900 border border-solid rounded-lg shadow-md dark:text-white bg-warm-gray-50 dark:bg-slate-900">
             <div className="mb-5 text-4xl">
               <UserAvatar user={user} userAccount={userAccount} />
+            </div>
+            <div className="font-bold">
+              <UserName user={user} userAccount={userAccount} />
             </div>
             {userAccount && (
               <div className="flex items-center space-x-2">
