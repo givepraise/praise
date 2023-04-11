@@ -87,6 +87,12 @@ export class ActivateService {
     let user;
     try {
       user = await this.usersService.findOneByEth(identityEthAddress);
+      if (user.username === user.identityEthAddress) {
+        // Update username
+        await this.usersService.update(user._id, {
+          username,
+        });
+      }
     } catch (e) {
       user = await this.usersService.create({
         identityEthAddress,
