@@ -1,7 +1,5 @@
-import { SettingsModel } from '../../settings/entities';
-import { PeriodModel } from '../../period/entities';
-import { PeriodSettingsModel } from '../../periodsettings/entities';
-import { insertNewPeriodSettings } from '../../periodsettings/utils';
+import { PeriodSettingsModel } from '../schemas/periodsettings/03_periodsettings.schema';
+import { SettingModel } from '../schemas/settings/03_settings.schema';
 
 const up = async (): Promise<void> => {
   const overridableSettingKeys = [
@@ -13,40 +11,38 @@ const up = async (): Promise<void> => {
   ];
 
   // Update Settings Indexes to reflect new index of [key, period] defined in SettingsSchema
-  await SettingsModel.syncIndexes();
+  await SettingModel.syncIndexes();
   await PeriodSettingsModel.syncIndexes();
 
   // Specify which settings are overridable per-period
-  await SettingsModel.updateMany(
+  await SettingModel.updateMany(
     {
       key: {
         $in: overridableSettingKeys,
       },
     },
-    { $set: { periodOverridable: true } }
+    { $set: { periodOverridable: true } },
   );
 
-  await SettingsModel.updateMany(
+  await SettingModel.updateMany(
     {
       key: {
         $nin: overridableSettingKeys,
       },
     },
-    { $set: { periodOverridable: false } }
+    { $set: { periodOverridable: false } },
   );
 
   // Copy default settings for all existing periods
-  const allPeriods = await PeriodModel.find();
-  await Promise.all(allPeriods.map((p) => insertNewPeriodSettings(p)));
+  // const allPeriods = await PeriodModel.find();
+  // await Promise.all(allPeriods.map((p) => insertNewPeriodSettings(p)));
 };
 
 const down = async (): Promise<void> => {
-  await SettingsModel.syncIndexes();
-  await PeriodSettingsModel.syncIndexes();
-
-  await SettingsModel.updateMany({}, { $unset: { periodOverridable: 1 } });
-
-  await PeriodSettingsModel.deleteMany({});
+  // await SettingModel.syncIndexes();
+  // await PeriodSettingsModel.syncIndexes();
+  // await SettingModel.updateMany({}, { $unset: { periodOverridable: 1 } });
+  // await PeriodSettingsModel.deleteMany({});
 };
 
 export { up, down };

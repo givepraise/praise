@@ -1,6 +1,6 @@
 {
   "name": "setup",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "license": "GPL-3.0-or-later",
   "type": "commonjs",
   "description": "Praise ENV setup scripts.",
@@ -12,7 +12,8 @@
     "bcrypt": "^5.1.0",
     "dotenv": "^16.0.0",
     "env-cmd": "^10.1.0",
-    "inquirer": "^8.2.4"
+    "inquirer": "^8.2.4",
+    "mongoose": "^6.10.2"
   },
   "devDependencies": {
     "ts-node": "^10.4.0",

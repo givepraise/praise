@@ -1,12 +1,12 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { Collection } from 'discord.js';
-import { logger } from 'api/dist/shared/logger';
 import { readdir } from 'fs/promises';
 import { join } from 'path';
 import { Command } from '../interfaces/Command';
 import { DiscordClient } from '../interfaces/DiscordClient';
 import { help } from '../commands/help';
+import { logger } from './logger';
 
 /**
  * Register (install) all commands to Discord

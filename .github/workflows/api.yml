@@ -1,0 +1,33 @@
+name: Api
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/api/**'
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    name: Build, Lint & Test
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.14.0'
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn workspace api lint
+      - run: yarn workspace api build
+
+      - run: cp .env.template .env
+
+      # Define environment variables that are not included in the .env.template file.
+      - run: echo "${{secrets.ROOT_ENV_TESTING }}" >> .env
+      - run: echo "${{secrets.API_ENV_TESTING }}" >> .env
+      - run: echo "${{secrets.DISCORDBOT_ENV_TESTING }}" >> .env
+      - run: echo "${{secrets.FRONTEND_ENV_TESTING }}" >> .env
+
+      - run: yarn mongodb:start
+      # We should first run mongo and after that run tests
+      - run: yarn workspace api test
+      - run: yarn workspace api test:e2e
+

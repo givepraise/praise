@@ -2,7 +2,7 @@ import React from 'react';
 import { UserPseudonym } from './UserPseudonym';
 import { User } from '@/model/user/dto/user.dto';
 import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
-import { shortenEthAddress } from '@/utils/string';
+import { shortenEthAddress } from '../../utils/string';
 
 interface UserNameProps {
   user?: User;
@@ -19,7 +19,7 @@ const WrappedUserName = ({
   periodId,
   className,
 }: UserNameProps): JSX.Element => {
-  let name;
+  let name = '';
 
   if ((!user && !userAccount) || (usePseudonym && !periodId))
     name = 'Unknown username';
@@ -28,23 +28,27 @@ const WrappedUserName = ({
     user ||
     (typeof userAccount?.user === 'object' ? userAccount?.user : undefined);
 
-  if (localUser) {
+  if (localUser?.username) {
     if (usePseudonym && periodId) {
-      name = <UserPseudonym userId={localUser._id} periodId={periodId} />;
+      return <UserPseudonym userId={localUser._id} periodId={periodId} />;
     } else {
-      name =
-        localUser.username.length === 42 && localUser.username.startsWith('0x')
-          ? shortenEthAddress(localUser.username)
-          : localUser.username;
+      name = localUser.username;
     }
   } else {
     if (userAccount) {
       if (usePseudonym && periodId) {
-        name = <UserPseudonym userId={userAccount._id} periodId={periodId} />;
+        return <UserPseudonym userId={userAccount._id} periodId={periodId} />;
       } else {
         name = userAccount.name;
       }
     }
+  }
+
+  if (name.length === 42) {
+    name = shortenEthAddress(name);
+  }
+  if (name.length > 20) {
+    name = name.substring(0, 20) + '...';
   }
 
   return <div className={className}>{name}</div>;

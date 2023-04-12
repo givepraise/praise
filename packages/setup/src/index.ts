@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import inquirer from 'inquirer';
 import * as dotenv from 'dotenv';
 import { readFileSync, writeFileSync } from 'fs';
@@ -147,14 +148,20 @@ const apiKeyRoles = 'API_KEY_DISCORD_BOT';
 const run = async (): Promise<void> => {
   const answers = await inquirer.prompt(questions);
 
+  const mongoInitDbRootPassword =
+    process.env.MONGO_INITDB_ROOT_PASSWORD || randomString();
+  const mongoPassword = process.env.MONGO_PASSWORD || randomString();
+
   const rootEnv = {
     NODE_ENV: answers.NODE_ENV,
     MONGO_HOST: answers.NODE_ENV === 'production' ? 'mongodb' : 'localhost',
     MONGO_INITDB_ROOT_USERNAME: process.env.MONGO_INITDB_ROOT_USERNAME,
-    MONGO_INITDB_ROOT_PASSWORD:
-      process.env.MONGO_INITDB_ROOT_PASSWORD || randomString(),
+    MONGO_INITDB_ROOT_PASSWORD: mongoInitDbRootPassword,
     MONGO_USERNAME: process.env.MONGO_USERNAME,
-    MONGO_PASSWORD: process.env.MONGO_PASSWORD || randomString(),
+    MONGO_PASSWORD: mongoPassword,
+    MONGO_DB: process.env.MONGO_DB,
+    MONGO_URI: `mongodb://${process.env.MONGO_USERNAME}:${mongoPassword}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/{DB}?authSource=admin&ssl=false`,
+    MONGO_ADMIN_URI: `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${mongoInitDbRootPassword}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/admin?authSource=admin&ssl=false`,
     HOST: answers.HOST,
     API_URL: serverUrl(answers),
     API_PORT: process.env.API_PORT,
@@ -172,7 +179,6 @@ const run = async (): Promise<void> => {
     DISCORD_TOKEN: answers.DISCORD_TOKEN,
     DISCORD_CLIENT_ID: answers.DISCORD_CLIENT_ID,
     DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,
-    DISCORD_BOT_API_KEY: process.env.DISCORD_BOT_API_KEY || discordBotApiKey,
   };
 
   setupAndWriteEnv(rootEnvTemplatePath, rootEnvPath, rootEnv);

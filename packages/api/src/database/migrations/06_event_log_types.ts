@@ -1,5 +1,14 @@
-import { EventLogTypeModel } from '../../eventlog/entities';
-import { EventLogTypeKey } from '../../eventlog/types';
+import { EventLogTypeModel } from '../schemas/event-log-type/event-log-type.schema';
+
+enum EventLogTypeKey {
+  PERMISSION = 'PERMISSION',
+  AUTHENTICATION = 'AUTHENTICATION',
+  PERIOD = 'PERIOD',
+  PRAISE = 'PRAISE',
+  QUANTIFICATION = 'QUANTIFICATION',
+  SETTING = 'SETTING',
+  USER_ACCOUNT = 'USER_ACCOUNT',
+}
 
 const eventLogTypes = [
   {
@@ -31,6 +40,11 @@ const eventLogTypes = [
     key: EventLogTypeKey.QUANTIFICATION,
     label: 'Quantification',
     description: 'An action to quantify praise',
+  },
+  {
+    key: EventLogTypeKey.USER_ACCOUNT,
+    label: 'UserAccount',
+    description: 'An action to UserAccounts',
   },
 ];
 

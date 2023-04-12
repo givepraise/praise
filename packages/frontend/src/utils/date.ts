@@ -1,5 +1,11 @@
-import { parse, parseISO, formatRelative, compareAsc } from 'date-fns';
-import { enUS } from 'date-fns/esm/locale';
+import {
+  parse,
+  parseISO,
+  formatRelative,
+  formatDistance,
+  compareAsc,
+} from 'date-fns';
+import { enGB } from 'date-fns/esm/locale';
 import { utcToZonedTime, format } from 'date-fns-tz';
 import jstz from 'jstz';
 
@@ -22,47 +28,75 @@ const utcDateToLocal = (dateUtc: Date): Date => {
 };
 
 export const localizeAndFormatIsoDateRelative = (dateIso: string): string => {
-  const formatRelativeLocale = {
-    lastWeek: "'last' eeee p",
-    yesterday: "'yesterday' p",
-    today: "'today' p",
-    tomorrow: "'tomorrow' p",
-    nextWeek: 'eeee p',
-    other: DATE_FORMAT,
-  };
+  try {
+    const formatRelativeLocale = {
+      lastWeek: 'eeee',
+      yesterday: "'yesterday', p",
+      today: 'p',
+      tomorrow: "'tomorrow' p",
+      nextWeek: 'eeee p',
+      other: DATE_FORMAT,
+    };
 
-  const locale = {
-    ...enUS,
-    formatRelative: (token) => formatRelativeLocale[token],
-  };
+    const locale = {
+      ...enGB,
+      formatRelative: (token) => formatRelativeLocale[token],
+    };
 
-  const dateUtc = parseISO(dateIso);
-  const dateLocal = utcDateToLocal(dateUtc);
+    const dateUtc = parseISO(dateIso);
+    const dateLocal = utcDateToLocal(dateUtc);
 
-  return formatRelative(dateLocal, new Date(), { locale });
+    const localDate = new Date(dateLocal);
+    const currentDate = new Date();
+
+    const differenceInDays = Math.round(
+      (currentDate.getTime() - localDate.getTime()) / 86400000
+    );
+    const isMoreThanAWeekAgo = differenceInDays >= 8;
+    const isMoreThanTwoDaysAgo = differenceInDays > 2;
+
+    let dateSuffix = '';
+    if (!isMoreThanAWeekAgo && isMoreThanTwoDaysAgo) {
+      dateSuffix =
+        ', ' +
+        formatDistance(localDate, currentDate, {
+          addSuffix: true,
+        });
+    }
+
+    return formatRelative(dateLocal, new Date(), { locale }) + dateSuffix;
+  } catch (error) {
+    return 'Invalid date';
+  }
 };
 
 export const localizeAndFormatIsoDate = (
   dateIso: string,
   pattern: string = DATE_FORMAT
 ): string => {
-  const dateUtc = parseISO(dateIso);
-  const dateLocal = utcDateToLocal(dateUtc);
-
-  return format(dateLocal, pattern);
+  try {
+    const dateUtc = parseISO(dateIso);
+    const dateLocal = utcDateToLocal(dateUtc);
+    return format(dateLocal, pattern);
+  } catch (error) {
+    return 'Invalid date';
+  }
 };
 
 export const formatIsoDateUTC = (
   dateIso: string,
   pattern: string = DATE_FORMAT_LONG
 ): string => {
-  const date = parseISO(dateIso);
-  const dateUtc = utcToZonedTime(date, 'UTC');
-  const formattedDateUtc = format(dateUtc, pattern, {
-    timeZone: 'UTC',
-  });
-
-  return formattedDateUtc;
+  try {
+    const date = parseISO(dateIso);
+    const dateUtc = utcToZonedTime(date, 'UTC');
+    const formattedDateUtc = format(dateUtc, pattern, {
+      timeZone: 'UTC',
+    });
+    return formattedDateUtc;
+  } catch (error) {
+    return 'Invalid date';
+  }
 };
 
 /**

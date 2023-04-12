@@ -1,4 +1,4 @@
-FROM node:16.18-alpine
+FROM node:18.14.0
 
 # Create app directory
 WORKDIR /usr/src/
@@ -18,3 +18,5 @@ RUN yarn
 
 # Run the app
 CMD ["yarn", "api:start"]
+
+

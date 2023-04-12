@@ -1,13 +1,13 @@
 import React from 'react';
 import { Jazzicon } from '@ukstv/jazzicon-react';
-import { faDiscord } from '@fortawesome/free-brands-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useHistory } from 'react-router-dom';
 import { classNames } from '@/utils/index';
 import { UserAvatar } from './UserAvatar';
 import { User } from '@/model/user/dto/user.dto';
 import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
 import { shortenEthAddress } from '@/utils/string';
+import { UserAccountPlatformIcon } from './UserAccountPlatformIcon';
+import { UserName } from './UserName';
 
 interface UserPopoverProps {
   user?: User;
@@ -34,32 +34,13 @@ const WrappedUserPopover = ({
   );
 
   if (!user && !userAccount) return null;
-
   if (usePseudonym) return children;
-
-  const localUser =
-    user ||
-    (typeof userAccount?.user === 'object' ? userAccount?.user : undefined);
-
-  let discordUsername: string | undefined;
-  let identityEthAddress: string | undefined;
-
-  if (localUser) {
-    discordUsername = localUser.accounts?.find(
-      (account) => account.platform === 'DISCORD'
-    )?.name;
-    identityEthAddress = localUser.identityEthAddress;
-  }
-
-  if (userAccount && userAccount.platform === 'DISCORD') {
-    discordUsername = userAccount.name;
-  }
 
   const handleClick = () => (event: React.MouseEvent<HTMLTableRowElement>) => {
     event.stopPropagation();
 
-    if (localUser) {
-      history.push(`/users/${localUser._id}`);
+    if (user) {
+      history.push(`/users/${user._id}`);
       return;
     }
   };
@@ -95,16 +76,23 @@ const WrappedUserPopover = ({
             <div className="mb-5 text-4xl">
               <UserAvatar user={user} userAccount={userAccount} />
             </div>
-            {discordUsername && (
+            <div className="font-bold">
+              <UserName user={user} userAccount={userAccount} />
+            </div>
+            {userAccount && (
               <div className="flex items-center space-x-2">
-                <FontAwesomeIcon icon={faDiscord} size="1x" />
-                <span>{discordUsername}</span>
+                <UserAccountPlatformIcon userAccount={userAccount} />
+                <span>{userAccount.name}</span>
               </div>
             )}
-            {identityEthAddress && (
+
+            {user && (
               <div className="flex items-center mt-3 space-x-2">
-                <Jazzicon address={identityEthAddress} className="w-4 h-4" />
-                <span>{shortenEthAddress(identityEthAddress)}</span>
+                <Jazzicon
+                  address={user.identityEthAddress}
+                  className="w-4 h-4"
+                />
+                <span>{shortenEthAddress(user.identityEthAddress)}</span>
               </div>
             )}
           </div>

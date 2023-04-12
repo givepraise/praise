@@ -1,15 +1,15 @@
-import { SettingsModel } from '../../settings/entities';
+import { SettingModel } from '../schemas/settings/01_settings.schema';
 
 const settings = [
   {
     key: 'NAME',
     label: 'App Name',
-    description: null,
+    description: undefined,
   },
   {
     key: 'DESCRIPTION',
     label: 'App Description',
-    description: null,
+    description: undefined,
   },
   {
     key: 'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
@@ -97,7 +97,7 @@ const settings = [
   {
     key: 'LOGO',
     label: 'App Logo',
-    description: null,
+    description: undefined,
   },
 ];
 
@@ -106,17 +106,18 @@ const up = async (): Promise<void> => {
     updateOne: {
       filter: { key: s.key },
       update: { $set: { label: s.label, description: s.description } },
+      upsert: true,
     },
   }));
 
-  await SettingsModel.bulkWrite(settingUpdates);
+  await SettingModel.bulkWrite(settingUpdates);
 };
 
 const down = async (): Promise<void> => {
   const allKeys = settings.map((s) => s.key);
-  await SettingsModel.updateMany(
+  await SettingModel.updateMany(
     { key: { $in: allKeys } },
-    { $set: { label: undefined, description: undefined } }
+    { $set: { label: undefined, description: undefined } },
   );
 };
 

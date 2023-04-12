@@ -1,8 +1,7 @@
-import { SettingGroup } from '@/settings/types';
-import { SettingsModel } from '@/settings/entities';
-import { PeriodSettingsModel } from '@/periodsettings/entities';
-import { PeriodModel } from '@/period/entities';
-import { PeriodDocument } from '@/period/types';
+import { SettingGroup } from '../../settings/enums/setting-group.enum';
+import { PeriodModel } from '../schemas/period/period.schema';
+import { PeriodSettingsModel } from '../schemas/periodsettings/07_periodsettings.schema';
+import { SettingModel } from '../schemas/settings/07_settings.schema';
 
 const newSetting = {
   key: 'PRAISE_QUANTIFIERS_ASSIGN_ALL',
@@ -12,13 +11,14 @@ const newSetting = {
   description:
     'Evenly assign praise among all quantifiers. If enabled, the setting "Praise per Quantifer" will be ignored',
   group: SettingGroup.PERIOD_DEFAULT,
+  periodOverridable: true,
 };
 
 const up = async (): Promise<void> => {
-  await SettingsModel.create(newSetting);
+  await SettingModel.create(newSetting);
 
   const periods = await PeriodModel.find({});
-  const periodsettings = periods.map((p: PeriodDocument) => ({
+  const periodsettings = periods.map((p: any) => ({
     ...newSetting,
     period: p._id,
   }));
@@ -27,7 +27,7 @@ const up = async (): Promise<void> => {
 };
 
 const down = async (): Promise<void> => {
-  await SettingsModel.deleteMany({ key: newSetting.key });
+  await SettingModel.deleteMany({ key: newSetting.key });
   await PeriodSettingsModel.deleteMany({ key: newSetting.key });
 };
 

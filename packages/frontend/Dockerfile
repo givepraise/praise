@@ -11,7 +11,9 @@ COPY ./yarn.lock .
 COPY ./.yarn ./.yarn
 
 # Copy packages
+COPY ./packages/api-types ./packages/api-types
 COPY ./packages/api ./packages/api
+COPY ./packages/api-types ./packages/api-types
 COPY ./packages/frontend ./packages/frontend
 
 # Install dependencies for packages
