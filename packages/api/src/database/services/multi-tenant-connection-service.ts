@@ -6,7 +6,7 @@ import {
   MongooseModuleOptions,
   MongooseOptionsFactory,
 } from '@nestjs/mongoose';
-import { dbUrlCommunity } from '../utils/community-db-url';
+import { dbUrlCommunity } from '../utils/db-url-community';
 
 @Injectable({ scope: Scope.REQUEST })
 export class MultiTenantConnectionService implements MongooseOptionsFactory {

@@ -1,5 +1,5 @@
-import { PeriodSettingsModel } from '../schemas/periodsettings/01_periodsettings.schema';
-import { SettingModel } from '../schemas/settings/01_settings.schema';
+import { PeriodSettingsModel } from '../schemas/periodsettings/03_periodsettings.schema';
+import { SettingModel } from '../schemas/settings/03_settings.schema';
 
 const up = async (): Promise<void> => {
   const overridableSettingKeys = [

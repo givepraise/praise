@@ -64,7 +64,7 @@ export class User {
     required: true,
     unique: true,
     minlength: 4,
-    maxlength: 20,
+    maxlength: 50,
     validate: {
       validator: (username: string) =>
         Promise.resolve(isValidUsername(username)),
