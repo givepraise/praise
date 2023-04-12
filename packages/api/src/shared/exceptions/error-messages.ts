@@ -466,4 +466,9 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     httpStatusCode: 404,
     code: 1096,
   },
+  DATABASE_NOT_FOUND: {
+    message: 'Database not found',
+    httpStatusCode: 400,
+    code: 1097,
+  },
 };
