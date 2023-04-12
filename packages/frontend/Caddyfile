@@ -1,19 +1,19 @@
 {$API_URL} {
-  log {
-    output file /var/log/caddy/access.log {
-      format '{remote} - [{when}] "{method} {uri} {proto}" {status} {size}'
-      }
-  }
-  handle /api* {
-    reverse_proxy api:{$API_PORT}
-  }
-    handle /uploads* {
-    reverse_proxy api:{$API_PORT}
-  }
-  handle {
-    root * /var/www/praise
-    try_files {path} /index.html
-    encode zstd gzip
-    file_server
-  }
+	log {
+		output file /var/log/caddy/access.log {
+			format '{remote} - [{when}] "{method} {uri} {proto}" {status} {size}'
+		}
+	}
+	handle /api* {
+		reverse_proxy api:{$API_PORT}
+	}
+	handle /uploads* {
+		reverse_proxy api:{$API_PORT}
+	}
+	handle {
+		root * /var/www/praise
+		try_files {path} /index.html
+		encode zstd gzip
+		file_server
+	}
 }
