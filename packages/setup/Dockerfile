@@ -5,12 +5,14 @@ WORKDIR /usr/src/
 
 # Copy workspace config
 COPY ./package*.json .
+COPY ./.yarnrc.yml .
 COPY ./yarn.lock .
+COPY ./.yarn ./.yarn
 
 # Copy packages
 COPY ./packages/setup ./packages/setup
 
-# Install dependencies for packages
+# Install dependencies
 RUN corepack enable
 RUN yarn
 

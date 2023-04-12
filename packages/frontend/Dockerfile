@@ -5,18 +5,23 @@ WORKDIR /usr/src/
 
 # Copy workspace config
 COPY ./package*.json .
+COPY ./.eslintrc.js .
+COPY ./.yarnrc.yml .
 COPY ./yarn.lock .
+COPY ./.yarn ./.yarn
 
 # Copy packages
 COPY ./packages/api-types ./packages/api-types
 COPY ./packages/frontend ./packages/frontend
 
-# Install dependencies for packages
+# Install dependencies
 RUN corepack enable
 RUN yarn
+
+# Build the app
 RUN yarn workspace frontend build
 
-# note: never use the :latest tag in a production site
+# Serve the app with Caddy
 FROM caddy:2.6.4-alpine
 
 COPY ./packages/frontend/Caddyfile /etc/caddy/Caddyfile
