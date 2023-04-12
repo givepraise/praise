@@ -731,6 +731,8 @@ export interface components {
       role: "USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB";
     };
     CreateApiKeyResponseDto: {
+      /** @example 639b178f19296ee0f2d0585d */
+      _id: string;
       /** @example 89f7edbd */
       name: string;
       /** @example My API Key */
@@ -747,6 +749,8 @@ export interface components {
       key: string;
     };
     ApiKey: {
+      /** @example 639b178f19296ee0f2d0585d */
+      _id: string;
       /** @example 89f7edbd */
       name: string;
       /** @example My API Key */
