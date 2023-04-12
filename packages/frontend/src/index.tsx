@@ -1,6 +1,5 @@
 import './utils/polyfills';
 import './styles/globals.css';
-
 // eslint-disable-next-line import/no-unresolved
 import '@rainbow-me/rainbowkit/styles.css';
 import React from 'react';

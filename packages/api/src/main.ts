@@ -5,6 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import { version } from '../package.json';
+
 import { AppModule } from './app.module';
 import { AppConfig } from './shared/appConfig.shared';
 import { envCheck } from './shared/env.shared';
