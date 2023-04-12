@@ -1,8 +1,4 @@
 {$API_URL} {
-   log {
-    output file /var/log/caddy/access.log
-    format '{remote} - [{when}] "{method} {uri} {proto}" {status} {size}'
-  }
   handle /api* {
 		reverse_proxy api:{$API_PORT}
 	}
