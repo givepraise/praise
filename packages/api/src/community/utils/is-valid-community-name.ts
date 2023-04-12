@@ -23,7 +23,7 @@ const communityNameBlacklist = [
  * A valid community name is:
  * - lowercase
  * - minimum 4 characters
- * - maximum 20 characters
+ * - maximum 30 characters
  * - only alphanumeric characters, underscores, dots, and hyphens
  * - cannot start with a dot or hyphen
  * - cannot end with a dot or hyphen
@@ -31,7 +31,7 @@ const communityNameBlacklist = [
  */
 
 export function checkCommunityNameRegex(name: string): boolean {
-  const pattern = /^[a-z0-9][a-z0-9_.-]{1,18}[a-z0-9]$/;
+  const pattern = /^[a-z0-9][a-z0-9_.-]{1,28}[a-z0-9]$/;
   return pattern.test(name);
 }
 
