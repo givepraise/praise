@@ -23,7 +23,7 @@ RUN yarn workspace api build
 RUN yarn workspace frontend build
 
 # note: never use the :latest tag in a production site
-FROM caddy:2.5.2-alpine
+FROM caddy:2.6.4-alpine
 
 COPY ./packages/frontend/Caddyfile /etc/caddy/Caddyfile
 COPY --from=builder /usr/src/packages/frontend/build /var/www/praise
