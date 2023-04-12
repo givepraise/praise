@@ -6,7 +6,6 @@ import { toast } from 'react-hot-toast';
 import { SignMessageButton } from '@/components/auth/SignMessageButton';
 import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 import { EthAccount } from '@/components/account/EthAccount';
-import { Button } from '../components/ui/Button';
 
 interface Props {
   children: JSX.Element;
