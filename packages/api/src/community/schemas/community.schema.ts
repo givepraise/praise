@@ -62,7 +62,7 @@ export class Community {
     type: String,
     required: true,
     minlength: 4,
-    maxlength: 20,
+    maxlength: 30,
     unique: true,
     validate: {
       validator: (name: string) => Promise.resolve(isValidCommunityName(name)),
