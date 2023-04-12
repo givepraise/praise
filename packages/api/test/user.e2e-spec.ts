@@ -365,7 +365,7 @@ describe('UserController (E2E)', () => {
     // Test updating invalid username: too long
     test('400 response when username is too long', async () => {
       await authorizedPatchRequest(`/users/${user._id}`, app, accessToken, {
-        username: 'a'.repeat(33),
+        username: 'a'.repeat(55),
       }).expect(400);
     });
 
