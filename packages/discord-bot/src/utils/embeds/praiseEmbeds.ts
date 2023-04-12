@@ -71,7 +71,7 @@ export const renderMessage = async (
   host?: string,
   subs?: substitutionParams
 ): Promise<string> => {
-  if (key == 'DM_ERROR' && !host)
+  if (key === 'DM_ERROR' && !host)
     return "The bot can't be used in DMs, please use commands in the server.";
 
   let msg = (await getSetting(key, host)) as string;

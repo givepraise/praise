@@ -93,7 +93,6 @@ export const praiseHandler: CommandHandler = async (
     .then((res) => (res.data as PraiseItem).totalPages)
     .catch(() => 0);
 
-  console.log(praiseItemsCount);
   const receivers: string[] = [];
   const receiverIds: string[] = [
     ...new Set(

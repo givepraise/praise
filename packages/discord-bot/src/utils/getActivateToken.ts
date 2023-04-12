@@ -22,7 +22,6 @@ export const getActivateToken = async (
     })
     .then((res) => res.data)
     .catch((e) => {
-      console.log(e.message);
       return undefined;
     });
 

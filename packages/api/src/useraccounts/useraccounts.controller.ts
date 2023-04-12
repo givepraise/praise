@@ -70,11 +70,11 @@ export class UserAccountsController {
       createUserAccountInputDto,
     );
 
-    this.eventLogService.logEventWithAuthContext({
-      authContext: req.authContext,
-      typeKey: EventLogTypeKey.USER_ACCOUNT,
-      description: `Created UserAccount id: ${userAccount.accountId}`,
-    });
+    // this.eventLogService.logEventWithAuthContext({
+    //   authContext: req.authContext,
+    //   typeKey: EventLogTypeKey.USER_ACCOUNT,
+    //   description: `Created UserAccount id: ${userAccount.accountId}`,
+    // });
 
     return userAccount;
   }
@@ -181,11 +181,11 @@ export class UserAccountsController {
       updateUserAccountInputDto,
     );
 
-    this.eventLogService.logEventWithAuthContext({
-      authContext: req.authContext,
-      typeKey: EventLogTypeKey.USER_ACCOUNT,
-      description: `Updated UserAccount id: ${userAccount.accountId}`,
-    });
+    // this.eventLogService.logEventWithAuthContext({
+    //   authContext: req.authContext,
+    //   typeKey: EventLogTypeKey.USER_ACCOUNT,
+    //   description: `Updated UserAccount id: ${userAccount.accountId}`,
+    // });
 
     return userAccount;
   }

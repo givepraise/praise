@@ -42,7 +42,6 @@ export const activationHandler: CommandHandler = async (
       (member as GuildMember).user,
       host
     );
-    console.log(userAccount);
     if (
       userAccount.user &&
       userAccount.user !== null &&
@@ -67,7 +66,6 @@ export const activationHandler: CommandHandler = async (
     // );
 
     const activateToken = await getActivateToken(userAccount, host);
-    console.log(activateToken);
 
     if (!activateToken) {
       await interaction.reply({

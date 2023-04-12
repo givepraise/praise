@@ -40,11 +40,11 @@ export const getHost = async (
   client: DiscordClient,
   guildId: string
 ): Promise<string | undefined> => {
-  let host = await client.hostCache.get(guildId);
+  let host = await client.urlCache.get(guildId);
 
   if (host === undefined) {
     await cacheHosts(client.hostCache, client.urlCache);
-    host = await client.hostCache.get(guildId);
+    host = await client.urlCache.get(guildId);
   }
 
   return host;

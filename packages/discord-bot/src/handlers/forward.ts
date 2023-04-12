@@ -4,7 +4,7 @@ import { GuildMember } from 'discord.js';
 import { getReceiverData } from '../utils/getReceiverData';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getUser } from '../utils/getUser';
-import { praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
+import { praiseSuccessDM, renderMessage } from '../utils/embeds/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
@@ -13,7 +13,6 @@ import { createForward } from '../utils/createForward';
 import { apiClient } from '../utils/api';
 import { logger } from '../utils/logger';
 import { getHost } from '../utils/getHost';
-import { renderMessage } from '../utils/embeds/praiseEmbeds';
 
 /**
  * Execute command /firward
