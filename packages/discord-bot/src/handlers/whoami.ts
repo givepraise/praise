@@ -3,7 +3,7 @@ import { UserState } from '../interfaces/UserState';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getStateEmbed } from '../utils/embeds/stateEmbed';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
-import { dmError } from '../utils/embeds/praiseEmbeds';
+import { renderMessage } from '../utils/embeds/praiseEmbeds';
 import { getUser } from '../utils/getUser';
 import { UserAccount } from '../utils/api-schema';
 import { apiClient } from '../utils/api';
@@ -22,7 +22,7 @@ export const whoamiHandler: CommandHandler = async (
 ): Promise<void> => {
   const { member, guild } = interaction;
   if (!guild || !member) {
-    await interaction.editReply(dmError);
+    await interaction.editReply(await renderMessage('DM_ERROR'));
     return;
   }
 

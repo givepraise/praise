@@ -1,5 +1,5 @@
 import { CacheType, CommandInteraction, GuildMember, Role } from 'discord.js';
-import { dmError, praiseRoleError } from './embeds/praiseEmbeds';
+import { renderMessage, praiseRoleError } from './embeds/praiseEmbeds';
 import { getSetting } from './settingsUtil';
 /**
  * Check if user has discord role PRAISE_GIVER_ROLE_ID if required,
@@ -20,7 +20,7 @@ export const assertPraiseGiver = async (
   if (!guild) {
     if (sendReply) {
       await interaction.editReply({
-        content: dmError,
+        content: await renderMessage('DM_ERROR'),
       });
     }
     return false;

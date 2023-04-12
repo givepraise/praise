@@ -3,7 +3,7 @@
 //import { Types } from 'mongoose';
 
 import { CommandHandler } from '../interfaces/CommandHandler';
-import { renderMessage, dmError } from '../utils/embeds/praiseEmbeds';
+import { renderMessage } from '../utils/embeds/praiseEmbeds';
 import { getUserAccount } from '../utils/getUserAccount';
 import { GuildMember } from 'discord.js';
 import { getActivateToken } from '../utils/getActivateToken';
@@ -24,7 +24,7 @@ export const activationHandler: CommandHandler = async (
 ) => {
   const { member, guild } = interaction;
   if (!guild || !member) {
-    await interaction.editReply(dmError);
+    await interaction.editReply(await renderMessage('DM_ERROR'));
     return;
   }
 

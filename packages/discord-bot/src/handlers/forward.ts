@@ -4,7 +4,7 @@ import { GuildMember } from 'discord.js';
 import { getReceiverData } from '../utils/getReceiverData';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getUser } from '../utils/getUser';
-import { dmError, praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
+import { praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
@@ -32,7 +32,7 @@ export const forwardHandler: CommandHandler = async (
 
   const { guild, channel, member } = interaction;
   if (!guild || !member || !channel) {
-    await interaction.editReply(dmError);
+    await interaction.editReply(await renderMessage('DM_ERROR'));
     return;
   }
 
