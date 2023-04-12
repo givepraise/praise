@@ -102,7 +102,7 @@ const ApplicationSettingsApiKeys = (): JSX.Element => {
   return (
     <>
       <div className="mb-2">
-        Generated keys to give external applications access to the Praise API.
+        Generate keys to give external applications access to the Praise API.
         For details on the permission levels, see documentation:{' '}
         <a
           href="https://givepraise.xyz/docs/category/configuring-praise"

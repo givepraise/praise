@@ -8,7 +8,6 @@ import { AllApiKeys } from '@/model/apikeys/apikeys';
 import { InlineLabel } from '@/components/ui/InlineLabel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBackspace } from '@fortawesome/free-solid-svg-icons';
-import Button from '@mui/material/Button';
 
 type ApiKeyTableProps = {
   handleDelete: (deleteKeyID: string) => void;
@@ -16,7 +15,7 @@ type ApiKeyTableProps = {
 
 export const ApplicationSettingsApiKeyTable = ({
   handleDelete,
-}: ApiKeyTableProps): JSX.Element => {
+}: ApiKeyTableProps): JSX.Element | null => {
   const apiKeys = useRecoilValue(AllApiKeys);
 
   const columns = React.useMemo(
@@ -24,12 +23,12 @@ export const ApplicationSettingsApiKeyTable = ({
       {
         Header: 'Key',
         accessor: 'description',
-        className: 'pl-5 text-left',
+        className: 'text-left',
       },
       {
         Header: 'Hash',
         accessor: 'hash',
-        className: 'pl-5 text-left',
+        className: 'text-left',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): string => {
           return data.value.slice(-8);
@@ -51,38 +50,40 @@ export const ApplicationSettingsApiKeyTable = ({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => {
           return (
-            <div className="w-full text-right">
-              <InlineLabel
-                text={data.value === 'API_KEY_READ' ? 'Read' : 'Read/Write'}
-                className="bg-themecolor-alt-1"
-              />
-            </div>
+            <InlineLabel
+              text={data.value === 'API_KEY_READ' ? 'Read' : 'Read/Write'}
+              className="!mr-0 bg-themecolor-alt-1"
+            />
           );
         },
       },
       {
         Header: '',
         accessor: '_id',
-        className: 'pl-5 text-left',
+        className: 'text-right w-9',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => {
           return (
-            <Button
+            <button
               onClick={(event): void => {
                 event.stopPropagation();
                 handleDelete(data.value);
               }}
+              className="cursor-pointer text-warm-gray-400 group-hover:inline-block"
+              title="Delete key"
+              type="button"
             >
               <FontAwesomeIcon
                 icon={faBackspace}
-                className="w-5 h-4 text-gray-500"
+                size="1x"
+                className="ml-2 hover:text-warm-gray-500 dark:hover:text-warm-gray-300"
               />
-            </Button>
+            </button>
           );
         },
       },
     ],
-    []
+    [handleDelete]
   );
 
   const options = {
@@ -102,13 +103,12 @@ export const ApplicationSettingsApiKeyTable = ({
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
-  if (!Array.isArray(apiKeys) || apiKeys.length === 0)
-    return <div className="px-5">Create your first API Key.</div>;
+  if (!Array.isArray(apiKeys) || apiKeys.length === 0) return null;
 
   return (
     <table
       id="periods-table"
-      className="w-full table-auto"
+      className="w-full mt-4 table-auto"
       {...getTableProps()}
     >
       <thead>
@@ -140,11 +140,7 @@ export const ApplicationSettingsApiKeyTable = ({
           prepareRow(row);
           const { key, ...restRowProps } = row.getRowProps();
           return (
-            <tr
-              className="px-5 cursor-pointer hover:bg-warm-gray-100 dark:hover:bg-slate-500"
-              key={key}
-              {...restRowProps}
-            >
+            <tr className="px-5" key={key} {...restRowProps}>
               {row.cells.map((cell) => {
                 const { key, ...restCellProps } = cell.getCellProps();
 

@@ -54,7 +54,7 @@ const ApplicationSettingsApiKeyForm = ({
           <div className="flex justify-center">
             <div className="flex items-center justify-center min-h-screen">
               <Dialog.Overlay className="fixed inset-0 bg-black/30" />
-              <div className="relative max-w-xl pb-16 mx-auto bg-white rounded dark:bg-slate-600 dark:text-white">
+              <div className="relative w-[576px] pb-16 mx-auto bg-white rounded dark:bg-slate-600 dark:text-white">
                 <div className="flex justify-end p-6">
                   <Button variant="round" onClick={close}>
                     <FontAwesomeIcon icon={faTimes} size="1x" />
@@ -67,10 +67,6 @@ const ApplicationSettingsApiKeyForm = ({
                   <Dialog.Title className="text-center mb-7">
                     Add API Key
                   </Dialog.Title>
-                  <Dialog.Description className="text-center mb-7">
-                    Please write your API key name and select your preferred
-                    access level.
-                  </Dialog.Description>
                   <Form
                     onSubmit={onSubmit}
                     encType="multipart/form-data"

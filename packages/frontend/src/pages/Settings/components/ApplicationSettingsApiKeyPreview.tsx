@@ -60,18 +60,20 @@ const ApplicationSettingsApiKeyPreview = ({
                       className="block w-full mr-2"
                     />
                     <button
-                      type="button"
                       onClick={async (): Promise<void> => {
                         await navigator.clipboard.writeText(
                           apiKeyData?.key ?? ''
                         );
                         toast.success('API Key copied to clipboard');
                       }}
-                      className="px-3 py-2 rounded bg-none hover:none"
+                      className="cursor-pointer text-warm-gray-400 group-hover:inline-block"
+                      title="Copy to clipboard"
+                      type="button"
                     >
                       <FontAwesomeIcon
                         icon={faCopy}
-                        className="w-5 h-5 text-gray-500"
+                        size="1x"
+                        className="ml-2 hover:text-warm-gray-500 dark:hover:text-warm-gray-300"
                       />
                     </button>
                   </div>

@@ -20,8 +20,6 @@ export const RadioInput = ({
 }: RadioInputParams): JSX.Element => {
   const [currentValue, setCurrentValue] = useState<string>(dbValue);
 
-  console.log(dbValue);
-
   return (
     <Field name={name} key={name} type="radio">
       {({ input }): JSX.Element => {
