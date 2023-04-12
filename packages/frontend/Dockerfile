@@ -5,17 +5,14 @@ WORKDIR /usr/src/
 
 # Copy workspace config
 COPY ./package*.json .
-COPY ./.eslintrc.js .
-COPY ./.yarnrc.yml .
 COPY ./yarn.lock .
-COPY ./.yarn ./.yarn
 
 # Copy packages
 COPY ./packages/api-types ./packages/api-types
 COPY ./packages/frontend ./packages/frontend
 
 # Install dependencies for packages
-RUN yarn set version berry
+RUN corepack enable
 RUN yarn
 RUN yarn workspace frontend build
 
