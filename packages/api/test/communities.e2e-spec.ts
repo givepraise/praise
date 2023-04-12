@@ -153,6 +153,33 @@ describe('Communities (E2E)', () => {
       expect(response.body.message).toBe('Validation failed');
     });
 
+    test('400 when name is invalid and is in blacklist', async () => {
+      for (const name of [
+        'www',
+        'setup',
+        'admin',
+        'api',
+        'app',
+        'mail',
+        'docs',
+        'blog',
+        'help',
+        'support',
+        'status',
+        'about',
+        'contact',
+        'terms',
+        'privacy',
+        'tos',
+        'legal',
+        'security',
+      ]) {
+        const response = await createValidCommunity({ name });
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe('Validation failed');
+      }
+    });
+
     test('400 when name is too short', async () => {
       const response = await createValidCommunity({ name: 'a' });
       expect(response.status).toBe(400);
