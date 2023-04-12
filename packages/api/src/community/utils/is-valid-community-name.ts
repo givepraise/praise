@@ -17,8 +17,7 @@ const communityNameBlacklist = [
   'tos',
   'legal',
   'security',
-]
-
+];
 
 /**
  * A valid community name is:
@@ -36,12 +35,10 @@ export function checkCommunityNameRegex(name: string): boolean {
   return pattern.test(name);
 }
 
-
-export function isValidCommunityName(name: string) :boolean{
+export function isValidCommunityName(name: string): boolean {
   const isRegexValid = checkCommunityNameRegex(name);
-  if (!isRegexValid){
-    return false
+  if (!isRegexValid) {
+    return false;
   }
   return !communityNameBlacklist.includes(name);
-
 }
