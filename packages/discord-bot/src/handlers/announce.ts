@@ -19,7 +19,6 @@
 // import { dmTargetMenu } from '../utils/menus/dmTargetmenu';
 // import { selectTargets } from '../utils/dmTargets';
 // import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
-// import { notActivatedError } from '../utils/embeds/praiseEmbeds';
 
 // /**
 //  * Executes command /announce
@@ -42,7 +41,7 @@
 //     { upsert: true, new: true }
 //   );
 //   if (!userAccount.user) {
-//     await interaction.editReply(await notActivatedError(guild.id));
+//     await interaction.editReply(await renderMessage('PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR', host));
 //     return;
 //   }
 //   const currentUser = await UserModel.findOne({ _id: userAccount.user });

@@ -78,11 +78,11 @@ export const getDefaultSetting = (
 
 export const getSetting = async (
   key: string,
-  guildId?: string
+  host?: string
 ): Promise<string | string[] | boolean | number | number[] | undefined> => {
   const setting = await apiClient
     .get(`/settings?key=${key}`, {
-      headers: guildId ? { host: guildId } : {},
+      headers: host ? { host: host } : {},
     })
     .then((res) => settingValueRealized(res.data as Setting[]))
     .catch(() => getDefaultSetting(key));

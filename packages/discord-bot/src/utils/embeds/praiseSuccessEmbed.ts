@@ -1,19 +1,13 @@
 import { User, EmbedBuilder } from 'discord.js';
 import { getSetting } from '../settingsUtil';
 
-/**
- * Generate message outlining user's current activation status
- *
- * @param {UserState} state
- * @returns {EmbedBuilder}
- */
 export const praiseSuccessEmbed = async (
   user: User,
   receivers: string[],
   reason: string,
-  guildId: string
+  host: string
 ): Promise<EmbedBuilder> => {
-  const msg = ((await getSetting('PRAISE_SUCCESS_MESSAGE', guildId)) as string)
+  const msg = ((await getSetting('PRAISE_SUCCESS_MESSAGE', host)) as string)
     .replace('{@receivers}', `${receivers.join(', ')}`)
     .replace('{reason}', reason);
 

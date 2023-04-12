@@ -1,20 +1,14 @@
 import { CommandInteraction, EmbedBuilder, User } from 'discord.js';
 import { getSetting } from '../settingsUtil';
 
-/**
- * Generate message outlining user's current activation status
- *
- * @param {UserState} state
- * @returns {EmbedBuilder}
- */
 export const praiseForwardEmbed = async (
   interaction: CommandInteraction,
   giver: User,
   receivers: string[],
   reason: string,
-  guildId: string
+  host: string
 ): Promise<EmbedBuilder> => {
-  const msg = ((await getSetting('FORWARD_SUCCESS_MESSAGE', guildId)) as string)
+  const msg = ((await getSetting('FORWARD_SUCCESS_MESSAGE', host)) as string)
     .replace('{@giver}', `<@!${giver.id}>`)
     .replace('{@receivers}', `${receivers.join(', ')}`)
     .replace('{reason}', reason);

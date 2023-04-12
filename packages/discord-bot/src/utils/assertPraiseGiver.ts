@@ -20,7 +20,7 @@ export const assertPraiseGiver = async (
   if (!guild) {
     if (sendReply) {
       await interaction.editReply({
-        content: await dmError(),
+        content: dmError,
       });
     }
     return false;

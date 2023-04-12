@@ -22,7 +22,7 @@ export const whoamiHandler: CommandHandler = async (
 ): Promise<void> => {
   const { member, guild } = interaction;
   if (!guild || !member) {
-    await interaction.editReply(await dmError());
+    await interaction.editReply(dmError);
     return;
   }
 

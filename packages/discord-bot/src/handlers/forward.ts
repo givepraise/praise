@@ -4,18 +4,7 @@ import { GuildMember } from 'discord.js';
 import { getReceiverData } from '../utils/getReceiverData';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getUser } from '../utils/getUser';
-import {
-  dmError,
-  invalidReceiverError,
-  missingReasonError,
-  notActivatedError,
-  praiseSuccessDM,
-  roleMentionWarning,
-  undefinedReceiverWarning,
-  giverNotActivatedError,
-  selfPraiseWarning,
-  forwardSuccess,
-} from '../utils/embeds/praiseEmbeds';
+import { dmError, praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
@@ -24,6 +13,7 @@ import { createForward } from '../utils/createForward';
 import { apiClient } from '../utils/api';
 import { logger } from '../utils/logger';
 import { getHost } from '../utils/getHost';
+import { renderMessage } from '../utils/embeds/praiseEmbeds';
 
 /**
  * Execute command /firward
@@ -42,7 +32,7 @@ export const forwardHandler: CommandHandler = async (
 
   const { guild, channel, member } = interaction;
   if (!guild || !member || !channel) {
-    await interaction.editReply(await dmError());
+    await interaction.editReply(dmError);
     return;
   }
 
@@ -58,7 +48,9 @@ export const forwardHandler: CommandHandler = async (
     host
   );
   if (!forwarderAccount.user) {
-    await interaction.editReply(await notActivatedError(host));
+    await interaction.editReply(
+      await renderMessage('PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR', host)
+    );
     return;
   }
 
@@ -83,7 +75,9 @@ export const forwardHandler: CommandHandler = async (
   const receiverOptions = interaction.options.getString('receivers');
 
   if (!receiverOptions || receiverOptions.length === 0) {
-    await interaction.editReply(await invalidReceiverError(host));
+    await interaction.editReply(
+      await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+    );
     return;
   }
 
@@ -92,20 +86,26 @@ export const forwardHandler: CommandHandler = async (
     !receiverData.validReceiverIds ||
     receiverData.validReceiverIds?.length === 0
   ) {
-    await interaction.editReply(await invalidReceiverError(host));
+    await interaction.editReply(
+      await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+    );
     return;
   }
 
   const reason = interaction.options.getString('reason');
   if (!reason || reason.length === 0) {
-    await interaction.editReply(await missingReasonError(host));
+    await interaction.editReply(
+      await renderMessage('PRAISE_REASON_MISSING_ERROR', host)
+    );
     return;
   }
 
   const giverAccount = await getUserAccount(praiseGiver.user, host);
   if (!giverAccount.user) {
     await interaction.editReply(
-      await giverNotActivatedError(praiseGiver.user, host)
+      await renderMessage('FORWARD_FROM_UNACTIVATED_GIVER_ERROR', host, {
+        praiseGiver: praiseGiver.user,
+      })
     );
     return;
   }
@@ -186,37 +186,38 @@ export const forwardHandler: CommandHandler = async (
       ephemeral: false,
     });
     await interaction.followUp({
-      content: await forwardSuccess(
-        praiseGiver.user,
-        receivers.map((id) => `<@!${id}>`),
-        reason,
-        host
-      ),
+      content: await renderMessage('FORWARD_SUCCESS_MESSAGE', host, {
+        reason: reason,
+        praiseGiver: praiseGiver.user,
+        receivers: receivers.map((id) => `<@!${id}>`),
+      }),
       ephemeral: false,
     });
   } else if (warnSelfPraise) {
-    await interaction.editReply(await selfPraiseWarning(host));
+    await interaction.editReply(
+      await renderMessage('SELF_PRAISE_WARNING', host)
+    );
   } else {
-    await interaction.editReply(await invalidReceiverError(host));
+    await interaction.editReply(
+      await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+    );
   }
 
   const warningMsg =
     (receiverData.undefinedReceivers
-      ? (await undefinedReceiverWarning(
-          receiverData.undefinedReceivers.join(', '),
-          praiseGiver.user,
-          host
-        )) + '\n'
+      ? (await renderMessage('PRAISE_UNDEFINED_RECEIVERS_WARNING', host, {
+          receivers: receiverData.undefinedReceivers,
+          user: praiseGiver.user,
+        })) + '\n'
       : '') +
     (receiverData.roleMentions
-      ? (await roleMentionWarning(
-          receiverData.roleMentions.join(', '),
-          praiseGiver.user,
-          host
-        )) + '\n'
+      ? (await renderMessage('PRAISE_TO_ROLE_WARNING', host, {
+          user: praiseGiver.user,
+          receivers: receiverData.roleMentions,
+        })) + '\n'
       : '') +
     (Receivers.length !== 0 && warnSelfPraise
-      ? (await selfPraiseWarning(host)) + '\n'
+      ? (await renderMessage('SELF_PRAISE_WARNING', host)) + '\n'
       : '');
 
   if (warningMsg && warningMsg.length !== 0) {

@@ -3,7 +3,7 @@
 //import { Types } from 'mongoose';
 
 import { CommandHandler } from '../interfaces/CommandHandler';
-import { alreadyActivatedError, dmError } from '../utils/embeds/praiseEmbeds';
+import { renderMessage, dmError } from '../utils/embeds/praiseEmbeds';
 import { getUserAccount } from '../utils/getUserAccount';
 import { GuildMember } from 'discord.js';
 import { getActivateToken } from '../utils/getActivateToken';
@@ -24,7 +24,7 @@ export const activationHandler: CommandHandler = async (
 ) => {
   const { member, guild } = interaction;
   if (!guild || !member) {
-    await interaction.editReply(await dmError());
+    await interaction.editReply(dmError);
     return;
   }
 
@@ -49,7 +49,10 @@ export const activationHandler: CommandHandler = async (
       userAccount.user !== ''
     ) {
       await interaction.reply({
-        content: await alreadyActivatedError(host),
+        content: await renderMessage(
+          'PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR',
+          host
+        ),
         ephemeral: true,
       });
       return;
