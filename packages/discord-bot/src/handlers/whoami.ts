@@ -7,7 +7,8 @@ import { renderMessage } from '../utils/embeds/praiseEmbeds';
 import { getUser } from '../utils/getUser';
 import { UserAccount } from '../utils/api-schema';
 import { apiClient } from '../utils/api';
-import { CommandHandler } from 'src/interfaces/CommandHandler';
+import { CommandHandler } from '../interfaces/CommandHandler';
+import { getHost } from '../utils/getHost';
 
 /**
  * Execute command /whoami
@@ -26,7 +27,14 @@ export const whoamiHandler: CommandHandler = async (
     return;
   }
 
-  const ua = await getUserAccount((member as GuildMember).user, guild.id);
+  const host = await getHost(client, guild.id);
+
+  if (host === undefined) {
+    await interaction.editReply('This community is not registered for praise.');
+    return;
+  }
+
+  const ua = await getUserAccount((member as GuildMember).user, host);
 
   const state: UserState = {
     id: ua.accountId,
@@ -38,7 +46,8 @@ export const whoamiHandler: CommandHandler = async (
   state.hasPraiseGiverRole = await assertPraiseGiver(
     member as GuildMember,
     interaction,
-    false
+    false,
+    host
   );
 
   const user =
@@ -61,7 +70,7 @@ export const whoamiHandler: CommandHandler = async (
           typeof ua.user === 'string' ? ua.user : ua.user._id
         }`,
         {
-          headers: { host: guild.id },
+          headers: { host: host },
         }
       )
       .then((res) => res.data);

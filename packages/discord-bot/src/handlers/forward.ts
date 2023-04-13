@@ -61,7 +61,7 @@ export const forwardHandler: CommandHandler = async (
     return;
   }
 
-  if ((await assertPraiseAllowedInChannel(interaction)) === false) return;
+  if ((await assertPraiseAllowedInChannel(interaction, host)) === false) return;
 
   const praiseGiver = interaction.options.getMember('giver') as GuildMember;
   if (!praiseGiver) {
@@ -69,7 +69,7 @@ export const forwardHandler: CommandHandler = async (
     return;
   }
 
-  if (!(await assertPraiseGiver(praiseGiver, interaction, true))) return;
+  if (!(await assertPraiseGiver(praiseGiver, interaction, true, host))) return;
 
   const receiverOptions = interaction.options.getString('receivers');
 
@@ -138,7 +138,8 @@ export const forwardHandler: CommandHandler = async (
       giverAccount,
       receiverAccount,
       forwarderAccount,
-      reason
+      reason,
+      host
     );
 
     // await logEvent(

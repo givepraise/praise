@@ -11,7 +11,8 @@ export const createPraise = async (
   interaction: ChatInputCommandInteraction,
   giverAccount: UserAccount,
   receiverAccount: UserAccount,
-  reason: string
+  reason: string,
+  host: string
 ): Promise<boolean> => {
   const { channel, guild } = interaction;
   if (!channel || !guild || channel.type === ChannelType.DM) return false;
@@ -37,7 +38,7 @@ export const createPraise = async (
 
   const response = await apiClient
     .post('/praise', praiseData, {
-      headers: { host: guild.id },
+      headers: { host: host },
     })
     .then((res) => res.status === 200)
     .catch(() => false);

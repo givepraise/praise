@@ -13,7 +13,8 @@ import { getSetting } from './settingsUtil';
 export const assertPraiseGiver = async (
   praiseGiver: GuildMember,
   interaction: CommandInteraction<CacheType>,
-  sendReply: boolean
+  sendReply: boolean,
+  host: string
 ): Promise<boolean> => {
   const { guild } = interaction;
 
@@ -28,12 +29,12 @@ export const assertPraiseGiver = async (
 
   const praiseGiverRoleIDRequired = (await getSetting(
     'PRAISE_GIVER_ROLE_ID_REQUIRED',
-    guild.id
+    host
   )) as boolean;
 
   const praiseGiverRoleIDList = (await getSetting(
     'PRAISE_GIVER_ROLE_ID',
-    guild.id
+    host
   )) as string[];
 
   if (!praiseGiverRoleIDRequired) {

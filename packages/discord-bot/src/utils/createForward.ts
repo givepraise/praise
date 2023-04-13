@@ -14,7 +14,8 @@ export const createForward = async (
   giverAccount: UserAccount,
   receiverAccount: UserAccount,
   forwarderAccount: UserAccount,
-  reason: string
+  reason: string,
+  host: string
 ): Promise<boolean> => {
   const { channel, guild } = interaction;
   if (!channel || !guild || channel.type === ChannelType.DM) return false;
@@ -41,7 +42,7 @@ export const createForward = async (
 
   const response = await apiClient
     .post('/praise/forward', praiseData, {
-      headers: { host: guild.id },
+      headers: { host: host },
     })
     .then((res) => res.status === 200)
     .catch(() => false);

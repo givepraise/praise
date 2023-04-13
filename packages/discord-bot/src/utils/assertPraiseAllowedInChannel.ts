@@ -10,7 +10,8 @@ const getChannelId = (channel: TextBasedChannel): string => {
 };
 
 export const assertPraiseAllowedInChannel = async (
-  interaction: CommandInteraction
+  interaction: CommandInteraction,
+  host: string
 ): Promise<boolean> => {
   const { channel, guild } = interaction;
 
@@ -18,14 +19,14 @@ export const assertPraiseAllowedInChannel = async (
 
   const allowedInAllChannels = (await getSetting(
     'PRAISE_ALLOWED_IN_ALL_CHANNELS',
-    guild.id
+    host
   )) as boolean;
 
   if (allowedInAllChannels) return true;
 
   const allowedChannelsList = (await getSetting(
     'PRAISE_ALLOWED_CHANNEL_IDS',
-    guild.id
+    host
   )) as string[];
 
   if (!channel) {

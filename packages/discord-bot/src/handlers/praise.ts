@@ -43,9 +43,11 @@ export const praiseHandler: CommandHandler = async (
     return;
   }
 
-  if (!(await assertPraiseGiver(member as GuildMember, interaction, true)))
+  if (
+    !(await assertPraiseGiver(member as GuildMember, interaction, true, host))
+  )
     return;
-  if (!(await assertPraiseAllowedInChannel(interaction))) return;
+  if (!(await assertPraiseAllowedInChannel(interaction, host))) return;
 
   const receiverOptions = interaction.options.getString('receivers');
 
@@ -76,10 +78,7 @@ export const praiseHandler: CommandHandler = async (
     return;
   }
 
-  const giverAccount = await getUserAccount(
-    (member as GuildMember).user,
-    guild.id
-  );
+  const giverAccount = await getUserAccount((member as GuildMember).user, host);
 
   if (!giverAccount.user || giverAccount.user === null) {
     await interaction.editReply(
@@ -116,16 +115,17 @@ export const praiseHandler: CommandHandler = async (
   );
 
   for (const receiver of Receivers) {
-    const receiverAccount = await getUserAccount(receiver.user, guild.id);
+    const receiverAccount = await getUserAccount(receiver.user, host);
 
-    const praiseObj = await createPraise(
+    const praiseRegistered = await createPraise(
       interaction,
       giverAccount,
       receiverAccount,
-      reason
+      reason,
+      host
     );
 
-    if (praiseObj) {
+    if (praiseRegistered) {
       // await logEvent(
       //   EventLogTypeKey.PRAISE,
       //   'Created a new praise from discord',
@@ -140,7 +140,7 @@ export const praiseHandler: CommandHandler = async (
             await praiseSuccessDM(
               responseUrl,
               receiverAccount.user ? true : false,
-              guild.id
+              host
             ),
           ],
         });
@@ -165,7 +165,7 @@ export const praiseHandler: CommandHandler = async (
           interaction.user,
           receivers.map((id) => `<@!${id}>`),
           reason,
-          guild.id
+          host
         ),
       ],
       ephemeral: false,
