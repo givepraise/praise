@@ -172,6 +172,7 @@ export interface paths {
     post: operations['CommunityController_create'];
   };
   '/api/communities/domain-check': {
+    /** Check to see if a given community hostname/domain name is setup and served by the API. Endpoint does not require authentication. */
     get: operations['CommunityController_domainCheck'];
   };
   '/api/communities/{id}': {
