@@ -11,6 +11,8 @@ import { errorMessages } from '../../shared/exceptions/error-messages';
 import { ApiKeyService } from '../../api-key/api-key.service';
 import { AuthContext } from '../auth-context';
 import { Types } from 'mongoose';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from '../../shared/decorators/public.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -18,6 +20,7 @@ export class AuthGuard implements CanActivate {
     private readonly jwtService: JwtService,
     private readonly apiKeyService: ApiKeyService,
     private readonly constantsProvider: ConstantsProvider,
+    private reflector: Reflector,
   ) {}
 
   /**
@@ -96,6 +99,15 @@ export class AuthGuard implements CanActivate {
    * Checks if the user has the required permissions to access the route.
    */
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
+
     const request = context.switchToHttp().getRequest();
 
     if (

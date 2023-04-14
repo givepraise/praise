@@ -9,7 +9,13 @@ import {
   SerializeOptions,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CommunityService } from './community.service';
 import { Permission } from '../auth/enums/permission.enum';
 import { Community } from './schemas/community.schema';
@@ -25,7 +31,7 @@ import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-p
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { ApiException } from '../shared/exceptions/api-exception';
-
+import { Public } from '../shared/decorators/public.decorator';
 @Controller('communities')
 @ApiTags('Communities')
 @SerializeOptions({
@@ -48,6 +54,20 @@ export class CommunityController {
     @Body() createCommunityInputDto: CreateCommunityInputDto,
   ): Promise<Community> {
     return this.communityService.create(createCommunityInputDto);
+  }
+
+  @Get('domain-check')
+  @Public()
+  @ApiResponse({
+    status: 200,
+    description: '"OK" if domain exists',
+    type: String,
+  })
+  @ApiQuery({ name: 'domain', type: String })
+  async domainCheck(@Query('domain') domain: string): Promise<string> {
+    const community = await this.communityService.findOne({ hostname: domain });
+    if (!community) throw new ApiException(errorMessages.COMMUNITY_NOT_FOUND);
+    return 'OK';
   }
 
   @Patch(':id')
@@ -91,7 +111,7 @@ export class CommunityController {
   @ApiParam({ name: 'id', type: String })
   async findOne(@Param('id', ObjectIdPipe) id: ObjectId): Promise<Community> {
     const community = await this.communityService.findOne(id);
-    if (!community) throw new ApiException(errorMessages.communityNotFound);
+    if (!community) throw new ApiException(errorMessages.COMMUNITY_NOT_FOUND);
     return community;
   }
 

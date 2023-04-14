@@ -81,7 +81,7 @@ export class CommunityService {
   ): Promise<Community> {
     const communityDocument = await this.communityModel.findById(_id);
     if (!communityDocument)
-      throw new ApiException(errorMessages.communityNotFound);
+      throw new ApiException(errorMessages.COMMUNITY_NOT_FOUND);
     if (community.owners) {
       assertOwnersIncludeCreator(community.owners, communityDocument.creator);
     }
