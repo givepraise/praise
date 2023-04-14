@@ -172,6 +172,9 @@ export interface paths {
     /** Create a new community */
     post: operations["CommunityController_create"];
   };
+  "/api/communities/domain-check": {
+    get: operations["CommunityController_domainCheck"];
+  };
   "/api/communities/{id}": {
     get: operations["CommunityController_findOne"];
     /** Update community */
@@ -1792,6 +1795,21 @@ export interface operations {
       201: {
         content: {
           "application/json": components["schemas"]["Community"];
+        };
+      };
+    };
+  };
+  CommunityController_domainCheck: {
+    parameters: {
+      query: {
+        domain: string;
+      };
+    };
+    responses: {
+      /** @description "OK" if domain exists */
+      200: {
+        content: {
+          "application/json": string;
         };
       };
     };
