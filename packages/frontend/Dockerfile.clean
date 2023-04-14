@@ -1,0 +1,27 @@
+# This Dockerfile is used to build the frontend for production in a 
+# multi community scenario. Only difference to the Dockerfile is that
+# it does not include Caddy. This image can be used as a base image
+# for other Dockerfiles.
+
+FROM node:18.15 as builder
+
+# Create app directory
+WORKDIR /usr/src/
+
+# Copy workspace config
+COPY ./package*.json .
+COPY ./.eslintrc.js .
+COPY ./.yarnrc.yml .
+COPY ./yarn.lock .
+COPY ./.yarn ./.yarn
+
+# Copy packages
+COPY ./packages/api-types ./packages/api-types
+COPY ./packages/frontend ./packages/frontend
+
+# Install dependencies
+RUN corepack enable
+RUN yarn
+
+# Build the app
+RUN yarn workspace frontend build
