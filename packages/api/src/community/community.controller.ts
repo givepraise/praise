@@ -58,6 +58,10 @@ export class CommunityController {
 
   @Get('domain-check')
   @Public()
+  @ApiOperation({
+    summary:
+      'Check to see if a given community hostname/domain name is setup and served by the API. Endpoint does not require authentication.',
+  })
   @ApiResponse({
     status: 200,
     description: '"OK" if domain exists',
