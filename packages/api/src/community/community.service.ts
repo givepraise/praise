@@ -50,24 +50,6 @@ export class CommunityService {
     return this.findOne({ _id });
   }
 
-  async domainCheck(domain: string): Promise<boolean> {
-    if (!process.env.MONGO_ADMIN_URI) {
-      throw new ApiException(errorMessages.MONGO_ADMIN_URI_NOT_SET);
-    }
-    const mongodb = new MongoClient(process.env.MONGO_ADMIN_URI);
-    try {
-      await mongodb.connect();
-      const db = mongodb.db(MONGODB_MAIN_DB);
-      const communitites = db.collection('communities');
-      const domainFound = await communitites.findOne({ hostname: domain });
-      return !!domainFound;
-    } catch (error) {
-      throw new ApiException(errorMessages.FAILED_TO_QUERY_COMMUNITIES);
-    } finally {
-      await mongodb.close();
-    }
-  }
-
   /**
    * Find all communities. Paginated.
    * @param options

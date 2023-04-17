@@ -11,6 +11,7 @@ import { Connection } from 'mongoose';
 import { dbNameCommunity } from '../utils/db-name-community';
 import { ApiException } from '../../shared/exceptions/api-exception';
 import { errorMessages } from '../../shared/exceptions/error-messages';
+import { logger } from '../../shared/logger';
 
 @Injectable({ scope: Scope.REQUEST })
 export class MultiTenantConnectionService implements MongooseOptionsFactory {
@@ -21,6 +22,11 @@ export class MultiTenantConnectionService implements MongooseOptionsFactory {
       process.env.NODE_ENV === 'testing'
         ? HOSTNAME_TEST
         : this.request.headers['host'].split(':')[0];
+
+    if (process.env.LOGGER_LEVEL === 'debug') {
+      logger.debug(`Connecting to database ${host}`);
+      logger.debug(`Request headers ${JSON.stringify(this.request.headers)}`);
+    }
 
     const options: MongooseModuleOptions = {
       uri: dbUrlCommunity({ hostname: host } as any),
