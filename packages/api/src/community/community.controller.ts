@@ -69,7 +69,7 @@ export class CommunityController {
   })
   @ApiQuery({ name: 'domain', type: String })
   async domainCheck(@Query('domain') domain: string): Promise<string> {
-    const community = await this.communityService.findOne({ hostname: domain });
+    const community = await this.communityService.domainCheck(domain);
     if (!community) throw new ApiException(errorMessages.COMMUNITY_NOT_FOUND);
     return 'OK';
   }
