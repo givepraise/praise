@@ -124,8 +124,17 @@ export class SettingsController {
   async setWithUpload(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @UploadedFile() file: Express.Multer.File,
+    @Request() request: RequestWithAuthContext,
   ) {
-    return this.settingsService.setImageSetting(id, file);
+    const response = this.settingsService.setImageSetting(id, file);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.SETTING,
+      description: `Uploaded file ${file.filename} for global setting "${id}"`,
+    });
+
+    return response;
   }
 
   @Get('uploads/:file')

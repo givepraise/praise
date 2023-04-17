@@ -11,8 +11,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { isString } from 'class-validator';
 import { parseISO, add, compareAsc } from 'date-fns';
 import { Model, Types } from 'mongoose';
-import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
-import { EventLogService } from '../../event-log/event-log.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '../../praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Praise } from '../../praise/schemas/praise.schema';
 import { PaginatedQueryDto } from '../../shared/dto/pagination-query.dto';
@@ -28,6 +26,7 @@ import { Period, PeriodExportSqlSchema } from '../schemas/periods.schema';
 import { SettingsService } from '../../settings/settings.service';
 import { isQuantificationCompleted } from '../../quantifications/utils/is-quantification-completed';
 import { PaginateModel } from '../../shared/interfaces/paginate-model.interface';
+import { logger } from 'src/shared/logger';
 
 @Injectable()
 export class PeriodsService {
@@ -36,7 +35,7 @@ export class PeriodsService {
     private periodModel: PaginateModel<Period>,
     @InjectModel(Praise.name)
     private praiseModel: Model<Praise>,
-    private eventLogService: EventLogService,
+
     private settingsService: SettingsService,
   ) {}
 
@@ -126,10 +125,7 @@ export class PeriodsService {
     // Create period settings
     await this.settingsService.createSettingsForPeriod(period._id);
 
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.PERIOD,
-      description: `Created a new period "${period.name}"`,
-    });
+    logger.info(`Created a new period "${period.name}"`);
 
     const periodDetailsDto = await this.findPeriodDetails(period._id);
 
@@ -186,10 +182,7 @@ export class PeriodsService {
 
     await period.save();
 
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.PERIOD,
-      description: eventLogMessages.join(', '),
-    });
+    logger.info(eventLogMessages.join(', '));
 
     return await this.findPeriodDetails(period._id);
   };
@@ -218,10 +211,7 @@ export class PeriodsService {
     period.status = PeriodStatusType.CLOSED;
     await period.save();
 
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.PERIOD,
-      description: `Closed the period "${period.name}"`,
-    });
+    logger.info(`Closed the period "${period.name}"`);
 
     return await this.findPeriodDetails(period._id);
   };

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Post,
+  Request,
   SerializeOptions,
   UseInterceptors,
 } from '@nestjs/common';
@@ -10,6 +11,9 @@ import { ActivateInputDto } from './dto/activate-input.dto';
 import { User } from '../users/schemas/users.schema';
 import { ActivateService } from './activate.service';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
+import { RequestWithAuthContext } from 'src/auth/interfaces/request-with-auth-context.interface';
+import { EventLogService } from 'src/event-log/event-log.service';
+import { EventLogTypeKey } from 'src/event-log/enums/event-log-type-key';
 
 @Controller('activate')
 @ApiTags('Activate')
@@ -18,7 +22,10 @@ import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongo
 })
 @UseInterceptors(MongooseClassSerializerInterceptor(User))
 export class ActivateController {
-  constructor(private activateService: ActivateService) {}
+  constructor(
+    private activateService: ActivateService,
+    private readonly eventLogService: EventLogService,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -30,7 +37,18 @@ export class ActivateController {
     description: 'The created (or updated) user.',
     type: User,
   })
-  activate(@Body() activateInputDto: ActivateInputDto): Promise<User> {
-    return this.activateService.activate(activateInputDto);
+  async activate(
+    @Body() activateInputDto: ActivateInputDto,
+    @Request() request: RequestWithAuthContext,
+  ): Promise<User> {
+    const user = this.activateService.activate(activateInputDto);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `User Account ${activateInputDto.accountId} activated.`,
+    });
+
+    return user;
   }
 }
