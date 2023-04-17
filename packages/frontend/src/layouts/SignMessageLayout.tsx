@@ -25,7 +25,7 @@ export const SignMessageLayout = ({
   return (
     <div className="w-full">
       <div className="flex flex-col w-full h-screen">
-        <div className="w-full p-5 text-2xl font-bold">
+        <div className="absolute p-5 text-2xl font-bold">
           <FontAwesomeIcon icon={faPrayingHands} size="1x" className="m-2" />
         </div>
         <div className="p-12 py-12 m-auto space-y-8 border-none rounded-none shadow-none md:p-10 md:border md:border-solid md:rounded-lg md:shadow-sm bg-none md:bg-warm-gray-50 w-96 dark:bg-slate-900">
