@@ -56,24 +56,6 @@ export class CommunityController {
     return this.communityService.create(createCommunityInputDto);
   }
 
-  @Get('domain-check')
-  @Public()
-  @ApiOperation({
-    summary:
-      'Check to see if a given community hostname/domain name is setup and served by the API. Endpoint does not require authentication.',
-  })
-  @ApiResponse({
-    status: 200,
-    description: '"OK" if domain exists',
-    type: String,
-  })
-  @ApiQuery({ name: 'domain', type: String })
-  async domainCheck(@Query('domain') domain: string): Promise<string> {
-    const community = await this.communityService.domainCheck(domain);
-    if (!community) throw new ApiException(errorMessages.COMMUNITY_NOT_FOUND);
-    return 'OK';
-  }
-
   @Patch(':id')
   @ApiOperation({ summary: 'Update community' })
   @ApiResponse({
