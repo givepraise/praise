@@ -31,7 +31,12 @@ export const createForward = async (
   const praiseData = {
     reason: reason,
     reasonRaw: cleanContent(reason, channel),
-    giver: giverAccount,
+    giver: {
+      accountId: giverAccount.accountId,
+      name: giverAccount.name,
+      avatarId: giverAccount.avatarId,
+      platform: giverAccount.platform,
+    },
     forwarderAccount: forwarderAccount,
     sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
     sourceName: `DISCORD:${encodeURIComponent(guild.name)}:${encodeURIComponent(

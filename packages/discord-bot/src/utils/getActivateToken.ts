@@ -21,9 +21,7 @@ export const getActivateToken = async (
       headers: { host: host },
     })
     .then((res) => res.data)
-    .catch((e) => {
-      return undefined;
-    });
+    .catch(() => undefined);
 
   return response?.activateToken;
 };

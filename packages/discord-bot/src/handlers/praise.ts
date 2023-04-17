@@ -8,8 +8,8 @@ import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
 import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
 import { apiClient } from '../utils/api';
-import { PraiseItem, Setting } from '../utils/api-schema';
-import { settingValueRealized } from '../utils/settingsUtil';
+import { PraiseItem } from '../utils/api-schema';
+import { getSetting } from '../utils/settingsUtil';
 import { getHost } from '../utils/getHost';
 
 import { logger } from '../utils/logger';
@@ -58,6 +58,21 @@ export const praiseHandler: CommandHandler = async (
     return;
   }
 
+  const reason = interaction.options.getString('reason', true);
+  if (!reason || reason.length === 0) {
+    await interaction.editReply(
+      await renderMessage('PRAISE_REASON_MISSING_ERROR', host)
+    );
+    return;
+  }
+
+  if (reason.length < 5 || reason.length > 280) {
+    await interaction.editReply(
+      'INVALID_REASON_LENGTH (reason should be between 5 to 280 characters)'
+    );
+    return;
+  }
+
   const receiverData = getReceiverData(receiverOptions);
 
   if (
@@ -66,14 +81,6 @@ export const praiseHandler: CommandHandler = async (
   ) {
     await interaction.editReply(
       await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
-    );
-    return;
-  }
-
-  const reason = interaction.options.getString('reason', true);
-  if (!reason || reason.length === 0) {
-    await interaction.editReply(
-      await renderMessage('PRAISE_REASON_MISSING_ERROR', host)
     );
     return;
   }
@@ -88,7 +95,7 @@ export const praiseHandler: CommandHandler = async (
   }
 
   const praiseItemsCount = await apiClient
-    .get(`/api/praise?limit=1&giver=${giverAccount._id}`)
+    .get(`/praise?limit=1&giver=${giverAccount._id}`, { headers: { host } })
     .then((res) => (res.data as PraiseItem).totalPages)
     .catch(() => 0);
 
@@ -99,10 +106,10 @@ export const praiseHandler: CommandHandler = async (
     ),
   ];
 
-  const selfPraiseAllowed = await apiClient
-    .get('/settings?key=SELF_PRAISE_ALLOWED')
-    .then((res) => settingValueRealized(res.data as Setting[]) as boolean)
-    .catch(() => false);
+  const selfPraiseAllowed = (await getSetting(
+    'SELF_PRAISE_ALLOWED',
+    host
+  )) as boolean;
 
   let warnSelfPraise = false;
   if (!selfPraiseAllowed && receiverIds.includes(giverAccount.accountId)) {
@@ -157,7 +164,7 @@ export const praiseHandler: CommandHandler = async (
     }
   }
 
-  if (Receivers.length !== 0) {
+  if (Receivers.length !== 0 && receivers.length !== 0) {
     await interaction.editReply('Praise given!');
     await interaction.followUp({
       embeds: [
@@ -181,10 +188,12 @@ export const praiseHandler: CommandHandler = async (
     await interaction.editReply(
       await renderMessage('SELF_PRAISE_WARNING', host)
     );
-  } else {
+  } else if (!Receivers.length) {
     await interaction.editReply(
       await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
     );
+  } else {
+    await interaction.editReply('Praise failed :(');
   }
 
   const warningMsg =
@@ -211,6 +220,7 @@ export const praiseHandler: CommandHandler = async (
   }
 
   if (
+    receivers.length &&
     receiverOptions.length &&
     receiverOptions.length !== 0 &&
     praiseItemsCount === 0

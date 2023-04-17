@@ -6,18 +6,20 @@ const createUserAccount = async (
   user: User,
   host: string
 ): Promise<UserAccount[]> => {
-  await apiClient.post(
-    '/useraccounts',
-    {
-      accountId: user.id,
-      name: user.username + '#' + user.discriminator,
-      avatarId: user.avatar || '',
-      platform: 'DISCORD',
-    },
-    {
-      headers: { host: host },
-    }
-  );
+  await apiClient
+    .post(
+      '/useraccounts',
+      {
+        accountId: user.id,
+        name: user.username + '#' + user.discriminator,
+        avatarId: user.avatar || '',
+        platform: 'DISCORD',
+      },
+      {
+        headers: { host: host },
+      }
+    )
+    .catch((err) => console.log(err));
   const response = await apiClient.get<UserAccount[]>(
     `/useraccounts/?accountId=${user.id}`,
     {
@@ -65,18 +67,18 @@ export const getUserAccount = async (
   user: User,
   host: string
 ): Promise<UserAccount> => {
-  const response = await apiClient.get<UserAccount[]>(
-    `/useraccounts/?accountId=${user.id}`,
-    {
+  let data = await apiClient
+    .get<UserAccount[]>(`/useraccounts/?accountId=${user.id}`, {
       headers: { host: host },
-    }
-  );
-  let data = response.data.filter((acc) => acc.platform === 'DISCORD');
+    })
+    .then((res) => res.data.filter((acc) => acc.platform === 'DISCORD'))
+    .catch(() => undefined);
 
-  if (!data.length) {
+  if (!data || !data.length) {
     data = await createUserAccount(user, host);
   } else {
     data = await updateUserAccount(data[0], user, host);
   }
+
   return data[0];
 };

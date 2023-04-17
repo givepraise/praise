@@ -10,7 +10,7 @@ import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChan
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
 import { createForward } from '../utils/createForward';
-import { apiClient } from '../utils/api';
+import { getSetting } from '../utils/settingsUtil';
 import { logger } from '../utils/logger';
 import { getHost } from '../utils/getHost';
 
@@ -42,6 +42,8 @@ export const forwardHandler: CommandHandler = async (
     return;
   }
 
+  if ((await assertPraiseAllowedInChannel(interaction, host)) === false) return;
+
   const forwarderAccount = await getUserAccount(
     (member as GuildMember).user,
     host
@@ -53,15 +55,18 @@ export const forwardHandler: CommandHandler = async (
     return;
   }
 
-  const forwarderUser = await getUser(forwarderAccount.user as string, host);
+  const forwarderUserId =
+    typeof forwarderAccount.user === 'string'
+      ? forwarderAccount.user
+      : forwarderAccount.user._id;
+
+  const forwarderUser = await getUser(forwarderUserId, host);
   if (!forwarderUser?.roles.includes('FORWARDER')) {
     await interaction.editReply(
       "**❌ You don't have the permission to use this command.**"
     );
     return;
   }
-
-  if ((await assertPraiseAllowedInChannel(interaction, host)) === false) return;
 
   const praiseGiver = interaction.options.getMember('giver') as GuildMember;
   if (!praiseGiver) {
@@ -70,6 +75,21 @@ export const forwardHandler: CommandHandler = async (
   }
 
   if (!(await assertPraiseGiver(praiseGiver, interaction, true, host))) return;
+
+  const reason = interaction.options.getString('reason');
+  if (!reason || reason.length === 0) {
+    await interaction.editReply(
+      await renderMessage('PRAISE_REASON_MISSING_ERROR', host)
+    );
+    return;
+  }
+
+  if (reason.length < 5 || reason.length > 280) {
+    await interaction.editReply(
+      'INVALID_REASON_LENGTH (reason should be between 5 to 280 characters)'
+    );
+    return;
+  }
 
   const receiverOptions = interaction.options.getString('receivers');
 
@@ -90,15 +110,6 @@ export const forwardHandler: CommandHandler = async (
     );
     return;
   }
-
-  const reason = interaction.options.getString('reason');
-  if (!reason || reason.length === 0) {
-    await interaction.editReply(
-      await renderMessage('PRAISE_REASON_MISSING_ERROR', host)
-    );
-    return;
-  }
-
   const giverAccount = await getUserAccount(praiseGiver.user, host);
   if (!giverAccount.user) {
     await interaction.editReply(
@@ -116,10 +127,10 @@ export const forwardHandler: CommandHandler = async (
     ),
   ];
 
-  const selfPraiseAllowed = await apiClient
-    .get('/settings?key=SELF_PRAISE_ALLOWED')
-    .then((res) => res.data)
-    .catch(() => false);
+  const selfPraiseAllowed = (await getSetting(
+    'SELF_PRAISE_ALLOWED',
+    host
+  )) as boolean;
 
   let warnSelfPraise = false;
   if (!selfPraiseAllowed && receiverIds.includes(giverAccount.accountId)) {
@@ -133,7 +144,7 @@ export const forwardHandler: CommandHandler = async (
   for (const receiver of Receivers) {
     const receiverAccount = await getUserAccount(receiver.user, host);
 
-    const praiseObj = await createForward(
+    const praiseRegistered = await createForward(
       interaction,
       giverAccount,
       receiverAccount,
@@ -151,7 +162,7 @@ export const forwardHandler: CommandHandler = async (
     //   }
     // );
 
-    if (praiseObj) {
+    if (praiseRegistered) {
       try {
         await receiver.send({
           embeds: [
@@ -171,7 +182,7 @@ export const forwardHandler: CommandHandler = async (
     }
   }
 
-  if (Receivers.length !== 0) {
+  if (Receivers.length !== 0 && receivers.length !== 0) {
     await interaction.editReply('Praise forwarded!');
     await interaction.followUp({
       embeds: [
@@ -197,10 +208,12 @@ export const forwardHandler: CommandHandler = async (
     await interaction.editReply(
       await renderMessage('SELF_PRAISE_WARNING', host)
     );
-  } else {
+  } else if (!Receivers.length) {
     await interaction.editReply(
       await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
     );
+  } else {
+    await interaction.editReply('Praise Forward failed :(');
   }
 
   const warningMsg =

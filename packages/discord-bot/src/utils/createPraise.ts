@@ -25,23 +25,34 @@ export const createPraise = async (
       ? `${channel.parent.name} / ${channel.name}`
       : channel.name;
 
+  if (typeof giverAccount.user !== 'string')
+    giverAccount.user = giverAccount.user._id;
+
   const praiseData = {
     reason: reason,
     reasonRaw: cleanContent(reason, channel),
-    giver: giverAccount,
+    giver: {
+      accountId: giverAccount.accountId,
+      name: giverAccount.name,
+      avatarId: giverAccount.avatarId,
+      platform: giverAccount.platform,
+    },
+    receiverIds: [receiverAccount.accountId],
     sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
     sourceName: `DISCORD:${encodeURIComponent(guild.name)}:${encodeURIComponent(
       channelName
     )}`,
-    receiverIds: [receiverAccount.accountId],
   };
 
   const response = await apiClient
     .post('/praise', praiseData, {
       headers: { host: host },
     })
-    .then((res) => res.status === 200)
-    .catch(() => false);
+    .then((res) => res.status === 201)
+    .catch((err) => {
+      console.log(err);
+      return false;
+    });
 
   return response;
 };

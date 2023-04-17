@@ -118,10 +118,18 @@ export const UserInfo = ({
         </div>
 
         <div className="sm:absolute sm:bottom-0 sm:right-0">
-          <p className="mb-2">
-            <FontAwesomeIcon icon={faCalendarAlt} className="mr-2" size="1x" />
-            Joined: {formatIsoDateUTC(user.createdAt, DATE_FORMAT)}
-          </p>
+          {user.createdAt ? (
+            <p className="mb-2">
+              <FontAwesomeIcon
+                icon={faCalendarAlt}
+                className="mr-2"
+                size="1x"
+              />
+              Joined: ${formatIsoDateUTC(user.createdAt, DATE_FORMAT)}
+            </p>
+          ) : (
+            ''
+          )}
           <p className="mb-2">
             <FontAwesomeIcon icon={faCalendarAlt} className="mr-2 " size="1x" />
             Latest activity: {formatIsoDateUTC(user.updatedAt, DATE_FORMAT)}

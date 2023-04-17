@@ -1,8 +1,8 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { logger } from '../utils/logger';
-// import { forwardHandler } from '../handlers/forward';
+import { forwardHandler } from '../handlers/forward';
 import { Command } from '../interfaces/Command';
-// import { getMsgLink } from '../utils/format';
+import { getMsgLink } from '../utils/format';
 
 export const forward: Command = {
   data: new SlashCommandBuilder()
@@ -37,16 +37,15 @@ export const forward: Command = {
         ephemeral: true,
       });
       if (msg === undefined) return;
-      // await forwardHandler(
-      //
-      //   interaction,
-      //   getMsgLink(
-      //     interaction.guildId || '',
-      //     interaction.channelId || '',
-      //     msg.id
-      //   )
-      // );
-      await interaction.editReply('...');
+      await forwardHandler(
+        client,
+        interaction,
+        getMsgLink(
+          interaction.guildId || '',
+          interaction.channelId || '',
+          msg.id
+        )
+      );
     } catch (err: any) {
       logger.error(err.message);
     }

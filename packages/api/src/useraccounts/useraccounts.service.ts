@@ -19,6 +19,7 @@ import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
 import { FindUserAccountFilterDto } from './dto/find-user-account-filter.dto';
 import { errorMessages } from '../shared/exceptions/error-messages';
+import { logger } from 'src/shared/logger';
 
 @Injectable()
 export class UserAccountsService {
@@ -45,9 +46,19 @@ export class UserAccountsService {
 
     // Check if a UserAccount with same info already exists
     const existingUserAccount = await this.userAccountModel.findOne({
-      $and: [{ platform }, { $or: [{ accountId }, { name }, { user }] }],
+      $and: [
+        { platform },
+        {
+          $or: [
+            { accountId },
+            { name },
+            { $and: [{ user }, { user: { $ne: null } }] },
+          ],
+        },
+      ],
     });
     if (existingUserAccount) {
+      logger.info(existingUserAccount);
       throw new ApiException(
         errorMessages.USER_ACCOUNT_WITH_PLATFORM_NAME__OR_USERNAME_ALREADY_EXITS,
       );
