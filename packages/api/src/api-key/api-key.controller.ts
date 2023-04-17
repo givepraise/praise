@@ -24,7 +24,6 @@ import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongo
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { RequestWithAuthContext } from 'src/auth/interfaces/request-with-auth-context.interface';
 import { EventLogTypeKey } from 'src/event-log/enums/event-log-type-key';
-import { eventLogService } from '../../test/shared/nest';
 import { EventLogService } from 'src/event-log/event-log.service';
 
 @Controller('api-key')
@@ -58,7 +57,7 @@ export class ApiKeyController {
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
-      typeKey: EventLogTypeKey.API_KEY,
+      typeKey: EventLogTypeKey.PERMISSION,
       description: `Created API key with description "${createApiKeyRequest.description}"`,
     });
 
@@ -119,7 +118,7 @@ export class ApiKeyController {
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
-      typeKey: EventLogTypeKey.API_KEY,
+      typeKey: EventLogTypeKey.PERMISSION,
       description: `Updated API key description to "${body.description}"`,
     });
 
@@ -146,7 +145,7 @@ export class ApiKeyController {
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
-      typeKey: EventLogTypeKey.API_KEY,
+      typeKey: EventLogTypeKey.PERMISSION,
       description: `Revoked API key with id "${id}"`,
     });
 

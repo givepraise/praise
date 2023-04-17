@@ -68,7 +68,6 @@ export class EthSignatureController {
   async login(
     @Headers('host') host: string,
     @Body() loginInputDto: LoginInputDto,
-    @Request() request: RequestWithAuthContext,
   ): Promise<LoginResponseDto> {
     const loginResponse = this.ethSignatureService.login(
       loginInputDto.identityEthAddress,
@@ -76,8 +75,7 @@ export class EthSignatureController {
       host.split(':')[0],
     );
 
-    await this.eventLogService.logEventWithAuthContext({
-      authContext: request.authContext,
+    await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.AUTHENTICATION,
       description: `User ${loginInputDto.identityEthAddress} logged in`,
     });

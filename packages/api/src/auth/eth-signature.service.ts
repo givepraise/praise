@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { LoginResponseDto } from './dto/login-response.dto';
+import { EventLogService } from '../event-log/event-log.service';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { HOSTNAME_TEST } from '../constants/constants.provider';
@@ -18,6 +19,7 @@ import { logger } from 'src/shared/logger';
 export class EthSignatureService {
   constructor(
     private readonly jwtService: JwtService,
+    private readonly eventLogService: EventLogService,
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
   ) {}
