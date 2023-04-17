@@ -6,18 +6,16 @@ import * as bcrypt from 'bcrypt';
 import { CreateApiKeyInputDto } from './dto/create-api-key-input.dto';
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response';
 import { ApiException } from '../shared/exceptions/api-exception';
-import { EventLogService } from '../event-log/event-log.service';
-import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { randomBytes } from 'crypto';
 import { ConstantsProvider } from '../constants/constants.provider';
 import { errorMessages } from '../shared/exceptions/error-messages';
+import { logger } from 'src/shared/logger';
 
 @Injectable()
 export class ApiKeyService {
   constructor(
     @InjectModel(ApiKey.name)
     private readonly apiKeyModel: Model<ApiKeyDocument>,
-    private readonly eventLogService: EventLogService,
     private readonly constantsProvider: ConstantsProvider,
   ) {}
 
@@ -49,10 +47,7 @@ export class ApiKeyService {
     });
     await apiKey.save();
 
-    this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.AUTHENTICATION,
-      description: `Created API key: ${apiKey.name}`,
-    });
+    logger.info(`Created API key: ${apiKey.name}`);
 
     return {
       ...apiKey.toObject(),
@@ -125,10 +120,7 @@ export class ApiKeyService {
     const apiKey = await this.findOne(id);
     await this.apiKeyModel.deleteOne({ _id: id });
 
-    this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.AUTHENTICATION,
-      description: `Revoked API key: ${apiKey.name}`,
-    });
+    logger.info(`Revoked API key: ${apiKey.name}`);
 
     return apiKey;
   }

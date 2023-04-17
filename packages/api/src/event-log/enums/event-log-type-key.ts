@@ -6,4 +6,5 @@ export enum EventLogTypeKey {
   QUANTIFICATION = 'QUANTIFICATION',
   SETTING = 'SETTING',
   USER_ACCOUNT = 'USER_ACCOUNT',
+  API_KEY = 'API_KEY',
 }

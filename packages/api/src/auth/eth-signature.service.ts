@@ -2,8 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { LoginResponseDto } from './dto/login-response.dto';
-import { EventLogService } from '../event-log/event-log.service';
-import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { HOSTNAME_TEST } from '../constants/constants.provider';
@@ -11,6 +9,7 @@ import { ethers } from 'ethers';
 import { User, UserDocument } from '../users/schemas/users.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { logger } from 'src/shared/logger';
 
 @Injectable()
 /**
@@ -19,7 +18,6 @@ import { InjectModel } from '@nestjs/mongoose';
 export class EthSignatureService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly eventLogService: EventLogService,
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
   ) {}
@@ -93,11 +91,7 @@ export class EthSignatureService {
       secret: process.env.JWT_SECRET,
     });
 
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.AUTHENTICATION,
-      description: 'Logged in',
-      user: user._id,
-    });
+    logger.info(`User ${user._id} logged in`);
 
     // Return login response with access token
     return {

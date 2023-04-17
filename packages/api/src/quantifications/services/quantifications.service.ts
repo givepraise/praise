@@ -12,7 +12,7 @@ import { QuantifyInputDto } from '../dto/quantify-input.dto';
 import { PeriodStatusType } from '../../periods/enums/status-type.enum';
 import { isQuantificationCompleted } from '../utils/is-quantification-completed';
 import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
-import { EventLogService } from '../../event-log/event-log.service';
+import { logger } from 'src/shared/logger';
 
 export class QuantificationsService {
   constructor(
@@ -23,7 +23,6 @@ export class QuantificationsService {
     private settingsService: SettingsService,
     private praiseService: PraiseService,
     private periodService: PeriodsService,
-    private eventLogService: EventLogService,
   ) {}
 
   /**
@@ -559,11 +558,9 @@ export class QuantificationsService {
       docs.push(praiseWithScore);
     }
 
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.PERMISSION,
-      description: eventLogMessage,
-      period: period._id,
-    });
+    logger.info(
+      `KEY: ${EventLogTypeKey.PERMISSION} - ${eventLogMessage} - PERIOD: ${period._id}`,
+    );
 
     return docs;
   };

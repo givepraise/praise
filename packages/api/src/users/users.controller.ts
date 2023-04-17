@@ -14,6 +14,7 @@ import {
   Param,
   Patch,
   Query,
+  Request,
   Res,
   SerializeOptions,
   StreamableFile,
@@ -36,6 +37,9 @@ import { exportContentType } from '../shared/export.shared';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { errorMessages } from '../shared/exceptions/error-messages';
+import { EventLogService } from 'src/event-log/event-log.service';
+import { RequestWithAuthContext } from 'src/auth/interfaces/request-with-auth-context.interface';
+import { EventLogTypeKey } from 'src/event-log/enums/event-log-type-key';
 
 @Controller('users')
 @ApiTags('Users')
@@ -44,7 +48,10 @@ import { errorMessages } from '../shared/exceptions/error-messages';
 })
 @EnforceAuthAndPermissions()
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly eventLogService: EventLogService,
+  ) {}
 
   @Get('export')
   @ApiOperation({ summary: 'Export users document to json or csv' })
@@ -157,8 +164,17 @@ export class UsersController {
   async addRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() roleChange: UpdateUserRoleInputDto,
+    @Request() request: RequestWithAuthContext,
   ): Promise<UserWithStatsDto> {
-    return this.usersService.addRole(id, roleChange);
+    const userWithStats = this.usersService.addRole(id, roleChange);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `Added role ${roleChange.role} to user ${id}`,
+    });
+
+    return userWithStats;
   }
 
   @Patch(':id/removeRole')
@@ -173,7 +189,16 @@ export class UsersController {
   async removeRole(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() roleChange: UpdateUserRoleInputDto,
+    @Request() request: RequestWithAuthContext,
   ): Promise<UserWithStatsDto> {
-    return this.usersService.removeRole(id, roleChange);
+    const userWithStats = this.usersService.removeRole(id, roleChange);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `Removed role ${roleChange.role} from user ${id}`,
+    });
+
+    return userWithStats;
   }
 }

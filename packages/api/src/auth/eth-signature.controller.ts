@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Headers } from '@nestjs/common';
+import { Controller, Post, Body, Headers, Request } from '@nestjs/common';
 import { EthSignatureService } from './eth-signature.service';
 import { NonceResponseDto } from './dto/nonce-response.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
@@ -8,6 +8,9 @@ import { LoginInputDto } from './dto/login-input.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { UsersService } from '../users/users.service';
+import { RequestWithAuthContext } from './interfaces/request-with-auth-context.interface';
+import { EventLogService } from 'src/event-log/event-log.service';
+import { EventLogTypeKey } from 'src/event-log/enums/event-log-type-key';
 
 @Controller('auth')
 @ApiTags('Authentication')
@@ -15,6 +18,7 @@ export class EthSignatureController {
   constructor(
     private readonly ethSignatureService: EthSignatureService,
     private readonly usersService: UsersService,
+    private readonly eventLogService: EventLogService,
   ) {}
 
   @Post('eth-signature/nonce')
@@ -64,11 +68,20 @@ export class EthSignatureController {
   async login(
     @Headers('host') host: string,
     @Body() loginInputDto: LoginInputDto,
+    @Request() request: RequestWithAuthContext,
   ): Promise<LoginResponseDto> {
-    return this.ethSignatureService.login(
+    const loginResponse = this.ethSignatureService.login(
       loginInputDto.identityEthAddress,
       loginInputDto.signature,
       host.split(':')[0],
     );
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.AUTHENTICATION,
+      description: `User ${loginInputDto.identityEthAddress} logged in`,
+    });
+
+    return loginResponse;
   }
 }
