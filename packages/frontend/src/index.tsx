@@ -3,7 +3,7 @@ import './styles/globals.css';
 // eslint-disable-next-line import/no-unresolved
 import '@rainbow-me/rainbowkit/styles.css';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
@@ -15,7 +15,9 @@ import { AwaitMetamaskInit } from './components/AwaitMetaMaskInit';
 import { LightDarkTheme } from './components/LightDarkTheme';
 import { ErrorBoundaryTopLevel } from './components/ErrorBoundaryTopLevel';
 
-ReactDOM.render(
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const root = createRoot(document.getElementById('root')!);
+root.render(
   <React.StrictMode>
     <RecoilRoot>
       <RecoilNexus />
@@ -40,7 +42,5 @@ ReactDOM.render(
         </Router>
       </Web3Provider>
     </RecoilRoot>
-  </React.StrictMode>,
-
-  document.getElementById('root')
+  </React.StrictMode>
 );

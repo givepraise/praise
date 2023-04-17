@@ -471,4 +471,9 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     httpStatusCode: 400,
     code: 1097,
   },
+  MONGO_ADMIN_URI_NOT_SET: {
+    message: 'MONGO_ADMIN_URI not set',
+    httpStatusCode: 400,
+    code: 1098,
+  },
 };
