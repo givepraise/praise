@@ -38,12 +38,16 @@ const updateUserAccount = async (
     ua.name !== user.username + '#' + user.discriminator ||
     ua.avatarId !== user.avatar
   ) {
-    ua.name = user.username + '#' + user.discriminator;
-    ua.avatarId = user?.avatar || '';
-
-    await apiClient.patch<UserAccount>(`/useraccounts/${ua._id}`, ua, {
-      headers: { host: host },
-    });
+    await apiClient.patch<UserAccount>(
+      `/useraccounts/${ua._id}`,
+      {
+        name: user.username + '#' + user.discriminator,
+        avatarId: user?.avatar || '',
+      },
+      {
+        headers: { host: host },
+      }
+    );
 
     return [
       (
