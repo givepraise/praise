@@ -37,19 +37,24 @@ export const createForward = async (
       avatarId: giverAccount.avatarId,
       platform: giverAccount.platform,
     },
-    forwarderAccount: forwarderAccount,
+    receiverIds: [receiverAccount.accountId],
     sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
     sourceName: `DISCORD:${encodeURIComponent(guild.name)}:${encodeURIComponent(
       channelName
     )}`,
-    receiverIds: [receiverAccount.accountId],
+    forwarder: {
+      accountId: forwarderAccount.accountId,
+      name: forwarderAccount.name,
+      avatarId: forwarderAccount.avatarId,
+      platform: forwarderAccount.platform,
+    },
   };
 
   const response = await apiClient
     .post('/praise/forward', praiseData, {
-      headers: { host: host },
+      headers: { host },
     })
-    .then((res) => res.status === 200)
+    .then((res) => res.status === 201)
     .catch(() => false);
 
   return response;
