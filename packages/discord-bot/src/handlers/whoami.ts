@@ -4,7 +4,6 @@ import { getUserAccount } from '../utils/getUserAccount';
 import { getStateEmbed } from '../utils/embeds/stateEmbed';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { renderMessage } from '../utils/embeds/praiseEmbeds';
-import { getUser } from '../utils/getUser';
 import { UserAccount } from '../utils/api-schema';
 import { apiClient } from '../utils/api';
 import { CommandHandler } from '../interfaces/CommandHandler';
@@ -50,29 +49,24 @@ export const whoamiHandler: CommandHandler = async (
     host
   );
 
-  const user =
-    ua.user === null
-      ? undefined
-      : await getUser(
-          typeof ua.user === 'string' ? ua.user : ua.user._id,
-          host
-        );
+  // const user =
+  //   ua.user === null
+  //     ? undefined
+  //     : await getUser(
+  //         typeof ua.user === 'string' ? ua.user : ua.user._id,
+  //         host
+  //       );
 
-  state.praiseRoles = user?.roles || undefined;
-  state.address = user?.identityEthAddress || '';
-  state.avatar = ua.avatarId;
-  state.activations = [];
+  if (ua.user !== undefined) {
+    state.praiseRoles = [...ua.user.roles];
+    state.address = ua.user.identityEthAddress || '';
+    state.avatar = ua.avatarId;
+    state.activations = [];
 
-  if (ua.user !== null) {
     const activatedAccounts = await apiClient
-      .get<UserAccount[]>(
-        `useraccounts?user=${
-          typeof ua.user === 'string' ? ua.user : ua.user._id
-        }`,
-        {
-          headers: { host: host },
-        }
-      )
+      .get<UserAccount[]>(`useraccounts?user=${ua.user._id as string}`, {
+        headers: { host: host },
+      })
       .then((res) => res.data);
     for (const account of activatedAccounts) {
       state.activations.push({
@@ -83,12 +77,14 @@ export const whoamiHandler: CommandHandler = async (
       });
     }
   } else {
-    state.activations.push({
-      platform: 'DISCORD',
-      user: ua.name,
-      activationDate: ua.createdAt,
-      latestUsageDate: ua.updatedAt,
-    });
+    if (state.activations) {
+      state.activations.push({
+        platform: 'DISCORD',
+        user: ua.name,
+        activationDate: ua.createdAt,
+        latestUsageDate: ua.updatedAt,
+      });
+    }
   }
 
   await interaction.editReply({

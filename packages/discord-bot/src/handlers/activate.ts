@@ -42,11 +42,7 @@ export const activationHandler: CommandHandler = async (
       (member as GuildMember).user,
       host
     );
-    if (
-      userAccount.user &&
-      userAccount.user !== null &&
-      userAccount.user !== ''
-    ) {
+    if (userAccount.user && userAccount.user !== null) {
       await interaction.reply({
         content: await renderMessage(
           'PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR',
