@@ -13,13 +13,12 @@ import {
   writeCsvAndJsonExports,
 } from '../shared/export.shared';
 import { EventLogService } from '../event-log/event-log.service';
-import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { CreateUserAccountInputDto } from './dto/create-user-account-input.dto';
 import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
 import { FindUserAccountFilterDto } from './dto/find-user-account-filter.dto';
 import { errorMessages } from '../shared/exceptions/error-messages';
-import { logger } from 'src/shared/logger';
+import { logger } from '../shared/logger';
 
 @Injectable()
 export class UserAccountsService {
@@ -131,14 +130,16 @@ export class UserAccountsService {
     }
 
     // Check if a UserAccount with same info already exists
+    const orQuery: any[] = [];
+    if (accountId) orQuery.push({ accountId });
+    if (name) orQuery.push({ name });
+    if (user) orQuery.push({ user });
+
     if (accountId || name || user) {
       const existingUserAccount = await this.userAccountModel.findOne({
-        $and: [
-          { platform: userAccount.platform },
-          { $or: [{ accountId }, { name }, { user }] },
-        ],
+        $and: [{ platform: userAccount.platform }, { $or: orQuery }],
       });
-      if (existingUserAccount) {
+      if (existingUserAccount && !existingUserAccount._id.equals(_id)) {
         throw new ApiException(
           errorMessages.USER_ACCOUNT_WITH_PLATFORM_NAME__OR_USERNAME_ALREADY_EXITS,
         );
