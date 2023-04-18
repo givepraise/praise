@@ -11,19 +11,22 @@ import { WagmiConfig, configureChains, createClient } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { mainnet } from 'wagmi/chains';
 import { infuraProvider } from 'wagmi/providers/infura';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
 
 const { chains, provider } = configureChains(
   [mainnet],
   [
+    alchemyProvider({ apiKey: 'F2zZplZomYztFDGt01AjNSXPtFfM3APh' }),
+    publicProvider(),
     infuraProvider({
       apiKey: '1f04715c0a10492483047083a5c3edd2',
     }),
-    publicProvider(),
   ]
 );
 
 const { connectors } = getDefaultWallets({
   appName: 'Praise',
+  projectId: '969fbaacb59c1313def58b6181921bec',
   chains,
 });
 
