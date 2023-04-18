@@ -69,6 +69,7 @@ export class UserAccount {
     type: 'string',
     minLength: 10,
     maxLength: 255,
+    required: false,
   })
   @IsOptional()
   @IsString()

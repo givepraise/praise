@@ -231,7 +231,7 @@ export interface components {
       /** @example darth#6755 */
       name: string;
       /** @example 098098098087097 */
-      avatarId: string;
+      avatarId?: string;
       /** @example DISCORD */
       platform: string;
       /** Format: date-time */
@@ -372,7 +372,7 @@ export interface components {
       /** @example darth#6755 */
       name: string;
       /** @example 098098098087097 */
-      avatarId: string;
+      avatarId?: string;
       /** @example DISCORD */
       platform: string;
       /** Format: date-time */
@@ -425,7 +425,7 @@ export interface components {
       /** @example darth#6755 */
       name: string;
       /** @example 098098098087097 */
-      avatarId: string;
+      avatarId?: string;
       /** @example DISCORD */
       platform: string;
       /** Format: date-time */
@@ -509,7 +509,7 @@ export interface components {
       /** @example darth#6755 */
       name: string;
       /** @example 098098098087097 */
-      avatarId: string;
+      avatarId?: string;
       /** @example DISCORD */
       platform: string;
       /** Format: date-time */
@@ -664,7 +664,7 @@ export interface components {
       /** @example darth#6755 */
       name: string;
       /** @example 098098098087097 */
-      avatarId: string;
+      avatarId?: string;
       /** @example DISCORD */
       platform: string;
       /** @example jkhvuygi643jh35g53 */
@@ -681,7 +681,7 @@ export interface components {
       /** @example darth#6755 */
       name: string;
       /** @example 098098098087097 */
-      avatarId: string;
+      avatarId?: string;
       /** @example DISCORD */
       platform: string;
       /** Format: date-time */
@@ -714,7 +714,7 @@ export interface components {
       /** @example darth#6755 */
       name: string;
       /** @example 098098098087097 */
-      avatarId: string;
+      avatarId?: string;
       /** @example DISCORD */
       platform: string;
       /** Format: date-time */
