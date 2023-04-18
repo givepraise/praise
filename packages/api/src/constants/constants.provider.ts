@@ -15,7 +15,7 @@ export const API_KEY_ROLES = process.env.API_KEY_ROLES
   ? process.env.API_KEY_ROLES.split(',')
   : [];
 
-export const API_KEY_SALT = process.env.API_KEY_SALT || 'salt';
+export const API_KEY_SALT = process.env.API_KEY_SALT;
 
 export const UPLOAD_DIRECTORY =
   process.env.NODE_ENV === 'production' ? '/usr/src/uploads/' : 'uploads/';

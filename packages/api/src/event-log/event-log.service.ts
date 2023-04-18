@@ -10,8 +10,6 @@ import mongoose from 'mongoose';
 import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-query.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { CreateEventLogInputDto } from './dto/create-event-log-input.dto';
-import { RequestContext } from 'nestjs-request-context';
-import { has } from 'lodash';
 import { User } from '../users/schemas/users.schema';
 import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.dto';
 import { errorMessages } from '../shared/exceptions/error-messages';

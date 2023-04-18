@@ -1,4 +1,4 @@
-FROM node:18.14-alpine
+FROM node:18.15-alpine
 
 # Create app directory
 WORKDIR /usr/src/
@@ -11,13 +11,12 @@ COPY ./yarn.lock .
 COPY ./.yarn ./.yarn
 
 # Copy packages
-COPY ./packages/api ./packages/api
+COPY ./packages/api-types ./packages/api-types
 COPY ./packages/discord-bot ./packages/discord-bot
 
 # Install dependencies for packages
 RUN yarn set version berry
 RUN yarn
-RUN yarn workspace api build
 
 # Run the app
 CMD ["yarn", "discord-bot:start"]

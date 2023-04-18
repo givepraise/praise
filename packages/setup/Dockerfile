@@ -1,4 +1,4 @@
-FROM node:16.18-alpine
+FROM node:18.15-alpine
 
 # Create app directory
 WORKDIR /usr/src/
@@ -12,8 +12,8 @@ COPY ./.yarn ./.yarn
 # Copy packages
 COPY ./packages/setup ./packages/setup
 
-# Install dependencies for packages
-RUN yarn set version berry
+# Install dependencies
+RUN corepack enable
 RUN yarn
 
 # Run the app

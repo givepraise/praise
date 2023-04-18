@@ -39,10 +39,14 @@ export class MultiTenancyManager {
     logger.info(
       `${MONGODB_MAIN_DB}: Creating initial community based on env variables`,
     );
+    if (!process.env.HOST) {
+      throw new Error('HOST env variable is not defined');
+    }
+
     const admins = process.env.ADMINS || '';
     const communityData = {
       hostname: this.singleSetupHostname,
-      name: process.env.HOST,
+      name: process.env.HOST.substring(0, 30),
       database: this.singleSetupCommunityDbName,
       creator: admins.split(',')[0],
       owners: admins.split(','),
@@ -171,8 +175,10 @@ export class MultiTenancyManager {
               ethereumAddress: eth, // For backwards compatibility
               identityEthAddress: eth,
               rewardsEthAddress: eth,
-              username: eth.substring(0, 20).toLowerCase(),
+              username: eth,
               roles: [AuthRole.ADMIN, AuthRole.USER],
+              createdAt: new Date(),
+              updatedAt: new Date(),
             });
           }
         }

@@ -2,13 +2,14 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { SettingsForm } from '@/components/settings/SettingsForm';
 import { Box } from '@/components/ui/Box';
 import { SettingsSubgroup } from './SettingsSubgroup';
-import { Setting } from '@/model/settings/dto/setting.dto';
+import ApplicationSettingsApiKeys from './ApplicationSettingsApiKeys';
+import { Setting as SettingDto } from '@/model/settings/dto/setting.dto';
 
 interface Params {
-  settings: Setting[] | undefined;
+  settings: SettingDto[] | undefined;
   parentOnSubmit(
-    setting: Setting
-  ): Promise<AxiosResponse<Setting> | AxiosError | undefined>;
+    setting: SettingDto
+  ): Promise<AxiosResponse<SettingDto> | AxiosError | undefined>;
 }
 
 export const ApplicationSettings = ({
@@ -22,6 +23,11 @@ export const ApplicationSettings = ({
       <Box className="mb-6">
         <SettingsSubgroup header="Application Settings">
           <SettingsForm settings={settings} parentOnSubmit={parentOnSubmit} />
+        </SettingsSubgroup>
+      </Box>
+      <Box className="mb-6">
+        <SettingsSubgroup header="Api Keys">
+          <ApplicationSettingsApiKeys />
         </SettingsSubgroup>
       </Box>
     </>
