@@ -171,10 +171,6 @@ export interface paths {
     /** Create a new community */
     post: operations['CommunityController_create'];
   };
-  '/api/communities/domain-check': {
-    /** Check to see if a given community hostname/domain name is setup and served by the API. Endpoint does not require authentication. */
-    get: operations['CommunityController_domainCheck'];
-  };
   '/api/communities/{id}': {
     get: operations['CommunityController_findOne'];
     /** Update community */
@@ -1887,22 +1883,6 @@ export interface operations {
       201: {
         content: {
           'application/json': components['schemas']['Community'];
-        };
-      };
-    };
-  };
-  /** Check to see if a given community hostname/domain name is setup and served by the API. Endpoint does not require authentication. */
-  CommunityController_domainCheck: {
-    parameters: {
-      query: {
-        domain: string;
-      };
-    };
-    responses: {
-      /** @description "OK" if domain exists */
-      200: {
-        content: {
-          'application/json': string;
         };
       };
     };
