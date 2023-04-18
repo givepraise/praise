@@ -12,7 +12,7 @@ import { QuantifyInputDto } from '../dto/quantify-input.dto';
 import { PeriodStatusType } from '../../periods/enums/status-type.enum';
 import { isQuantificationCompleted } from '../utils/is-quantification-completed';
 import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
-import { logger } from 'src/shared/logger';
+import { logger } from '../../shared/logger';
 
 export class QuantificationsService {
   constructor(

@@ -26,7 +26,7 @@ import { Period, PeriodExportSqlSchema } from '../schemas/periods.schema';
 import { SettingsService } from '../../settings/settings.service';
 import { isQuantificationCompleted } from '../../quantifications/utils/is-quantification-completed';
 import { PaginateModel } from '../../shared/interfaces/paginate-model.interface';
-import { logger } from 'src/shared/logger';
+import { logger } from '../../shared/logger';
 
 @Injectable()
 export class PeriodsService {

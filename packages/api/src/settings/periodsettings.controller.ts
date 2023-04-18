@@ -19,10 +19,9 @@ import { Permissions } from '../auth/decorators/permissions.decorator';
 import { ValueRealizedInterceptor } from './interceptors/value-realized.interceptor';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { SettingsService } from './settings.service';
-import { eventLogService } from '../../test/shared/nest';
-import { EventLogService } from 'src/event-log/event-log.service';
-import { RequestWithAuthContext } from 'src/auth/interfaces/request-with-auth-context.interface';
-import { EventLogTypeKey } from 'src/event-log/enums/event-log-type-key';
+import { EventLogService } from '../event-log/event-log.service';
+import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 
 @Controller('periods')
 @ApiTags('Periods')

@@ -7,7 +7,7 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/schemas/users.schema';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { AuthRole } from '../auth/enums/auth-role.enum';
-import { logger } from 'src/shared/logger';
+import { logger } from '../shared/logger';
 
 @Injectable()
 export class ActivateService {

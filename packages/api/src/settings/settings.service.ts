@@ -13,7 +13,7 @@ import { PeriodSetting } from './schemas/periodsettings.schema';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { Period } from '../periods/schemas/periods.schema';
 import { PeriodStatusType } from '../periods/enums/status-type.enum';
-import { logger } from 'src/shared/logger';
+import { logger } from '../shared/logger';
 
 @Injectable()
 export class SettingsService {

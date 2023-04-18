@@ -6,7 +6,6 @@ import {
   Param,
   Post,
   Query,
-  Req,
   Request,
   Res,
   SerializeOptions,
@@ -38,9 +37,9 @@ import { PraiseExportService } from './services/praise-export.service';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { PraiseCreateInputDto } from './dto/praise-create-input.dto';
 import { PraiseForwardInputDto } from './dto/praise-forward-input.dto';
-import { EventLogService } from 'src/event-log/event-log.service';
-import { RequestWithAuthContext } from 'src/auth/interfaces/request-with-auth-context.interface';
-import { EventLogTypeKey } from 'src/event-log/enums/event-log-type-key';
+import { EventLogService } from '../event-log/event-log.service';
+import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 
 @Controller('praise')
 @ApiTags('Praise')

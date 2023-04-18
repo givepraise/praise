@@ -9,7 +9,7 @@ import { ApiException } from '../shared/exceptions/api-exception';
 import { randomBytes } from 'crypto';
 import { ConstantsProvider } from '../constants/constants.provider';
 import { errorMessages } from '../shared/exceptions/error-messages';
-import { logger } from 'src/shared/logger';
+import { logger } from '../shared/logger';
 
 @Injectable()
 export class ApiKeyService {

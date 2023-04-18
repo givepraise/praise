@@ -30,7 +30,7 @@ import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interfac
 import { Period } from '../schemas/periods.schema';
 import { PeriodsService } from './periods.service';
 import { errorMessages } from '../../shared/exceptions/error-messages';
-import { logger } from 'src/shared/logger';
+import { logger } from '../../shared/logger';
 
 @Injectable()
 export class PeriodAssignmentsService {

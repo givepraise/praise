@@ -22,9 +22,9 @@ import { UpdateDescriptionInputDto } from './dto/update-description-input.dto';
 import { ApiOperation, ApiResponse, ApiTags, ApiParam } from '@nestjs/swagger';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
-import { RequestWithAuthContext } from 'src/auth/interfaces/request-with-auth-context.interface';
-import { EventLogTypeKey } from 'src/event-log/enums/event-log-type-key';
-import { EventLogService } from 'src/event-log/event-log.service';
+import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { EventLogService } from '../event-log/event-log.service';
 
 @Controller('api-key')
 @ApiTags('API Key')

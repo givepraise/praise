@@ -45,9 +45,9 @@ import { exportContentType } from '../shared/export.shared';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { errorMessages } from '../shared/exceptions/error-messages';
-import { EventLogService } from 'src/event-log/event-log.service';
-import { RequestWithAuthContext } from 'src/auth/interfaces/request-with-auth-context.interface';
-import { EventLogTypeKey } from 'src/event-log/enums/event-log-type-key';
+import { EventLogService } from '../event-log/event-log.service';
+import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 
 @Controller('periods')
 @ApiTags('Periods')

@@ -8,9 +8,8 @@ import { LoginInputDto } from './dto/login-input.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { UsersService } from '../users/users.service';
-import { RequestWithAuthContext } from './interfaces/request-with-auth-context.interface';
-import { EventLogService } from 'src/event-log/event-log.service';
-import { EventLogTypeKey } from 'src/event-log/enums/event-log-type-key';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 
 @Controller('auth')
 @ApiTags('Authentication')

@@ -12,8 +12,8 @@ import { User } from '../users/schemas/users.schema';
 import { ActivateService } from './activate.service';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { RequestWithAuthContext } from 'src/auth/interfaces/request-with-auth-context.interface';
-import { EventLogService } from 'src/event-log/event-log.service';
-import { EventLogTypeKey } from 'src/event-log/enums/event-log-type-key';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 
 @Controller('activate')
 @ApiTags('Activate')
@@ -37,14 +37,10 @@ export class ActivateController {
     description: 'The created (or updated) user.',
     type: User,
   })
-  async activate(
-    @Body() activateInputDto: ActivateInputDto,
-    @Request() request: RequestWithAuthContext,
-  ): Promise<User> {
+  async activate(@Body() activateInputDto: ActivateInputDto): Promise<User> {
     const user = this.activateService.activate(activateInputDto);
 
-    await this.eventLogService.logEventWithAuthContext({
-      authContext: request.authContext,
+    await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.USER_ACCOUNT,
       description: `User Account ${activateInputDto.accountId} activated.`,
     });

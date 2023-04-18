@@ -32,8 +32,8 @@ import { QuantifyInputDto } from './dto/quantify-input.dto';
 import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
 import { Types } from 'mongoose';
 import { QuantifyMultipleInputDto } from './dto/quantify-multiple-input.dto';
-import { EventLogService } from 'src/event-log/event-log.service';
-import { EventLogTypeKey } from 'src/event-log/enums/event-log-type-key';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 
 @Controller('quantifications')
 @ApiTags('Quantifications')
