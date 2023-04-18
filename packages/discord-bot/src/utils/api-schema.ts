@@ -1,3 +1,5 @@
+import { components } from 'api-types';
+
 interface UserAccountNoUserId {
   _id: string;
   user: string | User;
@@ -20,17 +22,24 @@ export interface User {
   updatedAt: string;
 }
 
-export interface UserAccount {
-  _id: string;
-  user: string | User;
-  accountId: string;
-  name: string;
-  avatarId: string;
-  platform: string;
-  createdAt: string;
-  updatedAt: string;
-  activateToken?: string;
-}
+export type CreateUserAccountInputDto =
+  components['schemas']['CreateUserAccountInputDto'];
+export type UpdateUserAccountInputDto =
+  components['schemas']['UpdateUserAccountInputDto'];
+
+export type UserAccount = components['schemas']['UserAccount'];
+
+// export interface UserAccount {
+//   _id: string;
+//   user: string | User;
+//   accountId: string;
+//   name: string;
+//   avatarId: string;
+//   platform: string;
+//   createdAt: string;
+//   updatedAt: string;
+//   activateToken?: string;
+// }
 
 export interface UserAccountWithActivateToken {
   _id: string;
