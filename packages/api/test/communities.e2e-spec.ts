@@ -153,7 +153,7 @@ describe('Communities (E2E)', () => {
       expect(response.body.message).toBe('Validation failed');
     });
 
-    test('400 when name is invalid and is in blacklist', async () => {
+    test('400 when name is invalid and is in blocklist', async () => {
       for (const name of [
         'www',
         'setup',
