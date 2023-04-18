@@ -45,6 +45,9 @@ export class AuthGuard implements CanActivate {
     }
 
     // Hash the API key as it is stored in the database as a hash.
+    if (!this.constantsProvider.apiKeySalt) {
+      throw new ApiException(errorMessages.API_KEY_SALT_NOT_SET);
+    }
     const hash = await bcrypt.hash(apiKey, this.constantsProvider.apiKeySalt);
 
     // Check if the API key has been configured in the database.

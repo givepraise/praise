@@ -476,4 +476,9 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     httpStatusCode: 400,
     code: 1098,
   },
+  API_KEY_SALT_NOT_SET: {
+    message: 'API_KEY_SALT not set',
+    httpStatusCode: 400,
+    code: 1099,
+  },
 };
