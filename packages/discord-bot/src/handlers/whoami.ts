@@ -55,7 +55,7 @@ export const whoamiHandler: CommandHandler = async (
       ? undefined
       : await getUser(
           typeof ua.user === 'string' ? ua.user : ua.user._id,
-          guild.id
+          host
         );
 
   state.praiseRoles = user?.roles || undefined;
