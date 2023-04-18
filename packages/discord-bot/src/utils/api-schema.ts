@@ -40,6 +40,7 @@ export type UserAccount = components['schemas']['UserAccount'];
 //   updatedAt: string;
 //   activateToken?: string;
 // }
+//
 
 export interface UserAccountWithActivateToken {
   _id: string;
