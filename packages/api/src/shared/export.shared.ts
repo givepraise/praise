@@ -104,6 +104,6 @@ export async function generateParquetExport(
   );
   await exec(
     db,
-    `COPY ${model} TO '${path}/${model}.parquet' (FORMAT PARQUET, COMPRESSION ZSTD);`,
+    `COPY ${model} TO '${path}/${model}.parquet' (FORMAT PARQUET);`,
   );
 }
