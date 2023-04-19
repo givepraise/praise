@@ -56,6 +56,21 @@ export class CommunityController {
     return this.communityService.create(createCommunityInputDto);
   }
 
+  @Post('/temp')
+  @ApiOperation({ summary: 'Create a new community' })
+  @ApiResponse({
+    status: 200,
+    description: 'Community',
+    type: Community,
+  })
+  @Permissions(Permission.CommunitiesCreate)
+  @UseInterceptors(MongooseClassSerializerInterceptor(Community))
+  async createByPassSetupWeb(
+    @Body() createCommunityInputDto: CreateCommunityInputDto,
+  ): Promise<Community> {
+    return this.communityService.createByPassSetupWeb(createCommunityInputDto);
+  }
+
   @Patch(':id')
   @ApiOperation({ summary: 'Update community' })
   @ApiResponse({

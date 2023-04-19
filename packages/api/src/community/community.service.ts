@@ -113,6 +113,27 @@ export class CommunityService {
     return community.toObject();
   }
 
+  //TODO temp endpoint, we will remove it once we have setup web deployed
+  async createByPassSetupWeb(
+    communityDto: CreateCommunityInputDto,
+  ): Promise<Community> {
+    assertOwnersIncludeCreator(communityDto.owners, communityDto.creator);
+    const community = new this.communityModel({
+      ...communityDto,
+      isPublic: true,
+      // it produces a random string of 5 characters
+      discordLinkNonce: randomBytes(5).toString('hex'),
+      discordLinkState: DiscordLinkState.ACTIVE,
+      database: communityDto.hostname.replace(/\./g, '-'),
+    });
+    await community.save();
+
+    // Run migrations immediately as we dont need to call /discord/link in this case
+    const migrationsManager = new MigrationsManager();
+    await migrationsManager.migrate(community);
+    return community.toObject();
+  }
+
   async linkDiscord(
     communityId: Types.ObjectId,
     linkDiscordBotDto: LinkDiscordBotDto,

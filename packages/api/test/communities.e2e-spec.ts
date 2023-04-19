@@ -5,7 +5,7 @@ import {
   authorizedGetRequest,
   authorizedPatchRequest,
   authorizedPostRequest,
-  loginUser,
+  loginUser
 } from './shared/request';
 import { AuthRole } from '../src/auth/enums/auth-role.enum';
 import { User } from '../src/users/schemas/users.schema';
@@ -20,7 +20,7 @@ import {
   usersService,
   usersSeeder,
   communityService,
-  communitiesSeeder,
+  communitiesSeeder
 } from './shared/nest';
 import { databaseExists } from '../src/database/utils/database-exists';
 import { MongoClient } from 'mongodb';
@@ -53,13 +53,13 @@ describe('Communities (E2E)', () => {
       const user = await usersSeeder.seedUser({
         identityEthAddress: wallet.address,
         rewardsAddress: wallet.address,
-        roles: [AuthRole.USER, AuthRole.QUANTIFIER],
+        roles: [AuthRole.USER, AuthRole.QUANTIFIER]
       });
       const response = await loginUser(app, testingModule, wallet);
       users.push({
         accessToken: response.accessToken,
         user,
-        wallet,
+        wallet
       });
     }
 
@@ -68,7 +68,7 @@ describe('Communities (E2E)', () => {
     await usersSeeder.seedUser({
       identityEthAddress: setupWebWallet.address,
       rewardsAddress: setupWebWallet.address,
-      roles: [AuthRole.API_KEY_SETUP_WEB],
+      roles: [AuthRole.API_KEY_SETUP_WEB]
     });
 
     const response = await loginUser(app, testingModule, setupWebWallet);
@@ -94,8 +94,8 @@ describe('Communities (E2E)', () => {
         app,
         users[0].accessToken,
         {
-          name: 'test',
-        },
+          name: 'test'
+        }
       );
 
       expect(response.status).toBe(403);
@@ -107,8 +107,8 @@ describe('Communities (E2E)', () => {
         app,
         setupWebUserAccessToken,
         {
-          name: 'test',
-        },
+          name: 'test'
+        }
       );
 
       expect(response.status).toBe(400);
@@ -121,10 +121,10 @@ describe('Communities (E2E)', () => {
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
-          users[1].user.identityEthAddress,
+          users[1].user.identityEthAddress
         ],
         discordGuildId: 'kldakdsal',
-        email: 'test@praise.io',
+        email: 'test@praise.io'
       };
 
       return authorizedPostRequest(
@@ -133,8 +133,8 @@ describe('Communities (E2E)', () => {
         setupWebUserAccessToken,
         {
           ...validCommunity,
-          ...override,
-        },
+          ...override
+        }
       );
     };
 
@@ -142,7 +142,7 @@ describe('Communities (E2E)', () => {
       const response = await createValidCommunity({ creator: 'invalid' });
       expect(response.status).toBe(400);
       expect(response.body.message[0]).toBe(
-        '(invalid) is not a valid Ethereum address.',
+        '(invalid) is not a valid Ethereum address.'
       );
     });
 
@@ -172,7 +172,7 @@ describe('Communities (E2E)', () => {
         'privacy',
         'tos',
         'legal',
-        'security',
+        'security'
       ]) {
         const response = await createValidCommunity({ name });
         expect(response.status).toBe(400);
@@ -188,7 +188,7 @@ describe('Communities (E2E)', () => {
 
     test('400 when name is too long', async () => {
       const response = await createValidCommunity({
-        name: 'a'.repeat(200),
+        name: 'a'.repeat(200)
       });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Validation failed');
@@ -198,11 +198,11 @@ describe('Communities (E2E)', () => {
       await createValidCommunity({ name: 'testcommunity' });
       const response = await createValidCommunity({
         name: 'testcommunity',
-        hostname: 'other.com',
+        hostname: 'other.com'
       });
       expect(response.status).toBe(409);
       expect(response.body.message).toBe(
-        "name 'testcommunity 'already exists.",
+        'name \'testcommunity \'already exists.'
       );
     });
 
@@ -214,7 +214,7 @@ describe('Communities (E2E)', () => {
 
     test('400 when hostname is not a valid hostname', async () => {
       const response = await createValidCommunity({
-        hostname: 'praise.hostname..com',
+        hostname: 'praise.hostname..com'
       });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Validation failed');
@@ -223,7 +223,7 @@ describe('Communities (E2E)', () => {
     test('400 when hostname already exists', async () => {
       await createValidCommunity({ hostname: 'test.test.se' });
       const response = await createValidCommunity({
-        hostname: 'test.test.se',
+        hostname: 'test.test.se'
       });
       expect(response.status).toBe(409);
       expect(response.body.error).toBe('Duplicate key');
@@ -237,7 +237,7 @@ describe('Communities (E2E)', () => {
 
     test('400 when owners contains an invalid eth address', async () => {
       const response = await createValidCommunity({
-        owners: ['invalid', users[0].user.identityEthAddress],
+        owners: ['invalid', users[0].user.identityEthAddress]
       });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Validation failed');
@@ -247,8 +247,8 @@ describe('Communities (E2E)', () => {
       const response = await createValidCommunity({
         owners: [
           users[0].user.identityEthAddress,
-          users[0].user.identityEthAddress,
-        ],
+          users[0].user.identityEthAddress
+        ]
       });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Validation failed');
@@ -256,14 +256,14 @@ describe('Communities (E2E)', () => {
 
     test('400 when creator is not in owners', async () => {
       const response = await createValidCommunity({
-        owners: [users[1].user.identityEthAddress],
+        owners: [users[1].user.identityEthAddress]
       });
       expect(response.status).toBe(400);
     });
 
     test('400 when owners contain invalid address', async () => {
       const response = await createValidCommunity({
-        owners: ['invalid', users[0].user.identityEthAddress],
+        owners: ['invalid', users[0].user.identityEthAddress]
       });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Validation failed');
@@ -271,11 +271,11 @@ describe('Communities (E2E)', () => {
 
     test('400 when database is added on creation', async () => {
       const response = await createValidCommunity({
-        database: 'test',
+        database: 'test'
       });
       expect(response.status).toBe(400);
       expect(response.body.message[0]).toBe(
-        'property database should not exist',
+        'property database should not exist'
       );
     });
 
@@ -286,6 +286,62 @@ describe('Communities (E2E)', () => {
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkNonce.length).toBe(10);
       expect(rb.isPublic).toBe(true);
+    });
+  });
+  describe('POST /api/communities/temp', () => {
+    //TODO after migrating all communities and removing this endpoint this test should be removed
+    const hostname = 'test-community';
+    const dbName = dbNameCommunity({ hostname });
+    const createValidCommunity = async (override?: any) => {
+      const validCommunity = {
+        name: randomBytes(10).toString('hex'),
+        hostname,
+        creator: users[0].user.identityEthAddress,
+        owners: [
+          users[0].user.identityEthAddress,
+          users[1].user.identityEthAddress
+        ],
+        discordGuildId: 'kldakdsal',
+        email: 'test@praise.io'
+      };
+
+      return authorizedPostRequest(
+        `/communities/temp`,
+        app,
+        setupWebUserAccessToken,
+        {
+          ...validCommunity,
+          ...override
+        }
+      );
+    };
+
+    beforeEach(async () => {
+      if (await databaseExists(dbName, mongodb)) {
+        // Delete community db if exists (We create db after linking discord to community)
+        await mongodb.db().dropDatabase({
+          dbName
+        });
+      }
+      await communityService.getModel().deleteMany({});
+    });
+
+    test('201 when authenticated as setupWeb and correct data is sent', async () => {
+      expect(await databaseExists(dbName, mongodb)).toBe(false);
+      const response = await createValidCommunity();
+      const rb = response.body;
+      expect(response.status).toBe(201);
+      expect(rb.email).toBe('test@praise.io');
+      expect(rb.isPublic).toBe(true);
+      expect(rb.discordLinkState).toBe(DiscordLinkState.ACTIVE);
+      expect(await databaseExists(dbName, mongodb)).toBe(true);
+      const communityDb = mongodb.db(dbName);
+      const migrationDocuments = await communityDb
+        .collection('migrations')
+        .countDocuments();
+
+      // To make sure all migrations has been executed successfully
+      expect(migrationDocuments).toBeGreaterThan(0);
     });
   });
 
@@ -299,7 +355,7 @@ describe('Communities (E2E)', () => {
       if (await databaseExists(dbName, mongodb)) {
         // Delete community db if exists (We create db after linking discord to community)
         await mongodb.db().dropDatabase({
-          dbName,
+          dbName
         });
       }
       community = await communitiesSeeder.seedCommunity({
@@ -308,11 +364,11 @@ describe('Communities (E2E)', () => {
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
-          users[1].user.identityEthAddress,
+          users[1].user.identityEthAddress
         ],
         discordGuildId: 'kldakdsal',
         discordLinkNonce: '223',
-        email: 'test@praise.io',
+        email: 'test@praise.io'
       });
     });
 
@@ -329,8 +385,8 @@ describe('Communities (E2E)', () => {
         app,
         users[0].accessToken,
         {
-          name: 'test',
-        },
+          name: 'test'
+        }
       );
 
       expect(response.status).toBe(403);
@@ -342,8 +398,8 @@ describe('Communities (E2E)', () => {
         app,
         setupWebUserAccessToken,
         {
-          wrongField: 'test',
-        },
+          wrongField: 'test'
+        }
       );
 
       expect(response.status).toBe(400);
@@ -354,16 +410,16 @@ describe('Communities (E2E)', () => {
         communityService.generateLinkDiscordMessage({
           communityId: String(community._id),
           guildId: community.discordGuildId as string,
-          nonce: community.discordLinkNonce as string,
-        }),
+          nonce: community.discordLinkNonce as string
+        })
       );
       const response = await authorizedPatchRequest(
         `/communities/${community._id}/discord/link`,
         app,
         setupWebUserAccessToken,
         {
-          signedMessage,
-        },
+          signedMessage
+        }
       );
 
       const rb = response.body;
@@ -385,8 +441,8 @@ describe('Communities (E2E)', () => {
         communityService.generateLinkDiscordMessage({
           communityId: String(community._id),
           guildId: community.discordGuildId as string,
-          nonce: community.discordLinkNonce as string,
-        }),
+          nonce: community.discordLinkNonce as string
+        })
       );
 
       const response = await authorizedPatchRequest(
@@ -394,8 +450,8 @@ describe('Communities (E2E)', () => {
         app,
         setupWebUserAccessToken,
         {
-          signedMessage,
-        },
+          signedMessage
+        }
       );
 
       expect(response.status).toBe(200);
@@ -415,16 +471,16 @@ describe('Communities (E2E)', () => {
         communityService.generateLinkDiscordMessage({
           communityId: String(community._id),
           guildId: community.discordGuildId as string,
-          nonce: community.discordLinkNonce as string,
-        }),
+          nonce: community.discordLinkNonce as string
+        })
       );
       const response = await authorizedPatchRequest(
         `/communities/${community._id}/discord/link`,
         app,
         setupWebUserAccessToken,
         {
-          signedMessage,
-        },
+          signedMessage
+        }
       );
 
       const rb = response.body;
@@ -437,22 +493,22 @@ describe('Communities (E2E)', () => {
         .getModel()
         .updateOne(
           { _id: community._id },
-          { $set: { discordLinkState: DiscordLinkState.ACTIVE } },
+          { $set: { discordLinkState: DiscordLinkState.ACTIVE } }
         );
       const signedMessage = await users[0].wallet.signMessage(
         communityService.generateLinkDiscordMessage({
           communityId: String(community._id),
           guildId: community.discordGuildId as string,
-          nonce: community.discordLinkNonce as string,
-        }),
+          nonce: community.discordLinkNonce as string
+        })
       );
       const response = await authorizedPatchRequest(
         `/communities/${community._id}/discord/link`,
         app,
         setupWebUserAccessToken,
         {
-          signedMessage,
-        },
+          signedMessage
+        }
       );
 
       const rb = response.body;
@@ -465,16 +521,16 @@ describe('Communities (E2E)', () => {
         communityService.generateLinkDiscordMessage({
           communityId: String(community._id),
           guildId: community.discordGuildId as string,
-          nonce: community.discordLinkNonce as string,
-        }),
+          nonce: community.discordLinkNonce as string
+        })
       );
       const response = await authorizedPatchRequest(
         `/communities/${users[0].user._id}/discord/link`,
         app,
         setupWebUserAccessToken,
         {
-          signedMessage,
-        },
+          signedMessage
+        }
       );
 
       const rb = response.body;
@@ -494,11 +550,11 @@ describe('Communities (E2E)', () => {
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
-          users[1].user.identityEthAddress,
+          users[1].user.identityEthAddress
         ],
         discordGuildId: 'kldakdsal',
         discordLinkNonce: randomBytes(10).toString('hex'),
-        email: 'test@praise.io',
+        email: 'test@praise.io'
       });
     });
 
@@ -515,8 +571,8 @@ describe('Communities (E2E)', () => {
         app,
         users[0].accessToken,
         {
-          name: 'test',
-        },
+          name: 'test'
+        }
       );
 
       expect(response.status).toBe(403);
@@ -526,7 +582,7 @@ describe('Communities (E2E)', () => {
       const response = await authorizedGetRequest(
         `/communities/${community._id}`,
         app,
-        setupWebUserAccessToken,
+        setupWebUserAccessToken
       );
 
       const rb = response.body;
@@ -547,11 +603,11 @@ describe('Communities (E2E)', () => {
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
-          users[1].user.identityEthAddress,
+          users[1].user.identityEthAddress
         ],
         discordGuildId: 'kldakdsal',
         discordLinkNonce: randomBytes(10).toString('hex'),
-        email: 'test@praise.io',
+        email: 'test@praise.io'
       });
     });
     const updateValidCommunity = async (override?: any) => {
@@ -559,7 +615,7 @@ describe('Communities (E2E)', () => {
         `/communities/${community._id}`,
         app,
         setupWebUserAccessToken,
-        override,
+        override
       );
     };
 
@@ -576,8 +632,8 @@ describe('Communities (E2E)', () => {
         app,
         users[0].accessToken,
         {
-          name: 'test',
-        },
+          name: 'test'
+        }
       );
 
       expect(response.status).toBe(403);
@@ -589,8 +645,8 @@ describe('Communities (E2E)', () => {
         app,
         setupWebUserAccessToken,
         {
-          invalidField: 'test',
-        },
+          invalidField: 'test'
+        }
       );
 
       expect(response.status).toBe(400);
@@ -611,7 +667,7 @@ describe('Communities (E2E)', () => {
 
     test('400 when name is too long', async () => {
       const response = await updateValidCommunity({
-        name: 'a'.repeat(200),
+        name: 'a'.repeat(200)
       });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Validation failed');
@@ -624,16 +680,16 @@ describe('Communities (E2E)', () => {
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
-          users[1].user.identityEthAddress,
+          users[1].user.identityEthAddress
         ],
         discordGuildId: 'kldakdsal',
         discordLinkNonce: randomBytes(10).toString('hex'),
-        email: 'test@praise.io',
+        email: 'test@praise.io'
       });
       const response = await updateValidCommunity({ name: newCommunity.name });
       expect(response.status).toBe(409);
       expect(response.body.message).toBe(
-        `name '${newCommunity.name} 'already exists.`,
+        `name '${newCommunity.name} 'already exists.`
       );
     });
 
@@ -650,11 +706,11 @@ describe('Communities (E2E)', () => {
         creator: users[0].user.identityEthAddress,
         owners: [
           users[0].user.identityEthAddress,
-          users[1].user.identityEthAddress,
+          users[1].user.identityEthAddress
         ],
         discordGuildId: 'kldakdsal',
         discordLinkNonce: '223',
-        email: 'test@praise.io',
+        email: 'test@praise.io'
       });
       const response = await updateValidCommunity({ hostname: 'beefy.xyz' });
       expect(response.status).toBe(409);
@@ -665,7 +721,7 @@ describe('Communities (E2E)', () => {
       const response = await updateValidCommunity({ database: 'notallowed' });
       expect(response.status).toBe(400);
       expect(response.body.message[0]).toBe(
-        'property database should not exist',
+        'property database should not exist'
       );
     });
 
@@ -677,7 +733,7 @@ describe('Communities (E2E)', () => {
 
     test('400 when owners contains an invalid eth address', async () => {
       const response = await updateValidCommunity({
-        owners: ['invalid', users[0].user.identityEthAddress],
+        owners: ['invalid', users[0].user.identityEthAddress]
       });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Validation failed');
@@ -687,8 +743,8 @@ describe('Communities (E2E)', () => {
       const response = await updateValidCommunity({
         owners: [
           users[0].user.identityEthAddress,
-          users[0].user.identityEthAddress,
-        ],
+          users[0].user.identityEthAddress
+        ]
       });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Validation failed');
@@ -696,14 +752,14 @@ describe('Communities (E2E)', () => {
 
     test('400 when creator is not in owners', async () => {
       const response = await updateValidCommunity({
-        owners: [users[1].user.identityEthAddress],
+        owners: [users[1].user.identityEthAddress]
       });
       expect(response.status).toBe(400);
     });
 
     test('400 when owners contain invalid address', async () => {
       const response = await updateValidCommunity({
-        owners: ['invalid', users[0].user.identityEthAddress],
+        owners: ['invalid', users[0].user.identityEthAddress]
       });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Validation failed');
