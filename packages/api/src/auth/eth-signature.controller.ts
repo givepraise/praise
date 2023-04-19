@@ -68,7 +68,7 @@ export class EthSignatureController {
     @Headers('host') host: string,
     @Body() loginInputDto: LoginInputDto,
   ): Promise<LoginResponseDto> {
-    const loginResponse = this.ethSignatureService.login(
+    const loginResponse = await this.ethSignatureService.login(
       loginInputDto.identityEthAddress,
       loginInputDto.signature,
       host.split(':')[0],

@@ -166,7 +166,7 @@ export class UsersController {
     @Body() roleChange: UpdateUserRoleInputDto,
     @Request() request: RequestWithAuthContext,
   ): Promise<UserWithStatsDto> {
-    const userWithStats = this.usersService.addRole(id, roleChange);
+    const userWithStats = await this.usersService.addRole(id, roleChange);
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
@@ -191,7 +191,7 @@ export class UsersController {
     @Body() roleChange: UpdateUserRoleInputDto,
     @Request() request: RequestWithAuthContext,
   ): Promise<UserWithStatsDto> {
-    const userWithStats = this.usersService.removeRole(id, roleChange);
+    const userWithStats = await this.usersService.removeRole(id, roleChange);
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,

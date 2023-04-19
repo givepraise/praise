@@ -151,7 +151,7 @@ export class PraiseController {
     @Request() request: RequestWithAuthContext,
     @Body() data: PraiseCreateInputDto,
   ): Promise<Praise[]> {
-    const praiseItem = this.praiseService.createPraiseItem(data);
+    const praiseItem = await this.praiseService.createPraiseItem(data);
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
@@ -175,7 +175,7 @@ export class PraiseController {
     @Request() request: RequestWithAuthContext,
     @Body() data: PraiseForwardInputDto,
   ): Promise<Praise[]> {
-    const praiseItem = this.praiseService.createPraiseItem(data);
+    const praiseItem = await this.praiseService.createPraiseItem(data);
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,

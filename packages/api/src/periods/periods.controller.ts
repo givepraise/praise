@@ -160,7 +160,7 @@ export class PeriodsController {
     @Request() request: RequestWithAuthContext,
     @Body() createPeriodDto: CreatePeriodInputDto,
   ): Promise<PeriodDetailsDto> {
-    const period = this.periodsService.create(createPeriodDto);
+    const period = await this.periodsService.create(createPeriodDto);
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
@@ -186,7 +186,7 @@ export class PeriodsController {
     @Body() updatePeriodDto: UpdatePeriodInputDto,
     @Request() request: RequestWithAuthContext,
   ): Promise<PeriodDetailsDto> {
-    const period = this.periodsService.update(id, updatePeriodDto);
+    const period = await this.periodsService.update(id, updatePeriodDto);
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
@@ -331,7 +331,9 @@ export class PeriodsController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Request() request: RequestWithAuthContext,
   ): Promise<PeriodDetailsDto> {
-    const periodDetails = this.periodAssignmentsService.assignQuantifiers(id);
+    const periodDetails = await this.periodAssignmentsService.assignQuantifiers(
+      id,
+    );
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
@@ -357,7 +359,10 @@ export class PeriodsController {
     @Request() request: RequestWithAuthContext,
   ): Promise<ReplaceQuantifierResponseDto> {
     const replaceQuantifierResponse =
-      this.periodAssignmentsService.replaceQuantifier(id, replaceQuantifierDto);
+      await this.periodAssignmentsService.replaceQuantifier(
+        id,
+        replaceQuantifierDto,
+      );
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,

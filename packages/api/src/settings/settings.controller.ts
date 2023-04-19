@@ -126,7 +126,7 @@ export class SettingsController {
     @UploadedFile() file: Express.Multer.File,
     @Request() request: RequestWithAuthContext,
   ) {
-    const response = this.settingsService.setImageSetting(id, file);
+    const response = await this.settingsService.setImageSetting(id, file);
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,

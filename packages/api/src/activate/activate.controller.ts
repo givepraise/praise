@@ -38,7 +38,7 @@ export class ActivateController {
     type: User,
   })
   async activate(@Body() activateInputDto: ActivateInputDto): Promise<User> {
-    const user = this.activateService.activate(activateInputDto);
+    const user = await this.activateService.activate(activateInputDto);
 
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.USER_ACCOUNT,

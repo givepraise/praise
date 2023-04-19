@@ -52,8 +52,9 @@ export class ApiKeyController {
     @Body() createApiKeyRequest: CreateApiKeyInputDto,
     @Request() request: RequestWithAuthContext,
   ): Promise<CreateApiKeyResponseDto> {
-    const createApiKeyResponse =
-      this.apiKeyService.createApiKey(createApiKeyRequest);
+    const createApiKeyResponse = await this.apiKeyService.createApiKey(
+      createApiKeyRequest,
+    );
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
@@ -114,7 +115,10 @@ export class ApiKeyController {
     @Body() body: UpdateDescriptionInputDto,
     @Request() request: RequestWithAuthContext,
   ): Promise<ApiKey> {
-    const apiKey = this.apiKeyService.updateDescription(id, body.description);
+    const apiKey = await this.apiKeyService.updateDescription(
+      id,
+      body.description,
+    );
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
@@ -141,7 +145,7 @@ export class ApiKeyController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Request() request: RequestWithAuthContext,
   ): Promise<ApiKey> {
-    const apiKey = this.apiKeyService.revoke(id);
+    const apiKey = await this.apiKeyService.revoke(id);
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,

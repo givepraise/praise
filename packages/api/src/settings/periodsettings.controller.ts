@@ -88,7 +88,7 @@ export class PeriodSettingsController {
     @Body() data: SetPeriodSettingDto,
     @Request() request: RequestWithAuthContext,
   ): Promise<PeriodSetting> {
-    const periodSetting = this.settingsService.setOnePeriodSetting(
+    const periodSetting = await this.settingsService.setOnePeriodSetting(
       settingId,
       periodId,
       data,

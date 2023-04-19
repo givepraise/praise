@@ -180,7 +180,7 @@ export class QuantificationsController {
     if (!userId) {
       throw new ApiException(errorMessages.USER_NOT_FOUND);
     }
-    const praise = this.quantificationsService.quantifyPraise(
+    const praise = await this.quantificationsService.quantifyPraise(
       userId,
       praiseId,
       data,
