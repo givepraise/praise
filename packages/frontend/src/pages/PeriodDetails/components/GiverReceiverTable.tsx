@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-key */
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { TableOptions, useSortBy, useTable } from 'react-table';
+import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
 import sortBy from 'lodash/sortBy';
 import {
@@ -14,6 +14,7 @@ import { Notice } from '@/components/ui/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
+import { orderBy } from 'lodash';
 
 type GiverReceiverType = 'giver' | 'receiver';
 
@@ -61,16 +62,11 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
       []
     );
     const data = period?.[pluralType]
-      ? sortBy(period[pluralType], [
-          // First, sort by user.score
-          (userAccount): number => {
-            if (!userAccount?.score) return 0;
-            return userAccount.score;
-          },
-
-          // Then by user.name
-          (user): string => user.name,
-        ])
+      ? orderBy(
+          period[pluralType],
+          ['score', 'praiseCount', 'name'],
+          ['desc', 'desc', 'asc']
+        )
       : [];
 
     const options = {
@@ -85,7 +81,7 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
         ],
       },
     } as TableOptions<UserAccount>;
-    const tableInstance = useTable<UserAccount>(options, useSortBy);
+    const tableInstance = useTable<UserAccount>(options);
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
       tableInstance;
