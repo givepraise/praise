@@ -3,7 +3,6 @@ import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { TableOptions, useTable } from 'react-table';
 import { useRecoilValue } from 'recoil';
-import sortBy from 'lodash/sortBy';
 import {
   PeriodPageParams,
   SinglePeriod,
