@@ -8,7 +8,6 @@ import {
   Query,
   Res,
   SerializeOptions,
-  StreamableFile,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -22,7 +21,7 @@ import {
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { PraiseService } from './services/praise.service';
-import { Praise } from './schemas/praise.schema';
+import { Praise, PraiseExportSqlSchema } from './schemas/praise.schema';
 import { PraisePaginatedQueryDto } from './dto/praise-paginated-query.dto';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 import { Permission } from '../auth/enums/permission.enum';
@@ -31,11 +30,28 @@ import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto'
 import { Response } from 'express';
 import { ExportInputDto } from '../shared/dto/export-input.dto';
 import { allExportsDirPath } from '../shared/fs.shared';
-import { exportContentType, exportOptionsHash } from '../shared/export.shared';
+import { generateParquetExport } from '../shared/export.shared';
 import { PraiseExportService } from './services/praise-export.service';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { PraiseCreateInputDto } from './dto/praise-create-input.dto';
 import { PraiseForwardInputDto } from './dto/praise-forward-input.dto';
+import * as JSONStream from 'JSONStream';
+import { Transform } from '@json2csv/node';
+import { Public } from '../shared/decorators/public.decorator';
+
+const exportIncludeFields = [
+  '_id',
+  'giver',
+  'forwarder',
+  'receiver',
+  'reason',
+  'reasonRaw',
+  'score',
+  'sourceId',
+  'sourceName',
+  'createdAt',
+  'updatedAt',
+];
 
 @Controller('praise')
 @ApiTags('Praise')
@@ -64,8 +80,76 @@ export class PraiseController {
     return this.praiseService.findAllPaginated(options);
   }
 
-  @Get('export')
-  @ApiOperation({ summary: 'Export Praises document to json or csv' })
+  @Get('export/json')
+  @ApiOperation({ summary: 'Export praise document to json' })
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @ApiProduces('application/json')
+  @Public()
+  @Permissions(Permission.PraiseExport)
+  async exportJson(@Query() options: ExportInputDto, @Res() res: Response) {
+    res.set({
+      'Content-Type': 'application/json',
+      'Content-Disposition': `attachment; filename="praise.json"`,
+    });
+
+    // Create a cursor to the praise collection
+    const praiseCursor = await this.praiseExportService.exportCursor(
+      options,
+      exportIncludeFields,
+    );
+
+    // Close the cursor when the response is closed
+    res.on('close', () => {
+      praiseCursor.close();
+    });
+
+    praiseCursor.pipe(JSONStream.stringify()).pipe(res);
+  }
+
+  @Get('export/csv')
+  @ApiOperation({ summary: 'Export praise document to csv' })
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @ApiProduces('text/csv')
+  @Public()
+  @Permissions(Permission.PraiseExport)
+  async exportCsv(@Query() options: ExportInputDto, @Res() res: Response) {
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': `attachment; filename="praise.csv"`,
+    });
+
+    // Create a cursor to the praise collection
+    const praiseCursor = await this.praiseExportService.exportCursor(
+      options,
+      exportIncludeFields,
+    );
+
+    // Create a transformer to convert the JSON data to CSV
+    const csvTransformer = new Transform(
+      { fields: exportIncludeFields },
+      { objectMode: true },
+    );
+
+    // Close the cursor when the response is closed
+    res.on('close', () => {
+      praiseCursor.close();
+    });
+
+    praiseCursor.pipe(csvTransformer).pipe(res);
+  }
+
+  @Get('export/parquet')
+  @ApiOperation({ summary: 'Export praise document to parquet' })
   @ApiOkResponse({
     schema: {
       type: 'string',
@@ -73,48 +157,56 @@ export class PraiseController {
     },
   })
   @ApiProduces('application/octet-stream')
-  @ApiProduces('application/json')
+  @Public()
   @Permissions(Permission.PraiseExport)
-  async export(
-    @Query() options: ExportInputDto,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<StreamableFile> {
-    const format = options.format || 'csv';
-
-    // Root path for all exports
-    const rootPath = `${allExportsDirPath}/praise`;
-
-    // Directory level 1 is the latest praise id
-    const dirLevel1 = (await this.praiseService.findLatest())._id.toString();
-
-    // Directory level 2 is the hashed options
-    const dirLevel2 = exportOptionsHash(options);
-
-    const dirPath = `${rootPath}/${dirLevel1}/${dirLevel2}`;
-    const filePath = `${dirPath}/praise.${format}`;
-
-    if (!fs.existsSync(filePath)) {
-      // If cached export don't exist
-      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
-        // If the latest praise id folder doesn't exist,
-        // database hase been updated, clear all cached exports
-        fs.rmSync(rootPath, { recursive: true, force: true });
-      }
-
-      // Create directory for new export
-      fs.mkdirSync(dirPath, { recursive: true });
-
-      // Generate new export files
-      await this.praiseExportService.generateAllExports(dirPath, options);
-    }
-
+  async exportParquet(@Query() options: ExportInputDto, @Res() res: Response) {
     res.set({
-      'Content-Type': exportContentType(format),
-      'Content-Disposition': `attachment; filename="praise.${format}"`,
+      'Content-Type': 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="praise.parquet"`,
     });
 
-    const file = fs.createReadStream(filePath);
-    return new StreamableFile(file);
+    // Tmp file paths
+    const tmpCsvPath = `${allExportsDirPath}/praise.csv`;
+    const tmpParquetPath = `${allExportsDirPath}/praise.parquet`;
+
+    // Create a cursor to the praise collection
+    const praiseCursor = await this.praiseExportService.exportCursor(
+      options,
+      exportIncludeFields,
+    );
+
+    // Create a writable stream to the temporary csv file
+    const writableStream = fs.createWriteStream(tmpCsvPath);
+
+    // Create a transformer to convert the JSON data to CSV
+    const csvTransformer = new Transform(
+      { fields: exportIncludeFields },
+      { objectMode: true },
+    );
+
+    // Pipe the CSV data to the temporary file
+    praiseCursor.pipe(csvTransformer).pipe(writableStream);
+
+    // When the CSV data is finished, convert it to Parquet and send it as a response
+    writableStream.on('finish', async () => {
+      // Convert the CSV file to Parquet
+      await generateParquetExport(
+        'praise',
+        PraiseExportSqlSchema,
+        tmpCsvPath,
+        tmpParquetPath,
+      );
+
+      // Read temporary parquet file and send it as a response
+      const readableStream = fs.createReadStream(tmpParquetPath);
+      readableStream.pipe(res);
+
+      // Clean up!
+      res.on('finish', () => {
+        fs.unlinkSync(tmpCsvPath);
+        fs.unlinkSync(tmpParquetPath);
+      });
+    });
   }
 
   @Get(':id')

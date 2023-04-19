@@ -77,3 +77,5 @@ declare module '@json2csv/transforms' {
     options?: FlattenOptions,
   ): Json2CsvTransform<any, any>;
 }
+
+declare module 'JSONStream';

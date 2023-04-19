@@ -5,7 +5,6 @@ import {
   Query,
   Res,
   SerializeOptions,
-  StreamableFile,
   Patch,
   Param,
   Body,
@@ -18,7 +17,7 @@ import { QuantificationsService } from './services/quantifications.service';
 import { Response } from 'express';
 import { ExportInputDto } from '../shared/dto/export-input.dto';
 import { allExportsDirPath } from '../shared/fs.shared';
-import { exportContentType, exportOptionsHash } from '../shared/export.shared';
+import { generateParquetExport } from '../shared/export.shared';
 import { QuantificationsExportService } from './services/quantifications-export.service';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { Permission } from '../auth/enums/permission.enum';
@@ -32,7 +31,23 @@ import { QuantifyInputDto } from './dto/quantify-input.dto';
 import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
 import { Types } from 'mongoose';
 import { QuantifyMultipleInputDto } from './dto/quantify-multiple-input.dto';
+import * as JSONStream from 'JSONStream';
+import { Transform } from '@json2csv/node';
+import { QuantificationsExportSqlSchema } from './schemas/quantifications.schema';
+import { Public } from '../shared/decorators/public.decorator';
 
+// Fields to include in the csv
+const exportIncludeFields = [
+  '_id',
+  'praise',
+  'quantifier',
+  'score',
+  'scoreRealized',
+  'dismissed',
+  'duplicatePraise',
+  'createdAt',
+  'updatedAt',
+];
 @Controller('quantifications')
 @ApiTags('Quantifications')
 @SerializeOptions({
@@ -45,10 +60,72 @@ export class QuantificationsController {
     private readonly quantificationsExportService: QuantificationsExportService,
   ) {}
 
-  @Get('export')
-  @ApiOperation({
-    summary: 'Exports quantifications document to json or csv.',
+  @Get('export/json')
+  @ApiOperation({ summary: 'Export quantifications document to json' })
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
   })
+  @ApiProduces('application/json')
+  @Public()
+  @Permissions(Permission.QuantificationsExport)
+  async exportJson(@Query() options: ExportInputDto, @Res() res: Response) {
+    res.set({
+      'Content-Type': 'application/json',
+      'Content-Disposition': `attachment; filename="quantifications.json"`,
+    });
+
+    // Create a cursor to the quantifications collection
+    const quantificationsCursor =
+      await this.quantificationsExportService.exportCursor(options);
+
+    // Close the cursor when the response is closed
+    res.on('close', () => {
+      quantificationsCursor.close();
+    });
+
+    quantificationsCursor.pipe(JSONStream.stringify()).pipe(res);
+  }
+
+  @Get('export/csv')
+  @ApiOperation({ summary: 'Export quantifications document to csv' })
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @ApiProduces('text/csv')
+  @Public()
+  @Permissions(Permission.QuantificationsExport)
+  async exportCsv(@Query() options: ExportInputDto, @Res() res: Response) {
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': `attachment; filename="quantifications.csv"`,
+    });
+
+    // Create a cursor to the quantifications collection
+    const quantificationsCursor =
+      await this.quantificationsExportService.exportCursor(options);
+
+    // Create a transformer to convert the JSON data to CSV
+    const csvTransformer = new Transform(
+      { fields: exportIncludeFields },
+      { objectMode: true },
+    );
+
+    // Close the cursor when the response is closed
+    res.on('close', () => {
+      quantificationsCursor.close();
+    });
+
+    quantificationsCursor.pipe(csvTransformer).pipe(res);
+  }
+
+  @Get('export/parquet')
+  @ApiOperation({ summary: 'Export quantifications document to parquet' })
   @ApiOkResponse({
     schema: {
       type: 'string',
@@ -56,57 +133,54 @@ export class QuantificationsController {
     },
   })
   @ApiProduces('application/octet-stream')
-  @ApiProduces('application/json')
+  @Public()
   @Permissions(Permission.QuantificationsExport)
-  async export(
-    @Query() options: ExportInputDto,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<StreamableFile> {
-    const format = options.format || 'csv';
-
-    // Root path for all exports
-    const rootPath = `${allExportsDirPath}/quantifications`;
-
-    // Directory level 1 is the latest quantifications id
-    const dirLevel1 = (
-      await this.quantificationsService.findLatest()
-    )._id.toString();
-
-    // Directory level 2 is the hashed options
-    const dirLevel2 = exportOptionsHash(options);
-
-    const dirPath = `${rootPath}/${dirLevel1}/${dirLevel2}`;
-    const filePath = `${dirPath}/quantifications.${format}`;
-
-    if (!fs.existsSync(filePath)) {
-      // If cached export don't exist
-      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
-        // If the latest quantifications id folder doesn't exist,
-        // database hase been updated, clear all cached exports
-        fs.rmSync(rootPath, { recursive: true, force: true });
-      }
-
-      // Create directory for new export
-      fs.mkdirSync(dirPath, { recursive: true });
-
-      // Generate new export files
-      await this.quantificationsExportService.generateAllExports(
-        dirPath,
-        options,
-      );
-    }
-
-    if (!fs.existsSync(filePath)) {
-      throw new ApiException(errorMessages.COULD_NOT_CREATE_EXPORT);
-    }
-
+  async exportParquet(@Query() options: ExportInputDto, @Res() res: Response) {
     res.set({
-      'Content-Type': exportContentType(format),
-      'Content-Disposition': `attachment; filename="quantifications.${format}"`,
+      'Content-Type': 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="quantifications.parquet"`,
     });
 
-    const file = fs.createReadStream(filePath);
-    return new StreamableFile(file);
+    // Tmp file paths
+    const tmpCsvPath = `${allExportsDirPath}/quantifications.csv`;
+    const tmpParquetPath = `${allExportsDirPath}/quantifications.parquet`;
+
+    // Create a cursor to the quantifications collection
+    const quantificationsCursor =
+      await this.quantificationsExportService.exportCursor(options);
+
+    // Create a writable stream to the temporary csv file
+    const writableStream = fs.createWriteStream(tmpCsvPath);
+
+    // Create a transformer to convert the JSON data to CSV
+    const csvTransformer = new Transform(
+      { fields: exportIncludeFields },
+      { objectMode: true },
+    );
+
+    // Pipe the CSV data to the temporary file
+    quantificationsCursor.pipe(csvTransformer).pipe(writableStream);
+
+    // When the CSV data is finished, convert it to Parquet and send it as a response
+    writableStream.on('finish', async () => {
+      // Convert the CSV file to Parquet
+      await generateParquetExport(
+        'quantifications',
+        QuantificationsExportSqlSchema,
+        tmpCsvPath,
+        tmpParquetPath,
+      );
+
+      // Read temporary parquet file and send it as a response
+      const readableStream = fs.createReadStream(tmpParquetPath);
+      readableStream.pipe(res);
+
+      // Clean up!
+      res.on('finish', () => {
+        fs.unlinkSync(tmpCsvPath);
+        fs.unlinkSync(tmpParquetPath);
+      });
+    });
   }
 
   @Patch('multiple')
