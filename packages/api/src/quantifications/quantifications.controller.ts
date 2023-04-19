@@ -16,7 +16,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { QuantificationsService } from './services/quantifications.service';
 import { Response } from 'express';
 import { ExportInputDto } from '../shared/dto/export-input.dto';
-import { allExportsDirPath } from '../shared/fs.shared';
+import { exportTmpFilePath } from '../shared/fs.shared';
 import { generateParquetExport } from '../shared/export.shared';
 import { QuantificationsExportService } from './services/quantifications-export.service';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
@@ -142,8 +142,8 @@ export class QuantificationsController {
     });
 
     // Tmp file paths
-    const tmpCsvPath = `${allExportsDirPath}/quantifications.csv`;
-    const tmpParquetPath = `${allExportsDirPath}/quantifications.parquet`;
+    const tmpCsvPath = exportTmpFilePath('quantifications.csv');
+    const tmpParquetPath = exportTmpFilePath('quantifications.parquet');
 
     // Create a cursor to the quantifications collection
     const quantificationsCursor =

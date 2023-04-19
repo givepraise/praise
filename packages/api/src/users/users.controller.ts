@@ -28,7 +28,7 @@ import { Permission } from '../auth/enums/permission.enum';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { UpdateUserRequestDto } from './dto/update-user-request.dto';
-import { allExportsDirPath } from '../shared/fs.shared';
+import { exportTmpFilePath } from '../shared/fs.shared';
 import { generateParquetExport } from '../shared/export.shared';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { ApiException } from '../shared/exceptions/api-exception';
@@ -140,8 +140,8 @@ export class UsersController {
     });
 
     // Tmp file paths
-    const tmpCsvPath = `${allExportsDirPath}/users.csv`;
-    const tmpParquetPath = `${allExportsDirPath}/users.parquet`;
+    const tmpCsvPath = exportTmpFilePath('users.csv');
+    const tmpParquetPath = exportTmpFilePath('users.parquet');
 
     // Create a cursor to the users collection
     const usersCursor = await this.usersService.exportCursor(

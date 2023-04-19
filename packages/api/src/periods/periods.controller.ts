@@ -37,7 +37,7 @@ import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-response.
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '../praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Response } from 'express';
-import { allExportsDirPath } from '../shared/fs.shared';
+import { exportTmpFilePath } from '../shared/fs.shared';
 import { generateParquetExport } from '../shared/export.shared';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import * as JSONStream from 'JSONStream';
@@ -149,8 +149,8 @@ export class PeriodsController {
     });
 
     // Tmp file paths
-    const tmpCsvPath = `${allExportsDirPath}/periods.csv`;
-    const tmpParquetPath = `${allExportsDirPath}/periods.parquet`;
+    const tmpCsvPath = exportTmpFilePath('periods.csv');
+    const tmpParquetPath = exportTmpFilePath('periods.parquet');
 
     // Create a cursor to the periods collection
     const periodsCursor = await this.periodsService.exportCursor(

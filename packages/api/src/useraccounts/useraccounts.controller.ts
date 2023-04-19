@@ -22,7 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { UserAccountsService } from './useraccounts.service';
 import { Response } from 'express';
-import { allExportsDirPath } from '../shared/fs.shared';
+import { exportTmpFilePath } from '../shared/fs.shared';
 import { generateParquetExport } from '../shared/export.shared';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { Permission } from '../auth/enums/permission.enum';
@@ -190,8 +190,8 @@ export class UserAccountsController {
     });
 
     // Tmp file paths
-    const tmpCsvPath = `${allExportsDirPath}/userAccounts.csv`;
-    const tmpParquetPath = `${allExportsDirPath}/userAccounts.parquet`;
+    const tmpCsvPath = exportTmpFilePath('useraccounts.csv');
+    const tmpParquetPath = exportTmpFilePath('useraccounts.parquet');
 
     // Create a cursor to the userAccounts collection
     const userAccountsCursor = await this.userAccountsService.exportCursor(

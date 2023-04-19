@@ -29,7 +29,7 @@ import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongo
 import { PraisePaginatedResponseDto } from './dto/praise-paginated-response.dto';
 import { Response } from 'express';
 import { ExportInputDto } from '../shared/dto/export-input.dto';
-import { allExportsDirPath } from '../shared/fs.shared';
+import { exportTmpFilePath } from '../shared/fs.shared';
 import { generateParquetExport } from '../shared/export.shared';
 import { PraiseExportService } from './services/praise-export.service';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
@@ -166,8 +166,8 @@ export class PraiseController {
     });
 
     // Tmp file paths
-    const tmpCsvPath = `${allExportsDirPath}/praise.csv`;
-    const tmpParquetPath = `${allExportsDirPath}/praise.parquet`;
+    const tmpCsvPath = exportTmpFilePath('praise.csv');
+    const tmpParquetPath = exportTmpFilePath('praise.parquet');
 
     // Create a cursor to the praise collection
     const praiseCursor = await this.praiseExportService.exportCursor(
