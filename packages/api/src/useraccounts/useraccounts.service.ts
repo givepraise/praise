@@ -1,17 +1,11 @@
-import * as fs from 'fs';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Cursor, Model, Types } from 'mongoose';
 import {
   UserAccount,
   UserAccountDocument,
-  UserAccountsExportSqlSchema,
 } from './schemas/useraccounts.schema';
 import { ApiException } from '../shared/exceptions/api-exception';
-import {
-  generateParquetExport,
-  writeCsvAndJsonExports,
-} from '../shared/export.shared';
 import { EventLogService } from '../event-log/event-log.service';
 import { CreateUserAccountInputDto } from './dto/create-user-account-input.dto';
 import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
@@ -95,6 +89,23 @@ export class UserAccountsService {
   }
 
   /**
+   * Creates a cursor for all useraccounts in the database
+   */
+  async exportCursor(
+    includeFields: string[],
+  ): Promise<Cursor<UserAccount, never>> {
+    // Include only the fields that are specified in the includeFields array
+    const projection: { [key: string]: 1 } = includeFields.reduce(
+      (obj: { [key: string]: 1 }, field: string) => {
+        obj[field] = 1;
+        return obj;
+      },
+      {},
+    );
+    return this.userAccountModel.aggregate([{ $project: projection }]).cursor();
+  }
+
+  /**
    * Update a user account
    */
   async update(
@@ -140,49 +151,5 @@ export class UserAccountsService {
     await userAccount.save();
     await userAccount.populate('user');
     return userAccount.toObject();
-  }
-
-  /**
-   * Generates all export files - csv, json and parquet
-   */
-  async generateAllExports(path: string) {
-    const includeFields = [
-      '_id',
-      'accountId',
-      'user',
-      'name',
-      'avatarId',
-      'platform',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Count the number of documents that matches query
-    const count = await this.userAccountModel.countDocuments({});
-
-    // If there are no documents, create empty files and return
-    if (count === 0) {
-      fs.writeFileSync(`${path}/useraccounts.csv`, includeFields.join(','));
-      fs.writeFileSync(`${path}/useraccounts.json`, '[]');
-      return;
-    }
-
-    // Lookup the periods, create a cursor
-    const useraccounts = this.userAccountModel.aggregate([]).cursor();
-
-    // Write the csv and json files
-    await writeCsvAndJsonExports(
-      'useraccounts',
-      useraccounts,
-      path,
-      includeFields,
-    );
-
-    // Generate the parquet file
-    await generateParquetExport(
-      path,
-      'useraccounts',
-      UserAccountsExportSqlSchema,
-    );
   }
 }

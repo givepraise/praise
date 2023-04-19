@@ -13,15 +13,13 @@ import {
   Get,
   Param,
   Patch,
-  Query,
   Res,
   SerializeOptions,
-  StreamableFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Types } from 'mongoose';
-import { User } from './schemas/users.schema';
+import { User, UsersExportSqlSchema } from './schemas/users.schema';
 import { UsersService } from './users.service';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
@@ -30,12 +28,24 @@ import { Permission } from '../auth/enums/permission.enum';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { UpdateUserRequestDto } from './dto/update-user-request.dto';
-import { ExportInputFormatOnlyDto } from '../shared/dto/export-input-format-only';
-import { allExportsDirPath } from '../shared/fs.shared';
-import { exportContentType } from '../shared/export.shared';
+import { exportTmpFilePath } from '../shared/fs.shared';
+import { generateParquetExport } from '../shared/export.shared';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { errorMessages } from '../shared/exceptions/error-messages';
+import { Transform } from '@json2csv/node';
+import * as JSONStream from 'JSONStream';
+import { Public } from '../shared/decorators/public.decorator';
+
+const exportIncludeFields = [
+  '_id',
+  'username',
+  'identityEthAddress',
+  'rewardsEthAddress',
+  'roles',
+  'createdAt',
+  'updatedAt',
+];
 
 @Controller('users')
 @ApiTags('Users')
@@ -46,8 +56,75 @@ import { errorMessages } from '../shared/exceptions/error-messages';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get('export')
-  @ApiOperation({ summary: 'Export users document to json or csv' })
+  @Get('export/json')
+  @ApiOperation({ summary: 'Export users document to json' })
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @ApiProduces('application/json')
+  @Public()
+  @Permissions(Permission.UsersExport)
+  async exportJson(@Res() res: Response) {
+    res.set({
+      'Content-Type': 'application/json',
+      'Content-Disposition': `attachment; filename="users.json"`,
+    });
+
+    // Create a cursor to the users collection
+    const usersCursor = await this.usersService.exportCursor(
+      exportIncludeFields,
+    );
+
+    // Close the cursor when the response is closed
+    res.on('close', () => {
+      usersCursor.close();
+    });
+
+    usersCursor.pipe(JSONStream.stringify()).pipe(res);
+  }
+
+  @Get('export/csv')
+  @ApiOperation({ summary: 'Export users document to csv' })
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @ApiProduces('text/csv')
+  @Public()
+  @Permissions(Permission.UsersExport)
+  async exportCsv(@Res() res: Response) {
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': `attachment; filename="users.csv"`,
+    });
+
+    // Create a cursor to the users collection
+    const usersCursor = await this.usersService.exportCursor(
+      exportIncludeFields,
+    );
+
+    // Create a transformer to convert the JSON data to CSV
+    const csvTransformer = new Transform(
+      { fields: exportIncludeFields },
+      { objectMode: true },
+    );
+
+    // Close the cursor when the response is closed
+    res.on('close', () => {
+      usersCursor.close();
+    });
+
+    usersCursor.pipe(csvTransformer).pipe(res);
+  }
+
+  @Get('export/parquet')
+  @Public()
+  @ApiOperation({ summary: 'Export users document to parquet' })
   @ApiOkResponse({
     schema: {
       type: 'string',
@@ -55,45 +132,54 @@ export class UsersController {
     },
   })
   @ApiProduces('application/octet-stream')
-  @ApiProduces('application/json')
   @Permissions(Permission.UsersExport)
-  async export(
-    @Query() options: ExportInputFormatOnlyDto,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<StreamableFile> {
-    const format = options.format || 'csv';
-
-    // Root path for all exports
-    const rootPath = `${allExportsDirPath}/users`;
-
-    // Directory level 1 is the latest users id
-    const dirLevel1 = (await this.usersService.findLatest())._id.toString();
-
-    const dirPath = `${rootPath}/${dirLevel1}`;
-    const filePath = `${dirPath}/users.${format}`;
-
-    if (!fs.existsSync(filePath)) {
-      // If cached export don't exist
-      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
-        // If the latest users id folder doesn't exist,
-        // database hase been updated, clear all cached exports
-        fs.rmSync(rootPath, { recursive: true, force: true });
-      }
-
-      // Create directory for new export
-      fs.mkdirSync(dirPath, { recursive: true });
-
-      // Generate new export files
-      await this.usersService.generateAllExports(dirPath);
-    }
-
+  async exportParquet(@Res() res: Response) {
     res.set({
-      'Content-Type': exportContentType(format),
-      'Content-Disposition': `attachment; filename="users.${format}"`,
+      'Content-Type': 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="users.parquet"`,
     });
 
-    const file = fs.createReadStream(filePath);
-    return new StreamableFile(file);
+    // Tmp file paths
+    const tmpCsvPath = exportTmpFilePath('users.csv');
+    const tmpParquetPath = exportTmpFilePath('users.parquet');
+
+    // Create a cursor to the users collection
+    const usersCursor = await this.usersService.exportCursor(
+      exportIncludeFields,
+    );
+
+    // Create a writable stream to the temporary csv file
+    const writableStream = fs.createWriteStream(tmpCsvPath);
+
+    // Create a transformer to convert the JSON data to CSV
+    const csvTransformer = new Transform(
+      { fields: exportIncludeFields },
+      { objectMode: true },
+    );
+
+    // Pipe the CSV data to the temporary file
+    usersCursor.pipe(csvTransformer).pipe(writableStream);
+
+    // When the CSV data is finished, convert it to Parquet and send it as a response
+    writableStream.on('finish', async () => {
+      // Convert the CSV file to Parquet
+      await generateParquetExport(
+        'users',
+        UsersExportSqlSchema,
+        tmpCsvPath,
+        tmpParquetPath,
+      );
+
+      // Read temporary parquet file and send it as a response
+      const readableStream = fs.createReadStream(tmpParquetPath);
+      readableStream.pipe(res);
+
+      // Clean up!
+      res.on('finish', () => {
+        fs.unlinkSync(tmpCsvPath);
+        fs.unlinkSync(tmpParquetPath);
+      });
+    });
   }
 
   @Get()

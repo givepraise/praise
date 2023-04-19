@@ -54,16 +54,14 @@ describe('UserController (E2E)', () => {
     });
 
     test('200 when authenticated', async () => {
-      await authorizedGetRequest(
-        '/users/export?format=json',
-        app,
-        accessToken,
-      ).expect(200);
+      await authorizedGetRequest('/users/export/json', app, accessToken).expect(
+        200,
+      );
     });
 
     test('returns user list that matches seeded list in json format', async () => {
       const response = await authorizedGetRequest(
-        '/users/export?format=json',
+        '/users/export/json',
         app,
         accessToken,
       ).expect(200);
@@ -81,7 +79,7 @@ describe('UserController (E2E)', () => {
 
     test('returns user list that matches seeded list in csv format', async () => {
       const response = await authorizedGetRequest(
-        '/users/export',
+        '/users/export/csv',
         app,
         accessToken,
       ).expect(200);

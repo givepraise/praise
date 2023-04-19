@@ -141,7 +141,7 @@ describe('Praise (E2E)', () => {
 
     test('200 when authenticated', async () => {
       await authorizedGetRequest(
-        `/praise/export?format=json&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
+        `/praise/export/json?startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
         app,
         adminUserAccessToken,
       ).expect(200);
@@ -149,7 +149,7 @@ describe('Praise (E2E)', () => {
 
     test('returns praises that matches seeded list in json format, filtered by date', async () => {
       const response = await authorizedGetRequest(
-        `/praise/export?format=json&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
+        `/praise/export/json?startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
         app,
         adminUserAccessToken,
       ).expect(200);
@@ -167,7 +167,7 @@ describe('Praise (E2E)', () => {
 
     test('returns praises that matches seeded list in csv format, filtered by date', async () => {
       const response = await authorizedGetRequest(
-        `/praise/export?format=csv&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
+        `/praise/export/csv?startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
         app,
         adminUserAccessToken,
       ).expect(200);
