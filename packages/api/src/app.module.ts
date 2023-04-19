@@ -17,6 +17,8 @@ import { CommunityModule } from './community/community.module';
 import { MultiTenantConnectionService } from './database/services/multi-tenant-connection-service';
 import { RequestLoggerMiddleware } from './shared/middlewares/request-logger.middleware';
 import { AuthGuardModule } from './auth/auth-guard.module';
+import { PingMiddleware } from './shared/middlewares/ping.middleware';
+import { DomainCheckMiddleware } from './shared/middlewares/domainCheck.middleware';
 
 @Module({
   imports: [
@@ -51,6 +53,8 @@ import { AuthGuardModule } from './auth/auth-guard.module';
 export class AppModule {
   // Add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
+    consumer.apply(DomainCheckMiddleware).forRoutes('domain-check');
+    consumer.apply(PingMiddleware).forRoutes('ping');
     consumer.apply(RequestLoggerMiddleware).forRoutes('*');
   }
 }

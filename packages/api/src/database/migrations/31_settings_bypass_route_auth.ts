@@ -1,38 +1,9 @@
-import { SettingGroup } from '../../settings/enums/setting-group.enum';
-import { SettingModel } from '../schemas/settings/23_settings.schema';
-
-const settings = [
-  {
-    key: 'BYPASS_ROUTE_AUTH',
-    defaultValue:
-      '/api/periods/export,/api/users/export,/api/quantifications/export,/api/praise/export,/api/useraccounts/export,/api/settings/uploads',
-    value:
-      '/api/periods/export,/api/users/export,/api/quantifications/export,/api/praise/export,/api/useraccounts/export,/api/settings/uploads',
-    type: 'StringList',
-    label: 'Bypass Route Authentication',
-    description: 'The routes listed here will not require authentication.',
-    group: SettingGroup.APPLICATION,
-    periodOverridable: false,
-  },
-];
-
 const up = async (): Promise<void> => {
-  const settingUpdates = settings.map((s) => ({
-    updateOne: {
-      filter: { key: s.key },
-
-      // Insert setting if not found, otherwise continue
-      update: { $setOnInsert: { ...s } },
-      upsert: true,
-    },
-  })) as any;
-
-  await SettingModel.bulkWrite(settingUpdates);
+  // Removing this migration as it was not used in production
 };
 
 const down = async (): Promise<void> => {
-  const allKeys = settings.map((s) => s.key);
-  await SettingModel.deleteMany({ key: { $in: allKeys } });
+  // Removing this migration as it was not used in production
 };
 
 export { up, down };

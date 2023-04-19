@@ -36,6 +36,9 @@ export class ApiKeyService {
   async createApiKey(
     createApiKeyDto: CreateApiKeyInputDto,
   ): Promise<CreateApiKeyResponseDto> {
+    if (!this.constantsProvider.apiKeySalt) {
+      throw new ApiException(errorMessages.API_KEY_SALT_NOT_SET);
+    }
     const key = randomBytes(32).toString('hex');
     const name = key.slice(0, 8);
     const hash = await bcrypt.hash(key, this.constantsProvider.apiKeySalt);

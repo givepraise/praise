@@ -153,7 +153,7 @@ describe('Communities (E2E)', () => {
       expect(response.body.message).toBe('Validation failed');
     });
 
-    test('400 when name is invalid and is in blacklist', async () => {
+    test('400 when name is invalid and is in blocklist', async () => {
       for (const name of [
         'www',
         'setup',
@@ -195,13 +195,15 @@ describe('Communities (E2E)', () => {
     });
 
     test('409 when name already exists', async () => {
-      await createValidCommunity({ name: 'test' });
+      await createValidCommunity({ name: 'testcommunity' });
       const response = await createValidCommunity({
-        name: 'test',
+        name: 'testcommunity',
         hostname: 'other.com',
       });
       expect(response.status).toBe(409);
-      expect(response.body.message).toBe("name 'test 'already exists.");
+      expect(response.body.message).toBe(
+        "name 'testcommunity 'already exists.",
+      );
     });
 
     test('400 when hostname is not a valid hostname', async () => {
