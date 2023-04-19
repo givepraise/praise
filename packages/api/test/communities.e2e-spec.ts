@@ -326,7 +326,7 @@ describe('Communities (E2E)', () => {
       await communityService.getModel().deleteMany({});
     });
 
-    test('201 when authenticated as setupWeb and correct data is sent', async () => {
+    test('201 , create active community', async () => {
       expect(await databaseExists(dbName, mongodb)).toBe(false);
       const response = await createValidCommunity();
       const rb = response.body;
