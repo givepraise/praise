@@ -8,9 +8,17 @@ export interface paths {
     /** Activate a user account in order to be able to give praise and receive rewards. Activation a user account creates a new User object or adds user account to User if it already exists. */
     post: operations['ActivateController_activate'];
   };
-  '/api/users/export': {
-    /** Export users document to json or csv */
-    get: operations['UsersController_export'];
+  '/api/users/export/json': {
+    /** Export users document to json */
+    get: operations['UsersController_exportJson'];
+  };
+  '/api/users/export/csv': {
+    /** Export users document to csv */
+    get: operations['UsersController_exportCsv'];
+  };
+  '/api/users/export/parquet': {
+    /** Export users document to parquet */
+    get: operations['UsersController_exportParquet'];
   };
   '/api/users': {
     get: operations['UsersController_findAll'];
@@ -26,9 +34,17 @@ export interface paths {
   '/api/users/{id}/removeRole': {
     patch: operations['UsersController_removeRole'];
   };
-  '/api/periods/export': {
-    /** Export periods document to json or csv */
-    get: operations['PeriodsController_export'];
+  '/api/periods/export/json': {
+    /** Export periods document to json */
+    get: operations['PeriodsController_exportJson'];
+  };
+  '/api/periods/export/csv': {
+    /** Export periods document to csv */
+    get: operations['PeriodsController_exportCsv'];
+  };
+  '/api/periods/export/parquet': {
+    /** Export periods document to parquet */
+    get: operations['PeriodsController_exportParquet'];
   };
   '/api/periods': {
     /** List all periods */
@@ -116,9 +132,17 @@ export interface paths {
     /** Create praise item */
     post: operations['PraiseController_praise'];
   };
-  '/api/praise/export': {
-    /** Export Praises document to json or csv */
-    get: operations['PraiseController_export'];
+  '/api/praise/export/json': {
+    /** Export praise document to json */
+    get: operations['PraiseController_exportJson'];
+  };
+  '/api/praise/export/csv': {
+    /** Export praise document to csv */
+    get: operations['PraiseController_exportCsv'];
+  };
+  '/api/praise/export/parquet': {
+    /** Export praise document to parquet */
+    get: operations['PraiseController_exportParquet'];
   };
   '/api/praise/{id}': {
     /** Find praise item by id */
@@ -134,9 +158,17 @@ export interface paths {
     /** Create a UserAccount */
     post: operations['UserAccountsController_create'];
   };
-  '/api/useraccounts/export': {
-    /** Exports UserAccounts document to json or csv. */
-    get: operations['UserAccountsController_export'];
+  '/api/useraccounts/export/json': {
+    /** Export userAccounts document to json */
+    get: operations['UserAccountsController_exportJson'];
+  };
+  '/api/useraccounts/export/csv': {
+    /** Export userAccounts document to csv */
+    get: operations['UserAccountsController_exportCsv'];
+  };
+  '/api/useraccounts/export/parquet': {
+    /** Export userAccounts document to parquet */
+    get: operations['UserAccountsController_exportParquet'];
   };
   '/api/useraccounts/{id}': {
     /** Get a UserAccount. */
@@ -171,10 +203,6 @@ export interface paths {
     /** Create a new community */
     post: operations['CommunityController_create'];
   };
-  '/api/communities/domain-check': {
-    /** Check to see if a given community hostname/domain name is setup and served by the API. Endpoint does not require authentication. */
-    get: operations['CommunityController_domainCheck'];
-  };
   '/api/communities/{id}': {
     get: operations['CommunityController_findOne'];
     /** Update community */
@@ -184,9 +212,17 @@ export interface paths {
     /** Link discord to community */
     patch: operations['CommunityController_linkDiscord'];
   };
-  '/api/quantifications/export': {
-    /** Exports quantifications document to json or csv. */
-    get: operations['QuantificationsController_export'];
+  '/api/quantifications/export/json': {
+    /** Export quantifications document to json */
+    get: operations['QuantificationsController_exportJson'];
+  };
+  '/api/quantifications/export/csv': {
+    /** Export quantifications document to csv */
+    get: operations['QuantificationsController_exportCsv'];
+  };
+  '/api/quantifications/export/parquet': {
+    /** Export quantifications document to parquet */
+    get: operations['QuantificationsController_exportParquet'];
   };
   '/api/quantifications/multiple': {
     /** Quantify multiple praise items */
@@ -1014,17 +1050,31 @@ export interface operations {
       };
     };
   };
-  /** Export users document to json or csv */
-  UsersController_export: {
-    parameters: {
-      query: {
-        format?: 'csv' | 'json' | 'parquet';
-      };
-    };
+  /** Export users document to json */
+  UsersController_exportJson: {
     responses: {
       200: {
         content: {
           'application/json': string;
+        };
+      };
+    };
+  };
+  /** Export users document to csv */
+  UsersController_exportCsv: {
+    responses: {
+      200: {
+        content: {
+          'text/csv': string;
+        };
+      };
+    };
+  };
+  /** Export users document to parquet */
+  UsersController_exportParquet: {
+    responses: {
+      200: {
+        content: {
           'application/octet-stream': string;
         };
       };
@@ -1116,17 +1166,31 @@ export interface operations {
       };
     };
   };
-  /** Export periods document to json or csv */
-  PeriodsController_export: {
-    parameters: {
-      query: {
-        format?: 'csv' | 'json' | 'parquet';
-      };
-    };
+  /** Export periods document to json */
+  PeriodsController_exportJson: {
     responses: {
       200: {
         content: {
           'application/json': string;
+        };
+      };
+    };
+  };
+  /** Export periods document to csv */
+  PeriodsController_exportCsv: {
+    responses: {
+      200: {
+        content: {
+          'text/csv': string;
+        };
+      };
+    };
+  };
+  /** Export periods document to parquet */
+  PeriodsController_exportParquet: {
+    responses: {
+      200: {
+        content: {
           'application/octet-stream': string;
         };
       };
@@ -1580,11 +1644,10 @@ export interface operations {
       };
     };
   };
-  /** Export Praises document to json or csv */
-  PraiseController_export: {
+  /** Export praise document to json */
+  PraiseController_exportJson: {
     parameters: {
       query: {
-        format?: 'csv' | 'json' | 'parquet';
         startDate?: string;
         endDate?: string;
       };
@@ -1593,6 +1656,37 @@ export interface operations {
       200: {
         content: {
           'application/json': string;
+        };
+      };
+    };
+  };
+  /** Export praise document to csv */
+  PraiseController_exportCsv: {
+    parameters: {
+      query: {
+        startDate?: string;
+        endDate?: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          'text/csv': string;
+        };
+      };
+    };
+  };
+  /** Export praise document to parquet */
+  PraiseController_exportParquet: {
+    parameters: {
+      query: {
+        startDate?: string;
+        endDate?: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
           'application/octet-stream': string;
         };
       };
@@ -1670,17 +1764,31 @@ export interface operations {
       };
     };
   };
-  /** Exports UserAccounts document to json or csv. */
-  UserAccountsController_export: {
-    parameters: {
-      query: {
-        format?: 'csv' | 'json' | 'parquet';
-      };
-    };
+  /** Export userAccounts document to json */
+  UserAccountsController_exportJson: {
     responses: {
       200: {
         content: {
           'application/json': string;
+        };
+      };
+    };
+  };
+  /** Export userAccounts document to csv */
+  UserAccountsController_exportCsv: {
+    responses: {
+      200: {
+        content: {
+          'text/csv': string;
+        };
+      };
+    };
+  };
+  /** Export userAccounts document to parquet */
+  UserAccountsController_exportParquet: {
+    responses: {
+      200: {
+        content: {
           'application/octet-stream': string;
         };
       };
@@ -1891,22 +1999,6 @@ export interface operations {
       };
     };
   };
-  /** Check to see if a given community hostname/domain name is setup and served by the API. Endpoint does not require authentication. */
-  CommunityController_domainCheck: {
-    parameters: {
-      query: {
-        domain: string;
-      };
-    };
-    responses: {
-      /** @description "OK" if domain exists */
-      200: {
-        content: {
-          'application/json': string;
-        };
-      };
-    };
-  };
   CommunityController_findOne: {
     parameters: {
       path: {
@@ -1954,11 +2046,10 @@ export interface operations {
       };
     };
   };
-  /** Exports quantifications document to json or csv. */
-  QuantificationsController_export: {
+  /** Export quantifications document to json */
+  QuantificationsController_exportJson: {
     parameters: {
       query: {
-        format?: 'csv' | 'json' | 'parquet';
         startDate?: string;
         endDate?: string;
       };
@@ -1967,6 +2058,37 @@ export interface operations {
       200: {
         content: {
           'application/json': string;
+        };
+      };
+    };
+  };
+  /** Export quantifications document to csv */
+  QuantificationsController_exportCsv: {
+    parameters: {
+      query: {
+        startDate?: string;
+        endDate?: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          'text/csv': string;
+        };
+      };
+    };
+  };
+  /** Export quantifications document to parquet */
+  QuantificationsController_exportParquet: {
+    parameters: {
+      query: {
+        startDate?: string;
+        endDate?: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
           'application/octet-stream': string;
         };
       };
