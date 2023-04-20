@@ -170,7 +170,7 @@ describe('Period (E2E)', () => {
 
     test('returns period list that matches seeded list in json format', async () => {
       const response = await authorizedGetRequest(
-        '/periods/export?format=json',
+        '/periods/export/json',
         app,
         users[0].accessToken,
       );
@@ -189,7 +189,7 @@ describe('Period (E2E)', () => {
 
     test('returns period list that matches seeded list in csv format', async () => {
       const response = await authorizedGetRequest(
-        '/periods/export?format=csv',
+        '/periods/export/csv',
         app,
         users[0].accessToken,
       );

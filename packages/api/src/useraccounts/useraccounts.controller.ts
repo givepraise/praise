@@ -10,7 +10,6 @@ import {
   Res,
   Request,
   SerializeOptions,
-  StreamableFile,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -23,13 +22,15 @@ import {
 } from '@nestjs/swagger';
 import { UserAccountsService } from './useraccounts.service';
 import { Response } from 'express';
-import { ExportInputFormatOnlyDto } from '../shared/dto/export-input-format-only';
-import { allExportsDirPath } from '../shared/fs.shared';
-import { exportContentType } from '../shared/export.shared';
+import { exportTmpFilePath } from '../shared/fs.shared';
+import { generateParquetExport } from '../shared/export.shared';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { Permission } from '../auth/enums/permission.enum';
 import { Permissions } from '../auth/decorators/permissions.decorator';
-import { UserAccount } from './schemas/useraccounts.schema';
+import {
+  UserAccount,
+  UserAccountsExportSqlSchema,
+} from './schemas/useraccounts.schema';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
 import { CreateUserAccountInputDto } from './dto/create-user-account-input.dto';
@@ -41,6 +42,20 @@ import { Types } from 'mongoose';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
+import * as JSONStream from 'JSONStream';
+import { Transform } from '@json2csv/node';
+import { Public } from '../shared/decorators/public.decorator';
+
+const exportIncludeFields = [
+  '_id',
+  'accountId',
+  'user',
+  'name',
+  'avatarId',
+  'platform',
+  'createdAt',
+  'updatedAt',
+];
 
 @Controller('useraccounts')
 @ApiTags('UserAccounts')
@@ -91,10 +106,74 @@ export class UserAccountsController {
     return this.userAccountsService.findAll(filter);
   }
 
-  @Get('export')
-  @ApiOperation({
-    summary: 'Exports UserAccounts document to json or csv.',
+  @Get('export/json')
+  @ApiOperation({ summary: 'Export userAccounts document to json' })
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
   })
+  @ApiProduces('application/json')
+  @Public()
+  @Permissions(Permission.UserAccountsExport)
+  async exportJson(@Res() res: Response) {
+    res.set({
+      'Content-Type': 'application/json',
+      'Content-Disposition': `attachment; filename="useraccounts.json"`,
+    });
+
+    // Create a cursor to the userAccounts collection
+    const userAccountsCursor = await this.userAccountsService.exportCursor(
+      exportIncludeFields,
+    );
+
+    // Close the cursor when the response is closed
+    res.on('close', () => {
+      userAccountsCursor.close();
+    });
+
+    userAccountsCursor.pipe(JSONStream.stringify()).pipe(res);
+  }
+
+  @Get('export/csv')
+  @ApiOperation({ summary: 'Export userAccounts document to csv' })
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @ApiProduces('text/csv')
+  @Public()
+  @Permissions(Permission.UserAccountsExport)
+  async exportCsv(@Res() res: Response) {
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': `attachment; filename="useraccounts.csv"`,
+    });
+
+    // Create a cursor to the userAccounts collection
+    const userAccountsCursor = await this.userAccountsService.exportCursor(
+      exportIncludeFields,
+    );
+
+    // Create a transformer to convert the JSON data to CSV
+    const csvTransformer = new Transform(
+      { fields: exportIncludeFields },
+      { objectMode: true },
+    );
+
+    // Close the cursor when the response is closed
+    res.on('close', () => {
+      userAccountsCursor.close();
+    });
+
+    userAccountsCursor.pipe(csvTransformer).pipe(res);
+  }
+
+  @Get('export/parquet')
+  @ApiOperation({ summary: 'Export userAccounts document to parquet' })
   @ApiOkResponse({
     schema: {
       type: 'string',
@@ -102,47 +181,55 @@ export class UserAccountsController {
     },
   })
   @ApiProduces('application/octet-stream')
-  @ApiProduces('application/json')
+  @Public()
   @Permissions(Permission.UserAccountsExport)
-  async export(
-    @Query() options: ExportInputFormatOnlyDto,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<StreamableFile> {
-    const format = options.format || 'csv';
-
-    // Root path for all exports
-    const rootPath = `${allExportsDirPath}/useraccounts`;
-
-    // Directory level 1 is the latest useraccounts id
-    const dirLevel1 = (
-      await this.userAccountsService.findLatest()
-    )._id.toString();
-
-    const dirPath = `${rootPath}/${dirLevel1}`;
-    const filePath = `${dirPath}/useraccounts.${format}`;
-
-    if (!fs.existsSync(filePath)) {
-      // If cached export don't exist
-      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
-        // If the latest useraccounts id folder doesn't exist,
-        // database hase been updated, clear all cached exports
-        fs.rmSync(rootPath, { recursive: true, force: true });
-      }
-
-      // Create directory for new export
-      fs.mkdirSync(dirPath, { recursive: true });
-
-      // Generate new export files
-      await this.userAccountsService.generateAllExports(dirPath);
-    }
-
+  async exportParquet(@Res() res: Response) {
     res.set({
-      'Content-Type': exportContentType(format),
-      'Content-Disposition': `attachment; filename="useraccounts.${format}"`,
+      'Content-Type': 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="useraccounts.parquet"`,
     });
 
-    const file = fs.createReadStream(filePath);
-    return new StreamableFile(file);
+    // Tmp file paths
+    const tmpCsvPath = exportTmpFilePath('useraccounts.csv');
+    const tmpParquetPath = exportTmpFilePath('useraccounts.parquet');
+
+    // Create a cursor to the userAccounts collection
+    const userAccountsCursor = await this.userAccountsService.exportCursor(
+      exportIncludeFields,
+    );
+
+    // Create a writable stream to the temporary csv file
+    const writableStream = fs.createWriteStream(tmpCsvPath);
+
+    // Create a transformer to convert the JSON data to CSV
+    const csvTransformer = new Transform(
+      { fields: exportIncludeFields },
+      { objectMode: true },
+    );
+
+    // Pipe the CSV data to the temporary file
+    userAccountsCursor.pipe(csvTransformer).pipe(writableStream);
+
+    // When the CSV data is finished, convert it to Parquet and send it as a response
+    writableStream.on('finish', async () => {
+      // Convert the CSV file to Parquet
+      await generateParquetExport(
+        'userAccounts',
+        UserAccountsExportSqlSchema,
+        tmpCsvPath,
+        tmpParquetPath,
+      );
+
+      // Read temporary parquet file and send it as a response
+      const readableStream = fs.createReadStream(tmpParquetPath);
+      readableStream.pipe(res);
+
+      // Clean up!
+      res.on('finish', () => {
+        fs.unlinkSync(tmpCsvPath);
+        fs.unlinkSync(tmpParquetPath);
+      });
+    });
   }
 
   @Get(':id')
