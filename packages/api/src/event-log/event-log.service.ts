@@ -54,13 +54,7 @@ export class EventLogService {
       .lean()
       .orFail();
 
-    logger.info(
-      `Logging event: ${JSON.stringify(
-        createEventLogDto,
-      )}, typeKey: "${typeKey}", and description "${
-        createEventLogDto.description
-      }" `,
-    );
+    logger.info(`logEvent: ${JSON.stringify(createEventLogDto)}`);
 
     return new this.eventLogModel({
       ...createEventLogDto,
@@ -72,11 +66,7 @@ export class EventLogService {
     const { authContext, typeKey, description } = input;
     const { userId, apiKeyId } = authContext;
 
-    logger.info(
-      `Logging event with auth context: ${JSON.stringify(
-        input,
-      )}, typeKey: "${typeKey}", and description "${description}" `,
-    );
+    logger.info(`logEventWithAuthContext: ${JSON.stringify(input)}`);
 
     return this.logEvent({
       user: userId ? new mongoose.Types.ObjectId(userId) : undefined,

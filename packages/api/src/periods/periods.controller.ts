@@ -291,8 +291,17 @@ export class PeriodsController {
   @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async close(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Request() request: RequestWithAuthContext,
   ): Promise<PeriodDetailsDto> {
-    return this.periodsService.close(id);
+    const period = this.periodsService.close(id);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERIOD,
+      description: `User ${request.authContext.userId} closed PERIOD ${id}`,
+    });
+
+    return period;
   }
 
   @Get(':id/praise')

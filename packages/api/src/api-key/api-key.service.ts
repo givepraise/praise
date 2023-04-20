@@ -9,7 +9,6 @@ import { ApiException } from '../shared/exceptions/api-exception';
 import { randomBytes } from 'crypto';
 import { ConstantsProvider } from '../constants/constants.provider';
 import { errorMessages } from '../shared/exceptions/error-messages';
-import { logger } from '../shared/logger';
 
 @Injectable()
 export class ApiKeyService {
@@ -49,8 +48,6 @@ export class ApiKeyService {
       hash,
     });
     await apiKey.save();
-
-    logger.info(`Created API key: ${apiKey.name}`);
 
     return {
       ...apiKey.toObject(),
@@ -122,8 +119,6 @@ export class ApiKeyService {
   async revoke(id: Types.ObjectId): Promise<ApiKey> {
     const apiKey = await this.findOne(id);
     await this.apiKeyModel.deleteOne({ _id: id });
-
-    logger.info(`Revoked API key: ${apiKey.name}`);
 
     return apiKey;
   }
