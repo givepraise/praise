@@ -49,6 +49,7 @@
     "mongoose-paginate-v2": "^1.7.1",
     "nest-winston": "^1.9.1",
     "nestjs-request-context": "^2.1.0",
+    "octokit": "^2.0.14",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
