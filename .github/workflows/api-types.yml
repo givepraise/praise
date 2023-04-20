@@ -1,4 +1,4 @@
-name: Build OpenAPI schemma
+name: Build OpenAPI schema
 on:
   workflow_dispatch:
   pull_request:

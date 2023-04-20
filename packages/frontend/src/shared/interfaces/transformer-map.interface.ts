@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TransformerMapOperateItem } from './transformer-map-operate-item.interface';
 
 export interface TransformerMap {

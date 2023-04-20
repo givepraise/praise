@@ -18,11 +18,11 @@ export function useDuckDbFiltered(
   };
 
   const duckDb = useDuckDb({
-    usersUrl: 'users/export?format=parquet',
-    useraccountsUrl: 'useraccounts/export?format=parquet',
-    periodsUrl: 'periods/export?format=parquet',
-    praisesUrl: `praise/export?format=parquet${filterQueryString()}`,
-    quantificationsUrl: `quantifications/export?format=parquet${filterQueryString()}`,
+    usersUrl: 'users/export/parquet',
+    useraccountsUrl: 'useraccounts/export/parquet',
+    periodsUrl: 'periods/export/parquet',
+    praisesUrl: `praise/export/parquet${filterQueryString()}`,
+    quantificationsUrl: `quantifications/export/parquet${filterQueryString()}`,
   });
   return duckDb;
 }

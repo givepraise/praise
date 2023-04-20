@@ -19,6 +19,7 @@ import { MigrationsManager } from '../database/migrations-manager';
 import { databaseExists } from '../database/utils/database-exists';
 import { dbNameCommunity } from '../database/utils/db-name-community';
 import { PaginateModel } from '../shared/interfaces/paginate-model.interface';
+import { MONGODB_MAIN_DB } from '../constants/constants.provider';
 
 @Injectable()
 export class CommunityService {
@@ -81,7 +82,7 @@ export class CommunityService {
   ): Promise<Community> {
     const communityDocument = await this.communityModel.findById(_id);
     if (!communityDocument)
-      throw new ApiException(errorMessages.communityNotFound);
+      throw new ApiException(errorMessages.COMMUNITY_NOT_FOUND);
     if (community.owners) {
       assertOwnersIncludeCreator(community.owners, communityDocument.creator);
     }

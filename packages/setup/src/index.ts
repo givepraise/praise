@@ -135,7 +135,7 @@ const serverUrl = (answers: Answers): string => {
 
 const frontendUrl = (answers: Answers): string => {
   if (answers.NODE_ENV === 'development') {
-    return `http://${answers.HOST}:${process.env.PORT as string}`;
+    return `http://${answers.HOST}:${process.env.FRONTEND_PORT as string}`;
   }
   return baseServerUrl(answers);
 };
@@ -152,22 +152,24 @@ const run = async (): Promise<void> => {
     process.env.MONGO_INITDB_ROOT_PASSWORD || randomString();
   const mongoPassword = process.env.MONGO_PASSWORD || randomString();
 
+  const mongoHost = answers.NODE_ENV === 'production' ? 'mongodb' : 'localhost';
+
   const rootEnv = {
     NODE_ENV: answers.NODE_ENV,
-    MONGO_HOST: answers.NODE_ENV === 'production' ? 'mongodb' : 'localhost',
+    MONGO_HOST: mongoHost,
     MONGO_INITDB_ROOT_USERNAME: process.env.MONGO_INITDB_ROOT_USERNAME,
     MONGO_INITDB_ROOT_PASSWORD: mongoInitDbRootPassword,
     MONGO_USERNAME: process.env.MONGO_USERNAME,
     MONGO_PASSWORD: mongoPassword,
     MONGO_DB: process.env.MONGO_DB,
-    MONGO_URI: `mongodb://${process.env.MONGO_USERNAME}:${mongoPassword}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/{DB}?authSource=admin&ssl=false`,
-    MONGO_ADMIN_URI: `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${mongoInitDbRootPassword}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/admin?authSource=admin&ssl=false`,
+    MONGO_URI: `mongodb://${process.env.MONGO_USERNAME}:${mongoPassword}@${mongoHost}:${process.env.MONGO_PORT}/{DB}?authSource=admin&ssl=false`,
+    MONGO_ADMIN_URI: `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${mongoInitDbRootPassword}@${mongoHost}:${process.env.MONGO_PORT}/admin?authSource=admin&ssl=false`,
     HOST: answers.HOST,
     API_URL: serverUrl(answers),
     API_PORT: process.env.API_PORT,
     API_KEYS: process.env.API_KEYS || apiKeys,
     API_KEY_ROLES: process.env.API_KEY_ROLES || apiKeyRoles,
-    API_KEY_SALT: process.env.API_KEY_SALT || (await bcrypt.genSalt(10)),
+    API_KEY_SALT: `'${process.env.API_KEY_SALT || (await bcrypt.genSalt(10))}'`,
     ADMINS: answers.ADMINS,
     JWT_SECRET: process.env.JWT_SECRET || randomString(),
     JWT_ACCESS_EXP: process.env.JWT_ACCESS_EXP,
