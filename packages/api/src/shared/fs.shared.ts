@@ -1,6 +1,9 @@
 import { join } from 'path';
+import { isDocker } from './isDocker';
 
-export const allExportsDirPath = join(process.cwd(), 'exports');
+const allExportsDirPath = isDocker()
+  ? '/usr/src/exports/'
+  : join(__dirname, '../../../exports');
 
 export function exportTmpFilePath(fileName: string) {
   return join(
