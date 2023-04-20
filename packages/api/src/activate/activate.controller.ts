@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Post,
-  Request,
   SerializeOptions,
   UseInterceptors,
 } from '@nestjs/common';
@@ -11,7 +10,6 @@ import { ActivateInputDto } from './dto/activate-input.dto';
 import { User } from '../users/schemas/users.schema';
 import { ActivateService } from './activate.service';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
-import { RequestWithAuthContext } from 'src/auth/interfaces/request-with-auth-context.interface';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 
