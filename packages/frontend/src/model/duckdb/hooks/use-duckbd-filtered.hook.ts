@@ -6,11 +6,8 @@ export function useDuckDbFiltered(
   filter: useDuckDbFilteredInput
 ): UseDuckDbReturn {
   const filterQueryString = (): string => {
-    if (filter.periodId) {
-      return `&periodId=${filter.periodId}`;
-    }
     if (filter.startDate && filter.endDate) {
-      return `&startDate=${encodeURIComponent(
+      return `?startDate=${encodeURIComponent(
         filter.startDate
       )}&endDate=${encodeURIComponent(filter.endDate)}`;
     }

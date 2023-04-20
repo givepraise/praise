@@ -25,6 +25,15 @@ export const DatePeriodRange: React.FC = () => {
   const [startDate, setStartDate] = useRecoilState(DatePeriodRangeStartDate);
   const [endDate, setEndDate] = useRecoilState(DatePeriodRangeEndDate);
 
+  // Set latest period as default if no startDate or endDate is set
+  useEffect(() => {
+    if (!startDate && !endDate && allPeriods.length > 0) {
+      const latestPeriod = allPeriods[0];
+      setPeriodId(latestPeriod._id);
+    }
+  }, [allPeriods, endDate, setPeriodId, startDate]);
+
+  // Set startDate and endDate when periodId changes
   useEffect(() => {
     if (periodId) {
       try {
