@@ -37,8 +37,9 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
   if (!command) return;
   try {
     await command.execute(discordClient, interaction);
-  } catch (error: any) {
-    logger.error(error.message);
+  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    logger.error((error as any).message);
     await interaction.reply({
       content: 'There was an error while executing this command!',
       ephemeral: true,

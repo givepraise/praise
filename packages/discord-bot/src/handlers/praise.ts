@@ -87,7 +87,7 @@ export const praiseHandler: CommandHandler = async (
 
   const giverAccount = await getUserAccount((member as GuildMember).user, host);
 
-  if (!giverAccount.user || giverAccount.user === null) {
+  if (!giverAccount || !giverAccount.user || giverAccount.user === null) {
     await interaction.editReply(
       await renderMessage('PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR', host)
     );
@@ -95,7 +95,9 @@ export const praiseHandler: CommandHandler = async (
   }
 
   const praiseItemsCount = await apiClient
-    .get(`/praise?limit=1&giver=${giverAccount._id}`, { headers: { host } })
+    .get(`/praise?limit=1&giver=${giverAccount._id}`, {
+      headers: { host },
+    })
     .then((res) => (res.data as PraiseItem).totalPages)
     .catch(() => 0);
 

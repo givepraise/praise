@@ -40,8 +40,9 @@ export const praise: Command = {
           msg.id
         )
       );
-    } catch (err: any) {
-      logger.error(err.message);
+    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      logger.error((err as any).message);
     }
   },
 

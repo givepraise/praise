@@ -60,9 +60,9 @@ export const registerCommands = async (
     });
 
     return true;
-  } catch (error: any) {
-    console.log(error);
-    logger.error(error.message);
+  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    logger.error((error as any).message);
     return false;
   }
 };

@@ -36,7 +36,7 @@ const updateUserAccount = async (
     };
     if (user.avatar) updatedUserAccount.avatarId = user.avatar;
     const response = await apiClient.patch<UserAccount>(
-      `/useraccounts/${ua._id as string}`,
+      `/useraccounts/${ua._id}`,
       updatedUserAccount,
       {
         headers: { host: host },

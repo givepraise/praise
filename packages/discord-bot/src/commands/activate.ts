@@ -16,6 +16,7 @@ export const activate: Command = {
         return;
       await activationHandler(client, interaction);
     } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       logger.error((err as any).message);
     }
   },

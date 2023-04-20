@@ -27,8 +27,9 @@ export const help: HelpCommandBuilder = (commands) => {
           });
           if (msg === undefined) return;
           await helpHandler(interaction, commands);
-        } catch (err: any) {
-          logger.error(err.message);
+        } catch (err) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          logger.error((err as any).message);
         }
       },
     } as Command,

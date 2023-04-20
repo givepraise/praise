@@ -64,7 +64,7 @@ export const whoamiHandler: CommandHandler = async (
     state.activations = [];
 
     const activatedAccounts = await apiClient
-      .get<UserAccount[]>(`useraccounts?user=${ua.user._id as string}`, {
+      .get<UserAccount[]>(`useraccounts?user=${ua.user._id}`, {
         headers: { host: host },
       })
       .then((res) => res.data);
