@@ -10,7 +10,6 @@ import {
   SerializeOptions,
   UseInterceptors,
   Res,
-  StreamableFile,
   Request,
 } from '@nestjs/common';
 import {
@@ -24,7 +23,7 @@ import {
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { PeriodsService } from './services/periods.service';
-import { Period } from './schemas/periods.schema';
+import { Period, PeriodExportSqlSchema } from './schemas/periods.schema';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 import { Permission } from '../auth/enums/permission.enum';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
@@ -39,15 +38,24 @@ import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-response.
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '../praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Response } from 'express';
-import { allExportsDirPath } from '../shared/fs.shared';
-import { ExportInputFormatOnlyDto } from '../shared/dto/export-input-format-only';
-import { exportContentType } from '../shared/export.shared';
+import { exportTmpFilePath } from '../shared/fs.shared';
+import { generateParquetExport } from '../shared/export.shared';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
-import { ApiException } from '../shared/exceptions/api-exception';
-import { errorMessages } from '../shared/exceptions/error-messages';
 import { EventLogService } from '../event-log/event-log.service';
 import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
 import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import * as JSONStream from 'JSONStream';
+import { Transform } from '@json2csv/node';
+import { Public } from '../shared/decorators/public.decorator';
+
+const exportIncludeFields = [
+  '_id',
+  'name',
+  'status',
+  'endDate',
+  'createdAt',
+  'updatedAt',
+];
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -62,8 +70,74 @@ export class PeriodsController {
     private readonly eventLogService: EventLogService,
   ) {}
 
-  @Get('export')
-  @ApiOperation({ summary: 'Export periods document to json or csv' })
+  @Get('export/json')
+  @ApiOperation({ summary: 'Export periods document to json' })
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @ApiProduces('application/json')
+  @Public()
+  @Permissions(Permission.PeriodExport)
+  async exportJson(@Res() res: Response) {
+    res.set({
+      'Content-Type': 'application/json',
+      'Content-Disposition': `attachment; filename="periods.json"`,
+    });
+
+    // Create a cursor to the periods collection
+    const periodsCursor = await this.periodsService.exportCursor(
+      exportIncludeFields,
+    );
+
+    // Close the cursor when the response is closed
+    res.on('close', () => {
+      periodsCursor.close();
+    });
+
+    periodsCursor.pipe(JSONStream.stringify()).pipe(res);
+  }
+
+  @Get('export/csv')
+  @ApiOperation({ summary: 'Export periods document to csv' })
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @ApiProduces('text/csv')
+  @Public()
+  @Permissions(Permission.PeriodExport)
+  async exportCsv(@Res() res: Response) {
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': `attachment; filename="periods.csv"`,
+    });
+
+    // Create a cursor to the periods collection
+    const periodsCursor = await this.periodsService.exportCursor(
+      exportIncludeFields,
+    );
+
+    // Create a transformer to convert the JSON data to CSV
+    const csvTransformer = new Transform(
+      { fields: exportIncludeFields },
+      { objectMode: true },
+    );
+
+    // Close the cursor when the response is closed
+    res.on('close', () => {
+      periodsCursor.close();
+    });
+
+    periodsCursor.pipe(csvTransformer).pipe(res);
+  }
+
+  @Get('export/parquet')
+  @ApiOperation({ summary: 'Export periods document to parquet' })
   @ApiOkResponse({
     schema: {
       type: 'string',
@@ -71,49 +145,55 @@ export class PeriodsController {
     },
   })
   @ApiProduces('application/octet-stream')
-  @ApiProduces('application/json')
+  @Public()
   @Permissions(Permission.PeriodExport)
-  async export(
-    @Query() options: ExportInputFormatOnlyDto,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<StreamableFile> {
-    const format = options.format || 'csv';
-
-    // Root path for all exports
-    const rootPath = `${allExportsDirPath}/periods`;
-
-    // Directory level 1 is the latest periods id
-    const latestPeriod = await this.periodsService.findLatestAdded();
-    if (!latestPeriod) {
-      throw new ApiException(errorMessages.NO_PERIODS_TO_EXPORT);
-    }
-
-    const dirLevel1 = latestPeriod._id.toString();
-    const dirPath = `${rootPath}/${dirLevel1}`;
-    const filePath = `${dirPath}/periods.${format}`;
-
-    if (!fs.existsSync(filePath)) {
-      // If cached export don't exist
-      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
-        // If the latest periods id folder doesn't exist,
-        // database hase been updated, clear all cached exports
-        fs.rmSync(rootPath, { recursive: true, force: true });
-      }
-
-      // Create directory for new export
-      fs.mkdirSync(dirPath, { recursive: true });
-
-      // Generate new export files
-      await this.periodsService.generateAllExports(dirPath);
-    }
-
+  async exportParquet(@Res() res: Response) {
     res.set({
-      'Content-Type': exportContentType(format),
-      'Content-Disposition': `attachment; filename="periods.${format}"`,
+      'Content-Type': 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="periods.parquet"`,
     });
 
-    const file = fs.createReadStream(filePath);
-    return new StreamableFile(file);
+    // Tmp file paths
+    const tmpCsvPath = exportTmpFilePath('periods.csv');
+    const tmpParquetPath = exportTmpFilePath('periods.parquet');
+
+    // Create a cursor to the periods collection
+    const periodsCursor = await this.periodsService.exportCursor(
+      exportIncludeFields,
+    );
+
+    // Create a writable stream to the temporary csv file
+    const writableStream = fs.createWriteStream(tmpCsvPath);
+
+    // Create a transformer to convert the JSON data to CSV
+    const csvTransformer = new Transform(
+      { fields: exportIncludeFields },
+      { objectMode: true },
+    );
+
+    // Pipe the CSV data to the temporary file
+    periodsCursor.pipe(csvTransformer).pipe(writableStream);
+
+    // When the CSV data is finished, convert it to Parquet and send it as a response
+    writableStream.on('finish', async () => {
+      // Convert the CSV file to Parquet
+      await generateParquetExport(
+        'periods',
+        PeriodExportSqlSchema,
+        tmpCsvPath,
+        tmpParquetPath,
+      );
+
+      // Read temporary parquet file and send it as a response
+      const readableStream = fs.createReadStream(tmpParquetPath);
+      readableStream.pipe(res);
+
+      // Clean up!
+      res.on('finish', () => {
+        fs.unlinkSync(tmpCsvPath);
+        fs.unlinkSync(tmpParquetPath);
+      });
+    });
   }
 
   @Get()

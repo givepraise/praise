@@ -178,7 +178,7 @@ describe('Quantifications (E2E)', () => {
 
     test('200 when authenticated', async () => {
       await authorizedGetRequest(
-        `/quantifications/export?format=json&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
+        `/quantifications/export/json?startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
         app,
         adminUserAccessToken,
       ).expect(200);
@@ -186,7 +186,7 @@ describe('Quantifications (E2E)', () => {
 
     test('returns quantifications that matches seeded list in json format, filtered by date', async () => {
       const response = await authorizedGetRequest(
-        `/quantifications/export?format=json&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
+        `/quantifications/export/json?startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
         app,
         adminUserAccessToken,
       ).expect(200);
@@ -205,7 +205,7 @@ describe('Quantifications (E2E)', () => {
 
     test('returns quantifications that matches seeded list in csv format, filtered by date', async () => {
       const response = await authorizedGetRequest(
-        `/quantifications/export?format=csv&startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
+        `/quantifications/export/csv?startDate=${dateBetween.toISOString()}&endDate=${endDate.toISOString()}`,
         app,
         adminUserAccessToken,
       ).expect(200);
