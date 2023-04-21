@@ -4393,6 +4393,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/cache-manager@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@nestjs/cache-manager@npm:1.0.0"
+  peerDependencies:
+    "@nestjs/common": ^9.0.0
+    cache-manager: <=5
+    reflect-metadata: ^0.1.12
+    rxjs: ^7.0.0
+  checksum: fbdc88dbddf17fc693b119b517532a83e11de449d8eb445e9a2efc9cd61fb2caf23d532dceb307b4e645384805ec76228ce5153f4d201dce45463097e6c1ebe4
+  languageName: node
+  linkType: hard
+
 "@nestjs/cli@npm:^9.3.0":
   version: 9.3.0
   resolution: "@nestjs/cli@npm:9.3.0"
@@ -4847,7 +4859,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/types@npm:^9.0.0":
+"@octokit/types@npm:^9.0.0, @octokit/types@npm:^9.1.0":
   version: 9.1.0
   resolution: "@octokit/types@npm:9.1.0"
   dependencies:
@@ -7590,6 +7602,7 @@ __metadata:
   dependencies:
     "@faker-js/faker": ^7.6.0
     "@json2csv/node": ^6.1.2
+    "@nestjs/cache-manager": ^1.0.0
     "@nestjs/cli": ^9.3.0
     "@nestjs/common": ^9.4.0
     "@nestjs/config": ^2.3.1
@@ -7603,6 +7616,7 @@ __metadata:
     "@nestjs/testing": ^9.4.0
     "@nestjs/throttler": ^4.0.0
     "@octokit/rest": ^19.0.7
+    "@octokit/types": ^9.1.0
     "@testing-library/jest-dom": ^5.16.5
     "@types/bcrypt": ^5.0.0
     "@types/express": ^4.17.14
@@ -7619,6 +7633,7 @@ __metadata:
     axios: ^1.3.2
     bcrypt: ^5.1.0
     bin-packer: ^1.7.0
+    cache-manager: ^5.2.0
     class-transformer: ^0.5.1
     class-validator: ^0.14.0
     date-fns: ^2.29.3
@@ -8645,6 +8660,16 @@ __metadata:
     tar: ^6.1.11
     unique-filename: ^2.0.0
   checksum: d91409e6e57d7d9a3a25e5dcc589c84e75b178ae8ea7de05cbf6b783f77a5fae938f6e8fda6f5257ed70000be27a681e1e44829251bfffe4c10216002f8f14e6
+  languageName: node
+  linkType: hard
+
+"cache-manager@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "cache-manager@npm:5.2.0"
+  dependencies:
+    lodash.clonedeep: ^4.5.0
+    lru-cache: ~7.18.3
+  checksum: 1f1ec19c902c01817af782c2fc3ba96705325794e20fc4865ec9382eb91c1cee76dc560a63f774cb54b85067142134b5338183c4cc7f465375fb063ce62b84ac
   languageName: node
   linkType: hard
 
@@ -15464,6 +15489,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.clonedeep@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "lodash.clonedeep@npm:4.5.0"
+  checksum: 92c46f094b064e876a23c97f57f81fbffd5d760bf2d8a1c61d85db6d1e488c66b0384c943abee4f6af7debf5ad4e4282e74ff83177c9e63d8ff081a4837c3489
+  languageName: node
+  linkType: hard
+
 "lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
@@ -15598,7 +15630,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^7.14.1, lru-cache@npm:^7.7.1":
+"lru-cache@npm:^7.14.1, lru-cache@npm:^7.7.1, lru-cache@npm:~7.18.3":
   version: 7.18.3
   resolution: "lru-cache@npm:7.18.3"
   checksum: e550d772384709deea3f141af34b6d4fa392e2e418c1498c078de0ee63670f1f46f5eee746e8ef7e69e1c895af0d4224e62ee33e66a543a14763b0f2e74c1356
