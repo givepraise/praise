@@ -28,6 +28,8 @@ import { UserAccountsModule } from '../../src/useraccounts/useraccounts.module';
 import { UserAccountsService } from '../../src/useraccounts/useraccounts.service';
 import { UsersModule } from '../../src/users/users.module';
 import { UsersService } from '../../src/users/users.service';
+import { ReportsModule } from '../../src/reports/reports.module';
+import { ReportsService } from '../../src/reports/reports.service';
 
 // Import filters
 import { ServiceExceptionFilter } from '../../src/shared/filters/service-exception.filter';
@@ -50,6 +52,7 @@ import { UserAccountsSeeder } from '../../src/database/seeder/useraccounts.seede
 import { HOSTNAME_TEST } from '../../src/constants/constants.provider';
 import { MultiTenancyManager } from '../../src/database/multi-tenancy-manager';
 import { MigrationsManager } from '../../src/database/migrations-manager';
+import { CacheModule } from '@nestjs/cache-manager';
 
 // Core Nest objects
 export let testingModule: TestingModule;
@@ -69,6 +72,7 @@ export let quantificationsService: QuantificationsService;
 export let settingsService: SettingsService;
 export let userAccountsService: UserAccountsService;
 export let usersService: UsersService;
+export let reportsService: ReportsService;
 
 // Seeders
 export let apiKeySeeder: ApiKeySeeder;
@@ -98,6 +102,9 @@ export async function startNest(): Promise<void> {
       MongooseModule.forRoot(
         `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${testDbName}?authSource=admin&appname=PraiseApi`,
       ),
+      CacheModule.register({
+        isGlobal: true,
+      }),
       ActivateModule,
       ApiKeyModule,
       EthSignatureModule,
@@ -110,6 +117,7 @@ export async function startNest(): Promise<void> {
       SettingsModule,
       UserAccountsModule,
       UsersModule,
+      ReportsModule,
     ],
     providers: [
       ApiKeySeeder,
