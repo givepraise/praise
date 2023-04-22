@@ -9,10 +9,7 @@ import { DiscordClient } from '../interfaces/DiscordClient';
  * @param {string} guildId
  * @returns {Promise<string | undefined>}
  */
-export const cacheHosts = async (
-  hostCache: Keyv,
-  urlCache: Keyv
-): Promise<void> => {
+export const cacheHosts = async (hostCache: Keyv): Promise<void> => {
   let currPage = 1;
   let totalPages = 1;
   while (currPage <= totalPages) {
@@ -22,8 +19,7 @@ export const cacheHosts = async (
 
     for (const community of communityList.docs) {
       if (community.discordGuildId) {
-        await hostCache.set(community.discordGuildId, community._id);
-        await urlCache.set(community.discordGuildId, community.hostname);
+        await hostCache.set(community.discordGuildId, community.hostname);
       }
     }
 
@@ -42,11 +38,11 @@ export const getHost = async (
   client: DiscordClient,
   guildId: string
 ): Promise<string | undefined> => {
-  let host = await client.urlCache.get(guildId);
+  let host = await client.hostCache.get(guildId);
 
   if (host === undefined) {
-    await cacheHosts(client.hostCache, client.urlCache);
-    host = await client.urlCache.get(guildId);
+    await cacheHosts(client.hostCache);
+    host = await client.hostCache.get(guildId);
   }
 
   return host;

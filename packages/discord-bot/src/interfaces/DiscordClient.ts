@@ -7,5 +7,4 @@ export interface DiscordClient extends Client {
   guildId: string;
   commands: Collection<string, Command>;
   hostCache: Keyv;
-  urlCache: Keyv;
 }

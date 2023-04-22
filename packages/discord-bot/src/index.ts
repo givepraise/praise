@@ -27,8 +27,7 @@ void (async (): Promise<void> => {
 discordClient.once('ready', async () => {
   logger.info('Discord client is ready!');
   discordClient.hostCache = new Keyv();
-  discordClient.urlCache = new Keyv();
-  await cacheHosts(discordClient.hostCache, discordClient.urlCache);
+  await cacheHosts(discordClient.hostCache);
 });
 
 discordClient.on('interactionCreate', async (interaction): Promise<void> => {
