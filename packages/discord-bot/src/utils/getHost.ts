@@ -1,6 +1,6 @@
 import { apiClient } from './api';
 import Keyv from 'keyv';
-import { PaginatedCommunities } from './api-schema';
+import { CommunityPaginatedResponseDto } from './api-schema';
 import { DiscordClient } from '../interfaces/DiscordClient';
 
 /**
@@ -14,19 +14,21 @@ export const cacheHosts = async (
   urlCache: Keyv
 ): Promise<void> => {
   let currPage = 1;
-  let nextPage = true;
-  while (nextPage) {
+  let totalPages = 1;
+  while (currPage <= totalPages) {
     const communityList = await apiClient
       .get(`/communities?page=${currPage}`)
-      .then<PaginatedCommunities>((res) => res.data);
+      .then<CommunityPaginatedResponseDto>((res) => res.data);
 
     for (const community of communityList.docs) {
-      await hostCache.set(community.discordGuildId, community._id);
-      await urlCache.set(community.discordGuildId, community.hostname);
+      if (community.discordGuildId) {
+        await hostCache.set(community.discordGuildId, community._id);
+        await urlCache.set(community.discordGuildId, community.hostname);
+      }
     }
 
     currPage++;
-    nextPage = communityList.hasNextPage;
+    totalPages = communityList.totalPages;
   }
 };
 

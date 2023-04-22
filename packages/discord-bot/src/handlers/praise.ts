@@ -8,7 +8,7 @@ import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
 import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
 import { apiClient } from '../utils/api';
-import { PraiseItem } from '../utils/api-schema';
+import { PraisePaginatedResponseDto } from '../utils/api-schema';
 import { getSetting } from '../utils/settingsUtil';
 import { getHost } from '../utils/getHost';
 
@@ -98,7 +98,7 @@ export const praiseHandler: CommandHandler = async (
     .get(`/praise?limit=1&giver=${giverAccount._id}`, {
       headers: { host },
     })
-    .then((res) => (res.data as PraiseItem).totalPages)
+    .then((res) => (res.data as PraisePaginatedResponseDto).totalPages)
     .catch(() => 0);
 
   const receivers: string[] = [];
@@ -177,13 +177,6 @@ export const praiseHandler: CommandHandler = async (
           host
         ),
       ],
-      ephemeral: false,
-    });
-    await interaction.followUp({
-      content: await renderMessage('PRAISE_SUCCESS_MESSAGE', host, {
-        receivers: receivers.map((id) => `<@!${id}>`),
-        reason: reason,
-      }),
       ephemeral: false,
     });
   } else if (warnSelfPraise) {

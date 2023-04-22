@@ -15,7 +15,7 @@ import { logger } from '../utils/logger';
 import { getHost } from '../utils/getHost';
 
 /**
- * Execute command /firward
+ * Execute command /forward
  *  Creates praises with a given giver, receiver, and reason
  *
  * @param  interaction
@@ -194,14 +194,6 @@ export const forwardHandler: CommandHandler = async (
           host
         ),
       ],
-      ephemeral: false,
-    });
-    await interaction.followUp({
-      content: await renderMessage('FORWARD_SUCCESS_MESSAGE', host, {
-        reason: reason,
-        praiseGiver: praiseGiver.user,
-        receivers: receivers.map((id) => `<@!${id}>`),
-      }),
       ephemeral: false,
     });
   } else if (warnSelfPraise) {

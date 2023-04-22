@@ -25,9 +25,6 @@ export const createPraise = async (
       ? `${channel.parent.name} / ${channel.name}`
       : channel.name;
 
-  // if (typeof giverAccount.user !== 'string')
-  //   giverAccount.user = giverAccount.user._id;
-
   const praiseData = {
     reason: reason,
     reasonRaw: cleanContent(reason, channel),
