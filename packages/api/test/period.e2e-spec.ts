@@ -540,7 +540,7 @@ describe('Period (E2E)', () => {
     });
 
     test('should return 403 when the user is not an admin', async () => {
-      return request(server)
+      request(server)
         .patch(`/periods/${period._id}/close`)
         .set('Authorization', `Bearer ${users[1].accessToken}`)
         .send()
@@ -548,10 +548,11 @@ describe('Period (E2E)', () => {
     });
 
     test('should return 404 when the period does not exist', async () => {
-      return request(server)
+      const response = await request(server)
         .patch(`/periods/5f5d5f5d5f5d5f5d5f5d5f5d/close`)
-        .set('Authorization', `Bearer ${users[0].accessToken}`)
-        .expect(404);
+        .set('Authorization', `Bearer ${users[0].accessToken}`);
+
+      expect(response.body.statusCode).toBe(404);
     });
 
     test('should return 400 when the period is not open', async () => {

@@ -293,7 +293,7 @@ export class PeriodsController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Request() request: RequestWithAuthContext,
   ): Promise<PeriodDetailsDto> {
-    const period = this.periodsService.close(id);
+    const period = await this.periodsService.close(id);
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
