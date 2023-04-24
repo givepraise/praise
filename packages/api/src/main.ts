@@ -17,6 +17,7 @@ import { MultiTenancyManager } from './database/multi-tenancy-manager';
 import { MigrationsManager } from './database/migrations-manager';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { isDocker } from './shared/isDocker';
 
 async function bootstrap() {
   // Check that all required ENV variables are set
@@ -64,7 +65,10 @@ async function bootstrap() {
   app.useGlobalFilters(new ServiceExceptionFilter());
 
   // Serve static files from the upload folder
-  app.useStaticAssets(join(__dirname, '../../uploads'), {
+  const uploadsPath = isDocker()
+    ? '/usr/src/uploads/'
+    : join(__dirname, '../../uploads');
+  app.useStaticAssets(uploadsPath, {
     prefix: '/uploads',
   });
 
