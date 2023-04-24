@@ -7,7 +7,6 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/schemas/users.schema';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { AuthRole } from '../auth/enums/auth-role.enum';
-import { logger } from '../shared/logger';
 
 @Injectable()
 export class ActivateService {
@@ -111,8 +110,6 @@ export class ActivateService {
     if (!user) {
       throw new ApiException(errorMessages.USER_NOT_FOUND_AFTER_UPDATE);
     }
-
-    logger.info(`User account activated: ${userAccount._id}`);
 
     return user;
   }

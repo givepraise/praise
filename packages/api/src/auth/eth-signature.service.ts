@@ -10,7 +10,6 @@ import { ethers } from 'ethers';
 import { User, UserDocument } from '../users/schemas/users.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { logger } from '../shared/logger';
 
 @Injectable()
 /**
@@ -92,8 +91,6 @@ export class EthSignatureService {
       expiresIn: '7d',
       secret: process.env.JWT_SECRET,
     });
-
-    logger.info(`User ${user._id} logged in`);
 
     // Return login response with access token
     return {

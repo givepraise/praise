@@ -134,8 +134,6 @@ export class PeriodsService {
     // Create period settings
     await this.settingsService.createSettingsForPeriod(period._id);
 
-    logger.info(`Created a new period "${period.name}"`);
-
     const periodDetailsDto = await this.findPeriodDetails(period._id);
 
     return periodDetailsDto;
@@ -219,8 +217,6 @@ export class PeriodsService {
 
     period.status = PeriodStatusType.CLOSED;
     await period.save();
-
-    logger.info(`Closed the period "${period.name}"`);
 
     return await this.findPeriodDetails(period._id);
   };
