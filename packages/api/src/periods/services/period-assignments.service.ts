@@ -831,7 +831,7 @@ export class PeriodAssignmentsService {
 
     const praisesAssigned = praises.map(
       (praise) =>
-        praise.quantifications.length === quantifiersPerPraiseReceiver,
+        praise.quantifications?.length === quantifiersPerPraiseReceiver,
     );
 
     return some(praisesAssigned);
