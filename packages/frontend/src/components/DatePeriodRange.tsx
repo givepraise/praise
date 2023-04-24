@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useRecoilState, atom, useRecoilValue } from 'recoil';
-import { AllPeriods } from '../../../model/periods/periods';
-import { getPeriodDatesConfig } from '../../../model/report/util/get-period-dates-config';
+import { AllPeriods } from '../model/periods/periods';
+import { getPeriodDatesConfig } from '../model/report/util/get-period-dates-config';
 import { toast } from 'react-hot-toast';
+import { SelectInput, SelectInputOption } from './form/SelectInput';
 
 export const DatePeriodRangePeriod = atom<string>({
   key: 'DatePeriodRangePeriod',
@@ -61,37 +62,38 @@ export const DatePeriodRange: React.FC = () => {
     setEndDate(new Date(event.target.value));
   };
 
+  const periodOptions: SelectInputOption[] = [
+    { value: '', label: 'Period', disabled: true },
+    ...allPeriods.map((period) => {
+      return { value: period._id, label: period.name };
+    }),
+  ];
+
   return (
     <div className="w-full p-5 mb-5 text-sm border rounded-none shadow-none md:shadow-md md:rounded-xl bg-warm-gray-50 dark:bg-slate-600 break-inside-avoid-column">
-      <div className="flex justify-start space-x-5">
+      <div className="sm:flex sm:justify-start sm:space-x-5">
         <div className="flex items-center">Select a period:</div>
-        <select
-          value={periodId}
-          onChange={(e): void => setPeriodId(e.target.value)}
-          className="text-sm"
-        >
-          <option value="" disabled>
-            Period
-          </option>
-          {allPeriods.map((period) => {
-            return (
-              <option key={period._id} value={period._id}>
-                {period.name}
-              </option>
-            );
-          })}
-        </select>
+        <SelectInput
+          handleChange={(e): void => {
+            console.log(e);
+            setPeriodId(e.value);
+          }}
+          selected={periodOptions.find((o) => o.value === periodId)}
+          options={periodOptions}
+        />
         <div className="flex items-center">or dates:</div>
         <input
           type="date"
           value={startDate ? startDate.toISOString().substr(0, 10) : ''}
           onChange={handleStartDateChange}
+          className="text-sm"
         />
         <div className="flex items-center">to</div>
         <input
           type="date"
           value={endDate ? endDate.toISOString().substr(0, 10) : ''}
           onChange={handleEndDateChange}
+          className="text-sm"
         />
       </div>
     </div>

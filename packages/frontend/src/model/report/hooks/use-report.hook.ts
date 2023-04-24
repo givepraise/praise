@@ -5,25 +5,23 @@ import { assertAllTablesLoaded } from '@/model/duckdb/utils/all-tables-loaded.ut
 import { AllPeriods } from '@/model/periods/periods';
 import { useRecoilValue } from 'recoil';
 import { Report } from '../interfaces/report.interface';
-import { usePeriodReportInput } from '../types/use-period-report-input.type';
-import { UsePeriodReportReturn } from '../types/use-period-report-return.type';
-import { usePeriodReportRunInput } from '../types/use-period-report-run-input.type';
+import { useReportInput } from '../types/use-report-input.type';
+import { UseReportReturn } from '../types/use-report-return.type';
+import { useReportRunInput } from '../types/use-report-run-input.type';
 import { useCompartment } from './use-compartment.hook';
-import { usePeriodReportRunReturn } from '../types/use-period-report-run-return.type';
+import { useReportRunReturn } from '../types/use-report-run-return.type';
 import { getPeriodDatesConfig } from '../util/get-period-dates-config';
-import { ReportManifest } from '../types/report-manifest.type';
+import { ReportManifestDto } from '../dto/report-manifest.dto';
 
 //lockdown();
 
-export function usePeriodReport(
-  input: usePeriodReportInput
-): UsePeriodReportReturn {
+export function useReport(input: useReportInput): UseReportReturn {
   const { url: reportUrl, periodId, startDate, endDate } = input;
   const duckDb = useDuckDbFiltered({ periodId, startDate, endDate });
   const periods = useRecoilValue(AllPeriods);
   const { create: createCompartment } = useCompartment();
 
-  const manifest = async (): Promise<ReportManifest | undefined> => {
+  const manifest = async (): Promise<ReportManifestDto | undefined> => {
     if (!reportUrl) return;
     // Create secure compartment to run report in
     const compartment = createCompartment();
@@ -32,14 +30,14 @@ export function usePeriodReport(
     const manifestUrl = `${reportUrl.substring(
       0,
       reportUrl.lastIndexOf('/')
-    )}/manifest.js`;
+    )}/manifest.json`;
     const { namespace } = await compartment.import(manifestUrl);
-    return namespace.default as ReportManifest;
+    return namespace.default as ReportManifestDto;
   };
 
   const run = async (
-    input: usePeriodReportRunInput
-  ): Promise<usePeriodReportRunReturn | undefined> => {
+    input: useReportRunInput
+  ): Promise<useReportRunReturn | undefined> => {
     if (!reportUrl) return;
     const { format, config: configInput } = input;
     if (!duckDb || !duckDb.db) {
@@ -87,6 +85,8 @@ export function usePeriodReport(
     log += '🙏';
     response.log = log;
 
+    console.log(response);
+
     // Default report format is json but csv is also supported
     let csv: string | undefined;
     if (format === 'csv' && response.rows) {
@@ -96,7 +96,7 @@ export function usePeriodReport(
     if (format === 'json' && response.rows) {
       response = {
         ...response,
-        rows: response.rows.map((r) => (r as any).toJSON()),
+        //rows: response.rows.map((r) => (r as any).toJSON()),
       };
     }
     return { manifest: report.manifest, ...response, csv };

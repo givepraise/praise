@@ -101,6 +101,12 @@ export const Nav = (): JSX.Element => {
               to="/analytics"
               exact={true}
             />
+            <NavItem
+              icon={faChartBar}
+              description="Reports"
+              to="/reports"
+              exact={true}
+            />
             <NavItem icon={faBook} description="Logs" to="/eventlogs" />
             <AdminOnly>
               <NavItem

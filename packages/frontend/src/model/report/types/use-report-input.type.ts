@@ -1,4 +1,4 @@
-export type usePeriodReportInput = {
+export type useReportInput = {
   url?: string;
   periodId?: string;
   startDate?: string;
