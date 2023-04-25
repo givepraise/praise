@@ -96,7 +96,9 @@ discordClient.on('guildCreate', async (guild): Promise<void> => {
       data: community,
     });
 
-    channel.send('Welcome to praise!');
+    channel.send(
+      `Welcome to praise! Link here - https://staging.givepraise.xyz/link-bot?nonce=${community.discordLinkNonce}&communityId=${hostId}&guildId=${guild.id}`
+    );
   }
 });
 
