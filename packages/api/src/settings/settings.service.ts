@@ -5,8 +5,6 @@ import { Setting } from './schemas/settings.schema';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { FileUtilsProvider } from '../settings/providers/file-utils.provider';
 import { ApiException } from '../shared/exceptions/api-exception';
-import { EventLogService } from '../event-log/event-log.service';
-import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { SettingGroup } from './enums/setting-group.enum';
 import { validateSetting } from './utils/validate-setting';
 import { SettingsFilterDto } from './dto/settings-filter.dto';
@@ -15,6 +13,7 @@ import { PeriodSetting } from './schemas/periodsettings.schema';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { Period } from '../periods/schemas/periods.schema';
 import { PeriodStatusType } from '../periods/enums/status-type.enum';
+import { logger } from '../shared/logger';
 
 @Injectable()
 export class SettingsService {
@@ -26,7 +25,6 @@ export class SettingsService {
     @InjectModel(Period.name)
     private periodModel: Model<Period>,
     private utils: FileUtilsProvider,
-    private eventLogService: EventLogService,
   ) {}
 
   /**
@@ -151,12 +149,11 @@ export class SettingsService {
 
     setting.value = file.filename;
 
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.SETTING,
-      description: `Updated global setting "${setting.label}" from "${
+    logger.info(
+      `Updated global setting "${setting.label}" from "${
         originalValue || ''
       }" to "${setting.value || ''}"`,
-    });
+    );
 
     await setting.save();
     return this.findOneById(_id);
@@ -293,12 +290,11 @@ export class SettingsService {
 
     await periodSetting.save();
 
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.SETTING,
-      description: `Updated period "${period.name}" setting "${
-        setting.label
-      }" from "${originalValue || ''}" to "${setting.value || ''}"`,
-    });
+    logger.info(
+      `Updated period "${period.name}" setting "${setting.label}" from "${
+        originalValue || ''
+      }" to "${setting.value || ''}"`,
+    );
 
     return this.findOneBySettingIdAndPeriodId(settingId, periodId);
   }

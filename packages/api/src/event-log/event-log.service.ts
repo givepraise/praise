@@ -16,6 +16,7 @@ import { errorMessages } from '../shared/exceptions/error-messages';
 import { PaginateModel } from '../shared/interfaces/paginate-model.interface';
 import { UserAccount } from '../useraccounts/schemas/useraccounts.schema';
 import { CreateEventLogWithAuthContextInputDto } from './dto/create-event-log-with-auth-context-input.dto';
+import { logger } from '../shared/logger';
 
 @Injectable()
 export class EventLogService {
@@ -53,6 +54,8 @@ export class EventLogService {
       .lean()
       .orFail();
 
+    logger.info(`logEvent: ${JSON.stringify(createEventLogDto)}`);
+
     return new this.eventLogModel({
       ...createEventLogDto,
       type: type._id,
@@ -62,6 +65,8 @@ export class EventLogService {
   async logEventWithAuthContext(input: CreateEventLogWithAuthContextInputDto) {
     const { authContext, typeKey, description } = input;
     const { userId, apiKeyId } = authContext;
+
+    logger.info(`logEventWithAuthContext: ${JSON.stringify(input)}`);
 
     return this.logEvent({
       user: userId ? new mongoose.Types.ObjectId(userId) : undefined,

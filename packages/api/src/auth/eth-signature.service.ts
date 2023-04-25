@@ -3,7 +3,6 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { EventLogService } from '../event-log/event-log.service';
-import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { HOSTNAME_TEST } from '../constants/constants.provider';
@@ -91,12 +90,6 @@ export class EthSignatureService {
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: '7d',
       secret: process.env.JWT_SECRET,
-    });
-
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.AUTHENTICATION,
-      description: 'Logged in',
-      user: user._id,
     });
 
     // Return login response with access token

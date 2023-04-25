@@ -1,6 +1,4 @@
 import { AuthRole } from '../../auth/enums/auth-role.enum';
-import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
-import { EventLogService } from '../../event-log/event-log.service';
 import { Quantifier } from '../../praise/interfaces/quantifier.interface';
 import { Receiver } from '../../praise/interfaces/receiver.interface';
 import { Praise } from '../../praise/schemas/praise.schema';
@@ -32,6 +30,7 @@ import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interfac
 import { Period } from '../schemas/periods.schema';
 import { PeriodsService } from './periods.service';
 import { errorMessages } from '../../shared/exceptions/error-messages';
+import { logger } from '../../shared/logger';
 
 @Injectable()
 export class PeriodAssignmentsService {
@@ -47,7 +46,6 @@ export class PeriodAssignmentsService {
     @InjectModel(Quantification.name)
     private quantificationModel: Model<Quantification>,
     private settingsService: SettingsService,
-    private eventLogService: EventLogService,
     private periodsService: PeriodsService,
   ) {}
 
@@ -159,10 +157,9 @@ export class PeriodAssignmentsService {
       // Execute all db queries
       await Promise.all(insertManyQuantifications);
     } catch (e) {
-      await this.eventLogService.logEvent({
-        typeKey: EventLogTypeKey.PERIOD,
-        description: `Failed to assign random quantifiers to all praise in period "${period.name}", retrying...`,
-      });
+      logger.error(
+        `Failed to assign random quantifiers to all praise in period "${period.name}", retrying...`,
+      );
     }
 
     await this.periodModel.updateOne(
@@ -170,10 +167,9 @@ export class PeriodAssignmentsService {
       { $set: { status: PeriodStatusType.QUANTIFY } },
     );
 
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.PERIOD,
-      description: `Assigned random quantifiers to all praise in period "${period.name}"`,
-    });
+    logger.info(
+      `Assigned random quantifiers to all praise in period "${period.name}"`,
+    );
 
     return await this.periodsService.findPeriodDetails(period._id);
   };
@@ -321,10 +317,9 @@ export class PeriodAssignmentsService {
       },
     );
 
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.PERIOD,
-      description: `Reassigned all praise in period "${period.name}" that is currently assigned to user with id "${currentQuantifierId}", to user with id "${newQuantifierId}"`,
-    });
+    logger.info(
+      `Reassigned all praise in period "${period.name}" that is currently assigned to user with id "${currentQuantifierId}", to user with id "${newQuantifierId}"`,
+    );
 
     const updatedPraises = await this.praiseModel
       .find({
@@ -715,10 +710,9 @@ export class PeriodAssignmentsService {
       assignedPraiseCount + assignments.remainingPraiseCount;
 
     if (accountedPraiseCount === expectedAccountedPraiseCount) {
-      await this.eventLogService.logEvent({
-        typeKey: EventLogTypeKey.PERIOD,
-        description: `All redundant praise assignments accounted for: ${accountedPraiseCount} / ${expectedAccountedPraiseCount} expected in period`,
-      });
+      logger.info(
+        `All redundant praise assignments accounted for: ${accountedPraiseCount} / ${expectedAccountedPraiseCount} expected in period`,
+      );
     } else {
       throw new ApiException(
         errorMessages.NOT_ALL_REDUNDANT_PRAISE_ASSIGNMENTS_ACCOUNTED,
@@ -733,10 +727,7 @@ export class PeriodAssignmentsService {
     );
 
     if (every(verifiedUniqueAssignments)) {
-      await this.eventLogService.logEvent({
-        typeKey: EventLogTypeKey.PERIOD,
-        description: `All redundant praise are assigned to unique quantifiers`,
-      });
+      logger.info(`All redundant praise are assigned to unique quantifiers`);
     } else {
       throw new ApiException(
         errorMessages.SOME_REDUNDANT_PRAISE_ARE_ASSIGNED_TO_THE_SAME_QUANTIFIER_MULTIPLE_TIMES,

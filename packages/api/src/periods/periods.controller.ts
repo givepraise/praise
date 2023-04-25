@@ -10,6 +10,7 @@ import {
   SerializeOptions,
   UseInterceptors,
   Res,
+  Request,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -40,6 +41,9 @@ import { Response } from 'express';
 import { exportTmpFilePath } from '../shared/fs.shared';
 import { generateParquetExport } from '../shared/export.shared';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
+import { EventLogService } from '../event-log/event-log.service';
+import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import * as JSONStream from 'JSONStream';
 import { Transform } from '@json2csv/node';
 import { Public } from '../shared/decorators/public.decorator';
@@ -63,6 +67,7 @@ export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,
     private readonly periodAssignmentsService: PeriodAssignmentsService,
+    private readonly eventLogService: EventLogService,
   ) {}
 
   @Get('export/json')
@@ -232,9 +237,18 @@ export class PeriodsController {
   @Permissions(Permission.PeriodCreate)
   @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async create(
+    @Request() request: RequestWithAuthContext,
     @Body() createPeriodDto: CreatePeriodInputDto,
   ): Promise<PeriodDetailsDto> {
-    return this.periodsService.create(createPeriodDto);
+    const period = await this.periodsService.create(createPeriodDto);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERIOD,
+      description: `User ${request.authContext.userId} created an PERIOD`,
+    });
+
+    return period;
   }
 
   @Patch(':id')
@@ -250,8 +264,19 @@ export class PeriodsController {
   async update(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() updatePeriodDto: UpdatePeriodInputDto,
+    @Request() request: RequestWithAuthContext,
   ): Promise<PeriodDetailsDto> {
-    return this.periodsService.update(id, updatePeriodDto);
+    const period = await this.periodsService.update(id, updatePeriodDto);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERIOD,
+      description: `User ${
+        request.authContext.userId
+      } updated an PERIOD ${id} with data ${JSON.stringify(updatePeriodDto)}`,
+    });
+
+    return period;
   }
 
   @Patch(':id/close')
@@ -266,8 +291,17 @@ export class PeriodsController {
   @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async close(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Request() request: RequestWithAuthContext,
   ): Promise<PeriodDetailsDto> {
-    return this.periodsService.close(id);
+    const period = await this.periodsService.close(id);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERIOD,
+      description: `User ${request.authContext.userId} closed PERIOD ${id}`,
+    });
+
+    return period;
   }
 
   @Get(':id/praise')
@@ -384,8 +418,19 @@ export class PeriodsController {
   @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async assignQuantifiers(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Request() request: RequestWithAuthContext,
   ): Promise<PeriodDetailsDto> {
-    return this.periodAssignmentsService.assignQuantifiers(id);
+    const periodDetails = await this.periodAssignmentsService.assignQuantifiers(
+      id,
+    );
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERIOD,
+      description: `Assigned random quantifiers to all praise in period "${id}"`,
+    });
+
+    return periodDetails;
   }
 
   @Patch(':id/replaceQuantifier')
@@ -400,10 +445,20 @@ export class PeriodsController {
   async replaceQuantifier(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() replaceQuantifierDto: ReplaceQuantifierInputDto,
+    @Request() request: RequestWithAuthContext,
   ): Promise<ReplaceQuantifierResponseDto> {
-    return this.periodAssignmentsService.replaceQuantifier(
-      id,
-      replaceQuantifierDto,
-    );
+    const replaceQuantifierResponse =
+      await this.periodAssignmentsService.replaceQuantifier(
+        id,
+        replaceQuantifierDto,
+      );
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERIOD,
+      description: `Reassigned all praise in period "${id}" that is currently assigned to user with id "${replaceQuantifierDto.currentQuantifierId}", to user with id "${replaceQuantifierDto.newQuantifierId}"`,
+    });
+
+    return replaceQuantifierResponse;
   }
 }

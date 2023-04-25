@@ -6,7 +6,6 @@ import {
   UserAccountDocument,
 } from './schemas/useraccounts.schema';
 import { ApiException } from '../shared/exceptions/api-exception';
-import { EventLogService } from '../event-log/event-log.service';
 import { CreateUserAccountInputDto } from './dto/create-user-account-input.dto';
 import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
@@ -18,7 +17,6 @@ export class UserAccountsService {
   constructor(
     @InjectModel(UserAccount.name)
     private userAccountModel: Model<UserAccountDocument>,
-    private readonly eventLogService: EventLogService,
   ) {}
 
   getModel(): Model<UserAccountDocument> {

@@ -31,6 +31,8 @@ import { QuantifyInputDto } from './dto/quantify-input.dto';
 import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
 import { Types } from 'mongoose';
 import { QuantifyMultipleInputDto } from './dto/quantify-multiple-input.dto';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import * as JSONStream from 'JSONStream';
 import { Transform } from '@json2csv/node';
 import { QuantificationsExportSqlSchema } from './schemas/quantifications.schema';
@@ -58,6 +60,7 @@ export class QuantificationsController {
   constructor(
     private readonly quantificationsService: QuantificationsService,
     private readonly quantificationsExportService: QuantificationsExportService,
+    private readonly eventLogService: EventLogService,
   ) {}
 
   @Get('export/json')
@@ -220,6 +223,14 @@ export class QuantificationsController {
       }),
     );
 
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `User ${userId} quantified a multiple Praise items ${JSON.stringify(
+        praiseIds,
+      )}`,
+    });
+
     return praiseItems.flat();
   }
 
@@ -243,6 +254,18 @@ export class QuantificationsController {
     if (!userId) {
       throw new ApiException(errorMessages.USER_NOT_FOUND);
     }
-    return this.quantificationsService.quantifyPraise(userId, praiseId, data);
+    const praise = await this.quantificationsService.quantifyPraise(
+      userId,
+      praiseId,
+      data,
+    );
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `User ${userId} quantified a Praise ${praiseId} with score ${data.score}`,
+    });
+
+    return praise;
   }
 }
