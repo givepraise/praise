@@ -15,7 +15,7 @@ import { alchemyProvider } from 'wagmi/providers/alchemy';
 const { chains, provider } = configureChains(
   [mainnet],
   [
-    alchemyProvider({ apiKey: process.env.ALCHEMY_ID as string }),
+    alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_KEY as string }),
     publicProvider(),
   ]
 );
