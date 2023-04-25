@@ -1,3 +1,5 @@
+/* TODO - fix forwards */
+
 import {
   ChannelType,
   ChatInputCommandInteraction,
@@ -7,10 +9,11 @@ import {
 import { UserAccount } from './api-schema';
 import { apiClient } from './api';
 
-export const createPraise = async (
+export const createForward = async (
   interaction: ChatInputCommandInteraction,
   giverAccount: UserAccount,
   receiverAccount: UserAccount,
+  forwarderAccount: UserAccount,
   reason: string,
   host: string
 ): Promise<boolean> => {
@@ -39,17 +42,20 @@ export const createPraise = async (
     sourceName: `DISCORD:${encodeURIComponent(guild.name)}:${encodeURIComponent(
       channelName
     )}`,
+    forwarder: {
+      accountId: forwarderAccount.accountId,
+      name: forwarderAccount.name,
+      avatarId: forwarderAccount.avatarId,
+      platform: forwarderAccount.platform,
+    },
   };
 
   const response = await apiClient
-    .post('/praise', praiseData, {
-      headers: { host: host },
+    .post('/praise/forward', praiseData, {
+      headers: { host },
     })
     .then((res) => res.status === 201)
-    .catch((err) => {
-      console.log(err);
-      return false;
-    });
+    .catch(() => false);
 
   return response;
 };

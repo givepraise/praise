@@ -1,16 +1,16 @@
-import { SelectMenuBuilder } from 'discord.js';
-import { PeriodDocument } from 'api/dist/period/types';
+import { Period } from '../api-schema';
+import { StringSelectMenuBuilder } from 'discord.js';
 
 /**
  * Generate Discord menu to select a period
  *
  * @param {PeriodDocument[]} periods
- * @returns {MessageSelectMenu}
+ * @returns {StringSelectMenuBuilder}
  */
 export const periodSelectMenu = (
-  periods: PeriodDocument[]
-): SelectMenuBuilder => {
-  const periodMenu = new SelectMenuBuilder()
+  periods: Period[]
+): StringSelectMenuBuilder => {
+  const periodMenu = new StringSelectMenuBuilder()
     .setCustomId('period-menu')
     .setPlaceholder('Select period');
 
@@ -18,8 +18,8 @@ export const periodSelectMenu = (
     periodMenu.addOptions([
       {
         label: period['name'],
-        description: `End date: ${period.endDate.toDateString()}`,
-        value: period['name'],
+        description: `End date: ${period.endDate}`,
+        value: period['_id'],
       },
     ]);
   }

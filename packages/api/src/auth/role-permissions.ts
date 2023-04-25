@@ -85,10 +85,15 @@ const PERMISSION_API_KEY_READWRITE = [...PERMISSIONS_ADMIN];
 const PERMISSION_API_KEY_DISCORD_BOT = [
   Permission.UserAccountsView,
   Permission.UserAccountsCreate,
+  Permission.UsersFind,
   Permission.UserAccountsUpdate,
+  Permission.PraiseView,
   Permission.PraiseCreate,
   Permission.PraiseForward,
+  Permission.PeriodView,
   Permission.CommunitiesView,
+  Permission.SettingsView,
+  Permission.EventLogView,
 ];
 
 /**

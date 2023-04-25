@@ -1,86 +1,93 @@
-import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount } from 'api/dist/useraccount/types';
-import { EventLogTypeKey } from 'api/dist/eventlog/types';
-import { logEvent } from 'api/dist/eventlog/utils';
-import randomstring from 'randomstring';
-import { alreadyActivatedError } from '../utils/embeds/praiseEmbeds';
+//import { EventLogTypeKey } from 'api/dist/eventlog/types';
+//import { logEvent } from 'api/dist/eventlog/utils';
+//import { Types } from 'mongoose';
+
 import { CommandHandler } from '../interfaces/CommandHandler';
+import { renderMessage } from '../utils/embeds/praiseEmbeds';
+import { getUserAccount } from '../utils/getUserAccount';
+import { GuildMember } from 'discord.js';
+import { getActivateToken } from '../utils/getActivateToken';
+import { getHost } from '../utils/getHost';
 
 /**
  * Executes command /activate
  *  Creates a one-time link on the Praise frontend linking to the activate page
  *  where the user can associate their Discord user with a UserAccount
  *
- * @param  interaction
+ * @param client
+ * @param interaction
  * @returns
  */
-export const activationHandler: CommandHandler = async (interaction) => {
-  const { user } = interaction;
-
-  let userAccount = await UserAccountModel.findOne({
-    accountId: user.id,
-    platform: 'DISCORD',
-  });
-
-  if (userAccount?.user) {
-    await interaction.reply({
-      content: await alreadyActivatedError(),
-      ephemeral: true,
-    });
+export const activationHandler: CommandHandler = async (
+  client,
+  interaction
+) => {
+  const { member, guild } = interaction;
+  if (!guild || !member) {
+    await interaction.editReply(await renderMessage('DM_ERROR'));
     return;
   }
 
-  const ua = {
-    accountId: user.id,
-    name: user.username + '#' + user.discriminator,
-    avatarId: user.avatar,
-    platform: 'DISCORD',
-    activateToken: randomstring.generate(),
-  } as UserAccount;
+  try {
+    const host = await getHost(client, guild.id);
 
-  userAccount = await UserAccountModel.findOneAndUpdate(
-    { accountId: user.id },
-    ua,
-    { upsert: true, new: true }
-  );
-
-  if (!userAccount) {
-    await interaction.reply({
-      content: 'Unable to create user account.',
-      ephemeral: true,
-    });
-    return;
-  }
-
-  await logEvent(
-    EventLogTypeKey.AUTHENTICATION,
-    'Ran the /activate command on discord',
-    {
-      userAccountId: userAccount._id,
+    if (host === undefined) {
+      await interaction.editReply(
+        'This community is not registered for praise.'
+      );
+      return;
     }
-  );
 
-  const getActivationURL = (
-    accountId: string,
-    uname: string,
-    hash: string,
-    token: string
-  ): string =>
-    `${
-      process.env.FRONTEND_URL as string
-    }/activate?accountId=${accountId}&accountName=${encodeURIComponent(
-      `${uname}#${hash}`
-    )}&platform=DISCORD&token=${token}`;
+    const userAccount = await getUserAccount(
+      (member as GuildMember).user,
+      host
+    );
+    if (userAccount.user && userAccount.user !== null) {
+      await interaction.reply({
+        content: await renderMessage(
+          'PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR',
+          host
+        ),
+        ephemeral: true,
+      });
+      return;
+    }
 
-  const activationURL = getActivationURL(
-    ua.accountId,
-    user.username,
-    user.discriminator,
-    ua.activateToken || 'undefined'
-  );
+    // await logEvent(
+    //   EventLogTypeKey.AUTHENTICATION,
+    //   'Ran the /activate command on discord',
+    //   {
+    //     userAccountId: new Types.ObjectId(userAccount._id),
+    //   }
+    // );
 
-  await interaction.reply({
-    content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${activationURL})`,
-    ephemeral: true,
-  });
+    const activateToken = await getActivateToken(userAccount, host);
+
+    if (!activateToken) {
+      await interaction.reply({
+        content: 'Unable to activate user account.',
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const hostUrl =
+      process.env.NODE_ENV === 'development'
+        ? process.env.FRONTEND_URL
+        : `https://${(await client.hostCache.get(guild.id)) as string}`;
+
+    const activationURL = `${hostUrl || 'undefined:/'}/activate?accountId=${
+      member.user.id
+    }&platform=DISCORD&token=${activateToken}`;
+
+    await interaction.reply({
+      content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${activationURL})`,
+      ephemeral: true,
+    });
+  } catch (error) {
+    await interaction.reply({
+      content: 'Unable to activate user account.',
+      ephemeral: true,
+    });
+  }
 };

@@ -13,9 +13,4 @@
   "include": [
     "src/**/*.ts"
   ],
-  "references": [
-    {
-      "path": "../api"
-    }
-  ]
 }

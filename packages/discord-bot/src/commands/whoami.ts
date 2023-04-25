@@ -7,14 +7,15 @@ export const whoami: Command = {
   data: new SlashCommandBuilder()
     .setName('whoami')
     .setDescription('Find praise info about yourself'),
-  async execute(interaction) {
+  async execute(client, interaction) {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'whoami')
         return;
       await interaction.deferReply({ ephemeral: true });
-      await whoamiHandler(interaction);
+      await whoamiHandler(client, interaction);
     } catch (err) {
-      logger.error(err);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      logger.error((err as any).message);
     }
   },
 };

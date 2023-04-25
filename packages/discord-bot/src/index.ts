@@ -1,16 +1,12 @@
-import { Client, GatewayIntentBits } from 'discord.js';
-import mongoose, { ConnectOptions } from 'mongoose';
-import { envCheck } from 'api/dist/pre-start/envCheck';
+import { ChannelType, Client, GatewayIntentBits } from 'discord.js';
 import { DiscordClient } from './interfaces/DiscordClient';
 import { registerCommands } from './utils/registerCommands';
-import { requiredEnvVariables } from './pre-start/env-required';
+// import { requiredEnvVariables } from './pre-start/env-required';
 import { logger } from './utils/logger';
-
-// Check for required ENV variables
-envCheck(requiredEnvVariables);
-
-// Start Discord bot
-const token = process.env.DISCORD_TOKEN;
+import { cacheHosts, getHost, getHostId } from './utils/getHost';
+import Keyv from 'keyv';
+import { apiClient } from './utils/api';
+import { Community } from './utils/api-schema';
 
 // Create a new client instance
 const discordClient = new Client({
@@ -20,18 +16,27 @@ const discordClient = new Client({
 // Set bot commands
 void (async (): Promise<void> => {
   discordClient.id = process.env.DISCORD_CLIENT_ID || '';
-  discordClient.guildId = process.env.DISCORD_GUILD_ID || '';
-  const registerSuccess = await registerCommands(discordClient);
-
+  let registerSuccess: boolean;
+  if (process.env.NODE_ENV === 'development') {
+    registerSuccess = await registerCommands(
+      discordClient,
+      process.env.DISCORD_GUILD_ID || ''
+    );
+  } else {
+    registerSuccess = await registerCommands(discordClient);
+  }
   if (registerSuccess) {
-    logger.info('All bot commands registered in Guild.');
+    logger.info('All bot commands registered.');
   } else {
     logger.error('Failed to register bot commands');
   }
 })();
 
-discordClient.once('ready', () => {
+discordClient.once('ready', async () => {
   logger.info('Discord client is ready!');
+  discordClient.hostCache = new Keyv();
+  discordClient.hostIdCache = new Keyv();
+  await cacheHosts(discordClient.hostCache, discordClient.hostIdCache);
 });
 
 discordClient.on('interactionCreate', async (interaction): Promise<void> => {
@@ -39,9 +44,10 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
   const command = discordClient.commands.get(interaction.commandName);
   if (!command) return;
   try {
-    await command.execute(interaction);
+    await command.execute(discordClient, interaction);
   } catch (error) {
-    logger.error(error);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    logger.error((error as any).message);
     await interaction.reply({
       content: 'There was an error while executing this command!',
       ephemeral: true,
@@ -62,24 +68,47 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
   }
 });
 
-// Connect to database
-void (async (): Promise<void> => {
-  logger.info('Connecting to database…');
-  const host = process.env.MONGO_HOST || '';
-  const port = process.env.MONGO_PORT || '';
-  const dbName = process.env.MONGO_DB || '';
-  const username = process.env.MONGO_USERNAME || '';
-  const password = process.env.MONGO_PASSWORD || '';
+discordClient.on('guildCreate', async (guild): Promise<void> => {
+  const channel = guild.channels.cache.find(
+    (channel) => channel.type === ChannelType.GuildText
+  );
+  if (!channel || channel.type !== ChannelType.GuildText) return;
 
-  try {
-    const db = `mongodb://${username}:${password}@${host}:${port}/${dbName}`;
-    await mongoose.connect(db, {
-      useNewUrlParser: true,
-    } as ConnectOptions);
-    logger.info('Connected to database.');
-  } catch (error) {
-    logger.error('Could not connect to database.');
+  const host = await getHost(discordClient, guild.id);
+  const hostId = await getHostId(discordClient, guild.id);
+
+  if (!host || !hostId) {
+    await channel.send(
+      'Welcome to Praise! To use praise, set up your praise instance in the praise portal.'
+    );
+    return;
   }
+
+  const community = await apiClient
+    .get<Community>(`/communities/${hostId}`, {
+      headers: { host },
+    })
+    .then((res) => res.data)
+    .catch(() => undefined);
+
+  if (!community) {
+    await channel.send(
+      'Welcome to Praise! To use praise, set up your praise instance in the praise portal.'
+    );
+  } else {
+    community.discordLinkState = 'ACTIVE';
+    await apiClient.post<Community>(`/communities/${hostId}`, {
+      headers: { host },
+      data: community,
+    });
+
+    await channel.send(
+      `Welcome to praise! Link here - https://staging.givepraise.xyz/link-bot?nonce=${community.discordLinkNonce}&communityId=${hostId}&guildId=${guild.id}`
+    );
+  }
+});
+
+void (async (): Promise<void> => {
   // Login to Discord with your client's token
-  await discordClient.login(token);
+  await discordClient.login(process.env.DISCORD_TOKEN);
 })();

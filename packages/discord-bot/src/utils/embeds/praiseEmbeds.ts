@@ -1,131 +1,14 @@
 import { User, EmbedBuilder, Role } from 'discord.js';
-import { settingValue } from 'api/dist/shared/settings';
+import { getSetting } from '../settingsUtil';
 
-/**
- * Generate success response message for commands/praise
- *
- * @param {string[]} praised
- * @param {string} reason
- * @returns {Promise<string>}
- */
-export const praiseSuccess = async (
-  praised: string[],
-  reason: string
-): Promise<string> => {
-  const msg = (await settingValue('PRAISE_SUCCESS_MESSAGE')) as string;
-  if (msg) {
-    return msg
-      .replace('{@receivers}', `${praised.join(', ')}`)
-      .replace('{reason}', reason);
-  } else {
-    return 'PRAISE SUCCESSFUL (message not set)';
-  }
-};
-
-/**
- * Generate success response message for commands/forward
- *
- * @param {User} giver
- * @param {string[]} receivers
- * @param {string} reason
- * @returns   {Promise<string>}
- */
-export const forwardSuccess = async (
-  giver: User,
-  receivers: string[],
-  reason: string
-): Promise<string> => {
-  const msg = (await settingValue('FORWARD_SUCCESS_MESSAGE')) as string;
-  if (msg) {
-    return msg
-      ?.replace('{@giver}', `<@!${giver.id}>`)
-      .replace('{@receivers}', `${receivers.join(', ')}`)
-      .replace('{reason}', reason);
-  } else {
-    return 'PRAISE SUCCESSFUL (message not set)';
-  }
-};
-
-/**
- * Generate response error message PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR
- *
- * @returns {Promise<string>}
- */
-export const notActivatedError = async (): Promise<string> => {
-  const msg = (await settingValue(
-    'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR'
-  )) as string;
-  if (msg) {
-    return msg;
-  } else {
-    return 'PRAISE ACCOUNT NOT ACTIVATED (message not set)';
-  }
-};
-
-/**
- * Generate response error message PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR
- *
- * @returns {Promise<string>}
- */
-export const alreadyActivatedError = async (): Promise<string> => {
-  const msg = (await settingValue(
-    'PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR'
-  )) as string;
-  if (msg) {
-    return msg;
-  } else {
-    return 'PRAISE ACCOUNT ALREADY ACTIVATED (message not set)';
-  }
-};
-
-/**
- * Generate response error message FORWARD_FROM_UNACTIVATED_GIVER_ERROR
- *
- * @returns {Promise<string>}
- */
-export const giverNotActivatedError = async (
-  praiseGiver: User
-): Promise<string> => {
-  const msg = (await settingValue(
-    'FORWARD_FROM_UNACTIVATED_GIVER_ERROR'
-  )) as string;
-  if (msg) {
-    return msg
-      .replace(
-        '{giver}',
-        `${praiseGiver.username}#${praiseGiver.discriminator}`
-      )
-      .replace('{@giver}', `<@!${praiseGiver.id}>`);
-  } else {
-    return "PRAISE GIVER'S ACCOUNT NOT ACTIVATED (message not set)";
-  }
-};
-
-/**
- * Generate response error message DM_ERROR
- *
- * @returns {Promise<string>}
- */
-export const dmError = async (): Promise<string> => {
-  const msg = (await settingValue('DM_ERROR')) as string;
-  if (msg) {
-    return msg;
-  } else {
-    return 'COMMAND CAN NOT BE USED IN DM (message not set)';
-  }
-};
-
-/**
- * Generate response error message PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR
- *
- * @returns {Promise<string>}
- */
 export const praiseRoleError = async (
   roles: Role[],
-  user: User
+  user: User,
+  host: string
 ): Promise<EmbedBuilder> => {
-  const msg = (await settingValue(
-    'PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR'
+  const msg = (await getSetting(
+    'PRAISE_WITHOUT_PRAISE_GIVER_ROLE_ERROR',
+    host
   )) as string;
 
   const roleNames = roles.map((r) => r.name).join(', ');
@@ -149,100 +32,26 @@ export const praiseRoleError = async (
   );
 };
 
-/**
- * Generate response error message PRAISE_INVALID_RECEIVERS_ERROR
- *
- * @returns {Promise<string>}
- */
-export const invalidReceiverError = async (): Promise<string> => {
-  const msg = (await settingValue('PRAISE_INVALID_RECEIVERS_ERROR')) as string;
-  if (msg) {
-    return msg;
-  }
-  return 'VALID RECEIVERS NOT MENTIONED (message not set)';
-};
-
-/**
- * Generate response error message PRAISE_INVALID_RECEIVERS_ERROR
- *
- * @returns {Promise<string>}
- */
-export const missingReasonError = async (): Promise<string> => {
-  const msg = (await settingValue('PRAISE_REASON_MISSING_ERROR')) as string;
-  if (msg) {
-    return msg;
-  }
-  return 'REASON NOT MENTIONED (message not set)';
-};
-
-/**
- * Generate response error message PRAISE_UNDEFINED_RECEIVERS_WARNING
- *
- * @returns {Promise<string>}
- */
-export const undefinedReceiverWarning = async (
-  receivers: string,
-  user: User
-): Promise<string> => {
-  const msg = (await settingValue(
-    'PRAISE_UNDEFINED_RECEIVERS_WARNING'
-  )) as string;
-  if (msg) {
-    return msg
-      .replace('{user}', `${user?.username}#${user?.discriminator}` || '...')
-      .replace('{@user}', `<@!${user?.id || '...'}>`)
-      .replace('{@receivers}', receivers);
-  }
-  return 'UNDEFINED RECEIVERS MENTIONED, UNABLE TO PRAISE THEM (message not set)';
-};
-
-/**
- * Generate response error message PRAISE_TO_ROLE_WARNING
- *
- * @returns {Promise<string>}
- */
-export const roleMentionWarning = async (
-  receivers: string,
-  user: User
-): Promise<string> => {
-  const msg = (await settingValue('PRAISE_TO_ROLE_WARNING')) as string;
-  if (msg) {
-    return msg
-      .replace('{@receivers}', receivers)
-      .replace('{@user}', `<@!${user?.id || '...'}>`)
-      .replace('{user}', `${user?.username}#${user?.discriminator}` || '...');
-  }
-  return "ROLES MENTIONED AS PRAISE RECEIVERS, PRAISE CAN'T BE DISHED TO ROLES (message not set)";
-};
-
-/**
- * Generate response error message PRAISE_SUCCESS_DM
- *
- * @returns {Promise<string>}
- */
 export const praiseSuccessDM = async (
   msgUrl: string,
-  isActivated = true
+  isActivated = true,
+  host: string
 ): Promise<EmbedBuilder> => {
-  const msg = (await settingValue('PRAISE_SUCCESS_DM')) as string;
-  const embed = new EmbedBuilder().setColor('#696969');
-  if (msg) {
-    embed.setDescription(msg.replace('{praiseURL}', msgUrl));
-  } else {
-    embed.setDescription(
-      `[YOU HAVE BEEN PRAISED!!!](${msgUrl}) (message not set)`
-    );
-  }
+  const msg = ((await getSetting('PRAISE_SUCCESS_DM', host)) as string).replace(
+    '{praiseURL}',
+    msgUrl
+  );
+  const embed = new EmbedBuilder().setColor('#696969').setDescription(msg);
   if (!isActivated) {
-    const notActivatedMsg = (await settingValue(
-      'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM'
+    const notActivatedMsg = (await getSetting(
+      'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM',
+      host
     )) as string;
+
     embed.addFields([
       {
         name: '\u200b',
-        value: notActivatedMsg
-          ? notActivatedMsg
-          : 'In order to claim your praise, link your discord account to your ethereum wallet using the `/activate` command',
+        value: notActivatedMsg,
       },
     ]);
   }
@@ -250,28 +59,47 @@ export const praiseSuccessDM = async (
   return embed;
 };
 
-/**
- * Generate response error message SELF_PRAISE_WARNING
- *
- * @returns {Promise<string>}
- */
-export const selfPraiseWarning = async (): Promise<string> => {
-  const msg = (await settingValue('SELF_PRAISE_WARNING')) as string;
-  if (msg) {
-    return msg;
-  }
-  return 'SELF-PRAISE NOT ALLOWED, PRAISE GIVERS UNABLE TO PRAISE THEMSELVES (message not set)';
-};
+interface substitutionParams {
+  praiseGiver?: User;
+  receivers?: string[];
+  reason?: string;
+  user?: User;
+}
 
-/**
- * Generate response info message FIRST_TIME_PRAISER
- *
- * @returns {Promise<string>}
- */
-export const firstTimePraiserInfo = async (): Promise<string> => {
-  const msg = (await settingValue('FIRST_TIME_PRAISER')) as string;
-  if (msg) {
-    return msg;
+export const renderMessage = async (
+  key: string,
+  host?: string,
+  subs?: substitutionParams
+): Promise<string> => {
+  if (key === 'DM_ERROR' && !host)
+    return "The bot can't be used in DMs, please use commands in the server.";
+
+  let msg = (await getSetting(key, host)) as string;
+
+  if (subs) {
+    if (subs.user) {
+      msg = msg.replace(
+        '{user}',
+        `${subs.user.username}#${subs.user.discriminator}`
+      );
+      msg = msg.replace('{@user}', `<@!${subs.user.id || '...'}>`);
+    }
+    if (subs.praiseGiver) {
+      msg = msg.replace(
+        '{giver}',
+        `${subs.praiseGiver.username}#${subs.praiseGiver.discriminator}`
+      );
+      msg = msg.replace('{@giver}', `<@!${subs.praiseGiver.id}>`);
+    }
+
+    if (subs.reason) {
+      msg = msg.replace('{reason}', subs.reason);
+    }
+
+    if (subs.receivers) {
+      msg = msg.replace('{@receivers}', subs.receivers.join(', '));
+    }
   }
-  return 'YOU ARE PRAISING FOR THE FIRST TIME. WELCOME TO PRAISE! (message not set)';
+
+  return msg;
 };

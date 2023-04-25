@@ -1,29 +1,20 @@
-import { PeriodModel } from 'api/dist/period/entities';
-import { UserModel } from 'api/dist/user/entities';
-import { UserRole, UserDocument } from 'api/dist/user/types';
-import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { getPreviousPeriodEndDate } from 'api/dist/period/utils/core';
-import {
-  PeriodDocument,
-  PeriodDetailsQuantifierDto,
-} from 'api/dist/period/types';
-
+import { PeriodDetailsDto, User } from '../utils/api-schema';
 import { CommandInteraction, DiscordAPIError } from 'discord.js';
-import { PraiseModel } from 'api/dist/praise/entities';
 import { Buffer } from 'node:buffer';
 import { FailedToDmUsersList } from '../interfaces/FailedToDmUsersList';
+import { apiClient } from './api';
 
 /**
  * Send a custom direct message to a list of users
  *
  * @param {CommandInteraction} interaction
- * @param {(UserDocument[] | PeriodDetailsQuantifierDto[])} users
+ * @param {User[]} users
  * @param {string} message
  * @returns {Promise<void>}
  */
 const sendDMs = async (
   interaction: CommandInteraction,
-  users: UserDocument[] | PeriodDetailsQuantifierDto[],
+  users: User[],
   message: string
 ): Promise<void> => {
   const successful = [];
@@ -40,9 +31,9 @@ const sendDMs = async (
   }
 
   for (const user of users) {
-    const userAccount = await UserAccountModel.findOne({
-      user: user._id,
-    });
+    const userAccount = user.accounts.filter(
+      (acc) => acc.platform === 'DISCORD'
+    )[0];
     const userId: string = userAccount?.accountId || 'Unknown user';
     const userName: string = userAccount?.name || userId;
     try {
@@ -160,76 +151,68 @@ const sendDMs = async (
  * @param {string} type
  * @param {(string | undefined)} period
  * @param {string} message
- * @returns   {Promise<void>}
+ * @param {string} host
+ * @returns {Promise<void>}
  */
 export const selectTargets = async (
   interaction: CommandInteraction,
   type: string,
   period: string | undefined,
-  message: string
+  message: string,
+  host: string
 ): Promise<void> => {
+  const users = await apiClient
+    .get<User[]>('/users', { headers: { host } })
+    .then((res) => res.data)
+    .catch(() => undefined);
+
+  if (!users) return;
   switch (type) {
     case 'USERS': {
-      const users = await UserModel.find({});
       await sendDMs(interaction, users, message);
       return;
     }
     case 'QUANTIFIERS': {
-      const users = await UserModel.find({ roles: UserRole.QUANTIFIER });
-      await sendDMs(interaction, users, message);
+      await sendDMs(
+        interaction,
+        users.filter((user) => user.roles.includes('QUANTIFIER')),
+        message
+      );
       return;
     }
     case 'ASSIGNED-QUANTIFIERS':
     case 'UNFINISHED-QUANTIFIERS': {
-      const selectedPeriod = (await PeriodModel.findOne({
-        name: period,
-      })) as PeriodDocument;
-      const previousPeriodEndDate = await getPreviousPeriodEndDate(
-        selectedPeriod
-      );
-      const quantifiers: PeriodDetailsQuantifierDto[] =
-        await PraiseModel.aggregate([
-          {
-            $match: {
-              createdAt: {
-                $gt: previousPeriodEndDate,
-                $lte: selectedPeriod?.endDate,
-              },
-            },
-          },
-          { $unwind: '$quantifications' },
-          {
-            $addFields: {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              finished: {
-                $or: [
-                  { $ne: ['$quantifications.dismissed', false] },
-                  { $gt: ['$quantifications.score', 0] },
-                  { $gt: ['$quantifications.duplicatePraise', null] },
-                ],
-              },
-            },
-          },
-          {
-            $group: {
-              _id: '$quantifications.quantifier',
-              praiseCount: { $count: {} },
-              finishedCount: { $sum: { $toInt: '$finished' } },
-            },
-          },
-        ]);
+      if (!period || !period.length) return;
+
+      const selectedPeriod = await apiClient
+        .get<PeriodDetailsDto>(`/period/${period}`)
+        .then((res) => res.data)
+        .catch(() => undefined);
+      if (!selectedPeriod) return;
+
+      const quantifiers = selectedPeriod.quantifiers;
+
+      if (!quantifiers) return;
+
       if (type === 'UNFINISHED-QUANTIFIERS') {
+        const q = quantifiers
+          .filter(
+            (quantifier) => quantifier.finishedCount !== quantifier.praiseCount
+          )
+          .map((q) => q._id);
         await sendDMs(
           interaction,
-          quantifiers.filter(
-            (quantifier) => quantifier.finishedCount !== quantifier.praiseCount
-          ),
+          users.filter((user) => q.includes(user._id)),
           message
         );
         return;
       }
-      await sendDMs(interaction, quantifiers, message);
+      const q = quantifiers.map((q) => q._id);
+      await sendDMs(
+        interaction,
+        users.filter((user) => q.includes(user._id)),
+        message
+      );
       return;
     }
   }

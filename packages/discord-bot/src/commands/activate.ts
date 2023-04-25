@@ -10,13 +10,14 @@ export const activate: Command = {
       'Activate your Praise account by linking your eth address.'
     ),
 
-  async execute(interaction) {
+  async execute(client, interaction) {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'activate')
         return;
-      await activationHandler(interaction);
+      await activationHandler(client, interaction);
     } catch (err) {
-      logger.error(err);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      logger.error((err as any).message);
     }
   },
 
