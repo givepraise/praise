@@ -253,12 +253,12 @@ describe('AuthController (E2E)', () => {
     /**
      *
      */
-    test('403 when accessing disallowed endpoint /api/users', async () => {
+    test('403 when accessing disallowed endpoint /api/useraccounts', async () => {
       const apiKey = process.env.API_KEYS?.split(',')[0]; // Usee first api key for testing purposes
       expect(apiKey).not.toBeUndefined();
       if (apiKey) {
         return request(server)
-          .get('/users')
+          .get('/useraccounts')
           .set('x-api-key', apiKey)
           .expect(403);
       }
