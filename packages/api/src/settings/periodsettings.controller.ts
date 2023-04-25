@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Patch,
+  Request,
   SerializeOptions,
   UseInterceptors,
 } from '@nestjs/common';
@@ -18,6 +19,9 @@ import { Permissions } from '../auth/decorators/permissions.decorator';
 import { ValueRealizedInterceptor } from './interceptors/value-realized.interceptor';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { SettingsService } from './settings.service';
+import { EventLogService } from '../event-log/event-log.service';
+import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -28,7 +32,10 @@ import { SettingsService } from './settings.service';
 })
 @EnforceAuthAndPermissions()
 export class PeriodSettingsController {
-  constructor(private readonly settingsService: SettingsService) {}
+  constructor(
+    private readonly settingsService: SettingsService,
+    private readonly eventLogService: EventLogService,
+  ) {}
 
   @Get(':periodId/settings')
   @ApiOperation({ summary: 'List all period settings.' })
@@ -79,7 +86,22 @@ export class PeriodSettingsController {
     @Param('periodId', ObjectIdPipe) periodId: Types.ObjectId,
     @Param('settingId', ObjectIdPipe) settingId: Types.ObjectId,
     @Body() data: SetPeriodSettingDto,
+    @Request() request: RequestWithAuthContext,
   ): Promise<PeriodSetting> {
-    return this.settingsService.setOnePeriodSetting(settingId, periodId, data);
+    const periodSetting = await this.settingsService.setOnePeriodSetting(
+      settingId,
+      periodId,
+      data,
+    );
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `Period setting with periodId ${periodId} and settingId ${settingId} was updated with data ${JSON.stringify(
+        data,
+      )}. `,
+    });
+
+    return periodSetting;
   }
 }

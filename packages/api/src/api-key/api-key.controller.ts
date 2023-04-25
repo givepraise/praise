@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Request,
   SerializeOptions,
   UseInterceptors,
 } from '@nestjs/common';
@@ -21,6 +22,9 @@ import { UpdateDescriptionInputDto } from './dto/update-description-input.dto';
 import { ApiOperation, ApiResponse, ApiTags, ApiParam } from '@nestjs/swagger';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
+import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { EventLogService } from '../event-log/event-log.service';
 
 @Controller('api-key')
 @ApiTags('API Key')
@@ -29,7 +33,10 @@ import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-p
 })
 @EnforceAuthAndPermissions()
 export class ApiKeyController {
-  constructor(private readonly apiKeyService: ApiKeyService) {}
+  constructor(
+    private readonly apiKeyService: ApiKeyService,
+    private readonly eventLogService: EventLogService,
+  ) {}
   @Post()
   @ApiOperation({
     summary: 'Create API key',
@@ -41,10 +48,21 @@ export class ApiKeyController {
   })
   @Permissions(Permission.ApiKeyManage)
   @UseInterceptors(MongooseClassSerializerInterceptor(ApiKey))
-  createApiKey(
+  async createApiKey(
     @Body() createApiKeyRequest: CreateApiKeyInputDto,
+    @Request() request: RequestWithAuthContext,
   ): Promise<CreateApiKeyResponseDto> {
-    return this.apiKeyService.createApiKey(createApiKeyRequest);
+    const createApiKeyResponse = await this.apiKeyService.createApiKey(
+      createApiKeyRequest,
+    );
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERMISSION,
+      description: `Created API key with description "${createApiKeyRequest.description}"`,
+    });
+
+    return createApiKeyResponse;
   }
 
   @Get()
@@ -95,8 +113,20 @@ export class ApiKeyController {
   async updateApiKeyDescription(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() body: UpdateDescriptionInputDto,
+    @Request() request: RequestWithAuthContext,
   ): Promise<ApiKey> {
-    return this.apiKeyService.updateDescription(id, body.description);
+    const apiKey = await this.apiKeyService.updateDescription(
+      id,
+      body.description,
+    );
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERMISSION,
+      description: `Updated API key description to "${body.description}"`,
+    });
+
+    return apiKey;
   }
 
   @Delete(':id')
@@ -113,7 +143,16 @@ export class ApiKeyController {
   @UseInterceptors(MongooseClassSerializerInterceptor(ApiKey))
   async revokeApiKey(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Request() request: RequestWithAuthContext,
   ): Promise<ApiKey> {
-    return this.apiKeyService.revoke(id);
+    const apiKey = await this.apiKeyService.revoke(id);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERMISSION,
+      description: `Revoked API key with id "${id}"`,
+    });
+
+    return apiKey;
   }
 }
