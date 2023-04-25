@@ -161,7 +161,7 @@ export const selectTargets = async (
   message: string,
   host: string
 ): Promise<void> => {
-  let users = await apiClient
+  const users = await apiClient
     .get<User[]>('/users', { headers: { host } })
     .then((res) => res.data)
     .catch(() => undefined);

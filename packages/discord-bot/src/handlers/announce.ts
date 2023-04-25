@@ -3,6 +3,7 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   StringSelectMenuBuilder,
+  GuildMember,
 } from 'discord.js';
 import { CommandHandler } from '../interfaces/CommandHandler';
 import {
@@ -14,7 +15,6 @@ import { selectTargets } from '../utils/dmTargets';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
 import { getHost } from '../utils/getHost';
 import { getUserAccount } from '../utils/getUserAccount';
-import { GuildMember } from 'discord.js';
 import { renderMessage } from '../utils/embeds/praiseEmbeds';
 import { apiClient } from '../utils/api';
 import { PeriodPaginatedResponseDto } from '../utils/api-schema';

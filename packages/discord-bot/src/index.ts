@@ -3,8 +3,7 @@ import { DiscordClient } from './interfaces/DiscordClient';
 import { registerCommands } from './utils/registerCommands';
 // import { requiredEnvVariables } from './pre-start/env-required';
 import { logger } from './utils/logger';
-import { cacheHosts } from './utils/getHost';
-import { getHost, getHostId } from './utils/getHost';
+import { cacheHosts, getHost, getHostId } from './utils/getHost';
 import Keyv from 'keyv';
 import { apiClient } from './utils/api';
 import { Community } from './utils/api-schema';
@@ -73,10 +72,17 @@ discordClient.on('guildCreate', async (guild): Promise<void> => {
   const channel = guild.channels.cache.find(
     (channel) => channel.type === ChannelType.GuildText
   );
-  if (!channel || channel.type != ChannelType.GuildText) return;
+  if (!channel || channel.type !== ChannelType.GuildText) return;
 
   const host = await getHost(discordClient, guild.id);
   const hostId = await getHostId(discordClient, guild.id);
+
+  if (!host || !hostId) {
+    await channel.send(
+      'Welcome to Praise! To use praise, set up your praise instance in the praise portal.'
+    );
+    return;
+  }
 
   const community = await apiClient
     .get<Community>(`/communities/${hostId}`, {
@@ -86,7 +92,7 @@ discordClient.on('guildCreate', async (guild): Promise<void> => {
     .catch(() => undefined);
 
   if (!community) {
-    channel.send(
+    await channel.send(
       'Welcome to Praise! To use praise, set up your praise instance in the praise portal.'
     );
   } else {
@@ -96,7 +102,7 @@ discordClient.on('guildCreate', async (guild): Promise<void> => {
       data: community,
     });
 
-    channel.send(
+    await channel.send(
       `Welcome to praise! Link here - https://staging.givepraise.xyz/link-bot?nonce=${community.discordLinkNonce}&communityId=${hostId}&guildId=${guild.id}`
     );
   }
