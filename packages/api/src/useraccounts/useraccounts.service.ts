@@ -49,7 +49,6 @@ export class UserAccountsService {
       ],
     });
     if (existingUserAccount) {
-      logger.info(existingUserAccount);
       throw new ApiException(
         errorMessages.USER_ACCOUNT_WITH_PLATFORM_NAME__OR_USERNAME_ALREADY_EXITS,
       );
