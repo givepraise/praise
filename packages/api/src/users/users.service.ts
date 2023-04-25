@@ -1,19 +1,12 @@
-import * as fs from 'fs';
 import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
-import {
-  User,
-  UserDocument,
-  UsersExportSqlSchema,
-} from './schemas/users.schema';
+import { User, UserDocument } from './schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Cursor, Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { UpdateUserInputDto } from './dto/update-user-input.dto';
 import { CreateUserInputDto } from './dto/create-user-input.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { UserAccount } from '../useraccounts/schemas/useraccounts.schema';
-import { EventLogService } from '../event-log/event-log.service';
-import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { AuthRole } from '../auth/enums/auth-role.enum';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { Praise, PraiseDocument } from '../praise/schemas/praise.schema';
@@ -22,10 +15,6 @@ import { PeriodDateRangeDto } from '../periods/dto/period-date-range.dto';
 import { Period } from '../periods/schemas/periods.schema';
 import { PeriodsService } from '../periods/services/periods.service';
 import { PraiseService } from '../praise/services/praise.service';
-import {
-  generateParquetExport,
-  writeCsvAndJsonExports,
-} from '../shared/export.shared';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { logger } from '../shared/logger';
 import { randomBytes } from 'crypto';
@@ -37,7 +26,6 @@ export class UsersService {
     private userModel: Model<UserDocument>,
     @InjectModel(Praise.name)
     private praiseModel: Model<PraiseDocument>,
-    private eventLogService: EventLogService,
     private periodService: PeriodsService,
     private praiseService: PraiseService,
   ) {}
@@ -139,12 +127,11 @@ export class UsersService {
     userDocument.roles.push(roleChange.role);
     const user = await userDocument.save();
 
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.PERMISSION,
-      description: `Added role "${roleChange.role}" to user with id "${(
+    logger.info(
+      `Added role "${roleChange.role}" to user with id "${(
         user._id as Types.ObjectId
       ).toString()}"`,
-    });
+    );
 
     return this.findOneById(user._id);
   }
@@ -199,12 +186,11 @@ export class UsersService {
     userDocument.roles.splice(roleIndex, 1);
     const user = await userDocument.save();
 
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.PERMISSION,
-      description: `Removed role "${roleChange.role}" from user with id "${(
+    logger.info(
+      `Removed role "${roleChange.role}" from user with id "${(
         user._id as Types.ObjectId
       ).toString()}"`,
-    });
+    );
 
     return this.findOneById(user._id);
   }
@@ -283,38 +269,20 @@ export class UsersService {
 
     return this.generateValidUsername(username);
   }
+
   /**
-   * Generates all export files - csv, json and parquet
+   * Creates a cursor for all users in the database
    */
-  async generateAllExports(path: string) {
-    const includeFields = [
-      '_id',
-      'username',
-      'identityEthAddress',
-      'rewardsEthAddress',
-      'roles',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Count the number of documents that matches query
-    const count = await this.userModel.countDocuments({});
-
-    // If there are no documents, create empty files and return
-    if (count === 0) {
-      fs.writeFileSync(`${path}/users.csv`, includeFields.join(','));
-      fs.writeFileSync(`${path}/users.json`, '[]');
-      return;
-    }
-
-    // Lookup the periods, create a cursor
-    const users = this.userModel.aggregate([]).cursor();
-
-    // Write the csv and json files
-    await writeCsvAndJsonExports('users', users, path, includeFields);
-
-    // Generate the parquet file
-    await generateParquetExport(path, 'users', UsersExportSqlSchema);
+  async exportCursor(includeFields: string[]): Promise<Cursor<User, never>> {
+    // Include only the fields that are specified in the includeFields array
+    const projection: { [key: string]: 1 } = includeFields.reduce(
+      (obj: { [key: string]: 1 }, field: string) => {
+        obj[field] = 1;
+        return obj;
+      },
+      {},
+    );
+    return this.userModel.aggregate([{ $project: projection }]).cursor();
   }
 
   /**

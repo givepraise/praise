@@ -10,7 +10,7 @@ import {
   SerializeOptions,
   UseInterceptors,
   Res,
-  StreamableFile,
+  Request,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -23,7 +23,7 @@ import {
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { PeriodsService } from './services/periods.service';
-import { Period } from './schemas/periods.schema';
+import { Period, PeriodExportSqlSchema } from './schemas/periods.schema';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 import { Permission } from '../auth/enums/permission.enum';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
@@ -38,12 +38,24 @@ import { ReplaceQuantifierResponseDto } from './dto/replace-quantifier-response.
 import { PeriodAssignmentsService } from './services/period-assignments.service';
 import { PraiseWithUserAccountsWithUserRefDto } from '../praise/dto/praise-with-user-accounts-with-user-ref.dto';
 import { Response } from 'express';
-import { allExportsDirPath } from '../shared/fs.shared';
-import { ExportInputFormatOnlyDto } from '../shared/dto/export-input-format-only';
-import { exportContentType } from '../shared/export.shared';
+import { exportTmpFilePath } from '../shared/fs.shared';
+import { generateParquetExport } from '../shared/export.shared';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
-import { ApiException } from '../shared/exceptions/api-exception';
-import { errorMessages } from '../shared/exceptions/error-messages';
+import { EventLogService } from '../event-log/event-log.service';
+import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import * as JSONStream from 'JSONStream';
+import { Transform } from '@json2csv/node';
+import { Public } from '../shared/decorators/public.decorator';
+
+const exportIncludeFields = [
+  '_id',
+  'name',
+  'status',
+  'endDate',
+  'createdAt',
+  'updatedAt',
+];
 
 @Controller('periods')
 @ApiTags('Periods')
@@ -55,10 +67,77 @@ export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,
     private readonly periodAssignmentsService: PeriodAssignmentsService,
+    private readonly eventLogService: EventLogService,
   ) {}
 
-  @Get('export')
-  @ApiOperation({ summary: 'Export periods document to json or csv' })
+  @Get('export/json')
+  @ApiOperation({ summary: 'Export periods document to json' })
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @ApiProduces('application/json')
+  @Public()
+  @Permissions(Permission.PeriodExport)
+  async exportJson(@Res() res: Response) {
+    res.set({
+      'Content-Type': 'application/json',
+      'Content-Disposition': `attachment; filename="periods.json"`,
+    });
+
+    // Create a cursor to the periods collection
+    const periodsCursor = await this.periodsService.exportCursor(
+      exportIncludeFields,
+    );
+
+    // Close the cursor when the response is closed
+    res.on('close', () => {
+      periodsCursor.close();
+    });
+
+    periodsCursor.pipe(JSONStream.stringify()).pipe(res);
+  }
+
+  @Get('export/csv')
+  @ApiOperation({ summary: 'Export periods document to csv' })
+  @ApiOkResponse({
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @ApiProduces('text/csv')
+  @Public()
+  @Permissions(Permission.PeriodExport)
+  async exportCsv(@Res() res: Response) {
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': `attachment; filename="periods.csv"`,
+    });
+
+    // Create a cursor to the periods collection
+    const periodsCursor = await this.periodsService.exportCursor(
+      exportIncludeFields,
+    );
+
+    // Create a transformer to convert the JSON data to CSV
+    const csvTransformer = new Transform(
+      { fields: exportIncludeFields },
+      { objectMode: true },
+    );
+
+    // Close the cursor when the response is closed
+    res.on('close', () => {
+      periodsCursor.close();
+    });
+
+    periodsCursor.pipe(csvTransformer).pipe(res);
+  }
+
+  @Get('export/parquet')
+  @ApiOperation({ summary: 'Export periods document to parquet' })
   @ApiOkResponse({
     schema: {
       type: 'string',
@@ -66,49 +145,55 @@ export class PeriodsController {
     },
   })
   @ApiProduces('application/octet-stream')
-  @ApiProduces('application/json')
+  @Public()
   @Permissions(Permission.PeriodExport)
-  async export(
-    @Query() options: ExportInputFormatOnlyDto,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<StreamableFile> {
-    const format = options.format || 'csv';
-
-    // Root path for all exports
-    const rootPath = `${allExportsDirPath}/periods`;
-
-    // Directory level 1 is the latest periods id
-    const latestPeriod = await this.periodsService.findLatestAdded();
-    if (!latestPeriod) {
-      throw new ApiException(errorMessages.NO_PERIODS_TO_EXPORT);
-    }
-
-    const dirLevel1 = latestPeriod._id.toString();
-    const dirPath = `${rootPath}/${dirLevel1}`;
-    const filePath = `${dirPath}/periods.${format}`;
-
-    if (!fs.existsSync(filePath)) {
-      // If cached export don't exist
-      if (!fs.existsSync(`${rootPath}/${dirLevel1}`)) {
-        // If the latest periods id folder doesn't exist,
-        // database hase been updated, clear all cached exports
-        fs.rmSync(rootPath, { recursive: true, force: true });
-      }
-
-      // Create directory for new export
-      fs.mkdirSync(dirPath, { recursive: true });
-
-      // Generate new export files
-      await this.periodsService.generateAllExports(dirPath);
-    }
-
+  async exportParquet(@Res() res: Response) {
     res.set({
-      'Content-Type': exportContentType(format),
-      'Content-Disposition': `attachment; filename="periods.${format}"`,
+      'Content-Type': 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="periods.parquet"`,
     });
 
-    const file = fs.createReadStream(filePath);
-    return new StreamableFile(file);
+    // Tmp file paths
+    const tmpCsvPath = exportTmpFilePath('periods.csv');
+    const tmpParquetPath = exportTmpFilePath('periods.parquet');
+
+    // Create a cursor to the periods collection
+    const periodsCursor = await this.periodsService.exportCursor(
+      exportIncludeFields,
+    );
+
+    // Create a writable stream to the temporary csv file
+    const writableStream = fs.createWriteStream(tmpCsvPath);
+
+    // Create a transformer to convert the JSON data to CSV
+    const csvTransformer = new Transform(
+      { fields: exportIncludeFields },
+      { objectMode: true },
+    );
+
+    // Pipe the CSV data to the temporary file
+    periodsCursor.pipe(csvTransformer).pipe(writableStream);
+
+    // When the CSV data is finished, convert it to Parquet and send it as a response
+    writableStream.on('finish', async () => {
+      // Convert the CSV file to Parquet
+      await generateParquetExport(
+        'periods',
+        PeriodExportSqlSchema,
+        tmpCsvPath,
+        tmpParquetPath,
+      );
+
+      // Read temporary parquet file and send it as a response
+      const readableStream = fs.createReadStream(tmpParquetPath);
+      readableStream.pipe(res);
+
+      // Clean up!
+      res.on('finish', () => {
+        fs.unlinkSync(tmpCsvPath);
+        fs.unlinkSync(tmpParquetPath);
+      });
+    });
   }
 
   @Get()
@@ -152,9 +237,18 @@ export class PeriodsController {
   @Permissions(Permission.PeriodCreate)
   @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async create(
+    @Request() request: RequestWithAuthContext,
     @Body() createPeriodDto: CreatePeriodInputDto,
   ): Promise<PeriodDetailsDto> {
-    return this.periodsService.create(createPeriodDto);
+    const period = await this.periodsService.create(createPeriodDto);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERIOD,
+      description: `User ${request.authContext.userId} created an PERIOD`,
+    });
+
+    return period;
   }
 
   @Patch(':id')
@@ -170,8 +264,19 @@ export class PeriodsController {
   async update(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() updatePeriodDto: UpdatePeriodInputDto,
+    @Request() request: RequestWithAuthContext,
   ): Promise<PeriodDetailsDto> {
-    return this.periodsService.update(id, updatePeriodDto);
+    const period = await this.periodsService.update(id, updatePeriodDto);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERIOD,
+      description: `User ${
+        request.authContext.userId
+      } updated an PERIOD ${id} with data ${JSON.stringify(updatePeriodDto)}`,
+    });
+
+    return period;
   }
 
   @Patch(':id/close')
@@ -186,8 +291,17 @@ export class PeriodsController {
   @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async close(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Request() request: RequestWithAuthContext,
   ): Promise<PeriodDetailsDto> {
-    return this.periodsService.close(id);
+    const period = await this.periodsService.close(id);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERIOD,
+      description: `User ${request.authContext.userId} closed PERIOD ${id}`,
+    });
+
+    return period;
   }
 
   @Get(':id/praise')
@@ -304,8 +418,19 @@ export class PeriodsController {
   @UseInterceptors(MongooseClassSerializerInterceptor(PeriodDetailsDto))
   async assignQuantifiers(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Request() request: RequestWithAuthContext,
   ): Promise<PeriodDetailsDto> {
-    return this.periodAssignmentsService.assignQuantifiers(id);
+    const periodDetails = await this.periodAssignmentsService.assignQuantifiers(
+      id,
+    );
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERIOD,
+      description: `Assigned random quantifiers to all praise in period "${id}"`,
+    });
+
+    return periodDetails;
   }
 
   @Patch(':id/replaceQuantifier')
@@ -320,10 +445,20 @@ export class PeriodsController {
   async replaceQuantifier(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() replaceQuantifierDto: ReplaceQuantifierInputDto,
+    @Request() request: RequestWithAuthContext,
   ): Promise<ReplaceQuantifierResponseDto> {
-    return this.periodAssignmentsService.replaceQuantifier(
-      id,
-      replaceQuantifierDto,
-    );
+    const replaceQuantifierResponse =
+      await this.periodAssignmentsService.replaceQuantifier(
+        id,
+        replaceQuantifierDto,
+      );
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PERIOD,
+      description: `Reassigned all praise in period "${id}" that is currently assigned to user with id "${replaceQuantifierDto.currentQuantifierId}", to user with id "${replaceQuantifierDto.newQuantifierId}"`,
+    });
+
+    return replaceQuantifierResponse;
   }
 }

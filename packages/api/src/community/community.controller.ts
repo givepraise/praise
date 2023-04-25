@@ -25,7 +25,6 @@ import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-p
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { ApiException } from '../shared/exceptions/api-exception';
-
 @Controller('communities')
 @ApiTags('Communities')
 @SerializeOptions({
@@ -91,7 +90,7 @@ export class CommunityController {
   @ApiParam({ name: 'id', type: String })
   async findOne(@Param('id', ObjectIdPipe) id: ObjectId): Promise<Community> {
     const community = await this.communityService.findOne(id);
-    if (!community) throw new ApiException(errorMessages.communityNotFound);
+    if (!community) throw new ApiException(errorMessages.COMMUNITY_NOT_FOUND);
     return community;
   }
 

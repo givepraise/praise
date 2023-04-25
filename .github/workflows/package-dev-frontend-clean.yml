@@ -1,0 +1,30 @@
+name: Frontend/Development/Clean - Create and publish Docker image without Caddy setup
+
+on:
+  push:
+    branches: ['main']
+
+env:
+  IMAGE_NAME: praise-dev/frontend-clean
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v3
+        name: Check out code
+
+      - uses: mr-smithers-excellent/docker-build-push@v5
+        name: Build and push Docker image
+        with:
+          image: $IMAGE_NAME
+          tags: latest
+          addTimestamp: true
+          registry: ghcr.io
+          dockerfile: packages/frontend/Dockerfile.clean
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}

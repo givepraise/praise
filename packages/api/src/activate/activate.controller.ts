@@ -10,6 +10,8 @@ import { ActivateInputDto } from './dto/activate-input.dto';
 import { User } from '../users/schemas/users.schema';
 import { ActivateService } from './activate.service';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 
 @Controller('activate')
 @ApiTags('Activate')
@@ -18,7 +20,10 @@ import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongo
 })
 @UseInterceptors(MongooseClassSerializerInterceptor(User))
 export class ActivateController {
-  constructor(private activateService: ActivateService) {}
+  constructor(
+    private activateService: ActivateService,
+    private readonly eventLogService: EventLogService,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -30,7 +35,14 @@ export class ActivateController {
     description: 'The created (or updated) user.',
     type: User,
   })
-  activate(@Body() activateInputDto: ActivateInputDto): Promise<User> {
-    return this.activateService.activate(activateInputDto);
+  async activate(@Body() activateInputDto: ActivateInputDto): Promise<User> {
+    const user = await this.activateService.activate(activateInputDto);
+
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `User Account ${activateInputDto.accountId} activated.`,
+    });
+
+    return user;
   }
 }

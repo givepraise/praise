@@ -471,7 +471,7 @@ describe('UserAccountsController (E2E)', () => {
 
     test('200 when authenticated', async () => {
       await authorizedGetRequest(
-        '/useraccounts/export?format=json',
+        '/useraccounts/export/json',
         app,
         accessToken,
       ).expect(200);
@@ -479,7 +479,7 @@ describe('UserAccountsController (E2E)', () => {
 
     test('returns userAccounts list that matches seeded list in json format', async () => {
       const response = await authorizedGetRequest(
-        '/useraccounts/export?format=json',
+        '/useraccounts/export/json',
         app,
         accessToken,
       ).expect(200);
@@ -496,7 +496,7 @@ describe('UserAccountsController (E2E)', () => {
 
     test('returns user list that matches seeded list in csv format', async () => {
       const response = await authorizedGetRequest(
-        '/useraccounts/export?format=csv',
+        '/useraccounts/export/csv',
         app,
         accessToken,
       ).expect(200);
