@@ -15,18 +15,16 @@ import { logger } from './logger';
  * @returns {Promise<boolean>}
  */
 export const registerCommands = async (
-  client: DiscordClient
+  client: DiscordClient,
+  guildId?: string
 ): Promise<boolean> => {
   if (!client.id) {
     logger.error('DISCORD_CLIENT_ID env variable not set.');
   }
-  if (!client.guildId) {
-    logger.error('DISCORD_GUILD_ID env variable not set.');
-  }
 
   try {
     logger.info('Started refreshing application (/) commands.');
-    const rest = new REST({ version: '9' }).setToken(client.token || '');
+    const rest = new REST({ version: '10' }).setToken(client.token || '');
 
     const commandData = [];
 
@@ -55,9 +53,17 @@ export const registerCommands = async (
     client.commands.set(helpCommand.data.name, helpCommand);
     commandData.push(helpCommand.data);
 
-    await rest.put(Routes.applicationGuildCommands(client.id, client.guildId), {
-      body: commandData,
-    });
+    if (guildId) {
+      logger.info(`Registering commands for guild - ${guildId}`);
+      await rest.put(Routes.applicationGuildCommands(client.id, guildId), {
+        body: commandData,
+      });
+    } else {
+      logger.info('Registering commands globally');
+      await rest.put(Routes.applicationCommands(client.id), {
+        body: commandData,
+      });
+    }
 
     return true;
   } catch (error) {

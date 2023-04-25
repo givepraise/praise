@@ -9,7 +9,10 @@ import { DiscordClient } from '../interfaces/DiscordClient';
  * @param {string} guildId
  * @returns {Promise<string | undefined>}
  */
-export const cacheHosts = async (hostCache: Keyv): Promise<void> => {
+export const cacheHosts = async (
+  hostCache: Keyv,
+  idCache: Keyv
+): Promise<void> => {
   let currPage = 1;
   let totalPages = 1;
   while (currPage <= totalPages) {
@@ -20,6 +23,7 @@ export const cacheHosts = async (hostCache: Keyv): Promise<void> => {
     for (const community of communityList.docs) {
       if (community.discordGuildId) {
         await hostCache.set(community.discordGuildId, community.hostname);
+        await idCache.set(community.discordGuildId, community._id);
       }
     }
 
@@ -41,8 +45,28 @@ export const getHost = async (
   let host = await client.hostCache.get(guildId);
 
   if (host === undefined) {
-    await cacheHosts(client.hostCache);
+    await cacheHosts(client.hostCache, client.hostIdCache);
     host = await client.hostCache.get(guildId);
+  }
+
+  return host;
+};
+
+/**
+ * Fetch Host by id
+ *
+ * @param {string} guildId
+ * @returns {Promise<string | undefined>}
+ */
+export const getHostId = async (
+  client: DiscordClient,
+  guildId: string
+): Promise<string | undefined> => {
+  let host = await client.hostIdCache.get(guildId);
+
+  if (host === undefined) {
+    await cacheHosts(client.hostCache, client.hostIdCache);
+    host = await client.hostIdCache.get(guildId);
   }
 
   return host;
