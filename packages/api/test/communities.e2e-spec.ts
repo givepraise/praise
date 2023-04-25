@@ -374,7 +374,7 @@ describe('Communities (E2E)', () => {
       expect(rb.isPublic).toBe(true);
     });
 
-    test.only('200 should create new db for community, after link it to discord', async () => {
+    test('200 should create new db for community, after link it to discord', async () => {
       const dbName = dbNameCommunity(community);
 
       // Before linking Discord to community there is no DB for that community
@@ -397,8 +397,6 @@ describe('Communities (E2E)', () => {
           signedMessage,
         },
       );
-
-      console.log('DATABASE EXIST:', await databaseExists(dbName, mongodb));
 
       expect(response.status).toBe(200);
       expect(await databaseExists(dbName, mongodb)).toBe(true);
