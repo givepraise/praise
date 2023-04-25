@@ -21,7 +21,7 @@
     "@headlessui/react": "^1.4.1",
     "@json2csv/plainjs": "^6.1.2",
     "@mui/material": "^5.3.0",
-    "@rainbow-me/rainbowkit": "^0.10.0",
+    "@rainbow-me/rainbowkit": "^0.12.8",
     "@sgratzl/chartjs-chart-boxplot": "^4.1.1",
     "@tailwindcss/forms": "latest",
     "@types/react-csv": "^1.1.2",

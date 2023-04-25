@@ -10,14 +10,12 @@ import merge from 'lodash/merge';
 import { WagmiConfig, configureChains, createClient } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { mainnet } from 'wagmi/chains';
-import { infuraProvider } from 'wagmi/providers/infura';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
 
 const { chains, provider } = configureChains(
   [mainnet],
   [
-    infuraProvider({
-      apiKey: '1f04715c0a10492483047083a5c3edd2',
-    }),
+    alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_KEY as string }),
     publicProvider(),
   ]
 );
