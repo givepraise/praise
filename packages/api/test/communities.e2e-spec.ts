@@ -535,6 +535,60 @@ describe('Communities (E2E)', () => {
       expect(rb.email).toBe(community.email);
     });
   });
+  describe('GET /api/communities/isNameAvailable', () => {
+    let community: Community;
+
+    beforeEach(async () => {
+      await communityService.getModel().deleteMany({});
+    });
+
+    test('return false for repetitive community name', async () => {
+      community = await communitiesSeeder.seedCommunity({
+        name: randomBytes(10).toString('hex'),
+        hostname: 'test-community.givepraise.xyz',
+        database: 'test-community-givepraise-xyz',
+        creator: users[0].user.identityEthAddress,
+        owners: [
+          users[0].user.identityEthAddress,
+          users[1].user.identityEthAddress,
+        ],
+        discordGuildId: 'kldakdsal',
+        discordLinkNonce: randomBytes(10).toString('hex'),
+        email: 'test@praise.io',
+      });
+
+      const response = await authorizedGetRequest(
+        `/communities/isNameAvailable?name=${community.name}`,
+        app,
+        setupWebUserAccessToken,
+      );
+      const rb = response.body;
+      expect(response.status).toBe(200);
+      expect(rb.available).toBe(false);
+    });
+    test('return false for invalid name', async () => {
+      const invalidName = 'test %$#@!';
+      const response = await authorizedGetRequest(
+        `/communities/isNameAvailable?name=${invalidName}`,
+        app,
+        setupWebUserAccessToken,
+      );
+      const rb = response.body;
+      expect(response.status).toBe(200);
+      expect(rb.available).toBe(false);
+    });
+    test('return true for valid name', async () => {
+      const invalidName = 'test_12345';
+      const response = await authorizedGetRequest(
+        `/communities/isNameAvailable?name=${invalidName}`,
+        app,
+        setupWebUserAccessToken,
+      );
+      const rb = response.body;
+      expect(response.status).toBe(200);
+      expect(rb.available).toBe(true);
+    });
+  });
 
   describe('PATCH /api/communities/:id', () => {
     let community: Community;

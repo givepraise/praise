@@ -19,6 +19,9 @@ import { MigrationsManager } from '../database/migrations-manager';
 import { databaseExists } from '../database/utils/database-exists';
 import { dbNameCommunity } from '../database/utils/db-name-community';
 import { PaginateModel } from '../shared/interfaces/paginate-model.interface';
+import { isValidHostname } from './utils/is-valid-hostname';
+import { isValidCommunityName } from './utils/is-valid-community-name';
+import { IsNameAvailableResponseDto } from './dto/is-name-available-response-dto';
 
 @Injectable()
 export class CommunityService {
@@ -205,5 +208,17 @@ export class CommunityService {
       logger.error('createDbForCommunity error', error.message);
       throw error;
     }
+  };
+
+  isCommunityNameAvailable = async (
+    name: string,
+  ): Promise<IsNameAvailableResponseDto> => {
+    const community = await this.communityModel.findOne({
+      name: name.toString(),
+    });
+    if (community) {
+      return { available: false };
+    }
+    return { available: isValidCommunityName(name) };
   };
 }
