@@ -26,13 +26,13 @@ const StartPage = (): JSX.Element => {
       <BreadCrumb name="Praise" icon={faPrayingHands} />
       <ActiveNoticesBoard />
 
-      <div className="flex mt-5 mb-5 ml-4 md:ml-0">
+      <div className="flex mb-5 ml-4 md:ml-0">
         <Button
           variant={'outline'}
           className={`rounded-r-none  ${
             view === pageViews.myPraiseView
-              ? 'bg-opacity-50 text-opacity-50 hover:border-themecolor-4'
-              : 'hover:bg-themecolor-3 hover:border-themecolor-3'
+              ? 'bg-opacity-50 text-opacity-50 hover:border-themecolor-4 hover:bg-themecolor-4'
+              : 'hover:bg-themecolor-4 hover:border-themecolor-4'
           }`}
           onClick={(): void => setView(pageViews.praiseView)}
         >
@@ -43,8 +43,8 @@ const StartPage = (): JSX.Element => {
           variant={'outline'}
           className={`rounded-l-none  ${
             view === pageViews.praiseView
-              ? 'bg-opacity-50  text-opacity-50 hover:border-themecolor-4 '
-              : 'hover:bg-themecolor-3 hover:border-themecolor-3'
+              ? 'bg-opacity-50  text-opacity-50 hover:border-themecolor-4 hover:bg-themecolor-4'
+              : 'hover:bg-themecolor-4 hover:border-themecolor-4'
           }`}
           onClick={(): void => setView(pageViews.myPraiseView)}
         >

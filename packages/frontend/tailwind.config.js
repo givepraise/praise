@@ -4,11 +4,11 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   theme: {
     screens: {
-      'xs': '376px',
-      'sm': '640px',
-      'md': '750px',
-      'lg': '1024px',
-      'xl': '1270px',
+      xs: '376px',
+      sm: '640px',
+      md: '750px',
+      lg: '1024px',
+      xl: '1270px',
     },
     extend: {
       colors: {
@@ -25,23 +25,23 @@ module.exports = {
           900: '#1C1917',
         },
         themecolor: {
-          1:   "#FF33A7",
-          2:   "#FF0A95",
-          3:   "#E1007F",
-          4:   "#B80068",
-          5:   "#8F0051",  
+          1: '#FF33A7',
+          2: '#FF0A95',
+          3: '#E1007F',
+          4: '#B80068',
+          5: '#8F0051',
         },
-        "themecolor-alt": {
-          1:   "#564148",
-          2:   "#BDA5AC",
-          3:   "#946F00",
-          4:   "#D0A200",
-        }
-      }
-    }
+        'themecolor-alt': {
+          1: '#564148',
+          2: '#BDA5AC',
+          3: '#946F00',
+          4: '#D0A200',
+        },
+      },
+    },
   },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/container-queries'),
+  ],
 };
-
-
-

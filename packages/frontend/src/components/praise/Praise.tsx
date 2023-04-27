@@ -67,9 +67,8 @@ export const Praise = ({
 
   if (!praise) return null;
   if (usePseudonyms && !periodId) return null;
-
   return (
-    <div className="w-full">
+    <div className="w-full ">
       <div className={classNames(className, 'flex')}>
         {bigGiverAvatar && (
           <div
@@ -91,13 +90,13 @@ export const Praise = ({
         <div className="overflow-hidden">
           <div className="flex w-full">
             <ForwarderTooltip praise={praise} />
-            <UserPopover
-              userAccount={praise.giver}
-              usePseudonym={usePseudonyms}
+            <div
+              className="cursor-pointer"
+              onClickCapture={handleUserClick(praise.giver)}
             >
-              <div
-                className="cursor-pointer"
-                onClickCapture={handleUserClick(praise.giver)}
+              <UserPopover
+                usePseudonym={usePseudonyms}
+                userAccount={praise.giver}
               >
                 {bigGiverAvatar ? (
                   <UserName
@@ -114,8 +113,8 @@ export const Praise = ({
                     nameClassName="font-bold"
                   />
                 )}
-              </div>
-            </UserPopover>
+              </UserPopover>
+            </div>
             {showReceiver && (
               <>
                 <div className="flex items-center px-2">→</div>
@@ -140,7 +139,7 @@ export const Praise = ({
               )}
               arrow
             >
-              <div className="items-center hidden pl-2 text-xs text-warm-gray-500 md:flex dark:text-warm-gray-400">
+              <div className="items-center hidden pl-2 text-xs text-warm-gray-500 @lg:flex dark:text-warm-gray-400">
                 {localizeAndFormatIsoDateRelative(praise.createdAt)}
               </div>
             </Tooltip>
@@ -177,7 +176,7 @@ export const Praise = ({
               )}
             ></span>
           </div>
-          <div className="flex items-center pb-2 text-xs text-warm-gray-500 md:hidden dark:text-warm-gray-400">
+          <div className="flex items-center pb-2 text-xs text-warm-gray-500 dark:text-warm-gray-400 @lg:hidden">
             {localizeAndFormatIsoDateRelative(praise.createdAt)}
           </div>
           <div className="flex items-center text-xs text-warm-gray-500 dark:text-warm-gray-400">

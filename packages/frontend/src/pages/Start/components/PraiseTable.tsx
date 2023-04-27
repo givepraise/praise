@@ -12,7 +12,7 @@ export const PraiseTable = (): JSX.Element => {
   const allPraise = useRecoilValue(AllPraiseList(PRAISE_LIST_KEY));
 
   return (
-    <div className="pb-4">
+    <div className="pb-4 @container">
       <ul>
         {allPraise?.map((praise, index) => (
           <PraiseRow praise={praise} key={index}>
