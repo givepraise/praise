@@ -1,5 +1,10 @@
 import React, { useEffect } from 'react';
-import { useRecoilState, atom, useRecoilValue } from 'recoil';
+import {
+  useRecoilState,
+  atom,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil';
 import { AllPeriods } from '../model/periods/periods';
 import { getPeriodDatesConfig } from '../model/report/util/get-period-dates-config';
 import { toast } from 'react-hot-toast';
@@ -23,8 +28,11 @@ export const DatePeriodRangeEndDate = atom<Date | null>({
 export const DatePeriodRange: React.FC = () => {
   const allPeriods = useRecoilValue(AllPeriods);
   const [periodId, setPeriodId] = useRecoilState(DatePeriodRangePeriod);
-  const [startDate, setStartDate] = useRecoilState(DatePeriodRangeStartDate);
-  const [endDate, setEndDate] = useRecoilState(DatePeriodRangeEndDate);
+  const [startDate, setStartDate] = React.useState<Date>();
+  const [endDate, setEndDate] = React.useState<Date>();
+
+  const setExportedStartDate = useSetRecoilState(DatePeriodRangeStartDate);
+  const setExportedEndDate = useSetRecoilState(DatePeriodRangeEndDate);
 
   // Set latest period as default if no startDate or endDate is set
   useEffect(() => {
@@ -42,24 +50,44 @@ export const DatePeriodRange: React.FC = () => {
         if (!dates) return;
         setStartDate(new Date(dates.startDate));
         setEndDate(new Date(dates.endDate));
+        setExportedStartDate(new Date(dates.startDate));
+        setExportedEndDate(new Date(dates.endDate));
       } catch (err) {
         toast.error((err as Error).message);
       }
     }
-  }, [periodId, setStartDate, setEndDate, allPeriods]);
+  }, [
+    periodId,
+    setStartDate,
+    setEndDate,
+    allPeriods,
+    setExportedEndDate,
+    setExportedStartDate,
+  ]);
 
   const handleStartDateChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
-    setPeriodId('');
-    setStartDate(new Date(event.target.value));
+    const d = new Date(event.target.value);
+    if (endDate && d < endDate) {
+      setStartDate(d);
+    }
   };
 
   const handleEndDateChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
-    setPeriodId('');
-    setEndDate(new Date(event.target.value));
+    const d = new Date(event.target.value);
+    if (startDate && d > startDate) {
+      setEndDate(d);
+    }
+  };
+
+  const handleDateInputBlur = (): void => {
+    if (startDate && endDate) {
+      setExportedStartDate(startDate);
+      setExportedEndDate(endDate);
+    }
   };
 
   const periodOptions: SelectInputOption[] = [
@@ -69,32 +97,37 @@ export const DatePeriodRange: React.FC = () => {
     }),
   ];
 
+  console.log('DatePeriodRange', startDate, endDate);
   return (
     <div className="w-full p-5 mb-5 text-sm border rounded-none shadow-none md:shadow-md md:rounded-xl bg-warm-gray-50 dark:bg-slate-600 break-inside-avoid-column">
       <div className="sm:flex sm:justify-start sm:space-x-5">
-        <div className="flex items-center">Select a period:</div>
+        <div className="flex items-center">Period:</div>
         <SelectInput
           handleChange={(e): void => {
             setPeriodId(e.value);
           }}
           selected={periodOptions.find((o) => o.value === periodId)}
           options={periodOptions}
-          className="text-sm min-w-1/2"
+          className="text-sm min-w-[200px]"
         />
-        <div className="flex items-center">or dates:</div>
-        <input
-          type="date"
-          value={startDate ? startDate.toISOString().substr(0, 10) : ''}
-          onChange={handleStartDateChange}
-          className="text-sm"
-        />
-        <div className="flex items-center">to</div>
-        <input
-          type="date"
-          value={endDate ? endDate.toISOString().substr(0, 10) : ''}
-          onChange={handleEndDateChange}
-          className="text-sm"
-        />
+        <div className="flex flex-row pt-3 sm:pt-0">
+          <div className="flex items-center hidden sm:visible">or dates:</div>
+          <input
+            type="date"
+            value={startDate ? startDate.toISOString().substr(0, 10) : ''}
+            onChange={handleStartDateChange}
+            onBlur={handleDateInputBlur}
+            className="w-full text-sm"
+          />
+          <div className="flex items-center px-3">to</div>
+          <input
+            type="date"
+            value={endDate ? endDate.toISOString().substr(0, 10) : ''}
+            onChange={handleEndDateChange}
+            onBlur={handleDateInputBlur}
+            className="w-full text-sm"
+          />
+        </div>
       </div>
     </div>
   );
