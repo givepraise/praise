@@ -75,11 +75,11 @@ export const DatePeriodRange: React.FC = () => {
         <div className="flex items-center">Select a period:</div>
         <SelectInput
           handleChange={(e): void => {
-            console.log(e);
             setPeriodId(e.value);
           }}
           selected={periodOptions.find((o) => o.value === periodId)}
           options={periodOptions}
+          className="text-sm min-w-1/2"
         />
         <div className="flex items-center">or dates:</div>
         <input
