@@ -12303,12 +12303,8 @@ __metadata:
     "@headlessui/react": ^1.4.1
     "@json2csv/plainjs": ^6.1.2
     "@mui/material": ^5.3.0
-<<<<<<< HEAD
     "@observablehq/plot": ^0.6.5
-    "@rainbow-me/rainbowkit": ^0.10.0
-=======
     "@rainbow-me/rainbowkit": ^0.12.12
->>>>>>> main
     "@sgratzl/chartjs-chart-boxplot": ^4.1.1
     "@tailwindcss/forms": latest
     "@types/react": ^18.0.35
