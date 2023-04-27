@@ -17,6 +17,8 @@ import { PraiseForwardInputDto } from '../dto/praise-forward-input.dto';
 import { errorMessages } from '../../shared/exceptions/error-messages';
 import { PaginateModel } from '../../shared/interfaces/paginate-model.interface';
 import { User } from '../../users/schemas/users.schema';
+import { Setting } from '../../settings/schemas/settings.schema';
+import { valueToValueRealized } from '../../settings/utils/value-to-value-realized.util';
 
 @Injectable()
 export class PraiseService {
@@ -272,9 +274,14 @@ export class PraiseService {
       }
     }
 
-    const selfPraiseAllowed = (
-      await this.settingsService.findOneByKey('SELF_PRAISE_ALLOWED')
-    )?.valueRealized;
+    const selfPraiseAllowedSetting = (await this.settingsService.findOneByKey(
+      'SELF_PRAISE_ALLOWED',
+    )) as Setting;
+
+    const selfPraiseAllowed = valueToValueRealized(
+      selfPraiseAllowedSetting.value,
+      selfPraiseAllowedSetting.type,
+    );
 
     if (!selfPraiseAllowed && receiverIds.includes(giverAccount.accountId)) {
       throw new ApiException(errorMessages.SELF_PRAISE_IS_NOT_ALLOWED);

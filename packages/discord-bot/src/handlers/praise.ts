@@ -112,6 +112,7 @@ export const praiseHandler: CommandHandler = async (
     'SELF_PRAISE_ALLOWED',
     host
   )) as boolean;
+  console.log(selfPraiseAllowed);
 
   let warnSelfPraise = false;
   if (!selfPraiseAllowed && receiverIds.includes(giverAccount.accountId)) {
