@@ -362,7 +362,7 @@ export class CommunityService {
   assertCommunityNameAvailable = async (name: string): Promise<void> => {
     const isAvailable = await this.isCommunityNameAvailable(name);
     if (!isAvailable.available) {
-      throw new ApiException(errorMessages.COMMUNITY_NAME_NOT_AVAILABLE,);
+      throw new ApiException(errorMessages.COMMUNITY_NAME_NOT_AVAILABLE);
     }
   };
 }

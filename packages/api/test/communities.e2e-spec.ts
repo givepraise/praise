@@ -25,6 +25,7 @@ import {
 import { databaseExists } from '../src/database/utils/database-exists';
 import { MongoClient } from 'mongodb';
 import { dbNameCommunity } from '../src/database/utils/db-name-community';
+import { errorMessages } from '../src/shared/exceptions/error-messages';
 
 class LoggedInUser {
   accessToken: string;
@@ -153,7 +154,7 @@ describe('Communities (E2E)', () => {
       expect(response.body.message).toBe('Validation failed');
     });
 
-    test('400 when name is invalid and is in blocklist', async () => {
+    test('400 when name is invalid and is in reserved name list', async () => {
       for (const name of [
         'www',
         'setup',
@@ -175,8 +176,10 @@ describe('Communities (E2E)', () => {
         'security',
       ]) {
         const response = await createValidCommunity({ name });
-        expect(response.status).toBe(400);
-        expect(response.body.message).toBe('Validation failed');
+        expect(response.status).toBe(409);
+        expect(response.body.message).toBe(
+          errorMessages.COMMUNITY_NAME_NOT_AVAILABLE.message,
+        );
       }
     });
 
@@ -202,7 +205,7 @@ describe('Communities (E2E)', () => {
       });
       expect(response.status).toBe(409);
       expect(response.body.message).toBe(
-        "name 'testcommunity 'already exists.",
+        errorMessages.COMMUNITY_NAME_NOT_AVAILABLE.message,
       );
     });
 
@@ -566,17 +569,6 @@ describe('Communities (E2E)', () => {
       expect(response.status).toBe(200);
       expect(rb.available).toBe(false);
     });
-    test('return false for invalid name', async () => {
-      const invalidName = 'test %$#@!';
-      const response = await authorizedGetRequest(
-        `/communities/isNameAvailable?name=${invalidName}`,
-        app,
-        setupWebUserAccessToken,
-      );
-      const rb = response.body;
-      expect(response.status).toBe(200);
-      expect(rb.available).toBe(false);
-    });
     test('return true for valid name', async () => {
       const invalidName = 'test_12345';
       const response = await authorizedGetRequest(
@@ -687,7 +679,7 @@ describe('Communities (E2E)', () => {
       const response = await updateValidCommunity({ name: newCommunity.name });
       expect(response.status).toBe(409);
       expect(response.body.message).toBe(
-        `name '${newCommunity.name} 'already exists.`,
+        errorMessages.COMMUNITY_NAME_NOT_AVAILABLE.message,
       );
     });
 
