@@ -22,6 +22,7 @@ const { chains, provider } = configureChains(
 
 const { connectors } = getDefaultWallets({
   appName: 'Praise',
+  projectId: process.env.REACT_APP_WALLETCONNECT_PROJECT_ID as string,
   chains,
 });
 
@@ -46,6 +47,12 @@ interface Web3ProviderProps {
 }
 
 export function Web3Provider({ children }: Web3ProviderProps): JSX.Element {
+  if (!process.env.REACT_APP_ALCHEMY_KEY) {
+    throw new Error('REACT_APP_ALCHEMY_KEY is not set');
+  }
+  if (!process.env.REACT_APP_WALLETCONNECT_PROJECT_ID) {
+    throw new Error('REACT_APP_WALLETCONNECT_PROJECT_ID is not set');
+  }
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider
