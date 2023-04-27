@@ -3,7 +3,7 @@ import { AsyncDuckDBConnection } from '@duckdb/duckdb-wasm';
 import * as Graph from './layout';
 
 import React from 'react';
-import { CellProps, Column, useTable } from 'react-table';
+import { Column, useTable } from 'react-table';
 
 type dataType = {
   username: string;

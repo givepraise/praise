@@ -78,14 +78,14 @@ export function useReport(input: useReportInput): UseReportReturn {
     let response = await report.run();
 
     // Add an header and footer message to the log
-    let log = `Report: ${report.manifest.name} (${report.manifest.version})\n`;
-    log += `Format: ${format}`;
-    log += response.log ? `\n${response.log}\n` : '\n\n';
-    log += `Number of response rows: ${response.rows?.length}\n\n`;
-    log += '🙏';
+    let log = '✅ Report run completed.\n';
+    if (response.rows?.length) {
+      log += `Response rows: ${response.rows?.length}\n\n`;
+    } else {
+      log += 'Report did not return any result\n\n';
+    }
+    log += response.log ? `${response.log}\n` : 'No log items.\n';
     response.log = log;
-
-    console.log(response);
 
     // Default report format is json but csv is also supported
     let csv: string | undefined;
@@ -96,7 +96,6 @@ export function useReport(input: useReportInput): UseReportReturn {
     if (format === 'json' && response.rows) {
       response = {
         ...response,
-        //rows: response.rows.map((r) => (r as any).toJSON()),
       };
     }
     return { manifest: report.manifest, ...response, csv };

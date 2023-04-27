@@ -1,5 +1,5 @@
 import { useReportRunReturn } from '../../../model/report/types/use-report-run-return.type';
-import { DefaultTable } from './presentations/DefaultTable';
+import { DefaultPresentation } from '../presentations/DefaultPresentation';
 
 const WhichPresentation = ({
   report,
@@ -8,9 +8,9 @@ const WhichPresentation = ({
 }): JSX.Element => {
   switch (report.manifest.name) {
     case 'top-praise':
-      return <DefaultTable report={report} />;
+      return <DefaultPresentation report={report} />;
     default:
-      return <DefaultTable report={report} />;
+      return <DefaultPresentation report={report} />;
   }
 };
 
@@ -21,7 +21,6 @@ export const ReportPresentation = ({
 }): JSX.Element => {
   return (
     <div>
-      <h1 className="text-4xl font-bold">Report Presentation</h1>
       <WhichPresentation report={report} />
     </div>
   );

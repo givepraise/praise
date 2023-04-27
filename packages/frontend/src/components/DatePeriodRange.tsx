@@ -30,17 +30,20 @@ export const DatePeriodRange: React.FC = () => {
   const [periodId, setPeriodId] = useRecoilState(DatePeriodRangePeriod);
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
-
-  const setExportedStartDate = useSetRecoilState(DatePeriodRangeStartDate);
-  const setExportedEndDate = useSetRecoilState(DatePeriodRangeEndDate);
+  const [exportedStartDate, setExportedStartDate] = useRecoilState(
+    DatePeriodRangeStartDate
+  );
+  const [exportedEndDate, setExportedEndDate] = useRecoilState(
+    DatePeriodRangeEndDate
+  );
 
   // Set latest period as default if no startDate or endDate is set
   useEffect(() => {
-    if (!startDate && !endDate && allPeriods.length > 0) {
+    if (!exportedStartDate && !exportedEndDate && allPeriods.length > 0) {
       const latestPeriod = allPeriods[0];
       setPeriodId(latestPeriod._id);
     }
-  }, [allPeriods, endDate, setPeriodId, startDate]);
+  }, [exportedStartDate, exportedEndDate, allPeriods, setPeriodId]);
 
   // Set startDate and endDate when periodId changes
   useEffect(() => {
@@ -97,7 +100,6 @@ export const DatePeriodRange: React.FC = () => {
     }),
   ];
 
-  console.log('DatePeriodRange', startDate, endDate);
   return (
     <div className="w-full p-5 mb-5 text-sm border rounded-none shadow-none md:shadow-md md:rounded-xl bg-warm-gray-50 dark:bg-slate-600 break-inside-avoid-column">
       <div className="sm:flex sm:justify-start sm:space-x-5">

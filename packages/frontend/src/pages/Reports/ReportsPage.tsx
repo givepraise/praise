@@ -1,4 +1,4 @@
-import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faTableList } from '@fortawesome/free-solid-svg-icons';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -58,7 +58,7 @@ const ReportsPage = (): JSX.Element | null => {
 
   return (
     <Page variant="full">
-      <BreadCrumb name="Reports" icon={faCalendarAlt} />
+      <BreadCrumb name="Reports" icon={faTableList} />
 
       <DatePeriodRange />
       <div className="w-full px-0 py-5 mb-5 text-sm border rounded-none shadow-none md:shadow-md md:rounded-xl bg-warm-gray-50 dark:bg-slate-600 break-inside-avoid-column">

@@ -1,4 +1,4 @@
-import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faChartArea } from '@fortawesome/free-solid-svg-icons';
 import { useRecoilValue } from 'recoil';
 import { BreadCrumb } from '../../components/ui/BreadCrumb';
 import { Page } from '../../components/ui/Page';
@@ -50,7 +50,7 @@ const Graphs = (): JSX.Element | null => {
 const AnalyticsPage = (): JSX.Element | null => {
   return (
     <Page variant="full">
-      <BreadCrumb name="Analytics" icon={faCalendarAlt} />
+      <BreadCrumb name="Analytics" icon={faChartArea} />
 
       <DatePeriodRange />
       <Graphs />
