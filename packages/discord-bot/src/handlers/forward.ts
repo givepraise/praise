@@ -1,31 +1,21 @@
+/* TODO - Replace db access with api2 calls */
+
 import { GuildMember } from 'discord.js';
-import { UserModel } from 'api/dist/user/entities';
-import { EventLogTypeKey } from 'api/dist/eventlog/types';
-import { logEvent } from 'api/dist/eventlog/utils';
-import { UserRole } from 'api/dist/user/types';
-import { settingValue } from 'api/dist/shared/settings';
 import { getReceiverData } from '../utils/getReceiverData';
 import { getUserAccount } from '../utils/getUserAccount';
-import {
-  dmError,
-  invalidReceiverError,
-  missingReasonError,
-  notActivatedError,
-  praiseSuccessDM,
-  roleMentionWarning,
-  undefinedReceiverWarning,
-  giverNotActivatedError,
-  selfPraiseWarning,
-} from '../utils/embeds/praiseEmbeds';
+import { getUser } from '../utils/getUser';
+import { praiseSuccessDM, renderMessage } from '../utils/embeds/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
-import { createPraise } from '../utils/createPraise';
 import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
+import { createForward } from '../utils/createForward';
+import { getSetting } from '../utils/settingsUtil';
 import { logger } from '../utils/logger';
+import { getHost } from '../utils/getHost';
 
 /**
- * Execute command /firward
+ * Execute command /forward
  *  Creates praises with a given giver, receiver, and reason
  *
  * @param  interaction
@@ -33,6 +23,7 @@ import { logger } from '../utils/logger';
  * @returns
  */
 export const forwardHandler: CommandHandler = async (
+  client,
   interaction,
   responseUrl
 ) => {
@@ -40,25 +31,42 @@ export const forwardHandler: CommandHandler = async (
 
   const { guild, channel, member } = interaction;
   if (!guild || !member || !channel) {
-    await interaction.editReply(await dmError());
+    await interaction.editReply(await renderMessage('DM_ERROR'));
     return;
   }
 
-  const forwarderAccount = await getUserAccount(member as GuildMember);
+  const host = await getHost(client, guild.id);
+
+  if (host === undefined) {
+    await interaction.editReply('This community is not registered for praise.');
+    return;
+  }
+
+  if ((await assertPraiseAllowedInChannel(interaction, host)) === false) return;
+
+  const forwarderAccount = await getUserAccount(
+    (member as GuildMember).user,
+    host
+  );
   if (!forwarderAccount.user) {
-    await interaction.editReply(await notActivatedError());
+    await interaction.editReply(
+      await renderMessage('PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR', host)
+    );
     return;
   }
 
-  const forwarderUser = await UserModel.findOne({ _id: forwarderAccount.user });
-  if (!forwarderUser?.roles.includes(UserRole.FORWARDER)) {
+  const forwarderUserId =
+    typeof forwarderAccount.user === 'string'
+      ? forwarderAccount.user
+      : forwarderAccount.user._id;
+
+  const forwarderUser = await getUser(forwarderUserId, host);
+  if (!forwarderUser?.roles.includes('FORWARDER')) {
     await interaction.editReply(
       "**❌ You don't have the permission to use this command.**"
     );
     return;
   }
-
-  if ((await assertPraiseAllowedInChannel(interaction)) === false) return;
 
   const praiseGiver = interaction.options.getMember('giver') as GuildMember;
   if (!praiseGiver) {
@@ -66,12 +74,29 @@ export const forwardHandler: CommandHandler = async (
     return;
   }
 
-  if (!(await assertPraiseGiver(praiseGiver, interaction, true))) return;
+  if (!(await assertPraiseGiver(praiseGiver, interaction, true, host))) return;
+
+  const reason = interaction.options.getString('reason');
+  if (!reason || reason.length === 0) {
+    await interaction.editReply(
+      await renderMessage('PRAISE_REASON_MISSING_ERROR', host)
+    );
+    return;
+  }
+
+  if (reason.length < 5 || reason.length > 280) {
+    await interaction.editReply(
+      'INVALID_REASON_LENGTH (reason should be between 5 to 280 characters)'
+    );
+    return;
+  }
 
   const receiverOptions = interaction.options.getString('receivers');
 
   if (!receiverOptions || receiverOptions.length === 0) {
-    await interaction.editReply(await invalidReceiverError());
+    await interaction.editReply(
+      await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+    );
     return;
   }
 
@@ -80,19 +105,18 @@ export const forwardHandler: CommandHandler = async (
     !receiverData.validReceiverIds ||
     receiverData.validReceiverIds?.length === 0
   ) {
-    await interaction.editReply(await invalidReceiverError());
+    await interaction.editReply(
+      await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+    );
     return;
   }
-
-  const reason = interaction.options.getString('reason');
-  if (!reason || reason.length === 0) {
-    await interaction.editReply(await missingReasonError());
-    return;
-  }
-
-  const giverAccount = await getUserAccount(praiseGiver);
+  const giverAccount = await getUserAccount(praiseGiver.user, host);
   if (!giverAccount.user) {
-    await interaction.editReply(await giverNotActivatedError(praiseGiver.user));
+    await interaction.editReply(
+      await renderMessage('FORWARD_FROM_UNACTIVATED_GIVER_ERROR', host, {
+        praiseGiver: praiseGiver.user,
+      })
+    );
     return;
   }
 
@@ -103,8 +127,9 @@ export const forwardHandler: CommandHandler = async (
     ),
   ];
 
-  const selfPraiseAllowed = (await settingValue(
-    'SELF_PRAISE_ALLOWED'
+  const selfPraiseAllowed = (await getSetting(
+    'SELF_PRAISE_ALLOWED',
+    host
   )) as boolean;
 
   let warnSelfPraise = false;
@@ -117,29 +142,32 @@ export const forwardHandler: CommandHandler = async (
   );
 
   for (const receiver of Receivers) {
-    const receiverAccount = await getUserAccount(receiver);
+    const receiverAccount = await getUserAccount(receiver.user, host);
 
-    const praiseObj = await createPraise(
+    const praiseRegistered = await createForward(
       interaction,
       giverAccount,
       receiverAccount,
+      forwarderAccount,
       reason,
-      forwarderAccount
+      host
     );
 
-    await logEvent(
-      EventLogTypeKey.PRAISE,
-      'Created a new forwarded praise from discord',
-      {
-        userAccountId: forwarderAccount._id,
-        userId: forwarderUser._id,
-      }
-    );
+    // await logEvent(
+    //   EventLogTypeKey.PRAISE,
+    //   'Created a new forwarded praise from discord',
+    //   {
+    //     userAccountId: forwarderAccount._id,
+    //     userId: forwarderUser._id,
+    //   }
+    // );
 
-    if (praiseObj) {
+    if (praiseRegistered) {
       try {
         await receiver.send({
-          embeds: [await praiseSuccessDM(responseUrl, !receiverAccount.user)],
+          embeds: [
+            await praiseSuccessDM(responseUrl, !receiverAccount.user, host),
+          ],
         });
       } catch (err) {
         logger.warn(
@@ -154,7 +182,7 @@ export const forwardHandler: CommandHandler = async (
     }
   }
 
-  if (Receivers.length !== 0) {
+  if (Receivers.length !== 0 && receivers.length !== 0) {
     await interaction.editReply('Praise forwarded!');
     await interaction.followUp({
       embeds: [
@@ -162,40 +190,39 @@ export const forwardHandler: CommandHandler = async (
           interaction,
           praiseGiver.user,
           receivers.map((id) => `<@!${id}>`),
-          reason
+          reason,
+          host
         ),
       ],
       ephemeral: false,
     });
-    // await interaction.followUp({
-    //   content: await forwardSuccess(
-    //     praiseGiver.user,
-    //     receivers.map((id) => `<@!${id}>`),
-    //     reason
-    //   ),
-    //   ephemeral: false,
-    // });
   } else if (warnSelfPraise) {
-    await interaction.editReply(await selfPraiseWarning());
+    await interaction.editReply(
+      await renderMessage('SELF_PRAISE_WARNING', host)
+    );
+  } else if (!Receivers.length) {
+    await interaction.editReply(
+      await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+    );
   } else {
-    await interaction.editReply(await invalidReceiverError());
+    await interaction.editReply('Praise Forward failed :(');
   }
 
   const warningMsg =
     (receiverData.undefinedReceivers
-      ? (await undefinedReceiverWarning(
-          receiverData.undefinedReceivers.join(', '),
-          praiseGiver.user
-        )) + '\n'
+      ? (await renderMessage('PRAISE_UNDEFINED_RECEIVERS_WARNING', host, {
+          receivers: receiverData.undefinedReceivers,
+          user: praiseGiver.user,
+        })) + '\n'
       : '') +
     (receiverData.roleMentions
-      ? (await roleMentionWarning(
-          receiverData.roleMentions.join(', '),
-          praiseGiver.user
-        )) + '\n'
+      ? (await renderMessage('PRAISE_TO_ROLE_WARNING', host, {
+          user: praiseGiver.user,
+          receivers: receiverData.roleMentions,
+        })) + '\n'
       : '') +
     (Receivers.length !== 0 && warnSelfPraise
-      ? (await selfPraiseWarning()) + '\n'
+      ? (await renderMessage('SELF_PRAISE_WARNING', host)) + '\n'
       : '');
 
   if (warningMsg && warningMsg.length !== 0) {

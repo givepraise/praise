@@ -1,29 +1,39 @@
-import { UserModel } from 'api/dist/user/entities';
-import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { UserState } from '../interfaces/UserState';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getStateEmbed } from '../utils/embeds/stateEmbed';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
-import { dmError } from '../utils/embeds/praiseEmbeds';
+import { renderMessage } from '../utils/embeds/praiseEmbeds';
+import { UserAccount } from '../utils/api-schema';
+import { apiClient } from '../utils/api';
+import { CommandHandler } from '../interfaces/CommandHandler';
+import { getHost } from '../utils/getHost';
 
 /**
  * Execute command /whoami
- *  Gives the user information about their account and activation status
+ * Gives the user information about their account and activation status
  *
  * @param {CommandInteraction} interaction
  * @returns {Promise<void>}
  */
-export const whoamiHandler = async (
-  interaction: CommandInteraction
+export const whoamiHandler: CommandHandler = async (
+  client,
+  interaction
 ): Promise<void> => {
   const { member, guild } = interaction;
   if (!guild || !member) {
-    await interaction.editReply(await dmError());
+    await interaction.editReply(await renderMessage('DM_ERROR'));
     return;
   }
 
-  const ua = await getUserAccount(member as GuildMember);
+  const host = await getHost(client, guild.id);
+
+  if (host === undefined) {
+    await interaction.editReply('This community is not registered for praise.');
+    return;
+  }
+
+  const ua = await getUserAccount((member as GuildMember).user, host);
 
   const state: UserState = {
     id: ua.accountId,
@@ -35,23 +45,44 @@ export const whoamiHandler = async (
   state.hasPraiseGiverRole = await assertPraiseGiver(
     member as GuildMember,
     interaction,
-    false
+    false,
+    host
   );
 
-  const User = await UserModel.findOne({ _id: ua.user });
-  state.praiseRoles = User?.roles || [];
-  state.address = User?.identityEthAddress || '';
-  state.avatar = ua.avatarId;
+  // const user =
+  //   ua.user === null
+  //     ? undefined
+  //     : await getUser(
+  //         typeof ua.user === 'string' ? ua.user : ua.user._id,
+  //         host
+  //       );
 
-  const activatedAccounts = await UserAccountModel.find({ user: ua.user });
-  if (activatedAccounts) {
+  if (ua.user !== undefined) {
+    state.praiseRoles = [...ua.user.roles];
+    state.address = ua.user.identityEthAddress || '';
+    state.avatar = ua.avatarId;
     state.activations = [];
+
+    const activatedAccounts = await apiClient
+      .get<UserAccount[]>(`useraccounts?user=${ua.user._id}`, {
+        headers: { host: host },
+      })
+      .then((res) => res.data);
     for (const account of activatedAccounts) {
       state.activations.push({
         platform: account.platform,
         user: account.name,
         activationDate: account.createdAt,
         latestUsageDate: account.updatedAt,
+      });
+    }
+  } else {
+    if (state.activations) {
+      state.activations.push({
+        platform: 'DISCORD',
+        user: ua.name,
+        activationDate: ua.createdAt,
+        latestUsageDate: ua.updatedAt,
       });
     }
   }

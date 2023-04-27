@@ -1,30 +1,17 @@
 import { CommandInteraction, EmbedBuilder, User } from 'discord.js';
-import { settingValue } from 'api/dist/shared/settings';
+import { getSetting } from '../settingsUtil';
 
-/**
- * Generate message outlining user's current activation status
- *
- * @param {UserState} state
- * @returns {EmbedBuilder}
- */
 export const praiseForwardEmbed = async (
   interaction: CommandInteraction,
   giver: User,
   receivers: string[],
-  reason: string
+  reason: string,
+  host: string
 ): Promise<EmbedBuilder> => {
-  const successMessage = (await settingValue(
-    'FORWARD_SUCCESS_MESSAGE'
-  )) as string;
-  let msg;
-  if (successMessage) {
-    msg = successMessage
-      ?.replace('{@giver}', `<@!${giver.id}>`)
-      .replace('{@receivers}', `${receivers.join(', ')}`)
-      .replace('{reason}', reason);
-  } else {
-    msg = 'PRAISE SUCCESSFUL (message not set)';
-  }
+  const msg = ((await getSetting('FORWARD_SUCCESS_MESSAGE', host)) as string)
+    .replace('{@giver}', `<@!${giver.id}>`)
+    .replace('{@receivers}', `${receivers.join(', ')}`)
+    .replace('{reason}', reason);
 
   const { user } = interaction;
   const embed = new EmbedBuilder()

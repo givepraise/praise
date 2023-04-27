@@ -1,11 +1,8 @@
-import { UserAccountPlatform } from 'api/dist/useraccount/types';
-import { UserRole } from 'api/dist/user/types';
-
 interface ActivatedAccount {
-  platform: UserAccountPlatform;
+  platform: string;
   user: string;
-  activationDate: Date;
-  latestUsageDate: Date;
+  activationDate: string;
+  latestUsageDate: string;
 }
 
 export interface UserState {
@@ -15,6 +12,6 @@ export interface UserState {
   activated: boolean;
   avatar?: string;
   address?: string;
-  praiseRoles?: UserRole[];
+  praiseRoles?: string[];
   activations?: ActivatedAccount[];
 }

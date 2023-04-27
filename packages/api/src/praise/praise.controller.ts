@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Query,
+  Request,
   Res,
   SerializeOptions,
   UseInterceptors,
@@ -35,6 +36,9 @@ import { PraiseExportService } from './services/praise-export.service';
 import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { PraiseCreateInputDto } from './dto/praise-create-input.dto';
 import { PraiseForwardInputDto } from './dto/praise-forward-input.dto';
+import { EventLogService } from '../event-log/event-log.service';
+import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import * as JSONStream from 'JSONStream';
 import { Transform } from '@json2csv/node';
 import { Public } from '../shared/decorators/public.decorator';
@@ -63,6 +67,7 @@ export class PraiseController {
   constructor(
     private readonly praiseService: PraiseService,
     private readonly praiseExportService: PraiseExportService,
+    private readonly eventLogService: EventLogService,
   ) {}
 
   @Get()
@@ -234,8 +239,19 @@ export class PraiseController {
   })
   @Permissions(Permission.PraiseCreate)
   @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
-  async praise(@Body() data: PraiseCreateInputDto): Promise<Praise[]> {
-    return this.praiseService.createPraiseItem(data);
+  async praise(
+    @Request() request: RequestWithAuthContext,
+    @Body() data: PraiseCreateInputDto,
+  ): Promise<Praise[]> {
+    const praiseItem = await this.praiseService.createPraiseItem(data);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PRAISE,
+      description: `Giver ${data.giver} created an Praise item with receiver IDS ${data.receiverIds}`,
+    });
+
+    return praiseItem;
   }
 
   @Post('forward')
@@ -247,7 +263,18 @@ export class PraiseController {
   })
   @Permissions(Permission.PraiseForward)
   @UseInterceptors(MongooseClassSerializerInterceptor(Praise))
-  async forward(@Body() data: PraiseForwardInputDto): Promise<Praise[]> {
-    return this.praiseService.createPraiseItem(data);
+  async forward(
+    @Request() request: RequestWithAuthContext,
+    @Body() data: PraiseForwardInputDto,
+  ): Promise<Praise[]> {
+    const praiseItem = await this.praiseService.createPraiseItem(data);
+
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: request.authContext,
+      typeKey: EventLogTypeKey.PRAISE,
+      description: `Forwarder ${data.forwarder} created an Praise item with receiver IDS ${data.receiverIds}`,
+    });
+
+    return praiseItem;
   }
 }

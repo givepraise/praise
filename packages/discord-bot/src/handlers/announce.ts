@@ -1,14 +1,11 @@
-import { UserAccountModel } from 'api/dist/useraccount/entities';
-import { UserAccount } from 'api/dist/useraccount/types';
-import { UserModel } from 'api/dist/user/entities';
 import {
-  SelectMenuInteraction,
+  StringSelectMenuInteraction,
   ActionRowBuilder,
   ButtonBuilder,
-  SelectMenuBuilder,
+  StringSelectMenuBuilder,
+  GuildMember,
 } from 'discord.js';
-import { UserRole } from 'api/dist/user/types';
-import { PeriodModel } from 'api/dist/period/entities';
+import { CommandHandler } from '../interfaces/CommandHandler';
 import {
   continueButton,
   cancelButton,
@@ -16,42 +13,56 @@ import {
 import { dmTargetMenu } from '../utils/menus/dmTargetmenu';
 import { selectTargets } from '../utils/dmTargets';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
-import { notActivatedError } from '../utils/embeds/praiseEmbeds';
-import { CommandHandler } from '../interfaces/CommandHandler';
+import { getHost } from '../utils/getHost';
+import { getUserAccount } from '../utils/getUserAccount';
+import { renderMessage } from '../utils/embeds/praiseEmbeds';
+import { apiClient } from '../utils/api';
+import { PeriodPaginatedResponseDto } from '../utils/api-schema';
 
-/**
- * Executes command /announce
- *  Sends DMs to specified lists of users with a given message
- *
- * @param  interaction
- * @returns
- */
-export const announcementHandler: CommandHandler = async (interaction) => {
-  const { user } = interaction;
-  const ua = {
-    accountId: user.id,
-    name: user.username + '#' + user.discriminator,
-    avatarId: user.avatar,
-    platform: 'DISCORD',
-  } as UserAccount;
-  const userAccount = await UserAccountModel.findOneAndUpdate(
-    { accountId: user.id },
-    ua,
-    { upsert: true, new: true }
-  );
-  if (!userAccount.user) {
-    await interaction.editReply(await notActivatedError());
+// /**
+//  * Executes command /announce
+//  *  Sends DMs to specified lists of users with a given message
+//  *
+//  * @param  interaction
+//  * @returns
+//  */
+export const announcementHandler: CommandHandler = async (
+  client,
+  interaction
+) => {
+  const { guild, channel, member } = interaction;
+  if (!guild || !member || !channel) {
+    await interaction.editReply(await renderMessage('DM_ERROR'));
     return;
   }
-  const currentUser = await UserModel.findOne({ _id: userAccount.user });
 
-  if (currentUser?.roles.includes(UserRole.ADMIN)) {
+  const host = await getHost(client, guild.id);
+
+  if (host === undefined) {
+    await interaction.editReply('This community is not registered for praise.');
+    return;
+  }
+
+  const userAccount = await getUserAccount((member as GuildMember).user, host);
+
+  if (!userAccount.user || userAccount === null) {
+    await interaction.editReply(
+      await renderMessage('PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR', host)
+    );
+    return;
+  }
+
+  const currentUser = userAccount.user;
+
+  if (currentUser.roles.includes('ADMIN')) {
     const message = interaction.options.getString('message');
 
     const userSelectionMsg = await interaction.editReply({
       content: 'Which users do you want to send the message to?',
       components: [
-        new ActionRowBuilder<SelectMenuBuilder>().addComponents([dmTargetMenu]),
+        new ActionRowBuilder<StringSelectMenuBuilder>().addComponents([
+          dmTargetMenu,
+        ]),
       ],
     });
 
@@ -65,15 +76,23 @@ export const announcementHandler: CommandHandler = async (interaction) => {
       await click.deferUpdate();
       switch (click.customId) {
         case 'dm-menu': {
-          if (!click.isSelectMenu()) break;
-          const menu: SelectMenuInteraction = click;
+          if (!click.isStringSelectMenu()) break;
+          const menu: StringSelectMenuInteraction = click;
           selectedUserType = menu.values[0];
           if (
             selectedUserType === 'ASSIGNED-QUANTIFIERS' ||
             selectedUserType === 'UNFINISHED-QUANTIFIERS'
           ) {
-            const openPeriods = await PeriodModel.find({ status: 'QUANTIFY' });
-            if (!openPeriods.length) {
+            const openPeriods = await apiClient
+              .get<PeriodPaginatedResponseDto>('/periods', {
+                headers: { host },
+              })
+              .then((res) =>
+                res.data.docs.filter((doc) => doc.status === 'QUANTIFY')
+              )
+              .catch(() => undefined);
+
+            if (!openPeriods || !openPeriods.length) {
               await interaction.editReply({
                 content: 'No periods open for quantification.',
                 components: [],
@@ -83,7 +102,7 @@ export const announcementHandler: CommandHandler = async (interaction) => {
             await interaction.editReply({
               content: 'Which period are you referring to?',
               components: [
-                new ActionRowBuilder<SelectMenuBuilder>().addComponents([
+                new ActionRowBuilder<StringSelectMenuBuilder>().addComponents([
                   periodSelectMenu(openPeriods),
                 ]),
               ],
@@ -105,7 +124,7 @@ export const announcementHandler: CommandHandler = async (interaction) => {
           break;
         }
         case 'period-menu': {
-          if (!click.isSelectMenu()) return;
+          if (!click.isStringSelectMenu()) return;
           selectedPeriod = click.values[0];
           await interaction.editReply({
             content: `Preview announcement before continuing:\n---\n${
@@ -129,7 +148,8 @@ export const announcementHandler: CommandHandler = async (interaction) => {
             interaction,
             selectedUserType,
             selectedPeriod,
-            message || ''
+            message || '',
+            host
           );
           break;
         }
@@ -142,6 +162,7 @@ export const announcementHandler: CommandHandler = async (interaction) => {
         }
       }
     });
+
     collector.on('end', async (collected) => {
       const successfulEndEvents = ['cancel', 'continue'];
       const ended = collected.some((clk) =>

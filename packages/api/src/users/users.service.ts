@@ -7,8 +7,6 @@ import { UpdateUserInputDto } from './dto/update-user-input.dto';
 import { CreateUserInputDto } from './dto/create-user-input.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { UserAccount } from '../useraccounts/schemas/useraccounts.schema';
-import { EventLogService } from '../event-log/event-log.service';
-import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { AuthRole } from '../auth/enums/auth-role.enum';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { Praise, PraiseDocument } from '../praise/schemas/praise.schema';
@@ -28,7 +26,6 @@ export class UsersService {
     private userModel: Model<UserDocument>,
     @InjectModel(Praise.name)
     private praiseModel: Model<PraiseDocument>,
-    private eventLogService: EventLogService,
     private periodService: PeriodsService,
     private praiseService: PraiseService,
   ) {}
@@ -130,12 +127,11 @@ export class UsersService {
     userDocument.roles.push(roleChange.role);
     const user = await userDocument.save();
 
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.PERMISSION,
-      description: `Added role "${roleChange.role}" to user with id "${(
+    logger.info(
+      `Added role "${roleChange.role}" to user with id "${(
         user._id as Types.ObjectId
       ).toString()}"`,
-    });
+    );
 
     return this.findOneById(user._id);
   }
@@ -190,12 +186,11 @@ export class UsersService {
     userDocument.roles.splice(roleIndex, 1);
     const user = await userDocument.save();
 
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.PERMISSION,
-      description: `Removed role "${roleChange.role}" from user with id "${(
+    logger.info(
+      `Removed role "${roleChange.role}" from user with id "${(
         user._id as Types.ObjectId
       ).toString()}"`,
-    });
+    );
 
     return this.findOneById(user._id);
   }

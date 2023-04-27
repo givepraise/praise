@@ -15,7 +15,8 @@ COPY ./packages/api-types ./packages/api-types
 COPY ./packages/discord-bot ./packages/discord-bot
 
 # Install dependencies for packages
-RUN yarn set version berry
+RUN apk add --no-cache git
+RUN corepack enable
 RUN yarn
 
 # Run the app

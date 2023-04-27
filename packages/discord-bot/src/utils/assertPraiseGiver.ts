@@ -1,7 +1,6 @@
 import { CacheType, CommandInteraction, GuildMember, Role } from 'discord.js';
-import { settingValue } from 'api/dist/shared/settings';
-import { dmError, praiseRoleError } from './embeds/praiseEmbeds';
-
+import { renderMessage, praiseRoleError } from './embeds/praiseEmbeds';
+import { getSetting } from './settingsUtil';
 /**
  * Check if user has discord role PRAISE_GIVER_ROLE_ID if required,
  *  if not: reply with an error message
@@ -14,13 +13,28 @@ import { dmError, praiseRoleError } from './embeds/praiseEmbeds';
 export const assertPraiseGiver = async (
   praiseGiver: GuildMember,
   interaction: CommandInteraction<CacheType>,
-  sendReply: boolean
+  sendReply: boolean,
+  host: string
 ): Promise<boolean> => {
-  const praiseGiverRoleIDRequired = (await settingValue(
-    'PRAISE_GIVER_ROLE_ID_REQUIRED'
+  const { guild } = interaction;
+
+  if (!guild) {
+    if (sendReply) {
+      await interaction.editReply({
+        content: await renderMessage('DM_ERROR'),
+      });
+    }
+    return false;
+  }
+
+  const praiseGiverRoleIDRequired = (await getSetting(
+    'PRAISE_GIVER_ROLE_ID_REQUIRED',
+    host
   )) as boolean;
-  const praiseGiverRoleIDList = (await settingValue(
-    'PRAISE_GIVER_ROLE_ID'
+
+  const praiseGiverRoleIDList = (await getSetting(
+    'PRAISE_GIVER_ROLE_ID',
+    host
   )) as string[];
 
   if (!praiseGiverRoleIDRequired) {
@@ -36,16 +50,6 @@ export const assertPraiseGiver = async (
     if (sendReply) {
       await interaction.editReply({
         content: '**❌ No Praise Giver Discord Role ID specified.**',
-      });
-    }
-    return false;
-  }
-
-  const { guild } = interaction;
-  if (!guild) {
-    if (sendReply) {
-      await interaction.editReply({
-        content: await dmError(),
       });
     }
     return false;
@@ -84,7 +88,7 @@ export const assertPraiseGiver = async (
   if (!isPraiseGiver) {
     if (sendReply) {
       await interaction.editReply({
-        embeds: [await praiseRoleError(roles, praiseGiver.user)],
+        embeds: [await praiseRoleError(roles, praiseGiver.user, guild.id)],
       });
     }
     return false;

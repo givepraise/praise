@@ -239,7 +239,6 @@ export class PraiseService {
     let forwarder: UserAccount | undefined;
     const { giver, receiverIds, reason, reasonRaw, sourceId, sourceName } =
       data;
-
     if ('forwarder' in data) {
       const { forwarder: forwarderFromDto } = data as PraiseForwardInputDto;
       forwarder = forwarderFromDto;

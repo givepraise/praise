@@ -8,6 +8,8 @@ import { LoginInputDto } from './dto/login-input.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { UsersService } from '../users/users.service';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 
 @Controller('auth')
 @ApiTags('Authentication')
@@ -15,6 +17,7 @@ export class EthSignatureController {
   constructor(
     private readonly ethSignatureService: EthSignatureService,
     private readonly usersService: UsersService,
+    private readonly eventLogService: EventLogService,
   ) {}
 
   @Post('eth-signature/nonce')
@@ -65,10 +68,17 @@ export class EthSignatureController {
     @Headers('host') host: string,
     @Body() loginInputDto: LoginInputDto,
   ): Promise<LoginResponseDto> {
-    return this.ethSignatureService.login(
+    const loginResponse = await this.ethSignatureService.login(
       loginInputDto.identityEthAddress,
       loginInputDto.signature,
       host.split(':')[0],
     );
+
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.AUTHENTICATION,
+      description: `User ${loginInputDto.identityEthAddress} logged in`,
+    });
+
+    return loginResponse;
   }
 }

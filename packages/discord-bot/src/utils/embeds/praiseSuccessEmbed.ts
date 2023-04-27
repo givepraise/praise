@@ -1,39 +1,30 @@
-import { CommandInteraction, EmbedBuilder } from 'discord.js';
-import { settingValue } from 'api/dist/shared/settings';
+import { User, EmbedBuilder } from 'discord.js';
+import { getSetting } from '../settingsUtil';
 
-/**
- * Generate message outlining user's current activation status
- *
- * @param {UserState} state
- * @returns {EmbedBuilder}
- */
 export const praiseSuccessEmbed = async (
-  interaction: CommandInteraction,
+  user: User,
   receivers: string[],
-  reason: string
+  reason: string,
+  host: string
 ): Promise<EmbedBuilder> => {
-  const successMessage = (await settingValue(
-    'PRAISE_SUCCESS_MESSAGE'
-  )) as string;
-  let msg;
-  if (successMessage) {
-    msg = successMessage
-      .replace('{@receivers}', `${receivers.join(', ')}`)
-      .replace('{reason}', reason);
-  } else {
-    msg = 'PRAISE SUCCESSFUL (message not set)';
-  }
-  const { user } = interaction;
+  const msg = ((await getSetting('PRAISE_SUCCESS_MESSAGE', host)) as string)
+    .replace('{@receivers}', `${receivers.join(', ')}`)
+    .replace('{reason}', reason);
 
-  const embed = new EmbedBuilder()
-    .setColor(0xe6007e)
-    .setAuthor({
-      name: user.username,
-      iconURL: user.avatar
-        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`
-        : 'https://discord.com/assets/1f0bfc0865d324c2587920a7d80c609b.png',
-      url: `${process.env.FRONTEND_URL as string}/users/${user.id}`,
-    })
-    .setDescription(msg);
-  return embed;
+  try {
+    const embed = new EmbedBuilder()
+      .setColor(0xe6007e)
+      .setAuthor({
+        name: user.username,
+        iconURL: user.avatar
+          ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`
+          : 'https://discord.com/assets/1f0bfc0865d324c2587920a7d80c609b.png',
+        url: `${process.env.FRONTEND_URL as string}/users/${user.id}`,
+      })
+      .setDescription(msg);
+    return embed;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };

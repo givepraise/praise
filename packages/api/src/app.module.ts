@@ -29,7 +29,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     }),
     ThrottlerModule.forRoot({
       ttl: 60,
-      limit: process.env.NODE_ENV === 'testing' ? 1000 : 10, // 10 requests per minute, except in development
+      limit: process.env.NODE_ENV === 'testing' ? 1000 : 100, // 10 requests per minute, except in development
     }),
     CacheModule.register({
       isGlobal: true,

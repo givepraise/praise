@@ -4,8 +4,6 @@ import { ApiException } from '../shared/exceptions/api-exception';
 import { UserAccountsService } from '../useraccounts/useraccounts.service';
 import { ethers } from 'ethers';
 import { UsersService } from '../users/users.service';
-import { EventLogService } from '../event-log/event-log.service';
-import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { User } from '../users/schemas/users.schema';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { AuthRole } from '../auth/enums/auth-role.enum';
@@ -15,7 +13,6 @@ export class ActivateService {
   constructor(
     private userAccountsService: UserAccountsService,
     private usersService: UsersService,
-    private eventLogService: EventLogService,
   ) {}
 
   /**
@@ -113,14 +110,6 @@ export class ActivateService {
     if (!user) {
       throw new ApiException(errorMessages.USER_NOT_FOUND_AFTER_UPDATE);
     }
-
-    // Log event
-    await this.eventLogService.logEvent({
-      typeKey: EventLogTypeKey.AUTHENTICATION,
-      description: 'Activated account',
-      userAccount: userAccount._id,
-      user: user._id,
-    });
 
     return user;
   }

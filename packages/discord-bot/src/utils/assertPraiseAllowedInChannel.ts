@@ -1,5 +1,5 @@
 import { ChannelType, CommandInteraction, TextBasedChannel } from 'discord.js';
-import { settingValue } from 'api/dist/shared/settings';
+import { getSetting } from './settingsUtil';
 
 const getChannelId = (channel: TextBasedChannel): string => {
   return channel.type === ChannelType.PublicThread ||
@@ -10,17 +10,24 @@ const getChannelId = (channel: TextBasedChannel): string => {
 };
 
 export const assertPraiseAllowedInChannel = async (
-  interaction: CommandInteraction
+  interaction: CommandInteraction,
+  host: string
 ): Promise<boolean> => {
-  const { channel } = interaction;
-  const allowedInAllChannels = (await settingValue(
-    'PRAISE_ALLOWED_IN_ALL_CHANNELS'
+  const { channel, guild } = interaction;
+
+  if (!channel || !guild) return false;
+
+  const allowedInAllChannels = (await getSetting(
+    'PRAISE_ALLOWED_IN_ALL_CHANNELS',
+    host
   )) as boolean;
-  const allowedChannelsList = (await settingValue(
-    'PRAISE_ALLOWED_CHANNEL_IDS'
-  )) as string[];
 
   if (allowedInAllChannels) return true;
+
+  const allowedChannelsList = (await getSetting(
+    'PRAISE_ALLOWED_CHANNEL_IDS',
+    host
+  )) as string[];
 
   if (!channel) {
     await interaction.editReply({
@@ -28,7 +35,6 @@ export const assertPraiseAllowedInChannel = async (
     });
     return false;
   }
-
   if (!Array.isArray(allowedChannelsList) || allowedChannelsList.length === 0) {
     await interaction.editReply({
       content: '**❌ Praise Restricted**\nPraise not allowed in any channel.',

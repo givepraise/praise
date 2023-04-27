@@ -10,20 +10,19 @@ import merge from 'lodash/merge';
 import { WagmiConfig, configureChains, createClient } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { mainnet } from 'wagmi/chains';
-import { infuraProvider } from 'wagmi/providers/infura';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
 
 const { chains, provider } = configureChains(
   [mainnet],
   [
-    infuraProvider({
-      apiKey: '1f04715c0a10492483047083a5c3edd2',
-    }),
+    alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_KEY as string }),
     publicProvider(),
   ]
 );
 
 const { connectors } = getDefaultWallets({
   appName: 'Praise',
+  projectId: process.env.REACT_APP_WALLETCONNECT_PROJECT_ID as string,
   chains,
 });
 
@@ -48,6 +47,12 @@ interface Web3ProviderProps {
 }
 
 export function Web3Provider({ children }: Web3ProviderProps): JSX.Element {
+  if (!process.env.REACT_APP_ALCHEMY_KEY) {
+    throw new Error('REACT_APP_ALCHEMY_KEY is not set');
+  }
+  if (!process.env.REACT_APP_WALLETCONNECT_PROJECT_ID) {
+    throw new Error('REACT_APP_WALLETCONNECT_PROJECT_ID is not set');
+  }
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider

@@ -27,7 +27,7 @@ export const forward: Command = {
         .setRequired(true)
     ),
 
-  async execute(interaction) {
+  async execute(client, interaction) {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'forward')
         return;
@@ -38,6 +38,7 @@ export const forward: Command = {
       });
       if (msg === undefined) return;
       await forwardHandler(
+        client,
         interaction,
         getMsgLink(
           interaction.guildId || '',
@@ -46,7 +47,8 @@ export const forward: Command = {
         )
       );
     } catch (err) {
-      logger.error(err);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      logger.error((err as any).message);
     }
   },
   help: {

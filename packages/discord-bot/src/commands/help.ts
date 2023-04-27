@@ -17,7 +17,7 @@ export const help: HelpCommandBuilder = (commands) => {
             .setRequired(false)
         ),
 
-      async execute(interaction) {
+      async execute(client, interaction) {
         try {
           if (!interaction.isCommand() || interaction.commandName !== 'help')
             return;
@@ -28,7 +28,8 @@ export const help: HelpCommandBuilder = (commands) => {
           if (msg === undefined) return;
           await helpHandler(interaction, commands);
         } catch (err) {
-          logger.error(err);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          logger.error((err as any).message);
         }
       },
     } as Command,

@@ -9,13 +9,7 @@ import {
   SerializeOptions,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  ApiOperation,
-  ApiParam,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommunityService } from './community.service';
 import { Permission } from '../auth/enums/permission.enum';
 import { Community } from './schemas/community.schema';
@@ -31,7 +25,6 @@ import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-p
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { ApiException } from '../shared/exceptions/api-exception';
-import { Public } from '../shared/decorators/public.decorator';
 @Controller('communities')
 @ApiTags('Communities')
 @SerializeOptions({
