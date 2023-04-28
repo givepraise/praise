@@ -1,7 +1,3 @@
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
-import { CSVLink } from 'react-csv';
 import { useRecoilValue } from 'recoil';
 
 import {
@@ -10,48 +6,12 @@ import {
   AllQuantifierUsers,
   AllUsers,
 } from '@/model/user/users';
-import { Button } from '@/components/ui/Button';
-import { User } from '@/model/user/dto/user.dto';
-
-interface DownloadUser extends Omit<User, 'accounts'> {
-  discordName?: string;
-  discordAccountId?: string;
-  telegramName?: string;
-  telegramAccountId?: string;
-  accounts?: string[];
-}
 
 export const UsersStatistics = (): JSX.Element => {
   const allAdminUsers = useRecoilValue(AllAdminUsers);
   const allForwarderUsers = useRecoilValue(AllForwarderUsers);
   const allQuantifierUsers = useRecoilValue(AllQuantifierUsers);
   const allUsers = useRecoilValue(AllUsers);
-  const [downloadData, setDownloadData] = useState<DownloadUser[]>([]);
-
-  const filterData = (): boolean => {
-    if (!allUsers) {
-      return false;
-    }
-    const data = allUsers.map((user) => {
-      const discordAccount = user.accounts?.find(
-        (account) => account.platform === 'DISCORD'
-      );
-      const telegramAccount = user.accounts?.find(
-        (account) => account.platform === 'TELEGRAM'
-      );
-      return {
-        ...user,
-        discordAccountId: discordAccount?.accountId,
-        discordName: discordAccount?.name,
-        telegramAccountId: telegramAccount?.accountId,
-        telegramName: telegramAccount?.name,
-        accounts: user.accounts?.map((account) => account.platform),
-      };
-    });
-
-    setDownloadData(data);
-    return true;
-  };
 
   return (
     <>
@@ -60,22 +20,6 @@ export const UsersStatistics = (): JSX.Element => {
       <div>Admins: {allAdminUsers?.length}</div>
       <div>Forwarders: {allForwarderUsers?.length}</div>
       <div>Quantifiers: {allQuantifierUsers?.length}</div>
-      <div className="flex w-full mt-5">
-        {allUsers && (
-          <Button>
-            <CSVLink
-              className="no-underline"
-              data={downloadData}
-              onClick={(): boolean => filterData()}
-              separator={';'}
-              filename={'PraiseUserExport.csv'}
-            >
-              <FontAwesomeIcon icon={faDownload} size="1x" className="mr-2" />
-              Export
-            </CSVLink>
-          </Button>
-        )}
-      </div>
     </>
   );
 };

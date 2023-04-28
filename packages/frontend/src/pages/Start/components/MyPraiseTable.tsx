@@ -42,7 +42,7 @@ export const MyPraiseTable = (): JSX.Element | null => {
     );
 
   return (
-    <div className="pb-6">
+    <div className="pb-6 @container">
       <ul>
         {allPraise?.map((praise, index) => (
           <PraiseRow praise={praise} key={index}>

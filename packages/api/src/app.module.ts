@@ -19,6 +19,8 @@ import { RequestLoggerMiddleware } from './shared/middlewares/request-logger.mid
 import { AuthGuardModule } from './auth/auth-guard.module';
 import { PingMiddleware } from './shared/middlewares/ping.middleware';
 import { DomainCheckMiddleware } from './shared/middlewares/domainCheck.middleware';
+import { ReportsModule } from './reports/reports.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -28,6 +30,9 @@ import { DomainCheckMiddleware } from './shared/middlewares/domainCheck.middlewa
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: process.env.NODE_ENV === 'testing' ? 1000 : 100, // 10 requests per minute, except in development
+    }),
+    CacheModule.register({
+      isGlobal: true,
     }),
     ActivateModule,
     ApiKeyModule,
@@ -42,6 +47,7 @@ import { DomainCheckMiddleware } from './shared/middlewares/domainCheck.middlewa
     SettingsModule,
     UserAccountsModule,
     UsersModule,
+    ReportsModule,
   ],
   providers: [
     {

@@ -47,4 +47,7 @@ export enum Permission {
   CommunitiesView = 'communities:view',
   CommunitiesCreate = 'communities:create',
   CommunitiesUpdate = 'communities:update',
+
+  // Reports
+  ReportsView = 'reports:view',
 }

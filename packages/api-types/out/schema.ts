@@ -232,6 +232,10 @@ export interface paths {
     /** Quantify praise item by id */
     patch: operations['QuantificationsController_quantify'];
   };
+  '/api/reports': {
+    /** List all report manifests */
+    get: operations['ReportsController_listAllReports'];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -526,7 +530,7 @@ export interface components {
       score: number;
       receiver: components['schemas']['UserAccountWithUserRefDto'];
       giver: components['schemas']['UserAccountWithUserRefDto'];
-      forwarder: components['schemas']['UserAccountWithUserRefDto'];
+      forwarder?: components['schemas']['UserAccountWithUserRefDto'];
       quantifications: readonly components['schemas']['Quantification'][];
       /** Format: date-time */
       createdAt: string;
@@ -568,7 +572,7 @@ export interface components {
       score: number;
       receiver: components['schemas']['UserAccount'];
       giver: components['schemas']['UserAccount'];
-      forwarder: components['schemas']['UserAccount'];
+      forwarder?: components['schemas']['UserAccount'];
       quantifications: readonly components['schemas']['Quantification'][];
       /** Format: date-time */
       createdAt: string;
@@ -1017,6 +1021,88 @@ export interface components {
        * ]
        */
       praiseIds: string[];
+    };
+    SettingDto: {
+      /**
+       * @description Type of the setting
+       * @example string
+       * @enum {string}
+       */
+      type: 'string' | 'number' | 'boolean' | 'array';
+      /**
+       * @description Default value for the setting
+       * @example Some string
+       */
+      default: Record<string, never>;
+      /**
+       * @description Description of the setting
+       * @example Description of the string setting
+       */
+      description: string;
+      /**
+       * @description Markdown description of the setting
+       * @example Description of the string setting
+       */
+      markdownDescription: string;
+      /**
+       * @description Edit presentation style
+       * @example multiline
+       * @enum {string}
+       */
+      editPresentation?: 'multiline';
+      /**
+       * @description Order of the setting
+       * @example 1
+       */
+      order: number;
+      /**
+       * @description Enum values for string type settings
+       * @example [
+       *   "left",
+       *   "right"
+       * ]
+       */
+      enum?: string[];
+      items: {
+        type?: Record<string, never>;
+      };
+    };
+    ReportManifestDto: {
+      /** @example simple-report */
+      name: string;
+      /** @example Simple Report */
+      displayName: string;
+      /** @example A simple report. */
+      description: string;
+      /** @example 1.2.3 */
+      version: string;
+      /** @example General Magic */
+      author: string;
+      /** @example general-magic */
+      publisher: string;
+      /** @example MIT */
+      license: string;
+      /** @example https://github.com/givepraise/reports */
+      repository: string;
+      /** @example https://github.com/givepraise/reports/issues */
+      bugs: string;
+      /**
+       * @example [
+       *   "Basic reports",
+       *   "Praise receiver reports"
+       * ]
+       */
+      categories: string[];
+      /**
+       * @example [
+       *   "toplist"
+       * ]
+       */
+      keywords: string[];
+      /** @description Configuration settings for the report */
+      configuration: {
+        [key: string]: components['schemas']['SettingDto'] | undefined;
+      };
     };
   };
   responses: never;
@@ -2129,6 +2215,19 @@ export interface operations {
           'application/json': components['schemas']['Praise'][];
         };
       };
+    };
+  };
+  /** List all report manifests */
+  ReportsController_listAllReports: {
+    responses: {
+      /** @description A list of report manifests */
+      200: {
+        content: {
+          'application/json': components['schemas']['ReportManifestDto'][];
+        };
+      };
+      /** @description An error occurred while fetching report manifests */
+      500: never;
     };
   };
 }
