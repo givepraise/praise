@@ -101,13 +101,13 @@ export const ReportConfigDialog = ({
               Thank you for supporting the continued development of Praise!{' '}
               <b>{csSupportPercentage?.valueRealized}%</b> will be added to the
               token distribution.{' '}
-              <Link to={'/settings/custom-export'}>Change settings</Link>
+              <Link to={'/settings/rewards'}>Change settings</Link>
             </p>
           ) : (
             <p className="mb-7">
               Support the development of Praise, consider donating a percentage
               of the distribution to the development team.{' '}
-              <Link to={'/settings/custom-export'}>Change settings</Link>
+              <Link to={'/settings/rewards'}>Change settings</Link>
             </p>
           )}
 

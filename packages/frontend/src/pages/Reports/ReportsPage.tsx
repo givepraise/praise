@@ -2,7 +2,7 @@ import { faTableList } from '@fortawesome/free-solid-svg-icons';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { atom, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import {
   DatePeriodRangeStartDate,
   DatePeriodRangeEndDate,
