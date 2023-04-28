@@ -7,7 +7,7 @@ import {
   DatePeriodRangeStartDate,
   DatePeriodRangeEndDate,
   DatePeriodRange,
-} from '../../components/DatePeriodRange';
+} from '../../components/report/DatePeriodRange';
 import { BreadCrumb } from '../../components/ui/BreadCrumb';
 import { Page } from '../../components/ui/Page';
 import { SingleReport } from '../../model/report/reports';

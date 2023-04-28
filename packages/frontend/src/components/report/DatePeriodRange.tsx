@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { useRecoilState, atom, useRecoilValue } from 'recoil';
-import { AllPeriods } from '../model/periods/periods';
-import { getPeriodDatesConfig } from '../model/report/util/get-period-dates-config';
+import { AllPeriods } from '../../model/periods/periods';
+import { getPeriodDatesConfig } from '../../model/report/util/get-period-dates-config';
 import { toast } from 'react-hot-toast';
-import { SelectInput, SelectInputOption } from './form/SelectInput';
+import { SelectInput, SelectInputOption } from '../form/SelectInput';
 
 export const DatePeriodRangePeriod = atom<string>({
   key: 'DatePeriodRangePeriod',

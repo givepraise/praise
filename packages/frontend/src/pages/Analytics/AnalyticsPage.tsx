@@ -11,7 +11,7 @@ import {
   DatePeriodRange,
   DatePeriodRangeEndDate,
   DatePeriodRangeStartDate,
-} from '../../components/DatePeriodRange';
+} from '../../components/report/DatePeriodRange';
 import PraiseScoreOverTime from './components/PraiseScoreOverTime';
 import TopPraise from './components/TopPraise';
 
