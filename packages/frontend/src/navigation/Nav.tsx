@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   faCog,
+  faCoins,
   faPrayingHands,
   faUserFriends,
   faBook,
@@ -106,6 +107,12 @@ export const Nav = (): JSX.Element => {
               icon={faTableList}
               description="Reports"
               to="/reports"
+              exact={true}
+            />
+            <NavItem
+              icon={faCoins}
+              description="Rewards"
+              to="/rewards"
               exact={true}
             />
             <NavItem icon={faBook} description="Logs" to="/eventlogs" />

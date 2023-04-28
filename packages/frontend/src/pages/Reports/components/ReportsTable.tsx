@@ -9,12 +9,40 @@ import { ReportManifestDto } from '../../../model/report/dto/report-manifest.dto
 
 type ReportsTableProps = {
   onClick: (id: string) => EventHandler<React.MouseEvent>;
+  include?: string[];
+  exclude?: string[];
 };
 
 export const ReportsTable = ({
   onClick: handleClick,
+  include,
+  exclude,
 }: ReportsTableProps): JSX.Element => {
   const allReports = useRecoilValue(AllReports);
+
+  // Filter reports based on include and exclude
+  const filteredReports = React.useMemo(() => {
+    if (!Array.isArray(allReports)) return [];
+
+    // If no filters are set, return all reports
+    // If include is set, return only reports that match the include
+    // If exclude is set, return only reports that do not match the exclude
+    if (include?.length === 0 && exclude?.length === 0) return allReports;
+    let filteredReports = allReports;
+    if (include && include.length > 0) {
+      filteredReports = allReports.filter((report) => {
+        return report.categories.some((category) => include.includes(category));
+      });
+    }
+    if (exclude && exclude.length > 0) {
+      filteredReports = filteredReports.filter((report) => {
+        return !report.categories.some((category) =>
+          exclude.includes(category)
+        );
+      });
+    }
+    return filteredReports;
+  }, [allReports, include, exclude]);
 
   const columns = React.useMemo(
     () => [
@@ -35,7 +63,7 @@ export const ReportsTable = ({
       },
       {
         Header: '',
-        accessor: 'categories',
+        accessor: 'keywords',
         className: 'pr-5 text-right',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: (data: any): JSX.Element => {
@@ -58,7 +86,7 @@ export const ReportsTable = ({
 
   const options = {
     columns,
-    data: allReports || [],
+    data: filteredReports || [],
   } as TableOptions<{}>;
   const tableInstance = useTable(options, useSortBy);
 

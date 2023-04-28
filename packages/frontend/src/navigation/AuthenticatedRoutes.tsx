@@ -16,6 +16,8 @@ const AnalyticsPage = React.lazy(
 
 const ReportsPage = React.lazy(() => import('@/pages/Reports/ReportsPage'));
 
+const RewardsPage = React.lazy(() => import('@/pages/Reports/RewardsPage'));
+
 const ReportsRunPage = React.lazy(
   () => import('@/pages/Reports/ReportsRunPage')
 );
@@ -101,6 +103,10 @@ export const AuthenticatedRoutes = ({
     <Switch>
       <Route exact path={'/reports'}>
         <ReportsPage />
+      </Route>
+
+      <Route exact path={'/rewards'}>
+        <RewardsPage />
       </Route>
 
       <Route exact path={'/reports/run'}>

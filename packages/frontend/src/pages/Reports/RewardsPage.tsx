@@ -1,8 +1,8 @@
-import { faTableList } from '@fortawesome/free-solid-svg-icons';
+import { faCoins } from '@fortawesome/free-solid-svg-icons';
 import { Dialog } from '@headlessui/react';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { atom, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import {
   DatePeriodRangeStartDate,
   DatePeriodRangeEndDate,
@@ -14,7 +14,7 @@ import { SingleReport } from '../../model/report/reports';
 import { ReportConfigDialog } from './components/ReportConfigDialog';
 import { ReportsTable } from './components/ReportsTable';
 
-const ReportsPage = (): JSX.Element | null => {
+const RewardsPage = (): JSX.Element | null => {
   const [isConfigDialogOpen, setIsConfigDialogOpen] = React.useState(false);
   const [selectedReportName, setSelectedReportName] = React.useState<string>();
 
@@ -53,11 +53,11 @@ const ReportsPage = (): JSX.Element | null => {
 
   return (
     <Page variant="full">
-      <BreadCrumb name="Reports" icon={faTableList} />
+      <BreadCrumb name="Rewards" icon={faCoins} />
 
       <DatePeriodRange />
       <div className="w-full px-0 py-5 mb-5 text-sm border rounded-none shadow-none md:shadow-md md:rounded-xl bg-warm-gray-50 dark:bg-slate-600 break-inside-avoid-column">
-        <ReportsTable onClick={handleReportClick} exclude={['rewards']} />
+        <ReportsTable onClick={handleReportClick} include={['rewards']} />
       </div>
 
       <Dialog
@@ -83,4 +83,4 @@ const ReportsPage = (): JSX.Element | null => {
   );
 };
 
-export default ReportsPage;
+export default RewardsPage;

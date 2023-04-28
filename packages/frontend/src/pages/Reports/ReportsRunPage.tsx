@@ -12,6 +12,7 @@ import RevealMore from './components/RevealMore';
 import CopyToClipboard from './components/CopyToClipboard';
 import DownloadToFile from './components/DownloadToFile';
 import { Parser } from '@json2csv/plainjs';
+import { BackLink } from '../../navigation/BackLink';
 
 const ReportsRunPage = (): JSX.Element | null => {
   const qs = React.useMemo(
@@ -56,6 +57,7 @@ const ReportsRunPage = (): JSX.Element | null => {
   return (
     <Page variant="full">
       <BreadCrumb name="Reports" icon={faTableList} />
+      <BackLink />
 
       <div className="w-full p-5 mb-5 border rounded-none shadow-none md:shadow-md md:rounded-xl bg-warm-gray-50 dark:bg-slate-600 break-inside-avoid-column">
         <div className="flex flex-row items-center justify-between w-full">
