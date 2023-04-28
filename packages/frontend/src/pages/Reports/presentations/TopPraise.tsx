@@ -1,6 +1,5 @@
 import React from 'react';
 import { useReportRunReturn } from '../../../model/report/types/use-report-run-return.type';
-import { ReportsTable } from '../components/presentations/ReportsTable';
 import { User } from '../../../model/user/dto/user.dto';
 import { UserAccount } from '../../../model/useraccount/dto/user-account.dto';
 import { Praise as PraiseDto } from '../../../model/praise/praise.dto';
