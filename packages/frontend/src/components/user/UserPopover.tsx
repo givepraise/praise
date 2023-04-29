@@ -62,7 +62,7 @@ const WrappedUserPopover = ({
 
       {open && (
         <div
-          className="absolute z-10 cursor-pointer"
+          className="absolute cursor-pointer "
           onClickCapture={handleClick()}
           onMouseOver={(): void => {
             closeTimeout && clearTimeout(closeTimeout);

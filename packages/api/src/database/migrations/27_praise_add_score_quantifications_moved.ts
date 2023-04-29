@@ -8,7 +8,7 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
     APPLICATION,
     PERIOD_DEFAULT,
     DISCORD,
-    CUSTOM_EXPORT,
+    REWARDS,
   }
 
   const allPeriods = await PeriodModel.find();

@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Type } from 'class-transformer';
 import { Types } from 'mongoose';
 import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
-import { ApiResponseProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { has } from 'lodash';
 import { Quantification } from '../../quantifications/schemas/quantifications.schema';
 import { ExposeId } from '../../shared/decorators/expose-id.decorator';
@@ -119,8 +119,9 @@ export class Praise {
   })
   giver: UserAccount | Types.ObjectId;
 
-  @ApiResponseProperty({
+  @ApiProperty({
     type: UserAccount,
+    required: false,
   })
   @Prop({
     type: Types.ObjectId,
