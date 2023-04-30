@@ -22,6 +22,7 @@ const PERMISSIONS_USER = [
   Permission.UserAccountsView,
   Permission.UserAccountsCreate,
   Permission.UserAccountsUpdate,
+  Permission.ReportsView,
 ];
 
 /**

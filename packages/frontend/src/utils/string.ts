@@ -11,3 +11,17 @@ export const shortenEthAddress = (address: string): string => {
     address.length - 4
   )}`;
 };
+
+/**
+ * Parse a stringified JSON object to a JS object. Supports BigInts.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+export const toObject = (obj: any): any => {
+  //TODO: type this better
+  return JSON.parse(
+    JSON.stringify(
+      obj,
+      (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
+    )
+  );
+};

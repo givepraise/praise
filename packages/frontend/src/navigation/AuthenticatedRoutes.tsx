@@ -10,6 +10,18 @@ const UserDetailsPage = React.lazy(
 );
 const UsersPage = React.lazy(() => import('@/pages/Users/UsersPage'));
 
+const AnalyticsPage = React.lazy(
+  () => import('@/pages/Analytics/AnalyticsPage')
+);
+
+const ReportsPage = React.lazy(() => import('@/pages/Reports/ReportsPage'));
+
+const RewardsPage = React.lazy(() => import('@/pages/Reports/RewardsPage'));
+
+const ReportsRunPage = React.lazy(
+  () => import('@/pages/Reports/ReportsRunPage')
+);
+
 const PeriodsPage = React.lazy(() => import('@/pages/Periods/PeriodsPage'));
 const PeriodsCreateUpdatePage = React.lazy(
   () => import('@/pages/PeriodCreate/PeriodCreatePage')
@@ -89,6 +101,22 @@ export const AuthenticatedRoutes = ({
 }: Props): JSX.Element | null => {
   return (
     <Switch>
+      <Route exact path={'/reports'}>
+        <ReportsPage />
+      </Route>
+
+      <Route exact path={'/rewards'}>
+        <RewardsPage />
+      </Route>
+
+      <Route exact path={'/reports/run'}>
+        <ReportsRunPage />
+      </Route>
+
+      <Route exact path={'/analytics'}>
+        <AnalyticsPage />
+      </Route>
+
       <Route exact path={'/users'}>
         <UsersPage />
       </Route>

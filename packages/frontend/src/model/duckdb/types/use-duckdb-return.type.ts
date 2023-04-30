@@ -5,4 +5,5 @@ export type UseDuckDbReturn = {
   db: duckdb.AsyncDuckDB | undefined;
   loadingWorker: boolean;
   tables: TablesCreated;
+  tablesLoaded: boolean;
 };

@@ -40,11 +40,11 @@ import { FindUserAccountFilterDto } from './dto/find-user-account-filter.dto';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { Types } from 'mongoose';
 import { EventLogService } from '../event-log/event-log.service';
-import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-context.interface';
 import * as JSONStream from 'JSONStream';
 import { Transform } from '@json2csv/node';
 import { Public } from '../shared/decorators/public.decorator';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 
 const exportIncludeFields = [
   '_id',
@@ -85,11 +85,11 @@ export class UserAccountsController {
       createUserAccountInputDto,
     );
 
-    // this.eventLogService.logEventWithAuthContext({
-    //   authContext: req.authContext,
-    //   typeKey: EventLogTypeKey.USER_ACCOUNT,
-    //   description: `Created UserAccount id: ${userAccount.accountId}`,
-    // });
+    this.eventLogService.logEventWithAuthContext({
+      authContext: req.authContext,
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `Created UserAccount id: ${userAccount.accountId}`,
+    });
 
     return userAccount;
   }
@@ -268,11 +268,11 @@ export class UserAccountsController {
       updateUserAccountInputDto,
     );
 
-    // this.eventLogService.logEventWithAuthContext({
-    //   authContext: req.authContext,
-    //   typeKey: EventLogTypeKey.USER_ACCOUNT,
-    //   description: `Updated UserAccount id: ${userAccount.accountId}`,
-    // });
+    this.eventLogService.logEventWithAuthContext({
+      authContext: req.authContext,
+      typeKey: EventLogTypeKey.USER_ACCOUNT,
+      description: `Updated UserAccount id: ${userAccount.accountId}`,
+    });
 
     return userAccount;
   }

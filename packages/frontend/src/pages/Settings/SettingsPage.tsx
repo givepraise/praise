@@ -11,7 +11,7 @@ import { NavItem } from '@/navigation/NavItem';
 import { isResponseOk } from '@/model/api';
 import { Page } from '@/components/ui/Page';
 import { DiscordBotSettings } from './components/DiscordBotSettings';
-import { CustomExportSettings } from './components/CustomExportSettings';
+import { RewardsSettings } from './components/RewardsSettings';
 import { PeriodDefaultsSettings } from './components/PeriodDefaultsSettings';
 import { ApplicationSettings } from './components/ApplicationSettings';
 import { SettingGroup } from '@/model/settings/enums/setting-group.enum';
@@ -33,8 +33,8 @@ const SettingsPage = (): JSX.Element | null => {
   const discordSettings = settings.filter(
     (s) => s.group === SettingGroup.DISCORD
   );
-  const customExportSettings = settings.filter(
-    (s) => s.group === SettingGroup.CUSTOM_EXPORT
+  const rewardsSettings = settings.filter(
+    (s) => s.group === SettingGroup.REWARDS
   );
 
   const onSubmit = async (
@@ -73,8 +73,8 @@ const SettingsPage = (): JSX.Element | null => {
                 replace
               />
               <NavItem
-                to={`${url}/custom-export`}
-                description="Custom Export"
+                to={`${url}/rewards`}
+                description="Rewards"
                 replace
                 rounded
               />
@@ -107,10 +107,10 @@ const SettingsPage = (): JSX.Element | null => {
                 />
               </React.Suspense>
             </Route>
-            <Route path={`${path}/custom-export`}>
+            <Route path={`${path}/rewards`}>
               <React.Suspense fallback={null}>
-                <CustomExportSettings
-                  settings={customExportSettings}
+                <RewardsSettings
+                  settings={rewardsSettings}
                   parentOnSubmit={onSubmit}
                 />
               </React.Suspense>
