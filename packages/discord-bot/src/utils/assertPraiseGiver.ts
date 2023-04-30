@@ -88,7 +88,7 @@ export const assertPraiseGiver = async (
   if (!isPraiseGiver) {
     if (sendReply) {
       await interaction.editReply({
-        embeds: [await praiseRoleError(roles, praiseGiver.user, guild.id)],
+        embeds: [await praiseRoleError(roles, praiseGiver.user, host)],
       });
     }
     return false;
