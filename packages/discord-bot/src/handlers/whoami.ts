@@ -3,7 +3,7 @@ import { UserState } from '../interfaces/UserState';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getStateEmbed } from '../utils/embeds/stateEmbed';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
-import { renderMessage } from '../utils/embeds/praiseEmbeds';
+import { renderMessage } from '../utils/renderMessage';
 import { UserAccount } from '../utils/api-schema';
 import { apiClient } from '../utils/api';
 import { CommandHandler } from '../interfaces/CommandHandler';

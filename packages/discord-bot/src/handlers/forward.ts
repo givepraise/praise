@@ -4,7 +4,7 @@ import { GuildMember } from 'discord.js';
 import { getReceiverData } from '../utils/getReceiverData';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getUser } from '../utils/getUser';
-import { praiseSuccessDM, renderMessage } from '../utils/embeds/praiseEmbeds';
+import { praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
@@ -13,6 +13,7 @@ import { createForward } from '../utils/createForward';
 import { getSetting } from '../utils/settingsUtil';
 import { logger } from '../utils/logger';
 import { getHost } from '../utils/getHost';
+import { renderMessage } from '../utils/renderMessage';
 
 /**
  * Execute command /forward
@@ -166,7 +167,7 @@ export const forwardHandler: CommandHandler = async (
       try {
         await receiver.send({
           embeds: [
-            await praiseSuccessDM(responseUrl, !receiverAccount.user, host),
+            await praiseSuccessDM(responseUrl, host, !receiverAccount.user),
           ],
         });
       } catch (err) {

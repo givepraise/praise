@@ -1,6 +1,7 @@
 import { GuildMember, User } from 'discord.js';
 import { getReceiverData } from '../utils/getReceiverData';
-import { praiseSuccessDM, renderMessage } from '../utils/embeds/praiseEmbeds';
+import { praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
+import { renderMessage } from '../utils/renderMessage';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
@@ -148,8 +149,8 @@ export const praiseHandler: CommandHandler = async (
           embeds: [
             await praiseSuccessDM(
               responseUrl,
-              receiverAccount.user ? true : false,
-              host
+              host,
+              receiverAccount.user ? true : false
             ),
           ],
         });
