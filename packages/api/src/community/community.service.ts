@@ -215,7 +215,7 @@ export class CommunityService {
   isCommunityNameAvailable = async (
     name: string,
   ): Promise<IsNameAvailableResponseDto> => {
-    const communityNameBlacklist = [
+    const communityNameBlocklist = [
       'about',
       'account',
       'accounts',
@@ -347,7 +347,7 @@ export class CommunityService {
       'www',
     ];
 
-    if (communityNameBlacklist.includes(name)) {
+    if (communityNameBlocklist.includes(name)) {
       return { available: false };
     }
     const community = await this.communityModel.findOne({
