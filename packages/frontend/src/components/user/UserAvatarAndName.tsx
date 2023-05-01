@@ -1,6 +1,4 @@
-import { useRecoilValue } from 'recoil';
 import React from 'react';
-import { SingleUser } from '@/model/user/users';
 import { classNames } from '@/utils/index';
 import { UserAvatar } from './UserAvatar';
 import { UserName } from './UserName';
@@ -20,42 +18,31 @@ interface UserNameProps {
 
 const WrappedUserAvatarAndName = ({
   user,
-  userId,
   userAccount,
   usePseudonym = false,
   periodId,
   avatarClassName,
   nameClassName,
 }: UserNameProps): JSX.Element | null => {
-  const mergedUserId =
-    userAccount?.user && typeof userAccount.user === 'string'
-      ? userAccount.user
-      : userId;
-
-  const userFromGlobalState = useRecoilValue(SingleUser(mergedUserId));
-
-  if ((!user && !userId && !userAccount) || (usePseudonym && !periodId))
-    return null;
-
-  const mergedUser = user ? user : userFromGlobalState;
+  if ((!user && !userAccount) || (usePseudonym && !periodId)) return null;
 
   return (
     <UserPopover
       usePseudonym={usePseudonym}
       userAccount={userAccount}
-      user={mergedUser}
+      user={user}
     >
       <div className="flex whitespace-nowrap">
         <div className={classNames('flex items-center pr-2', avatarClassName)}>
           <UserAvatar
-            user={mergedUser}
+            user={user}
             userAccount={userAccount}
             usePseudonym={usePseudonym}
           />
         </div>
         <div className={classNames('flex items-center', nameClassName)}>
           <UserName
-            user={mergedUser}
+            user={user}
             userAccount={userAccount}
             usePseudonym={usePseudonym}
             periodId={periodId}

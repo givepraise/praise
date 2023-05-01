@@ -13,6 +13,11 @@ export const praiseForwardEmbed = async (
     .replace('{@receivers}', `${receivers.join(', ')}`)
     .replace('{reason}', reason);
 
+  const hostUrl =
+    process.env.NODE_ENV === 'development'
+      ? process.env.FRONTEND_URL
+      : `https://${host} as string}`;
+
   const { user } = interaction;
   const embed = new EmbedBuilder()
     .setColor(0xe6007e)
@@ -21,7 +26,7 @@ export const praiseForwardEmbed = async (
       iconURL: user.avatar
         ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`
         : 'https://discord.com/assets/1f0bfc0865d324c2587920a7d80c609b.png',
-      url: `${process.env.FRONTEND_URL as string}/users/${user.id}`,
+      url: `${hostUrl || 'undefined:/'}/users/${user.id}`,
     })
     .setDescription(msg);
 

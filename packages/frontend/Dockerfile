@@ -21,8 +21,14 @@ RUN yarn
 # Build the app
 RUN yarn workspace frontend build
 
+# Make sure init-env.sh is executable
+RUN chmod +x ./packages/frontend/build/init-env.sh
+
 # Serve the app with Caddy
 FROM caddy:2.6.4-alpine
+
+# Install envsubst (part of gettext package)
+RUN apk add --no-cache gettext
 
 COPY ./packages/frontend/Caddyfile /etc/caddy/Caddyfile
 COPY --from=builder /usr/src/packages/frontend/build /var/www/praise

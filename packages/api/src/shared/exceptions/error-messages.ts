@@ -486,4 +486,9 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     code: 1100,
     httpStatusCode: 409,
   },
+  REPORTS_LIST_ERROR: {
+    message: 'Failed to get reports list',
+    httpStatusCode: 500,
+    code: 1101,
+  },
 };

@@ -15,9 +15,10 @@ import { selectTargets } from '../utils/dmTargets';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
 import { getHost } from '../utils/getHost';
 import { getUserAccount } from '../utils/getUserAccount';
-import { renderMessage } from '../utils/embeds/praiseEmbeds';
+
 import { apiClient } from '../utils/api';
 import { PeriodPaginatedResponseDto } from '../utils/api-schema';
+import { renderMessage } from '../utils/renderMessage';
 
 // /**
 //  * Executes command /announce

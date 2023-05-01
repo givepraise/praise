@@ -1,34 +1,6 @@
 import { Setting } from './api-schema';
 import { apiClient } from './api';
 
-export function settingValueRealized(
-  setting: Setting[]
-): string | string[] | boolean | number | number[] | undefined {
-  const { value, type } = setting[0];
-  if (!value) return undefined;
-
-  switch (type) {
-    case 'Integer':
-      return Number.parseInt(value);
-    case 'Float':
-      return Number.parseFloat(value);
-    case 'Boolean':
-      return value === 'true' ? true : false;
-    case 'IntegerList':
-      return value.split(',').map((v: string) => Number.parseInt(v.trim()));
-    case 'StringList':
-      return value.split(',').map((v: string) => v.trim());
-    case 'Image':
-      return `${process.env.API_URL as string}:${
-        process.env.API_PORT as string
-      }/api/settings/uploads/${value}`;
-    case 'JSON':
-      return value ? JSON.parse(value) : [];
-    default:
-      return value;
-  }
-}
-
 export const getDefaultSetting = (
   key: string
 ): string | string[] | boolean | number | number[] | undefined => {
@@ -84,7 +56,7 @@ export const getSetting = async (
     .get(`/settings?key=${key}`, {
       headers: host ? { host: host } : {},
     })
-    .then((res) => settingValueRealized(res.data as Setting[]))
+    .then((res) => (res.data[0] as Setting).valueRealized)
     .catch(() => getDefaultSetting(key));
 
   return setting;

@@ -1,12 +1,15 @@
 import { ChannelType, Client, GatewayIntentBits } from 'discord.js';
 import { DiscordClient } from './interfaces/DiscordClient';
 import { registerCommands } from './utils/registerCommands';
-// import { requiredEnvVariables } from './pre-start/env-required';
+import { requiredEnvVariables } from './pre-start/env-required';
+import { envCheck } from './pre-start/envCheck';
 import { logger } from './utils/logger';
 import { cacheHosts, getHost, getHostId } from './utils/getHost';
 import Keyv from 'keyv';
 import { apiClient } from './utils/api';
 import { Community } from './utils/api-schema';
+
+envCheck(requiredEnvVariables);
 
 // Create a new client instance
 const discordClient = new Client({
@@ -14,22 +17,19 @@ const discordClient = new Client({
 }) as DiscordClient;
 
 // Set bot commands
+
 void (async (): Promise<void> => {
-  discordClient.id = process.env.DISCORD_CLIENT_ID || '';
-  let registerSuccess: boolean;
-  if (process.env.NODE_ENV === 'development') {
-    registerSuccess = await registerCommands(
-      discordClient,
-      process.env.DISCORD_GUILD_ID || ''
-    );
-  } else {
-    registerSuccess = await registerCommands(discordClient);
-  }
-  if (registerSuccess) {
-    logger.info('All bot commands registered.');
-  } else {
-    logger.error('Failed to register bot commands');
-  }
+  discordClient.id = process.env.DISCORD_CLIENT_ID as string;
+
+  const registerSuccess = await registerCommands(
+    discordClient,
+    process.env.NODE_ENV && process.env.NODE_ENV === 'development'
+      ? process.env.DISCORD_GUILD_ID
+      : undefined
+  );
+
+  if (registerSuccess) logger.info('All bot commands registered.');
+  else logger.error('Failed to register bot commands');
 })();
 
 discordClient.once('ready', async () => {
@@ -43,6 +43,7 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
   if (!interaction.isChatInputCommand()) return;
   const command = discordClient.commands.get(interaction.commandName);
   if (!command) return;
+
   try {
     await command.execute(discordClient, interaction);
   } catch (error) {
@@ -96,12 +97,6 @@ discordClient.on('guildCreate', async (guild): Promise<void> => {
       'Welcome to Praise! To use praise, set up your praise instance in the praise portal.'
     );
   } else {
-    community.discordLinkState = 'ACTIVE';
-    await apiClient.post<Community>(`/communities/${hostId}`, {
-      headers: { host },
-      data: community,
-    });
-
     await channel.send(
       `Welcome to praise! Link here - https://staging.givepraise.xyz/link-bot?nonce=${community.discordLinkNonce}&communityId=${hostId}&guildId=${guild.id}`
     );

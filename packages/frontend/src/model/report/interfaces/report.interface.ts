@@ -1,7 +1,7 @@
-import { ReportManifest } from '../types/report-manifest.type';
+import { ReportManifestDto } from '../dto/report-manifest.dto';
+import { row } from './report-row.interface';
 
 export interface Report {
-  manifest: ReportManifest;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  run(): Promise<{ rows: unknown[]; log: string }>;
+  manifest: ReportManifestDto;
+  run(): Promise<{ rows: row[]; log: string }>;
 }

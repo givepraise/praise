@@ -10,7 +10,7 @@ const settings = [
     label: 'Transformation map',
     description:
       'The transformation map describes the transform to be performed. See documentation for details on how to create a transformation map.',
-    group: SettingGroup.CUSTOM_EXPORT,
+    group: SettingGroup.REWARDS,
   },
   {
     key: 'CUSTOM_EXPORT_CONTEXT',
@@ -19,7 +19,7 @@ const settings = [
     label: 'Export context',
     description:
       'Default values for the export context used by the transformation map.',
-    group: SettingGroup.CUSTOM_EXPORT,
+    group: SettingGroup.REWARDS,
   },
   {
     key: 'CUSTOM_EXPORT_FORMAT',
@@ -28,7 +28,7 @@ const settings = [
     label: 'Export format',
     description: '',
     options: '["csv", "json"]',
-    group: SettingGroup.CUSTOM_EXPORT,
+    group: SettingGroup.REWARDS,
   },
   {
     key: 'CS_SUPPORT_PERCENTAGE',
@@ -37,7 +37,7 @@ const settings = [
     label: 'Praise development support percentage',
     description:
       'Support the development of Praise, consider donating a percentage of the distribution to the development team.',
-    group: SettingGroup.CUSTOM_EXPORT,
+    group: SettingGroup.REWARDS,
   },
 ];
 

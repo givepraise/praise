@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   faCog,
+  faCoins,
   faPrayingHands,
   faUserFriends,
   faBook,
@@ -11,6 +12,8 @@ import {
   faFire,
   faFileLines,
   faUser,
+  faChartArea,
+  faTableList,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
@@ -92,6 +95,24 @@ export const Nav = (): JSX.Element => {
               icon={faUserFriends}
               description="Users"
               to="/users"
+              exact={true}
+            />
+            <NavItem
+              icon={faChartArea}
+              description="Analytics"
+              to="/analytics"
+              exact={true}
+            />
+            <NavItem
+              icon={faTableList}
+              description="Reports"
+              to="/reports"
+              exact={true}
+            />
+            <NavItem
+              icon={faCoins}
+              description="Rewards"
+              to="/rewards"
               exact={true}
             />
             <NavItem icon={faBook} description="Logs" to="/eventlogs" />

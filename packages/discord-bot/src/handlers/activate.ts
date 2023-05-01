@@ -3,11 +3,11 @@
 //import { Types } from 'mongoose';
 
 import { CommandHandler } from '../interfaces/CommandHandler';
-import { renderMessage } from '../utils/embeds/praiseEmbeds';
 import { getUserAccount } from '../utils/getUserAccount';
 import { GuildMember } from 'discord.js';
 import { getActivateToken } from '../utils/getActivateToken';
 import { getHost } from '../utils/getHost';
+import { renderMessage } from '../utils/renderMessage';
 
 /**
  * Executes command /activate

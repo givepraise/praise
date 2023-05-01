@@ -117,5 +117,12 @@ export function useDuckDb(urls: UseDuckDbInput): UseDuckDbReturn {
     void createTable(quantificationsParquet, 'quantifications');
   }, [quantificationsParquet, createTable]);
 
-  return { db, loadingWorker, tables };
+  const tablesLoaded =
+    tables.users &&
+    tables.useraccounts &&
+    tables.periods &&
+    tables.praises &&
+    tables.quantifications;
+
+  return { db, loadingWorker, tables, tablesLoaded };
 }

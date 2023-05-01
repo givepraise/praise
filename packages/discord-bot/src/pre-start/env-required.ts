@@ -1,15 +1,14 @@
 /** Here developers should specify required ENV variables */
 
 const requiredEnvVariables = [
-  'MONGO_DB',
-  'MONGO_HOST',
-  'MONGO_PORT',
-  'MONGO_USERNAME',
-  'MONGO_PASSWORD',
-  'DISCORD_TOKEN',
-  'DISCORD_CLIENT_ID',
-  'DISCORD_GUILD_ID',
   'NODE_ENV',
+  'API_URL',
+  'FRONTEND_URL',
+  'DISCORD_CLIENT_ID',
+  'DISCORD_TOKEN',
+  'API_PORT',
+  'API_KEYS',
+  'API_KEY_ROLES',
 ];
 
 export { requiredEnvVariables };

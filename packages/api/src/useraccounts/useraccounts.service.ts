@@ -11,7 +11,6 @@ import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
 import { FindUserAccountFilterDto } from './dto/find-user-account-filter.dto';
 import { errorMessages } from '../shared/exceptions/error-messages';
-import { logger } from '../shared/logger';
 
 @Injectable()
 export class UserAccountsService {

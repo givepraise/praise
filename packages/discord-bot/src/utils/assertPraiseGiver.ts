@@ -1,5 +1,6 @@
 import { CacheType, CommandInteraction, GuildMember, Role } from 'discord.js';
-import { renderMessage, praiseRoleError } from './embeds/praiseEmbeds';
+import { praiseRoleError } from './embeds/praiseEmbeds';
+import { renderMessage } from './renderMessage';
 import { getSetting } from './settingsUtil';
 /**
  * Check if user has discord role PRAISE_GIVER_ROLE_ID if required,
@@ -88,7 +89,7 @@ export const assertPraiseGiver = async (
   if (!isPraiseGiver) {
     if (sendReply) {
       await interaction.editReply({
-        embeds: [await praiseRoleError(roles, praiseGiver.user, guild.id)],
+        embeds: [await praiseRoleError(roles, praiseGiver.user, host)],
       });
     }
     return false;

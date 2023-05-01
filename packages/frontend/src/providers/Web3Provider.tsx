@@ -12,16 +12,33 @@ import { publicProvider } from 'wagmi/providers/public';
 import { mainnet } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 
+interface WindowWithEnv extends Window {
+  REACT_APP_ALCHEMY_KEY?: string;
+  REACT_APP_WALLETCONNECT_PROJECT_ID?: string;
+}
+
+const win = window as WindowWithEnv;
+
+const REACT_APP_ALCHEMY_KEY =
+  process.env.REACT_APP_ALCHEMY_KEY || win.REACT_APP_ALCHEMY_KEY;
+
+const REACT_APP_WALLETCONNECT_PROJECT_ID =
+  process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ||
+  win.REACT_APP_WALLETCONNECT_PROJECT_ID;
+
 const { chains, provider } = configureChains(
   [mainnet],
   [
-    alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_KEY as string }),
+    alchemyProvider({
+      apiKey: REACT_APP_ALCHEMY_KEY || '',
+    }),
     publicProvider(),
   ]
 );
 
 const { connectors } = getDefaultWallets({
   appName: 'Praise',
+  projectId: REACT_APP_WALLETCONNECT_PROJECT_ID,
   chains,
 });
 
@@ -46,6 +63,12 @@ interface Web3ProviderProps {
 }
 
 export function Web3Provider({ children }: Web3ProviderProps): JSX.Element {
+  if (!REACT_APP_ALCHEMY_KEY) {
+    throw new Error('REACT_APP_ALCHEMY_KEY is not set');
+  }
+  if (!REACT_APP_WALLETCONNECT_PROJECT_ID) {
+    throw new Error('REACT_APP_WALLETCONNECT_PROJECT_ID is not set');
+  }
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider

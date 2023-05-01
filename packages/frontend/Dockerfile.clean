@@ -25,3 +25,6 @@ RUN yarn
 
 # Build the app
 RUN yarn workspace frontend build
+
+# Make sure init-env.sh is executable
+RUN chmod +x ./packages/frontend/build/init-env.sh
