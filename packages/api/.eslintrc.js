@@ -2,7 +2,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'tsconfig.json',
-    tsconfigRootDir : __dirname, 
+    tsconfigRootDir : __dirname,
     sourceType: 'module',
   },
   plugins: [
@@ -25,6 +25,6 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'jest-extended/prefer-to-be-true': 'warn',
-    'jest-extended/prefer-to-be-false': 'error'
+    'jest-extended/prefer-to-be-false': 'off'
   },
 };

@@ -25,6 +25,9 @@ import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-p
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { ApiException } from '../shared/exceptions/api-exception';
+import { IsNameAvailableResponseDto } from './dto/is-name-available-response-dto';
+import { IsNameAvailableRequestDto } from './dto/is-name-available-request-dto';
+
 @Controller('communities')
 @ApiTags('Communities')
 @SerializeOptions({
@@ -77,6 +80,18 @@ export class CommunityController {
     @Query() options: PaginatedQueryDto,
   ): Promise<CommunityPaginatedResponseDto> {
     return this.communityService.findAllPaginated(options);
+  }
+
+  @Get('/isNameAvailable')
+  @ApiResponse({
+    status: 200,
+    description: 'Checking whether the community name is available',
+    type: IsNameAvailableResponseDto,
+  })
+  async isNameAvailable(
+    @Query() options: IsNameAvailableRequestDto,
+  ): Promise<IsNameAvailableResponseDto> {
+    return await this.communityService.isCommunityNameAvailable(options.name);
   }
 
   @Get(':id')

@@ -19,6 +19,7 @@ import { MigrationsManager } from '../database/migrations-manager';
 import { databaseExists } from '../database/utils/database-exists';
 import { dbNameCommunity } from '../database/utils/db-name-community';
 import { PaginateModel } from '../shared/interfaces/paginate-model.interface';
+import { IsNameAvailableResponseDto } from './dto/is-name-available-response-dto';
 
 @Injectable()
 export class CommunityService {
@@ -85,6 +86,9 @@ export class CommunityService {
     if (community.owners) {
       assertOwnersIncludeCreator(community.owners, communityDocument.creator);
     }
+    if (community.name) {
+      await this.assertCommunityNameAvailable(community.name);
+    }
     const oldDbName = dbNameCommunity(communityDocument);
 
     for (const [k, v] of Object.entries(community)) {
@@ -101,6 +105,7 @@ export class CommunityService {
 
   async create(communityDto: CreateCommunityInputDto): Promise<Community> {
     assertOwnersIncludeCreator(communityDto.owners, communityDto.creator);
+    await this.assertCommunityNameAvailable(communityDto.name);
     const community = new this.communityModel({
       ...communityDto,
       isPublic: true,
@@ -204,6 +209,160 @@ export class CommunityService {
     } catch (error) {
       logger.error('createDbForCommunity error', error.message);
       throw error;
+    }
+  };
+
+  isCommunityNameAvailable = async (
+    name: string,
+  ): Promise<IsNameAvailableResponseDto> => {
+    const communityNameBlocklist = [
+      'about',
+      'account',
+      'accounts',
+      'admin',
+      'affiliate',
+      'api',
+      'app',
+      'billing',
+      'blog',
+      'book',
+      'brand',
+      'bug',
+      'business',
+      'career',
+      'careers',
+      'cdn',
+      'chat',
+      'client',
+      'clients',
+      'code',
+      'company',
+      'compliance',
+      'contact',
+      'console',
+      'control',
+      'core',
+      'corp',
+      'customer',
+      'dashboard',
+      'data',
+      'database',
+      'demo',
+      'dev',
+      'directory',
+      'docs',
+      'download',
+      'education',
+      'email',
+      'enterprise',
+      'events',
+      'faq',
+      'feedback',
+      'file',
+      'files',
+      'finance',
+      'forum',
+      'gateway',
+      'git',
+      'github',
+      'givepraise',
+      'guide',
+      'help',
+      'host',
+      'hosting',
+      'hr',
+      'info',
+      'integration',
+      'internal',
+      'invoice',
+      'intranet',
+      'knowledgebase',
+      'labs',
+      'landing',
+      'legal',
+      'license',
+      'login',
+      'logs',
+      'mail',
+      'marketing',
+      'media',
+      'network',
+      'news',
+      'official',
+      'order',
+      'partner',
+      'partners',
+      'payment',
+      'portal',
+      'praise',
+      'press',
+      'privacy',
+      'prod',
+      'project',
+      'projects',
+      'promo',
+      'protocol',
+      'public',
+      'register',
+      'registration',
+      'remote',
+      'report',
+      'reports',
+      'resource',
+      'resources',
+      'sales',
+      'sandbox',
+      'security',
+      'server',
+      'service',
+      'services',
+      'setup',
+      'signin',
+      'signup',
+      'solutions',
+      'source',
+      'stage',
+      'staging',
+      'staff',
+      'static',
+      'status',
+      'storage',
+      'store',
+      'support',
+      'system',
+      'team',
+      'test',
+      'terms',
+      'tools',
+      'tos',
+      'training',
+      'tutorial',
+      'update',
+      'user',
+      'video',
+      'web',
+      'webinar',
+      'wiki',
+      'work',
+      'www',
+    ];
+
+    if (communityNameBlocklist.includes(name)) {
+      return { available: false };
+    }
+    const community = await this.communityModel.findOne({
+      name: name.toString(),
+    });
+    if (community) {
+      return { available: false };
+    }
+    return { available: true };
+  };
+
+  assertCommunityNameAvailable = async (name: string): Promise<void> => {
+    const isAvailable = await this.isCommunityNameAvailable(name);
+    if (!isAvailable.available) {
+      throw new ApiException(errorMessages.COMMUNITY_NAME_NOT_AVAILABLE);
     }
   };
 }
