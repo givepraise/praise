@@ -233,9 +233,9 @@ export interface paths {
     /** Quantify praise item by id */
     patch: operations["QuantificationsController_quantify"];
   };
-  '/api/reports': {
+  "/api/reports": {
     /** List all report manifests */
-    get: operations['ReportsController_listAllReports'];
+    get: operations["ReportsController_listAllReports"];
   };
 }
 
@@ -490,10 +490,10 @@ export interface components {
       sourceName: string;
       /** @example 144 */
       score: number;
-      receiver: components['schemas']['UserAccountWithUserRefDto'];
-      giver: components['schemas']['UserAccountWithUserRefDto'];
-      forwarder?: components['schemas']['UserAccountWithUserRefDto'];
-      quantifications: readonly components['schemas']['Quantification'][];
+      receiver: components["schemas"]["UserAccountWithUserRefDto"];
+      giver: components["schemas"]["UserAccountWithUserRefDto"];
+      forwarder?: components["schemas"]["UserAccountWithUserRefDto"];
+      quantifications: readonly (components["schemas"]["Quantification"])[];
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -532,10 +532,10 @@ export interface components {
       sourceName: string;
       /** @example 144 */
       score: number;
-      receiver: components['schemas']['UserAccount'];
-      giver: components['schemas']['UserAccount'];
-      forwarder?: components['schemas']['UserAccount'];
-      quantifications: readonly components['schemas']['Quantification'][];
+      receiver: components["schemas"]["UserAccount"];
+      giver: components["schemas"]["UserAccount"];
+      forwarder?: components["schemas"]["UserAccount"];
+      quantifications: readonly (components["schemas"]["Quantification"])[];
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -942,45 +942,45 @@ export interface components {
     };
     SettingDto: {
       /**
-       * @description Type of the setting
-       * @example string
+       * @description Type of the setting 
+       * @example string 
        * @enum {string}
        */
-      type: 'string' | 'number' | 'boolean' | 'array';
+      type: "string" | "number" | "boolean" | "array";
       /**
-       * @description Default value for the setting
+       * @description Default value for the setting 
        * @example Some string
        */
       default: Record<string, never>;
       /**
-       * @description Description of the setting
+       * @description Description of the setting 
        * @example Description of the string setting
        */
       description: string;
       /**
-       * @description Markdown description of the setting
+       * @description Markdown description of the setting 
        * @example Description of the string setting
        */
       markdownDescription: string;
       /**
-       * @description Edit presentation style
-       * @example multiline
+       * @description Edit presentation style 
+       * @example multiline 
        * @enum {string}
        */
-      editPresentation?: 'multiline';
+      editPresentation?: "multiline";
       /**
-       * @description Order of the setting
+       * @description Order of the setting 
        * @example 1
        */
       order: number;
       /**
-       * @description Enum values for string type settings
+       * @description Enum values for string type settings 
        * @example [
        *   "left",
        *   "right"
        * ]
        */
-      enum?: string[];
+      enum?: (string)[];
       items: {
         type?: Record<string, never>;
       };
@@ -1010,16 +1010,16 @@ export interface components {
        *   "Praise receiver reports"
        * ]
        */
-      categories: string[];
+      categories: (string)[];
       /**
        * @example [
        *   "toplist"
        * ]
        */
-      keywords: string[];
+      keywords: (string)[];
       /** @description Configuration settings for the report */
       configuration: {
-        [key: string]: components['schemas']['SettingDto'] | undefined;
+        [key: string]: components["schemas"]["SettingDto"] | undefined;
       };
     };
   };
@@ -2132,7 +2132,7 @@ export interface operations {
       /** @description A list of report manifests */
       200: {
         content: {
-          'application/json': components['schemas']['ReportManifestDto'][];
+          "application/json": (components["schemas"]["ReportManifestDto"])[];
         };
       };
       /** @description An error occurred while fetching report manifests */
