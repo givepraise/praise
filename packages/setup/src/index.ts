@@ -176,6 +176,9 @@ const run = async (): Promise<void> => {
     JWT_REFRESH_EXP: process.env.JWT_REFRESH_EXP,
     FRONTEND_URL: frontendUrl(answers),
     REACT_APP_SERVER_URL: serverUrl(answers),
+    REACT_APP_ALCHEMY_KEY: process.env.REACT_APP_ALCHEMY_KEY,
+    REACT_APP_WALLETCONNECT_PROJECT_ID:
+      process.env.REACT_APP_WALLETCONNECT_PROJECT_ID,
     FRONTEND_PORT: process.env.FRONTEND_PORT,
     LOGGER_LEVEL: process.env.LOGGER_LEVEL,
     DISCORD_TOKEN: answers.DISCORD_TOKEN,

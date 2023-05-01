@@ -60,6 +60,8 @@ services:
       - caddy_config:/config
     links:
       - api
+    command: >
+      sh -c "cd /var/www/praise && ./init-env.sh && caddy run --config /etc/caddy/Caddyfile"      
 
 volumes:
   mongodb_data:
