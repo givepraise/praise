@@ -44,7 +44,10 @@ export const renderMessage = async (
         .replace('{roles}', subs.roles.map((r) => r.name).join(', '))
         .replace('{@roles}', subs.roles.map((r) => `<@&${r.id}>`).join(', '));
 
-    if (subs.praiseUrl) msg = msg.replace('{praiseUrl}', subs.praiseUrl);
+    if (subs.praiseUrl)
+      msg = msg
+        .replace('{praiseUrl}', subs.praiseUrl)
+        .replace('{praiseURL}', subs.praiseUrl);
   }
 
   return msg;
