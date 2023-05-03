@@ -8,6 +8,8 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     name: Build, Lint & Test
+    env:
+      NODE_OPTIONS: --max_old_space_size=4096
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -22,4 +24,3 @@ jobs:
       - run: yarn mongodb:start
       # We should first run mongo and after that run tests
       - run: yarn workspace api test:e2e
-
