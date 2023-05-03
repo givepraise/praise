@@ -8,7 +8,10 @@ import { cacheHosts, getHost, getHostId } from './utils/getHost';
 import Keyv from 'keyv';
 import { apiClient } from './utils/api';
 import { Community } from './utils/api-schema';
-import { praiseWelcomeEmbed } from './utils/embeds/praiseEmbeds';
+import {
+  communityNotCreatedError,
+  praiseWelcomeEmbed,
+} from './utils/embeds/praiseEmbeds';
 
 envCheck(requiredEnvVariables);
 
@@ -81,9 +84,9 @@ discordClient.on('guildCreate', async (guild): Promise<void> => {
   const hostId = await getHostId(discordClient, guild.id);
 
   if (!host || !hostId) {
-    await channel.send(
-      'Welcome to Praise! To use praise, set up your praise instance in the praise portal.'
-    );
+    await channel.send({
+      embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
+    });
     return;
   }
 
