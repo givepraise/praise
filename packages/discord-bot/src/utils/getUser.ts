@@ -4,8 +4,6 @@ import { User } from './api-schema';
 /**
  * Fetch User by id
  *
- * @param {string} id
- * @returns {Promise<User>}
  */
 export const getUser = async (
   id: string,

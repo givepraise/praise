@@ -6,8 +6,6 @@ import { DiscordClient } from '../interfaces/DiscordClient';
 /**
  * Cache host after fetching communities from API
  *
- * @param {string} guildId
- * @returns {Promise<string | undefined>}
  */
 export const cacheHosts = async (
   hostCache: Keyv,
@@ -35,8 +33,6 @@ export const cacheHosts = async (
 /**
  * Fetch Host by id
  *
- * @param {string} guildId
- * @returns {Promise<string | undefined>}
  */
 export const getHost = async (
   client: DiscordClient,
@@ -55,8 +51,6 @@ export const getHost = async (
 /**
  * Fetch Host by id
  *
- * @param {string} guildId
- * @returns {Promise<string | undefined>}
  */
 export const getHostId = async (
   client: DiscordClient,

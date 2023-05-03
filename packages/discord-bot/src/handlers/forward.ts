@@ -18,9 +18,6 @@ import { renderMessage } from '../utils/renderMessage';
  * Execute command /forward
  *  Creates praises with a given giver, receiver, and reason
  *
- * @param  interaction
- * @param  responseUrl
- * @returns
  */
 export const forwardHandler: CommandHandler = async (
   client,

@@ -12,8 +12,6 @@ import { CommandHandler } from '../interfaces/CommandHandler';
  * Execute command /whoami
  * Gives the user information about their account and activation status
  *
- * @param {CommandInteraction} interaction
- * @returns {Promise<void>}
  */
 export const whoamiHandler: CommandHandler = async (
   client,

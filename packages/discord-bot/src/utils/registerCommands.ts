@@ -11,8 +11,6 @@ import { logger } from './logger';
 /**
  * Register (install) all commands to Discord
  *
- * @param {DiscordClient} client
- * @returns {Promise<boolean>}
  */
 export const registerCommands = async (
   client: DiscordClient,

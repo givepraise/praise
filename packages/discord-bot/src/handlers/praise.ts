@@ -18,9 +18,6 @@ import { logger } from '../utils/logger';
  *  Creates praises with a given receiver and reason
  *  with the command executor as the praise.giver
  *
- * @param  interaction
- * @param  responseUrl
- * @returns
  */
 export const praiseHandler: CommandHandler = async (
   client,

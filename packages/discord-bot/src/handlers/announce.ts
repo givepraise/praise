@@ -19,13 +19,11 @@ import { apiClient } from '../utils/api';
 import { PeriodPaginatedResponseDto } from '../utils/api-schema';
 import { renderMessage } from '../utils/renderMessage';
 
-// /**
-//  * Executes command /announce
-//  *  Sends DMs to specified lists of users with a given message
-//  *
-//  * @param  interaction
-//  * @returns
-//  */
+/**
+ * Executes command /announce
+ *  Sends DMs to specified lists of users with a given message
+ *
+ */
 export const announcementHandler: CommandHandler = async (
   client,
   interaction,
