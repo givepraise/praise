@@ -7,7 +7,6 @@ import { renderMessage } from '../utils/renderMessage';
 import { UserAccount } from '../utils/api-schema';
 import { apiClient } from '../utils/api';
 import { CommandHandler } from '../interfaces/CommandHandler';
-import { getHost } from '../utils/getHost';
 
 /**
  * Execute command /whoami
@@ -18,18 +17,12 @@ import { getHost } from '../utils/getHost';
  */
 export const whoamiHandler: CommandHandler = async (
   client,
-  interaction
+  interaction,
+  host
 ): Promise<void> => {
   const { member, guild } = interaction;
   if (!guild || !member) {
     await interaction.editReply(await renderMessage('DM_ERROR'));
-    return;
-  }
-
-  const host = await getHost(client, guild.id);
-
-  if (host === undefined) {
-    await interaction.editReply('This community is not registered for praise.');
     return;
   }
 

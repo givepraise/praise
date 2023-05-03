@@ -6,7 +6,6 @@ import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
 import { GuildMember } from 'discord.js';
 import { getActivateToken } from '../utils/getActivateToken';
-import { getHost } from '../utils/getHost';
 import { renderMessage } from '../utils/renderMessage';
 
 /**
@@ -20,7 +19,8 @@ import { renderMessage } from '../utils/renderMessage';
  */
 export const activationHandler: CommandHandler = async (
   client,
-  interaction
+  interaction,
+  host
 ) => {
   const { member, guild } = interaction;
   if (!guild || !member) {
@@ -29,15 +29,6 @@ export const activationHandler: CommandHandler = async (
   }
 
   try {
-    const host = await getHost(client, guild.id);
-
-    if (host === undefined) {
-      await interaction.editReply(
-        'This community is not registered for praise.'
-      );
-      return;
-    }
-
     const userAccount = await getUserAccount(
       (member as GuildMember).user,
       host

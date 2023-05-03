@@ -12,7 +12,6 @@ import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
 import { createForward } from '../utils/createForward';
 import { getSetting } from '../utils/settingsUtil';
 import { logger } from '../utils/logger';
-import { getHost } from '../utils/getHost';
 import { renderMessage } from '../utils/renderMessage';
 
 /**
@@ -26,6 +25,7 @@ import { renderMessage } from '../utils/renderMessage';
 export const forwardHandler: CommandHandler = async (
   client,
   interaction,
+  host,
   responseUrl
 ) => {
   if (!responseUrl) return;
@@ -33,13 +33,6 @@ export const forwardHandler: CommandHandler = async (
   const { guild, channel, member } = interaction;
   if (!guild || !member || !channel) {
     await interaction.editReply(await renderMessage('DM_ERROR'));
-    return;
-  }
-
-  const host = await getHost(client, guild.id);
-
-  if (host === undefined) {
-    await interaction.editReply('This community is not registered for praise.');
     return;
   }
 

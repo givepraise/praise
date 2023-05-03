@@ -11,7 +11,6 @@ import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
 import { apiClient } from '../utils/api';
 import { PraisePaginatedResponseDto } from '../utils/api-schema';
 import { getSetting } from '../utils/settingsUtil';
-import { getHost } from '../utils/getHost';
 
 import { logger } from '../utils/logger';
 /**
@@ -26,6 +25,7 @@ import { logger } from '../utils/logger';
 export const praiseHandler: CommandHandler = async (
   client,
   interaction,
+  host,
   responseUrl
 ) => {
   if (!responseUrl) return;
@@ -34,13 +34,6 @@ export const praiseHandler: CommandHandler = async (
 
   if (!guild || !member || !channel) {
     await interaction.editReply(await renderMessage('DM_ERROR'));
-    return;
-  }
-
-  const host = await getHost(client, guild.id);
-
-  if (host === undefined) {
-    await interaction.editReply('This community is not registered for praise.');
     return;
   }
 

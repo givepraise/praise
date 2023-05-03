@@ -20,7 +20,8 @@ export interface Command {
     | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
   execute: (
     client: DiscordClient,
-    interaction: ChatInputCommandInteraction
+    interaction: ChatInputCommandInteraction,
+    host: string
   ) => Promise<void>;
   help?: HelpText;
 }

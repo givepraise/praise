@@ -4,5 +4,6 @@ import { DiscordClient } from './DiscordClient';
 export type CommandHandler = (
   client: DiscordClient,
   interaction: ChatInputCommandInteraction,
+  host: string,
   responseUrl?: string
 ) => Promise<void>;
