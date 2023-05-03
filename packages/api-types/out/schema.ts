@@ -209,6 +209,9 @@ export interface paths {
     /** Update community */
     patch: operations["CommunityController_update"];
   };
+  "/api/communities/isNameAvailable": {
+    get: operations["CommunityController_isNameAvailable"];
+  };
   "/api/communities/{id}/discord/link": {
     /** Link discord to community */
     patch: operations["CommunityController_linkDiscord"];
@@ -918,6 +921,10 @@ export interface components {
       nextPage?: Record<string, never>;
       docs: readonly (components["schemas"]["Community"])[];
       meta?: Record<string, never>;
+    };
+    IsNameAvailableResponseDto: {
+      /** @example false */
+      available: boolean;
     };
     LinkDiscordBotDto: {
       /** @example 0xdb4bb91357b23083ec2a36dc1fe23e59b71434fc020542da7e983df206ed06611e275eb30e239508f9758c0608dca6cef5619c41b50a48f22bdb36a8dabc2d201c */
@@ -2021,6 +2028,22 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Community"];
+        };
+      };
+    };
+  };
+  CommunityController_isNameAvailable: {
+    parameters: {
+      query: {
+        /** @example test_12345 */
+        name: string;
+      };
+    };
+    responses: {
+      /** @description Checking whether the community name is available */
+      200: {
+        content: {
+          "application/json": components["schemas"]["IsNameAvailableResponseDto"];
         };
       };
     };
