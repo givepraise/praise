@@ -26,6 +26,7 @@ import { databaseExists } from '../src/database/utils/database-exists';
 import { MongoClient } from 'mongodb';
 import { dbNameCommunity } from '../src/database/utils/db-name-community';
 import { errorMessages } from '../src/shared/exceptions/error-messages';
+import { faker } from '@faker-js/faker';
 
 class LoggedInUser {
   accessToken: string;
@@ -124,7 +125,7 @@ describe('Communities (E2E)', () => {
           users[0].user.identityEthAddress,
           users[1].user.identityEthAddress,
         ],
-        discordGuildId: 'kldakdsal',
+        discordGuildId: faker.random.alphaNumeric(10),
         email: 'test@praise.io',
       };
 
@@ -313,7 +314,7 @@ describe('Communities (E2E)', () => {
           users[0].user.identityEthAddress,
           users[1].user.identityEthAddress,
         ],
-        discordGuildId: 'kldakdsal',
+        discordGuildId: faker.random.alphaNumeric(10),
         discordLinkNonce: '223',
         email: 'test@praise.io',
       });
@@ -499,7 +500,7 @@ describe('Communities (E2E)', () => {
           users[0].user.identityEthAddress,
           users[1].user.identityEthAddress,
         ],
-        discordGuildId: 'kldakdsal',
+        discordGuildId: faker.random.alphaNumeric(10),
         discordLinkNonce: randomBytes(10).toString('hex'),
         email: 'test@praise.io',
       });
@@ -555,7 +556,7 @@ describe('Communities (E2E)', () => {
           users[0].user.identityEthAddress,
           users[1].user.identityEthAddress,
         ],
-        discordGuildId: 'kldakdsal',
+        discordGuildId: faker.random.alphaNumeric(10),
         discordLinkNonce: randomBytes(10).toString('hex'),
         email: 'test@praise.io',
       });
@@ -595,7 +596,7 @@ describe('Communities (E2E)', () => {
           users[0].user.identityEthAddress,
           users[1].user.identityEthAddress,
         ],
-        discordGuildId: 'kldakdsal',
+        discordGuildId: faker.random.alphaNumeric(10),
         discordLinkNonce: randomBytes(10).toString('hex'),
         email: 'test@praise.io',
       });
@@ -672,7 +673,7 @@ describe('Communities (E2E)', () => {
           users[0].user.identityEthAddress,
           users[1].user.identityEthAddress,
         ],
-        discordGuildId: 'kldakdsal',
+        discordGuildId: faker.random.alphaNumeric(10),
         discordLinkNonce: randomBytes(10).toString('hex'),
         email: 'test@praise.io',
       });
@@ -698,7 +699,7 @@ describe('Communities (E2E)', () => {
           users[0].user.identityEthAddress,
           users[1].user.identityEthAddress,
         ],
-        discordGuildId: 'kldakdsal',
+        discordGuildId: faker.random.alphaNumeric(10),
         discordLinkNonce: '223',
         email: 'test@praise.io',
       });
