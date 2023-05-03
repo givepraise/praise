@@ -109,7 +109,13 @@ export class Community {
   @ApiProperty({ example: '0980987846534', required: false, maxLength: 32 })
   @IsOptional()
   @IsString()
-  @Prop({ type: String, required: false, maxlength: 255 })
+  @Prop({
+    type: String,
+    required: false,
+    maxlength: 255,
+    unique: true,
+    sparse: true,
+  })
   discordGuildId?: string;
 
   @ApiProperty({ example: 'oiujoiuoo8u', maxLength: 255 })
