@@ -25,7 +25,6 @@ export class MultiTenantConnectionService implements MongooseOptionsFactory {
 
     if (process.env.LOGGER_LEVEL === 'debug') {
       logger.debug(`Connecting to database ${host}`);
-      logger.debug(`Request headers ${JSON.stringify(this.request.headers)}`);
     }
 
     const options: MongooseModuleOptions = {
