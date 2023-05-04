@@ -13,6 +13,8 @@ export type PraiseDocument = Praise & Document;
 
 @Schema({
   timestamps: true,
+  toObject: { virtuals: true },
+  toJSON: { virtuals: true },
 })
 export class Praise {
   constructor(partial?: Partial<Praise>) {
@@ -146,7 +148,6 @@ export class Praise {
   @Prop({ type: Date })
   updatedAt: Date;
 }
-
 export const PraiseSchema = SchemaFactory.createForClass(Praise);
 
 PraiseSchema.plugin(mongoosePaginate);

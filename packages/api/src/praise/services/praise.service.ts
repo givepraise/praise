@@ -19,6 +19,7 @@ import { PaginateModel } from '../../shared/interfaces/paginate-model.interface'
 import { User } from '../../users/schemas/users.schema';
 import { Setting } from '../../settings/schemas/settings.schema';
 import { valueToValueRealized } from '../../settings/utils/value-to-value-realized.util';
+import { Quantification } from '../../quantifications/schemas/quantifications.schema';
 
 @Injectable()
 export class PraiseService {
@@ -31,6 +32,8 @@ export class PraiseService {
     private userAccountModel: Model<UserAccountDocument>,
     @InjectModel(User.name)
     private userModel: Model<User>,
+    @InjectModel(Quantification.name)
+    private quantificationModel: Model<Quantification>,
     private settingsService: SettingsService,
   ) {}
 
@@ -97,65 +100,27 @@ export class PraiseService {
    *
    **/
   async findOneById(_id: Types.ObjectId): Promise<Praise> {
-    const praise = await this.praiseModel.aggregate([
+    const praise = await this.praiseModel.findById(_id).populate([
       {
-        $match: {
-          _id,
-        },
+        path: 'giver',
+        populate: { path: 'user', model: this.userModel },
       },
       {
-        $lookup: {
-          from: 'useraccounts',
-          localField: 'giver',
-          foreignField: '_id',
-          as: 'giver',
-        },
+        path: 'receiver',
+        populate: { path: 'user', model: this.userModel },
       },
       {
-        $unwind: {
-          path: '$giver',
-        },
+        path: 'forwarder',
+        populate: { path: 'user', model: this.userModel },
       },
       {
-        $lookup: {
-          from: 'useraccounts',
-          localField: 'receiver',
-          foreignField: '_id',
-          as: 'receiver',
-        },
-      },
-      {
-        $unwind: {
-          path: '$receiver',
-        },
-      },
-      {
-        $lookup: {
-          from: 'useraccounts',
-          localField: 'forwarder',
-          foreignField: '_id',
-          as: 'forwarder',
-        },
-      },
-      {
-        $unwind: {
-          path: '$forwarder',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $lookup: {
-          from: 'quantifications',
-          localField: '_id',
-          foreignField: 'praise',
-          as: 'quantifications',
-        },
+        path: 'quantifications',
+        model: this.quantificationModel,
       },
     ]);
 
-    if (!praise[0]) throw new ApiException(errorMessages.PRAISE_NOT_FOUND);
-
-    return praise[0];
+    if (!praise) throw new ApiException(errorMessages.PRAISE_NOT_FOUND);
+    return praise;
   }
 
   /**
