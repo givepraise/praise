@@ -9,6 +9,7 @@ const requiredEnvVariables = [
   'API_PORT',
   'API_KEYS',
   'API_KEY_ROLES',
+  'WEB_URL',
 ];
 
 export { requiredEnvVariables };

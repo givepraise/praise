@@ -1,12 +1,7 @@
-//import { EventLogTypeKey } from 'api/dist/eventlog/types';
-//import { logEvent } from 'api/dist/eventlog/utils';
-//import { Types } from 'mongoose';
-
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { getUserAccount } from '../utils/getUserAccount';
 import { GuildMember } from 'discord.js';
 import { getActivateToken } from '../utils/getActivateToken';
-import { getHost } from '../utils/getHost';
 import { renderMessage } from '../utils/renderMessage';
 
 /**
@@ -14,13 +9,11 @@ import { renderMessage } from '../utils/renderMessage';
  *  Creates a one-time link on the Praise frontend linking to the activate page
  *  where the user can associate their Discord user with a UserAccount
  *
- * @param client
- * @param interaction
- * @returns
  */
 export const activationHandler: CommandHandler = async (
   client,
-  interaction
+  interaction,
+  host
 ) => {
   const { member, guild } = interaction;
   if (!guild || !member) {
@@ -29,15 +22,6 @@ export const activationHandler: CommandHandler = async (
   }
 
   try {
-    const host = await getHost(client, guild.id);
-
-    if (host === undefined) {
-      await interaction.editReply(
-        'This community is not registered for praise.'
-      );
-      return;
-    }
-
     const userAccount = await getUserAccount(
       (member as GuildMember).user,
       host
@@ -52,14 +36,6 @@ export const activationHandler: CommandHandler = async (
       });
       return;
     }
-
-    // await logEvent(
-    //   EventLogTypeKey.AUTHENTICATION,
-    //   'Ran the /activate command on discord',
-    //   {
-    //     userAccountId: new Types.ObjectId(userAccount._id),
-    //   }
-    // );
 
     const activateToken = await getActivateToken(userAccount, host);
 

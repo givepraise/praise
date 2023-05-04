@@ -5,8 +5,6 @@ import { randomBytes } from 'crypto';
 /**
  * Fetch activateToken associated with userAccount from api
  *
- * @param {UserAccount} userAccount
- * @returns {Promise<string>}
  */
 export const getActivateToken = async (
   userAccount: UserAccount,

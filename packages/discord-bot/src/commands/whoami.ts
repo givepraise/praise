@@ -7,12 +7,12 @@ export const whoami: Command = {
   data: new SlashCommandBuilder()
     .setName('whoami')
     .setDescription('Find praise info about yourself'),
-  async execute(client, interaction) {
+  async execute(client, interaction, host) {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'whoami')
         return;
       await interaction.deferReply({ ephemeral: true });
-      await whoamiHandler(client, interaction);
+      await whoamiHandler(client, interaction, host);
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       logger.error((err as any).message);

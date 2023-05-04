@@ -8,6 +8,11 @@ import { cacheHosts, getHost, getHostId } from './utils/getHost';
 import Keyv from 'keyv';
 import { apiClient } from './utils/api';
 import { Community } from './utils/api-schema';
+import {
+  communityNotCreatedError,
+  praiseWelcomeEmbed,
+} from './utils/embeds/praiseEmbeds';
+import { renderMessage } from './utils/renderMessage';
 
 envCheck(requiredEnvVariables);
 
@@ -42,10 +47,21 @@ discordClient.once('ready', async () => {
 discordClient.on('interactionCreate', async (interaction): Promise<void> => {
   if (!interaction.isChatInputCommand()) return;
   const command = discordClient.commands.get(interaction.commandName);
+
   if (!command) return;
 
   try {
-    await command.execute(discordClient, interaction);
+    if (!interaction.guild) {
+      await interaction.editReply(await renderMessage('DM_ERROR'));
+      return;
+    }
+
+    const host = await getHost(discordClient, interaction.guild.id);
+    if (host) await command.execute(discordClient, interaction, host);
+    else
+      await interaction.editReply({
+        embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
+      });
   } catch (error) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     logger.error((error as any).message);
@@ -73,15 +89,16 @@ discordClient.on('guildCreate', async (guild): Promise<void> => {
   const channel = guild.channels.cache.find(
     (channel) => channel.type === ChannelType.GuildText
   );
+
   if (!channel || channel.type !== ChannelType.GuildText) return;
 
   const host = await getHost(discordClient, guild.id);
   const hostId = await getHostId(discordClient, guild.id);
 
   if (!host || !hostId) {
-    await channel.send(
-      'Welcome to Praise! To use praise, set up your praise instance in the praise portal.'
-    );
+    await channel.send({
+      embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
+    });
     return;
   }
 
@@ -90,16 +107,25 @@ discordClient.on('guildCreate', async (guild): Promise<void> => {
       headers: { host },
     })
     .then((res) => res.data)
-    .catch(() => undefined);
+    .catch((err) => {
+      console.log(err);
+      return undefined;
+    });
 
   if (!community) {
-    await channel.send(
-      'Welcome to Praise! To use praise, set up your praise instance in the praise portal.'
-    );
+    await channel.send('...');
   } else {
-    await channel.send(
-      `Welcome to praise! Link here - https://staging.givepraise.xyz/link-bot?nonce=${community.discordLinkNonce}&communityId=${hostId}&guildId=${guild.id}`
-    );
+    await channel.send({
+      embeds: [
+        praiseWelcomeEmbed(
+          community.name,
+          process.env.WEB_URL as string,
+          community.discordLinkNonce,
+          hostId,
+          guild.id
+        ),
+      ],
+    });
   }
 });
 

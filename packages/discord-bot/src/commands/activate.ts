@@ -10,11 +10,11 @@ export const activate: Command = {
       'Activate your Praise account by linking your eth address.'
     ),
 
-  async execute(client, interaction) {
+  async execute(client, interaction, host) {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'activate')
         return;
-      await activationHandler(client, interaction);
+      await activationHandler(client, interaction, host);
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       logger.error((err as any).message);

@@ -13,34 +13,25 @@ import {
 import { dmTargetMenu } from '../utils/menus/dmTargetmenu';
 import { selectTargets } from '../utils/dmTargets';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
-import { getHost } from '../utils/getHost';
 import { getUserAccount } from '../utils/getUserAccount';
 
 import { apiClient } from '../utils/api';
 import { PeriodPaginatedResponseDto } from '../utils/api-schema';
 import { renderMessage } from '../utils/renderMessage';
 
-// /**
-//  * Executes command /announce
-//  *  Sends DMs to specified lists of users with a given message
-//  *
-//  * @param  interaction
-//  * @returns
-//  */
+/**
+ * Executes command /announce
+ *  Sends DMs to specified lists of users with a given message
+ *
+ */
 export const announcementHandler: CommandHandler = async (
   client,
-  interaction
+  interaction,
+  host
 ) => {
   const { guild, channel, member } = interaction;
   if (!guild || !member || !channel) {
     await interaction.editReply(await renderMessage('DM_ERROR'));
-    return;
-  }
-
-  const host = await getHost(client, guild.id);
-
-  if (host === undefined) {
-    await interaction.editReply('This community is not registered for praise.');
     return;
   }
 

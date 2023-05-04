@@ -9,9 +9,6 @@ import { Command } from '../interfaces/Command';
  * Executes command /help
  *  Provides documentation on how to use the praise discord bot
  *
- * @param {ChatInputCommandInteraction} interaction
- * @param {Collection<string, Command>} commands
- * @returns {Promise<void>}
  */
 export const helpHandler = async (
   interaction: ChatInputCommandInteraction,

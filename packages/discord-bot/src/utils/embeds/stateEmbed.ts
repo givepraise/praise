@@ -7,8 +7,6 @@ const formatDate = (date: Date): string => format(date, 'yyyy-MM-dd');
 /**
  * Generate message outlining user's current activation status
  *
- * @param {UserState} state
- * @returns {EmbedBuilder}
  */
 export const getStateEmbed = (state: UserState): EmbedBuilder => {
   let userStateDescription: string;

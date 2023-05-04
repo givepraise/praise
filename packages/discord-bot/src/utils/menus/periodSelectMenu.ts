@@ -4,8 +4,6 @@ import { StringSelectMenuBuilder } from 'discord.js';
 /**
  * Generate Discord menu to select a period
  *
- * @param {PeriodDocument[]} periods
- * @returns {StringSelectMenuBuilder}
  */
 export const periodSelectMenu = (
   periods: Period[]

@@ -21,7 +21,7 @@ export const praise: Command = {
         .setRequired(true)
     ),
 
-  async execute(client, interaction) {
+  async execute(client, interaction, host) {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'praise')
         return;
@@ -34,6 +34,7 @@ export const praise: Command = {
       await praiseHandler(
         client,
         interaction,
+        host,
         getMsgLink(
           interaction.guildId || '',
           interaction.channelId || '',

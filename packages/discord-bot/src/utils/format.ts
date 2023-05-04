@@ -1,10 +1,6 @@
 /**
  * Generate Discord URL linking directly to a message
  *
- * @param {string} guildId
- * @param {string} channelId
- * @param {string} msgID
- * @returns {string}
  */
 export const getMsgLink = (
   guildId: string,

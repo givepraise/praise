@@ -7,10 +7,6 @@ import { apiClient } from './api';
 /**
  * Send a custom direct message to a list of users
  *
- * @param {CommandInteraction} interaction
- * @param {User[]} users
- * @param {string} message
- * @returns {Promise<void>}
  */
 const sendDMs = async (
   interaction: CommandInteraction,
@@ -147,12 +143,6 @@ const sendDMs = async (
 /**
  * Send DMs to all users with a given role or assignment status
  *
- * @param {CommandInteraction} interaction
- * @param {string} type
- * @param {(string | undefined)} period
- * @param {string} message
- * @param {string} host
- * @returns {Promise<void>}
  */
 export const selectTargets = async (
   interaction: CommandInteraction,

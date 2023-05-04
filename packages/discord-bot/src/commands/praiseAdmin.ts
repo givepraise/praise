@@ -25,7 +25,7 @@ export const praiseAdmin: Command = {
         )
     ),
 
-  async execute(client, interaction) {
+  async execute(client, interaction, host) {
     try {
       if (!interaction.isCommand() || interaction.commandName !== 'admin')
         return;
@@ -35,7 +35,7 @@ export const praiseAdmin: Command = {
       await interaction.deferReply({ ephemeral: true });
       switch (subCommand) {
         case 'announce': {
-          await announcementHandler(client, interaction);
+          await announcementHandler(client, interaction, host);
           break;
         }
       }
