@@ -2,7 +2,7 @@ import { useRecoilValue } from 'recoil';
 import React from 'react';
 import { PseudonymForUser } from '@/model/user/users';
 interface UserPseudonymParams {
-  userId: string;
+  userId: string | undefined;
   periodId: string;
 }
 const WrappedUserPseudonym = ({

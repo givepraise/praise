@@ -18,24 +18,28 @@ interface UserNameProps {
 
 const WrappedUserAvatarAndName = ({
   user,
+  userId,
   userAccount,
   usePseudonym = false,
   periodId,
   avatarClassName,
   nameClassName,
 }: UserNameProps): JSX.Element | null => {
-  if ((!user && !userAccount) || (usePseudonym && !periodId)) return null;
+  if ((!user && !userId && !userAccount) || (usePseudonym && !periodId))
+    return null;
 
   return (
     <UserPopover
       usePseudonym={usePseudonym}
       userAccount={userAccount}
       user={user}
+      userId={userId}
     >
       <div className="flex whitespace-nowrap">
         <div className={classNames('flex items-center pr-2', avatarClassName)}>
           <UserAvatar
             user={user}
+            userId={userId}
             userAccount={userAccount}
             usePseudonym={usePseudonym}
           />
@@ -43,6 +47,7 @@ const WrappedUserAvatarAndName = ({
         <div className={classNames('flex items-center', nameClassName)}>
           <UserName
             user={user}
+            userId={userId}
             userAccount={userAccount}
             usePseudonym={usePseudonym}
             periodId={periodId}
