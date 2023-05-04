@@ -24,6 +24,7 @@ import { Praise as PraiseDto } from '@/model/praise/praise.dto';
 import { idLabel } from '@/model/praise/praise.utils';
 import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
 import { useQuantifyPraise } from '../../model/quantification/quantification';
+import { SingleUser } from '../../model/user/users';
 
 interface Props {
   praise: PraiseDto;
@@ -55,13 +56,28 @@ export const Praise = ({
   const { quantify } = useQuantifyPraise();
   const history = useHistory();
 
+  // This is a bit of a hack.
+  // If `user` can be either a string or a User object, that
+  // should be reflected in the type.
+  //TODO: Refactor this.
+  const giverUser = useRecoilValue(
+    SingleUser(praise?.giver?.user as unknown as string)
+  );
+  const receiverUser = useRecoilValue(
+    SingleUser(praise?.receiver?.user as unknown as string)
+  );
+
   const handleUserClick =
     (userAccount: UserAccount | undefined) =>
     (event: React.MouseEvent<HTMLTableRowElement>) => {
       event.stopPropagation();
 
       if (userAccount && userAccount.user) {
-        history.push(`/users/${userAccount.user._id}`);
+        if (typeof userAccount.user === 'object') {
+          history.push(`/users/${userAccount.user._id}`);
+        } else {
+          history.push(`/users/${userAccount.user}`);
+        }
       }
     };
 
@@ -77,11 +93,13 @@ export const Praise = ({
           >
             <UserPopover
               userAccount={praise.giver}
+              user={giverUser}
               className="w-8"
               usePseudonym={usePseudonyms}
             >
               <UserAvatar
                 userAccount={praise.giver}
+                user={giverUser}
                 usePseudonym={usePseudonyms}
               />
             </UserPopover>
@@ -97,10 +115,12 @@ export const Praise = ({
               <UserPopover
                 usePseudonym={usePseudonyms}
                 userAccount={praise.giver}
+                user={giverUser}
               >
                 {bigGiverAvatar ? (
                   <UserName
                     userAccount={praise.giver}
+                    user={giverUser}
                     usePseudonym={usePseudonyms}
                     periodId={periodId}
                     className="font-bold"
@@ -108,6 +128,7 @@ export const Praise = ({
                 ) : (
                   <UserAvatarAndName
                     userAccount={praise.giver}
+                    user={giverUser}
                     usePseudonym={usePseudonyms}
                     periodId={periodId}
                     nameClassName="font-bold"
@@ -124,6 +145,7 @@ export const Praise = ({
                 >
                   <UserAvatarAndName
                     userAccount={praise.receiver}
+                    user={receiverUser}
                     usePseudonym={usePseudonyms}
                     periodId={periodId}
                     nameClassName="font-bold"

@@ -82,7 +82,7 @@ export const AllForwarderUsers = selector({
 
 type PseudonymForUserParams = {
   periodId: string;
-  userId: string;
+  userId: string | undefined;
 };
 /**
  * User pseudonym for a given period.
@@ -93,8 +93,12 @@ export const PseudonymForUser = selectorFamily({
     (params: PseudonymForUserParams) =>
     ({ get }): string | undefined => {
       const { periodId, userId } = params;
+
+      if (!userId) return 'Unknown user';
+
       const allPeriods = get(AllPeriods);
       if (!allPeriods) return 'Loading…';
+
       const periodIndex = allPeriods.findIndex((p) => p._id === periodId);
 
       const stringToNumber = (s: string): number => {

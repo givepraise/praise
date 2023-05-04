@@ -1,8 +1,6 @@
-import React from 'react';
 import {
   faCog,
   faCoins,
-  faPrayingHands,
   faUserFriends,
   faBook,
   faMoon,
@@ -18,49 +16,12 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu } from '@headlessui/react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { Link } from 'react-router-dom';
-import { SingleSetting } from '@/model/settings/settings';
 import { EthAccount } from '@/components/account/EthAccount';
 import { AdminOnly } from '@/components/auth/AdminOnly';
 import { Theme } from '@/model/theme';
 import { ActiveUserId } from '@/model/auth/auth';
 import { NavItem } from './NavItem';
-
-const NavLogo = (): JSX.Element => {
-  const logoSetting = useRecoilValue(SingleSetting('LOGO'));
-
-  const [imageLoadError, setImageLoadError] = React.useState<boolean>(false);
-  const [imageLoaded, setImageLoaded] = React.useState<boolean>(false);
-
-  React.useEffect(() => {
-    setImageLoadError(false);
-  }, [logoSetting]);
-
-  return (
-    <Link to={'/'}>
-      {!imageLoaded && !imageLoadError && logoSetting?.valueRealized && (
-        <div className="inline-block object-cover object-center w-32 h-32 border rounded-full" />
-      )}
-      {(imageLoadError || !logoSetting?.valueRealized) && (
-        <FontAwesomeIcon
-          icon={faPrayingHands}
-          size="1x"
-          className="inline-block object-cover object-center w-28 h-28 text-themecolor-3"
-        />
-      )}
-      {logoSetting?.valueRealized && (
-        <img
-          src={logoSetting.valueRealized as string}
-          onError={(): void => setImageLoadError(true)}
-          onLoad={(): void => setImageLoaded(true)}
-          alt="avatar"
-          className="inline-block object-cover object-center w-32 h-32 border rounded-full"
-          style={!imageLoaded ? { display: 'none' } : {}}
-        />
-      )}
-    </Link>
-  );
-};
+import { NavLogo } from './NavLogo';
 
 export const Nav = (): JSX.Element => {
   const userId = useRecoilValue(ActiveUserId);

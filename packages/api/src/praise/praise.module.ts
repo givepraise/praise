@@ -13,6 +13,10 @@ import {
   UserAccountSchema,
 } from '../useraccounts/schemas/useraccounts.schema';
 import { User, UserSchema } from '../users/schemas/users.schema';
+import {
+  Quantification,
+  QuantificationsSchema,
+} from '../quantifications/schemas/quantifications.schema';
 
 @Module({
   imports: [
@@ -21,6 +25,7 @@ import { User, UserSchema } from '../users/schemas/users.schema';
       { name: Period.name, schema: PeriodSchema },
       { name: UserAccount.name, schema: UserAccountSchema },
       { name: User.name, schema: UserSchema },
+      { name: Quantification.name, schema: QuantificationsSchema },
     ]),
     SettingsModule,
     EventLogModule,

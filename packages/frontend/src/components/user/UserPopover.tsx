@@ -8,9 +8,12 @@ import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
 import { shortenEthAddress } from '@/utils/string';
 import { UserAccountPlatformIcon } from './UserAccountPlatformIcon';
 import { UserName } from './UserName';
+import { useRecoilValue } from 'recoil';
+import { SingleUser } from '../../model/user/users';
 
 interface UserPopoverProps {
   user?: User;
+  userId?: string | undefined;
   userAccount?: UserAccount;
   children: JSX.Element;
   className?: string;
@@ -19,12 +22,14 @@ interface UserPopoverProps {
 
 const WrappedUserPopover = ({
   user,
+  userId,
   userAccount,
   children,
   className,
   usePseudonym = false,
 }: UserPopoverProps): JSX.Element | null => {
   const history = useHistory();
+  const userFromId = useRecoilValue(SingleUser(userId));
   const [open, setOpen] = React.useState(false);
   const [openTimeout, setOpenTimeout] = React.useState<NodeJS.Timeout | null>(
     null
@@ -32,6 +37,19 @@ const WrappedUserPopover = ({
   const [closeTimeout, setCloseTimeout] = React.useState<NodeJS.Timeout | null>(
     null
   );
+
+  // Merge user and userFromId
+  user = user || userFromId;
+
+  // If we have a userAccount, but no user, we can use the user from the userAccount
+  if (
+    !user &&
+    userAccount &&
+    userAccount.user &&
+    typeof userAccount.user === 'object'
+  ) {
+    user = userAccount.user as User;
+  }
 
   if (!user && !userAccount) return null;
   if (usePseudonym) return children;
@@ -44,6 +62,13 @@ const WrappedUserPopover = ({
       return;
     }
   };
+
+  let userAccounts: UserAccount[] = [];
+  if (user && user.accounts) {
+    userAccounts = user.accounts as UserAccount[];
+  } else if (userAccount) {
+    userAccounts = [userAccount];
+  }
 
   return (
     <div className={classNames('inline-block', className)}>
@@ -74,20 +99,25 @@ const WrappedUserPopover = ({
         >
           <div className="p-5 text-sm font-normal text-gray-900 border border-solid rounded-lg shadow-md dark:text-white bg-warm-gray-50 dark:bg-slate-900">
             <div className="mb-5 text-4xl">
-              <UserAvatar user={user} userAccount={userAccount} />
+              <UserAvatar
+                user={user}
+                userId={userId}
+                userAccount={userAccount}
+              />
             </div>
             <div className="font-bold">
-              <UserName user={user} userAccount={userAccount} />
+              <UserName user={user} userId={userId} userAccount={userAccount} />
             </div>
-            {userAccount && (
-              <div className="flex items-center space-x-2">
-                <UserAccountPlatformIcon userAccount={userAccount} />
-                <span>{userAccount.name}</span>
-              </div>
-            )}
+            {userAccounts &&
+              userAccounts.map((account) => (
+                <div className="flex items-center space-x-2" key={account._id}>
+                  <UserAccountPlatformIcon userAccount={account} />
+                  <span>{account.name}</span>
+                </div>
+              ))}
 
             {user && (
-              <div className="flex items-center mt-3 space-x-2">
+              <div className="flex items-center space-x-2">
                 <Jazzicon
                   address={user.identityEthAddress}
                   className="w-4 h-4"

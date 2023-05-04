@@ -3,9 +3,12 @@ import { UserPseudonym } from './UserPseudonym';
 import { User } from '@/model/user/dto/user.dto';
 import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
 import { shortenEthAddress } from '../../utils/string';
+import { useRecoilValue } from 'recoil';
+import { SingleUser } from '../../model/user/users';
 
 interface UserNameProps {
   user?: User;
+  userId?: string | undefined;
   userAccount?: UserAccount;
   usePseudonym?: boolean;
   periodId?: string;
@@ -14,30 +17,42 @@ interface UserNameProps {
 
 const WrappedUserName = ({
   user,
+  userId,
   userAccount,
   usePseudonym = false,
   periodId,
   className,
 }: UserNameProps): JSX.Element => {
-  let name = '';
+  const userFromId = useRecoilValue(SingleUser(userId));
+
+  let name = 'Unknown username';
+
+  // Merge user and userFromId
+  user = user || userFromId;
+
+  // If we have a userAccount, but no user, we can use the user from the userAccount
+  if (
+    !user &&
+    userAccount &&
+    userAccount.user &&
+    typeof userAccount.user === 'object'
+  ) {
+    user = userAccount.user as User;
+  }
 
   if ((!user && !userAccount) || (usePseudonym && !periodId))
     name = 'Unknown username';
 
-  const localUser =
-    user ||
-    (typeof userAccount?.user === 'object' ? userAccount?.user : undefined);
-
-  if (localUser?.username) {
+  if (user) {
     if (usePseudonym && periodId) {
-      return <UserPseudonym userId={localUser._id} periodId={periodId} />;
-    } else {
-      name = localUser.username;
+      return <UserPseudonym userId={userId} periodId={periodId} />;
+    } else if (user.username) {
+      name = user.username;
     }
   } else {
     if (userAccount) {
       if (usePseudonym && periodId) {
-        return <UserPseudonym userId={userAccount._id} periodId={periodId} />;
+        return <UserPseudonym userId={userId} periodId={periodId} />;
       } else {
         name = userAccount.name;
       }
