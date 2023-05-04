@@ -52,14 +52,14 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
 
   try {
     if (!interaction.guild) {
-      await interaction.editReply(await renderMessage('DM_ERROR'));
+      await interaction.reply(await renderMessage('DM_ERROR'));
       return;
     }
 
     const host = await getHost(discordClient, interaction.guild.id);
     if (host) await command.execute(discordClient, interaction, host);
     else
-      await interaction.editReply({
+      await interaction.reply({
         embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
       });
   } catch (error) {
@@ -90,42 +90,49 @@ discordClient.on('guildCreate', async (guild): Promise<void> => {
     (channel) => channel.type === ChannelType.GuildText
   );
 
-  if (!channel || channel.type !== ChannelType.GuildText) return;
+  try {
+    if (!channel || channel.type !== ChannelType.GuildText) return;
 
-  const host = await getHost(discordClient, guild.id);
-  const hostId = await getHostId(discordClient, guild.id);
+    const host = await getHost(discordClient, guild.id);
+    const hostId = await getHostId(discordClient, guild.id);
 
-  if (!host || !hostId) {
-    await channel.send({
-      embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
-    });
-    return;
-  }
+    if (!host || !hostId) {
+      await channel.send({
+        embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
+      });
+      return;
+    }
 
-  const community = await apiClient
-    .get<Community>(`/communities/${hostId}`, {
-      headers: { host },
-    })
-    .then((res) => res.data)
-    .catch((err) => {
-      console.log(err);
-      return undefined;
-    });
+    const community = await apiClient
+      .get<Community>(`/communities/${hostId}`, {
+        headers: { host },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.log(err);
+        return undefined;
+      });
 
-  if (!community) {
-    await channel.send('...');
-  } else {
-    await channel.send({
-      embeds: [
-        praiseWelcomeEmbed(
-          community.name,
-          process.env.WEB_URL as string,
-          community.discordLinkNonce,
-          hostId,
-          guild.id
-        ),
-      ],
-    });
+    if (!community) {
+      await channel.send({
+        embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
+      });
+    } else {
+      await channel.send({
+        embeds: [
+          praiseWelcomeEmbed(
+            community.name,
+            process.env.WEB_URL as string,
+            community.discordLinkNonce,
+            community.discordLinkState === 'ACTIVE',
+            hostId,
+            guild.id
+          ),
+        ],
+      });
+    }
+  } catch (err) {
+    logger.warn("Can't access server");
   }
 });
 
