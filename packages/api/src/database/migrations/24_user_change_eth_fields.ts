@@ -44,7 +44,7 @@ const generateUserName = async (user: any): Promise<string> => {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (user as any).ethereumAddress;
+  return (user as any).ethereumAddress.toLowerCase();
 };
 
 const up = async (): Promise<void> => {

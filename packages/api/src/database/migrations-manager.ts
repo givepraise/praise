@@ -64,20 +64,21 @@ export class MigrationsManager {
       for (const owner of community.owners) {
         try {
           const user = await usersService.findOneByEth(owner);
+          logger.debug(`[${community.hostname}] Setting roles for ${owner}`);
           await usersService.update(user._id, {
+            username: user.username.toLocaleLowerCase(),
             roles: [AuthRole.ROOT, AuthRole.ADMIN, AuthRole.USER],
           });
-          logger.debug(`[${community.hostname}] Setting roles for ${owner}`);
         } catch (err) {
+          logger.debug(
+            `[${community.hostname}] Creating owner user for ${owner}`,
+          );
           await usersService.create({
             username: owner.toLowerCase(),
             identityEthAddress: owner,
             rewardsEthAddress: owner,
             roles: [AuthRole.ROOT, AuthRole.ADMIN, AuthRole.USER],
           });
-          logger.debug(
-            `[${community.hostname}] Creating owner user for ${owner}`,
-          );
         }
       }
 
