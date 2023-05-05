@@ -290,6 +290,17 @@ describe('Communities (E2E)', () => {
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkNonce.length).toBe(10);
       expect(rb.isPublic).toBe(true);
+
+      const communityDbName = dbNameCommunity(rb);
+      expect(await databaseExists(communityDbName, mongodb)).toBe(true);
+
+      const communityDb = mongodb.db(communityDbName);
+      const migrationDocuments = await communityDb
+        .collection('migrations')
+        .countDocuments();
+
+      // To make sure all migrations has been executed successfully
+      expect(migrationDocuments).toBeGreaterThan(0);
     });
   });
 
@@ -376,42 +387,6 @@ describe('Communities (E2E)', () => {
       expect(rb.email).toBe('test@praise.io');
       expect(rb.discordLinkState).toBe(DiscordLinkState.ACTIVE);
       expect(rb.isPublic).toBe(true);
-    });
-
-    test('200 should create new db for community, after link it to discord', async () => {
-      const dbName = dbNameCommunity(community);
-
-      // Before linking Discord to community there is no DB for that community
-      // eslint-disable-next-line jest-extended/prefer-to-be-false
-      expect(await databaseExists(dbName, mongodb)).toBe(false);
-
-      const signedMessage = await users[0].wallet.signMessage(
-        communityService.generateLinkDiscordMessage({
-          communityId: String(community._id),
-          guildId: community.discordGuildId as string,
-          nonce: community.discordLinkNonce as string,
-        }),
-      );
-
-      const response = await authorizedPatchRequest(
-        `/communities/${community._id}/discord/link`,
-        app,
-        setupWebUserAccessToken,
-        {
-          signedMessage,
-        },
-      );
-
-      expect(response.status).toBe(200);
-      expect(await databaseExists(dbName, mongodb)).toBe(true);
-
-      const communityDb = mongodb.db(dbName);
-      const migrationDocuments = await communityDb
-        .collection('migrations')
-        .countDocuments();
-
-      // To make sure all migrations has been executed successfully
-      expect(migrationDocuments).toBeGreaterThan(0);
     });
 
     test('400 when someone else wants to link discord to community instead of creator', async () => {

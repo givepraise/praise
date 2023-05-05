@@ -114,7 +114,12 @@ export class CommunityService {
       database: communityDto.hostname.replace(/\./g, '-'),
     });
     await community.save();
-    return community.toObject();
+
+    // Create and setup community database
+    const migrationsManager = new MigrationsManager();
+    await migrationsManager.migrate(community);
+
+    return community;
   }
 
   async linkDiscord(
@@ -144,10 +149,7 @@ export class CommunityService {
     }
 
     community.discordLinkState = DiscordLinkState.ACTIVE;
-    await community.save();
-    const migrationsManager = new MigrationsManager();
-    await migrationsManager.migrate(community);
-    return community;
+    return community.save();
   }
 
   /**
