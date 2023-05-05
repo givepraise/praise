@@ -12,6 +12,7 @@ import { UsersService } from '../users/users.service';
 import { AppMigrationsModule } from './modules/app-migrations.module';
 import { dbUrlCommunity } from './utils/db-url-community';
 import mongoose, { ConnectOptions } from 'mongoose';
+import { AuthRole } from '../auth/enums/auth-role.enum';
 
 export class MigrationsManager {
   /**
@@ -58,6 +59,27 @@ export class MigrationsManager {
 
       // Run the migrations
       await migrator.up();
+
+      const usersService = app.get(UsersService);
+      for (const owner of community.owners) {
+        try {
+          const user = await usersService.findOneByEth(owner);
+          await usersService.update(user._id, {
+            roles: [AuthRole.ROOT, AuthRole.ADMIN, AuthRole.USER],
+          });
+          logger.debug(`[${community.hostname}] Setting roles for ${owner}`);
+        } catch (err) {
+          await usersService.create({
+            username: owner.toLowerCase(),
+            identityEthAddress: owner,
+            rewardsEthAddress: owner,
+            roles: [AuthRole.ROOT, AuthRole.ADMIN, AuthRole.USER],
+          });
+          logger.debug(
+            `[${community.hostname}] Creating owner user for ${owner}`,
+          );
+        }
+      }
 
       // Close the app
       await app.close();
