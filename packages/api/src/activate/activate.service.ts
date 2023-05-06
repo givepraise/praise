@@ -85,7 +85,10 @@ export class ActivateService {
     let user;
     try {
       user = await this.usersService.findOneByEth(identityEthAddress);
-      if (user.username === user.identityEthAddress) {
+
+      // If user is found, update username if it is the same as the identityEthAddress.
+      // The identityEthAddress is used as a placeholder username when the user is created.
+      if (user.username === user.identityEthAddress.toLowerCase()) {
         // Update username
         await this.usersService.update(user._id, {
           username,
