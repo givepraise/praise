@@ -1,18 +1,11 @@
-import { GuildMember } from 'discord.js';
-import { UserState } from '../interfaces/UserState';
 import { getUserAccount } from '../utils/getUserAccount';
-import { getStateEmbed } from '../utils/embeds/stateEmbed';
-import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { renderMessage } from '../utils/renderMessage';
-import { UserAccount } from '../utils/api-schema';
 import { apiClient } from '../utils/api';
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { PraisePaginatedResponseDto } from '../utils/api-schema';
 import { queryOpenAi } from '../utils/queryOpenAi';
 import { EmbedBuilder } from '@discordjs/builders';
-import { ActionRowBuilder } from '@discordjs/builders';
-import { ButtonBuilder } from '@discordjs/builders';
-import { ButtonStyle } from 'discord.js';
+
 /**
  * Execute command /whoami
  * Gives the user information about their account and activation status
@@ -77,7 +70,6 @@ export const whoisHandler: CommandHandler = async (
     process.env.OPENAI_KEY
   );
 
-  let val = 0;
   const labels = (
     await queryOpenAi(topPraiseCsv, labelPrompt, process.env.OPENAI_KEY)
   )
@@ -102,7 +94,7 @@ export const whoisHandler: CommandHandler = async (
         .setTitle(userAccount.name)
         .setDescription(summary)
         .setThumbnail(
-          `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`
+          `https://cdn.discordapp.com/avatars/${user.id}/${user?.avatar || ''}`
         )
         .addFields(labels),
     ],
