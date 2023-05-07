@@ -56,6 +56,14 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
       return;
     }
 
+    logger.debug(
+      `Interaction /${interaction.commandName} used by ${
+        interaction.user.username
+      } from ${interaction.guild?.name} with options - ${JSON.stringify(
+        interaction.options.data
+      )}`
+    );
+
     const host = await getHost(discordClient, interaction.guild.id);
     if (host) await command.execute(discordClient, interaction, host);
     else

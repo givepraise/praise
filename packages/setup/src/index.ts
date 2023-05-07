@@ -90,6 +90,12 @@ const questions = [
     message: 'Discord Guild ID',
     default: process.env.DISCORD_GUILD_ID,
   },
+  {
+    type: 'string',
+    name: 'OPENAI_KEY',
+    message: 'OpenAI Key',
+    default: process.env.OPENAI_KEY,
+  },
 ];
 
 const setupAndWriteEnv = (
@@ -184,6 +190,7 @@ const run = async (): Promise<void> => {
     DISCORD_TOKEN: answers.DISCORD_TOKEN,
     DISCORD_CLIENT_ID: answers.DISCORD_CLIENT_ID,
     DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,
+    OPENAI_KEY: answers.OPENAI_KEY,
   };
 
   setupAndWriteEnv(rootEnvTemplatePath, rootEnvPath, rootEnv);
