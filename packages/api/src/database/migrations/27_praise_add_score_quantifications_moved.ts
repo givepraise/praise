@@ -26,7 +26,7 @@ const up = async ({ context }: MigrationsContext): Promise<void> => {
         setting: setting._id,
         value: setting.value,
         group: setting.group,
-        periodOverridable: setting.periodOverridable,
+        periodOverridable: true,
         label: setting.label,
         type: setting.type,
       };
