@@ -18,10 +18,18 @@ export class MultiTenantConnectionService implements MongooseOptionsFactory {
   constructor(@Inject(REQUEST) private readonly request: any) {}
 
   async createMongooseOptions(): Promise<MongooseModuleOptions> {
-    const host =
+    let host =
       process.env.NODE_ENV === 'testing'
         ? HOSTNAME_TEST
         : this.request.headers['host'].split(':')[0];
+
+    // When requests that are not specific to a community are made, the host
+    // will be 'api'. In this case, we want to connect to the main database.
+    // This is a slight hack, need to find a better way to do this eventualy.
+    // TODO: Find a better way to do this
+    if (host === 'api') {
+      host = process.env.MONGO_DB as string;
+    }
 
     if (process.env.LOGGER_LEVEL === 'debug') {
       logger.debug(`Connecting to database ${host}`);
