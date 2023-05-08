@@ -13,6 +13,8 @@ services:
       - './packages/mongodb/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh:ro'
       - './packages/mongodb/entrypoint.sh:/entrypoint.sh:ro'
     entrypoint: /entrypoint.sh
+    networks: 
+      - praise-network
 
   api:
     container_name: api-praise
@@ -25,8 +27,8 @@ services:
     volumes:
       - './packages/api/uploads/:/usr/src/uploads/'      
       - './packages/api/exports/:/usr/src/exports/'
-    links:
-      - mongodb
+    networks: 
+      - praise-network
 
   discord-bot:
     container_name: discord-bot-praise
@@ -34,8 +36,8 @@ services:
     env_file:
       - .env
     restart: always
-    links:
-      - mongodb
+    networks: 
+      - praise-network
 
   frontend:
     container_name: frontend-praise
@@ -49,12 +51,15 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
-    links:
-      - api
     command: >
       sh -c "cd /var/www/praise && ./init-env.sh && caddy run --config /etc/caddy/Caddyfile"      
+    networks: 
+      - praise-network
 
 volumes:
   mongodb_data:
   caddy_data:
   caddy_config:
+
+networks:
+  praise-network:

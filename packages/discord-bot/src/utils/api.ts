@@ -1,6 +1,9 @@
 import axios, { AxiosInstance } from 'axios';
+import { isDocker } from './isDocker';
 
-export const apiBaseURL = `${process.env.API_URL as string}/api`;
+export const apiBaseURL = isDocker()
+  ? `http://api:${process.env.API_PORT as string}/api`
+  : `${process.env.API_URL as string}/api`;
 
 /**
  * Get the API key for the Discord bot from the list of API keys and roles
