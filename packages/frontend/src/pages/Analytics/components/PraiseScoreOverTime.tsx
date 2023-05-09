@@ -108,7 +108,7 @@ const PraiseScoreOverTime = ({
     void run();
   }, [dbContext, date2, date1, date3]);
 
-  if (!data) return <Graph.LoadPlaceholder />;
+  if (!data || data.data.length === 0) return <Graph.LoadPlaceholder />;
 
   const firstDate = new Date(data.data[0].createdAt);
 

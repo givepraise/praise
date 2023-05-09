@@ -115,6 +115,7 @@ export const DatePeriodRange: React.FC = () => {
             onChange={handleStartDateChange}
             onBlur={handleDateInputBlur}
             className="w-full text-sm"
+            disabled={allPeriods.length === 0}
           />
           <div className="flex items-center px-3">to</div>
           <input
@@ -123,6 +124,7 @@ export const DatePeriodRange: React.FC = () => {
             onChange={handleEndDateChange}
             onBlur={handleDateInputBlur}
             className="w-full text-sm"
+            disabled={allPeriods.length === 0}
           />
         </div>
       </div>

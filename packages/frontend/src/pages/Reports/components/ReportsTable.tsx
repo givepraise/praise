@@ -6,6 +6,7 @@ import { classNames } from '@/utils/index';
 import { InlineLabel } from '@/components/ui/InlineLabel';
 import { AllReports } from '../../../model/report/reports';
 import { ReportManifestDto } from '../../../model/report/dto/report-manifest.dto';
+import { AllPeriods } from '../../../model/periods/periods';
 
 type ReportsTableProps = {
   onClick: (id: string) => EventHandler<React.MouseEvent>;
@@ -19,6 +20,7 @@ export const ReportsTable = ({
   exclude,
 }: ReportsTableProps): JSX.Element => {
   const allReports = useRecoilValue(AllReports);
+  const allPeriods = useRecoilValue(AllPeriods);
 
   // Filter reports based on include and exclude
   const filteredReports = React.useMemo(() => {
@@ -136,7 +138,9 @@ export const ReportsTable = ({
               <tr
                 className={classNames(
                   row.values.status === 'CLOSED' ? 'text-warm-gray-400' : '',
-                  'px-5 cursor-pointer hover:bg-warm-gray-100 dark:hover:bg-slate-500'
+                  allPeriods.length > 0
+                    ? 'px-5 cursor-pointer hover:bg-warm-gray-100 dark:hover:bg-slate-500'
+                    : 'px-5 text-warm-gray-400'
                 )}
                 onClick={handleClick((row.original as ReportManifestDto).name)}
                 key={key}

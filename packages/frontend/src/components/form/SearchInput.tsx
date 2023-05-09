@@ -19,7 +19,7 @@ export const SearchInput = ({
   handleClear,
 }: SearchInputProps): JSX.Element => {
   return (
-    <div className="relative flex items-center h-10 overflow-hidden border border-warm-gray-400">
+    <div className="relative flex items-center h-10 overflow-hidden border border-warm-gray-700">
       <div className="absolute inset-y-0 left-0 flex items-center pl-3">
         <span className="text-warm-gray-800 dark:text-white">
           <FontAwesomeIcon
@@ -30,7 +30,7 @@ export const SearchInput = ({
         </span>
       </div>
       <input
-        className="block w-full pl-8 pr-8 bg-transparent border-none outline-none focus:ring-0"
+        className="block w-full pl-8 pr-8 border-none outline-none focus:ring-0"
         name="search"
         type="text"
         placeholder={placeholder}
