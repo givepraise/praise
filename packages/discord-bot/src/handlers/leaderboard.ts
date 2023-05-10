@@ -67,7 +67,8 @@ export const leaderboardHandler: CommandHandler = async (
       embeds: [leaderboardEmbed(response.data)],
     });
   } catch (err) {
-    logger.error(err);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    logger.error((err as any).message);
     await interaction.editReply(
       'Unable to get period details or unable to construct leaderboard.'
     );

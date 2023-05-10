@@ -46,28 +46,46 @@ discordClient.once('ready', async () => {
 
 discordClient.on('interactionCreate', async (interaction): Promise<void> => {
   if (!interaction.isChatInputCommand()) return;
+
+  const msg = await interaction.deferReply({
+    ephemeral: true,
+    fetchReply: true,
+  });
+
   const command = discordClient.commands.get(interaction.commandName);
 
   if (!command) return;
 
   try {
     if (!interaction.guild) {
-      await interaction.reply(await renderMessage('DM_ERROR'));
+      await interaction.editReply(await renderMessage('DM_ERROR'));
       return;
     }
 
+    logger.debug(
+      `Interaction /${interaction.commandName} used by ${
+        interaction.user.username
+      } from ${interaction.guild?.name} with options - ${JSON.stringify(
+        interaction.options.data
+      )}`
+    );
+
     const host = await getHost(discordClient, interaction.guild.id);
-    if (host) await command.execute(discordClient, interaction, host);
+    if (host) await command.execute(discordClient, interaction, host, msg);
     else
-      await interaction.reply({
+      await interaction.editReply({
         embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
       });
-  } catch (error) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    logger.error((error as any).message);
-    await interaction.reply({
-      content: 'There was an error while executing this command!',
-      ephemeral: true,
+  } catch {
+    logger.error(
+      `Interaction /${interaction.commandName} failed for ${
+        interaction.user.username
+      } in ${interaction.guild?.name || 'dm'}(${
+        interaction.guildId || interaction.applicationId
+      })`
+    );
+    await interaction.editReply({
+      content: `There was an error while executing the \`/${interaction.commandName}\` command.`,
     });
     return;
   }
