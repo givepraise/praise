@@ -12360,6 +12360,7 @@ __metadata:
     use-error-boundary: ^2.0.6
     util: ^0.12.4
     wagmi: ^0.12.0
+    wasm-check: ^2.1.2
   languageName: unknown
   linkType: soft
 
@@ -21662,6 +21663,13 @@ __metadata:
   dependencies:
     makeerror: 1.0.12
   checksum: ad7a257ea1e662e57ef2e018f97b3c02a7240ad5093c392186ce0bcf1f1a60bbadd520d073b9beb921ed99f64f065efb63dfc8eec689a80e569f93c1c5d5e16c
+  languageName: node
+  linkType: hard
+
+"wasm-check@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "wasm-check@npm:2.1.2"
+  checksum: 3d555ac1b855e7028cf92990ca6ff860a45a73d1abfef64c502bb7911849ff098fa278d51d1f40d45da9f91c28410c886bb0577b1e0858d80ccb7b76d26c30f3
   languageName: node
   linkType: hard
 

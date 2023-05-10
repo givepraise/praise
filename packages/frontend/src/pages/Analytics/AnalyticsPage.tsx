@@ -21,6 +21,7 @@ import {
   useLoadSinglePeriodDetails,
 } from '../../model/periods/periods';
 import { Link } from 'react-router-dom';
+import * as check from 'wasm-check';
 
 const Graphs = (): JSX.Element | null => {
   const date2 = useRecoilValue(DatePeriodRangeStartDate);
@@ -56,8 +57,6 @@ const Graphs = (): JSX.Element | null => {
 };
 
 const NoPeriodsMessage = (): JSX.Element | null => {
-  const allPeriods = useRecoilValue(AllPeriods);
-  if (allPeriods.length > 0) return null;
   return (
     <div className="w-full p-5 mb-5 border rounded-none shadow-none md:shadow-md md:rounded-xl bg-warm-gray-50 dark:bg-slate-600 break-inside-avoid-column">
       Analytics will be available once you have created your first{' '}
@@ -74,18 +73,38 @@ const NoPraiseMessage = (): JSX.Element | null => {
   );
 };
 
+const NoWasmMessage = (): JSX.Element | null => {
+  return (
+    <div className="w-full p-5 mb-5 border rounded-none shadow-none md:shadow-md md:rounded-xl bg-warm-gray-50 dark:bg-slate-600 break-inside-avoid-column">
+      This web browser does not support WebAssembly. WebAssembly is required to
+      view analytics.
+    </div>
+  );
+};
+
 const AnalyticsPage = (): JSX.Element => {
   const periodId = useRecoilValue(DatePeriodRangePeriod);
   useLoadSinglePeriodDetails(periodId);
   const period = useRecoilValue(SinglePeriod(periodId));
-  console.log('period', period);
+  const allPeriods = useRecoilValue(AllPeriods);
+  const isWasmSupported = check.support();
+
   return (
     <Page variant="full">
       <BreadCrumb name="Analytics" icon={faChartArea} />
-
-      <DatePeriodRange />
-      <NoPeriodsMessage />
-      {period && period.numberOfPraise > 0 ? <Graphs /> : <NoPraiseMessage />}
+      {isWasmSupported ? (
+        <>
+          <DatePeriodRange />
+          {allPeriods.length === 0 && <NoPeriodsMessage />}
+          {period && period.numberOfPraise > 0 ? (
+            <Graphs />
+          ) : (
+            <NoPraiseMessage />
+          )}
+        </>
+      ) : (
+        <NoWasmMessage />
+      )}
     </Page>
   );
 };

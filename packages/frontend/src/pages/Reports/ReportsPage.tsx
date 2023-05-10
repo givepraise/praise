@@ -14,6 +14,8 @@ import { SingleReport } from '../../model/report/reports';
 import { ReportConfigDialog } from './components/ReportConfigDialog';
 import { ReportsTable } from './components/ReportsTable';
 import { AllPeriods } from '../../model/periods/periods';
+import * as check from 'wasm-check';
+import toast from 'react-hot-toast';
 
 const NoPeriodsMessage = (): JSX.Element | null => {
   const allPeriods = useRecoilValue(AllPeriods);
@@ -39,6 +41,12 @@ const ReportsPage = (): JSX.Element | null => {
 
   const handleReportClick = (name: string) => (): void => {
     if (allPeriods.length === 0) return;
+    if (!check.support()) {
+      toast.error(
+        'Your browser does not support WebAssembly which is required to run reports. Please try a different browser.'
+      );
+      return;
+    }
     setSelectedReportName(name);
   };
 
