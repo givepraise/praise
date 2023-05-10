@@ -76,9 +76,14 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
       await interaction.editReply({
         embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
       });
-  } catch (error) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    logger.error((error as any).message);
+  } catch {
+    logger.error(
+      `Interaction /${interaction.commandName} failed for ${
+        interaction.user.username
+      } in ${interaction.guild?.name || 'dm'}(${
+        interaction.guildId || interaction.applicationId
+      })`
+    );
     await interaction.editReply({
       content: `There was an error while executing the \`/${interaction.commandName}\` command.`,
     });

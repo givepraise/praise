@@ -7,6 +7,7 @@ import { renderMessage } from '../utils/renderMessage';
 import { UserAccount } from '../utils/api-schema';
 import { apiClient } from '../utils/api';
 import { CommandHandler } from '../interfaces/CommandHandler';
+import { logger } from '../utils/logger';
 
 /**
  * Execute command /whoami
@@ -24,53 +25,59 @@ export const whoamiHandler: CommandHandler = async (
     return;
   }
 
-  const ua = await getUserAccount((member as GuildMember).user, host);
+  try {
+    const ua = await getUserAccount((member as GuildMember).user, host);
 
-  const state: UserState = {
-    id: ua.accountId,
-    username: ua.name,
-    hasPraiseGiverRole: false,
-    activated: !ua.user ? false : true,
-  };
+    const state: UserState = {
+      id: ua.accountId,
+      username: ua.name,
+      hasPraiseGiverRole: false,
+      activated: !ua.user ? false : true,
+    };
 
-  state.hasPraiseGiverRole = await assertPraiseGiver(
-    member as GuildMember,
-    interaction,
-    false,
-    host
-  );
+    state.hasPraiseGiverRole = await assertPraiseGiver(
+      member as GuildMember,
+      interaction,
+      false,
+      host
+    );
 
-  if (ua.user !== undefined) {
-    state.praiseRoles = [...ua.user.roles];
-    state.address = ua.user.identityEthAddress || '';
-    state.avatar = ua.avatarId;
-    state.activations = [];
+    if (ua.user !== undefined) {
+      state.praiseRoles = [...ua.user.roles];
+      state.address = ua.user.identityEthAddress || '';
+      state.avatar = ua.avatarId;
+      state.activations = [];
 
-    const activatedAccounts = await apiClient
-      .get<UserAccount[]>(`useraccounts?user=${ua.user._id}`, {
-        headers: { host: host },
-      })
-      .then((res) => res.data);
-    for (const account of activatedAccounts) {
-      state.activations.push({
-        platform: account.platform,
-        user: account.name,
-        activationDate: account.createdAt,
-        latestUsageDate: account.updatedAt,
-      });
+      const activatedAccounts = await apiClient
+        .get<UserAccount[]>(`useraccounts?user=${ua.user._id}`, {
+          headers: { host: host },
+        })
+        .then((res) => res.data);
+      for (const account of activatedAccounts) {
+        state.activations.push({
+          platform: account.platform,
+          user: account.name,
+          activationDate: account.createdAt,
+          latestUsageDate: account.updatedAt,
+        });
+      }
+    } else {
+      if (state.activations) {
+        state.activations.push({
+          platform: 'DISCORD',
+          user: ua.name,
+          activationDate: ua.createdAt,
+          latestUsageDate: ua.updatedAt,
+        });
+      }
     }
-  } else {
-    if (state.activations) {
-      state.activations.push({
-        platform: 'DISCORD',
-        user: ua.name,
-        activationDate: ua.createdAt,
-        latestUsageDate: ua.updatedAt,
-      });
-    }
+
+    await interaction.editReply({
+      embeds: [getStateEmbed(state)],
+    });
+  } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    logger.error(`(whoami) ${(err as any).message as string}`);
+    throw err;
   }
-
-  await interaction.editReply({
-    embeds: [getStateEmbed(state)],
-  });
 };

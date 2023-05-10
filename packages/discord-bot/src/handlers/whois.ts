@@ -23,67 +23,75 @@ export const whoisHandler: CommandHandler = async (
     return;
   }
 
-  const user = interaction.options.getUser('member', true);
-  const userAccount = await getUserAccount(user, host);
+  try {
+    const user = interaction.options.getUser('member', true);
+    const userAccount = await getUserAccount(user, host);
 
-  if (!process.env.OPENAI_KEY) {
-    await interaction.editReply("This feature isn't available yet.");
-    return;
-  }
+    if (!process.env.OPENAI_KEY) {
+      await interaction.editReply("This feature isn't available yet.");
+      return;
+    }
 
-  if (!userAccount) {
-    await interaction.editReply('No data available on that user so far...');
-    return;
-  }
+    if (!userAccount) {
+      await interaction.editReply('No data available on that user so far...');
+      return;
+    }
 
-  const response = await apiClient.get<PraisePaginatedResponseDto>(
-    `/praise?limit=100&page=1&receiver=${userAccount._id}&sortType=desc&sortColumn=score`
-  );
+    const response = await apiClient.get<PraisePaginatedResponseDto>(
+      `/praise?limit=100&page=1&receiver=${userAccount._id}&sortType=desc&sortColumn=score`
+    );
 
-  const praise = [...response.data.docs];
+    const praise = [...response.data.docs];
 
-  praise.sort((a, b) => b.score - a.score).slice(0, 100);
+    praise.sort((a, b) => b.score - a.score);
 
-  const topPraiseCsv =
-    'score, reason\n' +
-    praise.map((item) => `${item.score}, ${item.reason}`).join('\n');
+    const topPraiseCsv =
+      'score, reason\n' +
+      praise.map((item) => `${item.score}, ${item.reason}`).join('\n');
 
-  const summaryPrompt = `Below is a table of praise items describing contributions made by community member ${userAccount.name}. Summarize, what kind of work does No account selected do for the community? The first column is a score representing the impact of the contribution, the second column describes the contribution. The higher impact score a contribution has the more it impacts your description of ${userAccount.name}.`;
-  const labelPrompt = `Below is a list of contributions made by community member ${userAccount.name}. The first column of the list is a score representing the impact of the contribution, the second column describes the contribution. I want you to create a comma separated list of labels that describe the most impactful work ${userAccount.name} does for the community. The higher impact score a contribution has the more it impacts your description. 7 labels please.`;
+    const summaryPrompt = `Below is a table of praise items describing contributions made by community member ${userAccount.name}. Summarize, what kind of work does No account selected do for the community? The first column is a score representing the impact of the contribution, the second column describes the contribution. The higher impact score a contribution has the more it impacts your description of ${userAccount.name}.`;
+    const labelPrompt = `Below is a list of contributions made by community member ${userAccount.name}. The first column of the list is a score representing the impact of the contribution, the second column describes the contribution. I want you to create a comma separated list of labels that describe the most impactful work ${userAccount.name} does for the community. The higher impact score a contribution has the more it impacts your description. 7 labels please.`;
 
-  const summary = await queryOpenAi(
-    topPraiseCsv,
-    summaryPrompt,
-    process.env.OPENAI_KEY
-  );
+    const summary = await queryOpenAi(
+      topPraiseCsv,
+      summaryPrompt,
+      process.env.OPENAI_KEY
+    );
 
-  const labels = (
-    await queryOpenAi(topPraiseCsv, labelPrompt, process.env.OPENAI_KEY)
-  )
-    .split(',')
-    .map((label: string) => {
-      return {
-        name: label
-          .trim()
-          .replace(
-            /\w\S*/g,
-            (txt) =>
-              txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
-          ),
-        value: '\u200b',
-        inline: true,
-      };
+    const labels = (
+      await queryOpenAi(topPraiseCsv, labelPrompt, process.env.OPENAI_KEY)
+    )
+      .split(',')
+      .map((label: string) => {
+        return {
+          name: label
+            .trim()
+            .replace(
+              /\w\S*/g,
+              (txt) =>
+                txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
+            ),
+          value: '\u200b',
+          inline: true,
+        };
+      });
+
+    await interaction.editReply({
+      embeds: [
+        new EmbedBuilder()
+          .setTitle(userAccount.name)
+          .setDescription(summary)
+          .setThumbnail(
+            `https://cdn.discordapp.com/avatars/${user.id}/${
+              user?.avatar || ''
+            }`
+          )
+          .addFields(labels),
+      ],
     });
-
-  await interaction.editReply({
-    embeds: [
-      new EmbedBuilder()
-        .setTitle(userAccount.name)
-        .setDescription(summary)
-        .setThumbnail(
-          `https://cdn.discordapp.com/avatars/${user.id}/${user?.avatar || ''}`
-        )
-        .addFields(labels),
-    ],
-  });
+  } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    logger.error(`(whois) ${(err as any).message as string}`);
+    throw err;
+  }
 };

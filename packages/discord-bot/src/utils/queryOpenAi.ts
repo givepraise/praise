@@ -24,6 +24,7 @@ export const queryOpenAi = async (
 
     return res.data.choices[0].message.content;
   } catch (err) {
-    throw err;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    throw new Error(`(queryOpenAi) ${(err as any).message as string}`);
   }
 };
