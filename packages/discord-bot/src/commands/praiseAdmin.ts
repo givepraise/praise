@@ -2,8 +2,6 @@ import {
   SlashCommandBuilder,
   SlashCommandSubcommandBuilder,
 } from '@discordjs/builders';
-
-import { logger } from '../utils/logger';
 import { announcementHandler } from '../handlers/announce';
 import { Command } from '../interfaces/Command';
 
@@ -26,22 +24,15 @@ export const praiseAdmin: Command = {
     ),
 
   async execute(client, interaction, host) {
-    try {
-      if (!interaction.isCommand() || interaction.commandName !== 'admin')
-        return;
+    if (!interaction.isCommand() || interaction.commandName !== 'admin') return;
 
-      const subCommand = interaction.options.getSubcommand();
+    const subCommand = interaction.options.getSubcommand();
 
-      await interaction.deferReply({ ephemeral: true });
-      switch (subCommand) {
-        case 'announce': {
-          await announcementHandler(client, interaction, host);
-          break;
-        }
+    switch (subCommand) {
+      case 'announce': {
+        await announcementHandler(client, interaction, host);
+        break;
       }
-    } catch (err) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      logger.error((err as any).message);
     }
   },
 

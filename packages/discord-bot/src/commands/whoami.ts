@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from '../utils/logger';
 import { whoamiHandler } from '../handlers/whoami';
 import { Command } from '../interfaces/Command';
 
@@ -8,14 +7,8 @@ export const whoami: Command = {
     .setName('whoami')
     .setDescription('Find praise info about yourself'),
   async execute(client, interaction, host) {
-    try {
-      if (!interaction.isCommand() || interaction.commandName !== 'whoami')
-        return;
-      await interaction.deferReply({ ephemeral: true });
-      await whoamiHandler(client, interaction, host);
-    } catch (err) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      logger.error((err as any).message);
-    }
+    if (!interaction.isCommand() || interaction.commandName !== 'whoami')
+      return;
+    await whoamiHandler(client, interaction, host);
   },
 };

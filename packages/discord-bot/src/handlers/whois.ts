@@ -5,6 +5,7 @@ import { CommandHandler } from '../interfaces/CommandHandler';
 import { PraisePaginatedResponseDto } from '../utils/api-schema';
 import { queryOpenAi } from '../utils/queryOpenAi';
 import { EmbedBuilder } from '@discordjs/builders';
+import { logger } from '../utils/logger';
 
 /**
  * Execute command /whoami
@@ -35,25 +36,11 @@ export const whoisHandler: CommandHandler = async (
     return;
   }
 
-  let currPage = 1;
-  let totalPages = 1;
+  const response = await apiClient.get<PraisePaginatedResponseDto>(
+    `/praise?limit=100&page=1&receiver=${userAccount._id}&sortType=desc&sortColumn=score`
+  );
 
-  const praise = [];
-  while (currPage <= totalPages) {
-    const response = await apiClient
-      .get(
-        `/praise?limit=100&page=${currPage}&receiver=${userAccount._id}&sortType=desc`
-      )
-      .then<PraisePaginatedResponseDto>((res) => res.data)
-      .catch(() => undefined);
-
-    if (!response) break;
-
-    praise.push(...response.docs);
-
-    currPage++;
-    totalPages = response.totalPages;
-  }
+  const praise = [...response.data.docs];
 
   praise.sort((a, b) => b.score - a.score).slice(0, 100);
 

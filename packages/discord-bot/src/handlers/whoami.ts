@@ -40,14 +40,6 @@ export const whoamiHandler: CommandHandler = async (
     host
   );
 
-  // const user =
-  //   ua.user === null
-  //     ? undefined
-  //     : await getUser(
-  //         typeof ua.user === 'string' ? ua.user : ua.user._id,
-  //         host
-  //       );
-
   if (ua.user !== undefined) {
     state.praiseRoles = [...ua.user.roles];
     state.address = ua.user.identityEthAddress || '';
