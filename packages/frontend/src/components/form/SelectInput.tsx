@@ -27,11 +27,15 @@ export const SelectInput = ({
 }: SelectInputProps): JSX.Element => {
   return (
     <div className={`relative h-10 ${className}`}>
-      <Listbox value={selected} onChange={handleChange}>
-        <Listbox.Button className="h-10 border border-warm-gray-400 w-full py-1.5 pl-3 pr-10 text-left bg-transparent  ">
+      <Listbox
+        value={selected}
+        onChange={handleChange}
+        disabled={options.length === 1}
+      >
+        <Listbox.Button className="h-10 border border-warm-gray-700 w-full py-1.5 pl-3 pr-10 text-left bg-white text-warm-gray-700 disabled:text-warm-gray-400 disabled:border-warm-gray-400 dark:bg-slate-500 dark:text-white disabled:dark:text-slate-400">
           <span className="block truncate">{selected?.label}</span>
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-            <span className="text-warm-gray-800 ">
+            <span className="">
               <FontAwesomeIcon icon={icon || faChevronDown} />
             </span>
           </div>
@@ -49,7 +53,7 @@ export const SelectInput = ({
                   <Listbox.Option
                     key={sIdx}
                     className={({ active }): string =>
-                      `relative cursor-default select-none py-2 pl-4 pr-4  ${
+                      `relative cursor-default select-none py-2 pl-4 pr-4 ${
                         active
                           ? 'bg-warm-gray-100 dark:bg-slate-700 text-warm-gray-900 dark:text-white'
                           : 'text-warm-gray-600 dark:text-white'

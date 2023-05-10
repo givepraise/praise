@@ -10,10 +10,18 @@ import TopPraiseReceivers from './components/TopPraiseReceivers';
 import {
   DatePeriodRange,
   DatePeriodRangeEndDate,
+  DatePeriodRangePeriod,
   DatePeriodRangeStartDate,
 } from '../../components/report/DatePeriodRange';
 import PraiseScoreOverTime from './components/PraiseScoreOverTime';
 import TopPraise from './components/TopPraise';
+import {
+  AllPeriods,
+  SinglePeriod,
+  useLoadSinglePeriodDetails,
+} from '../../model/periods/periods';
+import { Link } from 'react-router-dom';
+import * as check from 'wasm-check';
 
 const Graphs = (): JSX.Element | null => {
   const date2 = useRecoilValue(DatePeriodRangeStartDate);
@@ -47,13 +55,56 @@ const Graphs = (): JSX.Element | null => {
     </DuckDb>
   );
 };
-const AnalyticsPage = (): JSX.Element | null => {
+
+const NoPeriodsMessage = (): JSX.Element | null => {
+  return (
+    <div className="w-full p-5 mb-5 border rounded-none shadow-none md:shadow-md md:rounded-xl bg-warm-gray-50 dark:bg-slate-600 break-inside-avoid-column">
+      Analytics will be available once you have created your first{' '}
+      <Link to="/periods">praise period</Link>.
+    </div>
+  );
+};
+
+const NoPraiseMessage = (): JSX.Element | null => {
+  return (
+    <div className="w-full p-5 mb-5 border rounded-none shadow-none md:shadow-md md:rounded-xl bg-warm-gray-50 dark:bg-slate-600 break-inside-avoid-column">
+      Analytics will be available once some praise has been given.
+    </div>
+  );
+};
+
+const NoWasmMessage = (): JSX.Element | null => {
+  return (
+    <div className="w-full p-5 mb-5 border rounded-none shadow-none md:shadow-md md:rounded-xl bg-warm-gray-50 dark:bg-slate-600 break-inside-avoid-column">
+      This web browser does not support WebAssembly. WebAssembly is required to
+      view analytics.
+    </div>
+  );
+};
+
+const AnalyticsPage = (): JSX.Element => {
+  const periodId = useRecoilValue(DatePeriodRangePeriod);
+  useLoadSinglePeriodDetails(periodId);
+  const period = useRecoilValue(SinglePeriod(periodId));
+  const allPeriods = useRecoilValue(AllPeriods);
+  const isWasmSupported = check.support();
+
   return (
     <Page variant="full">
       <BreadCrumb name="Analytics" icon={faChartArea} />
-
-      <DatePeriodRange />
-      <Graphs />
+      {isWasmSupported ? (
+        <>
+          <DatePeriodRange />
+          {allPeriods.length === 0 && <NoPeriodsMessage />}
+          {period && period.numberOfPraise > 0 ? (
+            <Graphs />
+          ) : (
+            <NoPraiseMessage />
+          )}
+        </>
+      ) : (
+        <NoWasmMessage />
+      )}
     </Page>
   );
 };
