@@ -75,25 +75,25 @@ const questions = [
   {
     type: 'string',
     name: 'DISCORD_TOKEN',
-    message: 'Discord Token',
+    message: 'Discord token',
     default: process.env.DISCORD_TOKEN,
   },
   {
     type: 'string',
     name: 'DISCORD_CLIENT_ID',
-    message: 'Discord Client ID',
+    message: 'Discord client id',
     default: process.env.DISCORD_CLIENT_ID,
   },
   {
     type: 'string',
     name: 'DISCORD_GUILD_ID',
-    message: 'Discord Guild ID',
+    message: 'Discord guild id',
     default: process.env.DISCORD_GUILD_ID,
   },
   {
     type: 'string',
     name: 'OPENAI_KEY',
-    message: 'OpenAI Key',
+    message: 'OpenAI key (optional)',
     default: process.env.OPENAI_KEY,
   },
 ];

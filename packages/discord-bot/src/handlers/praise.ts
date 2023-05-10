@@ -60,7 +60,7 @@ export const praiseHandler: CommandHandler = async (
 
     if (reason.length < 5 || reason.length > 280) {
       await interaction.editReply(
-        'INVALID_REASON_LENGTH (reason should be between 5 to 280 characters)'
+        '⚠️ The praise reason should be between 5 to 280 characters.'
       );
       return;
     }

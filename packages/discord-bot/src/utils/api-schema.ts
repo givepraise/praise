@@ -7,6 +7,7 @@ export type UpdateUserAccountInputDto =
 export type UserAccount = components['schemas']['UserAccount'];
 
 export type User = components['schemas']['User'];
+export type UserWithStatsDto = components['schemas']['UserWithStatsDto'];
 
 export type Praise = components['schemas']['Praise'];
 export type PraisePaginatedResponseDto =
