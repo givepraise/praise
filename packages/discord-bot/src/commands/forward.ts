@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from '../utils/logger';
 import { forwardHandler } from '../handlers/forward';
 import { Command } from '../interfaces/Command';
 import { getMsgLink } from '../utils/format';
@@ -27,30 +26,16 @@ export const forward: Command = {
         .setRequired(true)
     ),
 
-  async execute(client, interaction, host) {
-    try {
-      if (!interaction.isCommand() || interaction.commandName !== 'forward')
-        return;
+  async execute(client, interaction, host, msg) {
+    if (!interaction.isCommand() || interaction.commandName !== 'forward')
+      return;
 
-      const msg = await interaction.deferReply({
-        fetchReply: true,
-        ephemeral: true,
-      });
-      if (msg === undefined) return;
-      await forwardHandler(
-        client,
-        interaction,
-        host,
-        getMsgLink(
-          interaction.guildId || '',
-          interaction.channelId || '',
-          msg.id
-        )
-      );
-    } catch (err) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      logger.error((err as any).message);
-    }
+    await forwardHandler(
+      client,
+      interaction,
+      host,
+      getMsgLink(interaction.guildId || '', interaction.channelId || '', msg.id)
+    );
   },
   help: {
     name: 'forward',

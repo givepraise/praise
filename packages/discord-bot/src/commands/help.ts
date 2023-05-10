@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from '../utils/logger';
 import { helpHandler } from '../handlers/help';
 import { HelpCommandBuilder, Command } from '../interfaces/Command';
 
@@ -18,19 +17,10 @@ export const help: HelpCommandBuilder = (commands) => {
         ),
 
       async execute(client, interaction) {
-        try {
-          if (!interaction.isCommand() || interaction.commandName !== 'help')
-            return;
+        if (!interaction.isCommand() || interaction.commandName !== 'help')
+          return;
 
-          const msg = await interaction.deferReply({
-            fetchReply: true,
-          });
-          if (msg === undefined) return;
-          await helpHandler(interaction, commands);
-        } catch (err) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          logger.error((err as any).message);
-        }
+        await helpHandler(interaction, commands);
       },
     } as Command,
   };

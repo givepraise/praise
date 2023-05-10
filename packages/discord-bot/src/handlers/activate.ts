@@ -27,12 +27,11 @@ export const activationHandler: CommandHandler = async (
       host
     );
     if (userAccount.user && userAccount.user !== null) {
-      await interaction.reply({
+      await interaction.editReply({
         content: await renderMessage(
           'PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR',
           host
         ),
-        ephemeral: true,
       });
       return;
     }
@@ -40,9 +39,8 @@ export const activationHandler: CommandHandler = async (
     const activateToken = await getActivateToken(userAccount, host);
 
     if (!activateToken) {
-      await interaction.reply({
+      await interaction.editReply({
         content: 'Unable to activate user account.',
-        ephemeral: true,
       });
       return;
     }
@@ -56,14 +54,12 @@ export const activationHandler: CommandHandler = async (
       member.user.id
     }&platform=DISCORD&token=${activateToken}`;
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${activationURL})`,
-      ephemeral: true,
     });
   } catch (error) {
-    await interaction.reply({
+    await interaction.editReply({
       content: 'Unable to activate user account.',
-      ephemeral: true,
     });
   }
 };

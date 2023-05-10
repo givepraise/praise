@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from '../utils/logger';
 import { praiseHandler } from '../handlers/praise';
 import { Command } from '../interfaces/Command';
 import { getMsgLink } from '../utils/format';
@@ -21,30 +20,16 @@ export const praise: Command = {
         .setRequired(true)
     ),
 
-  async execute(client, interaction, host) {
-    try {
-      if (!interaction.isCommand() || interaction.commandName !== 'praise')
-        return;
+  async execute(client, interaction, host, msg) {
+    if (!interaction.isCommand() || interaction.commandName !== 'praise')
+      return;
 
-      const msg = await interaction.deferReply({
-        fetchReply: true,
-        ephemeral: true,
-      });
-      if (msg === undefined) return;
-      await praiseHandler(
-        client,
-        interaction,
-        host,
-        getMsgLink(
-          interaction.guildId || '',
-          interaction.channelId || '',
-          msg.id
-        )
-      );
-    } catch (err) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      logger.error((err as any).message);
-    }
+    await praiseHandler(
+      client,
+      interaction,
+      host,
+      getMsgLink(interaction.guildId || '', interaction.channelId || '', msg.id)
+    );
   },
 
   help: {

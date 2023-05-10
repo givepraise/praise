@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logger } from '../utils/logger';
 import { activationHandler } from '../handlers/activate';
 import { Command } from '../interfaces/Command';
 
@@ -11,14 +10,9 @@ export const activate: Command = {
     ),
 
   async execute(client, interaction, host) {
-    try {
-      if (!interaction.isCommand() || interaction.commandName !== 'activate')
-        return;
-      await activationHandler(client, interaction, host);
-    } catch (err) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      logger.error((err as any).message);
-    }
+    if (!interaction.isCommand() || interaction.commandName !== 'activate')
+      return;
+    await activationHandler(client, interaction, host);
   },
 
   help: {
