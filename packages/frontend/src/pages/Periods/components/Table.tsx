@@ -25,8 +25,12 @@ export const PeriodsTable = (): JSX.Element => {
         accessor: 'endDate',
         className: 'text-left',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Cell: (data: any): string => {
-          return formatIsoDateUTC(data.value, DATE_FORMAT);
+        Cell: (data: any): JSX.Element => {
+          return (
+            <div className="px-3 whitespace-nowrap">
+              {formatIsoDateUTC(data.value, DATE_FORMAT)}
+            </div>
+          );
         },
       },
       {
