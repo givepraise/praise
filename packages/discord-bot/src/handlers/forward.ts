@@ -12,7 +12,7 @@ import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
 import { createForward } from '../utils/createForward';
 import { getSetting } from '../utils/settingsUtil';
 import { logger } from '../utils/logger';
-import { renderMessage } from '../utils/renderMessage';
+import { renderMessage, ephemeralWarning } from '../utils/renderMessage';
 
 /**
  * Execute command /forward
@@ -29,7 +29,7 @@ export const forwardHandler: CommandHandler = async (
 
   const { guild, channel, member } = interaction;
   if (!guild || !member || !channel) {
-    await interaction.editReply(await renderMessage('DM_ERROR'));
+    await ephemeralWarning(interaction, 'DM_ERROR');
     return;
   }
 
@@ -42,8 +42,10 @@ export const forwardHandler: CommandHandler = async (
       host
     );
     if (!forwarderAccount.user) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR', host)
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR',
+        host
       );
       return;
     }
@@ -55,41 +57,33 @@ export const forwardHandler: CommandHandler = async (
 
     const forwarderUser = await getUser(forwarderUserId, host);
     if (!forwarderUser?.roles.includes('FORWARDER')) {
-      await interaction.editReply(
-        "**❌ You don't have the permission to use this command.**"
-      );
+      await ephemeralWarning(interaction, 'FORWARDER_ROLE_WARNING', host);
       return;
     }
 
     const praiseGiver = interaction.options.getMember('giver') as GuildMember;
-    if (!praiseGiver) {
-      await interaction.editReply('**❌ No Praise giver specified**');
-      return;
-    }
 
     if (!(await assertPraiseGiver(praiseGiver, interaction, true, host)))
       return;
 
     const reason = interaction.options.getString('reason');
     if (!reason || reason.length === 0) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_REASON_MISSING_ERROR', host)
-      );
+      await ephemeralWarning(interaction, 'PRAISE_REASON_MISSING_ERROR', host);
       return;
     }
 
     if (reason.length < 5 || reason.length > 280) {
-      await interaction.editReply(
-        'INVALID_REASON_LENGTH (reason should be between 5 to 280 characters)'
-      );
+      await ephemeralWarning(interaction, 'INVALID_REASON_LENGTH', host);
       return;
     }
 
     const receiverOptions = interaction.options.getString('receivers');
 
     if (!receiverOptions || receiverOptions.length === 0) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_INVALID_RECEIVERS_ERROR',
+        host
       );
       return;
     }
@@ -99,17 +93,22 @@ export const forwardHandler: CommandHandler = async (
       !receiverData.validReceiverIds ||
       receiverData.validReceiverIds?.length === 0
     ) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_INVALID_RECEIVERS_ERROR',
+        host
       );
       return;
     }
     const giverAccount = await getUserAccount(praiseGiver.user, host);
     if (!giverAccount.user) {
-      await interaction.editReply(
-        await renderMessage('FORWARD_FROM_UNACTIVATED_GIVER_ERROR', host, {
+      await ephemeralWarning(
+        interaction,
+        'FORWARD_FROM_UNACTIVATED_GIVER_ERROR',
+        host,
+        {
           praiseGiver: praiseGiver.user,
-        })
+        }
       );
       return;
     }
@@ -168,8 +167,7 @@ export const forwardHandler: CommandHandler = async (
     }
 
     if (Receivers.length !== 0 && receivers.length !== 0) {
-      await interaction.editReply('Praise forwarded!');
-      await interaction.followUp({
+      await interaction.editReply({
         embeds: [
           await praiseForwardEmbed(
             interaction,
@@ -179,18 +177,17 @@ export const forwardHandler: CommandHandler = async (
             host
           ),
         ],
-        ephemeral: false,
       });
     } else if (warnSelfPraise) {
-      await interaction.editReply(
-        await renderMessage('SELF_PRAISE_WARNING', host)
-      );
+      await ephemeralWarning(interaction, 'SELF_PRAISE_WARNING', host);
     } else if (!Receivers.length) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_INVALID_RECEIVERS_ERROR',
+        host
       );
     } else {
-      await interaction.editReply('Praise Forward failed :(');
+      await ephemeralWarning(interaction, 'PRAISE_FORWARD_FAILED', host);
     }
 
     const warningMsg =

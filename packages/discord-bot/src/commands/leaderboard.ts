@@ -11,6 +11,7 @@ export const leaderboard: Command = {
   async execute(client, interaction, host) {
     if (!interaction.isCommand() || interaction.commandName !== 'leaderboard')
       return;
+    await interaction.deferReply({ ephemeral: true });
     await leaderboardHandler(client, interaction, host);
   },
 };

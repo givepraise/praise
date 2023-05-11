@@ -21,8 +21,7 @@ export interface Command {
   execute: (
     client: DiscordClient,
     interaction: ChatInputCommandInteraction,
-    host: string,
-    msg: Message<boolean>
+    host: string
   ) => Promise<void>;
   help?: HelpText;
 }

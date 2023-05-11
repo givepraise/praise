@@ -13,6 +13,7 @@ import { PraisePaginatedResponseDto } from '../utils/api-schema';
 import { getSetting } from '../utils/settingsUtil';
 
 import { logger } from '../utils/logger';
+import { ephemeralReply } from 'src/utils/ephemeralReply';
 /**
  * Execute command /praise
  *  Creates praises with a given receiver and reason
@@ -30,7 +31,11 @@ export const praiseHandler: CommandHandler = async (
   const { guild, channel, member } = interaction;
 
   if (!guild || !member || !channel) {
-    await interaction.editReply(await renderMessage('DM_ERROR'));
+    await interaction.followUp({
+      content: await renderMessage('DM_ERROR'),
+      ephemeral: true,
+    });
+    await interaction.deleteReply();
     return;
   }
 
@@ -44,24 +49,30 @@ export const praiseHandler: CommandHandler = async (
     const receiverOptions = interaction.options.getString('receivers');
 
     if (!receiverOptions || receiverOptions.length === 0) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
-      );
+      await interaction.followUp({
+        content: await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host),
+        ephemeral: true,
+      });
+      await interaction.deleteReply();
       return;
     }
 
     const reason = interaction.options.getString('reason', true);
     if (!reason || reason.length === 0) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_REASON_MISSING_ERROR', host)
-      );
+      await interaction.followUp({
+        content: await renderMessage('PRAISE_REASON_MISSING_ERROR', host),
+        ephemeral: true,
+      });
+      await interaction.deleteReply();
       return;
     }
 
     if (reason.length < 5 || reason.length > 280) {
-      await interaction.editReply(
-        '⚠️ The praise reason should be between 5 to 280 characters.'
-      );
+      await interaction.followUp({
+        content: '⚠️ The praise reason should be between 5 to 280 characters.',
+        ephemeral: true,
+      });
+      await interaction.deleteReply();
       return;
     }
 
@@ -71,9 +82,11 @@ export const praiseHandler: CommandHandler = async (
       !receiverData.validReceiverIds ||
       receiverData.validReceiverIds?.length === 0
     ) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
-      );
+      await interaction.followUp({
+        content: await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host),
+        ephemeral: true,
+      });
+      await interaction.deleteReply();
       return;
     }
 
@@ -83,9 +96,14 @@ export const praiseHandler: CommandHandler = async (
     );
 
     if (!giverAccount || !giverAccount.user || giverAccount.user === null) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR', host)
-      );
+      await interaction.followUp({
+        content: await renderMessage(
+          'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR',
+          host
+        ),
+        ephemeral: true,
+      });
+      await interaction.deleteReply();
       return;
     }
 
@@ -154,8 +172,7 @@ export const praiseHandler: CommandHandler = async (
     }
 
     if (Receivers.length !== 0 && receivers.length !== 0) {
-      await interaction.editReply('Praise given!');
-      await interaction.followUp({
+      await interaction.editReply({
         embeds: [
           await praiseSuccessEmbed(
             interaction.user,
@@ -164,18 +181,25 @@ export const praiseHandler: CommandHandler = async (
             host
           ),
         ],
-        ephemeral: false,
       });
     } else if (warnSelfPraise) {
-      await interaction.editReply(
-        await renderMessage('SELF_PRAISE_WARNING', host)
-      );
+      await interaction.followUp({
+        content: await renderMessage('SELF_PRAISE_WARNING', host),
+        ephemeral: true,
+      });
+      await interaction.deleteReply();
     } else if (!Receivers.length) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
-      );
+      await interaction.followUp({
+        content: await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host),
+        ephemeral: true,
+      });
+      await interaction.deleteReply();
     } else {
-      await interaction.editReply('Praise failed :(');
+      await interaction.followUp({
+        content: 'Praise failed :(',
+        ephemeral: true,
+      });
+      await interaction.deleteReply();
     }
 
     const warningMsg =
