@@ -6,7 +6,7 @@ function debugLogException(res: Response) {
   const exception = (res as any).exception;
   const errorJson = JSON.stringify({
     ...exception,
-    message: exception.message,
+    message: exception.message || '',
   });
   logger.debug(`Exception: ${errorJson}`);
 }
