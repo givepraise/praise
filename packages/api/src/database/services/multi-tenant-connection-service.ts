@@ -61,7 +61,7 @@ export class MultiTenantConnectionService implements MongooseOptionsFactory {
         // If database does not exist, throw an error. This occurs when a
         // user tries to access a community that does not exist.
         if (!dbExists) {
-          throw new ApiException(errorMessages.DATABASE_NOT_FOUND);
+          throw new ApiException(errorMessages.DATABASE_NOT_FOUND, host);
         }
 
         // Cache connection
